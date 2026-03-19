@@ -122,7 +122,6 @@ export const TerraPrimeSuite: React.FC = () => {
     const handleMessage = (event: MessageEvent) => {
       // SECURITY: Only accept messages from explicitly allowed origins
       if (!ALLOWED_ORIGINS.has(event.origin)) {
-        console.warn(`[TerraPrimeSuite] Rejected message from unknown origin: ${event.origin}`);
         return;
       }
 
@@ -130,7 +129,6 @@ export const TerraPrimeSuite: React.FC = () => {
 
       // SECURITY: Validate message type
       if (!type || !VALID_MESSAGE_TYPES.has(type)) {
-        console.warn(`[TerraPrimeSuite] Rejected invalid message type: ${type}`);
         return;
       }
 
@@ -154,7 +152,6 @@ export const TerraPrimeSuite: React.FC = () => {
 
         case 'TF_NOTIFY':
           // Suite sends notification
-          console.log('TerraPrime notification:', payload);
           // Could surface via toast here
           break;
 

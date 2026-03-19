@@ -19,7 +19,7 @@ interface CostCalculationRequest {
   parcelNumber?: string;
   region: string;
   buildingType: string;
-  additionalParameters?: Record<string, any>;
+  additionalParameters?: Record<string, unknown>;
 }
 
 interface CostAnalysis {
@@ -100,7 +100,7 @@ interface SystemStatus {
   activeAgents: number;
   performanceScore: number;
   lastUpdate: string;
-  systemMetrics: Record<string, any>;
+  systemMetrics: Record<string, unknown>;
 }
 
 interface PerformanceMetrics {
@@ -109,6 +109,41 @@ interface PerformanceMetrics {
   accuracyRate: number;
   totalCalculations: number;
   detailedMetrics: Record<string, number>;
+}
+
+/** Minimal response shape for /api/costforge/batch-calculate */
+interface BatchCalculateResult {
+  results: CostAnalysis[];
+  processed: number;
+  failed: number;
+  countyId: string;
+}
+
+/** Minimal response shape for /api/costforge/agents/status */
+interface AgentStatusResult {
+  activeAgents: number;
+  totalAgents: number;
+  healthyAgents: number;
+  agentDetails: Array<{ id: string; status: string; lastActivity: string }>;
+}
+
+/** Minimal response shape for /api/costforge/agents/scale */
+interface AgentScaleResult {
+  previousCount: number;
+  targetCount: number;
+  currentCount: number;
+  scalingStatus: string;
+}
+
+/** Minimal response shape for /api/costforge/sync/harris-pacs */
+interface HarrisPACSSyncResult {
+  countyId: string;
+  syncType: string;
+  recordsSynced: number;
+  recordsFailed: number;
+  syncStarted: string;
+  syncCompleted: string;
+  status: string;
 }
 
 /**
@@ -158,16 +193,8 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
         const responseData = await response.json();
         const duration = performance.now() - startTime;
 
-        // Log performance metrics for monitoring
-        console.debug(
-          `[CostForge API] ${options.method || 'GET'} ${endpoint} - ${duration.toFixed(2)}ms`
-        );
-
         // Performance warning for SLA monitoring
         if (duration > 150) {
-          console.warn(
-            `[CostForge API] Performance warning: ${endpoint} took ${duration.toFixed(2)}ms (SLA: <150ms)`
-          );
         }
 
         if (!response.ok) {
@@ -211,8 +238,8 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
 
   // Batch Valuation for county-wide assessments
   const batchCalculateValuations = useCallback(
-    async (propertyIds: string[], countyId: string): Promise<APIResponse<any>> => {
-      return apiCall<any>('/api/costforge/batch-calculate', {
+    async (propertyIds: string[], countyId: string): Promise<APIResponse<BatchCalculateResult>> => {
+      return apiCall<BatchCalculateResult>('/api/costforge/batch-calculate', {
         method: 'POST',
         body: JSON.stringify({
           propertyIds,
@@ -272,14 +299,14 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
   }, [apiCall]);
 
   // AI Agent Status for swarm monitoring
-  const getAIAgentStatus = useCallback(async (): Promise<APIResponse<any>> => {
-    return apiCall<any>('/api/costforge/agents/status');
+  const getAIAgentStatus = useCallback(async (): Promise<APIResponse<AgentStatusResult>> => {
+    return apiCall<AgentStatusResult>('/api/costforge/agents/status');
   }, [apiCall]);
 
   // Scale AI Agents for performance optimization
   const scaleAIAgents = useCallback(
-    async (targetCount: number): Promise<APIResponse<any>> => {
-      return apiCall<any>('/api/costforge/agents/scale', {
+    async (targetCount: number): Promise<APIResponse<AgentScaleResult>> => {
+      return apiCall<AgentScaleResult>('/api/costforge/agents/scale', {
         method: 'POST',
         body: JSON.stringify({ targetCount }),
       });
@@ -294,8 +321,8 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
 
   // Harris PACS Sync for government data integration
   const syncWithHarrisPACS = useCallback(
-    async (countyId: string, syncType: string = 'full'): Promise<APIResponse<any>> => {
-      return apiCall<any>('/api/costforge/sync/harris-pacs', {
+    async (countyId: string, syncType: string = 'full'): Promise<APIResponse<HarrisPACSSyncResult>> => {
+      return apiCall<HarrisPACSSyncResult>('/api/costforge/sync/harris-pacs', {
         method: 'POST',
         body: JSON.stringify({
           countyId,
@@ -311,7 +338,7 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
   // Connection health check
   const healthCheck = useCallback(async (): Promise<boolean> => {
     try {
-      const response = await apiCall<any>('/api/health');
+      const response = await apiCall<{ status: string }>('/api/health');
       return response.success;
     } catch {
       return false;
@@ -367,7 +394,6 @@ export const useBackendConnection = (baseUrl: string = (getViteEnv().VITE_API_UR
 
       if (healthy) {
         setConnectionAttempts(0);
-        console.log('[TerraFusion] Backend connection established ✓');
       } else {
         throw new Error('Health check failed');
       }
@@ -375,7 +401,6 @@ export const useBackendConnection = (baseUrl: string = (getViteEnv().VITE_API_UR
       setIsConnected(false);
       setConnectionAttempts((prev) => prev + 1);
 
-      console.warn(`[TerraFusion] Connection attempt ${connectionAttempts + 1} failed:`, error);
 
       // Exponential backoff reconnection
       const backoffDelay = Math.min(1000 * Math.pow(2, connectionAttempts), 30000);

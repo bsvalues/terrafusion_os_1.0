@@ -13,7 +13,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FileTraceStore = exports.InMemoryTraceStore = void 0;
 exports.createTraceStore = createTraceStore;
 const fs_1 = require("fs");
+const node_crypto_1 = require("node:crypto");
 const path_1 = require("path");
+// ============================================================================
+// Hash chain helpers
+// ============================================================================
+function sha256Event(event) {
+    return (0, node_crypto_1.createHash)('sha256')
+        .update(JSON.stringify(event), 'utf8')
+        .digest('hex');
+}
 const DEFAULT_PER_PARCEL_CAP = 2000;
 class InMemoryTraceStore {
     constructor(options = {}) {
@@ -24,9 +33,14 @@ class InMemoryTraceStore {
         this.perParcelCap = options.perParcelCap ?? DEFAULT_PER_PARCEL_CAP;
     }
     async append(event) {
-        this.events.push(event);
+        const lastEvent = this.events.length > 0 ? this.events[this.events.length - 1] : null;
+        const nextEvent = {
+            ...event,
+            previousHash: lastEvent !== null ? sha256Event(lastEvent) : null,
+        };
+        this.events.push(nextEvent);
         // Update parcel index
-        const pid = event.context.parcelId;
+        const pid = nextEvent.context.parcelId;
         if (pid) {
             if (!this.parcelIndex.has(pid))
                 this.parcelIndex.set(pid, new Set());
@@ -42,7 +56,7 @@ class InMemoryTraceStore {
             this.rebuildIndex(trimCount);
             this.events.splice(0, trimCount);
         }
-        return event;
+        return nextEvent;
     }
     /**
      * Enforce per-parcel cap: if a parcel exceeds the cap, remove its oldest
@@ -281,14 +295,19 @@ class FileTraceStore {
     }
     async append(event) {
         this.ensureLoaded();
-        this.events.push(event);
+        const lastEvent = this.events.length > 0 ? this.events[this.events.length - 1] : null;
+        const nextEvent = {
+            ...event,
+            previousHash: lastEvent !== null ? sha256Event(lastEvent) : null,
+        };
+        this.events.push(nextEvent);
         // Append to file (sync for durability)
         const dir = (0, path_1.dirname)(this.filePath);
         if (!(0, fs_1.existsSync)(dir)) {
             (0, fs_1.mkdirSync)(dir, { recursive: true });
         }
-        (0, fs_1.appendFileSync)(this.filePath, JSON.stringify(event) + '\n', 'utf-8');
-        return event;
+        (0, fs_1.appendFileSync)(this.filePath, JSON.stringify(nextEvent) + '\n', 'utf-8');
+        return nextEvent;
     }
     async query(options = {}) {
         this.ensureLoaded();

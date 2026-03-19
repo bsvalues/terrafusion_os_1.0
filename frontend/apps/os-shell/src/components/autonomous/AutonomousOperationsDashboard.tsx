@@ -138,7 +138,6 @@ export const AutonomousOperationsDashboard: React.FC = () => {
       const data = await response.json();
       setAnomalies(data.detectedAnomalies || []);
     } catch (err) {
-      console.error('Error fetching anomalies:', err);
     }
   }, []);
 
@@ -149,7 +148,6 @@ export const AutonomousOperationsDashboard: React.FC = () => {
       const data = await response.json();
       setPredictions(data.predictions || []);
     } catch (err) {
-      console.error('Error fetching predictions:', err);
     }
   }, []);
 
@@ -160,7 +158,6 @@ export const AutonomousOperationsDashboard: React.FC = () => {
       const data = await response.json();
       setRecoveries(data.activeRecoveries || []);
     } catch (err) {
-      console.error('Error fetching self-healing data:', err);
     }
   }, []);
 
@@ -172,7 +169,6 @@ export const AutonomousOperationsDashboard: React.FC = () => {
       setMlModels(data.mlModels || []);
       setSubsystems(data.subsystemHealth || []);
     } catch (err) {
-      console.error('Error fetching predictive maintenance:', err);
     }
   }, []);
 

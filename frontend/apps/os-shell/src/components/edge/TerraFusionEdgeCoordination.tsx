@@ -95,7 +95,6 @@ export const TerraFusionEdgeCoordination: React.FC<EdgeCoordinationProps> = ({
   }, []);
 
   const initializeEdgeCoordination = useCallback(() => {
-    console.log('🌐 Initializing TerraFusion Edge Computing & IoT Coordination...');
 
     // Initialize edge nodes
     const nodes: EdgeNode[] = [
@@ -346,7 +345,6 @@ export const TerraFusionEdgeCoordination: React.FC<EdgeCoordinationProps> = ({
     setProcessingTasks(tasks);
     calculateCoordinationMetrics(nodes, devices, tasks);
 
-    console.log('✅ Edge Computing & IoT Coordination - Elite Status Achieved');
   }, []);
 
   const calculateCoordinationMetrics = useCallback(

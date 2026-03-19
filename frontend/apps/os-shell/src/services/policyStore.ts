@@ -86,9 +86,6 @@ export function createPolicyStore(): PolicyStore {
 
         // Version check
         if (parsed.version !== STORAGE_VERSION) {
-          console.warn(
-            `Policy storage version mismatch: expected ${STORAGE_VERSION}, got ${parsed.version}`
-          );
           return [];
         }
 

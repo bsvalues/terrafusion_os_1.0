@@ -86,6 +86,27 @@ namespace TerraFusion.AI.Interfaces
         /// Phase 15: Get health status of a RAG dataset for diagnostics
         /// </summary>
         Task<RAGHealthStatus> GetRagHealthAsync(string datasetName);
+
+        /// <summary>
+        /// Wave 2: Get chunks (embeddings) for a document — read-only view for the UI.
+        /// Returns an empty list when the document has no indexed chunks.
+        /// </summary>
+        Task<List<RAGChunkSummary>> GetDocumentChunksAsync(int documentId);
+    }
+
+    /// <summary>
+    /// Wave 2: Lightweight chunk summary projected from RAGEmbedding for the UI.
+    /// Does not expose the raw float[] embedding vector.
+    /// </summary>
+    public class RAGChunkSummary
+    {
+        public int Id { get; set; }
+        public int DocumentId { get; set; }
+        public int ChunkIndex { get; set; }
+        public string ChunkText { get; set; } = string.Empty;
+        public int TokenCount { get; set; }
+        public int StartPosition { get; set; }
+        public int EndPosition { get; set; }
     }
 
     /// <summary>

@@ -64,7 +64,6 @@ export const TerraFusionQuantumComputing: React.FC<QuantumComputingProps> = ({
   }, []);
 
   const initializeQuantumSystems = useCallback(() => {
-    console.log('⚛️ Initializing TerraFusion Quantum Computing Platform...');
 
     // Initialize quantum processing nodes
     const nodes: QuantumProcessingNode[] = [
@@ -175,7 +174,6 @@ export const TerraFusionQuantumComputing: React.FC<QuantumComputingProps> = ({
     setExecutingCircuits(['qc-grover-001']);
     calculateQuantumMetrics(nodes, circuits);
 
-    console.log('✅ Quantum Computing Platform - Elite Status Achieved');
   }, []);
 
   const calculateQuantumMetrics = useCallback(
@@ -231,7 +229,6 @@ export const TerraFusionQuantumComputing: React.FC<QuantumComputingProps> = ({
     );
     setExecutingCircuits((prev) => [...prev, circuitId]);
 
-    console.log(`⚛️ Executing quantum circuit: ${circuitId}`);
   }, []);
 
   const getAlgorithmColor = (algorithm: QuantumCircuit['algorithm']) => {

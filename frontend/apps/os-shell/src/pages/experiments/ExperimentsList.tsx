@@ -31,7 +31,6 @@ export default function ExperimentsList() {
   }, []);
 
   useExperimentsSignalR((payload) => {
-    console.log('SignalR update:', payload);
     if (payload.experimentId && payload.runId) {
       loadRunsForExperiment(payload.experimentId);
     }

@@ -8,8 +8,7 @@
   "properties": {
     "$schema": { "type": "string" },
     "version": {
-      "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+      "const": "2.0.0"
     },
     "description": { "type": "string" },
     "lastUpdated": {
@@ -24,7 +23,18 @@
   "definitions": {
     "Suite": {
       "type": "string",
-      "enum": ["forge", "atlas", "dais", "dossier", "os", "pilot", "gpt"]
+      "enum": [
+        "forge",
+        "atlas",
+        "dais",
+        "dossier",
+        "os",
+        "pilot",
+        "gpt",
+        "clerk",
+        "treasury",
+        "audit"
+      ]
     },
     "Risk": {
       "type": "string",
@@ -33,14 +43,25 @@
     "TouchTarget": {
       "type": "string",
       "enum": [
+        "canon",
+        "canon_file",
+        "compliance",
         "parcel",
         "dossier",
         "workflow",
         "notice",
         "trace",
         "model",
-        "map"
+        "map",
+        "exemption",
+        "levy",
+        "recording",
+        "tax"
       ]
+    },
+    "OfficeId": {
+      "type": "string",
+      "enum": ["assessor", "clerk", "treasurer", "auditor", "recorder"]
     },
     "Mode": {
       "type": "string",
@@ -116,19 +137,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": [
-              "annual_certification",
-              "appeal_response",
-              "correction",
-              "exemption_change",
-              "new_construction",
-              "market_adjustment",
-              "catastrophic_loss",
-              "clerical_error",
-              "board_directive",
-              "supervisor_override",
-              "emergency"
-            ]
+            "pattern": "^[a-z][a-z0-9_]*$"
           },
           "description": "Allowed reason codes for this tool (required for write_high/irreversible)"
         },
@@ -157,13 +166,35 @@
           "description": "How this tool logs to TerraTrace (required if touches includes trace)"
         },
         "payloadStore": {
-          "type": "string",
-          "enum": ["dossier", "secure-blob", "case-store"],
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": [
+                "dossier",
+                "secure-blob",
+                "case-store",
+                "clerk",
+                "treasury",
+                "audit"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
           "description": "Where payload refs are stored (required if tracePolicy is payload_ref)"
+        },
+        "officeScope": {
+          "$ref": "#/definitions/OfficeId",
+          "description": "Office ownership scope for the tool"
         },
         "governance": {
           "$ref": "#/definitions/CommandGovernanceMeta",
           "description": "Optional command governance metadata for preflight policy checks"
+        },
+        "paramsSchema": {
+          "type": "object",
+          "description": "Optional JSON-schema-like contract for tool params"
         }
       }
     }

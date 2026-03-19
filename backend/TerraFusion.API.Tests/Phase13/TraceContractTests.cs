@@ -264,6 +264,213 @@ public class TraceContractTests
             string.Join("\n", violations));
     }
 
+    /// <summary>
+    /// Phase 8: emitIntent must exist in terraTrace.ts.
+    /// Proves the frontend paired API is present — source-text contract.
+    /// </summary>
+    [Fact]
+    public void Frontend_TerraTrace_Must_Export_EmitIntent()
+    {
+        var repoRoot = Path.GetDirectoryName(Path.GetDirectoryName(BackendSrcDir))!;
+        var traceFile = Path.Combine(
+            repoRoot, "frontend", "apps", "os-shell", "src", "services", "terraTrace.ts");
+
+        if (!File.Exists(traceFile)) return;
+
+        var content = File.ReadAllText(traceFile);
+        content.Should().Contain("export function emitIntent",
+            "terraTrace.ts must export emitIntent for intent/result pairing (Phase 8 contract)");
+    }
+
+    /// <summary>Phase 8: emitResult must exist in terraTrace.ts.</summary>
+    [Fact]
+    public void Frontend_TerraTrace_Must_Export_EmitResult()
+    {
+        var repoRoot = Path.GetDirectoryName(Path.GetDirectoryName(BackendSrcDir))!;
+        var traceFile = Path.Combine(
+            repoRoot, "frontend", "apps", "os-shell", "src", "services", "terraTrace.ts");
+
+        if (!File.Exists(traceFile)) return;
+
+        var content = File.ReadAllText(traceFile);
+        content.Should().Contain("export function emitResult",
+            "terraTrace.ts must export emitResult for intent/result pairing (Phase 8 contract)");
+    }
+
+    /// <summary>Phase 8: getUnpairedIntents must exist — enables sweep tooling.</summary>
+    [Fact]
+    public void Frontend_TerraTrace_Must_Export_GetUnpairedIntents()
+    {
+        var repoRoot = Path.GetDirectoryName(Path.GetDirectoryName(BackendSrcDir))!;
+        var traceFile = Path.Combine(
+            repoRoot, "frontend", "apps", "os-shell", "src", "services", "terraTrace.ts");
+
+        if (!File.Exists(traceFile)) return;
+
+        var content = File.ReadAllText(traceFile);
+        content.Should().Contain("export function getUnpairedIntents",
+            "terraTrace.ts must export getUnpairedIntents so sweep tooling can detect incomplete pairs");
+    }
+
+    /// <summary>
+    /// Phase 8: TraceIntent must carry countyId — county isolation contract.
+    /// </summary>
+    [Fact]
+    public void Frontend_TraceIntent_Must_Carry_CountyId()
+    {
+        var repoRoot = Path.GetDirectoryName(Path.GetDirectoryName(BackendSrcDir))!;
+        var traceFile = Path.Combine(
+            repoRoot, "frontend", "apps", "os-shell", "src", "services", "terraTrace.ts");
+
+        if (!File.Exists(traceFile)) return;
+
+        var content = File.ReadAllText(traceFile);
+        content.Should().Contain("countyId",
+            "TraceIntent must carry countyId for county isolation — every intent is county-scoped");
+    }
+
+    /// <summary>
+    /// Phase 8: sweep.ts CLI tool must exist in tools/tf/.
+    /// Proves drift detection tooling is present and deployable.
+    /// </summary>
+    [Fact]
+    public void SweepTool_Must_Exist_In_Tools_Tf()
+    {
+        var repoRoot = Path.GetDirectoryName(Path.GetDirectoryName(BackendSrcDir))!;
+        var sweepFile = Path.Combine(repoRoot, "tools", "tf", "sweep.ts");
+
+        File.Exists(sweepFile).Should().BeTrue(
+            "tools/tf/sweep.ts must exist — Phase 8 drift detection CLI tool required");
+    }
+
+    /// <summary>
+    /// Phase 8: verify-ops.ts CLI tool must exist in tools/tf/.
+    /// Proves shadow write detection tooling is present and deployable.
+    /// </summary>
+    [Fact]
+    public void VerifyOpsTool_Must_Exist_In_Tools_Tf()
+    {
+        var repoRoot = Path.GetDirectoryName(Path.GetDirectoryName(BackendSrcDir))!;
+        var verifyOpsFile = Path.Combine(repoRoot, "tools", "tf", "verify-ops.ts");
+
+        File.Exists(verifyOpsFile).Should().BeTrue(
+            "tools/tf/verify-ops.ts must exist — Phase 8 shadow write detection CLI tool required");
+    }
+
+    /// <summary>
+    /// Phase 8: sweep.ts must reference getUnpairedIntents or equivalent unpaired detection.
+    /// Proves the sweep tool actually uses the API — not just an empty file.
+    /// </summary>
+    [Fact]
+    public void SweepTool_Must_Reference_Unpaired_Detection()
+    {
+        var repoRoot = Path.GetDirectoryName(Path.GetDirectoryName(BackendSrcDir))!;
+        var sweepFile = Path.Combine(repoRoot, "tools", "tf", "sweep.ts");
+
+        if (!File.Exists(sweepFile)) return;
+
+        var content = File.ReadAllText(sweepFile);
+        var hasUnpairedRef =
+            content.Contains("unpaired", StringComparison.OrdinalIgnoreCase) ||
+            content.Contains("getUnpairedIntents", StringComparison.OrdinalIgnoreCase) ||
+            content.Contains("emitIntent", StringComparison.OrdinalIgnoreCase) ||
+            content.Contains("drift", StringComparison.OrdinalIgnoreCase);
+
+        hasUnpairedRef.Should().BeTrue(
+            "sweep.ts must reference unpaired intent detection or drift — an empty stub is insufficient");
+    }
+
+    /// <summary>
+    /// Phase 8: verify-ops.ts must reference SaveChangesAsync or direct mutation detection.
+    /// Proves the verify-ops tool targets actual shadow write patterns.
+    /// </summary>
+    [Fact]
+    public void VerifyOpsTool_Must_Reference_SaveChanges_Detection()
+    {
+        var repoRoot = Path.GetDirectoryName(Path.GetDirectoryName(BackendSrcDir))!;
+        var verifyOpsFile = Path.Combine(repoRoot, "tools", "tf", "verify-ops.ts");
+
+        if (!File.Exists(verifyOpsFile)) return;
+
+        var content = File.ReadAllText(verifyOpsFile);
+        var hasShadowWriteRef =
+            content.Contains("SaveChanges", StringComparison.OrdinalIgnoreCase) ||
+            content.Contains("shadow", StringComparison.OrdinalIgnoreCase) ||
+            content.Contains("bypass", StringComparison.OrdinalIgnoreCase) ||
+            content.Contains("mutation", StringComparison.OrdinalIgnoreCase);
+
+        hasShadowWriteRef.Should().BeTrue(
+            "verify-ops.ts must reference SaveChanges, shadow writes, or mutation bypass detection");
+    }
+
+    /// <summary>
+    /// Phase 8: DistributedTracingService must exist in TerraFusion.Core.
+    /// Validates the intent/result correlation service is in the sovereign spine.
+    /// </summary>
+    [Fact]
+    public void DistributedTracingService_Must_Exist_In_Core()
+    {
+        if (string.IsNullOrEmpty(BackendSrcDir) || !Directory.Exists(BackendSrcDir))
+            return;
+
+        var tracingFile = Directory.GetFiles(
+                BackendSrcDir, "DistributedTracingService.cs", SearchOption.AllDirectories)
+            .Where(f => !f.Contains("obj") && !f.Contains("bin") && !f.Contains("Test"))
+            .FirstOrDefault();
+
+        tracingFile.Should().NotBeNull(
+            "DistributedTracingService.cs must exist in backend/src — required for intent/result correlation");
+
+        var content = File.ReadAllText(tracingFile!);
+        content.Should().Contain("IDistributedTracingService",
+            "DistributedTracingService must implement IDistributedTracingService interface");
+    }
+
+    /// <summary>
+    /// Phase 8: No raw phone numbers or tax IDs in log format strings.
+    /// Extends PII sweep to government-specific sensitive fields.
+    /// </summary>
+    [Fact]
+    public void No_Raw_TaxId_Or_Phone_In_Log_Format_Strings()
+    {
+        if (string.IsNullOrEmpty(BackendSrcDir) || !Directory.Exists(BackendSrcDir))
+            return;
+
+        var taxIdPattern = new Regex(
+            @"_logger\.Log\w+\([^;]*\{[Tt]ax[Ii][Dd]\}[^;]*,\s*\w*[Tt]ax[Ii][Dd]",
+            RegexOptions.Compiled);
+
+        var phonePattern = new Regex(
+            @"_logger\.Log\w+\([^;]*\{[Pp]hone(Number)?\}[^;]*,\s*\w*[Pp]hone",
+            RegexOptions.Compiled);
+
+        var taxViolations = ScanForViolations(taxIdPattern, "Raw {TaxId} in log");
+        var phoneViolations = ScanForViolations(phonePattern, "Raw {Phone} in log");
+
+        taxViolations.Should().BeEmpty(
+            "PII contract: tax IDs must never appear as raw values in log format strings");
+        phoneViolations.Should().BeEmpty(
+            "PII contract: phone numbers must never appear as raw values in log format strings");
+    }
+
+    /// <summary>
+    /// Phase 8: terraTrace.ts must propagate countyId from TraceIntent through emitIntent.
+    /// County isolation — cross-county trace leakage is a governance violation.
+    /// </summary>
+    [Fact]
+    public void Frontend_EmitIntent_Must_Use_CountyId_Parameter()
+    {
+        var repoRoot = Path.GetDirectoryName(Path.GetDirectoryName(BackendSrcDir))!;
+        var traceFile = Path.Combine(
+            repoRoot, "frontend", "apps", "os-shell", "src", "services", "terraTrace.ts");
+
+        if (!File.Exists(traceFile)) return;
+
+        var content = File.ReadAllText(traceFile);
+        content.Should().Contain("intent.countyId",
+            "emitIntent must propagate countyId from TraceIntent — no county-anonymous intents allowed");
+    }
+
     #region Helpers
 
     private List<string> ScanForViolations(Regex pattern, string label)

@@ -98,16 +98,16 @@ export const useBackendConnection = () => {
       } else {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const endTime = performance.now();
       const responseTime = Math.round(endTime - startTime);
 
-      if (error.name === 'AbortError') {
+      if (error instanceof DOMException && error.name === 'AbortError') {
         logger.debug('Health check aborted');
         return null;
       }
 
-      const errorMessage = error.message || 'Unknown connection error';
+      const errorMessage = error instanceof Error ? error.message : 'Unknown connection error';
       logger.error('Backend connection failed:', errorMessage);
 
       setState((prev) => ({

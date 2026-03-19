@@ -18,6 +18,7 @@ module.exports = {
   },
   rules: {
     'no-unused-vars': 'off', // Disabled for TypeScript (handled in upper workspace)
+    '@typescript-eslint/no-explicit-any': 'warn',
     'prefer-const': 'warn',
     'no-console': 'off', // Temporarily disabled for cleanup
     'no-undef': 'off', // TypeScript handles this
@@ -48,6 +49,20 @@ module.exports = {
       rules: {
         // Disable CSS linting entirely for TypeScript files
         'css/*': 'off',
+      },
+    },
+    {
+      files: [
+        'apps/os-shell/src/auth/**/*.ts',
+        'apps/os-shell/src/auth/**/*.tsx',
+        'apps/os-shell/src/contracts/**/*.ts',
+        'apps/os-shell/src/orchestration/**/*.ts',
+        'apps/os-shell/src/routing/**/*.ts',
+        'apps/os-shell/src/routing/**/*.tsx',
+        'apps/os-shell/src/config/**/*.ts',
+      ],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'error',
       },
     },
   ],

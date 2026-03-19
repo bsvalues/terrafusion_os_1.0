@@ -132,7 +132,7 @@ export const GptStudioView: React.FC = () => {
     setSendError(null);
 
     try {
-      const convo = await createConversation(gpt.key);
+      const convo = await createConversation(gpt.id);
       setConversation(convo);
       await loadMessages(convo.id);
     } catch (err: unknown) {
@@ -160,7 +160,7 @@ export const GptStudioView: React.FC = () => {
       };
       setMessages((prev) => [...prev, userMessage]);
 
-      const assistant = await sendMessage(conversation.id, content);
+      const assistant = await sendMessage(conversation.id, content, selectedGpt!.id);
       setMessages((prev) => [...prev, assistant]);
     } catch (err: unknown) {
       setSendError(err instanceof Error ? err.message : 'Failed to send message.');

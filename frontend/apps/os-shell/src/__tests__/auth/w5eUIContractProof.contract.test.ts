@@ -89,15 +89,21 @@ describe('Gate 1 — DemoDataBanner inventory: every fixture surface discloses',
 // ============================================================================
 
 describe('Gate 2 — provenance tracking: hooks and components expose data origin', () => {
-  it('useTodaysWork returns isSampleData: true', () => {
+  it('useTodaysWork tracks both live and fallback provenance', () => {
     const src = readSrc('hooks/useTodaysWork.ts');
-    expect(src).toMatch(/isSampleData:\s*true/);
+    expect(src).toContain('isSampleData');
+    expect(src).toContain('setIsSampleData(false)');
+    expect(src).toContain('setIsSampleData(true)');
     expect(src).toContain('SAMPLE_TASKS');
+    expect(src).toContain('getQueueItems({ throwOnError: true })');
   });
 
-  it('useBudgetData returns isSampleData: true', () => {
+  it('useBudgetData tracks both live and fallback provenance', () => {
     const src = readSrc('applications/terra-levy/hooks/useBudgetData.ts');
-    expect(src).toMatch(/isSampleData:\s*true/);
+    expect(src).toContain('isSampleData');
+    expect(src).toContain('setIsSampleData(false)');
+    expect(src).toContain('setIsSampleData(true)');
+    expect(src).toContain('/levy/dashboard/summary');
   });
 
   it('SegmentDiscoveryDashboard tracks isFixture state', () => {
@@ -213,6 +219,32 @@ describe('Gate 4 — standalone suite home routes', () => {
       expect(srcExists(`${route.importPath}.tsx`)).toBe(true);
     });
   }
+});
+
+describe('Gate 4A — /gpt bounded workspace host', () => {
+  const src = readSrc('pages/suites/GptSuiteHome.tsx');
+
+  it('hosts GPTManagementDashboard directly inside /gpt', () => {
+    expect(src).toContain('GPTManagementDashboard');
+  });
+
+  it('hosts RAGDatasetManager directly inside /gpt', () => {
+    expect(src).toContain('RAGDatasetManager');
+  });
+
+  it('defines a bounded workspace panel test landmark', () => {
+    expect(src).toContain('data-testid="gpt-workspace-panel"');
+    expect(src).toContain('data-testid="gpt-workspace-nav"');
+  });
+
+  it('does not use SuiteModuleGrid launch cards for /gpt', () => {
+    expect(src).not.toContain('SuiteModuleGrid');
+  });
+
+  it('does not send /gpt modules through the pilot workbench tab', () => {
+    expect(src).not.toContain("launchMode: 'workbench'");
+    expect(src).not.toContain("workbenchTab: 'pilot'");
+  });
 });
 
 // ============================================================================
@@ -342,14 +374,16 @@ describe('Gate 7 — sealed wave regression wall', () => {
   });
 
   // W5D: Honesty sweep
-  it('useTodaysWork returns isSampleData: true (W5D)', () => {
+  it('useTodaysWork keeps dynamic fallback provenance (W5D)', () => {
     const src = readSrc('hooks/useTodaysWork.ts');
-    expect(src).toMatch(/isSampleData:\s*true/);
+    expect(src).toContain('setIsSampleData(false)');
+    expect(src).toContain('setIsSampleData(true)');
   });
 
-  it('useBudgetData returns isSampleData: true (W5D)', () => {
+  it('useBudgetData keeps dynamic fallback provenance (W5D)', () => {
     const src = readSrc('applications/terra-levy/hooks/useBudgetData.ts');
-    expect(src).toMatch(/isSampleData:\s*true/);
+    expect(src).toContain('setIsSampleData(false)');
+    expect(src).toContain('setIsSampleData(true)');
   });
 
   it('BatchCostRun has DemoDataBanner + BACKEND_APPLY_CAPABLE (W5D)', () => {

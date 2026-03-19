@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using Pgvector;
 using TerraFusion.Data;
 
 #nullable disable
@@ -22,6 +23,555 @@ namespace TerraFusion.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("TerraFusion.AI.Entities.GPTAudit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClientInfo")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CountyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EmbeddingModel")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("EmbeddingProvider")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("GPTConfigurationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("LLMGenerationTimeMs")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LLMModel")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("LLMProvider")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("MessageId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("RAGAverageScore")
+                        .HasColumnType("decimal(5,4)");
+
+                    b.Property<string>("RAGChunkDetails")
+                        .HasColumnType("jsonb");
+
+                    b.Property<int>("RAGChunksRetrieved")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RAGDatasetId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RAGDocumentIds")
+                        .HasColumnType("jsonb");
+
+                    b.Property<int?>("RAGRetrievalTimeMs")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("RAGUsed")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("TotalResponseTimeMs")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId")
+                        .HasDatabaseName("IX_GPTAudit_ConversationId");
+
+                    b.HasIndex("CountyId")
+                        .HasDatabaseName("IX_GPTAudit_CountyId");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_GPTAudit_CreatedAt");
+
+                    b.HasIndex("GPTConfigurationId");
+
+                    b.HasIndex("MessageId")
+                        .HasDatabaseName("IX_GPTAudit_MessageId");
+
+                    b.HasIndex("RAGDatasetId");
+
+                    b.ToTable("GPTAudit", (string)null);
+                });
+
+            modelBuilder.Entity("TerraFusion.AI.Entities.GPTMarketplaceInstall", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CountyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("GPTConfigurationId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("InstallDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("LastUsedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Review")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UsageCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("Version")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountyId")
+                        .HasDatabaseName("IX_GPTMarketplaceInstalls_CountyId");
+
+                    b.HasIndex("GPTConfigurationId")
+                        .HasDatabaseName("IX_GPTMarketplaceInstalls_GPTConfigurationId");
+
+                    b.HasIndex("InstallDate")
+                        .HasDatabaseName("IX_GPTMarketplaceInstalls_InstallDate");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_GPTMarketplaceInstalls_UserId");
+
+                    b.HasIndex("UserId", "GPTConfigurationId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_GPTMarketplaceInstalls_UserGPT_Unique");
+
+                    b.ToTable("GPTMarketplaceInstalls", (string)null);
+                });
+
+            modelBuilder.Entity("TerraFusion.AI.Entities.GPTMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompletionTokens")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Cost")
+                        .HasColumnType("decimal(18,6)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FinishReason")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("FunctionArgs")
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("FunctionName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("FunctionResult")
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("ModelUsed")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("PromptTokens")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Provider")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("RAGDocumentsUsed")
+                        .HasColumnType("jsonb");
+
+                    b.Property<decimal?>("RAGScore")
+                        .HasColumnType("decimal(3,2)");
+
+                    b.Property<int?>("ResponseTime")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("TotalTokens")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId")
+                        .HasDatabaseName("IX_GPTMessages_ConversationId");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_GPTMessages_CreatedAt");
+
+                    b.HasIndex("Provider")
+                        .HasDatabaseName("IX_GPTMessages_Provider");
+
+                    b.HasIndex("Role")
+                        .HasDatabaseName("IX_GPTMessages_Role");
+
+                    b.ToTable("GPTMessages", (string)null);
+                });
+
+            modelBuilder.Entity("TerraFusion.AI.Entities.GPTUsageMetric", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("CompletionTokenCost")
+                        .HasColumnType("decimal(18,6)");
+
+                    b.Property<int>("CompletionTokens")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ConversationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CountyId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("text");
+
+                    b.Property<int>("GPTConfigurationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MessageId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ModelName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<decimal>("PromptTokenCost")
+                        .HasColumnType("decimal(18,6)");
+
+                    b.Property<int>("PromptTokens")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int?>("ResponseTime")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("TotalCost")
+                        .HasColumnType("decimal(18,6)");
+
+                    b.Property<int>("TotalTokens")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId")
+                        .HasDatabaseName("IX_GPTUsageMetrics_ConversationId");
+
+                    b.HasIndex("CountyId")
+                        .HasDatabaseName("IX_GPTUsageMetrics_CountyId");
+
+                    b.HasIndex("GPTConfigurationId")
+                        .HasDatabaseName("IX_GPTUsageMetrics_GPTConfigurationId");
+
+                    b.HasIndex("Provider")
+                        .HasDatabaseName("IX_GPTUsageMetrics_Provider");
+
+                    b.HasIndex("Timestamp")
+                        .HasDatabaseName("IX_GPTUsageMetrics_Timestamp");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_GPTUsageMetrics_UserId");
+
+                    b.HasIndex("CountyId", "Timestamp")
+                        .HasDatabaseName("IX_GPTUsageMetrics_CountyTimestamp");
+
+                    b.HasIndex("GPTConfigurationId", "Timestamp")
+                        .HasDatabaseName("IX_GPTUsageMetrics_GPTTimestamp");
+
+                    b.ToTable("GPTUsageMetrics", (string)null);
+                });
+
+            modelBuilder.Entity("TerraFusion.AI.Entities.RAGDataset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int?>("CountyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DocumentCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("EmbeddingModel")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("EmbeddingProvider")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("LastIndexedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasDefaultValue("Active");
+
+                    b.Property<int>("TotalChunks")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("VectorDimension")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1536);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Category")
+                        .HasDatabaseName("IX_RAGDatasets_Category");
+
+                    b.HasIndex("CountyId")
+                        .HasDatabaseName("IX_RAGDatasets_CountyId");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_RAGDatasets_Name");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_RAGDatasets_Status");
+
+                    b.ToTable("RAGDatasets", (string)null);
+                });
+
+            modelBuilder.Entity("TerraFusion.AI.Entities.RAGDocument", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Author")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("ChunkCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DatasetId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("DocumentType")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("IndexedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("PublishedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SourceUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_RAGDocuments_CreatedAt");
+
+                    b.HasIndex("DatasetId")
+                        .HasDatabaseName("IX_RAGDocuments_DatasetId");
+
+                    b.HasIndex("DocumentType")
+                        .HasDatabaseName("IX_RAGDocuments_DocumentType");
+
+                    b.HasIndex("Title")
+                        .HasDatabaseName("IX_RAGDocuments_Title");
+
+                    b.ToTable("RAGDocuments", (string)null);
+                });
+
+            modelBuilder.Entity("TerraFusion.AI.Entities.RAGEmbedding", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChunkIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChunkText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DatasetId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DocumentId")
+                        .HasColumnType("integer");
+
+                    b.Property<Vector>("Embedding")
+                        .IsRequired()
+                        .HasColumnType("vector(1536)");
+
+                    b.Property<int>("EndPosition")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("jsonb");
+
+                    b.Property<int>("StartPosition")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TokenCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DatasetId")
+                        .HasDatabaseName("IX_RAGEmbeddings_DatasetId");
+
+                    b.HasIndex("DocumentId")
+                        .HasDatabaseName("IX_RAGEmbeddings_DocumentId");
+
+                    b.ToTable("RAGEmbeddings", (string)null);
+                });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.AIAgent", b =>
                 {
@@ -2313,6 +2863,281 @@ namespace TerraFusion.Data.Migrations
                     b.HasIndex("CountyId");
 
                     b.ToTable("Exemptions");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.GPTConfiguration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AllowedCounties")
+                        .HasColumnType("jsonb");
+
+                    b.Property<decimal?>("AverageRating")
+                        .HasColumnType("decimal(3,2)");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int?>("CountyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("CreatedByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("EnableFunctions")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("EnableRAG")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("FrequencyPenalty")
+                        .HasColumnType("decimal(3,2)");
+
+                    b.Property<string>("FunctionsJson")
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("IconUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("InstallCount")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSystemGPT")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("MaxTokens")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(4000);
+
+                    b.Property<string>("ModelName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ModelProvider")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<decimal>("PresencePenalty")
+                        .HasColumnType("decimal(3,2)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("RAGDatasetId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("RAGScoreThreshold")
+                        .HasColumnType("decimal(3,2)");
+
+                    b.Property<int>("RAGTopK")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RatingCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RequiredRole")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasDefaultValue("Active");
+
+                    b.Property<string>("SystemPrompt")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Temperature")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(3,2)")
+                        .HasDefaultValue(0.7m);
+
+                    b.Property<decimal>("TopP")
+                        .HasColumnType("decimal(3,2)");
+
+                    b.Property<long>("TotalConversations")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("TotalCost")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<long>("TotalMessages")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TotalTokensUsed")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("1.0");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Category")
+                        .HasDatabaseName("IX_GPTConfigurations_Category");
+
+                    b.HasIndex("CountyId")
+                        .HasDatabaseName("IX_GPTConfigurations_CountyId");
+
+                    b.HasIndex("CreatedByUserId")
+                        .HasDatabaseName("IX_GPTConfigurations_CreatedByUserId");
+
+                    b.HasIndex("InstallCount")
+                        .HasDatabaseName("IX_GPTConfigurations_InstallCount");
+
+                    b.HasIndex("IsFeatured")
+                        .HasDatabaseName("IX_GPTConfigurations_IsFeatured");
+
+                    b.HasIndex("IsPublic")
+                        .HasDatabaseName("IX_GPTConfigurations_IsPublic");
+
+                    b.HasIndex("IsSystemGPT")
+                        .HasDatabaseName("IX_GPTConfigurations_IsSystemGPT");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_GPTConfigurations_Name");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_GPTConfigurations_Status");
+
+                    b.HasIndex("AverageRating", "RatingCount")
+                        .HasDatabaseName("IX_GPTConfigurations_Rating");
+
+                    b.ToTable("GPTConfigurations", (string)null);
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.GPTConversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CountyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("Duration")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Feedback")
+                        .HasColumnType("text");
+
+                    b.Property<int>("GPTConfigurationId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("LastMessageAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasDefaultValue("Active");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<decimal>("TotalCost")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<int>("TotalMessages")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("TotalTokensUsed")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountyId")
+                        .HasDatabaseName("IX_GPTConversations_CountyId");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_GPTConversations_CreatedAt");
+
+                    b.HasIndex("GPTConfigurationId")
+                        .HasDatabaseName("IX_GPTConversations_GPTConfigurationId");
+
+                    b.HasIndex("LastMessageAt")
+                        .HasDatabaseName("IX_GPTConversations_LastMessageAt");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_GPTConversations_Status");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_GPTConversations_UserId");
+
+                    b.HasIndex("UserId", "GPTConfigurationId")
+                        .HasDatabaseName("IX_GPTConversations_UserGPT");
+
+                    b.ToTable("GPTConversations", (string)null);
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.GovernmentUser", b =>
@@ -5148,6 +5973,102 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("ExperimentRuns");
                 });
 
+            modelBuilder.Entity("TerraFusion.AI.Entities.GPTAudit", b =>
+                {
+                    b.HasOne("TerraFusion.Core.Entities.GPTConversation", "Conversation")
+                        .WithMany()
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TerraFusion.Core.Entities.GPTConfiguration", "GPTConfiguration")
+                        .WithMany()
+                        .HasForeignKey("GPTConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TerraFusion.AI.Entities.GPTMessage", "Message")
+                        .WithMany()
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TerraFusion.AI.Entities.RAGDataset", "RAGDataset")
+                        .WithMany()
+                        .HasForeignKey("RAGDatasetId");
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("GPTConfiguration");
+
+                    b.Navigation("Message");
+
+                    b.Navigation("RAGDataset");
+                });
+
+            modelBuilder.Entity("TerraFusion.AI.Entities.GPTMarketplaceInstall", b =>
+                {
+                    b.HasOne("TerraFusion.Core.Entities.GPTConfiguration", "GPTConfiguration")
+                        .WithMany()
+                        .HasForeignKey("GPTConfigurationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("GPTConfiguration");
+                });
+
+            modelBuilder.Entity("TerraFusion.AI.Entities.GPTMessage", b =>
+                {
+                    b.HasOne("TerraFusion.Core.Entities.GPTConversation", "Conversation")
+                        .WithMany()
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+                });
+
+            modelBuilder.Entity("TerraFusion.AI.Entities.GPTUsageMetric", b =>
+                {
+                    b.HasOne("TerraFusion.Core.Entities.GPTConfiguration", "GPTConfiguration")
+                        .WithMany()
+                        .HasForeignKey("GPTConfigurationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("GPTConfiguration");
+                });
+
+            modelBuilder.Entity("TerraFusion.AI.Entities.RAGDocument", b =>
+                {
+                    b.HasOne("TerraFusion.AI.Entities.RAGDataset", "Dataset")
+                        .WithMany()
+                        .HasForeignKey("DatasetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dataset");
+                });
+
+            modelBuilder.Entity("TerraFusion.AI.Entities.RAGEmbedding", b =>
+                {
+                    b.HasOne("TerraFusion.AI.Entities.RAGDataset", "Dataset")
+                        .WithMany()
+                        .HasForeignKey("DatasetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TerraFusion.AI.Entities.RAGDocument", "Document")
+                        .WithMany()
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dataset");
+
+                    b.Navigation("Document");
+                });
+
             modelBuilder.Entity("TerraFusion.Core.Entities.AnalysisResult", b =>
                 {
                     b.HasOne("TerraFusion.Core.Entities.County", "County")
@@ -5450,6 +6371,17 @@ namespace TerraFusion.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("County");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.GPTConversation", b =>
+                {
+                    b.HasOne("TerraFusion.Core.Entities.GPTConfiguration", "GPTConfiguration")
+                        .WithMany()
+                        .HasForeignKey("GPTConfigurationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("GPTConfiguration");
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.InstallmentPlan", b =>

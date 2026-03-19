@@ -203,3 +203,87 @@ TF_AGENT_MESH=1  # Enable mesh
 4. Losing party acknowledges
 
 See: `.governance/mesh/MESH_GOVERNANCE.md` for full specification.
+
+## MUSE MODE BOUNDARY
+
+Muse Mode is **read/explain/draft only**. It exists to help users think, summarize, compare, draft, and synthesize without mutating sovereign state.
+
+### Allowed in Muse Mode
+- Explain architecture, workflows, and evidence
+- Summarize records, logs, traces, and parcel context
+- Draft language, recommendations, templates, and decision support
+- Compare options, propose plans, and prepare human-review output
+
+### Forbidden in Muse Mode
+Muse Mode must **never** directly:
+- write, update, delete, approve, submit, seal, publish, or dispatch data
+- call write-capable tools
+- mutate workflow state
+- alter parcel records
+- emit side effects into suite-owned write lanes
+
+### Escalation Rule
+Any action that would create side effects must cross one of these gates:
+1. switch to a write-capable operational path in **TerraPilot**, and
+2. satisfy required HITL / approval policy before execution.
+
+If an operation requires mutation, Muse Mode must stop at a **gated handoff**. It may prepare the payload, but it may not execute the write.
+
+---
+
+## WRITE-LANE MATRIX
+
+The Write-Lane Matrix governs all writes in TerraFusion OS. All writes are sovereign and lane-bound. A capability may only write inside its own lane unless a separately governed bridge is explicitly defined.
+
+| Capability | Owns write lane for | Must not directly write to | Cross-lane rule |
+|---|---|---|---|
+| **TerraForge** | valuation artifacts, valuation runs, pricing outputs | TerraDais workflow state, TerraDossier evidence, TerraTrace ledger | emit governed request + TerraTrace event |
+| **TerraAtlas** | geospatial layers, map derivations, spatial overlays | Forge valuation artifacts, Dais workflow state, Dossier evidence | emit governed request + TerraTrace event |
+| **TerraDais** | workflow state, routing state, task progression | Forge valuation artifacts, Dossier evidence, Trace ledger contents | emit governed request + TerraTrace event |
+| **TerraDossier** | evidence packs, supporting documents, review bundles | Dais workflow state, Forge valuation artifacts, Trace ledger contents | emit governed request + TerraTrace event |
+| **TerraGPT** | no independent sovereign write lane across suites | all suite-owned records unless mediated by TerraPilot policy/tooling | must act through sanctioned TerraPilot tools only |
+| **TerraPilot** | operational orchestration state, gated tool execution metadata | parcel/domain records outside approved tool boundaries | writes only through approved tools and policy gates |
+| **TerraTrace** | append-only operational trace ledger | all mutable suite-owned business records | append-only only; never mutates domain truth |
+
+### Write-Lane Rules
+- Direct cross-lane mutation is prohibited.
+- Cross-lane intent must travel through a governed operation boundary.
+- Governed writes must emit TerraTrace lifecycle events.
+- No feature may bypass its owning lane by "helper" writes, hidden service calls, or shell shortcuts.
+
+---
+
+## TERRATRACE
+
+**TerraTrace** is the sovereign operational trace ledger for governed actions. It is append-only and tamper-evident.
+
+### Required emission contract
+Every governed write must emit:
+- `action_started`
+- one terminal event: `action_completed` or `action_failed`
+
+### Integrity contract
+- Each event must record the hash of the previous event as `previousHash`
+- `previousHash` is calculated as `sha256(previousEvent)`
+- The first event in a stream may use `null` for `previousHash`
+- Redaction may remove protected payload details, but it must not break event-shell integrity or chain continuity
+
+### Authority boundary
+- TerraTrace records operational truth about execution
+- TerraTrace does **not** become the source of truth for domain data owned by Forge, Atlas, Dais, or Dossier
+- Trace events are evidence of action, not a replacement for suite-owned records
+
+---
+
+## PROPERTY WORKBENCH + OS SURFACE SOVEREIGNTY
+
+Parcel-scoped user work must remain inside **Property Workbench**. OS capabilities remain in-shell OS surfaces.
+
+### Routing contract
+- Parcel search resolves to `property-workbench`
+- Parcel actions resolve to `property-workbench`
+- **TerraPilot** opens as an OS surface in-shell
+- **TerraTrace** opens as an OS surface in-shell
+- Dock / top bar / sovereign desktop chrome must remain preserved during these launches
+
+This entrypoint is the canonical authority for agent behavior, mode boundaries, write-lane discipline, and trace obligations.

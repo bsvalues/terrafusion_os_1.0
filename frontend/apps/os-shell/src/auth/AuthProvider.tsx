@@ -5,21 +5,20 @@
  * Initializes from localStorage via authStorage.
  * Registers a bridge so non-React code (axios interceptor) can trigger logout.
  */
-import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { getToken, setToken as persistToken, clearToken } from './authStorage';
 import { registerLogoutHandler, unregisterLogoutHandler } from './authBridge';
 import { useAuth } from './useAuth';
 import { isDevPreviewMode, shouldForceLoginRedirect } from './authPolicy';
-
-export interface AuthContextValue {
-  token: string | null;
-  isAuthenticated: boolean;
-  login: (token: string) => void;
-  logout: (reason?: string) => void;
-}
-
-export const AuthContext = createContext<AuthContextValue | null>(null);
+import { decodeAuthClaims } from '@/auth/useAuthContext';
+import { initTraceContext } from '@/services/terraTrace';
+// AuthContext and AuthContextValue live in authContextDef.ts to break the circular
+// import between this file and useAuthContext.ts.
+// Re-exported here for backward compatibility with existing importers.
+import { AuthContext } from './authContextDef';
+export { AuthContext } from './authContextDef';
+export type { AuthContextValue } from './authContextDef';
 
 const DEV_PREVIEW_TOKEN = 'dev-preview-token';
 const DEV_SESSION_KEY = 'tf.session.dev';
@@ -68,6 +67,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     registerLogoutHandler((reason) => logout(reason));
     return () => unregisterLogoutHandler();
   }, [logout]);
+
+  // Wave 1: sync TerraTrace session context whenever token changes.
+  // Uses shared decodeAuthClaims() — single JWT decode source, no duplication.
+  useEffect(() => {
+    if (!token) { initTraceContext('', ''); return; }
+    const claims = decodeAuthClaims(token);
+    initTraceContext(claims.countyId ?? '', claims.userId ?? '');
+  }, [token]);
 
   const value = useMemo<AuthContextValue>(
     () => ({

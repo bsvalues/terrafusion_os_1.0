@@ -109,12 +109,10 @@ export const CountyEmployeeDashboard: React.FC<CountyEmployeeDashboardProps> = (
   }, []);
 
   const handlePropertyAction = (action: string, property: any) => {
-    console.log('Property action:', action, property);
     // Implement action handlers
   };
 
   const handleAISuggestion = (suggestion: string) => {
-    console.log('AI suggestion:', suggestion);
     // Implement suggestion handlers
   };
 

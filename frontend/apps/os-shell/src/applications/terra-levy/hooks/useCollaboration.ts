@@ -42,7 +42,6 @@ export const useCollaboration = ({
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
-        console.log('Connected to collaborative session:', sessionId);
         setIsConnected(true);
         setConnectionStatus('connected');
 
@@ -84,7 +83,6 @@ export const useCollaboration = ({
       };
 
       wsRef.current.onclose = () => {
-        console.log('Collaboration session disconnected');
         setConnectionStatus('disconnected');
         setIsConnected(false);
 
@@ -220,7 +218,6 @@ export const useCollaboration = ({
           break;
 
         default:
-          console.log('Unknown collaboration message type:', message.type);
       }
     },
     [sessionId]

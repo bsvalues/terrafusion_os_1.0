@@ -8,6 +8,7 @@
  */
 
 import { NavigateFunction } from 'react-router-dom';
+import type { OsActor } from '@/auth/useAuthContext';
 import {
     CONSTITUTIONAL_SUITES,
     getSuiteIntent,
@@ -232,7 +233,11 @@ export function launcherItemToOsAction(item: LauncherItem): OsAction {
  * Routes through executeOsAction for consistent telemetry.
  * Slice 16: Unified OS action dispatch.
  */
-export function navigateToLauncherItem(item: LauncherItem, navigate: NavigateFunction): void {
+export function navigateToLauncherItem(
+  item: LauncherItem,
+  navigate: NavigateFunction,
+  actor?: OsActor | null,  // Wave 1: optional auth
+): void {
   // Legacy action items still execute directly (for backward compat)
   if (item.action) {
     item.action();
@@ -246,6 +251,7 @@ export function navigateToLauncherItem(item: LauncherItem, navigate: NavigateFun
       navigate,
       suiteId: item.id,
       surface: 'launcher',
+      actor: actor ?? null,
     };
     executeOsAction(action, context);
   }

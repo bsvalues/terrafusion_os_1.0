@@ -69,6 +69,7 @@ interface EventTypeVisual {
 
 const EVENT_TYPE_CONFIG: Record<string, EventTypeVisual> = {
   tool_invoked:        { icon: '⚡', severity: 'info' },
+  tool_succeeded:      { icon: '✅', severity: 'success' },
   tool_completed:      { icon: '✅', severity: 'success' },
   tool_failed:         { icon: '❌', severity: 'error' },
   value_changed:       { icon: '📝', severity: 'info' },

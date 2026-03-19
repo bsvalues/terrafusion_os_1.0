@@ -94,7 +94,6 @@ export const SystemGptConsoleView: React.FC = () => {
       const data = await getSystemDiagnostics(selectedCounty);
       setDiagnostics(data);
     } catch (err) {
-      console.error('Index failed:', err);
     } finally {
       setIndexing(false);
     }
@@ -144,7 +143,6 @@ export const SystemGptConsoleView: React.FC = () => {
         const data = await getSystemGptEvents(selectedCounty, undefined, 50);
         setEvents(data);
       } catch (err) {
-        console.error('Failed to load events:', err);
       } finally {
         setEventsLoading(false);
       }
@@ -215,7 +213,6 @@ export const SystemGptConsoleView: React.FC = () => {
     try {
       await downloadHealthSnapshot();
     } catch (err) {
-      console.error('Download failed:', err);
       // Could add toast notification here
     } finally {
       setDownloading(false);
@@ -296,7 +293,6 @@ export const SystemGptConsoleView: React.FC = () => {
       const data = await getSystemDiagnostics();
       setDiagnostics(data);
     } catch (err) {
-      console.error('Benton CAMA reindex failed:', err);
     } finally {
       setBentonReindexing(false);
     }
@@ -307,7 +303,6 @@ export const SystemGptConsoleView: React.FC = () => {
     try {
       await downloadBentonRagSnapshot();
     } catch (err) {
-      console.error('Benton RAG snapshot download failed:', err);
     } finally {
       setBentonDownloading(false);
     }

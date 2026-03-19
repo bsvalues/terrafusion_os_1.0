@@ -152,7 +152,6 @@ export const QuantumAnalyticsWorkbench: React.FC<QuantumAnalyticsWorkbenchProps>
   const generatePredictions = (model: AnalyticsModel, horizon: number = 12) => {
     // Generate high-accuracy predictions using selected model
     // This would integrate with actual ML pipeline
-    console.log(`Generating predictions for ${model.name} with ${horizon} month horizon`);
   };
 
   return (

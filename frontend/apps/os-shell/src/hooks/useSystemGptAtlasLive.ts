@@ -196,7 +196,6 @@ export function useSystemGptAtlasLive(
 
       eventSource.onopen = () => {
         if (!isMountedRef.current) return;
-        console.log('[Atlas Live] SSE connected');
         retryCountRef.current = 0;
         updateConnectionState('connected');
         setError(null);
@@ -218,7 +217,6 @@ export function useSystemGptAtlasLive(
       eventSource.onerror = () => {
         if (!isMountedRef.current) return;
 
-        console.warn('[Atlas Live] SSE error, attempting reconnect...');
 
         eventSource.close();
         eventSourceRef.current = null;
@@ -238,7 +236,6 @@ export function useSystemGptAtlasLive(
             }
           }, delay + jitter);
         } else {
-          console.warn('[Atlas Live] Max retries exceeded, falling back to polling');
           updateConnectionState('offline');
           setError(new Error('SSE connection failed after max retries'));
 

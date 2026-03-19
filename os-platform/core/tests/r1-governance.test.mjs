@@ -45,12 +45,12 @@ before(async () => {
 
 // -- Helpers -----------------------------------------------------------------
 
-async function setupRunner() {
+async function setupRunner(preflightPolicy) {
   const registry = new ToolRegistry();
   await registry.initialize(MANIFEST_PATH);
   const store = new InMemoryTraceStore({ maxEvents: 1000 });
   const trace = new TraceService({ store });
-  const runner = new ToolRunner({ registry, trace });
+  const runner = new ToolRunner({ registry, trace, preflightPolicy });
   registerPhase84Handlers(runner);
   return { runner, registry, trace, store };
 }
@@ -358,6 +358,46 @@ describe('Gate 6: PII/Trace Policy Enforcement (runtime)', () => {
   });
 });
 
+// == Preflight Policy Alignment ==============================================
+
+describe('Preflight Policy Alignment', () => {
+  it('validate reports POLICY_DENIED when preflight blocks an otherwise valid invocation', async () => {
+    const denyTool = ({ toolId }) =>
+      toolId === 'summarize_levy_rate_components'
+        ? { allow: false, reason: 'County freeze' }
+        : { allow: true };
+    const { runner } = await setupRunner(denyTool);
+
+    const result = runner.validate({
+      toolId: 'summarize_levy_rate_components',
+      params: { county: 'benton' },
+      context: APPRAISER_MUSE,
+    });
+
+    assert.equal(result.valid, false);
+    assert.ok(result.violations.some(v => v.includes('POLICY_DENIED')));
+    assert.ok(result.violations.some(v => v.includes('County freeze')));
+  });
+
+  it('execute still returns POLICY_DENIED for the same preflight block', async () => {
+    const denyTool = ({ toolId }) =>
+      toolId === 'summarize_levy_rate_components'
+        ? { allow: false, reason: 'County freeze' }
+        : { allow: true };
+    const { runner } = await setupRunner(denyTool);
+
+    const result = await runner.execute({
+      toolId: 'summarize_levy_rate_components',
+      params: { county: 'benton' },
+      context: APPRAISER_MUSE,
+    });
+
+    assert.equal(result.ok, false);
+    assert.equal(result.errorCode, ErrorCodes.POLICY_DENIED);
+    assert.equal(result.error, 'County freeze');
+  });
+});
+
 // == Combined Gate + Trace Emission ==========================================
 
 describe('Combined Gate + Trace Emission', () => {
@@ -426,6 +466,48 @@ describe('Combined Gate + Trace Emission', () => {
 // == County Isolation (ToolRunner.run) =======================================
 
 describe('County Isolation (ToolRunner.run)', () => {
+  it('validate reports COUNTY_MISMATCH before handler execution', async () => {
+    const { runner } = await setupRunner();
+    const result = runner.validate({
+      toolId: 'request_trace_redaction',
+      params: { county: 'yakima', traceEventIds: ['trace-1'], reason: 'Mismatch check' },
+      context: {
+        ...ADMIN_PILOT,
+        confirmation: true,
+        reasonCode: 'court_order',
+        supervisorApproval: {
+          approvedBy: 'supervisor-1',
+          approvedAt: new Date().toISOString(),
+          role: 'supervisor',
+        },
+      },
+    });
+
+    assert.equal(result.valid, false);
+    assert.ok(result.violations.some(v => v.includes('COUNTY_MISMATCH')));
+  });
+
+  it('execute returns COUNTY_MISMATCH before handler execution', async () => {
+    const { runner } = await setupRunner();
+    const result = await runner.execute({
+      toolId: 'request_trace_redaction',
+      params: { county: 'yakima', traceEventIds: ['trace-1'], reason: 'Mismatch check' },
+      context: {
+        ...ADMIN_PILOT,
+        confirmation: true,
+        reasonCode: 'court_order',
+        supervisorApproval: {
+          approvedBy: 'supervisor-1',
+          approvedAt: new Date().toISOString(),
+          role: 'supervisor',
+        },
+      },
+    });
+
+    assert.equal(result.ok, false);
+    assert.equal(result.errorCode, ErrorCodes.COUNTY_MISMATCH);
+  });
+
   it('county mismatch throws COUNTY_MISMATCH', async () => {
     const { runner } = await setupRunner();
     await assert.rejects(

@@ -127,9 +127,7 @@ const ApplicationLauncher: React.FC = () => {
     // In a real implementation, this would open the application
     if (process.env.NODE_ENV === 'development') {
       // eslint-disable-next-line no-console
-      console.log(`🚀 Launching REAL application: ${app.name}`);
       // eslint-disable-next-line no-console
-      console.log(`📂 Path: ${app.path}`);
     }
 
     // Simulate opening in new window/tab

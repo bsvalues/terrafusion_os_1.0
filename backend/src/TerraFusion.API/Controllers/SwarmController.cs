@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.API.Services;
+using TerraFusion.API.Services.Telemetry;
 using System.Text.Json;
 
 namespace TerraFusion.API.Controllers;
@@ -10,13 +11,16 @@ public class SwarmController : ControllerBase
 {
     private readonly IAIModuleOrchestrator _aiOrchestrator;
     private readonly ILogger<SwarmController> _logger;
+    private readonly IAgentTelemetryService _telemetry;
 
     public SwarmController(
         IAIModuleOrchestrator aiOrchestrator,
-        ILogger<SwarmController> logger)
+        ILogger<SwarmController> logger,
+        IAgentTelemetryService telemetry)
     {
         _aiOrchestrator = aiOrchestrator;
         _logger = logger;
+        _telemetry = telemetry;
     }
 
     /// <summary>
@@ -25,6 +29,7 @@ public class SwarmController : ControllerBase
     [HttpGet("status")]
     public async Task<IActionResult> GetStatus()
     {
+        _telemetry.Emit("Info", "swarm-controller", "swarm.status.get", "GetStatus called", correlationId: HttpContext.TraceIdentifier);
         try
         {
             // Load static swarm data from the JSON file first (fast path)
@@ -110,6 +115,7 @@ public class SwarmController : ControllerBase
     [HttpGet("modules")]
     public async Task<IActionResult> GetActiveModules()
     {
+        _telemetry.Emit("Info", "swarm-controller", "swarm.modules.get", "GetActiveModules called", correlationId: HttpContext.TraceIdentifier);
         try
         {
             var modules = await _aiOrchestrator.GetActiveModulesAsync();
@@ -138,6 +144,7 @@ public class SwarmController : ControllerBase
     [HttpPost("execute")]
     public async Task<IActionResult> ExecuteCommand([FromBody] AICommandRequest request)
     {
+        _telemetry.Emit("Info", "swarm-controller", "swarm.command.execute", "ExecuteCommand called", correlationId: HttpContext.TraceIdentifier);
         try
         {
             if (string.IsNullOrWhiteSpace(request.Module) || string.IsNullOrWhiteSpace(request.Command))
@@ -184,6 +191,7 @@ public class SwarmController : ControllerBase
     [HttpPost("modules/{moduleName}/start")]
     public async Task<IActionResult> StartModule(string moduleName)
     {
+        _telemetry.Emit("Info", "swarm-controller", "swarm.module.start", "StartModule called", correlationId: HttpContext.TraceIdentifier);
         try
         {
             _logger.LogInformation("Starting AI module: {ModuleName}", moduleName);
@@ -227,6 +235,7 @@ public class SwarmController : ControllerBase
     [HttpPost("modules/{moduleName}/stop")]
     public async Task<IActionResult> StopModule(string moduleName)
     {
+        _telemetry.Emit("Info", "swarm-controller", "swarm.module.stop", "StopModule called", correlationId: HttpContext.TraceIdentifier);
         try
         {
             _logger.LogInformation("Stopping AI module: {ModuleName}", moduleName);
@@ -270,6 +279,7 @@ public class SwarmController : ControllerBase
     [HttpGet("mcp-tools")]
     public async Task<IActionResult> GetMCPToolsStatus()
     {
+        _telemetry.Emit("Info", "swarm-controller", "swarm.mcp.status", "GetMCPToolsStatus called", correlationId: HttpContext.TraceIdentifier);
         try
         {
             var claudeFlowPath = "C:\\Users\\bsval\\terrafusion_os_1.0\\data\\ai-swarm\\claude-flow-integration.json";

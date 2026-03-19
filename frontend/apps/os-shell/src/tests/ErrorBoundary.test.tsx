@@ -2,7 +2,7 @@ import { vi, describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } 
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import { ErrorBoundary } from '../components/common/ErrorBoundary';
 import { ErrorProvider, useErrorContext } from '../contexts/ErrorContext';
 import { useErrorHandler } from '../hooks/useErrorHandler';

@@ -13,7 +13,7 @@ function prefersReducedMotion(): boolean {
 }
 
 function isLowPowerDevice(): boolean {
-  const cores = (navigator as any)?.hardwareConcurrency ?? 4;
+  const cores = navigator?.hardwareConcurrency ?? 4;
   return cores <= 4;
 }
 

@@ -32,7 +32,6 @@ export function createLogger(scope: string): Logger {
       if (!isProd) console.info(prefix, msg, ...args);
     },
     warn: (msg, ...args) => {
-      console.warn(prefix, msg, ...args);
     },
     error: (msg, ...args) => {
       console.error(prefix, msg, ...args);

@@ -96,7 +96,6 @@ export const TerraFusionSystemIntegration: React.FC<SystemIntegrationProps> = ({
   }, []);
 
   const initializeSystemIntegration = useCallback(() => {
-    console.log('🏛️ Initializing TerraFusion Elite System Integration & Optimization...');
 
     // Initialize all 6 major platforms
     const platformStatuses: PlatformStatus[] = [
@@ -291,7 +290,6 @@ export const TerraFusionSystemIntegration: React.FC<SystemIntegrationProps> = ({
     setOptimizationTasks(tasks);
     calculateSystemMetrics(platformStatuses);
 
-    console.log('✅ System Integration & Optimization - Elite Status Initialized');
   }, []);
 
   const calculateSystemMetrics = useCallback((platforms: PlatformStatus[]) => {

@@ -29,6 +29,7 @@ export interface SwarmTask {
 export class TerraFusionSwarmOrchestrator extends EventEmitter {
   private agents: Map<string, SwarmAgent> = new Map();
   private tasks: Map<string, SwarmTask> = new Map();
+  private static readonly MAX_QUEUE_DEPTH = 1000;
   private taskQueue: SwarmTask[] = [];
   private isProcessing = false;
 
@@ -109,8 +110,16 @@ export class TerraFusionSwarmOrchestrator extends EventEmitter {
     };
 
     this.tasks.set(swarmTask.id, swarmTask);
+
+    if (this.taskQueue.length >= TerraFusionSwarmOrchestrator.MAX_QUEUE_DEPTH) {
+      this.emit('task-rejected', {
+        taskId: swarmTask.id,
+        reason: `Queue at capacity (${TerraFusionSwarmOrchestrator.MAX_QUEUE_DEPTH}); task dropped`
+      });
+      return swarmTask.id;
+    }
+
     this.taskQueue.push(swarmTask);
-    
     this.emit('task-submitted', swarmTask);
     
     // Sort queue by priority

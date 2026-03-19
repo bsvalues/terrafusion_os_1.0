@@ -176,7 +176,6 @@ export function useCollaborationHub(enabled: boolean = true): UseCollaborationHu
 
     await connectionRef.current.invoke('JoinSession', sessionId, user);
     setState((prev) => ({ ...prev, sessionId }));
-    console.log(`👥 Joined collaboration session ${sessionId}`);
   }, []);
 
   const leaveSession = useCallback(async (sessionId: string) => {
@@ -186,7 +185,6 @@ export function useCollaborationHub(enabled: boolean = true): UseCollaborationHu
 
     await connectionRef.current.invoke('LeaveSession', sessionId);
     setState((prev) => ({ ...prev, sessionId: null }));
-    console.log(`👥 Left collaboration session ${sessionId}`);
   }, []);
 
   const updatePresence = useCallback(async (sessionId: string, status: PresenceStatus) => {
@@ -309,7 +307,6 @@ export function useCollaborationHub(enabled: boolean = true): UseCollaborationHu
         connection.on(
           'UserJoined',
           (data: { sessionId: string; user: UserInfo; connectionId: string; joinedAt: string }) => {
-            console.log(`👤 User ${data.user.userName} joined session ${data.sessionId}`);
             setState((prev) => ({
               ...prev,
               activeUsers: [...prev.activeUsers, data.user],
@@ -321,7 +318,6 @@ export function useCollaborationHub(enabled: boolean = true): UseCollaborationHu
         connection.on(
           'UserLeft',
           (data: { sessionId: string; user: UserInfo; connectionId: string; leftAt: string }) => {
-            console.log(`👤 User ${data.user.userName} left session ${data.sessionId}`);
             setState((prev) => ({
               ...prev,
               activeUsers: prev.activeUsers.filter((u) => u.userId !== data.user.userId),
@@ -353,7 +349,6 @@ export function useCollaborationHub(enabled: boolean = true): UseCollaborationHu
             connectionId: string;
             disconnectedAt: string;
           }) => {
-            console.log(`👤 User ${data.user.userName} disconnected`);
             setState((prev) => ({
               ...prev,
               activeUsers: prev.activeUsers.filter((u) => u.userId !== data.user.userId),
@@ -401,7 +396,6 @@ export function useCollaborationHub(enabled: boolean = true): UseCollaborationHu
 
         // Chat message received
         connection.on('ChatMessageReceived', (message: ChatMessage) => {
-          console.log(`💬 Chat from ${message.userName}: ${message.content}`);
           setState((prev) => ({
             ...prev,
             chatMessages: [...prev.chatMessages, message],
@@ -410,7 +404,6 @@ export function useCollaborationHub(enabled: boolean = true): UseCollaborationHu
 
         // Direct message received
         connection.on('DirectMessageReceived', (message: DirectMessage) => {
-          console.log(`📧 DM from ${message.fromUserName}: ${message.content}`);
           setState((prev) => ({
             ...prev,
             directMessages: [...prev.directMessages, message],
@@ -419,7 +412,6 @@ export function useCollaborationHub(enabled: boolean = true): UseCollaborationHu
 
         // Notification received
         connection.on('NotificationReceived', (notification: Notification) => {
-          console.log(`🔔 Notification: ${notification.title}`);
           setState((prev) => ({
             ...prev,
             notifications: [...prev.notifications, notification],

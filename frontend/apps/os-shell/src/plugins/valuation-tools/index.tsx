@@ -104,19 +104,22 @@ function ValuationToolsPlugin({ context }: { context: any }) {
   );
 }
 
+/** Plugin host elements carry a __tf_root stash for lifecycle management */
+type PluginHostElement = HTMLElement & { __tf_root?: Root };
+
 export default {
   mount: async (el: HTMLElement, context: any) => {
     const root: Root = createRoot(el);
     root.render(<ValuationToolsPlugin context={context} />);
-    (el as any).__tf_root = root;
+    (el as PluginHostElement).__tf_root = root;
   },
   unmount: async (el: HTMLElement) => {
-    const root: Root | undefined = (el as any).__tf_root;
+    const root: Root | undefined = (el as PluginHostElement).__tf_root;
     try {
       root?.unmount();
     } catch {
       // Ignore unmount errors
     }
-    delete (el as any).__tf_root;
+    delete (el as PluginHostElement).__tf_root;
   },
 };

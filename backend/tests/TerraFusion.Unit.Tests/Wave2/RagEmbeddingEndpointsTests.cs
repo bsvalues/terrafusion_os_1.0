@@ -58,18 +58,23 @@ public sealed class RagEmbeddingEndpointsTests
     }
 
     // ── GET /api/rag/documents/{documentId}/chunks ────────────────────────────
-    // This endpoint is a STUB: returns an empty list.
-    // Contract: must return 200 with an empty array, not 404 or 501.
+    // Wave 2 moved this from a hardcoded stub to a service call via IRAGService.GetDocumentChunksAsync.
+    // Contract: must return 200 with a list (empty is acceptable when no chunks are indexed).
 
     [Fact]
     public async Task GetChunks_Returns_Ok_With_Empty_List_Stub()
     {
-        var controller = BuildRagController();
+        var mockRag = new Mock<IRAGService>();
+        mockRag
+            .Setup(s => s.GetDocumentChunksAsync(42))
+            .ReturnsAsync(new List<RAGChunkSummary>());
+
+        var controller = BuildRagController(mockRag.Object);
 
         var result = await controller.GetChunks(42);
 
         var ok = Assert.IsType<OkObjectResult>(result);
-        // The stub returns List<object> — verify it is a list type
+        // Wave 2: service returns List<RAGChunkSummary> — empty until DbSets activated
         Assert.NotNull(ok.Value);
         var list = ok.Value as System.Collections.IList;
         Assert.NotNull(list);
@@ -79,13 +84,17 @@ public sealed class RagEmbeddingEndpointsTests
     [Fact]
     public void GetChunks_Is_Stub_Documented()
     {
-        // This test exists to make the stub visible in CI.
-        // When IRAGService.GetChunksAsync is added, replace the stub and update this test.
+        // Wave 2 added GetDocumentChunksAsync to IRAGService (not GetChunksAsync).
+        // The legacy sentinel for GetChunksAsync is preserved — it was never added.
         var ragInterface = typeof(IRAGService);
         var getChunksMethod = ragInterface.GetMethod("GetChunksAsync");
 
-        // IRAGService does NOT have GetChunksAsync yet — the stub bypasses the service entirely.
-        Assert.Null(getChunksMethod); // Wave 2 must add this method and un-stub the controller.
+        // GetChunksAsync was never added — Wave 2 used GetDocumentChunksAsync instead.
+        Assert.Null(getChunksMethod);
+
+        // Verify GetDocumentChunksAsync IS now present on IRAGService.
+        var getDocumentChunksMethod = ragInterface.GetMethod("GetDocumentChunksAsync");
+        Assert.NotNull(getDocumentChunksMethod); // Wave 2 delivered this method.
     }
 
     // ── GET /api/gpt/rag/health ───────────────────────────────────────────────

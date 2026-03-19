@@ -321,7 +321,6 @@ export function WidgetManagerProvider({ children }: { children: React.ReactNode 
         const parsedLayout = JSON.parse(savedLayout) as WidgetManagerState;
         dispatch({ type: 'LOAD_LAYOUT', payload: parsedLayout });
       } catch (error) {
-        console.warn('Failed to load saved widget layout:', error);
       }
     }
   }, []);
@@ -401,7 +400,6 @@ export function WidgetManagerProvider({ children }: { children: React.ReactNode 
         const parsedLayout = JSON.parse(savedLayout) as WidgetManagerState;
         dispatch({ type: 'LOAD_LAYOUT', payload: parsedLayout });
       } catch (error) {
-        console.warn('Failed to load saved widget layout:', error);
       }
     }
   }, []);

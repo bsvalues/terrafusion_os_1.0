@@ -87,7 +87,6 @@ export const TerraFusionAdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
   }, []);
 
   const initializeAnalyticsPlatform = useCallback(() => {
-    console.log('📊 Initializing TerraFusion Advanced Analytics Platform...');
 
     // Initialize analytics pipelines
     const pipelines: AnalyticsPipeline[] = [
@@ -296,7 +295,6 @@ export const TerraFusionAdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
     setGovernmentInsights(insights);
     calculatePlatformMetrics(pipelines, visualizations, insights);
 
-    console.log('✅ Advanced Analytics Platform - Elite Status Achieved');
   }, []);
 
   const calculatePlatformMetrics = useCallback(

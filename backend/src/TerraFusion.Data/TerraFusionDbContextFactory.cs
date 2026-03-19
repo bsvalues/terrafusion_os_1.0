@@ -32,6 +32,7 @@ public class TerraFusionDbContextFactory : IDesignTimeDbContextFactory<TerraFusi
         {
             npgsqlOptions.MigrationsAssembly("TerraFusion.Data");
             npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3);
+            npgsqlOptions.UseVector();
         });
 
         return new TerraFusionDbContext(optionsBuilder.Options, configuration);

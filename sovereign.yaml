@@ -1,0 +1,52 @@
+# sovereign.yaml — TerraFusion OS Immutable Constitution
+# This manifest defines the laws that govern all AI operations.
+# Tampering with this file blocks system initialization.
+#
+# Version: 1.0.0
+# Effective: Phase 11+
+
+version: '1.0.0'
+
+# Law 1: Human-In-The-Loop
+hitl:
+  enabled: true
+  ai_pilot_mutations_require_approval: true
+  approval_binding: 'HumanApproverId'
+  unapproved_ai_writes: 'BLOCKED'
+
+# Law 2: County Isolation
+county_isolation:
+  enforced: true
+  cross_county_access: 'BLOCKED'
+  county_scope_field: 'countyId'
+
+# Law 3: TruthGate Enforcement
+truthgate:
+  enabled: true
+  source_tagging_required: true
+  valid_sources:
+    - UI_WORKBENCH
+    - CLI_OPERATOR
+    - AI_PILOT
+  missing_source: 'BLOCKED'
+  missing_county: 'BLOCKED'
+  missing_actor: 'BLOCKED'
+
+# Law 4: Trace Fidelity
+trace:
+  intent_result_pairing: true
+  shadow_write_detection: true
+  pii_sanitization: true
+
+# Law 5: Audit Chain
+audit:
+  all_mutations_traced: true
+  trace_correlation_required: true
+  replay_capability: true
+
+# Law 6: Zero Tolerance
+zero_tolerance:
+  ai_write_without_approval: 'BLOCK_AND_LOG'
+  shadow_writes: 'BLOCK_AND_ALERT'
+  cross_county_leakage: 'BLOCK_AND_ALERT'
+  tampered_manifest: 'BLOCK_INITIALIZATION'

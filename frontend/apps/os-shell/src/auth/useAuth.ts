@@ -4,7 +4,9 @@
  * Must be used inside an AuthProvider tree.
  */
 import { useContext } from 'react';
-import { AuthContext, type AuthContextValue } from './AuthProvider';
+// Import from authContextDef (not AuthProvider) to break the circular dependency:
+// AuthProvider → useAuthContext → useAuth → AuthProvider
+import { AuthContext, type AuthContextValue } from './authContextDef';
 
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);

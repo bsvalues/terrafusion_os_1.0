@@ -19,6 +19,7 @@ import type {
 } from '../types/commandGovernance.js';
 import { createPreflight } from './ToolRunner.preflight.js';
 import type {
+    OfficeId,
     Tool,
     ToolExecutionContext,
     ToolExecutionInput,
@@ -36,6 +37,9 @@ export const ErrorCodes = {
   WRITE_LANE_MISMATCH: 'WRITE_LANE_MISMATCH',
   WRITE_LANE_REQUIRED: 'WRITE_LANE_REQUIRED',
 
+  // County Isolation
+  COUNTY_MISMATCH: 'COUNTY_MISMATCH',
+
   // Gate 5: Risk Policy
   CONFIRMATION_REQUIRED: 'CONFIRMATION_REQUIRED',
   REASON_CODE_REQUIRED: 'REASON_CODE_REQUIRED',
@@ -45,6 +49,7 @@ export const ErrorCodes = {
 
   // Gate 5b: RBAC Permission
   PERMISSION_DENIED: 'PERMISSION_DENIED',
+  OFFICE_SCOPE_DENIED: 'OFFICE_SCOPE_DENIED',
 
   // Gate 6: PII / Trace
   PAYLOAD_STORE_REQUIRED: 'PAYLOAD_STORE_REQUIRED',
@@ -108,6 +113,95 @@ function enforceWriteLane(tool: Tool, context: ToolExecutionContext): string[] {
   }
 
   return violations;
+}
+
+function extractCountyFromParams(params: unknown): string | undefined {
+  if (!params || typeof params !== 'object' || Array.isArray(params)) {
+    return undefined;
+  }
+
+  const county = (params as { county?: unknown }).county;
+  if (typeof county !== 'string') {
+    return undefined;
+  }
+
+  const trimmed = county.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function enforceCountyIsolation(params: unknown, context: ToolExecutionContext): string[] {
+  const requestedCounty = extractCountyFromParams(params);
+  if (!requestedCounty) {
+    return [];
+  }
+
+  const contextCounty = context.countyId?.trim();
+  if (contextCounty && requestedCounty.toLowerCase() === contextCounty.toLowerCase()) {
+    return [];
+  }
+
+  return [
+    `[${ErrorCodes.COUNTY_MISMATCH}] Requested county (${requestedCounty}) must match context county (${context.countyId})`,
+  ];
+}
+
+const KNOWN_OFFICE_IDS = new Set<OfficeId>(['assessor', 'clerk', 'treasurer', 'auditor', 'recorder']);
+
+const ROLE_DEFAULT_OFFICE: Record<string, OfficeId> = {
+  viewer: 'assessor',
+  appraiser: 'assessor',
+  supervisor: 'assessor',
+  administrator: 'assessor',
+  clerk: 'clerk',
+  treasurer: 'treasurer',
+  auditor: 'auditor',
+};
+
+function normalizeOfficeId(value: unknown): OfficeId | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const normalized = value.trim().toLowerCase() as OfficeId;
+  return KNOWN_OFFICE_IDS.has(normalized) ? normalized : undefined;
+}
+
+function resolveOfficeId(context: ToolExecutionContext): OfficeId | undefined {
+  const explicitOffice = normalizeOfficeId(context.officeId);
+  if (explicitOffice) {
+    return explicitOffice;
+  }
+
+  for (const role of context.roles) {
+    const mapped = ROLE_DEFAULT_OFFICE[role.toLowerCase()];
+    if (mapped) {
+      return mapped;
+    }
+  }
+
+  return undefined;
+}
+
+function enforceOfficeScope(tool: Tool, context: ToolExecutionContext): string[] {
+  const requiredOffice = normalizeOfficeId(tool.officeScope);
+  if (!requiredOffice) {
+    return [];
+  }
+
+  const resolvedOffice = resolveOfficeId(context);
+  if (!resolvedOffice) {
+    return [
+      `[${ErrorCodes.OFFICE_SCOPE_DENIED}] Tool ${tool.toolId} requires officeScope "${requiredOffice}" but no office context was resolved`,
+    ];
+  }
+
+  if (resolvedOffice !== requiredOffice) {
+    return [
+      `[${ErrorCodes.OFFICE_SCOPE_DENIED}] Tool ${tool.toolId} requires officeScope "${requiredOffice}" but context office is "${resolvedOffice}"`,
+    ];
+  }
+
+  return [];
 }
 
 /**
@@ -282,6 +376,30 @@ export class ToolRunner {
     this.preflight = createPreflight(options.preflightPolicy);
   }
 
+  private assessPolicy(
+    toolId: string,
+    tool: Tool,
+    correlationId: string
+  ): { allow: true } | { allow: false; reason: string; violation: string } {
+    const governance = (tool as Tool & { governance?: CommandGovernanceMeta }).governance;
+    const decision = this.preflight.decide({
+      toolId,
+      correlationId,
+      governance,
+      requestedMutation: mutationFromRisk(tool.risk),
+    });
+
+    if (decision.allow === true) {
+      return { allow: true };
+    }
+
+    return {
+      allow: false,
+      reason: decision.reason,
+      violation: `[${ErrorCodes.POLICY_DENIED}] ${decision.reason}`,
+    };
+  }
+
   /**
    * Canonical execution path.
    * Centralizes mode + county enforcement and returns a normalized result shape.
@@ -376,29 +494,24 @@ export class ToolRunner {
     }
 
     // Optional preflight policy gate (additive, defaults to allow)
-    const governance = (tool as Tool & { governance?: CommandGovernanceMeta }).governance;
-    const preflight = this.preflight.decide({
-      toolId,
-      correlationId,
-      governance,
-      requestedMutation: mutationFromRisk(tool.risk),
-    });
-    if (preflight.allow !== true) {
+    const policy = this.assessPolicy(toolId, tool, correlationId);
+    if (policy.allow !== true) {
       // Narrow to denial branch for TS discriminated union compat
-      const denied = preflight as Extract<PolicyDecision, { allow: false }>;
       this.emitTraceEvent(tool, 'tool_failed', correlationId, context, {
-        summary: `Policy denied ${toolId}: ${denied.reason}`,
+        summary: `Policy denied ${toolId}: ${policy.reason}`,
         errorCode: ErrorCodes.POLICY_DENIED,
         component: 'ToolRunner',
       });
-      return this.fail(correlationId, ErrorCodes.POLICY_DENIED, denied.reason);
+      return this.fail(correlationId, ErrorCodes.POLICY_DENIED, policy.reason);
     }
 
     // Collect all enforcement violations
     const violations: string[] = [
+      ...enforceCountyIsolation(params, context),
       ...enforceWriteLane(tool, context),
       ...enforceRiskPolicy(tool, context),
       ...enforceRbacPermissions(tool, context),
+      ...enforceOfficeScope(tool, context),
       ...enforcePiiPolicy(tool),
     ];
 
@@ -448,19 +561,19 @@ export class ToolRunner {
         correlationId,
         traceEventId: completeEvent.eventId,
       };
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : String(err);
-      const stackTrace = err instanceof Error ? err.stack : undefined;
-
-      // Emit failure trace with stackTrace for handler errors
+    } catch {
       this.emitTraceEvent(tool, 'tool_failed', correlationId, context, {
-        summary: `Failed ${toolId}: ${errorMessage}`,
+        summary: `Failed ${toolId}: [diagnostic_redacted]`,
         errorCode: ErrorCodes.EXECUTION_FAILED,
         component: 'Handler',
-        stackTrace,
+        redactedFields: ['errorMessage', 'stackTrace'],
       });
 
-      return this.fail(correlationId, ErrorCodes.EXECUTION_FAILED, errorMessage);
+      return this.fail(
+        correlationId,
+        ErrorCodes.EXECUTION_FAILED,
+        'Tool execution failed. See trace with the correlationId for details.'
+      );
     }
   }
 
@@ -483,10 +596,15 @@ export class ToolRunner {
       };
     }
 
+    const policy = this.assessPolicy(toolId, tool, `validate-${toolId}`);
+
     const violations = [
+      ...(policy.allow === true ? [] : [policy.violation]),
+      ...enforceCountyIsolation(input.params, context),
       ...enforceWriteLane(tool, context),
       ...enforceRiskPolicy(tool, context),
       ...enforceRbacPermissions(tool, context),
+      ...enforceOfficeScope(tool, context),
       ...enforcePiiPolicy(tool),
     ];
 
@@ -524,21 +642,23 @@ export class ToolRunner {
       errorCode?: string;
       component?: string;
       stackTrace?: string;
+      redactedFields?: string[];
     }
   ) {
     const piiHandling = tool.piiHandling ?? 'sanitize';
     const tracePolicy = tool.tracePolicy ?? 'summary_only';
 
-    // Decide how to handle payload based on trace policy
-    let payloadToStore: unknown | undefined;
-    let targetStore = tool.payloadStore;
+    // Allow sanitize mode to derive redaction markers from raw payload while
+    // only permitting payload_ref storage when trace policy explicitly allows it.
+    let payloadForPiiHandling: unknown | undefined;
+    const targetStore = tool.payloadStore;
 
-    if (tracePolicy === 'payload_ref' && options.rawPayload) {
-      payloadToStore = options.rawPayload;
-    } else if (tracePolicy === 'summary_only') {
-      payloadToStore = undefined;
-    } else if (tracePolicy === 'none') {
-      payloadToStore = undefined;
+    if (options.rawPayload) {
+      if (piiHandling === 'sanitize') {
+        payloadForPiiHandling = options.rawPayload;
+      } else if (piiHandling === 'payload_ref' && tracePolicy === 'payload_ref') {
+        payloadForPiiHandling = options.rawPayload;
+      }
     }
 
     const input: TraceEventInput = {
@@ -550,9 +670,10 @@ export class ToolRunner {
       errorCode: options.errorCode,
       component: options.component,
       stackTrace: options.stackTrace,
+      redactedFields: options.redactedFields,
     };
 
-    return this.trace.emitWithPiiHandling(input, piiHandling, payloadToStore, targetStore);
+    return this.trace.emitWithPiiHandling(input, piiHandling, payloadForPiiHandling, targetStore);
   }
 }
 
@@ -560,11 +681,14 @@ function mapErrorCode(code: ErrorCode): RunnerErrorCode {
   switch (code) {
     case ErrorCodes.MODE_MISMATCH:
       return 'MODE_DENIED';
+    case ErrorCodes.COUNTY_MISMATCH:
+      return 'COUNTY_MISMATCH';
     case ErrorCodes.PAYLOAD_STORE_REQUIRED:
       return 'PII_BLOCKED';
     case ErrorCodes.TOOL_NOT_FOUND:
       return 'TOOL_NOT_FOUND';
     case ErrorCodes.PERMISSION_DENIED:
+    case ErrorCodes.OFFICE_SCOPE_DENIED:
       return 'PERMISSION_DENIED';
     case ErrorCodes.POLICY_DENIED:
     case ErrorCodes.WRITE_LANE_MISMATCH:

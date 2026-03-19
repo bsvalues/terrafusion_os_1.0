@@ -183,6 +183,7 @@ Component Stack: ${errorInfo?.componentStack}
       }
       const { error, errorInfo, errorId } = this.state;
       // Use globalThis.import.meta.env for Jest compatibility (mocked in setupTests.ts)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- globalThis.import.meta is a Jest mock shim, not in TypeScript lib
       const isDevelopment = (globalThis as any).import?.meta?.env?.DEV ?? false;
       return (
         <div className='min-h-screen bg-gray-50 flex items-center justify-center p-4'>

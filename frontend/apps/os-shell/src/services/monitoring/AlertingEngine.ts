@@ -159,7 +159,6 @@ export class AlertingEngine {
    */
   public registerAlertRule(rule: AlertRule): void {
     this.alertRules.set(rule.id, rule);
-    console.log(`Alert rule registered: ${rule.name} (${rule.id})`);
   }
 
   /**
@@ -169,7 +168,6 @@ export class AlertingEngine {
     this.alertRules.delete(ruleId);
     this.lastAlertTimes.delete(ruleId);
     this.conditionStartTimes.delete(ruleId);
-    console.log(`Alert rule unregistered: ${ruleId}`);
   }
 
   /**
@@ -274,7 +272,6 @@ export class AlertingEngine {
     this.alertHistory.push(alert);
     this.lastAlertTimes.set(rule.id, new Date());
 
-    console.log(`🚨 ALERT: ${alert.message}`);
 
     // Send notifications
     this.sendNotifications(alert, rule.notificationChannels);
@@ -356,8 +353,6 @@ export class AlertingEngine {
     if (!this.notificationConfig.email?.enabled) return;
 
     // In production, this would use actual SMTP
-    console.log(`📧 Email notification sent: ${alert.message}`);
-    console.log(`   To: ${this.notificationConfig.email.recipients.join(', ')}`);
   }
 
   /**
@@ -391,8 +386,6 @@ export class AlertingEngine {
     };
 
     // In production, this would POST to Slack webhook
-    console.log(`💬 Slack notification sent to ${this.notificationConfig.slack.channel}`);
-    console.log(JSON.stringify(message, null, 2));
   }
 
   /**
@@ -404,8 +397,6 @@ export class AlertingEngine {
     const smsMessage = `TerraFusion Alert: ${alert.message}`;
 
     // In production, this would use Twilio or AWS SNS
-    console.log(`📱 SMS notification sent: ${smsMessage}`);
-    console.log(`   To: ${this.notificationConfig.sms.phoneNumbers.join(', ')}`);
   }
 
   /**
@@ -428,8 +419,6 @@ export class AlertingEngine {
     };
 
     // In production, this would POST to webhook URL
-    console.log(`🔗 Webhook notification sent to ${this.notificationConfig.webhook.url}`);
-    console.log(JSON.stringify(payload, null, 2));
   }
 
   /**
@@ -438,7 +427,6 @@ export class AlertingEngine {
   private async sendConsoleNotification(alert: Alert): Promise<void> {
     const severityEmoji =
       alert.severity === 'critical' ? '🔴' : alert.severity === 'warning' ? '🟡' : 'ℹ️';
-    console.log(`${severityEmoji} ${alert.message}`);
   }
 
   /**
@@ -454,15 +442,11 @@ export class AlertingEngine {
             return; // Alert resolved or acknowledged
           }
 
-          console.log(`⚠️ Escalating alert ${alert.id} to level ${index + 1}`);
 
           // Send escalation notifications
           await this.sendNotifications(alert, level.notificationChannels);
 
           if (level.requiresAcknowledgment) {
-            console.log(
-              `⏰ Alert ${alert.id} requires acknowledgment at escalation level ${index + 1}`
-            );
           }
         },
         level.delayMinutes * 60 * 1000
@@ -486,7 +470,6 @@ export class AlertingEngine {
     // Clear escalation timers
     this.clearEscalationTimers(alertId);
 
-    console.log(`✅ Alert ${alertId} acknowledged by ${acknowledgedBy}`);
     return true;
   }
 
@@ -506,7 +489,6 @@ export class AlertingEngine {
     this.activeAlerts.delete(alertId);
     this.clearEscalationTimers(alertId);
 
-    console.log(`✅ Alert ${alertId} resolved: ${resolution || 'No resolution provided'}`);
     return true;
   }
 

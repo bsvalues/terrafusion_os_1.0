@@ -104,11 +104,10 @@ export function useQuantumPerformance() {
 
         entries.forEach((entry) => {
           if (entry.entryType === 'paint' && entry.name === 'first-contentful-paint') {
-            console.log(`🎨 TerraFusion First Paint: ${entry.startTime.toFixed(2)}ms`);
           }
 
           if (entry.entryType === 'layout-shift') {
-            console.warn(`⚠️ Layout Shift Detected: ${(entry as any).value}`);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- LayoutShift.value is not in TypeScript's PerformanceEntry lib
           }
         });
       });
@@ -116,13 +115,13 @@ export function useQuantumPerformance() {
       try {
         performanceObserver.current.observe({ entryTypes: ['paint', 'layout-shift'] });
       } catch (e) {
-        console.warn('Performance Observer not fully supported');
       }
     }
 
     // Monitor memory usage
     const memoryInterval = setInterval(() => {
       if ('memory' in performance) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- performance.memory is non-standard (Chrome only), not in TypeScript lib
         const memory = (performance as any).memory;
         const memoryMB = memory.usedJSHeapSize / 1024 / 1024;
 
@@ -152,16 +151,15 @@ export function useQuantumPerformance() {
     if (animationFps < 45 || renderTime > 20) {
       document.documentElement.style.setProperty('--animation-duration', '0.1s');
       document.documentElement.style.setProperty('--blur-intensity', '5px');
-      console.log('🔧 TerraFusion: Optimizing for performance');
     }
 
     // Memory cleanup
     if (memoryUsage > 100) {
       // Trigger garbage collection if available
       if ('gc' in window) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- window.gc() is non-standard V8 GC API, not in TypeScript lib
         (window as any).gc();
       }
-      console.log('🧹 TerraFusion: Memory optimization triggered');
     }
   }, [metrics]);
 

@@ -64,11 +64,9 @@ export class SignalRService {
 
     try {
       await this.notebookConnection.start();
-      console.log('✅ Connected to NotebookHub');
 
       // Join the notebook
       await this.notebookConnection.invoke('JoinNotebook', notebookId, userId, countyId, userName);
-      console.log(`📓 Joined notebook ${notebookId}`);
 
       return this.notebookConnection;
     } catch (error) {
@@ -85,7 +83,6 @@ export class SignalRService {
       try {
         await this.notebookConnection.invoke('LeaveNotebook', notebookId, userName);
         await this.notebookConnection.stop();
-        console.log('✅ Disconnected from NotebookHub');
       } catch (error) {
         console.error('❌ Error disconnecting from NotebookHub:', error);
       }
@@ -128,7 +125,6 @@ export class SignalRService {
 
     try {
       await this.analyticsConnection.start();
-      console.log('✅ Connected to AnalyticsHub');
       return this.analyticsConnection;
     } catch (error) {
       console.error('❌ Failed to connect to AnalyticsHub:', error);
@@ -143,7 +139,6 @@ export class SignalRService {
     if (this.analyticsConnection?.state === HubConnectionState.Connected) {
       try {
         await this.analyticsConnection.stop();
-        console.log('✅ Disconnected from AnalyticsHub');
       } catch (error) {
         console.error('❌ Error disconnecting from AnalyticsHub:', error);
       }
@@ -190,11 +185,9 @@ export class SignalRService {
 
     try {
       await this.workflowConnection.start();
-      console.log('✅ Connected to WorkflowHub');
 
       // Subscribe to workflow
       await this.workflowConnection.invoke('SubscribeToWorkflow', workflowId, userId, countyId);
-      console.log(`🔄 Subscribed to workflow ${workflowId}`);
 
       return this.workflowConnection;
     } catch (error) {
@@ -211,7 +204,6 @@ export class SignalRService {
       try {
         await this.workflowConnection.invoke('UnsubscribeFromWorkflow', workflowId);
         await this.workflowConnection.stop();
-        console.log('✅ Disconnected from WorkflowHub');
       } catch (error) {
         console.error('❌ Error disconnecting from WorkflowHub:', error);
       }
@@ -254,11 +246,9 @@ export class SignalRService {
 
     try {
       await this.collaborationConnection.start();
-      console.log('✅ Connected to CollaborationHub');
 
       // Join session
       await this.collaborationConnection.invoke('JoinSession', sessionId, user);
-      console.log(`👥 Joined collaboration session ${sessionId}`);
 
       return this.collaborationConnection;
     } catch (error) {
@@ -275,7 +265,6 @@ export class SignalRService {
       try {
         await this.collaborationConnection.invoke('LeaveSession', sessionId);
         await this.collaborationConnection.stop();
-        console.log('✅ Disconnected from CollaborationHub');
       } catch (error) {
         console.error('❌ Error disconnecting from CollaborationHub:', error);
       }
@@ -296,13 +285,11 @@ export class SignalRService {
    */
   private setupReconnectionHandlers(connection: HubConnection, hubName: string): void {
     connection.onreconnecting((error) => {
-      console.warn(`⚠️ ${hubName}Hub reconnecting...`, error);
       const attempts = this.reconnectAttempts.get(hubName) || 0;
       this.reconnectAttempts.set(hubName, attempts + 1);
     });
 
     connection.onreconnected((connectionId) => {
-      console.log(`✅ ${hubName}Hub reconnected:`, connectionId);
       this.reconnectAttempts.set(hubName, 0);
     });
 
@@ -355,7 +342,6 @@ export class SignalRService {
     }
 
     await Promise.all(disconnectPromises);
-    console.log('✅ All SignalR connections closed');
   }
 }
 

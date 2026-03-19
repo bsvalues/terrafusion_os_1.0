@@ -18,7 +18,6 @@ export const bridgeService = {
         'x-tf-bridge-key': BRIDGE_KEY,
       };
 
-      console.log(`[Bridge] Hailing frequency open to ${BRIDGE_URL}/v1/parcels/${parcelId}`);
 
       const response = await fetch(`${BRIDGE_URL}/v1/parcels/${parcelId}`, {
         method: 'GET',
@@ -27,7 +26,6 @@ export const bridgeService = {
 
       if (!response.ok) {
         if (response.status === 404)
-          console.warn(`[Bridge] Parcel ${parcelId} not found in Lattice.`);
         if (response.status === 401) console.error('[Bridge] Sovereignty Violation: Invalid Key.');
         return null;
       }

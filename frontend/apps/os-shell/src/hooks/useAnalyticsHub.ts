@@ -99,7 +99,6 @@ export function useAnalyticsHub(enabled: boolean = true): UseAnalyticsHubReturn 
     }
 
     await connectionRef.current.invoke('SubscribeToAnalysis', analysisId);
-    console.log(`📊 Subscribed to analysis ${analysisId}`);
   }, []);
 
   const unsubscribeFromAnalysis = useCallback(async (analysisId: number) => {
@@ -108,7 +107,6 @@ export function useAnalyticsHub(enabled: boolean = true): UseAnalyticsHubReturn 
     }
 
     await connectionRef.current.invoke('UnsubscribeFromAnalysis', analysisId);
-    console.log(`📊 Unsubscribed from analysis ${analysisId}`);
   }, []);
 
   const subscribeToDataStream = useCallback(async (streamId: string) => {
@@ -117,7 +115,6 @@ export function useAnalyticsHub(enabled: boolean = true): UseAnalyticsHubReturn 
     }
 
     await connectionRef.current.invoke('SubscribeToDataStream', streamId);
-    console.log(`📡 Subscribed to data stream ${streamId}`);
   }, []);
 
   const unsubscribeFromDataStream = useCallback(async (streamId: string) => {
@@ -126,7 +123,6 @@ export function useAnalyticsHub(enabled: boolean = true): UseAnalyticsHubReturn 
     }
 
     await connectionRef.current.invoke('UnsubscribeFromDataStream', streamId);
-    console.log(`📡 Unsubscribed from data stream ${streamId}`);
   }, []);
 
   const disconnect = useCallback(async () => {
@@ -164,7 +160,6 @@ export function useAnalyticsHub(enabled: boolean = true): UseAnalyticsHubReturn 
         connection.on(
           'AnalysisStarted',
           (data: { analysisId: number; totalSteps: number; startedAt: string }) => {
-            console.log(`▶️ Analysis ${data.analysisId} started`);
             setState((prev) => {
               const newAnalyses = new Map(prev.activeAnalyses);
               newAnalyses.set(data.analysisId, {
@@ -203,7 +198,6 @@ export function useAnalyticsHub(enabled: boolean = true): UseAnalyticsHubReturn 
             durationMs: number;
             completedAt: string;
           }) => {
-            console.log(`✅ Analysis ${data.analysisId} completed in ${data.durationMs}ms`);
             setState((prev) => {
               const newAnalyses = new Map(prev.activeAnalyses);
               newAnalyses.set(data.analysisId, {
@@ -274,9 +268,6 @@ export function useAnalyticsHub(enabled: boolean = true): UseAnalyticsHubReturn 
 
         // Statistical result
         connection.on('StatisticalResult', (result: StatisticalResult) => {
-          console.log(
-            `📈 Statistical result for analysis ${result.analysisId}: ${result.statistic} = ${result.value}`
-          );
           setState((prev) => ({
             ...prev,
             statistics: [...prev.statistics, result],
@@ -293,9 +284,6 @@ export function useAnalyticsHub(enabled: boolean = true): UseAnalyticsHubReturn 
             isSignificant: boolean;
           }) => {
             if (data.isSignificant) {
-              console.warn(
-                `⚠️ Significant result for analysis ${data.analysisId}: p-value ${data.pValue} <= ${data.threshold}`
-              );
             }
           }
         );
@@ -310,9 +298,6 @@ export function useAnalyticsHub(enabled: boolean = true): UseAnalyticsHubReturn 
             loss: number;
             accuracy: number;
           }) => {
-            console.log(
-              `🤖 Model ${data.modelId} training: Epoch ${data.epoch}/${data.totalEpochs} - Loss: ${data.loss.toFixed(4)}, Accuracy: ${data.accuracy.toFixed(4)}`
-            );
           }
         );
 
