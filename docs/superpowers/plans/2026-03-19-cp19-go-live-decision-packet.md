@@ -240,3 +240,19 @@ Impact on gate status:
 - MCP initialization blocker is cleared for CP-18.
 - CP-18 remains blocked on upstream gate seals and swarm runtime evidence.
 - CP-19 remains blocked on upstream gates and Docker/WSL environment readiness.
+
+## Execution Snapshot (2026-03-19 Session 6)
+
+CP-14 controller audit completed (read-only) for G3/G4 targets:
+
+| Controller | Finding | Gate Impact |
+|---|---|---|
+| `PropertiesController` | optional `countyId`; no required missing/mismatch 400/403 enforcement across key endpoints | G3 fail |
+| `DaisController` | missing county claim path returns 403 (`Forbid`) rather than required 401 fail-closed | G3 fail |
+| `MarketplaceController` | no class-level `[Authorize]`; stub rating/download helpers still present | G4 fail |
+
+Resulting status:
+
+- G3: fail (controller isolation contract gaps)
+- G4: fail (controller RBAC contract gaps)
+- CP-19: remains blocked pending backend writer-lane implementation for CP-14 closure

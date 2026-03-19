@@ -11,8 +11,8 @@ Status: in-progress — artifact framework complete, upstream gates pending
 |---|---|---|---|
 | G1 | .governance/workflow/TRUTH_GATE_2026-03-19.md | Orchestrator | pass |
 | G2 | docs/superpowers/plans/2026-03-19-cp13-production-gate-catalog.md | Orchestrator | pass |
-| G3 | docs/superpowers/artifacts/cp14/isolation-proof.md | Platform Security Owner | pending — backend implementation required |
-| G4 | docs/superpowers/artifacts/cp14/rbac-proof.md | Platform Security Owner | pending — controller layer RBAC |
+| G3 | docs/superpowers/artifacts/cp14/isolation-proof.md | Platform Security Owner | fail — controller audit found county isolation contract gaps |
+| G4 | docs/superpowers/artifacts/cp14/rbac-proof.md | Platform Security Owner | fail — controller-layer RBAC not compliant |
 | G5 | docs/superpowers/artifacts/cp15/route-readiness-map.md | Suite Runtime Owner | pending — route survey and runtime verification remain |
 | G6 | docs/superpowers/artifacts/cp15/workbench-host-proof.md | Workbench Owner | pending — real tab surface verification |
 | G7 | docs/superpowers/artifacts/cp16/registry-contract-proof.md + yakima-proof.md + cowlitz-proof.md | Platform Core Owner | pending — Docker/WSL env required |

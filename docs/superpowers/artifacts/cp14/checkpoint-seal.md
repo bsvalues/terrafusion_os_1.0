@@ -11,10 +11,15 @@ Status: open — implementation pending
 - Gate result: open
 - Next entry condition: G3 + G4 both green → Phase 2 (CP-15) opens.
 - Blockers:
-  - PropertiesController: `countyId` not yet mandatory (backend implementation needed)
-  - DaisController: sentinel GUID fallback removal pending
-  - MarketplaceController: `[Authorize]` + stub removal pending
+  - PropertiesController: optional `countyId` and missing claim/request mismatch enforcement (400/403 contract not met)
+  - DaisController: missing-claim path returns 403 `Forbid()` instead of required 401 fail-closed behavior
+  - MarketplaceController: missing class-level `[Authorize]`; stub metrics helpers still present
   - PACS live integration tests: blocked on environment (S0-B/C)
+
+## Audit Note (2026-03-19)
+
+- Controller audit completed against current code in `backend/src/TerraFusion.API/Controllers/*`.
+- G3/G4 remain open and require backend writer-lane implementation.
 
 ## Sprint 0 Completed Items
 
