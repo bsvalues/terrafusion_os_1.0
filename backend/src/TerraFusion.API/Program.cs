@@ -239,6 +239,8 @@ builder.Services.AddScoped<IAdvancedSecurityFrameworkService, AdvancedSecurityFr
 // ✅ RE-ENABLED: Registration of workflow and assistant services needed for Controllers
 builder.Services.AddScoped<TerraFusion.AI.Services.IWorkflowAutomationService, TerraFusion.AI.Services.WorkflowAutomationService>();
 builder.Services.AddScoped<TerraFusion.AI.Services.IAIAssistantService, TerraFusion.AI.Services.AIAssistantService>();
+// Phase 9B: Muse Mode explain service
+builder.Services.AddScoped<IMuseService, TerraFusion.AI.Services.MuseService>();
 // ✅ STUB: Consciousness Engine stub for DI resolution
 builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services
