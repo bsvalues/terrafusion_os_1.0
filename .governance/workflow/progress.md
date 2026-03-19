@@ -19,7 +19,7 @@
 | **Phase** | **Phase 35-C CLOSED** — IV-1 persistence proof + IV-2 orphan archive complete; **Lane 1 CLOSED** |
 | **Task** | Lane 1 debt sweep — 3 sequential phases (35-A → 35-B → 35-C) — then charter gates for TerraCanon + AI Swarm |
 | **Status** | 🟢 LANE 1 CLOSED — founder gates `GATE-35-1` / `GATE-35-2` are now the only blockers for Lanes 2 + 3 |
-| **Latest Commit** | `7a6ed89ff` (fix(debt): CP-35-B — WF-2 console sweep 724 → 197) |
+| **Latest Commit** | `79119067e` (fix(debt): CP-35-C — IV-1 persistence + IV-2 archive orphan) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
