@@ -35,6 +35,7 @@ Define a bounded multi-agent and parallel subagent execution model to move from 
 - CP-17 closure packet (G8): `docs/superpowers/plans/2026-03-19-cp17-sre-restore-dr-hypercare-closure-packet.md`
 - CP-18 closure packet (G9): `docs/superpowers/plans/2026-03-19-cp18-security-compliance-seal-packet.md`
 - CP-19 closure packet (G10): `docs/superpowers/plans/2026-03-19-cp19-go-live-decision-packet.md`
+- Copilot deep-dive mirror: `docs/superpowers/plans/2026-03-19-copilot-full-ecosystem-go-live-deep-dive-plan.md`
 
 ## Current Repo Truth Anchors
 
