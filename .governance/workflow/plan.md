@@ -2224,3 +2224,25 @@ pnpm test
 ```
 
 **Rule:** If the proof lane is docs-first and no product files have changed yet, log that honestly. No confetti-driven fake green.
+
+---
+
+## Wave 2 Governed-Core Evidence Input (7B → 7E)
+
+> **Purpose:** Record the Phase 7B governed-core evidence packet as an intake artifact for 7E without lifting execution dependencies.
+
+- Evidence artifact: [`PHASE_7B_EVIDENCE_SUMMARY.md`](./PHASE_7B_EVIDENCE_SUMMARY.md)
+- Evidence status: **7B complete (evidence-closed)**
+- Scope held in 7B: `os-platform/core/**`, `tools/registry/**`
+- 7E intake posture: may consume this packet as Codex evidence input
+
+### Dependency wall (unchanged)
+
+- `7A -> 7C`
+- `7C/7D -> 7E`
+- `7A + 7B + 7C (+7D) + 7E -> 8`
+
+### Interpretation
+
+7B is satisfied and reusable for 7E evidence intake.  
+7E execution remains blocked until 7C closes (and 7D only if invoked).

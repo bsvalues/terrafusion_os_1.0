@@ -21,7 +21,7 @@ This memo remains useful as a remediation inventory, but it is not the authorita
 3. Forge lane F1 — Comparable Sales rehost proof ✅
 4. Forge lane F2 — Income Valuation rehost proof ✅
 5. Wave 0 inventory and governance pass ✅
-6. Wave 1 auth/context threading
+6. Wave 1 auth/context threading ✅
 7. Wave 2 backend truth inventory
 8. Wave 2 frontend GPT/RAG wiring
 9. Hard stop / review before Waves 3-5
@@ -37,12 +37,24 @@ No later-wave expansion opens until these three truths are green at the same tim
 - No lawful staged-cache proof exists at this checkpoint
 - Phase 2 is closed via bounded real-host harness stabilization in `workbenchRealHosting.gate.test.tsx`
 - Wave 0 inventory is now grounded by current measured counts, not the older zero-console assumption
-- The next unblocked implementation lane is Wave 1 auth/context threading
+- Wave 1 auth/context threading is closed with proof on the named surfaces
+- The next unblocked implementation lane is Wave 2 backend truth inventory
 
 **Immediate next-lane rule:**
 - If Wave 0 inventory/debt ledger is not explicitly closed, do Wave 0 next.
 - If Wave 0 is already explicitly closed, proceed to Wave 1 auth/context threading.
-- Current repo state: `WAVE0_DEBT_LEDGER_v1.md` is published, so Wave 1 auth/context threading is next.
+- If Wave 1 auth/context threading is explicitly closed, proceed to Wave 2 backend truth inventory.
+- Current repo state: `WAVE0_DEBT_LEDGER_v1.md` is published and Wave 1 auth/context threading is now closed, so Wave 2 backend truth inventory is next.
+
+### Phase 7B governed-core evidence packet (for 7E intake)
+
+- Evidence artifact: [`PHASE_7B_EVIDENCE_SUMMARY.md`](./PHASE_7B_EVIDENCE_SUMMARY.md)
+- Status: 7B is evidence-closed on governed-core proof obligations.
+- Constraint: this is an intake artifact, not a dependency override.
+- Dependency wall remains:
+  - `7A -> 7C`
+  - `7C/7D -> 7E`
+  - `7A + 7B + 7C (+7D) + 7E -> 8`
 
 ---
 
@@ -121,20 +133,27 @@ The original audit was directionally correct but overstated several claims. Vali
 **Goal**: Thread real auth through all surfaces. Kill hardcoded user IDs.
 **Tools**: Copilot (primary) + Codex (bulk replacements)
 
-| # | Task | Files | Tool |
-|---|------|-------|------|
-| 1.1 | Implement `useAuthContext()` hook with RBAC claims | 1 new hook | Copilot |
-| 1.2 | Wire auth to PropertyWorkbench (replace `[]` roles) | PropertyWorkbench.tsx | Copilot |
-| 1.3 | Wire auth to GPTManagementDashboard (replace hardcoded user ID) | GPTManagementDashboard.tsx | Copilot |
-| 1.4 | Wire auth to ResearchPortal (replace `phd-researcher-001`) | ResearchPortal.tsx | Copilot |
-| 1.5 | Wire auth to QuantumModuleManager (replace permission stub) | QuantumModuleManager.ts | Copilot |
-| 1.6 | Wire `useTodaysWork` to real backend task API | useTodaysWork.ts + contract test | Copilot |
-| 1.7 | Wire `useBudgetData` to R2 backend | useBudgetData.ts + contract test | Copilot |
+| # | Task | Files | Tool | Status |
+|---|------|-------|------|--------|
+| 1.1 | Implement `useAuthContext()` hook with RBAC claims | 1 new hook | Copilot | Already present |
+| 1.2 | Wire auth to PropertyWorkbench (replace `[]` roles) | PropertyWorkbench.tsx | Copilot | ✅ |
+| 1.3 | Wire auth to GPTManagementDashboard (replace hardcoded user ID) | GPTManagementDashboard.tsx | Copilot | ✅ |
+| 1.4 | Wire auth to ResearchPortal (replace `phd-researcher-001`) | ResearchPortal.tsx | Copilot | ✅ |
+| 1.5 | Wire auth to QuantumModuleManager (replace permission stub) | QuantumModuleManager.ts | Copilot | ✅ |
+| 1.6 | Wire `useTodaysWork` to real backend task API | useTodaysWork.ts + contract test | Copilot | ✅ |
+| 1.7 | Wire `useBudgetData` to R2 backend | useBudgetData.ts + contract test | Copilot | ✅ |
 
 **Exit Criteria**:
 - Zero hardcoded user IDs in production code
 - Auth context flows from shell → workbench → suite tabs
 - Contract tests for each wired hook
+
+**Execution Outcome (2026-03-18):**
+- `PropertyWorkbench.tsx` and `PropertyWorkbenchWindow.tsx` now thread auth-derived `countyId`, `userId`, and `roles` into Workbench context with session fallback.
+- `ResearchPortal.tsx` now uses governed auth/session identity plus `researchSessionAPI` instead of hardcoded researcher/institution strings in production code.
+- `QuantumModuleManager.ts` now derives module permissions and security level from canonical auth/session helpers instead of direct `tf.session.dev` reads.
+- `useTodaysWork.ts` and `useBudgetData.ts` are now API-first hooks with explicit fallback provenance.
+- Proof passed through the targeted Wave 1 auth bundle (`161/161`), `pnpm run type-check`, and `phase83-tools` (`54/54`).
 
 ---
 

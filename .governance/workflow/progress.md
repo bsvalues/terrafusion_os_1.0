@@ -53,6 +53,18 @@ Non-authorizations:
 - Hard stop review complete. GATE-0 human go/no-go decision recorded above.
 - Agent swarm scaffolding landed at `76b2a5efd` (docs/tooling only — no execution authority granted).
 - Slice 26 end-to-end phase map written in `plan.md` (planning only).
+- Phase 7B governed-core evidence packet is published at [PHASE_7B_EVIDENCE_SUMMARY.md](./PHASE_7B_EVIDENCE_SUMMARY.md) and accepted as a 7E intake input.
+- Dependency wall preserved: 7E execution remains blocked pending 7C closure (and 7D only if invoked).
+
+---
+
+## Wave 2 Governed-Core Evidence (Phase 7B)
+
+- Status: **evidence-closed**
+- Artifact: [PHASE_7B_EVIDENCE_SUMMARY.md](./PHASE_7B_EVIDENCE_SUMMARY.md)
+- Scope held to `os-platform/core/**` + `tools/registry/**` only
+- Command wall rerun is green across type-check + phase83/85/86 + ingress/runtime/trace suites
+- Intake posture: ready for 7E evidence review, not an execution unblocking event
 
 ---
 
@@ -516,6 +528,8 @@ Non-authorizations:
 
 | Priority | Task | Description | Blocked By |
 |----------|------|-------------|------------|
+| ✅ 0 | Wave 2 / 7B | Publish governed-core evidence packet for 7E intake | Done |
+| ⛔ 0A | Wave 2 / 7E | Consume 7B packet during 7E intake only after dependency closure | 7C (+7D if invoked) |
 | ✅ 1 | 25.4 / Phase 1A | Reconcile stale workflow truth across `plan.md`, `progress.md`, and `REMEDIATION_PLAN_v1.md` | Done |
 | ✅ 2 | 25.4 / Phase 1B | Publish proof-posture note for Muse seal and Workbench host boundary | Done |
 | ✅ 3 | 25.4 / Phase 2 | Close the real-host gate via bounded real-host harness stabilization; Atlas suspicion proved stale without a product rewrite | Done |
@@ -545,6 +559,7 @@ Non-authorizations:
 | 2026-03-18 | Close Phase 2 via bounded real-host harness stabilization, not an Atlas product rewrite | Direct Atlas proof stayed green; the combined host suite closed through a narrow harness-only fix path | Prevents the stale Atlas label from blocking Wave 0 and Wave 1 |
 | 2026-03-18 | Use auth-first identity with session fallback on the named Wave 1 surfaces | Shell auth claims are now canonical, but several surfaces still needed safe fallback during the transition | Closed hardcoded user/role placeholders without widening auth-model scope |
 | 2026-03-18 | Move the new Wave 1 runtime proofs into the `__tests__/auth` suite | Root Vitest discovery ignored sidecar hook/service test directories during filtered runs | The Wave 1 proof bundle now executes under the governed harness instead of living as dead files |
+| 2026-03-18 | Accept Phase 7B as a satisfied governed-core evidence input to 7E only | 7B proofs are green, but dependency order still governs execution | Prevents 7E from opening early while preserving reuse of 7B evidence |
 
 ---
 
@@ -569,6 +584,12 @@ Non-authorizations:
 |-------|--------|--------|---------|
 | type-check | ✅ | 0 | - |
 | phase83-tools | 54 | 0 | 0 |
+| phase85-tools | 22 | 0 | 0 |
+| phase86-toolrunner | 9 | 0 | 0 |
+| dev-pilot-runtime | 8 | 0 | 0 |
+| lane-k-trace-export-endpoint | 14 | 0 | 0 |
+| p7-trace-chain-integrity | 10 | 0 | 0 |
+| manifest-schema-parity | 3 | 0 | 0 |
 | workbenchRealHosting.gate | 15 | 0 | 0 |
 | wave1-auth bundle | 161 | 0 | 0 |
 | prompt contract verification (`rg`) | ✅ | 0 | - |
