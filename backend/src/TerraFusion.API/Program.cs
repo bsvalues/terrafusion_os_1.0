@@ -508,7 +508,19 @@ builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
     return new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
   }
 });
-builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGEmbeddingRepository, TerraFusion.AI.Repositories.InMemoryRAGEmbeddingRepository>();
+// Register RAG Embedding Repository — pgvector for Postgres, in-memory for SQLite/dev
+{
+    var usePostgres = builder.Configuration.GetConnectionString("DefaultConnection")
+        ?.Contains("Host=", StringComparison.OrdinalIgnoreCase) ?? false;
+    if (usePostgres)
+    {
+        builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGEmbeddingRepository, TerraFusion.AI.Repositories.PgVectorRAGEmbeddingRepository>();
+    }
+    else
+    {
+        builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGEmbeddingRepository, TerraFusion.AI.Repositories.InMemoryRAGEmbeddingRepository>();
+    }
+}
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGService, TerraFusion.AI.Services.RAGService>();
 
 // Phase 15.4: SystemGPT Health Evaluator for Herald threshold-based alerts
