@@ -37,6 +37,7 @@ const BENTON_MUSE = {
   userId: 'appraiser-001',
   roles: ['appraiser'],
   mode: 'muse',
+  officeId: 'assessor',
 };
 
 const BENTON_MUSE_SUPERVISOR = {
@@ -44,6 +45,7 @@ const BENTON_MUSE_SUPERVISOR = {
   userId: 'supervisor-001',
   roles: ['supervisor'],
   mode: 'muse',
+  officeId: 'assessor',
   confirmation: true,
   reasonCode: 'operator_correction',
 };
@@ -53,6 +55,7 @@ const BENTON_PILOT = {
   userId: 'supervisor-001',
   roles: ['supervisor'],
   mode: 'pilot',
+  officeId: 'assessor',
   confirmation: true,
   reasonCode: 'workflow_update',
 };
@@ -62,6 +65,13 @@ const YAKIMA_MUSE = {
   userId: 'appraiser-002',
   roles: ['appraiser'],
   mode: 'muse',
+  officeId: 'assessor',
+};
+
+const BENTON_MUSE_TREASURER = {
+  ...BENTON_MUSE,
+  roles: ['administrator'],
+  officeId: 'treasurer',
 };
 
 function setupRunner() {
@@ -353,5 +363,36 @@ describe('Phase 8.5 Tools - Pilot', () => {
       context: BENTON_PILOT,
     });
     assertFixture(result, fx);
+  });
+});
+
+describe('Phase 8.5 Tools - Office scope runtime policy', () => {
+  it('denies caller outside the allowed office scope at runtime even when the tool exists', async () => {
+    const { runner, registry } = await setupRunner();
+    const tool = registry.getTool('explain_model_inputs');
+    const fx = loadToolFixture('explain_model_inputs', 'happy');
+    const result = await runner.execute({
+      toolId: 'explain_model_inputs',
+      params: fx.params,
+      context: BENTON_MUSE_TREASURER,
+    });
+
+    assert.strictEqual(tool?.officeScope, 'assessor');
+    assert.strictEqual(result.ok, false);
+    assert.strictEqual(result.errorCode, 'OFFICE_SCOPE_DENIED');
+    assert.match(result.error, /officeScope "assessor"/i);
+  });
+
+  it('permits caller inside the allowed office scope', async () => {
+    const { runner, traceService } = await setupRunner();
+    const fx = loadToolFixture('explain_model_inputs', 'happy');
+    const result = await runner.execute({
+      toolId: 'explain_model_inputs',
+      params: fx.params,
+      context: BENTON_MUSE,
+    });
+
+    assertFixture(result, fx);
+    assertTracePair(traceService, 'explain_model_inputs');
   });
 });

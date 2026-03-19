@@ -13,6 +13,45 @@ export const TRACE_EXPORT_MAX_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
 const TRACE_EXPORT_TOOL_ID = 'pilot:traces:export';
 
+const WINDOWS_PATH_PATTERN = /\b[A-Za-z]:\\[^\s"'`]+/g;
+const UNIX_PATH_PATTERN = /\/(?:[^/\s"'`]+\/)+[^/\s"'`]+/g;
+const BEARER_TOKEN_PATTERN = /\bBearer\s+[A-Za-z0-9._~+/=-]+\b/gi;
+const SECRET_ASSIGNMENT_PATTERN = /\b(secret|token|password)\s*[:=]\s*[^\s"'`]+/gi;
+const ERROR_PREFIX_PATTERN = /\bError:\s*/g;
+
+function sanitizeTraceExportSummary(summary: string): string {
+  return summary
+    .replace(BEARER_TOKEN_PATTERN, 'Bearer [REDACTED]')
+    .replace(SECRET_ASSIGNMENT_PATTERN, '$1=[REDACTED]')
+    .replace(WINDOWS_PATH_PATTERN, '[PATH_REDACTED]')
+    .replace(UNIX_PATH_PATTERN, '[PATH_REDACTED]')
+    .replace(ERROR_PREFIX_PATTERN, '');
+}
+
+function sanitizeTraceExportEvent(event: TraceEvent): TraceEvent {
+  const sanitized: TraceEvent = {
+    ...event,
+    summary: sanitizeTraceExportSummary(event.summary ?? ''),
+  };
+
+  const redactedFields = Array.isArray(event.redactedFields)
+    ? [...event.redactedFields]
+    : [];
+
+  if (typeof event.stackTrace === 'string' && event.stackTrace.length > 0) {
+    sanitized.stackTrace = undefined;
+    if (!redactedFields.includes('stackTrace')) {
+      redactedFields.push('stackTrace');
+    }
+  }
+
+  if (redactedFields.length > 0) {
+    sanitized.redactedFields = redactedFields;
+  }
+
+  return sanitized;
+}
+
 export interface TraceExportRequestLike {
   query: Record<string, unknown>;
   user?: {
@@ -220,7 +259,9 @@ export async function handleTraceExport(
     });
   }
 
-  const exportedEvents = sortTraceExportEvents(visibleEvents).slice(0, params.limit);
+  const exportedEvents = sortTraceExportEvents(visibleEvents)
+    .slice(0, params.limit)
+    .map((event) => sanitizeTraceExportEvent(event));
 
   traceService.emit({
     type: 'trace_accessed',
