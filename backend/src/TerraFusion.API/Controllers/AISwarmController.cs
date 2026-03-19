@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.API.Services;
+using TerraFusion.API.Services.Telemetry;
 using TerraFusion.Abstractions.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,17 +21,20 @@ namespace TerraFusion.API.Controllers
         private readonly IAICommandService _aiCommandService;
         private readonly ILogger<AISwarmController> _logger;
         private readonly IAuditLogger _auditLogger;
+        private readonly IAgentTelemetryService _telemetry;
 
         public AISwarmController(
             IAIEngineService aiEngineService,
             IAICommandService aiCommandService,
             ILogger<AISwarmController> logger,
-            IAuditLogger auditLogger)
+            IAuditLogger auditLogger,
+            IAgentTelemetryService telemetry)
         {
             _aiEngineService = aiEngineService;
             _aiCommandService = aiCommandService;
             _logger = logger;
             _auditLogger = auditLogger;
+            _telemetry = telemetry;
         }
 
         /// <summary>
@@ -39,6 +43,7 @@ namespace TerraFusion.API.Controllers
         [HttpGet("status")]
         public async Task<IActionResult> GetSwarmStatus()
         {
+            _telemetry.Emit("Info", "ai-swarm-controller", "swarm.status.get", "GetSwarmStatus called", correlationId: HttpContext.TraceIdentifier);
             try
             {
                 _logger.LogInformation("AI Swarm status requested");
@@ -106,6 +111,7 @@ namespace TerraFusion.API.Controllers
         [HttpPost("optimize/county")]
         public async Task<IActionResult> OptimizeCounty([FromBody] CountyOptimizationRequest request)
         {
+            _telemetry.Emit("Info", "ai-swarm-controller", "swarm.county.optimize", "OptimizeCounty called", correlationId: HttpContext.TraceIdentifier);
             try
             {
                 _logger.LogInformation("County optimization requested for {CountyId}", request.CountyId);
@@ -162,6 +168,7 @@ namespace TerraFusion.API.Controllers
         [HttpPost("workflow/execute")]
         public async Task<IActionResult> ExecuteWorkflow([FromBody] WorkflowExecutionRequest request)
         {
+            _telemetry.Emit("Info", "ai-swarm-controller", "swarm.workflow.execute", "ExecuteWorkflow called", correlationId: HttpContext.TraceIdentifier);
             try
             {
                 _logger.LogInformation("Workflow execution requested: {WorkflowId}", request.WorkflowId);
@@ -217,6 +224,7 @@ namespace TerraFusion.API.Controllers
         [HttpGet("performance")]
         public async Task<IActionResult> GetPerformanceMetrics()
         {
+            _telemetry.Emit("Info", "ai-swarm-controller", "swarm.performance.get", "GetPerformanceMetrics called", correlationId: HttpContext.TraceIdentifier);
             try
             {
                 _logger.LogInformation("AI performance metrics requested");
@@ -269,6 +277,7 @@ namespace TerraFusion.API.Controllers
         [HttpGet("workflows")]
         public async Task<IActionResult> GetAvailableWorkflows()
         {
+            _telemetry.Emit("Info", "ai-swarm-controller", "swarm.workflows.list", "GetAvailableWorkflows called", correlationId: HttpContext.TraceIdentifier);
             try
             {
                 // Get workflows from Claude-Flow Integration
