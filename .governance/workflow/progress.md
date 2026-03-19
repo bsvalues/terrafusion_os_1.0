@@ -16,11 +16,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Phases 6 / 7 / 8 — pgvector + Sovereign Spine + TerraTrace Fidelity** |
-| **Phase** | **Phase 8 CLOSED** — all three sealed (6=`84bf408f4`, 7=pre-session `a7fa3cde7`, 8=`0197bfa72`) |
-| **Task** | Phase 6 CLOSED; Phase 7 CLOSED (18/18); Phase 8 CLOSED (20/20 + sweep.ts + verify-ops.ts) |
-| **Status** | 🟢 Phase 6 CLOSED, 🟢 Phase 7 CLOSED, 🟢 Phase 8 CLOSED |
-| **Latest Commit** | `c2b37861b` (current branch HEAD — working tree clean) |
+| **Slice** | **Phases 6–11 + tool trace fix — full roadmap sealed** |
+| **Phase** | **Phase 11 + tool trace patch CLOSED** — all phases 6–11 sealed; 532/532 frontend + 31/31 backend contract tests green |
+| **Task** | Phases 6–11 CLOSED; TerraPilotPanel emitToolInvoked/Succeeded/Failed instrument fix |
+| **Status** | 🟢 All phases CLOSED — working tree clean |
+| **Latest Commit** | `ba6d14b3c` (TerraPilotPanel tool trace fix — 532/532 ✅) |
 
 ## CP-W9-B — Multi-Agent/Subagent Parallel Execution Plan Publication — CLOSED ✅
 
