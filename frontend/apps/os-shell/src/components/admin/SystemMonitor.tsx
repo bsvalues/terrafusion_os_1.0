@@ -64,7 +64,6 @@ const SystemMonitor: React.FC = () => {
         setMetrics(stats);
         setIsConnected(true);
       } catch (err) {
-        console.warn('Failed to fetch system metrics:', err);
         setIsConnected(false);
       }
     }, 1000);

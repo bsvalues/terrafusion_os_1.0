@@ -44,11 +44,18 @@ const fmtNum = (n: number) => n.toLocaleString();
 
 export default function DossierSuiteHome() {
   const navigate = useNavigate();
-  const { stats } = useCountyStats();
+  const { stats, loading, error } = useCountyStats();
 
   return (
     <div data-testid="suite-dossier-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="dossier" />
+
+      {loading && !stats && (
+        <div data-testid="dossier-loading" role="status" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Loading stats...</div>
+      )}
+      {error && (
+        <div data-testid="dossier-error" role="alert" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-suite-dossier))' }}>{error}</div>
+      )}
 
       {/* Stats Strip */}
       {stats && (

@@ -121,7 +121,6 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
 
       setLastSync(new Date());
     } catch (err) {
-      console.error('[CostForge Integration] Failed to load system data:', err);
       setConnectionStatus('offline');
       setSystemStatus(null);
       setPerformanceMetrics(null);
@@ -163,11 +162,9 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
     try {
       const response = await costForgeAPI.syncWithHarrisPACS(countyId);
       if (response.success) {
-        console.log('[CostForge] Harris PACS sync completed successfully');
         await loadSystemData(); // Refresh data after sync
       }
     } catch (err) {
-      console.error('[CostForge] Harris PACS sync failed:', err);
     }
   };
 
@@ -176,11 +173,9 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
     try {
       const response = await costForgeAPI.scaleAIAgents(targetCount);
       if (response.success) {
-        console.log(`[CostForge] AI agents scaled to ${targetCount}`);
         await loadSystemData(); // Refresh agent status
       }
     } catch (err) {
-      console.error('[CostForge] Failed to scale agents:', err);
     }
   };
 
@@ -482,7 +477,6 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
                       id: 'calc_integration_001',
                     });
                   } catch (error) {
-                    console.error('Calculation failed:', error);
 
                     setCalculationResults({
                       error: 'Service Temporarily Unavailable',

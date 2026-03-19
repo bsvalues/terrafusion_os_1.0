@@ -25,8 +25,8 @@ import {
 } from '@mui/icons-material';
 import { Rnd } from 'react-rnd';
 
-// Type assertion for JSX compatibility
-const RndComponent = Rnd as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- react-rnd Rnd type is not directly JSX-compatible without this assertion
+const RndComponent = Rnd as React.ComponentType<any>;
 
 interface WindowConfig {
   id: string;

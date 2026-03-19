@@ -7,7 +7,8 @@
  * Shows: county stats (appeals, levy revenue), module launcher grid,
  * recent parcel queue. Does NOT host parcel execution.
  *
- * Note: County-level stats from useCountyStats provide appeals/levy data.
+ * Note: TerraDais API metrics are composed via useDaisSuiteStats.
+ * Falls back to county-provider aggregates when live Dais endpoints are unavailable.
  * Per-parcel appeal work routes to the Workbench Dais tab.
  */
 
@@ -18,7 +19,7 @@ import { OperationalQueue } from '../../components/suites/OperationalQueue';
 import NoticeBatchQueuePanel from '../../components/dais/NoticeBatchQueuePanel';
 import CertRollPanel from '../../components/dais/CertRollPanel';
 import ManagementDashboardPanel from '../../components/dais/ManagementDashboardPanel';
-import { useCountyStats } from '../../hooks/useCountyStats';
+import { useDaisSuiteStats } from './useDaisSuiteStats';
 import {
   ArrowLeft,
   Scale,
@@ -53,11 +54,11 @@ const DAIS_MODULES: SuiteModuleDef[] = [
 ];
 
 const fmtNum = (n: number) => n.toLocaleString();
-const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
+const fmtCurrency = (n: number | null) => (n === null ? '—' : `$${n.toLocaleString()}`);
 
 export default function DaisSuiteHome() {
   const navigate = useNavigate();
-  const { stats, loading, error } = useCountyStats();
+  const { stats, loading, error } = useDaisSuiteStats();
 
   return (
     <div data-testid="suite-dais-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
@@ -105,13 +106,13 @@ export default function DaisSuiteHome() {
           <SuiteModuleGrid modules={DAIS_MODULES} accentVar="--tf-suite-dais" />
         </div>
         <div data-testid="dais-mgmt-ops">
-          <ManagementDashboardPanel />
+          <ManagementDashboardPanel stats={stats} />
         </div>
         <div data-testid="dais-cert-ops">
-          <CertRollPanel />
+          <CertRollPanel stats={stats} />
         </div>
         <div data-testid="dais-notice-ops">
-          <NoticeBatchQueuePanel />
+          <NoticeBatchQueuePanel stats={stats} />
         </div>
         <div data-testid="dais-queue">
           <OperationalQueue title="Pending Appeals" accentVar="--tf-suite-dais" emptyMessage="No recent appeal activity" />

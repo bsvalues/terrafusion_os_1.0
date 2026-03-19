@@ -70,7 +70,6 @@ export function useGovernmentSecurity() {
           });
         }
       } catch (error) {
-        console.warn('Camera access check failed:', error);
       }
 
       // Behavioral biometrics (always available)

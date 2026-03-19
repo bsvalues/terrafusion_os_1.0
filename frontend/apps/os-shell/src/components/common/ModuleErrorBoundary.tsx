@@ -46,7 +46,6 @@ export const ModuleErrorBoundary: React.FC<ModuleErrorBoundaryProps> = ({
         timestamp: new Date().toISOString(),
       }),
     }).catch(() => {
-      console.warn('Failed to report module error');
     });
   };
 

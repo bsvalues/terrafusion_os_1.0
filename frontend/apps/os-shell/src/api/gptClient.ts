@@ -59,15 +59,14 @@ export interface GPTMessage {
   promptTokens: number;
   completionTokens: number;
   totalTokens: number;
-  latencyMs: number;
-  ragContextUsed: string | null;
+  responseTime: number | null;
+  ragDocumentsUsed: string | null;
   createdAt: string;
 }
 
 export interface SendMessageRequest {
-  content: string;
-  userId?: string;
-  countyId?: number;
+  message: string;
+  gptConfigId: number;
 }
 
 export interface ApiResponse<T> {
@@ -88,9 +87,9 @@ export type GPTMessageDto = GPTMessage;
 export interface RagDatasetStatus {
   id: string;
   name: string;
-  status: 'indexed' | 'indexing' | 'not_indexed' | 'error';
+  indexed: boolean;
   documentCount: number;
-  lastIndexed: string | null;
+  lastUpdated: string | null;
 }
 
 export interface RagHealthResponse {
@@ -145,17 +144,16 @@ export async function getSystemGPT(key: string): Promise<GPTConfiguration> {
  * Create a new conversation with a system GPT
  */
 export async function createConversation(
-  gptKey: string,
-  title?: string,
-  userId: string = 'anonymous',
-  countyId: number = 1
+  gptConfigId: number,
+  title?: string
 ): Promise<GPTConversation> {
-  const response = await fetch(`${API_BASE_URL}/api/gpt/system/${gptKey}/conversations`, {
+  // Auth: userId/countyId read from JWT claims by backend
+  const response = await fetch(`${API_BASE_URL}/api/gpt/conversations`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ title, userId, countyId }),
+    body: JSON.stringify({ gptConfigId, title }),
   });
 
   if (!response.ok) {
@@ -188,16 +186,16 @@ export async function getConversation(conversationId: number): Promise<GPTConver
  */
 export async function sendMessage(
   conversationId: number,
-  content: string,
-  userId: string = 'anonymous',
-  countyId: number = 1
+  message: string,
+  gptConfigId: number
 ): Promise<GPTMessage> {
+  // Auth: userId/countyId read from JWT claims by backend
   const response = await fetch(`${API_BASE_URL}/api/gpt/conversations/${conversationId}/messages`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ content, userId, countyId }),
+    body: JSON.stringify({ message, gptConfigId }),
   });
 
   if (!response.ok) {
@@ -226,13 +224,13 @@ export async function getMessages(conversationId: number): Promise<GPTMessage[]>
 }
 
 /**
- * Get all conversations for a user
+ * Get all conversations for the current user
  */
 export async function getUserConversations(
-  userId: string = 'anonymous',
   gptId?: number
 ): Promise<GPTConversation[]> {
-  const params = new URLSearchParams({ userId });
+  // Auth: userId/countyId read from JWT claims by backend
+  const params = new URLSearchParams();
   if (gptId) params.append('gptId', gptId.toString());
 
   const response = await fetch(`${API_BASE_URL}/api/gpt/conversations?${params}`, {

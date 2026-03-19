@@ -99,7 +99,6 @@ export function createTelemetrySink(
         flushedCount++;
       } catch (error) {
         // Log but continue - best effort persistence
-        console.warn('[TelemetrySink] Failed to persist event:', error);
       }
     }
   }

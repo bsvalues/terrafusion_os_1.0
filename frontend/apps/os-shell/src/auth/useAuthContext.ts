@@ -5,8 +5,12 @@
  * The shell chrome (Window.tsx, Taskbar, etc.) does NOT use this — only feature surfaces.
  */
 
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { useAuth } from './useAuth';
+// Import AuthContext from authContextDef (not AuthProvider) to avoid circular imports.
+// AuthProvider.tsx imports decodeAuthClaims from this file; importing AuthContext
+// from the leaf file breaks that cycle.
+import { AuthContext } from './authContextDef';
 
 export type AuthContextValue = {
   isAuthenticated: boolean;
@@ -16,39 +20,68 @@ export type AuthContextValue = {
   token: string | null;
 };
 
+// ---------------------------------------------------------------------------
+// Wave 1: Shared decode + actor identity
+// ---------------------------------------------------------------------------
+
+export interface DecodedAuthClaims {
+  userId: string | null;
+  countyId: string | null;
+  roles: readonly string[];
+}
+
 /**
- * Decode JWT payload without verification (browser-side, verification is backend's job).
- * Returns null if token is absent or malformed.
+ * Pure function — no hooks, no side effects.
+ * Single claim-normalization source shared by useAuthContext hook + AuthProvider.
  */
-function decodeJwtPayload(token: string | null): Record<string, unknown> | null {
-  if (!token) return null;
+export function decodeAuthClaims(token: string | null): DecodedAuthClaims {
+  if (!token) return { userId: null, countyId: null, roles: [] };
   try {
     const parts = token.split('.');
-    if (parts.length !== 3) return null;
-    const payload = parts[1];
-    // atob handles base64url by replacing URL-safe chars
-    const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
-    return JSON.parse(json) as Record<string, unknown>;
+    if (parts.length !== 3) return { userId: null, countyId: null, roles: [] };
+    const payload = JSON.parse(
+      atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+    ) as Record<string, unknown>;
+
+    const str = (...keys: string[]): string | null => {
+      for (const k of keys) {
+        const v = payload[k];
+        if (typeof v === 'string' && v.length > 0) return v;
+      }
+      return null;
+    };
+
+    const raw = payload['roles'] ?? payload['role'] ?? [];
+    const roles: readonly string[] = Array.isArray(raw)
+      ? raw.filter((r): r is string => typeof r === 'string')
+      : typeof raw === 'string' ? [raw] : [];
+
+    return {
+      userId: str('userId', 'sub', 'user_id', 'nameid'),
+      countyId: str('countyId', 'county_id', 'countyCode'),
+      roles,
+    };
   } catch {
-    return null;
+    return { userId: null, countyId: null, roles: [] };
   }
 }
 
-function extractRoles(payload: Record<string, unknown> | null): readonly string[] {
-  if (!payload) return [];
-  const raw = payload['roles'] ?? payload['role'] ?? [];
-  if (Array.isArray(raw)) return raw.filter((r): r is string => typeof r === 'string');
-  if (typeof raw === 'string') return [raw];
-  return [];
+export interface OsActor {
+  userId: string;         // non-nullable — authenticated + non-empty
+  countyId: string;       // non-nullable — county-scoped
+  roles: readonly string[];
 }
 
-function extractClaim(payload: Record<string, unknown> | null, ...keys: string[]): string | null {
-  if (!payload) return null;
-  for (const key of keys) {
-    const val = payload[key];
-    if (typeof val === 'string' && val.length > 0) return val;
-  }
-  return null;
+/**
+ * Returns OsActor when isAuthenticated AND userId AND countyId are all present.
+ * Returns null for any unauthenticated or incomplete-identity state.
+ * NEVER returns an object with nullable fields.
+ */
+export function toOsActor(
+  auth: Pick<AuthContextValue, 'isAuthenticated' | 'userId' | 'countyId' | 'roles'>
+): OsActor | null {
+  if (!auth.isAuthenticated || !auth.userId || !auth.countyId) return null;
+  return { userId: auth.userId, countyId: auth.countyId, roles: auth.roles };
 }
 
 /**
@@ -61,13 +94,24 @@ export function useAuthContext(): AuthContextValue {
   const { isAuthenticated, token } = useAuth();
 
   return useMemo((): AuthContextValue => {
-    const payload = decodeJwtPayload(token ?? null);
-    return {
-      isAuthenticated,
-      token: token ?? null,
-      userId: extractClaim(payload, 'userId', 'sub', 'user_id', 'nameid'),
-      countyId: extractClaim(payload, 'countyId', 'county_id', 'countyCode'),
-      roles: extractRoles(payload),
-    };
+    const claims = decodeAuthClaims(token ?? null);
+    return { isAuthenticated, token: token ?? null, ...claims };
   }, [isAuthenticated, token]);
+}
+
+/**
+ * useAuthContextOptional() — returns null instead of throwing when called outside AuthProvider.
+ *
+ * Use only in components that may legitimately render without an auth context
+ * (e.g., Launcher rendered in test harnesses, or shell chrome outside auth boundary).
+ * When null is returned the caller should treat the session as unauthenticated.
+ *
+ * Does NOT call useAuth() — reads AuthContext directly to avoid the throw guard.
+ */
+export function useAuthContextOptional(): AuthContextValue | null {
+  const rawCtx = useContext(AuthContext);
+  if (rawCtx === null) return null;
+  // rawCtx has { token, isAuthenticated } — derive claims the same way useAuthContext does.
+  const claims = decodeAuthClaims(rawCtx.token ?? null);
+  return { isAuthenticated: rawCtx.isAuthenticated, token: rawCtx.token ?? null, ...claims };
 }

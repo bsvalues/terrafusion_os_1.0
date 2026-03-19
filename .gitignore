@@ -50,6 +50,10 @@ Thumbs.db
 # Agent forensics (debug artifacts, not source)
 .forensics/
 
+# Claude Code workspace config (ephemeral local state)
+.claude/agents/
+.claude/settings.json
+
 # Logs
 logs/
 *.log
@@ -264,6 +268,7 @@ dmypy.json
 # .NET
 bin/
 obj/
+TestResults/
 *.user
 *.suo
 *.cache

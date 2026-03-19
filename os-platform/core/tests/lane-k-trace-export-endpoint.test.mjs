@@ -10,12 +10,16 @@ let handleTraceExport;
 let parseTraceExportQuery;
 let sortTraceExportEvents;
 let resetAccessDeniedMetrics;
+let InMemoryTraceStore;
+let TraceService;
 
 before(async () => {
   const traceModule = await import('../trace/index.js');
   const exportModule = await import('../pilot/traceExport.js');
 
   traceService = traceModule.traceService;
+  InMemoryTraceStore = traceModule.InMemoryTraceStore;
+  TraceService = traceModule.TraceService;
   resetAccessDeniedMetrics = traceModule.resetAccessDeniedMetrics;
   handleTraceExport = exportModule.handleTraceExport;
   parseTraceExportQuery = exportModule.parseTraceExportQuery;
@@ -67,6 +71,75 @@ function parseNdjsonBody(bodyText) {
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => JSON.parse(line));
+}
+
+function createLocalTraceHarness() {
+  const store = new InMemoryTraceStore({ maxEvents: 100 });
+  const backingTrace = new TraceService({ store });
+
+  return {
+    store,
+    trace: {
+      async queryAsync(options) {
+        return store.query(options);
+      },
+      emit(input) {
+        return backingTrace.emit(input);
+      },
+      clear() {
+        store.clear();
+      },
+    },
+  };
+}
+
+async function seedFailureChain(store, overrides = {}) {
+  const parcelId = overrides.parcelId ?? 'P-FAIL';
+  const correlationId = overrides.correlationId ?? 'corr-failure-redaction';
+  const context = {
+    countyId: 'benton',
+    userId: 'user-failure',
+    roles: ['appraiser'],
+    mode: 'pilot',
+    parcelId,
+  };
+
+  const invoked = await store.append({
+    eventId: overrides.invokedEventId ?? 'evt-failure-invoked',
+    correlationId,
+    type: 'tool_invoked',
+    toolId: 'explain_model_inputs',
+    timestamp: '2026-03-18T10:00:00.000Z',
+    schemaVersion: '1.0.0',
+    summary: 'Invoking explain_model_inputs {"ssn":"[REDACTED]","email":"[EMAIL REDACTED]","phone":"[REDACTED]"}',
+    redactedFields: ['params.ssn', 'params.email', 'params.phone'],
+    context,
+  });
+
+  const failed = await store.append({
+    eventId: overrides.failedEventId ?? 'evt-failure-terminal',
+    correlationId,
+    type: 'tool_failed',
+    toolId: 'explain_model_inputs',
+    timestamp: '2026-03-18T10:00:01.000Z',
+    schemaVersion: '1.0.0',
+    summary: 'Failed explain_model_inputs: secret=super-secret-token-123 windows=C:\\sensitive\\handler.js unix=/srv/terrafusion/secure/handler.js',
+    errorCode: 'EXECUTION_FAILED',
+    component: 'Handler',
+    stackTrace: 'Error: secret=super-secret-token-123\n    at C:\\sensitive\\handler.js:42:7\n    at /srv/terrafusion/secure/handler.js:12:3',
+    redactedFields: ['params.ssn', 'params.email', 'params.phone', 'stackTrace'],
+    context,
+  });
+
+  return { invoked, failed, correlationId, parcelId };
+}
+
+function assertNoSensitiveInternals(value) {
+  const serialized = JSON.stringify(value);
+  assert.ok(!serialized.includes('super-secret-token-123'), 'Export leaked secret material');
+  assert.ok(!serialized.includes('C:\\sensitive\\handler.js'), 'Export leaked Windows file path');
+  assert.ok(!serialized.includes('/srv/terrafusion/secure/handler.js'), 'Export leaked Unix file path');
+  assert.ok(!serialized.includes('Error:'), 'Export leaked raw exception prefix');
 }
 
 function emitTraceEvent(overrides = {}) {
@@ -412,6 +485,51 @@ describe('handleTraceExport', () => {
     const hash2 = await run();
     assert.equal(hash1, hash2, 'SHA-256 hash must be deterministic across runs');
     assert.equal(hash1.length, 64);
+  });
+
+  it('redacts sensitive internals from exported failure chains while keeping chain linkage', async () => {
+    const { store, trace } = createLocalTraceHarness();
+    const seeded = await seedFailureChain(store);
+    const req = {
+      query: {
+        parcelId: seeded.parcelId,
+        correlationId: seeded.correlationId,
+        includeMeta: '1',
+      },
+      user: {
+        userId: 'admin-1',
+        roles: ['administrator'],
+        countyId: 'benton',
+      },
+    };
+    const res = createMockResponse();
+
+    await handleTraceExport(req, res, trace);
+
+    assert.equal(res.statusCode, 200);
+
+    const lines = parseNdjsonBody(res.bodyText);
+    assert.equal(lines.length, 4, 'Expected header + 2 failure-chain events + footer');
+
+    const exportedEvents = lines.filter((line) => line.type === 'tool_invoked' || line.type === 'tool_failed');
+    assert.equal(exportedEvents.length, 2);
+
+    const exportedFailure = exportedEvents.find((line) => line.type === 'tool_failed');
+    assert.ok(exportedFailure, 'Exported failure event missing');
+    assert.equal(exportedFailure.toolId, 'explain_model_inputs');
+    assert.equal(exportedFailure.correlationId, seeded.correlationId);
+    assert.equal(exportedFailure.errorCode, 'EXECUTION_FAILED');
+    assert.equal(exportedFailure.component, 'Handler');
+    assert.equal(typeof exportedFailure.previousHash, 'string');
+    assert.equal(exportedFailure.previousHash, seeded.failed.previousHash);
+    assert.deepEqual(exportedFailure.redactedFields, ['params.ssn', 'params.email', 'params.phone', 'stackTrace']);
+    assertNoSensitiveInternals(exportedFailure);
+
+    const footer = lines[lines.length - 1];
+    assert.equal(footer.type, 'trace_export_footer');
+    assert.equal(footer.count, 2);
+    assert.equal(typeof footer.sha256, 'string');
+    assert.equal(footer.sha256.length, 64);
   });
 });
 

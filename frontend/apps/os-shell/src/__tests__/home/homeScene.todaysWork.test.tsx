@@ -114,7 +114,7 @@ describe('Phase 7: Today\'s Work Panel', () => {
     // Mock useTodaysWork to return empty tasks
     const todaysWorkModule = await import('../../hooks/useTodaysWork');
     const spy = vi.spyOn(todaysWorkModule, 'useTodaysWork');
-    spy.mockReturnValue({ tasks: [], loading: false });
+    spy.mockReturnValue({ tasks: [], loading: false, isSampleData: false });
 
     const { unmount } = render(<StageZeroState />);
     const panel = screen.getByTestId('todays-work-panel');

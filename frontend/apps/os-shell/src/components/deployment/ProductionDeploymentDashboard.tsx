@@ -197,7 +197,6 @@ export function ProductionDeploymentDashboard({
             }
           }
         } catch (err) {
-          console.error('Error polling deployment status:', err);
         }
       }, 2000);
 
@@ -252,7 +251,6 @@ export function ProductionDeploymentDashboard({
       // Refresh history
       await loadHistory();
     } catch (err) {
-      console.error('Deployment error:', err);
       setError('Failed to deploy. Please check the logs.');
       setIsDeploying(false);
     }
@@ -273,7 +271,6 @@ export function ProductionDeploymentDashboard({
 
       await loadHistory();
     } catch (err) {
-      console.error('Rollback error:', err);
       setError('Failed to rollback deployment');
     }
   };
@@ -289,7 +286,6 @@ export function ProductionDeploymentDashboard({
       setHealthCheck(result);
       setActiveTab('health');
     } catch (err) {
-      console.error('Health check error:', err);
       setError('Failed to perform health check');
     }
   };
@@ -302,7 +298,6 @@ export function ProductionDeploymentDashboard({
         setHistory(data);
       }
     } catch (err) {
-      console.error('Error loading history:', err);
     }
   }, []);
 

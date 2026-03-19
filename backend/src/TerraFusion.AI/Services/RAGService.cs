@@ -459,6 +459,33 @@ namespace TerraFusion.AI.Services
         }
 
         /// <inheritdoc />
+        public async Task<List<RAGChunkSummary>> GetDocumentChunksAsync(int documentId)
+        {
+            try
+            {
+                _logger.LogDebug("Fetching chunks for document {DocumentId}", documentId);
+
+                var embeddings = await _embeddingRepository.GetDocumentEmbeddingsAsync(documentId);
+
+                return embeddings.Select(e => new RAGChunkSummary
+                {
+                    Id = e.Id,
+                    DocumentId = e.DocumentId,
+                    ChunkIndex = e.ChunkIndex,
+                    ChunkText = e.ChunkText ?? string.Empty,
+                    TokenCount = e.TokenCount,
+                    StartPosition = e.StartPosition,
+                    EndPosition = e.EndPosition
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching chunks for document {DocumentId}", documentId);
+                throw;
+            }
+        }
+
+        /// <inheritdoc />
         public async Task<RAGHealthStatus> GetRagHealthAsync(string datasetName)
         {
             try

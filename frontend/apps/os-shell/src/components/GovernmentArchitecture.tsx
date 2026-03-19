@@ -155,15 +155,10 @@ const GovernmentArchitecture: React.FC = () => {
     // Championship Deployment initiated
     if (process.env.NODE_ENV === 'development') {
       // eslint-disable-next-line no-console
-      console.log('Initiating Championship Deployment...');
       // eslint-disable-next-line no-console
-      console.log('Package: Terrafusion-Gov-Edition-2.0.msi');
       // eslint-disable-next-line no-console
-      console.log('Size: ~50MB');
       // eslint-disable-next-line no-console
-      console.log('Requirements: None (no admin, no drivers)');
       // eslint-disable-next-line no-console
-      console.log('Deployment: SCCM/Intune ready');
     }
     setTimeout(() => {
       setDeploymentStatus('deployed');
@@ -175,20 +170,14 @@ const GovernmentArchitecture: React.FC = () => {
     // AI Swarm activation logs
     if (process.env.NODE_ENV === 'development') {
       // eslint-disable-next-line no-console
-      console.log('Activating 164-agent swarm...');
       // eslint-disable-next-line no-console
-      console.log('Supreme Commander: BELICHICK');
       // eslint-disable-next-line no-console
-      console.log('Brady Units: GOV, COM, AI');
       // eslint-disable-next-line no-console
-      console.log('Coordinators: BUILD, TEST, DEPLOY, OPS');
     }
     // Additional swarm details
     if (process.env.NODE_ENV === 'development') {
       // eslint-disable-next-line no-console
-      console.log('Squad Leaders: 12 active');
       // eslint-disable-next-line no-console
-      console.log('Micro Agents: 144 operational');
     }
     setTimeout(() => {
       alert('Swarm fully operational at 379,000,000× performance!');
@@ -199,7 +188,6 @@ const GovernmentArchitecture: React.FC = () => {
     // Compliance validation initiated
     if (process.env.NODE_ENV === 'development') {
       // eslint-disable-next-line no-console
-      console.log('Running compliance validation...');
     }
     const checks = [
       'FISMA Moderate: PASSED',

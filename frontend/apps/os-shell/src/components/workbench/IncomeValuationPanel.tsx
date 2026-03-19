@@ -3,12 +3,12 @@
  *
  * ADAPTER HOST — not greenfield.
  * Translates existing backend CostForge income-approach endpoints and
- * legacy IncomeForgeModule patterns into the Property Workbench Forge tab.
+ * legacy archived income-module patterns into the Property Workbench Forge tab.
  *
  * Provenance:
- *   - Layout pattern: IncomeForgeModule.tsx (standalone suite module)
- *   - NOI waterfall: IncomeForgeModule.tsx NOI Waterfall section
- *   - Cap rate visualization: IncomeForgeModule.tsx market range bar
+ *   - Layout pattern: legacy income module (standalone suite surface)
+ *   - NOI waterfall: legacy income module NOI Waterfall section
+ *   - Cap rate visualization: legacy income module market range bar
  *   - Backend math: CostForge income-approach/calculate-noi + calculate-valuation
  *   - Expense structure: CostForge NoiCalculationRequest schema
  *   - Client preview: forgeService.ts calculateIncome() (deprecated, offline only)
@@ -25,7 +25,9 @@ import { useWorkbenchTab } from '../../context/workbenchTabContext';
 import { usePropertyStore } from '../../stores/propertyStore';
 import {
   calculateIncomeValuation,
+  fetchValuationRecord,
   previewValuation,
+  saveIncomeValuationRecord,
   totalExpenses,
   DEFAULT_EXPENSES,
   BENTON_LOCATIONS,
@@ -181,7 +183,13 @@ const CapitalizationResult: React.FC<{ result: IncomeValuationResult }> = ({ res
 // Main Component
 // ═══════════════════════════════════════════════════════════════
 
-export const IncomeValuationPanel: React.FC = () => {
+export interface IncomeValuationPanelProps {
+  taxYear?: number;
+}
+
+export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
+  taxYear = new Date().getFullYear(),
+}) => {
   const { parcelId } = useWorkbenchTab();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
 
@@ -199,6 +207,8 @@ export const IncomeValuationPanel: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [backendError, setBackendError] = useState<string | null>(null);
   const [isPreview, setIsPreview] = useState(false);
+  const [recordNotice, setRecordNotice] = useState<string | null>(null);
+  const [recordError, setRecordError] = useState<string | null>(null);
 
   // Derive property type from parcel if available
   useEffect(() => {
@@ -241,12 +251,37 @@ export const IncomeValuationPanel: React.FC = () => {
     setLoading(true);
     setBackendError(null);
     setIsPreview(false);
+    setRecordNotice(null);
+    setRecordError(null);
 
     const input = buildInput();
 
     try {
       const backendResult = await calculateIncomeValuation(input);
       setResult(backendResult);
+
+      if (parcelId) {
+        try {
+          const persisted = await saveIncomeValuationRecord({
+            parcelId,
+            taxYear,
+            propertyType,
+            incomeApproachValue: backendResult.adjustedValuation,
+            incomeConfidence: backendResult.riskClassification,
+            grossIncome: input.annualRentalIncome + input.otherIncome,
+            vacancyRate: input.vacancyRate,
+            operatingExpenses: totalExpenses(input.expenses),
+            netOperatingIncome: backendResult.netOperatingIncome,
+            capRate: backendResult.capRate,
+            notes: `Income approach valuation (${backendResult.source})`,
+          });
+
+          await fetchValuationRecord(persisted.id);
+          setRecordNotice(`Valuation record saved (${persisted.status})`);
+        } catch {
+          setRecordError('Valuation record could not be persisted or retrieved.');
+        }
+      }
     } catch {
       // Graceful degradation: use client-side preview
       setBackendError('Backend unavailable — showing client-side preview (not authoritative)');
@@ -255,7 +290,7 @@ export const IncomeValuationPanel: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [annualRentalIncome, buildInput]);
+  }, [annualRentalIncome, buildInput, parcelId, propertyType, taxYear]);
 
   // No parcel context
   if (!parcelId && !activeParcel) {
@@ -517,6 +552,32 @@ export const IncomeValuationPanel: React.FC = () => {
               }}
             >
               {backendError}
+            </div>
+          )}
+
+          {recordNotice && (
+            <div
+              className="text-xs px-3 py-2 rounded"
+              style={{
+                background: 'hsl(142 71% 45% / 0.1)',
+                color: 'hsl(142 71% 45%)',
+                border: '1px solid hsl(142 71% 45% / 0.2)',
+              }}
+            >
+              {recordNotice}
+            </div>
+          )}
+
+          {recordError && (
+            <div
+              className="text-xs px-3 py-2 rounded"
+              style={{
+                background: 'hsl(0 84% 60% / 0.08)',
+                color: 'hsl(0 84% 60%)',
+                border: '1px solid hsl(0 84% 60% / 0.2)',
+              }}
+            >
+              {recordError}
             </div>
           )}
 

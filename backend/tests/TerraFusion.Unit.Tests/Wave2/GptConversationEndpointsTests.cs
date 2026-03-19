@@ -209,22 +209,39 @@ public sealed class GptConversationEndpointsTests
         Assert.IsType<NoContentResult>(result);
     }
 
-    // ── MISSING: GET /api/gpt/conversations ───────────────────────────────────
-    // This route does NOT exist in GPTController. The frontend calls it to list all
-    // conversations for the current user. Wave 2 must add it.
+    // ── GET /api/gpt/conversations ────────────────────────────────────────────
+    // Wave 2 added this route. The frontend gptClient.ts calls it to list all
+    // conversations for the current user. Verify it returns 200 with a list.
 
     [Fact]
-    public void Missing_Route_GetAllConversations_Is_Documented()
+    public async System.Threading.Tasks.Task GetAllConversations_Returns_Ok_With_List()
     {
-        // Static assertion: ensure the method does NOT exist yet so Wave 2 implementer knows to add it.
-        // When added, this test should be updated to verify the new endpoint returns 200.
+        var mockOrch = new Mock<IGPTOrchestrationService>();
+        mockOrch
+            .Setup(s => s.GetAllConversationsAsync(
+                "test-user-42", 1, 0, 50,
+                System.Threading.CancellationToken.None))
+            .ReturnsAsync(new List<CoreEntities.GPTConversation>());
+
+        var controller = BuildController(orchestrationService: mockOrch.Object);
+
+        var result = await controller.GetAllConversations(0, 50, System.Threading.CancellationToken.None);
+
+        var ok = Assert.IsType<OkObjectResult>(result.Result);
+        Assert.NotNull(ok.Value);
+        var list = ok.Value as System.Collections.IList;
+        Assert.NotNull(list);
+    }
+
+    [Fact]
+    public void Route_GetAllConversations_Exists_In_Controller()
+    {
+        // Wave 2 verification: the route was added to GPTController.
         var controllerType = typeof(GPTController);
         var method = controllerType.GetMethod("GetAllConversations",
             System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
-        // This must be null until Wave 2 adds the route.
-        // If this assertion fails, the route was added — update this test to verify behaviour.
-        Assert.Null(method); // EXPECTED: missing — add GET /api/gpt/conversations in Wave 2
+        Assert.NotNull(method); // Route exists — GET /api/gpt/conversations is live.
     }
 
     // ── POST /api/gpt/explain ─────────────────────────────────────────────────

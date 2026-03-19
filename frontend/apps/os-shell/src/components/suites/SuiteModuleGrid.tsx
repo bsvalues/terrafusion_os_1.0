@@ -17,6 +17,7 @@ import type { LucideIcon } from 'lucide-react';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { usePropertyStore } from '../../stores/propertyStore';
+import { useAuthContext, toOsActor } from '../../auth/useAuthContext';
 
 export interface SuiteModuleDef {
   id: string;
@@ -37,11 +38,12 @@ interface SuiteModuleGridProps {
 
 export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteModuleGridProps) {
   const activeParcel = usePropertyStore((s) => s.activeParcel);
+  const auth = useAuthContext();
+  const actor = toOsActor(auth);
 
   const handleLaunch = (mod: SuiteModuleDef) => {
     if (mod.launchMode === 'workbench') {
       if (!mod.workbenchTab) {
-        console.warn(`[SuiteModuleGrid] workbench card "${mod.id}" missing workbenchTab — skipping`);
         return;
       }
       const metadata: Record<string, unknown> = { tabId: mod.workbenchTab };
@@ -51,14 +53,14 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
       activateModule('property-workbench', {
         source: 'start_menu',
         metadata,
+        actor,
       });
     } else {
       const targetId = mod.moduleId ?? mod.id;
       if (!targetId) {
-        console.warn(`[SuiteModuleGrid] standalone card "${mod.id}" missing moduleId — skipping`);
         return;
       }
-      activateModule(targetId, { source: 'start_menu' });
+      activateModule(targetId, { source: 'start_menu', actor });
     }
   };
 

@@ -36,6 +36,10 @@ import {
   type CompFilter,
 } from '../../services/comparableSalesService';
 
+interface ComparableSalesPanelProps {
+  onReconciledValue?: (result: ReconciliationResult) => void;
+}
+
 // ═══════════════════════════════════════════════════════════════
 // Helpers
 // ═══════════════════════════════════════════════════════════════
@@ -163,7 +167,9 @@ const ReconciliationSummary: React.FC<{ result: ReconciliationResult }> = ({ res
 // Main Component
 // ═══════════════════════════════════════════════════════════════
 
-export const ComparableSalesPanel: React.FC = () => {
+export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
+  onReconciledValue,
+}) => {
   const { parcelId } = useWorkbenchTab();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
 
@@ -288,12 +294,13 @@ export const ComparableSalesPanel: React.FC = () => {
         })),
       );
       setReconciliation(result);
+      onReconciledValue?.(result);
     } catch {
       setReconError('Backend unavailable — connect to CostForge API for reconciliation');
     } finally {
       setReconLoading(false);
     }
-  }, [selectedComps, adjustments]);
+  }, [selectedComps, adjustments, onReconciledValue]);
 
   // Auto-reconcile when we have enough adjusted comps
   const adjustedCount = selectedComps.filter(
@@ -341,14 +348,18 @@ export const ComparableSalesPanel: React.FC = () => {
   // No subject
   if (!subject) {
     return (
-      <div className="flex items-center justify-center h-32 text-sm" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+      <div
+        className="flex items-center justify-center h-32 text-sm"
+        data-testid="comparable-sales-empty-state"
+        style={{ color: 'hsl(var(--tf-text) / 0.5)' }}
+      >
         Select a parcel to view comparable sales
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col" style={{ color: 'hsl(var(--tf-text))' }}>
+    <div className="flex flex-col" data-testid="comparable-sales-panel" style={{ color: 'hsl(var(--tf-text))' }}>
       {/* Subject context */}
       <SubjectBar subject={subject} />
 

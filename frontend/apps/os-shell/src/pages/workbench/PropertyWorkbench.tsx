@@ -42,6 +42,7 @@ import { usePropertyStore } from '../../stores/propertyStore';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
 import { useSession } from '../../auth/useSession';
+import { useAuthContext, toOsActor } from '../../auth/useAuthContext';
 import type { SuiteCompassItem } from '../../components/workbench/SuiteCompass';
 
 // ============================================================================
@@ -233,6 +234,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const navigate = useNavigate();
   const location = useLocation();
   const session = useSession();
+  const auth = useAuthContext();
 
   // Track whether this is initial mount (to avoid trace on mount)
   const isInitialMount = useRef(true);
@@ -274,8 +276,13 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   // ── Work Mode state ──
   const [workMode, setWorkMode] = useState<WorkMode>('overview');
 
-  // ── Role-based tab visibility (wired to session.role — Wave 1) ──
-  const roles = useMemo(() => (session.role ? [session.role] : []), [session.role]);
+  // ── Role-based tab visibility (auth claims first, session fallback) ──
+  const countyId = auth.countyId ?? session.countyId;
+  const userId = auth.userId ?? session.userId;
+  const roles = useMemo(
+    () => (auth.roles.length > 0 ? [...auth.roles] : session.role ? [session.role] : []),
+    [auth.roles, session.role]
+  );
   const { visibleTabs, hiddenCount, showAll, toggleShowAll } = useWorkbenchRoles(roles);
 
   /** Tabs filtered by role visibility — order preserved, never mutated */
@@ -308,9 +315,9 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: session.countyId,
-      userId: session.userId,
-      roles: [],
+      countyId,
+      userId,
+      roles,
       parcelId,
       workMode,
     };
@@ -327,7 +334,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     });
 
     return () => { cancelled = true; };
-  }, [parcelId, workMode]);
+  }, [countyId, parcelId, roles, userId, workMode]);
 
   // ── Quick Actions — mode-aware, collected from providers ──
   const [quickActions, setQuickActions] = useState<QuickActionDefinition[]>([]);
@@ -337,9 +344,9 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: session.countyId,
-      userId: session.userId,
-      roles: [],
+      countyId,
+      userId,
+      roles,
       parcelId,
       workMode,
     };
@@ -356,7 +363,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     });
 
     return () => { cancelled = true; };
-  }, [parcelId, workMode]);
+  }, [countyId, parcelId, roles, userId, workMode]);
 
   // ── Activity Feed — collapsible bottom panel ──
   const [activityOpen, setActivityOpen] = useState(false);
@@ -401,6 +408,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
         moduleId: 'workbench_tabs',
         parcelIdHash: parcelId ? hashParcelId(parcelId) : undefined,
         tabId: tab.id,
+        actor: toOsActor(auth),
       };
 
       executeOsAction(action, context);
@@ -488,6 +496,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
               surface: 'context-ribbon',
               moduleId: 'quick-actions',
               parcelIdHash: parcelId ? hashParcelId(parcelId) : undefined,
+              actor: toOsActor(auth),
             }
           );
         }}

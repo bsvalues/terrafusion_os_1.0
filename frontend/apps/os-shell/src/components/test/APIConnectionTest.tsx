@@ -46,12 +46,12 @@ export const APIConnectionTest: React.FC = () => {
           responseTime: Math.round(endTime - startTime),
         };
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const endTime = performance.now();
       return {
         endpoint: name,
         status: 'error',
-        error: error.message || 'Network error',
+        error: error instanceof Error ? error.message : 'Network error',
         responseTime: Math.round(endTime - startTime),
       };
     }

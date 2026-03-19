@@ -19,6 +19,7 @@
 import { createContext, useContext, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
+import { useAuthContext, toOsActor } from '../../auth/useAuthContext';
 import { getOsFeatureById, WORKBENCH_FALLBACK_BASE } from '../../config/suiteRegistry';
 import { useParcelContext } from '../../context/parcelContext';
 import { executeOsAction, type OsActionContext } from '../../services/osActions';
@@ -339,6 +340,8 @@ export function StandaloneHomeShell({
   const navigate = useNavigate();
   const location = useLocation();
   const quality = useMaterialQuality();
+  const auth = useAuthContext();
+  const actor = toOsActor(auth);
 
   // Resolve feature metadata from registry
   const featureDefinition = getOsFeatureById(featureId);
@@ -418,8 +421,9 @@ export function StandaloneHomeShell({
       suiteId: featureId,
       surface: 'standalone_home',
       parcelIdHash: parcelContext?.parcelId ? `h-${parcelContext.parcelId.slice(0, 8)}` : undefined,
+      actor,
     }),
-    [navigate, featureId, parcelContext]
+    [navigate, featureId, parcelContext, actor]
   );
 
   // Build context value
@@ -429,8 +433,9 @@ export function StandaloneHomeShell({
       meta: resolvedMeta,
       parcelContext,
       openInWorkbench,
+      actor,
     }),
-    [featureId, resolvedMeta, parcelContext]
+    [featureId, resolvedMeta, parcelContext, actor]
   );
 
   // Shell container classes

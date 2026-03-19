@@ -12,6 +12,18 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import DaisSuiteHome from '../../pages/suites/DaisSuiteHome';
 
+vi.mock('../../components/workbench/ParcelContextBanner', () => ({
+  ParcelContextBanner: () => null,
+}));
+vi.mock('../../components/suites/SuiteModuleGrid', () => ({
+  SuiteModuleGrid: ({ modules }: { modules: Array<{ label: string }> }) => (
+    <div data-testid="mock-suite-module-grid">{modules.map((m) => m.label).join(' | ')}</div>
+  ),
+}));
+vi.mock('../../components/suites/OperationalQueue', () => ({
+  OperationalQueue: () => <div data-testid="mock-operational-queue" />,
+}));
+
 vi.mock('../../hooks/useCountyStats', () => ({
   useCountyStats: () => ({
     stats: {

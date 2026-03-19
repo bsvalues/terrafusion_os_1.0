@@ -316,6 +316,31 @@ namespace TerraFusion.API.Controllers
         }
 
         /// <summary>
+        /// Get all conversations for the authenticated user scoped to their county.
+        /// Wave 2 — previously missing route (frontend gptClient.ts calls GET /api/gpt/conversations).
+        /// </summary>
+        [HttpGet("conversations")]
+        public async System.Threading.Tasks.Task<ActionResult<List<GPTConversation>>> GetAllConversations(
+            [FromQuery] int skip = 0,
+            [FromQuery] int limit = 50,
+            System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var userId = GetUserId();
+                var countyId = GetCountyId();
+                var conversations = await _orchestrationService.GetAllConversationsAsync(
+                    userId, countyId, skip, limit, cancellationToken);
+                return Ok(conversations);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all conversations for user");
+                return StatusCode(500, new { error = "Failed to retrieve conversations" });
+            }
+        }
+
+        /// <summary>
         /// Get conversation by ID
         /// </summary>
         [HttpGet("conversations/{id}")]

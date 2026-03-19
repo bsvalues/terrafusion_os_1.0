@@ -239,6 +239,10 @@ builder.Services.AddScoped<IAdvancedSecurityFrameworkService, AdvancedSecurityFr
 // ✅ RE-ENABLED: Registration of workflow and assistant services needed for Controllers
 builder.Services.AddScoped<TerraFusion.AI.Services.IWorkflowAutomationService, TerraFusion.AI.Services.WorkflowAutomationService>();
 builder.Services.AddScoped<TerraFusion.AI.Services.IAIAssistantService, TerraFusion.AI.Services.AIAssistantService>();
+// Phase 9B: Muse Mode explain service
+builder.Services.AddScoped<IMuseService, TerraFusion.AI.Services.MuseService>();
+// Phase 10: HITL Drafter Mode — draft/approve/reject pipeline
+builder.Services.AddScoped<IDraftService, TerraFusion.AI.Services.DraftService>();
 // ✅ STUB: Consciousness Engine stub for DI resolution
 builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services
@@ -281,6 +285,9 @@ builder.Services.AddHostedService<ModuleLoaderService>(provider =>
 
 // Agent telemetry buffer (read-only feed)
 builder.Services.AddSingleton<IAgentTelemetryService>(_ => new AgentTelemetryService(capacity: 1000));
+
+// Trace ingestion ring-buffer service (Phase 35-G-1)
+builder.Services.AddSingleton<ITraceIngestionService, TraceIngestionService>();
 
 // Register module services
 builder.Services.AddScoped<TerraFusion.Core.Services.IModuleService, TerraFusion.Core.Services.ModuleService>();
@@ -377,6 +384,11 @@ builder.Services.AddAutoMapper(typeof(TerraFusion.API.Program).Assembly, typeof(
 // TEMPORARILY DISABLED - ffi_bridge.dll is placeholder, may cause issues
 // builder.Services.AddSingleton<RustFFIService>();
 
+// Wave 4: Wire GPT/RAG AI entity configurations into TerraFusionDbContext via static hook.
+// This avoids a circular assembly reference (Data → AI → Data).
+// Program.cs references both assemblies, so it can bridge them safely.
+TerraFusion.Data.TerraFusionDbContext.OnModelCreatingExtensions = TerraFusion.AI.Data.GptAiEntityConfigurations.Apply;
+
 // Register database context with SQLite fallback
 builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
 {
@@ -389,8 +401,8 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
   }
   else if (connectionString.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
   {
-    // PostgreSQL for production
-    options.UseNpgsql(connectionString);
+    // PostgreSQL for production — UseVector() enables pgvector(1536) type mapping
+    options.UseNpgsql(connectionString, o => o.UseVector());
   }
   else
   {
@@ -411,7 +423,7 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
   }
   else if (connectionString.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
   {
-    options.UseNpgsql(connectionString);
+    options.UseNpgsql(connectionString, o => o.UseVector());
   }
   else
   {
@@ -496,7 +508,23 @@ builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
     return new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
   }
 });
-builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGEmbeddingRepository, TerraFusion.AI.Repositories.InMemoryRAGEmbeddingRepository>();
+// Register RAG Embedding Repository — pgvector for Postgres, in-memory for SQLite/dev
+{
+    var ragConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
+    var ragProvider = builder.Configuration["DatabaseProvider"] ?? "";
+    var usePostgres = ragConnStr.Contains("Host=", StringComparison.OrdinalIgnoreCase)
+        || ragProvider.Equals("Postgres", StringComparison.OrdinalIgnoreCase);
+    var ragRepoName = usePostgres ? "PgVectorRAGEmbeddingRepository" : "InMemoryRAGEmbeddingRepository";
+    Console.WriteLine("[RAG] Embedding repository: {0}", ragRepoName);
+    if (usePostgres)
+    {
+        builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGEmbeddingRepository, TerraFusion.AI.Repositories.PgVectorRAGEmbeddingRepository>();
+    }
+    else
+    {
+        builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGEmbeddingRepository, TerraFusion.AI.Repositories.InMemoryRAGEmbeddingRepository>();
+    }
+}
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGService, TerraFusion.AI.Services.RAGService>();
 
 // Phase 15.4: SystemGPT Health Evaluator for Herald threshold-based alerts
@@ -692,6 +720,9 @@ else
   Console.WriteLine("ℹ️ QuantumMetricsBackgroundService disabled by default. Set TF_ENABLE_QUANTUM_METRICS_BACKGROUND_SERVICE=true to enable.");
 }
 
+// Phase 11 — Sovereign Guard: verify sovereign.yaml manifest at startup
+builder.Services.AddSingleton<SovereignGuard>();
+
 // Configure CORS — restrict to known frontend origins
 builder.Services.AddCors(options =>
 {
@@ -712,6 +743,17 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Phase 11 — Sovereign Guard: fail fast if manifest is missing or tampered
+{
+  var sovereignGuard = app.Services.GetRequiredService<SovereignGuard>();
+  var verification = sovereignGuard.Verify();
+  if (!verification.IsValid)
+  {
+    Console.Error.WriteLine($"[SOVEREIGN VIOLATION] {verification.Violation}. Startup blocked.");
+    Environment.Exit(1);
+  }
+}
 
 // 🤖 Seed GPT configurations on startup (PropertyAssessmentGPT, etc.)
 using (var scope = app.Services.CreateScope())

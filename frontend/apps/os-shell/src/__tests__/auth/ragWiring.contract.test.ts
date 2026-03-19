@@ -122,3 +122,34 @@ describe('Gate 3 — GPTManagementDashboard auth', () => {
     expect(src).not.toContain("'current-user-id'");
   });
 });
+
+// ============================================================================
+// Gate 4: gptActorBridge actor threading contract
+// ============================================================================
+
+describe('Gate 4 — gptActorBridge actor threading contract', () => {
+  const src = readSrc('services/gptActorBridge.ts');
+
+  it('imports OsActor from @/auth/useAuthContext', () => {
+    expect(src).toMatch(/import type \{[^}]*OsActor[^}]*\} from ['"]@\/auth\/useAuthContext['"]/);
+  });
+
+  it('exports resolveGptActor function', () => {
+    expect(src).toMatch(/export function resolveGptActor/);
+  });
+
+  it('exports GptActorError type with all 4 kinds', () => {
+    expect(src).toContain("'unauthenticated'");
+    expect(src).toContain("'missing_county'");
+    expect(src).toContain("'api_error'");
+    expect(src).toContain("'timeout'");
+  });
+
+  it('exports GptActorResult generic type', () => {
+    expect(src).toMatch(/GptActorResult<T>/);
+  });
+
+  it('does NOT import from osActions (no Wave 1 coupling)', () => {
+    expect(src).not.toContain('osActions');
+  });
+});

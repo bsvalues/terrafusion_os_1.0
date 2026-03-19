@@ -6,6 +6,8 @@ import axios, { AxiosInstance } from 'axios';
 import { getToken } from '@/auth/authStorage';
 import { getViteEnv } from '@/env/getViteEnv';
 const API_BASE_URL = getViteEnv().VITE_API_URL || '';
+export const WAVE2_GPT_SERVICE_LANE = 'canonical';
+export const GPT_API_BASE_PATH = '/api/gpt';
 
 /**
  * GPT Configuration entity
@@ -100,6 +102,41 @@ export interface GPTMessage {
   createdAt: string;
 }
 
+export interface GPTTraceChunkDetail {
+  chunkId: string;
+  documentTitle?: string | null;
+  sourceUrl?: string | null;
+  textSnippet?: string | null;
+  score?: number | null;
+  chunkIndex?: number | null;
+}
+
+export interface GPTTraceMessage {
+  id: number;
+  role: string;
+  content: string;
+  createdAt: string;
+  tokensUsed: number;
+  cost: number;
+  ragUsed: boolean;
+  ragDocuments?: string[] | null;
+  ragScore?: number | null;
+  ragChunkDetails?: GPTTraceChunkDetail[] | null;
+}
+
+export interface GPTConversationTrace {
+  conversationId: number;
+  gptKey: string;
+  gptDisplayName: string;
+  title?: string | null;
+  messageCount: number;
+  totalTokensUsed: number;
+  totalCost: number;
+  messages: GPTTraceMessage[];
+  createdAt: string;
+  lastMessageAt?: string | null;
+}
+
 /**
  * GPT Usage Statistics
  */
@@ -166,7 +203,7 @@ class GPTAPIService {
 
   constructor() {
     this.api = axios.create({
-      baseURL: `${API_BASE_URL}/api/gpt`,
+      baseURL: `${API_BASE_URL}${GPT_API_BASE_PATH}`,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -294,6 +331,14 @@ class GPTAPIService {
     const response = await this.api.get<GPTMessage[]>(`/conversations/${conversationId}/history`, {
       params: { limit },
     });
+    return response.data;
+  }
+
+  /**
+   * Get conversation trace and source details
+   */
+  async getConversationTrace(conversationId: number): Promise<GPTConversationTrace> {
+    const response = await this.api.get<GPTConversationTrace>(`/conversations/${conversationId}/trace`);
     return response.data;
   }
 

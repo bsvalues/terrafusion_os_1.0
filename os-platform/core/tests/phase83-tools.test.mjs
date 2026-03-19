@@ -16,6 +16,8 @@
  */
 
 import assert from 'node:assert';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import os from 'node:os';
 import { resolve } from 'node:path';
 import { before, beforeEach, describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -52,6 +54,7 @@ before(async () => {
 // Resolve absolute path to manifest using import.meta.url
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const MANIFEST_PATH = resolve(__dirname, '../../../tools/registry/terrapilot.tools.json');
+const SCHEMA_PATH = resolve(__dirname, '../../../tools/registry/terrapilot.tools.schema.json');
 
 // ============================================================================
 // ToolRegistry Default Path Resolution
@@ -108,6 +111,36 @@ describe('ToolRegistry defaults', () => {
       normalized.endsWith('/tools/registry/terrapilot.tools.json'),
       'Manifest path should resolve to canonical tools/registry/terrapilot.tools.json'
     );
+  });
+
+  it('rejects manifest files with the wrong version anchor', async () => {
+    const tempDir = mkdtempSync(resolve(os.tmpdir(), 'tf-manifest-version-'));
+    const manifestPath = resolve(tempDir, 'invalid-manifest.json');
+    const manifest = {
+      version: '1.3.0',
+      tools: [],
+    };
+
+    writeFileSync(manifestPath, JSON.stringify(manifest), 'utf-8');
+
+    try {
+      const registry = new ToolRegistry();
+      await assert.rejects(
+        () => registry.initialize(manifestPath),
+        (error) => {
+          assert.ok(Array.isArray(error.violations));
+          assert.ok(error.violations.includes('Manifest version must be 2.0.0, got 1.3.0'));
+          return true;
+        }
+      );
+    } finally {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('pins the schema version anchor to 2.0.0', () => {
+    const schema = JSON.parse(readFileSync(SCHEMA_PATH, 'utf-8'));
+    assert.equal(schema.properties?.version?.const, '2.0.0');
   });
 });
 

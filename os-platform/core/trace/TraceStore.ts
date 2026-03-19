@@ -9,8 +9,19 @@
  */
 
 import { readFileSync, appendFileSync, existsSync, mkdirSync, writeFileSync, renameSync } from 'fs';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'path';
 import type { TraceEvent, TraceQueryOptions } from '../types/index.js';
+
+// ============================================================================
+// Hash chain helpers
+// ============================================================================
+
+function sha256Event(event: TraceEvent): string {
+  return createHash('sha256')
+    .update(JSON.stringify(event), 'utf8')
+    .digest('hex');
+}
 
 // ============================================================================
 // TraceStore Interface
@@ -116,9 +127,14 @@ export class InMemoryTraceStore implements TraceStore {
   }
 
   async append(event: TraceEvent): Promise<TraceEvent> {
-    this.events.push(event);
+    const lastEvent = this.events.length > 0 ? this.events[this.events.length - 1] : null;
+    const nextEvent: TraceEvent = {
+      ...event,
+      previousHash: lastEvent !== null ? sha256Event(lastEvent) : null,
+    };
+    this.events.push(nextEvent);
     // Update parcel index
-    const pid = event.context.parcelId;
+    const pid = nextEvent.context.parcelId;
     if (pid) {
       if (!this.parcelIndex.has(pid)) this.parcelIndex.set(pid, new Set());
       this.parcelIndex.get(pid)!.add(this.events.length - 1);
@@ -136,7 +152,7 @@ export class InMemoryTraceStore implements TraceStore {
       this.events.splice(0, trimCount);
     }
 
-    return event;
+    return nextEvent;
   }
 
   /**
@@ -412,16 +428,21 @@ export class FileTraceStore implements TraceStore {
 
   async append(event: TraceEvent): Promise<TraceEvent> {
     this.ensureLoaded();
-    this.events.push(event);
+    const lastEvent = this.events.length > 0 ? this.events[this.events.length - 1] : null;
+    const nextEvent: TraceEvent = {
+      ...event,
+      previousHash: lastEvent !== null ? sha256Event(lastEvent) : null,
+    };
+    this.events.push(nextEvent);
 
     // Append to file (sync for durability)
     const dir = dirname(this.filePath);
     if (!existsSync(dir)) {
       mkdirSync(dir, { recursive: true });
     }
-    appendFileSync(this.filePath, JSON.stringify(event) + '\n', 'utf-8');
+    appendFileSync(this.filePath, JSON.stringify(nextEvent) + '\n', 'utf-8');
 
-    return event;
+    return nextEvent;
   }
 
   async query(options: TraceQueryOptions = {}): Promise<TraceEvent[]> {

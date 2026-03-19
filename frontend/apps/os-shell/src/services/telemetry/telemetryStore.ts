@@ -89,7 +89,6 @@ export function createTelemetryStore(
       }
     } catch (error) {
       // Log but don't throw - retention enforcement is best-effort
-      console.warn('[TelemetryStore] Retention enforcement failed:', error);
     }
   }
 
@@ -100,7 +99,6 @@ export function createTelemetryStore(
         await enforceRetention();
       } catch (error) {
         // Swallow errors for graceful degradation
-        console.warn('[TelemetryStore] Failed to append event:', error);
       }
     },
 
@@ -108,7 +106,6 @@ export function createTelemetryStore(
       try {
         return await adapter.list(options);
       } catch (error) {
-        console.warn('[TelemetryStore] Failed to list events:', error);
         return [];
       }
     },
@@ -117,7 +114,6 @@ export function createTelemetryStore(
       try {
         await adapter.wipe();
       } catch (error) {
-        console.warn('[TelemetryStore] Failed to wipe events:', error);
       }
     },
 
@@ -126,7 +122,6 @@ export function createTelemetryStore(
         const count = await adapter.count();
         return { eventCount: count };
       } catch (error) {
-        console.warn('[TelemetryStore] Failed to get stats:', error);
         return { eventCount: 0 };
       }
     },

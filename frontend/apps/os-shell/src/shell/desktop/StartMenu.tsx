@@ -164,10 +164,10 @@ const categoryToVariant = {
 
 const AppTile: React.FC<AppTileProps> = ({ module, onLaunch }) => {
   const isRunning = useIsModuleRunning(module.id);
-  const Icon = getLucideIcon((module as any).iconName ?? module.icon);
-  const category = ((module as any).category ?? 'system') as Category;
+  const Icon = getLucideIcon(module.icon);
+  const category = (module.category ?? 'system') as Category;
   const variant = categoryToVariant[category] ?? 'default';
-  const entryType = (module as any).entryType as 'url' | 'route' | 'mf' | undefined;
+  const entryType = module.entryType;
 
   return (
     <button
@@ -197,10 +197,10 @@ const AppTile: React.FC<AppTileProps> = ({ module, onLaunch }) => {
  */
 const AppListItem: React.FC<AppTileProps> = ({ module, onLaunch }) => {
   const isRunning = useIsModuleRunning(module.id);
-  const Icon = getLucideIcon((module as any).iconName ?? module.icon);
-  const category = ((module as any).category ?? 'system') as Category;
+  const Icon = getLucideIcon(module.icon);
+  const category = (module.category ?? 'system') as Category;
   const variant = categoryToVariant[category] ?? 'default';
-  const entryType = (module as any).entryType as 'url' | 'route' | 'mf' | undefined;
+  const entryType = module.entryType;
 
   return (
     <button

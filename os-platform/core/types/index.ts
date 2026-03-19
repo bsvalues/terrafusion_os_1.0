@@ -7,6 +7,8 @@
  * Reference: tools/registry/terrapilot.tools.schema.json
  */
 
+import type { CommandGovernanceMeta } from './commandGovernance.js';
+
 // ============================================================================
 // Suite & Risk Enums (matches manifest schema)
 // ============================================================================
@@ -17,7 +19,21 @@ export type Risk = 'read_only' | 'write_low' | 'write_high' | 'irreversible';
 
 export type Mode = 'pilot' | 'muse';
 
-export type TouchTarget = 'parcel' | 'dossier' | 'workflow' | 'notice' | 'trace' | 'model' | 'map';
+export type TouchTarget =
+  | 'parcel'
+  | 'dossier'
+  | 'workflow'
+  | 'notice'
+  | 'trace'
+  | 'model'
+  | 'map'
+  | 'canon'
+  | 'canon_file'
+  | 'compliance'
+  | 'exemption'
+  | 'levy'
+  | 'recording'
+  | 'tax';
 
 export type PiiHandling = 'none' | 'sanitize' | 'payload_ref';
 
@@ -59,6 +75,8 @@ export interface OfficeRegistry {
   getToolsForOffice(id: OfficeId): string[];
 }
 
+export type { SwarmEventPayload } from './swarm.js';
+
 // ============================================================================
 // Tool Manifest Types
 // ============================================================================
@@ -82,9 +100,13 @@ export interface Tool {
   crossSuiteReads?: Suite[];
   piiHandling?: PiiHandling;
   tracePolicy?: TracePolicy;
-  payloadStore?: PayloadStore;
+  payloadStore?: PayloadStore | null;
   /** Office scope — which office owns this tool (R3.1) */
   officeScope?: OfficeId;
+  /** Optional command governance metadata for preflight policy checks. */
+  governance?: CommandGovernanceMeta;
+  /** Optional JSON-schema-like parameter contract used by UI/runtime validation. */
+  paramsSchema?: Record<string, unknown>;
 }
 
 export interface ToolManifest {
@@ -206,6 +228,8 @@ export interface TraceEvent extends TraceEventInput {
   timestamp: string;
   /** Schema version for forward compatibility */
   schemaVersion: string;
+  /** SHA-256 of the previous event (null for genesis). Enables tamper-evident chain verification. */
+  previousHash?: string | null;
 }
 
 export interface TraceQueryOptions {

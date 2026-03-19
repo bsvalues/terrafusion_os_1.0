@@ -97,6 +97,113 @@ async function readJsonBody(req) {
   });
 }
 
+function firstHeaderValue(value, fallback) {
+  if (Array.isArray(value)) {
+    const first = value.find((entry) => typeof entry === "string" && entry.trim().length > 0);
+    return first ?? fallback;
+  }
+  if (typeof value === "string" && value.trim().length > 0) {
+    return value;
+  }
+  return fallback;
+}
+
+function optionalHeaderValue(value) {
+  return firstHeaderValue(value, undefined);
+}
+
+function normalizeToolParams(params) {
+  if (!params || typeof params !== "object" || Array.isArray(params)) {
+    return {};
+  }
+  return params;
+}
+
+const REQUIRED_PARAMS_ERROR_CODE = "PARAMS_REQUIRED_MISSING";
+
+function collectMissingRequiredParams(tool, params) {
+  const required = Array.isArray(tool?.paramsSchema?.required)
+    ? tool.paramsSchema.required.filter((value) => typeof value === "string" && value.trim().length > 0)
+    : [];
+
+  if (required.length === 0) {
+    return [];
+  }
+
+  const record = normalizeToolParams(params);
+  return required.filter((field) => {
+    if (!(field in record)) return true;
+    const value = record[field];
+    if (value === undefined || value === null) return true;
+    if (typeof value === "string" && value.trim().length === 0) return true;
+    return false;
+  });
+}
+
+function requiredParamsViolation(missingParams) {
+  return `[${REQUIRED_PARAMS_ERROR_CODE}] Missing required params: ${missingParams.join(", ")}`;
+}
+
+function buildInvokeEnvelope({
+  ok,
+  correlationId,
+  result = null,
+  error = "Tool execution failed. See trace with the correlationId for details.",
+  errorCode = "EXECUTION_FAILED",
+  traceEventId = null,
+}) {
+  const envelope = {
+    ok,
+    correlationId,
+    result,
+  };
+
+  if (ok) {
+    envelope.traceEventId = traceEventId;
+    return envelope;
+  }
+
+  envelope.error = error;
+  envelope.errorCode = errorCode;
+  return envelope;
+}
+
+function buildValidateEnvelope({
+  valid,
+  violations,
+  tool,
+  preflight,
+}) {
+  return {
+    valid,
+    violations,
+    tool,
+    preflight,
+  };
+}
+
+function buildPilotExecutionContext(req, body) {
+  const normalizedParams = normalizeToolParams(body.params);
+  const requestedMode = typeof body.mode === "string" && body.mode.trim().length > 0
+    ? body.mode
+    : firstHeaderValue(req.headers["x-mode"], "pilot");
+
+  return {
+    countyId: firstHeaderValue(req.headers["x-county-id"], "benton"),
+    userId: firstHeaderValue(req.headers["x-user-id"], "dev-user"),
+    roles: [firstHeaderValue(req.headers["x-role"], "appraiser")],
+    mode: requestedMode,
+    parcelId: body.parcelId || normalizedParams.parcelId,
+    dossierId: body.dossierId,
+    officeId: optionalHeaderValue(req.headers["x-office-id"]),
+    confirmation: !!body.confirmation,
+    reasonCode: typeof body.reasonCode === "string" && body.reasonCode.trim().length > 0
+      ? body.reasonCode
+      : undefined,
+    supervisorApproval: body.supervisorApproval || undefined,
+  };
+}
+
 function normalizeEcho(value) {
   if (typeof value !== "string") return "hello";
   const trimmed = value.trim();
@@ -802,10 +909,21 @@ const server = createServer(async (req, res) => {
     // POST /pilot/invoke — invoke a tool (pilotApi.invokePilotTool)
     if (method === "POST" && pathname === "/pilot/invoke") {
       const body = await readJsonBody(req);
-      const { toolId, params, mode, confirmation, reasonCode, supervisorApproval, parcelId, dossierId } = body;
+      const { toolId } = body;
 
       if (!toolId || typeof toolId !== "string") {
-        writeJson(res, 400, { ok: false, correlationId: `err-${Date.now()}`, error: "toolId is required", errorCode: "VALIDATION" });
+        writeJson(
+          res,
+          400,
+          buildInvokeEnvelope({
+            ok: false,
+            correlationId: `err-${Date.now()}`,
+            result: null,
+            error: "toolId is required",
+            errorCode: "VALIDATION",
+            traceEventId: null,
+          })
+        );
         return;
       }
 
@@ -813,68 +931,87 @@ const server = createServer(async (req, res) => {
       const tool = sharedRegistry.getTool(toolId);
 
       if (!tool) {
-        writeJson(res, 404, { ok: false, correlationId: `err-${Date.now()}`, error: `Tool not found: ${toolId}`, errorCode: "NOT_FOUND" });
-        return;
-      }
-
-      // Build execution context from headers
-      const userId = req.headers["x-user-id"] || "dev-user";
-      const countyId = req.headers["x-county-id"] || "benton";
-      const userRole = req.headers["x-role"] || "appraiser";
-      const userMode = mode || req.headers["x-mode"] || "pilot";
-
-      // Confirmation gate enforcement
-      if (tool.requiresConfirmation && !confirmation) {
-        writeJson(res, 200, {
-          ok: false,
-          correlationId: `gate-${Date.now()}`,
-          error: `Tool ${toolId} requires confirmation (risk: ${tool.risk})`,
-          errorCode: "CONFIRMATION_REQUIRED",
-        });
-        return;
-      }
-
-      if (tool.reasonCodeRequired && !reasonCode) {
-        writeJson(res, 200, {
-          ok: false,
-          correlationId: `gate-${Date.now()}`,
-          error: `Tool ${toolId} requires a reason code`,
-          errorCode: "REASON_CODE_REQUIRED",
-        });
+        writeJson(
+          res,
+          404,
+          buildInvokeEnvelope({
+            ok: false,
+            correlationId: `err-${Date.now()}`,
+            result: null,
+            error: `Tool not found: ${toolId}`,
+            errorCode: "NOT_FOUND",
+            traceEventId: null,
+          })
+        );
         return;
       }
 
       try {
+        const normalizedParams = normalizeToolParams(body.params);
+        const missingRequiredParams = collectMissingRequiredParams(tool, normalizedParams);
+        if (missingRequiredParams.length > 0) {
+          writeJson(
+            res,
+            200,
+            buildInvokeEnvelope({
+              ok: false,
+              correlationId: `err-${Date.now()}`,
+              result: null,
+              error: requiredParamsViolation(missingRequiredParams),
+              errorCode: REQUIRED_PARAMS_ERROR_CODE,
+              traceEventId: null,
+            })
+          );
+          return;
+        }
+
         const result = await runner.execute({
           toolId,
-          params: params || {},
-          context: {
-            countyId,
-            userId,
-            roles: [userRole],
-            mode: userMode,
-            parcelId: parcelId || params?.parcelId,
-            dossierId,
-            confirmation: !!confirmation,
-            reasonCode: reasonCode || undefined,
-          },
+          params: normalizedParams,
+          context: buildPilotExecutionContext(req, body),
         });
 
-        writeJson(res, 200, {
-          ok: result.ok !== false,
-          correlationId: result.correlationId || `corr-${Date.now()}`,
-          result: result.result || result,
-          error: result.error || undefined,
-          errorCode: result.errorCode || undefined,
-          traceEventId: result.traceEventId || undefined,
-        });
+        if (result.ok === false) {
+          writeJson(
+            res,
+            200,
+            buildInvokeEnvelope({
+              ok: false,
+              correlationId: result.correlationId || `corr-${Date.now()}`,
+              result: null,
+              error: result.error || "Tool execution failed. See trace with the correlationId for details.",
+              errorCode: result.errorCode || "EXECUTION_FAILED",
+              traceEventId: result.traceEventId || null,
+            })
+          );
+          return;
+        }
+
+        writeJson(
+          res,
+          200,
+          buildInvokeEnvelope({
+            ok: true,
+            correlationId: result.correlationId || `corr-${Date.now()}`,
+            result: result.result ?? null,
+            error: null,
+            errorCode: null,
+            traceEventId: result.traceEventId || null,
+          })
+        );
       } catch (err) {
-        writeJson(res, 200, {
-          ok: false,
-          correlationId: `err-${Date.now()}`,
-          error: err?.message ?? String(err),
-          errorCode: "EXECUTION_FAILED",
-        });
+        writeJson(
+          res,
+          200,
+          buildInvokeEnvelope({
+            ok: false,
+            correlationId: `err-${Date.now()}`,
+            result: null,
+            error: "Tool execution failed. See trace with the correlationId for details.",
+            errorCode: "EXECUTION_FAILED",
+            traceEventId: null,
+          })
+        );
       }
       return;
     }
@@ -882,54 +1019,82 @@ const server = createServer(async (req, res) => {
     // POST /pilot/validate — validate a tool invocation (pilotApi.validatePilotTool)
     if (method === "POST" && pathname === "/pilot/validate") {
       const body = await readJsonBody(req);
-      const { toolId, params, mode, confirmation, reasonCode } = body;
+      const { toolId } = body;
 
-      if (!toolId) {
-        writeJson(res, 400, { valid: false, violations: ["toolId is required"] });
+      if (!toolId || typeof toolId !== "string") {
+        writeJson(
+          res,
+          400,
+          buildValidateEnvelope({
+            valid: false,
+            violations: ["toolId is required"],
+            tool: null,
+            preflight: null,
+          })
+        );
         return;
       }
 
-      await getCompareRunner();
+      const runner = await getCompareRunner();
       const tool = sharedRegistry.getTool(toolId);
 
       if (!tool) {
-        writeJson(res, 404, { valid: false, violations: [`Tool not found: ${toolId}`] });
+        writeJson(
+          res,
+          404,
+          buildValidateEnvelope({
+            valid: false,
+            violations: [`Tool not found: ${toolId}`],
+            tool: null,
+            preflight: null,
+          })
+        );
         return;
       }
 
-      const violations = [];
+      const normalizedParams = normalizeToolParams(body.params);
+      const executionContext = buildPilotExecutionContext(req, body);
+
+      const validation = runner.validate({
+        toolId,
+        params: normalizedParams,
+        context: executionContext,
+      });
+      const missingRequiredParams = collectMissingRequiredParams(tool, normalizedParams);
+      const ingressViolations = missingRequiredParams.length > 0
+        ? [requiredParamsViolation(missingRequiredParams)]
+        : [];
+      const violations = [...validation.violations, ...ingressViolations];
+
       const confirmationRequired = tool.requiresConfirmation || false;
       const reasonCodeRequired = tool.reasonCodeRequired || false;
       const supervisorRequired = tool.requiresSupervisorApproval || false;
 
-      if (confirmationRequired && !confirmation) {
-        violations.push("Confirmation required for this tool");
-      }
-      if (reasonCodeRequired && !reasonCode) {
-        violations.push("Reason code required for this tool");
-      }
-
-      writeJson(res, 200, {
-        valid: violations.length === 0,
-        violations,
-        tool: {
-          toolId: tool.toolId,
-          suite: tool.suite,
-          risk: tool.risk,
-          requiresConfirmation: confirmationRequired,
-          reasonCodes: tool.reasonCodes || [],
-          requiresSupervisorApproval: supervisorRequired,
-          supervisorRoles: tool.supervisorRoles || [],
-        },
-        preflight: {
-          confirmationRequired,
-          confirmationProvided: !!confirmation,
-          reasonCodeRequired,
-          reasonCodeProvided: !!reasonCode,
-          supervisorRequired,
-          supervisorProvided: false,
-        },
-      });
+      writeJson(
+        res,
+        200,
+        buildValidateEnvelope({
+          valid: violations.length === 0,
+          violations,
+          tool: {
+            toolId: tool.toolId,
+            suite: tool.suite,
+            risk: tool.risk,
+            requiresConfirmation: confirmationRequired,
+            reasonCodes: tool.reasonCodes || [],
+            requiresSupervisorApproval: supervisorRequired,
+            supervisorRoles: tool.supervisorRoles || [],
+          },
+          preflight: {
+            confirmationRequired,
+            confirmationProvided: !!body.confirmation,
+            reasonCodeRequired,
+            reasonCodeProvided: !!executionContext.reasonCode,
+            supervisorRequired,
+            supervisorProvided: !!executionContext.supervisorApproval,
+          },
+        })
+      );
       return;
     }
 

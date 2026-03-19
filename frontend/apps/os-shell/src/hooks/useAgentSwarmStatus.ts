@@ -127,7 +127,6 @@ export function useAgentSwarmStatus(
           setIsConnected(false); // Using simulated data
           setLastUpdate(new Date());
 
-          console.warn('Using simulated swarm metrics (Consciousness service not available)');
         }
       } catch (err: any) {
         if (!isMounted) return;

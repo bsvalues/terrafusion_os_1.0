@@ -285,7 +285,7 @@ namespace TerraFusion.API.Security
         public Task LockAccountAsync(string email, TimeSpan duration, string reason)
         {
             _lockedAccounts[email] = DateTimeOffset.UtcNow.Add(duration);
-            _logger.LogWarning("Account locked for {Email}. Reason: {Reason}", email, reason);
+            _logger.LogWarning("Account locked for {EmailHash}. Reason: {Reason}", email.GetHashCode(), reason);
             return Task.CompletedTask;
         }
 
