@@ -75,6 +75,8 @@ export interface OfficeRegistry {
   getToolsForOffice(id: OfficeId): string[];
 }
 
+export type { SwarmEventPayload } from './swarm.js';
+
 // ============================================================================
 // Tool Manifest Types
 // ============================================================================

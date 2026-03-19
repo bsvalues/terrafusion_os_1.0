@@ -16,10 +16,10 @@
 | Field | Value |
 |-------|-------|
 | **Slice** | **Slice 35 — Debt Sweep + TerraCanon IDE Charter + AI Swarm Scale Charter** |
-| **Phase** | **Phase 35-F CLOSED** — AI Swarm Scale recon + charter synthesis complete |
-| **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 recon closed — Phase 35-G gated on charter acceptance |
-| **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟡 Lane 3 RECON CLOSED (35-G pending charter) |
-| **Latest Commit** | `e78d1262c` (current HEAD at 35-E closure) |
+| **Phase** | **Phase 35-G OPEN** — SW Phase 1 trace bridge implemented; SW Phase 2 constrained by governance scope |
+| **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 implementation active (SW Phase 1 complete) |
+| **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟡 Lane 3 IN PROGRESS |
+| **Latest Commit** | `23beb0dc2` (CP-35-F charter synthesis) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
@@ -49,7 +49,7 @@
 |------|--------------|
 | **Lane 1 — Debt Sweep** (35-A, 35-B, 35-C) | ✅ OPEN — founder go 2026-03-19 |
 | **Lane 2 — TerraCanon IDE** (35-D recon, 35-E impl) | ✅ CLOSED — 35-D recon + charter done; 35-E TC Phase 1 + 2 implemented and proven |
-| **Lane 3 — AI Swarm Scale** (35-F recon, 35-G impl) | 🟡 RECON CLOSED — 35-F SW-A..SW-E recon + charter `docs/superpowers/plans/2026-03-19-aiswarm-charter.md` published; Phase 35-G gated on charter acceptance |
+| **Lane 3 — AI Swarm Scale** (35-F recon, 35-G impl) | 🟡 IN PROGRESS — 35-F recon + charter closed; 35-G SW Phase 1 delivered in `os-platform/core/**` |
 
 **Scope authorized for Lane 1:**
 - `CP-35-A`: WF-1 backfill Slice 22/23 commit hashes + WF-3 migrate ReactDOMTestUtils.act → `from 'react'`
@@ -84,6 +84,45 @@
 - Phase 35-G remains blocked on founder acceptance of `docs/superpowers/plans/2026-03-19-aiswarm-charter.md`
 
 **Classification:** Implemented bounded recon + planning slice (no production behavior changes)
+
+---
+
+## CP-35-G1 — AI Swarm Scale Implementation (SW Phase 1: Trace Bridge) — CLOSED ✅
+
+**Date**: 2026-03-19  
+**Branch**: post-r3/w5f-registry-edge-cleanup  
+**Commit baseline**: pending (current HEAD before commit: `23beb0dc2`)
+
+### Verdict: PASS — GREEN (bounded implementation in allowed core scope)
+
+**What closed:**
+- Added canonical swarm trace bridge in allowed scope:
+  - `os-platform/core/pilot/swarmTraceAdapter.ts`
+  - `os-platform/core/pilot/swarmTraceAdapter.js`
+  - `os-platform/core/pilot/swarmTraceAdapter.d.ts`
+- Added canonical swarm event payload type:
+  - `os-platform/core/types/swarm.ts`
+  - exported from `os-platform/core/types/index.ts`
+- Added proof wall:
+  - `os-platform/core/tests/swarm-trace-adapter.contract.test.mjs` (7/7 pass)
+
+**Adapter guarantees implemented:**
+- County guard: `countyId` required (throws on empty/whitespace)
+- Correlation chain: dispatch returns correlationId; complete/fail reuse correlationId
+- Canonical event mapping: `tool_invoked` / `tool_completed` / `tool_failed`
+- PII-safe summaries: task IDs + reason only
+- Fire-and-forget trace emission: trace exceptions are swallowed
+
+**Proof gate results:**
+- ✅ `node --test os-platform/core/tests/swarm-trace-adapter.contract.test.mjs` — 7/7 pass
+- ✅ `pnpm run type-check` — clean
+- ✅ `node --test os-platform/core/tests/phase83-tools.test.mjs` — 56/56 pass
+
+**Scope boundary enforced:**
+- No writes made to forbidden paths under `os-platform/ai-systems/ai-systems/ai-swarm/**`
+- SW Phase 2 items from charter (port hardcode fix, queue guard in swarm orchestrators) remain pending governance-approved scope exception
+
+**Classification:** Implemented bounded core integration slice (trace bridge + proof)
 
 ---
 
@@ -1086,7 +1125,9 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ✅ 20 | Phase 35-E | TerraCanon TC Phase 1 + TC Phase 2 implementation | Done — canonFs.ts trace wiring + CanonHome.tsx explain command |
 | ✅ 21 | GATE-35-2 | Founder explicit go for AI Swarm Scale recon (Phase 35-F) | Done — `go` signal 2026-03-19 |
 | ✅ 22 | Phase 35-F | AI Swarm Scale recon SW-A..SW-E + charter synthesis | Done — `docs/superpowers/plans/2026-03-19-aiswarm-charter.md` |
-| ⛔ 23 | GATE-35-3 | Founder acceptance of AI Swarm Scale charter (opens Phase 35-G implementation) | Phase 35-F charter published |
+| ✅ 23 | GATE-35-3 | Founder acceptance of AI Swarm Scale charter (opens Phase 35-G implementation) | Done — `go` signal 2026-03-19 |
+| ✅ 24 | Phase 35-G / SW-1 | Implement swarm trace bridge in `os-platform/core/**` + contract proof wall | Done — `swarmTraceAdapter` + `swarm.ts` + 7/7 contract pass |
+| ⛔ 25 | Phase 35-G / SW-2 | Apply charter's swarm orchestrator hardening (port env var + queue guard) | Governance scope exception required for `os-platform/ai-systems/ai-systems/ai-swarm/**` |
 
 ---
 
