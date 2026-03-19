@@ -19,13 +19,13 @@
 | **Phase** | **CP-W9-1 CLOSED** ✅ |
 | **Task** | Canonical Muse lane repair: canonical TerraTrace wiring, explicit `mode: 'muse'` pinning, and strengthened runtime proof |
 | **Status** | ✅ BOUNDED PHASE CLOSED — Muse shell truth tightened without widening into backend explain redesign |
-| **Latest Commit** | working tree (pending commit) |
+| **Latest Commit** | `1a644f565` (Muse proof boundary) |
 
 ## CP-W9-1: Phase 9 — TerraPilot Muse Mode — CLOSED ✅
 
 **Date**: 2026-03-18
-**Branch**: working tree
-**Commit**: pending commit
+**Branch**: post-r3/w5f-registry-edge-cleanup
+**Commit**: `1a644f565`
 
 ### Verdict: PASS — GREEN (bounded implementation + proof tightening)
 
