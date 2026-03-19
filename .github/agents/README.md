@@ -28,6 +28,85 @@ A Claude Code–aware engineering agent that orchestrates the development enviro
 
 **Usage**: Invoke with `@Claude-Code_IDE` for IDE configuration and MCP orchestration.
 
+---
+
+## Phase-Governance Swarm (Slice 25.5)
+
+Five tightly-scoped agents that implement the TerraFusion Phase A–E execution
+law. Together they form a single-writer, dual-read-only, hard-stop-enforced
+Copilot-native agent swarm. Invoke via `@tf-phase-orchestrator` to start a
+phase; the orchestrator coordinates the rest.
+
+#### Governance Posture (non-negotiable)
+
+These agents are **bounded governance/tooling scaffolding** under `.github/agents/**`.
+They are classified as follows:
+
+- ✅ Agent-governance and operator-tooling scaffolding
+- ✅ Complement the canonical workflow governance files
+- ❌ Do **not** replace `plan.md`, `progress.md`, or hard-stop decisions
+- ❌ Do **not** grant execution authority on their own
+- ❌ Do **not** constitute a product phase opening
+- ❌ Do **not** lift any active hard stop (CP-W2-8 or successor)
+- ❌ Do **not** authorize Wave 3–5 motion or any runtime behavior change
+
+**Hard-stop rule**: A hard stop issued in `progress.md` by `@tf-checkpoint`
+requires a new explicit human go/no-go before any implementation phase opens.
+These agent files are subordinate to that decision — they exist to make the
+eventual execution more disciplined, not to replace the human gate.
+
+**Write authority summary**: `@tf-writer` is the sole writer for source/test
+files. `@tf-checkpoint` is the sole writer for governance files (`progress.md`
++ evidence notes). All other agents in this swarm are read-only.
+
+### 3. tf-phase-orchestrator
+**File**: `tf-phase-orchestrator.agent.md`
+
+Phase-control only. Reads the charter, enforces allowed/forbidden file sets,
+invokes subagents in order, and blocks phase exit until the closure wall passes.
+Does not write source code.
+
+**Usage**: `@tf-phase-orchestrator` — start here for every new bounded phase.
+
+### 4. tf-writer
+**File**: `tf-writer.agent.md`
+
+The sole write-capable subagent per phase. Implements only in `allowed_files`.
+No scope expansion, no adjacent cleanup, no speculative improvements.
+
+**Usage**: Invoked by `@tf-phase-orchestrator` in Phase C (implementation)
+and Phase D (closure-blocker fixes only).
+
+### 5. tf-contract-truth
+**File**: `tf-contract-truth.agent.md`
+
+Read-only. Verifies backend routes, DTOs, auth boundaries, and persistence
+schemas. Classifies findings as `CONFIRMED`, `DIVERGENCE`, `GAP`, or
+`UNRESOLVED`. Runs in Phase B alongside `@tf-proof-audit`.
+
+**Usage**: Invoked by `@tf-phase-orchestrator` in Phase B (parallel
+read-only truth pass).
+
+### 6. tf-proof-audit
+**File**: `tf-proof-audit.agent.md`
+
+Read-only. Designs the proof wall (Phase B) and verifies it (Phase D).
+Quarantines stale tests, maps the RED→GREEN checklist, and reports pass/fail
+on every gate command. Never approximates a result.
+
+**Usage**: Invoked by `@tf-phase-orchestrator` in Phase B and Phase D.
+
+### 7. tf-checkpoint
+**File**: `tf-checkpoint.agent.md`
+
+Writes the closure entry in `.governance/workflow/progress.md` and issues
+the hard stop. Records what closed, what remains deferred, and the next entry
+condition. Phase E only.
+
+**Usage**: Invoked by `@tf-phase-orchestrator` in Phase E (checkpoint + hard stop).
+
+---
+
 ## Agent Configuration
 
 All agents follow the GitHub Copilot custom agent configuration format:
