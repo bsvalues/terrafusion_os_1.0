@@ -1592,6 +1592,9 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 * **Date:** 2026-03-18
 * **Prereq:** CP-W2-8 hard stop review remains active in `.governance/workflow/progress.md`
 
+Execution artifact (2026-03-19 refresh):
+- `docs/superpowers/plans/2026-03-19-multi-agent-subagent-parallel-execution-plan.md`
+
 ---
 
 ## Definition of Done
