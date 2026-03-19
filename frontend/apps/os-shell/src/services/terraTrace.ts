@@ -132,3 +132,69 @@ export function emitTraceEvent(
     // Swallow — audit infrastructure must never break the caller.
   });
 }
+
+// ---------------------------------------------------------------------------
+// Phase 8: Intent/Result paired trace events
+// ---------------------------------------------------------------------------
+
+export interface TraceIntent {
+  intentId: string;
+  source: string;
+  intent: string;
+  countyId: string;
+  actorId: string;
+  timestamp: string;
+}
+
+export interface TraceResult {
+  intentId: string;
+  outcome: string;
+  reason?: string;
+  traceId: string;
+  durationMs: number;
+  timestamp: string;
+}
+
+const _intentLog: TraceIntent[] = [];
+const _resultLog: TraceResult[] = [];
+
+/** Emit an intent trace — call BEFORE operation execution */
+export function emitIntent(intent: TraceIntent): void {
+  _intentLog.push({ ...intent });
+  emitTraceEvent(
+    intent.intent,
+    intent.source,
+    intent.intentId,
+    { countyId: intent.countyId, actorId: intent.actorId, type: 'INTENT' },
+    undefined,
+  );
+}
+
+/** Emit a result trace — call AFTER operation execution */
+export function emitResult(result: TraceResult): void {
+  _resultLog.push({ ...result });
+  emitTraceEvent(
+    result.outcome,
+    'truthgate',
+    result.intentId,
+    { intentId: result.intentId, traceId: result.traceId, durationMs: result.durationMs, reason: result.reason, type: 'RESULT' },
+    undefined,
+  );
+}
+
+/** Get unpaired intents (intents without matching results) — for sweep tooling */
+export function getUnpairedIntents(): TraceIntent[] {
+  const resultIds = new Set(_resultLog.map(r => r.intentId));
+  return _intentLog.filter(i => !resultIds.has(i.intentId));
+}
+
+/** Get the full intent/result log — for audit replay */
+export function getTraceLog(): { intents: TraceIntent[]; results: TraceResult[] } {
+  return { intents: [..._intentLog], results: [..._resultLog] };
+}
+
+/** Clear trace logs — for testing only */
+export function _clearTraceLog(): void {
+  _intentLog.length = 0;
+  _resultLog.length = 0;
+}
