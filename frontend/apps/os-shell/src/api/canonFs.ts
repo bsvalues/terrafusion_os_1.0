@@ -4,6 +4,15 @@
  * runtime (port 4317).  Using a relative path lets the Vite `/pilot` proxy
  * forward requests to the correct service.
  */
+import {
+  generateCorrelationId,
+  emitToolInvoked,
+  emitToolSucceeded,
+  emitToolFailed,
+  emitArtifactCreated,
+  getTraceContext,
+} from '../services/terraTrace';
+
 const PILOT_BASE = '/pilot';
 
 /** Shared JSON request headers */
@@ -92,6 +101,9 @@ export async function fetchListDir(dirPath: string): Promise<ListDirResponse> {
 }
 
 export async function fetchReadFile(filePath: string): Promise<ReadFileResponse> {
+  const { countyId } = getTraceContext();
+  const correlationId = generateCorrelationId();
+  emitToolInvoked({ suite: 'os', correlationId, countyId, inputSummary: `canon.read:${filePath}` });
   try {
     const res = await fetch(`${PILOT_BASE}/canon/read`, {
       method: 'POST',
@@ -100,16 +112,26 @@ export async function fetchReadFile(filePath: string): Promise<ReadFileResponse>
     });
     if (res.status === 403) {
       const body = await res.json() as { message?: string };
-      return { filePath, content: '', size: 0, language: 'plaintext', error: body.message || 'Forbidden' };
+      const error = body.message || 'Forbidden';
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
+      return { filePath, content: '', size: 0, language: 'plaintext', error };
     }
-    return (await res.json()) as ReadFileResponse;
+    const result = (await res.json()) as ReadFileResponse;
+    if (result.error) {
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: result.error });
+    } else {
+      emitToolSucceeded({ suite: 'os', correlationId, countyId, outputSummary: `opened:${filePath}` });
+    }
+    return result;
   } catch (err) {
+    const error = err instanceof Error ? err.message : String(err);
+    emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
     return {
       filePath,
       content: '',
       size: 0,
       language: 'plaintext',
-      error: err instanceof Error ? err.message : String(err),
+      error,
     };
   }
 }
@@ -124,6 +146,9 @@ export interface WriteFileResponse {
 }
 
 export async function writeCanonFile(filePath: string, content: string): Promise<WriteFileResponse> {
+  const { countyId } = getTraceContext();
+  const correlationId = generateCorrelationId();
+  emitToolInvoked({ suite: 'os', correlationId, countyId, inputSummary: `canon.write:${filePath}` });
   try {
     const res = await fetch(`${PILOT_BASE}/canon/write`, {
       method: 'POST',
@@ -132,19 +157,31 @@ export async function writeCanonFile(filePath: string, content: string): Promise
     });
     if (res.status === 403) {
       const body = await res.json() as { message?: string };
-      return { filePath, size: 0, writtenAt: '', error: body.message || 'Forbidden' };
+      const error = body.message || 'Forbidden';
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
+      return { filePath, size: 0, writtenAt: '', error };
     }
     if (res.status === 413) {
       const body = await res.json() as { message?: string };
-      return { filePath, size: 0, writtenAt: '', error: body.message || 'File too large' };
+      const error = body.message || 'File too large';
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
+      return { filePath, size: 0, writtenAt: '', error };
     }
-    return (await res.json()) as WriteFileResponse;
+    const result = (await res.json()) as WriteFileResponse;
+    if (result.error) {
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: result.error });
+    } else {
+      emitToolSucceeded({ suite: 'os', correlationId, countyId, outputSummary: `saved:${filePath}` });
+    }
+    return result;
   } catch (err) {
+    const error = err instanceof Error ? err.message : String(err);
+    emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
     return {
       filePath,
       size: 0,
       writtenAt: '',
-      error: err instanceof Error ? err.message : String(err),
+      error,
     };
   }
 }
@@ -159,6 +196,9 @@ export interface CreateFileResponse {
 }
 
 export async function createCanonFile(filePath: string, content: string = ''): Promise<CreateFileResponse> {
+  const { countyId } = getTraceContext();
+  const correlationId = generateCorrelationId();
+  emitToolInvoked({ suite: 'os', correlationId, countyId, inputSummary: `canon.create:${filePath}` });
   try {
     const res = await fetch(`${PILOT_BASE}/canon/create`, {
       method: 'POST',
@@ -167,23 +207,38 @@ export async function createCanonFile(filePath: string, content: string = ''): P
     });
     if (res.status === 403) {
       const body = await res.json() as { message?: string };
-      return { filePath, size: 0, createdAt: '', error: body.message || 'Forbidden' };
+      const error = body.message || 'Forbidden';
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
+      return { filePath, size: 0, createdAt: '', error };
     }
     if (res.status === 409) {
       const body = await res.json() as { message?: string };
-      return { filePath, size: 0, createdAt: '', error: body.message || 'File already exists' };
+      const error = body.message || 'File already exists';
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
+      return { filePath, size: 0, createdAt: '', error };
     }
     if (res.status === 413) {
       const body = await res.json() as { message?: string };
-      return { filePath, size: 0, createdAt: '', error: body.message || 'File too large' };
+      const error = body.message || 'File too large';
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
+      return { filePath, size: 0, createdAt: '', error };
     }
-    return (await res.json()) as CreateFileResponse;
+    const result = (await res.json()) as CreateFileResponse;
+    if (result.error) {
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: result.error });
+    } else {
+      emitToolSucceeded({ suite: 'os', correlationId, countyId, outputSummary: `created:${filePath}` });
+      emitArtifactCreated({ suite: 'os', correlationId, countyId, outputSummary: `canon.file:${filePath}` });
+    }
+    return result;
   } catch (err) {
+    const error = err instanceof Error ? err.message : String(err);
+    emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
     return {
       filePath,
       size: 0,
       createdAt: '',
-      error: err instanceof Error ? err.message : String(err),
+      error,
     };
   }
 }
@@ -197,6 +252,9 @@ export interface DeleteFileResponse {
 }
 
 export async function deleteCanonFile(filePath: string): Promise<DeleteFileResponse> {
+  const { countyId } = getTraceContext();
+  const correlationId = generateCorrelationId();
+  emitToolInvoked({ suite: 'os', correlationId, countyId, inputSummary: `canon.delete:${filePath}` });
   try {
     const res = await fetch(`${PILOT_BASE}/canon/delete`, {
       method: 'POST',
@@ -205,22 +263,36 @@ export async function deleteCanonFile(filePath: string): Promise<DeleteFileRespo
     });
     if (res.status === 403) {
       const body = await res.json() as { message?: string };
-      return { filePath, deletedAt: '', error: body.message || 'Forbidden' };
+      const error = body.message || 'Forbidden';
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
+      return { filePath, deletedAt: '', error };
     }
     if (res.status === 404) {
       const body = await res.json() as { message?: string };
-      return { filePath, deletedAt: '', error: body.message || 'File not found' };
+      const error = body.message || 'File not found';
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
+      return { filePath, deletedAt: '', error };
     }
     if (res.status === 400) {
       const body = await res.json() as { message?: string };
-      return { filePath, deletedAt: '', error: body.message || 'Bad request' };
+      const error = body.message || 'Bad request';
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
+      return { filePath, deletedAt: '', error };
     }
-    return (await res.json()) as DeleteFileResponse;
+    const result = (await res.json()) as DeleteFileResponse;
+    if (result.error) {
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: result.error });
+    } else {
+      emitToolSucceeded({ suite: 'os', correlationId, countyId, outputSummary: `deleted:${filePath}` });
+    }
+    return result;
   } catch (err) {
+    const error = err instanceof Error ? err.message : String(err);
+    emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
     return {
       filePath,
       deletedAt: '',
-      error: err instanceof Error ? err.message : String(err),
+      error,
     };
   }
 }
@@ -235,6 +307,9 @@ export interface RenameFileResponse {
 }
 
 export async function renameCanonFile(oldPath: string, newPath: string): Promise<RenameFileResponse> {
+  const { countyId } = getTraceContext();
+  const correlationId = generateCorrelationId();
+  emitToolInvoked({ suite: 'os', correlationId, countyId, inputSummary: `canon.rename:${oldPath}` });
   try {
     const res = await fetch(`${PILOT_BASE}/canon/rename`, {
       method: 'POST',
@@ -243,27 +318,43 @@ export async function renameCanonFile(oldPath: string, newPath: string): Promise
     });
     if (res.status === 403) {
       const body = await res.json() as { message?: string };
-      return { oldPath, newPath, renamedAt: '', error: body.message || 'Forbidden' };
+      const error = body.message || 'Forbidden';
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
+      return { oldPath, newPath, renamedAt: '', error };
     }
     if (res.status === 404) {
       const body = await res.json() as { message?: string };
-      return { oldPath, newPath, renamedAt: '', error: body.message || 'Source not found' };
+      const error = body.message || 'Source not found';
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
+      return { oldPath, newPath, renamedAt: '', error };
     }
     if (res.status === 409) {
       const body = await res.json() as { message?: string };
-      return { oldPath, newPath, renamedAt: '', error: body.message || 'Destination already exists' };
+      const error = body.message || 'Destination already exists';
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
+      return { oldPath, newPath, renamedAt: '', error };
     }
     if (res.status === 400) {
       const body = await res.json() as { message?: string };
-      return { oldPath, newPath, renamedAt: '', error: body.message || 'Bad request' };
+      const error = body.message || 'Bad request';
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
+      return { oldPath, newPath, renamedAt: '', error };
     }
-    return (await res.json()) as RenameFileResponse;
+    const result = (await res.json()) as RenameFileResponse;
+    if (result.error) {
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: result.error });
+    } else {
+      emitToolSucceeded({ suite: 'os', correlationId, countyId, outputSummary: `renamed:${oldPath}` });
+    }
+    return result;
   } catch (err) {
+    const error = err instanceof Error ? err.message : String(err);
+    emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: error });
     return {
       oldPath,
       newPath,
       renamedAt: '',
-      error: err instanceof Error ? err.message : String(err),
+      error,
     };
   }
 }

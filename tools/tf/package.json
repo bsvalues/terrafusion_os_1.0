@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "sweep": "npx tsx sweep.ts",
-    "verify-ops": "npx tsx verify-ops.ts"
+    "verify-ops": "npx tsx verify-ops.ts",
+    "test-safety": "npx tsx test-safety.ts"
   },
   "devDependencies": {
     "tsx": "^4.7.0"
