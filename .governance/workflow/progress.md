@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **GATE-0 open → Phase 1 Charter active** |
-| **Phase** | Phase 1 — Forge F1: Comparable Sales Rehost Proof |
-| **Task** | Build CP-W3-1 proof wall before any source edits |
-| **Status** | 🟡 IN PROGRESS |
-| **Latest Commit** | `76b2a5efd` — docs(agents): add copilot multi-agent swarm roles |
+| **Slice** | **CP-W3-1: Phase 1 Forge F1 — Comparable Sales Rehost Proof** |
+| **Phase** | Phase E complete — checkpoint recorded |
+| **Task** | Hard stop in force; awaiting explicit human go/no-go for Phase 2 |
+| **Status** | 🟢 CHECKPOINT |
+| **Latest Commit** | `0e0f21a90` — docs(governance): formalize GATE-0 and Phase 1 charter protocol |
 
 ## GATE-0 — Human Go/No-Go Decision — 2026-03-18
 
@@ -55,6 +55,54 @@ Non-authorizations:
 - Slice 26 end-to-end phase map written in `plan.md` (planning only).
 - Phase 7B governed-core evidence packet is published at [PHASE_7B_EVIDENCE_SUMMARY.md](./PHASE_7B_EVIDENCE_SUMMARY.md) and accepted as a 7E intake input.
 - Dependency wall preserved: 7E execution remains blocked pending 7C closure (and 7D only if invoked).
+
+---
+
+## CP-W3-1: Phase 1 — Forge F1: Comparable Sales Rehost Proof — CLOSED ✅
+
+**Date**: 2026-03-18
+**Branch**: post-r3/w5f-registry-edge-cleanup
+**Commit**: 0e0f21a90 (no source changes — verification slice)
+
+### Verdict: PASS — GREEN
+
+**What closed:**
+- Comparable Sales is correctly Forge-owned and Forge-hosted
+- No cross-suite coupling exists in runtime code
+- Proof wall passed on all gates without any source edits
+
+**Pre-change evidence:**
+- ✅ Forge wrapper confirmed: `pages/workbench/tabs/forge/SalesComparison.tsx`
+- ✅ `PropertyForge.tsx` routes `?tab=sales` launch hint to `<SalesComparison />`
+- ✅ `ComparableSalesPanel` owned exclusively by Forge via the `SalesComparison` sub-tab
+- ✅ QUARANTINE refs in `ComparableSalesPanel.tsx` and `comparableSalesService.ts` are **provenance comments only** — no live imports from QUARANTINE directory
+- ✅ `generatedModules.ts` explicitly marks legacy GeospatialAnalyzerBS as ARCHIVED, absorbed into Forge → Sales sub-tab
+
+**Test evidence:**
+- ✅ `ComparableSalesForgeHost.test.tsx` — **5/5 PASS** (585ms)
+  - `lands on the real Sales sub-tab when a launch hint selects it`
+  - `shows the empty Comparable Sales state when no parcel is bound`
+  - `shows the populated Comparable Sales state when parcel context is present`
+  - `filters out the subject parcel and respects qualified-only defaults`
+  - `covers adjust and reconcile backend success and failure responses`
+
+**Mandatory gate evidence:**
+- ✅ `pnpm run type-check` — clean (0 errors)
+- ✅ `node --test os-platform/core/tests/phase83-tools.test.mjs` — 56/56 pass
+
+**Ownership evidence:**
+- ✅ No active `import ... from ... QUARANTINE` anywhere in `frontend/apps/os-shell/src/**`
+- ✅ No cross-suite write coupling introduced
+- ✅ No Property Workbench regression (shell launch path unchanged)
+- ✅ No unbounded file expansion — `@tf-writer` was not invoked (not needed)
+
+**Classification: Verification slice — no product files changed**
+
+**Deferred items:** None. Phase 1 scope was fully proved as-is.
+
+**Next entry condition:** Explicit human go/no-go to open Phase 2 (Forge F2 — Income Valuation Rehost Proof).
+
+🛑 **HARD STOP — CP-W3-1 is the active checkpoint.** No Phase 2 or later phase opens without an explicit human go/no-go decision referencing CP-W3-1.
 
 ---
 
