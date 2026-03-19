@@ -16,9 +16,9 @@
 | Field | Value |
 |-------|-------|
 | **Slice** | **Slice 35 — Debt Sweep + TerraCanon IDE Charter + AI Swarm Scale Charter** |
-| **Phase** | **Phase 35-E CLOSED** — TerraCanon trace hardening + explain binding implemented |
-| **Task** | Lane 1 CLOSED; Lane 2 CLOSED (recon + implementation); Lane 3 gated on `GATE-35-2` |
-| **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, ⛔ Lane 3 gated on `GATE-35-2` |
+| **Phase** | **Phase 35-F CLOSED** — AI Swarm Scale recon + charter synthesis complete |
+| **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 recon closed — Phase 35-G gated on charter acceptance |
+| **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟡 Lane 3 RECON CLOSED (35-G pending charter) |
 | **Latest Commit** | `e78d1262c` (current HEAD at 35-E closure) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
@@ -43,13 +43,13 @@
 
 ## Slice 35 — Founder Go/No-Go — 2026-03-19
 
-**Status: APPROVED — LANE 1 CLOSED, LANE 2 RECON CLOSED, LANE 2 IMPL + LANE 3 GATED**
+**Status: APPROVED — LANE 1 CLOSED, LANE 2 CLOSED, LANE 3 OPEN (GATE-35-2 consumed)**
 
 | Lane | Authorization |
 |------|--------------|
 | **Lane 1 — Debt Sweep** (35-A, 35-B, 35-C) | ✅ OPEN — founder go 2026-03-19 |
-| **Lane 2 — TerraCanon IDE** (35-D recon, 35-E impl) | � CLOSED — 35-D recon + charter done; 35-E TC Phase 1 + 2 implemented and proven |
-| **Lane 3 — AI Swarm Scale** (35-F recon, 35-G impl) | ⛔ GATED — requires explicit `GATE-35-2` after CP-35-C |
+| **Lane 2 — TerraCanon IDE** (35-D recon, 35-E impl) | ✅ CLOSED — 35-D recon + charter done; 35-E TC Phase 1 + 2 implemented and proven |
+| **Lane 3 — AI Swarm Scale** (35-F recon, 35-G impl) | 🟡 RECON CLOSED — 35-F SW-A..SW-E recon + charter `docs/superpowers/plans/2026-03-19-aiswarm-charter.md` published; Phase 35-G gated on charter acceptance |
 
 **Scope authorized for Lane 1:**
 - `CP-35-A`: WF-1 backfill Slice 22/23 commit hashes + WF-3 migrate ReactDOMTestUtils.act → `from 'react'`
@@ -58,7 +58,34 @@
 
 **Charter document:** `docs/superpowers/plans/2026-03-19-slice35-debt-terracanon-aiswarm.md`
 **TerraCanon charter output:** `docs/superpowers/plans/2026-03-19-terracanon-charter.md`
+**AI Swarm charter output:** `docs/superpowers/plans/2026-03-19-aiswarm-charter.md`
 **Plan reference:** plan.md Slice 35
+
+## CP-35-F — AI Swarm Scale Recon + Charter Synthesis — CLOSED ✅
+
+**Date**: 2026-03-19  
+**Branch**: post-r3/w5f-registry-edge-cleanup  
+**Commit baseline**: TBD (charter committed below)
+
+### Verdict: PASS — GREEN (recon + charter only, no product implementation)
+
+**What closed (SW-A through SW-E):**
+- **SW-A (Hierarchy + count)**: Three disconnected swarm implementations found: `SwarmOrchestrator.ts` (157 live agents: 2 coordinators + 8 field generals + 147 micro-agents), `SwarmStrategicCoordinator.ts` (1,008 virtual IDs), `ClaudeFlowIntegration.ts` + `AIAgentManager.ts` (1,008+ pool + HiveMind groups). None connected to `ToolRunner`.
+- **SW-B (Coordination)**: `setInterval(100ms)` sequential task processor (10 tasks/sec cap). WebSocket server on **hardcoded port 8080** (port rule violation). No back-pressure; no county isolation on task models.
+- **SW-C (Tool allowlists)**: `os-platform/core/pilot/ToolRunner.ts` has complete Gates 4-6 enforcement + TraceService. All swarm layers bypass it entirely — ZERO tool policy checks in any swarm dispatcher.
+- **SW-D (Bottlenecks)**: Sequential task processor top bottleneck (1 task/100ms). Sequential phase execution (phases block each other). Unbounded `taskQueue`. `for await` blocking stream in `QuantumAnalyticsService.ts`. Port 8080 hardcode.
+- **SW-E (TerraTrace coverage)**: Zero TerraTrace calls in ANY swarm module. EventEmitter events (`task-submitted`, `task-started`, `task-completed`, `task-failed`) exist but none reach `TraceService`. No `correlationId` or `countyId` on any swarm task model.
+
+**Evidence artifact:**
+- `docs/superpowers/plans/2026-03-19-aiswarm-charter.md` (9 sections, file map, proof gates, security gates, phase sequencing)
+
+**Gate transition:**
+- `GATE-35-2` consumed by explicit founder go 2026-03-19
+- Phase 35-G remains blocked on founder acceptance of `docs/superpowers/plans/2026-03-19-aiswarm-charter.md`
+
+**Classification:** Implemented bounded recon + planning slice (no production behavior changes)
+
+---
 
 ## CP-35-E — TerraCanon TC Phase 1 + TC Phase 2 — CLOSED ✅
 
@@ -1057,7 +1084,9 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ✅ 18 | Slice 35 / Phase 35-D | TerraCanon TC-A..TC-G recon + bounded charter synthesis | Done — `docs/superpowers/plans/2026-03-19-terracanon-charter.md` |
 | ✅ 19 | Gate | Founder acceptance of TerraCanon charter (opens 35-E implementation) | Done — `go` signal received 2026-03-19 |
 | ✅ 20 | Phase 35-E | TerraCanon TC Phase 1 + TC Phase 2 implementation | Done — canonFs.ts trace wiring + CanonHome.tsx explain command |
-| ⛔ 21 | GATE-35-2 | Founder explicit go for AI Swarm Scale recon (Phase 35-F) | CP-35-C closed |
+| ✅ 21 | GATE-35-2 | Founder explicit go for AI Swarm Scale recon (Phase 35-F) | Done — `go` signal 2026-03-19 |
+| ✅ 22 | Phase 35-F | AI Swarm Scale recon SW-A..SW-E + charter synthesis | Done — `docs/superpowers/plans/2026-03-19-aiswarm-charter.md` |
+| ⛔ 23 | GATE-35-3 | Founder acceptance of AI Swarm Scale charter (opens Phase 35-G implementation) | Phase 35-F charter published |
 
 ---
 
