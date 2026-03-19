@@ -121,6 +121,23 @@
 
 ---
 
+## CP-W9B-1 — Phase 9B Backend Explain Integration — CLOSED ✅
+
+- Opened: 2026-03-19
+- Closed: 2026-03-19
+- Deliverables:
+  - MuseService + Explain DTOs (ExplainRequest, ExplainResponse, ExplainSource)
+  - IMuseService interface in TerraFusion.Core
+  - POST /api/pilot/explain endpoint on PilotController
+  - pilotApi.ts explain() with TerraTrace audit coverage
+  - TerraPilotPanel.tsx wired to real backend (stub removed)
+  - EvidenceRail: statute source assertion test
+  - A11y: role="alert", aria-label, stable source key
+- Gate: ExplainEndpointTests pass (4/4) + TypeScript clean
+- Commits: 70eee4e1e, b5da05902, 6e506585b
+
+---
+
 ## Phase 8 — CP-W8-1 CLOSED — 2026-03-18
 
 ### Deliverables

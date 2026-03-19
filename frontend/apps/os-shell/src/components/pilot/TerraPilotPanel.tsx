@@ -64,6 +64,7 @@ export function TerraPilotPanel({ parcelId, parcelData }: TerraPilotPanelProps) 
       <p>Ask questions about the active parcel. Read-only — no changes are made.</p>
       <div>
         <textarea
+          aria-label="Property question"
           data-testid="pilot-query-input"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -78,7 +79,7 @@ export function TerraPilotPanel({ parcelId, parcelData }: TerraPilotPanelProps) 
           {isLoading ? 'Explaining...' : 'Explain'}
         </button>
       </div>
-      {error && <div data-testid="pilot-error">{error}</div>}
+      {error && <div role="alert" data-testid="pilot-error">{error}</div>}
       {response && (
         <div data-testid="pilot-response">
           <div data-testid="pilot-explanation">{response.explanation}</div>
@@ -86,8 +87,8 @@ export function TerraPilotPanel({ parcelId, parcelData }: TerraPilotPanelProps) 
             <div data-testid="pilot-sources">
               <h3>Sources</h3>
               <ul>
-                {response.sources.map((s, i) => (
-                  <li key={i}>{s.type}: {s.reference}</li>
+                {response.sources.map((s) => (
+                  <li key={`${s.type}-${s.reference}`}>{s.type}: {s.reference}</li>
                 ))}
               </ul>
             </div>
