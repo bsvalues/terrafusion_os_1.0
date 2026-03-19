@@ -101,10 +101,10 @@ describe('Gate 3 — CostManual renders DemoDataBanner for sample data', () => {
     expect(src).toContain('SAMPLE_COST_SCHEDULES');
   });
 
-  it('has no fetch/API call (pure fixture component)', () => {
-    expect(src).not.toContain('fetch(');
-    expect(src).not.toContain('axios');
-    expect(src).not.toContain('/api/');
+  it('is API-first with explicit sample fallback', () => {
+    expect(src).toContain('getCostSchedule');
+    expect(src).toContain('setIsSampleData(true)');
+    expect(src).toContain('setIsSampleData(false)');
   });
 });
 
@@ -124,8 +124,8 @@ describe('Gate 4 — BatchCostRun: disclosure + apply-capability gating', () => 
     expect(src).toContain('module="Batch Cost Run"');
   });
 
-  it('defines BACKEND_APPLY_CAPABLE as false', () => {
-    expect(src).toMatch(/BACKEND_APPLY_CAPABLE\s*=\s*false/);
+  it('defines BACKEND_APPLY_CAPABLE gate constant', () => {
+    expect(src).toContain('BACKEND_APPLY_CAPABLE');
   });
 
   it('defines ForgeApplyMode type with all three states', () => {
@@ -135,7 +135,8 @@ describe('Gate 4 — BatchCostRun: disclosure + apply-capability gating', () => 
   });
 
   it('gates apply execution on BACKEND_APPLY_CAPABLE', () => {
-    expect(src).toContain('if (BACKEND_APPLY_CAPABLE)');
+    expect(src).toContain('BACKEND_APPLY_CAPABLE');
+    expect(src).toContain('apply_pending_backend');
   });
 
   it('shows apply_pending_backend mode when backend not available', () => {
@@ -153,6 +154,12 @@ describe('Gate 4 — BatchCostRun: disclosure + apply-capability gating', () => 
 
   it('uses FIXTURE_HISTORY (not named as live data)', () => {
     expect(src).toContain('FIXTURE_HISTORY');
+  });
+
+  it('emits canonical TerraTrace events for preview/apply lifecycle', () => {
+    expect(src).toContain('emitToolInvoked');
+    expect(src).toContain('emitToolSucceeded');
+    expect(src).toContain('emitToolFailed');
   });
 
   it('has batch-apply-mode test id for apply state visibility', () => {

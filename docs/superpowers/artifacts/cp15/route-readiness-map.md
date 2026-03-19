@@ -20,8 +20,8 @@ Status: PARTIAL — review required per route
 |---|---|---|---|
 | `/forge` | TerraForge suite home | NOT-ASSESSED | Needs inspection |
 | `/forge/valuation` | Valuation landing | NOT-ASSESSED | |
-| `/forge/cost` | CostManual + CostForge | HONESTY VIOLATION | CostManual: static SAMPLE_COST_SCHEDULES — see Honesty Sweep |
-| `/forge/batch` | BatchCostRun | HONESTY VIOLATION | BACKEND_APPLY_CAPABLE=false — see Honesty Sweep |
+| `/forge/cost` | CostManual + CostForge | SAMPLE-TRANSPARENT | API-first via `getCostSchedule`; sample fallback disclosed |
+| `/forge/batch` | BatchCostRun | SAMPLE-TRANSPARENT | Live preview/apply endpoints wired; fallback disclosed + TerraTrace emit |
 | `/forge/sales` | Sales comparables | NOT-ASSESSED | |
 | `/forge/income` | Income approach | NOT-ASSESSED | |
 
@@ -63,13 +63,13 @@ Status: PARTIAL — review required per route
 ## Zero-Placeholder Gate Condition
 
 G5 requires: every named route resolves to a real component with real data.
-Current violations:
-- `CostManual.tsx` — static SAMPLE_COST_SCHEDULES (Honesty Sweep item)
-- `BatchCostRun.tsx` — BACKEND_APPLY_CAPABLE=false (Honesty Sweep item)
+Current known gaps:
+- Several routes remain NOT-ASSESSED (full route audit still pending)
+- End-to-end live environment verification pending (staging/runtime)
 
 All NOT-ASSESSED routes need per-route inspection before G5 can formally pass.
 
 ## Implementation Handoff
 
 Full route inspection and placeholder elimination is a bounded Phase 2 delivery task.
-Honesty Sweep fixes (CostManual, BatchCostRun) are prerequisite before G5 closes.
+Honesty Sweep fixes (CostManual, BatchCostRun) are complete; full route survey remains open.

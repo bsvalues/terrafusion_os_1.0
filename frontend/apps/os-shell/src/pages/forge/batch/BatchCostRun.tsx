@@ -17,6 +17,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
+import {
+  emitToolFailed,
+  emitToolInvoked,
+  emitToolSucceeded,
+  generateCorrelationId,
+} from '@/services/terraTrace';
 
 // ---------------------------------------------------------------------------
 // 1E: Apply-mode types & audit event emitter
@@ -34,8 +40,8 @@ interface AuditEvent {
   timestamp: string;
 }
 
-/** Backend capability flag — false until real backend is wired */
-const BACKEND_APPLY_CAPABLE = false;
+/** Feature gate remains explicit; runtime backend availability is checked per request. */
+const BACKEND_APPLY_CAPABLE = true;
 
 let _auditSeq = 0;
 function emitAuditEvent(
@@ -51,10 +57,73 @@ function emitAuditEvent(
     outcome,
     timestamp: new Date().toISOString(),
   };
-  // In production this would be sent to TerraTrace; for now log to console
-  // eslint-disable-next-line no-console
-  console.info('[BatchCostRun:audit]', evt);
   return evt;
+}
+
+async function previewBatchRun(filter: BatchFilter): Promise<RunSummary> {
+  const params = new URLSearchParams();
+  if (filter.neighborhoods.length > 0) {
+    params.set('neighborhood', filter.neighborhoods[0]);
+  }
+  if (filter.propertyClasses.length > 0) {
+    params.set('propertyType', filter.propertyClasses[0]);
+  }
+
+  const response = await fetch(`/api/forge/cost/batch/preview?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error(`Preview request failed: ${response.status}`);
+  }
+
+  const data = (await response.json()) as Partial<RunSummary> & { matchCount?: number };
+
+  if (typeof data.totalParcels === 'number') {
+    return {
+      totalParcels: data.totalParcels,
+      increasedCount: data.increasedCount ?? 0,
+      decreasedCount: data.decreasedCount ?? 0,
+      unchangedCount: data.unchangedCount ?? 0,
+      meanChange: data.meanChange ?? 0,
+      medianChange: data.medianChange ?? 0,
+      meanPctChange: data.meanPctChange ?? 0,
+    };
+  }
+
+  const matchCount = data.matchCount ?? 0;
+  return {
+    totalParcels: matchCount,
+    increasedCount: 0,
+    decreasedCount: 0,
+    unchangedCount: matchCount,
+    meanChange: 0,
+    medianChange: 0,
+    meanPctChange: 0,
+  };
+}
+
+async function applyBatchRun(request: {
+  label: string;
+  modelYear: number;
+  costTableVersion: string;
+  filter: BatchFilter;
+}): Promise<Partial<RunRecord> & { jobId?: string }> {
+  const response = await fetch('/api/forge/cost/batch/apply', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      neighborhoodFilter: request.filter.neighborhoods[0] ?? '',
+      propertyType: request.filter.propertyClasses[0] ?? '',
+      costScheduleId: request.costTableVersion,
+      modelYear: request.modelYear,
+      strata: request.filter.strata,
+      label: request.label,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Apply request failed: ${response.status}`);
+  }
+
+  return response.json();
 }
 
 // ---------------------------------------------------------------------------
@@ -126,7 +195,7 @@ type View = 'configure' | 'history';
 
 export function BatchCostRun() {
   const [view, setView] = useState<View>('configure');
-  const [history] = useState<RunRecord[]>(FIXTURE_HISTORY);
+  const [history, setHistory] = useState<RunRecord[]>(FIXTURE_HISTORY);
 
   // Config form state
   const [label, setLabel] = useState('');
@@ -136,6 +205,9 @@ export function BatchCostRun() {
   const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<string[]>([]);
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
   const [dryRunResult, setDryRunResult] = useState<RunSummary | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isSampleData, setIsSampleData] = useState(false);
 
   // 1E: Apply mode lifecycle
   const [applyMode, setApplyMode] = useState<ForgeApplyMode>('preview_only');
@@ -145,40 +217,138 @@ export function BatchCostRun() {
     setter(arr.includes(item) ? arr.filter((x) => x !== item) : [...arr, item]);
   };
 
-  const handleDryRun = useCallback(() => {
-    // Fixture response — preview-safe, no real API call
-    setDryRunResult({
-      totalParcels: 12_430,
-      increasedCount: 8_200,
-      decreasedCount: 3_100,
-      unchangedCount: 1_130,
-      meanChange: 9_870,
-      medianChange: 7_200,
-      meanPctChange: 3.6,
-    });
-    setApplyMode('preview_only');
-    const evt = emitAuditEvent('preview_only', 'preview_generated');
-    setAuditLog((prev) => [...prev, evt]);
-  }, []);
+  const handleDryRun = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
 
-  const handleApplyRequest = useCallback(() => {
-    if (BACKEND_APPLY_CAPABLE) {
-      // Real backend path — would send to API
+    const correlationId = generateCorrelationId();
+    emitToolInvoked({
+      suite: 'forge',
+      correlationId,
+      inputSummary: 'batch_cost_preview',
+      risk: 'read_only',
+    });
+
+    try {
+      const filter: BatchFilter = {
+        strata: selectedStrata,
+        neighborhoods: selectedNeighborhoods,
+        propertyClasses: selectedClasses,
+      };
+      const summary = await previewBatchRun(filter);
+      setDryRunResult(summary);
+      setApplyMode('preview_only');
+      setIsSampleData(false);
+      const evt = emitAuditEvent('preview_only', 'preview_generated');
+      setAuditLog((prev) => [...prev, evt]);
+      emitToolSucceeded({
+        suite: 'forge',
+        correlationId,
+        outputSummary: `preview_parcels=${summary.totalParcels}`,
+      });
+    } catch {
+      setDryRunResult({
+        totalParcels: 12_430,
+        increasedCount: 8_200,
+        decreasedCount: 3_100,
+        unchangedCount: 1_130,
+        meanChange: 9_870,
+        medianChange: 7_200,
+        meanPctChange: 3.6,
+      });
+      setApplyMode('preview_only');
+      setIsSampleData(true);
+      setError('Batch preview API unavailable. Showing sample preview output.');
+      const evt = emitAuditEvent('preview_only', 'preview_generated');
+      setAuditLog((prev) => [...prev, evt]);
+      emitToolFailed({
+        suite: 'forge',
+        correlationId,
+        inputSummary: 'batch_cost_preview',
+        outputSummary: 'preview_api_unavailable_fallback',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedClasses, selectedNeighborhoods, selectedStrata]);
+
+  const handleApplyRequest = useCallback(async () => {
+    if (!BACKEND_APPLY_CAPABLE) {
+      setApplyMode('apply_pending_backend');
+      const blocked = emitAuditEvent('apply_pending_backend', 'apply_blocked');
+      setAuditLog((prev) => [...prev, blocked]);
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    const correlationId = generateCorrelationId();
+    emitToolInvoked({
+      suite: 'forge',
+      correlationId,
+      inputSummary: 'batch_cost_apply',
+      risk: 'write_high',
+      reasonCode: 'batch_valuation_update',
+    });
+
+    try {
+      const filter: BatchFilter = {
+        strata: selectedStrata,
+        neighborhoods: selectedNeighborhoods,
+        propertyClasses: selectedClasses,
+      };
+      const applied = await applyBatchRun({
+        label,
+        modelYear,
+        costTableVersion,
+        filter,
+      });
+
+      const runId = applied.id ?? applied.jobId ?? `bcr-live-${Date.now()}`;
+      const newRecord: RunRecord = {
+        id: runId,
+        label: label || `Batch Run ${new Date().toLocaleDateString()}`,
+        modelYear,
+        costTableVersion,
+        filter,
+        dryRun: false,
+        status: (applied.status as RunRecord['status']) ?? 'running',
+        summary: dryRunResult,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      };
+
+      setHistory((prev) => [newRecord, ...prev]);
       setApplyMode('apply_executed');
+      setIsSampleData(false);
       const evt = emitAuditEvent('apply_executed', 'apply_executed');
       setAuditLog((prev) => [...prev, evt]);
-    } else {
-      // No backend — record the blocked attempt honestly
+      emitToolSucceeded({
+        suite: 'forge',
+        correlationId,
+        outputSummary: `batch_run_id=${runId}`,
+      });
+    } catch {
       setApplyMode('apply_pending_backend');
+      setError('Batch apply API unavailable. Apply request blocked.');
       const evt = emitAuditEvent('apply_pending_backend', 'apply_blocked');
       setAuditLog((prev) => [...prev, evt]);
+      emitToolFailed({
+        suite: 'forge',
+        correlationId,
+        inputSummary: 'batch_cost_apply',
+        outputSummary: 'apply_api_failed',
+      });
+    } finally {
+      setIsLoading(false);
     }
-  }, []);
+  }, [costTableVersion, dryRunResult, label, modelYear, selectedClasses, selectedNeighborhoods, selectedStrata]);
 
   const fmtNum = (n: number) => n.toLocaleString();
   const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
 
-  const statusVariant = (s: string) => {
+  const statusVariant = (s: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
     switch (s) {
       case 'completed': return 'secondary';
       case 'running': return 'default';
@@ -189,7 +359,7 @@ export function BatchCostRun() {
 
   return (
     <div data-testid="batch-cost-run" className="space-y-4 p-4">
-      <DemoDataBanner module="Batch Cost Run" />
+      {isSampleData && <DemoDataBanner module="Batch Cost Run" />}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-fg))' }}>Batch Cost Model Runs</h1>
         <div className="flex gap-2">
@@ -201,6 +371,17 @@ export function BatchCostRun() {
           </Button>
         </div>
       </div>
+      <div className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
+        Source: {isSampleData ? 'Sample fallback' : 'Live batch valuation API'}
+      </div>
+      {error && (
+        <div className="text-xs px-2 py-1 rounded" style={{
+          background: 'hsl(40 80% 40% / 0.2)',
+          color: 'hsl(40 80% 70%)',
+        }}>
+          {error}
+        </div>
+      )}
 
       {/* VIEW: Configure */}
       {view === 'configure' && (
@@ -299,7 +480,7 @@ export function BatchCostRun() {
               </div>
 
               <Button data-testid="batch-dry-run-btn" onClick={handleDryRun} className="w-full">
-                Preview (Dry Run)
+                {isLoading ? 'Loading Preview...' : 'Preview (Dry Run)'}
               </Button>
 
               {/* 1E: Apply Request — only visible after a preview */}
@@ -309,7 +490,7 @@ export function BatchCostRun() {
                     data-testid="batch-apply-btn"
                     variant={applyMode === 'apply_executed' ? 'default' : 'outline'}
                     onClick={handleApplyRequest}
-                    disabled={applyMode === 'apply_executed'}
+                    disabled={applyMode === 'apply_executed' || isLoading}
                     className="w-full"
                   >
                     {applyMode === 'apply_executed'
@@ -428,7 +609,7 @@ export function BatchCostRun() {
                       <Badge variant={run.dryRun ? 'outline' : 'secondary'}>{run.dryRun ? 'Dry Run' : 'Live'}</Badge>
                     </td>
                     <td className="py-2">
-                      <Badge variant={statusVariant(run.status) as any}>{run.status}</Badge>
+                      <Badge variant={statusVariant(run.status)}>{run.status}</Badge>
                     </td>
                     <td className="py-2 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
                       {new Date(run.createdAt).toLocaleDateString()}
