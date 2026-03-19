@@ -16,10 +16,10 @@
 | Field | Value |
 |-------|-------|
 | **Slice** | **Slice 35 — Debt Sweep + TerraCanon IDE Charter + AI Swarm Scale Charter** |
-| **Phase** | **Phase 35-B CLOSED** — WF-2 console sweep complete (production `console.*` 724 → 197); **Phase 35-C NEXT** |
+| **Phase** | **Phase 35-C CLOSED** — IV-1 persistence proof + IV-2 orphan archive complete; **Lane 1 CLOSED** |
 | **Task** | Lane 1 debt sweep — 3 sequential phases (35-A → 35-B → 35-C) — then charter gates for TerraCanon + AI Swarm |
-| **Status** | 🔵 EXECUTION OPEN — Lane 1 authorized by founder 2026-03-19; GATE-35-1/GATE-35-2 pending Lane 1 close |
-| **Latest Commit** | `ae83e8abb` (fix(debt): CP-35-A — WF-1 hash backfill + WF-3 act() migration) |
+| **Status** | 🟢 LANE 1 CLOSED — founder gates `GATE-35-1` / `GATE-35-2` are now the only blockers for Lanes 2 + 3 |
+| **Latest Commit** | `7a6ed89ff` (fix(debt): CP-35-B — WF-2 console sweep 724 → 197) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
@@ -948,7 +948,7 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ✅ 14 | Slice 34 / LOCAL-1 | Clean or ignore local artifacts (`.claude/**`, `backend/tests/**/TestResults/**`) | Done — .gitignored in `520344e49` |
 | ✅ 15 | Slice 35 / Phase 35-A | WF-1 + WF-3: backfill Slice 22/23 commit hashes + fix ReactDOMTestUtils.act imports | Done — `ae83e8abb` |
 | ✅ 16 | Slice 35 / Phase 35-B | WF-2: console noise sweep 724 → ≤ 200 (REMOVE/PROMOTE rules) | Done — count reduced to `197` |
-| 🔵 17 | Slice 35 / Phase 35-C | IV-1/IV-2: wire income valuation persistence + archive IncomeForgeModule orphan | CP-35-C after 35-B |
+| ✅ 17 | Slice 35 / Phase 35-C | IV-1/IV-2: wire income valuation persistence + archive IncomeForgeModule orphan | Done — IV-1 already wired/proven, IV-2 archived in `legacy/IncomeForge.archived.tsx` |
 | ⛔ 18 | GATE-35-1 | Founder explicit go for TerraCanon IDE recon (Phase 35-D) | CP-35-C closed |
 | ⛔ 19 | GATE-35-2 | Founder explicit go for AI Swarm Scale recon (Phase 35-F) | CP-35-C closed |
 
@@ -986,8 +986,8 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ~~WF-5~~ | ~~`.gitignore` drift~~ | ~~Low~~ | ✅ RESOLVED — .gitignore updated in `520344e49` |
 | ~~WF-6~~ | ~~Local artifacts in working tree~~ | ~~Low~~ | ✅ RESOLVED — .gitignored in `520344e49` |
 | CS-1 | Comparable Sales launch-to-sales selection depends on the current query/state hint convention | Low | Revisit if upstream module-launch metadata changes |
-| IV-1 | Forge Income proof is closed, but saved valuation record/list wiring is still a follow-up if persistence becomes a product requirement | Medium | Post-proof enhancement |
-| IV-2 | Legacy income valuation surfaces still need an archive-truth pass to collapse duplicate authority | Low | Archive truth follow-up |
+| ~~IV-1~~ | ~~Forge Income proof is closed, but saved valuation record/list wiring is still a follow-up if persistence becomes a product requirement~~ | ~~Medium~~ | ✅ RESOLVED — persistence + retrieval asserted in IncomeValuationPanel/incomeValuationService proof suite |
+| ~~IV-2~~ | ~~Legacy income valuation surfaces still need an archive-truth pass to collapse duplicate authority~~ | ~~Low~~ | ✅ RESOLVED — orphan module moved to `pages/suites/modules/legacy/IncomeForge.archived.tsx` |
 | ⚠️ D1 | Suite tab internals not restyled | Low | Deferred per plan |
 | ⚠️ D2 | Compositor jitter fix if observed | Med | Monitor after skin |
 
