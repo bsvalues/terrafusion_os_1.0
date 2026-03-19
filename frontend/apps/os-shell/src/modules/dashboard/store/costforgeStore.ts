@@ -121,7 +121,7 @@ export const useCostforgeStore = create<CostforgeState>((set, get) => {
 
       // Token-driven delay (mock mode or API fallback)
       if (get().status !== 'analyzing') return;
-      const delayMs = (TF_TOKENS as any).motion?.analysisDelayMs ?? 1618;
+      const delayMs = TF_TOKENS.motion?.analysisDelayMs ?? 1618;
       await new Promise<void>((resolve) => setTimeout(resolve, delayMs));
       if (get().status !== 'analyzing') return;
 

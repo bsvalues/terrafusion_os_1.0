@@ -46,7 +46,7 @@ const PluginsHost: React.FC = () => {
       if (match) {
         const name = match[1];
         map.set(name, async () => {
-          const mod: any = await (loader as any)();
+          const mod = await (loader as () => Promise<{ default?: PluginModule } & PluginModule>)();
           return mod && mod.default ? (mod.default as PluginModule) : (mod as PluginModule);
         });
       }
