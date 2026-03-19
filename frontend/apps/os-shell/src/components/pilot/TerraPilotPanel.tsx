@@ -9,6 +9,7 @@ import { useAuthContext, toOsActor } from '@/auth/useAuthContext';
 import { buildPilotContext } from '@/services/pilotBridge';
 import { explain } from '@/services/pilotApi';
 import type { ExplainResponse } from '@/services/pilotApi';
+import { emitToolInvoked, emitToolSucceeded, emitToolFailed, generateCorrelationId } from '@/services/terraTrace';
 
 interface TerraPilotPanelProps {
   parcelId: string | null;
@@ -31,6 +32,14 @@ export function TerraPilotPanel({ parcelId, parcelData }: TerraPilotPanelProps) 
     setIsLoading(true);
     setError(null);
 
+    const correlationId = generateCorrelationId();
+    emitToolInvoked({
+      suite: 'pilot',
+      correlationId,
+      countyId: pilotContext.countyId,
+      actor: { userId: pilotContext.actorId },
+    });
+
     try {
       const result = await explain({
         query,
@@ -41,9 +50,22 @@ export function TerraPilotPanel({ parcelId, parcelData }: TerraPilotPanelProps) 
         parcelSummary: pilotContext.parcelSummary,
         statutes: pilotContext.statutes,
       });
+      emitToolSucceeded({
+        suite: 'pilot',
+        correlationId,
+        countyId: pilotContext.countyId,
+        actor: { userId: pilotContext.actorId },
+      });
       setResponse(result);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Explain failed';
+      emitToolFailed({
+        suite: 'pilot',
+        correlationId,
+        countyId: pilotContext.countyId,
+        actor: { userId: pilotContext.actorId },
+        outputSummary: message,
+      });
       setError(message);
     } finally {
       setIsLoading(false);
