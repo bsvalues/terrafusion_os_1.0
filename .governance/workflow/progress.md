@@ -21,7 +21,7 @@
 | **Phase** | **REHEARSAL COMPLETE — GO FOR ONSITE** |
 | **Task** | Evidence lock sealed. Day 6 onsite demo execution ready. |
 | **Status** | 🟢 GO — all gates green, all artifacts published, no open blockers |
-| **Latest Commit** | `4e3d888f3` (docs(superpowers): replace CP-18/CP-19 proof placeholders with executable command wall) |
+| **Latest Commit** | `99988b8a6` (docs(superpowers): publish Copilot deep-dive mirror for full ecosystem go-live) |
 
 ## CP-DEMO-DAY5 — Benton Demo Day 5 Go/No-Go Checkpoint — GO ✅
 
@@ -141,6 +141,60 @@
 - Preserved canonical ordering and gate dependency model from locked full-ecosystem roadmap.
 
 **Classification:** Implemented bounded docs-only execution mirror slice
+
+## CP-W9-G — Truth Gate Runtime Rerun (Phase -1) — CLOSED ✅
+
+**Date**: 2026-03-19  
+**Branch**: main  
+**Commit baseline**: working-tree evidence slice
+
+### Verdict: PASS — GREEN (runtime command wall)
+
+**What closed:**
+- Re-executed Phase -1 Truth Gate command wall:
+  - `dotnet build TerraFusion.sln --configuration Release`
+  - `pnpm run type-check`
+  - `node --test os-platform/core/tests/phase83-tools.test.mjs` (56/56)
+  - `node --test os-platform/core/tests/phase85-tools.test.mjs` (22/22)
+  - `node --test os-platform/core/tests/phase86-toolrunner.test.mjs` (9/9)
+  - `pnpm vitest run src/__tests__/auth/` (exit 0)
+- Verified PR #656 state via GitHub CLI: MERGED at 2026-03-10T13:55:35Z.
+- Updated Truth Gate artifact with rerun evidence:
+  - `.governance/workflow/TRUTH_GATE_2026-03-19.md`
+
+**Classification:** Implemented runtime evidence rerun slice
+
+## CP-W9-H — CP-18/CP-19 Command Wall Execution — BLOCKED ⛔
+
+**Date**: 2026-03-19  
+**Branch**: main  
+**Commit baseline**: working-tree evidence slice
+
+### Verdict: PARTIAL — BLOCKED
+
+**What executed:**
+- CP-18 command wall:
+  - `pnpm run security:scan` (pass)
+  - `pnpm run validate:compliance` (fail)
+  - `pnpm run ci:dependency-scope-quarantine:gate` (pass)
+- CP-19 command wall:
+  - `pnpm run governance:check` (fail)
+  - `pnpm run ci:governance-proof` (pass)
+  - `pwsh -File ops/dev/tf.ps1 status` (fail)
+
+**Active blockers:**
+- Missing module `mcp-init-validation.cjs` blocks compliance validation.
+- Governance check fails on missing generated header `os-platform/core/pilot/swarmTraceAdapter.js`.
+- `tf.ps1 status` fails locally due to `C:\tf.log` permission and WSL service connectivity.
+
+**Evidence updates:**
+- `docs/superpowers/artifacts/cp18/proof-results.md`
+- `docs/superpowers/artifacts/cp18/checkpoint-seal.md`
+- `docs/superpowers/artifacts/cp19/proof-results.md`
+- `docs/superpowers/artifacts/cp19/checkpoint-seal.md`
+- `docs/superpowers/artifacts/cp19/go-live-checklist.md`
+
+**Classification:** Runtime wall executed; gate seal blocked pending environment/tooling repair
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
