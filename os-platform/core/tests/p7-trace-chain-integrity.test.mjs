@@ -55,6 +55,16 @@ function makeSupervisor(overrides = {}) {
   };
 }
 
+function makeMuseAppraiser(overrides = {}) {
+  return {
+    countyId: 'benton',
+    userId: 'appraiser-001',
+    roles: ['appraiser'],
+    mode: 'muse',
+    ...overrides,
+  };
+}
+
 async function makeRunner() {
   const registry = new ToolRegistry();
   await registry.initialize(MANIFEST_PATH);
@@ -69,6 +79,44 @@ async function makeRunner() {
 function getEvents(traceService, toolId) {
   // TraceService.query() returns in-memory events
   return traceService.query({ toolId });
+}
+
+async function getChain(store, correlationId) {
+  return store.getByCorrelationId(correlationId);
+}
+
+function assertNoSensitiveFailureLeakage(value, expectations = {}) {
+  const serialized = JSON.stringify(value);
+
+  if (expectations.secret) {
+    assert.ok(
+      !serialized.includes(expectations.secret),
+      `Client-visible failure payload leaked secret marker: ${expectations.secret}`
+    );
+  }
+
+  if (expectations.windowsPath) {
+    assert.ok(
+      !serialized.includes(expectations.windowsPath),
+      `Client-visible failure payload leaked Windows path: ${expectations.windowsPath}`
+    );
+  }
+
+  if (expectations.unixPath) {
+    assert.ok(
+      !serialized.includes(expectations.unixPath),
+      `Client-visible failure payload leaked Unix path: ${expectations.unixPath}`
+    );
+  }
+
+  assert.ok(
+    !serialized.includes('Bearer '),
+    'Client-visible failure payload leaked bearer-token material'
+  );
+  assert.ok(
+    !serialized.includes('stackTrace'),
+    'Client-visible failure payload must not expose trace-internal stackTrace fields'
+  );
 }
 
 // ============================================================================
@@ -340,5 +388,162 @@ describe('E4: previousHash chain linkage (append-only, tamper-evident)', () => {
         'Implement hash-chain in TraceStore.append().'
       );
     }
+  });
+});
+
+// ============================================================================
+// E5: Failure envelopes stay stable while trace evidence remains append-only
+// ============================================================================
+
+describe('E5: Failure envelopes are stable and evidence remains append-only', () => {
+  it('validate stays side-effect free while invoke failure appends immutable evidence', async () => {
+    const { runner, store } = await makeRunner();
+    const input = {
+      toolId: 'assemble_boe_packet',
+      params: { county: 'benton', caseId: 'BOE-p7-envelope-001' },
+      context: {
+        countyId: 'benton',
+        userId: 'supervisor-001',
+        roles: ['supervisor'],
+        mode: 'pilot',
+        reasonCode: 'appeal_response',
+      },
+    };
+
+    const beforeValidateCount = await store.count();
+    const validation = runner.validate(input);
+    const afterValidateCount = await store.count();
+
+    assert.deepEqual(
+      Object.keys(validation).sort(),
+      ['valid', 'violations'],
+      'Validate failure envelope must remain the narrow { valid, violations } shape'
+    );
+    assert.equal(validation.valid, false);
+    assert.ok(
+      validation.violations.some((violation) => String(violation).includes('CONFIRMATION_REQUIRED')),
+      'Validate must surface the canonical confirmation violation'
+    );
+    assert.equal(
+      afterValidateCount,
+      beforeValidateCount,
+      'validate() must not append trace evidence or mutate the existing chain'
+    );
+
+    const invokeResult = await runner.execute(input);
+    assert.equal(invokeResult.ok, false);
+    assert.equal(invokeResult.errorCode, 'CONFIRMATION_REQUIRED');
+    assert.equal(typeof invokeResult.correlationId, 'string');
+    assert.equal('result' in invokeResult, false, 'Invoke failure envelope must not expose result payloads');
+    assert.equal(
+      'traceEventId' in invokeResult,
+      false,
+      'Invoke failure envelope must not expose terminal trace IDs on failure'
+    );
+
+    const firstChain = await getChain(store, invokeResult.correlationId);
+    assert.equal(firstChain.length, 1, 'Governance-blocked invoke should append exactly one tool_failed event');
+    assert.equal(firstChain[0].type, 'tool_failed');
+    assert.equal(firstChain[0].errorCode, 'CONFIRMATION_REQUIRED');
+
+    const chainSnapshot = JSON.stringify(firstChain[0]);
+    const afterFirstInvokeCount = await store.count();
+
+    const secondInvoke = await runner.execute(input);
+    assert.equal(secondInvoke.ok, false);
+    assert.notEqual(
+      secondInvoke.correlationId,
+      invokeResult.correlationId,
+      'Independent failure attempts must produce independent correlation chains'
+    );
+
+    const afterSecondInvokeCount = await store.count();
+    assert.equal(
+      afterSecondInvokeCount,
+      afterFirstInvokeCount + 1,
+      'A later failure may append a new event but must not rewrite the first chain'
+    );
+
+    const firstChainReloaded = await getChain(store, invokeResult.correlationId);
+    assert.equal(firstChainReloaded.length, 1);
+    assert.equal(
+      JSON.stringify(firstChainReloaded[0]),
+      chainSnapshot,
+      'Append-only trace evidence must leave the original failure event unchanged'
+    );
+  });
+
+  it('handler failure chain preserves correlation, failure class, and redaction markers', async () => {
+    const { runner, store } = await makeRunner();
+
+    runner.registerHandler('explain_model_inputs', async () => {
+      throw new Error('Synthetic handler failure for P7 redaction-chain test');
+    });
+
+    const result = await runner.execute({
+      toolId: 'explain_model_inputs',
+      params: {
+        county: 'benton',
+        parcelId: 'P-700',
+        ssn: '123-45-6789',
+        email: 'owner@county.gov',
+        phone: '509-555-1212',
+      },
+      context: makeMuseAppraiser(),
+    });
+
+    assert.equal(result.ok, false);
+    assert.equal(result.errorCode, 'EXECUTION_FAILED');
+
+    const chain = await getChain(store, result.correlationId);
+    assert.equal(chain.length, 2, 'Handler failures must retain invoke + fail evidence');
+
+    const invoked = chain.find((event) => event.type === 'tool_invoked');
+    const failed = chain.find((event) => event.type === 'tool_failed');
+
+    assert.ok(invoked, 'tool_invoked event missing from failure chain');
+    assert.ok(failed, 'tool_failed event missing from failure chain');
+    assert.equal(invoked.toolId, 'explain_model_inputs');
+    assert.equal(failed.toolId, 'explain_model_inputs');
+    assert.equal(invoked.correlationId, failed.correlationId);
+    assert.equal(failed.errorCode, 'EXECUTION_FAILED');
+    assert.equal(failed.component, 'Handler');
+    assert.ok(Array.isArray(invoked.redactedFields), 'Sanitized invoke event must carry redaction markers');
+    assert.ok(invoked.redactedFields.some((field) => /ssn/i.test(String(field))));
+    assert.ok(invoked.redactedFields.some((field) => /email/i.test(String(field))));
+    assert.ok(invoked.redactedFields.some((field) => /phone/i.test(String(field))));
+    assert.ok(
+      String(invoked.summary).includes('[REDACTED]') || String(invoked.summary).includes('[EMAIL REDACTED]'),
+      'Invoke summary must preserve visible redaction markers for downstream audit/export'
+    );
+    assert.equal(typeof failed.previousHash, 'string');
+    assert.ok(failed.previousHash.length >= 32, 'Failed event must link back to the prior event hash');
+  });
+
+  it('client-safe failure payload omits raw exception internals for handler failures', async () => {
+    const { runner } = await makeRunner();
+    const leakedSecret = 'super-secret-token-123';
+    const leakedWindowsPath = 'C:\\sensitive\\handler.js';
+    const leakedUnixPath = '/srv/terrafusion/secure/handler.js';
+
+    runner.registerHandler('explain_model_inputs', async () => {
+      throw new Error(
+        `Failure secret=${leakedSecret} windows=${leakedWindowsPath} unix=${leakedUnixPath} Bearer tf-secret`
+      );
+    });
+
+    const result = await runner.execute({
+      toolId: 'explain_model_inputs',
+      params: { county: 'benton', parcelId: 'P-701' },
+      context: makeMuseAppraiser(),
+    });
+
+    assert.equal(result.ok, false);
+    assert.equal(result.errorCode, 'EXECUTION_FAILED');
+    assertNoSensitiveFailureLeakage(result, {
+      secret: leakedSecret,
+      windowsPath: leakedWindowsPath,
+      unixPath: leakedUnixPath,
+    });
   });
 });

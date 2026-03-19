@@ -39,6 +39,7 @@ const BENTON_MUSE = {
   userId: 'appraiser-001',
   roles: ['appraiser'],
   mode: 'muse',
+  officeId: 'assessor',
 };
 
 const BENTON_MUSE_SUPERVISOR = {
@@ -46,6 +47,7 @@ const BENTON_MUSE_SUPERVISOR = {
   userId: 'supervisor-001',
   roles: ['supervisor'],
   mode: 'muse',
+  officeId: 'assessor',
   confirmation: true,
   reasonCode: 'operator_correction',
 };
@@ -55,6 +57,19 @@ const BENTON_PILOT = {
   userId: 'supervisor-001',
   roles: ['supervisor'],
   mode: 'pilot',
+  officeId: 'assessor',
+};
+
+const BENTON_MUSE_TREASURER = {
+  ...BENTON_MUSE,
+  roles: ['administrator'],
+  officeId: 'treasurer',
+};
+
+const BENTON_PILOT_TREASURER = {
+  ...BENTON_PILOT,
+  roles: ['administrator'],
+  officeId: 'treasurer',
 };
 
 function setupRunner() {
@@ -147,5 +162,64 @@ describe('Phase 8.6 ToolRunner - canonical execution', () => {
       const keys = Object.keys(event).sort();
       assert.deepStrictEqual(keys, ['toolId', 'ts', 'type'].filter(k => k in event).sort());
     }
+  });
+
+  it('direct runner path cannot bypass office-scope policy enforced by validate', async () => {
+    const { runner, registry } = await setupRunner();
+    const tool = registry.getTool('explain_model_inputs');
+    const fx = loadToolFixture('explain_model_inputs', 'happy');
+    const validation = runner.validate({
+      toolId: 'explain_model_inputs',
+      params: fx.params,
+      context: BENTON_MUSE_TREASURER,
+    });
+
+    assert.strictEqual(tool?.officeScope, 'assessor');
+    assert.strictEqual(validation.valid, false);
+    assert.ok(validation.violations.some(v => v.includes('OFFICE_SCOPE_DENIED')));
+    assert.ok(validation.violations.some(v => v.includes('officeScope "assessor"')));
+
+    await assert.rejects(
+      () => runner.run('explain_model_inputs', fx.params, BENTON_MUSE_TREASURER),
+      err => {
+        assertErrorCode(err, 'PERMISSION_DENIED');
+        assert.match(err.message, /officeScope "assessor"/i);
+        return true;
+      }
+    );
+  });
+
+  it('registry metadata and runtime policy agree on office-scope allow and deny outcomes', async () => {
+    const allowed = await setupRunner();
+    const denied = await setupRunner();
+    const assessorFx = loadToolFixture('explain_model_inputs', 'happy');
+    const osFx = loadToolFixture('search_trace_by_correlation', 'happy');
+
+    assert.strictEqual(allowed.registry.getTool('explain_model_inputs')?.officeScope, 'assessor');
+    assert.strictEqual(allowed.registry.getTool('search_trace_by_correlation')?.officeScope, undefined);
+
+    const assessorValidation = allowed.runner.validate({
+      toolId: 'explain_model_inputs',
+      params: assessorFx.params,
+      context: BENTON_MUSE,
+    });
+    assert.strictEqual(assessorValidation.valid, true);
+    assert.deepStrictEqual(assessorValidation.violations, []);
+
+    const treasurerValidation = denied.runner.validate({
+      toolId: 'explain_model_inputs',
+      params: assessorFx.params,
+      context: BENTON_MUSE_TREASURER,
+    });
+    assert.strictEqual(treasurerValidation.valid, false);
+    assert.ok(treasurerValidation.violations.some(v => v.includes('OFFICE_SCOPE_DENIED')));
+
+    const unscopedValidation = denied.runner.validate({
+      toolId: 'search_trace_by_correlation',
+      params: osFx.params,
+      context: BENTON_PILOT_TREASURER,
+    });
+    assert.strictEqual(unscopedValidation.valid, true);
+    assert.deepStrictEqual(unscopedValidation.violations, []);
   });
 });

@@ -46,6 +46,10 @@ function collectNestedManifestValues(tools, key) {
   );
 }
 
+function collectToolsWithParamsSchema(tools) {
+  return tools.filter((tool) => tool?.paramsSchema && typeof tool.paramsSchema === "object");
+}
+
 test("live manifest values stay inside the registry schema boundary", () => {
   const manifest = loadJson(manifestPath);
   const schema = loadJson(schemaPath);
@@ -112,5 +116,37 @@ test("schema exposes the live manifest properties that drifted in Wave 2 backend
   assert.ok(manifestReasonCodes.length > 0, "manifest should contain governed reason codes");
   for (const reasonCode of manifestReasonCodes) {
     assert.match(reasonCode, /^[a-z][a-z0-9_]*$/);
+  }
+});
+
+test("manifest paramsSchema.required entries stay inside declared properties without duplicates", () => {
+  const manifest = loadJson(manifestPath);
+  const tools = collectToolsWithParamsSchema(Array.isArray(manifest.tools) ? manifest.tools : []);
+
+  assert.ok(tools.length > 0, "manifest should contain tools with paramsSchema");
+
+  for (const tool of tools) {
+    const paramsSchema = tool.paramsSchema ?? {};
+    const properties = paramsSchema.properties ?? {};
+    const propertyKeys = Object.keys(properties).sort();
+    const required = Array.isArray(paramsSchema.required) ? paramsSchema.required : [];
+
+    assert.equal(
+      paramsSchema.type,
+      "object",
+      `${tool.toolId} paramsSchema must stay rooted at object`
+    );
+    assert.deepEqual(
+      [...required].sort(),
+      sortedUnique(required),
+      `${tool.toolId} paramsSchema.required must not contain duplicates`
+    );
+    assert.deepEqual(
+      [...required].sort(),
+      required
+        .filter((key) => typeof key === "string" && propertyKeys.includes(key))
+        .sort(),
+      `${tool.toolId} paramsSchema.required must only reference declared properties`
+    );
   }
 });

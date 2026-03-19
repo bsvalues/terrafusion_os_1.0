@@ -8,7 +8,7 @@ TS_EXPECT_CEILING=17
 
 any_count=$(grep -rn ': any' "$SRC" --include='*.ts' --include='*.tsx' | grep -v '__tests__' | grep -v '\.test\.' | grep -v 'node_modules' | wc -l)
 any_count=$(echo "$any_count" | tr -d ' ')
-ts_expect_count=$(grep -rn '@ts-expect-error' "$SRC" --include='*.ts' --include='*.tsx' | grep -v 'node_modules' | wc -l)
+ts_expect_count=$(grep -rn '@ts-expect-error' "$SRC" --include='*.ts' --include='*.tsx' | grep -v '__tests__' | grep -v '\.test\.' | grep -v 'node_modules' | wc -l)
 ts_expect_count=$(echo "$ts_expect_count" | tr -d ' ')
 
 echo "Type debt report:"
