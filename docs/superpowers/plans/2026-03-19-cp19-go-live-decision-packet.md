@@ -182,3 +182,24 @@ No implicit residual risk beyond final decision packet.
 - proof commands are declared with baseline and targeted layers
 - hard-stop rules and rollback actions are explicit
 - packet is compatible with CP-13 gate catalog and parent parallel plan
+
+## Execution Snapshot (2026-03-19 Session 3)
+
+Latest CP-19 command-wall rerun:
+
+| Command | Exit Code | Status | Notes |
+|---|---|---|---|
+| `pnpm run governance:check` | 0 | pass | 56/56 (phase83), 22/22 (phase85), 9/9 (phase86), generated headers verified |
+| `pnpm run ci:governance-proof` | 0 | pass | scope proof + governance sentinel complete |
+| `pwsh -File ops/dev/tf.ps1 status` | 0 | blocked | WSL/Docker connectivity error `Wsl/Service/0x8007274c` |
+
+Phase 5 Honesty Sweep status:
+
+- `CostManual.tsx`: remediated to API-first with explicit sample fallback
+- `BatchCostRun.tsx`: remediated to live preview/apply + TerraTrace invoke/result events
+- Contract tests: 105/105 pass (`w5dHonestySweep`, `w5eUIContractProof`)
+
+Current CP-19 blocker set:
+
+- Upstream gates G3-G9 still pending seal completion
+- Local Docker/WSL environment unavailable for `tf.ps1 status`
