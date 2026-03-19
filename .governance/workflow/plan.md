@@ -1482,6 +1482,13 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
   - [x] Named target files grounded in the current repo
   - [x] Tool split called out explicitly
 
+* **Execution Outcome (2026-03-18):**
+  - `PropertyWorkbench.tsx` and `PropertyWorkbenchWindow.tsx` now derive `countyId`, `userId`, and `roles` from auth claims first with session fallback, removing the hardcoded empty-role workbench context.
+  - `ResearchPortal.tsx` now derives researcher identity from governed auth/session surfaces, initializes through `researchSessionAPI`, and removes the legacy hardcoded researcher/institution strings from production code.
+  - `QuantumModuleManager.ts` now builds module loading context from canonical auth/session helpers instead of reading `tf.session.dev` directly, and resolves permissions/security level from auth-aware helpers.
+  - `useTodaysWork.ts` and `useBudgetData.ts` are now API-first hooks with explicit fallback provenance instead of fixture-only or no-op behavior.
+  - Proof landed through the targeted Wave 1 auth bundle (`161/161`), `pnpm run type-check`, and `node --test os-platform/core/tests/phase83-tools.test.mjs` (`54/54`).
+
 ### Phase 7: Wave 2 RAG and GPT Split
 
 > Break Wave 2 into a backend recon pass and a bounded implementation pass.
@@ -1570,3 +1577,182 @@ If a suite does both: tile opens Standalone, and Standalone offers "Open current
 - [x] Git strategy defined
 - [x] Dependencies verified
 - [x] Execution complete
+
+---
+
+# Slice 25.5: Post-Wave-2 Copilot Multi-Agent Phase Map
+
+> **Purpose:** Keep the next Copilot phases on the same proof-first, multi-agent operating model without reopening execution early.
+> **Strategy:** Planning only. Preserve the Phase 3 hard stop, require an explicit go/no-go before any post-Wave-2 implementation, and standardize every future phase on one writer lane plus read-only parallel truth and proof lanes.
+
+---
+
+* **Project:** Post-Wave-2 Copilot Multi-Agent Planning
+* **Branch/PR:** current working tree
+* **Date:** 2026-03-18
+* **Prereq:** CP-W2-8 hard stop review remains active in `.governance/workflow/progress.md`
+
+---
+
+## Definition of Done
+
+> What MUST be true for this planning slice to be complete?
+
+- [x] Future Copilot work stays behind the existing hard stop until an explicit go/no-go decision is recorded
+- [x] Every future phase uses the same bounded lane split: Copilot writer lane, Claude read-only contract lane, Codex read-only proof lane
+- [x] Parallelism is limited to read-only research, proof audits, or disjoint-file execution with exclusive file ownership
+- [x] Every future phase has an explicit closure wall, a closure note, and a fresh hard stop before the next phase opens
+- [x] No planning text here authorizes Waves 3-5 execution on its own
+
+---
+
+## Operating Rules
+
+### Rule 1: Hard Stop First
+
+- No post-Wave-2 implementation starts until a human records an explicit go/no-go decision.
+- Planning may continue under the hard stop, but execution may not.
+- If repo truth changes before go/no-go, refresh the checkpoint before opening any new lane.
+
+### Rule 2: One Writer Per Slice
+
+- Copilot is the default writer for the active bounded slice unless the phase charter says otherwise.
+- Claude and Codex may run in parallel only as read-only subagents unless a future charter assigns them a distinct file set.
+- No two agents write the same file in the same slice.
+
+### Rule 3: Parallelism Is Evidence-Scoped
+
+- Safe parallel work:
+  - backend contract clarification
+  - proof-surface audit
+  - stale test and client drift classification
+  - route and DTO inventory
+- Unsafe parallel work:
+  - overlapping edits in the same feature lane
+  - simultaneous truth-setting in both docs and implementation without a single owner
+  - speculative frontend compatibility shims before backend truth is settled
+
+### Rule 4: Every Phase Ends Twice
+
+- First end: the bounded proof wall is green.
+- Second end: a checkpoint or hard stop note is written before the next phase opens.
+
+---
+
+## Standard Phase Frame
+
+Use this same frame for every future Copilot phase after go/no-go.
+
+### Phase A: Charter
+
+* **Output:** one bounded phase brief
+* **Must include:**
+  - objective
+  - allowed files
+  - forbidden files
+  - success criteria
+  - proof wall
+  - closure artifact
+
+### Phase B: Read-Only Parallel Truth Pass
+
+* **Copilot lane:** inspect the active writer lane and classify likely implementation seams
+* **Claude lane:** clarify backend/service/DTO/route truth only
+* **Codex lane:** isolate lawful proof surfaces, stale tests to quarantine, and RED→GREEN checklist
+* **Exit condition:** the writer lane has enough repo truth to implement without inventing contracts
+
+### Phase C: Bounded Implementation
+
+* **Copilot lane:** implement only inside the named live lane
+* **Claude lane:** answer contract ambiguities only if new uncertainty appears
+* **Codex lane:** remain read-only unless the phase charter explicitly grants a disjoint proof-only file set
+* **Exit condition:** the scoped behavior is truthful, bounded, and consistent with the confirmed service lane
+
+### Phase D: Closure Wall
+
+* **Run:** the full targeted proof wall for the active lane, not just the newest test
+* **Fix:** only closure-blocking defects in the allowed file set
+* **Exit condition:** the bounded wall is green and quarantined lanes remain quarantined
+
+### Phase E: Checkpoint and Hard Stop
+
+* **Record:** what closed, what remains non-live or deferred, and what stays quarantined
+* **Stop:** do not open the next phase until that note exists
+
+---
+
+## Default Lane Assignment For Future Copilot Phases
+
+### Copilot lane
+
+- Own the bounded live implementation lane
+- Keep edits inside the named file set only
+- Run the proof wall and close only on evidence
+
+### Claude Code lane
+
+- Stay read-only by default
+- Clarify route shape, DTO truth, auth scope, persistence behavior, and backend non-live constraints
+- Return blocker lists and contract truth, not frontend design decisions
+
+### Codex lane
+
+- Stay read-only by default
+- Produce proof plans, stale assertion quarantine lists, drift inventories, and RED→GREEN checklists
+- Avoid architecture, product, or governance decisions
+
+---
+
+## Safe Parallel Execution Map For Next Phases
+
+1. Planning group: Copilot drafts the bounded phase brief while Claude and Codex validate contract and proof assumptions read-only.
+2. Truth group: Copilot inspects the writer lane while Claude maps backend truth and Codex isolates lawful proof sources.
+3. Closure group: Copilot runs the full proof wall while Codex audits failures for brittleness vs real regressions.
+4. Blocking rule: no later phase opens until the current phase has both a green closure wall and a checkpoint or hard stop note.
+
+---
+
+## Next Copilot Phase Order
+
+This order is planning-only and does not lift the hard stop.
+
+1. Entry decision phase: explicit go/no-go to leave the current hard stop.
+2. If `go`: open the next bounded Copilot phase with the standard phase frame above.
+3. After each future phase: close on evidence, write the checkpoint, and stop again before the next phase.
+4. If `no-go`: remain at the current checkpoint and limit work to documentation, evidence refresh, or blocker clarification only.
+
+---
+
+## Risk Register
+
+| ID | Risk | Severity | Likelihood | Mitigation | Rollback |
+|----|------|----------|------------|------------|----------|
+| R1 | Multi-agent work creates competing truths | High | Med | Single writer lane, read-only parallel lanes by default | Freeze the slice and re-charter ownership |
+| R2 | Planning text is mistaken for execution approval | High | Low | Repeat hard-stop requirement in every future charter | Revert to checkpoint-only status |
+| R3 | Parallel proof work widens into product decisions | Med | Med | Keep Claude/Codex outputs bounded to truth and proof only | Reassign decisions to the writer lane |
+| R4 | Future phases skip closure notes and drift between slices | Med | Med | Require checkpoint or hard stop note before any new phase opens | Block the next phase until recorded |
+
+---
+
+## Git Strategy
+
+1. `docs(workflow): add post-wave2 copilot multi-agent phase map`
+
+---
+
+## Dependencies
+
+- [x] CP-W2-8 hard stop review recorded
+- [x] Wave 2 frontend closure wall passed on evidence
+- [x] Existing Copilot, Claude, and Codex operating split already proven on bounded slices
+
+---
+
+## Document Status (Slice 25.5)
+
+- [x] Definition of Done defined
+- [x] Operating rules defined
+- [x] Standard phase frame defined
+- [x] Parallel execution map defined
+- [x] Hard-stop dependency preserved
+- [x] Planning complete

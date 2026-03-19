@@ -15,11 +15,20 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **Slice 25.4: Next-Phase Execution Roadmap** 🔄 ACTIVE |
-| **Phase** | Phase 6: Wave 1 auth/context threading |
-| **Task** | The Workbench real-host gate is green and the Wave 0 debt ledger is published; Wave 1 auth/context threading is now the next unblocked implementation lane |
-| **Status** | 🟡 READY |
-| **Latest Commit** | `da6ef0bce` `test(workbench): stabilize host proofs and publish wave0 ledger` |
+| **Slice** | **CP-W2-8: Wave 2 frontend hard stop review** |
+| **Phase** | Phase 3: hard stop and entry-gate review |
+| **Task** | Wave 2 frontend is closed on evidence; hard stop remains in force pending an explicit go/no-go decision before any Waves 3–5 motion |
+| **Status** | 🟢 CHECKPOINT |
+| **Latest Commit** | Working tree - CP-W2-7 closure wall and CP-W2-8 hard stop review recorded |
+
+## Checkpoint — 2026-03-18
+
+- CP-W2-7 frontend closure wall passed: 8 files, 154 tests green.
+- `/gpt` is closed as a bounded, honest workspace on the canonical service lane.
+- Management, RAG, chat, and manual trace/source affordances are live within confirmed backend truth.
+- Prototype and duplicate GPT client lanes remain quarantined.
+- Hard stop review complete: no Waves 3–5 motion until an explicit go/no-go decision is recorded.
+- Planning-only follow-up is defined in `.governance/workflow/plan.md`: future Copilot phases reuse the same multi-agent, proof-first pattern and remain gated behind the current hard stop.
 
 ---
 
@@ -428,9 +437,10 @@
 | ✅ 3.2 | Complete Forge lane F1 Comparable Sales proof pack | `da6ef0bce` | `ComparableSalesForgeHost.test.tsx` + `SalesComparison.test.tsx` (`7/7`) prove launch hint, host rendering, wrapper history, value flow, and frontend boundary behavior | 2026-03-18 |
 | ✅ 4.1 | Complete Forge lane F2 Income Valuation proof pack | `da6ef0bce` | `PropertyForge.income.test.tsx`, `IncomeApproach.test.tsx`, `IncomeValuationPanel.test.tsx`, and `incomeValuationService.test.ts` (`8/8`) prove host, wrapper, panel, and service behavior | 2026-03-18 |
 | ✅ 5.1 | Publish Wave 0 debt ledger from fresh probes | `da6ef0bce` | `WAVE0_DEBT_LEDGER_v1.md` records current counts and bounded cleanup candidates | 2026-03-18 |
+| ✅ 6.1 | Complete Wave 1 auth/context threading on named surfaces | Pending | Targeted Wave 1 auth bundle (`161/161`), `pnpm run type-check`, and `phase83-tools` (`54/54`) | 2026-03-18 |
 | ✅ 3.1 | Lock entry gate for Waves 3-5 | `5a01be449` | Phase gate verified | 2026-03-18 |
 
-**Key Achievement:** The workflow canon, Forge proof bundles, Workbench real-host gate, and Wave 0 inventory baseline are now aligned to current evidence instead of stale assumptions. The former Atlas blocker reduced to a bounded Dais lazy-host harness defect in `workbenchRealHosting.gate.test.tsx`, the full host gate is now green, and Wave 1 auth/context threading is the next unblocked implementation lane. Waves 3-5 remain explicitly blocked until the earlier truths close cleanly.
+**Key Achievement:** The workflow canon, Forge proof bundles, Workbench real-host gate, Wave 0 inventory baseline, and Wave 1 auth/context threading are now aligned to current evidence instead of stale assumptions. Phase 6 is closed with bounded auth-first wiring plus proof on the named surfaces, and Wave 2 backend truth inventory is now the next unblocked implementation lane. Waves 3-5 remain explicitly blocked until the earlier truths close cleanly.
 
 **Current State Calibration:**
 - `frontend/apps/os-shell/src` currently shows raw `console.` matches = `960`
@@ -438,7 +448,7 @@
 - `frontend/apps/os-shell/src` currently shows raw `any` matches = `1010`
 - `frontend/apps/os-shell/src` currently shows `TODO` / `FIXME` / `HACK` matches = `37`
 - `frontend/apps/os-shell/src` currently shows skip markers (`describe.skip`, `it.skip`, `test.skip`) = `164`
-- Phase 2 host classification is closed: Atlas stayed green and the combined gate failure reduced to a bounded Dais lazy-host harness defect
+- Phase 2 host classification is closed via bounded real-host harness stabilization; Atlas stayed green and the combined gate failure resolved in the gate harness
 - Comparable Sales host surfaces verified in Forge:
   - `frontend/apps/os-shell/src/components/workbench/ComparableSalesPanel.tsx`
   - `frontend/apps/os-shell/src/services/comparableSalesService.ts`
@@ -447,6 +457,19 @@
   - `frontend/apps/os-shell/src/pages/workbench/tabs/forge/IncomeApproach.tsx`
   - `frontend/apps/os-shell/src/components/workbench/IncomeValuationPanel.tsx`
   - `frontend/apps/os-shell/src/services/incomeValuationService.ts`
+- Wave 1 auth/context threading closed on the named surfaces:
+  - `frontend/apps/os-shell/src/pages/workbench/PropertyWorkbench.tsx`
+  - `frontend/apps/os-shell/src/pages/workbench/PropertyWorkbenchWindow.tsx`
+  - `frontend/apps/os-shell/src/components/gpt/GPTManagementDashboard.tsx`
+  - `frontend/apps/os-shell/src/components/research/ResearchPortal.tsx`
+  - `frontend/apps/os-shell/src/services/QuantumModuleManager.ts`
+  - `frontend/apps/os-shell/src/hooks/useTodaysWork.ts`
+  - `frontend/apps/os-shell/src/applications/terra-levy/hooks/useBudgetData.ts`
+- Wave 1 proof highlights:
+  - Workbench and WorkbenchWindow now thread `countyId`, `userId`, and `roles` from auth claims first with session fallback
+  - ResearchPortal now uses governed auth/session identity plus `researchSessionAPI` instead of hardcoded researcher strings
+  - QuantumModuleManager derives permissions and security level from canonical auth/session surfaces instead of direct `tf.session.dev` reads
+  - `useTodaysWork` and `useBudgetData` are API-first hooks with explicit fallback provenance
 
 **Roadmap Order Locked:**
 1. Workflow truth reconciliation
@@ -471,13 +494,13 @@
 |----------|------|-------------|------------|
 | ✅ 1 | 25.4 / Phase 1A | Reconcile stale workflow truth across `plan.md`, `progress.md`, and `REMEDIATION_PLAN_v1.md` | Done |
 | ✅ 2 | 25.4 / Phase 1B | Publish proof-posture note for Muse seal and Workbench host boundary | Done |
-| ✅ 3 | 25.4 / Phase 2 | Close the real-host gate; Atlas suspicion proved stale and Dais lazy-host harness defect was fixed in the gate harness | Done |
+| ✅ 3 | 25.4 / Phase 2 | Close the real-host gate via bounded real-host harness stabilization; Atlas suspicion proved stale without a product rewrite | Done |
 | ✅ 4 | 25.4 / Phase 3 | Complete Forge lane F1 Comparable Sales proof pack | Done |
 | ✅ 5 | 25.4 / Phase 4 | Complete Forge lane F2 Income Valuation proof pack | Done |
 | ✅ 6 | 25.4 / Phase 5 | Produce Wave 0 inventory/debt ledger with `any` triage first | Done |
-| 🔵 7 | 25.4 / Phase 6 | Finish Wave 1 auth threading on named surfaces | None |
-| 🔵 8 | 25.4 / Phase 7 | Split Wave 2 into backend recon then frontend wiring | Wave 1 proof |
-| 🔵 9 | 25.4 / Phase 8 | Hold Waves 3-5 until prior proof gates land | Phases 6-7 |
+| ✅ 7 | 25.4 / Phase 6 | Finish Wave 1 auth threading on named surfaces | Done |
+| 🔵 8 | 25.4 / Phase 7 | Split Wave 2 into backend recon then frontend wiring | None |
+| 🔵 9 | 25.4 / Phase 8 | Hold Waves 3-5 until prior proof gates land | Phase 7 |
 | ✅ 8 | 25.3 | Add Codex Directive Pack v1 and workflow cross-links | Done |
 | ✅ 9 | Commit | Create docs commit for Slice 25.4 | Done |
 
@@ -495,7 +518,9 @@
 | 2026-03-18 | Recalibrate Wave 0 from fresh measured repo counts | Current probes show raw `console.` usage is still high (`960`), `@ts-ignore` is `0`, and raw `any` remains high (`1010`) | Keep Wave 0 inventory-first and do not claim a zero-console baseline |
 | 2026-03-18 | Use `progress.md` completion evidence as the winner for shipped Slices 2-6 | Historical `plan.md` checklists were still future-tense after the slices shipped | Workflow docs now reflect shipped state instead of stale intent |
 | 2026-03-18 | Land Forge proof bundles in parallel while keeping host classification separate | Comparable Sales and Income were bounded, disjoint frontend proof slices while the Workbench real-host gate needed a separate root-cause loop | Faster closure on live Forge lanes without mixing root-cause categories |
-| 2026-03-18 | Close Phase 2 as a bounded Dais lazy-host harness defect, not an Atlas regression | Direct Atlas proof stayed green; the combined host suite failed only on Dais and closed after aligning the lazy default-export path plus module preload in the harness | Prevents the stale Atlas label from blocking Wave 0 and Wave 1 |
+| 2026-03-18 | Close Phase 2 via bounded real-host harness stabilization, not an Atlas product rewrite | Direct Atlas proof stayed green; the combined host suite closed through a narrow harness-only fix path | Prevents the stale Atlas label from blocking Wave 0 and Wave 1 |
+| 2026-03-18 | Use auth-first identity with session fallback on the named Wave 1 surfaces | Shell auth claims are now canonical, but several surfaces still needed safe fallback during the transition | Closed hardcoded user/role placeholders without widening auth-model scope |
+| 2026-03-18 | Move the new Wave 1 runtime proofs into the `__tests__/auth` suite | Root Vitest discovery ignored sidecar hook/service test directories during filtered runs | The Wave 1 proof bundle now executes under the governed harness instead of living as dead files |
 
 ---
 
@@ -505,6 +530,7 @@
 |----|------|----------|--------------|
 | WF-1 | Slice 22 and Slice 23 still show `Pending` commit fields and need separate git-history reconciliation | Low | Workflow ledger follow-up |
 | WF-2 | `frontend/apps/os-shell/src` is not on a zero-console baseline; Wave 0 cleanup must start from the new ledger, not the older plan assumption | Medium | Wave 0 follow-up |
+| WF-3 | Legacy React test helpers still emit `ReactDOMTestUtils.act` deprecation warnings in the home/Wave 1 hook proofs | Low | Test harness cleanup follow-up |
 | CS-1 | Comparable Sales launch-to-sales selection depends on the current query/state hint convention | Low | Revisit if upstream module-launch metadata changes |
 | IV-1 | Forge Income proof is closed, but saved valuation record/list wiring is still a follow-up if persistence becomes a product requirement | Medium | Post-proof enhancement |
 | IV-2 | Legacy income valuation surfaces still need an archive-truth pass to collapse duplicate authority | Low | Archive truth follow-up |
@@ -520,6 +546,7 @@
 | type-check | ✅ | 0 | - |
 | phase83-tools | 54 | 0 | 0 |
 | workbenchRealHosting.gate | 15 | 0 | 0 |
+| wave1-auth bundle | 161 | 0 | 0 |
 | prompt contract verification (`rg`) | ✅ | 0 | - |
 | cross-link verification (`rg`) | ✅ | 0 | - |
 | roadmap calibration probes (`rg`) | ✅ | 0 | - |
