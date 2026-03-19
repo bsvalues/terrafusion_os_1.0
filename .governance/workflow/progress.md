@@ -19,7 +19,7 @@
 | **Phase** | **Phase 35-G OPEN** — SW Phase 1 trace bridge implemented; SW Phase 2 constrained by governance scope |
 | **Task** | Lane 1 CLOSED; Lane 2 CLOSED; Lane 3 implementation active (SW Phase 1 complete) |
 | **Status** | 🟢 Lane 1 CLOSED, 🟢 Lane 2 CLOSED, 🟡 Lane 3 IN PROGRESS |
-| **Latest Commit** | `32ba2cd72` (CP-35-G1 SW Phase 1 trace bridge + proof wall) |
+| **Latest Commit** | `18335d739` (post-SW1 ledger reconciliation to commit truth) |
 
 ## CP-TRIAGE-1 — Dirty Worktree Triage — CLOSED ✅
 
@@ -124,6 +124,13 @@
 - SW Phase 2 items from charter (port hardcode fix, queue guard in swarm orchestrators) remain pending governance-approved scope exception
 
 **Classification:** Implemented bounded core integration slice (trace bridge + proof)
+
+### SW Phase 2 Hold Update — 2026-03-19
+
+- Read-only target inspection reconfirmed SW-2 deltas are in forbidden scope files (`SwarmStrategicCoordinator.ts`, `SwarmOrchestrator.ts`)
+- Working tree includes unrelated backend trace drift (tracked + untracked) and remains untouched by Lane 3 execution
+- Execution posture remains: continue bounded governance-safe work only; open SW-2 only after explicit scope exception
+- Scope exception packet published: `.governance/workflow/phase35g-sw2-scope-exception.md` (pending approval)
 
 ---
 
@@ -1128,7 +1135,7 @@ Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed stat
 | ✅ 22 | Phase 35-F | AI Swarm Scale recon SW-A..SW-E + charter synthesis | Done — `docs/superpowers/plans/2026-03-19-aiswarm-charter.md` |
 | ✅ 23 | GATE-35-3 | Founder acceptance of AI Swarm Scale charter (opens Phase 35-G implementation) | Done — `go` signal 2026-03-19 |
 | ✅ 24 | Phase 35-G / SW-1 | Implement swarm trace bridge in `os-platform/core/**` + contract proof wall | Done — `swarmTraceAdapter` + `swarm.ts` + 7/7 contract pass |
-| ⛔ 25 | Phase 35-G / SW-2 | Apply charter's swarm orchestrator hardening (port env var + queue guard) | Governance scope exception required for `os-platform/ai-systems/ai-systems/ai-swarm/**` |
+| ⛔ 25 | Phase 35-G / SW-2 | Apply charter's swarm orchestrator hardening (port env var + queue guard) | Governance scope exception required for `os-platform/ai-systems/ai-systems/ai-swarm/**`; request packet published in `.governance/workflow/phase35g-sw2-scope-exception.md` |
 
 ---
 
