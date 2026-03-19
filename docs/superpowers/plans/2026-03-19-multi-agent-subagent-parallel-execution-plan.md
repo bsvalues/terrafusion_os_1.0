@@ -26,6 +26,10 @@ Verification rule:
 
 Define a bounded multi-agent and parallel subagent execution model to move from current governed closure posture to full production go-live readiness for TerraFusion OS and the broader TerraFusion ecosystem.
 
+## Linked Artifacts
+
+- CP-13 gate catalog: `docs/superpowers/plans/2026-03-19-cp13-production-gate-catalog.md`
+
 ## Current Repo Truth Anchors
 
 - Workflow closure history and phase ledger: `.governance/workflow/progress.md`
