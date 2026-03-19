@@ -153,6 +153,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<Notice> Notices { get; set; } = null!;
   public DbSet<QueueItem> QueueItems { get; set; } = null!;
 
+  // HITL Drafter — AI-proposed assessment actions awaiting human approval (Phase 10)
+  public DbSet<PilotDraft> PilotDrafts { get; set; } = null!;
+
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
     if (!optionsBuilder.IsConfigured)
