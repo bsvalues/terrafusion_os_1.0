@@ -9,6 +9,7 @@
 * **Last Updated:** 2026-03-19
 * **Plan Link:** [plan.md](./plan.md)
 * **Execution Plan Link:** `docs/superpowers/plans/2026-03-19-multi-agent-subagent-parallel-execution-plan.md`
+* **Demo Charter Link:** `docs/superpowers/plans/2026-03-19-benton-onsite-production-demo-charter.md`
 
 ---
 
