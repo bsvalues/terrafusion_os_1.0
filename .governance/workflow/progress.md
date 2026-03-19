@@ -15,11 +15,11 @@
 
 | Field | Value |
 |-------|-------|
-| **Slice** | **CP-W3-1: Phase 1 Forge F1 — Comparable Sales Rehost Proof** |
+| **Slice** | **CP-W3-2: Phase 2 Forge F2 — Income Valuation Rehost Proof** |
 | **Phase** | Phase E complete — checkpoint recorded |
-| **Task** | Hard stop in force; awaiting explicit human go/no-go for Phase 2 |
+| **Task** | Hard stop in force; awaiting founder go for Phase 3 |
 | **Status** | 🟢 CHECKPOINT |
-| **Latest Commit** | `0e0f21a90` — docs(governance): formalize GATE-0 and Phase 1 charter protocol |
+| **Latest Commit** | `a05b6e888` — docs(proof): record CP-W3-1 Comparable Sales Forge-host attestation |
 
 ## GATE-0 — Human Go/No-Go Decision — 2026-03-18
 
@@ -55,6 +55,62 @@ Non-authorizations:
 - Slice 26 end-to-end phase map written in `plan.md` (planning only).
 - Phase 7B governed-core evidence packet is published at [PHASE_7B_EVIDENCE_SUMMARY.md](./PHASE_7B_EVIDENCE_SUMMARY.md) and accepted as a 7E intake input.
 - Dependency wall preserved: 7E execution remains blocked pending 7C closure (and 7D only if invoked).
+
+---
+
+## Phase 2 — Founder Go/No-Go — 2026-03-18
+
+Status: **APPROVED TO OPEN PHASE 2 ONLY**
+
+Authorized phase: Phase 2 — Forge F2: Income Valuation Rehost Proof
+Authorization: Founder direct instruction ("go") referencing CP-W3-1 closed state.
+
+---
+
+## CP-W3-2: Phase 2 — Forge F2: Income Valuation Rehost Proof — CLOSED ✅
+
+**Date**: 2026-03-18
+**Branch**: post-r3/w5f-registry-edge-cleanup
+**Commit**: a05b6e888 (no source changes — verification slice)
+
+### Verdict: PASS — GREEN
+
+**What closed:**
+- Income Valuation is correctly Forge-owned and Forge-hosted
+- No cross-suite coupling in runtime code
+- Proof wall passed on all gates without any source edits
+
+**Pre-change evidence:**
+- ✅ Forge wrapper confirmed: `pages/workbench/tabs/forge/IncomeApproach.tsx`
+- ✅ `PropertyForge.tsx` imports `<IncomeApproach />` as the `income` sub-tab
+- ✅ `IncomeValuationPanel` (555 lines) owned exclusively by Forge via `IncomeApproach` sub-tab wrapper
+- ✅ `IncomeForgeModule.tsx` exists at `pages/suites/modules/` but has **zero live imports** — orphaned, not routed, not a runtime duplicate
+- ✅ All `IncomeForgeModule` references in `IncomeValuationPanel.tsx` and `incomeValuationService.ts` are **provenance comments only**
+- ✅ Backend routes confirmed real: `CostForgeController.cs` exposes `income-approach/calculate-noi`, `income-approach/calculate-valuation`, cap-rates, market-data, expense-ratios, location-premiums
+
+**Test evidence:**
+- ✅ `IncomeApproach.test.tsx` — **3/3 PASS** (177ms)
+  - `records history, emits value, and renders success output`
+  - `surfaces backend failures with correlationId`
+  - `surfaces network failures with client correlationId`
+
+**Mandatory gate evidence:**
+- ✅ `pnpm run type-check` — clean (0 errors)
+- ✅ `node --test os-platform/core/tests/phase83-tools.test.mjs` — 56/56 pass
+
+**Ownership evidence:**
+- ✅ No `import.*IncomeForgeModule` anywhere in `frontend/apps/os-shell/src/**`
+- ✅ No live QUARANTINE imports
+- ✅ No cross-suite write coupling introduced
+- ✅ `@tf-writer` not invoked (not needed)
+
+**Classification: Verification slice — no product files changed**
+
+**Deferred items:** `IncomeForgeModule.tsx` is an orphaned file with no live imports. It is **not** a Phase 2 concern — it belongs in the Wave 3A suite home cleanup phase (Phase 4 per Slice 26).
+
+**Next entry condition:** Founder explicit go for Phase 3 (Wave 0: Debt Inventory and Governance Pass).
+
+🛑 **HARD STOP — CP-W3-2 is the active checkpoint.** No Phase 3 or later opens without founder explicit go.
 
 ---
 
