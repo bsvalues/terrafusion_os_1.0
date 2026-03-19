@@ -33,7 +33,7 @@ export interface SignalRClientOptions {
 export class SignalRClient {
   private connection: signalR.HubConnection | null = null;
   private options: SignalRClientOptions;
-  private eventHandlers: Map<string, Set<(...args: any[]) => void>> = new Map();
+  private eventHandlers: Map<string, Set<(...args: unknown[]) => void>> = new Map();
 
   constructor(options: SignalRClientOptions) {
     this.options = {
@@ -117,7 +117,7 @@ export class SignalRClient {
   /**
    * Subscribe to hub events
    */
-  on(eventName: string, handler: (...args: any[]) => void): void {
+  on(eventName: string, handler: (...args: unknown[]) => void): void {
     if (!this.connection) {
       throw new Error('SignalR connection not initialized. Call connect() first.');
     }
@@ -135,7 +135,7 @@ export class SignalRClient {
   /**
    * Unsubscribe from hub events
    */
-  off(eventName: string, handler?: (...args: any[]) => void): void {
+  off(eventName: string, handler?: (...args: unknown[]) => void): void {
     if (!this.connection) {
       return;
     }
@@ -154,7 +154,7 @@ export class SignalRClient {
   /**
    * Invoke a hub method
    */
-  async invoke<T = any>(methodName: string, ...args: any[]): Promise<T> {
+  async invoke<T = unknown>(methodName: string, ...args: unknown[]): Promise<T> {
     if (!this.connection) {
       throw new Error('SignalR connection not initialized. Call connect() first.');
     }
@@ -170,7 +170,7 @@ export class SignalRClient {
   /**
    * Send a message to the hub (fire-and-forget)
    */
-  async send(methodName: string, ...args: any[]): Promise<void> {
+  async send(methodName: string, ...args: unknown[]): Promise<void> {
     if (!this.connection) {
       throw new Error('SignalR connection not initialized. Call connect() first.');
     }
