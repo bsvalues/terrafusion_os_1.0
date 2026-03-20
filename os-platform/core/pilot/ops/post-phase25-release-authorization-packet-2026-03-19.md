@@ -29,6 +29,10 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/sec-005-jwt-rotation-runbook-2026-03-19.md`
 - `os-platform/core/pilot/ops/leak-guard-governance-drift-2026-03-19.md`
 
+Traceability index:
+
+- `os-platform/core/pilot/ops/post-phase25-artifact-index-2026-03-19.md`
+
 ## What Is Sealed
 
 ### Post-go-live operating phases
