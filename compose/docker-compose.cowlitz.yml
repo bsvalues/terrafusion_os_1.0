@@ -4,7 +4,7 @@ services:
     container_name: cowlitz-postgres
     environment:
       POSTGRES_USER: terrafusion_cowlitz
-      POSTGRES_PASSWORD: terrafusion_cowlitz_secure_2024
+      POSTGRES_PASSWORD: ${TF_COWLITZ_DB_PASSWORD:?TF_COWLITZ_DB_PASSWORD is required}
       POSTGRES_DB: terrafusion_cowlitz
     ports:
       - "5432:5432"

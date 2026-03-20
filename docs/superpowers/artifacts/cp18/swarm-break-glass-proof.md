@@ -3,7 +3,7 @@
 Date: 2026-03-19
 Phase: Phase 8 — AI Swarm Production Stability
 Gate: Swarm Stability Gate
-Status: PENDING
+Status: DEFERRED — staging environment + authorized AI Swarm lane required
 
 ## Recovery Drill: Break-Glass with Swarm Active (Roadmap Phase 8-C)
 
