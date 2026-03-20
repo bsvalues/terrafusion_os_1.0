@@ -16,6 +16,29 @@
  */
 
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+
+vi.mock('../../auth/useAuthContext', () => ({
+  useAuthContext: vi.fn(() => ({
+    isAuthenticated: true,
+    userId: 'u-test',
+    countyId: 'benton',
+    roles: ['EnterpriseAdmin'],
+    token: null,
+  })),
+  toOsActor: vi.fn((auth) => ({
+    userId: auth.userId ?? 'u-test',
+    countyId: auth.countyId ?? 'benton',
+    roles: auth.roles ?? [],
+  })),
+}));
+vi.mock('../../auth/useAuth', () => ({
+  useAuth: vi.fn(() => ({
+    isAuthenticated: true,
+    token: null,
+    login: vi.fn(),
+    logout: vi.fn(),
+  })),
+}));
 import '@testing-library/jest-dom';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
