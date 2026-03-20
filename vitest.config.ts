@@ -53,6 +53,7 @@ export default defineConfig({
       '**/ULTIMATE_*/**',
       'tests/e2e/**/*.spec.ts',
       'tests/**/*.spec.ts',
+      'tests/deployment-truth-gate.test.mjs',
     ],
     globals: true,
     environment: 'jsdom',

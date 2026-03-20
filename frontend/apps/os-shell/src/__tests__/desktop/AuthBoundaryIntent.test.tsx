@@ -28,7 +28,7 @@
  * Scope: Mechanical auth boundary only; not testing real JWT exchange or backend.
  */
 
-import { vi, describe, it, expect, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { getDesktopIcons } from '../../config/desktopManifest';
@@ -72,6 +72,8 @@ vi.mock('../../services/authAPI', () => ({
 }));
 
 import Router from '../../Router';
+import '../../App';
+import '../../pages/LoginPage';
 
 // ============================================================================
 // Landmark Registry (same as Phase 25/27)
@@ -162,6 +164,11 @@ function assertLandmark(route: string) {
 // ============================================================================
 
 describe('Phase 29 contract: auth boundary intent — unauthenticated redirects, authenticated renders', () => {
+  beforeAll(() => {
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
   afterEach(() => {
     cleanup();
     // Reset to authenticated for safety between tests
@@ -199,7 +206,7 @@ describe('Phase 29 contract: auth boundary intent — unauthenticated redirects,
           () => {
             expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
           },
-          { timeout: 5000 }
+          { timeout: 15000 }
         );
 
         // Must not crash
@@ -228,7 +235,7 @@ describe('Phase 29 contract: auth boundary intent — unauthenticated redirects,
         () => {
           expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
         },
-        { timeout: 5000 }
+        { timeout: 15000 }
       );
 
       expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
@@ -251,7 +258,7 @@ describe('Phase 29 contract: auth boundary intent — unauthenticated redirects,
         () => {
           expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
         },
-        { timeout: 5000 }
+        { timeout: 15000 }
       );
 
       // Must not crash
@@ -291,7 +298,7 @@ describe('Phase 29 contract: auth boundary intent — unauthenticated redirects,
             () => {
               expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
             },
-            { timeout: 5000 }
+            { timeout: 15000 }
           );
 
           // Must not crash

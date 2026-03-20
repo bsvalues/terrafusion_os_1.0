@@ -40,10 +40,13 @@ export function CompImpactVisualizer({ adjustments, loading }: CompImpactVisuali
               <Tooltip
                 formatter={(value: number) => [`$${value.toLocaleString()}`, 'Adjustment']}
               />
-              <ReferenceLine x={0} stroke="#666" />
+              <ReferenceLine x={0} stroke="hsl(var(--tf-border) / 0.8)" />
               <Bar dataKey="amount" radius={[0, 4, 4, 0]}>
                 {chartData.map((entry, idx) => (
-                  <Cell key={idx} fill={entry.amount >= 0 ? '#22c55e' : '#ef4444'} />
+                  <Cell
+                    key={idx}
+                    fill={entry.amount >= 0 ? 'hsl(var(--tf-success))' : 'hsl(var(--tf-error))'}
+                  />
                 ))}
               </Bar>
             </BarChart>
