@@ -61,8 +61,7 @@ vi.mock('../../orchestration/moduleActivation', () => ({
 
 // Mock openWorkbenchWindow (surface icon opens a desktop window, not navigate)
 const mockOpenWorkbenchWindow = vi.fn();
-vi.mock('../../context/parcelContext', async () => ({
-  ...(await vi.importActual('../../context/parcelContext')),
+vi.mock('../../context/parcelContext', () => ({
   openWorkbenchWindow: (...args: unknown[]) => mockOpenWorkbenchWindow(...args),
 }));
 
