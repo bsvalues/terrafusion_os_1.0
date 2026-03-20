@@ -135,6 +135,31 @@ vi.mock('../../../hooks/usePropertyLookup', () => ({
   usePropertyLookup: () => ({ data: null, loading: false, error: null }),
 }));
 
+vi.mock('../../../auth/useAuthContext', () => ({
+  useAuthContext: vi.fn(() => ({
+    isAuthenticated: true,
+    userId: 'u-test',
+    countyId: 'benton',
+    roles: ['EnterpriseAdmin'],
+    token: null,
+  })),
+  toOsActor: vi.fn((auth: any) => ({
+    userId: auth.userId ?? 'u-test',
+    countyId: auth.countyId ?? 'benton',
+    roles: auth.roles ?? [],
+  })),
+}));
+
+vi.mock('../../../auth/useAuth', () => ({
+  useAuth: vi.fn(() => ({
+    isAuthenticated: true,
+    userId: 'u-test',
+    countyId: 'benton',
+    roles: ['EnterpriseAdmin'],
+    token: null,
+  })),
+}));
+
 // Import after mocks
 import PropertyWorkbench from '../PropertyWorkbench';
 
