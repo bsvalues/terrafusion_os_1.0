@@ -322,8 +322,8 @@ describe('Meta: Suite Route Registry', () => {
     const routerPath = path.join(SHELL_SRC, 'Router.tsx');
     expect(fs.existsSync(routerPath)).toBe(true);
     const content = fs.readFileSync(routerPath, 'utf-8');
-    for (const route of ['/forge', '/atlas', '/dais', '/dossier', '/gpt']) {
-      expect(content).toContain(route);
+    for (const route of ['forge', 'atlas', 'dais', 'dossier', 'gpt']) {
+      expect(content).toContain(`path='${route}'`);
     }
     // Workbench sub-routes
     for (const tab of ['forge', 'atlas', 'dais', 'dossier', 'pilot']) {

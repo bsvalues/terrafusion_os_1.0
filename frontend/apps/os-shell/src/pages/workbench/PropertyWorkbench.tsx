@@ -34,6 +34,7 @@ import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import { ContextRibbon } from '../../components/workbench/ContextRibbon';
 import { SuiteCompass } from '../../components/workbench/SuiteCompass';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
+import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
@@ -161,10 +162,10 @@ const TabNavigation: React.FC<{
   onTabClick: (tab: WorkbenchTab, isActive: boolean) => void;
 }> = ({ parcelId, tabs, currentTabId, emphasizedTabId, onTabClick }) => (
   <nav
-    className="border-b px-4 flex gap-1 overflow-x-auto"
+    className="border-b px-2 flex gap-0 overflow-x-auto"
     style={{
-      borderColor: 'hsl(var(--tf-border) / 0.15)',
-      background: 'hsl(var(--tf-bg-surface) / 0.5)',
+      borderColor: 'hsl(var(--tf-border) / 0.2)',
+      background: 'hsl(var(--tf-bg-surface) / 0.6)',
     }}
   >
     {tabs.map((tab) => {
@@ -174,7 +175,7 @@ const TabNavigation: React.FC<{
           key={tab.id}
           to={tab.path ? `/property/${parcelId}/${tab.path}` : `/property/${parcelId}`}
           end={tab.path === ''}
-          className="flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
+          className="flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold transition-colors whitespace-nowrap uppercase tracking-wide"
           style={({ isActive }) => {
             const isEmphasized = emphasizedTabId === tab.id && !isActive;
             return {
@@ -449,7 +450,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   if (propertyLoading) {
     return (
       <div
-        className="flex items-center justify-center min-h-screen"
+        className="flex items-center justify-center h-full"
         style={{ background: 'hsl(var(--tf-bg))' }}
       >
         <div className="text-center p-8">
@@ -470,7 +471,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
 
   // ── Spec-compliant layout ──
   return (
-    <div className={`flex flex-col h-screen ${className}`} style={{ background: 'hsl(var(--tf-bg))' }}>
+    <div className={`flex flex-col h-full ${className}`} style={{ background: 'hsl(var(--tf-bg))' }}>
       {/* Context Ribbon — parcel identity, badges, work mode, pop-out */}
       <ContextRibbon
         parcelId={propertyData.parcelId}
@@ -503,10 +504,10 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
         onPopOut={handlePopOut}
       />
 
-      {/* Workbench content: SuiteCompass (left) + Tab bar + Outlet (center) */}
+      {/* Workbench content: SuiteCompass (left on desktop) + Tab bar + Outlet */}
       <div className="flex flex-1 min-h-0">
-        {/* Suite Compass — left rail navigation */}
-        <div className="shrink-0">
+        {/* Suite Compass — left rail (desktop only, SuiteCompass handles responsive internally) */}
+        <div className="shrink-0 hidden lg:block">
           <SuiteCompass
             activeTab={currentTabId}
             onTabChange={(slug) => {
@@ -524,7 +525,8 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
 
         {/* Main content area */}
         <div className="flex flex-col flex-1 min-w-0">
-          {/* Tab Navigation — filtered by role visibility (Phase 2) */}
+
+          {/* Tab Navigation — filtered by role visibility */}
           <div className="flex items-center">
             <div className="flex-1 min-w-0">
               <TabNavigation
@@ -551,12 +553,14 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
           </div>
 
           {/* Tab Content via React Router Outlet */}
-          <main className="flex-1 overflow-auto">
-            <ErrorBoundary>
-              <Suspense fallback={<TabLoader />}>
-                <Outlet context={{ parcelId, propertyData, workMode }} />
-              </Suspense>
-            </ErrorBoundary>
+          <main className="flex-1 overflow-auto p-2">
+            <LiquidPanel variant="interactive" radius="md" className="min-h-full">
+              <ErrorBoundary>
+                <Suspense fallback={<TabLoader />}>
+                  <Outlet context={{ parcelId, propertyData, workMode }} />
+                </Suspense>
+              </ErrorBoundary>
+            </LiquidPanel>
           </main>
         </div>
       </div>
@@ -568,7 +572,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
       >
         <button
           onClick={() => setActivityOpen((o) => !o)}
-          className="flex items-center gap-2 w-full px-4 py-1.5 text-xs font-medium transition-colors"
+          className="flex items-center gap-2 w-full px-3 py-1 text-xs font-medium transition-colors"
           style={{
             color: 'hsl(var(--tf-text) / 0.5)',
             background: 'hsl(var(--tf-bg-surface) / 0.3)',
