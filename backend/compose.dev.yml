@@ -11,7 +11,7 @@ services:
     environment:
       POSTGRES_DB: terrafusion_dev
       POSTGRES_USER: terrafusion_dev
-      POSTGRES_PASSWORD: dev_password_123
+      POSTGRES_PASSWORD: ${TF_DEV_DB_PASSWORD:-dev_local_only}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - '5432:5432'
