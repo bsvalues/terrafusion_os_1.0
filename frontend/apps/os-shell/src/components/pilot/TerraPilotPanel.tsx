@@ -6,7 +6,7 @@
 
 import { useState, useCallback } from 'react';
 import { useAuthContext, toOsActor } from '@/auth/useAuthContext';
-import { buildPilotContext } from '@/services/pilotBridge';
+import { buildPilotContext, buildExplainRequest } from '@/services/pilotBridge';
 import { explain } from '@/services/pilotApi';
 import type { ExplainResponse } from '@/services/pilotApi';
 import { emitToolInvoked, emitToolSucceeded, emitToolFailed, generateCorrelationId } from '@/services/terraTrace';
@@ -37,23 +37,27 @@ export function TerraPilotPanel({ parcelId, parcelData }: TerraPilotPanelProps) 
       suite: 'pilot',
       correlationId,
       countyId: pilotContext.countyId,
+      parcelId: parcelId ?? undefined,
+      risk: 'read_only',
       actor: { userId: pilotContext.actorId },
     });
 
     try {
+      const req = buildExplainRequest(query, pilotContext);
       const result = await explain({
-        query,
-        parcelId: parcelId ?? undefined,
-        countyId: pilotContext.countyId,
-        actorId: pilotContext.actorId,
+        query: req.query,
+        parcelId: req.context.parcelId ?? undefined,
+        countyId: req.context.countyId,
+        actorId: req.context.actorId,
         source: 'TerraPilotPanel',
-        parcelSummary: pilotContext.parcelSummary,
-        statutes: pilotContext.statutes,
+        parcelSummary: req.context.parcelSummary,
+        statutes: req.context.statutes,
       });
       emitToolSucceeded({
         suite: 'pilot',
         correlationId,
         countyId: pilotContext.countyId,
+        parcelId: parcelId ?? undefined,
         actor: { userId: pilotContext.actorId },
       });
       setResponse(result);
@@ -63,6 +67,7 @@ export function TerraPilotPanel({ parcelId, parcelData }: TerraPilotPanelProps) 
         suite: 'pilot',
         correlationId,
         countyId: pilotContext.countyId,
+        parcelId: parcelId ?? undefined,
         actor: { userId: pilotContext.actorId },
         outputSummary: message,
       });

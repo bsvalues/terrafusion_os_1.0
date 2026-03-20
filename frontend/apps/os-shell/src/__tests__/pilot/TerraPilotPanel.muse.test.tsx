@@ -12,6 +12,15 @@ const emitToolInvokedMock = vi.fn();
 const emitToolSucceededMock = vi.fn();
 const emitToolFailedMock = vi.fn();
 
+vi.mock('@/services/pilotApi', () => ({
+  explain: vi.fn().mockResolvedValue({
+    explanation: 'This value is high due to recent market conditions.',
+    sources: [],
+    confidence: 0.9,
+    traceId: 'cid-test-123',
+  }),
+}));
+
 vi.mock('@/auth/useAuthContext', () => ({
   useAuthContext: () => useAuthContextMock(),
   toOsActor: (...args: unknown[]) => toOsActorMock(...args),
@@ -74,16 +83,16 @@ describe('TerraPilotPanel Muse lane', () => {
           risk: 'read_only',
         }),
       );
+      expect(emitToolSucceededMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          suite: 'pilot',
+          correlationId: 'cid-test-123',
+          countyId: '037',
+          parcelId: 'P-100',
+        }),
+      );
     });
 
-    expect(emitToolSucceededMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        suite: 'pilot',
-        correlationId: 'cid-test-123',
-        countyId: '037',
-        parcelId: 'P-100',
-      }),
-    );
     expect(emitToolFailedMock).not.toHaveBeenCalled();
     expect(screen.getByTestId('pilot-trace-id')).toHaveTextContent('cid-test-123');
   });
