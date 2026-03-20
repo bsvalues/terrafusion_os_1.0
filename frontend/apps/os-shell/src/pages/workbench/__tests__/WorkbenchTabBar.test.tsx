@@ -15,7 +15,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense } from 'react';
 import { MemoryRouter, Route, Routes, useOutletContext } from 'react-router-dom';
 
 // ============================================================================
@@ -135,6 +135,25 @@ vi.mock('../../../hooks/usePropertyLookup', () => ({
   usePropertyLookup: () => ({ data: null, loading: false, error: null }),
 }));
 
+vi.mock('../../../stores/propertyStore', () => ({
+  usePropertyStore: vi.fn((selector: (s: any) => any) =>
+    selector({
+      activeParcel: null,
+      activeParcelLoading: false,
+      selectParcel: vi.fn(),
+      clearParcel: vi.fn(),
+      assessments: [],
+      documents: [],
+      appeals: [],
+      taxStatements: [],
+      recordings: [],
+      auditTrail: [],
+      operations: [],
+      recentParcels: [],
+    })
+  ),
+}));
+
 vi.mock('../../../auth/useAuthContext', () => ({
   useAuthContext: vi.fn(() => ({
     isAuthenticated: true,
@@ -162,36 +181,40 @@ vi.mock('../../../auth/useAuth', () => ({
 
 // Import after mocks
 import PropertyWorkbench from '../PropertyWorkbench';
+// Tab components are mocked above with vi.mock(); import them directly (not lazy)
+// so the test's Suspense boundary never blocks on a cold-start dynamic import
+// with fake timers active from setupTests.ts.
+import MockPropertySummary from '../tabs/PropertySummary';
+import MockPropertyForge from '../tabs/PropertyForge';
+import MockPropertyAtlas from '../tabs/PropertyAtlas';
+import MockPropertyDais from '../tabs/PropertyDais';
+import MockPropertyClerk from '../tabs/PropertyClerk';
+import MockPropertyTreasury from '../tabs/PropertyTreasury';
+import MockPropertyAudit from '../tabs/PropertyAudit';
+import MockPropertyDossier from '../tabs/PropertyDossier';
+import MockPropertyPilot from '../tabs/PropertyPilot';
 
 // ============================================================================
 // Test Wrapper
 // ============================================================================
 
 const renderWorkbench = (initialRoute: string = '/property/12345-001') => {
-  const PropertySummary = lazy(() => import('../tabs/PropertySummary'));
-  const PropertyForge = lazy(() => import('../tabs/PropertyForge'));
-  const PropertyAtlas = lazy(() => import('../tabs/PropertyAtlas'));
-  const PropertyDais = lazy(() => import('../tabs/PropertyDais'));
-  const PropertyClerk = lazy(() => import('../tabs/PropertyClerk'));
-  const PropertyTreasury = lazy(() => import('../tabs/PropertyTreasury'));
-  const PropertyAudit = lazy(() => import('../tabs/PropertyAudit'));
-  const PropertyDossier = lazy(() => import('../tabs/PropertyDossier'));
-  const PropertyPilot = lazy(() => import('../tabs/PropertyPilot'));
-
+  // Use mocked components directly (not lazy) to avoid Suspense hanging with
+  // fake timers active from setupTests.ts. vi.mock() provides synchronous mocks.
   return render(
     <MemoryRouter initialEntries={[initialRoute]}>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           <Route path='/property/:parcelId' element={<PropertyWorkbench />}>
-            <Route index element={<PropertySummary />} />
-            <Route path='forge' element={<PropertyForge />} />
-            <Route path='atlas' element={<PropertyAtlas />} />
-            <Route path='dais' element={<PropertyDais />} />
-            <Route path='clerk' element={<PropertyClerk />} />
-            <Route path='treasury' element={<PropertyTreasury />} />
-            <Route path='audit' element={<PropertyAudit />} />
-            <Route path='dossier' element={<PropertyDossier />} />
-            <Route path='pilot' element={<PropertyPilot />} />
+            <Route index element={<MockPropertySummary />} />
+            <Route path='forge' element={<MockPropertyForge />} />
+            <Route path='atlas' element={<MockPropertyAtlas />} />
+            <Route path='dais' element={<MockPropertyDais />} />
+            <Route path='clerk' element={<MockPropertyClerk />} />
+            <Route path='treasury' element={<MockPropertyTreasury />} />
+            <Route path='audit' element={<MockPropertyAudit />} />
+            <Route path='dossier' element={<MockPropertyDossier />} />
+            <Route path='pilot' element={<MockPropertyPilot />} />
           </Route>
         </Routes>
       </Suspense>
