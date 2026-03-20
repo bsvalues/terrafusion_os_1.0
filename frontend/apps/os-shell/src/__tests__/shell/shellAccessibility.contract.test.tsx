@@ -189,7 +189,7 @@ describe('Taskbar Accessibility Contracts (source inspection)', () => {
   beforeAll(async () => {
     const fs = await import('fs');
     taskbarSource = fs.readFileSync(
-      'frontend/apps/os-shell/src/shell/desktop/Taskbar.tsx',
+      'apps/os-shell/src/shell/desktop/Taskbar.tsx',
       'utf-8'
     );
   });
@@ -232,7 +232,7 @@ describe('Top Bar Accessibility Contracts (source inspection)', () => {
   beforeAll(async () => {
     const fs = await import('fs');
     desktopSource = fs.readFileSync(
-      'frontend/apps/os-shell/src/shell/desktop/Desktop.tsx',
+      'apps/os-shell/src/shell/desktop/Desktop.tsx',
       'utf-8'
     );
   });
