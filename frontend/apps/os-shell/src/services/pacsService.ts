@@ -1,8 +1,8 @@
 /**
- * pacsService — Typed wrappers for /ops/pacs/* endpoints.
+ * pacsService — Typed wrappers for property data endpoints.
  *
- * Uses a root-level axios instance (not /api base) because
- * PACS ops live under /ops/pacs/ rather than /api/*.
+ * In development mode uses /api/properties (SQLite dev DB).
+ * In production uses /ops/pacs/* (live Harris PACS).
  *
  * @module services/pacsService
  */
@@ -68,6 +68,43 @@ export interface PacsPropertiesPage {
   totalCount: number;
 }
 
+// ── Backend DTO (from /api/properties) ──────────────────────────────────
+
+interface BackendPropertyDto {
+  id: string;
+  parcelNumber: string;
+  address: string;
+  ownerName: string | null;
+  assessedValue: number;
+  landValue: number;
+  improvementValue: number;
+  countyId: string;
+  countyName: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface BackendPagedResult {
+  items: BackendPropertyDto[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+function mapToSummary(dto: BackendPropertyDto): PacsPropertySummary {
+  return {
+    propId: 0,
+    geoId: dto.parcelNumber,
+    address: dto.address ?? '',
+    assessedValue: dto.assessedValue ?? 0,
+    marketValue: dto.assessedValue ?? 0, // market ≈ assessed in dev data
+    propertyType: '',
+  };
+}
+
 // ── API calls ───────────────────────────────────────────────────────────
 
 export async function getPacsProof(): Promise<PacsProofResponse> {
@@ -78,9 +115,24 @@ export async function getPacsProof(): Promise<PacsProofResponse> {
 export async function getPacsProperties(
   page = 1,
   pageSize = 10,
+  search?: string,
 ): Promise<PacsPropertiesPage> {
-  const { data } = await ops.get<PacsPropertiesPage>('/ops/pacs/properties', {
-    params: { page, pageSize },
-  });
-  return data;
+  // Try /api/properties first (works with SQLite dev DB)
+  try {
+    const params: Record<string, string | number> = { page, pageSize };
+    if (search) params.search = search;
+    const { data } = await ops.get<BackendPagedResult>('/api/properties', { params });
+    return {
+      items: data.items.map(mapToSummary),
+      page: data.page,
+      pageSize: data.pageSize,
+      totalCount: data.totalCount,
+    };
+  } catch {
+    // Fall back to /ops/pacs/properties (live PACS)
+    const { data } = await ops.get<PacsPropertiesPage>('/ops/pacs/properties', {
+      params: { page, pageSize },
+    });
+    return data;
+  }
 }

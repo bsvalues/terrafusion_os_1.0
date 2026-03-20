@@ -15,7 +15,7 @@ public class SovereignGuard
     public SovereignGuard(ILogger<SovereignGuard> logger, string? manifestPath = null)
     {
         _logger = logger;
-        _manifestPath = manifestPath ?? Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "sovereign.yaml");
+        _manifestPath = manifestPath ?? FindManifest();
     }
 
     /// <summary>
@@ -54,6 +54,20 @@ public class SovereignGuard
 
         _logger.LogInformation("Sovereign manifest verified. Hash: {Hash}", hash);
         return new SovereignVerification(true, hash, null);
+    }
+
+    /// <summary>Walk up from bin dir to find sovereign.yaml at repo root.</summary>
+    private static string FindManifest()
+    {
+        var dir = AppContext.BaseDirectory;
+        while (dir != null)
+        {
+            var candidate = Path.Combine(dir, "sovereign.yaml");
+            if (File.Exists(candidate)) return candidate;
+            dir = Directory.GetParent(dir)?.FullName;
+        }
+        // Fallback to original path if walk-up fails
+        return Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "..", "sovereign.yaml");
     }
 
     private static string ComputeHash(string content)
