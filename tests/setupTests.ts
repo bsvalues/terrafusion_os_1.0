@@ -135,6 +135,14 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
 }));
 
+// Mock scrollIntoView for cmdk and other components that call it in jsdom
+Element.prototype.scrollIntoView = vi.fn();
+
+// Mock hasPointerCapture for Radix UI Select and other pointer-capture components in jsdom
+Element.prototype.hasPointerCapture = vi.fn().mockReturnValue(false);
+Element.prototype.setPointerCapture = vi.fn();
+Element.prototype.releasePointerCapture = vi.fn();
+
 // Setup MSW (if available)
 beforeAll(() => {
   if (server) {

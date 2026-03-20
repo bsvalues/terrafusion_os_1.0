@@ -48,6 +48,21 @@ vi.mock('../../config/moduleComponents', () => ({
   }),
 }));
 
+vi.mock('../../auth/useAuthContext', () => ({
+  useAuthContext: vi.fn(() => ({
+    isAuthenticated: true,
+    userId: 'u-test',
+    countyId: 'benton',
+    roles: ['EnterpriseAdmin'],
+    token: null,
+  })),
+  toOsActor: vi.fn((auth: any) => ({
+    userId: auth.userId ?? 'u-test',
+    countyId: auth.countyId ?? 'benton',
+    roles: auth.roles ?? [],
+  })),
+}));
+
 // Import after mocks
 import { ModuleRouteBridge } from '../ModuleRouteBridge';
 
