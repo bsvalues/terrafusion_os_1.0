@@ -123,6 +123,16 @@ jobs:
           done
           echo "::endgroup::"
 
+      - name: Helm lint — all service charts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for chart in backend/helm/terrafusion-api backend/helm/terrafusion-consciousness backend/helm/terrafusion-gateway backend/helm/terrafusion-operations; do
+            echo "Linting $chart..."
+            helm lint "$chart" --strict
+          done
+          echo "All service charts lint clean"
+
       - name: Validate Kubernetes manifests
         if: steps.detect-charts.outputs.present == 'true'
         run: |
