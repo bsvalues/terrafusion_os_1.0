@@ -17,7 +17,7 @@ interface OperationalQueueProps {
   accentVar?: string;
 }
 
-const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
+const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
 
 export function OperationalQueue({
   title,

@@ -50,7 +50,7 @@ export const PropertySummary: React.FC = () => {
   const appeals = usePropertyStore((s) => s.appeals);
 
   return (
-    <div className="space-y-6 p-1">
+    <div className="space-y-6 p-6">
       {/* Identity Grid */}
       <BentoGrid columns={4} gap={0.75} padding={0}>
         <BentoCard variant="stat" title="Parcel ID">

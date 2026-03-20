@@ -42,11 +42,11 @@ import { CURRENT_YEAR, TAX_YEARS } from './forge/types';
 type ForgeSubTab = 'overview' | 'cost' | 'sales' | 'income' | 'reconcile';
 
 const SUB_TABS: { id: ForgeSubTab; label: string; icon: string }[] = [
-  { id: 'overview',   label: 'Overview',       icon: '\uD83D\uDD25' },
-  { id: 'cost',       label: 'Cost',           icon: '\uD83C\uDFD7\uFE0F' },
-  { id: 'sales',      label: 'Sales',          icon: '\uD83C\uDFD8\uFE0F' },
-  { id: 'income',     label: 'Income',         icon: '\uD83D\uDCB0' },
-  { id: 'reconcile',  label: 'Reconciliation', icon: '\u2696\uFE0F' },
+  { id: 'overview',   label: 'Overview',       icon: '🔥' },
+  { id: 'cost',       label: 'Cost',           icon: '🏗️' },
+  { id: 'sales',      label: 'Sales',          icon: '🏘️' },
+  { id: 'income',     label: 'Income',         icon: '💰' },
+  { id: 'reconcile',  label: 'Reconciliation', icon: '⚖️' },
 ];
 
 const FORGE_SUB_TABS = new Set<ForgeSubTab>(SUB_TABS.map((tab) => tab.id));
@@ -100,7 +100,7 @@ export const PropertyForge: React.FC = () => {
     <div className="tf-suite-forge space-y-4" data-testid="property-forge-tab">
       {/* Header */}
       <ParcelContextHeader
-        icon="\uD83D\uDD25"
+        icon="🔥"
         title="TerraForge"
         parcelId={parcelId}
         subtitle={`AI-powered valuation analysis for ${parcelId}`}

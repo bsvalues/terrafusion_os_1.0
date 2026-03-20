@@ -294,15 +294,15 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   /** SuiteCompass items filtered by role visibility */
   const compassItems = useMemo<SuiteCompassItem[]>(() => {
     const compassMap: Record<WorkbenchTabSlug, SuiteCompassItem> = {
-      summary:  { slug: 'summary',  label: 'Summary',       shortLabel: 'Sum',     icon: '\uD83D\uDCCA', affordance: 'Parcel at a glance',  color: 'var(--tf-accent)' },
-      forge:    { slug: 'forge',    label: 'TerraForge',    shortLabel: 'Forge',   icon: '\uD83D\uDD28', affordance: 'Build value',         color: 'var(--tf-suite-forge)' },
-      atlas:    { slug: 'atlas',    label: 'TerraAtlas',    shortLabel: 'Atlas',   icon: '\uD83D\uDDFA\uFE0F', affordance: 'See the county',      color: 'var(--tf-suite-atlas)' },
-      dais:     { slug: 'dais',     label: 'TerraDais',     shortLabel: 'Dais',    icon: '\u2696\uFE0F', affordance: 'Operate value',       color: 'var(--tf-suite-dais)' },
-      clerk:    { slug: 'clerk',    label: 'TerraClerk',    shortLabel: 'Clerk',   icon: '\uD83D\uDCDC', affordance: 'Record & title',      color: 'var(--tf-accent)' },
-      treasury: { slug: 'treasury', label: 'TerraTreasury', shortLabel: 'Treas',   icon: '\uD83D\uDCB0', affordance: 'Tax collection',      color: 'var(--tf-accent)' },
-      audit:    { slug: 'audit',    label: 'TerraAudit',    shortLabel: 'Audit',   icon: '\uD83D\uDD0D', affordance: 'Financial compliance', color: 'var(--tf-accent)' },
-      dossier:  { slug: 'dossier',  label: 'TerraDossier',  shortLabel: 'Dossier', icon: '\uD83D\uDCCB', affordance: 'Prove the decision',  color: 'var(--tf-suite-dossier)' },
-      pilot:    { slug: 'pilot',    label: 'TerraPilot',    shortLabel: 'Pilot',   icon: '\uD83E\uDD16', affordance: 'Act or draft',        color: 'var(--tf-accent)' },
+      summary:  { slug: 'summary',  label: 'Summary',       shortLabel: 'Sum',     icon: '📊', affordance: 'Parcel at a glance',  color: 'var(--tf-accent)' },
+      forge:    { slug: 'forge',    label: 'TerraForge',    shortLabel: 'Forge',   icon: '🔨', affordance: 'Build value',         color: 'var(--tf-suite-forge)' },
+      atlas:    { slug: 'atlas',    label: 'TerraAtlas',    shortLabel: 'Atlas',   icon: '🗺️', affordance: 'See the county',      color: 'var(--tf-suite-atlas)' },
+      dais:     { slug: 'dais',     label: 'TerraDais',     shortLabel: 'Dais',    icon: '⚖️', affordance: 'Operate value',       color: 'var(--tf-suite-dais)' },
+      clerk:    { slug: 'clerk',    label: 'TerraClerk',    shortLabel: 'Clerk',   icon: '📜', affordance: 'Record & title',      color: 'var(--tf-accent)' },
+      treasury: { slug: 'treasury', label: 'TerraTreasury', shortLabel: 'Treas',   icon: '💰', affordance: 'Tax collection',      color: 'var(--tf-accent)' },
+      audit:    { slug: 'audit',    label: 'TerraAudit',    shortLabel: 'Audit',   icon: '🔍', affordance: 'Financial compliance', color: 'var(--tf-accent)' },
+      dossier:  { slug: 'dossier',  label: 'TerraDossier',  shortLabel: 'Dossier', icon: '📋', affordance: 'Prove the decision',  color: 'var(--tf-suite-dossier)' },
+      pilot:    { slug: 'pilot',    label: 'TerraPilot',    shortLabel: 'Pilot',   icon: '🤖', affordance: 'Act or draft',        color: 'var(--tf-accent)' },
     };
     return visibleTabs.map((slug) => compassMap[slug]);
   }, [visibleTabs]);

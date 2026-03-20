@@ -154,10 +154,11 @@ export const VALUATION_REASON_CODES = [
 
 /* ── Utilities ──────────────────────────────────────────── */
 
-export const fmtCurrency = (v: number) => (v ? `$${v.toLocaleString()}` : '—');
+export const fmtCurrency = (v: number | undefined | null) =>
+  v != null ? `$${v.toLocaleString()}` : '—';
 
-export const formatCurrency = (value: number | undefined) =>
-  value !== undefined ? `$${value.toLocaleString()}` : 'N/A';
+export const formatCurrency = (value: number | undefined | null) =>
+  value != null ? `$${value.toLocaleString()}` : 'N/A';
 
-export const formatConfidence = (value: number | undefined) =>
-  value !== undefined ? `${Math.round(value * 100)}%` : 'N/A';
+export const formatConfidence = (value: number | undefined | null) =>
+  value != null ? `${Math.round(value * 100)}%` : 'N/A';

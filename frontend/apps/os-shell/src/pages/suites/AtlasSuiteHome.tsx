@@ -37,7 +37,7 @@ const ATLAS_MODULES: SuiteModuleDef[] = [
   { id: 'terra-gis-pro', label: 'TerraGIS Pro', icon: Map, description: 'Full county-wide GIS platform — advanced cartography & spatial analysis', launchMode: 'standalone', moduleId: 'terra-gis' },
 ];
 
-const fmtNum = (n: number) => n.toLocaleString();
+const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 
 export default function AtlasSuiteHome() {
   const navigate = useNavigate();

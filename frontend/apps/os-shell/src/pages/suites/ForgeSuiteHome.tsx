@@ -48,8 +48,8 @@ const FORGE_MODULES: SuiteModuleDef[] = [
   { id: 'coefficient-preview', label: 'Coefficient Preview', icon: Scale, description: 'Current vs proposed coefficient comparison with parcel impact analysis', launchMode: 'standalone', moduleId: 'coefficient-preview' },
 ];
 
-const fmtNum = (n: number) => n.toLocaleString();
-const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
+const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
+const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
 
 export default function ForgeSuiteHome() {
   const navigate = useNavigate();
@@ -74,7 +74,7 @@ export default function ForgeSuiteHome() {
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Avg Assessed</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtCurrency(stats.averageAssessedValue)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Assessed This Year</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.assessedThisYear)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Pending</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-suite-forge))' }}>{fmtNum(stats.pendingAssessments)}</span></div>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Completion</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{stats.assessmentCompletionPercent.toFixed(1)}%</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Completion</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{(stats.assessmentCompletionPercent ?? 0).toFixed(1)}%</span></div>
         </div>
       )}
 

@@ -26,6 +26,18 @@ public class PropertyDto
     [Range(0, double.MaxValue)]
     public decimal ImprovementValue { get; set; }
 
+    [Range(0, double.MaxValue)]
+    public decimal MarketValue { get; set; }
+
+    [StringLength(100)]
+    public string? PropertyType { get; set; }
+
+    public int? YearBuilt { get; set; }
+
+    public int TaxYear { get; set; }
+
+    public DateTime AssessmentDate { get; set; }
+
     [Required]
     public Guid CountyId { get; set; }
 

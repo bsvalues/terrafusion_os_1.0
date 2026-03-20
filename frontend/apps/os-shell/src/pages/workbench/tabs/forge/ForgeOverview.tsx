@@ -225,7 +225,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
                 compareEnabled ? 'tf-suite-active' : 'tf-panel tf-text-secondary tf-hover-surface'
               }`}
             >
-              <span>{compareEnabled ? '\uD83D\uDCCA' : '\uD83D\uDCC8'}</span>
+              <span>{compareEnabled ? '📊' : '📈'}</span>
               <span>Year-over-Year Comparison</span>
               {compareEnabled && <span className="ml-auto tf-suite-accent-text">&check;</span>}
             </button>
