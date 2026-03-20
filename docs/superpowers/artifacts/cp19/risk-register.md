@@ -24,6 +24,13 @@ Status: COMPLETE
 | SEC-016 | `TerraFusion.API/appsettings.Development.json` — `TF_Pacs2026!` (×2) + dev JWT | HIGH | Security | **CLOSED** — O1 final sweep, commit `bdb82ad31` | ✅ CLOSED |
 | SEC-017 | `TerraFusion.API/appsettings.BentonCounty.json` — `Password=postgres` | HIGH | Security | **CLOSED** — O1 final sweep, commit `bdb82ad31` | ✅ CLOSED |
 | SEC-018 | `backend/publish/appsettings.json` — JWT secret in build artifact | CRITICAL | Security | **CLOSED** — O1 final sweep, commit `bdb82ad31`; `backend/publish/` added to `.gitignore` | ✅ CLOSED |
+| SEC-019 | `.env.vim` tracked in git — live prod secrets (`tf_prod_p@ssw0rd_2025!` + JWT `c8a9f7b1...`) | CRITICAL | Security | **CLOSED** — wiped; `.env.vim` gitignored — commit `b57932e3e` | ✅ CLOSED |
+| SEC-020 | `.env.template` hardcoded port 5000 (PORT RULE violation) | LOW | Platform | **CLOSED** — `${TF_API_PORT:-5046}` — commit `b57932e3e` | ✅ CLOSED |
+| SEC-021 | `backend/compose.dev.yml` `POSTGRES_PASSWORD: dev_password_123` hardcoded | HIGH | Security | **CLOSED** — env var — commit `b57932e3e` | ✅ CLOSED |
+| SEC-022 | `docker-compose.bulletproof.yml` + `docker-compose.microservices.yml` — 19 `${VAR:-TerraFusion2024!}` silent-fail defaults | CRITICAL | Security | **CLOSED** — fail-loud — commit `b57932e3e` | ✅ CLOSED |
+| SEC-023 | `BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK/docker-compose.yml` — `championship_password_2024` ×10 + Grafana `championship2024` | CRITICAL | Security | **CLOSED** — fail-loud env vars — commit `176bff7e1` | ✅ CLOSED |
+| SEC-024 | `.ci_artifacts_local/docker-compose.dev.yml` — `KEYCLOAK_ADMIN_PASSWORD: admin` + postgres soft-defaults ×2 | HIGH | Security | **CLOSED** — fail-loud env vars — commit `176bff7e1` | ✅ CLOSED |
+| SEC-025 | `backend/compose.dev.yml` — `PGADMIN_DEFAULT_PASSWORD: dev_admin_123` + `dev_local_only` soft-default | HIGH | Security | **CLOSED** — fail-loud env vars; plaintext scrubbed from comments — commit `6d663a96e` | ✅ CLOSED |
 | SWARM-8A | Swarm load test (1,008 agents) not executed in live staging | MEDIUM | SRE / AI Swarm Lane | Execute before opening production traffic; AI Swarm lane owns | ⏸ DEFERRED (pre-launch) |
 | SWARM-8B | Queue depth guard proof not executed in live staging | MEDIUM | SRE / AI Swarm Lane | Execute Phase 8-B in staging before production traffic | ⏸ DEFERRED (pre-launch) |
 | SWARM-8C | Break-glass drill with swarm active not executed | MEDIUM | SRE / AI Swarm Lane | Execute Phase 8-C in staging before production traffic | ⏸ DEFERRED (pre-launch) |
@@ -39,5 +46,5 @@ Per `sovereign.yaml` Law 6 (zero tolerance for unlogged risk):
 - No implicit carry-forward. Every deferred item has an owner and resolution path.
 - SWARM-8A/B/C, SRE-RESTORE, SRE-DR: must complete BEFORE production traffic begins.
 - **SEC-005-ROTATE + SRE-O1-OPS: hard/required pre-launch gates — JWT key rotation and env var deployment MUST complete before any traffic opens. Prior values are in git history and must be treated as compromised.**
-- O1 code sweep COMPLETE (2026-03-19): SEC-001 through SEC-018 all CLOSED. Zero hardcoded credentials remain in any tracked non-QUARANTINE config file.
+- O1 code sweep COMPLETE (2026-03-19, Rounds 1–3): SEC-001 through SEC-025 all CLOSED. Zero hardcoded credentials remain in any tracked non-QUARANTINE config, compose, or env file. `.env.vim` (live prod secrets) wiped and gitignored. All soft-default patterns (`${VAR:-literal}`) converted to fail-loud (`${VAR:?...}`).
 - PACS-LIVE, CODEX-PHASE9: post-launch accepted risks (not blockers).
