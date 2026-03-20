@@ -228,7 +228,7 @@ export const PropertyAudit: React.FC = () => {
   // ── Render ──
 
   return (
-    <div className='tf-suite-audit space-y-6'>
+    <div className='tf-suite-audit space-y-4'>
       <ParcelContextHeader icon='🔍' title='TerraAudit' parcelId={parcelId} subtitle={`Financial compliance & audit for ${parcelId}`} />
 
       {/* Audit Trail from Store */}
@@ -259,7 +259,7 @@ export const PropertyAudit: React.FC = () => {
         </BentoCard>
       )}
 
-      <BentoGrid columns={3} gap={1.5}>
+      <BentoGrid columns="auto" gap={1.5}>
 
         {/* Roll Summary (read_only) */}
         <BentoCard title='📋 Roll Summary' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>

@@ -240,7 +240,7 @@ export const PropertyClerk: React.FC = () => {
   // ── Render ──
 
   return (
-    <div className='tf-suite-clerk space-y-6'>
+    <div className='tf-suite-clerk space-y-4'>
       <ParcelContextHeader icon='📜' title='TerraClerk' parcelId={parcelId} subtitle={`Recording & title services for ${parcelId}`} />
 
       {/* Recent Recordings from Store */}
@@ -271,7 +271,7 @@ export const PropertyClerk: React.FC = () => {
         </BentoCard>
       )}
 
-      <BentoGrid columns={3} gap={1.5}>
+      <BentoGrid columns="auto" gap={1.5}>
 
         {/* Search Recorded Documents (read_only) */}
         <BentoCard title='🔍 Search Recorded Documents' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>

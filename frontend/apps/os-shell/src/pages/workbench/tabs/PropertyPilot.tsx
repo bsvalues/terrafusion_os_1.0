@@ -142,7 +142,7 @@ export const PropertyPilot: React.FC = () => {
   const traceList = usePilotTraceList({ parcelId });
 
   return (
-    <div className='tf-suite-pilot space-y-6' data-testid='property-pilot-tab'>
+    <div className='tf-suite-pilot space-y-4' data-testid='property-pilot-tab'>
       {/* Header */}
       <ParcelContextHeader
         icon='🎮'

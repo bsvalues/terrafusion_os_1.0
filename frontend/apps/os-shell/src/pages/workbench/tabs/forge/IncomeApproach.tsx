@@ -89,7 +89,7 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
   /* ── Render ───────────────────────────────────────────── */
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Full IncomeValuationPanel — existing 555-line component, no changes */}
       <IncomeValuationPanel taxYear={taxYear} />
 

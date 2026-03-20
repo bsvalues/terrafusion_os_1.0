@@ -574,7 +574,7 @@ export const PropertyDossier: React.FC = () => {
   }, [parcelId]);
 
   return (
-    <div className='tf-suite-dossier space-y-6' data-testid='property-dossier-tab'>
+    <div className='tf-suite-dossier space-y-4' data-testid='property-dossier-tab'>
       {/* Header */}
       <ParcelContextHeader
         icon="📁"
@@ -585,7 +585,7 @@ export const PropertyDossier: React.FC = () => {
 
       {/* Documents on File from Store */}
       {documents.length > 0 && (
-        <BentoGrid columns={3} gap={0.75} padding={0}>
+        <BentoGrid columns="auto" gap={0.75} padding={0}>
           <BentoCard variant="stat" title="Documents on File">
             <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}>
               {documents.length}
@@ -662,7 +662,7 @@ export const PropertyDossier: React.FC = () => {
 
         {/* Details sections — 4 BentoGrid cards */}
         {dossierDetails.data && (
-          <BentoGrid columns={2} gap={1.5} padding={0}>
+          <BentoGrid columns="auto" gap={1.5} padding={0}>
             {/* Property */}
             <BentoCard title="Property" actions={<span>🏠</span>}>
               {dossierDetails.data.property

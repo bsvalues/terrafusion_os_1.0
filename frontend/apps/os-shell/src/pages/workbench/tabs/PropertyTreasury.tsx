@@ -289,12 +289,12 @@ export const PropertyTreasury: React.FC = () => {
   // ── Render ──
 
   return (
-    <div className='tf-suite-treasury space-y-6'>
+    <div className='tf-suite-treasury space-y-4'>
       <ParcelContextHeader icon='💰' title='TerraTreasury' parcelId={parcelId} subtitle={`Tax & collection services for ${parcelId}`} />
 
       {/* Tax History from Store */}
       {taxStatements.length > 0 && (
-        <BentoGrid columns={4} gap={0.75} padding={0}>
+        <BentoGrid columns="auto" gap={0.75} padding={0}>
           {taxStatements.slice(0, 4).map((ts) => (
             <BentoCard key={ts.statementId} variant="stat" title={`${ts.taxYear} Tax`}>
               <p className="text-lg font-bold" style={{ color: 'hsl(var(--tf-text))' }}>
@@ -308,7 +308,7 @@ export const PropertyTreasury: React.FC = () => {
         </BentoGrid>
       )}
 
-      <BentoGrid columns={3} gap={1.5}>
+      <BentoGrid columns="auto" gap={1.5}>
 
         {/* Tax Statement (read_only) */}
         <BentoCard title='📄 Tax Statement' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>

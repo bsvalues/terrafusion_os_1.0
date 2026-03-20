@@ -170,10 +170,10 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
   /* ── Render ───────────────────────────────────────────── */
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Valuation Context from Store */}
       {(activeParcel || assessments.length > 0) && (
-        <BentoGrid columns={4} gap={0.75} padding={0}>
+        <BentoGrid columns="auto" gap={0.75} padding={0}>
           {activeParcel && (
             <BentoCard variant="stat" title="Current Market Value">
               <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}>
@@ -202,7 +202,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
       )}
 
       {/* Main Content Grid — Controls + Results */}
-      <BentoGrid columns={3} gap={1.5} padding={0}>
+      <BentoGrid columns="auto" gap={1.5} padding={0}>
         {/* Controls Panel */}
         <BentoCard variant="form" title="Valuation Parameters" actions={<span>&#9881;&#65039;</span>}>
           {/* Audience Selector */}

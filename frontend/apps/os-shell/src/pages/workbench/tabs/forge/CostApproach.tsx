@@ -81,7 +81,7 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
   /* ── Render ───────────────────────────────────────────── */
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Model Inputs */}
       <BentoCard title="&#128269; Model Inputs" variant="default">
         <p className="tf-text-tertiary text-sm mb-4">
