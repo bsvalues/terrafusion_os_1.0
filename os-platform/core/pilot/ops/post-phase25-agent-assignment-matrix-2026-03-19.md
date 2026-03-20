@@ -4,12 +4,19 @@ Date: 2026-03-19
 Status: READY
 Scope: Concrete agent and subagent ownership matrix for the post-Phase-25 execution plan
 
+## Update -- 2026-03-20
+
+- Agent A is complete.
+- Sanitized closure artifact: `os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md`
+- Agent B has remediated the leak-guard drift; strict coverage is green and the rerun artifact is `os-platform/core/pilot/ops/leak-guard-remediation-status-2026-03-20.md`.
+- Remaining open lanes are Agent C reconciliation against the remaining live SRE/rehearsal blockers and the unrelated frontend full-root failures now named by Agent B.
+
 ## Top-Level Agents
 
 | Agent | Human owner role | AI owner | Mission | Blocking deliverable |
 |---|---|---|---|---|
-| Agent A | Security owner | Copilot-A | Close `SEC-005-ROTATE` and publish rotation proof | JWT rotation receipt + verification bundle |
-| Agent B | Governance owner | Copilot-B | Restore governance green by remediating leak-guard drift | strict leak-guard pass + full-root Vitest rerun |
+| Agent A | Security owner | Copilot-A | Completed `SEC-005-ROTATE` and published rotation proof | JWT rotation receipt + verification bundle |
+| Agent B | Governance owner | Copilot-B | Restore honest full-root Vitest green by fixing only the separate frontend contract/accessibility cluster | targeted frontend proof + full-root Vitest rerun summary |
 | Agent C | Release truth owner | Copilot-C | Build final release authorization packet from sealed phases and remediation outputs | release authorization packet |
 
 Agent A execution note:
@@ -23,9 +30,9 @@ Agent A execution note:
 | A1 Rotation inventory | Agent A | Security owner | Map JWT secret sources, consumers, and deployment surfaces | environment-specific inventory commands; repo grep over auth and deployment surfaces | JWT inventory, source/consumer map |
 | A2 Rotation execution | Agent A | Security owner | Rotate JWT signing material in the approved authority | environment-specific rotation commands and deployment update commands; must update the live `JwtSettings:SecretKey` path | rotation receipt, update ledger, rollback instructions |
 | A3 Post-rotation verification | Agent A | Security owner | Verify issuance and validation after rotation | service auth smoke commands; surface verification commands; confirm no default-key fallback | auth verification log, blocker closure note |
-| B1 Coverage inventory | Agent B | Governance owner | De-duplicate and cluster uncovered leak-guard paths | `pnpm exec vitest run os-platform/core/tests/leak-guard-strict-components-coverage.test.ts --reporter=verbose` | de-duplicated coverage inventory |
-| B2 Rule-model diagnosis | Agent B | Governance owner | Decide whether fix is guards, mapping, or eligibility narrowing | test-source inspection; coverage-map inspection; guard-file search | diagnosis memo, approved repair pattern |
-| B3 Remediation waves | Agent B | Governance owner | Execute bounded remediation waves and restore full-root green | `pnpm exec vitest run os-platform/core/tests/leak-guard-strict-components-coverage.test.ts --reporter=verbose`; `pnpm exec vitest run` | wave proofs, final green summary |
+| B1 Failure inventory | Agent B | Governance owner | Isolate the seven remaining frontend failures and confirm leak-guard stays closed | targeted Vitest commands for the seven failing files | isolated failure ledger |
+| B2 Frontend diagnosis | Agent B | Governance owner | Decide the bounded fix for the TerraCanon and shell accessibility/keyboard cluster | test-source inspection; target file reads; failure proof review | diagnosis memo, approved repair pattern |
+| B3 Frontend remediation waves | Agent B | Governance owner | Execute bounded frontend proof waves and restore honest full-root green | targeted seven-file Vitest reruns; `pnpm exec vitest run` | wave proofs, final rerun summary |
 | C1 Evidence collation | Agent C | Release truth owner | Collect all sealed artifacts and remediation references | repo evidence inventory commands; packet artifact reads | evidence manifest draft |
 | C2 Truth reconciliation | Agent C | Release truth owner | Align release packet claims with repo truth | artifact comparison and checklist reconciliation | truth reconciliation memo |
 | C3 Authorization draft | Agent C | Release truth owner | Prepare final GO / HOLD packet and sign-off checklist | document assembly commands only | authorization packet draft, sign-off checklist |
@@ -54,6 +61,19 @@ pnpm exec vitest run os-platform/core/tests/leak-guard-strict-components-coverag
 pnpm exec vitest run
 ```
 
+### Frontend cluster restoration commands
+
+```powershell
+pnpm exec vitest run frontend/apps/os-shell/src/__tests__/desktop/TerraCanonCrossTabSyncContract.test.tsx --reporter=verbose
+pnpm exec vitest run frontend/apps/os-shell/src/__tests__/desktop/TerraCanonMultiWorkspaceSwitcherContract.test.tsx --reporter=verbose
+pnpm exec vitest run frontend/apps/os-shell/src/__tests__/desktop/TerraCanonRenameWorkspaceIntentContract.test.tsx --reporter=verbose
+pnpm exec vitest run frontend/apps/os-shell/src/__tests__/desktop/TerraCanonReopenWorkspaceIntentContract.test.tsx --reporter=verbose
+pnpm exec vitest run frontend/apps/os-shell/src/__tests__/desktop/TerraCanonWorkspacePersistenceSpineContract.test.tsx --reporter=verbose
+pnpm exec vitest run frontend/apps/os-shell/src/__tests__/shell/shellAccessibility.contract.test.tsx --reporter=verbose
+pnpm exec vitest run frontend/apps/os-shell/src/__tests__/shell/shellKeyboardFocus.contract.test.ts --reporter=verbose
+pnpm exec vitest run --reporter=verbose
+```
+
 ### Frontend proof preservation anchor
 
 ```powershell
@@ -68,12 +88,12 @@ Security rotation commands are environment-specific and must be taken from the a
 
 | Gate | Owner | Pass condition |
 |---|---|---|
-| Security blocker closure | Agent A | `SEC-005-ROTATE` no longer listed as hard blocker and verification bundle exists |
-| Governance green restoration | Agent B | strict leak-guard coverage test passes and full-root Vitest is green |
+| Security blocker closure | Agent A | PASS on 2026-03-20: `SEC-005-ROTATE` no longer listed as hard blocker and verification bundle exists |
+| Frontend cluster restoration | Agent B | seven named frontend failures are fixed while leak-guard remains green and the full-root Vitest rerun is honest |
 | Release truth closure | Agent C | packet contains no placeholder blocker lines and all evidence references exact artifacts |
 
 ## Non-Goals
 
 - no reuse of the sealed contract-repair lane as evidence for leak-guard remediation
 - no weakening of governance policy to obtain a pass
-- no release-ready claim until Agent A and Agent B both close successfully
+- no release-ready claim until the remaining live blockers close and the current full-root failure cluster is resolved or explicitly dispositioned

@@ -57,12 +57,13 @@ Status: COMPLETE (GO) — 2026-03-19
 
 Proof:
 - [phase22-multi-county-tenant-isolation.latest.json](../evidence/phase22-multi-county-tenant-isolation.latest.json)
+- `os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md`
 
 Exit target:
 - credentials, promotion authority, and environment access are intentionally hardened and rotated
 
 Current truth:
-- SEC-005-ROTATE (JWT key rotation) = ⛔ HARD BLOCKER — must execute before production traffic
+- SEC-005-ROTATE (JWT key rotation) = COMPLETE — closed 2026-03-20 on the live Hostinger runtime path; see `os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md`
 
 ## Phase 23 -- Frontend Operator Maturity
 Status: COMPLETE (GO) — 2026-03-19
