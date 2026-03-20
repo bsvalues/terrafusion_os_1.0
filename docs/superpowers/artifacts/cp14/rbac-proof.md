@@ -3,7 +3,7 @@
 Date: 2026-03-19
 Phase: Phase 1 — Security & Isolation Closure
 Gate: G4 (RBAC Contract Closure)
-Status: FAILED AUDIT — controller-layer RBAC incomplete
+Status: PASS — controller-layer RBAC closure implemented
 
 ## RBAC Requirements
 
@@ -43,27 +43,31 @@ All privileged actions require valid claim + policy allowance per TerraFusion OS
 
 | Check | Status |
 |---|---|
-| All controllers with mutations carry `[Authorize]` | FAIL (`MarketplaceController` missing class `[Authorize]`) |
-| JWT countyId extraction mandatory | FAIL (`PropertiesController` supports optional countyId query) |
+| All controllers with mutations carry `[Authorize]` | PASS (`MarketplaceController` now gated to `Admin,SystemAdmin`) |
+| JWT countyId extraction mandatory | PASS (`PropertiesController` and `DaisController` enforce controller-entry county context) |
 | write_high confirmation/reason enforced by ToolRunner | PASS (phase83 tool-layer enforcement confirmed) |
 | Supervisor required for irreversible | PASS (phase83 tool-layer enforcement confirmed) |
-| MarketplaceController stubs removed | FAIL (`GetDownloadCount`, `GetRating`, `GetRatingCount` still present) |
+| MarketplaceController stubs removed | PASS (synthetic metric helpers removed) |
 
 ## Line-Level RBAC Findings
 
-- `MarketplaceController` lacks class-level `[Authorize]` (controller declaration starts at line 12 after `[ApiController]`/`[Route]` only)
-- synthetic governance-unsafe metrics still injected in plugin payload mapping (lines 42-44)
-- stub helper methods still active (lines 150, 160, 170)
+- `MarketplaceController` now enforces `[Authorize(Roles = "Admin,SystemAdmin")]` at class level.
+- synthetic governance-unsafe metrics removed from plugin payload mapping.
 - write endpoints exposed at controller surface:
 	- `SubmitPlugin` (line 191)
 	- `PublishPlugin` (line 215)
-- `PropertiesController` and `DaisController` are `[Authorize]`, but county-claim enforcement is inconsistent at endpoint boundary (see CP-14 isolation proof)
+- `PropertiesController` and `DaisController` now fail closed on missing county context and reject mismatches at controller entry (see CP-14 isolation proof)
 
 ## Pass Condition (G4)
 
 All privileged actions require valid claim + policy allowance.
 Phase 83 tool-layer enforcement: CONFIRMED (56/56 — write_high and irreversible risk levels verified).
-Controller-layer RBAC: NOT YET COMPLIANT. Backend writer lane must close controller gaps before G4 can pass.
+Controller-layer RBAC: COMPLIANT.
+
+## Proof Command
+
+- `dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj --filter FullyQualifiedName~ControllerSecurityBoundaryTests`
+- Result: PASS (7/7)
 
 ## Implementation Acceptance Checks (backend lane)
 

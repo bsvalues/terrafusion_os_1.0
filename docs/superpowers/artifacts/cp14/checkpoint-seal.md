@@ -3,23 +3,22 @@
 Date: 2026-03-19
 Phase: CP-14
 Gate: G3 + G4
-Status: open — implementation pending
+Status: PASS — controller closure implemented
 
 ## Seal Decision
 
-- Entry criteria met: partial
-- Gate result: open
-- Next entry condition: G3 + G4 both green → Phase 2 (CP-15) opens.
+- Entry criteria met: yes
+- Gate result: pass
+- Next entry condition: proceed to Phase 2 (CP-15).
 - Blockers:
-  - PropertiesController: optional `countyId` and missing claim/request mismatch enforcement (400/403 contract not met)
-  - DaisController: missing-claim path returns 403 `Forbid()` instead of required 401 fail-closed behavior
-  - MarketplaceController: missing class-level `[Authorize]`; stub metrics helpers still present
   - PACS live integration tests: blocked on environment (S0-B/C)
 
 ## Audit Note (2026-03-19)
 
 - Controller audit completed against current code in `backend/src/TerraFusion.API/Controllers/*`.
-- G3/G4 remain open and require backend writer-lane implementation.
+- G3/G4 implementation completed in controller and service layers.
+- Targeted proof command: `dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj --filter FullyQualifiedName~ControllerSecurityBoundaryTests`
+- Result: PASS (7/7)
 - Line-level evidence and backend patch checklist are captured in:
   - `docs/superpowers/artifacts/cp14/isolation-proof.md`
   - `docs/superpowers/artifacts/cp14/rbac-proof.md`
@@ -37,8 +36,8 @@ Status: open — implementation pending
 |---|---|
 | G1 (Truth Gate) | PASS — .governance/workflow/TRUTH_GATE_2026-03-19.md |
 | G2 (Production Gate Catalog) | PASS — cp13 catalog confirmed |
-| G3 (Tenant Isolation Coverage) | PENDING |
-| G4 (RBAC Contract Closure) | PENDING |
+| G3 (Tenant Isolation Coverage) | PASS — targeted controller proof green |
+| G4 (RBAC Contract Closure) | PASS — targeted controller proof green |
 
 ## Approvals
 

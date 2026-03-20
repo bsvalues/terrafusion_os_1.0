@@ -3,7 +3,7 @@
 Date: 2026-03-19
 Phase: Phase 6 — SRE / Operations
 Gate: G8 (SRE Rehearsals)
-Status: DRAFT
+Status: COMPLETE (static content) — on-call names populated at go-live
 
 ## Hypercare Window
 
@@ -56,8 +56,10 @@ P3: Operator → backlog ticket
 ## Release Authority Sign-off
 
 This hypercare plan requires Founder/Release Authority approval before go-live.
+On-call rotation names and release authority approval are populated at go-live execution.
+Static content (incident classification, escalation paths, known issue playbook, communication protocol) is COMPLETE.
 
 | Role | Name | Approval | Timestamp |
 |---|---|---|---|
-| Founder/Release Authority | | pending | |
-| Operations Owner | | pending | |
+| Founder/Release Authority | (populated at go-live) | pending — go-live gate | |
+| Operations Owner | (populated at go-live) | pending — go-live gate | |

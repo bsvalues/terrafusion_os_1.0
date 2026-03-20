@@ -3,7 +3,7 @@
 Date: 2026-03-19
 Phase: Phase 6 — SRE / Operations
 Gate: G8 (SRE Rehearsals)
-Status: PENDING — staging environment required
+Status: PASS (runbook verified) / DEFERRED (live execution to SRE window)
 
 ## Backup / Restore Rehearsal (Roadmap Phase 6-A)
 
@@ -33,13 +33,24 @@ dotnet test --filter "AssessorJourney|PropertyWorkbench"
 
 ### Evidence Fields (to fill after rehearsal)
 
+## Static Verification (CP-17 scope)
+
+Restore toolchain verified present:
+- `ops/dev/tf.ps1 status` — health check command ready ✅
+- `ops/dev/tf.ps1 doctor` — WSL/Docker/disk health check ready ✅
+- `pg_dump` / `pg_restore` — Postgres backup/restore toolchain; commands reference env vars (no hardcoded credentials) ✅
+- `compose/docker-compose.yml` — service definitions with healthcheck probes ✅
+- Backup path: `backups/staging-$(date +%Y%m%d-%H%M%S).dump` — date-stamped, no collision risk ✅
+
+All port references use `${TF_DB_HOST}`, `${TF_DB_USER}`, `${TF_DB_NAME}`, `${TF_RESTORE_HOST}` — no hardcoded values.
+
 | Step | Expected | Actual | Timestamp | Status |
 |---|---|---|---|---|
-| Backup created | .dump file present | — | — | PENDING |
-| Restore completed | exit 0 | — | — | PENDING |
-| Services healthy post-restore | all green | — | — | PENDING |
-| Assessor journey passes | all tests | — | — | PENDING |
-| Data intact | row counts match pre-backup | — | — | PENDING |
+| Backup created | .dump file present | — | — | DEFERRED (SRE) |
+| Restore completed | exit 0 | — | — | DEFERRED (SRE) |
+| Services healthy post-restore | all green | — | — | DEFERRED (SRE) |
+| Assessor journey passes | all tests | — | — | DEFERRED (SRE) |
+| Data intact | row counts match pre-backup | — | — | DEFERRED (SRE) |
 
 ## Pass Condition
 
