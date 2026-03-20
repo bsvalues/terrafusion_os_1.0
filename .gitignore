@@ -29,6 +29,9 @@ backend/publish/
 .env.test.local
 .env.production.local
 .env.benton
+# Vim/editor temp env files (may contain real credentials)
+.env.vim
+*.env.bak
 
 # County cockpit generated artifacts
 /counties/benton/.env
