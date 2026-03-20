@@ -90,3 +90,30 @@ Status: PASS (static layer) / DEFERRED (swarm live rehearsals)
 - O1 code sweep: COMPLETE (Rounds 1–3) — 25 findings (SEC-001 through SEC-025), all CLOSED. Zero hardcoded credentials remain in any tracked non-QUARANTINE config, compose, or env file. `.env.vim` (live prod secrets) wiped and gitignored. All soft-default patterns converted to fail-loud.
 - Deferred: swarm Phase 8 live rehearsals — require staging (Docker unavailable); AI Swarm lane scope restriction applies.
 - All upstream phases CP-14–CP-17 sealed. Upstream blocker fully resolved.
+
+## Scoped Frontend Contract Repair Addendum
+
+Date: 2026-03-19
+Commit: `6f03cd595`
+Lane: Scoped frontend contract-test repair only
+
+### Repaired Suites
+
+| Suite | Status | Notes |
+|---|---|---|
+| `TerraCanonCrossTabSyncContract` | ✅ PASS | Stabilized lazy Canon cold-start in test harness with explicit warmup under real timers |
+| `WorkbenchTabBar` | ✅ PASS | Replaced hanging lazy tab mocks with direct mocked components and mocked property store state |
+| `DesktopIntentContract` | ✅ PASS | Corrected `openWorkbenchWindow` mocking for `surface-workbench` desktop window launch |
+| `AuthBoundaryIntent` | ✅ PASS | Empty authenticated-route case made explicit: suite states when the jsdom lazy-route allowlist removes all authenticated routes under test |
+
+### Targeted Proof Command
+
+| Command | Result | Evidence |
+|---|---|---|
+| `pnpm exec vitest run frontend/apps/os-shell/src/__tests__/desktop/TerraCanonCrossTabSyncContract.test.tsx frontend/apps/os-shell/src/pages/workbench/__tests__/WorkbenchTabBar.test.tsx frontend/apps/os-shell/src/__tests__/desktop/DesktopIntentContract.test.tsx frontend/apps/os-shell/src/__tests__/desktop/AuthBoundaryIntent.test.tsx --reporter=verbose` | ✅ PASS | 4 test files passed, 38 tests passed |
+
+### Scope Boundary
+
+- This repair slice is limited to the four frontend contract suites above.
+- Full Vitest remains non-green due to pre-existing unrelated governance drift in `os-platform/core/tests/leak-guard-strict-components-coverage.test.ts`.
+- Leak-guard remediation is intentionally deferred to a separate governance lane so this proof remains honest and attributable.
