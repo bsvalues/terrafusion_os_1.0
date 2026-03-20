@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-16T16:59:03.857Z",
+  "generatedAt": "2026-03-20T03:17:28.534Z",
   "scope": "Phase 23 AI Swarm Production Readiness Packet",
   "decision": "GO",
   "checks": [
@@ -9,7 +9,7 @@
       "detail": "Phase 22 decision=GO",
       "payload": {
         "decision": "GO",
-        "generatedAt": "2026-03-16T16:58:15.087Z"
+        "generatedAt": "2026-03-20T03:17:26.758Z"
       },
       "blocker": null
     },

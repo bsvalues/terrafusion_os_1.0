@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-16T17:01:05.023Z",
+  "generatedAt": "2026-03-20T03:17:38.952Z",
   "scope": "Phase 24 Suite Integration Completeness Packet",
   "decision": "GO",
   "checks": [
@@ -9,7 +9,7 @@
       "detail": "Phase 23 decision=GO",
       "payload": {
         "decision": "GO",
-        "generatedAt": "2026-03-16T16:59:03.857Z"
+        "generatedAt": "2026-03-20T03:17:28.534Z"
       },
       "blocker": null
     },
@@ -18,7 +18,14 @@
       "ok": true,
       "detail": "All 6 constitutional tabs wired",
       "payload": {
-        "foundSlugs": ["summary", "forge", "atlas", "dais", "dossier", "pilot"],
+        "foundSlugs": [
+          "summary",
+          "forge",
+          "atlas",
+          "dais",
+          "dossier",
+          "pilot"
+        ],
         "missingSlugs": []
       },
       "blocker": null
@@ -28,7 +35,13 @@
       "ok": true,
       "detail": "All 5 suite home pages present",
       "payload": {
-        "foundPages": ["forge", "atlas", "dais", "dossier", "gpt"],
+        "foundPages": [
+          "forge",
+          "atlas",
+          "dais",
+          "dossier",
+          "gpt"
+        ],
         "missingPages": []
       },
       "blocker": null
@@ -38,7 +51,10 @@
       "ok": true,
       "detail": "2/5 suites in module registry",
       "payload": {
-        "foundInRegistry": ["forge", "dossier"]
+        "foundInRegistry": [
+          "forge",
+          "dossier"
+        ]
       },
       "blocker": null
     },

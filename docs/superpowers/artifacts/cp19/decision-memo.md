@@ -30,6 +30,10 @@ Decision: CONDITIONAL GO
 
 | Role | Name | Approval | Timestamp |
 |---|---|---|---|
-| Founder/Release Authority | | Pending (go-live event) | |
-| Operations Owner | | Pending (go-live event) | |
-| Security Owner | | Pending (go-live event) | |
+| Founder/Release Authority | Bill Spencer | APPROVED | 2026-03-19 |
+| Operations Owner | Bill Spencer | APPROVED | 2026-03-19 |
+| Security Owner | Bill Spencer | APPROVED — pending SEC-005-ROTATE execution | 2026-03-19 |
+
+Hard blockers acknowledged. Production traffic gate remains closed until:
+1. SEC-005-ROTATE — JWT key rotated in all environments
+2. SRE-O1-OPS — all `TF_*` env vars deployed to staging/prod
