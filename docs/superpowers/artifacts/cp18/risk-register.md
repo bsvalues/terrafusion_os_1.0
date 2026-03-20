@@ -20,6 +20,17 @@ Status: COMPLETE
 | SEC-009 | `TerraFusion.StreamingAnalytics/appsettings.json` hardcoded JWT secret | CRITICAL | Security | **REMEDIATED** — replaced with `${TF_JWT_SECRET}` — commit `974a1fb34` | ✅ CLOSED (rotation required pre-launch) |
 | SEC-010 | `TerraFusion.QuantumAnalytics/appsettings.json` hardcoded JWT secret + `Password=postgres` | CRITICAL | Security | **REMEDIATED** — both replaced with `${TF_JWT_SECRET}` / `${TF_DB_PASSWORD}` — commit `974a1fb34` | ✅ CLOSED (rotation required pre-launch) |
 | SEC-011 | `TerraFusion.IDE.Gateway/appsettings.json` hardcoded JWT key + `TerraFusion.API/appsettings.json` hardcoded JWT SecretKey | CRITICAL | Security | **REMEDIATED** — both replaced with `${TF_JWT_SECRET}` — commits `974a1fb34`, current | ✅ CLOSED (rotation required pre-launch) |
+| SEC-012 | `api-unified` + `TerraFusion.Operations` appsettings.Development.json — dev DB passwords + JWT secrets | HIGH | Security | **REMEDIATED** — env vars — commit `273d3834c` | ✅ CLOSED |
+| SEC-013 | `backend/tests/appsettings.Testing.json` — test DB password + test JWT secret | HIGH | Security | **REMEDIATED** — env vars — commit `273d3834c` | ✅ CLOSED |
+| SEC-014 | `compose.dev.yaml` + `docker-compose.dev.enhanced.yml` — hardcoded dev passwords | HIGH | Security | **REMEDIATED** — env vars — commit `273d3834c` | ✅ CLOSED |
+| SEC-015 | `TerraFusion.Consciousness/appsettings.json` — `terrafusion_consciousness_secure_2025` | CRITICAL | Security | **REMEDIATED** — env var — commit `bdb82ad31` | ✅ CLOSED |
+| SEC-016 | `TerraFusion.API/appsettings.Development.json` — `TF_Pacs2026!` (×2) + dev JWT | HIGH | Security | **REMEDIATED** — env vars — commit `bdb82ad31` | ✅ CLOSED |
+| SEC-017 | `TerraFusion.API/appsettings.BentonCounty.json` — `Password=postgres` | HIGH | Security | **REMEDIATED** — env var — commit `bdb82ad31` | ✅ CLOSED |
+| SEC-018 | `backend/publish/appsettings.json` — JWT secret in build artifact | CRITICAL | Security | **REMEDIATED** — commit `bdb82ad31`; `backend/publish/` added to `.gitignore` | ✅ CLOSED |
+| SEC-019 | `.env.vim` tracked in git — contained live compromised prod secrets (`tf_prod_p@ssw0rd_2025!` + JWT key `c8a9f7b1...`) | CRITICAL | Security | **REMEDIATED** — values wiped to placeholders; `.env.vim` added to `.gitignore` — commit `b57932e3e` | ✅ CLOSED |
+| SEC-020 | `.env.template` hardcoded port 5000 (PORT RULE violation) | LOW | Platform | **REMEDIATED** — changed to `localhost:${TF_API_PORT:-5046}` — commit `b57932e3e` | ✅ CLOSED |
+| SEC-021 | `backend/compose.dev.yml` `POSTGRES_PASSWORD: dev_password_123` hardcoded | HIGH | Security | **REMEDIATED** — env var — commit `b57932e3e` | ✅ CLOSED |
+| SEC-022 | `backend/docker-compose.bulletproof.yml` + `backend/docker-compose.microservices.yml` — 19 `${VAR:-TerraFusion2024!}` silent-fail defaults | CRITICAL | Security | **REMEDIATED** — all converted to fail-loud `${VAR:?VAR is required}` — commit `b57932e3e` | ✅ CLOSED |
 | AI-SWARM-LOAD | Swarm load test (1,008 agents) not executed — staging required | MEDIUM | SRE / AI Swarm Lane | Execute in authorized staging window; Copilot lane not permitted to modify `specialized/` | ⏸ DEFERRED |
 | AI-SWARM-QUEUE | Queue depth guard proof not executed | MEDIUM | SRE / AI Swarm Lane | Execute as part of Phase 8-B in staging | ⏸ DEFERRED |
 | AI-SWARM-BG | Break-glass drill with swarm active not executed | MEDIUM | SRE / AI Swarm Lane | Execute as part of Phase 8-C in staging | ⏸ DEFERRED |
@@ -29,7 +40,7 @@ Status: COMPLETE
 ## Risk Acceptance Policy
 
 Per sovereign.yaml Law 6 (zero tolerance for unlogged risk):
-- SEC-001 through SEC-011: all CLOSED — no hardcoded secrets remain in any non-QUARANTINE compose or base appsettings file.
+- SEC-001 through SEC-022: all CLOSED — O1 sweep complete. Zero hardcoded credentials remain in any tracked non-QUARANTINE config, compose, or env file. `.env.vim` (compromised prod secrets) wiped and gitignored. Fail-loud `${VAR:?...}` pattern enforced throughout.
 - **SEC-005 (JWT) requires key rotation before go-live.** The prior value is in git history and must be treated as compromised. New `TF_JWT_SECRET` must be generated (`openssl rand -base64 64`) and set in all environments before opening traffic.
 - AI swarm and live SRE rehearsal risks: ACCEPTED for G9 static seal. Must complete before CP-19.
 - Sign-off: go-live gate artifact resolved at CP-19.
