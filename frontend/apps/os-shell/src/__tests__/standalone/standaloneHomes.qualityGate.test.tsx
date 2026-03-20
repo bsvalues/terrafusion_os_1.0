@@ -13,6 +13,31 @@
  * @see Slice 12: Suite Home Quality Gate + Visual Contract Enforcement
  */
 
+import { vi } from 'vitest';
+
+vi.mock('../../auth/useAuthContext', () => ({
+  useAuthContext: vi.fn(() => ({
+    isAuthenticated: true,
+    userId: 'u-test',
+    countyId: 'benton',
+    roles: ['EnterpriseAdmin'],
+    token: null,
+  })),
+  toOsActor: vi.fn((auth) => ({
+    userId: auth.userId ?? 'u-test',
+    countyId: auth.countyId ?? 'benton',
+    roles: auth.roles ?? [],
+  })),
+}));
+vi.mock('../../auth/useAuth', () => ({
+  useAuth: vi.fn(() => ({
+    isAuthenticated: true,
+    token: null,
+    login: vi.fn(),
+    logout: vi.fn(),
+  })),
+}));
+
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 

@@ -36,11 +36,13 @@ import { GptStudioView } from '../../features/gpt/GptStudioView';
 
 const mockGpts = [
   {
+    id: 'PropertyAssessmentGPT',
     key: 'PropertyAssessmentGPT',
     name: 'Property Assessment GPT',
     description: 'Elite property valuation assistant for government assessors',
   },
   {
+    id: 'ComplianceGPT',
     key: 'ComplianceGPT',
     name: 'Compliance GPT',
     description: 'FISMA-High compliance validation assistant',
