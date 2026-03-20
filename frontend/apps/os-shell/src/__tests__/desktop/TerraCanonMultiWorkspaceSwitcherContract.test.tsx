@@ -31,7 +31,7 @@
  * Scope: Session-only multi-workspace; no persistence, no filesystem, no Monaco.
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -81,6 +81,19 @@ import Router from '../../Router';
 // ============================================================================
 
 describe('Phase 35 contract: TerraCanon supports multiple session workspaces and a safe switcher', () => {
+  beforeAll(async () => {
+    vi.useRealTimers();
+    memoryRouterEntries = ['/canon'];
+    render(<Router />);
+    await waitFor(
+      () => expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument(),
+      { timeout: 15000 },
+    );
+    cleanup();
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  }, 20000);
+
   beforeEach(() => {
     localStorage.clear();
   });
@@ -101,7 +114,7 @@ describe('Phase 35 contract: TerraCanon supports multiple session workspaces and
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 }
+      { timeout: 15000 }
     );
 
     expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();

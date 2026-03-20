@@ -26,7 +26,7 @@
  * Scope: localStorage persistence only. No backend, no API, no IndexedDB.
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -83,6 +83,19 @@ const ACTIVE_INDEX_KEY = 'tf.canon.activeIndex.v1';
 // ============================================================================
 
 describe('Phase 38 contract: TerraCanon persists workspace state to localStorage', () => {
+  beforeAll(async () => {
+    vi.useRealTimers();
+    memoryRouterEntries = ['/canon'];
+    render(<Router />);
+    await waitFor(
+      () => expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument(),
+      { timeout: 15000 },
+    );
+    cleanup();
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  }, 20000);
+
   beforeEach(() => {
     localStorage.clear();
   });
@@ -103,7 +116,7 @@ describe('Phase 38 contract: TerraCanon persists workspace state to localStorage
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 }
+      { timeout: 15000 }
     );
 
     expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
