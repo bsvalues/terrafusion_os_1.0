@@ -34,9 +34,9 @@ type ReconciliationMethod =
   | 'ai_assisted';
 
 const APPROACH_LABELS: Record<ApproachType, { label: string; icon: string }> = {
-  cost:   { label: 'Cost Approach',       icon: '\uD83C\uDFD7\uFE0F' },
-  sales:  { label: 'Sales Comparison',    icon: '\uD83C\uDFD8\uFE0F' },
-  income: { label: 'Income Approach',     icon: '\uD83D\uDCB0' },
+  cost:   { label: 'Cost Approach',       icon: '🏗️' },
+  sales:  { label: 'Sales Comparison',    icon: '🏘️' },
+  income: { label: 'Income Approach',     icon: '💰' },
 };
 
 const METHODS: { value: ReconciliationMethod; label: string }[] = [

@@ -45,6 +45,11 @@ interface BackendPropertyDto {
   assessedValue: number;
   landValue: number;
   improvementValue: number;
+  marketValue: number;
+  propertyType: string | null;
+  yearBuilt: number | null;
+  taxYear: number;
+  assessmentDate: string;
   countyId: string;
   countyName: string;
   createdAt: string;
@@ -100,19 +105,19 @@ function mapProperty(dto: BackendPropertyDto): Property {
     zip,
     legalDescription: '',
     ownerName: dto.ownerName ?? 'On File',
-    propertyType: 'residential',
+    propertyType: dto.propertyType ?? 'residential',
     landAcreage: 0,
-    yearBuilt: 0,
+    yearBuilt: dto.yearBuilt ?? 0,
     buildingSquareFeet: 0,
     landValue: dto.landValue ?? 0,
     improvementValue: dto.improvementValue ?? 0,
     totalAssessedValue: dto.assessedValue ?? 0,
-    marketValue: dto.assessedValue ?? 0,
+    marketValue: dto.marketValue ?? dto.assessedValue ?? 0,
     taxableValue: dto.assessedValue ?? 0,
     exemptionAmount: 0,
     assessmentStatus: 'active',
-    assessmentYear: new Date().getFullYear(),
-    assessmentDate: dto.updatedAt ?? new Date().toISOString(),
+    assessmentYear: dto.taxYear || new Date().getFullYear(),
+    assessmentDate: dto.assessmentDate ?? dto.updatedAt ?? new Date().toISOString(),
     lastUpdated: dto.updatedAt ?? new Date().toISOString(),
     latitude: 46.2396,
     longitude: -119.2687,
@@ -129,8 +134,8 @@ function mapSearchResult(dto: BackendPropertyDto): PropertySearchResult {
     city: (dto.address ?? '').split(',')[1]?.trim() ?? '',
     ownerName: dto.ownerName ?? 'On File',
     totalAssessedValue: dto.assessedValue ?? 0,
-    propertyType: 'Residential' as any,
-    assessmentYear: new Date().getFullYear(),
+    propertyType: (dto.propertyType ?? 'Residential') as any,
+    assessmentYear: dto.taxYear || new Date().getFullYear(),
   };
 }
 
@@ -290,29 +295,39 @@ export class LiveDataProvider implements DataProvider {
   }
 
   async getCountyStats(): Promise<CountyAggregateStats> {
+    const defaults: CountyAggregateStats = {
+      totalParcels: 0,
+      totalAssessedValue: 0,
+      totalMarketValue: 0,
+      averageAssessedValue: 0,
+      medianAssessedValue: 0,
+      assessedThisYear: 0,
+      pendingAssessments: 0,
+      activeAppeals: 0,
+      totalLevyRevenue: 0,
+      assessmentCompletionPercent: 0,
+      parcelsByType: {} as any,
+      parcelsByCity: {},
+      byPropertyType: [],
+      byCity: [],
+      assessmentYear: new Date().getFullYear(),
+    };
     try {
-      const data = await apiFetch<{ totalProperties: number }>('/api/properties/stats');
+      const data = await apiFetch<{
+        totalProperties: number;
+        totalAssessedValue: number;
+        averageAssessedValue: number;
+      }>('/api/properties/stats');
       return {
+        ...defaults,
         totalParcels: data.totalProperties ?? 0,
-        totalAssessedValue: 0,
-        totalMarketValue: 0,
-        averageAssessedValue: 0,
-        medianAssessedValue: 0,
-        byPropertyType: [],
-        byCity: [],
-        assessmentYear: new Date().getFullYear(),
+        totalAssessedValue: data.totalAssessedValue ?? 0,
+        averageAssessedValue: data.averageAssessedValue ?? 0,
+        assessedThisYear: data.totalProperties ?? 0,
+        assessmentCompletionPercent: 100,
       };
     } catch {
-      return {
-        totalParcels: 0,
-        totalAssessedValue: 0,
-        totalMarketValue: 0,
-        averageAssessedValue: 0,
-        medianAssessedValue: 0,
-        byPropertyType: [],
-        byCity: [],
-        assessmentYear: new Date().getFullYear(),
-      };
+      return defaults;
     }
   }
 

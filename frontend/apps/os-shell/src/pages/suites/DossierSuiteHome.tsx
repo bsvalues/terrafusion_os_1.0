@@ -40,7 +40,7 @@ const DOSSIER_MODULES: SuiteModuleDef[] = [
   { id: 'terra-flow', label: 'TerraFlow', icon: Zap, description: 'Workflow automation engine — assessment pipeline orchestration', launchMode: 'standalone', moduleId: 'terra-flow' },
 ];
 
-const fmtNum = (n: number) => n.toLocaleString();
+const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 
 export default function DossierSuiteHome() {
   const navigate = useNavigate();

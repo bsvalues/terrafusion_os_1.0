@@ -84,8 +84,8 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
 
 const LIVE_WORKSPACE_VIEWS: WorkspaceView[] = ['management', 'rag'];
 
-const fmtNum = (n: number) => n.toLocaleString();
-const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
+const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
+const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
 
 function coerceWorkspaceView(value: string | null): WorkspaceView {
   if (value && WORKSPACE_CARDS.some((card) => card.id === value)) {

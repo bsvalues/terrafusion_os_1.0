@@ -78,6 +78,11 @@ interface BackendPropertyDto {
   assessedValue: number;
   landValue: number;
   improvementValue: number;
+  marketValue: number;
+  propertyType: string | null;
+  yearBuilt: number | null;
+  taxYear: number;
+  assessmentDate: string;
   countyId: string;
   countyName: string;
   createdAt: string;
@@ -100,8 +105,8 @@ function mapToSummary(dto: BackendPropertyDto): PacsPropertySummary {
     geoId: dto.parcelNumber,
     address: dto.address ?? '',
     assessedValue: dto.assessedValue ?? 0,
-    marketValue: dto.assessedValue ?? 0, // market ≈ assessed in dev data
-    propertyType: '',
+    marketValue: dto.marketValue ?? dto.assessedValue ?? 0,
+    propertyType: dto.propertyType ?? '',
   };
 }
 
