@@ -17,11 +17,6 @@ if (import.meta.env.DEV && import.meta.env.VITE_FORCE_REDUCE_MOTION === '1') {
   document.documentElement.classList.add('reduce-motion-force');
 }
 
-// Console Badge for IT Admins
- color: var(--tf-transcend-highlight); padding: 4px; border-radius: 4px 0 0 4px;',
-  'background: var(--tf-transcend-highlight); color: var(--tf-void-black); padding: 4px; border-radius: 0 4px 4px 0;'
-);
-
 console.table(FEATURES); // Transparency for the operator
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
