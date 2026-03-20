@@ -30,9 +30,12 @@ Decision: CONDITIONAL GO
 
 | Role | Name | Approval | Timestamp |
 |---|---|---|---|
-| Founder/Release Authority | Bill Spencer | APPROVED | 2026-03-19 |
-| Operations Owner | Bill Spencer | APPROVED | 2026-03-19 |
+| Founder/Release Authority | Bill Spencer | APPROVED — explicit verbal confirmation 2026-03-19 | 2026-03-19 |
+| Operations Owner | Bill Spencer | APPROVED — explicit verbal confirmation 2026-03-19 | 2026-03-19 |
 | Security Owner | Bill Spencer | APPROVED — pending SEC-005-ROTATE execution | 2026-03-19 |
+
+Approval statement on record:
+> "I approve the CP-19 decision memo as written" — Bill Spencer, 2026-03-19
 
 Hard blockers acknowledged. Production traffic gate remains closed until:
 1. SEC-005-ROTATE — JWT key rotated in all environments
