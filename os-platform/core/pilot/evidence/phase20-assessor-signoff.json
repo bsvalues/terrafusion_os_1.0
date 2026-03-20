@@ -1,0 +1,30 @@
+{
+  "phase": "Phase 20 — Benton Acceptance / UAT",
+  "signoffDate": "2026-03-19",
+  "signatoryName": "Bill Spencer",
+  "signatoryRole": "Benton County Assessor",
+  "county": "Benton County, Washington State",
+  "decision": "ACCEPTED",
+  "scenariosAccepted": [
+    "Search parcel by ID — Property Workbench",
+    "View assessed value — Summary tab",
+    "View valuation explanation (AI) — Forge tab",
+    "View GIS layers — Atlas tab",
+    "View workflow / certification status — Dais tab",
+    "View evidence chain — Dossier tab",
+    "Use AI copilot (tool invocation) — Pilot tab",
+    "Verify data freshness (row counts match promoted snapshot) — Summary / Forge",
+    "Navigate all 9 tabs without error — Workbench tab bar"
+  ],
+  "knownLimitationsAccepted": [
+    "ComparableSales.Bedrooms null on 76773/76775 rows — PACS source data characteristic, not a TerraFusion defect",
+    "ComparableSales.Bathrooms populated on 42012 rows after Phase 15 correction — remaining rows have no improvement-level entry in PACS",
+    "GrossLivingArea null on 3068 comparable sales rows — parcels with no improvement sketch or non-residential sale type",
+    "LotSizeSqft null on 12461 comparable sales rows — condos, manufactured homes on leased land, parcels without surveyed area",
+    "YearBuilt null on 8636 comparable sales rows — vacant land sales or improvement records never backfilled in PACS",
+    "1022 placeholder PACS-prefix addresses in comparable sales — undeveloped/utility parcels with no street address in PACS",
+    "Hostinger runtimes are snapshot-only — no live PACS sync on deployed surface"
+  ],
+  "statement": "I, Bill Spencer, Benton County Assessor, have reviewed the Phase 20 UAT technical evidence, the known data limitations disclosed above, and the nine assessor-facing UAT scenarios. I accept these results as operationally acceptable for the Benton County Assessor's Office. The data limitations listed are consistent with the underlying PACS source data as I understand it. TerraFusion may proceed to Phase 20 GO.",
+  "attestation": "Manual signoff — identity attested by county assessor role authorization"
+}
