@@ -68,13 +68,13 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__Primary=Host=postgres-primary;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=5;MaxPoolSize=50;ConnectionLifetime=300
-      - ConnectionStrings__Replicas__0=Host=postgres-replica-1;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
-      - ConnectionStrings__Replicas__1=Host=postgres-replica-2;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
+      - ConnectionStrings__Primary=Host=postgres-primary;Database=terrafusion;Username=terrafusion;Password=${TF_PROD_DB_PASSWORD:?TF_PROD_DB_PASSWORD is required};Pooling=true;MinPoolSize=5;MaxPoolSize=50;ConnectionLifetime=300
+      - ConnectionStrings__Replicas__0=Host=postgres-replica-1;Database=terrafusion;Username=terrafusion;Password=${TF_PROD_DB_PASSWORD:?TF_PROD_DB_PASSWORD is required};Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
+      - ConnectionStrings__Replicas__1=Host=postgres-replica-2;Database=terrafusion;Username=terrafusion;Password=${TF_PROD_DB_PASSWORD:?TF_PROD_DB_PASSWORD is required};Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
       - Redis__ConnectionString=redis-master:6379,redis-replica-1:6379
       - Redis__Configuration__AbortOnConnectFail=false
       - Redis__Configuration__ConnectRetry=3
-      - JwtSettings__SecretKey=c8a9f7b1e2d3c4a5b6f7e8d9c0a1b2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9
+      - JwtSettings__SecretKey=${TF_JWT_SECRET:?TF_JWT_SECRET is required}
       - NegativeCache__Enabled=true
       - NegativeCache__MissSentinelTTL=30
       - NegativeCache__PositiveCacheTTL=300
@@ -123,13 +123,13 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__Primary=Host=postgres-primary;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=5;MaxPoolSize=50;ConnectionLifetime=300
-      - ConnectionStrings__Replicas__0=Host=postgres-replica-1;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
-      - ConnectionStrings__Replicas__1=Host=postgres-replica-2;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
+      - ConnectionStrings__Primary=Host=postgres-primary;Database=terrafusion;Username=terrafusion;Password=${TF_PROD_DB_PASSWORD:?TF_PROD_DB_PASSWORD is required};Pooling=true;MinPoolSize=5;MaxPoolSize=50;ConnectionLifetime=300
+      - ConnectionStrings__Replicas__0=Host=postgres-replica-1;Database=terrafusion;Username=terrafusion;Password=${TF_PROD_DB_PASSWORD:?TF_PROD_DB_PASSWORD is required};Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
+      - ConnectionStrings__Replicas__1=Host=postgres-replica-2;Database=terrafusion;Username=terrafusion;Password=${TF_PROD_DB_PASSWORD:?TF_PROD_DB_PASSWORD is required};Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
       - Redis__ConnectionString=redis-master:6379,redis-replica-1:6379
       - Redis__Configuration__AbortOnConnectFail=false
       - Redis__Configuration__ConnectRetry=3
-      - JwtSettings__SecretKey=c8a9f7b1e2d3c4a5b6f7e8d9c0a1b2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9
+      - JwtSettings__SecretKey=${TF_JWT_SECRET:?TF_JWT_SECRET is required}
       - NegativeCache__Enabled=true
       - NegativeCache__MissSentinelTTL=30
       - NegativeCache__PositiveCacheTTL=300
@@ -175,13 +175,13 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__Primary=Host=postgres-primary;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=5;MaxPoolSize=50;ConnectionLifetime=300
-      - ConnectionStrings__Replicas__0=Host=postgres-replica-1;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
-      - ConnectionStrings__Replicas__1=Host=postgres-replica-2;Database=terrafusion;Username=terrafusion;Password=tf_prod_p@ssw0rd_2025!;Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
+      - ConnectionStrings__Primary=Host=postgres-primary;Database=terrafusion;Username=terrafusion;Password=${TF_PROD_DB_PASSWORD:?TF_PROD_DB_PASSWORD is required};Pooling=true;MinPoolSize=5;MaxPoolSize=50;ConnectionLifetime=300
+      - ConnectionStrings__Replicas__0=Host=postgres-replica-1;Database=terrafusion;Username=terrafusion;Password=${TF_PROD_DB_PASSWORD:?TF_PROD_DB_PASSWORD is required};Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
+      - ConnectionStrings__Replicas__1=Host=postgres-replica-2;Database=terrafusion;Username=terrafusion;Password=${TF_PROD_DB_PASSWORD:?TF_PROD_DB_PASSWORD is required};Pooling=true;MinPoolSize=3;MaxPoolSize=30;ConnectionLifetime=300
       - Redis__ConnectionString=redis-master:6379,redis-replica-1:6379
       - Redis__Configuration__AbortOnConnectFail=false
       - Redis__Configuration__ConnectRetry=3
-      - JwtSettings__SecretKey=c8a9f7b1e2d3c4a5b6f7e8d9c0a1b2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9
+      - JwtSettings__SecretKey=${TF_JWT_SECRET:?TF_JWT_SECRET is required}
       - NegativeCache__Enabled=true
       - NegativeCache__MissSentinelTTL=30
       - NegativeCache__PositiveCacheTTL=300
@@ -228,9 +228,9 @@ services:
     environment:
       - POSTGRES_DB=terrafusion
       - POSTGRES_USER=terrafusion
-      - POSTGRES_PASSWORD=tf_prod_p@ssw0rd_2025!
+      - POSTGRES_PASSWORD=${TF_PROD_DB_PASSWORD:?TF_PROD_DB_PASSWORD is required}
       - POSTGRES_REPLICATION_USER=replicator
-      - POSTGRES_REPLICATION_PASSWORD=repl_p@ssw0rd_2025!
+      - POSTGRES_REPLICATION_PASSWORD=${TF_PROD_DB_REPLICATION_PASSWORD:?TF_PROD_DB_REPLICATION_PASSWORD is required}
       - POSTGRES_INITDB_ARGS=--auth-host=md5 --auth-local=trust
     volumes:
       - postgres-primary-data:/var/lib/postgresql/data
@@ -269,10 +269,10 @@ services:
       - "5433:5432"
     environment:
       - PGUSER=postgres
-      - POSTGRES_PASSWORD=tf_prod_p@ssw0rd_2025!
+      - POSTGRES_PASSWORD=${TF_PROD_DB_PASSWORD:?TF_PROD_DB_PASSWORD is required}
       - POSTGRES_MASTER_SERVICE=postgres-primary
       - POSTGRES_REPLICATION_USER=replicator
-      - POSTGRES_REPLICATION_PASSWORD=repl_p@ssw0rd_2025!
+      - POSTGRES_REPLICATION_PASSWORD=${TF_PROD_DB_REPLICATION_PASSWORD:?TF_PROD_DB_REPLICATION_PASSWORD is required}
     volumes:
       - postgres-replica-1-data:/var/lib/postgresql/data
       - ./scripts/postgres/setup-replica.sh:/docker-entrypoint-initdb.d/setup-replica.sh
@@ -309,10 +309,10 @@ services:
       - "5434:5432"
     environment:
       - PGUSER=postgres
-      - POSTGRES_PASSWORD=tf_prod_p@ssw0rd_2025!
+      - POSTGRES_PASSWORD=${TF_PROD_DB_PASSWORD:?TF_PROD_DB_PASSWORD is required}
       - POSTGRES_MASTER_SERVICE=postgres-primary
       - POSTGRES_REPLICATION_USER=replicator
-      - POSTGRES_REPLICATION_PASSWORD=repl_p@ssw0rd_2025!
+      - POSTGRES_REPLICATION_PASSWORD=${TF_PROD_DB_REPLICATION_PASSWORD:?TF_PROD_DB_REPLICATION_PASSWORD is required}
     volumes:
       - postgres-replica-2-data:/var/lib/postgresql/data
       - ./scripts/postgres/setup-replica.sh:/docker-entrypoint-initdb.d/setup-replica.sh

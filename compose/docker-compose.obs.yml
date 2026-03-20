@@ -25,7 +25,7 @@ services:
       - "3009:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=terrafusion
+      - GF_SECURITY_ADMIN_PASSWORD=${TF_GRAFANA_PASSWORD:?TF_GRAFANA_PASSWORD is required}
       - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
       - GF_SERVER_ROOT_URL=http://localhost:3009
     volumes:

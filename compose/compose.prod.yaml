@@ -188,7 +188,7 @@ services:
     ports:
       - "3009:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=terrafusion2025
+      - GF_SECURITY_ADMIN_PASSWORD=${TF_GRAFANA_PASSWORD:?TF_GRAFANA_PASSWORD is required}
     volumes:
       - grafana-data:/var/lib/grafana
       - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
