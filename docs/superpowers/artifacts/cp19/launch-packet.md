@@ -16,12 +16,30 @@ Status: COMPLETE (pre-conditions pending — see risk-register.md)
 
 | Item | Owner | Status |
 |---|---|---|
-| Swarm Phase 8-A/B/C live rehearsals | SRE / AI Swarm Lane | ⏸ Pre-condition |
-| SRE live restore + DR rehearsals | SRE | ⏸ Pre-condition |
+| **SEC-005-ROTATE**: Generate new `TF_JWT_SECRET` (`openssl rand -base64 64`) and rotate in all envs | Security / SRE | ⛔ HARD BLOCKER |
+| **SRE-O1-OPS**: Deploy all `TF_*` env vars to staging + prod (see table below) | SRE | ⛔ REQUIRED |
 | Pre-launch DB snapshot captured | SRE | ⏸ Pre-condition |
 | On-call rotation live + page-tested | Platform Lead | ⏸ Pre-condition |
+| Swarm Phase 8-A/B/C live rehearsals | SRE / AI Swarm Lane | ⏸ Pre-condition |
+| SRE live restore + DR rehearsals | SRE | ⏸ Pre-condition |
 | Founder/Release Authority sign-off | Founder | ⏸ Pre-condition |
-| TF_COWLITZ_DB_PASSWORD env var set in prod | SRE | ⏸ Pre-condition |
+
+### SRE-O1-OPS: Required Env Vars (all must be set before T-0)
+
+| Env Var | Scope | Notes |
+|---|---|---|
+| `TF_JWT_SECRET` | Production + Staging | **CRITICAL — rotate from prior value; use `openssl rand -base64 64`** |
+| `TF_PROD_DB_PASSWORD` | Production | Main DB password for `docker-compose.production-optimized.yml` |
+| `TF_PROD_DB_REPLICATION_PASSWORD` | Production | Replication password |
+| `TF_GRAFANA_PASSWORD` | Production + Staging | Grafana admin — all compose files |
+| `TF_COWLITZ_DB_PASSWORD` | Cowlitz County | County-scoped DB password |
+| `TF_YAKIMA_GRAFANA_PASSWORD` | Yakima County | County-scoped Grafana password |
+| `TF_DB_PASSWORD` | Staging | Used by backend `appsettings.json` base configs |
+| `TF_DEV_DB_PASSWORD` | Dev only | Dev stack only — not required in prod |
+| `TF_DEV_JWT_SECRET` | Dev only | Dev stack only — not required in prod |
+| `TF_DEV_PACS_PASSWORD` | Dev only | Harris PACS dev connection — not required in prod |
+
+Full canonical list with descriptions: see `.env.example` at repo root.
 
 ## Run of Show
 
