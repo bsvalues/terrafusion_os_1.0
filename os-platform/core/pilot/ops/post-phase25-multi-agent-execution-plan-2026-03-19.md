@@ -9,14 +9,21 @@ Companion artifacts:
 - `os-platform/core/pilot/ops/post-phase25-operator-checklist-2026-03-19.md`
 - `os-platform/core/pilot/ops/post-phase25-agent-assignment-matrix-2026-03-19.md`
 
+## Update -- 2026-03-20
+
+- Agent A completed `SEC-005-ROTATE` on the live Hostinger runtime path.
+- Sanitized closure artifact: `os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md`
+- Leak-guard governance drift is closed and its strict gate is green.
+- The remaining open lanes are `SRE-O1-OPS`, live rehearsal execution, and the separate frontend contract/accessibility restoration lane for honest full-root Vitest green.
+
 ## Truth Source
 
 Current operating truth from the repository is:
 
 - Phase 20 UAT: COMPLETE (`GO`)
 - Phases 21-25: COMPLETE (`GO`)
-- Full-root Vitest: NOT green due to separate leak-guard governance drift
-- Security hard blocker still called out in the post-go-live checklist: `SEC-005-ROTATE`
+- Full-root Vitest: NOT green due to a separate frontend contract/accessibility failure cluster
+- `SEC-005-ROTATE` is closed; production traffic still remains `HOLD` for other live conditions
 
 This plan does not claim a new sealed phase yet. It defines the next executable work as parallel operating lanes with explicit blockers, evidence, and merge criteria.
 
@@ -30,17 +37,42 @@ Exit target:
 
 Primary blocker in current truth:
 
-- `SEC-005-ROTATE` (JWT key rotation)
+- `SRE-O1-OPS` and the remaining live rehearsal bundle
 
 ### Phase 27 -- Governance Green Restoration
 
 Exit target:
 
-- restore full-root governance green without mixing unrelated repairs into already-sealed frontend contract work
+- restore honest full-root Vitest green without mixing unrelated repairs into already-sealed proof slices
 
 Primary blocker in current truth:
 
-- `os-platform/core/tests/leak-guard-strict-components-coverage.test.ts`
+- seven-file frontend contract/accessibility failure cluster
+
+### Phase 27B -- Frontend Contract/Accessibility Cluster Restoration
+
+Owner: Agent B (separate lane)
+Goal: restore honest full-root Vitest green without reclassifying leak-guard or reopening sealed proof slices
+
+Success criteria:
+
+- reproduce and fix only the seven named frontend failures
+- preserve previously sealed frontend contract proof slices
+- rerun:
+   - `pnpm exec vitest run frontend/apps/os-shell/src/__tests__/desktop/TerraCanonCrossTabSyncContract.test.tsx --reporter=verbose`
+   - `pnpm exec vitest run frontend/apps/os-shell/src/__tests__/desktop/TerraCanonMultiWorkspaceSwitcherContract.test.tsx --reporter=verbose`
+   - `pnpm exec vitest run frontend/apps/os-shell/src/__tests__/desktop/TerraCanonRenameWorkspaceIntentContract.test.tsx --reporter=verbose`
+   - `pnpm exec vitest run frontend/apps/os-shell/src/__tests__/desktop/TerraCanonReopenWorkspaceIntentContract.test.tsx --reporter=verbose`
+   - `pnpm exec vitest run frontend/apps/os-shell/src/__tests__/desktop/TerraCanonWorkspacePersistenceSpineContract.test.tsx --reporter=verbose`
+   - `pnpm exec vitest run frontend/apps/os-shell/src/__tests__/shell/shellAccessibility.contract.test.tsx --reporter=verbose`
+   - `pnpm exec vitest run frontend/apps/os-shell/src/__tests__/shell/shellKeyboardFocus.contract.test.ts --reporter=verbose`
+   - `pnpm exec vitest run --reporter=verbose`
+
+Guardrails:
+
+- do not weaken leak-guard policy
+- do not relabel this cluster as leak-guard
+- do not claim production-ready from this lane alone
 
 ### Phase 28 -- Release Authorization Packet
 
@@ -55,10 +87,11 @@ Three top-level agents run in parallel after a short coordination pass.
 | Agent | Lane | Parallelizable | Blocking output |
 |---|---|---|---|
 | Agent A | Security hard blocker closure | Yes | JWT rotation receipt + access-hardening evidence |
-| Agent B | Governance green restoration | Yes | leak-guard remediation proof + full-root vitest rerun |
+| Agent B | Frontend contract/accessibility restoration | Yes | targeted frontend proof + full-root Vitest rerun summary |
 | Agent C | Release truth / evidence packet | Partial | release authorization packet using outputs from A and B |
 
 Agent C can prepare packet structure and evidence placeholders immediately, but final release authorization cannot close until Agents A and B finish.
+Agent A is now complete; final release authorization still cannot close until the remaining live SRE/rehearsal items and Agent B finish.
 
 ## Agent A -- Security Hard Blocker Closure
 
@@ -86,7 +119,7 @@ Agent C can prepare packet structure and evidence placeholders immediately, but 
 - new JWT secret is generated and stored in the authoritative location
 - old secret is no longer accepted on intended production surfaces
 - rotation evidence is written and linked from the operating packet
-- post-go-live checklist can truthfully remove `SEC-005-ROTATE` as a hard blocker
+- post-go-live checklist truth line is updated and `SEC-005-ROTATE` is no longer listed as a hard blocker
 
 ### Evidence Targets
 
@@ -98,32 +131,32 @@ Agent C can prepare packet structure and evidence placeholders immediately, but 
 
 ### Objective
 
-- remediate the separate leak-guard drift as its own governed slice and restore full-root Vitest green
+- preserve the closed leak-guard result and restore honest full-root Vitest green by fixing only the separate frontend contract/accessibility cluster
 
 ### Subagents In Parallel
 
 1. Subagent B1 -- Coverage inventory
-   - de-duplicate the reported 63 unguarded files
-   - cluster them by area: atlas, canon, dais, dossier, forge, levy, pilot, etc.
+   - preserve the leak-guard closure receipt and isolate the remaining seven frontend failures
+   - confirm that none of the remaining failures are leak-guard-related
 
 2. Subagent B2 -- Rule-model diagnosis
-   - determine whether the correct fix is missing guard files, coverage mapping drift, or eligibility narrowing
-   - explicitly reject any repair that weakens the gate without justification
+   - determine the smallest bounded fix for the TerraCanon and shell accessibility/keyboard cluster
+   - explicitly reject any repair that weakens leak-guard or reclassifies this cluster
 
 3. Subagent B3 -- Remediation wave planning
-   - sequence the actual fix set into bounded waves
+   - sequence the seven failing files into bounded proof waves
    - define proof commands for each wave and the final full-root rerun
 
 ### Exit Criteria
 
-- leak-guard strict coverage test passes
+- leak-guard strict coverage remains green
 - no unrelated previously-sealed frontend proof is rewritten or reclassified
 - full-root Vitest rerun is green, or any remaining blocker is newly discovered and separately documented
 
 ### Evidence Targets
 
-- leak-guard remediation ledger
-- wave-by-wave proof notes
+- leak-guard closure receipt
+- wave-by-wave frontend proof notes
 - final full-root Vitest summary
 
 ## Agent C -- Release Truth And Authorization Packet
@@ -158,7 +191,7 @@ Coordination pass
   │    ├─ A1 inventory
   │    ├─ A2 rotate
   │    └─ A3 verify
-  ├─ Agent B: leak-guard remediation
+   ├─ Agent B: frontend contract/accessibility restoration
   │    ├─ B1 inventory
   │    ├─ B2 diagnose
   │    └─ B3 wave plan / execute
@@ -214,5 +247,6 @@ pnpm exec vitest run
 ## Non-Goals
 
 - do not reopen the already-sealed four-suite frontend contract repair lane
-- do not claim production-ready status before `SEC-005-ROTATE` and governance green are both closed
+- do not claim production-ready status before the remaining live blockers and governance green are both closed
 - do not weaken leak-guard policy merely to achieve a cosmetic pass
+- do not relabel the seven-file frontend cluster as leak-guard

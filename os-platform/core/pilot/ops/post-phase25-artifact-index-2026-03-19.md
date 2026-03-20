@@ -59,6 +59,42 @@ What it established:
 - active signing-path distinction (`JwtSettings:SecretKey` / `TF_JWT_SECRET`)
 - sanitized evidence requirements for `SEC-005-ROTATE`
 
+### Slice 2B: Agent A live closure artifact
+
+Artifact:
+
+- `os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md`
+
+What it established:
+
+- live Hostinger `staging` and `production` now inject `JwtSettings__SecretKey` through `APP_ROOT/app.env`
+- backend-only restarts returned both environments to healthy status
+- `SEC-005-ROTATE` can be removed from the hard-blocker line without exposing secret material
+
+### Slice 2C: SRE-O1 partial live status
+
+Artifact:
+
+- `os-platform/core/pilot/ops/sre-o1-ops-status-2026-03-20.md`
+
+What it established:
+
+- pre-launch SQLite snapshots were captured on both Hostinger environments
+- the current Hostinger footprint does not expose a deployed pager/on-call test surface
+- the remaining SRE HOLD reason is narrowed to pager/on-call validation, not a generic claim of missing live env deployment
+
+### Slice 2D: SRE-O1 authorized pager/on-call closure path
+
+Artifact:
+
+- `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
+
+What it established:
+
+- Hostinger on-box inspection is not an executable pager/on-call surface
+- the authorized closure path is an off-box Prometheus -> Alertmanager -> real on-call receiver chain
+- `SRE-O1-OPS` may only close with routed incident proof tied back to Benton release metadata
+
 ### Slice 3: Agent B governance diagnosis
 
 Artifact:
@@ -80,6 +116,18 @@ What it established:
 - full 63-file uncovered inventory
 - grouped counts by area
 - explicit separation from the sealed frontend contract repair slice
+
+### Slice 3B: Agent B leak-guard remediation outcome
+
+Artifact:
+
+- `os-platform/core/pilot/ops/leak-guard-remediation-status-2026-03-20.md`
+
+What it established:
+
+- the strict leak-guard coverage gate is green after adding the missing wrappers
+- leak-guard drift is no longer the truthful reason full-root Vitest is non-green
+- the remaining full-root failures are a separate frontend contract/accessibility cluster
 
 ### Slice 4: Agent C release authorization
 
@@ -141,5 +189,5 @@ What they established:
 As of this index:
 
 - post-Phase-25 documentation authority is fully chained
-- production traffic is still blocked on live execution work, not on missing documentation
-- the remaining repo-local governance gap is the separate leak-guard remediation lane
+- `SEC-005-ROTATE` is closed; production traffic is still blocked on the remaining live execution work, not on missing documentation
+- the remaining repo-local root-green gap is the separate frontend contract/accessibility failure cluster, not leak-guard

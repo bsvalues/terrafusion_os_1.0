@@ -1,6 +1,7 @@
 # Post-Phase-25 Release Authorization Packet
 
 Date: 2026-03-19
+Updated: 2026-03-20
 Status: READY
 Owner lane: Agent C
 Purpose: Reconcile sealed code/static proof with the remaining live pre-traffic conditions after Phase 25
@@ -27,7 +28,11 @@ Primary sources reconciled in this packet:
 - `docs/superpowers/artifacts/cp17/proof-results.md`
 - `os-platform/core/pilot/ops/post-go-live-phase-execution-checklist.md`
 - `os-platform/core/pilot/ops/sec-005-jwt-rotation-runbook-2026-03-19.md`
+- `os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-ops-status-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
 - `os-platform/core/pilot/ops/leak-guard-governance-drift-2026-03-19.md`
+- `os-platform/core/pilot/ops/leak-guard-remediation-status-2026-03-20.md`
 
 Traceability index:
 
@@ -41,7 +46,7 @@ Phases 20 through 25 are recorded as complete in the current operating checklist
 
 - Phase 20: Benton acceptance / UAT packet = `GO`
 - Phase 21: continuous observability = `GO`
-- Phase 22: security / credential / access hardening = `GO` with one explicit residual hard blocker
+- Phase 22: security / credential / access hardening = `GO`; the prior JWT residual hard blocker is now closed by live evidence dated 2026-03-20
 - Phase 23: frontend operator maturity = `GO`
 - Phase 24: PACS continuity write-back disposition = `GO`
 - Phase 25: county replication model = `GO`
@@ -60,14 +65,21 @@ The previously repaired frontend contract suites remain a sealed proof slice and
 
 ### Hard / required pre-traffic conditions
 
-1. `SEC-005-ROTATE`
-   - JWT signing key rotation is still an explicit hard blocker.
-   - Authoritative execution note: `os-platform/core/pilot/ops/sec-005-jwt-rotation-runbook-2026-03-19.md`
+1. `SRE-O1-OPS`
+  - Pre-launch DB snapshots are captured for staging and production.
+  - Pager/on-call validation remains open.
+  - On-box Hostinger inspection did not find a truthful executable pager surface.
+  - This lane may close only through the authorized off-box Prometheus -> Alertmanager -> real on-call receiver evidence path tied to Benton release metadata.
+  - Current status artifacts:
+    - `os-platform/core/pilot/ops/sre-o1-ops-status-2026-03-20.md`
+    - `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
 
-2. `SRE-O1-OPS`
-   - Required `TF_*` environment variables must be deployed to staging and production.
-   - Pre-launch DB snapshot must be captured.
-   - Pager/on-call test must run successfully.
+### Recently closed live blocker
+
+- `SEC-005-ROTATE`
+  - closed 2026-03-20
+  - authoritative runbook: `os-platform/core/pilot/ops/sec-005-jwt-rotation-runbook-2026-03-19.md`
+  - authoritative verification bundle: `os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md`
 
 ### Pre-launch required live rehearsals
 
@@ -79,11 +91,21 @@ These are not code blockers, but they are still traffic-opening blockers per CP-
 
 ### Governance blocker still open in parallel
 
-Full-root Vitest is still non-green because of the separate leak-guard governance drift documented in:
+The separate leak-guard governance drift is remediated and its strict gate is now green.
 
-- `os-platform/core/pilot/ops/leak-guard-governance-drift-2026-03-19.md`
+Leak-guard is no longer the truthful reason full-root Vitest is non-green.
 
-This blocker does not rewrite the sealed frontend contract proof, but it does prevent an honest claim that the entire root Vitest surface is green.
+Full-root Vitest remains non-green because of a separate frontend contract/accessibility failure cluster documented in:
+
+- `frontend/apps/os-shell/src/__tests__/desktop/TerraCanonCrossTabSyncContract.test.tsx`
+- `frontend/apps/os-shell/src/__tests__/desktop/TerraCanonMultiWorkspaceSwitcherContract.test.tsx`
+- `frontend/apps/os-shell/src/__tests__/desktop/TerraCanonRenameWorkspaceIntentContract.test.tsx`
+- `frontend/apps/os-shell/src/__tests__/desktop/TerraCanonReopenWorkspaceIntentContract.test.tsx`
+- `frontend/apps/os-shell/src/__tests__/desktop/TerraCanonWorkspacePersistenceSpineContract.test.tsx`
+- `frontend/apps/os-shell/src/__tests__/shell/shellAccessibility.contract.test.tsx`
+- `frontend/apps/os-shell/src/__tests__/shell/shellKeyboardFocus.contract.test.ts`
+
+This does not reopen the leak-guard lane, but it prevents any honest claim that the entire root Vitest surface is green.
 
 ## Decision Matrix
 
@@ -91,10 +113,10 @@ This blocker does not rewrite the sealed frontend contract proof, but it does pr
 |---|---|---|
 | Code/static contract layer | sealed enough to support release packet prep | `CONDITIONAL GO` |
 | Security repo sweep | complete | `GO` |
-| JWT rotation in live environments | not executed | `HOLD` |
-| SRE env deployment and pager checks | not executed | `HOLD` |
+| JWT rotation in live environments | executed and verified on 2026-03-20 | `GO` |
+| SRE-O1-OPS | partially executed; DB snapshots captured, pager/on-call proof still unresolved | `HOLD` |
 | Live restore/DR/swarm rehearsals | deferred to execution window | `HOLD` |
-| Full-root Vitest | not green because of leak-guard drift | `NOT GREEN` |
+| Full-root Vitest | not green because of unrelated frontend contract/accessibility failures after leak-guard remediation | `NOT GREEN` |
 | Production traffic opening | blocked on above conditions | `HOLD` |
 
 ## Authorization Statement
@@ -103,7 +125,7 @@ Authorized now:
 
 - Continue release preparation and evidence collation.
 - Execute Agent A against the live secret/runtime authority.
-- Execute a separately authorized governance lane for leak-guard remediation.
+- Execute the authorized off-box pager/on-call evidence path for `SRE-O1-OPS`.
 - Prepare launch-window comms, rollback, and hypercare materials.
 
 Not authorized now:
@@ -111,27 +133,23 @@ Not authorized now:
 - Open production traffic.
 - Claim full production-ready status.
 - Claim full-root test green.
-- Remove `SEC-005-ROTATE` from the hard-blocker line before execution proof exists.
+- Claim `SRE-O1-OPS` or live rehearsal closure before execution proof exists.
 
 ## Minimum Closure Conditions To Flip `HOLD` To `GO`
 
 The production traffic gate may move from `HOLD` to `GO` only when all of the following are evidenced:
 
-1. JWT signing key rotated in the authoritative live runtime path.
-2. `TF_*` environment deployment completed for staging and production.
-3. Pre-launch DB snapshot captured.
-4. Pager/on-call test passed.
-5. Swarm Phase 8-A/B/C live rehearsals completed.
-6. Live restore and DR rehearsals completed.
-7. Formal launch-time sign-off collected.
+1. Remaining `SRE-O1-OPS` pager/on-call validation is completed on a truthful executable surface.
+2. Swarm Phase 8-A/B/C live rehearsals completed.
+3. Live restore and DR rehearsals completed.
+4. Formal launch-time sign-off collected.
 
 ## Recommended Next Order Of Operations
 
-1. Execute Agent A using the SEC-005 runbook and publish the sanitized verification bundle.
-2. Execute the SRE-O1-OPS live environment deployment checklist during the SRE window.
-3. Run live restore/DR and swarm rehearsals and attach evidence to the launch packet.
-4. Open a dedicated governance remediation lane for leak-guard coverage restoration.
-5. Reconcile this packet, CP-19, and the post-go-live checklist after those live conditions close.
+1. Close the remaining pager/on-call validation gap in `SRE-O1-OPS` using a real executable monitoring surface or an explicitly authorized off-box evidence path.
+2. Run live restore/DR and swarm rehearsals and attach evidence to the launch packet.
+3. Execute the separate frontend contract/accessibility restoration lane for honest full-root Vitest green.
+4. Reconcile this packet, CP-19, and the post-go-live checklist after those live conditions close.
 
 ## Honest Bottom Line
 
@@ -139,9 +157,8 @@ TerraFusion OS is past the point of “missing core product proof” for the Ben
 
 It is not yet at the point of truthfully opening production traffic.
 
-The remaining work is execution-risk closure, not architecture discovery:
+The remaining work is execution-risk closure plus one now-isolated frontend test cluster, not architecture discovery:
 
-- one live security blocker
-- one live SRE environment deployment bundle
+- one pager/on-call validation gap on the current Hostinger footprint
 - one live rehearsal bundle
-- one separate governance-green restoration lane
+- one unrelated frontend contract/accessibility failure cluster keeping full-root Vitest non-green
