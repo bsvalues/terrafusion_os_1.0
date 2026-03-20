@@ -44,6 +44,17 @@ import {
 const fmt = (n: number) =>
   '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 });
 const fmtPct = (n: number) => n.toFixed(1) + '%';
+const SUCCESS_COLOR = 'hsl(var(--tf-success))';
+const SUCCESS_BG = 'hsl(var(--tf-success) / 0.1)';
+const SUCCESS_BORDER = '1px solid hsl(var(--tf-success) / 0.2)';
+const WARNING_COLOR = 'hsl(var(--tf-warning))';
+const WARNING_BG = 'hsl(var(--tf-warning) / 0.1)';
+const WARNING_BG_SUBTLE = 'hsl(var(--tf-warning) / 0.08)';
+const WARNING_BORDER = '1px solid hsl(var(--tf-warning) / 0.2)';
+const WARNING_BORDER_DASHED = '1px dashed hsl(var(--tf-warning) / 0.3)';
+const ERROR_COLOR = 'hsl(var(--tf-error))';
+const ERROR_BG = 'hsl(var(--tf-error) / 0.08)';
+const ERROR_BORDER = '1px solid hsl(var(--tf-error) / 0.2)';
 
 // ═══════════════════════════════════════════════════════════════
 // Sub-components
@@ -61,15 +72,15 @@ const NoiWaterfall: React.FC<{
   <div className="space-y-1 text-xs">
     <div className="flex justify-between">
       <span style={{ color: 'hsl(var(--tf-text) / 0.6)' }}>Potential Gross Income</span>
-      <span className="font-mono" style={{ color: 'hsl(142 71% 45%)' }}>{fmt(pgi)}</span>
+      <span className="font-mono" style={{ color: SUCCESS_COLOR }}>{fmt(pgi)}</span>
     </div>
     <div className="flex justify-between">
       <span style={{ color: 'hsl(var(--tf-text) / 0.6)' }}>Less: Vacancy & Collection</span>
-      <span className="font-mono" style={{ color: 'hsl(0 84% 60%)' }}>({fmt(vacancyLoss)})</span>
+      <span className="font-mono" style={{ color: ERROR_COLOR }}>({fmt(vacancyLoss)})</span>
     </div>
     <div className="flex justify-between">
       <span style={{ color: 'hsl(var(--tf-text) / 0.6)' }}>Plus: Other Income</span>
-      <span className="font-mono" style={{ color: 'hsl(142 71% 45%)' }}>{fmt(otherIncome)}</span>
+      <span className="font-mono" style={{ color: SUCCESS_COLOR }}>{fmt(otherIncome)}</span>
     </div>
     <div
       className="flex justify-between pt-1 mt-1 font-medium"
@@ -80,7 +91,7 @@ const NoiWaterfall: React.FC<{
     </div>
     <div className="flex justify-between">
       <span style={{ color: 'hsl(var(--tf-text) / 0.6)' }}>Less: Operating Expenses</span>
-      <span className="font-mono" style={{ color: 'hsl(0 84% 60%)' }}>({fmt(expenses)})</span>
+      <span className="font-mono" style={{ color: ERROR_COLOR }}>({fmt(expenses)})</span>
     </div>
     <div
       className="flex justify-between pt-1 mt-1 font-bold"
@@ -89,7 +100,7 @@ const NoiWaterfall: React.FC<{
       <span style={{ color: 'hsl(var(--tf-text))' }}>Net Operating Income</span>
       <span
         className="font-mono"
-        style={{ color: noi > 0 ? 'hsl(142 71% 45%)' : 'hsl(0 84% 60%)' }}
+        style={{ color: noi > 0 ? SUCCESS_COLOR : ERROR_COLOR }}
       >
         {fmt(noi)}
       </span>
@@ -101,10 +112,10 @@ const NoiWaterfall: React.FC<{
 const CapitalizationResult: React.FC<{ result: IncomeValuationResult }> = ({ result }) => {
   const riskColor =
     result.riskClassification === 'low'
-      ? 'hsl(142 71% 45%)'
+      ? SUCCESS_COLOR
       : result.riskClassification === 'medium'
-        ? 'hsl(43 96% 56%)'
-        : 'hsl(0 84% 60%)';
+        ? WARNING_COLOR
+        : ERROR_COLOR;
 
   return (
     <div className="space-y-3">
@@ -546,9 +557,9 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
             <div
               className="text-xs px-3 py-2 rounded"
               style={{
-                background: 'hsl(43 96% 56% / 0.1)',
-                color: 'hsl(43 96% 56%)',
-                border: '1px solid hsl(43 96% 56% / 0.2)',
+                background: WARNING_BG,
+                color: WARNING_COLOR,
+                border: WARNING_BORDER,
               }}
             >
               {backendError}
@@ -559,9 +570,9 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
             <div
               className="text-xs px-3 py-2 rounded"
               style={{
-                background: 'hsl(142 71% 45% / 0.1)',
-                color: 'hsl(142 71% 45%)',
-                border: '1px solid hsl(142 71% 45% / 0.2)',
+                background: SUCCESS_BG,
+                color: SUCCESS_COLOR,
+                border: SUCCESS_BORDER,
               }}
             >
               {recordNotice}
@@ -572,9 +583,9 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
             <div
               className="text-xs px-3 py-2 rounded"
               style={{
-                background: 'hsl(0 84% 60% / 0.08)',
-                color: 'hsl(0 84% 60%)',
-                border: '1px solid hsl(0 84% 60% / 0.2)',
+                background: ERROR_BG,
+                color: ERROR_COLOR,
+                border: ERROR_BORDER,
               }}
             >
               {recordError}
@@ -588,9 +599,9 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
                 <div
                   className="text-[10px] px-2 py-1 rounded text-center"
                   style={{
-                    background: 'hsl(43 96% 56% / 0.08)',
-                    color: 'hsl(43 96% 56%)',
-                    border: '1px dashed hsl(43 96% 56% / 0.3)',
+                    background: WARNING_BG_SUBTLE,
+                    color: WARNING_COLOR,
+                    border: WARNING_BORDER_DASHED,
                   }}
                 >
                   Preview only — not authoritative

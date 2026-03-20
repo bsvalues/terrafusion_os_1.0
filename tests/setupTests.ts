@@ -113,20 +113,25 @@ global.electron = {
   },
 };
 
-// Mock window.matchMedia (jsdom does not implement it)
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation((query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-});
+const hasWindow = typeof window !== 'undefined';
+const hasElement = typeof Element !== 'undefined';
+
+if (hasWindow) {
+  // Mock window.matchMedia (jsdom does not implement it)
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+}
 
 // Mock ResizeObserver for responsive components
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
@@ -135,13 +140,15 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
 }));
 
-// Mock scrollIntoView for cmdk and other components that call it in jsdom
-Element.prototype.scrollIntoView = vi.fn();
+if (hasElement) {
+  // Mock scrollIntoView for cmdk and other components that call it in jsdom
+  Element.prototype.scrollIntoView = vi.fn();
 
-// Mock hasPointerCapture for Radix UI Select and other pointer-capture components in jsdom
-Element.prototype.hasPointerCapture = vi.fn().mockReturnValue(false);
-Element.prototype.setPointerCapture = vi.fn();
-Element.prototype.releasePointerCapture = vi.fn();
+  // Mock hasPointerCapture for Radix UI Select and other pointer-capture components in jsdom
+  Element.prototype.hasPointerCapture = vi.fn().mockReturnValue(false);
+  Element.prototype.setPointerCapture = vi.fn();
+  Element.prototype.releasePointerCapture = vi.fn();
+}
 
 // Setup MSW (if available)
 beforeAll(() => {

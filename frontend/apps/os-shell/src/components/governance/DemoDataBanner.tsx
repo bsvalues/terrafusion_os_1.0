@@ -7,6 +7,10 @@
 
 import React from 'react';
 
+const WARNING_BACKGROUND = 'hsl(var(--tf-warning) / 0.15)';
+const WARNING_BORDER = 'hsl(var(--tf-warning) / 0.3)';
+const WARNING_TEXT = 'hsl(var(--tf-warning))';
+
 export interface DemoDataBannerProps {
   module: string;
   className?: string;
@@ -18,9 +22,9 @@ export const DemoDataBanner: React.FC<DemoDataBannerProps> = ({ module, classNam
     className={className}
     style={{
       padding: '6px 16px',
-      background: 'rgba(234, 179, 8, 0.15)',
-      borderBottom: '1px solid rgba(234, 179, 8, 0.3)',
-      color: 'rgb(234, 179, 8)',
+      background: WARNING_BACKGROUND,
+      borderBottom: `1px solid ${WARNING_BORDER}`,
+      color: WARNING_TEXT,
       fontSize: 12,
       fontWeight: 600,
       textAlign: 'center',

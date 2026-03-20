@@ -6,15 +6,19 @@ interface CanonMinimapPanelProps {
   onGoToLine?: (line: number) => void;
 }
 
+const DENSITY_COLOR = 'hsl(var(--primary))';
+const FALLBACK_ICON_COLOR = 'hsl(var(--muted-foreground))';
+const FALLBACK_BLOCK_COLOR = 'hsl(var(--muted-foreground) / 0.8)';
+
 const KIND_COLORS: Record<string, string> = {
-  function: 'var(--tf-syntax-function, #4fc1ff)',
-  class: 'var(--tf-syntax-class, #e5935a)',
-  interface: 'var(--tf-syntax-interface, #3dc9b0)',
-  type: 'var(--tf-syntax-type, #c586c0)',
-  import: 'var(--tf-syntax-import, #808080)',
-  export: 'var(--tf-syntax-export, #9cdcfe)',
-  comment: 'var(--tf-syntax-comment, #6a9955)',
-  block: 'var(--tf-syntax-block, #555)',
+  function: 'hsl(var(--primary))',
+  class: 'hsl(var(--tf-warning))',
+  interface: 'hsl(var(--tf-success))',
+  type: 'hsl(var(--accent))',
+  import: 'hsl(var(--muted-foreground))',
+  export: 'hsl(var(--foreground))',
+  comment: 'hsl(var(--tf-success) / 0.7)',
+  block: 'hsl(var(--muted-foreground) / 0.8)',
 };
 
 const KIND_LABELS: Record<string, string> = {
@@ -96,7 +100,7 @@ export const CanonMinimapPanel: React.FC<CanonMinimapPanelProps> = ({ filePath, 
               className='canon-minimap__density-cell'
               style={{
                 opacity: 0.15 + (count / maxDensity) * 0.85,
-                backgroundColor: count > 0 ? 'hsl(190, 90%, 60%)' : undefined,
+                backgroundColor: count > 0 ? DENSITY_COLOR : undefined,
               }}
               title={`Lines ${i * 10 + 1}–${Math.min((i + 1) * 10, totalLines)}: ${count} symbol(s)`}
             />
@@ -122,7 +126,7 @@ export const CanonMinimapPanel: React.FC<CanonMinimapPanelProps> = ({ filePath, 
             >
               <span
                 className='canon-minimap__section-icon'
-                style={{ color: KIND_COLORS[section.kind] || '#888' }}
+                style={{ color: KIND_COLORS[section.kind] || FALLBACK_ICON_COLOR }}
               >
                 {KIND_LABELS[section.kind] || '·'}
               </span>
@@ -134,7 +138,7 @@ export const CanonMinimapPanel: React.FC<CanonMinimapPanelProps> = ({ filePath, 
                 className='canon-minimap__section-bar'
                 style={{
                   width: `${Math.max(4, ((section.endLine - section.startLine + 1) / totalLines) * 100)}%`,
-                  backgroundColor: KIND_COLORS[section.kind] || '#555',
+                  backgroundColor: KIND_COLORS[section.kind] || FALLBACK_BLOCK_COLOR,
                 }}
               />
             </button>
@@ -156,7 +160,7 @@ export const CanonMinimapPanel: React.FC<CanonMinimapPanelProps> = ({ filePath, 
                 style={{
                   top: `${top}%`,
                   height: `${height}%`,
-                  backgroundColor: KIND_COLORS[section.kind] || '#555',
+                  backgroundColor: KIND_COLORS[section.kind] || FALLBACK_BLOCK_COLOR,
                   left: `${section.depth * 8}%`,
                   width: `${100 - section.depth * 8}%`,
                 }}

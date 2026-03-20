@@ -28,9 +28,9 @@ export interface MarketHeatMapWidgetProps {
 
 function intensityColor(count: number, max: number): string {
   const ratio = max > 0 ? count / max : 0;
-  if (ratio >= 0.7) return '#EF4444';
-  if (ratio >= 0.4) return '#F59E0B';
-  return '#3B82F6';
+  if (ratio >= 0.7) return 'hsl(var(--tf-error))';
+  if (ratio >= 0.4) return 'hsl(var(--tf-warning))';
+  return 'hsl(var(--primary))';
 }
 
 // ---------------------------------------------------------------------------
@@ -120,9 +120,9 @@ export default function MarketHeatMapWidget({
 
       {/* Legend */}
       <div className="absolute bottom-1 right-1 flex gap-1.5 text-[8px] bg-terra-midnight/60 px-1 py-0.5 rounded">
-        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-[#EF4444]" />High</span>
-        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]" />Med</span>
-        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6]" />Low</span>
+        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(var(--tf-error))' }} />High</span>
+        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(var(--tf-warning))' }} />Med</span>
+        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(var(--primary))' }} />Low</span>
       </div>
     </div>
   );
