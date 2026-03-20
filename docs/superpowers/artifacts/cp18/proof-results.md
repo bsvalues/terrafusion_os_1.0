@@ -60,6 +60,11 @@ Status: PASS (static layer) / DEFERRED (swarm live rehearsals)
 | `pnpm run security:scan` | ✅ PASS | 0 | 2026-03-19 post-O1 sweep |
 | `pnpm run type-check` | ✅ PASS | 0 | 2026-03-19 post-O1 Round 3 |
 | `node --test phase83-tools.test.mjs` | ✅ PASS 56/56 | 0 | 2026-03-19 post-O1 Round 3 |
+| `pnpm run type-check` | ✅ PASS | 0 | 2026-03-19 post-test-infra + cp14-cp17 seal |
+| `node --test phase83-tools.test.mjs` | ✅ PASS 56/56 | 0 | 2026-03-19 post-test-infra + cp14-cp17 seal |
+| `node --test phase85-tools.test.mjs` | ✅ PASS 22/22 | 0 | 2026-03-19 post-test-infra + cp14-cp17 seal |
+| `node --test phase86-toolrunner.test.mjs` | ✅ PASS 9/9 | 0 | 2026-03-19 post-test-infra + cp14-cp17 seal |
+| `pnpm run test` (vitest) | ✅ PASS 164/164 | 0 | 2026-03-19 post-test-infra + cp14-cp17 seal |
 
 ## Upstream Gate Chain
 
