@@ -5,6 +5,17 @@ Phase: CP-19
 Gate: G10
 Status: COMPLETE (pre-conditions pending — see risk-register.md)
 
+## Current Authorization Reconciliation
+
+Use the current operating authorization memo as the top-level truth reconciler for this packet:
+
+- `os-platform/core/pilot/ops/post-phase25-release-authorization-packet-2026-03-19.md`
+
+Interpretation:
+
+- CP-19 static/repository readiness remains sufficient for launch-packet preparation.
+- Production traffic authorization remains `HOLD` until the pre-launch gate below is fully green.
+
 ## Launch Window
 
 - Planned start: TBD (after live rehearsal pre-conditions met)

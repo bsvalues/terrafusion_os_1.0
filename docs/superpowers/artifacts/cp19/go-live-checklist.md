@@ -5,6 +5,14 @@ Phase: CP-19
 Gate: G10
 Status: COMPLETE (static layer) — live rehearsals deferred pre-condition
 
+## Current Authorization Reconciliation
+
+Top-level reconciler:
+
+- `os-platform/core/pilot/ops/post-phase25-release-authorization-packet-2026-03-19.md`
+
+This checklist remains the CP-19 gate ledger for static evidence, but it must not be read as authority to open production traffic while the reconciled authorization packet remains `HOLD` on live pre-traffic conditions.
+
 ## Gate Evidence Checklist
 
 | Gate | Evidence Reference | Owner | Status |
@@ -18,7 +26,7 @@ Status: COMPLETE (static layer) — live rehearsals deferred pre-condition
 | G7 | docs/superpowers/artifacts/cp16/registry-contract-proof.md + yakima-proof.md + cowlitz-proof.md | Platform Core Owner | ✅ SEALED 2026-03-19 — 29/29 registry contract tests; static verification PASS; live activation deferred to SRE |
 | G8 | docs/superpowers/artifacts/cp17/restore-proof.md + dr-proof.md + sre-pack.md + hypercare-plan.md | Operations Owner | ✅ SEALED 2026-03-19 — all runbooks complete; live rehearsals deferred to SRE window |
 | G9 | docs/superpowers/artifacts/cp18/security-closure-packet.md | Security Owner | ✅ SEALED 2026-03-19 — O1 sweep complete: SEC-001 through SEC-018 (9 CRITICAL + 9 HIGH) all remediated; 0 open criticals/highs; swarm Phase 8 deferred to AI Swarm lane |
-| G10 | this checklist + decision-memo.md + rollback-plan.md + codex-integration-proof.md | Founder/Release Authority | ✅ STATIC LAYER PASS — pending live rehearsals + formal signatures |
+| G10 | this checklist + decision-memo.md + rollback-plan.md + codex-integration-proof.md + `os-platform/core/pilot/ops/post-phase25-release-authorization-packet-2026-03-19.md` | Founder/Release Authority | ✅ STATIC LAYER PASS — production traffic still `HOLD` pending live rehearsals + formal signatures |
 
 ## Additional Required Evidence
 
