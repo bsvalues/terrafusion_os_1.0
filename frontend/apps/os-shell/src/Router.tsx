@@ -113,106 +113,113 @@ const Router: React.FC = () => {
                 {/* Phase 18: Login (auth redirect target — AuthGuard exempts /login) */}
                 <Route path='/login' element={<LoginPage />} />
 
-                {/* TerraFusion OS Desktop — the real OS surface with windows, taskbar, start menu */}
-                <Route path='/' element={<App />} />
+                {/* ══════════════════════════════════════════════════════════
+                    TerraFusion OS Desktop — persistent shell chrome layout.
+                    All OS routes nest here so Taskbar/TopBar/CommandPalette
+                    remain mounted across navigations.
+                    ══════════════════════════════════════════════════════════ */}
+                <Route path='/' element={<App />}>
+                  {/* Home — Desktop internally shows StageZeroState + icons */}
+                  <Route index element={null} />
 
-                {/* Shell Home — deprecated; redirects to Desktop (Phase 7) */}
-                <Route path='/home' element={<Navigate to='/' replace />} />
+                  {/* Shell Home — deprecated; redirects to Desktop (Phase 7) */}
+                  <Route path='home' element={<Navigate to='/' replace />} />
 
-                {/* Legacy: /desktop still works */}
-                <Route path='/desktop' element={<App />} />
+                  {/* Legacy: /desktop redirects to home */}
+                  <Route path='desktop' element={<Navigate to='/' replace />} />
 
-                {/* Legacy: /launchpad bookmarks redirect to home */}
-                <Route
-                  path='/launchpad'
-                  element={<LegacyRedirect to='/' legacyAppId='launchpad.legacy-route' />}
-                />
+                  {/* Legacy: /launchpad bookmarks redirect to home */}
+                  <Route
+                    path='launchpad'
+                    element={<LegacyRedirect to='/' legacyAppId='launchpad.legacy-route' />}
+                  />
 
-                {/* Property Search — native TerraPrime replacement */}
-                <Route path='/property' element={<PropertySearch />} />
+                  {/* Property Search — native TerraPrime replacement */}
+                  <Route path='property' element={<PropertySearch />} />
 
-                {/* Property Workbench - Parcel-context hub (Tier-0 OS Surface) */}
-                <Route path='/property/:parcelId' element={<PropertyWorkbench />}>
-                  <Route index element={<PropertySummary />} />
-                  <Route path='forge' element={<PropertyForge />} />
-                  <Route path='atlas' element={<PropertyAtlas />} />
-                  <Route path='dais' element={<PropertyDais />} />
-                  <Route path='clerk' element={<PropertyClerk />} />
-                  <Route path='treasury' element={<PropertyTreasury />} />
-                  <Route path='audit' element={<PropertyAudit />} />
-                  <Route path='dossier' element={<PropertyDossier />} />
-                  <Route path='pilot' element={<PropertyPilot />} />
+                  {/* Property Workbench - Parcel-context hub (Tier-0 OS Surface) */}
+                  <Route path='property/:parcelId' element={<PropertyWorkbench />}>
+                    <Route index element={<PropertySummary />} />
+                    <Route path='forge' element={<PropertyForge />} />
+                    <Route path='atlas' element={<PropertyAtlas />} />
+                    <Route path='dais' element={<PropertyDais />} />
+                    <Route path='clerk' element={<PropertyClerk />} />
+                    <Route path='treasury' element={<PropertyTreasury />} />
+                    <Route path='audit' element={<PropertyAudit />} />
+                    <Route path='dossier' element={<PropertyDossier />} />
+                    <Route path='pilot' element={<PropertyPilot />} />
+                  </Route>
+
+                  {/* Legacy Redirects - Demote broken defaults with telemetry */}
+                  <Route
+                    path='modules/property-workbench'
+                    element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
+                  />
+                  <Route
+                    path='modules/property-workbench/*'
+                    element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
+                  />
+
+                  <Route path='monitoring' element={<Monitoring />} />
+                  <Route path='marketplace' element={<TerraFusionMarketplace />} />
+                  <Route path='experiments' element={<ExperimentsList />} />
+                  <Route path='experiments/create' element={<CreateExperiment />} />
+                  <Route path='codex/preferences' element={<NotificationPreferences />} />
+
+                  {/* Gen2 Module Routes - Internal OS modules */}
+                  <Route path='gen2/terraforge' element={<TerraForgeGen2 />} />
+                  <Route path='gen2/dossier' element={<TerraDossierGen2 />} />
+
+                  {/* Suite Routes (Phase 5: MWUX Slices) */}
+                  {/* TerraPrime → migrated to native PropertySearch (legacy redirect with telemetry) */}
+                  <Route path='suites/terra-prime/*' element={<LegacyRedirect to='/property' legacyAppId='suites.terra-prime' />} />
+
+                  {/* Constitutional Suite Home Routes (Phase 9) */}
+                  <Route path='forge' element={<ForgeHome />} />
+                  <Route path='atlas' element={<AtlasHome />} />
+                  <Route path='dais' element={<DaisHome />} />
+                  <Route path='dossier' element={<DossierHome />} />
+                  <Route path='gpt' element={<GptHome />} />
+
+                  {/* GovernanceLock - Single Choke Point UI (Slice 6: StandaloneHomeShell) */}
+                  <Route path='pilot' element={<PilotHome />} />
+                  {/* Legacy: Direct PilotConsole (for backwards compat during transition) */}
+                  <Route path='pilot/legacy' element={<PilotConsole />} />
+                  {/* Slice 6.1: TerraTrace - Observability & Telemetry */}
+                  <Route path='trace' element={<TraceHome />} />
+                  {/* Phase 30: TerraCanon - Integrated Development Environment */}
+                  <Route path='canon' element={<CanonHome />} />
+
+                  {/* GovernanceLock - Dashboard (role-gated) */}
+                  <Route path='pilot/dashboard' element={<GovernanceDashboard />} />
+                  <Route path='pilot/api' element={<PilotApiDemo />} />
+
+                  {/* Phase 1: Error Display Demo */}
+                  <Route path='error-demo' element={<ErrorDisplayDemo />} />
+
+                  {/* Phase 2: Pilot Tool Invocation Demo */}
+                  <Route path='pilot-demo' element={<PilotDemo />} />
+
+                  {/* Phase 7: Dev-only Legacy Burn-Down Viewer (always registered, element guards) */}
+                  <Route
+                    path='dev/legacy-metrics'
+                    element={
+                      getViteEnv().DEV ? (
+                        <LegacyMetricsViewer />
+                      ) : (
+                        <div className='p-8 text-center' style={{ color: 'hsl(var(--tf-muted))' }}>
+                          Dev-only route. Not available in production.
+                        </div>
+                      )
+                    }
+                  />
+
+                  {/* Legacy module routes - redirect to home with telemetry */}
+                  <Route
+                    path='modules/*'
+                    element={<LegacyRedirect to='/' legacyAppId='modules.unknown' />}
+                  />
                 </Route>
-
-                {/* Legacy Redirects - Demote broken defaults with telemetry */}
-                <Route
-                  path='/modules/property-workbench'
-                  element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
-                />
-                <Route
-                  path='/modules/property-workbench/*'
-                  element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
-                />
-
-                <Route path='/monitoring' element={<Monitoring />} />
-                <Route path='/marketplace' element={<TerraFusionMarketplace />} />
-                <Route path='/experiments' element={<ExperimentsList />} />
-                <Route path='/experiments/create' element={<CreateExperiment />} />
-                <Route path='/codex/preferences' element={<NotificationPreferences />} />
-
-                {/* Gen2 Module Routes - Internal OS modules */}
-                <Route path='/gen2/terraforge' element={<TerraForgeGen2 />} />
-                <Route path='/gen2/dossier' element={<TerraDossierGen2 />} />
-
-                {/* Suite Routes (Phase 5: MWUX Slices) */}
-                {/* TerraPrime → migrated to native PropertySearch (legacy redirect with telemetry) */}
-                <Route path='/suites/terra-prime/*' element={<LegacyRedirect to='/property' legacyAppId='suites.terra-prime' />} />
-
-                {/* Constitutional Suite Home Routes (Phase 9) */}
-                <Route path='/forge' element={<ForgeHome />} />
-                <Route path='/atlas' element={<AtlasHome />} />
-                <Route path='/dais' element={<DaisHome />} />
-                <Route path='/dossier' element={<DossierHome />} />
-                <Route path='/gpt' element={<GptHome />} />
-
-                {/* GovernanceLock - Single Choke Point UI (Slice 6: StandaloneHomeShell) */}
-                <Route path='/pilot' element={<PilotHome />} />
-                {/* Legacy: Direct PilotConsole (for backwards compat during transition) */}
-                <Route path='/pilot/legacy' element={<PilotConsole />} />
-                {/* Slice 6.1: TerraTrace - Observability & Telemetry */}
-                <Route path='/trace' element={<TraceHome />} />
-                {/* Phase 30: TerraCanon - Integrated Development Environment */}
-                <Route path='/canon' element={<CanonHome />} />
-
-                {/* GovernanceLock - Dashboard (role-gated) */}
-                <Route path='/pilot/dashboard' element={<GovernanceDashboard />} />
-                <Route path='/pilot/api' element={<PilotApiDemo />} />
-
-                {/* Phase 1: Error Display Demo */}
-                <Route path='/error-demo' element={<ErrorDisplayDemo />} />
-
-                {/* Phase 2: Pilot Tool Invocation Demo */}
-                <Route path='/pilot-demo' element={<PilotDemo />} />
-
-                {/* Phase 7: Dev-only Legacy Burn-Down Viewer (always registered, element guards) */}
-                <Route
-                  path='/dev/legacy-metrics'
-                  element={
-                    getViteEnv().DEV ? (
-                      <LegacyMetricsViewer />
-                    ) : (
-                      <div className='p-8 text-center' style={{ color: 'hsl(var(--tf-muted))' }}>
-                        Dev-only route. Not available in production.
-                      </div>
-                    )
-                  }
-                />
-
-                {/* Legacy module routes - redirect to home with telemetry */}
-                <Route
-                  path='/modules/*'
-                  element={<LegacyRedirect to='/' legacyAppId='modules.unknown' />}
-                />
               </Routes>
             </AuthGuard>
           </Suspense>

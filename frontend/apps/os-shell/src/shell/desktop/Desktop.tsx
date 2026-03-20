@@ -9,7 +9,8 @@
  * @see SUCCESS CRITERIA SC-2.4, SC-3.1, SC-3.11, SC-5.1, SC-7, SC-9
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { Outlet, useLocation, UNSAFE_NavigationContext } from 'react-router-dom';
 import { Layers, Search, Settings2, User } from 'lucide-react';
 import { Launcher } from '../../components/launcher';
 import { useContextMenu } from '../../hooks/useContextMenu';
@@ -51,6 +52,8 @@ import { Z } from './zIndex';
 export interface DesktopProps {
   /** Optional className for additional styling */
   className?: string;
+  /** Optional children — when absent, Desktop renders <Outlet /> for nested routes */
+  children?: React.ReactNode;
 }
 
 /** NotificationBell connected to the notification store (used in top bar) */
@@ -212,7 +215,27 @@ const DesktopTopSystemBar: React.FC<{
  * <DesktopWithErrorBoundary />
  * ```
  */
-export function Desktop({ className = '' }: DesktopProps) {
+/**
+ * Safe pathname hook — returns '/' when rendered outside a Router (e.g. in tests).
+ * useLocation() throws if there is no Router ancestor. We detect this via the
+ * navigation context: when navigator is null, we know there is no Router.
+ */
+function useSafePathname(): string {
+  const ctx = useContext(UNSAFE_NavigationContext);
+  if (!ctx?.navigator) {
+    // No Router ancestor — default to home so Desktop shows StageZeroState
+    return '/';
+  }
+  // Safe to call — Router is present
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return useLocation().pathname;
+}
+
+export function Desktop({ className = '', children }: DesktopProps) {
+  // Route-aware home detection — gate desktop icons vs routed content
+  const pathname = useSafePathname();
+  const isHome = pathname === '/';
+
   // Install IPC bridge for app ↔ shell communication (Phase 6)
   useIpcBridge();
 
@@ -492,14 +515,27 @@ export function Desktop({ className = '' }: DesktopProps) {
         onToggleSceneSelector={toggleSceneSelector}
       />
 
-      {/* Layer 0.3: Desktop Icons — only interactive when desktop surface is visible */}
-      {surfaces.desktop !== 'hidden' && (
-        <DesktopIconGrid className='absolute top-12 left-4' />
-      )}
+      {/* Layer 0.3–0.8: Home surfaces OR routed OS content */}
+      {isHome ? (
+        <>
+          {/* Layer 0.3: Desktop Icons — only interactive when desktop surface is visible */}
+          {surfaces.desktop !== 'hidden' && (
+            <DesktopIconGrid className='absolute top-12 left-4' />
+          )}
 
-      {/* Layer 0.5: Stage Zero-State — gated by shell mode surface policy */}
-      {surfaces.recentWork !== 'hidden' && (
-        <StageZeroState id='desktop-main-content' />
+          {/* Layer 0.5: Stage Zero-State — gated by shell mode surface policy */}
+          {surfaces.recentWork !== 'hidden' && (
+            <StageZeroState id='desktop-main-content' />
+          )}
+        </>
+      ) : (
+        <div
+          className='absolute left-0 right-0 top-12 bottom-12 overflow-auto'
+          style={{ zIndex: 2 }}
+          data-testid='shell-routed-content'
+        >
+          {children ?? <Outlet />}
+        </div>
       )}
 
       {/* Layer 1-999: Windows */}

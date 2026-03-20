@@ -167,7 +167,7 @@ describe('Gate 3 — Workbench route-collapse: parcel-context tabs', () => {
   }
 
   it('PropertyWorkbench is the parent route at /property/:parcelId', () => {
-    expect(router).toContain("path='/property/:parcelId'");
+    expect(router).toContain("path='property/:parcelId'");
     expect(router).toContain('element={<PropertyWorkbench />}');
   });
 
@@ -184,16 +184,16 @@ describe('Gate 4 — standalone suite home routes', () => {
   const router = readSrc('Router.tsx');
 
   const SUITE_ROUTES = [
-    { path: '/forge', component: 'ForgeHome', importPath: 'suites/ForgeSuiteHome' },
-    { path: '/atlas', component: 'AtlasHome', importPath: 'suites/AtlasSuiteHome' },
-    { path: '/dais', component: 'DaisHome', importPath: 'suites/DaisSuiteHome' },
-    { path: '/dossier', component: 'DossierHome', importPath: 'suites/DossierSuiteHome' },
-    { path: '/gpt', component: 'GptHome', importPath: 'suites/GptSuiteHome' },
+    { publicPath: '/forge', sourcePath: 'forge', component: 'ForgeHome', importPath: 'suites/ForgeSuiteHome' },
+    { publicPath: '/atlas', sourcePath: 'atlas', component: 'AtlasHome', importPath: 'suites/AtlasSuiteHome' },
+    { publicPath: '/dais', sourcePath: 'dais', component: 'DaisHome', importPath: 'suites/DaisSuiteHome' },
+    { publicPath: '/dossier', sourcePath: 'dossier', component: 'DossierHome', importPath: 'suites/DossierSuiteHome' },
+    { publicPath: '/gpt', sourcePath: 'gpt', component: 'GptHome', importPath: 'suites/GptSuiteHome' },
   ];
 
   for (const route of SUITE_ROUTES) {
-    it(`${route.path} route exists with ${route.component}`, () => {
-      expect(router).toContain(`path='${route.path}'`);
+    it(`${route.publicPath} route exists with ${route.component}`, () => {
+      expect(router).toContain(`path='${route.sourcePath}'`);
       expect(router).toContain(`element={<${route.component} />}`);
     });
 
@@ -204,14 +204,14 @@ describe('Gate 4 — standalone suite home routes', () => {
   }
 
   const OS_ROUTES = [
-    { path: '/pilot', component: 'PilotHome', importPath: 'pages/PilotHome' },
-    { path: '/trace', component: 'TraceHome', importPath: 'pages/TraceHome' },
-    { path: '/canon', component: 'CanonHome', importPath: 'pages/CanonHome' },
+    { publicPath: '/pilot', sourcePath: 'pilot', component: 'PilotHome', importPath: 'pages/PilotHome' },
+    { publicPath: '/trace', sourcePath: 'trace', component: 'TraceHome', importPath: 'pages/TraceHome' },
+    { publicPath: '/canon', sourcePath: 'canon', component: 'CanonHome', importPath: 'pages/CanonHome' },
   ];
 
   for (const route of OS_ROUTES) {
-    it(`${route.path} OS route exists`, () => {
-      expect(router).toContain(`path='${route.path}'`);
+    it(`${route.publicPath} OS route exists`, () => {
+      expect(router).toContain(`path='${route.sourcePath}'`);
       expect(router).toContain(`element={<${route.component} />}`);
     });
 

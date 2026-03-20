@@ -50,9 +50,9 @@ export const PropertySummary: React.FC = () => {
   const appeals = usePropertyStore((s) => s.appeals);
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4 p-4">
       {/* Identity Grid */}
-      <BentoGrid columns={4} gap={0.75} padding={0}>
+      <BentoGrid columns="auto" gap={0.75} padding={0}>
         <BentoCard variant="stat" title="Parcel ID">
           <p className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
             {propertyData.parcelId}
@@ -86,7 +86,7 @@ export const PropertySummary: React.FC = () => {
       </BentoGrid>
 
       {/* Valuation Breakdown */}
-      <BentoGrid columns={4} gap={0.75} padding={0}>
+      <BentoGrid columns="auto" gap={0.75} padding={0}>
         <BentoCard variant="stat" title="Market Value" promote>
           <p
             className="text-2xl font-bold"
@@ -114,7 +114,7 @@ export const PropertySummary: React.FC = () => {
 
       {/* Property Details — from full Property record */}
       {activeParcel && (
-        <BentoGrid columns={4} gap={0.75} padding={0}>
+        <BentoGrid columns="auto" gap={0.75} padding={0}>
           <BentoCard variant="stat" title="Year Built">
             <p className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
               {activeParcel.yearBuilt || '—'}
@@ -143,7 +143,7 @@ export const PropertySummary: React.FC = () => {
 
       {/* Status Flags + Exemptions */}
       {activeParcel && (activeParcel.hasActivePermits || activeParcel.hasAppeals || (activeParcel.exemptionAmount > 0)) && (
-        <BentoGrid columns={3} gap={0.75} padding={0}>
+        <BentoGrid columns="auto" gap={0.75} padding={0}>
           {activeParcel.exemptionAmount > 0 && (
             <BentoCard variant="stat" title="Exemptions">
               <p className="text-lg font-bold" style={{ color: 'hsl(var(--tf-warning, 45 90% 55%))' }}>
@@ -209,7 +209,7 @@ export const PropertySummary: React.FC = () => {
       )}
 
       {/* Legal Description + Quick Actions */}
-      <BentoGrid columns={2} gap={0.75} padding={0}>
+      <BentoGrid columns="auto" gap={0.75} padding={0}>
         {propertyData.legalDescription && (
           <BentoCard variant="table" title="Legal Description">
             <p
@@ -271,7 +271,7 @@ export const PropertySummary: React.FC = () => {
 
       {/* Sale History — if available */}
       {activeParcel?.lastSaleDate && (
-        <BentoGrid columns={2} gap={0.75} padding={0}>
+        <BentoGrid columns="auto" gap={0.75} padding={0}>
           <BentoCard variant="stat" title="Last Sale Date">
             <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
               {new Date(activeParcel.lastSaleDate).toLocaleDateString()}

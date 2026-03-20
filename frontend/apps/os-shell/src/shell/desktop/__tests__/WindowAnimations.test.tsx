@@ -11,6 +11,7 @@
  * @module shell/desktop/__tests__/WindowAnimations
  */
 
+import React from 'react';
 import { vi, describe, it, expect } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { DesktopWindow } from '../../../stores/desktopStore';
@@ -31,6 +32,36 @@ import {
     windowRestoreVariants,
     windowVariants,
 } from '../windowAnimations';
+
+// ============================================================================
+// Mock framer-motion
+// ============================================================================
+
+vi.mock('framer-motion', async () => {
+  const ReactModule = await import('react');
+
+  const MotionDiv = ReactModule.forwardRef<HTMLDivElement, any>(function MotionDiv(
+    { animate, variants, style, onAnimationComplete, children, ...props },
+    ref
+  ) {
+    const resolvedStyle = {
+      ...(style ?? {}),
+      ...((variants && animate && typeof animate === 'string' && variants[animate]) || {}),
+    };
+
+    ReactModule.useEffect(() => {
+      onAnimationComplete?.();
+    }, [animate, onAnimationComplete]);
+
+    return ReactModule.createElement('div', { ...props, ref, style: resolvedStyle }, children);
+  });
+
+  return {
+    motion: {
+      div: MotionDiv,
+    },
+  };
+});
 
 // ============================================================================
 // Mock desktopStore
@@ -346,7 +377,8 @@ describe('Window Component Animations', () => {
     await waitFor(
       () => {
         const windowAnimation = screen.getByTestId('tf-window-animation');
-        expect(windowAnimation).toHaveStyle({ opacity: '1' });
+        expect(windowAnimation).toBeInstanceOf(HTMLElement);
+        expect(Number.parseFloat((windowAnimation as HTMLElement).style.opacity || '0')).toBeGreaterThan(0.99);
       },
       { timeout: 1000 }
     );
