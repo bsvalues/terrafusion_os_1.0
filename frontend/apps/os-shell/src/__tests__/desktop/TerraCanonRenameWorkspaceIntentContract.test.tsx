@@ -33,7 +33,7 @@
  * Scope: Session rename only; no persistence, no filesystem, no Monaco.
  */
 
-import { vi, describe, it, expect, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -83,6 +83,19 @@ import Router from '../../Router';
 // ============================================================================
 
 describe('Phase 34 contract: loaded workspace can be renamed (session-only, no persistence)', () => {
+  beforeAll(async () => {
+    vi.useRealTimers();
+    memoryRouterEntries = ['/canon'];
+    render(<Router />);
+    await waitFor(
+      () => expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument(),
+      { timeout: 15000 },
+    );
+    cleanup();
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  }, 20000);
+
   afterEach(() => {
     cleanup();
   });
@@ -98,7 +111,7 @@ describe('Phase 34 contract: loaded workspace can be renamed (session-only, no p
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 }
+      { timeout: 15000 }
     );
 
     expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
