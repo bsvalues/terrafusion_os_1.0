@@ -29,7 +29,11 @@ public class PropertiesController : ControllerBase
     {
         try
         {
-            var properties = await _propertyService.GetPropertiesAsync(page, pageSize, search, countyId);
+            var countyAccessFailure = TryResolveCountyId(countyId, out var effectiveCountyId);
+            if (countyAccessFailure is not null)
+                return countyAccessFailure;
+
+            var properties = await _propertyService.GetPropertiesAsync(page, pageSize, search, effectiveCountyId);
             return Ok(properties);
         }
         catch (Exception ex)
@@ -45,8 +49,9 @@ public class PropertiesController : ControllerBase
     {
         try
         {
-            if (!TryGetCountyId(out var countyId))
-                return Forbid();
+            var countyAccessFailure = TryResolveCountyId(null, out var countyId);
+            if (countyAccessFailure is not null)
+                return countyAccessFailure;
 
             var property = await _propertyService.GetPropertyByIdAsync(id, countyId);
             if (property == null)
@@ -61,11 +66,17 @@ public class PropertiesController : ControllerBase
         }
     }
 
-    private bool TryGetCountyId(out Guid countyId)
+    private ActionResult? TryResolveCountyId(Guid? requestedCountyId, out Guid countyId)
     {
         countyId = Guid.Empty;
         var claim = User.FindFirst("countyId")?.Value?.Trim();
-        return !string.IsNullOrWhiteSpace(claim) && Guid.TryParse(claim, out countyId);
+        if (string.IsNullOrWhiteSpace(claim) || !Guid.TryParse(claim, out countyId))
+            return BadRequest(new { error = "A valid countyId claim is required." });
+
+        if (requestedCountyId.HasValue && requestedCountyId.Value != countyId)
+            return Forbid();
+
+        return null;
     }
 
     [HttpGet("parcel/{parcelNumber}")]
@@ -73,7 +84,11 @@ public class PropertiesController : ControllerBase
     {
         try
         {
-            var property = await _propertyService.GetPropertyByParcelAsync(parcelNumber);
+            var countyAccessFailure = TryResolveCountyId(null, out var countyId);
+            if (countyAccessFailure is not null)
+                return countyAccessFailure;
+
+            var property = await _propertyService.GetPropertyByParcelAsync(parcelNumber, countyId);
             if (property == null)
                 return NotFound();
 
@@ -91,7 +106,15 @@ public class PropertiesController : ControllerBase
     {
         try
         {
-            var valuations = await _propertyService.GetPropertyValuationsAsync(id);
+            var countyAccessFailure = TryResolveCountyId(null, out var countyId);
+            if (countyAccessFailure is not null)
+                return countyAccessFailure;
+
+            var property = await _propertyService.GetPropertyByIdAsync(id, countyId);
+            if (property == null)
+                return NotFound();
+
+            var valuations = await _propertyService.GetPropertyValuationsAsync(id, countyId);
             return Ok(valuations);
         }
         catch (Exception ex)
@@ -106,6 +129,14 @@ public class PropertiesController : ControllerBase
     {
         try
         {
+            var countyAccessFailure = TryResolveCountyId(null, out var countyId);
+            if (countyAccessFailure is not null)
+                return countyAccessFailure;
+
+            var property = await _propertyService.GetPropertyByIdAsync(id, countyId);
+            if (property == null)
+                return NotFound();
+
             createDto.PropertyId = id;
             var valuation = await _propertyService.CreateValuationAsync(createDto);
             return CreatedAtAction(nameof(GetPropertyValuations), new { id }, valuation);
@@ -122,7 +153,11 @@ public class PropertiesController : ControllerBase
     {
         try
         {
-            var stats = await _propertyService.GetPropertyStatsAsync();
+            var countyAccessFailure = TryResolveCountyId(null, out var countyId);
+            if (countyAccessFailure is not null)
+                return countyAccessFailure;
+
+            var stats = await _propertyService.GetPropertyStatsAsync(countyId);
             return Ok(stats);
         }
         catch (Exception ex)

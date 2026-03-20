@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Interfaces;
@@ -9,6 +10,7 @@ namespace TerraFusion.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,SystemAdmin")]
     public class MarketplaceController : ControllerBase
     {
         private readonly IMarketplaceService _marketplaceService;
@@ -33,15 +35,16 @@ namespace TerraFusion.API.Controllers
                 var plugins = modules.Select(m => new
                 {
                     id = m.Name?.ToLower().Replace(" ", "-"),
-                    name = m.Name,
+                    name = string.IsNullOrWhiteSpace(m.DisplayName) ? m.Name : m.DisplayName,
                     version = m.Version ?? "1.0.0",
                     description = m.Description,
                     author = "TerraFusion",
-                    category = "Government", // ModuleDto doesn't have Category
+                    category = m.IsCore ? "Core" : m.Tier.ToString(),
                     tags = new[] { m.Tier.ToString().ToLower(), "government", "terrafusion" },
-                    downloads = GetDownloadCount(m.Name ?? ""),
-                    rating = GetRating(m.Name ?? ""),
-                    ratingCount = GetRatingCount(m.Name ?? "")
+                    downloads = 0,
+                    rating = 0.0,
+                    ratingCount = 0,
+                    metricsAvailable = false
                 }).ToList();
 
                 // Apply search filter
@@ -146,36 +149,6 @@ namespace TerraFusion.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
-        private static int GetDownloadCount(string moduleName) => moduleName switch
-        {
-            "CostForge AI" => 15420,
-            "Harris PACS" => 8930,
-            "GIS Core" => 12750,
-            "CAMA Core" => 6840,
-            "Valuation Tools" => 9320,
-            _ => new Random().Next(1000, 20000)
-        };
-
-        private static double GetRating(string moduleName) => moduleName switch
-        {
-            "CostForge AI" => 4.8,
-            "Harris PACS" => 4.6,
-            "GIS Core" => 4.9,
-            "CAMA Core" => 4.5,
-            "Valuation Tools" => 4.7,
-            _ => Math.Round(4.0 + new Random().NextDouble(), 1)
-        };
-
-        private static int GetRatingCount(string moduleName) => moduleName switch
-        {
-            "CostForge AI" => 342,
-            "Harris PACS" => 156,
-            "GIS Core" => 289,
-            "CAMA Core" => 198,
-            "Valuation Tools" => 234,
-            _ => new Random().Next(50, 400)
-        };
 
         private static string GetCategoryIcon(string category) => category switch
         {

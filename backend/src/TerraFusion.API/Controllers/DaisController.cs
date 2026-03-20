@@ -119,13 +119,40 @@ public class DaisController : ControllerBase
     return candidates.ToArray();
   }
 
+  private async Task<(Guid? CountyId, ActionResult? ErrorResult)> RequireCountyAccessAsync(string? requestedCounty = null)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return (null, Unauthorized(new { error = "A valid countyId or countyCode claim is required." }));
+
+    if (string.IsNullOrWhiteSpace(requestedCounty))
+      return (countyId.Value, null);
+
+    var requestedCountyValue = requestedCounty.Trim();
+    var county = await _db.Counties
+      .AsNoTracking()
+      .Where(c => c.Id == countyId.Value)
+      .Select(c => new { c.Name, c.FipsCode })
+      .FirstOrDefaultAsync();
+
+    if (county is null)
+      return (null, Forbid());
+
+    var matchesName = string.Equals(county.Name, requestedCountyValue, StringComparison.OrdinalIgnoreCase);
+    var matchesFips = !string.IsNullOrWhiteSpace(county.FipsCode) &&
+      string.Equals(county.FipsCode, requestedCountyValue, StringComparison.OrdinalIgnoreCase);
+
+    return matchesName || matchesFips
+      ? (countyId.Value, null)
+      : (null, Forbid());
+  }
+
   // ── Static Endpoints (catalog data — no county isolation) ────────
 
   /// <summary>
   /// GET api/dais/permit-types — Real Benton County permit type catalog.
   /// </summary>
   [HttpGet("permit-types")]
-  [AllowAnonymous]
   public IActionResult GetPermitTypes()
   {
     Response.Headers["X-Dais-Source"] = "benton-real-permits-fy2025";
@@ -142,7 +169,6 @@ public class DaisController : ControllerBase
   /// GET api/dais/workflow-stages — Assessor permit tracking workflow stages.
   /// </summary>
   [HttpGet("workflow-stages")]
-  [AllowAnonymous]
   public IActionResult GetWorkflowStages()
   {
     Response.Headers["X-Dais-Source"] = "benton-real-permits-fy2025";
@@ -158,7 +184,6 @@ public class DaisController : ControllerBase
   /// GET api/dais/benton/fee-schedule — Real Benton County building permit fee schedule.
   /// </summary>
   [HttpGet("benton/fee-schedule")]
-  [AllowAnonymous]
   public IActionResult GetFeeSchedule()
   {
     Response.Headers["X-Dais-Source"] = "benton-real-permits-fy2025";
@@ -176,7 +201,6 @@ public class DaisController : ControllerBase
   /// GET api/dais/classification-rules — Permit classification rules for assessor intake.
   /// </summary>
   [HttpGet("classification-rules")]
-  [AllowAnonymous]
   public IActionResult GetClassificationRules()
   {
     Response.Headers["X-Dais-Source"] = "benton-real-permits-fy2025";
@@ -203,7 +227,6 @@ public class DaisController : ControllerBase
   /// Uses the real Benton County assessor classification rules.
   /// </summary>
   [HttpPost("classify")]
-  [AllowAnonymous]
   public IActionResult ClassifyPermit([FromBody] PermitClassifyRequest request)
   {
     if (request is null || string.IsNullOrWhiteSpace(request.Description))
@@ -222,13 +245,13 @@ public class DaisController : ControllerBase
   [HttpGet("permits/{parcelId}/assessment-impact")]
   public async Task<IActionResult> GetPermitAssessmentImpact(string parcelId)
   {
-    var countyId = await ResolveCountyIdAsync();
-    if (countyId is null)
-      return Forbid();
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
 
     var property = await _db.Properties
         .AsNoTracking()
-        .Where(p => p.CountyId == countyId.Value &&
+        .Where(p => p.CountyId == countyAccess.CountyId!.Value &&
                     (p.ParcelId == parcelId || p.ParcelNumber == parcelId))
         .Select(p => new
         {
@@ -448,7 +471,6 @@ public class DaisController : ControllerBase
   /// GET api/dais/exempt/programs — List available WA State exemption programs.
   /// </summary>
   [HttpGet("exempt/programs")]
-  [AllowAnonymous]
   public IActionResult GetExemptionPrograms()
   {
     return Ok(new
@@ -479,7 +501,6 @@ public class DaisController : ControllerBase
   /// POST api/dais/exempt/senior-disabled — Calculate Senior/Disabled exemption (RCW 84.36.381).
   /// </summary>
   [HttpPost("exempt/senior-disabled")]
-  [AllowAnonymous]
   public IActionResult CalculateSeniorDisabledExemption([FromBody] SeniorDisabledRequest request)
   {
     if (request is null)
@@ -533,7 +554,6 @@ public class DaisController : ControllerBase
   /// POST api/dais/exempt/current-use — Calculate Current Use assessment (RCW 84.34).
   /// </summary>
   [HttpPost("exempt/current-use")]
-  [AllowAnonymous]
   public IActionResult CalculateCurrentUseAssessment([FromBody] CurrentUseRequest request)
   {
     if (request is null)
@@ -572,7 +592,6 @@ public class DaisController : ControllerBase
   /// POST api/dais/exempt/historic — Calculate Historic Property valuation (RCW 84.26).
   /// </summary>
   [HttpPost("exempt/historic")]
-  [AllowAnonymous]
   public IActionResult CalculateHistoricValuation([FromBody] HistoricPropertyRequest request)
   {
     if (request is null)
@@ -607,7 +626,6 @@ public class DaisController : ControllerBase
   /// Query params: program, householdIncome, assessedValue, age
   /// </summary>
   [HttpGet("exemptions/impact")]
-  [AllowAnonymous]
   public IActionResult GetExemptionImpact(
       [FromQuery] string? program,
       [FromQuery] decimal? householdIncome,
@@ -658,7 +676,6 @@ public class DaisController : ControllerBase
   /// GET api/dais/appeal/grounds — List valid appeal grounds for BOE.
   /// </summary>
   [HttpGet("appeal/grounds")]
-  [AllowAnonymous]
   public IActionResult GetAppealGrounds()
   {
     return Ok(new
@@ -679,7 +696,6 @@ public class DaisController : ControllerBase
   /// GET api/dais/appeal/timeline — BOE appeal timeline and deadlines.
   /// </summary>
   [HttpGet("appeal/timeline")]
-  [AllowAnonymous]
   public IActionResult GetAppealTimeline([FromQuery] int? taxYear)
   {
     var year = taxYear ?? DateTime.UtcNow.Year;
@@ -703,7 +719,6 @@ public class DaisController : ControllerBase
   /// GET api/dais/appeal/evidence-checklist — Required evidence by appeal ground.
   /// </summary>
   [HttpGet("appeal/evidence-checklist")]
-  [AllowAnonymous]
   public IActionResult GetAppealEvidenceChecklist([FromQuery] string? ground)
   {
     var checklist = new Dictionary<string, object[]>
@@ -736,11 +751,13 @@ public class DaisController : ControllerBase
   /// GET api/dais/certification/{county}/{taxYear} — Roll certification status (handler #14: check_cert_status).
   /// </summary>
   [HttpGet("certification/{county}/{taxYear:int}")]
-  [AllowAnonymous]
   public async Task<IActionResult> GetCertificationStatus(string county, int taxYear)
   {
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync(county);
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var steps = await _certificationService.GetByTaxYearAsync(taxYear, effectiveCountyId);
 
@@ -788,10 +805,25 @@ public class DaisController : ControllerBase
   /// GET api/dais/cert/status — Alternate certification status endpoint.
   /// </summary>
   [HttpGet("cert/status")]
-  [AllowAnonymous]
   public async Task<IActionResult> GetCertStatus([FromQuery] string? county, [FromQuery] int? taxYear)
   {
-    return await GetCertificationStatus(county ?? "benton", taxYear ?? DateTime.UtcNow.Year);
+    if (!string.IsNullOrWhiteSpace(county))
+      return await GetCertificationStatus(county, taxYear ?? DateTime.UtcNow.Year);
+
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var currentCounty = await _db.Counties
+      .AsNoTracking()
+      .Where(c => c.Id == countyAccess.CountyId!.Value)
+      .Select(c => c.Name)
+      .FirstOrDefaultAsync();
+
+    if (string.IsNullOrWhiteSpace(currentCounty))
+      return Forbid();
+
+    return await GetCertificationStatus(currentCounty, taxYear ?? DateTime.UtcNow.Year);
   }
 
   // ══════════════════════════════════════════════════════════════════
@@ -802,7 +834,6 @@ public class DaisController : ControllerBase
   /// GET api/dais/notice/templates — Available notice templates.
   /// </summary>
   [HttpGet("notice/templates")]
-  [AllowAnonymous]
   public IActionResult GetNoticeTemplates()
   {
     return Ok(new
@@ -828,9 +859,11 @@ public class DaisController : ControllerBase
     if (request is null || string.IsNullOrWhiteSpace(request.TemplateId))
       return BadRequest(new { error = "Template ID is required." });
 
-    var countyId = await ResolveCountyIdAsync();
-    // Fallback county ID for development / anonymous callers
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var notice = new Notice
     {
@@ -860,7 +893,6 @@ public class DaisController : ControllerBase
   /// GET api/dais/queue/types — Available queue/task types.
   /// </summary>
   [HttpGet("queue/types")]
-  [AllowAnonymous]
   public IActionResult GetQueueTypes()
   {
     return Ok(new
@@ -886,8 +918,11 @@ public class DaisController : ControllerBase
     if (request is null || string.IsNullOrWhiteSpace(request.TaskType))
       return BadRequest(new { error = "Task type is required." });
 
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var slaHours = request.TaskType switch
     {
@@ -942,8 +977,11 @@ public class DaisController : ControllerBase
     if (request is null || string.IsNullOrWhiteSpace(request.ParcelId))
       return BadRequest(new { error = "ParcelId is required." });
 
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var appeal = new Appeal
     {
@@ -976,8 +1014,11 @@ public class DaisController : ControllerBase
     if (!ctx.IsAuthenticated)
       return Unauthorized();
 
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
     var year = taxYear ?? DateTime.UtcNow.Year;
 
     var appeals = await _appealService.GetByTaxYearAsync(year, effectiveCountyId);
@@ -990,8 +1031,11 @@ public class DaisController : ControllerBase
   [HttpGet("appeals/{id:guid}")]
   public async Task<IActionResult> GetAppealById(Guid id)
   {
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var appeal = await _appealService.GetByIdAsync(id, effectiveCountyId);
     return appeal is not null ? Ok(appeal) : NotFound(new { error = $"Appeal {id} not found." });
@@ -1003,8 +1047,11 @@ public class DaisController : ControllerBase
   [HttpGet("appeals/parcel/{parcelId}")]
   public async Task<IActionResult> GetAppealsByParcel(string parcelId)
   {
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var appeals = await _appealService.GetByParcelAsync(parcelId, effectiveCountyId);
     return Ok(appeals);
@@ -1019,8 +1066,11 @@ public class DaisController : ControllerBase
     if (request is null || string.IsNullOrWhiteSpace(request.Status))
       return BadRequest(new { error = "Status is required." });
 
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     try
     {
@@ -1045,8 +1095,11 @@ public class DaisController : ControllerBase
     if (request is null || string.IsNullOrWhiteSpace(request.ParcelId))
       return BadRequest(new { error = "ParcelId is required." });
 
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var exemption = new Exemption
     {
@@ -1071,8 +1124,11 @@ public class DaisController : ControllerBase
   [HttpGet("exemptions/{id:guid}")]
   public async Task<IActionResult> GetExemptionById(Guid id)
   {
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var exemption = await _exemptionService.GetByIdAsync(id, effectiveCountyId);
     return exemption is not null ? Ok(exemption) : NotFound(new { error = $"Exemption {id} not found." });
@@ -1084,8 +1140,11 @@ public class DaisController : ControllerBase
   [HttpGet("exemptions/parcel/{parcelId}")]
   public async Task<IActionResult> GetExemptionsByParcel(string parcelId)
   {
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var exemptions = await _exemptionService.GetByParcelAsync(parcelId, effectiveCountyId);
     return Ok(exemptions);
@@ -1099,8 +1158,11 @@ public class DaisController : ControllerBase
   [HttpGet("notices/{id:guid}")]
   public async Task<IActionResult> GetNoticeById(Guid id)
   {
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var notice = await _noticeService.GetByIdAsync(id, effectiveCountyId);
     return notice is not null ? Ok(notice) : NotFound(new { error = $"Notice {id} not found." });
@@ -1112,8 +1174,11 @@ public class DaisController : ControllerBase
   [HttpGet("notices/parcel/{parcelId}")]
   public async Task<IActionResult> GetNoticesByParcel(string parcelId)
   {
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var notices = await _noticeService.GetByParcelAsync(parcelId, effectiveCountyId);
     return Ok(notices);
@@ -1127,8 +1192,11 @@ public class DaisController : ControllerBase
   [HttpGet("queue/{id:guid}")]
   public async Task<IActionResult> GetQueueItemById(Guid id)
   {
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var item = await _queueService.GetByIdAsync(id, effectiveCountyId);
     return item is not null ? Ok(item) : NotFound(new { error = $"Queue item {id} not found." });
@@ -1140,8 +1208,11 @@ public class DaisController : ControllerBase
   [HttpGet("queue/pending")]
   public async Task<IActionResult> GetPendingQueueItems([FromQuery] string? taskType)
   {
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var items = await _queueService.GetPendingAsync(effectiveCountyId, taskType);
     return Ok(items);
@@ -1153,8 +1224,11 @@ public class DaisController : ControllerBase
   [HttpGet("queue/all")]
   public async Task<IActionResult> GetAllQueueItems([FromQuery] string? status, [FromQuery] string? assignedTo, [FromQuery] string? taskType)
   {
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var items = await _queueService.GetAllAsync(effectiveCountyId, status, assignedTo, taskType);
     return Ok(items);
@@ -1166,8 +1240,11 @@ public class DaisController : ControllerBase
   [HttpGet("queue/metrics")]
   public async Task<IActionResult> GetQueueMetrics()
   {
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var metrics = await _queueService.GetMetricsAsync(effectiveCountyId);
     return Ok(metrics);
@@ -1179,8 +1256,11 @@ public class DaisController : ControllerBase
   [HttpGet("queue/productivity")]
   public async Task<IActionResult> GetQueueProductivity()
   {
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     var productivity = await _queueService.GetProductivityAsync(effectiveCountyId);
     return Ok(productivity);
@@ -1195,8 +1275,11 @@ public class DaisController : ControllerBase
     if (request is null || string.IsNullOrWhiteSpace(request.Action))
       return BadRequest(new { error = "Action is required (approve or reject)." });
 
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     try
     {
@@ -1223,8 +1306,11 @@ public class DaisController : ControllerBase
     if (request is null || string.IsNullOrWhiteSpace(request.Status))
       return BadRequest(new { error = "Status is required." });
 
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     try
     {
@@ -1246,8 +1332,11 @@ public class DaisController : ControllerBase
     if (request is null || string.IsNullOrWhiteSpace(request.Status))
       return BadRequest(new { error = "Status is required." });
 
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     try
     {
@@ -1269,8 +1358,11 @@ public class DaisController : ControllerBase
     if (request is null || string.IsNullOrWhiteSpace(request.Status))
       return BadRequest(new { error = "Status is required." });
 
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     try
     {
@@ -1296,8 +1388,11 @@ public class DaisController : ControllerBase
     if (request is null || string.IsNullOrWhiteSpace(request.AssignedTo))
       return BadRequest(new { error = "AssignedTo is required." });
 
-    var countyId = await ResolveCountyIdAsync();
-    var effectiveCountyId = countyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
 
     try
     {
