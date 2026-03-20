@@ -212,7 +212,7 @@ describe('useHydration', () => {
       expect(levyWindows).toHaveLength(1); // Valid module restored
 
       // Warning should be logged
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('nonexistent-module'));
+      expect(consoleSpy).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('nonexistent-module'));
 
       consoleSpy.mockRestore();
     });

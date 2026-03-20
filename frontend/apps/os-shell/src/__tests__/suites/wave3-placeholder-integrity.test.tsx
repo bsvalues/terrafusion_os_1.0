@@ -35,6 +35,31 @@ vi.mock('../../stores/desktopStore', () => ({
   useDesktopStore: () => ({ launchModule: vi.fn(), modules: [] }),
 }));
 
+vi.mock('../../auth/useAuthContext', () => ({
+  useAuthContext: vi.fn(() => ({
+    isAuthenticated: true,
+    userId: 'u-test',
+    countyId: 'benton',
+    roles: ['EnterpriseAdmin'],
+    token: null,
+  })),
+  toOsActor: vi.fn((auth: any) => ({
+    userId: auth.userId ?? 'u-test',
+    countyId: auth.countyId ?? 'benton',
+    roles: auth.roles ?? [],
+  })),
+}));
+
+vi.mock('../../auth/useAuth', () => ({
+  useAuth: vi.fn(() => ({
+    isAuthenticated: true,
+    userId: 'u-test',
+    countyId: 'benton',
+    roles: ['EnterpriseAdmin'],
+    token: null,
+  })),
+}));
+
 const PLACEHOLDER_PATTERNS = [
   /coming soon/i,
   /under construction/i,
