@@ -190,7 +190,7 @@ describe('Keyboard Shortcut Contracts (source inspection)', () => {
   beforeEach(async () => {
     const fs = await import('fs');
     shortcutSource = fs.readFileSync(
-      'frontend/apps/os-shell/src/hooks/useKeyboardShortcuts.ts',
+      'apps/os-shell/src/hooks/useKeyboardShortcuts.ts',
       'utf-8'
     );
   });
