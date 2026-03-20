@@ -34,6 +34,15 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 };
 
+// Mock MutationObserver — CommandPalette and other Desktop sub-components
+// use it internally; jsdom's implementation isn't constructor-compatible in
+// all vitest worker configurations.
+global.MutationObserver = class MutationObserver {
+  observe() {}
+  disconnect() {}
+  takeRecords() { return []; }
+} as unknown as typeof MutationObserver;
+
 describe('AxiomFS Module Integration', () => {
   beforeEach(() => {
     // Reset stores

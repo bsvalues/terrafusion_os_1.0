@@ -6,6 +6,13 @@ import { MemoryRouter } from 'react-router-dom';
 
 vi.mock('@/services/authAPI', () => ({ __esModule: true, login: vi.fn() }));
 
+// Prevent AuthProvider from calling fetchDevToken() in dev preview mode —
+// that fetch hangs in jsdom and consumes the 5s test timeout.
+vi.mock('@/auth/authPolicy', () => ({
+  isDevPreviewMode: () => false,
+  shouldForceLoginRedirect: () => true,
+}));
+
 const navigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
