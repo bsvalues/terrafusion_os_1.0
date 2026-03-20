@@ -115,21 +115,10 @@ function simulateCrossTabWrite(key: string, newValue: string | null, oldValue: s
 // ============================================================================
 
 describe('Phase 40 contract: cross-tab sync reloads workspace state from storage events', () => {
-  // Pre-warm the lazy CanonHome import before S1 runs.
-  // CanonHome is a 2100+ line lazy-loaded module; first cold import can exceed
-  // the 5 s waitFor window on Windows/forks pool. With retry: 2 the module
-  // loads during S1's three attempts (≥ 15 s), so S2–S6 always pass from cache.
-  // Real timers are needed here because the global setupTests.ts installs fake
-  // timers which interfere with React Suspense resolution in a beforeAll context.
   beforeAll(async () => {
     vi.useRealTimers();
-    memoryRouterEntries = ['/canon'];
-    render(<Router />);
-    await waitFor(
-      () => expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument(),
-      { timeout: 15000 },
-    );
-    cleanup();
+    await import('../../App');
+    await import('../../pages/CanonHome');
     localStorage.clear();
     vi.useFakeTimers({ shouldAdvanceTime: true });
   }, 20000);

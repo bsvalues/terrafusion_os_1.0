@@ -594,3 +594,4 @@ tools/reports/
 # Exception: TDC violation inventory (classification artifact, tracked)
 !tools/reports/tdc_violation_inventory.json
 os-platform/core/tests/forge-modelapplication-contract.test.mjs
+os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md

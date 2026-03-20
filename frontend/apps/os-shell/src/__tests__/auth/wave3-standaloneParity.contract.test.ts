@@ -16,23 +16,28 @@ const SRC_ROOT = resolve(__dirname, '../..');
 const readSrc = (p: string) => readFileSync(resolve(SRC_ROOT, p), 'utf-8');
 
 // ============================================================================
-// Gate 1: SuiteModuleGrid imports auth and threads actor
+// Gate 1: SuiteModuleGrid routes into standalone/workbench entry points
 // ============================================================================
 
-describe('Gate 1 — SuiteModuleGrid actor threading', () => {
+describe('Gate 1 — SuiteModuleGrid route handoff', () => {
   const src = readSrc('components/suites/SuiteModuleGrid.tsx');
 
-  it('imports useAuthContext from auth', () => {
-    expect(src).toContain('useAuthContext');
+  it('imports useNavigate from react-router-dom', () => {
+    expect(src).toContain('useNavigate');
   });
 
-  it('imports toOsActor from auth', () => {
-    expect(src).toContain('toOsActor');
+  it('reads the active parcel from property store for workbench routing', () => {
+    expect(src).toContain('usePropertyStore');
+    expect(src).toContain('activeParcel');
   });
 
-  it('passes actor to activateModule', () => {
-    expect(src).toContain('actor');
-    expect(src).toContain('activateModule');
+  it('navigates standalone modules by route instead of direct activation', () => {
+    expect(src).toContain('navigate(`/${targetId}`)');
+  });
+
+  it('navigates workbench launches through parcel or property-search routes', () => {
+    expect(src).toContain('navigate(`/property/${parcelId}/${mod.workbenchTab}`)');
+    expect(src).toContain('navigate(`/property?openTab=${mod.workbenchTab}`)');
   });
 });
 

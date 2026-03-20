@@ -33,7 +33,7 @@
  * Scope: Mechanical layout landmark only; no persistence, no real files.
  */
 
-import { vi, describe, it, expect, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -83,6 +83,14 @@ import Router from '../../Router';
 // ============================================================================
 
 describe('Phase 31 contract: TerraCanon workspace bootstrap — IDE interior renders on cold start', () => {
+  beforeAll(async () => {
+    vi.useRealTimers();
+    await import('../../App');
+    await import('../../pages/CanonHome');
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  }, 20000);
+
   afterEach(() => {
     cleanup();
   });
@@ -100,7 +108,7 @@ describe('Phase 31 contract: TerraCanon workspace bootstrap — IDE interior ren
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 }
+      { timeout: 15000 }
     );
 
     // Must not crash

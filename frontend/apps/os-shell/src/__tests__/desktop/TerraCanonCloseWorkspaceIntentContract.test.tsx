@@ -29,7 +29,7 @@
  * Scope: Session-only close; no persistence, no filesystem, no Monaco.
  */
 
-import { vi, describe, it, expect, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -79,6 +79,14 @@ import Router from '../../Router';
 // ============================================================================
 
 describe('Phase 36 contract: TerraCanon can close the active workspace safely (session-only)', () => {
+  beforeAll(async () => {
+    vi.useRealTimers();
+    await import('../../App');
+    await import('../../pages/CanonHome');
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  }, 20000);
+
   afterEach(() => {
     cleanup();
   });
@@ -94,7 +102,7 @@ describe('Phase 36 contract: TerraCanon can close the active workspace safely (s
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 },
+      { timeout: 15000 },
     );
 
     expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
