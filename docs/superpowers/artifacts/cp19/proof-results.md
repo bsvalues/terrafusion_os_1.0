@@ -17,6 +17,17 @@ Status: PASS (static layer) — live rehearsals deferred; formal signatures pend
 | `pnpm run ci:governance-proof` | ✅ PASS | 0 | Governance snapshot generated, scope proof + sentinel completed |
 | `pwsh -File ops/dev/tf.ps1 status` | ✅ EXIT 0 | 0 | Script exits 0; Docker daemon not running locally (expected — SRE-managed in staging/prod) |
 
+## Post-O1 Secrets Sweep Gate Rerun (2026-03-19)
+
+| Command | Result | Exit | Notes |
+|---|---|---|---|
+| `pnpm run type-check` | ✅ PASS | 0 | Post-O1 sweep — 0 type errors |
+| `node --test phase83-tools.test.mjs` | ✅ PASS | 0 | 56/56 tests, 219ms |
+| `node --test phase85-tools.test.mjs` | ✅ PASS | 0 | 22/22 tests, 191ms |
+| `pnpm run security:scan` | ✅ PASS | 0 | mcp-security-config.js absent (optional); no blocking findings |
+
+O1 sweep status at gate rerun: SEC-001 through SEC-018 all CLOSED. Zero hardcoded secrets in any tracked non-QUARANTINE backend or compose config file.
+
 ## Upstream Gate Chain
 
 | Phase | Gate | Sealed | Evidence |
@@ -35,4 +46,6 @@ Status: PASS (static layer) — live rehearsals deferred; formal signatures pend
 - Gate outcome: PASS (static contract layer fully complete)
 - Upstream chain: G3–G9 all sealed 2026-03-19
 - Prior Docker/WSL blocker: RESOLVED — tf.ps1 exits 0; Docker not running locally (SRE environment)
-- Remaining pre-production conditions: swarm Phase 8 live rehearsals (AI Swarm lane) + SRE live rehearsals + formal signatures
+- O1 code sweep: COMPLETE (2026-03-19) — 18 findings, all CLOSED
+- Hard blockers remaining: SEC-005-ROTATE (JWT key rotation in environments — SRE), SRE-O1-OPS (env var deployment to staging/prod — SRE)
+- Remaining pre-production conditions: ENV VAR DEPLOYMENT (SRE-O1-OPS) + swarm Phase 8 live rehearsals (AI Swarm lane) + SRE live rehearsals (O2) + formal signatures (O4)
