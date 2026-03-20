@@ -46,7 +46,9 @@ describe('LoginPage real auth exchange', () => {
       email: 'user@gov.example.com',
       password: 'password',
     });
-    expect(navigate).toHaveBeenCalledWith('/');
+    await waitFor(() => {
+      expect(navigate).toHaveBeenCalledWith('/');
+    });
   });
 
   it('on failure: shows error and does not navigate', async () => {
