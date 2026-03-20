@@ -40,7 +40,15 @@ Status: PASS (static layer) / DEFERRED (swarm live rehearsals)
 | SEC-017: `TerraFusion.API/appsettings.BentonCounty.json` `Password=postgres` | HIGH | REMEDIATED — `bdb82ad31` |
 | SEC-018: `backend/publish/appsettings.json` JWT secret in build artifact | CRITICAL | REMEDIATED — `bdb82ad31`; `backend/publish/` added to `.gitignore` |
 
-**O1 sweep total: 18 findings — 9 CRITICAL + 7 HIGH + 2 HIGH (SEC-001/002) — all CLOSED. Zero hardcoded credentials remain in any tracked non-QUARANTINE config file.**
+| SEC-019: `.env.vim` tracked with live prod secrets (`tf_prod_p@ssw0rd_2025!` + JWT `c8a9f7b1...`) | CRITICAL | REMEDIATED — wiped to placeholders; `.env.vim` added to `.gitignore` — commit `b57932e3e` |
+| SEC-020: `.env.template` hardcoded port 5000 (PORT RULE violation) | LOW | REMEDIATED — `${TF_API_PORT:-5046}` — commit `b57932e3e` |
+| SEC-021: `backend/compose.dev.yml` `POSTGRES_PASSWORD: dev_password_123` hardcoded | HIGH | REMEDIATED — env var — commit `b57932e3e` |
+| SEC-022: `backend/docker-compose.bulletproof.yml` + `backend/docker-compose.microservices.yml` — 19 `${VAR:-TerraFusion2024!}` silent-fail defaults | CRITICAL | REMEDIATED — all converted to fail-loud `${VAR:?VAR is required}` — commit `b57932e3e` |
+| SEC-023: `backend/ai-models/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK/docker-compose.yml` — `championship_password_2024` ×10 + Grafana `championship2024` | CRITICAL | REMEDIATED — `TF_DEV_DB_PASSWORD` / `TF_DEV_GRAFANA_PASSWORD` fail-loud — commit `176bff7e1` |
+| SEC-024: `.ci_artifacts_local/docker-compose.dev.yml` — `KEYCLOAK_ADMIN_PASSWORD: admin` + postgres soft-defaults ×2 | HIGH | REMEDIATED — `TF_DEV_KEYCLOAK_PASSWORD` fail-loud; postgres soft-defaults → fail-loud — commit `176bff7e1` |
+| SEC-025: `backend/compose.dev.yml` — `PGADMIN_DEFAULT_PASSWORD: dev_admin_123` + `dev_local_only` soft-default | HIGH | REMEDIATED — fail-loud env vars; plaintext scrubbed from comments — commit `6d663a96e` |
+
+**O1 sweep total: 25 findings — 12 CRITICAL + 12 HIGH + 1 LOW — all CLOSED. Zero hardcoded credentials remain in any tracked non-QUARANTINE config, compose, or env file.**
 
 ## Post-O1-Sweep Gate Rerun
 
@@ -50,6 +58,8 @@ Status: PASS (static layer) / DEFERRED (swarm live rehearsals)
 | `node --test phase83-tools.test.mjs` | ✅ PASS 56/56 | 0 | 2026-03-19 post-O1 sweep |
 | `node --test phase85-tools.test.mjs` | ✅ PASS 22/22 | 0 | 2026-03-19 post-O1 sweep |
 | `pnpm run security:scan` | ✅ PASS | 0 | 2026-03-19 post-O1 sweep |
+| `pnpm run type-check` | ✅ PASS | 0 | 2026-03-19 post-O1 Round 3 |
+| `node --test phase83-tools.test.mjs` | ✅ PASS 56/56 | 0 | 2026-03-19 post-O1 Round 3 |
 
 ## Upstream Gate Chain
 
@@ -72,6 +82,6 @@ Status: PASS (static layer) / DEFERRED (swarm live rehearsals)
 ## Decision Summary
 
 - Gate outcome: PASS (static layer)
-- O1 code sweep: COMPLETE — 18 findings (SEC-001 through SEC-018), all CLOSED. Zero hardcoded secrets in any tracked non-QUARANTINE config file.
+- O1 code sweep: COMPLETE (Rounds 1–3) — 25 findings (SEC-001 through SEC-025), all CLOSED. Zero hardcoded credentials remain in any tracked non-QUARANTINE config, compose, or env file. `.env.vim` (live prod secrets) wiped and gitignored. All soft-default patterns converted to fail-loud.
 - Deferred: swarm Phase 8 live rehearsals — require staging (Docker unavailable); AI Swarm lane scope restriction applies.
 - All upstream phases CP-14–CP-17 sealed. Upstream blocker fully resolved.
