@@ -1,0 +1,5 @@
+# Demo environment — may contain operator credentials; never commit
+.env.demo
+
+# The example template is safe to commit (no secrets)
+!.env.demo.example
