@@ -49,3 +49,7 @@ pnpm run ci:dependency-scope-quarantine:gate
 | `pnpm run ci:governance-proof` | PASS (exit 0) | 2026-03-19 CP-19 seal run |
 | `pwsh -File ops/dev/tf.ps1 status` | EXIT 0 | 2026-03-19 CP-19 seal run |
 | Swarm Phase 8 + SRE live rehearsals | DEFERRED (pre-production condition) | — |
+| `pnpm run type-check` | PASS (exit 0) | 2026-03-19 post-O1 sweep rerun |
+| `node --test phase83-tools.test.mjs` | PASS 56/56 (219ms) | 2026-03-19 post-O1 sweep rerun |
+| `node --test phase85-tools.test.mjs` | PASS 22/22 (191ms) | 2026-03-19 post-O1 sweep rerun |
+| `pnpm run security:scan` | PASS exit 0 | 2026-03-19 post-O1 sweep rerun |
