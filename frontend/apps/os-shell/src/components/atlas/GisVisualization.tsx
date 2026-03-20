@@ -104,6 +104,7 @@ export default function GisVisualization({
         const isSelected = selectedFeatureId === feature.id;
         const isHovered = hoveredId === feature.id;
         const size = feature.size ?? 50;
+        const activeTextColor = 'hsl(var(--tf-text-primary-hs) var(--tf-l-100))';
 
         return (
           <button
@@ -126,9 +127,9 @@ export default function GisVisualization({
                 width: size,
                 height: size * 0.7,
                 backgroundColor: `${feature.color}${isSelected ? '44' : isHovered ? '33' : '22'}`,
-                borderColor: isSelected ? '#FFFFFF' : `${feature.color}${isHovered ? 'BB' : '66'}`,
+                borderColor: isSelected ? activeTextColor : `${feature.color}${isHovered ? 'BB' : '66'}`,
                 boxShadow: isSelected ? `0 0 10px ${feature.color}44` : 'none',
-                color: isHovered || isSelected ? '#FFFFFF' : `${feature.color}CC`,
+                color: isHovered || isSelected ? activeTextColor : `${feature.color}CC`,
               }}
             >
               {feature.label}

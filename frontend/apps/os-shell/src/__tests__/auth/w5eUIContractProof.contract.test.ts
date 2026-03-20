@@ -317,7 +317,7 @@ describe('Gate 6 — DemoDataBanner component is governance-correct', () => {
   });
 
   it('uses warning color (yellow/amber)', () => {
-    expect(src).toContain('234, 179, 8');
+    expect(src).toContain("hsl(var(--tf-warning))");
   });
 });
 
