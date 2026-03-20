@@ -17,7 +17,7 @@ Status: COMPLETE (static layer) — live rehearsals deferred pre-condition
 | G6 | docs/superpowers/artifacts/cp15/workbench-host-proof.md | Workbench Owner | ✅ SEALED 2026-03-19 — 8/8 tab surfaces verified (15/15 gate tests) |
 | G7 | docs/superpowers/artifacts/cp16/registry-contract-proof.md + yakima-proof.md + cowlitz-proof.md | Platform Core Owner | ✅ SEALED 2026-03-19 — 29/29 registry contract tests; static verification PASS; live activation deferred to SRE |
 | G8 | docs/superpowers/artifacts/cp17/restore-proof.md + dr-proof.md + sre-pack.md + hypercare-plan.md | Operations Owner | ✅ SEALED 2026-03-19 — all runbooks complete; live rehearsals deferred to SRE window |
-| G9 | docs/superpowers/artifacts/cp18/security-closure-packet.md + residual-risk-signoff.md | Security Owner | ✅ SEALED 2026-03-19 — SEC-001 remediated; 0 open criticals/highs; swarm Phase 8 deferred to AI Swarm lane |
+| G9 | docs/superpowers/artifacts/cp18/security-closure-packet.md | Security Owner | ✅ SEALED 2026-03-19 — O1 sweep complete: SEC-001 through SEC-018 (9 CRITICAL + 9 HIGH) all remediated; 0 open criticals/highs; swarm Phase 8 deferred to AI Swarm lane |
 | G10 | this checklist + decision-memo.md + rollback-plan.md + codex-integration-proof.md | Founder/Release Authority | ✅ STATIC LAYER PASS — pending live rehearsals + formal signatures |
 
 ## Additional Required Evidence
@@ -34,9 +34,13 @@ Status: COMPLETE (static layer) — live rehearsals deferred pre-condition
 ## Final Readiness
 
 - G3–G9: ✅ All sealed 2026-03-19.
+- O1 secrets sweep: ✅ COMPLETE — SEC-001 through SEC-018, all CLOSED.
+- **Hard blockers (SRE-owned, no code changes required):**
+  - SEC-005-ROTATE: generate new `TF_JWT_SECRET` (`openssl rand -base64 64`) and rotate in all environments
+  - SRE-O1-OPS: deploy all `TF_*` env vars to staging + prod (see launch-packet.md env var table)
 - PACS integration: deferred (environment dependency — not a launch blocker for pilot counties).
 - Docker/WSL: `tf.ps1 status` exits 0; Docker daemon not running locally (expected — live in staging/prod via SRE).
 - Swarm Phase 8 (8-A/B/C) live rehearsals: deferred to AI Swarm lane + staging window.
 - SRE live restore/DR: deferred to SRE window.
 - TerraCanon Codex: reserved post-2026-03-25 (not a G10 blocker).
-- Readiness statement: static contract layer COMPLETE. Launch CONDITIONAL on live rehearsal completion before production traffic.
+- Readiness statement: static contract layer COMPLETE. Launch CONDITIONAL on env var deployment, live rehearsal completion, and formal signatures before production traffic.
