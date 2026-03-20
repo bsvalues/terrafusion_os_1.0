@@ -160,7 +160,9 @@ export function useErrorReporter(componentName: string): ErrorReporter {
   const reportWarning = useCallback(
     (message: string, context?: ErrorContext) => {
       if (context) {
+        console.warn(`[${componentName}] Warning:`, message, context);
       } else {
+        console.warn(`[${componentName}] Warning:`, message);
       }
     },
     [componentName]
