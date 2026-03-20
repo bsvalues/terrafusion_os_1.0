@@ -31,16 +31,8 @@ const PropertySearch: React.FC = () => {
   const doSearch = useCallback(async (text: string) => {
     setLoading(true);
     try {
-      const page = await getPacsProperties(1, PAGE_SIZE);
-      const q = text.toLowerCase().trim();
-      const filtered = q
-        ? page.items.filter(
-            (p) =>
-              p.geoId.toLowerCase().includes(q) ||
-              p.address.toLowerCase().includes(q),
-          )
-        : page.items;
-      setResults(filtered);
+      const page = await getPacsProperties(1, PAGE_SIZE, text.trim() || undefined);
+      setResults(page.items);
       setTotalCount(page.totalCount);
     } catch {
       setResults([]);
