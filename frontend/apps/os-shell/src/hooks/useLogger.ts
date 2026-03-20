@@ -32,6 +32,8 @@ export function createLogger(scope: string): Logger {
       if (!isProd) console.info(prefix, msg, ...args);
     },
     warn: (msg, ...args) => {
+      const extra = args.length ? ` ${args.map(String).join(' ')}` : '';
+      console.warn(`${prefix} ${msg}${extra}`);
     },
     error: (msg, ...args) => {
       console.error(prefix, msg, ...args);

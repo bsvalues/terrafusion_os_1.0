@@ -269,6 +269,8 @@ import { StatisticsStudio } from '../../pages/forge/statistics/StatisticsStudio'
 import { RatioStudyPanel } from '../../components/forge/RatioStudyPanel';
 import { RegressionStudio } from '../../pages/forge/regression/RegressionStudio';
 import { DataQualityPage } from '../../pages/forge/quality/DataQualityPage';
+import { useForgeRegressionStore } from '../../stores/forgeRegressionStore';
+import { REGRESSION_MODELS } from '../../data/forgeRegressionFixtures';
 
 // ---------------------------------------------------------------------------
 // Mock data for RatioStudyPanel
@@ -369,6 +371,15 @@ describe('Phase 10: Forge Analytics Contract', () => {
   // RegressionStudio
   // =========================================================================
   describe('RegressionStudio', () => {
+    beforeEach(() => {
+      useForgeRegressionStore.setState({
+        models: REGRESSION_MODELS,
+        loading: false,
+        error: null,
+        fetchModels: async () => {},
+      });
+    });
+
     // WILL FAIL — component does not yet emit data-testid="regression-studio"
     it('renders with data-testid="regression-studio"', () => {
       render(<RegressionStudio />);
