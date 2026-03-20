@@ -14,10 +14,9 @@
  */
 
 import type { LucideIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
-import { activateModule } from '../../orchestration/moduleActivation';
 import { usePropertyStore } from '../../stores/propertyStore';
-import { useAuthContext, toOsActor } from '../../auth/useAuthContext';
 
 export interface SuiteModuleDef {
   id: string;
@@ -38,29 +37,28 @@ interface SuiteModuleGridProps {
 
 export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteModuleGridProps) {
   const activeParcel = usePropertyStore((s) => s.activeParcel);
-  const auth = useAuthContext();
-  const actor = toOsActor(auth);
+  const navigate = useNavigate();
 
   const handleLaunch = (mod: SuiteModuleDef) => {
     if (mod.launchMode === 'workbench') {
       if (!mod.workbenchTab) {
         return;
       }
-      const metadata: Record<string, unknown> = { tabId: mod.workbenchTab };
-      if (activeParcel) {
-        metadata.parcelId = activeParcel.parcelId;
+      // Navigate to workbench tab route — no window creation
+      const parcelId = activeParcel?.parcelId;
+      if (parcelId) {
+        navigate(`/property/${parcelId}/${mod.workbenchTab}`);
+      } else {
+        // No active parcel — go to property search with tab intent
+        navigate(`/property?openTab=${mod.workbenchTab}`);
       }
-      activateModule('property-workbench', {
-        source: 'start_menu',
-        metadata,
-        actor,
-      });
     } else {
+      // Standalone modules — navigate to their route (e.g., /pilot, /trace)
       const targetId = mod.moduleId ?? mod.id;
       if (!targetId) {
         return;
       }
-      activateModule(targetId, { source: 'start_menu', actor });
+      navigate(`/${targetId}`);
     }
   };
 

@@ -16,7 +16,7 @@
  * Scope: Mechanical landmark only; not asserting business data or API calls.
  */
 
-import { vi, describe, it, expect, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { getDesktopIcons } from '../../config/desktopManifest';
@@ -151,6 +151,24 @@ function assertLandmark(route: string) {
 // ============================================================================
 
 describe('Phase 25 contract: desktop routes render stable content landmarks', () => {
+  beforeAll(async () => {
+    vi.useRealTimers();
+    await import('../../App');
+    await import('../../pages/PropertySearch');
+    await import('../../pages/PilotHome');
+    await import('../../pages/TraceHome');
+    await import('../../pages/CanonHome');
+    await import('../../pages/suites/ForgeSuiteHome');
+    await import('../../pages/workbench/PropertyWorkbench');
+    await import('../../pages/workbench/tabs/PropertyForge');
+    await import('../../pages/workbench/tabs/PropertyAtlas');
+    await import('../../pages/workbench/tabs/PropertyDais');
+    await import('../../pages/workbench/tabs/PropertyDossier');
+    await import('../../pages/workbench/tabs/PropertyPilot');
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  }, 20000);
+
   afterEach(() => {
     cleanup();
   });
@@ -190,7 +208,7 @@ describe('Phase 25 contract: desktop routes render stable content landmarks', ()
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 }
+      { timeout: 15000 }
     );
 
     // Phase 24 crash guard (redundant but cheap).

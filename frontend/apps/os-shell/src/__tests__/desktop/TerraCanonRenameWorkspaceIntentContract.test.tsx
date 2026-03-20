@@ -85,13 +85,8 @@ import Router from '../../Router';
 describe('Phase 34 contract: loaded workspace can be renamed (session-only, no persistence)', () => {
   beforeAll(async () => {
     vi.useRealTimers();
-    memoryRouterEntries = ['/canon'];
-    render(<Router />);
-    await waitFor(
-      () => expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument(),
-      { timeout: 15000 },
-    );
-    cleanup();
+    await import('../../App');
+    await import('../../pages/CanonHome');
     localStorage.clear();
     vi.useFakeTimers({ shouldAdvanceTime: true });
   }, 20000);

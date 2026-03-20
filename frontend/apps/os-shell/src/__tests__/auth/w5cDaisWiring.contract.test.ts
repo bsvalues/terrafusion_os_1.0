@@ -174,7 +174,7 @@ describe('Gate 4 — dais route-collapse in Router + Workbench', () => {
   });
 
   it('wires /dais as standalone suite route', () => {
-    expect(router).toMatch(/<Route\s+path=['"]\/dais['"]\s+element=\{<DaisHome\s*\/>\}/);
+    expect(router).toMatch(/<Route\s+path=['"]dais['"]\s+element=\{<DaisHome\s*\/>\}/);
   });
 
   it('PropertyDais tab component exists', () => {

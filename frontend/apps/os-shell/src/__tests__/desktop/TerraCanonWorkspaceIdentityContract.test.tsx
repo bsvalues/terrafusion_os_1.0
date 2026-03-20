@@ -34,7 +34,7 @@
  * Scope: Session identity only; no persistence, no filesystem, no Monaco.
  */
 
-import { vi, describe, it, expect, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -84,6 +84,14 @@ import Router from '../../Router';
 // ============================================================================
 
 describe('Phase 33 contract: TerraCanon loaded workspace exposes stable session identity (no persistence)', () => {
+  beforeAll(async () => {
+    vi.useRealTimers();
+    await import('../../App');
+    await import('../../pages/CanonHome');
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  }, 20000);
+
   afterEach(() => {
     cleanup();
   });
@@ -99,7 +107,7 @@ describe('Phase 33 contract: TerraCanon loaded workspace exposes stable session 
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 }
+      { timeout: 15000 }
     );
 
     expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();

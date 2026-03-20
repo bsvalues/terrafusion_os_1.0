@@ -85,13 +85,8 @@ const ACTIVE_INDEX_KEY = 'tf.canon.activeIndex.v1';
 describe('Phase 38 contract: TerraCanon persists workspace state to localStorage', () => {
   beforeAll(async () => {
     vi.useRealTimers();
-    memoryRouterEntries = ['/canon'];
-    render(<Router />);
-    await waitFor(
-      () => expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument(),
-      { timeout: 15000 },
-    );
-    cleanup();
+    await import('../../App');
+    await import('../../pages/CanonHome');
     localStorage.clear();
     vi.useFakeTimers({ shouldAdvanceTime: true });
   }, 20000);

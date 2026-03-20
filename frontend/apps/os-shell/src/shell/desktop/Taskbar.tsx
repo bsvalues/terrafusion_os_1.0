@@ -14,6 +14,7 @@
 
 import { cn } from '@/lib/utils';
 import React, { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Hammer,
@@ -29,11 +30,11 @@ import { useWindowPeek } from '../../hooks/useWindowPeek';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { Z } from './zIndex';
 import { useStartMenuStore } from '../../stores/startMenuStore';
-import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
+
 import { useDataMode } from '../../hooks/useDataMode';
 import { TerraSphere } from '../../ui/brand/TerraSphere';
 import { LiquidPanel } from '../../ui/materials';
-import { activateModule } from '../../orchestration/moduleActivation';
+
 import { TaskbarContextMenu } from './TaskbarContextMenu';
 import { VirtualDesktopSwitcher } from './VirtualDesktopSwitcher';
 
@@ -94,17 +95,11 @@ const DockSuiteButton: React.FC<{
   onContextMenu?: (e: React.MouseEvent, suiteId: string) => void;
 }> = ({ suite, isRunning, isActive, onContextMenu }) => {
   const Icon = getSuiteIcon(suite.iconName);
-  const focusWindow = useDesktopStore((s) => s.focusWindow);
-  const windows = useDesktopStore((s) => s.windows);
+  const navigate = useNavigate();
 
   const handleClick = () => {
-    // If the suite is running, toggle focus/minimize instead of re-launching
-    const suiteWindow = windows.find((w) => w.moduleId === suite.id);
-    if (suiteWindow) {
-      focusWindow(suiteWindow.id);
-    } else {
-      activateModule(suite.id, { source: 'dock' });
-    }
+    // Navigate to suite route — no window creation, no stuck taskbar entries
+    navigate(suite.route);
   };
 
   return (
