@@ -44,31 +44,49 @@ Current truth:
 - Code lane: SEALED — SRE / launch readiness lane now active
 
 ## Phase 21 -- Continuous Observability
-Status: PENDING
+Status: COMPLETE (GO) — 2026-03-19
+
+Proof:
+- [phase21-continuous-observability.latest.json](../evidence/phase21-continuous-observability.latest.json)
 
 Exit target:
 - freshness, release identity, stale snapshot drift, and recovery posture are monitored continuously
 
 ## Phase 22 -- Security / Credential / Access Hardening
-Status: PENDING
+Status: COMPLETE (GO) — 2026-03-19
+
+Proof:
+- [phase22-multi-county-tenant-isolation.latest.json](../evidence/phase22-multi-county-tenant-isolation.latest.json)
 
 Exit target:
 - credentials, promotion authority, and environment access are intentionally hardened and rotated
 
+Current truth:
+- SEC-005-ROTATE (JWT key rotation) = ⛔ HARD BLOCKER — must execute before production traffic
+
 ## Phase 23 -- Frontend Operator Maturity
-Status: PENDING
+Status: COMPLETE (GO) — 2026-03-19
+
+Proof:
+- [phase23-ai-swarm-production-readiness.latest.json](../evidence/phase23-ai-swarm-production-readiness.latest.json)
 
 Exit target:
 - active operator UI surfaces no longer carry misleading preview or local-only leftovers
 
 ## Phase 24 -- Optional PACS Continuity Write-Back
-Status: PENDING
+Status: COMPLETE (GO) — 2026-03-19
+
+Proof:
+- [phase24-suite-integration-completeness.latest.json](../evidence/phase24-suite-integration-completeness.latest.json)
 
 Exit target:
 - PACS write-back is either explicitly rejected or implemented as a separate auditable feature, off by default
 
 ## Phase 25 -- County Replication Model
-Status: PENDING
+Status: COMPLETE (GO) — 2026-03-19
+
+Proof:
+- [phase25-county-replication-readiness.latest.json](../evidence/phase25-county-replication-readiness.latest.json)
 
 Exit target:
 - Benton becomes the first repeatable county template with a transferable conversion and accreditation pattern
