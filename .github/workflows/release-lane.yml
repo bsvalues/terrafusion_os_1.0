@@ -333,6 +333,32 @@ jobs:
 
           grep -iE '^HTTP/.* 200' curl_headers.txt
 
+      - name: Shell route contract smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== Shell route contract smoke ==="
+
+          # Derive the public host from the same PUBLIC_URL env var used by the health check step
+          HOST="$(node -e "const url = new URL(process.env.PUBLIC_URL); process.stdout.write(url.hostname);")"
+
+          probe() {
+            local path="$1"
+            local status
+            status=$(curl -sf -o /dev/null -w "%{http_code}" --max-time 10 "https://${HOST}${path}" 2>/dev/null || echo "000")
+            echo "  $path -> HTTP $status"
+            if [[ "$status" =~ ^[23] ]]; then
+              echo "  OK"
+            else
+              echo "::error::Shell route smoke failed: $path returned HTTP $status"
+              exit 1
+            fi
+          }
+
+          probe "/"
+          probe "/property"
+          echo "Shell route contract intact after deploy"
+
       - name: Finalize current SHA on VPS
         shell: bash
         run: |

@@ -565,8 +565,14 @@ jobs:
         run: node scripts/governance/workflow-inventory.mjs --check
         continue-on-error: true
 
+      - name: Deployment truth gate (63 specs)
+        id: deployment-truth-gate
+        shell: bash
+        run: node --test tests/deployment-truth-gate.test.mjs
+        continue-on-error: true
+
       - name: Governance test escape hatch (expires 2026-06-30)
-        if: steps.quarantine-tests.outcome == 'failure' || steps.phase83-tests.outcome == 'failure' || steps.write-lane-tests.outcome == 'failure' || steps.workbench-tests.outcome == 'failure' || steps.workflow-tests.outcome == 'failure' || steps.inventory-tests.outcome == 'failure' || steps.inventory-snapshot.outcome == 'failure'
+        if: steps.quarantine-tests.outcome == 'failure' || steps.phase83-tests.outcome == 'failure' || steps.write-lane-tests.outcome == 'failure' || steps.workbench-tests.outcome == 'failure' || steps.workflow-tests.outcome == 'failure' || steps.inventory-tests.outcome == 'failure' || steps.inventory-snapshot.outcome == 'failure' || steps.deployment-truth-gate.outcome == 'failure'
         shell: bash
         run: |
           set -euo pipefail
