@@ -11,7 +11,7 @@ services:
     environment:
       POSTGRES_DB: terrafusion_dev
       POSTGRES_USER: terrafusion_dev
-      POSTGRES_PASSWORD: ${TF_DEV_DB_PASSWORD:-dev_local_only}
+      POSTGRES_PASSWORD: ${TF_DEV_DB_PASSWORD:?TF_DEV_DB_PASSWORD is required}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - '5432:5432'
@@ -31,7 +31,7 @@ services:
     container_name: terrafusion-pgadmin-dev
     environment:
       PGADMIN_DEFAULT_EMAIL: dev@terrafusion.local
-      PGADMIN_DEFAULT_PASSWORD: dev_admin_123
+      PGADMIN_DEFAULT_PASSWORD: ${TF_DEV_PGADMIN_PASSWORD:?TF_DEV_PGADMIN_PASSWORD is required}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     ports:
@@ -52,8 +52,8 @@ volumes:
 # 1. Start: docker compose -f compose.dev.yml up -d
 # 2. Check status: docker compose -f compose.dev.yml ps
 # 3. View logs: docker compose -f compose.dev.yml logs -f postgres-dev
-# 4. Access pgAdmin: http://localhost:8080 (dev@terrafusion.local / dev_admin_123)
+# 4. Access pgAdmin: http://localhost:8080 (dev@terrafusion.local / $TF_DEV_PGADMIN_PASSWORD)
 # 5. Stop: docker compose -f compose.dev.yml down
 # 6. Reset data: docker compose -f compose.dev.yml down -v
 #
-# Connection String: Server=localhost;Port=5432;Database=terrafusion_dev;User Id=terrafusion_dev;Password=dev_password_123;
+# Connection String: Server=localhost;Port=5432;Database=terrafusion_dev;User Id=terrafusion_dev;Password=$TF_DEV_DB_PASSWORD;
