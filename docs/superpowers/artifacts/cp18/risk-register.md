@@ -31,6 +31,9 @@ Status: COMPLETE
 | SEC-020 | `.env.template` hardcoded port 5000 (PORT RULE violation) | LOW | Platform | **REMEDIATED** — changed to `localhost:${TF_API_PORT:-5046}` — commit `b57932e3e` | ✅ CLOSED |
 | SEC-021 | `backend/compose.dev.yml` `POSTGRES_PASSWORD: dev_password_123` hardcoded | HIGH | Security | **REMEDIATED** — env var — commit `b57932e3e` | ✅ CLOSED |
 | SEC-022 | `backend/docker-compose.bulletproof.yml` + `backend/docker-compose.microservices.yml` — 19 `${VAR:-TerraFusion2024!}` silent-fail defaults | CRITICAL | Security | **REMEDIATED** — all converted to fail-loud `${VAR:?VAR is required}` — commit `b57932e3e` | ✅ CLOSED |
+| SEC-023 | `backend/ai-models/BENTON_COUNTY_CHAMPIONSHIP_PLAYBOOK/docker-compose.yml` — `POSTGRES_PASSWORD: championship_password_2024` (x10 refs) + `GF_SECURITY_ADMIN_PASSWORD=championship2024` | CRITICAL | Security | **REMEDIATED** — all refs replaced with `TF_DEV_DB_PASSWORD` / `TF_DEV_GRAFANA_PASSWORD` fail-loud env vars — commit `176bff7e1` | ✅ CLOSED |
+| SEC-024 | `.ci_artifacts_local/docker-compose.dev.yml` — `KEYCLOAK_ADMIN_PASSWORD: admin` hardcoded + `${POSTGRES_PASSWORD:-postgres}` soft-defaults (×2) | HIGH | Security | **REMEDIATED** — env vars `TF_DEV_KEYCLOAK_PASSWORD` fail-loud; postgres soft-defaults → fail-loud — commit `176bff7e1` | ✅ CLOSED |
+| SEC-025 | `backend/compose.dev.yml` — `PGADMIN_DEFAULT_PASSWORD: dev_admin_123` hardcoded + `${TF_DEV_DB_PASSWORD:-dev_local_only}` soft-default | HIGH | Security | **REMEDIATED** — both converted to fail-loud env vars `TF_DEV_PGADMIN_PASSWORD` / `TF_DEV_DB_PASSWORD`; plaintext passwords scrubbed from comments — commit `6d663a96e` | ✅ CLOSED |
 | AI-SWARM-LOAD | Swarm load test (1,008 agents) not executed — staging required | MEDIUM | SRE / AI Swarm Lane | Execute in authorized staging window; Copilot lane not permitted to modify `specialized/` | ⏸ DEFERRED |
 | AI-SWARM-QUEUE | Queue depth guard proof not executed | MEDIUM | SRE / AI Swarm Lane | Execute as part of Phase 8-B in staging | ⏸ DEFERRED |
 | AI-SWARM-BG | Break-glass drill with swarm active not executed | MEDIUM | SRE / AI Swarm Lane | Execute as part of Phase 8-C in staging | ⏸ DEFERRED |
@@ -40,7 +43,7 @@ Status: COMPLETE
 ## Risk Acceptance Policy
 
 Per sovereign.yaml Law 6 (zero tolerance for unlogged risk):
-- SEC-001 through SEC-022: all CLOSED — O1 sweep complete. Zero hardcoded credentials remain in any tracked non-QUARANTINE config, compose, or env file. `.env.vim` (compromised prod secrets) wiped and gitignored. Fail-loud `${VAR:?...}` pattern enforced throughout.
+- SEC-001 through SEC-025: all CLOSED — O1 sweep complete (Rounds 1–3). Zero hardcoded credentials remain in any tracked non-QUARANTINE config, compose, or env file. `.env.vim` (compromised prod secrets) wiped and gitignored. Fail-loud `${VAR:?...}` pattern enforced throughout. Championship playbook, CI artifacts, and pgAdmin credentials all remediated.
 - **SEC-005 (JWT) requires key rotation before go-live.** The prior value is in git history and must be treated as compromised. New `TF_JWT_SECRET` must be generated (`openssl rand -base64 64`) and set in all environments before opening traffic.
 - AI swarm and live SRE rehearsal risks: ACCEPTED for G9 static seal. Must complete before CP-19.
 - Sign-off: go-live gate artifact resolved at CP-19.
