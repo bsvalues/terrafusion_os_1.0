@@ -27,6 +27,46 @@ Repo truth supporting this authorization:
 - `ops/validation/alert_trace_map.yaml` documents a concrete critical alert shape with `severity: critical` and `pagerduty: "true"`
 - `os-platform/core/pilot/ops/sre-o1-ops-status-2026-03-20.md` proves the Hostinger box itself does not currently host that surface
 
+## Concrete AKS Access Path
+
+The repo-documented off-box observability route for this lane is the AKS monitoring stack wired by the observability workflow:
+
+- Azure resource group: `terrafusion-prod`
+- AKS cluster: `terrafusion-aks-prod`
+- staging monitoring namespace: `monitoring`
+- production monitoring namespace: `production-monitoring`
+- staging Grafana URL: `https://grafana-staging.terrafusion.io`
+- production Grafana URL: `https://grafana.terrafusion.io`
+
+Repo truth for this path is recorded in:
+
+- `.github/workflows/README_OBSERVABILITY_CI.md`
+- `.github/workflows/observability-ci.yml`
+
+The minimum truthful operator path is:
+
+1. authenticate to Azure using a valid Azure principal or a valid `AZURE_CREDENTIALS` payload
+2. acquire AKS credentials for `terrafusion-aks-prod` in `terrafusion-prod`
+3. verify access to the monitoring namespace for the target environment
+4. verify the live Prometheus / Alertmanager / Grafana surface
+5. execute the critical alert drill and collect routed incident proof
+
+Representative repo-documented access pattern:
+
+- `az aks get-credentials --resource-group terrafusion-prod --name terrafusion-aks-prod`
+- `kubectl get ns monitoring`
+- `kubectl get ns production-monitoring`
+- `kubectl port-forward -n monitoring svc/prometheus 9090:9090`
+- `kubectl port-forward -n monitoring svc/grafana 13000:3000`
+
+## Current Workstation Attempt
+
+The current Windows workstation could not execute the live AKS proof path on 2026-03-20 because the required Azure and kube access chain was not usable locally.
+
+Sanitized blocked-attempt receipt:
+
+- `os-platform/core/pilot/ops/sre-o1-ops-aks-proof-attempt-2026-03-20.md`
+
 ## Minimum Evidence Required
 
 The off-box execution bundle must contain sanitized proof of all items below:

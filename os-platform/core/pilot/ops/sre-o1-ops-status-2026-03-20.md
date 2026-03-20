@@ -16,6 +16,7 @@ Two parts of the bundle now have current live evidence:
 The authorized off-box closure path is recorded in:
 
 - `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-ops-aks-proof-attempt-2026-03-20.md`
 
 This artifact does not claim pager/on-call success and does not open production traffic.
 
@@ -70,6 +71,23 @@ Operational interpretation:
 - closure requires either a deployed pager-capable monitoring surface for this lane or an explicitly authorized off-box/on-call evidence path
 - the currently authorized off-box/on-call evidence path is the real Prometheus -> Alertmanager -> on-call receiver surface defined in `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
 
+## AKS Execution Attempt Status
+
+An execution attempt against the authorized off-box AKS observability path was made from the current Windows workstation on 2026-03-20.
+
+Sanitized outcome:
+
+- Azure CLI was installed locally
+- kubectl was installed locally
+- no active Azure login was present in the current shell
+- `AZURE_CREDENTIALS` was not present in the local environment
+- the repo-scoped kubeconfig path was present but malformed and could not be loaded
+- the only usable local fallback kube context was `docker-desktop`, not `terrafusion-aks-prod`
+
+Receipt:
+
+- `os-platform/core/pilot/ops/sre-o1-ops-aks-proof-attempt-2026-03-20.md`
+
 ## Remaining SRE-O1-OPS Closure Conditions
 
 `SRE-O1-OPS` may move to COMPLETE only when all remaining conditions are evidenced truthfully:
@@ -82,4 +100,6 @@ Operational interpretation:
 
 The pre-launch DB snapshot requirement is now satisfied.
 
-The remaining blocker inside `SRE-O1-OPS` is the absent pager/on-call execution proof, not missing production release metadata injection on the current Hostinger runtime.
+The remaining blocker inside `SRE-O1-OPS` is the absent pager/on-call execution proof.
+
+The current authorized off-box path is known, but the current workstation still lacks the valid Azure and AKS access chain needed to execute that proof truthfully.
