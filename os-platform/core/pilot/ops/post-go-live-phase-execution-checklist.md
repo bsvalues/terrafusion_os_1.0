@@ -27,7 +27,7 @@ Completed:
 - current automation mode is parity-confirmed no-replace promotion when the deployed runtimes already match the stable Benton contract
 
 ## Phase 20 -- Benton Acceptance / UAT Packet
-Status: READY_FOR_SIGNOFF
+Status: COMPLETE (GO) — 2026-03-19
 
 Exit target:
 - assessor-facing Benton scenarios are signed off as operator-acceptable, not just technically proven
@@ -35,10 +35,13 @@ Exit target:
 Proof:
 - `pnpm run proof:phase20`
 - [phase20-benton-acceptance-uat.latest.json](../evidence/phase20-benton-acceptance-uat.latest.json)
+- [phase20-assessor-signoff.json](../evidence/phase20-assessor-signoff.json)
 
 Current truth:
-- the technical Benton UAT packet is automated and reproducible from the current Phase 17 and Phase 19 baselines
-- final `GO` still requires an explicit assessor/operator signoff artifact; the packet will not fake that acceptance
+- Bill Spencer, Benton County Assessor, signed off 2026-03-19
+- All 9 UAT scenarios accepted; all 7 known PACS data limitations accepted
+- Packet decision: GO (commit cf8556334)
+- Code lane: SEALED — SRE / launch readiness lane now active
 
 ## Phase 21 -- Continuous Observability
 Status: PENDING
