@@ -85,7 +85,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
   /* ── Render ───────────────────────────────────────────── */
 
   return (
-    <div className="space-y-6" data-testid="sales-comparison-host">
+    <div className="space-y-4" data-testid="sales-comparison-host">
       {/* Full ComparableSalesPanel — existing 612-line component, no changes */}
       <ComparableSalesPanel
         onReconciledValue={(result) => {

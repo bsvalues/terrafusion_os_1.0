@@ -364,7 +364,7 @@ export const PropertyAtlas: React.FC = () => {
       : [];
 
   return (
-    <div className='tf-suite-atlas space-y-6' data-testid='property-atlas-tab'>
+    <div className='tf-suite-atlas space-y-4' data-testid='property-atlas-tab'>
       {/* Header */}
       <ParcelContextHeader
         icon='🗺️'
@@ -375,7 +375,7 @@ export const PropertyAtlas: React.FC = () => {
 
       {/* Parcel Context from Store */}
       {activeParcel && (
-        <BentoGrid columns={4} gap={0.75} padding={0}>
+        <BentoGrid columns="auto" gap={0.75} padding={0}>
           <BentoCard variant="stat" title="Address">
             <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
               {activeParcel.address || '—'}
@@ -405,7 +405,7 @@ export const PropertyAtlas: React.FC = () => {
       )}
 
       {/* Main Content Grid */}
-      <BentoGrid columns={3} gap={1.5} padding={0}>
+      <BentoGrid columns="auto" gap={1.5} padding={0}>
         {/* Layer Controls */}
         <BentoCard variant="form" title="Map Layers" actions={<span>📚</span>}>
 

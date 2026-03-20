@@ -134,7 +134,7 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
       : 'bg-yellow-500/20 border-yellow-500/40';
 
   return (
-    <div className="space-y-6" data-testid="forge-reconciliation">
+    <div className="space-y-4" data-testid="forge-reconciliation">
       {/* ── Approach Cards ─────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {indications.map((ind, idx) => {

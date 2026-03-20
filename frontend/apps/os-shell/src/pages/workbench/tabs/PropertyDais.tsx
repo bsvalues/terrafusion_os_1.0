@@ -819,7 +819,7 @@ export const PropertyDais: React.FC = () => {
   const isDev = getEnv('MODE') === 'development';
 
   return (
-    <div className='tf-suite-dais space-y-6' data-testid='property-dais-tab'>
+    <div className='tf-suite-dais space-y-4' data-testid='property-dais-tab'>
       {/* Header */}
       <ParcelContextHeader
         icon='📊'
@@ -830,7 +830,7 @@ export const PropertyDais: React.FC = () => {
 
       {/* Active Appeals from Store */}
       {appeals.length > 0 && (
-        <BentoGrid columns={3} gap={0.75} padding={0}>
+        <BentoGrid columns="auto" gap={0.75} padding={0}>
           <BentoCard variant="stat" title="Active Appeals">
             <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}>
               {appeals.length} appeal{appeals.length !== 1 ? 's' : ''}
@@ -850,7 +850,7 @@ export const PropertyDais: React.FC = () => {
       )}
 
       {/* Main Content Grid */}
-      <BentoGrid columns={3} gap={1.5} padding={0}>
+      <BentoGrid columns="auto" gap={1.5} padding={0}>
         {/* Controls Panel */}
         <BentoCard variant="form" title="Workflow Parameters" actions={<span>⚙️</span>}>
 
@@ -1039,7 +1039,7 @@ export const PropertyDais: React.FC = () => {
       {/* ================================================================ */}
       {/* PILT Calculator — calculate_pilt_payment governed tool            */}
       {/* ================================================================ */}
-      <BentoGrid columns={2} gap={1.5} padding={0}>
+      <BentoGrid columns="auto" gap={1.5} padding={0}>
         <BentoCard title="PILT Calculator" actions={<span>🏛️</span>}>
           <p className='tf-text-dim text-sm mb-3'>
             Payment in Lieu of Taxes — Hanford Nuclear Reservation (RCW 84.33)
