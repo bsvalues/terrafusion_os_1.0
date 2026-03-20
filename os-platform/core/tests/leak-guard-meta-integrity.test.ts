@@ -20,17 +20,19 @@ describe('leak-guard meta-integrity', () => {
     expect(guardFiles.length).toBeGreaterThanOrEqual(330);
   });
 
-  it('every guard imports assertNoRawColorLeaks', () => {
+  it('every guard uses the canonical leak-guard assertion path', () => {
     const missing: string[] = [];
     for (const file of guardFiles) {
       const content = fs.readFileSync(path.join(guardsDir, file), 'utf8');
-      if (!content.includes('assertNoRawColorLeaks')) {
+      const usesCanonicalAssertion =
+        content.includes('assertNoRawColorLeaks') || content.includes('registerLeakGuard');
+      if (!usesCanonicalAssertion) {
         missing.push(file);
       }
     }
     expect(
       missing,
-      `Guards missing assertNoRawColorLeaks import: ${missing.join(', ')}`
+      `Guards missing canonical leak-guard assertion: ${missing.join(', ')}`
     ).toHaveLength(0);
   });
 
@@ -42,7 +44,8 @@ describe('leak-guard meta-integrity', () => {
         content.includes('path.resolve(') ||
         content.includes('path.join(') ||
         /\bresolve\s*\(/.test(content) ||
-        /assertNoRawColorLeaks\s*\(\s*['"]/.test(content);
+        /assertNoRawColorLeaks\s*\(\s*['"]/.test(content) ||
+        (content.includes('registerLeakGuard') && content.includes('targetFile'));
       if (!hasPathResolution) {
         broken.push(file);
       }

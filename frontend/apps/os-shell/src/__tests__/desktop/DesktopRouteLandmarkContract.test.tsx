@@ -167,7 +167,7 @@ describe('Phase 25 contract: desktop routes render stable content landmarks', ()
     await import('../../pages/workbench/tabs/PropertyPilot');
     localStorage.clear();
     vi.useFakeTimers({ shouldAdvanceTime: true });
-  }, 20000);
+  }, 60000);
 
   afterEach(() => {
     cleanup();

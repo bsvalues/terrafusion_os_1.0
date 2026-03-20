@@ -26,7 +26,7 @@
  * Scope: Cross-tab sync via storage events. No BroadcastChannel, no SharedWorker.
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -70,6 +70,8 @@ vi.mock('monaco-editor/esm/vs/language/json/json.worker?worker', () => ({ defaul
 vi.mock('monaco-editor/esm/vs/language/typescript/ts.worker?worker', () => ({ default: class {} }));
 
 import Router from '../../Router';
+import '../../App';
+import '../../pages/CanonHome';
 
 // ============================================================================
 // Storage keys (must match production)
@@ -115,13 +117,10 @@ function simulateCrossTabWrite(key: string, newValue: string | null, oldValue: s
 // ============================================================================
 
 describe('Phase 40 contract: cross-tab sync reloads workspace state from storage events', () => {
-  beforeAll(async () => {
-    vi.useRealTimers();
-    await import('../../App');
-    await import('../../pages/CanonHome');
+  beforeAll(() => {
     localStorage.clear();
     vi.useFakeTimers({ shouldAdvanceTime: true });
-  }, 20000);
+  });
 
   beforeEach(() => {
     localStorage.clear();

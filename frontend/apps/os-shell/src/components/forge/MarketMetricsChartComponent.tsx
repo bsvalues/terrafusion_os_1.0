@@ -42,7 +42,7 @@ export function MarketMetricsChartComponent({
         ) : (
           <ResponsiveContainer width="100%" height={280}>
             <ComposedChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--tf-border) / 0.6)" />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} />
               <YAxis
                 yAxisId="value"
@@ -62,12 +62,18 @@ export function MarketMetricsChartComponent({
                 }
               />
               <Legend />
-              <Bar yAxisId="volume" dataKey="volume" fill="#3b82f6" opacity={0.4} name="Volume" />
+              <Bar
+                yAxisId="volume"
+                dataKey="volume"
+                fill="hsl(var(--primary))"
+                opacity={0.4}
+                name="Volume"
+              />
               <Line
                 yAxisId="value"
                 type="monotone"
                 dataKey="value"
-                stroke="#22c55e"
+                stroke="hsl(var(--tf-success))"
                 strokeWidth={2}
                 dot={false}
                 name="Median Value"
