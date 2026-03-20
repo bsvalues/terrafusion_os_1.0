@@ -17,6 +17,11 @@ out/
 .nuxt/
 .vuepress/dist
 
+# .NET build artifacts (bin, obj, publish dirs should never be committed)
+**/bin/
+**/obj/
+backend/publish/
+
 # Environment variables
 .env
 .env.local
