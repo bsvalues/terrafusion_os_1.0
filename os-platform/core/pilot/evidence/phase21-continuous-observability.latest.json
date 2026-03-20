@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-16T16:58:05.951Z",
+  "generatedAt": "2026-03-20T03:00:07.417Z",
   "scope": "Phase 21 Continuous Observability Packet",
   "decision": "GO",
   "checks": [
@@ -9,7 +9,7 @@
       "detail": "Phase 20 decision=READY_FOR_SIGNOFF",
       "payload": {
         "decision": "READY_FOR_SIGNOFF",
-        "generatedAt": "2026-03-16T16:08:12.462Z"
+        "generatedAt": "2026-03-20T02:59:54.289Z"
       },
       "blocker": null
     },
@@ -37,10 +37,11 @@
     {
       "name": "observability.evidence_chain",
       "ok": true,
-      "detail": "63 phase evidence files in chain",
+      "detail": "68 phase evidence files in chain",
       "payload": {
-        "count": 63,
+        "count": 68,
         "files": [
+          "phase-c-naming-port-cleanup.json",
           "phase10-environment-identity.latest.json",
           "phase11-deployment-contract.latest.json",
           "phase12-pacs-connected-runtime.latest.json",
@@ -49,8 +50,7 @@
           "phase14-production-atlas-click.png",
           "phase14-production-atlas-deeplink.png",
           "phase14-production-audit-click.png",
-          "phase14-production-audit-deeplink.png",
-          "phase14-production-clerk-click.png"
+          "phase14-production-audit-deeplink.png"
         ]
       },
       "blocker": null
