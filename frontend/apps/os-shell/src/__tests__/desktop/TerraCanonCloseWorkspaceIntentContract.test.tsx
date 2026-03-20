@@ -73,19 +73,18 @@ vi.mock('monaco-editor/esm/vs/language/json/json.worker?worker', () => ({ defaul
 vi.mock('monaco-editor/esm/vs/language/typescript/ts.worker?worker', () => ({ default: class {} }));
 
 import Router from '../../Router';
+import '../../App';
+import '../../pages/CanonHome';
 
 // ============================================================================
 // Tests
 // ============================================================================
 
 describe('Phase 36 contract: TerraCanon can close the active workspace safely (session-only)', () => {
-  beforeAll(async () => {
-    vi.useRealTimers();
-    await import('../../App');
-    await import('../../pages/CanonHome');
+  beforeAll(() => {
     localStorage.clear();
     vi.useFakeTimers({ shouldAdvanceTime: true });
-  }, 20000);
+  });
 
   afterEach(() => {
     cleanup();

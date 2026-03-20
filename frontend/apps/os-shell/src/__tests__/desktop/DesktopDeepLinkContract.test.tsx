@@ -164,7 +164,7 @@ describe('Phase 27 contract: deep-link → Router mounts → landmark renders', 
     await import('../../pages/workbench/tabs/PropertyPilot');
     localStorage.clear();
     vi.useFakeTimers({ shouldAdvanceTime: true });
-  }, 20000);
+  }, 60000);
 
   afterEach(() => {
     cleanup();

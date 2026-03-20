@@ -75,19 +75,18 @@ vi.mock('monaco-editor/esm/vs/language/json/json.worker?worker', () => ({ defaul
 vi.mock('monaco-editor/esm/vs/language/typescript/ts.worker?worker', () => ({ default: class {} }));
 
 import Router from '../../Router';
+import '../../App';
+import '../../pages/CanonHome';
 
 // ============================================================================
 // Tests
 // ============================================================================
 
 describe('Phase 35 contract: TerraCanon supports multiple session workspaces and a safe switcher', () => {
-  beforeAll(async () => {
-    vi.useRealTimers();
-    await import('../../App');
-    await import('../../pages/CanonHome');
+  beforeAll(() => {
     localStorage.clear();
     vi.useFakeTimers({ shouldAdvanceTime: true });
-  }, 20000);
+  });
 
   beforeEach(() => {
     localStorage.clear();

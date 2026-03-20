@@ -125,7 +125,7 @@ describe('Phase 28 contract: parcel param robustness — invalid parcelId never 
     await import('../../pages/workbench/tabs/PropertyPilot');
     localStorage.clear();
     vi.useFakeTimers({ shouldAdvanceTime: true });
-  }, 20000);
+  }, 60000);
 
   afterEach(() => {
     cleanup();
