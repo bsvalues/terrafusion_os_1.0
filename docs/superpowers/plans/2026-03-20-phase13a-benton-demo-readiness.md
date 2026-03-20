@@ -794,3 +794,41 @@ Run after all three agents complete.
 
 **In scope:** Auth policy contract tests, demo env config, 4-leg journey test, county isolation audit test + proof doc.
 **Out of scope:** Backend changes, new UI surfaces, AKS deployment, second county provisioning (→ Phase 13B), route restructuring.
+
+---
+
+## Phase 13 Seal — 2026-03-20 15:50
+
+**Vitest**: 458/458 files ✓ | 5,884/5,884 tests ✓ | 0 failures  
+**UI token ratchet**: 789 violations ≤ 812 baseline (−23)  
+**Type-check**: clean  
+**Seal commit**: b3283563f  
+
+### Bonus fixes landed during integration gate
+
+| Commit | Fix |
+|--------|-----|
+| `cf1504f88` | LoginPage.real-auth timeout — mock authPolicy to suppress fetchDevToken |
+| `cf1504f88` | AxiomFSWindow MutationObserver — add global stub alongside ResizeObserver |
+| `b3283563f` | shellAccessibility ENOENT — import.meta.dirname path resolution |
+
+**Status: SEALED ✓**
+
+---
+
+## Phase 13 Seal — 2026-03-20 15:50
+
+**Vitest**: 458/458 files ✓ | 5,884/5,884 tests ✓ | 0 failures  
+**UI token ratchet**: 789 violations ≤ 812 baseline (−23)  
+**Type-check**: clean  
+**Seal commit**: b3283563f  
+
+### Bonus fixes landed during integration gate
+
+| Commit | Fix |
+|--------|-----|
+| `cf1504f88` | LoginPage.real-auth timeout — mock authPolicy to suppress fetchDevToken |
+| `cf1504f88` | AxiomFSWindow MutationObserver — add global stub alongside ResizeObserver |
+| `b3283563f` | shellAccessibility ENOENT — import.meta.dirname path resolution |
+
+**Status: SEALED ✓**
