@@ -29,7 +29,7 @@
  * Scope: Session-only reopen; no persistence, no filesystem, no Monaco.
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -79,6 +79,25 @@ import Router from '../../Router';
 // ============================================================================
 
 describe('Phase 37 contract: TerraCanon can reopen the last closed workspace (session-only)', () => {
+  // Pre-warm the lazy CanonHome import before S1 runs.
+  // CanonHome is a 2100+ line lazy-loaded module; first cold import can exceed
+  // the 5 s waitFor window on Windows/forks pool. With retry: 2 the module
+  // loads during S1's three attempts (≥ 15 s), so S2–S5 always pass from cache.
+  // Real timers are needed here because the global setupTests.ts installs fake
+  // timers which interfere with React Suspense resolution in a beforeAll context.
+  beforeAll(async () => {
+    vi.useRealTimers();
+    memoryRouterEntries = ['/canon'];
+    render(<Router />);
+    await waitFor(
+      () => expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument(),
+      { timeout: 15000 },
+    );
+    cleanup();
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  }, 20000);
+
   beforeEach(() => {
     localStorage.clear();
   });
@@ -99,7 +118,7 @@ describe('Phase 37 contract: TerraCanon can reopen the last closed workspace (se
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 }
+      { timeout: 15000 },
     );
 
     expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
