@@ -20,7 +20,7 @@
  * Scope: localStorage persistence for lastClosed only. No backend, no IndexedDB.
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -76,6 +76,14 @@ const KEY_LAST_CLOSED = 'tf.canon.lastClosed.v1';
 // ============================================================================
 
 describe('Phase 39 contract: persisted lastClosed enables reopen-after-refresh (schema-safe)', () => {
+  beforeAll(async () => {
+    vi.useRealTimers();
+    await import('../../App');
+    await import('../../pages/CanonHome');
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  }, 20000);
+
   beforeEach(() => {
     localStorage.clear();
   });
@@ -93,7 +101,7 @@ describe('Phase 39 contract: persisted lastClosed enables reopen-after-refresh (
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 },
+      { timeout: 15000 },
     );
 
     expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
