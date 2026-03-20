@@ -8,6 +8,7 @@ Related artifacts:
 
 - `os-platform/core/pilot/ops/post-phase25-multi-agent-execution-plan-2026-03-19.md`
 - `os-platform/core/pilot/ops/post-phase25-agent-assignment-matrix-2026-03-19.md`
+- `os-platform/core/pilot/ops/sec-005-jwt-rotation-runbook-2026-03-19.md`
 - `os-platform/core/pilot/ops/leak-guard-governance-drift-2026-03-19.md`
 
 ## Pass 0 -- Coordination Freeze
@@ -29,6 +30,7 @@ Evidence output:
 
 ### A1 Rotation Inventory
 
+- [ ] Use `os-platform/core/pilot/ops/sec-005-jwt-rotation-runbook-2026-03-19.md` as the execution note for this lane.
 - [ ] Inventory every JWT signing secret source.
 - [ ] Inventory every consumer that validates JWT signatures.
 - [ ] Inventory deployment surfaces that receive the secret.
@@ -43,7 +45,7 @@ Evidence output:
 ### A2 Rotation Execution
 
 - [ ] Generate replacement JWT signing secret in the approved authority.
-- [ ] Update deployment injection points and secret references.
+- [ ] Update deployment injection points and secret references, prioritizing the live `JwtSettings:SecretKey` path.
 - [ ] Ensure old secret is no longer the active signing key.
 - [ ] Record timestamp, operator, and target surfaces changed.
 - [ ] Record rollback material and expiration policy.
@@ -58,6 +60,7 @@ Evidence output:
 
 - [ ] Verify auth issuance works after rotation.
 - [ ] Verify auth validation works after rotation.
+- [ ] Verify the runtime did not fall back to a random default signing key.
 - [ ] Verify stale signatures are rejected where required.
 - [ ] Verify no accidental auth outage was introduced.
 - [ ] Update the post-go-live checklist truth line for `SEC-005-ROTATE`.

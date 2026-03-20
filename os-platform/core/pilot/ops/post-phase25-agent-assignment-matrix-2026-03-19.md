@@ -12,13 +12,17 @@ Scope: Concrete agent and subagent ownership matrix for the post-Phase-25 execut
 | Agent B | Governance owner | Copilot-B | Restore governance green by remediating leak-guard drift | strict leak-guard pass + full-root Vitest rerun |
 | Agent C | Release truth owner | Copilot-C | Build final release authorization packet from sealed phases and remediation outputs | release authorization packet |
 
+Agent A execution note:
+
+- `os-platform/core/pilot/ops/sec-005-jwt-rotation-runbook-2026-03-19.md`
+
 ## Subagent Matrix
 
 | Subagent | Parent | Owner role | Objective | Primary commands | Evidence outputs |
 |---|---|---|---|---|---|
 | A1 Rotation inventory | Agent A | Security owner | Map JWT secret sources, consumers, and deployment surfaces | environment-specific inventory commands; repo grep over auth and deployment surfaces | JWT inventory, source/consumer map |
-| A2 Rotation execution | Agent A | Security owner | Rotate JWT signing material in the approved authority | environment-specific rotation commands and deployment update commands | rotation receipt, update ledger, rollback instructions |
-| A3 Post-rotation verification | Agent A | Security owner | Verify issuance and validation after rotation | service auth smoke commands; surface verification commands | auth verification log, blocker closure note |
+| A2 Rotation execution | Agent A | Security owner | Rotate JWT signing material in the approved authority | environment-specific rotation commands and deployment update commands; must update the live `JwtSettings:SecretKey` path | rotation receipt, update ledger, rollback instructions |
+| A3 Post-rotation verification | Agent A | Security owner | Verify issuance and validation after rotation | service auth smoke commands; surface verification commands; confirm no default-key fallback | auth verification log, blocker closure note |
 | B1 Coverage inventory | Agent B | Governance owner | De-duplicate and cluster uncovered leak-guard paths | `pnpm exec vitest run os-platform/core/tests/leak-guard-strict-components-coverage.test.ts --reporter=verbose` | de-duplicated coverage inventory |
 | B2 Rule-model diagnosis | Agent B | Governance owner | Decide whether fix is guards, mapping, or eligibility narrowing | test-source inspection; coverage-map inspection; guard-file search | diagnosis memo, approved repair pattern |
 | B3 Remediation waves | Agent B | Governance owner | Execute bounded remediation waves and restore full-root green | `pnpm exec vitest run os-platform/core/tests/leak-guard-strict-components-coverage.test.ts --reporter=verbose`; `pnpm exec vitest run` | wave proofs, final green summary |

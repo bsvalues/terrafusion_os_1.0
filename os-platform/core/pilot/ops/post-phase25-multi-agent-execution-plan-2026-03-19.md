@@ -65,6 +65,7 @@ Agent C can prepare packet structure and evidence placeholders immediately, but 
 ### Objective
 
 - execute and prove `SEC-005-ROTATE` without disturbing already-sealed contract-test proof
+- use `os-platform/core/pilot/ops/sec-005-jwt-rotation-runbook-2026-03-19.md` as the lane-specific execution packet
 
 ### Subagents In Parallel
 
