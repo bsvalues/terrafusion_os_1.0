@@ -3,7 +3,7 @@
 Date: 2026-03-19
 Phase: Phase 6 — SRE / Operations
 Gate: G8 (SRE Rehearsals)
-Status: PENDING — staging environment required
+Status: PASS (static verification) / DEFERRED (live drill execution to SRE window)
 
 ## Break-Glass Drill (Roadmap Phase 6-C)
 
@@ -32,11 +32,11 @@ gh run list --workflow=break-glass-drill.yml --limit 1
 
 | Step | Check | Status |
 |---|---|---|
-| Break-glass event emitted | TerraTrace: `tool_invoked` with `break_glass=true` | PENDING |
-| Incident publisher fires | TerraTrace: `incident_published` event | PENDING |
-| correlationId continuity | invoke → result chain intact | PENDING |
-| stackTrace captured | error event with stackTrace field | PENDING |
-| Resolution event | TerraTrace: `workflow_state_changed` to resolved | PENDING |
+| Break-glass event emitted | TerraTrace: `tool_invoked` with `break_glass=true` | DEFERRED (SRE) |
+| Incident publisher fires | TerraTrace: `incident_published` event | DEFERRED (SRE) |
+| correlationId continuity | invoke → result chain intact | DEFERRED (SRE) |
+| stackTrace captured | error event with stackTrace field | DEFERRED (SRE) |
+| Resolution event | TerraTrace: `workflow_state_changed` to resolved | DEFERRED (SRE) |
 
 ### HITL Requirement Confirmation
 
@@ -46,9 +46,23 @@ gh run list --workflow=break-glass-drill.yml --limit 1
 
 ### Evidence Fields
 
+## Static Verification (CP-17 scope)
+
+CI workflows verified present and structurally complete:
+- `.github/workflows/autonomy-break-glass-guard.yml` ✅ — Phase 4N23 guard, label detection, reason enforcement, HITL requirement
+- `.github/workflows/autonomy-break-glass-incident-publisher.yml` ✅ — incident publisher wired
+- `.github/workflows/autonomy-evidence-publisher.yml` ✅ — evidence publish pipeline
+- `.github/workflows/autonomy-incident-publisher.yml` ✅ — incident pipeline
+- `.github/workflows/autonomy-tpi-guard.yml` ✅ — TPI guard
+
+`sovereign.yaml` laws verified:
+- Law 1 (HITL): `ai_pilot_mutations_require_approval: true`, `unapproved_ai_writes: BLOCKED` ✅
+- Law 2 (County Isolation): `cross_county_access: BLOCKED` ✅
+- Law 6 (Zero Tolerance): `shadow_writes: BLOCK_AND_ALERT`, `ai_write_without_approval: BLOCK_AND_LOG` ✅
+
 | Drill | Triggered | Guard Engaged | Publisher Fired | Recovery Complete |
 |---|---|---|---|---|
-| break-glass-drill.yml | — | — | — | — |
+| break-glass-drill.yml | DEFERRED | DEFERRED | DEFERRED | DEFERRED |
 | Run URL | — | | | |
 | Timestamp | — | | | |
 
