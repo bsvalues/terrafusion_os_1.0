@@ -43,6 +43,11 @@ export interface DistrictHeatmapDatum {
   intensity: number; // 0-1 scale
 }
 
+const CURRENT_RATE_COLOR = 'hsl(var(--primary))';
+const PRIOR_RATE_COLOR = 'hsl(var(--muted-foreground))';
+const STATUTORY_LIMIT_COLOR = 'hsl(var(--tf-error))';
+const ASSESSED_VALUE_COLOR = 'hsl(var(--tf-success))';
+
 /* ------------------------------------------------------------------ */
 /*  RateComparisonChart                                                */
 /* ------------------------------------------------------------------ */
@@ -63,9 +68,9 @@ export const RateComparisonChart: React.FC<RateComparisonChartProps> = ({
       <YAxis label={{ value: 'Rate ($/1000 AV)', angle: -90, position: 'insideLeft' }} />
       <Tooltip formatter={(v: number) => `$${v.toFixed(4)}`} />
       <Legend />
-      <Bar dataKey="currentRate" name="Current Rate" fill="#3b82f6" />
-      <Bar dataKey="priorRate" name="Prior Rate" fill="#94a3b8" />
-      <Bar dataKey="statutoryLimit" name="Statutory Limit" fill="#ef4444" />
+      <Bar dataKey="currentRate" name="Current Rate" fill={CURRENT_RATE_COLOR} />
+      <Bar dataKey="priorRate" name="Prior Rate" fill={PRIOR_RATE_COLOR} />
+      <Bar dataKey="statutoryLimit" name="Statutory Limit" fill={STATUTORY_LIMIT_COLOR} />
     </BarChart>
   </ResponsiveContainer>
 );
@@ -95,12 +100,12 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({
       />
       <Tooltip />
       <Legend />
-      <Line yAxisId="rate" type="monotone" dataKey="levyRate" stroke="#3b82f6" name="Levy Rate" />
+      <Line yAxisId="rate" type="monotone" dataKey="levyRate" stroke={CURRENT_RATE_COLOR} name="Levy Rate" />
       <Line
         yAxisId="av"
         type="monotone"
         dataKey="assessedValue"
-        stroke="#10b981"
+        stroke={ASSESSED_VALUE_COLOR}
         name="Assessed Value"
       />
     </LineChart>
@@ -117,10 +122,9 @@ interface DistrictHeatmapProps {
 }
 
 const intensityColor = (intensity: number): string => {
-  const r = Math.round(59 + (239 - 59) * intensity);
-  const g = Math.round(130 - 62 * intensity);
-  const b = Math.round(246 - 178 * intensity);
-  return `rgb(${r},${g},${b})`;
+  const primaryWeight = Math.round((1 - intensity) * 100);
+  const errorWeight = 100 - primaryWeight;
+  return `color-mix(in srgb, ${CURRENT_RATE_COLOR} ${primaryWeight}%, ${STATUTORY_LIMIT_COLOR} ${errorWeight}%)`;
 };
 
 export const DistrictHeatmap: React.FC<DistrictHeatmapProps> = ({

@@ -199,11 +199,15 @@ describe('GPTChatInterface interactions', () => {
     render(<GPTChatInterface gpt={gpt} onConversationChange={onConversationChange} />);
 
     expect(await screen.findByText('County Valuation Helper')).toBeInTheDocument();
-    expect(mockCreateConversation).toHaveBeenCalledWith({
-      gptConfigId: 1,
-      title: 'New conversation with County Valuation Helper',
+
+    await waitFor(() => {
+      expect(mockCreateConversation).toHaveBeenCalledWith({
+        gptConfigId: 1,
+        title: 'New conversation with County Valuation Helper',
+      });
+      expect(onConversationChange).toHaveBeenCalledWith(createdConversation);
     });
-    expect(onConversationChange).toHaveBeenCalledWith(createdConversation);
+
     expect(
       screen.getByText(/manual trace fetch through the canonical GPT API/i),
     ).toBeInTheDocument();

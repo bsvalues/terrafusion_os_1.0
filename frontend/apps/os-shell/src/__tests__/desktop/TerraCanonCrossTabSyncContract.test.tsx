@@ -182,10 +182,10 @@ describe('Phase 40 contract: cross-tab sync reloads workspace state from storage
       { timeout: 5000 },
     );
 
-    // Flush all pending React effects (including lazy-load useEffects)
-    // before dispatching storage events
+    // Yield one turn so the mounted router and listeners settle before the
+    // synthetic cross-tab storage event is dispatched.
     await act(async () => {
-      await new Promise((r) => setTimeout(r, 50));
+      await Promise.resolve();
     });
 
     // Another tab creates a workspace — write BOTH keys before dispatching

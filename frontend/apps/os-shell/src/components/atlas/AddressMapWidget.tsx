@@ -28,6 +28,8 @@ export default function AddressMapWidget({
   onMarkerPlace,
   className = '',
 }: AddressMapWidgetProps) {
+  const markerColor = 'hsl(var(--primary))';
+
   const center: [number, number] = [lat ?? 46.23, lng ?? -119.2];
   const [marker, setMarker] = useState<{ lat: number; lng: number } | null>(
     lat != null && lng != null ? { lat, lng } : null,
@@ -77,7 +79,7 @@ export default function AddressMapWidget({
           }}
         >
           <svg width="18" height="24" viewBox="0 0 24 32">
-            <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 20 12 20s12-11 12-20C24 5.4 18.6 0 12 0z" fill="#00FFFF" />
+            <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 20 12 20s12-11 12-20C24 5.4 18.6 0 12 0z" fill={markerColor} />
             <circle cx="12" cy="12" r="3" fill="white" />
           </svg>
         </div>
