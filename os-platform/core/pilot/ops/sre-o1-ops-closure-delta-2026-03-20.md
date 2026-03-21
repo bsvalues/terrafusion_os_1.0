@@ -1,7 +1,7 @@
 # SRE-O1-OPS Closure Delta
 
-Date: 2026-03-20
-Status: READY
+Date: 2026-03-21
+Status: REVISED
 Scope: Exact closure delta for the remaining `SRE-O1-OPS` blocker
 
 ## Purpose
@@ -34,6 +34,8 @@ Current truthful posture from that chain:
 - remaining blocker = `SRE-O1-OPS`
 - DB snapshot requirement = complete
 - pager/on-call routed-incident proof = not complete
+- Hostinger is the current live Benton truth surface
+- Azure/AKS is an unverified alternate lane unless separately proven live for this release lane
 
 ## Exact Missing Evidence
 
@@ -61,20 +63,28 @@ Current truthful posture from that chain:
 
 If any one of these is absent, `SRE-O1-OPS` is still open.
 
+The successful closure artifact must come from either:
+
+1. the live Hostinger-backed Benton release path when it can produce truthful routed-incident evidence, or
+2. a separately verified observability surface that is demonstrably bound to the same Benton release lane
+
 ## Exact Prerequisites For Next Closure Attempt
 
 Do not begin the next attempt unless all prerequisites below are true:
 
-1. a valid Azure principal is active in the execution shell or workstation session
-2. `az account show` succeeds against the intended tenant/subscription
-3. a valid AKS kube context exists for `terrafusion-aks-prod`
-4. the current context is not a local fallback such as `docker-desktop`
-5. the target monitoring namespace is reachable for the intended environment
-6. Benton release identity is known before firing the alert
-7. the sanitized evidence artifact path is chosen under `os-platform/core/pilot/ops/**`
-8. the operator has the successful-drill template available at `os-platform/core/pilot/ops/sre-o1-ops-verification-template.md`
+1. the claimed execution surface for pager/on-call proof is identified concretely
+2. that execution surface is proven live, reachable, and currently deployed
+3. the operator has a usable access path to that surface in the same shell or workstation session that will run the drill
+4. the execution surface is not a local fallback, repo example, or undocumented assumption
+5. the target monitoring and routing plane is reachable for the intended environment
+6. the real critical receiver path is known for the intended environment
+7. Benton release identity is known before firing the alert
+8. the sanitized evidence artifact path is chosen under `os-platform/core/pilot/ops/**`
+9. the operator has the successful-drill template available at `os-platform/core/pilot/ops/sre-o1-ops-verification-template.md`
 
 If any prerequisite fails, publish a new blocked-attempt receipt instead of improvising.
+
+Do not begin with `az`, `az aks get-credentials`, `kubectl`, or monitoring namespace assumptions unless the Azure/AKS lane has first been separately verified for this release lane.
 
 The preferred operator-side input bundle for satisfying these prerequisites is recorded in:
 
@@ -120,9 +130,10 @@ After a successful routed incident drill:
 
 If the next attempt still cannot execute, the correct output is a new blocked-attempt receipt recording:
 
-- Azure auth status
-- kube context status
-- namespace reachability status
+- claimed execution surface
+- surface verification status
+- access-path status
+- monitoring and receiver reachability status
 - exact blocked stage
 - exact required operator input for the next attempt
 
@@ -134,10 +145,12 @@ False closure is not.
 
 ## Immediate Next Operator Step
 
-The next closure attempt must begin by fixing the access chain recorded in `os-platform/core/pilot/ops/sre-o1-ops-aks-proof-attempt-2026-03-20.md`:
+The next closure attempt must begin by resolving the execution-surface ambiguity recorded across the current evidence chain:
 
-1. establish valid Azure login
-2. acquire valid `terrafusion-aks-prod` kube context
-3. verify monitoring namespace reachability
+1. identify the real pager-capable surface, if one exists, for the Benton release lane
+2. verify that the surface is live and bound to the same release lane as the Hostinger runtime
+3. verify monitoring and real receiver reachability for the target environment
 4. execute one real critical-alert drill for the Benton release lane
 5. publish the sanitized routed-incident evidence bundle
+
+If step 1 or 2 cannot be completed, publish a blocked-attempt receipt stating that no verified pager-capable execution surface currently exists for this lane and that Azure/AKS remains only an unverified alternate lane.

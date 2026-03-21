@@ -1,25 +1,26 @@
 # SRE-O1 Pager / On-Call Evidence Path
 
-Date: 2026-03-20
-Status: AUTHORIZED
-Scope: Define the only truthful pager/on-call execution surface that may be used to close the remaining `SRE-O1-OPS` blocker for the Benton Hostinger release lane
+Date: 2026-03-21
+Status: REVISED
+Scope: Define the truthful pager/on-call execution surface rules for closing the remaining `SRE-O1-OPS` blocker for the Benton Hostinger release lane
 
 ## Why This Artifact Exists
 
-The current Hostinger snapshot footprint does not expose a deployed pager-capable monitoring surface.
+The current Hostinger snapshot footprint is the live Benton truth surface, but it does not expose a deployed pager-capable monitoring surface.
 
 That means pager/on-call validation cannot be truthfully completed on-box there.
 
-`SRE-O1-OPS` may still close, but only by executing the pager/on-call proof on an explicitly authorized off-box observability surface that is real, routable, and tied back to the same release lane.
+`SRE-O1-OPS` may still close, but only by collecting closure evidence from the live Hostinger-backed Benton lane or from a separately verified off-box observability surface that is real, routable, and tied back to that same release lane.
 
-## Authorized Execution Surface
+## Execution Surface Rule
 
-The authorized pager/on-call execution surface for this lane is the external observability stack that satisfies all of the following:
+Pager/on-call closure for this lane may be executed only on a surface that is proven to satisfy all of the following:
 
-1. alert evaluation is performed by a real Prometheus-capable monitoring plane
-2. alert routing is performed by a real Alertmanager-capable routing plane
-3. critical alerts route to a real on-call receiver, with PagerDuty as the canonical receiver shape already documented in repo observability guidance
+1. alert evaluation is performed by a real monitoring plane
+2. alert routing is performed by a real alerting plane
+3. critical alerts route to a real on-call receiver, with PagerDuty remaining the canonical receiver shape already documented in repo observability guidance
 4. the alert is bound to the Benton release lane by environment identity and release metadata
+5. the surface is currently verified, not merely named in repo documentation
 
 Repo truth supporting this authorization:
 
@@ -27,45 +28,45 @@ Repo truth supporting this authorization:
 - `ops/validation/alert_trace_map.yaml` documents a concrete critical alert shape with `severity: critical` and `pagerduty: "true"`
 - `os-platform/core/pilot/ops/sre-o1-ops-status-2026-03-20.md` proves the Hostinger box itself does not currently host that surface
 
-## Concrete AKS Access Path
+## Current Verified Posture
 
-The repo-documented off-box observability route for this lane is the AKS monitoring stack wired by the observability workflow:
+The current verified Benton runtime is the Hostinger snapshot lane documented in:
 
-- Azure resource group: `terrafusion-prod`
-- AKS cluster: `terrafusion-aks-prod`
-- staging monitoring namespace: `monitoring`
-- production monitoring namespace: `production-monitoring`
-- staging Grafana URL: `https://grafana-staging.terrafusion.io`
-- production Grafana URL: `https://grafana.terrafusion.io`
+- `os-platform/core/pilot/ops/hostinger-control-plane.md`
+- `.github/workflows/release-lane.yml`
+- `.github/workflows/health-check.yml`
+- `.github/workflows/infra-probe.yml`
 
-Repo truth for this path is recorded in:
+The current verified Hostinger footprint does not expose a pager-capable monitoring surface.
+
+Repo documentation and workflows still contain Azure/AKS observability references, including:
 
 - `.github/workflows/README_OBSERVABILITY_CI.md`
 - `.github/workflows/observability-ci.yml`
 
-The minimum truthful operator path is:
+Those references are not sufficient, by themselves, to authorize an execution surface for this lane.
 
-1. authenticate to Azure using a valid Azure principal or a valid `AZURE_CREDENTIALS` payload
-2. acquire AKS credentials for `terrafusion-aks-prod` in `terrafusion-prod`
-3. verify access to the monitoring namespace for the target environment
-4. verify the live Prometheus / Alertmanager / Grafana surface
-5. execute the critical alert drill and collect routed incident proof
+Until a real off-box surface is separately verified as live, reachable, receiver-capable, and bound to the Benton release lane, the Azure/AKS path must be treated as an unverified alternate lane rather than current operational truth.
 
-Representative repo-documented access pattern:
+Current truthful outcome:
 
-- `az aks get-credentials --resource-group terrafusion-prod --name terrafusion-aks-prod`
-- `kubectl get ns monitoring`
-- `kubectl get ns production-monitoring`
-- `kubectl port-forward -n monitoring svc/prometheus 9090:9090`
-- `kubectl port-forward -n monitoring svc/grafana 13000:3000`
+1. Hostinger is the verified live Benton runtime
+2. Hostinger does not currently provide the required pager/on-call surface
+3. no separate off-box pager/on-call surface has yet been verified for this lane
 
-## Current Workstation Attempt
+## Operator Rule For Next Attempt
 
-The current Windows workstation could not execute the live AKS proof path on 2026-03-20 because the required Azure and kube access chain was not usable locally.
+The next truthful attempt must begin by proving the execution surface itself before any alert drill is attempted.
 
-Sanitized blocked-attempt receipt:
+The minimum operator path is:
 
-- `os-platform/core/pilot/ops/sre-o1-ops-aks-proof-attempt-2026-03-20.md`
+1. identify the claimed live pager/on-call execution surface for the Benton lane
+2. prove that the surface is real, reachable, and currently deployed
+3. prove that the surface routes critical incidents to the real on-call receiver
+4. prove that the surface can be bound to Benton release metadata for the target environment
+5. only then execute the critical alert drill and collect routed incident proof
+
+If the operator cannot prove steps 1 through 4, the correct result is a blocked-attempt receipt rather than beginning with `az`, `az aks get-credentials`, `kubectl`, or a documentation-only closure attempt.
 
 ## Minimum Evidence Required
 
@@ -93,7 +94,7 @@ The off-box execution bundle must contain sanitized proof of all items below:
 
 ## Acceptance Rule
 
-`SRE-O1-OPS` pager/on-call validation may be marked COMPLETE only when the proof bundle shows that a real critical alert for the Benton release lane was routed through the authorized monitoring surface and received by the real on-call path.
+`SRE-O1-OPS` pager/on-call validation may be marked COMPLETE only when the proof bundle shows that a real critical alert for the Benton release lane was routed through a verified live monitoring surface and received by the real on-call path.
 
 Documentation-only statements, repo examples, or undeployed config stubs do not satisfy this requirement.
 
@@ -102,6 +103,7 @@ Documentation-only statements, repo examples, or undeployed config stubs do not 
 The following do not close the blocker:
 
 - Hostinger box inspection alone
+- Azure/AKS workflow references without live surface verification
 - screenshots without routed incident evidence
 - Slack-only notification without the critical on-call route
 - static repo files that were not executed on a live monitoring surface
@@ -109,4 +111,4 @@ The following do not close the blocker:
 
 ## Operational Next Step
 
-Execute the pager/on-call test on the real off-box observability surface, then publish a sanitized verification artifact under `os-platform/core/pilot/ops/**` that records the routed incident proof and links it back to `SRE-O1-OPS`.
+First verify or commission a real pager-capable execution surface for the Benton lane, then execute the pager/on-call test on that surface and publish a sanitized verification artifact under `os-platform/core/pilot/ops/**` that records the routed incident proof and links it back to `SRE-O1-OPS`.
