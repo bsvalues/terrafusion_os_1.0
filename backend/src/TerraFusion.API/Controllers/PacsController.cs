@@ -45,11 +45,18 @@ public class PacsController : ControllerBase
     /// Paginated property list from vw_TerraFusion_Property_Core.
     /// Returns 503 when PACS is not configured.
     /// </summary>
+    /// <param name="geoId">
+    /// Legacy ProVal/Ascend geo_id for exact-match lookup.
+    /// Bound as raw string — leading zeroes and non-numeric values are preserved.
+    /// Routes to GetPropertyByGeoIdAsync (WHERE geo_id = @GeoId), not a table scan.
+    /// </param>
+    /// <param name="search">Free-text in-page filter on address/city (best-effort, not SQL-pushed).</param>
     [HttpGet("properties")]
     [AllowAnonymous]
     public async Task<ActionResult<PacsPropertiesResponse>> GetProperties(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10,
+        [FromQuery] string? geoId = null,
         [FromQuery] string? search = null,
         CancellationToken ct = default)
     {
@@ -74,6 +81,38 @@ public class PacsController : ControllerBase
 
         try
         {
+            // ── geo_id exact lookup ───────────────────────────────────────────
+            // geo_id is a legacy ProVal/Ascend text identifier. Bind as raw string.
+            // Do NOT parse as numeric. Do NOT strip leading zeroes.
+            // Route directly to the dedicated adapter method (WHERE geo_id = @GeoId)
+            // so TotalCount reflects the filtered result, not the full table count.
+            if (!string.IsNullOrWhiteSpace(geoId))
+            {
+                var prop = await adapter.GetPropertyByGeoIdAsync(geoId.Trim(), pacsCts.Token);
+                var mapped = prop is null
+                    ? new System.Collections.Generic.List<PacsPropertySummaryDto>()
+                    : new System.Collections.Generic.List<PacsPropertySummaryDto>
+                      {
+                          new()
+                          {
+                              PropId        = prop.PropId,
+                              GeoId         = prop.GeoId,
+                              Address       = BuildAddress(prop),
+                              AssessedValue = (double)(prop.AssessedVal ?? 0m),
+                              MarketValue   = (double)(prop.MarketVal ?? 0m),
+                              PropertyType  = prop.PropTypeCd ?? string.Empty,
+                          }
+                      };
+                return Ok(new PacsPropertiesResponse
+                {
+                    Items      = mapped,
+                    Page       = 1,
+                    PageSize   = pageSize,
+                    TotalCount = mapped.Count,
+                });
+            }
+
+            // ── paginated list with optional in-page address filter ───────────
             var result = await adapter.GetPropertiesAsync(page, pageSize, pacsCts.Token);
 
             var items = result.Items.AsEnumerable();
@@ -82,23 +121,22 @@ public class PacsController : ControllerBase
                 var q = search.Trim();
                 items = items.Where(p =>
                     (p.SitusAddr != null && p.SitusAddr.Contains(q, StringComparison.OrdinalIgnoreCase)) ||
-                    p.GeoId.Contains(q, StringComparison.OrdinalIgnoreCase) ||
                     (p.SitusCity != null && p.SitusCity.Contains(q, StringComparison.OrdinalIgnoreCase)));
             }
 
-            var mapped = items.Select(p => new PacsPropertySummaryDto
+            var mappedPage = items.Select(p => new PacsPropertySummaryDto
             {
-                PropId       = p.PropId,
-                GeoId        = p.GeoId,
-                Address      = BuildAddress(p),
+                PropId        = p.PropId,
+                GeoId         = p.GeoId,
+                Address       = BuildAddress(p),
                 AssessedValue = (double)(p.AssessedVal ?? 0m),
-                MarketValue  = (double)(p.MarketVal ?? 0m),
-                PropertyType = p.PropTypeCd ?? string.Empty,
+                MarketValue   = (double)(p.MarketVal ?? 0m),
+                PropertyType  = p.PropTypeCd ?? string.Empty,
             }).ToList();
 
             return Ok(new PacsPropertiesResponse
             {
-                Items      = mapped,
+                Items      = mappedPage,
                 Page       = result.Page,
                 PageSize   = result.PageSize,
                 TotalCount = result.TotalCount,
