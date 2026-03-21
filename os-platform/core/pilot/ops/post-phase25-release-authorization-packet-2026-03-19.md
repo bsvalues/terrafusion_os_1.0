@@ -71,7 +71,7 @@ The previously repaired frontend contract suites remain a sealed proof slice and
   - Pre-launch DB snapshots are captured for staging and production.
   - Pager/on-call validation remains open.
   - On-box Hostinger inspection did not find a truthful executable pager surface.
-  - This lane may close only through the authorized off-box Prometheus -> Alertmanager -> real on-call receiver evidence path tied to Benton release metadata.
+  - This lane may close only through the authorized pager/on-call evidence path tied to Benton release metadata, after execution-surface verification establishes where that drill is actually live.
   - The exact missing evidence fields, next-attempt prerequisites, and post-success reconciliation steps are narrowed in `os-platform/core/pilot/ops/sre-o1-ops-closure-delta-2026-03-20.md`.
     - The exact operator-supplied execution-surface, environment, release-binding, and incident-capture inputs required before the next drill are narrowed in `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`; Azure/AKS remains an alternate lane only if separately proven live for Benton.
   - Current status artifacts:
@@ -131,7 +131,7 @@ Authorized now:
 
 - Continue release preparation and evidence collation.
 - Execute Agent A against the live secret/runtime authority.
-- Execute the authorized off-box pager/on-call evidence path for `SRE-O1-OPS`.
+- Execute the authorized pager/on-call evidence path for `SRE-O1-OPS` on the verified execution surface.
 - Prepare launch-window comms, rollback, and hypercare materials.
 
 Not authorized now:
@@ -152,7 +152,7 @@ The production traffic gate may move from `HOLD` to `GO` only when all of the fo
 
 ## Recommended Next Order Of Operations
 
-1. Close the remaining pager/on-call validation gap in `SRE-O1-OPS` using a real executable monitoring surface or an explicitly authorized off-box evidence path.
+1. Close the remaining pager/on-call validation gap in `SRE-O1-OPS` by first verifying the execution surface, then running the drill on that real executable monitoring path or on an explicitly authorized off-box evidence path when that is the verified lane.
 2. Run live restore/DR and swarm rehearsals and attach evidence to the launch packet.
 3. Execute the separate frontend contract/accessibility restoration lane for honest full-root Vitest green.
 4. Reconcile this packet, CP-19, and the post-go-live checklist after those live conditions close.

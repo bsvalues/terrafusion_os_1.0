@@ -87,13 +87,10 @@ What it established:
 
 Artifact:
 
-- `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
 
 What it established:
 
-- Hostinger on-box inspection is not an executable pager/on-call surface
-- the authorized closure path is an off-box Prometheus -> Alertmanager -> real on-call receiver chain
-- `SRE-O1-OPS` may only close with routed incident proof tied back to Benton release metadata
+- the authorized closure path is the pager/on-call evidence chain on the verified execution surface, with the off-box Prometheus -> Alertmanager -> real on-call receiver chain usable only when that lane is separately verified
 
 ### Slice 2E: CP-17 operator execution checklist
 
