@@ -161,6 +161,7 @@
     "format": "prettier --write apps/os-shell/src tests",
     "type-check": "tsc --noEmit",
     "verify:constitution": "node apps/os-shell/scripts/verify-constitution.js",
+    "test:skip-ceiling": "node ../tools/registry/check-skip-ceiling.mjs vitest-results.json",
     "test:smoke": "vitest run SovereignDashboard CostforgeSimulation ContextInjection",
     "build:sovereign": "npm run type-check && npm run verify:constitution && npm run test:smoke && vite build",
     "clean": "rm -rf dist node_modules/.vite",
