@@ -1,9 +1,9 @@
 # CP-17 Hypercare Plan
 
-Date: 2026-03-19
-Phase: Phase 6 — SRE / Operations
+Date: 2026-03-21 (Phase 26-D confirmed; original 2026-03-19)
+Phase: Phase 26-D (Claude Code) / Phase 6 — SRE / Operations
 Gate: G8 (SRE Rehearsals)
-Status: COMPLETE (static content) — on-call names populated at go-live
+Status: ✅ COMPLETE — hypercare plan sealed 2026-03-21
 
 ## Hypercare Window
 
