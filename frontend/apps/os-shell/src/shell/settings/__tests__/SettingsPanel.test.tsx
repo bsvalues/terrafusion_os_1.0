@@ -66,6 +66,14 @@ describe('SettingsPanel', () => {
       expect(screen.getByTestId('settings-panel')).toBeInTheDocument();
     });
 
+    it('general system info avoids a static production claim', () => {
+      render(<SettingsPanel />);
+
+      expect(screen.getByText('Environment')).toBeInTheDocument();
+      expect(screen.getByText('Workspace build')).toBeInTheDocument();
+      expect(screen.queryByText('Production')).not.toBeInTheDocument();
+    });
+
     it('renders all navigation tabs', () => {
       render(<SettingsPanel />);
 

@@ -77,6 +77,8 @@ const SystemMonitor: React.FC = () => {
     return `${hours}h ${minutes}m`;
   };
 
+  const databaseHealthLabel = databaseHealth?.allHealthy ? '✅ Healthy' : '⚠️ Issues';
+
   return (
     <div className={styles.systemMonitor}>
       <div className={styles.header}>
@@ -144,9 +146,9 @@ const SystemMonitor: React.FC = () => {
       </div>
 
       <div className={styles.footer}>
-        <div className={styles.footerText}>
-          Benton County • Harris PACS 9.0 • Production Mode • DB Health:{' '}
-          {databaseHealth?.allHealthy ? '✅ Healthy' : '⚠️ Issues'}
+        <div className={styles.footerText} data-testid='system-monitor-footer-text'>
+          Benton County • Harris PACS 9.0 • Workspace monitor • Reported DB Health:{' '}
+          {databaseHealthLabel}
         </div>
         <div className={styles.timestamp}>Last Update: {new Date().toLocaleTimeString()}</div>
       </div>

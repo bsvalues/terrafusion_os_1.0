@@ -165,7 +165,7 @@ const GeneralSection: React.FC = () => {
           </div>
           <div className='flex justify-between'>
             <span className='text-white/60'>Environment</span>
-            <span className='text-white'>Production</span>
+            <span className='text-white'>Workspace build</span>
           </div>
         </div>
       </div>
