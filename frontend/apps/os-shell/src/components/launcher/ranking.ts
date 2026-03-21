@@ -159,8 +159,18 @@ export function rankItems(
     score: calculateScore(item, trimmedQuery, context),
   }));
 
-  // Filter out non-matching items when query is present
-  const filteredItems = trimmedQuery ? scoredItems.filter((item) => item.score > 0) : scoredItems;
+  // Filter out non-matching items when query is present.
+  // Must pass on MATCH score (label/keyword), not total score — pinned/recent boosts
+  // should only affect ordering among matched items, not whether an item appears.
+  const filteredItems = trimmedQuery
+    ? scoredItems.filter(
+        (item) =>
+          Math.max(
+            calculateLabelScore(item.label, trimmedQuery),
+            calculateKeywordScore(item.keywords, trimmedQuery),
+          ) > 0,
+      )
+    : scoredItems;
 
   // Sort by score descending, then alphabetically by label for stable ordering
   return filteredItems.sort((a, b) => {
