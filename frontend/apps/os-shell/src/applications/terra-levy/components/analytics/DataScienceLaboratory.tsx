@@ -199,28 +199,24 @@ export const DataScienceLaboratory: React.FC<DataScienceLabProps> = ({
   // Create new notebook with TerraLevy template
   const createNotebook = useCallback(
     async (template: string) => {
-      try {
-        const newNotebook: Notebook = {
-          id: `notebook-${Date.now()}`,
-          name: `TerraLevy ${template} Analysis`,
-          path: `/notebooks/terralev-${template.toLowerCase()}-${Date.now()}.ipynb`,
-          language: 'python',
-          kernel: 'python-quantum',
-          lastModified: new Date(),
-          collaborators: [userId],
-          isShared: false,
-          tags: ['terraLevy', template.toLowerCase(), department.toLowerCase()],
-          description: `Advanced ${template} analysis notebook with quantum-enhanced capabilities`,
-        };
+      const newNotebook: Notebook = {
+        id: `notebook-${Date.now()}`,
+        name: `TerraLevy ${template} Analysis`,
+        path: `/notebooks/terralev-${template.toLowerCase()}-${Date.now()}.ipynb`,
+        language: 'python',
+        kernel: 'python-quantum',
+        lastModified: new Date(),
+        collaborators: [userId],
+        isShared: false,
+        tags: ['terraLevy', template.toLowerCase(), department.toLowerCase()],
+        description: `Advanced ${template} analysis notebook with quantum-enhanced capabilities`,
+      };
 
-        setNotebooks((prev) => [newNotebook, ...prev]);
+      setNotebooks((prev) => [newNotebook, ...prev]);
 
-        // In production, would create actual Jupyter notebook file
+      // In production, would create actual Jupyter notebook file
 
-        return newNotebook;
-      } catch (error) {
-        throw error;
-      }
+      return newNotebook;
     },
     [userId, department]
   );
@@ -228,38 +224,34 @@ export const DataScienceLaboratory: React.FC<DataScienceLabProps> = ({
   // Start collaborative research session
   const startCollaborativeSession = useCallback(
     async (notebookId: string) => {
-      try {
-        const session = {
-          id: `collab-${Date.now()}`,
-          notebookId,
-          participants: [userId],
-          startTime: new Date(),
-          isActive: true,
-          quantumResourcesShared: true,
-        };
+      const session = {
+        id: `collab-${Date.now()}`,
+        notebookId,
+        participants: [userId],
+        startTime: new Date(),
+        isActive: true,
+        quantumResourcesShared: true,
+      };
 
-        setCollaborativeSession(session);
+      setCollaborativeSession(session);
 
-        // Setup WebSocket for real-time collaboration
-        wsRef.current = new WebSocket(`${getViteEnv().VITE_WS_URL || 'ws://localhost:8080'}/jupyter-collaboration`);
+      // Setup WebSocket for real-time collaboration
+      wsRef.current = new WebSocket(`${getViteEnv().VITE_WS_URL || 'ws://localhost:8080'}/jupyter-collaboration`);
 
-        wsRef.current.onopen = () => {
-          if (wsRef.current) {
-            wsRef.current.send(
-              JSON.stringify({
-                type: 'join_session',
-                sessionId: session.id,
-                userId,
-                notebookId,
-              })
-            );
-          }
-        };
+      wsRef.current.onopen = () => {
+        if (wsRef.current) {
+          wsRef.current.send(
+            JSON.stringify({
+              type: 'join_session',
+              sessionId: session.id,
+              userId,
+              notebookId,
+            })
+          );
+        }
+      };
 
-        return session;
-      } catch (error) {
-        throw error;
-      }
+      return session;
     },
     [userId]
   );
@@ -267,37 +259,32 @@ export const DataScienceLaboratory: React.FC<DataScienceLabProps> = ({
   // Execute quantum algorithm with real-time monitoring
   const executeQuantumAlgorithm = useCallback(
     async (algorithmId: string, parameters: any) => {
-      try {
+      const algorithm = algorithms.find((a) => a.id === algorithmId);
+      if (!algorithm) throw new Error('Algorithm not found');
 
-        const algorithm = algorithms.find((a) => a.id === algorithmId);
-        if (!algorithm) throw new Error('Algorithm not found');
+      // Simulate quantum execution with progress monitoring
+      const results = {
+        algorithmId,
+        executionTime: Math.random() * 5000 + 2000, // 2-7 seconds
+        quantumAdvantage: Math.random() * 0.5 + 0.2, // 20-70% improvement
+        accuracy: Math.random() * 0.1 + 0.9, // 90-100% accuracy
+        results: {
+          optimal_solution: Math.random() * 1000000,
+          convergence_iterations: Math.floor(Math.random() * 500) + 100,
+          quantum_fidelity: Math.random() * 0.1 + 0.9,
+        },
+        metadata: {
+          qubits_used: algorithm.requiresQuantumHardware ? 16 : 0,
+          classical_comparison: true,
+          error_mitigation: true,
+        },
+      };
 
-        // Simulate quantum execution with progress monitoring
-        const results = {
-          algorithmId,
-          executionTime: Math.random() * 5000 + 2000, // 2-7 seconds
-          quantumAdvantage: Math.random() * 0.5 + 0.2, // 20-70% improvement
-          accuracy: Math.random() * 0.1 + 0.9, // 90-100% accuracy
-          results: {
-            optimal_solution: Math.random() * 1000000,
-            convergence_iterations: Math.floor(Math.random() * 500) + 100,
-            quantum_fidelity: Math.random() * 0.1 + 0.9,
-          },
-          metadata: {
-            qubits_used: algorithm.requiresQuantumHardware ? 16 : 0,
-            classical_comparison: true,
-            error_mitigation: true,
-          },
-        };
-
-        if (onAnalysisComplete) {
-          onAnalysisComplete(results);
-        }
-
-        return results;
-      } catch (error) {
-        throw error;
+      if (onAnalysisComplete) {
+        onAnalysisComplete(results);
       }
+
+      return results;
     },
     [algorithms, onAnalysisComplete]
   );

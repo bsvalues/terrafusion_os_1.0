@@ -288,21 +288,16 @@ export function CollaborationProvider({ children, hubUrl = '/hubs/collaboration'
     async (newSessionId: string, user: User): Promise<void> => {
       if (!connectionRef.current) throw new Error('Not connected');
 
-      try {
-        const session = await connectionRef.current.invoke('JoinSession', newSessionId, {
-          userId: parseInt(user.userId),
-          userName: user.userName,
-          avatar: user.avatar,
-        });
+      const session = await connectionRef.current.invoke('JoinSession', newSessionId, {
+        userId: parseInt(user.userId),
+        userName: user.userName,
+        avatar: user.avatar,
+      });
 
-        setSessionId(newSessionId);
-        setCurrentUser(user);
-        setParticipants(session.participants || []);
-        setServerVersion(session.version || 0);
-
-      } catch (error) {
-        throw error;
-      }
+      setSessionId(newSessionId);
+      setCurrentUser(user);
+      setParticipants(session.participants || []);
+      setServerVersion(session.version || 0);
     },
     []
   );
