@@ -104,7 +104,7 @@ Artifact:
 What it established:
 
 - the remaining CP-17 blocker is converted into an operator-grade execution sequence
-- Azure and AKS access preconditions are stated explicitly before the drill begins
+- execution-surface verification preconditions are stated explicitly before the drill begins, with Azure/AKS usable only if separately proven for Benton
 - the evidence bundle and release-authority reconciliation steps are defined without reopening product or frontend scope
 
 ### Slice 2F: SRE-O1 exact closure delta
@@ -127,7 +127,7 @@ Artifact:
 
 What it established:
 
-- the exact operator-supplied Azure, AKS, environment, and release-binding inputs are narrowed before the next drill starts
+- the exact operator-supplied execution-surface, environment, and release-binding inputs are narrowed before the next drill starts
 - the next attempt can now be blocked on a specific missing input instead of a broad access-chain statement
 - the operator handoff is reduced to a minimal ready-check that prevents improvisation at execution time
 

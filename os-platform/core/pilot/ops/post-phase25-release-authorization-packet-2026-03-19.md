@@ -73,7 +73,7 @@ The previously repaired frontend contract suites remain a sealed proof slice and
   - On-box Hostinger inspection did not find a truthful executable pager surface.
   - This lane may close only through the authorized off-box Prometheus -> Alertmanager -> real on-call receiver evidence path tied to Benton release metadata.
   - The exact missing evidence fields, next-attempt prerequisites, and post-success reconciliation steps are narrowed in `os-platform/core/pilot/ops/sre-o1-ops-closure-delta-2026-03-20.md`.
-  - The exact operator-supplied Azure, AKS, environment, release-binding, and incident-capture inputs required before the next drill are narrowed in `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`.
+    - The exact operator-supplied execution-surface, environment, release-binding, and incident-capture inputs required before the next drill are narrowed in `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`; Azure/AKS remains an alternate lane only if separately proven live for Benton.
   - Current status artifacts:
     - `os-platform/core/pilot/ops/sre-o1-ops-status-2026-03-20.md`
     - `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
