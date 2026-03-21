@@ -75,6 +75,10 @@ Do not begin the next attempt unless all prerequisites below are true:
 
 If any prerequisite fails, publish a new blocked-attempt receipt instead of improvising.
 
+Preferred blocked-attempt format:
+
+- `os-platform/core/pilot/ops/sre-o1-ops-blocked-attempt-template.md`
+
 ## Exact Non-Accepted Substitutes
 
 None of the following closes the lane:
@@ -116,6 +120,8 @@ If the next attempt still cannot execute, the correct output is a new blocked-at
 - namespace reachability status
 - exact blocked stage
 - exact required operator input for the next attempt
+
+Use `os-platform/core/pilot/ops/sre-o1-ops-blocked-attempt-template.md` as the preferred blocked-attempt shape.
 
 Blocked execution is acceptable.
 
