@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TerraFusion.Core.DTOs;
-using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Services;
-using TerraFusion.API.Services;
 using System.Threading.Tasks;
 
 namespace TerraFusion.API.Controllers
@@ -13,13 +10,11 @@ namespace TerraFusion.API.Controllers
     [Authorize(Roles = "Admin,SystemAdmin")]
     public class MarketplaceController : ControllerBase
     {
-        private readonly IMarketplaceService _marketplaceService;
         private readonly IModuleService _moduleService;
         private readonly ILogger<MarketplaceController> _logger;
 
-        public MarketplaceController(IMarketplaceService marketplaceService, IModuleService moduleService, ILogger<MarketplaceController> logger)
+        public MarketplaceController(IModuleService moduleService, ILogger<MarketplaceController> logger)
         {
-            _marketplaceService = marketplaceService;
             _moduleService = moduleService;
             _logger = logger;
         }
@@ -41,9 +36,6 @@ namespace TerraFusion.API.Controllers
                     author = "TerraFusion",
                     category = m.IsCore ? "Core" : m.Tier.ToString(),
                     tags = new[] { m.Tier.ToString().ToLower(), "government", "terrafusion" },
-                    downloads = 0,
-                    rating = 0.0,
-                    ratingCount = 0,
                     metricsAvailable = false
                 }).ToList();
 
@@ -65,10 +57,8 @@ namespace TerraFusion.API.Controllers
                 // Apply sorting
                 plugins = sort switch
                 {
-                    "rating" => plugins.OrderByDescending(p => p.rating).ToList(),
                     "name" => plugins.OrderBy(p => p.name).ToList(),
-                    "updated" => plugins.OrderByDescending(p => p.version).ToList(),
-                    _ => plugins.OrderByDescending(p => p.downloads).ToList()
+                    _ => plugins.OrderByDescending(p => p.version).ToList()
                 };
 
                 return Ok(new { plugins });
@@ -132,24 +122,6 @@ namespace TerraFusion.API.Controllers
             }
         }
 
-        [HttpPost("plugins/{id}/rate")]
-        public async Task<ActionResult> RatePlugin(string id, [FromBody] RatingDto rating)
-        {
-            try
-            {
-                // Government-grade: Log rating submission for audit compliance
-                await Task.Run(() => _logger.LogInformation("Plugin rating submitted: {PluginId}, Rating: {Rating}", id, rating.Rating));
-
-                // For now, just return success - implement rating storage later
-                return Ok(new { message = "Rating submitted successfully" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error rating plugin {PluginId}", id);
-                return StatusCode(500, "Internal server error");
-            }
-        }
-
         private static string GetCategoryIcon(string category) => category switch
         {
             "AI" => "Zap",
@@ -160,46 +132,5 @@ namespace TerraFusion.API.Controllers
             _ => "Package"
         };
 
-        [HttpPost("submit")]
-        public async Task<IActionResult> SubmitPlugin([FromBody] PluginSubmissionDto submissionDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var result = await _marketplaceService.ProcessPluginSubmissionAsync(submissionDto);
-
-            if (result.Success)
-            {
-                return Ok(new { message = result.Message });
-            }
-
-            // Use BadRequest for validation failures, and a more general error for others.
-            if (result.Message.Contains("validation failed"))
-            {
-                return BadRequest(new { message = result.Message });
-            }
-
-            return StatusCode(500, new { message = result.Message });
-        }
-
-        [HttpPost("publish")]
-        public async Task<IActionResult> PublishPlugin([FromBody] PluginPublishDto publishDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var result = await _marketplaceService.PublishPluginAsync(publishDto);
-
-            if (result.Success)
-            {
-                return Ok(new { message = result.Message });
-            }
-
-            return BadRequest(new { message = result.Message });
-        }
     }
 }
