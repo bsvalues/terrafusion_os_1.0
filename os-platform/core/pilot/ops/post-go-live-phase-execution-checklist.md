@@ -6,7 +6,7 @@ This checklist tracks the post-go-live operating phases after the Benton Hosting
 
 Current traffic-opening blocker:
 
-- `SRE-O1-OPS` remains open until the off-box pager/on-call drill is executed and evidenced truthfully.
+- `SRE-O1-OPS` remains open until the execution surface is verified and the authorized pager/on-call drill is executed and evidenced truthfully.
 
 Operator execution artifact:
 
