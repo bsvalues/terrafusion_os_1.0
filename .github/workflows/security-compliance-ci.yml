@@ -343,22 +343,15 @@ jobs:
       - name: Snyk code scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_FAIL_ON_FINDINGS: '1'
         run: |
           echo "::group::Snyk Code Security Scan"
 
-          if [ -n "$SNYK_TOKEN" ]; then
-            snyk auth $SNYK_TOKEN
+          npm run security:scan
 
-            # Scan for code vulnerabilities
-            snyk code test --json-file-output=snyk-code-report.json || echo "Snyk scan completed with findings"
-
-            # Parse results
-            if [ -f "snyk-code-report.json" ]; then
-              VULNERABILITIES=$(jq '.runs[0].results | length' snyk-code-report.json 2>/dev/null || echo 0)
-              echo "Snyk vulnerabilities found: $VULNERABILITIES"
-            fi
-          else
-            echo "::warning::SNYK_TOKEN not configured, skipping Snyk scan"
+          if [ -f "snyk-code-report.json" ]; then
+            VULNERABILITIES=$(jq '.runs[0].results | length' snyk-code-report.json 2>/dev/null || echo 0)
+            echo "Snyk vulnerabilities found: $VULNERABILITIES"
           fi
 
           echo "::endgroup::"
