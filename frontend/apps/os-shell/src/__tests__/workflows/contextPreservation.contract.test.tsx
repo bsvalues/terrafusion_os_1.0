@@ -16,11 +16,14 @@
  *
  * @see Phase 14 — Operator Journey Proofing
  */
-import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route, useParams, useLocation, Outlet } from 'react-router-dom';
 import React from 'react';
+import DaisSuiteHome from '../../pages/suites/DaisSuiteHome';
+import ForgeSuiteHome from '../../pages/suites/ForgeSuiteHome';
+import AtlasSuiteHome from '../../pages/suites/AtlasSuiteHome';
 
 // ── Shared Mocks ─────────────────────────────────────────────────────────
 
@@ -105,23 +108,6 @@ vi.mock('lucide-react', () => {
     Calendar: Icon, Bot: Icon, LayoutDashboard: Icon, Pencil: Icon, ClipboardList: Icon, Mail: Icon, FileCheck: Icon,
   };
 });
-
-// ── Dynamic Suite Imports ────────────────────────────────────────────────
-
-let DaisSuiteHome: React.ComponentType;
-let ForgeSuiteHome: React.ComponentType;
-let AtlasSuiteHome: React.ComponentType;
-
-beforeAll(async () => {
-  const [dais, forge, atlas] = await Promise.all([
-    import('../../pages/suites/DaisSuiteHome'),
-    import('../../pages/suites/ForgeSuiteHome'),
-    import('../../pages/suites/AtlasSuiteHome'),
-  ]);
-  DaisSuiteHome = dais.default;
-  ForgeSuiteHome = forge.default;
-  AtlasSuiteHome = atlas.default;
-}, 30000);
 
 beforeEach(() => {
   mockActivateModule.mockClear();
