@@ -14,8 +14,8 @@ Companion artifacts:
 - Agent A completed `SEC-005-ROTATE` on the live Hostinger runtime path.
 - Sanitized closure artifact: `os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md`
 - Leak-guard governance drift is closed and its strict gate is green.
-- The current active lane is `SRE-O1-OPS` live closure via the off-box pager/on-call path plus the later live rehearsal bundle.
-- The exact operator-side prerequisites for the next off-box attempt are now narrowed in `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`.
+- The current active lane is `SRE-O1-OPS` execution-surface verification plus the authorized pager/on-call closure path, followed by the later live rehearsal bundle.
+- The exact operator-side prerequisites for the next `SRE-O1-OPS` attempt are now narrowed in `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`.
 - The separate frontend contract/accessibility restoration lane remains optional and is not active by default in this plan revision.
 
 ## Truth Source
@@ -55,7 +55,7 @@ Primary blocker in current truth:
 Current posture:
 
 - optional later lane only
-- not part of the active CP-17 off-box closure sequence
+- not part of the active CP-17 `SRE-O1-OPS` execution-surface verification and closure sequence
 
 ### Phase 27B -- Frontend Contract/Accessibility Cluster Restoration
 
@@ -99,7 +99,7 @@ Three top-level agents run in parallel after a short coordination pass.
 | Agent C | Release truth / evidence packet | Partial | release authorization packet using outputs from A and B |
 
 Agent C can prepare packet structure and evidence placeholders immediately, but final release authorization cannot close until Agents A and B finish.
-Agent A is now complete; current release truth remains blocked by the remaining live SRE/rehearsal items. Agent B is a separate optional lane, not part of the active off-box closure sequence.
+Agent A is now complete; current release truth remains blocked by the remaining live SRE/rehearsal items. Agent B is a separate optional lane, not part of the active `SRE-O1-OPS` execution-surface verification and closure sequence.
 
 ## Agent A -- Security Hard Blocker Closure
 
