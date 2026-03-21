@@ -32,6 +32,8 @@ backend/publish/
 # .NET local appsettings overrides (developer credentials, never commit)
 appsettings.*.local.json
 appsettings.local.json
+# Compose override (Phase 34 rehearsal credentials, never commit)
+backend/docker-compose.override.yml
 # Vim/editor temp env files (may contain real credentials)
 .env.vim
 *.env.bak
