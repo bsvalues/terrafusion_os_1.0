@@ -40,6 +40,14 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Local developer override — appsettings.Development.local.json is gitignored.
+// Use it to set real connection strings without committing credentials.
+// Example: copy appsettings.Development.json, fill in real passwords, save as .local.json.
+builder.Configuration.AddJsonFile(
+    $"appsettings.{builder.Environment.EnvironmentName}.local.json",
+    optional: true,
+    reloadOnChange: true);
+
 static string ResolveSqliteConnectionString(string connectionString, string contentRootPath)
 {
   if (string.IsNullOrWhiteSpace(connectionString) ||
