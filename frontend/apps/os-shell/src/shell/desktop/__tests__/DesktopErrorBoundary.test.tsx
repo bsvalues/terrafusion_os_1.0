@@ -126,14 +126,9 @@ describe('DesktopErrorBoundary', () => {
       expect(screen.getByRole('button', { name: /restart terrafusion os/i })).toBeInTheDocument();
     });
 
-    // Skip: jsdom doesn't allow redefining window.location reliably
-    it.skip('restart button triggers page reload', async () => {
-      // Mock window.location.reload using delete+assign pattern
-      const originalLocation = window.location;
+    it('restart button triggers page reload', async () => {
       const reloadMock = vi.fn();
-      // @ts-expect-error - deleting location for mock
-      delete window.location;
-      window.location = { ...originalLocation, reload: reloadMock } as Location;
+      vi.stubGlobal('location', { reload: reloadMock });
 
       render(
         <DesktopErrorBoundary>
@@ -145,6 +140,7 @@ describe('DesktopErrorBoundary', () => {
       await userEvent.click(screen.getByRole('button', { name: /restart terrafusion os/i }));
 
       expect(reloadMock).toHaveBeenCalled();
+      vi.unstubAllGlobals();
     });
 
     it('shows "Clear Data & Restart" option', () => {
@@ -157,19 +153,10 @@ describe('DesktopErrorBoundary', () => {
       expect(screen.getByRole('button', { name: /clear data/i })).toBeInTheDocument();
     });
 
-    // Skip: jsdom doesn't allow redefining window.location reliably
-    it.skip('clear data button clears localStorage', async () => {
-      // Store original localStorage
-      const originalClear = window.localStorage.clear.bind(window.localStorage);
-      const clearMock = vi.fn();
-      window.localStorage.clear = clearMock;
-
-      // Mock window.location.reload using delete+assign pattern
-      const originalLocation = window.location;
+    it('clear data button clears localStorage', async () => {
+      const clearSpy = vi.spyOn(Storage.prototype, 'clear').mockImplementation(vi.fn());
       const reloadMock = vi.fn();
-      // @ts-expect-error - deleting location for mock
-      delete window.location;
-      window.location = { ...originalLocation, reload: reloadMock } as Location;
+      vi.stubGlobal('location', { reload: reloadMock });
 
       render(
         <DesktopErrorBoundary>
@@ -179,12 +166,11 @@ describe('DesktopErrorBoundary', () => {
 
       await userEvent.click(screen.getByRole('button', { name: /clear data/i }));
 
-      expect(clearMock).toHaveBeenCalled();
+      expect(clearSpy).toHaveBeenCalled();
       expect(reloadMock).toHaveBeenCalled();
 
-      // Restore
-      window.localStorage.clear = originalClear;
-      window.location = originalLocation;
+      clearSpy.mockRestore();
+      vi.unstubAllGlobals();
     });
   });
 
