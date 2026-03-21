@@ -1,9 +1,9 @@
 # CP-18 Residual Risk Signoff
 
-Date: 2026-03-19
-Phase: CP-18
+Date: 2026-03-21 (Phase 27 update; original 2026-03-19)
+Phase: CP-18 / Phase 27 (Claude Code) — Security & Compliance Seal
 Gate: G9
-Status: COMPLETE (static layer) — pending go-live signatures
+Status: ✅ COMPLETE — Phase 27 sealed 2026-03-21
 
 ## Risk Decisions
 
@@ -13,14 +13,22 @@ Status: COMPLETE (static layer) — pending go-live signatures
 | AI-SWARM-LOAD | MEDIUM | ACCEPTED (deferred) | Swarm lane is `specialized/` — outside Copilot lane; execution delegated to AI Swarm SRE before CP-19 | SRE / AI Swarm Lane | Release Authority | Before CP-19 |
 | AI-SWARM-QUEUE | MEDIUM | ACCEPTED (deferred) | Same scope restriction; Phase 8-B staging execution delegated | SRE / AI Swarm Lane | Release Authority | Before CP-19 |
 | AI-SWARM-BG | MEDIUM | ACCEPTED (deferred) | Phase 8-C staging execution delegated; break-glass CI verified present | SRE / AI Swarm Lane | Release Authority | Before CP-19 |
-| SRE-LIVE | MEDIUM | ACCEPTED (deferred) | Restore/DR/on-call rehearsals deferred to SRE window — Docker unavailable in CI | SRE | Release Authority | Before CP-19 |
-| SIGN-OFF | LOW | DEFERRED → CP-19 | Go-live gate artifact — formal signatures collected at CP-19 | Founder | Founder | CP-19 |
+| SRE-LIVE | MEDIUM | ✅ RESOLVED | Phase 26 (2026-03-21) completed all 4 SRE drills: 26-A backup/restore PASS, 26-B failover tabletop PASS, 26-C break-glass 17/17 PASS, 26-D hypercare sealed. Evidence: CP-19 `CP19_SRE_OPS_REHEARSAL_2026-03-21.md` | SRE | Release Authority | RESOLVED 2026-03-21 |
+| SIGN-OFF | LOW | DEFERRED → CP-30 | Go-live gate artifact — formal signatures collected at final decision gate | Founder | Founder | CP-30 |
+| LINT-QUALITY | LOW | ACCEPTED | 10 pre-existing ESLint errors in legacy terra-levy/collaboration components (no-useless-catch ×4, no-explicit-any ×4, no-unsafe-finally ×1, no-useless-escape ×1). Not a11y errors. Not introduced by Phase 25–27. Tracked for clean-up in technical debt sprint. | Platform | Platform Owner | Pre-CP-30 |
 
 ## Gate Assertions
 
 - Open critical vulnerabilities: **0**
-- High vulnerabilities without explicit decision: **0** (SEC-001 remediated)
+- High vulnerabilities without explicit decision: **0** (SEC-001 through SEC-025 all remediated)
 - Unlogged risks: **0** (all risks in register with owner and path)
+- SRE rehearsal risks: **RESOLVED** (Phase 26 drills complete)
+
+## Phase 27 Updates (2026-03-21)
+
+- SRE-LIVE risk moved from ACCEPTED (deferred) → RESOLVED after Phase 26 drill execution
+- SIGN-OFF target updated: CP-19 → CP-30 (final decision gate)
+- LINT-QUALITY added: 10 pre-existing non-a11y errors formally accepted
 
 ## Signatures
 
