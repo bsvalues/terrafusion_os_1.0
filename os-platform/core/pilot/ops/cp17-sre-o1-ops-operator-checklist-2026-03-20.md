@@ -59,8 +59,13 @@ Before starting the alert drill, confirm all of the following:
 3. The target environment and release identity are known for the Benton lane under test.
 4. The operator knows where the sanitized proof artifact will be published under `os-platform/core/pilot/ops/**`.
 5. The current release packet still names `SRE-O1-OPS` as the truthful remaining blocker.
+6. The operator has the sanitized verification format available in `os-platform/core/pilot/ops/sre-o1-ops-verification-template.md`.
 
 If any precondition fails, stop and publish a blocked-attempt receipt instead of improvising.
+
+Recommended blocked-attempt format:
+
+- `os-platform/core/pilot/ops/sre-o1-ops-blocked-attempt-template.md`
 
 ## Execution Surface
 
@@ -164,7 +169,15 @@ Create a new dated artifact under `os-platform/core/pilot/ops/**` that records:
 - whether operator acknowledgement was observed
 - exact reason for failure if blocked
 
+Recommended successful-drill format:
+
+- `os-platform/core/pilot/ops/sre-o1-ops-verification-template.md`
+
 If the drill fails, publish a blocked-attempt artifact rather than partial success language.
+
+Recommended blocked-attempt format:
+
+- `os-platform/core/pilot/ops/sre-o1-ops-blocked-attempt-template.md`
 
 ### 7. Reconcile release authority
 
@@ -191,6 +204,10 @@ If execution is blocked, publish a blocked-attempt receipt containing:
 - namespace availability status
 - exact blocked stage in the sequence
 - next required operator input
+
+Recommended blocked-attempt format:
+
+- `os-platform/core/pilot/ops/sre-o1-ops-blocked-attempt-template.md`
 
 Blocked execution is a valid truthful outcome.
 
