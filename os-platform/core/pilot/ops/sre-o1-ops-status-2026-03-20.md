@@ -1,6 +1,6 @@
 # SRE-O1-OPS Status
 
-Date: 2026-03-20
+Date: 2026-03-21
 Status: PARTIAL
 Scope: Sanitized live status note for the remaining `SRE-O1-OPS` pre-traffic bundle on the Hostinger Benton snapshot runtime
 
@@ -13,12 +13,14 @@ Two parts of the bundle now have current live evidence:
 - pre-launch DB snapshots were captured for both Hostinger environments
 - current Hostinger pager/on-call test surface was inspected and no deployed pager surface was found there
 
-The authorized off-box closure path is recorded in:
+The current closure analysis is recorded in:
 
 - `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
 - `os-platform/core/pilot/ops/sre-o1-ops-aks-proof-attempt-2026-03-20.md`
 - `os-platform/core/pilot/ops/sre-o1-ops-closure-delta-2026-03-20.md`
 - `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`
+
+The Azure/AKS receipt in that chain is historical attempt evidence only. It is not current Benton runtime authority.
 
 This artifact does not claim pager/on-call success and does not open production traffic.
 
@@ -70,12 +72,13 @@ Classification:
 Operational interpretation:
 
 - a truthful pager/on-call test cannot be marked passed on the current Hostinger snapshot footprint
-- closure requires either a deployed pager-capable monitoring surface for this lane or an explicitly authorized off-box/on-call evidence path
-- the currently authorized off-box/on-call evidence path is the real Prometheus -> Alertmanager -> on-call receiver surface defined in `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
+- closure requires either a deployed pager-capable monitoring surface for this lane or a separately verified off-box/on-call evidence path
+- the repo-documented Azure/AKS observability path remains unverified for this lane and cannot be treated as automatic authorization
+- no operator should begin with Azure, AKS, or namespace-specific commands unless that alternate lane is separately verified first
 
-## AKS Execution Attempt Status
+## Repo-Documented Azure / AKS Attempt Status
 
-An execution attempt against the authorized off-box AKS observability path was made from the current Windows workstation on 2026-03-20.
+An execution attempt against the repo-documented Azure/AKS observability path was made from the current Windows workstation on 2026-03-20.
 
 Sanitized outcome:
 
@@ -89,6 +92,13 @@ Sanitized outcome:
 Receipt:
 
 - `os-platform/core/pilot/ops/sre-o1-ops-aks-proof-attempt-2026-03-20.md`
+
+Interpretation:
+
+- this receipt proves the workstation did not have a usable Azure/AKS access chain on that date
+- it does not prove that the Azure/AKS surface is live for the Benton lane
+- it does not authorize Azure/AKS as the required next attempt path
+- it must remain a historical blocked-attempt receipt unless the Azure/AKS lane is separately proven live for Benton
 
 ## Remaining SRE-O1-OPS Closure Conditions
 
@@ -108,4 +118,6 @@ The pre-launch DB snapshot requirement is now satisfied.
 
 The remaining blocker inside `SRE-O1-OPS` is the absent pager/on-call execution proof.
 
-The current authorized off-box path is known, but the current workstation still lacks the valid Azure and AKS access chain needed to execute that proof truthfully.
+The current verified Benton runtime is the Hostinger-backed release lane, and no verified pager-capable execution surface is presently documented for this lane.
+
+The repo still contains Azure/AKS observability references, but those references must be separately proven before they can be used for truthful closure.
