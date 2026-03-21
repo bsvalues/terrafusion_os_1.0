@@ -47,11 +47,11 @@
   box-shadow: 0 6px 20px hsl(var(--tf-text-primary-hs) var(--tf-l-0) / 0.4);
 }
 
-.indicator-badge.mock-mode {
+.indicator-badge.simulated-mode {
   background: linear-gradient(135deg, var(--tf-warning-amber), hsl(var(--tf-warning-hs) var(--tf-l-40)));
 }
 
-.indicator-badge.production-mode {
+.indicator-badge.backend-mode {
   background: linear-gradient(135deg, var(--tf-success-green), hsl(var(--tf-success-hs) var(--tf-l-40)));
 }
 
@@ -143,11 +143,11 @@
   font-weight: bold;
 }
 
-.status-value.mock {
+.status-value.simulated {
   color: var(--tf-warning-amber);
 }
 
-.status-value.real {
+.status-value.backend {
   color: var(--tf-success-green);
 }
 

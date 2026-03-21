@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { BackendIntegrationService, SystemHealth } from '../../services/BackendIntegrationService';
 import './DevelopmentModeIndicator.css';
 
+type ConnectionStats = ReturnType<BackendIntegrationService['getConnectionStats']>;
+
 interface DevelopmentModeIndicatorProps {
   backendService: BackendIntegrationService;
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
@@ -24,67 +26,57 @@ const DevelopmentModeIndicator: React.FC<DevelopmentModeIndicatorProps> = ({
   backendService,
   position = 'top-right',
 }) => {
-  const [mockMode, setMockMode] = useState(true);
-  const [healthStatus, setHealthStatus] = useState<SystemHealth | null>(null);
-  const [connectionStats, setConnectionStats] = useState<any>(null);
+  const [healthStatus, setHealthStatus] = useState<SystemHealth | null>(() =>
+    backendService.getHealthStatus()
+  );
+  const [connectionStats, setConnectionStats] = useState<ConnectionStats | null>(() =>
+    backendService.getConnectionStats()
+  );
   const [isExpanded, setIsExpanded] = useState(false);
 
-  useEffect(() => {
-    const updateStatus = () => {
-      setMockMode(backendService.isMockMode());
-      setHealthStatus(backendService.getHealthStatus());
-      setConnectionStats(backendService.getConnectionStats());
-    };
+  const backendConnected = Boolean(healthStatus?.backend_connected);
+  const showingSimulatedData = !backendConnected;
 
-    // Initial update
-    updateStatus();
+  const syncStatusFromService = () => {
+    setHealthStatus(backendService.getHealthStatus());
+    setConnectionStats(backendService.getConnectionStats());
+  };
+
+  useEffect(() => {
+    syncStatusFromService();
 
     // Update every 5 seconds
-    const interval = setInterval(updateStatus, 5000);
+    const interval = setInterval(syncStatusFromService, 5000);
     return () => clearInterval(interval);
   }, [backendService]);
 
   const handleReconnect = async () => {
-    const success = await backendService.reconnect();
-    if (success) {
-      setMockMode(false);
-    }
+    await backendService.reconnect();
+    syncStatusFromService();
   };
 
   const getStatusColor = () => {
-    if (!mockMode && healthStatus?.backend_connected) {
-      return 'var(--tf-success-green)'; // Green - Real backend
-    } else if (mockMode) {
-      return 'var(--tf-warning-amber)'; // Orange - Mock mode
-    } else {
-      return 'var(--tf-error-red)'; // Red - Connection issues
-    }
+    return backendConnected ? 'var(--tf-success-green)' : 'var(--tf-warning-amber)';
   };
 
   const getStatusText = () => {
-    if (!mockMode && healthStatus?.backend_connected) {
-      return 'PRODUCTION DATA';
-    } else if (mockMode) {
-      return 'DEVELOPMENT MODE';
-    } else {
-      return 'BACKEND OFFLINE';
-    }
+    return backendConnected ? 'BACKEND VERIFIED' : 'SIMULATED DATA';
   };
 
   const getStatusIcon = () => {
-    if (!mockMode && healthStatus?.backend_connected) {
-      return '🟢'; // Green circle - Production
-    } else if (mockMode) {
-      return '🟡'; // Yellow circle - Development
-    } else {
-      return '🔴'; // Red circle - Offline
-    }
+    return backendConnected ? '🟢' : '🟡';
   };
+
+  const getStatusValueText = (
+    reported: boolean,
+    positiveLabel: string,
+    unavailableLabel: string = 'Unavailable'
+  ) => (reported ? `${positiveLabel} ✅` : `${unavailableLabel} ⚠️`);
 
   return (
     <div className={`development-mode-indicator ${position}`}>
       <div
-        className={`indicator-badge ${mockMode ? 'mock-mode' : 'production-mode'}`}
+        className={`indicator-badge ${showingSimulatedData ? 'simulated-mode' : 'backend-mode'}`}
         style={{ backgroundColor: getStatusColor() }}
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -103,8 +95,8 @@ const DevelopmentModeIndicator: React.FC<DevelopmentModeIndicatorProps> = ({
           <div className='status-grid'>
             <div className='status-item'>
               <span className='status-label'>Data Source:</span>
-              <span className={`status-value ${mockMode ? 'mock' : 'real'}`}>
-                {mockMode ? 'Mock Data (Development)' : 'Real Backend API'}
+              <span className={`status-value ${showingSimulatedData ? 'simulated' : 'backend'}`}>
+                {showingSimulatedData ? 'Simulated or workspace data' : 'Backend API data'}
               </span>
             </div>
 
@@ -118,7 +110,7 @@ const DevelopmentModeIndicator: React.FC<DevelopmentModeIndicatorProps> = ({
               <span
                 className={`status-value ${healthStatus?.backend_connected ? 'connected' : 'disconnected'}`}
               >
-                {healthStatus?.backend_connected ? 'Connected ✅' : 'Offline ❌'}
+                {healthStatus?.backend_connected ? 'Health responding ✅' : 'Health unavailable ⚠️'}
               </span>
             </div>
 
@@ -127,7 +119,10 @@ const DevelopmentModeIndicator: React.FC<DevelopmentModeIndicatorProps> = ({
               <span
                 className={`status-value ${healthStatus?.database_operational ? 'connected' : 'disconnected'}`}
               >
-                {healthStatus?.database_operational ? 'Operational ✅' : 'Unavailable ❌'}
+                {getStatusValueText(
+                  Boolean(healthStatus?.database_operational),
+                  'Reported operational'
+                )}
               </span>
             </div>
 
@@ -136,7 +131,7 @@ const DevelopmentModeIndicator: React.FC<DevelopmentModeIndicatorProps> = ({
               <span
                 className={`status-value ${healthStatus?.ai_services_online ? 'connected' : 'disconnected'}`}
               >
-                {healthStatus?.ai_services_online ? 'Online ✅' : 'Mock Data ⚠️'}
+                {getStatusValueText(Boolean(healthStatus?.ai_services_online), 'Reported online')}
               </span>
             </div>
 
@@ -145,7 +140,7 @@ const DevelopmentModeIndicator: React.FC<DevelopmentModeIndicatorProps> = ({
               <span
                 className={`status-value ${healthStatus?.security_systems_active ? 'connected' : 'disconnected'}`}
               >
-                {healthStatus?.security_systems_active ? 'Active ✅' : 'Simulated ⚠️'}
+                {getStatusValueText(Boolean(healthStatus?.security_systems_active), 'Reported active')}
               </span>
             </div>
           </div>
@@ -153,31 +148,32 @@ const DevelopmentModeIndicator: React.FC<DevelopmentModeIndicatorProps> = ({
           <div className='audit-notice'>
             <h5>🛡️ AUDIT TRANSPARENCY NOTICE</h5>
             <p>
-              {mockMode ? (
+              {showingSimulatedData ? (
                 <span>
-                  <strong>Development Phase:</strong> This system is currently using mock data for
-                  frontend development and testing. This is standard practice for government systems
-                  during the development phase.
+                  <strong>Backend health unavailable:</strong> This indicator is not receiving
+                  verified backend status and may sit alongside simulated or workspace-only data
+                  used for development and testing.
                 </span>
               ) : (
                 <span>
-                  <strong>Production Ready:</strong> This system is connected to real backend
-                  services and displaying actual operational data.
+                  <strong>Backend health responding:</strong> This indicator is receiving
+                  backend-backed status from configured services. This verifies connectivity, not
+                  production traffic approval.
                 </span>
               )}
             </p>
 
-            {mockMode && (
+            {showingSimulatedData && (
               <div className='mock-data-warning'>
-                ⚠️ <strong>Mock Data Active:</strong> All metrics, performance indicators, and
-                security data shown in dashboards are simulated for development purposes. Real
-                backend integration available when deployed to production environment.
+                ⚠️ <strong>Simulated data active:</strong> Treat any dashboard metrics shown beside
+                this indicator as workspace-only proof until backend health returns and live
+                environment gates are separately completed.
               </div>
             )}
           </div>
 
           <div className='connection-actions'>
-            {mockMode && (
+            {showingSimulatedData && (
               <button className='reconnect-button' onClick={handleReconnect}>
                 🔄 Attempt Backend Connection
               </button>
@@ -199,12 +195,11 @@ const DevelopmentModeIndicator: React.FC<DevelopmentModeIndicatorProps> = ({
           <div className='development-info'>
             <h5>📋 DEVELOPMENT CONTEXT</h5>
             <ul>
-              <li>✅ Frontend components are production-ready</li>
+              <li>✅ Frontend components are workspace-validated</li>
               <li>✅ Backend API endpoints are defined and documented</li>
-
               <li>✅ Database schemas are implemented</li>
-              <li>⚠️ Mock data used for development and testing</li>
-              <li>🔄 Real integration activated when backend is available</li>
+              <li>⚠️ Simulated data may appear while backend health is unavailable</li>
+              <li>🔄 Live traffic still depends on separate environment gates and sign-off</li>
             </ul>
           </div>
         </div>

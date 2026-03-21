@@ -19,7 +19,7 @@ import {
     OS_FEATURES,
     type OsFeatureDefinition,
     type SuiteDefinition
-} from '../config/suiteRegistry';
+} from '../../config/suiteRegistry';
 
 // Icon imports - using Lucide
 import {
@@ -46,6 +46,31 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Building,
 };
 
+type LauncherStatus = SuiteDefinition['status'] | OsFeatureDefinition['status'];
+
+function getLauncherStatusLabel(status: LauncherStatus): string | null {
+  switch (status) {
+    case 'live':
+      return null;
+    case 'wip':
+      return 'In progress';
+    case 'planned':
+      return 'Planned';
+    default:
+      return null;
+  }
+}
+
+function getLauncherStatusClassName(status: Exclude<LauncherStatus, 'live'>): string {
+  switch (status) {
+    case 'planned':
+      return 'bg-slate-500/20 text-slate-300 border border-slate-400/30';
+    case 'wip':
+    default:
+      return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
+  }
+}
+
 interface SuiteCardProps {
   suite: SuiteDefinition;
   onClick: () => void;
@@ -53,6 +78,7 @@ interface SuiteCardProps {
 
 function SuiteCard({ suite, onClick }: SuiteCardProps) {
   const Icon = ICON_MAP[suite.iconName] || Globe;
+  const statusLabel = getLauncherStatusLabel(suite.status);
 
   return (
     <button
@@ -82,12 +108,12 @@ function SuiteCard({ suite, onClick }: SuiteCardProps) {
       <p className='text-sm text-slate-400 line-clamp-2'>{suite.description}</p>
 
       {/* Status badge */}
-      {suite.status !== 'live' && (
+      {statusLabel && (
         <span
-          className='absolute top-4 right-4 px-2 py-0.5 text-xs rounded-full
-                        bg-amber-500/20 text-amber-400 border border-amber-500/30'
+          data-testid={`suite-status-badge-${suite.id}`}
+          className={`absolute top-4 right-4 px-2 py-0.5 text-xs rounded-full ${getLauncherStatusClassName(suite.status)}`}
         >
-          {suite.status.toUpperCase()}
+          {statusLabel}
         </span>
       )}
 
@@ -110,6 +136,7 @@ interface FeatureChipProps {
 
 function FeatureChip({ feature, onClick }: FeatureChipProps) {
   const Icon = ICON_MAP[feature.iconName] || Activity;
+  const statusLabel = getLauncherStatusLabel(feature.status);
 
   return (
     <button
@@ -123,7 +150,14 @@ function FeatureChip({ feature, onClick }: FeatureChipProps) {
     >
       <Icon size={16} className='text-cyan-400' />
       <span className='text-sm text-slate-300'>{feature.shortName}</span>
-      {feature.status === 'wip' && <span className='text-xs text-slate-500'>WIP</span>}
+      {statusLabel && (
+        <span
+          data-testid={`feature-status-badge-${feature.id}`}
+          className={`text-xs ${feature.status === 'planned' ? 'text-slate-400' : 'text-slate-500'}`}
+        >
+          {statusLabel}
+        </span>
+      )}
     </button>
   );
 }
