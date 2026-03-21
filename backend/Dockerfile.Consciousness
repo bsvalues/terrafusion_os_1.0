@@ -44,7 +44,7 @@ RUN dotnet publish "TerraFusion.Consciousness.csproj" -c Release -o /app/publish
     --runtime linux-x64 \
     --self-contained false \
     --no-restore \
-    /p:PublishReadyToRun=true \
+    /p:PublishReadyToRun=false \
     /p:PublishSingleFile=false \
     /p:DebugType=None \
     /p:DebugSymbols=false
