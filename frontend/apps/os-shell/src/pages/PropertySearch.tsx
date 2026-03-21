@@ -27,17 +27,29 @@ const PropertySearch: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [initialLoaded, setInitialLoaded] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mountedRef = useRef(true);
+  const requestIdRef = useRef(0);
 
   const doSearch = useCallback(async (text: string) => {
+    const requestId = ++requestIdRef.current;
     setLoading(true);
     try {
       const page = await getPacsProperties(1, PAGE_SIZE, text.trim() || undefined);
+      if (!mountedRef.current || requestId !== requestIdRef.current) {
+        return;
+      }
       setResults(page.items);
       setTotalCount(page.totalCount);
     } catch {
+      if (!mountedRef.current || requestId !== requestIdRef.current) {
+        return;
+      }
       setResults([]);
       setTotalCount(null);
     } finally {
+      if (!mountedRef.current || requestId !== requestIdRef.current) {
+        return;
+      }
       setLoading(false);
       setInitialLoaded(true);
     }
@@ -46,6 +58,15 @@ const PropertySearch: React.FC = () => {
   // Load initial results on mount
   useEffect(() => {
     doSearch('');
+
+    return () => {
+      mountedRef.current = false;
+      requestIdRef.current += 1;
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+        debounceRef.current = null;
+      }
+    };
   }, [doSearch]);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
