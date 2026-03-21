@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-13T11:56:48.432Z",
+  "generatedAt": "2026-03-21T04:44:48.767Z",
   "scope": "Phase 8 deployed Benton operator parity packet",
   "decision": "GO",
   "checks": [
@@ -8,10 +8,10 @@
       "ok": true,
       "detail": "admin@terrafusionmarket.com",
       "payload": {
-        "nameid": "8ea9303e-5f98-4367-bdf7-c0db6e9630c6",
+        "nameid": "6ebe4eea-fa83-4ced-82ab-8479798c410f",
         "email": "admin@terrafusionmarket.com",
-        "jti": "87fd1780-fc61-4f64-85b2-c0d93c877551",
-        "iat": 1773403008,
+        "jti": "44452b6a-7a44-48ad-8d12-18f434ea739e",
+        "iat": 1774068286,
         "terrafusion_version": "1.0",
         "ai_agents": ["2016", "2016"],
         "modules": "32",
@@ -43,8 +43,8 @@
         ],
         "countyId": "19190019-1919-1919-1919-191919191919",
         "countyCode": "53005",
-        "nbf": 1773403008,
-        "exp": 1773406608,
+        "nbf": 1774068286,
+        "exp": 1774071886,
         "iss": "Terrafusion.API",
         "aud": "Terrafusion.Client"
       },
@@ -55,10 +55,10 @@
       "ok": true,
       "detail": "countyId=19190019-1919-1919-1919-191919191919, countyCode=53005",
       "payload": {
-        "nameid": "8ea9303e-5f98-4367-bdf7-c0db6e9630c6",
+        "nameid": "6ebe4eea-fa83-4ced-82ab-8479798c410f",
         "email": "admin@terrafusionmarket.com",
-        "jti": "87fd1780-fc61-4f64-85b2-c0d93c877551",
-        "iat": 1773403008,
+        "jti": "44452b6a-7a44-48ad-8d12-18f434ea739e",
+        "iat": 1774068286,
         "terrafusion_version": "1.0",
         "ai_agents": ["2016", "2016"],
         "modules": "32",
@@ -90,8 +90,8 @@
         ],
         "countyId": "19190019-1919-1919-1919-191919191919",
         "countyCode": "53005",
-        "nbf": 1773403008,
-        "exp": 1773406608,
+        "nbf": 1774068286,
+        "exp": 1774071886,
         "iss": "Terrafusion.API",
         "aud": "Terrafusion.Client"
       },
@@ -421,7 +421,7 @@
           "coefficient_of_dispersion": 6.2
         },
         "includesAdjustments": true,
-        "retrievedAt": "2026-03-13T11:56:48.9561887Z"
+        "retrievedAt": "2026-03-21T04:44:48.2369987Z"
       },
       "blocker": null
     },
@@ -430,10 +430,10 @@
       "ok": true,
       "detail": "admin@terrafusionmarket.com",
       "payload": {
-        "nameid": "704cb17a-8d7b-454d-a1d2-ffd04ab095e2",
+        "nameid": "6c3229ae-9b11-4d81-a7af-991caf3982a3",
         "email": "admin@terrafusionmarket.com",
-        "jti": "07d64c51-94c3-460c-8eb0-c2d593d45e26",
-        "iat": 1773403009,
+        "jti": "b9b0cc40-d050-44ab-a0ce-e87bdc3fa172",
+        "iat": 1774068289,
         "terrafusion_version": "1.0",
         "ai_agents": ["2016", "2016"],
         "modules": "32",
@@ -465,8 +465,8 @@
         ],
         "countyId": "19190019-1919-1919-1919-191919191919",
         "countyCode": "53005",
-        "nbf": 1773403009,
-        "exp": 1773406609,
+        "nbf": 1774068289,
+        "exp": 1774071889,
         "iss": "Terrafusion.API",
         "aud": "Terrafusion.Client"
       },
@@ -477,10 +477,10 @@
       "ok": true,
       "detail": "countyId=19190019-1919-1919-1919-191919191919, countyCode=53005",
       "payload": {
-        "nameid": "704cb17a-8d7b-454d-a1d2-ffd04ab095e2",
+        "nameid": "6c3229ae-9b11-4d81-a7af-991caf3982a3",
         "email": "admin@terrafusionmarket.com",
-        "jti": "07d64c51-94c3-460c-8eb0-c2d593d45e26",
-        "iat": 1773403009,
+        "jti": "b9b0cc40-d050-44ab-a0ce-e87bdc3fa172",
+        "iat": 1774068289,
         "terrafusion_version": "1.0",
         "ai_agents": ["2016", "2016"],
         "modules": "32",
@@ -512,8 +512,8 @@
         ],
         "countyId": "19190019-1919-1919-1919-191919191919",
         "countyCode": "53005",
-        "nbf": 1773403009,
-        "exp": 1773406609,
+        "nbf": 1774068289,
+        "exp": 1774071889,
         "iss": "Terrafusion.API",
         "aud": "Terrafusion.Client"
       },
@@ -843,7 +843,7 @@
           "coefficient_of_dispersion": 6.2
         },
         "includesAdjustments": true,
-        "retrievedAt": "2026-03-13T11:56:50.2015072Z"
+        "retrievedAt": "2026-03-21T04:44:50.7082163Z"
       },
       "blocker": null
     }
