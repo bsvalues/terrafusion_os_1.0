@@ -13,6 +13,16 @@ Repo-standard local scan command:
 
 This command is the canonical Snyk path for this repo.
 
+Default governed targets:
+
+- `tools/registry`
+- `os-platform/core/pilot`
+- `os-platform/core/types`
+
+Default IaC targets when `SNYK_SCAN_MODE=iac`:
+
+- `charts`
+
 The VS Code extension is optional convenience only. It is not the release-closure authority because extension availability drifts across editor profiles and hosts.
 
 ## Local Capability Semantics
@@ -20,8 +30,11 @@ The VS Code extension is optional convenience only. It is not the release-closur
 `pnpm run security:scan` must tell the truth about local capability.
 
 - If `snyk` is on `PATH` and authenticated, the command runs `snyk code test` and writes `snyk-code-report.json`.
+- If no explicit target list is supplied, the command scans the governed core targets above instead of attempting an unbounded full-repo crawl.
 - If `snyk` is missing from `PATH`, the command records `CAPABILITY UNAVAILABLE` and does not pretend a scan ran.
 - If `snyk` is installed but not authenticated, the command records `CAPABILITY UNAVAILABLE` and instructs the operator to run `snyk auth` or provide `SNYK_TOKEN`.
+- If a target scan exceeds the configured timeout, the command fails truthfully instead of hanging indefinitely.
+- In IaC mode, `snyk` exit code `3` is treated as a truthful skip for optional targets with no supported IaC files detected.
 
 This keeps local release work truthful without pretending the extension or the CLI is always present.
 
@@ -33,6 +46,7 @@ CI must use the same repo contract instead of duplicating raw Snyk commands inli
 - CI provides `SNYK_TOKEN`.
 - CI runs `npm run security:scan`.
 - CI sets `SNYK_FAIL_ON_FINDINGS=1` so findings fail the scan in the enforced lane.
+- CI may switch modes with `SNYK_SCAN_MODE=iac` and explicit `SNYK_IAC_TARGETS` when a workflow is scanning Kubernetes or Helm surfaces.
 
 This makes workstation drift non-authoritative and keeps enforcement on the same path used locally.
 
