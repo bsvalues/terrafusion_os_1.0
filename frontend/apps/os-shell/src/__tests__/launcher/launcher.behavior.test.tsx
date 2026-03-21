@@ -18,6 +18,21 @@ vi.mock('../../stores/commandPaletteStore', () => ({
   useCommandPaletteStore: vi.fn(),
 }));
 
+// Isolate Zustand personalization stores — prevent state leaking between tests
+vi.mock('../../components/launcher/pinsStore', () => ({
+  usePinsStore: vi.fn((selector: (s: { pinnedIds: Set<string>; isPinned: () => boolean; togglePin: () => void }) => unknown) =>
+    selector({ pinnedIds: new Set<string>(), isPinned: () => false, togglePin: vi.fn() }),
+  ),
+  initPinsStore: vi.fn(),
+}));
+
+vi.mock('../../components/launcher/recentsStore', () => ({
+  useRecentsStore: vi.fn((selector: (s: { recentIds: string[]; record: () => void }) => unknown) =>
+    selector({ recentIds: [], record: vi.fn() }),
+  ),
+  initRecentsStore: vi.fn(),
+}));
+
 // Mock materials gate
 vi.mock('../../ui/materials/materialQualityGate', () => ({
   useMaterialQuality: () => ({
@@ -371,8 +386,7 @@ describe('Launcher: Search Filtering', () => {
     expect(screen.getByText('Settings')).toBeInTheDocument();
   });
 
-  // TODO: Search filtering not yet implemented - launcher ignores searchQuery currently
-  it.skip('shows empty state when no results match', () => {
+  it('shows empty state when no results match', () => {
     mockStore.searchQuery = 'nonexistent';
     renderLauncher();
 
