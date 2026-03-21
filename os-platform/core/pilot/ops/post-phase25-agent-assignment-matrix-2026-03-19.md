@@ -10,7 +10,7 @@ Scope: Concrete agent and subagent ownership matrix for the post-Phase-25 execut
 - Sanitized closure artifact: `os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md`
 - Agent B has remediated the leak-guard drift; strict coverage is green and the rerun artifact is `os-platform/core/pilot/ops/leak-guard-remediation-status-2026-03-20.md`.
 - Agent C repo-local reconciliation is complete through the current release packet and SRE operator chain.
-- Remaining active lane is the off-box `SRE-O1-OPS` attempt plus later live rehearsals.
+- Remaining active lane is `SRE-O1-OPS` execution-surface verification plus the authorized pager/on-call closure path, followed by later live rehearsals.
 - The unrelated frontend full-root failures named by Agent B remain a separate optional lane and are not active by default.
 
 ## Top-Level Agents
@@ -19,7 +19,7 @@ Scope: Concrete agent and subagent ownership matrix for the post-Phase-25 execut
 |---|---|---|---|---|
 | Agent A | Security owner | Copilot-A | Completed `SEC-005-ROTATE` and published rotation proof | JWT rotation receipt + verification bundle |
 | Agent B | Governance owner | Copilot-B | Optional later lane to restore honest full-root Vitest green by fixing only the separate frontend contract/accessibility cluster | targeted frontend proof + full-root Vitest rerun summary |
-| Agent C | Release truth owner | Copilot-C | Completed repo-local release reconciliation and now points operators to the active off-box SRE chain | reconciled release authorization packet |
+| Agent C | Release truth owner | Copilot-C | Completed repo-local release reconciliation and now points operators to the active `SRE-O1-OPS` execution-surface verification and closure chain | reconciled release authorization packet |
 
 Agent A execution note:
 

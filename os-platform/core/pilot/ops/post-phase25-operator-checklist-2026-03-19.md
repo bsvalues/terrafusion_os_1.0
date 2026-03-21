@@ -22,7 +22,7 @@ Related artifacts:
 
 - Agent A is complete and `SEC-005-ROTATE` is closed.
 - Leak-guard drift is remediated; the strict coverage gate is green.
-- Current active lane is the live `SRE-O1-OPS` off-box closure path plus the later live rehearsal bundle.
+- Current active lane is `SRE-O1-OPS` execution-surface verification plus the authorized pager/on-call closure path, followed by the later live rehearsal bundle.
 - The exact next attempt inputs now have a dedicated authority artifact: `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`.
 - The unrelated frontend contract/accessibility cluster still keeps full-root Vitest non-green, but that lane is not active by default from this checklist.
 
@@ -30,7 +30,7 @@ Related artifacts:
 
 - [ ] Confirm baseline SHA and branch state are recorded before any remediation work starts.
 - [ ] Confirm current blocker set is unchanged: `SRE-O1-OPS` and the later live rehearsal execution bundle.
-- [ ] Confirm the next off-box attempt has concrete values for the input bundle recorded in `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`.
+- [ ] Confirm the next `SRE-O1-OPS` attempt has concrete execution-surface values for the input bundle recorded in `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`.
 - [ ] Confirm Phases 20-25 remain sealed and are not being reopened.
 - [ ] Create or update execution log for Agent A, Agent B, and Agent C.
 - [ ] Assign human owner role for each agent lane.
