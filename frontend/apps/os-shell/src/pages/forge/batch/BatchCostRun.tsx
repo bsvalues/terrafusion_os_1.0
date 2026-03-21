@@ -42,6 +42,7 @@ interface AuditEvent {
 
 /** Feature gate remains explicit; runtime backend availability is checked per request. */
 const BACKEND_APPLY_CAPABLE = true;
+const HISTORY_IS_FIXTURE_BACKED = true;
 
 let _auditSeq = 0;
 function emitAuditEvent(
@@ -213,6 +214,12 @@ export function BatchCostRun() {
   const [applyMode, setApplyMode] = useState<ForgeApplyMode>('preview_only');
   const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
 
+  const sourceSummary = isSampleData
+    ? 'Fixture-backed run history and sample preview fallback'
+    : HISTORY_IS_FIXTURE_BACKED
+      ? 'Fixture-backed run history; preview and apply use workspace batch valuation APIs when available'
+      : 'Workspace batch valuation API';
+
   const toggleItem = (arr: string[], item: string, setter: (v: string[]) => void) => {
     setter(arr.includes(item) ? arr.filter((x) => x !== item) : [...arr, item]);
   };
@@ -359,7 +366,7 @@ export function BatchCostRun() {
 
   return (
     <div data-testid="batch-cost-run" className="space-y-4 p-4">
-      {isSampleData && <DemoDataBanner module="Batch Cost Run" />}
+      <DemoDataBanner module="Batch Cost Run" />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-fg))' }}>Batch Cost Model Runs</h1>
         <div className="flex gap-2">
@@ -372,7 +379,7 @@ export function BatchCostRun() {
         </div>
       </div>
       <div className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
-        Source: {isSampleData ? 'Sample fallback' : 'Live batch valuation API'}
+        Source: {sourceSummary}
       </div>
       {error && (
         <div className="text-xs px-2 py-1 rounded" style={{
@@ -606,7 +613,7 @@ export function BatchCostRun() {
                       {run.summary ? `${run.summary.meanPctChange.toFixed(1)}%` : '—'}
                     </td>
                     <td className="py-2">
-                      <Badge variant={run.dryRun ? 'outline' : 'secondary'}>{run.dryRun ? 'Dry Run' : 'Live'}</Badge>
+                      <Badge variant={run.dryRun ? 'outline' : 'secondary'}>{run.dryRun ? 'Preview' : 'Applied'}</Badge>
                     </td>
                     <td className="py-2">
                       <Badge variant={statusVariant(run.status)}>{run.status}</Badge>

@@ -41,6 +41,12 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/phase32-live-input-contract-2026-03-21.md`
 - `os-platform/core/pilot/ops/leak-guard-governance-drift-2026-03-19.md`
 - `os-platform/core/pilot/ops/leak-guard-remediation-status-2026-03-20.md`
+- `os-platform/core/pilot/ops/frontend-terracanon-continuity-rerun-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-root-vitest-reconciliation-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-shell-honesty-indicators-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-coefficient-preview-fixture-disclosure-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-batch-cost-run-fixture-disclosure-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-sentinel-feed-label-honesty-2026-03-21.md`
 
 Traceability index:
 
@@ -126,17 +132,59 @@ The separate leak-guard governance drift is remediated and its strict gate is no
 
 Leak-guard is no longer the truthful reason full-root Vitest is non-green.
 
-Full-root Vitest remains non-green because of a separate frontend contract/accessibility failure cluster documented in:
+The previously cited TerraCanon workspace continuity and shell accessibility cluster was rerun on 2026-03-21 and is currently green under targeted execution:
 
-- `frontend/apps/os-shell/src/__tests__/desktop/TerraCanonCrossTabSyncContract.test.tsx`
-- `frontend/apps/os-shell/src/__tests__/desktop/TerraCanonMultiWorkspaceSwitcherContract.test.tsx`
-- `frontend/apps/os-shell/src/__tests__/desktop/TerraCanonRenameWorkspaceIntentContract.test.tsx`
-- `frontend/apps/os-shell/src/__tests__/desktop/TerraCanonReopenWorkspaceIntentContract.test.tsx`
-- `frontend/apps/os-shell/src/__tests__/desktop/TerraCanonWorkspacePersistenceSpineContract.test.tsx`
-- `frontend/apps/os-shell/src/__tests__/shell/shellAccessibility.contract.test.tsx`
-- `frontend/apps/os-shell/src/__tests__/shell/shellKeyboardFocus.contract.test.ts`
+- authoritative rerun note: `os-platform/core/pilot/ops/frontend-terracanon-continuity-rerun-2026-03-21.md`
+- targeted status: `61 passed`, `0 failed`
 
-This does not reopen the leak-guard lane, but it prevents any honest claim that the entire root Vitest surface is green.
+Therefore that cluster is no longer the truthful explanation for frontend non-green status.
+
+That whole-surface question was then reconciled by an explicit frontend-root Vitest run on 2026-03-21:
+
+- authoritative reconciliation note: `os-platform/core/pilot/ops/frontend-root-vitest-reconciliation-2026-03-21.md`
+- root status: `2573 / 2573 test suites passed`, `6448 / 6448 tests passed`
+
+Frontend-root Vitest is therefore green and is no longer a truthful blocker in this packet.
+
+A bounded shell honesty/provenance follow-on slice then landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-shell-honesty-indicators-2026-03-21.md`
+- shell indicator status: `57 passed`, `0 failed`
+- launcher label status: `29 passed`, `0 failed`
+- settings environment status: `47 passed`, `0 failed`
+- transparency indicator status: `2 passed`, `0 failed`
+- admin monitor status: `2 passed`, `0 failed`
+
+That quality lane tightened shell copy in the taskbar and TerraCanon header so status labels now describe backend and Pilot health more precisely, replaced raw non-live launcher enum leakage with explicit user-facing labels, removed a static `Production` environment claim from Settings, rewrote the standalone transparency indicator so backend-health response no longer overclaims `PRODUCTION DATA` or `Production Ready` status, and removed a `Production Mode` claim from the admin monitor footer in favor of workspace-monitor wording tied to reported database health.
+
+It remains a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded Forge preview fixture-disclosure follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-coefficient-preview-fixture-disclosure-2026-03-21.md`
+- coefficient preview status: `2 passed`, `0 failed`
+
+That slice disclosed that the coefficient preview surface is backed by sample fixtures, removed fixture-only `Production` labels from model names and selectors, and avoided a `production model` claim in apply-state copy.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded Forge batch-run fixture-disclosure follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-batch-cost-run-fixture-disclosure-2026-03-21.md`
+- batch cost run status: `2 passed`, `0 failed`
+
+That slice made the default fixture-backed run history explicit on first render, clarified that preview and apply call workspace batch valuation APIs when available, and replaced fixture-history `Live` type labels with `Applied` or `Preview` wording.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded Sentinel feed label honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-sentinel-feed-label-honesty-2026-03-21.md`
+- sentinel feed label status: `1 passed`, `0 failed`
+
+That slice removed a false `LIVE` badge from the mounted Sentinel console feed and replaced it with `AUTO-SCROLL`, which truthfully describes the enabled UI-follow mode instead of implying runtime/feed validation the badge does not establish.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
 ## Decision Matrix
 
@@ -148,7 +196,7 @@ This does not reopen the leak-guard lane, but it prevents any honest claim that 
 | SRE-O1-OPS | partially executed; DB snapshots captured, pager/on-call proof still unresolved | `HOLD` |
 | Phase 32 live execution | repo-owned bundle staged; live window still depends on verified external inputs | `ENVIRONMENT-GATED` |
 | Live restore/DR/swarm rehearsals | deferred to execution window | `HOLD` |
-| Full-root Vitest | not green because of unrelated frontend contract/accessibility failures after leak-guard remediation | `NOT GREEN` |
+| Full-root Vitest | explicit frontend-root Vitest reconciliation passed on 2026-03-21; no current blocker from this lane | `GO` |
 | Production traffic opening | blocked on above conditions | `HOLD` |
 
 ## Authorization Statement
@@ -165,7 +213,6 @@ Not authorized now:
 
 - Open production traffic.
 - Claim full production-ready status.
-- Claim full-root test green.
 - Claim live Phase 32 execution readiness before the external input contract is satisfied.
 - Claim `SRE-O1-OPS` or live rehearsal closure before execution proof exists.
 
@@ -183,7 +230,7 @@ The production traffic gate may move from `HOLD` to `GO` only when all of the fo
 1. Close the remaining pager/on-call validation gap in `SRE-O1-OPS` by first verifying the execution surface, then running the drill on that real executable monitoring path or on an explicitly authorized off-box evidence path when that is the verified lane.
 2. Run live restore/DR and swarm rehearsals and attach evidence to the launch packet.
 3. Use the staged Phase 32 no-wait bundle under `os-platform/core/pilot/ops/phase32-no-wait-solo-dev-execution-plan-2026-03-21.md`, `os-platform/core/pilot/ops/phase32-contract-truth-lock-2026-03-21.md`, and `os-platform/core/pilot/ops/phase32-live-input-contract-2026-03-21.md` so the live window opens only after the exact external inputs are present.
-4. Execute the separate frontend contract/accessibility restoration lane for honest full-root Vitest green.
+4. Keep any follow-on shell honesty/provenance sweep clearly separated from traffic-opening blockers; it is now a quality lane, not a release-gate reconciliation lane.
 5. Reconcile this packet, CP-19, and the post-go-live checklist after those live conditions close.
 
 ## Honest Bottom Line
@@ -192,8 +239,8 @@ TerraFusion OS is past the point of “missing core product proof” for the Ben
 
 It is not yet at the point of truthfully opening production traffic.
 
-The remaining work is execution-risk closure plus one now-isolated frontend test cluster, not architecture discovery:
+The remaining blocking work is execution-risk closure, not architecture discovery:
 
 - one pager/on-call validation gap on the current Hostinger footprint
 - one live rehearsal bundle
-- one unrelated frontend contract/accessibility failure cluster keeping full-root Vitest non-green
+- one formal launch-time sign-off bundle before traffic opening
