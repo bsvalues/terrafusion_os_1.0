@@ -8,6 +8,10 @@ Related artifacts:
 
 - `os-platform/core/pilot/ops/post-phase25-multi-agent-execution-plan-2026-03-19.md`
 - `os-platform/core/pilot/ops/post-phase25-agent-assignment-matrix-2026-03-19.md`
+- `os-platform/core/pilot/ops/post-phase25-release-authorization-packet-2026-03-19.md`
+- `os-platform/core/pilot/ops/cp17-sre-o1-ops-operator-checklist-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-ops-closure-delta-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`
 - `os-platform/core/pilot/ops/sec-005-jwt-rotation-runbook-2026-03-19.md`
 - `os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md`
 - `os-platform/core/pilot/ops/leak-guard-governance-drift-2026-03-19.md`
@@ -18,12 +22,15 @@ Related artifacts:
 
 - Agent A is complete and `SEC-005-ROTATE` is closed.
 - Leak-guard drift is remediated; the strict coverage gate is green.
-- Remaining blockers are the live `SRE-O1-OPS` bundle, live rehearsal execution, and an unrelated frontend contract/accessibility failure cluster that still keeps full-root Vitest non-green.
+- Current active lane is the live `SRE-O1-OPS` off-box closure path plus the later live rehearsal bundle.
+- The exact next attempt inputs now have a dedicated authority artifact: `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`.
+- The unrelated frontend contract/accessibility cluster still keeps full-root Vitest non-green, but that lane is not active by default from this checklist.
 
 ## Pass 0 -- Coordination Freeze
 
 - [ ] Confirm baseline SHA and branch state are recorded before any remediation work starts.
-- [ ] Confirm current blocker set is unchanged: `SRE-O1-OPS`, live rehearsal execution, and the unrelated frontend contract/accessibility full-root failures.
+- [ ] Confirm current blocker set is unchanged: `SRE-O1-OPS` and the later live rehearsal execution bundle.
+- [ ] Confirm the next off-box attempt has concrete values for the input bundle recorded in `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`.
 - [ ] Confirm Phases 20-25 remain sealed and are not being reopened.
 - [ ] Create or update execution log for Agent A, Agent B, and Agent C.
 - [ ] Assign human owner role for each agent lane.
@@ -185,6 +192,7 @@ Evidence output:
 ## Hard Guardrails
 
 - [ ] Do not reopen the sealed four-suite frontend contract repair lane.
+- [ ] Do not reopen the separate frontend contract/accessibility lane from this checklist unless it is explicitly chosen as a new bounded lane.
 - [ ] Do not claim full green before the remaining unrelated full-root failures are resolved or explicitly waived.
 - [ ] Do not claim production-ready before the remaining live blockers are closed.
 - [ ] Do not weaken leak-guard policy to get a cosmetic pass.

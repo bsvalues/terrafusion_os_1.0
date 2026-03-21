@@ -14,7 +14,9 @@ Companion artifacts:
 - Agent A completed `SEC-005-ROTATE` on the live Hostinger runtime path.
 - Sanitized closure artifact: `os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md`
 - Leak-guard governance drift is closed and its strict gate is green.
-- The remaining open lanes are `SRE-O1-OPS`, live rehearsal execution, and the separate frontend contract/accessibility restoration lane for honest full-root Vitest green.
+- The current active lane is `SRE-O1-OPS` live closure via the off-box pager/on-call path plus the later live rehearsal bundle.
+- The exact operator-side prerequisites for the next off-box attempt are now narrowed in `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`.
+- The separate frontend contract/accessibility restoration lane remains optional and is not active by default in this plan revision.
 
 ## Truth Source
 
@@ -24,6 +26,7 @@ Current operating truth from the repository is:
 - Phases 21-25: COMPLETE (`GO`)
 - Full-root Vitest: NOT green due to a separate frontend contract/accessibility failure cluster
 - `SEC-005-ROTATE` is closed; production traffic still remains `HOLD` for other live conditions
+- Current CP-17 source of truth is the release packet plus the SRE operator chain, not the earlier provisional parallel-plan posture
 
 This plan does not claim a new sealed phase yet. It defines the next executable work as parallel operating lanes with explicit blockers, evidence, and merge criteria.
 
@@ -48,6 +51,11 @@ Exit target:
 Primary blocker in current truth:
 
 - seven-file frontend contract/accessibility failure cluster
+
+Current posture:
+
+- optional later lane only
+- not part of the active CP-17 off-box closure sequence
 
 ### Phase 27B -- Frontend Contract/Accessibility Cluster Restoration
 
@@ -91,7 +99,7 @@ Three top-level agents run in parallel after a short coordination pass.
 | Agent C | Release truth / evidence packet | Partial | release authorization packet using outputs from A and B |
 
 Agent C can prepare packet structure and evidence placeholders immediately, but final release authorization cannot close until Agents A and B finish.
-Agent A is now complete; final release authorization still cannot close until the remaining live SRE/rehearsal items and Agent B finish.
+Agent A is now complete; current release truth remains blocked by the remaining live SRE/rehearsal items. Agent B is a separate optional lane, not part of the active off-box closure sequence.
 
 ## Agent A -- Security Hard Blocker Closure
 
