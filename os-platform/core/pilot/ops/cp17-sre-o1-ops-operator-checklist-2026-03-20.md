@@ -10,7 +10,7 @@ This checklist converts the current CP-17 posture into an operator execution seq
 
 It does not reopen product scope, frontend scope, or registry scope.
 
-It exists because the remaining blocker is operational and off-box, not code-local.
+It exists because the remaining blocker is operational and requires execution-surface verification, not code-local changes.
 
 Authoritative status sources:
 
