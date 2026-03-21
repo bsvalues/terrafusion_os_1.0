@@ -14,7 +14,6 @@ COPY src/TerraFusion.API/TerraFusion.API.csproj src/TerraFusion.API/
 COPY src/TerraFusion.Core/TerraFusion.Core.csproj src/TerraFusion.Core/
 COPY src/TerraFusion.Data/TerraFusion.Data.csproj src/TerraFusion.Data/
 COPY src/TerraFusion.AI/TerraFusion.AI.csproj src/TerraFusion.AI/
-COPY src/TerraFusion.Security/TerraFusion.Security.csproj src/TerraFusion.Security/
 COPY src/TerraFusion.Abstractions/TerraFusion.Abstractions.csproj src/TerraFusion.Abstractions/
 COPY src/TerraFusion.Consciousness/TerraFusion.Consciousness.csproj src/TerraFusion.Consciousness/
 COPY src/TerraFusion.Operations/TerraFusion.Operations.csproj src/TerraFusion.Operations/
