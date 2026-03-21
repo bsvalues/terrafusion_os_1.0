@@ -29,7 +29,7 @@ Current reconciled operating authorization:
 | Phase 26 — SRE Rehearsal | `CP19_SRE_OPS_REHEARSAL_2026-03-21.md` | ✅ 4/4 drills (G8 GREEN) |
 | Phase 27 — Compliance Seal | `CP20_SECURITY_COMPLIANCE_SEAL_2026-03-21.md` | ✅ FISMA + build EXIT 0 (G9 GREEN) |
 | Phase 28 — AI Swarm Stability | `CP21_AI_SWARM_STABILITY_2026-03-21.md` | ✅ 20/20 backpressure + 1,008 config |
-| Phase 29 — TerraCanon Codex | N/A — DEFERRED BY POLICY | ⏸ Non-blocking per spec (Codex post-March-25) |
+| Phase 29 — TerraCanon Codex | `CP23_TERRACANON_CODEX_2026-03-21.md` | ✅ STATIC PASS (29/29 canon tests) — live Codex DEFERRED 2026-03-25 |
 | Phase 30 — Final Decision Gate | `CP22_FINAL_DECISION_GATE_2026-03-21.md` | ✅ G10 GREEN |
 
 ## Residual Risk Statement
