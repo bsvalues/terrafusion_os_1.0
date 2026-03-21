@@ -301,6 +301,9 @@ builder.Services.AddScoped<TerraFusion.Core.Services.IDynamicPropertyService, Te
 // Register Property Service (REQUIRED by PropertiesController, SystemHub, QuantumMetricsHub)
 builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyService, TerraFusion.Core.Services.PropertyService>();
 
+// Register Codex 3-6-9 Framework service (CodexController)
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICodexService, TerraFusion.Core.Services.CodexService>();
+
 // Register Dais CRUD services (appeals, exemptions, certifications, notices, queue)
 builder.Services.AddScoped<TerraFusion.Core.Services.IExemptionService, TerraFusion.Core.Services.ExemptionService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.IAppealService, TerraFusion.Core.Services.AppealService>();
