@@ -1,7 +1,7 @@
 # CP-17 SRE-O1-OPS Operator Checklist
 
-Date: 2026-03-20
-Status: READY FOR OPERATOR EXECUTION
+Date: 2026-03-21
+Status: REVISED FOR OPERATOR EXECUTION
 Scope: Truthful closure checklist for the remaining `SRE-O1-OPS` blocker on the Benton Hostinger release lane
 
 ## Purpose
@@ -21,6 +21,8 @@ Authoritative status sources:
 - `os-platform/core/pilot/ops/sre-o1-ops-aks-proof-attempt-2026-03-20.md`
 - `os-platform/core/pilot/ops/phase17-go-live-decision.md`
 
+The Azure/AKS attempt receipt above is historical attempt evidence only. It is not the default closure path.
+
 ## Current Truth
 
 - Repository/static posture: `CONDITIONAL GO`
@@ -28,7 +30,7 @@ Authoritative status sources:
 - Remaining blocker: `SRE-O1-OPS`
 - DB snapshot requirement: complete
 - Pager/on-call proof: not complete
-- Authorized execution surface: off-box AKS observability stack
+- Verified execution surface: none yet beyond Hostinger inspection
 
 ## Success Condition
 
@@ -55,13 +57,13 @@ Do not mark this lane complete from any of the following alone:
 
 Before starting the alert drill, confirm all of the following:
 
-1. A valid Azure principal is available in the current shell or workstation session.
-2. A valid AKS kube context for `terrafusion-aks-prod` is available.
+1. The claimed pager/on-call execution surface has been identified concretely.
+2. That surface has been verified as real, reachable, and currently deployed for the Benton lane.
 3. The target environment and release identity are known for the Benton lane under test.
 4. The operator knows where the sanitized proof artifact will be published under `os-platform/core/pilot/ops/**`.
 5. The current release packet still names `SRE-O1-OPS` as the truthful remaining blocker.
 6. The operator has the sanitized verification format available in `os-platform/core/pilot/ops/sre-o1-ops-verification-template.md`.
-7. The operator has concrete values for the access and release-binding bundle in `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`.
+7. The operator has concrete values for the execution-surface, receiver, and release-binding bundle in `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`.
 
 If any precondition fails, stop and publish a blocked-attempt receipt instead of improvising.
 
@@ -71,14 +73,14 @@ Recommended blocked-attempt format:
 
 ## Execution Surface
 
-Authorized off-box target:
+Current verified facts:
 
-- Azure resource group: `terrafusion-prod`
-- AKS cluster: `terrafusion-aks-prod`
-- staging monitoring namespace: `monitoring`
-- production monitoring namespace: `production-monitoring`
-- staging Grafana URL: `https://grafana-staging.terrafusion.io`
-- production Grafana URL: `https://grafana.terrafusion.io`
+- the live Benton runtime is Hostinger
+- Hostinger does not currently expose a pager-capable monitoring surface
+- repo-documented Azure/AKS observability references remain unverified for this lane
+- Azure/AKS commands are not the starting point unless that alternate lane is separately proven first
+
+Do not begin the drill until the actual execution surface is proven.
 
 ## Operator Sequence
 
@@ -94,34 +96,34 @@ Expected truth before the drill:
 
 - production traffic remains `HOLD`
 - pager/on-call proof is still open
-- off-box AKS path is the only authorized closure path
+- no pager-capable execution surface has yet been verified for this lane
 
-### 2. Acquire Azure and cluster access
+### 2. Verify execution-surface identity and access
 
-Representative access pattern:
+Representative verification pattern:
 
 ```bash
-az login
-az aks get-credentials --resource-group terrafusion-prod --name terrafusion-aks-prod
-kubectl config current-context
-kubectl get ns monitoring
-kubectl get ns production-monitoring
+# Record the actual live surface first.
+# Examples only:
+# - authenticated monitoring URL check
+# - cluster/context verification if a real cluster is separately proven
+# - receiver route verification for the target environment
 ```
 
 Stop immediately if:
 
-- no Azure login is active
-- `AZURE_CREDENTIALS` is required but unavailable
-- kubeconfig is malformed
-- current context is not the target AKS cluster
+- the claimed surface exists only in repo docs
+- the surface cannot be reached from the operator session
+- the target environment cannot be bound to a live monitoring and receiver path
+- the execution surface is still ambiguous
+- the only next step is an Azure or AKS command sequence with no prior surface verification
 
 ### 3. Verify the live monitoring surface
 
 Representative checks:
 
 ```bash
-kubectl port-forward -n monitoring svc/prometheus 9090:9090
-kubectl port-forward -n monitoring svc/grafana 13000:3000
+# Confirm live monitoring and receiver reachability on the proven surface.
 ```
 
 Confirm that the target monitoring plane is live enough to evaluate and route a critical alert for the Benton lane.
@@ -201,9 +203,10 @@ This checklist is complete only if all of the following are true:
 If execution is blocked, publish a blocked-attempt receipt containing:
 
 - tool versions if relevant
-- auth status
-- kube context status
-- namespace availability status
+- execution-surface identity
+- surface verification status
+- access-path status
+- monitoring and receiver reachability status
 - exact blocked stage in the sequence
 - next required operator input
 
