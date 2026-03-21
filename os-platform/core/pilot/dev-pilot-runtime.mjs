@@ -1544,6 +1544,8 @@ const server = createServer(async (req, res) => {
         // Build regex from query
         let pattern;
         try {
+          // snyk-disable-next-line javascript/reDOS -- loopback-only dev tool (127.0.0.1);
+          // operator-supplied regex is intentional search feature, not user input from the internet.
           pattern = isRegex ? new RegExp(query, "gi") : new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
         } catch {
           writeJson(res, 400, { error: "BAD_REQUEST", message: "Invalid regex pattern" });
@@ -3326,6 +3328,8 @@ const server = createServer(async (req, res) => {
         let pattern;
         try {
           const flags = caseSensitive ? "g" : "gi";
+          // snyk-disable-next-line javascript/reDOS -- loopback-only dev tool (127.0.0.1);
+          // operator-supplied regex is intentional search feature, not user input from the internet.
           pattern = isRegex ? new RegExp(query, flags) : new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), flags);
         } catch (regErr) {
           writeJson(res, 400, { error: "BAD_REQUEST", message: "Invalid regex: " + regErr.message });
@@ -4725,6 +4729,8 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(PILOT_PORT, () => {
+// Bind to loopback only — dev-pilot-runtime is a local governance tool, not a
+// network service. Explicit 127.0.0.1 prevents accidental exposure on all interfaces.
+server.listen(PILOT_PORT, "127.0.0.1", () => {
   console.log(`[pilot] runtime listening on http://localhost:${PILOT_PORT}/pilot`);
 });

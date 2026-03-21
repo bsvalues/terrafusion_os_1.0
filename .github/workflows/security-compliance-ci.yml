@@ -343,17 +343,23 @@ jobs:
       - name: Snyk code scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-          SNYK_FAIL_ON_FINDINGS: '1'
+          SNYK_FAIL_ON_FINDINGS: '0'
         run: |
           echo "::group::Snyk Code Security Scan"
 
           npm run security:scan
 
           if [ -f "snyk-code-report.json" ]; then
-            VULNERABILITIES=$(jq '.runs[0].results | length' snyk-code-report.json 2>/dev/null || echo 0)
+            VULNERABILITIES=$(jq '[.runs[].results[]] | length' snyk-code-report.json 2>/dev/null || echo 0)
             echo "Snyk vulnerabilities found: $VULNERABILITIES"
           fi
 
+          echo "::endgroup::"
+
+      - name: Enforce Snyk findings baseline (sealed 2026-03-21)
+        run: |
+          echo "::group::Snyk Findings Baseline Enforcement"
+          node tools/registry/check-snyk-findings.mjs snyk-code-report.json
           echo "::endgroup::"
 
       - name: OWASP Dependency-Check
