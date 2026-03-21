@@ -32,11 +32,20 @@ export interface GamaMapProps {
 // Zoning palette
 // ---------------------------------------------------------------------------
 
+const SELECTED_TEXT_COLOR = 'hsl(var(--tf-text-primary-hs) var(--tf-l-100))';
+const DEFAULT_ZONING_COLOR = 'hsl(var(--muted-foreground))';
+
 const ZONING_COLORS: Record<string, string> = {
-  'R-1': '#22C55E', 'R-2': '#16A34A', 'R-3': '#15803D',
-  'C-1': '#3B82F6', 'C-2': '#2563EB', 'C-3': '#1D4ED8',
-  'I-1': '#F59E0B', 'I-2': '#D97706',
-  AG: '#A3E635', PUD: '#A855F7',
+  'R-1': 'hsl(var(--tf-success))',
+  'R-2': 'color-mix(in srgb, hsl(var(--tf-success)) 82%, hsl(var(--muted-foreground)) 18%)',
+  'R-3': 'color-mix(in srgb, hsl(var(--tf-success)) 64%, hsl(var(--muted-foreground)) 36%)',
+  'C-1': 'hsl(var(--primary))',
+  'C-2': 'color-mix(in srgb, hsl(var(--primary)) 82%, hsl(var(--foreground)) 18%)',
+  'C-3': 'color-mix(in srgb, hsl(var(--primary)) 64%, hsl(var(--foreground)) 36%)',
+  'I-1': 'hsl(var(--tf-warning))',
+  'I-2': 'color-mix(in srgb, hsl(var(--tf-warning)) 78%, hsl(var(--foreground)) 22%)',
+  AG: 'color-mix(in srgb, hsl(var(--tf-success)) 55%, hsl(var(--tf-warning)) 45%)',
+  PUD: 'hsl(var(--accent))',
 };
 
 const REGULATIONS: Record<string, Record<string, string>> = {
@@ -91,7 +100,7 @@ export default function GamaMap({
         {parcels.map((parcel) => {
           const xPct = ((parcel.center[1] - mapCenter[1]) / 0.06 + 0.5) * 100;
           const yPct = ((mapCenter[0] - parcel.center[0]) / 0.04 + 0.5) * 100;
-          const color = ZONING_COLORS[parcel.zoning] ?? '#6B7280';
+          const color = ZONING_COLORS[parcel.zoning] ?? DEFAULT_ZONING_COLOR;
           const isSelected = selectedParcelId === parcel.id;
           const isHovered = hoveredId === parcel.id;
 
@@ -116,9 +125,9 @@ export default function GamaMap({
                   width: 56,
                   height: 38,
                   backgroundColor: `${color}${isSelected ? '44' : '22'}`,
-                  borderColor: isSelected ? '#FFF' : `${color}${isHovered ? 'BB' : '66'}`,
+                  borderColor: isSelected ? SELECTED_TEXT_COLOR : `${color}${isHovered ? 'BB' : '66'}`,
                   boxShadow: isSelected ? `0 0 10px ${color}` : 'none',
-                  color: isSelected || isHovered ? '#FFF' : `${color}CC`,
+                  color: isSelected || isHovered ? SELECTED_TEXT_COLOR : `${color}CC`,
                 }}
               >
                 {parcel.zoning}

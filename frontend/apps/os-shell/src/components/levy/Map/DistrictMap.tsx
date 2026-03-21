@@ -29,6 +29,12 @@ export interface DistrictMapProps {
   height?: number | string;
 }
 
+const MAP_BACKGROUND_COLOR = 'hsl(var(--tf-text-primary-hs) var(--tf-l-0))';
+const SELECTED_FILL_COLOR = 'hsl(var(--primary))';
+const DEFAULT_FILL_COLOR = 'hsl(var(--secondary))';
+const SELECTED_STROKE_COLOR = 'hsl(var(--primary) / 0.8)';
+const DEFAULT_STROKE_COLOR = 'hsl(var(--muted-foreground))';
+
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
@@ -71,7 +77,7 @@ const DistrictMap: React.FC<DistrictMapProps> = ({
         className="h-full w-full"
         preserveAspectRatio="xMidYMid meet"
       >
-        <rect width="1000" height="800" fill="#0f172a" />
+        <rect width="1000" height="800" fill={MAP_BACKGROUND_COLOR} />
 
         {districts.map((d) => {
           const points = d.coordinates.map(([x, y]) => `${x},${y}`).join(' ');
@@ -81,8 +87,8 @@ const DistrictMap: React.FC<DistrictMapProps> = ({
             <polygon
               key={d.id}
               points={points}
-              fill={d.fillColor ?? (isSelected ? '#3b82f6' : '#1e293b')}
-              stroke={isSelected ? '#60a5fa' : '#334155'}
+              fill={d.fillColor ?? (isSelected ? SELECTED_FILL_COLOR : DEFAULT_FILL_COLOR)}
+              stroke={isSelected ? SELECTED_STROKE_COLOR : DEFAULT_STROKE_COLOR}
               strokeWidth={isSelected ? 2.5 : 1}
               opacity={isSelected ? 1 : 0.8}
               className="cursor-pointer transition-colors hover:fill-blue-800"

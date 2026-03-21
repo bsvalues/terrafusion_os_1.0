@@ -363,9 +363,24 @@ export const GPTChatInterface: React.FC<GPTChatInterfaceProps> = ({
 
   if (isInitializing) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-      </div>
+      <Card className="h-full flex flex-col">
+        <CardHeader className="border-b">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <CardTitle className="flex items-center gap-2">
+                {gpt.iconUrl && (
+                  <img src={gpt.iconUrl} alt={gpt.displayName} className="h-6 w-6 rounded" />
+                )}
+                {gpt.displayName}
+              </CardTitle>
+              <CardDescription className="mt-1">{gpt.description}</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="flex flex-1 items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        </CardContent>
+      </Card>
     );
   }
 
