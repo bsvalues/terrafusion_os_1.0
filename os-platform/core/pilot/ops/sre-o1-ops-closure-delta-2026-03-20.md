@@ -24,7 +24,8 @@ Use these artifacts in this order:
 2. `os-platform/core/pilot/ops/sre-o1-ops-status-2026-03-20.md`
 3. `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
 4. `os-platform/core/pilot/ops/cp17-sre-o1-ops-operator-checklist-2026-03-20.md`
-5. `os-platform/core/pilot/ops/sre-o1-ops-aks-proof-attempt-2026-03-20.md`
+5. `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`
+6. `os-platform/core/pilot/ops/sre-o1-ops-aks-proof-attempt-2026-03-20.md`
 
 Current truthful posture from that chain:
 
@@ -74,6 +75,10 @@ Do not begin the next attempt unless all prerequisites below are true:
 8. the operator has the successful-drill template available at `os-platform/core/pilot/ops/sre-o1-ops-verification-template.md`
 
 If any prerequisite fails, publish a new blocked-attempt receipt instead of improvising.
+
+The preferred operator-side input bundle for satisfying these prerequisites is recorded in:
+
+- `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`
 
 Preferred blocked-attempt format:
 

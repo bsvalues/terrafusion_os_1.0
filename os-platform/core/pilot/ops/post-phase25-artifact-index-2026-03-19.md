@@ -95,6 +95,42 @@ What it established:
 - the authorized closure path is an off-box Prometheus -> Alertmanager -> real on-call receiver chain
 - `SRE-O1-OPS` may only close with routed incident proof tied back to Benton release metadata
 
+### Slice 2E: CP-17 operator execution checklist
+
+Artifact:
+
+- `os-platform/core/pilot/ops/cp17-sre-o1-ops-operator-checklist-2026-03-20.md`
+
+What it established:
+
+- the remaining CP-17 blocker is converted into an operator-grade execution sequence
+- Azure and AKS access preconditions are stated explicitly before the drill begins
+- the evidence bundle and release-authority reconciliation steps are defined without reopening product or frontend scope
+
+### Slice 2F: SRE-O1 exact closure delta
+
+Artifact:
+
+- `os-platform/core/pilot/ops/sre-o1-ops-closure-delta-2026-03-20.md`
+
+What it established:
+
+- the exact missing evidence bundle is enumerated field-by-field
+- the exact prerequisites for the next closure attempt are separated from the broader operator checklist
+- the exact release-packet reconciliation sequence is defined for the first truthful successful drill
+
+### Slice 2G: SRE-O1 next-attempt input bundle
+
+Artifact:
+
+- `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`
+
+What it established:
+
+- the exact operator-supplied Azure, AKS, environment, and release-binding inputs are narrowed before the next drill starts
+- the next attempt can now be blocked on a specific missing input instead of a broad access-chain statement
+- the operator handoff is reduced to a minimal ready-check that prevents improvisation at execution time
+
 ### Slice 3: Agent B governance diagnosis
 
 Artifact:

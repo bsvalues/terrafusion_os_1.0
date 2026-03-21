@@ -17,6 +17,7 @@ Authoritative status sources:
 - `os-platform/core/pilot/ops/post-phase25-release-authorization-packet-2026-03-19.md`
 - `os-platform/core/pilot/ops/sre-o1-ops-status-2026-03-20.md`
 - `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`
 - `os-platform/core/pilot/ops/sre-o1-ops-aks-proof-attempt-2026-03-20.md`
 - `os-platform/core/pilot/ops/phase17-go-live-decision.md`
 
@@ -60,6 +61,7 @@ Before starting the alert drill, confirm all of the following:
 4. The operator knows where the sanitized proof artifact will be published under `os-platform/core/pilot/ops/**`.
 5. The current release packet still names `SRE-O1-OPS` as the truthful remaining blocker.
 6. The operator has the sanitized verification format available in `os-platform/core/pilot/ops/sre-o1-ops-verification-template.md`.
+7. The operator has concrete values for the access and release-binding bundle in `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`.
 
 If any precondition fails, stop and publish a blocked-attempt receipt instead of improvising.
 
