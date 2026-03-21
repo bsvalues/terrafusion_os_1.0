@@ -17,6 +17,8 @@ The authorized off-box closure path is recorded in:
 
 - `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
 - `os-platform/core/pilot/ops/sre-o1-ops-aks-proof-attempt-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-ops-closure-delta-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`
 
 This artifact does not claim pager/on-call success and does not open production traffic.
 
@@ -92,9 +94,13 @@ Receipt:
 
 `SRE-O1-OPS` may move to COMPLETE only when all remaining conditions are evidenced truthfully:
 
-1. the required runtime environment deployment statement is narrowed to the actual Hostinger lane contract
-2. pager/on-call validation is completed on a real executable surface
+1. pager/on-call validation is completed on a real executable surface
+2. the required routed-incident evidence bundle exists with Benton release binding
 3. the release packet is reconciled so the HOLD reason names the actual remaining live gap
+
+The exact closure delta for these conditions is recorded in `os-platform/core/pilot/ops/sre-o1-ops-closure-delta-2026-03-20.md`.
+
+The exact operator-supplied inputs required before the next truthful attempt begins are recorded in `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`.
 
 ## Bottom Line
 

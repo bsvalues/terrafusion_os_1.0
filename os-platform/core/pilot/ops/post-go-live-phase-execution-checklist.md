@@ -2,6 +2,24 @@
 
 This checklist tracks the post-go-live operating phases after the Benton Hostinger snapshot runtime reached Phase 17 `GO`.
 
+## Current Live Blocker Tracking
+
+Current traffic-opening blocker:
+
+- `SRE-O1-OPS` remains open until the off-box pager/on-call drill is executed and evidenced truthfully.
+
+Operator execution artifact:
+
+- `os-platform/core/pilot/ops/cp17-sre-o1-ops-operator-checklist-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-ops-closure-delta-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`
+
+Authority chain:
+
+- `os-platform/core/pilot/ops/post-phase25-release-authorization-packet-2026-03-19.md`
+- `os-platform/core/pilot/ops/sre-o1-ops-status-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
+
 ## Phase 18 -- PACS-Connected Runtime Productization
 Status: COMPLETE (`GO`)
 
