@@ -260,6 +260,7 @@ builder.Services.AddScoped<ICognitiveFrameworkService, CognitiveFrameworkService
 // 🔮 TESLA 3-6-9 FRAMEWORK - Universal Harmonic Metrics Engine
 // "If you only knew the magnificence of the 3, 6 and 9, then you would have a key to the universe." - Nikola Tesla
 builder.Services.AddScoped<TerraFusion.AI.Services.Framework369MetricsEngine>();
+builder.Services.AddScoped<TerraFusion.AI.Services.ICodex369FrameworkService, TerraFusion.AI.Services.Codex369FrameworkService>();
 
 // 🧠 GOVERNMENT-GRADE RESEARCH ANALYTICS SERVICES - PhD-Level Excellence
 // Elite research coordination and quantum-enhanced analytics services
@@ -1023,6 +1024,7 @@ app.MapHub<TerraFusion.AI.Hubs.NotebookHub>("/hubs/notebook");
 app.MapHub<TerraFusion.AI.Hubs.AnalyticsHub>("/hubs/analytics");
 app.MapHub<TerraFusion.AI.Hubs.WorkflowHub>("/hubs/workflow");
 app.MapHub<TerraFusion.AI.Hubs.CollaborationHub>("/hubs/collaboration");
+app.MapHub<TerraFusion.AI.Hubs.Codex369Hub>("/hubs/codex369");
 
 // Add test endpoints
 app.MapGet("/api/test", () => new
