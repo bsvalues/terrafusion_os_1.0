@@ -1,137 +1,19 @@
 {
-  "generatedAt": "2026-03-13T11:56:57.837Z",
+  "generatedAt": "2026-03-21T04:44:57.907Z",
   "apiBaseUrl": "http://localhost:5000",
   "checks": [
     {
-      "name": "auth.login",
-      "ok": true,
-      "detail": "admin@gov.",
+      "name": "benton.sync.proof",
+      "ok": false,
+      "detail": "Pilot auth failed: Backend unreachable: fetch failed",
       "payload": {
-        "roles": ["GovernmentUser", "Administrator"],
-        "expiresAt": "2026-03-13T19:56:58.058Z"
-      }
-    },
-    {
-      "name": "backend.health",
-      "ok": true,
-      "detail": "Healthy",
-      "payload": {
-        "status": "Healthy",
-        "timestamp": "2026-03-13T11:56:58.0691323Z",
-        "environment": "Development",
-        "version": "1.0.0",
-        "service": "TerraFusion OS API - Basic Mode"
-      }
-    },
-    {
-      "name": "sync.status.before",
-      "ok": true,
-      "detail": "status available",
-      "payload": {
-        "ok": true,
-        "status": 200,
-        "data": {
-          "isActive": false,
-          "currentOperation": "Idle",
-          "lastSyncTime": "2026-03-13T11:52:40.9466853Z",
-          "nextScheduledSync": "2026-03-13T12:07:40.9466853Z",
-          "activeConnections": 1,
-          "metrics": {
-            "TotalSystems": 1,
-            "ActiveCounties": 1,
-            "UptimeSeconds": 0
-          }
-        }
-      }
-    },
-    {
-      "name": "sync.county.benton",
-      "ok": true,
-      "detail": "recordsProcessed=0, salesAdded=0, salesUpdated=288, salesSkipped=77001",
-      "payload": {
-        "countyName": "Benton",
-        "legacySystemType": "harris_pacs",
-        "totalParcels": 0,
-        "recordTypes": {
-          "Properties": 0,
-          "Assessments": 0,
-          "Owners": 0,
-          "Sales": 288,
-          "CamaCharacteristics": 0,
-          "CostMatrices": 0
-        },
-        "success": true,
-        "message": "Imported Benton PACS operational data into TerraFusion.",
-        "status": "completed",
-        "timestamp": "2026-03-13T11:56:58.0788174Z",
-        "startTime": "2026-03-13T11:56:58.0788174Z",
-        "endTime": "2026-03-13T11:58:29.2627147Z",
-        "syncTime": "2026-03-13T11:58:29.2627147Z",
-        "syncTimestamp": "2026-03-13T11:58:29.2627147Z",
-        "duration": "00:01:31.1838973",
-        "syncDuration": "00:01:31.1838973",
-        "recordsProcessed": 0,
-        "recordsInserted": 0,
-        "recordsUpdated": 0,
-        "recordsAdded": 0,
-        "recordsSynced": 0,
-        "recordsSkipped": 0,
-        "recordsFailed": 0,
-        "errorCount": 0,
-        "totalRecordsSynced": 0,
-        "errors": [],
-        "syncOperations": [],
-        "syncId": "",
-        "aiTrainingDataUpdated": false,
-        "metadata": {
-          "source": "pacscontract.v1",
-          "mode": "full",
-          "contractValidatedAt": "2026-03-13T11:57:50.654409Z",
-          "propertyPassSkipped": true,
-          "totalSourceRecords": 0,
-          "propertiesAdded": 0,
-          "propertiesUpdated": 0,
-          "propertiesSkipped": 0,
-          "assessmentsAdded": 0,
-          "assessmentsUpdated": 0,
-          "ownersImported": 0,
-          "camaAdded": 0,
-          "camaUpdated": 0,
-          "salesAdded": 0,
-          "salesUpdated": 288,
-          "salesSkipped": 77001,
-          "salesImported": 288,
-          "costMatricesAdded": 0,
-          "costMatricesUpdated": 0,
-          "currentAssessmentMode": "vw_TerraFusion_Property_Core snapshot"
-        }
-      }
-    },
-    {
-      "name": "sync.status.after",
-      "ok": true,
-      "detail": "status available",
-      "payload": {
-        "ok": true,
-        "status": 200,
-        "data": {
-          "isActive": false,
-          "currentOperation": "Idle",
-          "lastSyncTime": "2026-03-13T11:56:58.0788174Z",
-          "nextScheduledSync": "2026-03-13T12:11:58.0788174Z",
-          "activeConnections": 1,
-          "metrics": {
-            "TotalSystems": 1,
-            "ActiveCounties": 1,
-            "UptimeSeconds": 0
-          }
-        }
+        "error": "Pilot auth failed: Backend unreachable: fetch failed"
       }
     }
   ],
   "summary": {
-    "ok": true,
-    "failures": 0
+    "ok": false,
+    "failures": 1
   },
   "scope": "Benton sync proof for the canonical TerraFusionSync conversion lane"
 }

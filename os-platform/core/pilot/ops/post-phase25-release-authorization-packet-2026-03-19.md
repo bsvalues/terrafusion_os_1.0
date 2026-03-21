@@ -1,7 +1,7 @@
 # Post-Phase-25 Release Authorization Packet
 
 Date: 2026-03-19
-Updated: 2026-03-20
+Updated: 2026-03-21
 Status: READY
 Owner lane: Agent C
 Purpose: Reconcile sealed code/static proof with the remaining live pre-traffic conditions after Phase 25
@@ -33,6 +33,12 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
 - `os-platform/core/pilot/ops/sre-o1-ops-closure-delta-2026-03-20.md`
 - `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`
+- `os-platform/core/pilot/ops/phase32-no-wait-solo-dev-execution-plan-2026-03-21.md`
+- `os-platform/core/pilot/ops/phase32-contract-truth-lock-2026-03-21.md`
+- `os-platform/core/pilot/phase32-codex-live-smoke.mjs`
+- `os-platform/core/pilot/phase32-codex-collab-smoke.mjs`
+- `os-platform/core/pilot/ops/phase32-evidence-bundle-templates-2026-03-21.md`
+- `os-platform/core/pilot/ops/phase32-live-input-contract-2026-03-21.md`
 - `os-platform/core/pilot/ops/leak-guard-governance-drift-2026-03-19.md`
 - `os-platform/core/pilot/ops/leak-guard-remediation-status-2026-03-20.md`
 
@@ -95,7 +101,26 @@ These are not code blockers, but they are still traffic-opening blockers per CP-
 - Live restore rehearsal
 - Live DR failover rehearsal
 
-### Governance blocker still open in parallel
+### Phase 32 execution posture
+
+Phase 32 no longer carries an abstract "prep remains" status.
+
+The repo-owned bundle is now staged:
+
+- `os-platform/core/pilot/ops/phase32-contract-truth-lock-2026-03-21.md`
+- `os-platform/core/pilot/phase32-codex-live-smoke.mjs`
+- `os-platform/core/pilot/phase32-codex-collab-smoke.mjs`
+- `os-platform/core/pilot/ops/phase32-evidence-bundle-templates-2026-03-21.md`
+- `os-platform/core/pilot/ops/phase32-live-input-contract-2026-03-21.md`
+
+Therefore the truthful status language is:
+
+- Phase 32 live execution is environment-gated
+- repo-owned prep is staged
+
+The remaining dependency is external live input truth, not unresolved repo architecture.
+
+### Parallel frontend restoration lane
 
 The separate leak-guard governance drift is remediated and its strict gate is now green.
 
@@ -121,6 +146,7 @@ This does not reopen the leak-guard lane, but it prevents any honest claim that 
 | Security repo sweep | complete | `GO` |
 | JWT rotation in live environments | executed and verified on 2026-03-20 | `GO` |
 | SRE-O1-OPS | partially executed; DB snapshots captured, pager/on-call proof still unresolved | `HOLD` |
+| Phase 32 live execution | repo-owned bundle staged; live window still depends on verified external inputs | `ENVIRONMENT-GATED` |
 | Live restore/DR/swarm rehearsals | deferred to execution window | `HOLD` |
 | Full-root Vitest | not green because of unrelated frontend contract/accessibility failures after leak-guard remediation | `NOT GREEN` |
 | Production traffic opening | blocked on above conditions | `HOLD` |
@@ -130,6 +156,7 @@ This does not reopen the leak-guard lane, but it prevents any honest claim that 
 Authorized now:
 
 - Continue release preparation and evidence collation.
+- Use the staged Phase 32 no-wait bundle for repo-owned prep and for execution the moment the live input contract is satisfied.
 - Execute Agent A against the live secret/runtime authority.
 - Execute the authorized pager/on-call evidence path for `SRE-O1-OPS` on the verified execution surface.
 - Prepare launch-window comms, rollback, and hypercare materials.
@@ -139,6 +166,7 @@ Not authorized now:
 - Open production traffic.
 - Claim full production-ready status.
 - Claim full-root test green.
+- Claim live Phase 32 execution readiness before the external input contract is satisfied.
 - Claim `SRE-O1-OPS` or live rehearsal closure before execution proof exists.
 
 ## Minimum Closure Conditions To Flip `HOLD` To `GO`
@@ -154,8 +182,9 @@ The production traffic gate may move from `HOLD` to `GO` only when all of the fo
 
 1. Close the remaining pager/on-call validation gap in `SRE-O1-OPS` by first verifying the execution surface, then running the drill on that real executable monitoring path or on an explicitly authorized off-box evidence path when that is the verified lane.
 2. Run live restore/DR and swarm rehearsals and attach evidence to the launch packet.
-3. Execute the separate frontend contract/accessibility restoration lane for honest full-root Vitest green.
-4. Reconcile this packet, CP-19, and the post-go-live checklist after those live conditions close.
+3. Use the staged Phase 32 no-wait bundle under `os-platform/core/pilot/ops/phase32-no-wait-solo-dev-execution-plan-2026-03-21.md`, `os-platform/core/pilot/ops/phase32-contract-truth-lock-2026-03-21.md`, and `os-platform/core/pilot/ops/phase32-live-input-contract-2026-03-21.md` so the live window opens only after the exact external inputs are present.
+4. Execute the separate frontend contract/accessibility restoration lane for honest full-root Vitest green.
+5. Reconcile this packet, CP-19, and the post-go-live checklist after those live conditions close.
 
 ## Honest Bottom Line
 
