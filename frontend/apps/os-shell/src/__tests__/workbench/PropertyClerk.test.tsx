@@ -69,6 +69,9 @@ vi.mock('../../components/workbench', () => ({
       </div>
     );
   },
+  WorkbenchSourceBadge: ({ source }: any) => (
+    <span data-testid='workbench-source-badge' data-source={source} />
+  ),
 }));
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
