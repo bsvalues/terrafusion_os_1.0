@@ -390,6 +390,153 @@ describe('PropertyDais', () => {
       });
     });
 
+    it('invokes summarize_levy_rate_components with request wording and returned-summary disclosure', async () => {
+      const currentYear = new Date().getFullYear();
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-levy-summary-001',
+        result: {
+          toolId: 'summarize_levy_rate_components',
+          output: JSON.stringify({
+            components: [
+              { name: 'Statutory Limit', rate: 50 },
+              { name: 'AI Optimal Rate', rate: 29.85 },
+              { name: 'Base Rate', rate: 25 },
+            ],
+            totalRate: 29.85,
+            explanation: 'Levy calculation for 2026 returned AI optimal rate $29.85 per $1,000 AV with projected revenue $44770.',
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed levy-summary request for Benton County and the current tax year, then review the returned rate components, total rate, and explanation/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Breakdown of levy rate by component \(state, school, local\)/i)).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: /Submit Levy Summary Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'summarize_levy_rate_components',
+          params: {
+            county: 'benton',
+            taxYear: currentYear,
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getAllByText(/AI Optimal Rate/i).length).toBeGreaterThan(0);
+        expect(screen.getByText(/Base Rate/i)).toBeInTheDocument();
+        expect(screen.getByText(/Statutory Limit/i)).toBeInTheDocument();
+        expect(screen.getByText(/Levy calculation for 2026 returned AI optimal rate \$29\.85 per \$1,000 AV with projected revenue \$44770\./i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned rate components, total rate, and explanation for this levy-summary request\./i)).toBeInTheDocument();
+      });
+    });
+
+    it('invokes generate_commissioner_memo with request wording and returned-memo disclosure', async () => {
+      const currentYear = new Date().getFullYear();
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-commissioner-memo-001',
+        result: {
+          toolId: 'generate_commissioner_memo',
+          output: JSON.stringify({
+            memo: {
+              title: `Commissioner Briefing - Annual Revaluation Summary (${currentYear})`,
+              body: `Summary of Annual Revaluation Summary for tax year ${currentYear}. Prepared for commissioner review.`,
+            },
+            payloadRef: 'dossier://benton/memos/memo-2026-001',
+            wordCount: 14,
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed commissioner-memo draft request for the selected topic and current tax year, then review the returned memo title, body, and word count/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Generate a briefing memo for commissioner review/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByLabelText(/^Topic$/i), {
+        target: { value: 'Annual Revaluation Summary' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Submit Commissioner Memo Draft Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'generate_commissioner_memo',
+          params: {
+            county: 'benton',
+            topic: 'Annual Revaluation Summary',
+            taxYear: currentYear,
+            format: 'brief',
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(new RegExp(`Commissioner Briefing - Annual Revaluation Summary \\(${currentYear}\\)`, 'i'))).toBeInTheDocument();
+        expect(screen.getByText(new RegExp(`Summary of Annual Revaluation Summary for tax year ${currentYear}\\. Prepared for commissioner review\\.`, 'i'))).toBeInTheDocument();
+        expect(screen.getByText(/14 words/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned memo title, body, and word count for this commissioner-memo draft request\./i)).toBeInTheDocument();
+      });
+    });
+
+    it('invokes calculate_pilt_payment with request wording and returned-summary disclosure', async () => {
+      const currentYear = new Date().getFullYear();
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-pilt-001',
+        result: {
+          toolId: 'calculate_pilt_payment',
+          output: JSON.stringify({
+            county: 'BENTON',
+            fiscalYear: currentYear,
+            totalAssessedValue: 845000000,
+            totalPiltDue: 1234000,
+            districtCount: 7,
+            summary: `PILT calculation for FY${currentYear}: 7 districts, $1,234,000 total due on $845,000,000 assessed value (Hanford Nuclear Reservation, 586,000 federal acres).`,
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed PILT summary request for Benton County and the current fiscal year, then review the returned total due, district count, assessed value, and summary/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Run PILT calculation to view district breakdown/i)).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: /Submit PILT Summary Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'calculate_pilt_payment',
+          params: {
+            county: 'benton',
+            fiscalYear: currentYear,
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/PILT calculation for FY/i)).toBeInTheDocument();
+        expect(screen.getByText(/County: BENTON/i)).toBeInTheDocument();
+        expect(screen.getByText(new RegExp(`FY ${currentYear}`, 'i'))).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned total due, district count, assessed value, and summary for this PILT request\./i)).toBeInTheDocument();
+      });
+
+      expect(screen.queryByText(/^PILT Districts$/i)).not.toBeInTheDocument();
+    });
+
     it('invokes draft_value_change_notice with request wording and returned-draft disclosure', async () => {
       const currentYear = new Date().getFullYear();
       const mockResponse = {
