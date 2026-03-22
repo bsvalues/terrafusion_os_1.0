@@ -49,6 +49,8 @@ export const PropertySummary: React.FC = () => {
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const assessments = usePropertyStore((s) => s.assessments);
   const appeals = usePropertyStore((s) => s.appeals);
+  const valuationAssessmentYear = activeParcel?.assessmentYear;
+  const valuationSource = propertyData.source || 'Unknown';
 
   return (
     <div className="space-y-4 p-4">
@@ -85,6 +87,14 @@ export const PropertySummary: React.FC = () => {
           )}
         </BentoCard>
       </BentoGrid>
+
+      <BentoCard variant="table" title="Valuation Snapshot">
+        <p className="text-sm leading-relaxed" style={{ color: 'hsl(var(--tf-text) / 0.75)' }}>
+          Displayed values reflect the loaded parcel summary for assessment year {valuationAssessmentYear ?? 'unknown'}.
+          This route does not show a more precise as-of timestamp than that assessment year.
+          {' '}Source: {valuationSource}.
+        </p>
+      </BentoCard>
 
       {/* Valuation Breakdown */}
       <BentoGrid columns="auto" gap={0.75} padding={0}>
@@ -172,16 +182,22 @@ export const PropertySummary: React.FC = () => {
             </BentoCard>
           )}
           {activeParcel.hasAppeals && (
-            <BentoCard variant="stat" title="Active Appeals">
+            <BentoCard variant="stat" title="Loaded Appeals">
               <p className="text-lg font-bold" style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}>
                 {appeals.length} appeal{appeals.length !== 1 ? 's' : ''}
+              </p>
+              <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                Shown from the appeal records currently loaded for this parcel.
               </p>
             </BentoCard>
           )}
           {activeParcel.hasActivePermits && (
             <BentoCard variant="stat" title="Permits">
               <p className="text-lg font-bold" style={{ color: 'hsl(var(--tf-info, 200 80% 60%))' }}>
-                Active permits on file
+                Loaded parcel is marked with active permits.
+              </p>
+              <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                Shown from the parcel summary currently loaded for this parcel.
               </p>
             </BentoCard>
           )}

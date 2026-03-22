@@ -123,6 +123,13 @@ export const PropertyForge: React.FC = () => {
         </select>
       </div>
 
+      <div className="tf-status-info rounded-xl p-4" data-testid="forge-baseline-disclosure">
+        <p className="tf-text">
+          Overview baseline values reflect the parcel snapshot already loaded in the workbench.
+          Changing Tax Year here changes the governed tool requests below; it does not relabel those baseline cards until a tool result returns.
+        </p>
+      </div>
+
       {/* Sub-Tab Bar */}
       <nav
         className="flex gap-1 border-b tf-border pb-0"
