@@ -69,7 +69,26 @@ const FALSE_POSITIVE_RULES = new Set([
 ]);
 
 // ─── Parse args ───────────────────────────────────────────────────────────────
-const reportPath = resolve(process.argv[2] ?? 'snyk-code-report.json');
+const CODE_REPORT_PATH = resolve('snyk-code-report.json');
+const IAC_REPORT_PATH = resolve('snyk-iac-report.json');
+
+function selectReportPath(inputPath) {
+  const candidate = inputPath ?? 'snyk-code-report.json';
+
+  switch (candidate) {
+    case 'snyk-code-report.json':
+      return CODE_REPORT_PATH;
+    case 'snyk-iac-report.json':
+      return IAC_REPORT_PATH;
+    default:
+      console.error(
+        `❌ [snyk-findings] Unsupported report path: ${String(candidate)}. Use snyk-code-report.json or snyk-iac-report.json in the current working directory.`
+      );
+      process.exit(1);
+  }
+}
+
+const reportPath = selectReportPath(process.argv[2]);
 
 if (!existsSync(reportPath)) {
   console.log(`⚠️  [snyk-findings] Report not found at ${reportPath} — skipping enforcement.`);

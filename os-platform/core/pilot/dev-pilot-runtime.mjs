@@ -1541,14 +1541,21 @@ const server = createServer(async (req, res) => {
       });
 
       try {
-        // Build regex from query
+        if (isRegex) {
+          writeJson(res, 400, {
+            error: "BAD_REQUEST",
+            message: "Regex search is not supported on this dev surface. Use literal search.",
+          });
+          return;
+        }
+
+        // Literal search only: escape operator input before compiling.
         let pattern;
         try {
-          // snyk-disable-next-line javascript/reDOS -- loopback-only dev tool (127.0.0.1);
-          // operator-supplied regex is intentional search feature, not user input from the internet.
-          pattern = isRegex ? new RegExp(query, "gi") : new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+          const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          pattern = new RegExp(escapedQuery, "gi");
         } catch {
-          writeJson(res, 400, { error: "BAD_REQUEST", message: "Invalid regex pattern" });
+          writeJson(res, 400, { error: "BAD_REQUEST", message: "Invalid search pattern" });
           return;
         }
 
@@ -3324,15 +3331,22 @@ const server = createServer(async (req, res) => {
           return;
         }
 
-        // Build regex from query
+        if (isRegex) {
+          writeJson(res, 400, {
+            error: "BAD_REQUEST",
+            message: "Regex find/replace is not supported on this dev surface. Use literal search.",
+          });
+          return;
+        }
+
+        // Literal search only: escape operator input before compiling.
         let pattern;
         try {
           const flags = caseSensitive ? "g" : "gi";
-          // snyk-disable-next-line javascript/reDOS -- loopback-only dev tool (127.0.0.1);
-          // operator-supplied regex is intentional search feature, not user input from the internet.
-          pattern = isRegex ? new RegExp(query, flags) : new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), flags);
+          const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          pattern = new RegExp(escapedQuery, flags);
         } catch (regErr) {
-          writeJson(res, 400, { error: "BAD_REQUEST", message: "Invalid regex: " + regErr.message });
+          writeJson(res, 400, { error: "BAD_REQUEST", message: "Invalid search pattern: " + regErr.message });
           return;
         }
 
