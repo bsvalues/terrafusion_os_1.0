@@ -24,3 +24,6 @@
 LICENSE
 README.md
 TerraFusion.sln.DotSettings
+
+# Local dev credential overrides — must NOT ship inside images
+**/appsettings.*.local.json
