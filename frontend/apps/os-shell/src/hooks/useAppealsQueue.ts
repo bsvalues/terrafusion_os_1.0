@@ -36,7 +36,6 @@ export function useAppealsQueue(): FreshData<AppealsQueueSummary> {
   const [state, setState] = useState<FreshData<AppealsQueueSummary>>(INITIAL)
   const lastUpdatedRef = useRef<number | null>(null)
   const lastDataRef = useRef<AppealsQueueSummary | null>(null)
-  const isInitialRef = useRef(true)
 
   useEffect(() => {
     const poll = async () => {
@@ -59,11 +58,7 @@ export function useAppealsQueue(): FreshData<AppealsQueueSummary> {
       }
     }
 
-    if (isInitialRef.current) {
-      isInitialRef.current = false
-      poll()
-    }
-
+    poll()
     const id = setInterval(poll, DAIS_REFRESH.appealsQueueMs)
     return () => clearInterval(id)
   }, [])
