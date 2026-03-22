@@ -3,9 +3,9 @@
  *
  * Phase 5.5 + R2.9: Property Dais Tab - Workflow MWUX Slice
  * Real MWUX with governed tool invocations:
- * - check_cert_status: Certification workflow status
+ * - check_cert_status: Certification roll status
  * - calculate_pilt_payment: PILT payment calculation (RCW, Hanford)
- * - explain_senior_exemption_impact: Senior/disabled exemption impact bands
+ * - explain_senior_exemption_impact: Senior exemption impact bands
  * - summarize_levy_rate_components: Levy rate breakdown
  * - generate_commissioner_memo: AI memo drafting
  * - draft_value_change_notice: Value change notice (write_low)
@@ -48,31 +48,18 @@ import AppealHearingPanel from '../../../components/dais/AppealHearingPanel';
 import AppealNoticePanel from '../../../components/dais/AppealNoticePanel';
 import AppealCertificationPanel from '../../../components/dais/AppealCertificationPanel';
 
-/** Workflow type options */
-const WORKFLOW_TYPES = [
-  { value: 'certification', label: 'Certification', description: 'Annual certification workflow' },
-  { value: 'appeal', label: 'Appeal', description: 'Property value appeal' },
-  { value: 'exemption', label: 'Exemption', description: 'Exemption application' },
-  { value: 'review', label: 'Review', description: 'Property review request' },
-] as const;
-
-type WorkflowType = (typeof WORKFLOW_TYPES)[number]['value'];
-
 interface WorkflowStep {
   name: string;
-  status: 'completed' | 'current' | 'pending';
+  status: 'completed' | 'pending';
 }
 
 interface StatusResult {
-  parcelId: string;
-  certificationStatus?: string;
-  lastUpdated?: string;
-  currentStep?: string;
-  completedSteps?: string[];
-  pendingSteps?: string[];
-  assignedTo?: string;
-  dueDate?: string;
-  workflowType?: string;
+  county: string;
+  taxYear: number;
+  status: string;
+  completedSteps: string[];
+  remainingSteps: string[];
+  certifiedAt?: string;
 }
 
 interface StatusState {
@@ -101,16 +88,15 @@ interface PiltState {
 
 /** Exemption impact result from explain_senior_exemption_impact */
 interface ExemptionBand {
-  incomeRange: string;
-  exemptionLevel: string;
-  estimatedSavings: number;
+  tier: string;
+  estTaxChange: number;
 }
 
 interface ExemptionResult {
-  parcelId: string;
-  bands: ExemptionBand[];
-  eligibilitySummary?: string;
-  rcwReference?: string;
+  summary: string;
+  assumptions: string[];
+  impactBands?: ExemptionBand[];
+  payloadRef?: string;
 }
 
 interface ExemptionState {
@@ -185,7 +171,6 @@ export const PropertyDais: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const appeals = usePropertyStore((s) => s.appeals);
 
-  const [workflowType, setWorkflowType] = useState<WorkflowType>('certification');
   const [statusState, setStatusState] = useState<StatusState>({ status: 'idle' });
   const [piltState, setPiltState] = useState<PiltState>({ status: 'idle' });
   const [exemptionState, setExemptionState] = useState<ExemptionState>({ status: 'idle' });
@@ -238,9 +223,11 @@ export const PropertyDais: React.FC = () => {
   const handleCheckStatus = useCallback(async () => {
     setStatusState({ status: 'loading' });
 
-    const params: Record<string, unknown> = {
-      parcelId,
-      workflowType,
+    const taxYear = new Date().getFullYear();
+
+    const params = {
+      county: 'benton',
+      taxYear,
     };
 
     try {
@@ -258,7 +245,7 @@ export const PropertyDais: React.FC = () => {
               ? JSON.parse(response.result.output)
               : response.result.output;
         } catch {
-          parsed = { parcelId };
+          parsed = { county: 'benton', taxYear, status: 'unknown', completedSteps: [], remainingSteps: [] };
         }
 
         setStatusState({
@@ -274,7 +261,7 @@ export const PropertyDais: React.FC = () => {
             status: 'success',
             correlationId: response.correlationId || 'unknown',
             timestamp: new Date(),
-            meta: { workflow: workflowType },
+            meta: { county: 'benton', taxYear },
           },
           ...prev.slice(0, 9),
         ]);
@@ -300,7 +287,7 @@ export const PropertyDais: React.FC = () => {
             correlationId: response.correlationId || 'unknown',
             timestamp: new Date(),
             errorCode: response.error?.code || 'STATUS_CHECK_FAILED',
-            meta: { workflow: workflowType },
+            meta: { county: 'benton', taxYear },
           },
           ...prev.slice(0, 9),
         ]);
@@ -328,12 +315,12 @@ export const PropertyDais: React.FC = () => {
           correlationId: clientCorrelationId,
           timestamp: new Date(),
           errorCode: 'NETWORK_ERROR',
-          meta: { workflow: workflowType },
+          meta: { county: 'benton', taxYear },
         },
         ...prev.slice(0, 9),
       ]);
     }
-  }, [parcelId, workflowType]);
+  }, [parcelId]);
 
   /** calculate_pilt_payment — PILT district payment calculation */
   const handleCalculatePilt = useCallback(async () => {
@@ -402,14 +389,16 @@ export const PropertyDais: React.FC = () => {
     }
   }, [parcelId]);
 
-  /** explain_senior_exemption_impact — exemption impact bands */
+  /** explain_senior_exemption_impact — senior exemption impact summary */
   const handleExemptionImpact = useCallback(async () => {
     setExemptionState({ status: 'loading' });
+
+    const year = new Date().getFullYear();
 
     try {
       const response = await invokeTool({
         toolId: 'explain_senior_exemption_impact',
-        params: { county: 'benton', parcelId, taxYear: new Date().getFullYear() },
+        params: { county: 'benton', parcelId, year, exemptionProgram: 'senior' },
         parcelId,
       });
 
@@ -420,7 +409,7 @@ export const PropertyDais: React.FC = () => {
             ? JSON.parse(response.result.output)
             : response.result.output;
         } catch {
-          parsed = { parcelId, bands: [] };
+          parsed = { summary: '', assumptions: [], impactBands: [] };
         }
 
         setExemptionState({ status: 'success', result: parsed, correlationId: response.correlationId });
@@ -815,12 +804,8 @@ export const PropertyDais: React.FC = () => {
       });
     }
 
-    if (result.currentStep) {
-      steps.push({ name: result.currentStep, status: 'current' });
-    }
-
-    if (result.pendingSteps) {
-      result.pendingSteps.forEach((step) => {
+    if (result.remainingSteps) {
+      result.remainingSteps.forEach((step) => {
         steps.push({ name: step, status: 'pending' });
       });
     }
@@ -867,29 +852,10 @@ export const PropertyDais: React.FC = () => {
       {/* Main Content Grid */}
       <BentoGrid columns="auto" gap={1.5} padding={0}>
         {/* Controls Panel */}
-        <BentoCard variant="form" title="Workflow Parameters" actions={<span>⚙️</span>}>
-
-          {/* Workflow Type Selector */}
-          <div className='mb-4'>
-            <label htmlFor='workflow-type' className='block tf-text-secondary text-sm mb-2'>
-              Workflow Type
-            </label>
-            <select
-              id='workflow-type'
-              value={workflowType}
-              onChange={(e) => setWorkflowType(e.target.value as WorkflowType)}
-              className='tf-input'
-            >
-              {WORKFLOW_TYPES.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <p className='tf-text-dim text-xs mt-1'>
-              {WORKFLOW_TYPES.find((t) => t.value === workflowType)?.description}
-            </p>
-          </div>
+        <BentoCard variant="form" title="Certification Status Request" actions={<span>⚙️</span>}>
+          <p className='tf-text-tertiary text-sm mb-4'>
+            Submit a governed certification-status request for Benton County and the current tax year, then review the returned county, tax year, status, completed steps, remaining steps, and certified-at timestamp
+          </p>
 
           {/* Check Status Button */}
           <button
@@ -897,7 +863,7 @@ export const PropertyDais: React.FC = () => {
             disabled={statusState.status === 'loading'}
             className='tf-suite-dais-cta w-full py-2 px-4 rounded-lg font-semibold transition-all'
           >
-            {statusState.status === 'loading' ? 'Checking...' : 'Check Status'}
+            {statusState.status === 'loading' ? 'Submitting...' : 'Submit Certification Status Request'}
           </button>
         </BentoCard>
 
@@ -906,14 +872,14 @@ export const PropertyDais: React.FC = () => {
           {statusState.status === 'loading' ? (
             <div role='status' className='flex flex-col items-center justify-center py-12 gap-3'>
               <div className='tf-spinner h-10 w-10' />
-              <span className='tf-text-tertiary'>Checking workflow status...</span>
+              <span className='tf-text-tertiary'>Submitting certification-status request...</span>
             </div>
           ) : statusState.status === 'success' && statusState.result ? (
             <div className='space-y-4'>
               {/* Status Summary */}
               <div className='flex items-center justify-between mb-3'>
                 <h4 className='tf-suite-accent-text font-semibold flex items-center gap-2'>
-                  <span>✅</span> Workflow Status
+                  <span>✅</span> Certification Status
                 </h4>
                 {statusState.correlationId && (
                   <div className='flex items-center gap-2 text-xs'>
@@ -933,49 +899,46 @@ export const PropertyDais: React.FC = () => {
               </div>
 
               {/* Status Cards */}
-              <div className='grid grid-cols-2 gap-4'>
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
                 <div className='tf-panel p-4'>
                   <div className='tf-text-tertiary text-sm'>Status</div>
                   <div className='text-xl font-bold tf-text'>
-                    {statusState.result.certificationStatus || 'Unknown'}
+                    {statusState.result.status || 'unknown'}
                   </div>
                 </div>
                 <div className='tf-panel p-4'>
-                  <div className='tf-text-tertiary text-sm'>Reported Step</div>
+                  <div className='tf-text-tertiary text-sm'>County</div>
                   <div className='text-xl font-bold tf-text'>
-                    {statusState.result.currentStep || 'N/A'}
+                    {statusState.result.county || 'unknown'}
+                  </div>
+                </div>
+                <div className='tf-panel p-4'>
+                  <div className='tf-text-tertiary text-sm'>Tax Year</div>
+                  <div className='text-xl font-bold tf-text'>
+                    {statusState.result.taxYear}
                   </div>
                 </div>
               </div>
 
               <p className='tf-text-tertiary text-sm'>
-                Shown from the workflow status returned for this parcel.
+                Shows the returned county, tax year, status, completed steps, remaining steps, and certified-at timestamp for this certification-status request.
               </p>
 
               {/* Workflow Steps */}
               {(statusState.result.completedSteps?.length ||
-                statusState.result.pendingSteps?.length ||
-                statusState.result.currentStep) && (
+                statusState.result.remainingSteps?.length) && (
                 <div className='tf-panel p-4'>
                   <h5 className='tf-text-secondary font-medium mb-3'>📋 Workflow Steps</h5>
                   <div className='space-y-2'>
                     {buildWorkflowSteps(statusState.result).map((step, idx) => (
                       <div
                         key={idx}
-                        className={`flex items-center gap-3 py-2 px-3 rounded ${
-                          step.status === 'current'
-                            ? 'tf-suite-active'
-                            : step.status === 'completed'
-                              ? 'tf-status-success'
-                              : 'tf-panel'
-                        }`}
+                        className={`flex items-center gap-3 py-2 px-3 rounded ${step.status === 'completed' ? 'tf-status-success' : 'tf-panel'}`}
                       >
                         <span>{getStepIcon(step.status)}</span>
                         <span
                           className={
-                            step.status === 'current'
-                              ? 'tf-text font-medium'
-                              : step.status === 'completed'
+                            step.status === 'completed'
                                 ? ''
                                 : 'tf-text-muted'
                           }
@@ -993,30 +956,10 @@ export const PropertyDais: React.FC = () => {
                 </div>
               )}
 
-              {/* Assignment Info */}
-              {(statusState.result.assignedTo || statusState.result.dueDate) && (
-                <div className='grid grid-cols-2 gap-4'>
-                  {statusState.result.assignedTo && (
-                    <div className='tf-panel p-3'>
-                      <div className='tf-text-tertiary text-sm'>Assigned To</div>
-                      <div className='tf-text font-medium'>{statusState.result.assignedTo}</div>
-                    </div>
-                  )}
-                  {statusState.result.dueDate && (
-                    <div className='tf-panel p-3'>
-                      <div className='tf-text-tertiary text-sm'>Due Date</div>
-                      <div className='tf-text font-medium'>
-                        {formatDate(statusState.result.dueDate)}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Last Updated */}
-              {statusState.result.lastUpdated && (
+              {/* Certified At */}
+              {statusState.result.certifiedAt && (
                 <div className='text-xs tf-text-dim'>
-                  Last updated: {formatDate(statusState.result.lastUpdated)}
+                  Certified at: {formatDate(statusState.result.certifiedAt)}
                 </div>
               )}
 
@@ -1035,9 +978,9 @@ export const PropertyDais: React.FC = () => {
           ) : statusState.status === 'idle' ? (
             <div className='flex flex-col items-center justify-center py-12 text-center'>
               <div className='text-4xl mb-2'>📊</div>
-              <p className='tf-text-tertiary'>Select workflow type and check status</p>
+              <p className='tf-text-tertiary'>Submit a certification-status request to view the returned status and steps</p>
               <p className='tf-text-dim text-sm mt-1'>
-                View certification status, workflow steps, and assignments
+                Review the returned county, tax year, completed steps, remaining steps, and certified-at timestamp
               </p>
             </div>
           ) : null}
@@ -1133,43 +1076,51 @@ export const PropertyDais: React.FC = () => {
       {/* ================================================================ */}
       {/* Senior Exemption Impact — explain_senior_exemption_impact tool    */}
       {/* ================================================================ */}
-      <BentoCard title="Senior/Disabled Exemption Impact" actions={<span>🏠</span>}>
+      <BentoCard title="Senior Exemption Impact" actions={<span>🏠</span>}>
         <div className='flex items-start justify-between gap-4 flex-wrap mb-3'>
           <p className='tf-text-dim text-sm'>
-            RCW 84.36.381 exemption impact analysis by income band
+            Submit a governed senior-exemption impact request for this parcel and the current tax year, then review the returned summary, assumptions, and impact bands
           </p>
           <button
             onClick={handleExemptionImpact}
             disabled={exemptionState.status === 'loading'}
             className='px-4 py-2 rounded-lg font-semibold transition-all tf-suite-dais-cta'
           >
-            {exemptionState.status === 'loading' ? 'Analyzing...' : 'Analyze Impact'}
+            {exemptionState.status === 'loading' ? 'Submitting...' : 'Submit Senior Exemption Impact Request'}
           </button>
         </div>
 
         {exemptionState.status === 'success' && exemptionState.result && (
           <div className='space-y-3'>
-            {exemptionState.result.eligibilitySummary && (
-              <p className='tf-text-secondary text-sm'>{exemptionState.result.eligibilitySummary}</p>
+            {exemptionState.result.summary && (
+              <p className='tf-text-secondary text-sm'>{exemptionState.result.summary}</p>
             )}
-            {exemptionState.result.bands?.length ? (
+            {exemptionState.result.assumptions?.length ? (
+              <div className='tf-panel p-4 rounded-xl'>
+                <div className='tf-text-dim text-xs uppercase tracking-wide mb-2'>Returned Assumptions</div>
+                <ul className='space-y-1 text-sm tf-text-secondary list-disc pl-5'>
+                  {exemptionState.result.assumptions.map((assumption, idx) => (
+                    <li key={idx}>{assumption}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {exemptionState.result.impactBands?.length ? (
               <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
-                {exemptionState.result.bands.map((band, idx) => (
+                {exemptionState.result.impactBands.map((band, idx) => (
                   <div key={idx} className='tf-panel p-4 rounded-xl'>
-                    <div className='tf-text-dim text-xs uppercase tracking-wide'>{band.incomeRange}</div>
-                    <div className='tf-text font-bold text-lg mt-1'>{band.exemptionLevel}</div>
+                    <div className='tf-text-dim text-xs uppercase tracking-wide'>{band.tier}</div>
+                    <div className='tf-text font-bold text-lg mt-1'>Estimated Tax Change</div>
                     <div className='tf-text-secondary text-sm mt-1'>
-                      Saves ${band.estimatedSavings?.toLocaleString() ?? '0'}
+                      ${band.estTaxChange?.toLocaleString() ?? '0'}
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className='tf-text-dim text-sm italic'>No exemption bands returned.</p>
+              <p className='tf-text-dim text-sm italic'>No impact bands returned.</p>
             )}
-            {exemptionState.result.rcwReference && (
-              <p className='tf-text-dim text-xs'>Ref: {exemptionState.result.rcwReference}</p>
-            )}
+            <p className='tf-text-tertiary text-xs'>Shows the returned summary, assumptions, and impact bands for this senior-exemption impact request.</p>
             {exemptionState.correlationId && (
               <div className='flex items-center gap-2 text-xs'>
                 <span className='tf-text-muted'>ID:</span>
@@ -1552,7 +1503,7 @@ export const PropertyDais: React.FC = () => {
                 <span className='font-semibold tf-text'>{certProgressState.result.percentComplete}% Complete</span>
                 <span className='text-xs tf-badge px-2 py-0.5 rounded'>{certProgressState.result.taxYear}</span>
               </div>
-              <div className='w-full bg-gray-700 rounded-full h-2 mb-3'><div className='bg-green-500 h-2 rounded-full transition-all' style={{ width: `${certProgressState.result.percentComplete}%` }} /></div>
+              <div className='w-full tf-border rounded-full h-2 mb-3'><div className='bg-[color:var(--terra-green,#22c55e)] h-2 rounded-full transition-all' style={{ width: `${certProgressState.result.percentComplete}%` }} /></div>
               {certProgressState.result.steps.length > 0 && <div className='space-y-1'>{certProgressState.result.steps.map(s => <div key={s.id} className='flex items-center gap-2 text-sm'><span>{s.complete ? '✅' : '⏳'}</span><span className='tf-text'>{s.name}</span></div>)}</div>}
               {certProgressState.result.blockers.length > 0 && <div className='mt-2 text-xs text-red-400'>Blockers: {certProgressState.result.blockers.join(', ')}</div>}
               <p className='text-xs tf-text-dim mt-2'>Shows the returned percent complete, checklist steps, and blockers for this certification progress request.</p>

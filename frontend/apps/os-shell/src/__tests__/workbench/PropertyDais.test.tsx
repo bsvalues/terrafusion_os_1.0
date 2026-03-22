@@ -52,16 +52,12 @@ describe('PropertyDais', () => {
       expect(screen.getAllByText(/12345-001/).length).toBeGreaterThan(0);
     });
 
-    it('displays workflow status controls', () => {
-      const { container } = render(<TestWrapper parcelId='12345-001' />);
-
-      expect(screen.getByRole('button', { name: /check status/i })).toBeInTheDocument();
-    });
-
-    it('displays workflow type options', () => {
+    it('displays certification status request controls', () => {
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByLabelText(/workflow type/i)).toBeInTheDocument();
+      expect(screen.getByText(/Submit a governed certification-status request for Benton County and the current tax year, then review the returned county, tax year, status, completed steps, remaining steps, and certified-at timestamp/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Submit Certification Status Request/i })).toBeInTheDocument();
+      expect(screen.queryByLabelText(/workflow type/i)).not.toBeInTheDocument();
     });
 
     it('shows loaded appeals disclosure for store-backed appeal records', () => {
@@ -89,34 +85,21 @@ describe('PropertyDais', () => {
       expect(screen.queryByText(/^Active Appeals$/i)).not.toBeInTheDocument();
     });
   });
-
-  describe('Controls', () => {
-    it('allows workflow type selection', () => {
-      render(<TestWrapper parcelId='12345-001' />);
-
-      const typeSelect = screen.getByLabelText(/workflow type/i);
-      fireEvent.change(typeSelect, { target: { value: 'appeal' } });
-
-      expect(typeSelect).toHaveValue('appeal');
-    });
-  });
-
   describe('Tool Invocation', () => {
-    it('invokes check_cert_status tool successfully', async () => {
+    it('invokes check_cert_status with request wording and returned-status disclosure', async () => {
+      const currentYear = new Date().getFullYear();
       const mockResponse = {
         success: true,
         correlationId: 'corr-dais-abc123',
         result: {
           toolId: 'check_cert_status',
           output: JSON.stringify({
-            parcelId: '12345-001',
-            certificationStatus: 'pending_review',
-            lastUpdated: '2026-02-05T10:30:00Z',
-            currentStep: 'Appraiser Review',
+            county: 'benton',
+            taxYear: currentYear,
+            status: 'pending_review',
             completedSteps: ['Intake', 'Data Verification'],
-            pendingSteps: ['Supervisor Approval', 'Final Certification'],
-            assignedTo: 'John Smith',
-            dueDate: '2026-02-15T00:00:00Z',
+            remainingSteps: ['Supervisor Approval', 'Final Certification'],
+            certifiedAt: '2026-02-05T10:30:00Z',
           }),
         },
       };
@@ -125,30 +108,35 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      // Click check status
-      fireEvent.click(screen.getByRole('button', { name: /check status/i }));
+      expect(screen.getByText(/Submit a governed certification-status request for Benton County and the current tax year, then review the returned county, tax year, status, completed steps, remaining steps, and certified-at timestamp/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Select workflow type and check status/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/View certification status, workflow steps, and assignments/i)).not.toBeInTheDocument();
 
-      // Verify tool invoked
+      fireEvent.click(screen.getByRole('button', { name: /Submit Certification Status Request/i }));
+
       await waitFor(() => {
         expect(mockInvokeTool).toHaveBeenCalledWith({
           toolId: 'check_cert_status',
-          params: expect.objectContaining({
-            parcelId: '12345-001',
-          }),
+          params: {
+            county: 'benton',
+            taxYear: currentYear,
+          },
           parcelId: '12345-001',
         });
       });
 
-      // Verify success display
       await waitFor(() => {
         expect(screen.getAllByText(/pending_review/i).length).toBeGreaterThan(0);
-        expect(screen.getAllByText(/Appraiser Review/i).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/benton/i).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(new RegExp(`${currentYear}`, 'i')).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/Final Certification/i).length).toBeGreaterThan(0);
         expect(screen.getAllByText(/corr-dais/).length).toBeGreaterThan(0);
       });
 
-      expect(screen.getByText(/^Reported Step$/i)).toBeInTheDocument();
-      expect(screen.getByText(/Shown from the workflow status returned for this parcel\./i)).toBeInTheDocument();
-      expect(screen.queryByText(/^Current Step$/i)).not.toBeInTheDocument();
+      expect(screen.getByText(/Shows the returned county, tax year, status, completed steps, remaining steps, and certified-at timestamp for this certification-status request\./i)).toBeInTheDocument();
+      expect(screen.getByText(/Certified at:/i)).toBeInTheDocument();
+      expect(screen.queryByText(/^Reported Step$/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Assigned To/i)).not.toBeInTheDocument();
     });
 
     it('surfaces tool error with correlationId', async () => {
@@ -166,7 +154,7 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      fireEvent.click(screen.getByRole('button', { name: /check status/i }));
+      fireEvent.click(screen.getByRole('button', { name: /Submit Certification Status Request/i }));
 
       await waitFor(() => {
         expect(screen.getByText(/No active workflow found/i)).toBeInTheDocument();
@@ -179,7 +167,7 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      fireEvent.click(screen.getByRole('button', { name: /check status/i }));
+      fireEvent.click(screen.getByRole('button', { name: /Submit Certification Status Request/i }));
 
       await waitFor(() => {
         expect(screen.getByText(/network error|failed to fetch/i)).toBeInTheDocument();
@@ -535,6 +523,63 @@ describe('PropertyDais', () => {
       });
 
       expect(screen.queryByText(/^PILT Districts$/i)).not.toBeInTheDocument();
+    });
+
+    it('invokes explain_senior_exemption_impact with request wording and returned-summary disclosure', async () => {
+      const currentYear = new Date().getFullYear();
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-senior-exemption-001',
+        result: {
+          toolId: 'explain_senior_exemption_impact',
+          output: JSON.stringify({
+            summary: `Senior exemption impact estimate for tax year ${currentYear}.`,
+            assumptions: [
+              `Tax year ${currentYear}`,
+              'Parcel 12345-001 provided',
+              'Public-rate estimate only',
+            ],
+            impactBands: [
+              { tier: 'Income up to $40,000', estTaxChange: 1200 },
+              { tier: 'Income $40,001-$50,000', estTaxChange: 650 },
+            ],
+            payloadRef: `dais://benton/exemptions/12345-001/${currentYear}`,
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed senior-exemption impact request for this parcel and the current tax year, then review the returned summary, assumptions, and impact bands/i)).toBeInTheDocument();
+      expect(screen.queryByText(/RCW 84\.36\.381 exemption impact analysis by income band/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Senior\/Disabled Exemption Impact$/i)).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: /Submit Senior Exemption Impact Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'explain_senior_exemption_impact',
+          params: {
+            county: 'benton',
+            parcelId: '12345-001',
+            year: currentYear,
+            exemptionProgram: 'senior',
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(new RegExp(`Senior exemption impact estimate for tax year ${currentYear}\.`, 'i'))).toBeInTheDocument();
+        expect(screen.getAllByText(new RegExp(`Tax year ${currentYear}`, 'i')).length).toBeGreaterThan(0);
+        expect(screen.getByText(/Parcel 12345-001 provided/i)).toBeInTheDocument();
+        expect(screen.getByText(/Public-rate estimate only/i)).toBeInTheDocument();
+        expect(screen.getByText(/Income up to \$40,000/i)).toBeInTheDocument();
+        expect(screen.getByText(/Income \$40,001-\$50,000/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned summary, assumptions, and impact bands for this senior-exemption impact request\./i)).toBeInTheDocument();
+      });
     });
 
     it('invokes draft_value_change_notice with request wording and returned-draft disclosure', async () => {
@@ -1092,7 +1137,7 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      fireEvent.click(screen.getByRole('button', { name: /check status/i }));
+      fireEvent.click(screen.getByRole('button', { name: /submit certification status request/i }));
 
       expect(screen.getByRole('status')).toBeInTheDocument();
     });
@@ -1111,7 +1156,7 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      fireEvent.click(screen.getByRole('button', { name: /check status/i }));
+      fireEvent.click(screen.getByRole('button', { name: /submit certification status request/i }));
 
       await waitFor(() => {
         expect(screen.getAllByText(/corr-dais/).length).toBeGreaterThan(0);
@@ -1127,52 +1172,60 @@ describe('PropertyDais', () => {
 
   describe('Status Display', () => {
     it('displays workflow steps when available', async () => {
+      const currentYear = new Date().getFullYear();
       mockInvokeTool.mockResolvedValue({
         success: true,
         correlationId: 'corr-steps-test',
         result: {
           toolId: 'check_cert_status',
           output: JSON.stringify({
-            parcelId: '12345-001',
+            county: 'benton',
+            taxYear: currentYear,
+            status: 'pending_review',
             completedSteps: ['Intake', 'Verification'],
-            pendingSteps: ['Final Approval'],
-            currentStep: 'Supervisor Check',
+            remainingSteps: ['Final Approval'],
           }),
         },
       });
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      fireEvent.click(screen.getByRole('button', { name: /check status/i }));
+      fireEvent.click(screen.getByRole('button', { name: /Submit Certification Status Request/i }));
 
       await waitFor(() => {
         expect(screen.getAllByText(/Intake/i).length).toBeGreaterThan(0);
         expect(screen.getAllByText(/Verification/i).length).toBeGreaterThan(0);
-        expect(screen.getAllByText(/Supervisor Check/i).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/Final Approval/i).length).toBeGreaterThan(0);
       });
     });
 
-    it('displays assignee and due date when available', async () => {
+    it('does not render unsupported assignment fields for certification status results', async () => {
+      const currentYear = new Date().getFullYear();
       mockInvokeTool.mockResolvedValue({
         success: true,
         correlationId: 'corr-assign-test',
         result: {
           toolId: 'check_cert_status',
           output: JSON.stringify({
-            parcelId: '12345-001',
-            assignedTo: 'Jane Doe',
-            dueDate: '2026-02-20T00:00:00Z',
+            county: 'benton',
+            taxYear: currentYear,
+            status: 'complete',
+            completedSteps: ['Intake', 'Verification', 'Certification'],
+            remainingSteps: [],
           }),
         },
       });
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      fireEvent.click(screen.getByRole('button', { name: /check status/i }));
+      fireEvent.click(screen.getByRole('button', { name: /Submit Certification Status Request/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/Jane Doe/i)).toBeInTheDocument();
+        expect(screen.getByText('complete')).toBeInTheDocument();
       });
+
+      expect(screen.queryByText(/Assigned To/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Due Date/i)).not.toBeInTheDocument();
     });
   });
 });
