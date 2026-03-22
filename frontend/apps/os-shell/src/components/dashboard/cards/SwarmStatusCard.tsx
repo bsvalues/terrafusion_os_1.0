@@ -22,7 +22,7 @@ export function SwarmStatusCard({ swarm }: SwarmStatusCardProps) {
   if (swarm.source === 'unavailable') {
     return (
       <div className="rounded-lg border border-red-900/40 bg-terra-midnight p-4 flex flex-col gap-1">
-        <p className="text-xs text-gray-500 uppercase tracking-wide">AI Swarm</p>
+        <p className="text-xs tf-text-dim uppercase tracking-wide">AI Swarm</p>
         <span className="text-xs text-red-400 font-medium">Unavailable</span>
       </div>
     )
@@ -47,7 +47,7 @@ export function SwarmStatusCard({ swarm }: SwarmStatusCardProps) {
       swarm.isStale ? 'border-amber-800/40 bg-terra-midnight' : 'border-white/10 bg-terra-midnight'
     )}>
       <div className="flex items-center justify-between">
-        <p className="text-xs text-gray-500 uppercase tracking-wide">AI Swarm</p>
+        <p className="text-xs tf-text-dim uppercase tracking-wide">AI Swarm</p>
         {swarm.source === 'fallback' && (
           <span className="text-xs text-amber-400">Last known</span>
         )}
@@ -67,10 +67,10 @@ export function SwarmStatusCard({ swarm }: SwarmStatusCardProps) {
             <ConnectionPip state={data.connectionState} />
             <span className="text-sm font-medium text-white capitalize">{data.connectionState}</span>
           </div>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs tf-text-dim">
             {data.healthyAgents.toLocaleString()} / {data.totalAgents.toLocaleString()} agents healthy
           </p>
-          <p className="text-xs text-gray-500 capitalize">{data.overallStatus}</p>
+          <p className="text-xs tf-text-dim capitalize">{data.overallStatus}</p>
         </>
       )}
     </div>
