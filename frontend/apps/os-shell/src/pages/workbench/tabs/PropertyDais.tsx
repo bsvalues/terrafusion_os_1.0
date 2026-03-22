@@ -35,6 +35,7 @@ import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
     InvocationHistory,
     ParcelContextHeader,
+    WorkbenchSourceBadge,
     type InvocationRecord,
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
@@ -1579,7 +1580,7 @@ export const PropertyDais: React.FC = () => {
       {/* ═══ R2.9 TerraQueue Module ═══ */}
 
       {/* Queue Statistics (read_only) */}
-      <BentoCard title='📈 Queue Statistics' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
+      <BentoCard title='📈 Queue Statistics' actions={<><span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span><WorkbenchSourceBadge source={queueStatsState.status === 'success' ? 'live' : 'unavailable'} className='ml-2' /></>}>
         <p className='tf-text-tertiary text-sm mb-3'>Task queue statistics with SLA compliance metrics</p>
         <button onClick={handleGetQueueStats} disabled={queueStatsState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
           {queueStatsState.status === 'loading' ? 'Loading...' : 'Get Queue Statistics'}
