@@ -1,0 +1,45 @@
+# Design Token Police — Banned Class Patterns
+# Format: BANNED_PATTERN|CANONICAL_REPLACEMENT|REASON
+# Patterns are grep -E extended regex matched against className strings.
+#
+# TerraFusion canonical tokens (as of 2026-03-22):
+#   Text:    tf-text  tf-text-primary  tf-text-secondary  tf-text-tertiary  tf-text-dim
+#   Surface: tf-panel  terra-midnight  terra-glass  terra-slate
+#   Brand:   terra-cyan  terra-blue  terra-silver  terra-green
+#   UI:      tf-input  tf-badge  tf-border  tf-spinner  tf-suite-accent-text
+#
+# TDC ratchet baseline: 779 violations (2026-03-22). Each new violation
+# must be caught here BEFORE it reaches the pre-commit hook.
+
+# ── Text color drift ─────────────────────────────────────────────────────────
+text-gray-[0-9]|tf-text-tertiary / tf-text-dim / tf-text-secondary|Raw gray text bypasses dark-theme tokens
+text-slate-[0-9]|tf-text-secondary or tf-text-tertiary|Raw slate bypasses dark-theme tokens
+text-zinc-[0-9]|tf-text-dim|Raw zinc bypasses dark-theme tokens
+text-neutral-[0-9]|tf-text-dim|Raw neutral bypasses dark-theme tokens
+text-stone-[0-9]|tf-text-tertiary|Raw stone bypasses dark-theme tokens
+text-white|tf-text or terra-silver|White text hardcodes light-mode assumption; use semantic token
+text-black|tf-text|Black text hardcodes light-mode assumption
+text-blue-[0-9]|terra-blue or tf-suite-accent-text|Raw blue bypasses brand palette
+text-green-[0-9]|terra-green|Raw green bypasses brand palette
+text-red-[0-9]|tf-badge-error or text-red-400 (acceptable for error states — verify context)|Raw red may be acceptable for error states; confirm intent
+text-yellow-[0-9]|tf-badge-warning or amber-* (verify)|Raw yellow — confirm this is a warning state
+
+# ── Background color drift ────────────────────────────────────────────────────
+bg-gray-[0-9]|tf-panel or terra-midnight|Raw gray background bypasses dark-theme surface tokens
+bg-slate-[0-9]|tf-panel or terra-slate|Raw slate bypasses surface tokens
+bg-zinc-[0-9]|tf-panel|Raw zinc bypasses surface tokens
+bg-neutral-[0-9]|tf-panel|Raw neutral bypasses surface tokens
+bg-white|terra-midnight or tf-panel|White background hardcodes light-mode — dark-theme violation
+bg-black|terra-midnight|Black background — use semantic surface token
+bg-blue-[0-9]|terra-blue (as bg, confirm intent)|Raw blue background bypasses brand tokens
+bg-green-[0-9]|terra-green (as bg, confirm intent)|Raw green background bypasses brand tokens
+
+# ── Border drift ──────────────────────────────────────────────────────────────
+border-gray-[0-9]|tf-border|Raw gray border bypasses border token
+border-slate-[0-9]|tf-border|Raw slate border bypasses border token
+border-white|tf-border|White border hardcodes light-mode
+
+# ── Spacing / typography drift (lower severity) ───────────────────────────────
+font-size-\[|Use Tailwind text-* scale (text-sm, text-xs, text-base)|Arbitrary font-size bypasses type scale
+leading-\[|Use Tailwind leading-* scale|Arbitrary line-height bypasses type scale
+tracking-\[|Use Tailwind tracking-* scale (generally)|Arbitrary letter-spacing — confirm intent
