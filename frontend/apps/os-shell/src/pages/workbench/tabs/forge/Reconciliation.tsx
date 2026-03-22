@@ -12,6 +12,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useWorkbenchTab } from '../../../../context/workbenchTabContext';
 import { BentoCard } from '../../../../ui/materials/BentoCard';
+import { WorkbenchSourceBadge } from '../../../../components/workbench/WorkbenchSourceBadge';
 import type { ForgeSubTabProps } from './types';
 import { fmtCurrency, CURRENT_YEAR } from './types';
 
@@ -205,7 +206,16 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
       </div>
 
       {/* ── Reconciliation Controls ────────────────────── */}
-      <BentoCard title="⚖️ Reconciliation" variant="default">
+      <BentoCard
+        title="⚖️ Reconciliation"
+        variant="default"
+        actions={
+          <WorkbenchSourceBadge
+            source={reconciled ? 'live' : 'unavailable'}
+            className="ml-2"
+          />
+        }
+      >
         <div className="space-y-4">
           {/* Method Selector */}
           <div className="flex items-center gap-4">
