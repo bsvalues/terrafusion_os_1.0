@@ -215,7 +215,7 @@ function useSafePathname(): string {
  * <DesktopErrorBoundary>
  *   <Desktop>
  *     ├── <DesktopBackground />       (z: 0)
- *     ├── <shell-routed-content />    (z: 2, non-home routes via Outlet)
+ *     ├── <routed-content-outlet />   (z: 2, non-home routes via Outlet)
  *     ├── <WindowManager />           (z: 30+)
  *     ├── <Taskbar />                 (z: 1000)
  *     ├── <StartMenu />               (z: 1001, conditional)
