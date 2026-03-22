@@ -151,6 +151,13 @@ describe('PropertyAtlas', () => {
         expect(screen.getAllByText(/Parcel Boundary/i).length).toBeGreaterThan(0);
         expect(screen.getByText(/Zoning Districts/i)).toBeInTheDocument();
         expect(screen.getByText(/Not exposed on this route yet/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches/i)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/Atlas layer availability is confirmed for this parcel, but the boundary and centroid shown on this route are preview sketches/i)
+        ).toBeInTheDocument();
+        expect(screen.queryByText(/Live Atlas layer truth is available/i)).not.toBeInTheDocument();
         // Truncated display shows first 16 chars
         expect(screen.getAllByText(/corr-atlas-abc/).length).toBeGreaterThan(0);
       });

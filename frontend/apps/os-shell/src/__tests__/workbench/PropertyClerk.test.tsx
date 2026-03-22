@@ -16,9 +16,17 @@ import PropertyClerk from '../../pages/workbench/tabs/PropertyClerk';
 
 vi.mock('../../api/pilotApi');
 
+let clerkRecordings: Array<{
+  recordingId: string;
+  documentType: string;
+  grantor?: string;
+  grantee?: string;
+  recordingDate: string;
+}> = [];
+
 vi.mock('../../stores/propertyStore', () => ({
-  usePropertyStore: (selector: (s: { recordings: never[] }) => unknown) => {
-    const state = { recordings: [] };
+  usePropertyStore: (selector: (s: { recordings: typeof clerkRecordings }) => unknown) => {
+    const state = { recordings: clerkRecordings };
     return typeof selector === 'function' ? selector(state) : state;
   },
 }));
@@ -94,6 +102,7 @@ describe('PropertyClerk', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     capturedRecords = [];
+    clerkRecordings = [];
   });
 
   // ── Rendering ──────────────────────────────────────────────────────────────
@@ -122,12 +131,50 @@ describe('PropertyClerk', () => {
       expect(screen.getByText(/write_high/i)).toBeInTheDocument();
       expect(screen.getByText(/write_low/i)).toBeInTheDocument();
     });
+
+    it('describes the recording action as a submission request until the tool confirms it', () => {
+      render(<TestWrapper />);
+
+      expect(
+        screen.getByText(/Submit a governed recording request for county processing\. Official record status appears only after the tool returns a recording number and timestamp\./i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('checkbox', { name: /I confirm this recording request is ready for submission/i })
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/official county record/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/I confirm this official recording/i)).not.toBeInTheDocument();
+    });
+
+    it('renders loaded recording history wording when store recordings are present', () => {
+      clerkRecordings = [
+        {
+          recordingId: 'REC-1',
+          documentType: 'Warranty Deed',
+          grantor: 'Alex Smith',
+          grantee: 'Taylor Jones',
+          recordingDate: '2024-01-15T00:00:00Z',
+        },
+      ];
+
+      render(<TestWrapper />);
+
+      expect(screen.getByText(/Loaded Recording History \(1\)/i)).toBeInTheDocument();
+      expect(screen.getByText(/Shown from the recording history currently loaded for this parcel\./i)).toBeInTheDocument();
+      expect(screen.queryByText(/Recent Recordings/i)).not.toBeInTheDocument();
+    });
+
+    it('describes the recording summary as returned totals plus preview entries', () => {
+      render(<TestWrapper />);
+
+      expect(screen.getByText(/Returned recording totals and preview entries for parcel BC-2026-001/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Summary of all recordings for parcel BC-2026-001/i)).not.toBeInTheDocument();
+    });
   });
 
   // ── Tool Invocations ───────────────────────────────────────────────────────
 
   describe('Tool Invocations', () => {
-    it('invokes search_recorded_documents with correct params and renders result', async () => {
+    it('invokes search_recorded_documents with returned-query wording and preview disclosure', async () => {
       mockInvokeTool.mockResolvedValue({
         success: true,
         correlationId: 'corr-search-001',
@@ -150,6 +197,9 @@ describe('PropertyClerk', () => {
 
       render(<TestWrapper />);
 
+      expect(screen.getByText(/Search returned recorded-document preview entries for this parcel using the entered query/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Search recorded instruments by keyword, grantor, or type/i)).not.toBeInTheDocument();
+
       const input = screen.getByPlaceholderText(/Search query/i);
       fireEvent.change(input, { target: { value: 'deed' } });
 
@@ -165,10 +215,11 @@ describe('PropertyClerk', () => {
 
       await waitFor(() => {
         expect(screen.getByText(/1 document\(s\) found/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned document count and preview entries for this parcel query\./i)).toBeInTheDocument();
       });
     });
 
-    it('invokes get_title_chain and renders currentOwner', async () => {
+    it('invokes get_title_chain and renders returned title-chain preview wording', async () => {
       mockInvokeTool.mockResolvedValue({
         success: true,
         correlationId: 'corr-title-001',
@@ -176,13 +227,23 @@ describe('PropertyClerk', () => {
           toolId: 'get_title_chain',
           output: JSON.stringify({
             parcelId: PARCEL_ID,
-            chain: [],
+            chain: [
+              { documentId: 'DOC-001', type: 'Deed', grantor: 'Owner A', grantee: 'Owner B', date: '2020-01-01T00:00:00Z' },
+              { documentId: 'DOC-002', type: 'Deed', grantor: 'Owner B', grantee: 'Owner C', date: '2021-01-01T00:00:00Z' },
+              { documentId: 'DOC-003', type: 'Deed', grantor: 'Owner C', grantee: 'Owner D', date: '2022-01-01T00:00:00Z' },
+              { documentId: 'DOC-004', type: 'Deed', grantor: 'Owner D', grantee: 'Owner E', date: '2023-01-01T00:00:00Z' },
+              { documentId: 'DOC-005', type: 'Deed', grantor: 'Owner E', grantee: 'Owner F', date: '2024-01-01T00:00:00Z' },
+              { documentId: 'DOC-006', type: 'Deed', grantor: 'Owner F', grantee: 'Owner G', date: '2025-01-01T00:00:00Z' },
+            ],
             currentOwner: 'Margaret Thompson',
           }),
         },
       });
 
       render(<TestWrapper />);
+
+      expect(screen.getByText(/Returned title-chain owner and preview entries for parcel/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Ownership chain of title for parcel/i)).not.toBeInTheDocument();
 
       fireEvent.click(screen.getByRole('button', { name: /Get Title Chain/i }));
 
@@ -195,7 +256,17 @@ describe('PropertyClerk', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Margaret Thompson/i)).toBeInTheDocument();
+        const ownerLine = screen.getByText(/Returned Title-Chain Owner:/i);
+        const previewPanel = ownerLine.closest('div');
+
+        expect(ownerLine).toBeInTheDocument();
+        expect(previewPanel).not.toBeNull();
+        expect(previewPanel).toHaveTextContent(/Returned Title-Chain Owner: Margaret Thompson/i);
+        expect(previewPanel).toHaveTextContent(/Owner shown from the returned title chain\. This preview shows up to five returned chain entries\./i);
+        expect(screen.queryByText(/Current Owner:/i)).not.toBeInTheDocument();
+        expect(previewPanel).toHaveTextContent(/Owner A/i);
+        expect(previewPanel).toHaveTextContent(/Owner F/i);
+        expect(previewPanel).not.toHaveTextContent(/Owner F → Owner G/i);
       });
     });
 
@@ -232,6 +303,50 @@ describe('PropertyClerk', () => {
       });
     });
 
+    it('invokes record_document with submission wording and renders confirmation', async () => {
+      mockInvokeTool.mockResolvedValue({
+        success: true,
+        correlationId: 'corr-record-001',
+        result: {
+          toolId: 'record_document',
+          output: JSON.stringify({
+            documentId: 'DOC-2026-001',
+            recordingNumber: 'REC-2026-0099',
+            recordedAt: '2026-03-21T15:30:00Z',
+            status: 'recorded',
+          }),
+        },
+      });
+
+      render(<TestWrapper />);
+
+      fireEvent.change(screen.getByDisplayValue('Select document type'), { target: { value: 'deed' } });
+      fireEvent.change(screen.getByPlaceholderText(/Grantor name/i), { target: { value: 'Smith Family Trust' } });
+      fireEvent.change(screen.getByPlaceholderText(/Grantee name/i), { target: { value: 'Jones Holdings LLC' } });
+      fireEvent.click(screen.getByRole('checkbox', { name: /I confirm this recording request is ready for submission/i }));
+
+      fireEvent.click(screen.getByRole('button', { name: /Submit Recording Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'record_document',
+          params: expect.objectContaining({
+            parcelId: PARCEL_ID,
+            documentType: 'deed',
+            grantor: 'Smith Family Trust',
+            grantee: 'Jones Holdings LLC',
+            confirmed: true,
+            reason: 'Recording request submission',
+          }),
+          parcelId: PARCEL_ID,
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Recording confirmed: REC-2026-0099/i)).toBeInTheDocument();
+      });
+    });
+
     it('invokes summarize_parcel_recordings and renders counts', async () => {
       mockInvokeTool.mockResolvedValue({
         success: true,
@@ -264,6 +379,8 @@ describe('PropertyClerk', () => {
       await waitFor(() => {
         expect(screen.getByText('12')).toBeInTheDocument();
         expect(screen.getByText('2')).toBeInTheDocument();
+        expect(screen.getByText(/Previewing up to 3 recordings returned in this summary\./i)).toBeInTheDocument();
+        expect(screen.queryByText(/Summary of all recordings for parcel/i)).not.toBeInTheDocument();
       });
     });
   });

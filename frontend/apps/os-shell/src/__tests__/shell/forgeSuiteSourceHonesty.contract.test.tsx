@@ -1,11 +1,12 @@
 import React from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import ForgeSuiteHome from '../../pages/suites/ForgeSuiteHome';
 
 const mockUseCountyStats = vi.fn();
+const mockSuiteModuleGrid = vi.fn(() => <div data-testid="mock-module-grid" />);
 
 vi.mock('../../hooks/useCountyStats', () => ({
   useCountyStats: () => mockUseCountyStats(),
@@ -16,7 +17,7 @@ vi.mock('../../components/workbench/ParcelContextBanner', () => ({
 }));
 
 vi.mock('../../components/suites/SuiteModuleGrid', () => ({
-  SuiteModuleGrid: () => <div data-testid="mock-module-grid" />,
+  SuiteModuleGrid: (props: unknown) => mockSuiteModuleGrid(props),
 }));
 
 vi.mock('../../components/suites/OperationalQueue', () => ({
@@ -32,6 +33,10 @@ const MOCK_STATS = {
 };
 
 describe('ForgeSuiteHome source honesty contract', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('discloses snapshot-backed county aggregates on the mounted route', () => {
     mockUseCountyStats.mockReturnValue({
       stats: MOCK_STATS,
@@ -69,5 +74,34 @@ describe('ForgeSuiteHome source honesty contract', () => {
 
     expect(screen.queryByTestId('forge-source-disclosure')).not.toBeInTheDocument();
     expect(screen.getByTestId('forge-stats')).toBeInTheDocument();
+  });
+
+  it('makes the TerraDais workbench handoff explicit for appeal prep', () => {
+    mockUseCountyStats.mockReturnValue({
+      stats: MOCK_STATS,
+      loading: false,
+      error: null,
+      source: 'live',
+    });
+
+    render(
+      <MemoryRouter>
+        <ForgeSuiteHome />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByTestId('mock-module-grid')).toBeInTheDocument();
+
+    const [gridCall] = mockSuiteModuleGrid.mock.calls;
+    const modules = gridCall?.[0]?.modules ?? [];
+    const appealModule = modules.find((module: { id: string }) => module.id === 'appeal');
+
+    expect(appealModule).toEqual(
+      expect.objectContaining({
+        label: 'Appeals via TerraDais',
+        description: 'BOE appeal preparation routes through the TerraDais workbench flow for scheduling, packet handoff, and case operations',
+        workbenchTab: 'dais',
+      }),
+    );
   });
 });
