@@ -17,6 +17,7 @@ import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
     InvocationHistory,
     ParcelContextHeader,
+    WorkbenchSourceBadge,
     type InvocationRecord,
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
@@ -443,6 +444,18 @@ export const PropertyAtlas: React.FC = () => {
 
         {/* Map Container */}
         <BentoCard span="2x1" variant="map">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs tf-text-muted">Layer data</span>
+            <WorkbenchSourceBadge
+              source={queryState.status === 'success' ? 'live' : 'unavailable'}
+            />
+          </div>
+          <p
+            data-testid="atlas-geometry-disclosure"
+            style={{ fontSize: 11, color: 'hsl(215 16% 47%)', marginBottom: 6 }}
+          >
+            Layer preview — full GIS geometry not yet available on this route
+          </p>
           <div
             data-testid='map-container'
             className='aspect-video relative overflow-hidden'
