@@ -1,12 +1,13 @@
 /**
- * ManagementDashboard.tsx (ADR-003 → Wave 3)
+ * ManagementDashboard.tsx (ADR-003 → Wave 3 / Phase 8)
  *
  * County-wide assessor operations oversight dashboard.
  * Standalone window component for the TerraDais suite.
  * Tabs: Overview, Certification, Appeals, Workload.
  *
- * API-first: composes from DaisController + QueueService endpoints.
- * Falls back to fixtures when backend is unavailable.
+ * Phase 8: wired to live hooks (useSwarmLive, usePacsStatus,
+ * useAppealsQueue, useWorkloadSummary) via MorningBriefingStrip.
+ * Falls back to fixtures for tab data when backend is unavailable.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -19,14 +20,6 @@ import { getCertificationStatus, getAllAppeals } from '@/services/suites/daisSer
 import { getQueueMetrics, getAppraiserProductivity } from '@/services/suites/queueService';
 import type { CertificationStatus, Appeal } from '@/services/suites/daisService';
 import type { QueueMetrics, AppraiserProductivity } from '@/data/queueFixtures';
-import {
-  OVERVIEW_STATS_FIXTURE,
-  KEY_DEADLINES_FIXTURE,
-  CERT_AREAS_FIXTURE,
-  APPEALS_SUMMARY_FIXTURE,
-  RECENT_APPEALS_FIXTURE,
-  APPRAISERS_FIXTURE,
-} from '@/data/managementDashboardFixtures';
 import type {
   OverviewStat,
   KeyDeadline,
@@ -35,6 +28,11 @@ import type {
   RecentAppeal,
   Appraiser,
 } from '@/data/managementDashboardFixtures';
+import { useSwarmLive } from '../../hooks/useSwarmLive';
+import { usePacsStatus } from '../../hooks/usePacsStatus';
+import { useAppealsQueue } from '../../hooks/useAppealsQueue';
+import { useWorkloadSummary } from '../../hooks/useWorkloadSummary';
+import { MorningBriefingStrip } from '../../components/dashboard/MorningBriefingStrip';
 
 type Tab = 'overview' | 'certification' | 'appeals' | 'workload';
 
@@ -83,7 +81,7 @@ function computeAppealsSummary(appeals: Appeal[]): AppealsSummary {
     totalFiled: appeals.length,
     pendingHearing: appeals.filter((a) => a.status === 'filed' || a.status === 'scheduled').length,
     decided: appeals.filter((a) => a.status === 'decided').length,
-    avgDaysToResolution: APPEALS_SUMMARY_FIXTURE.avgDaysToResolution, // Not calculable from appeal list alone
+    avgDaysToResolution: 0, // Not calculable from appeal list alone — Phase 9 will wire a real metric
   };
 }
 
@@ -102,13 +100,19 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
   const session = useSession();
   const [activeTab, setActiveTab] = useState<Tab>('overview');
 
-  // State with fixture defaults — replaced by API data when available
-  const [overviewStats, setOverviewStats] = useState<OverviewStat[]>(OVERVIEW_STATS_FIXTURE);
-  const [keyDeadlines] = useState<KeyDeadline[]>(KEY_DEADLINES_FIXTURE);
-  const [certificationAreas, setCertificationAreas] = useState<CertArea[]>(CERT_AREAS_FIXTURE);
-  const [appealsSummary, setAppealsSummary] = useState<AppealsSummary>(APPEALS_SUMMARY_FIXTURE);
-  const [recentAppeals, setRecentAppeals] = useState<RecentAppeal[]>(RECENT_APPEALS_FIXTURE);
-  const [appraisers, setAppraisers] = useState<Appraiser[]>(APPRAISERS_FIXTURE);
+  // Phase 8: live data hooks for MorningBriefingStrip
+  const swarm    = useSwarmLive();
+  const pacs     = usePacsStatus();
+  const appeals  = useAppealsQueue();
+  const workload = useWorkloadSummary();
+
+  // State initialized empty — populated from real API calls when backend is available
+  const [overviewStats, setOverviewStats] = useState<OverviewStat[]>([]);
+  const [keyDeadlines] = useState<KeyDeadline[]>([]);
+  const [certificationAreas, setCertificationAreas] = useState<CertArea[]>([]);
+  const [appealsSummary, setAppealsSummary] = useState<AppealsSummary>({ totalFiled: 0, pendingHearing: 0, decided: 0, avgDaysToResolution: 0 });
+  const [recentAppeals, setRecentAppeals] = useState<RecentAppeal[]>([]);
+  const [appraisers, setAppraisers] = useState<Appraiser[]>([]);
   const [isFixture, setIsFixture] = useState(true);
 
   const fetchDashboardData = useCallback(async () => {
@@ -184,6 +188,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       className="space-y-4 p-4"
       style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}
     >
+      <MorningBriefingStrip swarm={swarm} pacs={pacs} appeals={appeals} workload={workload} />
       {isFixture && <DemoDataBanner module="Management Dashboard" />}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Management Dashboard</h1>
