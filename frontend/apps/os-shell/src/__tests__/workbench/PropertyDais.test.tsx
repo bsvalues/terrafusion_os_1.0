@@ -484,6 +484,100 @@ describe('PropertyDais', () => {
         expect(screen.getByText(/Shows the returned step ID, signer, and signed-at timestamp for this certification sign-off request\./i)).toBeInTheDocument();
       });
     });
+
+    it('invokes file_appeal with request wording and returned-appeal disclosure', async () => {
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-file-appeal-001',
+        result: {
+          toolId: 'file_appeal',
+          output: JSON.stringify({
+            appealId: 'APL-2026-042',
+            parcelId: '12345-001',
+            status: 'filed',
+            filedAt: '2026-03-22T16:10:00Z',
+            payloadRef: 'dais://benton/appeals/APL-2026-042',
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed Board of Equalization appeal request for this parcel, then review the returned appeal summary/i)).toBeInTheDocument();
+      expect(screen.queryByText(/File a new Board of Equalization appeal for parcel 12345-001/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByPlaceholderText(/Grounds for appeal/i), {
+        target: { value: 'Comparable sales indicate a lower market value.' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Submit Appeal Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'file_appeal',
+          params: {
+            county: 'benton',
+            parcelId: '12345-001',
+            grounds: 'Comparable sales indicate a lower market value.',
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Appeal APL-2026-042/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned appeal ID, status, and filed-at timestamp for this appeal request\./i)).toBeInTheDocument();
+      });
+    });
+
+    it('invokes escalate_task with request wording and returned-escalation disclosure', async () => {
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-escalate-task-001',
+        result: {
+          toolId: 'escalate_task',
+          output: JSON.stringify({
+            taskId: 'TASK-404',
+            escalatedTo: 'supervisor',
+            status: 'escalated',
+            payloadRef: 'dais://benton/queue/escalations/TASK-404',
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed escalation request for this task, then review the returned escalation target and status summary/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Escalate an overdue or high-priority task/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByPlaceholderText(/^Task ID$/i), {
+        target: { value: 'TASK-404' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(/Escalation reason/i), {
+        target: { value: 'SLA breach requires supervisor review.' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Submit Escalation Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'escalate_task',
+          params: {
+            county: 'benton',
+            taskId: 'TASK-404',
+            reason: 'SLA breach requires supervisor review.',
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Task TASK-404 escalation submitted/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned task ID, escalation target, and status for this escalation request\./i)).toBeInTheDocument();
+      });
+    });
   });
 
   describe('Loading States', () => {

@@ -1473,15 +1473,15 @@ export const PropertyDais: React.FC = () => {
 
       {/* File Appeal (write_low) */}
       <BentoCard title='📋 File Appeal' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>File a new Board of Equalization appeal for parcel {parcelId}</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed Board of Equalization appeal request for this parcel, then review the returned appeal summary</p>
         <textarea value={appealGrounds} onChange={e => setAppealGrounds(e.target.value)} placeholder='Grounds for appeal...' rows={3} className='w-full p-2 rounded-lg tf-input resize-y mb-3' />
         <button onClick={handleFileAppeal} disabled={fileAppealState.status === 'loading' || !appealGrounds.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-          {fileAppealState.status === 'loading' ? 'Filing...' : 'File Appeal'}
+          {fileAppealState.status === 'loading' ? 'Submitting...' : 'Submit Appeal Request'}
         </button>
-        {fileAppealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Filing appeal...</span></div>}
+        {fileAppealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting appeal request...</span></div>}
         {fileAppealState.status === 'success' && fileAppealState.result && (
           <div className='space-y-2'>
-            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Appeal {fileAppealState.result.appealId}</span><p className='tf-text-secondary text-sm'>Status: {fileAppealState.result.status} | Filed: {formatDate(fileAppealState.result.filedAt)}</p></div>
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Appeal {fileAppealState.result.appealId}</span><p className='tf-text-secondary text-sm'>Status: {fileAppealState.result.status} | Filed: {formatDate(fileAppealState.result.filedAt)}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned appeal ID, status, and filed-at timestamp for this appeal request.</p></div>
             {fileAppealState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{fileAppealState.correlationId.slice(0, 16)}...</code></div>}
           </div>
         )}
@@ -1614,18 +1614,18 @@ export const PropertyDais: React.FC = () => {
 
       {/* Escalate Task (write_low) */}
       <BentoCard title='🚨 Escalate Task' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Escalate an overdue or high-priority task</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed escalation request for this task, then review the returned escalation target and status summary</p>
         <div className='space-y-2 mb-3'>
           <input type='text' value={escalateTaskId} onChange={e => setEscalateTaskId(e.target.value)} placeholder='Task ID' className='w-full p-2 rounded-lg tf-input' />
           <input type='text' value={escalateReason} onChange={e => setEscalateReason(e.target.value)} placeholder='Escalation reason' className='w-full p-2 rounded-lg tf-input' />
         </div>
         <button onClick={handleEscalateTask} disabled={escalateState.status === 'loading' || !escalateTaskId.trim() || !escalateReason.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-          {escalateState.status === 'loading' ? 'Escalating...' : 'Escalate Task'}
+          {escalateState.status === 'loading' ? 'Submitting...' : 'Submit Escalation Request'}
         </button>
-        {escalateState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Escalating task...</span></div>}
+        {escalateState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting escalation request...</span></div>}
         {escalateState.status === 'success' && escalateState.result && (
           <div className='space-y-2'>
-            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Task {escalateState.result.taskId} escalated</span><p className='tf-text-secondary text-sm'>To: {escalateState.result.escalatedTo} | Status: {escalateState.result.status}</p></div>
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Task {escalateState.result.taskId} escalation submitted</span><p className='tf-text-secondary text-sm'>To: {escalateState.result.escalatedTo} | Status: {escalateState.result.status}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned task ID, escalation target, and status for this escalation request.</p></div>
             {escalateState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{escalateState.correlationId.slice(0, 16)}...</code></div>}
           </div>
         )}
