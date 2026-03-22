@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { FreshData } from '../lib/freshData'
 import { DAIS_REFRESH } from '../config/daisRefresh.config'
 

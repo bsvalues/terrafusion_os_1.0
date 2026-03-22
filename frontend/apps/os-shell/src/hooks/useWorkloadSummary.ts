@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { FreshData } from '../lib/freshData'
 import { DAIS_REFRESH } from '../config/daisRefresh.config'
 
@@ -37,7 +37,6 @@ export function useWorkloadSummary(): FreshData<WorkloadSummary> {
   const [state, setState] = useState<FreshData<WorkloadSummary>>(INITIAL)
   const lastUpdatedRef = useRef<number | null>(null)
   const lastDataRef = useRef<WorkloadSummary | null>(null)
-  const hasInitializedRef = useRef(false)
 
   useEffect(() => {
     const poll = async () => {
@@ -60,11 +59,7 @@ export function useWorkloadSummary(): FreshData<WorkloadSummary> {
       }
     }
 
-    if (!hasInitializedRef.current) {
-      hasInitializedRef.current = true
-      poll()
-    }
-
+    poll()
     const id = setInterval(poll, DAIS_REFRESH.workloadMs)
     return () => clearInterval(id)
   }, [])

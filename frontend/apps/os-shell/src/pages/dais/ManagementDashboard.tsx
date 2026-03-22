@@ -386,7 +386,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
                 </thead>
                 <tbody>
                   {appraisers.map((appraiser) => {
-                    const pct = ((appraiser.completed / appraiser.assigned) * 100).toFixed(1);
+                    const pct = ((appraiser.completed / Math.max(appraiser.assigned, 1)) * 100).toFixed(1);
                     return (
                       <tr
                         key={appraiser.name}
