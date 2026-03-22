@@ -271,7 +271,7 @@ export default function GptSuiteHome() {
             </div>
 
             <div className="mt-6 rounded-2xl border" style={{ borderColor: 'hsl(var(--tf-border) / 0.18)', background: 'hsl(var(--tf-card-bg) / 0.35)' }}>
-              <OperationalQueue title="Recent AI Queries" accentVar="--tf-suite-gpt" emptyMessage="No recent AI activity" />
+              <OperationalQueue title="Recent Parcels" accentVar="--tf-suite-gpt" emptyMessage="No recent parcel activity" />
             </div>
           </aside>
 

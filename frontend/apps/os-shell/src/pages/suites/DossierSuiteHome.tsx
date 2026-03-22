@@ -4,7 +4,7 @@
  * Constitutional Suite: dossier (Article IV)
  * Layer 3: Domain router + cross-parcel operational workspace
  *
- * Shows: county stats, module launcher grid, recent parcel queue.
+ * Shows: county stats, module launcher grid, shared recent parcel queue.
  * Does NOT host parcel execution — that lives in the Property Workbench.
  */
 
@@ -30,7 +30,7 @@ const DOSSIER_MODULES: SuiteModuleDef[] = [
   // Workbench-mode (parcel-scoped, opens Property Workbench)
   { id: 'documents', label: 'Document Manager', icon: FolderOpen, description: 'File repository with search, type filtering, custody chain', launchMode: 'workbench', workbenchTab: 'dossier' },
   { id: 'evidence', label: 'Evidence Viewer', icon: Shield, description: 'Chain-of-custody evidence registry and timeline', launchMode: 'workbench', workbenchTab: 'dossier' },
-  { id: 'defense', label: 'Defense Packets', icon: Package, description: 'BOE appeal defense packet assembly', launchMode: 'workbench', workbenchTab: 'dais' },
+  { id: 'defense', label: 'Defense Packets', icon: Package, description: 'BOE appeal defense packet assembly via the TerraDais workbench flow', launchMode: 'workbench', workbenchTab: 'dais' },
   { id: 'chain', label: 'Chain of Custody', icon: Link2, description: 'Full custody chain explorer with hash verification', launchMode: 'workbench', workbenchTab: 'dossier' },
   { id: 'photos', label: 'Photo Manager', icon: Camera, description: 'Geotagged property photos with metadata', launchMode: 'workbench', workbenchTab: 'dossier' },
   { id: 'search', label: 'Deep Search', icon: FileSearch, description: 'Full-text search across all documents and evidence', launchMode: 'workbench', workbenchTab: 'dossier' },
@@ -62,7 +62,7 @@ export default function DossierSuiteHome() {
         <div className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Total Parcels</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.totalParcels)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Active Appeals</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-suite-dossier))' }}>{fmtNum(stats.activeAppeals)}</span></div>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Pending Reviews</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.pendingAssessments)}</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Pending Assessments</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.pendingAssessments)}</span></div>
         </div>
       )}
 
@@ -88,7 +88,7 @@ export default function DossierSuiteHome() {
       {/* Module Grid + Operational Queue */}
       <main className="flex-1 min-h-0 overflow-y-auto">
         <SuiteModuleGrid modules={DOSSIER_MODULES} accentVar="--tf-suite-dossier" />
-        <OperationalQueue title="Recent Documents" accentVar="--tf-suite-dossier" emptyMessage="No recent document activity" />
+        <OperationalQueue title="Recent Parcels" accentVar="--tf-suite-dossier" emptyMessage="No recent parcel activity" />
       </main>
     </div>
   );

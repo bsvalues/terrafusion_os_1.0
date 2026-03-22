@@ -58,7 +58,7 @@ const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocal
 
 export default function DaisSuiteHome() {
   const navigate = useNavigate();
-  const { stats, loading, error } = useDaisSuiteStats();
+  const { stats, loading, error, source } = useDaisSuiteStats();
 
   return (
     <div data-testid="suite-dais-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
@@ -69,6 +69,21 @@ export default function DaisSuiteHome() {
       )}
       {error && (
         <div data-testid="dais-error" role="alert" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-suite-dais))' }}>{error}</div>
+      )}
+
+      {stats && source === 'county-provider' && (
+        <div
+          data-testid="dais-source-disclosure"
+          role="status"
+          className="px-6 py-3 text-sm"
+          style={{
+            color: 'hsl(var(--tf-warning))',
+            background: 'hsl(var(--tf-warning) / 0.12)',
+            borderBottom: '1px solid hsl(var(--tf-warning) / 0.24)',
+          }}
+        >
+          County aggregate fallback active: TerraDais overview, certification, and notice panels are currently using county-wide provider aggregates, not TerraDais API metrics.
+        </div>
       )}
 
       {/* Stats Strip */}
@@ -115,7 +130,7 @@ export default function DaisSuiteHome() {
           <NoticeBatchQueuePanel stats={stats} />
         </div>
         <div data-testid="dais-queue">
-          <OperationalQueue title="Pending Appeals" accentVar="--tf-suite-dais" emptyMessage="No recent appeal activity" />
+          <OperationalQueue title="Recent Parcels" accentVar="--tf-suite-dais" emptyMessage="No recent parcel activity" />
         </div>
       </main>
     </div>

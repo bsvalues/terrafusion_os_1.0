@@ -297,7 +297,7 @@ export const EvidenceRail: React.FC<EvidenceRailProps> = ({
         <p className="text-xs text-white/50">
           {isFiltered
             ? 'No matches for current filters.'
-            : 'No trace events in the last 30 days.'}
+            : 'No trace events returned for this parcel.'}
         </p>
       </LiquidPanel>
     );

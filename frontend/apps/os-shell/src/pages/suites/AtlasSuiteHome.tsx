@@ -87,7 +87,7 @@ export default function AtlasSuiteHome() {
       {/* Module Grid + Operational Queue */}
       <main className="flex-1 min-h-0 overflow-y-auto">
         <div data-testid="atlas-modules"><SuiteModuleGrid modules={ATLAS_MODULES} accentVar="--tf-suite-atlas" /></div>
-        <div data-testid="atlas-queue"><OperationalQueue title="Recent GIS Queries" accentVar="--tf-suite-atlas" emptyMessage="No recent spatial queries" /></div>
+        <div data-testid="atlas-queue"><OperationalQueue title="Recent Parcels" accentVar="--tf-suite-atlas" emptyMessage="No recent parcel activity" /></div>
       </main>
     </div>
   );
