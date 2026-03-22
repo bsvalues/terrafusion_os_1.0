@@ -1235,17 +1235,18 @@ export const PropertyDais: React.FC = () => {
 
       {/* Value Change Notice (write_low) */}
       <BentoCard title='📨 Value Change Notice' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Draft a value change notice for parcel {parcelId}</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed value-change notice draft request for this parcel and selected reason codes, then review the returned draft title, body, and disclaimer</p>
         <input type='text' value={noticeReasons} onChange={e => setNoticeReasons(e.target.value)} placeholder='Reason codes (comma-separated, e.g. revaluation, new_construction)' className='w-full p-2 rounded-lg tf-input mb-3' data-testid='notice-reasons-input' />
         <button onClick={handleDraftNotice} disabled={noticeState.status === 'loading' || !noticeReasons.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {noticeState.status === 'loading' ? 'Drafting...' : 'Draft Value Change Notice'}
+          {noticeState.status === 'loading' ? 'Submitting...' : 'Submit Value-Change Notice Draft Request'}
         </button>
-        {noticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Generating notice...</span></div>}
+        {noticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting value-change notice draft request...</span></div>}
         {noticeState.status === 'success' && noticeState.result && (
           <div className='space-y-3'>
             <div className='tf-panel p-4'>
               <h4 className='font-semibold tf-text mb-2'>{noticeState.result.document.title}</h4>
               <p className='tf-text-secondary whitespace-pre-line text-sm'>{noticeState.result.document.body}</p>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned draft title, body, and disclaimer for this value-change notice request.</p>
             </div>
             <div className='text-xs tf-text-dim italic'>{noticeState.result.disclaimer}</div>
             {noticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{noticeState.correlationId.slice(0, 16)}...</code></div>}
@@ -1256,7 +1257,7 @@ export const PropertyDais: React.FC = () => {
 
       {/* Appeal Response Draft (write_low) */}
       <BentoCard title='⚖️ Appeal Response Draft' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Draft an appeal response for parcel {parcelId}</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed appeal-response draft request for this parcel, appeal, and selected position, then review the returned appeal ID, position, draft summary, and word count</p>
         <div className='flex gap-2 mb-3'>
           <input type='text' value={appealId} onChange={e => setAppealId(e.target.value)} placeholder='Appeal ID (e.g. APL-2026-001)' className='flex-1 p-2 rounded-lg tf-input' data-testid='appeal-id-input' />
           <select value={appealPosition} onChange={e => setAppealPosition(e.target.value as 'uphold' | 'adjust' | 'partial')} className='p-2 rounded-lg tf-input'>
@@ -1266,9 +1267,9 @@ export const PropertyDais: React.FC = () => {
           </select>
         </div>
         <button onClick={handleDraftAppealResponse} disabled={appealState.status === 'loading' || !appealId.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {appealState.status === 'loading' ? 'Drafting...' : 'Draft Appeal Response'}
+          {appealState.status === 'loading' ? 'Submitting...' : 'Submit Appeal Response Draft Request'}
         </button>
-        {appealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Drafting response...</span></div>}
+        {appealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting appeal-response draft request...</span></div>}
         {appealState.status === 'success' && appealState.result && (
           <div className='space-y-3'>
             <div className='tf-panel p-4'>
@@ -1277,6 +1278,7 @@ export const PropertyDais: React.FC = () => {
                 <span className='text-xs tf-badge px-2 py-0.5 rounded'>{appealState.result.position}</span>
               </div>
               <p className='tf-text-secondary text-sm'>{appealState.result.draftSummary}</p>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned appeal ID, position, draft summary, and word count for this appeal-response request.</p>
             </div>
             <div className='flex items-center gap-4 text-xs tf-text-dim'>
               <span>{appealState.result.wordCount} words</span>
@@ -1396,7 +1398,7 @@ export const PropertyDais: React.FC = () => {
 
       {/* BOE Appeal Response (write_low) */}
       <BentoCard title='⚖️ BOE Appeal Response' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Draft a formal BOE appeal response with legal citations</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Submit a governed BOE appeal-response draft request for this case and position, then review the returned draft title, body, and citations</p>
         <div className='space-y-2 mb-3'>
           <input type='text' value={boeAppealCaseId} onChange={e => setBoeAppealCaseId(e.target.value)} placeholder='Case ID (e.g. BOE-2026-001)' className='w-full p-2 rounded-lg tf-input' data-testid='boe-appeal-case-id' />
           <select value={boeAppealPosition} onChange={e => setBoeAppealPosition(e.target.value)} className='w-full p-2 rounded-lg tf-input'>
@@ -1408,14 +1410,15 @@ export const PropertyDais: React.FC = () => {
           </div>
         </div>
         <button onClick={handleBoeAppealResponse} disabled={boeAppealState.status === 'loading' || !boeAppealCaseId.trim() || !boeAppealPoints.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {boeAppealState.status === 'loading' ? 'Drafting...' : 'Draft BOE Appeal Response'}
+          {boeAppealState.status === 'loading' ? 'Submitting...' : 'Submit BOE Response Draft Request'}
         </button>
-        {boeAppealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Drafting BOE response...</span></div>}
+        {boeAppealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting BOE response draft request...</span></div>}
         {boeAppealState.status === 'success' && boeAppealState.result && (
           <div className='space-y-3'>
             <div className='tf-panel p-4'>
               <h4 className='font-semibold tf-text mb-2'>{boeAppealState.result.document.title}</h4>
               <p className='tf-text-secondary whitespace-pre-line text-sm'>{boeAppealState.result.document.body}</p>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned draft title, body, and citations for this BOE appeal-response request.</p>
             </div>
             {boeAppealState.result.citations && boeAppealState.result.citations.length > 0 && (
               <div className='flex flex-wrap gap-1'>
@@ -1521,11 +1524,11 @@ export const PropertyDais: React.FC = () => {
 
       {/* Certification Progress (read_only) */}
       <BentoCard title='📊 Certification Progress' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Assessment roll certification progress with checklist and blockers</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Request the returned certification progress summary, then review the returned percent complete, checklist steps, and blockers</p>
         <button onClick={handleGetCertProgress} disabled={certProgressState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {certProgressState.status === 'loading' ? 'Loading...' : 'Get Certification Progress'}
+          {certProgressState.status === 'loading' ? 'Requesting...' : 'Request Certification Progress'}
         </button>
-        {certProgressState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Loading progress...</span></div>}
+        {certProgressState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Requesting certification progress...</span></div>}
         {certProgressState.status === 'success' && certProgressState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'>
@@ -1536,6 +1539,7 @@ export const PropertyDais: React.FC = () => {
               <div className='w-full bg-gray-700 rounded-full h-2 mb-3'><div className='bg-green-500 h-2 rounded-full transition-all' style={{ width: `${certProgressState.result.percentComplete}%` }} /></div>
               {certProgressState.result.steps.length > 0 && <div className='space-y-1'>{certProgressState.result.steps.map(s => <div key={s.id} className='flex items-center gap-2 text-sm'><span>{s.complete ? '✅' : '⏳'}</span><span className='tf-text'>{s.name}</span></div>)}</div>}
               {certProgressState.result.blockers.length > 0 && <div className='mt-2 text-xs text-red-400'>Blockers: {certProgressState.result.blockers.join(', ')}</div>}
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned percent complete, checklist steps, and blockers for this certification progress request.</p>
             </div>
             {certProgressState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{certProgressState.correlationId.slice(0, 16)}...</code></div>}
           </div>

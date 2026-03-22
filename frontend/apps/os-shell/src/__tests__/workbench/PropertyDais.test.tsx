@@ -390,6 +390,109 @@ describe('PropertyDais', () => {
       });
     });
 
+    it('invokes draft_value_change_notice with request wording and returned-draft disclosure', async () => {
+      const currentYear = new Date().getFullYear();
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-value-change-notice-001',
+        result: {
+          toolId: 'draft_value_change_notice',
+          output: JSON.stringify({
+            document: {
+              title: `Notice of Value Change - ${currentYear}`,
+              body: 'Reason:\n- revaluation, new_construction\nAppeal Rights:\n- You may request a review within the statutory window.',
+            },
+            payloadRef: `dossier://benton/notices/12345-001/${currentYear}/latest`,
+            disclaimer: 'Draft for internal review only. Not a final notice.',
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed value-change notice draft request for this parcel and selected reason codes, then review the returned draft title, body, and disclaimer/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Draft a value change notice for parcel 12345-001/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByTestId('notice-reasons-input'), {
+        target: { value: 'revaluation, new_construction' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Submit Value-Change Notice Draft Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'draft_value_change_notice',
+          params: {
+            county: 'benton',
+            parcelId: '12345-001',
+            taxYear: currentYear,
+            reasonCodes: ['revaluation', 'new_construction'],
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(new RegExp(`Notice of Value Change - ${currentYear}`, 'i'))).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned draft title, body, and disclaimer for this value-change notice request\./i)).toBeInTheDocument();
+        expect(screen.getByText(/Draft for internal review only\. Not a final notice\./i)).toBeInTheDocument();
+      });
+    });
+
+    it('invokes draft_appeal_response with request wording and returned-draft disclosure', async () => {
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-appeal-response-001',
+        result: {
+          toolId: 'draft_appeal_response',
+          output: JSON.stringify({
+            appealId: 'APL-2026-001',
+            payloadRef: 'dossier://benton/appeals/APL-2026-001/drafts/latest',
+            draftSummary: 'After careful review of the appeal, a partial adjustment is recommended.',
+            wordCount: 450,
+            position: 'partial',
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed appeal-response draft request for this parcel, appeal, and selected position, then review the returned appeal ID, position, draft summary, and word count/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Draft an appeal response for parcel 12345-001/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByTestId('appeal-id-input'), {
+        target: { value: 'APL-2026-001' },
+      });
+      fireEvent.change(screen.getByDisplayValue(/Uphold/i), {
+        target: { value: 'partial' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Submit Appeal Response Draft Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'draft_appeal_response',
+          params: {
+            parcelId: '12345-001',
+            appealId: 'APL-2026-001',
+            position: 'partial',
+            tone: 'formal',
+            includeEvidenceRefs: true,
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Appeal: APL-2026-001/i)).toBeInTheDocument();
+        expect(screen.getByText(/After careful review of the appeal, a partial adjustment is recommended\./i)).toBeInTheDocument();
+        expect(screen.getByText(/450 words/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned appeal ID, position, draft summary, and word count for this appeal-response request\./i)).toBeInTheDocument();
+      });
+    });
+
     it('invokes assemble_boe_packet with request wording and returned-packet disclosure', async () => {
       const mockResponse = {
         success: true,
@@ -428,6 +531,60 @@ describe('PropertyDais', () => {
       await waitFor(() => {
         expect(screen.getByText(/Case: BOE-2026-001/i)).toBeInTheDocument();
         expect(screen.getByText(/Shows the returned case ID and section list for this BOE packet request\./i)).toBeInTheDocument();
+      });
+    });
+
+    it('invokes draft_boe_appeal_response with request wording and returned-draft disclosure', async () => {
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-boe-response-001',
+        result: {
+          toolId: 'draft_boe_appeal_response',
+          output: JSON.stringify({
+            document: {
+              title: 'BOE Appeal Response - Case BOE-2026-001',
+              body: 'Position: balanced review.\nSummary of Points:\n- Comparable sales support the current value.',
+            },
+            payloadRef: 'dossier://benton/boe/BOE-2026-001/response/latest',
+            citations: ['RCW-84.40', 'WAC-458-07'],
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed BOE appeal-response draft request for this case and position, then review the returned draft title, body, and citations/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Draft a formal BOE appeal response with legal citations/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByTestId('boe-appeal-case-id'), {
+        target: { value: 'BOE-2026-001' },
+      });
+      fireEvent.change(screen.getByDisplayValue(/Support Assessor/i), {
+        target: { value: 'balanced' },
+      });
+      fireEvent.change(screen.getByTestId('boe-appeal-points'), {
+        target: { value: 'Comparable sales support the current value.' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Submit BOE Response Draft Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'draft_boe_appeal_response',
+          params: {
+            county: 'benton',
+            caseId: 'BOE-2026-001',
+            position: 'balanced',
+            points: ['Comparable sales support the current value.'],
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/BOE Appeal Response - Case BOE-2026-001/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned draft title, body, and citations for this BOE appeal-response request\./i)).toBeInTheDocument();
       });
     });
 
@@ -670,6 +827,52 @@ describe('PropertyDais', () => {
       await waitFor(() => {
         expect(screen.getByText(/Eligible/i)).toBeInTheDocument();
         expect(screen.getByText(/Shows the returned eligibility flag, program, reason, and income threshold for this parcel request\./i)).toBeInTheDocument();
+      });
+    });
+
+    it('invokes get_certification_progress with request wording and returned-progress disclosure', async () => {
+      const currentYear = new Date().getFullYear();
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-cert-progress-001',
+        result: {
+          toolId: 'get_certification_progress',
+          output: JSON.stringify({
+            county: 'benton',
+            taxYear: currentYear,
+            percentComplete: 72,
+            steps: [
+              { id: 'step-1', name: 'Review parcel updates', complete: true },
+              { id: 'step-2', name: 'Finalize levy imports', complete: false },
+            ],
+            blockers: ['Awaiting levy certification'],
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Request the returned certification progress summary, then review the returned percent complete, checklist steps, and blockers/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Assessment roll certification progress with checklist and blockers/i)).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: /Request Certification Progress/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'get_certification_progress',
+          params: {
+            county: 'benton',
+            taxYear: currentYear,
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/72% Complete/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned percent complete, checklist steps, and blockers for this certification progress request\./i)).toBeInTheDocument();
       });
     });
   });

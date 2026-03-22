@@ -72,6 +72,10 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/frontend-property-dais-escalate-task-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-assign-task-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-exemption-eligibility-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-certification-progress-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-boe-appeal-response-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-value-change-notice-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-appeal-response-draft-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-exemption-renewal-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-hearing-schedule-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-queue-statistics-honesty-2026-03-21.md`
@@ -487,6 +491,42 @@ A bounded PropertyDais exemption-eligibility honesty follow-on slice also landed
 - PropertyDais exemption-eligibility honesty: `25 passed`, `0 failed`
 
 That slice removes mounted PropertyDais read-only wording that presented the route as an unqualified statutory exemption-eligibility check on mount, and replaces it with eligibility-summary request wording plus a short disclosure that the card shows the returned eligibility flag, program, reason, and income threshold from the `check_exemption_eligibility` request for the parcel.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais certification-progress honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-certification-progress-honesty-2026-03-22.md`
+- PropertyDais certification-progress honesty: `26 passed`, `0 failed`
+
+That slice removes mounted PropertyDais read-only wording that presented the route as an unqualified assessment-roll certification progress surface on mount, and replaces it with certification-progress request wording plus a short disclosure that the card shows the returned percent complete, checklist steps, and blockers from the `get_certification_progress` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais BOE appeal-response honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-boe-appeal-response-honesty-2026-03-22.md`
+- PropertyDais BOE appeal-response honesty: `27 passed`, `0 failed`
+
+That slice removes mounted PropertyDais write-low wording that presented the route as an unqualified formal BOE appeal-response surface on mount, and replaces it with BOE appeal-response request wording plus a short disclosure that the card shows the returned draft title, body, and citations from the `draft_boe_appeal_response` request for the selected case and position.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais value-change notice honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-value-change-notice-honesty-2026-03-22.md`
+- PropertyDais value-change notice honesty: `28 passed`, `0 failed`
+
+That slice removes mounted PropertyDais write-low wording that presented the route as an unqualified value-change notice drafting surface on mount, and replaces it with value-change notice request wording plus a short disclosure that the card shows the returned draft title, body, and disclaimer from the `draft_value_change_notice` request for the selected parcel and reason codes.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais appeal-response draft honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-appeal-response-draft-honesty-2026-03-22.md`
+- PropertyDais appeal-response draft honesty: `29 passed`, `0 failed`
+
+That slice removes mounted PropertyDais write-low wording that presented the route as an unqualified appeal-response drafting surface on mount, and replaces it with appeal-response request wording plus a short disclosure that the card shows the returned appeal ID, position, draft summary, and word count from the `draft_appeal_response` request for the selected parcel, appeal, and position.
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
