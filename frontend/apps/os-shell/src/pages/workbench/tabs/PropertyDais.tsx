@@ -1291,7 +1291,7 @@ export const PropertyDais: React.FC = () => {
 
       {/* General Notice Draft (write_low) */}
       <BentoCard title='📝 Draft Notice' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Create a notice draft for parcel {parcelId}</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed notice-draft request for this parcel and selected notice type, then review the returned notice ID, notice type, and status</p>
         <select value={draftNoticeType} onChange={e => setDraftNoticeType(e.target.value)} className='w-full p-2 rounded-lg tf-input mb-3' data-testid='notice-type-select'>
           <option value='assessment'>Assessment Notice</option>
           <option value='exemption'>Exemption Notice</option>
@@ -1299,9 +1299,9 @@ export const PropertyDais: React.FC = () => {
           <option value='certification'>Certification Notice</option>
         </select>
         <button onClick={handleGeneralNotice} disabled={draftNoticeState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {draftNoticeState.status === 'loading' ? 'Drafting...' : 'Create Notice Draft'}
+          {draftNoticeState.status === 'loading' ? 'Submitting...' : 'Submit Notice Draft Request'}
         </button>
-        {draftNoticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Creating draft...</span></div>}
+        {draftNoticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting notice-draft request...</span></div>}
         {draftNoticeState.status === 'success' && draftNoticeState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'>
@@ -1310,6 +1310,7 @@ export const PropertyDais: React.FC = () => {
                 <span className='text-xs tf-badge px-2 py-0.5 rounded'>{draftNoticeState.result.status}</span>
               </div>
               <div className='text-xs tf-text-dim mt-1'>Notice ID: <code className='tf-suite-accent-text font-mono'>{draftNoticeState.result.noticeId}</code></div>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned notice ID, notice type, and status for this notice-draft request.</p>
             </div>
             {draftNoticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{draftNoticeState.correlationId.slice(0, 16)}...</code></div>}
           </div>

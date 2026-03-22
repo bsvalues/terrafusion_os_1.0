@@ -48,8 +48,13 @@ function doctorOk() {
   });
 }
 
-// Skipped: Ctrl+K command palette overlay not yet implemented (stubs only).
-// Re-enable when the full command palette with history tracking lands.
+// Skipped: CommandPalette data model (addToRecent/recentCommands) is implemented,
+// but the UI surface testids required by these tests are not yet wired:
+//   data-testid="command-palette-overlay"  (root wrapper)
+//   data-testid="command-palette-recent"   (recent section header)
+//   data-testid="cmd-doctor"               (doctor command item)
+//   data-testid="cmd-recent-doctor"        (recent doctor entry)
+// Re-enable when those testids are present in CommandPalette.tsx.
 describe.skip('P18 Command History', () => {
   afterEach(() => {
     cleanup();

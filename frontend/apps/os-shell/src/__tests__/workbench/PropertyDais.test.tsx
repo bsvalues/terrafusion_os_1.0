@@ -493,6 +493,55 @@ describe('PropertyDais', () => {
       });
     });
 
+    it('invokes draft_notice with request wording and returned-notice disclosure', async () => {
+      const currentYear = new Date().getFullYear();
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-draft-notice-001',
+        result: {
+          toolId: 'draft_notice',
+          output: JSON.stringify({
+            noticeId: 'NTC-2026-001',
+            parcelId: '12345-001',
+            noticeType: 'exemption',
+            payloadRef: 'dossier://benton/notices/12345-001/NTC-2026-001',
+            status: 'draft',
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed notice-draft request for this parcel and selected notice type, then review the returned notice ID, notice type, and status/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Create a notice draft for parcel 12345-001/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByTestId('notice-type-select'), {
+        target: { value: 'exemption' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Submit Notice Draft Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'draft_notice',
+          params: {
+            county: 'benton',
+            parcelId: '12345-001',
+            noticeType: 'exemption',
+            taxYear: currentYear,
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/^draft$/i)).toBeInTheDocument();
+        expect(screen.getByText(/Notice ID:/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned notice ID, notice type, and status for this notice-draft request\./i)).toBeInTheDocument();
+      });
+    });
+
     it('invokes assemble_boe_packet with request wording and returned-packet disclosure', async () => {
       const mockResponse = {
         success: true,
