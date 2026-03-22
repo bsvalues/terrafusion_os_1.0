@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Data.Configurations;
@@ -155,6 +156,22 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
 
   // HITL Drafter — AI-proposed assessment actions awaiting human approval (Phase 10)
   public DbSet<PilotDraft> PilotDrafts { get; set; } = null!;
+
+  // PACS Mirror — Harris PACS 9.0 data replicated to local store (Phase 33)
+  // Source: tf-mssql pacs_oltp (89,247 Benton County parcels)
+  public DbSet<PacsParcel> PacsParcel { get; set; } = null!;
+  public DbSet<PacsPropertyProfile> PacsPropertyProfiles { get; set; } = null!;
+  public DbSet<PacsSitus> PacsSituses { get; set; } = null!;
+  public DbSet<PacsValuation> PacsValuations { get; set; } = null!;
+  public DbSet<PacsImprovement> PacsImprovements { get; set; } = null!;
+  public DbSet<PacsImprovementDetail> PacsImprovementDetails { get; set; } = null!;
+  public DbSet<PacsImprovementAttribute> PacsImprovementAttributes { get; set; } = null!;
+  public DbSet<PacsLandDetail> PacsLandDetails { get; set; } = null!;
+  public DbSet<PacsOwner> PacsOwners { get; set; } = null!;
+  public DbSet<PacsSale> PacsSales { get; set; } = null!;
+  public DbSet<PacsExemption> PacsExemptions { get; set; } = null!;
+  public DbSet<PacsAppeal> PacsAppeals { get; set; } = null!;
+  public DbSet<PacsTaxArea> PacsTaxAreas { get; set; } = null!;
 
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
