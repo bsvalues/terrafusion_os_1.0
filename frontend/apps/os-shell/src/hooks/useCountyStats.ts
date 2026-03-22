@@ -5,25 +5,30 @@
 
 import { useEffect, useState } from 'react';
 import { getDataProvider } from '../services/dataProvider';
+import type { DataMode } from '../services/dataProvider';
 import type { CountyAggregateStats } from '../types/domain';
 
 export interface CountyStatsResult {
   stats: CountyAggregateStats | null;
   loading: boolean;
   error: string | null;
+  source: DataMode | null;
 }
 
 export function useCountyStats(): CountyStatsResult {
   const [stats, setStats] = useState<CountyAggregateStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [source, setSource] = useState<DataMode | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
+    const provider = getDataProvider();
+    setSource(provider.mode);
 
-    getDataProvider()
+    provider
       .getCountyStats()
       .then((result) => {
         if (!cancelled) {
@@ -41,5 +46,5 @@ export function useCountyStats(): CountyStatsResult {
     return () => { cancelled = true; };
   }, []);
 
-  return { stats, loading, error };
+  return { stats, loading, error, source };
 }

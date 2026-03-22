@@ -36,7 +36,7 @@ const FORGE_MODULES: SuiteModuleDef[] = [
   { id: 'comps', label: 'CompsForge', icon: BarChart3, description: 'Sales comparison approach with paired adjustments', launchMode: 'workbench', workbenchTab: 'forge' },
   { id: 'income-val', label: 'Income Valuation', icon: DollarSign, description: 'Income approach — direct capitalization & GRM for commercial properties', launchMode: 'workbench', workbenchTab: 'forge' },
   { id: 'comparable-sales', label: 'Comparable Sales', icon: Search, description: 'Parcel-scoped comp selection with paired sale adjustments', launchMode: 'workbench', workbenchTab: 'forge' },
-  { id: 'appeal', label: 'AppealForge', icon: Gavel, description: 'BOE appeal preparation, evidence packets, and defense builder', launchMode: 'workbench', workbenchTab: 'dais' },
+  { id: 'appeal', label: 'Appeals via TerraDais', icon: Gavel, description: 'BOE appeal preparation routes through the TerraDais workbench flow for scheduling, packet handoff, and case operations', launchMode: 'workbench', workbenchTab: 'dais' },
   { id: 'reconcile', label: 'Reconciliation', icon: Scale, description: 'Three-approach reconciliation and final opinion of value', launchMode: 'workbench', workbenchTab: 'forge' },
   { id: 'audit', label: 'Value Audit', icon: FileSearch, description: 'FISMA-compliant audit trail for valuation changes', launchMode: 'workbench', workbenchTab: 'audit' },
   { id: 'governed', label: 'Governed Run', icon: ShieldCheck, description: 'Execute run_valuation_model through the governed path', launchMode: 'workbench', workbenchTab: 'forge' },
@@ -51,9 +51,22 @@ const FORGE_MODULES: SuiteModuleDef[] = [
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
 
+function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): string | null {
+  if (source === 'snapshot') {
+    return 'Snapshot-backed county aggregates active: TerraForge overview stats are currently using bundled county snapshot data, not live backend metrics.';
+  }
+
+  if (source === 'fixtures') {
+    return 'Fixture-backed county aggregates active: TerraForge overview stats are currently using test fixture data, not live backend metrics.';
+  }
+
+  return null;
+}
+
 export default function ForgeSuiteHome() {
   const navigate = useNavigate();
-  const { stats, loading, error } = useCountyStats();
+  const { stats, loading, error, source } = useCountyStats();
+  const sourceDisclosure = getSourceDisclosure(source);
 
   return (
     <div data-testid="suite-forge-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
@@ -65,6 +78,21 @@ export default function ForgeSuiteHome() {
       )}
       {error && (
         <div data-testid="forge-error" role="alert" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-suite-forge))' }}>{error}</div>
+      )}
+
+      {stats && sourceDisclosure && (
+        <div
+          data-testid="forge-source-disclosure"
+          role="status"
+          className="px-6 py-3 text-sm"
+          style={{
+            color: 'hsl(var(--tf-warning))',
+            background: 'hsl(var(--tf-warning) / 0.12)',
+            borderBottom: '1px solid hsl(var(--tf-warning) / 0.24)',
+          }}
+        >
+          {sourceDisclosure}
+        </div>
       )}
 
       {/* Stats Strip */}
@@ -103,7 +131,7 @@ export default function ForgeSuiteHome() {
           <SuiteModuleGrid modules={FORGE_MODULES} accentVar="--tf-suite-forge" />
         </div>
         <div data-testid="forge-queue">
-          <OperationalQueue title="Recent Assessments" accentVar="--tf-suite-forge" emptyMessage="No recent assessment activity" />
+          <OperationalQueue title="Recent Parcels" accentVar="--tf-suite-forge" emptyMessage="No recent parcel activity" />
         </div>
       </main>
     </div>

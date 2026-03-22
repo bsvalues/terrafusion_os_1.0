@@ -279,7 +279,7 @@ function TraceConsoleContent({ telemetryStore }: TraceHomeProps): React.ReactEle
     <div className='trace-console' data-testid='trace-console-content'>
       <section className='trace-console__overview'>
         <h2>System Telemetry</h2>
-        <p>Real-time observability and audit trail visualization.</p>
+        <p>Live action stream with 15-second telemetry refresh and audit trail visualization.</p>
 
         <div className='trace-console__stats'>
           <div className='trace-console__stat'>
@@ -368,7 +368,7 @@ function TraceConsoleContent({ telemetryStore }: TraceHomeProps): React.ReactEle
         </section>
       )}
 
-      {/* Action Stream - Real-time OS action visibility */}
+      {/* Action Stream - Live OS action visibility */}
       <section className='trace-console__action-stream'>
         <ActionStreamModule maxHeight='400px' showFilters telemetryStore={telemetryStore} />
       </section>
