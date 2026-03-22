@@ -83,19 +83,13 @@ interface StatusState {
 }
 
 /** PILT district result from calculate_pilt_payment */
-interface PiltDistrict {
-  districtName: string;
-  federalAcres: number;
-  piltDue: number;
-  levyRate: number;
-}
-
 interface PiltResult {
   county: string;
-  taxYear: number;
+  fiscalYear: number;
+  totalAssessedValue: number;
   totalPiltDue: number;
-  districtsCount: number;
-  districts: PiltDistrict[];
+  districtCount: number;
+  summary: string;
 }
 
 interface PiltState {
@@ -344,22 +338,39 @@ export const PropertyDais: React.FC = () => {
   /** calculate_pilt_payment — PILT district payment calculation */
   const handleCalculatePilt = useCallback(async () => {
     setPiltState({ status: 'loading' });
+    const fiscalYear = new Date().getFullYear();
 
     try {
       const response = await invokeTool({
         toolId: 'calculate_pilt_payment',
-        params: { county: 'benton', taxYear: new Date().getFullYear() },
+        params: { county: 'benton', fiscalYear },
         parcelId,
       });
 
       if (response.success && response.result) {
         let parsed: PiltResult;
         try {
-          parsed = typeof response.result.output === 'string'
+          const rawParsed = typeof response.result.output === 'string'
             ? JSON.parse(response.result.output)
             : response.result.output;
+          parsed = {
+            county: rawParsed.county ?? 'BENTON',
+            fiscalYear: rawParsed.fiscalYear ?? rawParsed.taxYear ?? fiscalYear,
+            totalAssessedValue: rawParsed.totalAssessedValue ?? 0,
+            totalPiltDue: rawParsed.totalPiltDue ?? 0,
+            districtCount: rawParsed.districtCount ?? rawParsed.districtsCount ?? rawParsed.districts?.length ?? 0,
+            summary: rawParsed.summary
+              ?? `PILT request returned ${rawParsed.districtCount ?? rawParsed.districtsCount ?? rawParsed.districts?.length ?? 0} districts with total due $${(rawParsed.totalPiltDue ?? 0).toLocaleString()}.`,
+          };
         } catch {
-          parsed = { county: 'benton', taxYear: new Date().getFullYear(), totalPiltDue: 0, districtsCount: 0, districts: [] };
+          parsed = {
+            county: 'BENTON',
+            fiscalYear,
+            totalAssessedValue: 0,
+            totalPiltDue: 0,
+            districtCount: 0,
+            summary: 'No PILT summary returned.',
+          };
         }
 
         setPiltState({ status: 'success', result: parsed, correlationId: response.correlationId });
@@ -1050,14 +1061,14 @@ export const PropertyDais: React.FC = () => {
       <BentoGrid columns="auto" gap={1.5} padding={0}>
         <BentoCard title="PILT Calculator" actions={<span>🏛️</span>}>
           <p className='tf-text-dim text-sm mb-3'>
-            Payment in Lieu of Taxes — Hanford Nuclear Reservation (RCW 84.33)
+            Submit a governed PILT summary request for Benton County and the current fiscal year, then review the returned total due, district count, assessed value, and summary
           </p>
           <button
             onClick={handleCalculatePilt}
             disabled={piltState.status === 'loading'}
             className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'
           >
-            {piltState.status === 'loading' ? 'Calculating...' : 'Calculate PILT'}
+            {piltState.status === 'loading' ? 'Submitting...' : 'Submit PILT Summary Request'}
           </button>
 
           {piltState.status === 'success' && piltState.result && (
@@ -1069,9 +1080,14 @@ export const PropertyDais: React.FC = () => {
                 </span>
               </div>
               <div className='flex items-center justify-between text-sm'>
-                <span className='tf-text-dim'>Districts</span>
-                <span className='tf-text'>{piltState.result.districtsCount}</span>
+                <span className='tf-text-dim'>District Count</span>
+                <span className='tf-text'>{piltState.result.districtCount}</span>
               </div>
+              <div className='flex items-center justify-between text-sm'>
+                <span className='tf-text-dim'>Assessed Value</span>
+                <span className='tf-text'>${piltState.result.totalAssessedValue?.toLocaleString() ?? '0'}</span>
+              </div>
+              <p className='text-xs tf-text-dim'>Shows the returned total due, district count, assessed value, and summary for this PILT request.</p>
               {piltState.correlationId && (
                 <div className='flex items-center gap-2 text-xs'>
                   <span className='tf-text-muted'>ID:</span>
@@ -1089,27 +1105,22 @@ export const PropertyDais: React.FC = () => {
           )}
         </BentoCard>
 
-        {/* PILT District Detail */}
-        <BentoCard title="PILT Districts" actions={<span>📋</span>}>
-          {piltState.status === 'success' && piltState.result?.districts?.length ? (
-            <div className='space-y-2 max-h-64 overflow-y-auto'>
-              {piltState.result.districts.map((d, idx) => (
-                <div key={idx} className='tf-overlay rounded-lg px-3 py-2 text-sm'>
-                  <div className='flex justify-between'>
-                    <span className='tf-text font-medium'>{d.districtName}</span>
-                    <span className='tf-text font-semibold'>${d.piltDue?.toLocaleString() ?? '0'}</span>
-                  </div>
-                  <div className='flex justify-between mt-1 text-xs tf-text-dim'>
-                    <span>{d.federalAcres?.toLocaleString()} federal acres</span>
-                    <span>Rate: {d.levyRate?.toFixed(4)}</span>
-                  </div>
-                </div>
-              ))}
+        {/* PILT Request Summary */}
+        <BentoCard title="PILT Request Summary" actions={<span>📋</span>}>
+          {piltState.status === 'success' && piltState.result ? (
+            <div className='space-y-3'>
+              <div className='tf-panel p-4'>
+                <p className='tf-text-secondary text-sm whitespace-pre-wrap'>{piltState.result.summary}</p>
+              </div>
+              <div className='flex items-center justify-between text-xs tf-text-dim'>
+                <span>County: {piltState.result.county}</span>
+                <span>FY {piltState.result.fiscalYear}</span>
+              </div>
             </div>
           ) : piltState.status === 'idle' ? (
             <div className='flex flex-col items-center justify-center py-8 text-center'>
               <div className='text-3xl mb-2'>🏛️</div>
-              <p className='tf-text-tertiary text-sm'>Run PILT calculation to view district breakdown</p>
+              <p className='tf-text-tertiary text-sm'>Submit a PILT summary request to view the returned summary</p>
             </div>
           ) : piltState.status === 'loading' ? (
             <div className='flex items-center justify-center py-8' role='status'>
@@ -1176,11 +1187,11 @@ export const PropertyDais: React.FC = () => {
 
       {/* Levy Rate Breakdown */}
       <BentoCard title='📊 Levy Rate Components' actions={<span>💲</span>}>
-        <p className='tf-text-tertiary text-sm mb-4'>Breakdown of levy rate by component (state, school, local)</p>
+        <p className='tf-text-tertiary text-sm mb-4'>Submit a governed levy-summary request for Benton County and the current tax year, then review the returned rate components, total rate, and explanation</p>
         <button onClick={handleLevyBreakdown} disabled={levyState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {levyState.status === 'loading' ? 'Loading...' : 'Get Levy Breakdown'}
+          {levyState.status === 'loading' ? 'Submitting...' : 'Submit Levy Summary Request'}
         </button>
-        {levyState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Calculating levy rates...</span></div>}
+        {levyState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Submitting levy-summary request...</span></div>}
         {levyState.status === 'success' && levyState.result && (
           <div className='space-y-3'>
             <div className='space-y-1'>
@@ -1195,7 +1206,10 @@ export const PropertyDais: React.FC = () => {
                 <span className='font-mono tf-suite-accent-text'>${levyState.result.totalRate.toFixed(2)}</span>
               </div>
             </div>
-            <div className='tf-panel p-3'><p className='tf-text-secondary text-sm'>{levyState.result.explanation}</p></div>
+            <div className='tf-panel p-3'>
+              <p className='tf-text-secondary text-sm'>{levyState.result.explanation}</p>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned rate components, total rate, and explanation for this levy-summary request.</p>
+            </div>
           </div>
         )}
         {levyState.status === 'error' && levyState.error && <ErrorDisplay error={{ message: levyState.error.message, errorCode: levyState.error.code, correlationId: levyState.correlationId }} />}
@@ -1203,20 +1217,21 @@ export const PropertyDais: React.FC = () => {
 
       {/* Commissioner Memo */}
       <BentoCard title='📝 Commissioner Memo' actions={<span>🏛️</span>}>
-        <p className='tf-text-tertiary text-sm mb-4'>Generate a briefing memo for commissioner review</p>
+        <p className='tf-text-tertiary text-sm mb-4'>Submit a governed commissioner-memo draft request for the selected topic and current tax year, then review the returned memo title, body, and word count</p>
         <div className='mb-4'>
           <label htmlFor='memo-topic' className='block tf-text-secondary text-sm mb-2'>Topic</label>
           <input id='memo-topic' type='text' value={memoTopic} onChange={e => setMemoTopic(e.target.value)} placeholder='e.g. Annual revaluation summary' className='w-full tf-input px-3 py-2' />
         </div>
         <button onClick={handleCommissionerMemo} disabled={memoState.status === 'loading' || !memoTopic.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {memoState.status === 'loading' ? 'Generating...' : 'Generate Memo'}
+          {memoState.status === 'loading' ? 'Submitting...' : 'Submit Commissioner Memo Draft Request'}
         </button>
-        {memoState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Generating memo...</span></div>}
+        {memoState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Submitting commissioner-memo draft request...</span></div>}
         {memoState.status === 'success' && memoState.result && (
           <div className='space-y-3'>
             <div className='tf-panel p-4'>
               <h5 className='tf-text font-semibold mb-2'>{memoState.result.memo.title}</h5>
               <p className='tf-text-secondary whitespace-pre-wrap'>{memoState.result.memo.body}</p>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned memo title, body, and word count for this commissioner-memo draft request.</p>
             </div>
             <div className='flex items-center gap-4 text-xs tf-text-dim'>
               <span>{memoState.result.wordCount} words</span>
