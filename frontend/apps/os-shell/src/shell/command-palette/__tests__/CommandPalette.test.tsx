@@ -174,10 +174,10 @@ describe('CommandPalette', () => {
       const input = screen.getByTestId('command-palette-input');
       await user.type(input, 'CostForge');
 
-      // Verify the CostForge module appears in results by checking for the button
+      // Verify legacy aliases resolve to the canonically named legacy entry.
       const options = screen.getAllByRole('option');
       const costforgeOption = options.find((option) =>
-        /Open.*CostForge/i.test(option.textContent || '')
+        /Open.*TerraForge Legacy/i.test(option.textContent || '')
       );
       expect(costforgeOption).toBeDefined();
     });
@@ -190,7 +190,7 @@ describe('CommandPalette', () => {
       const input = screen.getByTestId('command-palette-input');
       await user.type(input, 'property');
 
-      const costforgeItems = screen.getAllByText(/CostForge/i);
+      const costforgeItems = screen.getAllByText(/TerraForge Legacy/i);
       expect(costforgeItems.length).toBeGreaterThan(0);
     });
 
@@ -214,12 +214,12 @@ describe('CommandPalette', () => {
 
       // Type partial query
       await user.type(input, 'cost');
-      expect(screen.getByText(/CostForge/i)).toBeInTheDocument();
+      expect(screen.getByText(/TerraForge Legacy/i)).toBeInTheDocument();
 
       // Clear and type different query
       await user.clear(input);
-      await user.type(input, 'atlas');
-      expect(screen.getByText(/ATLAS AI/i)).toBeInTheDocument();
+      await user.type(input, 'atlas ai');
+      expect(screen.getByText(/TerraAtlas Legacy AI/i)).toBeInTheDocument();
     });
   });
 
@@ -236,7 +236,7 @@ describe('CommandPalette', () => {
       const input = screen.getByTestId('command-palette-input');
       await user.type(input, 'gaia');
 
-      expect(screen.getByText(/TerraGaia/i)).toBeInTheDocument();
+      expect(screen.getByText(/TerraGPT Legacy/i)).toBeInTheDocument();
     });
 
     it('matches case insensitive', async () => {
@@ -247,7 +247,7 @@ describe('CommandPalette', () => {
       const input = screen.getByTestId('command-palette-input');
       await user.type(input, 'COSTFORGE');
 
-      const costforgeItems = screen.getAllByText(/CostForge/i);
+      const costforgeItems = screen.getAllByText(/TerraForge Legacy/i);
       expect(costforgeItems.length).toBeGreaterThan(0);
     });
 
@@ -257,9 +257,9 @@ describe('CommandPalette', () => {
       render(<CommandPalette />);
 
       const input = screen.getByTestId('command-palette-input');
-      await user.type(input, 'Cost');
+      await user.type(input, 'Terra');
 
-      const highlights = screen.getAllByText('Cost');
+      const highlights = screen.getAllByText('Terra');
       const markHighlight = highlights.find((el) => el.tagName === 'MARK');
       expect(markHighlight).toBeDefined();
     });
@@ -373,7 +373,7 @@ describe('CommandPalette', () => {
       openPalette();
       render(<CommandPalette />);
 
-      const costforgeItem = screen.getByText(/Open CostForge/i);
+      const costforgeItem = screen.getByText(/Open TerraForge Legacy/i);
       await user.click(costforgeItem);
 
       expect(mockActivateModule).toHaveBeenCalledWith('costforge', {
@@ -386,7 +386,7 @@ describe('CommandPalette', () => {
       openPalette();
       render(<CommandPalette />);
 
-      const item = screen.getByText(/Open CostForge/i);
+      const item = screen.getByText(/Open TerraForge Legacy/i);
       await user.click(item);
 
       expect(useCommandPaletteStore.getState().isOpen).toBe(false);
@@ -397,7 +397,7 @@ describe('CommandPalette', () => {
       openPalette();
       render(<CommandPalette />);
 
-      const item = screen.getByText(/Open CostForge/i);
+      const item = screen.getByText(/Open TerraForge Legacy/i);
       await user.click(item);
 
       expect(useCommandPaletteStore.getState().recentCommands).toContain('module:costforge');
@@ -499,7 +499,7 @@ describe('CommandPalette', () => {
   // ==========================================================================
 
   describe('keyboard shortcuts display', () => {
-    it('shows shortcut for CostForge', () => {
+    it('shows shortcut for TerraForge Legacy', () => {
       openPalette();
       render(<CommandPalette />);
       expect(screen.getByText('Ctrl+1')).toBeInTheDocument();

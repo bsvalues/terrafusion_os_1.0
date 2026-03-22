@@ -70,12 +70,13 @@ describe('EvidenceRail — empty state', () => {
   it('renders empty message when phase is "empty"', () => {
     render(<EvidenceRail phase="empty" events={[]} error={null} onRetry={vi.fn()} />);
     expect(screen.getByTestId('evidence-empty')).toBeInTheDocument();
-    expect(screen.getByText(/no trace events in the last 30 days/i)).toBeInTheDocument();
+    expect(screen.getByText(/no trace events returned for this parcel/i)).toBeInTheDocument();
   });
 
   it('renders empty message when phase is "ready" but events array is empty', () => {
     render(<EvidenceRail phase="ready" events={[]} error={null} onRetry={vi.fn()} />);
     expect(screen.getByTestId('evidence-empty')).toBeInTheDocument();
+    expect(screen.getByText(/no trace events returned for this parcel/i)).toBeInTheDocument();
   });
 });
 

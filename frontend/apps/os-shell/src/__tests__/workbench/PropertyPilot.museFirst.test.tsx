@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { PropertyPilot } from '../../pages/workbench/tabs/PropertyPilot';
 
 const listPilotToolsMock = vi.fn();
+let pilotOperations: unknown[] = [];
 
 vi.mock('../../api/pilotApi', async () => {
   const actual = await vi.importActual<typeof import('../../api/pilotApi')>('../../api/pilotApi');
@@ -21,7 +22,7 @@ vi.mock('../../context/workbenchTabContext', () => ({
 
 vi.mock('../../stores/propertyStore', () => ({
   usePropertyStore: (selector: (state: { operations: unknown[] }) => unknown) =>
-    selector({ operations: [] }),
+    selector({ operations: pilotOperations }),
 }));
 
 vi.mock('../../hooks/useToolInvocation', () => ({
@@ -83,6 +84,11 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 }
 
 describe('PropertyPilot Muse-first surface', () => {
+  beforeEach(() => {
+    pilotOperations = [];
+    listPilotToolsMock.mockReset();
+  });
+
   it('loads only muse tools and hides write-capable or pilot-mode tools', async () => {
     listPilotToolsMock.mockResolvedValue({
       count: 4,
@@ -137,5 +143,46 @@ describe('PropertyPilot Muse-first surface', () => {
     expect(screen.getByText('Summarize Dossier')).toBeInTheDocument();
     expect(screen.queryByText('Draft Appeal Response')).not.toBeInTheDocument();
     expect(screen.queryByText('Search Trace')).not.toBeInTheDocument();
+  });
+
+  it('renders loaded operation history wording when store operations are present', async () => {
+    pilotOperations = [
+      {
+        traceId: 'TRC-1',
+        toolId: 'explain_value_change',
+        status: 'completed',
+        durationMs: 1200,
+        startedAt: '2026-03-21T10:00:00Z',
+      },
+    ];
+
+    listPilotToolsMock.mockResolvedValue({
+      count: 1,
+      tools: [
+        {
+          toolId: 'explain_value_change',
+          displayName: 'Explain Value Change',
+          suite: 'forge',
+          mode: 'muse',
+          risk: 'read_only',
+          description: 'Explain the assessed value delta.',
+        },
+      ],
+    });
+
+    render(
+      <Wrapper>
+        <PropertyPilot />
+      </Wrapper>
+    );
+
+    await waitFor(() => {
+      expect(listPilotToolsMock).toHaveBeenCalledWith('muse');
+    });
+
+    expect(await screen.findByText(/Shown from the operation history currently loaded for this parcel\./i)).toBeInTheDocument();
+    expect(screen.getByText('explain_value_change')).toBeInTheDocument();
+    expect(screen.getByText('completed')).toBeInTheDocument();
+    expect(screen.queryByText(/Recent Operations/i)).not.toBeInTheDocument();
   });
 });

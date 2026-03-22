@@ -85,12 +85,12 @@ describe('Lane I — empty-state messaging', () => {
   it('shows default window message when not filtered', () => {
     renderRail({ phase: 'empty', events: [] });
     expect(screen.getByTestId('evidence-empty')).toBeInTheDocument();
-    expect(screen.getByText(/no trace events in the last 30 days/i)).toBeInTheDocument();
+    expect(screen.getByText(/no trace events returned for this parcel/i)).toBeInTheDocument();
   });
 
   it('shows default message when phase=ready + 0 events + not filtered', () => {
     renderRail({ phase: 'ready', events: [] });
-    expect(screen.getByText(/no trace events in the last 30 days/i)).toBeInTheDocument();
+    expect(screen.getByText(/no trace events returned for this parcel/i)).toBeInTheDocument();
   });
 
   it('shows filtered message when isFiltered=true', () => {

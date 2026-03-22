@@ -10,6 +10,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import * as pilotApi from '../../api/pilotApi';
 import PropertyDais from '../../pages/workbench/tabs/PropertyDais';
+import { usePropertyStore } from '../../stores/propertyStore';
 
 // Mock the pilotApi module
 vi.mock('../../api/pilotApi');
@@ -39,6 +40,7 @@ const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
 describe('PropertyDais', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    usePropertyStore.setState({ appeals: [] });
   });
 
   describe('Rendering', () => {
@@ -51,7 +53,7 @@ describe('PropertyDais', () => {
     });
 
     it('displays workflow status controls', () => {
-      render(<TestWrapper parcelId='12345-001' />);
+      const { container } = render(<TestWrapper parcelId='12345-001' />);
 
       expect(screen.getByRole('button', { name: /check status/i })).toBeInTheDocument();
     });
@@ -60,6 +62,31 @@ describe('PropertyDais', () => {
       render(<TestWrapper parcelId='12345-001' />);
 
       expect(screen.getByLabelText(/workflow type/i)).toBeInTheDocument();
+    });
+
+    it('shows loaded appeals disclosure for store-backed appeal records', () => {
+      usePropertyStore.setState({
+        appeals: [
+          {
+            appealId: 'APL-12345-001-2025',
+            parcelId: '12345-001',
+            appealYear: 2025,
+            filingDate: '2025-05-20',
+            hearingDate: '2025-07-15T09:00:00',
+            status: 'scheduled',
+            petitionerName: 'Jane Doe',
+            currentAssessedValue: 325000,
+            petitionedValue: 280000,
+            reason: 'Market value exceeds comparable sales',
+          },
+        ],
+      });
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Loaded Appeals/i)).toBeInTheDocument();
+      expect(screen.getByText(/Shown from the appeal records currently loaded for this parcel\./i)).toBeInTheDocument();
+      expect(screen.queryByText(/^Active Appeals$/i)).not.toBeInTheDocument();
     });
   });
 
@@ -118,6 +145,10 @@ describe('PropertyDais', () => {
         expect(screen.getAllByText(/Appraiser Review/i).length).toBeGreaterThan(0);
         expect(screen.getAllByText(/corr-dais/).length).toBeGreaterThan(0);
       });
+
+      expect(screen.getByText(/^Reported Step$/i)).toBeInTheDocument();
+      expect(screen.getByText(/Shown from the workflow status returned for this parcel\./i)).toBeInTheDocument();
+      expect(screen.queryByText(/^Current Step$/i)).not.toBeInTheDocument();
     });
 
     it('surfaces tool error with correlationId', async () => {
@@ -154,6 +185,303 @@ describe('PropertyDais', () => {
         expect(screen.getByText(/network error|failed to fetch/i)).toBeInTheDocument();
         const correlationTexts = screen.getAllByText(/net-/);
         expect(correlationTexts.length).toBeGreaterThan(0);
+      });
+    });
+
+    it('invokes queue_notice_for_mailing and renders the returned queue result', async () => {
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-queue-notice-001',
+        result: {
+          toolId: 'queue_notice_for_mailing',
+          output: JSON.stringify({
+            queued: 2,
+            batchId: 'BATCH-2026-041',
+            deliveryMethod: 'certified_mail',
+            payloadRef: 'payload://notice-batch/BATCH-2026-041',
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Queue generated notices for batch mailing and return the batch method for this request/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Queue generated notices for batch mailing with delivery tracking/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByPlaceholderText(/Notice IDs \(comma-separated\)/i), {
+        target: { value: 'NTC-001, NTC-002' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Queue for Mailing/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'queue_notice_for_mailing',
+          params: { county: 'benton', noticeIds: ['NTC-001', 'NTC-002'] },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/2 notice\(s\) queued/i)).toBeInTheDocument();
+        expect(screen.getByText(/Batch: BATCH-2026-041 \| Method: certified_mail/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the queued count, batch ID, and delivery method returned by this request\./i)).toBeInTheDocument();
+      });
+    });
+
+    describe('PropertyDais queue statistics honesty', () => {
+      const mockQueueStatsResponse = {
+        success: true,
+        correlationId: 'corr-queue-stats-001',
+        result: {
+          toolId: 'get_queue_statistics',
+          output: JSON.stringify({
+            county: 'benton',
+            period: '2026-Q1',
+            totalTasks: 128,
+            completedTasks: 96,
+            slaCompliance: 92,
+            overdueCount: 7,
+          }),
+        },
+      };
+
+      async function renderQueueStatisticsCard() {
+        mockInvokeTool.mockResolvedValue(mockQueueStatsResponse);
+
+        render(<TestWrapper parcelId='12345-001' />);
+        fireEvent.click(screen.getByRole('button', { name: /Get Queue Statistics/i }));
+
+        await waitFor(() => {
+          expect(mockInvokeTool).toHaveBeenCalledWith({
+            toolId: 'get_queue_statistics',
+            params: { county: 'benton' },
+            parcelId: '12345-001',
+          });
+        });
+      }
+
+      it('invokes get_queue_statistics for the user action', async () => {
+        await renderQueueStatisticsCard();
+      });
+
+      it('renders request-returned queue totals rather than generic system-truth wording', async () => {
+        await renderQueueStatisticsCard();
+
+          expect(screen.getByText(/Request returned queue totals, completion count, overdue count, and SLA compliance for this request/i)).toBeInTheDocument();
+
+        await waitFor(() => {
+          expect(screen.getByText('128')).toBeInTheDocument();
+          expect(screen.getByText('96')).toBeInTheDocument();
+          expect(screen.getByText('92%')).toBeInTheDocument();
+          expect(screen.getByText('7')).toBeInTheDocument();
+        });
+      });
+
+      it('does not render old overclaim language such as SLA compliance metrics if unsupported', () => {
+        render(<TestWrapper parcelId='12345-001' />);
+
+        expect(screen.queryByText(/Task queue statistics with SLA compliance metrics/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/county-wide/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/official/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/live/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/all queues/i)).not.toBeInTheDocument();
+      });
+
+      it('shows a success disclosure tied to the actual returned fields', async () => {
+        await renderQueueStatisticsCard();
+
+        await waitFor(() => {
+          expect(screen.getByText(/Shows the total tasks, completed tasks, overdue count, and SLA compliance returned by this request\./i)).toBeInTheDocument();
+        });
+      });
+    });
+
+    it('invokes process_exemption_renewal and renders the returned renewal status', async () => {
+      const currentYear = new Date().getFullYear();
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-renewal-001',
+        result: {
+          toolId: 'process_exemption_renewal',
+          output: JSON.stringify({
+            exemptionId: 'EXM-2026-001',
+            taxYear: currentYear,
+            status: 'renewed',
+            payloadRef: 'payload://exemptions/EXM-2026-001',
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Process annual exemption renewal and return the renewal status for this exemption/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Process annual exemption renewal with documentation verification/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByPlaceholderText(/Exemption ID \(e\.g\. EXM-2026-001\)/i), {
+        target: { value: 'EXM-2026-001' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Process Renewal/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'process_exemption_renewal',
+          params: { county: 'benton', exemptionId: 'EXM-2026-001', taxYear: currentYear },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Status: renewed/i)).toBeInTheDocument();
+        expect(screen.getByText(/Exemption EXM-2026-001 renewed for/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the renewal status returned by this request for the selected exemption and tax year\./i)).toBeInTheDocument();
+      });
+    });
+
+    it('invokes schedule_boe_hearing and renders the returned hearing schedule details', async () => {
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-hearing-001',
+        result: {
+          toolId: 'schedule_boe_hearing',
+          output: JSON.stringify({
+            hearingId: 'HEAR-2026-041',
+            appealId: 'APL-2026-041',
+            scheduledDate: '2026-08-14',
+            panelSize: 3,
+            payloadRef: 'payload://hearings/HEAR-2026-041',
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+  const { container } = render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Schedule a Board of Equalization hearing and return the scheduled date and panel size for this request/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Schedule a Board of Equalization hearing with panel assignment/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByPlaceholderText(/^Appeal ID$/i), {
+        target: { value: 'APL-2026-041' },
+      });
+      const hearingDateInput = container.querySelector("input[type='date']");
+      expect(hearingDateInput).not.toBeNull();
+      fireEvent.change(hearingDateInput as HTMLInputElement, {
+        target: { value: '2026-08-14' },
+      });
+      fireEvent.click(screen.getByRole('checkbox', { name: /I confirm scheduling this hearing/i }));
+      fireEvent.click(screen.getByRole('button', { name: /Schedule Hearing/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'schedule_boe_hearing',
+          params: { county: 'benton', appealId: 'APL-2026-041', requestedDate: '2026-08-14' },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Hearing HEAR-2026-041/i)).toBeInTheDocument();
+        expect(screen.getByText(/Date: .*\| Panel: 3 members/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the scheduled date and panel size returned by this request for the selected appeal\./i)).toBeInTheDocument();
+      });
+    });
+
+    it('invokes assemble_boe_packet with request wording and returned-packet disclosure', async () => {
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-boe-packet-001',
+        result: {
+          toolId: 'assemble_boe_packet',
+          output: JSON.stringify({
+            caseId: 'BOE-2026-001',
+            sections: ['evidence', 'comps'],
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed BOE packet request for this case and selected sections, then review the returned packet summary/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Assemble a Board of Equalization evidence packet — requires confirmation/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByTestId('boe-case-id'), {
+        target: { value: 'BOE-2026-001' },
+      });
+
+      fireEvent.click(screen.getByLabelText(/I confirm this BOE packet request is ready for submission for case/i));
+      fireEvent.click(screen.getByRole('button', { name: /Submit BOE Packet Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'assemble_boe_packet',
+          params: { county: 'benton', caseId: 'BOE-2026-001', include: ['evidence'] },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Case: BOE-2026-001/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned case ID and section list for this BOE packet request\./i)).toBeInTheDocument();
+      });
+    });
+
+    it('invokes sign_off_certification_step with request wording and returned-sign-off disclosure', async () => {
+      const currentYear = new Date().getFullYear();
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-sign-off-001',
+        result: {
+          toolId: 'sign_off_certification_step',
+          output: JSON.stringify({
+            stepId: 'step-review-001',
+            signedBy: 'Jordan Lee',
+            signedAt: '2026-03-22T14:30:00Z',
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed certification sign-off request for this step, then review the returned signer and timestamp summary/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Sign off a certification checklist step/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByPlaceholderText(/Step ID \(e\.g\. step-review-001\)/i), {
+        target: { value: 'step-review-001' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(/Signer name/i), {
+        target: { value: 'Jordan Lee' },
+      });
+
+      expect(screen.getByText(/I confirm this certification sign-off request is ready for submission for step/i)).toBeInTheDocument();
+      expect(screen.queryByText(/I confirm this write_high sign-off for step/i)).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByLabelText(/I confirm this certification sign-off request is ready for submission for step/i));
+      fireEvent.click(screen.getByRole('button', { name: /Submit Certification Sign-Off Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'sign_off_certification_step',
+          params: {
+            county: 'benton',
+            taxYear: currentYear,
+            stepId: 'step-review-001',
+            signedBy: 'Jordan Lee',
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Step step-review-001 signed off/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned step ID, signer, and signed-at timestamp for this certification sign-off request\./i)).toBeInTheDocument();
       });
     });
   });

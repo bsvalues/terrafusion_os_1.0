@@ -9,6 +9,57 @@ import { MemoryRouter } from 'react-router-dom';
 import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
 import PropertySummary from '../../pages/workbench/tabs/PropertySummary';
 
+const { buildPropertyStoreState, propertyStoreState } = vi.hoisted(() => {
+  const buildPropertyStoreState = () => ({
+    activeParcel: {
+      parcelId: 'SUMMARY-TEST-001',
+      address: '123 Real Data St',
+      city: 'Kennewick',
+      zip: '99336',
+      yearBuilt: 1985,
+      buildingSquareFeet: 1800,
+      landAcreage: 0.25,
+      assessmentYear: 2026,
+      assessmentStatus: 'certified',
+      landUseDescription: 'Single Family Residential',
+      exemptionAmount: 15000,
+      exemptionTypes: ['Senior/Disabled'],
+      hasAppeals: true,
+      hasActivePermits: false,
+      lastSaleDate: '2021-06-15T00:00:00Z',
+      lastSalePrice: 285000,
+      taxDistrictName: 'Benton County',
+      taxDistrictCode: 'BC-001',
+    },
+    assessments: [
+      {
+        assessmentId: 'ASMT-2026',
+        assessmentYear: 2026,
+        landValue: 80000,
+        improvementValue: 170000,
+        totalAssessedValue: 250000,
+        marketValue: 265000,
+        taxableValue: 235000,
+      },
+      {
+        assessmentId: 'ASMT-2025',
+        assessmentYear: 2025,
+        landValue: 75000,
+        improvementValue: 160000,
+        totalAssessedValue: 235000,
+        marketValue: 248000,
+        taxableValue: 220000,
+      },
+    ],
+    appeals: [{ appealId: 'APP-001', status: 'pending' }],
+  });
+
+  return {
+    buildPropertyStoreState,
+    propertyStoreState: buildPropertyStoreState(),
+  };
+});
+
 vi.mock('../../stores/propertyStore', () => ({
   usePropertyStore: (selector: (state: {
     activeParcel: {
@@ -25,50 +76,7 @@ vi.mock('../../stores/propertyStore', () => ({
     }>;
     appeals: Array<{ appealId: string; status: string }>;
   }) => unknown) => {
-    const state = {
-      activeParcel: {
-        parcelId: 'SUMMARY-TEST-001',
-        address: '123 Real Data St',
-        city: 'Kennewick',
-        zip: '99336',
-        yearBuilt: 1985,
-        buildingSquareFeet: 1800,
-        landAcreage: 0.25,
-        assessmentYear: 2026,
-        assessmentStatus: 'certified',
-        landUseDescription: 'Single Family Residential',
-        exemptionAmount: 15000,
-        exemptionTypes: ['Senior/Disabled'],
-        hasAppeals: true,
-        hasActivePermits: false,
-        lastSaleDate: '2021-06-15T00:00:00Z',
-        lastSalePrice: 285000,
-        taxDistrictName: 'Benton County',
-        taxDistrictCode: 'BC-001',
-      },
-      assessments: [
-        {
-          assessmentId: 'ASMT-2026',
-          assessmentYear: 2026,
-          landValue: 80000,
-          improvementValue: 170000,
-          totalAssessedValue: 250000,
-          marketValue: 265000,
-          taxableValue: 235000,
-        },
-        {
-          assessmentId: 'ASMT-2025',
-          assessmentYear: 2025,
-          landValue: 75000,
-          improvementValue: 160000,
-          totalAssessedValue: 235000,
-          marketValue: 248000,
-          taxableValue: 220000,
-        },
-      ],
-      appeals: [{ appealId: 'APP-001', status: 'pending' }],
-    };
-    return typeof selector === 'function' ? selector(state) : state;
+    return typeof selector === 'function' ? selector(propertyStoreState) : propertyStoreState;
   },
 }));
 
@@ -98,7 +106,10 @@ const Wrapper: React.FC = () => (
 );
 
 describe('PropertySummary — Phase 5 honesty contract', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    Object.assign(propertyStoreState, buildPropertyStoreState());
+  });
 
   describe('Identity data', () => {
     it('renders parcel ID from context', () => {
@@ -142,6 +153,17 @@ describe('PropertySummary — Phase 5 honesty contract', () => {
       render(<Wrapper />);
       expect(screen.getAllByText(/170,000/).length).toBeGreaterThan(0);
     });
+
+    it('discloses the assessment-year snapshot framing for displayed valuation amounts', () => {
+      render(<Wrapper />);
+      expect(screen.getByText(/Valuation Snapshot/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Displayed values reflect the loaded parcel summary for assessment year 2026\./i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/This route does not show a more precise as-of timestamp than that assessment year\. Source: PACS\./i)
+      ).toBeInTheDocument();
+    });
   });
 
   describe('Property detail data from store', () => {
@@ -183,6 +205,23 @@ describe('PropertySummary — Phase 5 honesty contract', () => {
     it('renders appeal count from store appeals', () => {
       render(<Wrapper />);
       expect(screen.getByText(/1 appeal/i)).toBeInTheDocument();
+    });
+
+    it('uses loaded-appeals wording for store-backed appeal records', () => {
+      render(<Wrapper />);
+      expect(screen.getByText(/Loaded Appeals/i)).toBeInTheDocument();
+      expect(screen.getByText(/Shown from the appeal records currently loaded for this parcel\./i)).toBeInTheDocument();
+      expect(screen.queryByText(/^Active Appeals$/i)).not.toBeInTheDocument();
+    });
+
+    it('uses loaded-parcel permit wording for the store-backed permit flag', () => {
+      propertyStoreState.activeParcel.hasActivePermits = true;
+
+      render(<Wrapper />);
+
+      expect(screen.getByText(/Loaded parcel is marked with active permits\./i)).toBeInTheDocument();
+      expect(screen.getByText(/Shown from the parcel summary currently loaded for this parcel\./i)).toBeInTheDocument();
+      expect(screen.queryByText(/Active permits on file/i)).not.toBeInTheDocument();
     });
   });
 

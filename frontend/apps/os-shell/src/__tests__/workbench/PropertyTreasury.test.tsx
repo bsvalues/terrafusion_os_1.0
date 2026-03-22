@@ -122,7 +122,7 @@ describe('PropertyTreasury', () => {
   // ── Tool Invocations ───────────────────────────────────────────────────────
 
   describe('Tool Invocation — get_tax_statement', () => {
-    it('invokes get_tax_statement and renders Total Due on success', async () => {
+    it('invokes get_tax_statement with returned-summary wording and preview disclosure', async () => {
       mockInvokeTool.mockResolvedValue({
         success: true,
         correlationId: 'corr-stmt-abc123',
@@ -145,6 +145,9 @@ describe('PropertyTreasury', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
+      expect(screen.getByText(/Request the returned tax-statement summary and preview line items for this parcel and tax year/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Retrieve tax statement for a specific tax year/i)).not.toBeInTheDocument();
+
       fireEvent.click(screen.getByRole('button', { name: /get tax statement/i }));
 
       await waitFor(() => {
@@ -157,14 +160,15 @@ describe('PropertyTreasury', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Total Due/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/Total Due/i).length).toBeGreaterThan(0);
         expect(screen.getByText(/4,500/)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned total due, balance, due date, and up to four returned line items for this parcel and tax year\./i)).toBeInTheDocument();
       });
     });
   });
 
   describe('Tool Invocation — check_delinquency_status', () => {
-    it('invokes check_delinquency_status and renders Current status on success', async () => {
+    it('invokes check_delinquency_status and renders returned status wording on success', async () => {
       mockInvokeTool.mockResolvedValue({
         success: true,
         correlationId: 'corr-delinq-xyz',
@@ -196,13 +200,16 @@ describe('PropertyTreasury', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Current/i)).toBeInTheDocument();
+        expect(screen.getByText(/No delinquency returned/i)).toBeInTheDocument();
+        expect(screen.getByText(/delinquency check returned for this parcel/i)).toBeInTheDocument();
+        expect(screen.queryByText(/^Current$/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/latest delinquency check/i)).not.toBeInTheDocument();
       });
     });
   });
 
   describe('Tool Invocation — explain_tax_breakdown', () => {
-    it('invokes explain_tax_breakdown and renders Total Rate on success', async () => {
+    it('invokes explain_tax_breakdown with returned-breakdown wording and preview disclosure', async () => {
       mockInvokeTool.mockResolvedValue({
         success: true,
         correlationId: 'corr-breakdown-abc',
@@ -222,6 +229,9 @@ describe('PropertyTreasury', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
+      expect(screen.getByText(/Request returned levy components, total rate, and assessed value for this parcel/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Levy component breakdown with rates and amounts/i)).not.toBeInTheDocument();
+
       fireEvent.click(screen.getByRole('button', { name: /explain tax breakdown/i }));
 
       await waitFor(() => {
@@ -234,8 +244,9 @@ describe('PropertyTreasury', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Total Rate/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/Total Rate/i).length).toBeGreaterThan(0);
         expect(screen.getByText(/1\.2543/)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned total rate, assessed value, and up to five returned levy components for this parcel\./i)).toBeInTheDocument();
       });
     });
   });
@@ -261,6 +272,9 @@ describe('PropertyTreasury', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
+      expect(screen.getByText(/Request returned collection totals and rates for this parcel/i)).toBeInTheDocument();
+      expect(screen.queryByText(/County-wide tax collection statistics/i)).not.toBeInTheDocument();
+
       fireEvent.click(screen.getByRole('button', { name: /get collection stats/i }));
 
       await waitFor(() => {
@@ -275,6 +289,157 @@ describe('PropertyTreasury', () => {
       await waitFor(() => {
         expect(screen.getByText(/Collection Rate/i)).toBeInTheDocument();
         expect(screen.getByText(/95/)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the collection totals and rates returned by this request\./i)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Tool Invocation — record_payment', () => {
+    it('invokes record_payment with request wording and returned-receipt disclosure', async () => {
+      mockInvokeTool.mockResolvedValue({
+        success: true,
+        correlationId: 'corr-payment-abc',
+        result: {
+          toolId: 'record_payment',
+          output: JSON.stringify({
+            paymentId: 'PAY-2026-11',
+            amount: 1250,
+            method: 'ach',
+            receiptNumber: 'RCT-7711',
+            appliedAt: '2026-03-22T10:15:00Z',
+            remainingBalance: 3400,
+          }),
+        },
+      });
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed payment-recording request for this parcel and review the returned receipt summary/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Record a tax payment against this parcel/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByPlaceholderText(/Payment amount \(\$\)/i), { target: { value: '1250' } });
+      fireEvent.change(screen.getByDisplayValue('Check'), { target: { value: 'ach' } });
+      expect(screen.getByText(/I confirm this payment request is ready for submission for \$1250/i)).toBeInTheDocument();
+      expect(screen.queryByText(/I confirm recording payment of \$1250/i)).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByLabelText(/I confirm this payment request is ready for submission for \$1250/i));
+      fireEvent.click(screen.getByRole('button', { name: /submit payment request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith(
+          expect.objectContaining({
+            toolId: 'record_payment',
+            parcelId: '12345-001',
+            params: expect.objectContaining({
+              parcelId: '12345-001',
+              amount: 1250,
+              method: 'ach',
+              confirmed: true,
+              reason: 'Tax payment',
+            }),
+          })
+        );
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Receipt: RCT-7711/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned receipt number, amount, method, and remaining balance for this request\./i)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Tool Invocation — create_installment_plan', () => {
+    it('invokes create_installment_plan with returned-plan wording and disclosure', async () => {
+      mockInvokeTool.mockResolvedValue({
+        success: true,
+        correlationId: 'corr-installment-abc',
+        result: {
+          toolId: 'create_installment_plan',
+          output: JSON.stringify({
+            planId: 'PLAN-2401',
+            totalAmount: 2400,
+            installments: 24,
+            monthlyPayment: 100,
+            startDate: '2026-05-15T00:00:00Z',
+            status: 'active',
+          }),
+        },
+      });
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Request a returned installment-plan summary for this parcel and selected term/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Create a payment installment plan for delinquent taxes/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByDisplayValue('12 months'), { target: { value: '24' } });
+      fireEvent.click(screen.getByRole('button', { name: /create installment plan/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith(
+          expect.objectContaining({
+            toolId: 'create_installment_plan',
+            parcelId: '12345-001',
+            params: expect.objectContaining({
+              parcelId: '12345-001',
+              months: 24,
+            }),
+          })
+        );
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Plan: PLAN-2401/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned plan ID, monthly payment, installment count, and start date for this request\./i)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Tool Invocation — initiate_tax_sale', () => {
+    it('invokes initiate_tax_sale with request wording and returned-sale disclosure', async () => {
+      mockInvokeTool.mockResolvedValue({
+        success: true,
+        correlationId: 'corr-tax-sale-abc',
+        result: {
+          toolId: 'initiate_tax_sale',
+          output: JSON.stringify({
+            saleId: 'SALE-2026-17',
+            parcelId: '12345-001',
+            scheduledDate: '2026-09-15T00:00:00Z',
+            minimumBid: 7800,
+            status: 'scheduled',
+            noticesSent: 3,
+          }),
+        },
+      });
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed tax-sale initiation request for this parcel and review the returned sale summary/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Initiate tax sale process for delinquent parcel/i)).not.toBeInTheDocument();
+      expect(screen.getByText(/I confirm this tax-sale request is ready for submission for parcel 12345-001/i)).toBeInTheDocument();
+      expect(screen.queryByText(/I confirm initiating tax sale for parcel 12345-001/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByPlaceholderText(/reason for tax sale initiation/i), { target: { value: 'Delinquency review complete' } });
+      fireEvent.click(screen.getByLabelText(/I confirm this tax-sale request is ready for submission for parcel 12345-001/i));
+      fireEvent.click(screen.getByRole('button', { name: /submit tax sale request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith(
+          expect.objectContaining({
+            toolId: 'initiate_tax_sale',
+            parcelId: '12345-001',
+            params: expect.objectContaining({
+              parcelId: '12345-001',
+              confirmed: true,
+              reason: 'Delinquency review complete',
+            }),
+          })
+        );
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Sale SALE-2026-17/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned sale ID, scheduled date, minimum bid, and notices-sent count for this request\./i)).toBeInTheDocument();
       });
     });
   });

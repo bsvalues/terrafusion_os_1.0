@@ -8,8 +8,38 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
+import * as pilotApi from '../../api/pilotApi';
 import * as dossierServiceModule from '../../services/dossierService';
 import PropertyDossier from '../../pages/workbench/tabs/PropertyDossier';
+
+vi.mock('../../stores/propertyStore', () => ({
+  usePropertyStore: (selector: (state: {
+    documents: Array<{
+      documentId: string;
+      documentType: string;
+      title: string;
+      uploadedAt: string;
+      mimeType: string;
+    }>;
+  }) => unknown) => selector({
+    documents: [
+      {
+        documentId: 'DOC-STORE-001',
+        documentType: 'deed',
+        title: 'Loaded Warranty Deed',
+        uploadedAt: '2026-03-04T18:30:00.000Z',
+        mimeType: 'application/pdf',
+      },
+      {
+        documentId: 'DOC-STORE-002',
+        documentType: 'photo',
+        title: 'Loaded Exterior Photo',
+        uploadedAt: '2026-03-03T18:30:00.000Z',
+        mimeType: 'image/jpeg',
+      },
+    ],
+  }),
+}));
 
 // Mock the pilotApi module
 vi.mock('../../api/pilotApi');
@@ -53,6 +83,8 @@ const mockGetStats =
   dossierServiceModule.dossierService.getStats as vi.MockedFunction<
     typeof dossierServiceModule.dossierService.getStats
   >;
+
+const mockInvokeTool = pilotApi.invokeTool as ReturnType<typeof vi.fn>;
 
 // Test wrapper providing parcel context via outlet
 const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
@@ -222,13 +254,28 @@ describe('PropertyDossier', () => {
       expect(screen.getAllByText(/12345-001/).length).toBeGreaterThan(0);
     });
 
-    it('shows live read-only document management data', async () => {
+    it('uses loaded-documents wording for the store-backed document count', () => {
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Loaded Documents/i)).toBeInTheDocument();
+      expect(screen.getByText(/Shown from the document entries currently loaded for this parcel\./i)).toBeInTheDocument();
+      expect(screen.getByText('Loaded Warranty Deed')).toBeInTheDocument();
+      expect(screen.queryByText(/^Documents on File$/i)).not.toBeInTheDocument();
+    });
+
+    it('shows the limited read-only registry view without live wording', async () => {
       render(<TestWrapper parcelId='12345-001' />);
 
       await screen.findByText('Casefile summary - 12345-001');
-      expect(screen.getByText(/Read-only live registry/i)).toBeInTheDocument();
+      expect(screen.getByText(/Read-only registry view/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/This route shows up to 5 parcel documents and 5 evidence records per refresh\./i)
+      ).toBeInTheDocument();
+      expect(screen.getByText(/Visible parcel documents/i)).toBeInTheDocument();
+      expect(screen.getByText(/Visible parcel evidence/i)).toBeInTheDocument();
       expect(screen.getByText('Casefile summary - 12345-001')).toBeInTheDocument();
       expect(screen.getByText('Parcel evidence snapshot - 12345-001')).toBeInTheDocument();
+      expect(screen.queryByText(/Read-only live registry/i)).not.toBeInTheDocument();
     });
 
     it('loads and shows the evidence chain-of-custody on demand', async () => {
@@ -245,6 +292,87 @@ describe('PropertyDossier', () => {
       expect(screen.getByTestId('evidence-chain-panel')).toBeInTheDocument();
       expect(screen.getByText('Collected evidence')).toBeInTheDocument();
       expect(screen.getByText('Verified evidence hash')).toBeInTheDocument();
+    });
+
+    it('uses returned-synthesis wording for the evidence synthesis card', async () => {
+      mockInvokeTool.mockResolvedValue({
+        success: true,
+        correlationId: 'corr-synth-001',
+        result: {
+          toolId: 'synthesize_evidence',
+          output: JSON.stringify({
+            parcelId: '12345-001',
+            totalItems: 5,
+            synthesisNarrative: 'Returned evidence categories are available for review.',
+            categories: [
+              {
+                category: 'Documents',
+                count: 2,
+                items: ['Casefile summary', 'Inspection packet'],
+              },
+            ],
+          }),
+        },
+      });
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Request returned evidence totals and categories for this parcel/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Aggregate and categorize all evidence items for this parcel/i)).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: /Synthesize Evidence/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'synthesize_evidence',
+          params: expect.objectContaining({ county: 'benton', parcelId: '12345-001' }),
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/5 total evidence items/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the totals and categories returned by this synthesis request\./i)).toBeInTheDocument();
+      });
+    });
+
+    it('uses returned-summary wording for the casefile summary card', async () => {
+      mockInvokeTool.mockResolvedValue({
+        success: true,
+        correlationId: 'corr-casefile-001',
+        result: {
+          toolId: 'summarize_parcel_casefile',
+          output: JSON.stringify({
+            parcelId: '12345-001',
+            summary: 'Returned casefile summary is available for the requested sections.',
+            highlights: ['1 appeal returned', '2 permit entries returned'],
+          }),
+        },
+      });
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Request returned a casefile summary for notices, appeals, permits, and sales on 12345-001/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Comprehensive casefile overview for 12345-001/i)).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: /Summarize Casefile/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'summarize_parcel_casefile',
+          params: {
+            county: 'benton',
+            parcelId: '12345-001',
+            include: ['notices', 'appeals', 'permits', 'sales'],
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Returned casefile summary is available for the requested sections\./i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the summary and highlights returned for the requested casefile sections\./i)).toBeInTheDocument();
+      });
     });
   });
 

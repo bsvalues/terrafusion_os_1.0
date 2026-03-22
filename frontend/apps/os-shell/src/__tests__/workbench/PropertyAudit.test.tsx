@@ -11,12 +11,20 @@ import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import * as pilotApi from '../../api/pilotApi';
 import PropertyAudit from '../../pages/workbench/tabs/PropertyAudit';
 
+const mockAuditTrail = vi.hoisted(() => [] as Array<{
+  auditId: string;
+  action: string;
+  userId: string;
+  timestamp: string;
+  fieldName?: string;
+}>);
+
 // Mocks
 vi.mock('../../api/pilotApi');
 
 vi.mock('../../stores/propertyStore', () => ({
   usePropertyStore: (selector: any) => {
-    const state = { auditTrail: [] };
+    const state = { auditTrail: mockAuditTrail };
     return typeof selector === 'function' ? selector(state) : state;
   },
 }));
@@ -73,6 +81,7 @@ const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => (
 describe('PropertyAudit', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockAuditTrail.length = 0;
   });
 
   // ── Rendering ──────────────────────────────────────────────────────────────
@@ -93,6 +102,22 @@ describe('PropertyAudit', () => {
       expect(screen.getAllByText(/Cross-Office Reconciliation/i).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/Submit Audit Finding/i).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/Compliance Report/i).length).toBeGreaterThan(0);
+    });
+
+    it('shows loaded audit history disclosure for store-backed entries', () => {
+      mockAuditTrail.push({
+        auditId: 'AUD-99-0042-001-1',
+        action: 'Assessment Review',
+        userId: 'assessor-1',
+        fieldName: 'totalAssessedValue',
+        timestamp: '2025-03-10T14:22:00Z',
+      });
+
+      render(<TestWrapper parcelId='99-0042-001' />);
+
+      expect(screen.getByText(/Shown from the audit history currently loaded for this parcel\./i)).toBeInTheDocument();
+      expect(screen.getByText(/Assessment Review/i)).toBeInTheDocument();
+      expect(screen.queryByText(/^Audit Trail \(/i)).not.toBeInTheDocument();
     });
   });
 
@@ -165,6 +190,9 @@ describe('PropertyAudit', () => {
 
       render(<TestWrapper parcelId='99-0042-001' />);
 
+      expect(screen.getByText(/Request returned levy compliance totals and issues for this parcel/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Check levy rate compliance across all taxing districts/i)).not.toBeInTheDocument();
+
       fireEvent.click(screen.getByRole('button', { name: /Check Levy Compliance/i }));
 
       await waitFor(() => {
@@ -179,12 +207,13 @@ describe('PropertyAudit', () => {
       await waitFor(() => {
         // Rendered as "compliantLevies/totalLevies compliant"
         expect(screen.getByText(/12\/12 compliant/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the levy compliance totals and issues returned by this request\./i)).toBeInTheDocument();
       });
     });
   });
 
   describe('Tool Invocation — reconcile_cross_office', () => {
-    it('calls invokeTool and renders reconciliation variance', async () => {
+    it('calls invokeTool and renders the returned reconciliation summary', async () => {
       const mockResponse = {
         success: true,
         correlationId: 'corr-reconcile-def456',
@@ -206,6 +235,9 @@ describe('PropertyAudit', () => {
 
       render(<TestWrapper parcelId='99-0042-001' />);
 
+      expect(screen.getByText(/Return Assessor and Treasurer totals with reconciliation variance for this request/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Reconcile totals between Assessor and Treasurer offices/i)).not.toBeInTheDocument();
+
       fireEvent.click(screen.getByRole('button', { name: /Reconcile Offices/i }));
 
       await waitFor(() => {
@@ -218,8 +250,59 @@ describe('PropertyAudit', () => {
       });
 
       await waitFor(() => {
-        // Variance rendered as "Variance: $0 (0%)"
-        expect(screen.getByText(/Variance:/i)).toBeInTheDocument();
+        expect(screen.getByText(/Variance: \$0 \(0%\)/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned assessor total, treasurer total, and variance for this request\./i)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Tool Invocation — generate_compliance_report', () => {
+    it('calls invokeTool and renders the returned report summary', async () => {
+      const currentYear = new Date().getFullYear();
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-report-2026-001',
+        result: {
+          toolId: 'generate_compliance_report',
+          output: JSON.stringify({
+            reportId: 'AUD-RPT-2026-001',
+            county: 'Benton',
+            taxYear: currentYear,
+            generatedAt: '2026-03-21T15:45:00Z',
+            totalFindings: 7,
+            criticalFindings: 1,
+            complianceScore: 94,
+            downloadUrl: '/reports/AUD-RPT-2026-001.pdf',
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='99-0042-001' />);
+
+      expect(screen.getByText(/Generate a compliance report summary for this parcel and selected tax year/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Generate a comprehensive compliance report/i)).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: /Generate Report/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith(
+          expect.objectContaining({
+            toolId: 'generate_compliance_report',
+            parcelId: '99-0042-001',
+            params: expect.objectContaining({
+              parcelId: '99-0042-001',
+              taxYear: currentYear,
+            }),
+          })
+        );
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Report AUD-RPT-2026-001/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the report totals and score returned by this request for the selected tax year\./i)).toBeInTheDocument();
+        expect(screen.getByText('94%')).toBeInTheDocument();
       });
     });
   });
