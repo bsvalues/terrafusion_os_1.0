@@ -176,14 +176,14 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
       {(activeParcel || assessments.length > 0) && (
         <BentoGrid columns="auto" gap={0.75} padding={0}>
           {activeParcel && (
-            <BentoCard variant="stat" title="Current Market Value">
+            <BentoCard variant="stat" title="Loaded Market Value">
               <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}>
                 {fmtCurrency(activeParcel.marketValue)}
               </p>
             </BentoCard>
           )}
           {activeParcel && (
-            <BentoCard variant="stat" title="Current Assessed">
+            <BentoCard variant="stat" title="Loaded Assessed">
               <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-success))' }}>
                 {fmtCurrency(activeParcel.totalAssessedValue)}
               </p>
@@ -340,7 +340,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="text-4xl mb-2">&#128293;</div>
               <p className="tf-text-tertiary">Configure parameters and click Explain Valuation</p>
-              <p className="tf-text-dim text-sm mt-1">Get AI-powered analysis of valuation model results</p>
+              <p className="tf-text-dim text-sm mt-1">Get tool-generated analysis of the selected valuation model results</p>
             </div>
           ) : null}
         </BentoCard>
@@ -363,6 +363,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
         }
       >
         <p className="tf-text-tertiary text-sm mb-4">Year-over-year value change breakdown for {parcelId}</p>
+        <p className="tf-text-tertiary text-sm mb-4">Compares the selected tax year to the prior year returned for this parcel.</p>
         <button onClick={handleValueChange} disabled={valueChangeState.status === 'loading'} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4">
           {valueChangeState.status === 'loading' ? 'Analyzing...' : `Explain Value Change (${taxYear})`}
         </button>
@@ -378,11 +379,11 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
           <div className="space-y-4">
             <div className="grid grid-cols-3 gap-3">
               <div className="tf-panel p-3 text-center">
-                <div className="tf-text-tertiary text-xs">Previous</div>
+                <div className="tf-text-tertiary text-xs">Prior Year ({taxYear - 1})</div>
                 <div className="text-lg font-bold tf-text">{formatCurrency(valueChangeState.result.previousValue)}</div>
               </div>
               <div className="tf-panel p-3 text-center">
-                <div className="tf-text-tertiary text-xs">Current</div>
+                <div className="tf-text-tertiary text-xs">Selected Year ({taxYear})</div>
                 <div className="text-lg font-bold tf-text">{formatCurrency(valueChangeState.result.currentValue)}</div>
               </div>
               <div className="tf-panel p-3 text-center">

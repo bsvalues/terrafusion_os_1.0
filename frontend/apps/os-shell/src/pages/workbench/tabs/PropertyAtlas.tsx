@@ -2,9 +2,9 @@
  * PropertyAtlas.tsx
  *
  * Phase 5.3: Property Atlas Tab - GIS/Mapping MWUX Slice
- * Real MWUX with layer selection, live layer availability, and query_parcel_layers tool invocation.
+ * Real MWUX with layer selection, Atlas layer-availability checks, and query_parcel_layers tool invocation.
  *
- * Map visualization is a deterministic preview driven by the live layer-availability payload.
+ * Map visualization is a deterministic preview sketch driven by the layer-availability payload.
  * Full GIS geometry is not yet available on this route.
  *
  * Architecture: UI → select layers → query_parcel_layers tool → correlationId UX
@@ -203,7 +203,7 @@ function ParcelMapVisualization({
 
       {/* Preview disclaimer */}
       <p className="tf-text-dim text-xs mt-1 text-center italic">
-        Live layer availability preview — full GIS geometry is not yet available on this route
+        Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches until full GIS geometry ships on this route
       </p>
 
       {/* Map info bar */}
@@ -531,7 +531,7 @@ export const PropertyAtlas: React.FC = () => {
 
           {queryState.result.geometryAvailable === false && (
             <div className='mt-4 tf-panel p-3 text-sm tf-text-tertiary'>
-              Live Atlas layer truth is available, but parcel geometry, centroid, and zoning detail remain deferred until the fuller GIS surface ships.
+              Atlas layer availability is confirmed for this parcel, but the boundary and centroid shown on this route are preview sketches. Full GIS geometry and route-level spatial detail remain deferred until the fuller Atlas surface ships.
             </div>
           )}
 
