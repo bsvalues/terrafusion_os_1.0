@@ -76,6 +76,7 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/frontend-property-dais-boe-appeal-response-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-value-change-notice-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-appeal-response-draft-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-draft-notice-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-exemption-renewal-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-hearing-schedule-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-queue-statistics-honesty-2026-03-21.md`
@@ -527,6 +528,15 @@ A bounded PropertyDais appeal-response draft honesty follow-on slice also landed
 - PropertyDais appeal-response draft honesty: `29 passed`, `0 failed`
 
 That slice removes mounted PropertyDais write-low wording that presented the route as an unqualified appeal-response drafting surface on mount, and replaces it with appeal-response request wording plus a short disclosure that the card shows the returned appeal ID, position, draft summary, and word count from the `draft_appeal_response` request for the selected parcel, appeal, and position.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais Draft Notice honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-draft-notice-honesty-2026-03-22.md`
+- PropertyDais Draft Notice honesty: `30 passed`, `0 failed`
+
+That slice removes mounted PropertyDais write-low wording that presented the route as an unqualified notice-drafting surface on mount, and replaces it with notice-draft request wording plus a short disclosure that the card shows the returned notice ID, notice type, and status from the `draft_notice` request for the selected parcel and notice type.
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
