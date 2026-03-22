@@ -69,6 +69,9 @@ vi.mock('../../components/workbench', () => ({
   ),
   InvocationHistory: () => <div data-testid="invocation-history" />,
   EvidenceSnapshotPanel: () => <div data-testid="evidence-snapshot-panel" />,
+  WorkbenchSourceBadge: ({ source }: any) => (
+    <span data-testid="workbench-source-badge" data-source={source} />
+  ),
 }));
 
 vi.mock('../../ui/materials/BentoCard', () => ({
