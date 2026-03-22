@@ -37,9 +37,7 @@ export default defineConfig({
       '**/dist/**',
       '**/*.spec.ts',
       '**/e2e/**',
-      // Pre-existing failures unrelated to honesty pass (real-hosting env / act() timing)
-      '**/workbenchRealHosting.gate.test.tsx',
-      '**/RiskPolicyGate.irreversible.test.tsx',
+      // Known-fail exclusions: none remain (workbenchRealHosting + RiskPolicyGate fixed 2026-03-22)
     ],
   },
 });

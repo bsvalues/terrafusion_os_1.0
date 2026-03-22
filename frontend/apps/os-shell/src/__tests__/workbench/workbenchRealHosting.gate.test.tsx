@@ -209,6 +209,10 @@ vi.mock('../../components/workbench', () => ({
   ),
   InvocationHistory: () => <div data-testid="invocation-history" />,
   EvidenceSnapshotPanel: () => <div data-testid="evidence-snapshot-panel" />,
+  // WorkbenchSourceBadge added in Round A honesty pass — mock must include it
+  WorkbenchSourceBadge: ({ source }: any) => (
+    <span data-testid="workbench-source-badge" data-source={source} />
+  ),
 }));
 
 vi.mock('../../components/errors/ErrorDisplay', () => ({

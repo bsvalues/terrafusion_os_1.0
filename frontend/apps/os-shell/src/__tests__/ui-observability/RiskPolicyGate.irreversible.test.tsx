@@ -34,9 +34,12 @@ const mockRequestApprovalToken = requestApprovalToken as vi.MockedFunction<
 describe('RiskPolicyGate - Irreversible Tools', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Ensure real timers are always the baseline; fake timers are scoped per-describe
+    vi.useRealTimers();
   });
 
   afterEach(() => {
+    // Belt-and-suspenders: restore real timers after every test regardless of which describe ran
     vi.useRealTimers();
   });
 
@@ -355,9 +358,17 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
   });
 
   describe('token_expires_and_flow_rejects', () => {
+    // Fake timers are required for this describe; scope them here to prevent
+    // parallel-suite timer bleed that causes flake under full-suite load.
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it('shows expiration warning and disables execution after token expires', async () => {
       mockValidatePilotTool.mockResolvedValue(mockIrreversibleValidation);
-      vi.useFakeTimers();
 
       // Token expires in 10 seconds
       const shortLivedToken = {
@@ -411,7 +422,6 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
 
     it('requires regenerating token after expiration', async () => {
       mockValidatePilotTool.mockResolvedValue(mockIrreversibleValidation);
-      vi.useFakeTimers();
 
       const shortLivedToken = {
         ...mockApprovalToken,
