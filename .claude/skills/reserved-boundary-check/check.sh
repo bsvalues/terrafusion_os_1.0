@@ -96,11 +96,14 @@ scan_rule \
   "listPilotTools.*canon|canon.*listPilotTools|pilotApi.*canon[[:space:]]|[[:space:]]canon.*pilotApi|invokeTool.*canon[[:space:]]+(op|action|command)|canon[[:space:]]+(op|action|command).*invokeTool"
 
 # ── Rule 5: OS Features polluting SuiteId type or suite nav lists ─────────────
+# Note: Pilot is a valid *workbench tab* (PropertyPilot). This rule targets
+# SuiteId type unions and suite nav arrays — not tab-order descriptions.
+# Patterns target TS type syntax and array literals, not free-text strings.
 scan_rule \
   "OS_FEATURE_IN_SUITE_LIST" \
-  "pilot/trace/canon are OsFeatureIds and must not appear as peers in SuiteId lists or suite navigation arrays." \
-  "Remove pilot/trace/canon from suite ID lists. Route OS features via their own navigation (PilotHome, CanonHome, TraceHome)." \
-  "'?\"?(pilot|trace|canon)'?\"?[[:space:]]*,[[:space:]]*(forge|atlas|dais|dossier|gpt)|(forge|atlas|dais|dossier|gpt)[[:space:]]*,[[:space:]]*'?\"?(pilot|trace|canon)|SuiteId.*[|'][[:space:]]*(pilot|trace|canon)[[:space:]]*[|'//]|[|'][[:space:]]*(pilot|trace|canon)[[:space:]]*[|'].*SuiteId"
+  "pilot/trace/canon are OsFeatureIds and must not appear in SuiteId type unions or constitutional suite navigation arrays." \
+  "Remove pilot/trace/canon from SuiteId unions. Use OsFeatureId for the type; route via PilotHome/CanonHome/TraceHome." \
+  "SuiteId.*(pilot|trace|canon)|suites[[:space:]]*=[[:space:]]*\[.*'(pilot|trace|canon)'"
 
 # ── Rule 6: Shell/Workbench layer conflation ──────────────────────────────────
 scan_rule \
