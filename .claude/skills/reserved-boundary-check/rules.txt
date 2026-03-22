@@ -1,0 +1,42 @@
+# Reserved Boundary Rules — TerraFusion OS
+# Human-readable reference. Grep patterns live in check.sh.
+#
+# Source of truth: frontend/apps/os-shell/src/config/suiteRegistry.ts
+#   SuiteId     = forge | atlas | dais | dossier | gpt       ← constitutional suites
+#   OsFeatureId = pilot | trace | canon                       ← OS-layer features
+#   OsSurfaceId = workbench                                   ← parcel-context surface
+
+# ── PILOT_AS_SUITE ──────────────────────────────────────────────────────────
+# TerraPilot (pilot) is an OS Feature, not a Suite.
+# WRONG: "the Pilot suite", "Pilot Suite", "suite called pilot", SuiteId type includes pilot
+# RIGHT: "TerraPilot", "the Pilot OS feature", "PropertyPilot tab" (workbench context)
+
+# ── CANON_AS_SUITE ──────────────────────────────────────────────────────────
+# TerraCanon (canon) is an OS Feature (protocol/canonicalization layer), not a Suite.
+# WRONG: "Canon Suite", "the canon suite", "TerraCanon suite"
+# RIGHT: "TerraCanon", "the Canon protocol", "CanonHome"
+
+# ── TRACE_AS_SUITE ──────────────────────────────────────────────────────────
+# TerraTrace (trace) is an OS Feature (observability), not a Suite.
+# WRONG: "Trace Suite", "the trace suite"
+# RIGHT: "TerraTrace", "the Trace OS feature", "TraceHome"
+
+# ── CANON_PILOT_SWAP ────────────────────────────────────────────────────────
+# Canon and Pilot are distinct. Canon = integrity/protocol. Pilot = tool invocation.
+# WRONG: pilot API used for canon ops; listPilotTools in a canon context
+# RIGHT: keep canon ops in canon API context, tool invocations in pilot API context
+
+# ── WORKBENCH_AS_SHELL ──────────────────────────────────────────────────────
+# OS shell (Desktop/Taskbar/TopBar/CommandPalette) ≠ workbench (PropertyWorkbench + tabs)
+# WRONG: "workbench shell", "shell layer called workbench"
+# RIGHT: "OS shell" or "shell chrome" for persistent chrome; "workbench" for parcel surface
+
+# ── SUITE_LIST_POLLUTED ─────────────────────────────────────────────────────
+# OS features should not appear in suite navigation lists alongside forge/atlas/etc.
+# WRONG: ['forge', 'atlas', 'pilot', 'dais']   ← pilot in suite list
+# RIGHT: ['forge', 'atlas', 'dais']  + separate OS feature routing for pilot
+
+# ── PILOT_TAB_AS_SUITE_TAB ──────────────────────────────────────────────────
+# PropertyPilot is a workbench tab surfacing an OS feature — not a constitutional suite tab.
+# WRONG: assigning SuiteId to PropertyPilot; listing it alongside ForgeTab/AtlasTab as a suite
+# RIGHT: PropertyPilot tab / Pilot workbench tab
