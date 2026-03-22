@@ -82,7 +82,26 @@ const FILE_BASELINES = {
 };
 
 // ─── Parse args ───────────────────────────────────────────────────────────────
-const resultsPath = resolve(process.argv[2] ?? 'vitest-results.json');
+function resolveAllowedResultsPath(inputPath) {
+  const candidate = inputPath ?? 'vitest-results.json';
+
+  if (
+    typeof candidate !== 'string' ||
+    candidate.includes('/') ||
+    candidate.includes('\\') ||
+    candidate.includes('..') ||
+    candidate !== 'vitest-results.json'
+  ) {
+    console.error(
+      `❌ [skip-ceiling] Unsupported results path: ${String(candidate)}. Use vitest-results.json in the current working directory.`
+    );
+    process.exit(1);
+  }
+
+  return resolve(candidate);
+}
+
+const resultsPath = resolveAllowedResultsPath(process.argv[2]);
 
 let raw;
 try {
