@@ -19,6 +19,7 @@ import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
+import { WorkbenchSourceBadge } from '../../../components/workbench/WorkbenchSourceBadge';
 
 const fmt = (v: number) => (v ? `$${v.toLocaleString()}` : '—');
 const num = (v: number | undefined) => (v != null ? v.toLocaleString() : '—');
@@ -87,7 +88,21 @@ export const PropertySummary: React.FC = () => {
 
       {/* Valuation Breakdown */}
       <BentoGrid columns="auto" gap={0.75} padding={0}>
-        <BentoCard variant="stat" title="Market Value" promote>
+        <BentoCard
+          variant="stat"
+          title="Market Value"
+          promote
+          actions={
+            <WorkbenchSourceBadge
+              source={
+                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                  ? 'live'
+                  : 'fallback'
+              }
+              className="ml-2"
+            />
+          }
+        >
           <p
             className="text-2xl font-bold"
             style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}
