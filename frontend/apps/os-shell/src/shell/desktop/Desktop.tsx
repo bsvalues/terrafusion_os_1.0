@@ -186,17 +186,40 @@ const DesktopTopSystemBar: React.FC<{
 // ============================================================================
 
 /**
+ * Safe pathname hook — returns '/' when rendered outside a Router (e.g. in tests).
+ * useLocation() throws if there is no Router ancestor. We detect this via the
+ * navigation context: when navigator is null, we know there is no Router.
+ *
+ * NOTE: This hook conditionally calls useLocation(), which technically violates
+ * react-hooks/rules-of-hooks. The pattern is safe here because in production
+ * Desktop always has a Router ancestor, so the call-order is stable across renders.
+ * The only Router-less consumers are tests and Storybook, which always see the
+ * early-return path. Do not copy this pattern to hooks with variable call-order.
+ */
+function useSafePathname(): string {
+  const ctx = useContext(UNSAFE_NavigationContext);
+  if (!ctx?.navigator) {
+    // No Router ancestor — default to home so Desktop shows StageZeroState
+    return '/';
+  }
+  // Safe to call — Router is present
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return useLocation().pathname;
+}
+
+/**
  * Desktop - Root orchestrator for the TerraFusion OS shell.
  *
  * Architecture:
  * ```
  * <DesktopErrorBoundary>
  *   <Desktop>
- *     ├── <DesktopBackground />  (z: 0)
- *     ├── <WindowManager />      (z: 1-999)
- *     ├── <Taskbar />            (z: 1000)
- *     ├── <StartMenu />          (z: 1001, conditional)
- *     └── <ToastContainer />     (z: 50)
+ *     ├── <DesktopBackground />       (z: 0)
+ *     ├── <shell-routed-content />    (z: 2, non-home routes via Outlet)
+ *     ├── <WindowManager />           (z: 30+)
+ *     ├── <Taskbar />                 (z: 1000)
+ *     ├── <StartMenu />               (z: 1001, conditional)
+ *     └── <ToastContainer />          (z: 50)
  *   </Desktop>
  * </DesktopErrorBoundary>
  * ```
@@ -215,22 +238,6 @@ const DesktopTopSystemBar: React.FC<{
  * <DesktopWithErrorBoundary />
  * ```
  */
-/**
- * Safe pathname hook — returns '/' when rendered outside a Router (e.g. in tests).
- * useLocation() throws if there is no Router ancestor. We detect this via the
- * navigation context: when navigator is null, we know there is no Router.
- */
-function useSafePathname(): string {
-  const ctx = useContext(UNSAFE_NavigationContext);
-  if (!ctx?.navigator) {
-    // No Router ancestor — default to home so Desktop shows StageZeroState
-    return '/';
-  }
-  // Safe to call — Router is present
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  return useLocation().pathname;
-}
-
 export function Desktop({ className = '', children }: DesktopProps) {
   // Route-aware home detection — gate desktop icons vs routed content
   const pathname = useSafePathname();
@@ -530,6 +537,7 @@ export function Desktop({ className = '', children }: DesktopProps) {
         </>
       ) : (
         <div
+          id='desktop-main-content'
           className='absolute left-0 right-0 top-12 bottom-12 overflow-auto'
           style={{ zIndex: 2 }}
           data-testid='shell-routed-content'
