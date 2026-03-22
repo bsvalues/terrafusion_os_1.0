@@ -28,6 +28,14 @@ import type {
   RecentAppeal,
   Appraiser,
 } from '@/data/managementDashboardFixtures';
+import {
+  OVERVIEW_STATS_FIXTURE,
+  KEY_DEADLINES_FIXTURE,
+  CERT_AREAS_FIXTURE,
+  RECENT_APPEALS_FIXTURE,
+  APPEALS_SUMMARY_FIXTURE,
+  APPRAISERS_FIXTURE,
+} from '@/data/managementDashboardFixtures';
 import { useSwarmLive } from '../../hooks/useSwarmLive';
 import { usePacsStatus } from '../../hooks/usePacsStatus';
 import { useAppealsQueue } from '../../hooks/useAppealsQueue';
@@ -106,13 +114,13 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
   const appeals  = useAppealsQueue();
   const workload = useWorkloadSummary();
 
-  // State initialized empty — populated from real API calls when backend is available
-  const [overviewStats, setOverviewStats] = useState<OverviewStat[]>([]);
-  const [keyDeadlines] = useState<KeyDeadline[]>([]);
-  const [certificationAreas, setCertificationAreas] = useState<CertArea[]>([]);
-  const [appealsSummary, setAppealsSummary] = useState<AppealsSummary>({ totalFiled: 0, pendingHearing: 0, decided: 0, avgDaysToResolution: 0 });
-  const [recentAppeals, setRecentAppeals] = useState<RecentAppeal[]>([]);
-  const [appraisers, setAppraisers] = useState<Appraiser[]>([]);
+  // Seeded from fixtures — API calls update individual fields when backend is available
+  const [overviewStats, setOverviewStats] = useState<OverviewStat[]>(OVERVIEW_STATS_FIXTURE);
+  const [keyDeadlines] = useState<KeyDeadline[]>(KEY_DEADLINES_FIXTURE);
+  const [certificationAreas, setCertificationAreas] = useState<CertArea[]>(CERT_AREAS_FIXTURE);
+  const [appealsSummary, setAppealsSummary] = useState<AppealsSummary>(APPEALS_SUMMARY_FIXTURE);
+  const [recentAppeals, setRecentAppeals] = useState<RecentAppeal[]>(RECENT_APPEALS_FIXTURE);
+  const [appraisers, setAppraisers] = useState<Appraiser[]>(APPRAISERS_FIXTURE);
   const [isFixture, setIsFixture] = useState(true);
 
   const fetchDashboardData = useCallback(async () => {

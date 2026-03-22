@@ -37,9 +37,8 @@ export default defineConfig({
       '**/dist/**',
       '**/*.spec.ts',
       '**/e2e/**',
-      // Pre-existing failures unrelated to honesty pass (Phase 8 impl mismatch / real-hosting env / act() timing)
+      // Pre-existing failures unrelated to honesty pass (real-hosting env / act() timing)
       '**/workbenchRealHosting.gate.test.tsx',
-      '**/managementDashboard.contract.test.tsx',
       '**/RiskPolicyGate.irreversible.test.tsx',
     ],
   },
