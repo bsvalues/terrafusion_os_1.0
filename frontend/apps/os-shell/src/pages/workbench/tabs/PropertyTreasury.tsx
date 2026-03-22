@@ -312,7 +312,7 @@ export const PropertyTreasury: React.FC = () => {
 
         {/* Tax Statement (read_only) */}
         <BentoCard title='📄 Tax Statement' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Retrieve tax statement for a specific tax year</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Request the returned tax-statement summary and preview line items for this parcel and tax year</p>
           <input type='number' value={statementYear} onChange={e => setStatementYear(e.target.value)} min='2000' max='2030' className='w-full p-2 rounded-lg tf-input mb-3' />
           <button onClick={handleGetStatement} disabled={statementState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
             {statementState.status === 'loading' ? 'Loading...' : 'Get Tax Statement'}
@@ -321,6 +321,7 @@ export const PropertyTreasury: React.FC = () => {
           {statementState.status === 'success' && statementState.result && (
             <div className='space-y-2'>
               <div className='tf-panel p-4'>
+                <p className='text-xs tf-text-dim mb-2'>Shows the returned total due, balance, due date, and up to four returned line items for this parcel and tax year.</p>
                 <div className='grid grid-cols-2 gap-3 mb-2'>
                   <div><span className='text-xs tf-text-dim'>Total Due</span><p className='font-semibold tf-text'>${statementState.result.totalDue.toLocaleString()}</p></div>
                   <div><span className='text-xs tf-text-dim'>Balance</span><p className='font-semibold tf-text'>${statementState.result.balance.toLocaleString()}</p></div>
@@ -338,7 +339,7 @@ export const PropertyTreasury: React.FC = () => {
 
         {/* Tax Breakdown (read_only) */}
         <BentoCard title='📊 Tax Breakdown' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Levy component breakdown with rates and amounts</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Request returned levy components, total rate, and assessed value for this parcel</p>
           <button onClick={handleExplainBreakdown} disabled={breakdownState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
             {breakdownState.status === 'loading' ? 'Loading...' : 'Explain Tax Breakdown'}
           </button>
@@ -346,6 +347,7 @@ export const PropertyTreasury: React.FC = () => {
           {breakdownState.status === 'success' && breakdownState.result && (
             <div className='space-y-2'>
               <div className='tf-panel p-4'>
+                <p className='text-xs tf-text-dim mb-2'>Shows the returned total rate, assessed value, and up to five returned levy components for this parcel.</p>
                 <p className='font-semibold tf-text mb-2'>Total Rate: {breakdownState.result.totalRate.toFixed(4)} | AV: ${breakdownState.result.assessedValue.toLocaleString()}</p>
                 {breakdownState.result.levyComponents.slice(0, 5).map((lc, i) => (
                   <div key={i} className='text-sm tf-text-secondary mt-1'>{lc.authority}: {lc.rate.toFixed(4)} = ${lc.amount.toLocaleString()}</div>
@@ -369,8 +371,9 @@ export const PropertyTreasury: React.FC = () => {
               <div className='tf-panel p-4'>
                 <div className='flex items-center gap-2 mb-2'>
                   <span className='text-lg'>{delinquencyState.result.isDelinquent ? '🔴' : '🟢'}</span>
-                  <span className='font-semibold tf-text'>{delinquencyState.result.isDelinquent ? 'Delinquent' : 'Current'}</span>
+                  <span className='font-semibold tf-text'>{delinquencyState.result.isDelinquent ? 'Delinquent' : 'No delinquency returned'}</span>
                 </div>
+                <p className='text-xs tf-text-dim mb-2'>This reflects the delinquency check returned for this parcel.</p>
                 {delinquencyState.result.isDelinquent && (
                   <div className='grid grid-cols-2 gap-2'>
                     <div><span className='text-xs tf-text-dim'>Years</span><p className='tf-text'>{delinquencyState.result.yearsDelinquent}</p></div>
@@ -388,7 +391,7 @@ export const PropertyTreasury: React.FC = () => {
 
         {/* Record Payment (write_high) */}
         <BentoCard title='💳 Record Payment' actions={<span className='text-xs tf-badge-danger px-2 py-0.5 rounded'>write_high</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Record a tax payment against this parcel</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Submit a governed payment-recording request for this parcel and review the returned receipt summary</p>
           <div className='space-y-2 mb-3'>
             <input type='number' value={paymentAmount} onChange={e => setPaymentAmount(e.target.value)} placeholder='Payment amount ($)' step='0.01' min='0' className='w-full p-2 rounded-lg tf-input' />
             <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} className='w-full p-2 rounded-lg tf-input'>
@@ -400,17 +403,18 @@ export const PropertyTreasury: React.FC = () => {
             <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
               <label className='flex items-center gap-3 cursor-pointer'>
                 <input type='checkbox' checked={paymentConfirmed} onChange={e => setPaymentConfirmed(e.target.checked)} className='h-4 w-4' />
-                <span className='text-sm tf-text'>I confirm recording payment of ${paymentAmount || '0'}</span>
+                <span className='text-sm tf-text'>I confirm this payment request is ready for submission for ${paymentAmount || '0'}</span>
               </label>
             </div>
           </div>
           <button onClick={handleRecordPayment} disabled={paymentState.status === 'loading' || !paymentAmount || parseFloat(paymentAmount) <= 0 || !paymentConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-            {paymentState.status === 'loading' ? 'Recording...' : paymentConfirmed ? 'Record Payment' : '⚠️ Confirm Above to Enable'}
+            {paymentState.status === 'loading' ? 'Submitting...' : paymentConfirmed ? 'Submit Payment Request' : '⚠️ Confirm Above to Enable'}
           </button>
-          {paymentState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Recording payment...</span></div>}
+          {paymentState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting payment request...</span></div>}
           {paymentState.status === 'success' && paymentState.result && (
             <div className='space-y-2'>
               <div className='tf-panel p-4'>
+                <p className='text-xs tf-text-dim mb-2'>Shows the returned receipt number, amount, method, and remaining balance for this request.</p>
                 <span className='font-semibold tf-text'>Receipt: {paymentState.result.receiptNumber}</span>
                 <p className='tf-text-secondary text-sm'>${paymentState.result.amount.toLocaleString()} via {paymentState.result.method}</p>
                 <p className='text-xs tf-text-dim'>Remaining: ${paymentState.result.remainingBalance.toLocaleString()}</p>
@@ -423,7 +427,7 @@ export const PropertyTreasury: React.FC = () => {
 
         {/* Installment Plan (write_low) */}
         <BentoCard title='📅 Installment Plan' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Create a payment installment plan for delinquent taxes</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Request a returned installment-plan summary for this parcel and selected term</p>
           <select value={installmentMonths} onChange={e => setInstallmentMonths(e.target.value)} className='w-full p-2 rounded-lg tf-input mb-3'>
             <option value='6'>6 months</option>
             <option value='12'>12 months</option>
@@ -437,6 +441,7 @@ export const PropertyTreasury: React.FC = () => {
           {installmentState.status === 'success' && installmentState.result && (
             <div className='space-y-2'>
               <div className='tf-panel p-4'>
+                <p className='text-xs tf-text-dim mb-2'>Shows the returned plan ID, monthly payment, installment count, and start date for this request.</p>
                 <span className='font-semibold tf-text'>Plan: {installmentState.result.planId}</span>
                 <p className='tf-text-secondary text-sm'>${installmentState.result.monthlyPayment.toLocaleString()}/mo × {installmentState.result.installments} payments</p>
                 <p className='text-xs tf-text-dim'>Start: {formatDate(installmentState.result.startDate)}</p>
@@ -449,7 +454,7 @@ export const PropertyTreasury: React.FC = () => {
 
         {/* Collection Statistics (read_only) */}
         <BentoCard title='📈 Collection Statistics' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>County-wide tax collection statistics</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Request returned collection totals and rates for this parcel</p>
           <button onClick={handleGetCollectionStats} disabled={collectionState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
             {collectionState.status === 'loading' ? 'Loading...' : 'Get Collection Stats'}
           </button>
@@ -457,6 +462,7 @@ export const PropertyTreasury: React.FC = () => {
           {collectionState.status === 'success' && collectionState.result && (
             <div className='space-y-2'>
               <div className='tf-panel p-4'>
+                <p className='text-xs tf-text-dim mb-2'>Shows the collection totals and rates returned by this request.</p>
                 <div className='grid grid-cols-2 gap-3'>
                   <div><span className='text-xs tf-text-dim'>Collection Rate</span><p className='font-semibold tf-text'>{collectionState.result.collectionRate}%</p></div>
                   <div><span className='text-xs tf-text-dim'>Total Collected</span><p className='font-semibold tf-text'>${collectionState.result.totalCollected.toLocaleString()}</p></div>
@@ -472,23 +478,24 @@ export const PropertyTreasury: React.FC = () => {
 
         {/* Initiate Tax Sale (write_high) */}
         <BentoCard title='🏛️ Initiate Tax Sale' actions={<span className='text-xs tf-badge-danger px-2 py-0.5 rounded'>write_high</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Initiate tax sale process for delinquent parcel</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Submit a governed tax-sale initiation request for this parcel and review the returned sale summary</p>
           <div className='space-y-2 mb-3'>
             <input type='text' value={taxSaleReason} onChange={e => setTaxSaleReason(e.target.value)} placeholder='Reason for tax sale initiation' className='w-full p-2 rounded-lg tf-input' />
             <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
               <label className='flex items-center gap-3 cursor-pointer'>
                 <input type='checkbox' checked={taxSaleConfirmed} onChange={e => setTaxSaleConfirmed(e.target.checked)} className='h-4 w-4' />
-                <span className='text-sm tf-text'>I confirm initiating tax sale for parcel {parcelId}</span>
+                <span className='text-sm tf-text'>I confirm this tax-sale request is ready for submission for parcel {parcelId}</span>
               </label>
             </div>
           </div>
           <button onClick={handleInitiateTaxSale} disabled={taxSaleState.status === 'loading' || !taxSaleReason.trim() || !taxSaleConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-            {taxSaleState.status === 'loading' ? 'Initiating...' : taxSaleConfirmed ? 'Initiate Tax Sale' : '⚠️ Confirm Above to Enable'}
+            {taxSaleState.status === 'loading' ? 'Submitting...' : taxSaleConfirmed ? 'Submit Tax Sale Request' : '⚠️ Confirm Above to Enable'}
           </button>
-          {taxSaleState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Initiating tax sale...</span></div>}
+          {taxSaleState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting tax-sale request...</span></div>}
           {taxSaleState.status === 'success' && taxSaleState.result && (
             <div className='space-y-2'>
               <div className='tf-panel p-4'>
+                <p className='text-xs tf-text-dim mb-2'>Shows the returned sale ID, scheduled date, minimum bid, and notices-sent count for this request.</p>
                 <span className='font-semibold tf-text'>Sale {taxSaleState.result.saleId}</span>
                 <p className='tf-text-secondary text-sm'>Scheduled: {formatDate(taxSaleState.result.scheduledDate)} | Min Bid: ${taxSaleState.result.minimumBid.toLocaleString()}</p>
                 <p className='text-xs tf-text-dim'>Notices Sent: {taxSaleState.result.noticesSent}</p>

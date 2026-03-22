@@ -829,12 +829,15 @@ export const PropertyDais: React.FC = () => {
         subtitle={`Workflow orchestration for ${parcelId}`}
       />
 
-      {/* Active Appeals from Store */}
+      {/* Loaded Appeals from Store */}
       {appeals.length > 0 && (
         <BentoGrid columns="auto" gap={0.75} padding={0}>
-          <BentoCard variant="stat" title="Active Appeals">
+          <BentoCard variant="stat" title="Loaded Appeals">
             <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}>
               {appeals.length} appeal{appeals.length !== 1 ? 's' : ''}
+            </p>
+            <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+              Shown from the appeal records currently loaded for this parcel.
             </p>
           </BentoCard>
           {appeals.slice(0, 2).map((a) => (
@@ -927,12 +930,16 @@ export const PropertyDais: React.FC = () => {
                   </div>
                 </div>
                 <div className='tf-panel p-4'>
-                  <div className='tf-text-tertiary text-sm'>Current Step</div>
+                  <div className='tf-text-tertiary text-sm'>Reported Step</div>
                   <div className='text-xl font-bold tf-text'>
                     {statusState.result.currentStep || 'N/A'}
                   </div>
                 </div>
               </div>
+
+              <p className='tf-text-tertiary text-sm'>
+                Shown from the workflow status returned for this parcel.
+              </p>
 
               {/* Workflow Steps */}
               {(statusState.result.completedSteps?.length ||
@@ -1337,7 +1344,7 @@ export const PropertyDais: React.FC = () => {
 
       {/* Assemble BOE Packet (write_high) */}
       <BentoCard title='📦 BOE Evidence Packet' actions={<span className='text-xs tf-badge-error px-2 py-0.5 rounded'>write_high</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Assemble a Board of Equalization evidence packet — requires confirmation</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed BOE packet request for this case and selected sections, then review the returned packet summary</p>
         <div className='space-y-3 mb-4'>
           <input type='text' value={boeCaseId} onChange={e => setBoeCaseId(e.target.value)} placeholder='Case ID (e.g. BOE-2026-001)' className='w-full p-2 rounded-lg tf-input' data-testid='boe-case-id' />
           <div>
@@ -1360,17 +1367,18 @@ export const PropertyDais: React.FC = () => {
           <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
             <label className='flex items-center gap-3 cursor-pointer'>
               <input type='checkbox' checked={boeConfirmed} onChange={e => setBoeConfirmed(e.target.checked)} className='h-4 w-4' data-testid='boe-confirm-checkbox' />
-              <span className='text-sm tf-text'>I confirm this write_high operation: assemble BOE packet for case <strong>{boeCaseId || '...'}</strong></span>
+              <span className='text-sm tf-text'>I confirm this BOE packet request is ready for submission for case <strong>{boeCaseId || '...'}</strong></span>
             </label>
           </div>
         </div>
         <button onClick={handleAssembleBoePacket} disabled={boePacketState.status === 'loading' || !boeCaseId.trim() || !boeConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-          {boePacketState.status === 'loading' ? 'Assembling...' : boeConfirmed ? 'Assemble BOE Packet' : '⚠️ Confirm Above to Enable'}
+          {boePacketState.status === 'loading' ? 'Submitting...' : boeConfirmed ? 'Submit BOE Packet Request' : '⚠️ Confirm Above to Enable'}
         </button>
-        {boePacketState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Assembling BOE packet...</span></div>}
+        {boePacketState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting BOE packet request...</span></div>}
         {boePacketState.status === 'success' && boePacketState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'>
+              <p className='text-xs tf-text-dim mb-2'>Shows the returned case ID and section list for this BOE packet request.</p>
               <div className='flex items-center justify-between mb-2'>
                 <span className='font-semibold tf-text'>Case: {boePacketState.result.caseId}</span>
                 <span className='text-xs tf-badge px-2 py-0.5 rounded'>{boePacketState.result.sections.length} sections</span>
@@ -1446,7 +1454,7 @@ export const PropertyDais: React.FC = () => {
 
       {/* Exemption Renewal (write_low) */}
       <BentoCard title='🔄 Exemption Renewal' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Process annual exemption renewal with documentation verification</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Process annual exemption renewal and return the renewal status for this exemption</p>
         <input type='text' value={renewalExemptionId} onChange={e => setRenewalExemptionId(e.target.value)} placeholder='Exemption ID (e.g. EXM-2026-001)' className='w-full p-2 rounded-lg tf-input mb-3' />
         <button onClick={handleProcessRenewal} disabled={renewalState.status === 'loading' || !renewalExemptionId.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
           {renewalState.status === 'loading' ? 'Processing...' : 'Process Renewal'}
@@ -1454,7 +1462,7 @@ export const PropertyDais: React.FC = () => {
         {renewalState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Processing renewal...</span></div>}
         {renewalState.status === 'success' && renewalState.result && (
           <div className='space-y-2'>
-            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Status: {renewalState.result.status}</span><p className='tf-text-secondary text-sm'>Exemption {renewalState.result.exemptionId} renewed for {renewalState.result.taxYear}</p></div>
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Status: {renewalState.result.status}</span><p className='tf-text-secondary text-sm'>Exemption {renewalState.result.exemptionId} renewed for {renewalState.result.taxYear}</p><p className='text-xs tf-text-dim mt-2'>Shows the renewal status returned by this request for the selected exemption and tax year.</p></div>
             {renewalState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{renewalState.correlationId.slice(0, 16)}...</code></div>}
           </div>
         )}
@@ -1482,7 +1490,7 @@ export const PropertyDais: React.FC = () => {
 
       {/* Schedule BOE Hearing (write_high) */}
       <BentoCard title='📅 Schedule BOE Hearing' actions={<span className='text-xs tf-badge-danger px-2 py-0.5 rounded'>write_high</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Schedule a Board of Equalization hearing with panel assignment</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Schedule a Board of Equalization hearing and return the scheduled date and panel size for this request</p>
         <div className='space-y-2 mb-3'>
           <input type='text' value={hearingAppealId} onChange={e => setHearingAppealId(e.target.value)} placeholder='Appeal ID' className='w-full p-2 rounded-lg tf-input' />
           <input type='date' value={hearingDate} onChange={e => setHearingDate(e.target.value)} className='w-full p-2 rounded-lg tf-input' />
@@ -1500,6 +1508,7 @@ export const PropertyDais: React.FC = () => {
         {hearingState.status === 'success' && hearingState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'><span className='font-semibold tf-text'>Hearing {hearingState.result.hearingId}</span><p className='tf-text-secondary text-sm'>Date: {formatDate(hearingState.result.scheduledDate)} | Panel: {hearingState.result.panelSize} members</p></div>
+            <div className='text-xs tf-text-secondary'>Shows the scheduled date and panel size returned by this request for the selected appeal.</div>
             {hearingState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{hearingState.correlationId.slice(0, 16)}...</code></div>}
           </div>
         )}
@@ -1534,24 +1543,24 @@ export const PropertyDais: React.FC = () => {
 
       {/* Certification Sign-Off (write_high) */}
       <BentoCard title='✍️ Certification Sign-Off' actions={<span className='text-xs tf-badge-danger px-2 py-0.5 rounded'>write_high</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Sign off a certification checklist step</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed certification sign-off request for this step, then review the returned signer and timestamp summary</p>
         <div className='space-y-2 mb-3'>
           <input type='text' value={signOffStepId} onChange={e => setSignOffStepId(e.target.value)} placeholder='Step ID (e.g. step-review-001)' className='w-full p-2 rounded-lg tf-input' />
           <input type='text' value={signOffName} onChange={e => setSignOffName(e.target.value)} placeholder='Signer name' className='w-full p-2 rounded-lg tf-input' />
           <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
             <label className='flex items-center gap-3 cursor-pointer'>
               <input type='checkbox' checked={signOffConfirmed} onChange={e => setSignOffConfirmed(e.target.checked)} className='h-4 w-4' />
-              <span className='text-sm tf-text'>I confirm this write_high sign-off for step <strong>{signOffStepId || '...'}</strong></span>
+              <span className='text-sm tf-text'>I confirm this certification sign-off request is ready for submission for step <strong>{signOffStepId || '...'}</strong></span>
             </label>
           </div>
         </div>
         <button onClick={handleSignOff} disabled={signOffState.status === 'loading' || !signOffStepId.trim() || !signOffName.trim() || !signOffConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-          {signOffState.status === 'loading' ? 'Signing...' : signOffConfirmed ? 'Sign Off Step' : '⚠️ Confirm Above to Enable'}
+          {signOffState.status === 'loading' ? 'Submitting...' : signOffConfirmed ? 'Submit Certification Sign-Off Request' : '⚠️ Confirm Above to Enable'}
         </button>
-        {signOffState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Processing sign-off...</span></div>}
+        {signOffState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting certification sign-off request...</span></div>}
         {signOffState.status === 'success' && signOffState.result && (
           <div className='space-y-2'>
-            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Step {signOffState.result.stepId} signed off</span><p className='tf-text-secondary text-sm'>By: {signOffState.result.signedBy} at {formatDate(signOffState.result.signedAt)}</p></div>
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Step {signOffState.result.stepId} signed off</span><p className='tf-text-secondary text-sm'>By: {signOffState.result.signedBy} at {formatDate(signOffState.result.signedAt)}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned step ID, signer, and signed-at timestamp for this certification sign-off request.</p></div>
             {signOffState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{signOffState.correlationId.slice(0, 16)}...</code></div>}
           </div>
         )}
@@ -1562,7 +1571,7 @@ export const PropertyDais: React.FC = () => {
 
       {/* Queue Notice for Mailing (write_low) */}
       <BentoCard title='📬 Queue Notices for Mailing' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Queue generated notices for batch mailing with delivery tracking</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Queue generated notices for batch mailing and return the batch method for this request</p>
         <input type='text' value={queueNoticeIds} onChange={e => setQueueNoticeIds(e.target.value)} placeholder='Notice IDs (comma-separated)' className='w-full p-2 rounded-lg tf-input mb-3' />
         <button onClick={handleQueueNotice} disabled={queueNoticeState.status === 'loading' || !queueNoticeIds.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
           {queueNoticeState.status === 'loading' ? 'Queuing...' : 'Queue for Mailing'}
@@ -1570,7 +1579,7 @@ export const PropertyDais: React.FC = () => {
         {queueNoticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Queuing notices...</span></div>}
         {queueNoticeState.status === 'success' && queueNoticeState.result && (
           <div className='space-y-2'>
-            <div className='tf-panel p-4'><span className='font-semibold tf-text'>{queueNoticeState.result.queued} notice(s) queued</span><p className='tf-text-secondary text-sm'>Batch: {queueNoticeState.result.batchId} | Method: {queueNoticeState.result.deliveryMethod}</p></div>
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>{queueNoticeState.result.queued} notice(s) queued</span><p className='tf-text-secondary text-sm'>Batch: {queueNoticeState.result.batchId} | Method: {queueNoticeState.result.deliveryMethod}</p><p className='text-xs tf-text-dim mt-2'>Shows the queued count, batch ID, and delivery method returned by this request.</p></div>
             {queueNoticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{queueNoticeState.correlationId.slice(0, 16)}...</code></div>}
           </div>
         )}
@@ -1581,7 +1590,7 @@ export const PropertyDais: React.FC = () => {
 
       {/* Queue Statistics (read_only) */}
       <BentoCard title='📈 Queue Statistics' actions={<><span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span><WorkbenchSourceBadge source={queueStatsState.status === 'success' ? 'live' : 'unavailable'} className='ml-2' /></>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Task queue statistics with SLA compliance metrics</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Request returned queue totals, completion count, overdue count, and SLA compliance for this request</p>
         <button onClick={handleGetQueueStats} disabled={queueStatsState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
           {queueStatsState.status === 'loading' ? 'Loading...' : 'Get Queue Statistics'}
         </button>
@@ -1595,6 +1604,7 @@ export const PropertyDais: React.FC = () => {
                 <div><span className='text-xs tf-text-dim'>SLA Compliance</span><p className='font-semibold tf-text'>{queueStatsState.result.slaCompliance}%</p></div>
                 <div><span className='text-xs tf-text-dim'>Overdue</span><p className='font-semibold text-red-400'>{queueStatsState.result.overdueCount}</p></div>
               </div>
+              <p className='text-xs tf-text-dim mt-2'>Shows the total tasks, completed tasks, overdue count, and SLA compliance returned by this request.</p>
             </div>
             {queueStatsState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{queueStatsState.correlationId.slice(0, 16)}...</code></div>}
           </div>

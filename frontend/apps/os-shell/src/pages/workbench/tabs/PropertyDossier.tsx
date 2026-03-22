@@ -6,7 +6,7 @@
  * Two sections:
  * 1. Parcel Details — real backend data from GET /api/dossier/parcels/{parcelId}/details
  *    (property, valuation, levies, note headers — all nullable for selective includes)
- * 2. Document Management — live read-only registry for documents and evidence.
+ * 2. Document Management — read-only registry view for documents and evidence.
  *
  * Architecture: UI → useDossierDetails hook → real API → correlationId UX
  */
@@ -586,9 +586,12 @@ export const PropertyDossier: React.FC = () => {
       {/* Documents on File from Store */}
       {documents.length > 0 && (
         <BentoGrid columns="auto" gap={0.75} padding={0}>
-          <BentoCard variant="stat" title="Documents on File">
+          <BentoCard variant="stat" title="Loaded Documents">
             <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}>
               {documents.length}
+            </p>
+            <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+              Shown from the document entries currently loaded for this parcel.
             </p>
           </BentoCard>
           {documents.slice(0, 2).map((d) => (
@@ -712,10 +715,11 @@ export const PropertyDossier: React.FC = () => {
         <div className='space-y-4' data-testid='document-management-live'>
           <div className='flex items-start justify-between gap-4 flex-wrap'>
             <div>
-              <p className='tf-text-tertiary font-medium'>Read-only live registry</p>
+              <p className='tf-text-tertiary font-medium'>Read-only registry view</p>
               <p className='tf-text-dim text-sm mt-1'>
-                Parcel-scoped documents and evidence records are now live. Upload and
-                write workflows remain deferred.
+                This route shows up to 5 parcel documents and 5 evidence records per refresh.
+                Use Refresh registry to reload available records; upload and write workflows
+                remain deferred.
               </p>
             </div>
             <button
@@ -787,7 +791,7 @@ export const PropertyDossier: React.FC = () => {
               <div className='grid gap-4 lg:grid-cols-2'>
                 <div className='tf-panel p-4 rounded-xl space-y-3'>
                   <div className='flex items-center justify-between'>
-                    <p className='tf-text-tertiary font-medium'>Recent documents</p>
+                    <p className='tf-text-tertiary font-medium'>Visible parcel documents</p>
                     <span className='tf-text-dim text-xs'>
                       {documentManagement.documents.length} visible
                     </span>
@@ -821,7 +825,7 @@ export const PropertyDossier: React.FC = () => {
 
                 <div className='tf-panel p-4 rounded-xl space-y-3'>
                   <div className='flex items-center justify-between'>
-                    <p className='tf-text-tertiary font-medium'>Recent evidence</p>
+                    <p className='tf-text-tertiary font-medium'>Visible parcel evidence</p>
                     <span className='tf-text-dim text-xs'>
                       {documentManagement.evidenceItems.length} visible
                     </span>
@@ -993,7 +997,7 @@ export const PropertyDossier: React.FC = () => {
       <BentoCard title="Evidence Synthesis" actions={<span>🔬</span>}>
         <div className='flex items-start justify-between gap-4 flex-wrap mb-3'>
           <p className='tf-text-dim text-sm'>
-            Aggregate and categorize all evidence items for this parcel
+            Request returned evidence totals and categories for this parcel
           </p>
           <button
             onClick={handleSynthesizeEvidence}
@@ -1016,6 +1020,8 @@ export const PropertyDossier: React.FC = () => {
                 </code>
               )}
             </div>
+
+            <p className='tf-text-dim text-xs'>Shows the totals and categories returned by this synthesis request.</p>
 
             {synthesizeState.result.synthesisNarrative && (
               <p className='tf-text-secondary text-sm'>{synthesizeState.result.synthesisNarrative}</p>
@@ -1053,13 +1059,14 @@ export const PropertyDossier: React.FC = () => {
 
       {/* Casefile Summary */}
       <BentoCard title='📋 Casefile Summary' actions={<span>📑</span>}>
-        <p className='tf-text-tertiary text-sm mb-4'>Comprehensive casefile overview for {parcelId}</p>
+        <p className='tf-text-tertiary text-sm mb-4'>Request returned a casefile summary for notices, appeals, permits, and sales on {parcelId}</p>
         <button onClick={handleCasefileSummary} disabled={casefileState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta mb-4'>
           {casefileState.status === 'loading' ? 'Loading...' : 'Summarize Casefile'}
         </button>
         {casefileState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Loading casefile...</span></div>}
         {casefileState.status === 'success' && casefileState.result && (
           <div className='space-y-3'>
+            <p className='tf-text-dim text-xs'>Shows the summary and highlights returned for the requested casefile sections.</p>
             <div className='tf-panel p-4'><p className='tf-text-secondary'>{casefileState.result.summary}</p></div>
             {casefileState.result.highlights.length > 0 && (
               <div className='space-y-1'>
