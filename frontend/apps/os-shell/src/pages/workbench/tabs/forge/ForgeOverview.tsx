@@ -16,6 +16,7 @@ import { useWorkbenchTab } from '../../../../context/workbenchTabContext';
 import { invokeTool } from '../../../../api/pilotApi';
 import { ErrorDisplay } from '../../../../components/errors/ErrorDisplay';
 import { InvocationHistory, type InvocationRecord } from '../../../../components/workbench';
+import { WorkbenchSourceBadge } from '../../../../components/workbench/WorkbenchSourceBadge';
 import { getEnv } from '../../../../runtime/env';
 import { usePropertyStore } from '../../../../stores/propertyStore';
 import { BentoGrid } from '../../../../ui/materials/BentoGrid';
@@ -254,7 +255,15 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
         </BentoCard>
 
         {/* Results Panel */}
-        <BentoCard span="2x1">
+        <BentoCard
+          span="2x1"
+          actions={
+            <WorkbenchSourceBadge
+              source={explainState.status === 'success' ? 'live' : 'unavailable'}
+              className="ml-2"
+            />
+          }
+        >
           {explainState.status === 'loading' ? (
             <div role="status" className="flex flex-col items-center justify-center py-12 gap-3">
               <div className="tf-spinner h-10 w-10" />
@@ -343,7 +352,16 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
       )}
 
       {/* Value Change Analysis */}
-      <BentoCard title="&#128200; Value Change Analysis" variant="default">
+      <BentoCard
+        title="&#128200; Value Change Analysis"
+        variant="default"
+        actions={
+          <WorkbenchSourceBadge
+            source={valueChangeState.status === 'success' ? 'live' : 'unavailable'}
+            className="ml-2"
+          />
+        }
+      >
         <p className="tf-text-tertiary text-sm mb-4">Year-over-year value change breakdown for {parcelId}</p>
         <button onClick={handleValueChange} disabled={valueChangeState.status === 'loading'} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4">
           {valueChangeState.status === 'loading' ? 'Analyzing...' : `Explain Value Change (${taxYear})`}
@@ -415,7 +433,16 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
       </BentoCard>
 
       {/* Value History Trend */}
-      <BentoCard title="&#128202; Value History Trend" variant="default">
+      <BentoCard
+        title="&#128202; Value History Trend"
+        variant="default"
+        actions={
+          <WorkbenchSourceBadge
+            source={historyState.status === 'success' ? 'live' : 'unavailable'}
+            className="ml-2"
+          />
+        }
+      >
         <p className="tf-text-tertiary text-sm mb-4">Multi-year assessed value comparison for {parcelId}</p>
         <button onClick={handleValueHistory} disabled={historyState.status === 'loading'} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4">
           {historyState.status === 'loading' ? 'Loading...' : 'Compare Value History'}
@@ -444,7 +471,18 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
       </BentoCard>
 
       {/* Run Valuation Model (write_high) */}
-      <BentoCard title="&#127959;&#65039; Run Valuation Model" actions={<span className="text-xs tf-badge-error px-2 py-0.5 rounded">write_high</span>}>
+      <BentoCard
+        title="&#127959;&#65039; Run Valuation Model"
+        actions={
+          <>
+            <span className="text-xs tf-badge-error px-2 py-0.5 rounded">write_high</span>
+            <WorkbenchSourceBadge
+              source={valuationState.status === 'success' ? 'live' : 'unavailable'}
+              className="ml-2"
+            />
+          </>
+        }
+      >
         <p className="tf-text-tertiary text-sm mb-3">Execute a valuation model for parcel {parcelId} — requires confirmation</p>
         <div className="space-y-3 mb-4">
           <div>
