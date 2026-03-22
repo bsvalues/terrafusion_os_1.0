@@ -578,6 +578,100 @@ describe('PropertyDais', () => {
         expect(screen.getByText(/Shows the returned task ID, escalation target, and status for this escalation request\./i)).toBeInTheDocument();
       });
     });
+
+    it('invokes assign_task with request wording and returned-assignment disclosure', async () => {
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-assign-task-001',
+        result: {
+          toolId: 'assign_task',
+          output: JSON.stringify({
+            taskId: 'TSK-2026-042',
+            assignedTo: 'usr-jdoe',
+            status: 'assigned',
+            payloadRef: 'dais://benton/tasks/TSK-2026-042/assignment',
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Submit a governed task-assignment request, then review the returned assignee and status summary/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Assign a workflow task to a queue or user/i)).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByPlaceholderText(/Task ID \(e\.g\. TSK-2026-042\)/i), {
+        target: { value: 'TSK-2026-042' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(/Assignee ID \(e\.g\. usr-jdoe\)/i), {
+        target: { value: 'usr-jdoe' },
+      });
+      fireEvent.change(screen.getByPlaceholderText(/Reason \(optional\)/i), {
+        target: { value: 'Rebalanced assessor queue.' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /Submit Assignment Request/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'assign_task',
+          params: {
+            county: 'benton',
+            taskId: 'TSK-2026-042',
+            assigneeId: 'usr-jdoe',
+            reason: 'Rebalanced assessor queue.',
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Task: TSK-2026-042/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned task ID, assigned-to value, and status for this assignment request\./i)).toBeInTheDocument();
+      });
+    });
+
+    it('invokes check_exemption_eligibility with request wording and returned-eligibility disclosure', async () => {
+      const mockResponse = {
+        success: true,
+        correlationId: 'corr-exemption-eligibility-001',
+        result: {
+          toolId: 'check_exemption_eligibility',
+          output: JSON.stringify({
+            eligible: true,
+            program: 'senior',
+            reason: 'Returned parcel summary indicates the applicant qualifies.',
+            incomeThreshold: 40000,
+            parcelId: '12345-001',
+          }),
+        },
+      };
+
+      mockInvokeTool.mockResolvedValue(mockResponse);
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByText(/Request the returned exemption eligibility summary for this parcel, then review the returned program, reason, and income-threshold details/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Check senior\/disabled exemption eligibility per RCW 84\.36\.381/i)).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: /Request Eligibility Summary/i }));
+
+      await waitFor(() => {
+        expect(mockInvokeTool).toHaveBeenCalledWith({
+          toolId: 'check_exemption_eligibility',
+          params: {
+            county: 'benton',
+            parcelId: '12345-001',
+          },
+          parcelId: '12345-001',
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Eligible/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned eligibility flag, program, reason, and income threshold for this parcel request\./i)).toBeInTheDocument();
+      });
+    });
   });
 
   describe('Loading States', () => {

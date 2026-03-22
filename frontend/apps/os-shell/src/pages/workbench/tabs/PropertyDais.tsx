@@ -1317,16 +1317,16 @@ export const PropertyDais: React.FC = () => {
 
       {/* Assign Task (write_low) */}
       <BentoCard title='👤 Assign Task' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Assign a workflow task to a queue or user</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed task-assignment request, then review the returned assignee and status summary</p>
         <div className='space-y-2 mb-3'>
           <input type='text' value={assignTaskId} onChange={e => setAssignTaskId(e.target.value)} placeholder='Task ID (e.g. TSK-2026-042)' className='w-full p-2 rounded-lg tf-input' data-testid='assign-task-id' />
           <input type='text' value={assignAssigneeId} onChange={e => setAssignAssigneeId(e.target.value)} placeholder='Assignee ID (e.g. usr-jdoe)' className='w-full p-2 rounded-lg tf-input' data-testid='assign-assignee-id' />
           <input type='text' value={assignReason} onChange={e => setAssignReason(e.target.value)} placeholder='Reason (optional)' className='w-full p-2 rounded-lg tf-input' />
         </div>
         <button onClick={handleAssignTask} disabled={assignTaskState.status === 'loading' || !assignTaskId.trim() || !assignAssigneeId.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {assignTaskState.status === 'loading' ? 'Assigning...' : 'Assign Task'}
+          {assignTaskState.status === 'loading' ? 'Submitting...' : 'Submit Assignment Request'}
         </button>
-        {assignTaskState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Assigning task...</span></div>}
+        {assignTaskState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting assignment request...</span></div>}
         {assignTaskState.status === 'success' && assignTaskState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'>
@@ -1335,6 +1335,7 @@ export const PropertyDais: React.FC = () => {
                 <span className='text-xs tf-badge px-2 py-0.5 rounded'>{assignTaskState.result.status}</span>
               </div>
               <div className='text-sm tf-text-secondary'>Assigned to: <strong>{assignTaskState.result.assignedTo}</strong></div>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned task ID, assigned-to value, and status for this assignment request.</p>
             </div>
             {assignTaskState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{assignTaskState.correlationId.slice(0, 16)}...</code></div>}
           </div>
@@ -1431,11 +1432,11 @@ export const PropertyDais: React.FC = () => {
 
       {/* Exemption Eligibility Check (read_only) */}
       <BentoCard title='🛡️ Exemption Eligibility' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Check senior/disabled exemption eligibility per RCW 84.36.381</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Request the returned exemption eligibility summary for this parcel, then review the returned program, reason, and income-threshold details</p>
         <button onClick={handleCheckEligibility} disabled={eligibilityState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {eligibilityState.status === 'loading' ? 'Checking...' : 'Check Eligibility'}
+          {eligibilityState.status === 'loading' ? 'Requesting...' : 'Request Eligibility Summary'}
         </button>
-        {eligibilityState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Checking eligibility...</span></div>}
+        {eligibilityState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Requesting eligibility summary...</span></div>}
         {eligibilityState.status === 'success' && eligibilityState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'>
@@ -1445,6 +1446,7 @@ export const PropertyDais: React.FC = () => {
               </div>
               <p className='tf-text-secondary text-sm'>{eligibilityState.result.reason}</p>
               <p className='tf-text-dim text-xs mt-1'>Program: {eligibilityState.result.program} | Threshold: ${eligibilityState.result.incomeThreshold.toLocaleString()}</p>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned eligibility flag, program, reason, and income threshold for this parcel request.</p>
             </div>
             {eligibilityState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{eligibilityState.correlationId.slice(0, 16)}...</code></div>}
           </div>

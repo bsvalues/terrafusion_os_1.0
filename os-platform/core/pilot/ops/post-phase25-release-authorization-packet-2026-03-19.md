@@ -70,6 +70,8 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/frontend-property-dais-certification-sign-off-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-file-appeal-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-escalate-task-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-assign-task-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-exemption-eligibility-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-exemption-renewal-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-hearing-schedule-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-queue-statistics-honesty-2026-03-21.md`
@@ -467,6 +469,24 @@ A bounded PropertyDais escalate-task honesty follow-on slice also landed on 2026
 - PropertyDais escalate-task honesty: `23 passed`, `0 failed`
 
 That slice removes mounted PropertyDais write-low wording that presented the route as directly escalating an overdue or high-priority task on mount, and replaces it with escalation-request wording plus a short disclosure that the card shows the returned task ID, escalation target, and status from the `escalate_task` request for the selected task.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais assign-task honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-assign-task-honesty-2026-03-22.md`
+- PropertyDais assign-task honesty: `24 passed`, `0 failed`
+
+That slice removes mounted PropertyDais write-low wording that presented the route as directly assigning a workflow task on mount, and replaces it with assignment-request wording plus a short disclosure that the card shows the returned task ID, assigned-to value, and status from the `assign_task` request for the selected task and assignee.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais exemption-eligibility honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-exemption-eligibility-honesty-2026-03-22.md`
+- PropertyDais exemption-eligibility honesty: `25 passed`, `0 failed`
+
+That slice removes mounted PropertyDais read-only wording that presented the route as an unqualified statutory exemption-eligibility check on mount, and replaces it with eligibility-summary request wording plus a short disclosure that the card shows the returned eligibility flag, program, reason, and income threshold from the `check_exemption_eligibility` request for the parcel.
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
