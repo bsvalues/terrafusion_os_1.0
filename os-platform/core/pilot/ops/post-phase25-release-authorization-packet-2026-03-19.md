@@ -1,7 +1,7 @@
 # Post-Phase-25 Release Authorization Packet
 
 Date: 2026-03-19
-Updated: 2026-03-21
+Updated: 2026-03-22
 Status: READY
 Owner lane: Agent C
 Purpose: Reconcile sealed code/static proof with the remaining live pre-traffic conditions after Phase 25
@@ -41,6 +41,7 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/phase32-live-input-contract-2026-03-21.md`
 - `os-platform/core/pilot/ops/leak-guard-governance-drift-2026-03-19.md`
 - `os-platform/core/pilot/ops/leak-guard-remediation-status-2026-03-20.md`
+- `os-platform/core/pilot/ops/snyk-findings-rerun-reconciliation-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-terracanon-continuity-rerun-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-root-vitest-reconciliation-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-shell-honesty-indicators-2026-03-21.md`
@@ -58,18 +59,42 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/frontend-suite-stat-label-and-handoff-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-atlas-geometry-preview-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-audit-history-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-audit-levy-compliance-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-audit-compliance-report-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-audit-cross-office-reconciliation-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-county-employee-workspace-status-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-loaded-appeals-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-reported-step-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-notice-queue-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-boe-packet-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-certification-sign-off-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-exemption-renewal-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-hearing-schedule-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-queue-statistics-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-dossier-casefile-summary-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-dossier-loaded-documents-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-dossier-evidence-synthesis-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-dossier-registry-view-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-clerk-recording-request-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-clerk-recorded-document-search-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-clerk-recording-summary-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-clerk-title-chain-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-clerk-title-chain-preview-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-clerk-recording-history-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-summary-loaded-appeals-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-summary-permit-flag-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-summary-valuation-snapshot-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-forge-baseline-disclosure-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-forge-value-change-label-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-pilot-evidence-window-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-pilot-operation-history-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-treasury-collection-statistics-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-treasury-delinquency-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-treasury-record-payment-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-treasury-installment-plan-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-treasury-tax-breakdown-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-treasury-tax-sale-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-treasury-tax-statement-honesty-2026-03-22.md`
 
 Traceability index:
 
@@ -168,6 +193,15 @@ That whole-surface question was then reconciled by an explicit frontend-root Vit
 - root status: `2573 / 2573 test suites passed`, `6448 / 6448 tests passed`
 
 Frontend-root Vitest is therefore green and is no longer a truthful blocker in this packet.
+
+A governed Snyk rerun reconciliation slice also landed on 2026-03-21:
+
+- authoritative reconciliation note: `os-platform/core/pilot/ops/snyk-findings-rerun-reconciliation-2026-03-21.md`
+- rerun status: `pnpm run security:scan` now completes with `69 findings` (`13 error`, `40 warning`, `16 note`); `pnpm run security:check` passes against the ratified warning ceiling
+
+That note records that the bounded `dev-pilot-runtime.mjs` fix cleared the live `javascript/reDOS` regression and that the two over-baseline PT warnings were removed from the repo-owned checker scripts, bringing the governed warning count back to the ratified `40` ceiling without changing baseline policy.
+
+It remains separate from the live traffic-opening blockers in this packet, and it restores the truthful sealed security posture for the repo-owned Snyk code lane.
 
 A bounded shell honesty/provenance follow-on slice then landed on 2026-03-21:
 
@@ -308,6 +342,33 @@ That slice removed mounted PropertyAudit table wording that presented store-load
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
+A bounded PropertyAudit levy-compliance honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-audit-levy-compliance-honesty-2026-03-21.md`
+- PropertyAudit levy-compliance honesty: `10 passed`, `0 failed`
+
+That slice removed mounted PropertyAudit levy wording that described the route as checking compliance across all taxing districts, and replaced it with returned-result wording plus a short disclosure that the card shows the levy compliance totals and issues returned by the `check_levy_compliance` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyAudit compliance-report honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-audit-compliance-report-honesty-2026-03-21.md`
+- PropertyAudit compliance-report honesty: `11 passed`, `0 failed`
+
+That slice removed mounted PropertyAudit report wording that described the generated output as a comprehensive compliance report, and replaced it with report-summary wording plus a short disclosure that the card shows the totals and score returned by the `generate_compliance_report` request for the selected tax year.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyAudit cross-office reconciliation honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-audit-cross-office-reconciliation-honesty-2026-03-21.md`
+- PropertyAudit cross-office reconciliation honesty: `11 passed`, `0 failed`
+
+That slice removed mounted PropertyAudit reconciliation wording that described the route as reconciling totals between the Assessor and Treasurer offices, and replaced it with returned-summary wording plus a short disclosure that the card shows the returned assessor total, treasurer total, and variance from the `reconcile_cross_office` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
 A bounded CountyEmployeeWorkspace status-honesty follow-on slice also landed on 2026-03-21:
 
 - authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-county-employee-workspace-status-honesty-2026-03-21.md`
@@ -323,6 +384,96 @@ A bounded PropertyDais loaded-appeals honesty follow-on slice also landed on 202
 - PropertyDais loaded-appeals honesty: `12 passed`, `0 failed`
 
 That slice removed mounted PropertyDais store-backed header wording that presented parcel appeal records as unqualified `Active Appeals`, and replaced it with loaded-appeals wording plus a short disclosure that the records shown come from the appeal entries currently loaded for the parcel.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais reported-step honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-reported-step-honesty-2026-03-21.md`
+- PropertyDais reported-step honesty: `12 passed`, `0 failed`
+
+That slice removed mounted PropertyDais workflow-status wording that labeled the returned certification step as `Current Step`, and replaced it with reported-step wording plus a short disclosure that the panel reflects the workflow status returned for the parcel rather than a separately proven live/current workflow state.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais notice-queue honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-notice-queue-honesty-2026-03-21.md`
+- PropertyDais notice-queue honesty: `13 passed`, `0 failed`
+
+That slice removed mounted PropertyDais notice-queue wording that promised delivery tracking, and replaced it with queued-result wording plus a short disclosure that the card shows the queued count, batch ID, and delivery method returned by the `queue_notice_for_mailing` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais exemption-renewal honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-exemption-renewal-honesty-2026-03-21.md`
+- PropertyDais exemption-renewal honesty: `14 passed`, `0 failed`
+
+That slice removed mounted PropertyDais renewal wording that promised documentation verification, and replaced it with returned-renewal wording plus a short disclosure that the card shows the renewal status returned by the `process_exemption_renewal` request for the selected exemption and tax year.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais hearing-schedule honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-hearing-schedule-honesty-2026-03-21.md`
+- PropertyDais hearing-schedule honesty: `15 passed`, `0 failed`
+
+That slice removed mounted PropertyDais hearing wording that promised panel assignment, and replaced it with returned-schedule wording plus a short disclosure that the card shows the scheduled date and panel size returned by the `schedule_boe_hearing` request for the selected appeal.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais queue-statistics honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-queue-statistics-honesty-2026-03-21.md`
+- PropertyDais queue-statistics honesty: `19 passed`, `0 failed`
+
+That slice removed mounted PropertyDais queue-statistics wording that described the card as generic SLA metrics, and replaced it with request-returned wording plus a short disclosure that the card shows the total tasks, completed tasks, overdue count, and SLA compliance returned by the `get_queue_statistics` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais BOE packet honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-boe-packet-honesty-2026-03-22.md`
+- PropertyDais BOE packet honesty: `20 passed`, `0 failed`
+
+That slice removes mounted PropertyDais write-high wording that presented the route as fully assembling a Board of Equalization evidence packet on mount, and replaces it with BOE packet request wording plus a short disclosure that the card shows the returned case ID and section list from the `assemble_boe_packet` request for the selected case and sections.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais certification sign-off honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-certification-sign-off-honesty-2026-03-22.md`
+- PropertyDais certification sign-off honesty: `21 passed`, `0 failed`
+
+That slice removes mounted PropertyDais write-high wording that presented the route as directly signing off a certification checklist step on mount, and replaces it with certification sign-off request wording plus a short disclosure that the card shows the returned step ID, signer, and signed-at timestamp from the `sign_off_certification_step` request for the selected step.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDossier loaded-documents honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dossier-loaded-documents-honesty-2026-03-21.md`
+- PropertyDossier loaded-documents honesty: `9 passed`, `0 failed`
+
+That slice removed mounted PropertyDossier store-backed document-count wording that presented loaded parcel document entries as unqualified `Documents on File`, and replaced it with loaded-documents wording plus a short disclosure that the count shown comes from the document entries currently loaded for the parcel rather than a separately proven full registry count.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDossier casefile-summary honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dossier-casefile-summary-honesty-2026-03-21.md`
+- PropertyDossier casefile-summary honesty: `11 passed`, `0 failed`
+
+That slice removed mounted PropertyDossier casefile wording that described the card as a comprehensive overview, and replaced it with returned-summary wording plus a short disclosure that the route shows the summary and highlights returned by the `summarize_parcel_casefile` request for the fixed notices, appeals, permits, and sales include set.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDossier evidence-synthesis honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dossier-evidence-synthesis-honesty-2026-03-21.md`
+- PropertyDossier evidence-synthesis honesty: `10 passed`, `0 failed`
+
+That slice removed mounted PropertyDossier synthesis wording that described the card as aggregating and categorizing all parcel evidence items, and replaced it with returned-synthesis wording plus a short disclosure that the route shows the totals and categories returned by the `synthesize_evidence` request.
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
@@ -344,6 +495,24 @@ That slice removed mounted workbench wording that implied the operator was alrea
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
+A bounded PropertyClerk recorded-document search honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-clerk-recorded-document-search-honesty-2026-03-21.md`
+- PropertyClerk recorded-document search honesty: `15 passed`, `0 failed`
+
+That slice removed mounted PropertyClerk search wording that implied separately proven keyword, grantor, and type search modes, and replaced it with parcel-query wording plus a short disclosure that the card shows the returned document count and preview entries from the `search_recorded_documents` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyClerk recording-summary honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-clerk-recording-summary-honesty-2026-03-21.md`
+- PropertyClerk recording-summary honesty: `15 passed`, `0 failed`
+
+That slice removed mounted PropertyClerk summary wording that described returned totals plus preview entries as a summary of all parcel recordings, and replaced it with returned-summary wording plus a short disclosure that the route previews up to three recordings returned in the summary result.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
 A bounded PropertyClerk title-chain honesty follow-on slice also landed on 2026-03-21:
 
 - authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-clerk-title-chain-honesty-2026-03-21.md`
@@ -353,12 +522,39 @@ That slice removed mounted title-chain wording that labeled the returned owner v
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
+A bounded PropertyClerk title-chain preview honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-clerk-title-chain-preview-honesty-2026-03-21.md`
+- PropertyClerk title-chain preview honesty: `15 passed`, `0 failed`
+
+That slice removed mounted PropertyClerk wording that presented the route as a full ownership chain surface, and replaced it with returned-preview wording plus a short disclosure that the card shows the returned owner and up to five returned chain entries from the `get_title_chain` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
 A bounded PropertyClerk recording-history honesty follow-on slice also landed on 2026-03-21:
 
 - authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-clerk-recording-history-honesty-2026-03-21.md`
 - PropertyClerk recording-history honesty: `14 passed`, `0 failed`
 
 That slice removed mounted Clerk table wording that labeled store-loaded parcel recording history as `Recent Recordings`, and replaced it with loaded-history wording plus a short disclosure that the entries shown come from the recording history currently loaded for the parcel.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertySummary loaded-appeals honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-summary-loaded-appeals-honesty-2026-03-21.md`
+- PropertySummary loaded-appeals honesty: `19 passed`, `0 failed`
+
+That slice removed mounted PropertySummary store-backed header wording that presented parcel appeal records as unqualified `Active Appeals`, and replaced it with loaded-appeals wording plus a short disclosure that the records shown come from the appeal entries currently loaded for the parcel.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertySummary permit-flag honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-summary-permit-flag-honesty-2026-03-21.md`
+- PropertySummary permit-flag honesty: `20 passed`, `0 failed`
+
+That slice removed mounted PropertySummary permit wording that presented a store-backed parcel boolean as unqualified `Active permits on file`, and replaced it with loaded-parcel permit wording plus a short disclosure that the card reflects the parcel summary currently loaded for the parcel rather than independently proven permit records or fresher permit status.
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
@@ -407,12 +603,66 @@ That slice removed mounted PropertyPilot table wording that labeled store-loaded
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
+A bounded PropertyTreasury collection-statistics honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-treasury-collection-statistics-honesty-2026-03-21.md`
+- PropertyTreasury collection-statistics honesty: `10 passed`, `0 failed`
+
+That slice removed mounted PropertyTreasury collection-statistics wording that described the card as county-wide, and replaced it with returned-result wording plus a short disclosure that the card shows the collection totals and rates returned by the `summarize_collection_stats` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
 A bounded PropertyTreasury delinquency honesty follow-on slice also landed on 2026-03-21:
 
 - authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-treasury-delinquency-honesty-2026-03-21.md`
 - PropertyTreasury honesty: `10 passed`, `0 failed`
 
 That slice removed mounted PropertyTreasury delinquency wording that labeled a non-delinquent tool response as `Current`, and replaced it with returned-check wording plus a short disclosure that the card reflects the delinquency check returned for the parcel without implying freshness the route does not prove.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyTreasury installment-plan honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-treasury-installment-plan-honesty-2026-03-22.md`
+- PropertyTreasury installment-plan honesty: `11 passed`, `0 failed`
+
+That slice removed mounted PropertyTreasury installment-plan wording that implied delinquent-tax qualification the route does not prove, and replaced it with returned-plan wording plus a short disclosure that the card shows the returned plan ID, monthly payment, installment count, and start date from the `create_installment_plan` request for the parcel and selected term.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyTreasury record-payment honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-treasury-record-payment-honesty-2026-03-22.md`
+- PropertyTreasury record-payment honesty: `13 passed`, `0 failed`
+
+That slice removes mounted PropertyTreasury write-high wording that presented the route as directly recording payment on mount, and replaces it with payment-request wording plus a short disclosure that the card shows the returned receipt number, amount, method, and remaining balance from the `record_payment` request for the parcel.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyTreasury tax-breakdown honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-treasury-tax-breakdown-honesty-2026-03-22.md`
+- PropertyTreasury tax-breakdown honesty: `10 passed`, `0 failed`
+
+That slice removed mounted PropertyTreasury tax-breakdown wording that implied a fuller levy breakdown surface, and replaced it with returned-breakdown wording plus a short disclosure that the card shows the returned total rate, assessed value, and up to five returned levy components from the `explain_tax_breakdown` request for the parcel.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyTreasury tax-sale honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-treasury-tax-sale-honesty-2026-03-22.md`
+- PropertyTreasury tax-sale honesty: `12 passed`, `0 failed`
+
+That slice removes mounted PropertyTreasury write-high wording that implied delinquent-parcel qualification and an unqualified initiation surface the route does not prove on mount, and replaces it with tax-sale request wording plus a short disclosure that the card shows the returned sale ID, scheduled date, minimum bid, and notices-sent count from the `initiate_tax_sale` request for the parcel.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyTreasury tax-statement honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-treasury-tax-statement-honesty-2026-03-22.md`
+- PropertyTreasury tax-statement honesty: `10 passed`, `0 failed`
+
+That slice removed mounted PropertyTreasury tax-statement wording that implied a fuller statement retrieval surface, and replaced it with returned-summary wording plus a short disclosure that the card shows the returned total due, balance, due date, and up to four returned line items from the `get_tax_statement` request for the selected parcel and tax year.
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
