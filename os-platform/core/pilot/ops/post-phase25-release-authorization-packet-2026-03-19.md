@@ -47,6 +47,29 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/frontend-coefficient-preview-fixture-disclosure-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-batch-cost-run-fixture-disclosure-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-sentinel-feed-label-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-command-palette-legacy-label-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-monitoring-simulation-disclosure-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-governance-dashboard-polling-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-trace-home-refresh-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-dais-suite-fallback-disclosure-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-forge-suite-source-disclosure-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-dossier-suite-routing-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-suite-shared-queue-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-suite-stat-label-and-handoff-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-atlas-geometry-preview-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-audit-history-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-county-employee-workspace-status-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-loaded-appeals-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-dossier-registry-view-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-clerk-recording-request-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-clerk-title-chain-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-clerk-recording-history-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-summary-valuation-snapshot-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-forge-baseline-disclosure-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-forge-value-change-label-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-pilot-evidence-window-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-pilot-operation-history-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-treasury-delinquency-honesty-2026-03-21.md`
 
 Traceability index:
 
@@ -183,6 +206,213 @@ A bounded Sentinel feed label honesty follow-on slice also landed on 2026-03-21:
 - sentinel feed label status: `1 passed`, `0 failed`
 
 That slice removed a false `LIVE` badge from the mounted Sentinel console feed and replaced it with `AUTO-SCROLL`, which truthfully describes the enabled UI-follow mode instead of implying runtime/feed validation the badge does not establish.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded command-palette legacy-label honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-command-palette-legacy-label-honesty-2026-03-21.md`
+- command palette status: `37 passed`, `0 failed`
+
+That slice relabeled mounted command-palette entries for `costforge`, `terra-gaia`, and `atlas-ai` as explicit legacy surfaces under their canonical suite identity, while preserving old-name search and shortcut matching so operator alias lookups still resolve to the same legacy modules.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded monitoring simulation-disclosure follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-monitoring-simulation-disclosure-2026-03-21.md`
+- monitoring honesty status: `1 passed`, `0 failed`
+
+That slice removed live-swarm overclaim language from the mounted `/monitoring` route, added the standard demo-data disclosure to the AI swarm dashboard, and relabeled chart and refresh copy so the surface now reads as workspace simulation rather than live county swarm telemetry.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded GovernanceLock dashboard polling-honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-governance-dashboard-polling-honesty-2026-03-21.md`
+- governance dashboard honesty status: `1 passed`, `0 failed`
+
+That slice replaced `Real-time metrics` wording on the mounted `pilot/dashboard` route with explicit `Auto-refresh metrics (30s poll)` language so the UI describes the current fetch cadence truthfully instead of implying a live streaming surface.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded TraceHome refresh-honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-trace-home-refresh-honesty-2026-03-21.md`
+- trace home honesty status: `1 passed`, `0 failed`
+
+That slice replaced page-wide `Real-time observability` wording on the mounted `/trace` route with explicit mixed-mode language that preserves the live action-stream claim while disclosing that telemetry metrics refresh on a 15-second interval.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded TerraDais suite fallback-disclosure follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-dais-suite-fallback-disclosure-2026-03-21.md`
+- dais suite honesty status: `2 passed`, `0 failed`
+
+That slice added a mounted-route provenance disclosure to `/dais` so operators can see when the suite home is rendering county-provider aggregate fallback instead of TerraDais API metrics.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded TerraForge suite source-disclosure follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-forge-suite-source-disclosure-2026-03-21.md`
+- forge suite honesty status: `2 passed`, `0 failed`
+
+That slice preserved provider-mode provenance through `useCountyStats()` and added a mounted-route disclosure to `/forge` so operators can see when county overview stats are coming from bundled snapshot or fixture data instead of live backend metrics.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded TerraDossier suite routing-honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-dossier-suite-routing-honesty-2026-03-21.md`
+- dossier suite honesty status: `2 passed`, `0 failed`
+
+That slice relabeled the mounted `/dossier` queue to match its shared `recentParcels` source and made the `Defense Packets` launcher explicitly state that its current handoff path routes through the TerraDais workbench flow.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded shared suite-queue honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-suite-shared-queue-honesty-2026-03-21.md`
+- suite shared queue honesty status: `4 passed`, `0 failed`
+
+That slice relabeled the remaining mounted Atlas, Dais, Forge, and GPT suite-home queues to `Recent Parcels` so the UI no longer presents shared MRU parcel activity as GIS queries, pending appeals, recent assessments, or AI queries.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded suite stat-label and handoff honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-suite-stat-label-and-handoff-honesty-2026-03-21.md`
+- suite stat-label and handoff honesty status: `5 passed`, `0 failed`
+
+That slice relabeled the mounted `/dossier` pending-assessment stat to match the actual county field being rendered and made the mounted `/forge` appeal launcher explicitly disclose that it routes through the TerraDais workbench flow.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyAtlas geometry-preview honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-atlas-geometry-preview-honesty-2026-03-21.md`
+- PropertyAtlas honesty status: `7 passed`, `0 failed`
+
+That slice removed a mounted workbench claim that implied the PropertyAtlas route was showing authoritative live Atlas parcel shape truth, and replaced it with explicit wording that distinguishes confirmed layer availability from the preview boundary and centroid sketches shown before the fuller GIS surface ships.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyAudit history honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-audit-history-honesty-2026-03-21.md`
+- PropertyAudit history honesty: `10 passed`, `0 failed`
+
+That slice removed mounted PropertyAudit table wording that presented store-loaded parcel audit history as an unqualified `Audit Trail`, and replaced it with loaded-history wording plus a short disclosure that the entries shown come from the audit history currently loaded for the parcel.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded CountyEmployeeWorkspace status-honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-county-employee-workspace-status-honesty-2026-03-21.md`
+- workspace status honesty: `2 passed`, `0 failed`
+
+That slice removed mounted workspace wording that presented swarm and insight surfaces as unqualified live or real-time status, and replaced it with explicit refreshed-status wording that matches the route's 30-second polling posture and latest reported metrics.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais loaded-appeals honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-loaded-appeals-honesty-2026-03-21.md`
+- PropertyDais loaded-appeals honesty: `12 passed`, `0 failed`
+
+That slice removed mounted PropertyDais store-backed header wording that presented parcel appeal records as unqualified `Active Appeals`, and replaced it with loaded-appeals wording plus a short disclosure that the records shown come from the appeal entries currently loaded for the parcel.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDossier registry-view honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dossier-registry-view-honesty-2026-03-21.md`
+- PropertyDossier registry honesty: `6 passed`, `0 failed`
+
+That slice removed mounted workbench wording that described the PropertyDossier document-management panel as a live registry, and replaced it with explicit limited-view wording that matches the route's manual refresh behavior and 5-item list limits.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyClerk recording-request honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-clerk-recording-request-honesty-2026-03-21.md`
+- PropertyClerk recording honesty: `13 passed`, `0 failed`
+
+That slice removed mounted workbench wording that implied the operator was already writing into the official county record before the governed `record_document` tool returned a result, and replaced it with explicit recording-request submission wording tied to tool confirmation.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyClerk title-chain honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-clerk-title-chain-honesty-2026-03-21.md`
+- PropertyClerk title-chain honesty: `13 passed`, `0 failed`
+
+That slice removed mounted title-chain wording that labeled the returned owner value as `Current Owner`, and replaced it with returned title-chain wording plus a short disclosure that the owner shown comes from the title chain returned for the parcel.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyClerk recording-history honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-clerk-recording-history-honesty-2026-03-21.md`
+- PropertyClerk recording-history honesty: `14 passed`, `0 failed`
+
+That slice removed mounted Clerk table wording that labeled store-loaded parcel recording history as `Recent Recordings`, and replaced it with loaded-history wording plus a short disclosure that the entries shown come from the recording history currently loaded for the parcel.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertySummary valuation-snapshot honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-summary-valuation-snapshot-honesty-2026-03-21.md`
+- PropertySummary valuation honesty: `18 passed`, `0 failed`
+
+That slice added mounted workbench disclosure above the headline valuation cards so the route now states that displayed amounts reflect the loaded parcel summary for the shown assessment year and do not carry a more precise as-of timestamp than that assessment year.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyForge baseline-disclosure honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-forge-baseline-disclosure-2026-03-21.md`
+- PropertyForge baseline honesty: `14 passed`, `0 failed`
+
+That slice added mounted disclosure below the Forge tax-year selector so the route now states that overview values reflect the parcel snapshot already loaded in the workbench, and that changing the selected tax year changes governed tool requests below rather than silently reinterpreting those baseline cards as current-year truth.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyForge value-change label honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-forge-value-change-label-honesty-2026-03-21.md`
+- PropertyForge value-change honesty: `15 passed`, `0 failed`
+
+That slice removed mounted PropertyForge value-change wording that labeled the selected tax-year result as `Current`, and replaced it with selected-year and prior-year wording plus a short disclosure that the comparison shown is between the selected tax year and the prior year returned for the parcel.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyPilot evidence-window honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-pilot-evidence-window-honesty-2026-03-21.md`
+- PropertyPilot evidence honesty: `33 passed`, `0 failed`
+
+That slice removed mounted PropertyPilot evidence-rail wording that claimed an empty-state 30-day trace window the route did not actually request, and replaced it with parcel-returned wording that matches the mounted trace list behavior.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyPilot operation-history honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-pilot-operation-history-honesty-2026-03-21.md`
+- PropertyPilot operation-history honesty: `2 passed`, `0 failed`
+
+That slice removed mounted PropertyPilot table wording that labeled store-loaded parcel operation history as `Recent Operations`, and replaced it with loaded-history wording plus a short disclosure that the entries shown come from the operation history currently loaded for the parcel.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyTreasury delinquency honesty follow-on slice also landed on 2026-03-21:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-treasury-delinquency-honesty-2026-03-21.md`
+- PropertyTreasury honesty: `10 passed`, `0 failed`
+
+That slice removed mounted PropertyTreasury delinquency wording that labeled a non-delinquent tool response as `Current`, and replaced it with returned-check wording plus a short disclosure that the card reflects the delinquency check returned for the parcel without implying freshness the route does not prove.
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
