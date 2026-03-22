@@ -1,4 +1,10 @@
 /**
+ * @deprecated Phase 8: replaced by SwarmStatusCard inside MorningBriefingStrip.
+ * This component uses fixture data only. Do not use in new surfaces.
+ * Remove once all imports, tests, and stories referencing this file are migrated.
+ */
+
+/**
  * 🎛️ Terrafusion OS 1.0 - AI Swarm Management Dashboard
  * Real-time monitoring and control interface for 50,000+ AI agents
  *
@@ -89,6 +95,7 @@ import {
   BarChart,
   Bar,
 } from 'recharts';
+import { DemoDataBanner } from '../governance/DemoDataBanner';
 
 // Types
 interface SwarmStatus {
@@ -384,7 +391,7 @@ export const AISwarmDashboard: React.FC = () => {
           <CardContent>
             <Typography variant='h6' gutterBottom>
               <TimelineIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
-              Real-Time Performance Metrics
+              Simulated Performance Metrics
             </Typography>
             <ResponsiveContainer width='100%' height={400}>
               <LineChart data={performanceHistory}>
@@ -432,7 +439,7 @@ export const AISwarmDashboard: React.FC = () => {
                 startIcon={<RefreshIcon />}
                 onClick={() => window.location.reload()}
               >
-                Refresh All Data
+                Reseed Workspace Data
               </Button>
               <Button
                 variant='contained'
@@ -687,10 +694,12 @@ export const AISwarmDashboard: React.FC = () => {
 
   return (
     <Box sx={{ flexGrow: 1, p: 3, backgroundColor: 'var(--gray-50)', minHeight: '100vh' }}>
+      <DemoDataBanner module='AI Swarm Monitoring' className='mb-4' />
+
       {/* Header */}
       <Box display='flex' justifyContent='space-between' alignItems='center' mb={3}>
         <Typography variant='h4' component='h1' fontWeight='bold'>
-          🤖 Terrafusion AI Swarm Command Center
+          🤖 Terrafusion AI Swarm Workspace Command Center
         </Typography>
         <Box display='flex' gap={2}>
           <Chip
