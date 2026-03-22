@@ -283,6 +283,7 @@ builder.Services.AddScoped<TerraFusion.API.Interfaces.IPerformanceMonitor, Terra
 // Register flexible module catalog system (no hardcoding!)
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IModuleCatalog, DbModuleCatalog>();
 builder.Services.AddScoped<ModuleSeedService>();
+builder.Services.AddScoped<TerraFusion.API.Seeds.PacsDataSeeder>();
 builder.Services.AddScoped<TerraFusion.API.Health.IFileSystemModuleDiscovery, FileSystemModuleDiscovery>();
 builder.Services.AddScoped<TerraFusion.API.Health.IOrchestratorView, OrchestratorModuleView>();
 
@@ -1042,6 +1043,17 @@ app.MapGet("/api/test", () => new
   version = "1.0.0",
   environment = app.Environment.EnvironmentName
 });
+
+// ── PACS ETL seed trigger (admin only) ───────────────────────────────────────
+// POST /api/admin/pacs/seed  — pulls all 13 tables from tf-mssql pacs_oltp
+// into TerraFusionDbContext. Idempotent upsert. Safe to re-run.
+app.MapPost("/api/admin/pacs/seed", async (
+    TerraFusion.API.Seeds.PacsDataSeeder seeder,
+    CancellationToken ct) =>
+{
+    var result = await seeder.SeedAllAsync(ct);
+    return Results.Ok(result.ToString());
+}).WithTags("Admin").WithName("SeedPacsData");
 
 // Minimal transcendence health probe (previously returned 404 in some checks)
 // Returns a simple OK payload without invoking heavy services
