@@ -23,6 +23,37 @@
 | **Status** | 🟢 GO — all gates green, all artifacts published, no open blockers |
 | **Latest Commit** | `99988b8a6` (docs(superpowers): publish Copilot deep-dive mirror for full ecosystem go-live) |
 
+## CP-W9-I — OS Shell URL Provenance Hardening — CLOSED ✅
+
+**Date**: 2026-03-22  
+**Branch**: main  
+**Commit baseline**: working-tree security slice
+
+### Verdict: PASS — GREEN (bounded frontend security hardening)
+
+**What closed:**
+- Added a canonical trusted URL helper for os-shell iframe and popup launches:
+  - `frontend/apps/os-shell/src/lib/trustedShellUrl.ts`
+- Hardened the previously triaged shell-host sinks:
+  - `frontend/apps/os-shell/src/components/PWAShell.tsx`
+  - `frontend/apps/os-shell/src/components/layout/ProfessionalDashboard.tsx`
+  - `frontend/apps/os-shell/src/pages/suites/TerraPrimeSuite.tsx`
+- Added focused proof coverage:
+  - `frontend/apps/os-shell/src/__tests__/security/trustedShellUrl.test.ts`
+  - `frontend/apps/os-shell/src/__tests__/suites/TerraPrimeSuite.test.tsx`
+- Published authoritative evidence note:
+  - `os-platform/core/pilot/ops/frontend-os-shell-url-provenance-hardening-2026-03-22.md`
+
+**Proof wall:**
+- `pnpm vitest run frontend/apps/os-shell/src/__tests__/security/trustedShellUrl.test.ts frontend/apps/os-shell/src/__tests__/suites/TerraPrimeSuite.test.tsx` ✅ `19/19`
+- `pnpm run type-check` ✅
+- `node --test os-platform/core/tests/phase83-tools.test.mjs` ✅ `56/56`
+- `pnpm run security:scan:frontend` ✅ `18 findings total`; patched files no longer present in current report
+- `pnpm run security:scan` ✅ `69 findings`
+- `pnpm run security:check` ✅ baseline enforcement restored
+
+**Classification:** Implemented bounded shell URL trust/provenance closure slice
+
 ## CP-DEMO-DAY5 — Benton Demo Day 5 Go/No-Go Checkpoint — GO ✅
 
 **Date**: 2026-03-19
