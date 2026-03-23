@@ -1,0 +1,7 @@
+user
+tadata
+tadata2600
+binary
+cd GIS\BrownData
+put D:\PropAccessData\BrownData.rar
+bye

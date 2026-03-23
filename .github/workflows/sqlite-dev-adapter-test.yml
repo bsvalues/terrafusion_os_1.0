@@ -1,0 +1,59 @@
+name: sqlite-backed-dev-adapter-test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  sqlite-backed-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Prepare package manager
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+
+      - name: Install JS dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install sqlite3 for CI (no-save)
+        run: npm install sqlite3 --no-save
+
+      - name: Prepare sqlite test environment
+        run: |
+          mkdir -p ./.tmp
+        env:
+          TF_DEV_AUDIT: '1'
+          TF_DEV_AUDIT_STORE: 'sqlite'
+          TF_DEV_AUDIT_DB: ${{ github.workspace }}/.tmp/terrafusion-ci.db
+
+      - name: Run sqlite-backed Node test
+        env:
+          TF_DEV_AUDIT: '1'
+          TF_DEV_AUDIT_STORE: 'sqlite'
+          TF_DEV_AUDIT_DB: ${{ github.workspace }}/.tmp/terrafusion-ci.db
+        run: |
+          node --test os-platform/core/pilot/trace/tests/dev-audit.test.mjs
+
+      - name: Upload dev-audit artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sqlite-backed-test-logs
+          path: |
+            ./.tmp
+            dev-audit
+            **/TestResults/**

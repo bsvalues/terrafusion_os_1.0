@@ -44,6 +44,7 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/snyk-findings-rerun-reconciliation-2026-03-21.md`
 - `os-platform/core/pilot/ops/snyk-frontend-scan-lane-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-os-shell-snyk-triage-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-os-shell-url-provenance-hardening-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-terracanon-continuity-rerun-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-root-vitest-reconciliation-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-shell-honesty-indicators-2026-03-21.md`
@@ -251,6 +252,13 @@ A bounded frontend shell scan triage then landed on 2026-03-22:
 - current truth: the `18` frontend shell findings are mostly timer/download/test-pattern noise, while the strongest follow-up candidates are the iframe and pop-out URL flows in `PWAShell.tsx`, `ProfessionalDashboard.tsx`, and `TerraPrimeSuite.tsx`
 
 That triage confirms the new frontend shell scan lane did not surface an immediate blocker tied to the recent PropertyDais/PILT honesty work, and it narrows the next real security review lane to shell-host URL provenance.
+
+A bounded shell-host URL provenance hardening slice then landed on 2026-03-22:
+
+- authoritative implementation note: `os-platform/core/pilot/ops/frontend-os-shell-url-provenance-hardening-2026-03-22.md`
+- current truth: the shared `trustedShellUrl.ts` helper now gates iframe and popup URL resolution in `PWAShell.tsx`, `ProfessionalDashboard.tsx`, and `TerraPrimeSuite.tsx`, and those patched files no longer appear in the fresh frontend Snyk report
+
+That slice closes the strongest real follow-up exposed by the earlier frontend scan triage without changing the governed-core Snyk baseline contract or overstating the remaining frontend-only findings.
 
 A bounded shell honesty/provenance follow-on slice then landed on 2026-03-21:
 

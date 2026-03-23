@@ -1,0 +1,16 @@
+SELECT DISTINCT pv.prop_id
+   , pr.error
+   , pr.*
+   , hood_cd
+
+FROM property_val pv WITH (nolock)
+
+   INNER JOIN prop_recalc_errors pr WITH (nolock)
+      ON pv.prop_id = pr.prop_id
+      AND pv.prop_val_yr = pr.sup_yr
+      AND pv.sup_num = pr.sup_num
+
+   INNER JOIN pacs_system ps with (nolock)
+      ON pv.prop_val_yr = ps.appr_yr
+
+WHERE pv.prop_val_yr = ps.appr_yr

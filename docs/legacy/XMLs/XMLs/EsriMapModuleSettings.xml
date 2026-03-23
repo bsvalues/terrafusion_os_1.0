@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EsriMapModuleSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <BaseMap>
+    <EnableSelection>false</EnableSelection>
+    <Order>0</Order>
+    <Visible>false</Visible>
+    <Type>ESRIDynamicLayer</Type>
+  </BaseMap>
+  <BaseLayers />
+  <ViewableLayers>
+    <CciLayerModel>
+      <Name>Imagery</Name>
+      <EnableSelection>false</EnableSelection>
+      <Order>1</Order>
+      <Visible>true</Visible>
+      <URL>http://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer</URL>
+      <Type>ESRIDynamicLayer</Type>
+    </CciLayerModel>
+    <CciLayerModel>
+      <Name>Street Map</Name>
+      <EnableSelection>false</EnableSelection>
+      <Order>2</Order>
+      <Visible>true</Visible>
+      <URL>http://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/</URL>
+      <Type>ESRIDynamicLayer</Type>
+    </CciLayerModel>
+    <CciLayerModel>
+      <Name>Counties</Name>
+      <EnableSelection>true</EnableSelection>
+      <SelectionLayerID>0</SelectionLayerID>
+      <Order>3</Order>
+      <Visible>true</Visible>
+      <URL>https://services7.arcgis.com/NURlY7V8UHl6XumF/arcgis/rest/services/BentonAssessorWa_WFL1/FeatureServer</URL>
+      <Type>ESRIDynamicLayer</Type>
+    </CciLayerModel>
+  </ViewableLayers>
+  <ESRIGeometryServerURL>http://matixags.cloudapp.net:6080/arcgis/rest/services/Utilities/Geometry/GeometryServer</ESRIGeometryServerURL>
+  <GISPINFieldName>Prop_ID</GISPINFieldName>
+  <XCentroidFieldName>CENTROID_X</XCentroidFieldName>
+  <YCentroidFieldName>CENTROID_Y</YCentroidFieldName>
+  <SpatialFilter />
+  <ConvertMeasureToProjection>0</ConvertMeasureToProjection>
+  <ShowScaleBar>true</ShowScaleBar>
+  <FetchPartitionSize>200</FetchPartitionSize>
+  <AppendSearch>false</AppendSearch>
+  <SelectionFillOpacity>0.15</SelectionFillOpacity>
+  <SelectedBorderThickness>1</SelectedBorderThickness>
+  <SelectionBorderColor>0,255,255</SelectionBorderColor>
+  <HighlightedBorderColor>0,0,255</HighlightedBorderColor>
+  <HighlightedBorderThickness>3</HighlightedBorderThickness>
+  <FilteredFillOpacity>0.25</FilteredFillOpacity>
+  <FilteredFillColor>200,0,0</FilteredFillColor>
+  <FilteredBorderColor>200,0,0</FilteredBorderColor>
+  <FilteredBorderThickness>1</FilteredBorderThickness>
+  <MapExtent>
+    <SpatialReferenceWKID>0</SpatialReferenceWKID>
+    <XMin>0</XMin>
+    <YMin>0</YMin>
+    <XMax>0</XMax>
+    <YMax>0</YMax>
+  </MapExtent>
+  <IntersectionModels />
+</EsriMapModuleSettings>

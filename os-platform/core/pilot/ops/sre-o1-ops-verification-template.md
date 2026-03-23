@@ -2,24 +2,27 @@
 
 Date: YYYY-MM-DD
 Status: COMPLETE
-Scope: Sanitized verification artifact for closing `SRE-O1-OPS` on the authorized off-box observability path
+Scope: Sanitized verification artifact for closing `SRE-O1-OPS` on the verified pager/on-call execution surface
 
 ## Outcome Summary
 
 `SRE-O1-OPS` is closed.
 
-On YYYY-MM-DD, one real critical alert for the Benton release lane was evaluated by the authorized monitoring surface, routed through the real alerting path, received by the real on-call receiver, and acknowledged on the operator path.
+On YYYY-MM-DD, one real critical alert for the Benton release lane was evaluated by the verified monitoring surface, routed through the real alerting path, received by the real on-call receiver, and acknowledged on the operator path.
 
 This artifact records sanitized operational proof only.
+
+That verified surface must be either the live Hostinger-backed Benton lane or a separately verified alternate observability lane that is demonstrably bound to the same release path.
 
 ## Authoritative Execution Surface
 
 Execution surface used:
 
-- Azure resource group: `terrafusion-prod`
-- AKS cluster: `terrafusion-aks-prod`
-- namespace: `<monitoring|production-monitoring>`
+- surface identity: `<value>`
+- surface classification: `<hostinger-backed|separately-verified-alternate>`
 - target environment: `<staging|production>`
+- monitoring or routing namespace/path if applicable: `<value>`
+- access method used: `<value>`
 
 ## Release-Lane Binding
 
@@ -37,7 +40,7 @@ Execution surface used:
 
 ## Routing Proof
 
-- Alertmanager route or equivalent receiver evaluation: `<value>`
+- alerting route or equivalent receiver evaluation: `<value>`
 - real critical receiver path: `<value>`
 - routing timestamp: `<value>`
 - sanitized route/group key: `<value>`
@@ -65,14 +68,14 @@ Execution surface used:
 The following conditions were verified:
 
 1. a real critical alert fired for the Benton release lane
-2. the alert was routed through the authorized monitoring surface
+2. the alert was routed through the verified monitoring surface
 3. the real on-call receiver created or received the incident
 4. the operator acknowledgement path was observed
 5. the evidence bundle binds the same incident window to Benton release metadata
 
 ## Blocker Disposition
 
-`SRE-O1-OPS` may be removed from the production-traffic HOLD line because routed incident proof now exists on the authorized off-box observability path.
+`SRE-O1-OPS` may be removed from the production-traffic HOLD line because routed incident proof now exists on the verified execution surface for this lane.
 
 Affected truth artifacts to update after publishing this verification:
 

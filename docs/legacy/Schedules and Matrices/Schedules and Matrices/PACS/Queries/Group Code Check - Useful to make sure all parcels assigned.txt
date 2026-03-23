@@ -1,0 +1,20 @@
+select
+	p1.[prop_id],
+	pv1.[cycle],
+	pv1.[hood_cd],
+	pgc1.[group_desc]
+from dbo.prop_group_assoc as pga1 with(nolock)
+join dbo.prop_group_code as pgc1 with(nolock) on
+	pgc1.[group_cd] = pga1.[prop_group_cd]
+join dbo.prop_supp_assoc as psa1 with(nolock) on
+	psa1.[prop_id] = pga1.[prop_id]
+join dbo.property as p1 with(nolock) on
+	p1.[prop_id] = pga1.[prop_id]
+join dbo.property_val as pv1 with(nolock) on
+	pv1.[prop_id] = psa1.[prop_id] and
+	pv1.[prop_val_yr] = psa1.[owner_tax_yr] and
+	pv1.[sup_num] = psa1.[sup_num]
+where
+	pv1.[cycle] = 4 and
+	pv1.[prop_val_yr] = 2018 and
+	pv1.[prop_inactive_dt] is null

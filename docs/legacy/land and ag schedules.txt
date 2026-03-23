@@ -1,0 +1,25 @@
+SELECT DISTINCT pv.prop_id, p.geo_id, ld.land_seg_id, ld.land_type_cd, 
+ld.land_class_code, ld.land_soil_code, ls1.ls_code as Market_Table, 
+ls.ls_code as Ag_Table, pv.legal_desc
+FROM property_val pv WITH (nolock)
+INNER JOIN prop_supp_assoc psa WITH (nolock) ON
+                pv.prop_id = psa.prop_id
+                AND pv.prop_val_yr = psa.owner_tax_yr
+                AND pv.sup_num = psa.sup_num
+INNER JOIN property p WITH (nolock) ON
+                pv.prop_id = p.prop_id
+INNER JOIN land_detail ld WITH (nolock) ON
+                pv.prop_id = ld.prop_id
+                AND pv.prop_val_yr = ld.prop_val_yr
+                AND pv.sup_num = ld.sup_num
+                AND ld.sale_id = 0
+INNER JOIN land_sched ls WITH (nolock) ON
+                ld.ls_ag_id = ls.ls_id 
+                AND ld.prop_val_yr = ls.ls_year
+INNER JOIN land_sched ls1 WITH (nolock) ON
+                ld.ls_mkt_id = ls1.ls_id  
+                AND ld.prop_val_yr = ls1.ls_year
+WHERE pv.prop_val_yr = 2012
+AND (pv.prop_inactive_dt is null or udi_parent = 'T')
+AND ld.land_soil_code is null
+ORDER BY ld.land_type_cd--pv.prop_id
