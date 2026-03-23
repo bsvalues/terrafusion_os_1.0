@@ -1442,7 +1442,16 @@ public class PacsDataSeeder
                    pe.apply_local_option_pct_only
             FROM property_exemption pe
             INNER JOIN property p ON pe.prop_id = p.prop_id
-            WHERE pe.exmpt_tax_yr = (SELECT MAX(exmpt_tax_yr) FROM property_exemption)
+            WHERE pe.exmpt_tax_yr = (
+                SELECT TOP 1 exmpt_tax_yr
+                FROM (
+                    SELECT exmpt_tax_yr, COUNT(*) cnt
+                    FROM property_exemption
+                    GROUP BY exmpt_tax_yr
+                    HAVING COUNT(*) >= 1
+                ) x
+                ORDER BY exmpt_tax_yr DESC
+            )
             ORDER BY pe.prop_id, pe.owner_id, pe.exmpt_tax_yr, pe.exmpt_type_cd";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
@@ -1598,7 +1607,16 @@ public class PacsDataSeeder
                    ap.final_entities
             FROM _arb_protest ap
             INNER JOIN property p ON ap.prop_id = p.prop_id
-            WHERE ap.prop_val_yr = (SELECT MAX(prop_val_yr) FROM _arb_protest)
+            WHERE ap.prop_val_yr = (
+                SELECT TOP 1 prop_val_yr
+                FROM (
+                    SELECT prop_val_yr, COUNT(*) cnt
+                    FROM _arb_protest
+                    GROUP BY prop_val_yr
+                    HAVING COUNT(*) >= 1
+                ) x
+                ORDER BY prop_val_yr DESC
+            )
             ORDER BY ap.prop_id, ap.prop_val_yr, ap.case_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
@@ -1749,7 +1767,16 @@ public class PacsDataSeeder
             FROM property_tax_area pta
             INNER JOIN tax_area ta ON pta.tax_area_id = ta.tax_area_id
             INNER JOIN property p  ON pta.prop_id = p.prop_id
-            WHERE pta.year = (SELECT MAX(year) FROM property_tax_area)
+            WHERE pta.year = (
+                SELECT TOP 1 year
+                FROM (
+                    SELECT year, COUNT(*) cnt
+                    FROM property_tax_area
+                    GROUP BY year
+                    HAVING COUNT(*) >= 1000
+                ) x
+                ORDER BY year DESC
+            )
             ORDER BY pta.prop_id, pta.year";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
