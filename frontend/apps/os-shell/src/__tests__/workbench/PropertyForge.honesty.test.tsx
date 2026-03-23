@@ -12,6 +12,7 @@ import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 /* ── Mocks ────────────────────────────────────────────── */
 
@@ -44,6 +45,15 @@ vi.mock('../../components/errors/ErrorDisplay', () => ({
 
 import PropertyForge from '../../pages/workbench/tabs/PropertyForge';
 
+const renderForge = () => {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(
+    <QueryClientProvider client={qc}>
+      <MemoryRouter><PropertyForge /></MemoryRouter>
+    </QueryClientProvider>,
+  );
+};
+
 /* ── Tests ─────────────────────────────────────────────── */
 
 describe('PropertyForge source honesty contract', () => {
@@ -52,21 +62,21 @@ describe('PropertyForge source honesty contract', () => {
   });
 
   it('does not use aspirational "AI-powered" language in the subtitle', () => {
-    render(<MemoryRouter><PropertyForge /></MemoryRouter>);
+    renderForge();
     const forgeTab = screen.getByTestId('property-forge-tab');
     // "AI-powered" is aspirational and should not appear
     expect(forgeTab.textContent).not.toMatch(/AI-powered/i);
   });
 
   it('subtitle uses governed-tool disclosure wording', () => {
-    render(<MemoryRouter><PropertyForge /></MemoryRouter>);
+    renderForge();
     const forgeTab = screen.getByTestId('property-forge-tab');
     // Should reference tools being "requested via" governed tooling
     expect(forgeTab.textContent).toMatch(/requested via|returned from/i);
   });
 
   it('baseline disclosure info box carries a WorkbenchSourceBadge', () => {
-    render(<MemoryRouter><PropertyForge /></MemoryRouter>);
+    renderForge();
     const disclosure = screen.getByTestId('forge-baseline-disclosure');
     // The disclosure box should contain a source badge
     const badge = disclosure.querySelector('[data-testid="workbench-source-badge"]');
@@ -74,7 +84,7 @@ describe('PropertyForge source honesty contract', () => {
   });
 
   it('baseline disclosure badge shows "fallback" for store-loaded data', () => {
-    render(<MemoryRouter><PropertyForge /></MemoryRouter>);
+    renderForge();
     const disclosure = screen.getByTestId('forge-baseline-disclosure');
     const badge = disclosure.querySelector('[data-testid="workbench-source-badge"]');
     expect(badge).toHaveAttribute('data-source', 'fallback');

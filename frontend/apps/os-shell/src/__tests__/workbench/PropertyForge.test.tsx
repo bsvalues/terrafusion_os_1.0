@@ -8,6 +8,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as pilotApi from '../../api/pilotApi';
 import PropertyForge from '../../pages/workbench/tabs/PropertyForge';
 
@@ -16,23 +17,29 @@ vi.mock('../../api/pilotApi');
 
 const mockInvokeTool = pilotApi.invokeTool as vi.MockedFunction<typeof pilotApi.invokeTool>;
 
-// Test wrapper providing parcel context via outlet
+// Test wrapper providing parcel context via outlet + QueryClientProvider
 const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+
   return (
-    <MemoryRouter initialEntries={[`/property/${parcelId}/forge`]}>
-      <Routes>
-        <Route
-          path='/property/:parcelId'
-          element={
-            <div>
-              <Outlet context={{ parcelId }} />
-            </div>
-          }
-        >
-          <Route path='forge' element={<PropertyForge />} />
-        </Route>
-      </Routes>
-    </MemoryRouter>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[`/property/${parcelId}/forge`]}>
+        <Routes>
+          <Route
+            path='/property/:parcelId'
+            element={
+              <div>
+                <Outlet context={{ parcelId }} />
+              </div>
+            }
+          >
+            <Route path='forge' element={<PropertyForge />} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>
   );
 };
 
@@ -242,7 +249,7 @@ describe('PropertyForge', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /explain valuation/i }));
 
-      expect(screen.getByRole('status')).toBeInTheDocument();
+      expect(screen.getAllByRole('status').length).toBeGreaterThan(0);
     });
   });
 

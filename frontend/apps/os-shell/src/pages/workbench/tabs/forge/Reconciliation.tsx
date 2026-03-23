@@ -9,10 +9,11 @@
  * Constitutional truth: parcel-scoped, never cross-parcel.
  */
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWorkbenchTab } from '../../../../context/workbenchTabContext';
 import { BentoCard } from '../../../../ui/materials/BentoCard';
 import { WorkbenchSourceBadge } from '../../../../components/workbench/WorkbenchSourceBadge';
+import { useReconciliation as useReconciliationAPI } from '../../../../hooks/forge/useForgeValuation';
 import type { ForgeSubTabProps } from './types';
 import { fmtCurrency, CURRENT_YEAR } from './types';
 
@@ -64,10 +65,46 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
 }) => {
   const { parcelId } = useWorkbenchTab();
 
+  /* ── Live API data ──────────────────────────────────────── */
+  const reconAPI = useReconciliationAPI(parcelId, taxYear);
+
   /* Local state */
   const [indications, setIndications] = useState<ApproachIndication[]>(
     () => FIXTURE_INDICATIONS.map((a) => ({ ...a })),
   );
+  const [seededFromAPI, setSeededFromAPI] = useState(false);
+
+  /* Seed indications from live API data when available */
+  useEffect(() => {
+    if (reconAPI.data && !seededFromAPI) {
+      const liveIndications: ApproachIndication[] = [
+        {
+          approach: 'cost',
+          indicatedValue: Number(reconAPI.data.costApproach.indicatedValue) || 0,
+          weight: reconAPI.data.costApproach.weight || 40,
+          confidence: reconAPI.data.costApproach.confidence,
+          note: reconAPI.data.costApproach.note || 'From PACS cost approach',
+        },
+        {
+          approach: 'sales',
+          indicatedValue: Number(reconAPI.data.salesApproach.indicatedValue) || 0,
+          weight: reconAPI.data.salesApproach.weight || 45,
+          confidence: reconAPI.data.salesApproach.confidence,
+          note: reconAPI.data.salesApproach.note || 'From PACS sales comparison',
+        },
+        {
+          approach: 'income',
+          indicatedValue: Number(reconAPI.data.incomeApproach.indicatedValue) || 0,
+          weight: reconAPI.data.incomeApproach.weight || 15,
+          confidence: reconAPI.data.incomeApproach.confidence,
+          note: reconAPI.data.incomeApproach.note || 'From PACS income approach',
+        },
+      ];
+      setIndications(liveIndications);
+      setSeededFromAPI(true);
+      setReconciled(false);
+    }
+  }, [reconAPI.data, seededFromAPI]);
   const [method, setMethod] = useState<ReconciliationMethod>('weighted_average');
   const [overrideValue, setOverrideValue] = useState<string>('');
   const [reconciled, setReconciled] = useState(false);
@@ -136,6 +173,21 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
 
   return (
     <div className="space-y-4" data-testid="forge-reconciliation">
+      {/* ── Data Source Indicator ─────────────────────── */}
+      <div className="flex items-center justify-between">
+        <span className="tf-text-secondary text-sm">
+          Approach indications {seededFromAPI ? 'loaded from API' : 'using fallback data'}
+        </span>
+        <WorkbenchSourceBadge source={reconAPI.source} />
+      </div>
+
+      {reconAPI.loading && (
+        <div role="status" className="flex items-center justify-center py-4 gap-3">
+          <div className="tf-spinner h-6 w-6" />
+          <span className="tf-text-tertiary text-sm">Loading reconciliation data...</span>
+        </div>
+      )}
+
       {/* ── Approach Cards ─────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {indications.map((ind, idx) => {
@@ -211,7 +263,7 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
         variant="default"
         actions={
           <WorkbenchSourceBadge
-            source={reconciled ? 'live' : 'unavailable'}
+            source={reconciled ? 'live' : reconAPI.source === 'live' ? 'partial' : 'unavailable'}
             className="ml-2"
           />
         }

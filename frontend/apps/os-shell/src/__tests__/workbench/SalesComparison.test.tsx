@@ -1,6 +1,7 @@
 import type React from 'react';
 import { describe, expect, it, beforeEach, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SalesComparison } from '../../pages/workbench/tabs/forge/SalesComparison';
 import * as pilotApi from '../../api/pilotApi';
 
@@ -41,6 +42,15 @@ vi.mock('../../api/pilotApi', () => ({
 
 const mockInvokeTool = vi.mocked(pilotApi.invokeTool);
 
+const renderSales = (props: { taxYear: number; onHistoryRecord: ReturnType<typeof vi.fn>; onValueIndicated: ReturnType<typeof vi.fn> }) => {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(
+    <QueryClientProvider client={qc}>
+      <SalesComparison {...props} />
+    </QueryClientProvider>,
+  );
+};
+
 describe('SalesComparison wrapper', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -62,13 +72,7 @@ describe('SalesComparison wrapper', () => {
     const onHistoryRecord = vi.fn();
     const onValueIndicated = vi.fn();
 
-    render(
-      <SalesComparison
-        taxYear={2026}
-        onHistoryRecord={onHistoryRecord}
-        onValueIndicated={onValueIndicated}
-      />,
-    );
+    renderSales({ taxYear: 2026, onHistoryRecord, onValueIndicated });
 
     fireEvent.change(screen.getByLabelText(/comp parcel ids/i), {
       target: { value: 'C-1, C-2' },
@@ -107,13 +111,7 @@ describe('SalesComparison wrapper', () => {
     const onHistoryRecord = vi.fn();
     const onValueIndicated = vi.fn();
 
-    render(
-      <SalesComparison
-        taxYear={2026}
-        onHistoryRecord={onHistoryRecord}
-        onValueIndicated={onValueIndicated}
-      />,
-    );
+    renderSales({ taxYear: 2026, onHistoryRecord, onValueIndicated });
 
     fireEvent.click(screen.getByRole('button', { name: /emit reconciled value/i }));
 

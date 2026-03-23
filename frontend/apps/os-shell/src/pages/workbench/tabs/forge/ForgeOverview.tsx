@@ -22,6 +22,12 @@ import { usePropertyStore } from '../../../../stores/propertyStore';
 import { BentoGrid } from '../../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../../ui/materials/BentoCard';
 import {
+  useCostApproach,
+  useSalesComparison,
+  useIncomeApproach,
+  useReconciliation,
+} from '../../../../hooks/forge/useForgeValuation';
+import {
   type ForgeSubTabProps,
   type ExplainState,
   type ValueChangeState,
@@ -54,6 +60,19 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
   const { parcelId } = useWorkbenchTab();
   const assessments = usePropertyStore((s) => s.assessments);
   const activeParcel = usePropertyStore((s) => s.activeParcel);
+
+  /* ── Live Forge API data for overview cards ─────────────── */
+  const costAPI = useCostApproach(parcelId, taxYear);
+  const salesAPI = useSalesComparison(parcelId, taxYear);
+  const incomeAPI = useIncomeApproach(parcelId, taxYear);
+  const reconAPI = useReconciliation(parcelId, taxYear);
+
+  /** Determine overall data source from API results */
+  const apiSources = [costAPI, salesAPI, incomeAPI, reconAPI];
+  const liveCount = apiSources.filter((a) => a.source === 'live').length;
+  const overviewSource = liveCount === 4 ? 'live' as const
+    : liveCount > 0 ? 'partial' as const
+    : 'fallback' as const;
 
   const [audience, setAudience] = useState<AudienceType>('internal');
   const [compareEnabled, setCompareEnabled] = useState(false);
@@ -172,6 +191,53 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* Live Forge API Summary */}
+      <BentoCard
+        title="&#128293; Forge Valuation Summary"
+        variant="default"
+        actions={<WorkbenchSourceBadge source={overviewSource} />}
+      >
+        {(costAPI.loading || salesAPI.loading || incomeAPI.loading || reconAPI.loading) && (
+          <div role="status" className="flex items-center justify-center py-4 gap-3">
+            <div className="tf-spinner h-6 w-6" />
+            <span className="tf-text-tertiary text-sm">Loading forge valuation data...</span>
+          </div>
+        )}
+        {liveCount > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3" data-testid="forge-overview-live">
+            {costAPI.data && (
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Cost Indicated</div>
+                <div className="text-lg font-bold tf-text">{fmtCurrency(costAPI.data.indicatedValue)}</div>
+              </div>
+            )}
+            {salesAPI.data && (
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Sales Indicated</div>
+                <div className="text-lg font-bold tf-text">{fmtCurrency(salesAPI.data.indicatedValue)}</div>
+              </div>
+            )}
+            {incomeAPI.data && (
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Income Indicated</div>
+                <div className="text-lg font-bold tf-text">{fmtCurrency(incomeAPI.data.valuation)}</div>
+              </div>
+            )}
+            {reconAPI.data && (
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Reconciled</div>
+                <div className="text-lg font-bold tf-suite-accent-text">{fmtCurrency(reconAPI.data.reconciledValue)}</div>
+              </div>
+            )}
+          </div>
+        )}
+        {!costAPI.loading && !salesAPI.loading && liveCount === 0 && (
+          <p className="tf-text-tertiary text-sm py-2">
+            Forge API data not yet available. Use the tools below to generate valuations.
+          </p>
+        )}
+      </BentoCard>
+
       {/* Valuation Context from Store */}
       {(activeParcel || assessments.length > 0) && (
         <BentoGrid columns="auto" gap={0.75} padding={0}>

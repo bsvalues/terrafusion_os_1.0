@@ -13,10 +13,14 @@ import { useWorkbenchTab } from '../../../../context/workbenchTabContext';
 import { invokeTool } from '../../../../api/pilotApi';
 import { ErrorDisplay } from '../../../../components/errors/ErrorDisplay';
 import { BentoCard } from '../../../../ui/materials/BentoCard';
+import { WorkbenchSourceBadge } from '../../../../components/workbench/WorkbenchSourceBadge';
+import { useCostApproach as useCostApproachAPI } from '../../../../hooks/forge/useForgeValuation';
 import {
   type ForgeSubTabProps,
   type ModelInputsResult,
   type ToolState,
+  fmtCurrency,
+  formatConfidence,
 } from './types';
 
 export const CostApproach: React.FC<ForgeSubTabProps> = ({
@@ -24,6 +28,9 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
   onHistoryRecord,
 }) => {
   const { parcelId } = useWorkbenchTab();
+
+  /* ── Live API data ──────────────────────────────────────── */
+  const costAPI = useCostApproachAPI(parcelId, taxYear);
 
   const [modelId, setModelId] = useState<string>('cost-approach');
   const [modelInputsState, setModelInputsState] = useState<ToolState<ModelInputsResult>>({ status: 'idle' });
@@ -82,6 +89,72 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* Live Cost Approach Data */}
+      <BentoCard
+        title="&#127959;&#65039; Cost Approach Summary"
+        variant="default"
+        actions={<WorkbenchSourceBadge source={costAPI.source} />}
+      >
+        {costAPI.loading && (
+          <div role="status" className="flex items-center justify-center py-6 gap-3">
+            <div className="tf-spinner h-8 w-8" />
+            <span className="tf-text-tertiary">Loading cost approach data...</span>
+          </div>
+        )}
+        {costAPI.data && (
+          <div className="space-y-3" data-testid="cost-approach-live">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">RCN</div>
+                <div className="text-lg font-bold tf-text">{fmtCurrency(costAPI.data.replacementCostNew)}</div>
+              </div>
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Depreciated Cost</div>
+                <div className="text-lg font-bold tf-text">{fmtCurrency(costAPI.data.depreciatedCost)}</div>
+              </div>
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Land Value</div>
+                <div className="text-lg font-bold tf-text">{fmtCurrency(costAPI.data.landValue)}</div>
+              </div>
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Indicated Value</div>
+                <div className="text-lg font-bold tf-suite-accent-text">{fmtCurrency(costAPI.data.indicatedValue)}</div>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Physical Depr.</div>
+                <div className="text-sm font-semibold tf-text">{fmtCurrency(costAPI.data.physicalDepreciation)}</div>
+              </div>
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Functional Obs.</div>
+                <div className="text-sm font-semibold tf-text">{fmtCurrency(costAPI.data.functionalObsolescence)}</div>
+              </div>
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">External Obs.</div>
+                <div className="text-sm font-semibold tf-text">{fmtCurrency(costAPI.data.externalObsolescence)}</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <span className="tf-text-tertiary">Confidence:</span>
+              <span className="tf-suite-accent-text font-semibold">{formatConfidence(costAPI.data.confidence)}</span>
+              <span className="tf-text-dim text-xs ml-auto">Source: {costAPI.data.source}</span>
+            </div>
+          </div>
+        )}
+        {!costAPI.loading && !costAPI.data && costAPI.error && (
+          <div className="py-4 text-center">
+            <p className="tf-text-tertiary text-sm">Cost approach data unavailable from API</p>
+            <p className="tf-text-dim text-xs mt-1">{costAPI.error.message}</p>
+          </div>
+        )}
+        {!costAPI.loading && !costAPI.data && !costAPI.error && (
+          <div className="py-4 text-center">
+            <p className="tf-text-tertiary text-sm">No parcel selected</p>
+          </div>
+        )}
+      </BentoCard>
+
       {/* Model Inputs */}
       <BentoCard title="&#128269; Model Inputs" variant="default">
         <p className="tf-text-tertiary text-sm mb-4">
