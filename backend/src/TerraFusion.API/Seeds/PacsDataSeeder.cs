@@ -63,7 +63,16 @@ public class PacsDataSeeder
         // Full-refresh: clear all PACS mirror tables before seeding so we do plain
         // inserts rather than loading all existing rows into memory for upsert logic.
         await ClearPacsTablesAsync(ct);
-        _logger.LogInformation("[PacsSeeder] PACS tables cleared. Starting fresh insert.");
+
+        // Guard: if pacs_valuations still has rows, the DELETE silently failed.
+        // Proceeding into a dirty table causes the unique-index fallback to skip every insert.
+        var staleValuations = await _db.PacsValuations.CountAsync(ct);
+        if (staleValuations > 0)
+            throw new InvalidOperationException(
+                $"[PacsSeeder] Clear failed: pacs_valuations still has {staleValuations} rows. " +
+                "Aborting to prevent stale data collision. Check for DB locks or FK constraints.");
+
+        _logger.LogInformation("[PacsSeeder] PACS tables cleared and verified empty. Starting fresh insert.");
 
         var result = new PacsSeederResult();
 
@@ -343,11 +352,21 @@ public class PacsDataSeeder
     {
         _logger.LogInformation("[PacsSeeder] Seeding PacsValuation (current year, sup_num=0 per prop_id)...");
 
-        // One row per prop_id: current certified year (global MAX, sup_num=0) only.
-        // Global MAX is a constant — SQL Server can index-seek on it, far faster than a CTE GROUP BY.
+        // One row per prop_id: most-recent substantive year (sup_num=0) only.
+        // Use HAVING COUNT >= 1000 to skip sparse stub years (same pattern as owner fix).
         const string sql = @"
             SELECT * FROM property_val
-            WHERE  prop_val_yr = (SELECT MAX(prop_val_yr) FROM property_val)
+            WHERE  prop_val_yr = (
+                SELECT TOP 1 prop_val_yr
+                FROM (
+                    SELECT prop_val_yr, COUNT(*) cnt
+                    FROM property_val
+                    WHERE sup_num = 0
+                    GROUP BY prop_val_yr
+                    HAVING COUNT(*) >= 1000
+                ) x
+                ORDER BY prop_val_yr DESC
+            )
               AND  sup_num     = 0";
 
         _logger.LogInformation("[PacsSeeder] PacsValuation: executing current-year query on SQL Server...");
@@ -555,12 +574,29 @@ public class PacsDataSeeder
                 i => (i.PacsPropId, i.PropValYear, i.PacsImprvId),
                 i => i.Id, ct);
         var seen = new HashSet<(int, int, int)>(existing.Keys);
+        // Build result map from existing; new entries added after each batch save.
+        var imprvMap = new Dictionary<(int, int, int), Guid>(existing);
 
-        const string sql = @"SELECT * FROM imprv WHERE prop_val_yr = (SELECT MAX(prop_val_yr) FROM imprv) ORDER BY prop_id, prop_val_yr, imprv_id";
+        // Substantive year: skip sparse stub years (HAVING >= 1000).
+        const string sql = @"SELECT * FROM imprv
+            WHERE prop_val_yr = (
+                SELECT TOP 1 prop_val_yr
+                FROM (
+                    SELECT prop_val_yr, COUNT(*) cnt
+                    FROM imprv
+                    WHERE (sale_id = 0 OR sale_id IS NULL)
+                    GROUP BY prop_val_yr
+                    HAVING COUNT(*) >= 1000
+                ) x
+                ORDER BY prop_val_yr DESC
+            )
+              AND (sale_id = 0 OR sale_id IS NULL)
+            ORDER BY prop_id, prop_val_yr, imprv_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
         await using var rdr = await cmd.ExecuteReaderAsync(ct);
         var batch = new List<PacsImprovement>(BatchSize);
+        var batchKeys = new List<(int, int, int)>(BatchSize);
         var total = 0;
 
         while (await rdr.ReadAsync(ct))
@@ -640,16 +676,25 @@ public class PacsDataSeeder
             e.LastPacsSync   = DateTime.UtcNow;
 
             batch.Add(e);
+            batchKeys.Add(key);
             if (batch.Count >= BatchSize)
             {
                 total += await UpsertAsync(batch, ct);
+                for (int i = 0; i < batch.Count; i++)
+                    imprvMap[batchKeys[i]] = batch[i].Id;
                 batch.Clear();
+                batchKeys.Clear();
             }
         }
 
-        if (batch.Count > 0) total += await UpsertAsync(batch, ct);
+        if (batch.Count > 0)
+        {
+            total += await UpsertAsync(batch, ct);
+            for (int i = 0; i < batch.Count; i++)
+                imprvMap[batchKeys[i]] = batch[i].Id;
+        }
         _logger.LogInformation("[PacsSeeder] PacsImprovement: {Total}", total);
-        return existing;
+        return imprvMap;
     }
 
     // ── 5. PacsImprovementDetail ─────────────────────────────────────────
@@ -666,7 +711,21 @@ public class PacsDataSeeder
                 d => d.Id, ct);
         var seen = new HashSet<(int, int, int, int)>(existing.Keys);
 
-        const string sql = @"SELECT * FROM imprv_detail WHERE prop_val_yr = (SELECT MAX(prop_val_yr) FROM imprv_detail) ORDER BY prop_id, prop_val_yr, imprv_id, imprv_det_id";
+        // Substantive year: skip sparse stub years (HAVING >= 1000).
+        const string sql = @"SELECT * FROM imprv_detail
+            WHERE prop_val_yr = (
+                SELECT TOP 1 prop_val_yr
+                FROM (
+                    SELECT prop_val_yr, COUNT(*) cnt
+                    FROM imprv_detail
+                    WHERE (sale_id = 0 OR sale_id IS NULL)
+                    GROUP BY prop_val_yr
+                    HAVING COUNT(*) >= 1000
+                ) x
+                ORDER BY prop_val_yr DESC
+            )
+              AND (sale_id = 0 OR sale_id IS NULL)
+            ORDER BY prop_id, prop_val_yr, imprv_id, imprv_det_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
         await using var rdr = await cmd.ExecuteReaderAsync(ct);
@@ -779,7 +838,21 @@ public class PacsDataSeeder
                 a => a.Id, ct);
         var seen = new HashSet<(int, int, int, int, int)>(existing.Keys);
 
-        const string sql = @"SELECT * FROM imprv_attr WHERE prop_val_yr = (SELECT MAX(prop_val_yr) FROM imprv_attr) ORDER BY prop_id, prop_val_yr, imprv_id, imprv_det_id";
+        // Substantive year: skip sparse stub years (HAVING >= 1000).
+        const string sql = @"SELECT * FROM imprv_attr
+            WHERE prop_val_yr = (
+                SELECT TOP 1 prop_val_yr
+                FROM (
+                    SELECT prop_val_yr, COUNT(*) cnt
+                    FROM imprv_attr
+                    WHERE (sale_id = 0 OR sale_id IS NULL)
+                    GROUP BY prop_val_yr
+                    HAVING COUNT(*) >= 1000
+                ) x
+                ORDER BY prop_val_yr DESC
+            )
+              AND (sale_id = 0 OR sale_id IS NULL)
+            ORDER BY prop_id, prop_val_yr, imprv_id, imprv_det_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
         await using var rdr = await cmd.ExecuteReaderAsync(ct);
@@ -851,10 +924,24 @@ public class PacsDataSeeder
         // Track keys seen in this run to skip PACS source duplicates.
         var seen = new HashSet<(int, int, int)>(existing.Keys);
 
-        // Most-recent year only — historical years balloon the table to millions of rows.
+        // Most-recent substantive year only — historical years balloon the table to millions of rows.
+        // sale_id = 0 is MANDATORY: PACS creates sale_id != 0 snapshot copies of land_detail
+        // records at time of sale for ratio analysis. These are NOT live assessment values.
+        // Use HAVING COUNT >= 1000 to skip sparse stub years (same pattern as owner/valuation fix).
         const string sql = @"
             SELECT * FROM land_detail
-            WHERE prop_val_yr = (SELECT MAX(prop_val_yr) FROM land_detail)
+            WHERE prop_val_yr = (
+                SELECT TOP 1 prop_val_yr
+                FROM (
+                    SELECT prop_val_yr, COUNT(*) cnt
+                    FROM land_detail
+                    WHERE (sale_id = 0 OR sale_id IS NULL)
+                    GROUP BY prop_val_yr
+                    HAVING COUNT(*) >= 1000
+                ) x
+                ORDER BY prop_val_yr DESC
+            )
+              AND (sale_id = 0 OR sale_id IS NULL)
             ORDER BY prop_id, prop_val_yr, land_seg_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
