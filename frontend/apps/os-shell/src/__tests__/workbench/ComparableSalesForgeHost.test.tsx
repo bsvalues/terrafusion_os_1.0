@@ -10,6 +10,7 @@ import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import PropertyForge from '../../pages/workbench/tabs/PropertyForge';
 import { ComparableSalesPanel } from '../../components/workbench/ComparableSalesPanel';
@@ -127,7 +128,9 @@ function renderForge(
     search = '?tab=sales',
   }: { parcelId?: string; search?: string } = {}
 ) {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
+    <QueryClientProvider client={qc}>
     <MemoryRouter initialEntries={[`/property/${parcelId}/forge${search}`]}>
       <Routes>
         <Route
@@ -157,6 +160,7 @@ function renderForge(
         </Route>
       </Routes>
     </MemoryRouter>
+    </QueryClientProvider>
   );
 }
 

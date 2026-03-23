@@ -1,20 +1,28 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import PropertyForge from '../../pages/workbench/tabs/PropertyForge';
 
-const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => (
-  <MemoryRouter initialEntries={[`/property/${parcelId}/forge`]}>
-    <Routes>
-      <Route
-        path="/property/:parcelId"
-        element={<Outlet context={{ parcelId }} />}
-      >
-        <Route path="forge" element={<PropertyForge />} />
-      </Route>
-    </Routes>
-  </MemoryRouter>
-);
+const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[`/property/${parcelId}/forge`]}>
+        <Routes>
+          <Route
+            path="/property/:parcelId"
+            element={<Outlet context={{ parcelId }} />}
+          >
+            <Route path="forge" element={<PropertyForge />} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>
+  );
+};
 
 describe('PropertyForge income hosting', () => {
   beforeEach(() => {

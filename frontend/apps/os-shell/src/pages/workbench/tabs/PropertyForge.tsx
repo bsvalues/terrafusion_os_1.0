@@ -31,6 +31,7 @@ import {
   WorkbenchSourceBadge,
   type InvocationRecord,
 } from '../../../components/workbench';
+import { useCostApproach } from '../../../hooks/forge/useForgeValuation';
 import { ForgeOverview } from './forge/ForgeOverview';
 import { CostApproach } from './forge/CostApproach';
 import { SalesComparison } from './forge/SalesComparison';
@@ -79,6 +80,9 @@ function readInitialSubTab(search: string, state: unknown): ForgeSubTab {
 export const PropertyForge: React.FC = () => {
   const location = useLocation();
   const { parcelId } = useWorkbenchTab();
+
+  /* Probe the cost endpoint to determine if the Forge API is reachable */
+  const forgeProbe = useCostApproach(parcelId, CURRENT_YEAR);
 
   /* Shared state */
   const [activeSubTab, setActiveSubTab] = useState<ForgeSubTab>(() =>
@@ -130,7 +134,7 @@ export const PropertyForge: React.FC = () => {
             Overview baseline values reflect the parcel snapshot already loaded in the workbench.
             Changing Tax Year here changes the governed tool requests below; it does not relabel those baseline cards until a tool result is returned from the selected tool.
           </p>
-          <WorkbenchSourceBadge source="fallback" className="shrink-0" />
+          <WorkbenchSourceBadge source={forgeProbe.source} className="shrink-0" />
         </div>
       </div>
 

@@ -13,11 +13,15 @@ import { useWorkbenchTab } from '../../../../context/workbenchTabContext';
 import { invokeTool } from '../../../../api/pilotApi';
 import { ErrorDisplay } from '../../../../components/errors/ErrorDisplay';
 import { BentoCard } from '../../../../ui/materials/BentoCard';
+import { WorkbenchSourceBadge } from '../../../../components/workbench/WorkbenchSourceBadge';
 import { ComparableSalesPanel } from '../../../../components/workbench/ComparableSalesPanel';
+import { useSalesComparison as useSalesComparisonAPI } from '../../../../hooks/forge/useForgeValuation';
 import {
   type ForgeSubTabProps,
   type SalesCompsResult,
   type ToolState,
+  fmtCurrency,
+  formatConfidence,
 } from './types';
 
 export const SalesComparison: React.FC<ForgeSubTabProps> = ({
@@ -26,6 +30,9 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
   onValueIndicated,
 }) => {
   const { parcelId } = useWorkbenchTab();
+
+  /* ── Live API data ──────────────────────────────────────── */
+  const salesAPI = useSalesComparisonAPI(parcelId, taxYear);
 
   const [compIds, setCompIds] = useState<string>('');
   const [compsState, setCompsState] = useState<ToolState<SalesCompsResult>>({ status: 'idle' });
@@ -86,6 +93,78 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
 
   return (
     <div className="space-y-4" data-testid="sales-comparison-host">
+      {/* Live Sales Comparison Data */}
+      <BentoCard
+        title="&#127968;&#65039; Sales Comparison Summary"
+        variant="default"
+        actions={<WorkbenchSourceBadge source={salesAPI.source} />}
+      >
+        {salesAPI.loading && (
+          <div role="status" className="flex items-center justify-center py-6 gap-3">
+            <div className="tf-spinner h-8 w-8" />
+            <span className="tf-text-tertiary">Loading sales comparison data...</span>
+          </div>
+        )}
+        {salesAPI.data && (
+          <div className="space-y-3" data-testid="sales-comparison-live">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Indicated Value</div>
+                <div className="text-lg font-bold tf-suite-accent-text">{fmtCurrency(salesAPI.data.indicatedValue)}</div>
+              </div>
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Comparables</div>
+                <div className="text-lg font-bold tf-text">{salesAPI.data.comparableCount}</div>
+              </div>
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Median Adj. Price</div>
+                <div className="text-lg font-bold tf-text">{fmtCurrency(salesAPI.data.medianAdjustedPrice)}</div>
+              </div>
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Adjustment Range</div>
+                <div className="text-lg font-bold tf-text">{fmtCurrency(salesAPI.data.adjustmentRange)}</div>
+              </div>
+            </div>
+            {salesAPI.data.rationale && (
+              <div className="tf-panel p-3">
+                <p className="tf-text-secondary text-sm">{salesAPI.data.rationale}</p>
+              </div>
+            )}
+            {salesAPI.data.comparables && salesAPI.data.comparables.length > 0 && (
+              <div className="space-y-2">
+                <div className="tf-text-tertiary text-xs font-medium">Comparable Sales</div>
+                {salesAPI.data.comparables.map((c) => (
+                  <div key={c.parcelId} className="tf-panel p-3 rounded">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-mono tf-text text-sm">{c.parcelId}</span>
+                      <span className="text-sm font-semibold tf-suite-accent-text">
+                        {Math.round(c.similarity * 100)}% match
+                      </span>
+                    </div>
+                    <div className="flex gap-4 text-xs tf-text-dim">
+                      <span>Sale: {fmtCurrency(c.salePrice)}</span>
+                      <span>Adjusted: {fmtCurrency(c.adjustedPrice)}</span>
+                      {c.saleDate && <span>{new Date(c.saleDate).toLocaleDateString()}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="flex items-center gap-3 text-sm">
+              <span className="tf-text-tertiary">Confidence:</span>
+              <span className="tf-suite-accent-text font-semibold">{formatConfidence(salesAPI.data.confidence)}</span>
+              <span className="tf-text-dim text-xs ml-auto">Source: {salesAPI.data.source}</span>
+            </div>
+          </div>
+        )}
+        {!salesAPI.loading && !salesAPI.data && salesAPI.error && (
+          <div className="py-4 text-center">
+            <p className="tf-text-tertiary text-sm">Sales comparison data unavailable from API</p>
+            <p className="tf-text-dim text-xs mt-1">{salesAPI.error.message}</p>
+          </div>
+        )}
+      </BentoCard>
+
       {/* Full ComparableSalesPanel — existing 612-line component, no changes */}
       <ComparableSalesPanel
         onReconciledValue={(result) => {

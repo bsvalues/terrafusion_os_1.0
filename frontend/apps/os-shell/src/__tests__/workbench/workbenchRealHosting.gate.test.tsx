@@ -19,6 +19,7 @@ import React, { Suspense } from 'react';
 import { vi, describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // ---------------------------------------------------------------------------
 // Mocks — pilotApi (all tab components that invoke tools)
@@ -238,7 +239,9 @@ vi.mock('../../ui/materials/BentoCard', () => ({
 // ---------------------------------------------------------------------------
 
 function TabTestWrapper({ children, tabSlug }: { children: React.ReactNode; tabSlug: string }) {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return (
+    <QueryClientProvider client={qc}>
     <MemoryRouter initialEntries={[`/property/GATE-TEST-001/${tabSlug}`]}>
       <Routes>
         <Route
@@ -270,6 +273,7 @@ function TabTestWrapper({ children, tabSlug }: { children: React.ReactNode; tabS
         </Route>
       </Routes>
     </MemoryRouter>
+    </QueryClientProvider>
   );
 }
 

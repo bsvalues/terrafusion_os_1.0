@@ -1,5 +1,6 @@
 import { describe, expect, it, beforeEach, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { IncomeApproach } from '../../pages/workbench/tabs/forge/IncomeApproach';
 import * as pilotApi from '../../api/pilotApi';
 
@@ -22,6 +23,15 @@ vi.mock('../../api/pilotApi', () => ({
 }));
 
 const mockInvokeTool = vi.mocked(pilotApi.invokeTool);
+
+const renderIncome = (props: { taxYear: number; onHistoryRecord: ReturnType<typeof vi.fn>; onValueIndicated: ReturnType<typeof vi.fn> }) => {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(
+    <QueryClientProvider client={qc}>
+      <IncomeApproach {...props} />
+    </QueryClientProvider>,
+  );
+};
 
 describe('IncomeApproach wrapper', () => {
   beforeEach(() => {
@@ -50,13 +60,7 @@ describe('IncomeApproach wrapper', () => {
     const onHistoryRecord = vi.fn();
     const onValueIndicated = vi.fn();
 
-    render(
-      <IncomeApproach
-        taxYear={2026}
-        onHistoryRecord={onHistoryRecord}
-        onValueIndicated={onValueIndicated}
-      />,
-    );
+    renderIncome({ taxYear: 2026, onHistoryRecord, onValueIndicated });
 
     expect(incomePanelPropSpy).toHaveBeenCalledWith({ taxYear: 2026 });
 
@@ -105,13 +109,7 @@ describe('IncomeApproach wrapper', () => {
     const onHistoryRecord = vi.fn();
     const onValueIndicated = vi.fn();
 
-    render(
-      <IncomeApproach
-        taxYear={2026}
-        onHistoryRecord={onHistoryRecord}
-        onValueIndicated={onValueIndicated}
-      />,
-    );
+    renderIncome({ taxYear: 2026, onHistoryRecord, onValueIndicated });
 
     fireEvent.change(screen.getByLabelText(/annual rental income/i), {
       target: { value: '120000' },
@@ -133,13 +131,7 @@ describe('IncomeApproach wrapper', () => {
     const onHistoryRecord = vi.fn();
     const onValueIndicated = vi.fn();
 
-    render(
-      <IncomeApproach
-        taxYear={2026}
-        onHistoryRecord={onHistoryRecord}
-        onValueIndicated={onValueIndicated}
-      />,
-    );
+    renderIncome({ taxYear: 2026, onHistoryRecord, onValueIndicated });
 
     fireEvent.change(screen.getByLabelText(/annual rental income/i), {
       target: { value: '120000' },
