@@ -1,10 +1,20 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { AuthGuard, AuthProvider } from './auth/AuthProvider';
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
 import { getViteEnv } from './env/getViteEnv';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      staleTime: 30_000,
+    },
+  },
+});
 
 // CSS imports — design tokens must load for ShellHome route
 import './styles/terrafusion-tokens.css';
@@ -99,6 +109,7 @@ const LoginPage = lazy(() => import('./pages/LoginPage'));
 
 const Router: React.FC = () => {
   return (
+    <QueryClientProvider client={queryClient}>
     <BrowserRouter
       future={{
         v7_startTransition: true,
@@ -226,6 +237,7 @@ const Router: React.FC = () => {
         </ErrorBoundary>
       </AuthProvider>
     </BrowserRouter>
+    </QueryClientProvider>
   );
 };
 
