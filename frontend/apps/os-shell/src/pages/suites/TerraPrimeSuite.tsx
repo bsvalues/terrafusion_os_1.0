@@ -14,11 +14,16 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ErrorBoundary from '../../components/errors/ErrorBoundary';
 import { ErrorDisplay } from '../../components/errors/ErrorDisplay';
 import { LegacyDeprecationBanner } from '../../components/legacy/LegacyDeprecationBanner';
+import {
+  getTrustedShellOrigin,
+  openTrustedShellPopup,
+  resolveTrustedShellUrl,
+} from '../../lib/trustedShellUrl';
 import { getViteEnv } from '../../shared/viteEnv';
 import { emitLegacyUiHit } from '../../telemetry/legacyUiTelemetry';
 
@@ -49,6 +54,22 @@ interface SuiteError {
   retryable: boolean;
   timestamp: string;
 }
+
+const SecurityPolicyError: React.FC = () => (
+  <div className='flex items-center justify-center h-full min-h-[400px] bg-gray-50'>
+    <div className='max-w-md w-full p-6'>
+      <ErrorDisplay
+        error={{
+          message: 'TerraPrime launch was blocked by the shell URL trust policy.',
+          errorCode: 'SUITE_TRUST_POLICY_BLOCKED',
+          correlationId: `trust-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 7)}`,
+          timestamp: new Date().toISOString(),
+          component: 'TerraPrimeSuite',
+        }}
+      />
+    </div>
+  </div>
+);
 
 /**
  * Loading skeleton for suite iframe
@@ -111,11 +132,25 @@ export const TerraPrimeSuite: React.FC = () => {
   const [retryCount, setRetryCount] = useState(0);
 
   // Build iframe URL with path passthrough
-  const getIframeUrl = useCallback(() => {
-    // Extract sub-path after /suites/terra-prime
+  const iframeUrl = useMemo(() => {
     const subPath = location.pathname.replace(/^\/suites\/terra-prime\/?/, '');
-    return subPath ? `${TERRAPRIME_URL}/${subPath}` : TERRAPRIME_URL;
+    const safeSubPath = subPath
+      .split('/')
+      .filter((segment) => segment.length > 0)
+      .map((segment) => encodeURIComponent(segment))
+      .join('/');
+
+    const candidate = safeSubPath ? `${TERRAPRIME_URL}/${safeSubPath}` : TERRAPRIME_URL;
+    return resolveTrustedShellUrl(candidate, {
+      allowRelative: false,
+      allowedOrigins: Array.from(ALLOWED_ORIGINS),
+    });
   }, [location.pathname]);
+
+  const iframeOrigin = useMemo(
+    () => (iframeUrl ? getTrustedShellOrigin(iframeUrl) : null),
+    [iframeUrl]
+  );
 
   // Handle messages from iframe
   useEffect(() => {
@@ -184,9 +219,19 @@ export const TerraPrimeSuite: React.FC = () => {
     setRetryCount((c) => c + 1);
   }, []);
 
+  const handlePopOut = useCallback(() => {
+    if (!iframeUrl) {
+      setHasError(true);
+      setIsLoading(false);
+      return;
+    }
+
+    openTrustedShellPopup(iframeUrl);
+  }, [iframeUrl]);
+
   // Send session token to iframe
   useEffect(() => {
-    if (!isLoading && iframeRef.current?.contentWindow) {
+    if (!isLoading && iframeOrigin && iframeRef.current?.contentWindow) {
       const token = sessionStorage.getItem('tf_session_token');
       if (token) {
         iframeRef.current.contentWindow.postMessage(
@@ -197,11 +242,11 @@ export const TerraPrimeSuite: React.FC = () => {
               correlationId: `corr-${Date.now().toString(36)}`,
             },
           },
-          TERRAPRIME_URL
+          iframeOrigin
         );
       }
     }
-  }, [isLoading]);
+  }, [iframeOrigin, isLoading]);
 
   // Emit legacy.ui_hit telemetry on first visit
   const handleTelemetry = useCallback(
@@ -218,6 +263,10 @@ export const TerraPrimeSuite: React.FC = () => {
 
   if (hasError) {
     return <ConnectionError onRetry={handleRetry} />;
+  }
+
+  if (!iframeUrl) {
+    return <SecurityPolicyError />;
   }
 
   return (
@@ -239,7 +288,7 @@ export const TerraPrimeSuite: React.FC = () => {
         </div>
         <div className='flex items-center gap-2'>
           <button
-            onClick={() => window.open(getIframeUrl(), '_blank')}
+            onClick={handlePopOut}
             className='text-xs text-gray-500 hover:text-gray-700'
             title='Open in new tab'
           >
@@ -254,7 +303,7 @@ export const TerraPrimeSuite: React.FC = () => {
         <iframe
           key={retryCount} // Force remount on retry
           ref={iframeRef}
-          src={getIframeUrl()}
+          src={iframeUrl}
           onLoad={handleIframeLoad}
           onError={handleIframeError}
           className={`w-full h-full border-0 ${isLoading ? 'hidden' : 'block'}`}

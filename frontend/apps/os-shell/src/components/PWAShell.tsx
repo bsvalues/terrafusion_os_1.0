@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { resolveTrustedShellUrl } from '../lib/trustedShellUrl';
 interface Module {
   id: string;
   name: string;
@@ -332,7 +333,16 @@ const PWAShell: React.FC = () => {
     if (module.id === 'system-monitoring') {
       window.location.href = '/monitoring';
     } else {
-      setCurrentModule(module);
+      const trustedUrl = resolveTrustedShellUrl(module.url);
+      if (!trustedUrl) {
+        showError(`Blocked module launch for ${module.name}`);
+        return;
+      }
+
+      setCurrentModule({
+        ...module,
+        url: trustedUrl,
+      });
     }
   };
   const closeModule = () => {

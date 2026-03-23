@@ -34,6 +34,7 @@ import './ProfessionalDashboard.css';
 import UniversalTranslationInterface from '../consciousness/UniversalTranslationInterface';
 import SpeciesDetectionVisualizer from '../consciousness/SpeciesDetectionVisualizer';
 import QuantumConsciousnessManager from '../consciousness/QuantumConsciousnessManager';
+import { resolveTrustedShellUrl } from '../../lib/trustedShellUrl';
 
 // Import Terrafusion Intelligent CSS Architecture
 import '../../styles/terrafusion-intelligent-architecture.css';
@@ -268,9 +269,15 @@ const ProfessionalDashboard: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
   const handleLaunchModule = (module: Module) => {
-    if (module.url) {
-      setCurrentModule(module);
+    const trustedUrl = resolveTrustedShellUrl(module.url);
+    if (!trustedUrl) {
+      return;
     }
+
+    setCurrentModule({
+      ...module,
+      url: trustedUrl,
+    });
   };
   const closeModule = () => {
     setCurrentModule(null);
