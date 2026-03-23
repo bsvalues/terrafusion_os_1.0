@@ -6,7 +6,7 @@
  */
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 import * as pilotApi from '../../api/pilotApi';
 import PropertyDais from '../../pages/workbench/tabs/PropertyDais';
@@ -83,6 +83,54 @@ describe('PropertyDais', () => {
       expect(screen.getByText(/Loaded Appeals/i)).toBeInTheDocument();
       expect(screen.getByText(/Shown from the appeal records currently loaded for this parcel\./i)).toBeInTheDocument();
       expect(screen.queryByText(/^Active Appeals$/i)).not.toBeInTheDocument();
+    });
+
+    it('shows a placeholder disclosure for the mounted appeal certification panel', () => {
+      render(<TestWrapper parcelId='12345-001' />);
+
+      const certificationPanel = screen.getByTestId('certification-panel');
+
+      expect(within(certificationPanel).getByText(/Certification Readiness Placeholder: 12345-001/i)).toBeInTheDocument();
+      expect(within(certificationPanel).getByText(/Mounted parcel-scoped placeholder\. No live appeal outcome or certification-readiness result is loaded in this panel\./i)).toBeInTheDocument();
+      expect(within(certificationPanel).getByText(/Placeholder only/i)).toBeInTheDocument();
+      expect(within(certificationPanel).queryByText(/Appeal outcome and certification status/i)).not.toBeInTheDocument();
+      expect(within(certificationPanel).queryByText(/^Pending$/i)).not.toBeInTheDocument();
+    });
+
+    it('shows a placeholder disclosure for the mounted appeal deadline panel', () => {
+      render(<TestWrapper parcelId='12345-001' />);
+
+      const deadlinePanel = screen.getByTestId('deadline-panel');
+
+      expect(within(deadlinePanel).getByText(/Appeal Deadline Placeholder: 12345-001/i)).toBeInTheDocument();
+      expect(within(deadlinePanel).getByText(/Mounted parcel-scoped placeholder\. No live filing deadline, hearing milestone, or hearing-state result is loaded in this panel\./i)).toBeInTheDocument();
+      expect(within(deadlinePanel).getByText(/Placeholder only/i)).toBeInTheDocument();
+      expect(within(deadlinePanel).queryByText(/Filing and hearing milestone tracking/i)).not.toBeInTheDocument();
+      expect(within(deadlinePanel).queryByText(/No Active Appeals/i)).not.toBeInTheDocument();
+    });
+
+    it('shows a placeholder disclosure for the mounted appeal hearing panel', () => {
+      render(<TestWrapper parcelId='12345-001' />);
+
+      const hearingPanel = screen.getByTestId('hearing-panel');
+
+      expect(within(hearingPanel).getByText(/Appeal Hearing Placeholder: 12345-001/i)).toBeInTheDocument();
+      expect(within(hearingPanel).getByText(/Mounted parcel-scoped placeholder\. No live hearing schedule, hearing date, or hearing-state result is loaded in this panel\./i)).toBeInTheDocument();
+      expect(within(hearingPanel).getByText(/Placeholder only/i)).toBeInTheDocument();
+      expect(within(hearingPanel).queryByText(/BOE hearing scheduling and tracking/i)).not.toBeInTheDocument();
+      expect(within(hearingPanel).queryByText(/No Scheduled Hearings/i)).not.toBeInTheDocument();
+    });
+
+    it('shows a placeholder disclosure for the mounted appeal notice panel', () => {
+      render(<TestWrapper parcelId='12345-001' />);
+
+      const noticePanel = screen.getByTestId('notice-panel');
+
+      expect(within(noticePanel).getByText(/Appeal Notice Placeholder: 12345-001/i)).toBeInTheDocument();
+      expect(within(noticePanel).getByText(/Mounted parcel-scoped placeholder\. No live hearing notice, notice queue, or notice-delivery result is loaded in this panel\./i)).toBeInTheDocument();
+      expect(within(noticePanel).getByText(/Placeholder only/i)).toBeInTheDocument();
+      expect(within(noticePanel).queryByText(/Hearing notice generation and queue status/i)).not.toBeInTheDocument();
+      expect(within(noticePanel).queryByText(/No Pending Notices/i)).not.toBeInTheDocument();
     });
   });
   describe('Tool Invocation', () => {
@@ -195,13 +243,14 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByText(/Queue generated notices for batch mailing and return the batch method for this request/i)).toBeInTheDocument();
+      expect(screen.getByText(/Submit a governed notice-queue request for these notice IDs, then review the returned queued count, batch ID, and delivery method/i)).toBeInTheDocument();
       expect(screen.queryByText(/Queue generated notices for batch mailing with delivery tracking/i)).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /Queue for Mailing/i })).not.toBeInTheDocument();
 
       fireEvent.change(screen.getByPlaceholderText(/Notice IDs \(comma-separated\)/i), {
         target: { value: 'NTC-001, NTC-002' },
       });
-      fireEvent.click(screen.getByRole('button', { name: /Queue for Mailing/i }));
+      fireEvent.click(screen.getByRole('button', { name: /Submit Notice-Queue Request/i }));
 
       await waitFor(() => {
         expect(mockInvokeTool).toHaveBeenCalledWith({
@@ -212,9 +261,9 @@ describe('PropertyDais', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/2 notice\(s\) queued/i)).toBeInTheDocument();
-        expect(screen.getByText(/Batch: BATCH-2026-041 \| Method: certified_mail/i)).toBeInTheDocument();
-        expect(screen.getByText(/Shows the queued count, batch ID, and delivery method returned by this request\./i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned queued count: 2/i)).toBeInTheDocument();
+        expect(screen.getByText(/Batch ID: BATCH-2026-041 \| Delivery method: certified_mail/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned queued count, batch ID, and delivery method for this notice-queue request\./i)).toBeInTheDocument();
       });
     });
 
@@ -273,7 +322,7 @@ describe('PropertyDais', () => {
         expect(screen.queryByText(/Task queue statistics with SLA compliance metrics/i)).not.toBeInTheDocument();
         expect(screen.queryByText(/county-wide/i)).not.toBeInTheDocument();
         expect(screen.queryByText(/official/i)).not.toBeInTheDocument();
-        expect(screen.queryByText(/live/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/live queue statistics/i)).not.toBeInTheDocument();
         expect(screen.queryByText(/all queues/i)).not.toBeInTheDocument();
       });
 
@@ -282,6 +331,19 @@ describe('PropertyDais', () => {
 
         await waitFor(() => {
           expect(screen.getByText(/Shows the total tasks, completed tasks, overdue count, and SLA compliance returned by this request\./i)).toBeInTheDocument();
+        });
+      });
+
+      it('does not promote returned queue statistics to a live source badge after success', async () => {
+        await renderQueueStatisticsCard();
+
+        await waitFor(() => {
+          expect(screen.queryByText(/^Live$/i)).not.toBeInTheDocument();
+          expect(
+            screen
+              .queryAllByTestId('workbench-source-badge')
+              .filter((badge) => badge.getAttribute('data-source') === 'live')
+          ).toHaveLength(0);
         });
       });
     });
@@ -306,13 +368,14 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByText(/Process annual exemption renewal and return the renewal status for this exemption/i)).toBeInTheDocument();
+      expect(screen.getByText(/Submit a governed exemption-renewal request for this exemption, then review the returned exemption ID, tax year, and renewal status/i)).toBeInTheDocument();
       expect(screen.queryByText(/Process annual exemption renewal with documentation verification/i)).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /Process Renewal/i })).not.toBeInTheDocument();
 
       fireEvent.change(screen.getByPlaceholderText(/Exemption ID \(e\.g\. EXM-2026-001\)/i), {
         target: { value: 'EXM-2026-001' },
       });
-      fireEvent.click(screen.getByRole('button', { name: /Process Renewal/i }));
+      fireEvent.click(screen.getByRole('button', { name: /Submit Renewal Request/i }));
 
       await waitFor(() => {
         expect(mockInvokeTool).toHaveBeenCalledWith({
@@ -323,9 +386,9 @@ describe('PropertyDais', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Status: renewed/i)).toBeInTheDocument();
-        expect(screen.getByText(/Exemption EXM-2026-001 renewed for/i)).toBeInTheDocument();
-        expect(screen.getByText(/Shows the renewal status returned by this request for the selected exemption and tax year\./i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned status: renewed/i)).toBeInTheDocument();
+        expect(screen.getByText(new RegExp(`Exemption ID: EXM-2026-001 \\| Tax year: ${currentYear}`, 'i'))).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned exemption ID, tax year, and renewal status for this request\./i)).toBeInTheDocument();
       });
     });
 
@@ -349,8 +412,9 @@ describe('PropertyDais', () => {
 
   const { container } = render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByText(/Schedule a Board of Equalization hearing and return the scheduled date and panel size for this request/i)).toBeInTheDocument();
+      expect(screen.getByText(/Submit a governed BOE hearing request for this appeal, then review the returned hearing ID, scheduled date, and panel size/i)).toBeInTheDocument();
       expect(screen.queryByText(/Schedule a Board of Equalization hearing with panel assignment/i)).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /Schedule Hearing/i })).not.toBeInTheDocument();
 
       fireEvent.change(screen.getByPlaceholderText(/^Appeal ID$/i), {
         target: { value: 'APL-2026-041' },
@@ -360,8 +424,8 @@ describe('PropertyDais', () => {
       fireEvent.change(hearingDateInput as HTMLInputElement, {
         target: { value: '2026-08-14' },
       });
-      fireEvent.click(screen.getByRole('checkbox', { name: /I confirm scheduling this hearing/i }));
-      fireEvent.click(screen.getByRole('button', { name: /Schedule Hearing/i }));
+      fireEvent.click(screen.getByRole('checkbox', { name: /I confirm this BOE hearing request is ready for submission/i }));
+      fireEvent.click(screen.getByRole('button', { name: /Submit Hearing Request/i }));
 
       await waitFor(() => {
         expect(mockInvokeTool).toHaveBeenCalledWith({
@@ -372,9 +436,9 @@ describe('PropertyDais', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Hearing HEAR-2026-041/i)).toBeInTheDocument();
-        expect(screen.getByText(/Date: .*\| Panel: 3 members/i)).toBeInTheDocument();
-        expect(screen.getByText(/Shows the scheduled date and panel size returned by this request for the selected appeal\./i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned hearing ID: HEAR-2026-041/i)).toBeInTheDocument();
+        expect(screen.getByText(/Scheduled date: .*\| Panel: 3 members/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned hearing ID, scheduled date, and panel size for this hearing request\./i)).toBeInTheDocument();
       });
     });
 
@@ -477,7 +541,7 @@ describe('PropertyDais', () => {
       });
     });
 
-    it('invokes calculate_pilt_payment with request wording and returned-summary disclosure', async () => {
+    it('invokes calculate_pilt_payment with request wording, limited-applicability disclosure, and returned-summary-text disclosure', async () => {
       const currentYear = new Date().getFullYear();
       const mockResponse = {
         success: true,
@@ -499,8 +563,11 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByText(/Submit a governed PILT summary request for Benton County and the current fiscal year, then review the returned total due, district count, assessed value, and summary/i)).toBeInTheDocument();
+    expect(screen.getByText(/Submit a governed PILT summary request for Benton County and the current fiscal year, then review the returned total due, district count, assessed value, and summary text/i)).toBeInTheDocument();
+      expect(screen.getByText(/Limited applicability: this TerraPILT-style calculation does not apply to every parcel and is better treated as a standalone county or fiscal module when needed\./i)).toBeInTheDocument();
       expect(screen.queryByText(/Run PILT calculation to view district breakdown/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Applies to every parcel$/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Shows the returned total due, district count, assessed value, and summary for this PILT request\./i)).not.toBeInTheDocument();
 
       fireEvent.click(screen.getByRole('button', { name: /Submit PILT Summary Request/i }));
 
@@ -516,10 +583,10 @@ describe('PropertyDais', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/PILT calculation for FY/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned summary text: PILT calculation for FY/i)).toBeInTheDocument();
         expect(screen.getByText(/County: BENTON/i)).toBeInTheDocument();
         expect(screen.getByText(new RegExp(`FY ${currentYear}`, 'i'))).toBeInTheDocument();
-        expect(screen.getByText(/Shows the returned total due, district count, assessed value, and summary for this PILT request\./i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned total due, district count, assessed value, and summary text for this PILT request\./i)).toBeInTheDocument();
       });
 
       expect(screen.queryByText(/^PILT Districts$/i)).not.toBeInTheDocument();
@@ -552,9 +619,10 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByText(/Submit a governed senior-exemption impact request for this parcel and the current tax year, then review the returned summary, assumptions, and impact bands/i)).toBeInTheDocument();
+      expect(screen.getByText(/Submit a governed senior-exemption impact request for this parcel and the current tax year, then review the returned summary text, assumptions, and impact bands/i)).toBeInTheDocument();
       expect(screen.queryByText(/RCW 84\.36\.381 exemption impact analysis by income band/i)).not.toBeInTheDocument();
       expect(screen.queryByText(/^Senior\/Disabled Exemption Impact$/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/returned summary, assumptions, and impact bands/i)).not.toBeInTheDocument();
 
       fireEvent.click(screen.getByRole('button', { name: /Submit Senior Exemption Impact Request/i }));
 
@@ -572,13 +640,13 @@ describe('PropertyDais', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(new RegExp(`Senior exemption impact estimate for tax year ${currentYear}\.`, 'i'))).toBeInTheDocument();
+        expect(screen.getByText(new RegExp(`Returned summary text: Senior exemption impact estimate for tax year ${currentYear}\.`, 'i'))).toBeInTheDocument();
         expect(screen.getAllByText(new RegExp(`Tax year ${currentYear}`, 'i')).length).toBeGreaterThan(0);
         expect(screen.getByText(/Parcel 12345-001 provided/i)).toBeInTheDocument();
         expect(screen.getByText(/Public-rate estimate only/i)).toBeInTheDocument();
         expect(screen.getByText(/Income up to \$40,000/i)).toBeInTheDocument();
         expect(screen.getByText(/Income \$40,001-\$50,000/i)).toBeInTheDocument();
-        expect(screen.getByText(/Shows the returned summary, assumptions, and impact bands for this senior-exemption impact request\./i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned summary text, assumptions, and impact bands for this senior-exemption impact request\./i)).toBeInTheDocument();
       });
     });
 
@@ -632,7 +700,7 @@ describe('PropertyDais', () => {
       });
     });
 
-    it('invokes draft_appeal_response with request wording and returned-draft disclosure', async () => {
+    it('invokes draft_appeal_response with request wording and returned-draft-summary-text disclosure', async () => {
       const mockResponse = {
         success: true,
         correlationId: 'corr-appeal-response-001',
@@ -652,8 +720,9 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByText(/Submit a governed appeal-response draft request for this parcel, appeal, and selected position, then review the returned appeal ID, position, draft summary, and word count/i)).toBeInTheDocument();
+      expect(screen.getByText(/Submit a governed appeal-response draft request for this parcel, appeal, and selected position, then review the returned appeal ID, position, draft summary text, and word count/i)).toBeInTheDocument();
       expect(screen.queryByText(/Draft an appeal response for parcel 12345-001/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/returned appeal ID, position, draft summary, and word count/i)).not.toBeInTheDocument();
 
       fireEvent.change(screen.getByTestId('appeal-id-input'), {
         target: { value: 'APL-2026-001' },
@@ -678,10 +747,11 @@ describe('PropertyDais', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Appeal: APL-2026-001/i)).toBeInTheDocument();
-        expect(screen.getByText(/After careful review of the appeal, a partial adjustment is recommended\./i)).toBeInTheDocument();
-        expect(screen.getByText(/450 words/i)).toBeInTheDocument();
-        expect(screen.getByText(/Shows the returned appeal ID, position, draft summary, and word count for this appeal-response request\./i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned appeal ID: APL-2026-001/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned position: partial/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned draft summary text: After careful review of the appeal, a partial adjustment is recommended\./i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned word count: 450 words/i)).toBeInTheDocument();
+        expect(screen.getByText(/Shows the returned appeal ID, position, draft summary text, and word count for this appeal-response request\./i)).toBeInTheDocument();
       });
     });
 
@@ -751,8 +821,9 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByText(/Submit a governed BOE packet request for this case and selected sections, then review the returned packet summary/i)).toBeInTheDocument();
+      expect(screen.getByText(/Submit a governed BOE packet request for this case and selected sections, then review the returned case ID and section list/i)).toBeInTheDocument();
       expect(screen.queryByText(/Assemble a Board of Equalization evidence packet — requires confirmation/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/returned packet summary/i)).not.toBeInTheDocument();
 
       fireEvent.change(screen.getByTestId('boe-case-id'), {
         target: { value: 'BOE-2026-001' },
@@ -770,7 +841,8 @@ describe('PropertyDais', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Case: BOE-2026-001/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned case ID: BOE-2026-001/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned sections: 2/i)).toBeInTheDocument();
         expect(screen.getByText(/Shows the returned case ID and section list for this BOE packet request\./i)).toBeInTheDocument();
       });
     });
@@ -848,8 +920,9 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByText(/Submit a governed certification sign-off request for this step, then review the returned signer and timestamp summary/i)).toBeInTheDocument();
+      expect(screen.getByText(/Submit a governed certification sign-off request for this step, then review the returned step ID, signer, and signed-at timestamp/i)).toBeInTheDocument();
       expect(screen.queryByText(/Sign off a certification checklist step/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/returned signer and timestamp summary/i)).not.toBeInTheDocument();
 
       fireEvent.change(screen.getByPlaceholderText(/Step ID \(e\.g\. step-review-001\)/i), {
         target: { value: 'step-review-001' },
@@ -878,7 +951,8 @@ describe('PropertyDais', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Step step-review-001 signed off/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned step ID: step-review-001/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned signer: Jordan Lee \| Returned signed-at:/i)).toBeInTheDocument();
         expect(screen.getByText(/Shows the returned step ID, signer, and signed-at timestamp for this certification sign-off request\./i)).toBeInTheDocument();
       });
     });
@@ -903,8 +977,9 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByText(/Submit a governed Board of Equalization appeal request for this parcel, then review the returned appeal summary/i)).toBeInTheDocument();
+      expect(screen.getByText(/Submit a governed Board of Equalization appeal request for this parcel, then review the returned appeal ID, status, and filed-at timestamp/i)).toBeInTheDocument();
       expect(screen.queryByText(/File a new Board of Equalization appeal for parcel 12345-001/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/returned appeal summary/i)).not.toBeInTheDocument();
 
       fireEvent.change(screen.getByPlaceholderText(/Grounds for appeal/i), {
         target: { value: 'Comparable sales indicate a lower market value.' },
@@ -924,7 +999,8 @@ describe('PropertyDais', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Appeal APL-2026-042/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned appeal ID: APL-2026-042/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned status: filed \| Filed at:/i)).toBeInTheDocument();
         expect(screen.getByText(/Shows the returned appeal ID, status, and filed-at timestamp for this appeal request\./i)).toBeInTheDocument();
       });
     });
@@ -948,8 +1024,9 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByText(/Submit a governed escalation request for this task, then review the returned escalation target and status summary/i)).toBeInTheDocument();
+      expect(screen.getByText(/Submit a governed escalation request for this task, then review the returned task ID, escalation target, and status/i)).toBeInTheDocument();
       expect(screen.queryByText(/Escalate an overdue or high-priority task/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/returned escalation target and status summary/i)).not.toBeInTheDocument();
 
       fireEvent.change(screen.getByPlaceholderText(/^Task ID$/i), {
         target: { value: 'TASK-404' },
@@ -972,7 +1049,8 @@ describe('PropertyDais', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Task TASK-404 escalation submitted/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned task ID: TASK-404/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned escalation target: supervisor \| Returned status: escalated/i)).toBeInTheDocument();
         expect(screen.getByText(/Shows the returned task ID, escalation target, and status for this escalation request\./i)).toBeInTheDocument();
       });
     });
@@ -996,8 +1074,9 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByText(/Submit a governed task-assignment request, then review the returned assignee and status summary/i)).toBeInTheDocument();
+      expect(screen.getByText(/Submit a governed task-assignment request, then review the returned task ID, assignee ID, and status/i)).toBeInTheDocument();
       expect(screen.queryByText(/Assign a workflow task to a queue or user/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/returned assignee and status summary/i)).not.toBeInTheDocument();
 
       fireEvent.change(screen.getByPlaceholderText(/Task ID \(e\.g\. TSK-2026-042\)/i), {
         target: { value: 'TSK-2026-042' },
@@ -1024,7 +1103,9 @@ describe('PropertyDais', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Task: TSK-2026-042/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned task ID: TSK-2026-042/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned status: assigned/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned assignee ID:/i)).toBeInTheDocument();
         expect(screen.getByText(/Shows the returned task ID, assigned-to value, and status for this assignment request\./i)).toBeInTheDocument();
       });
     });
@@ -1049,8 +1130,9 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByText(/Request the returned exemption eligibility summary for this parcel, then review the returned program, reason, and income-threshold details/i)).toBeInTheDocument();
+      expect(screen.getByText(/Request the returned exemption eligibility fields for this parcel, then review the returned eligibility flag, program, reason, and income-threshold details/i)).toBeInTheDocument();
       expect(screen.queryByText(/Check senior\/disabled exemption eligibility per RCW 84\.36\.381/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/returned exemption eligibility summary/i)).not.toBeInTheDocument();
 
       fireEvent.click(screen.getByRole('button', { name: /Request Eligibility Summary/i }));
 
@@ -1066,7 +1148,9 @@ describe('PropertyDais', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/Eligible/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned eligibility flag: Eligible/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned reason: Returned parcel summary indicates the applicant qualifies\./i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned program: senior \| Returned threshold: \$40,000/i)).toBeInTheDocument();
         expect(screen.getByText(/Shows the returned eligibility flag, program, reason, and income threshold for this parcel request\./i)).toBeInTheDocument();
       });
     });
@@ -1095,8 +1179,9 @@ describe('PropertyDais', () => {
 
       render(<TestWrapper parcelId='12345-001' />);
 
-      expect(screen.getByText(/Request the returned certification progress summary, then review the returned percent complete, checklist steps, and blockers/i)).toBeInTheDocument();
+      expect(screen.getByText(/Request the returned certification progress fields, then review the returned percent complete, checklist steps, and blockers/i)).toBeInTheDocument();
       expect(screen.queryByText(/Assessment roll certification progress with checklist and blockers/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/returned certification progress summary/i)).not.toBeInTheDocument();
 
       fireEvent.click(screen.getByRole('button', { name: /Request Certification Progress/i }));
 
@@ -1112,7 +1197,8 @@ describe('PropertyDais', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText(/72% Complete/i)).toBeInTheDocument();
+        expect(screen.getByText(/Returned percent complete: 72%/i)).toBeInTheDocument();
+        expect(screen.getByText(new RegExp(`Returned tax year: ${currentYear}`, 'i'))).toBeInTheDocument();
         expect(screen.getByText(/Shows the returned percent complete, checklist steps, and blockers for this certification progress request\./i)).toBeInTheDocument();
       });
     });
