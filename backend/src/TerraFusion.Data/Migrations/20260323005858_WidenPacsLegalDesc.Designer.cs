@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pgvector;
@@ -13,9 +14,11 @@ using TerraFusion.Data;
 namespace TerraFusion.Data.Migrations
 {
     [DbContext(typeof(TerraFusionDbContext))]
-    partial class TerraFusionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260323005858_WidenPacsLegalDesc")]
+    partial class WidenPacsLegalDesc
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4890,7 +4893,7 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal?>("AgUnitPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,4)");
 
                     b.Property<string>("AgUseCd")
                         .HasMaxLength(5)
@@ -4994,7 +4997,7 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("LandSegUp")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,4)");
 
                     b.Property<string>("LandSoilCode")
                         .HasMaxLength(10)
@@ -5027,7 +5030,7 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("MktUnitPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,4)");
 
                     b.Property<string>("MktValSource")
                         .HasMaxLength(1)
