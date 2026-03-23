@@ -21,6 +21,7 @@ out/
 **/bin/
 **/obj/
 backend/publish/
+backend/.build-verify/
 
 # Environment variables
 .env
