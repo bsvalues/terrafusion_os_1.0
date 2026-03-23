@@ -972,13 +972,22 @@ public class PacsDataSeeder
                 o => o.Id, ct);
         var seen = new HashSet<(int, int, int)>(existing.Keys);
 
-        // Most-recent year only — historical years balloon the table to millions of rows.
-        // JOIN account for file_as_name/first/last.
+        // Most-recent substantive year — MAX(year) may be a sparse stub (e.g. 5 test rows).
+        // Pick the highest year that has at least 1,000 rows so we get the real roll.
         const string sql = @"
             SELECT o.*, ac.file_as_name, ac.first_name, ac.last_name
             FROM owner o
             LEFT JOIN account ac ON o.owner_id = ac.acct_id
-            WHERE o.owner_tax_yr = (SELECT MAX(owner_tax_yr) FROM owner)
+            WHERE o.owner_tax_yr = (
+                SELECT TOP 1 owner_tax_yr
+                FROM (
+                    SELECT owner_tax_yr, COUNT(*) cnt
+                    FROM owner
+                    GROUP BY owner_tax_yr
+                    HAVING COUNT(*) >= 1000
+                ) x
+                ORDER BY owner_tax_yr DESC
+            )
             ORDER BY o.prop_id, o.owner_tax_yr, o.owner_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
