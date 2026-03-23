@@ -14,6 +14,18 @@ import PropertyAtlas from '../../pages/workbench/tabs/PropertyAtlas';
 // Mock the pilotApi module
 vi.mock('../../api/pilotApi');
 
+// Mock the useAtlasGis hooks — default to 'unavailable' so existing tests pass unchanged
+const mockUseParcelBoundary = vi.fn().mockReturnValue({
+  data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn(),
+});
+const mockUseParcelLayers = vi.fn().mockReturnValue({
+  data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn(),
+});
+vi.mock('../../hooks/useAtlasGis', () => ({
+  useParcelBoundary: (...args: unknown[]) => mockUseParcelBoundary(...args),
+  useParcelLayers: (...args: unknown[]) => mockUseParcelLayers(...args),
+}));
+
 const mockInvokeTool = pilotApi.invokeTool as vi.MockedFunction<typeof pilotApi.invokeTool>;
 
 // Test wrapper providing parcel context via outlet
