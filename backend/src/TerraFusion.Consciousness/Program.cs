@@ -137,6 +137,7 @@ namespace TerraFusion.Consciousness
             builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IBentonCountyDataService, BentonCountyDataService>();
             builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IHybridConsciousnessManager, HybridConsciousnessManager>();
             builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceValidator, ComplianceValidator>();
+            builder.Services.AddScoped<TerraFusion.Core.Interfaces.IQuantumConsciousnessOrchestrator, CoreQuantumConsciousnessOrchestrator>();
             builder.Services.AddScoped<IElitePerformanceMonitor, ElitePerformanceMonitor>();
             builder.Services.AddScoped<IStatisticalAnalysisEngine, StatisticalAnalysisEngine>();
             builder.Services.AddScoped<ICrossWorkspaceSync, CrossWorkspaceSync>();
