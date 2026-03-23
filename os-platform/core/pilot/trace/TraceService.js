@@ -75,7 +75,18 @@ class TraceService {
         if (this.devAuditEnabled) {
             try {
                 // lazy-load dev adapter
-                this.devAdapter = require('./devAuditAdapter.mjs');
+                const storeKind = process.env.TF_DEV_AUDIT_STORE || 'file';
+                if (storeKind === 'sqlite') {
+                    // prefer sqlite-backed adapter when requested
+                    // CommonJS module
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    this.devAdapter = require('./devSqliteAdapter.cjs');
+                }
+                else {
+                    // fallback to file-based ESM adapter
+                    // eslint-disable-next-line global-require, import/no-dynamic-require
+                    this.devAdapter = require('./devAuditAdapter.mjs');
+                }
             }
             catch (e) {
                 // ignore - adapter optional
