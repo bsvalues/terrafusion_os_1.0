@@ -33,6 +33,11 @@ vi.mock('../../components/errors/ErrorDisplay', () => ({
   ),
 }));
 
+vi.mock('../../hooks/useAtlasGis', () => ({
+  useParcelBoundary: () => ({ data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn() }),
+  useParcelLayers: () => ({ data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn() }),
+}));
+
 import { PropertyAtlas } from '../../pages/workbench/tabs/PropertyAtlas';
 
 describe('PropertyAtlas source honesty contract', () => {
