@@ -273,7 +273,7 @@ describe('PropertyAtlas', () => {
 
       // Verify history section exists with entry
       expect(screen.getByText(/Query History/i)).toBeInTheDocument();
-      expect(screen.getByText(/query_parcel_layers/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/query_parcel_layers/i).length).toBeGreaterThan(0);
 
       // Verify there's a copy button in history
       const copyButtons = screen.getAllByRole('button', { name: /copy/i });

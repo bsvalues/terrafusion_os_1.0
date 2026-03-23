@@ -28,6 +28,7 @@ import { useLocation } from 'react-router-dom';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import {
   ParcelContextHeader,
+  WorkbenchSourceBadge,
   type InvocationRecord,
 } from '../../../components/workbench';
 import { ForgeOverview } from './forge/ForgeOverview';
@@ -103,7 +104,7 @@ export const PropertyForge: React.FC = () => {
         icon="🔥"
         title="TerraForge"
         parcelId={parcelId}
-        subtitle={`AI-powered valuation analysis for ${parcelId}`}
+        subtitle={`Governed valuation tools requested via Forge for ${parcelId}`}
       />
 
       {/* Shared Tax Year Selector */}
@@ -124,10 +125,13 @@ export const PropertyForge: React.FC = () => {
       </div>
 
       <div className="tf-status-info rounded-xl p-4" data-testid="forge-baseline-disclosure">
-        <p className="tf-text">
-          Overview baseline values reflect the parcel snapshot already loaded in the workbench.
-          Changing Tax Year here changes the governed tool requests below; it does not relabel those baseline cards until a tool result returns.
-        </p>
+        <div className="flex items-start justify-between gap-3">
+          <p className="tf-text">
+            Overview baseline values reflect the parcel snapshot already loaded in the workbench.
+            Changing Tax Year here changes the governed tool requests below; it does not relabel those baseline cards until a tool result is returned from the selected tool.
+          </p>
+          <WorkbenchSourceBadge source="fallback" className="shrink-0" />
+        </div>
       </div>
 
       {/* Sub-Tab Bar */}
