@@ -13,6 +13,52 @@
 
 ---
 
+# SLICE 3: OS Shell URL Provenance Hardening
+
+> **Purpose:** Close the strongest real follow-up from the frontend shell Snyk triage by constraining iframe and popup URLs to trusted origins.
+> **Strategy:** Validate launch URLs before they reach browser sinks, fail closed, and prove the patched files disappear from the frontend scan report.
+
+* **Project:** OS Shell URL Provenance Hardening
+* **Branch/PR:** main (direct, per solo-dev mode)
+* **Date:** 2026-03-22
+* **Discovery Link:** Reusing existing frontend shell scan triage (incremental security hardening, not a new initiative)
+* **Research Link:** `os-platform/core/pilot/ops/frontend-os-shell-snyk-triage-2026-03-22.md`
+
+## Definition of Done
+
+- [x] Shared helper resolves only trusted iframe/popup URLs
+- [x] `PWAShell.tsx` validates module iframe URLs before launch
+- [x] `ProfessionalDashboard.tsx` validates dialog iframe URLs before launch
+- [x] `TerraPrimeSuite.tsx` constrains iframe and pop-out URLs to allowlisted origins
+- [x] Blocked URL state fails closed with truthful UI behavior
+- [x] Focused security tests cover helper and TerraPrime popup path
+- [x] Required gates pass (`type-check`, `phase83-tools`)
+- [x] Fresh frontend scan no longer reports patched files
+- [x] Governed-core Snyk baseline restored after frontend-only scan
+
+## Phases & Tasks
+
+### Phase 1: Trust Resolver
+
+- [x] Add canonical trusted URL helper for same-origin shell routes and allowlisted absolute suite origins
+- [x] Add hardened popup helper with `noopener,noreferrer`
+
+### Phase 2: Sink Hardening
+
+- [x] Gate `PWAShell.tsx` module iframe launches through the helper
+- [x] Gate `ProfessionalDashboard.tsx` iframe launches through the helper
+- [x] Gate `TerraPrimeSuite.tsx` iframe, popup, and postMessage target origin through the helper
+
+### Phase 3: Proof Wall
+
+- [x] Add focused frontend tests for the helper and TerraPrime popup hardening
+- [x] Run targeted vitest proof
+- [x] Run required repo gates
+- [x] Re-run frontend Snyk and verify patched files are absent
+- [x] Restore governed-core `security:scan` + `security:check`
+
+---
+
 ## Definition of Done
 
 > What MUST be true for this to be complete?
