@@ -325,6 +325,9 @@ builder.Services.AddScoped<IForgeStatisticsService, ForgeStatisticsService>();
 builder.Services.AddScoped<IPredictiveModelingService, PredictiveModelingService>();
 builder.Services.AddScoped<TerraFusion.API.Interfaces.IPerformanceMonitor, TerraFusion.API.Services.PerformanceMonitorService>();
 
+// Phase 10: PropertyForge valuation service (cost/sales/income/reconciliation)
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.IValuationService, TerraFusion.API.Services.ValuationService>();
+
 // Register flexible module catalog system (no hardcoding!)
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IModuleCatalog, DbModuleCatalog>();
 builder.Services.AddScoped<ModuleSeedService>();

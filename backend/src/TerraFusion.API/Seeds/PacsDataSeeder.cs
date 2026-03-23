@@ -25,6 +25,7 @@ namespace TerraFusion.API.Seeds;
 ///  10. PacsExemption    — property_exemption (no PII)
 ///  11. PacsAppeal       — _arb_protest full BOE workflow
 ///  12. PacsTaxArea      — property_tax_area JOIN tax_area
+///  13. PacsTaxAreaAssoc — wash_prop_owner_tax_area_assoc
 /// </summary>
 public class PacsDataSeeder
 {
@@ -108,6 +109,7 @@ public class PacsDataSeeder
         result.Exemptions  = await SeedExemptionsAsync(pacs, propMap, ct);
         result.Appeals     = await SeedAppealsAsync(pacs, propMap, ct);
         result.TaxAreas    = await SeedTaxAreasAsync(pacs, propMap, ct);
+        result.TaxAreaAssocs = await SeedTaxAreaAssocsAsync(pacs, propMap, ct);
         result.PropertyProfiles = await SeedPropertyProfilesAsync(pacs, propMap, ct);
 
         _logger.LogInformation("[PacsSeeder] Complete. {Summary}", result);
@@ -124,7 +126,7 @@ public class PacsDataSeeder
         // Postgres TRUNCATE is far faster than DELETE and avoids FK ordering issues.
         const string truncateSql = @"
             TRUNCATE TABLE
-                pacs_tax_areas, pacs_appeals, pacs_exemptions, pacs_sales,
+                pacs_tax_area_assocs, pacs_tax_areas, pacs_appeals, pacs_exemptions, pacs_sales,
                 pacs_owner_vals, pacs_owners, pacs_land_details,
                 pacs_improvement_attributes, pacs_improvement_details, pacs_improvements,
                 pacs_valuations, pacs_situs, pacs_property_profiles, ""PacsParcel""
@@ -139,7 +141,7 @@ public class PacsDataSeeder
             // Fallback: individual DELETEs with FK-safe order
             var tables = new[]
             {
-                "pacs_tax_areas", "pacs_appeals", "pacs_exemptions", "pacs_sales",
+                "pacs_tax_area_assocs", "pacs_tax_areas", "pacs_appeals", "pacs_exemptions", "pacs_sales",
                 "pacs_owner_vals", "pacs_owners", "pacs_land_details",
                 "pacs_improvement_attributes", "pacs_improvement_details", "pacs_improvements",
                 "pacs_valuations", "pacs_situs", "pacs_property_profiles", "PacsParcel"
@@ -1828,7 +1830,73 @@ public class PacsDataSeeder
         return total;
     }
 
-    // ── 13. PacsPropertyProfile ───────────────────────────────────────────
+    // ── 13. PacsTaxAreaAssoc ────────────────────────────────────────────
+
+    private async Task<int> SeedTaxAreaAssocsAsync(
+        SqlConnection pacs, Dictionary<int, Guid> propMap, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding PacsTaxAreaAssoc (wash_prop_owner_tax_area_assoc, current year)...");
+
+        const string sql = @"
+            SELECT * FROM wash_prop_owner_tax_area_assoc
+            WHERE year = (
+                SELECT TOP 1 year
+                FROM (
+                    SELECT year, COUNT(*) cnt
+                    FROM wash_prop_owner_tax_area_assoc
+                    GROUP BY year
+                    HAVING COUNT(*) >= 1
+                ) x
+                ORDER BY year DESC
+            )
+            ORDER BY prop_id, year, sup_num, owner_id";
+
+        _logger.LogInformation("[PacsSeeder] PacsTaxAreaAssoc: executing current-year query on SQL Server...");
+        await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 120 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        _logger.LogInformation("[PacsSeeder] PacsTaxAreaAssoc: reader opened, starting row reads.");
+        var batch = new List<PacsTaxAreaAssoc>(BatchSize);
+        var total = 0;
+
+        while (await rdr.ReadAsync(ct))
+        {
+            var propId = rdr.GetInt32(rdr.GetOrdinal("prop_id"));
+            if (!propMap.TryGetValue(propId, out var parcelId)) continue;
+
+            var yr      = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("year")));
+            var sup     = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("sup_num")));
+            var ownerId = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("owner_id")));
+            var taxAreaOrd = rdr.GetOrdinal("tax_area_id");
+            var taxArea = rdr.IsDBNull(taxAreaOrd)
+                ? string.Empty
+                : Convert.ToString(rdr.GetValue(taxAreaOrd))?.Trim() ?? string.Empty;
+
+            var e = new PacsTaxAreaAssoc();
+
+            e.ParcelId     = parcelId;
+            e.PacsPropId   = propId;
+            e.PropValYear  = yr;
+            e.SupNum       = sup;
+            e.PacsOwnerId  = ownerId;
+            e.TaxAreaId    = taxArea;
+
+            e.LastPacsSync = DateTime.UtcNow;
+
+            batch.Add(e);
+            if (batch.Count >= BatchSize)
+            {
+                total += await UpsertAsync(batch, ct);
+                batch.Clear();
+                _logger.LogInformation("[PacsSeeder] PacsTaxAreaAssoc batch saved, total: {Total}", total);
+            }
+        }
+
+        if (batch.Count > 0) total += await UpsertAsync(batch, ct);
+        _logger.LogInformation("[PacsSeeder] PacsTaxAreaAssoc: {Total}", total);
+        return total;
+    }
+
+    // ── 14. PacsPropertyProfile ───────────────────────────────────────────
 
     private async Task<int> SeedPropertyProfilesAsync(
         SqlConnection pacs, Dictionary<int, Guid> propMap, CancellationToken ct)
@@ -2108,6 +2176,7 @@ public sealed record PacsSeederResult
     public int Exemptions             { get; set; }
     public int Appeals                { get; set; }
     public int TaxAreas               { get; set; }
+    public int TaxAreaAssocs          { get; set; }
     public int PropertyProfiles        { get; set; }
 
     public override string ToString() =>
@@ -2115,5 +2184,5 @@ public sealed record PacsSeederResult
         $"Imprv={Improvements} Det={ImprovementDetails} Attr={ImprovementAttributes} " +
         $"Land={LandDetails} Owners={Owners} OwnerVals={OwnerVals} Sales={Sales} " +
         $"Exemptions={Exemptions} Appeals={Appeals} TaxAreas={TaxAreas} " +
-        $"Profiles={PropertyProfiles}";
+        $"TaxAreaAssocs={TaxAreaAssocs} Profiles={PropertyProfiles}";
 }

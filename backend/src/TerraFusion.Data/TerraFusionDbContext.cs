@@ -173,6 +173,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<PacsAppeal> PacsAppeals { get; set; } = null!;
   public DbSet<PacsTaxArea> PacsTaxAreas { get; set; } = null!;
   public DbSet<PacsOwnerVal> PacsOwnerVals { get; set; } = null!;
+  public DbSet<PacsTaxAreaAssoc> PacsTaxAreaAssocs { get; set; } = null!;
 
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
