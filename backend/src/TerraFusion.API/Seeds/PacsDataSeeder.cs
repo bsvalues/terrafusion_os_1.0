@@ -54,6 +54,9 @@ public class PacsDataSeeder
             ?? throw new InvalidOperationException(
                 "PacsConnection not configured. Add it to appsettings.Development.local.json.");
 
+        var csSales = _config.GetConnectionString("PacsSalesConnection");
+
+
         // Ensure PACS tables exist in the target database.
         // EF Core's CreateTablesAsync emits plain CREATE TABLE (no IF NOT EXISTS), so
         // we generate the full DDL script and execute each statement individually,
@@ -81,6 +84,18 @@ public class PacsDataSeeder
         await pacs.OpenAsync(ct);
         _logger.LogInformation("[PacsSeeder] Connected to pacs_oltp. Starting full ETL.");
 
+        // Open pacs_golive connection for wash_ tables (owner vals, tax area assocs)
+        // which live in pacs_golive, not pacs_oltp.
+        SqlConnection? golive = null;
+        if (!string.IsNullOrEmpty(csSales))
+        {
+            golive = new SqlConnection(csSales);
+            await golive.OpenAsync(ct);
+            _logger.LogInformation("[PacsSeeder] Connected to pacs_golive for wash_ tables.");
+        }
+
+        try
+        {
         // Phase 1: Root parcels — must run first
         var propMap = await SeedParcelsAsync(pacs, ct);
         result.Parcels = propMap.Count;
@@ -103,14 +118,20 @@ public class PacsDataSeeder
         result.LandDetails       = await SeedLandDetailsAsync(pacs, propMap, ct);
 
         // Phase 3: Ownership, transactions, compliance
-        result.Owners      = await SeedOwnersAsync(pacs, propMap, ct);
-        result.OwnerVals   = await SeedOwnerValsAsync(pacs, propMap, ct);
-        result.Sales       = await SeedSalesAsync(pacs, propMap, ct);
-        result.Exemptions  = await SeedExemptionsAsync(pacs, propMap, ct);
-        result.Appeals     = await SeedAppealsAsync(pacs, propMap, ct);
-        result.TaxAreas    = await SeedTaxAreasAsync(pacs, propMap, ct);
-        result.TaxAreaAssocs = await SeedTaxAreaAssocsAsync(pacs, propMap, ct);
+        // wash_ tables (OwnerVals, TaxAreaAssocs) use pacs_golive; others use pacs_oltp.
+        result.Owners        = await SeedOwnersAsync(pacs, propMap, ct);
+        result.OwnerVals     = await SeedOwnerValsAsync(golive ?? pacs, propMap, ct);
+        result.Sales         = await SeedSalesAsync(pacs, propMap, ct);
+        result.Exemptions    = await SeedExemptionsAsync(pacs, propMap, ct);
+        result.Appeals       = await SeedAppealsAsync(pacs, propMap, ct);
+        result.TaxAreas      = await SeedTaxAreasAsync(pacs, propMap, ct);
+        result.TaxAreaAssocs = await SeedTaxAreaAssocsAsync(golive ?? pacs, propMap, ct);
         result.PropertyProfiles = await SeedPropertyProfilesAsync(pacs, propMap, ct);
+        }
+        finally
+        {
+            if (golive != null) await golive.DisposeAsync();
+        }
 
         _logger.LogInformation("[PacsSeeder] Complete. {Summary}", result);
         return result;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -347,8 +347,8 @@ namespace TerraFusion.Data.Migrations
                     OverallScore = table.Column<double>(type: "double precision", nullable: false),
                     Grade = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
                     IssueCount = table.Column<int>(type: "integer", nullable: false),
-                    Issues = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Issues = table.Column<string>(type: "text", nullable: true),
+                    Details = table.Column<string>(type: "text", nullable: true),
                     CreatedBy = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -482,8 +482,8 @@ namespace TerraFusion.Data.Migrations
                     SkippedRecords = table.Column<int>(type: "integer", nullable: false),
                     DurationMs = table.Column<long>(type: "bigint", nullable: false),
                     RecordsPerSecond = table.Column<double>(type: "double precision", nullable: false),
-                    Errors = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Errors = table.Column<string>(type: "text", nullable: true),
+                    Details = table.Column<string>(type: "text", nullable: true),
                     Watermark = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     StartedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -577,7 +577,7 @@ namespace TerraFusion.Data.Migrations
                     WasReduced = table.Column<bool>(type: "boolean", nullable: false),
                     ReductionAmount = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Details = table.Column<string>(type: "text", nullable: true),
                     CreatedBy = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -636,9 +636,9 @@ namespace TerraFusion.Data.Migrations
                     FeatureCount = table.Column<int>(type: "integer", nullable: false),
                     TrainingSamples = table.Column<int>(type: "integer", nullable: false),
                     InferenceTimeMs = table.Column<long>(type: "bigint", nullable: false),
-                    InputFeatures = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FeatureImportances = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InputFeatures = table.Column<string>(type: "text", nullable: true),
+                    FeatureImportances = table.Column<string>(type: "text", nullable: true),
+                    Details = table.Column<string>(type: "text", nullable: true),
                     CreatedBy = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
