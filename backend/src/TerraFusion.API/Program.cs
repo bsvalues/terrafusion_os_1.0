@@ -369,6 +369,9 @@ builder.Services.AddScoped<TerraFusion.Core.Services.ICertificationService, Terr
 builder.Services.AddScoped<TerraFusion.Core.Services.INoticeService, TerraFusion.Core.Services.NoticeService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.IQueueService, TerraFusion.Core.Services.QueueService>();
 
+// Phase 11: GIS data service — PACS-sourced parcel boundary & layer data
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.IGisDataService, TerraFusion.API.Services.GisDataService>();
+
 // 🏛️ PACS Adapter - pacscontract.v1 compliant read-only boundary
 builder.Services.AddPacsAdapter();
 // Conditionally register Redis-backed cache or NoOp fallback

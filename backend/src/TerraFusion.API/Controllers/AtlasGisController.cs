@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.Core.GIS;
 using TerraFusion.Core.GIS.Connectors;
+using TerraFusion.Core.Interfaces;
 
 namespace TerraFusion.API.Controllers;
 
@@ -20,6 +21,7 @@ public class AtlasGisController : ControllerBase
     private readonly IGeospatialEnricher _enricher;
     private readonly IGisParseService _parser;
     private readonly IGisSyncService _sync;
+    private readonly IGisDataService _gisData;
     private readonly ILogger<AtlasGisController> _logger;
 
     public AtlasGisController(
@@ -27,12 +29,14 @@ public class AtlasGisController : ControllerBase
         IGeospatialEnricher enricher,
         IGisParseService parser,
         IGisSyncService sync,
+        IGisDataService gisData,
         ILogger<AtlasGisController> logger)
     {
         _connector = connector;
         _enricher = enricher;
         _parser = parser;
         _sync = sync;
+        _gisData = gisData;
         _logger = logger;
     }
 
@@ -229,6 +233,42 @@ public class AtlasGisController : ControllerBase
                 .Distinct()
                 .ToList(),
             ImportResult: importResult));
+    }
+
+    // ── PACS-Sourced Parcel Data ─────────────────────────────────────
+
+    /// <summary>
+    /// Return a parcel boundary approximation from PACS situs + land_detail data.
+    /// Includes centroid, lot dimensions, and area.
+    /// </summary>
+    /// <param name="parcelId">GeoId or SimpleGeoId of the parcel.</param>
+    [HttpGet("parcels/{parcelId}/boundary")]
+    [ProducesResponseType(typeof(ParcelBoundaryResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetParcelBoundary(string parcelId, CancellationToken ct)
+    {
+        _logger.LogInformation("Atlas parcel boundary: {ParcelId}", parcelId);
+        var result = await _gisData.GetParcelBoundaryAsync(parcelId, ct);
+
+        if (result.Source == "fallback" && result.Centroid is null)
+            return NotFound(new { error = $"Parcel '{parcelId}' not found in PACS mirror." });
+
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Return GIS layer data (zoning, flood zone, tax area, land classification)
+    /// for a parcel from PACS tables.
+    /// </summary>
+    /// <param name="parcelId">GeoId or SimpleGeoId of the parcel.</param>
+    [HttpGet("parcels/{parcelId}/layers")]
+    [ProducesResponseType(typeof(ParcelLayersResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetParcelLayers(string parcelId, CancellationToken ct)
+    {
+        _logger.LogInformation("Atlas parcel layers: {ParcelId}", parcelId);
+        var result = await _gisData.GetParcelLayersAsync(parcelId, ct);
+        return Ok(result);
     }
 
     // ── Response DTOs ────────────────────────────────────────────────
