@@ -103,10 +103,12 @@ public class PacsDataSeeder
 
         // Phase 3: Ownership, transactions, compliance
         result.Owners      = await SeedOwnersAsync(pacs, propMap, ct);
+        result.OwnerVals   = await SeedOwnerValsAsync(pacs, propMap, ct);
         result.Sales       = await SeedSalesAsync(pacs, propMap, ct);
         result.Exemptions  = await SeedExemptionsAsync(pacs, propMap, ct);
         result.Appeals     = await SeedAppealsAsync(pacs, propMap, ct);
         result.TaxAreas    = await SeedTaxAreasAsync(pacs, propMap, ct);
+        result.PropertyProfiles = await SeedPropertyProfilesAsync(pacs, propMap, ct);
 
         _logger.LogInformation("[PacsSeeder] Complete. {Summary}", result);
         return result;
@@ -123,7 +125,7 @@ public class PacsDataSeeder
         const string truncateSql = @"
             TRUNCATE TABLE
                 pacs_tax_areas, pacs_appeals, pacs_exemptions, pacs_sales,
-                pacs_owners, pacs_land_details,
+                pacs_owner_vals, pacs_owners, pacs_land_details,
                 pacs_improvement_attributes, pacs_improvement_details, pacs_improvements,
                 pacs_valuations, pacs_situs, pacs_property_profiles, ""PacsParcel""
             RESTART IDENTITY CASCADE";
@@ -138,7 +140,7 @@ public class PacsDataSeeder
             var tables = new[]
             {
                 "pacs_tax_areas", "pacs_appeals", "pacs_exemptions", "pacs_sales",
-                "pacs_owners", "pacs_land_details",
+                "pacs_owner_vals", "pacs_owners", "pacs_land_details",
                 "pacs_improvement_attributes", "pacs_improvement_details", "pacs_improvements",
                 "pacs_valuations", "pacs_situs", "pacs_property_profiles", "PacsParcel"
             };
@@ -1142,6 +1144,100 @@ public class PacsDataSeeder
         return total;
     }
 
+    // ── 8b. PacsOwnerVal (wash_prop_owner_val) ──────────────────────────
+
+    private async Task<int> SeedOwnerValsAsync(
+        SqlConnection pacs, Dictionary<int, Guid> propMap, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding PacsOwnerVal (wash_prop_owner_val, current year)...");
+
+        const string sql = @"
+            SELECT * FROM wash_prop_owner_val
+            WHERE year = (
+                SELECT TOP 1 year
+                FROM (
+                    SELECT year, COUNT(*) cnt
+                    FROM wash_prop_owner_val
+                    GROUP BY year
+                    HAVING COUNT(*) >= 1
+                ) x
+                ORDER BY year DESC
+            )
+            ORDER BY prop_id, year, sup_num, owner_id";
+
+        _logger.LogInformation("[PacsSeeder] PacsOwnerVal: executing current-year query on SQL Server...");
+        await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 120 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        _logger.LogInformation("[PacsSeeder] PacsOwnerVal: reader opened, starting row reads.");
+        var batch = new List<PacsOwnerVal>(BatchSize);
+        var total = 0;
+
+        while (await rdr.ReadAsync(ct))
+        {
+            var propId = rdr.GetInt32(rdr.GetOrdinal("prop_id"));
+            if (!propMap.TryGetValue(propId, out var parcelId)) continue;
+
+            var yr      = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("year")));
+            var sup     = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("sup_num")));
+            var ownerId = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("owner_id")));
+
+            var e = new PacsOwnerVal();
+
+            e.ParcelId     = parcelId;
+            e.PacsPropId   = propId;
+            e.PropValYear  = yr;
+            e.SupNum       = sup;
+            e.PacsOwnerId  = ownerId;
+
+            // Improvement value splits
+            e.ImprvHstdVal    = Dec(rdr, "imprv_hstd_val");
+            e.ImprvNonHstdVal = Dec(rdr, "imprv_non_hstd_val");
+
+            // Land value splits
+            e.LandHstdVal    = Dec(rdr, "land_hstd_val");
+            e.LandNonHstdVal = Dec(rdr, "land_non_hstd_val");
+
+            // Timber / Ag market
+            e.TimberMarket   = Dec(rdr, "timber_market");
+            e.AgMarket       = Dec(rdr, "ag_market");
+            e.TimberHsMarket = Dec(rdr, "timber_hs_market");
+            e.AgHsMarket     = Dec(rdr, "ag_hs_market");
+
+            // New construction
+            e.NewValHs  = Dec(rdr, "new_val_hs");
+            e.NewValNhs = Dec(rdr, "new_val_nhs");
+            e.NewValP   = Dec(rdr, "new_val_p");
+
+            // Appraised
+            e.AppraisedClassified    = Dec(rdr, "appraised_classified");
+            e.AppraisedNonClassified = Dec(rdr, "appraised_non_classified");
+
+            // Use values
+            e.AgUseVal       = Dec(rdr, "ag_use_val");
+            e.AgHsUseVal     = Dec(rdr, "ag_hs_use_val");
+            e.TimberUseVal   = Dec(rdr, "timber_use_val");
+            e.TimberHsUseVal = Dec(rdr, "timber_hs_use_val");
+
+            // Taxable
+            e.TaxableClassified    = Dec(rdr, "taxable_classified");
+            e.TaxableNonClassified = Dec(rdr, "taxable_non_classified");
+
+            e.LastPacsSync = DateTime.UtcNow;
+
+            batch.Add(e);
+            if (batch.Count >= BatchSize)
+            {
+                total += await UpsertAsync(batch, ct);
+                batch.Clear();
+                _logger.LogInformation("[PacsSeeder] PacsOwnerVal batch saved, total: {Total}", total);
+            }
+        }
+
+        if (batch.Count > 0) total += await UpsertAsync(batch, ct);
+        _logger.LogInformation("[PacsSeeder] PacsOwnerVal: {Total}", total);
+        return total;
+    }
+
     // ── 9. PacsSale ──────────────────────────────────────────────────────
 
     private async Task<int> SeedSalesAsync(
@@ -1705,6 +1801,149 @@ public class PacsDataSeeder
         return total;
     }
 
+    // ── 13. PacsPropertyProfile ───────────────────────────────────────────
+
+    private async Task<int> SeedPropertyProfilesAsync(
+        SqlConnection pacs, Dictionary<int, Guid> propMap, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding PacsPropertyProfile...");
+        var existing = await _db.PacsPropertyProfiles
+            .ToDictionaryAsync(
+                pp => (pp.PacsPropId, pp.PropValYear),
+                pp => pp.Id, ct);
+        var seen = new HashSet<(int, int)>(existing.Keys);
+
+        // Substantive year: skip sparse stub years (HAVING >= 1000).
+        // Falls back to MAX if no year has >= 1000 rows (small tables like this one).
+        const string sql = @"
+            SELECT * FROM property_profile
+            WHERE prop_val_yr = (
+                SELECT TOP 1 prop_val_yr
+                FROM (
+                    SELECT prop_val_yr, COUNT(*) cnt
+                    FROM property_profile
+                    GROUP BY prop_val_yr
+                    HAVING COUNT(*) >= 1
+                ) x
+                ORDER BY prop_val_yr DESC
+            )
+            ORDER BY prop_id, prop_val_yr";
+
+        await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        var batch = new List<PacsPropertyProfile>(BatchSize);
+        var total = 0;
+
+        while (await rdr.ReadAsync(ct))
+        {
+            var propId = rdr.GetInt32(rdr.GetOrdinal("prop_id"));
+            if (!propMap.TryGetValue(propId, out var parcelId)) continue;
+
+            var yr  = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("prop_val_yr")));
+            var key = (propId, yr);
+
+            if (!seen.Add(key)) continue;
+
+            PacsPropertyProfile e;
+            if (existing.TryGetValue(key, out var eId))
+                e = await _db.PacsPropertyProfiles.FindAsync(new object[] { eId }, ct)
+                    ?? new PacsPropertyProfile { Id = eId };
+            else
+                e = new PacsPropertyProfile();
+
+            e.ParcelId    = parcelId;
+            e.PacsPropId  = propId;
+            e.PropValYear = yr;
+            e.SupNum      = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("sup_num")));
+
+            // Classification
+            e.ClassCode          = Str(rdr, "class_cd");
+            e.StateCd            = Str(rdr, "state_cd");
+            e.PropertyUseCd      = Str(rdr, "property_use_cd");
+            e.ImprvTypeCode      = Str(rdr, "imprv_type_cd");
+            e.ImprvDetSubClassCd = Str(rdr, "imprv_det_sub_class_cd");
+            e.NumImprv           = Int(rdr, "num_imprv");
+
+            // Building characteristics
+            e.YearBuilt          = Dec(rdr, "yr_blt");
+            e.ActualYearBuilt    = Dec(rdr, "actual_year_built");
+            e.EffectiveYearBuilt = Dec(rdr, "eff_yr_blt");
+            e.ActualAge          = Int(rdr, "actual_age");
+            e.LivingArea         = Dec(rdr, "living_area");
+            e.ConditionCode      = Str(rdr, "condition_cd");
+            e.PercentComplete    = Dec(rdr, "percent_complete");
+            e.HeatAcCode         = Str(rdr, "heat_ac_code");
+            e.ClassCdHighValueImprv    = Str(rdr, "class_cd_highvalueimprov");
+            e.LivingAreaHighValueImprv = Dec(rdr, "living_area_highvalueimprov");
+
+            // Improvement valuation
+            e.ImprvUnitPrice = Dec(rdr, "imprv_unit_price");
+            e.ImprvAddVal    = Dec(rdr, "imprv_add_val");
+            e.AppraisedVal   = Dec(rdr, "appraised_val");
+
+            // Land measurements
+            e.LandTypeCode    = Str(rdr, "land_type_cd");
+            e.LandSqft        = Dec(rdr, "land_sqft");
+            e.LandAcres       = Dec(rdr, "land_acres");
+            e.LandTotalAcres  = Dec(rdr, "land_total_acres");
+            e.LandUseableAcres = Dec(rdr, "land_useable_acres");
+            e.LandUseableSqft  = Dec(rdr, "land_useable_sqft");
+            e.LandFrontFeet   = Dec(rdr, "land_front_feet");
+            e.LandDepth       = Dec(rdr, "land_depth");
+            e.LandNumLots     = Dec(rdr, "land_num_lots");
+            e.LandTotalSqft   = Dec(rdr, "land_total_sqft");
+
+            // Land valuation
+            e.LandUnitPrice     = Dec(rdr, "land_unit_price");
+            e.MainLandUnitPrice = Dec(rdr, "main_land_unit_price");
+            e.MainLandTotalAdj  = Dec(rdr, "main_land_total_adj");
+            e.LandApprMethod    = Str(rdr, "land_appr_method");
+            e.LsTable           = Str(rdr, "ls_table");
+            e.SizeAdjPct        = Dec(rdr, "size_adj_pct");
+
+            // Geographic / market
+            e.NeighborhoodCode = Str(rdr, "neighborhood");
+            e.RegionCode       = Str(rdr, "region");
+            e.AbsSubdv         = Str(rdr, "abs_subdv");
+            e.SubsetCode       = Str(rdr, "subset");
+            e.MapId            = Str(rdr, "map_id");
+            e.SubMarketCd      = Str(rdr, "sub_market_cd");
+
+            // Site characteristics
+            e.Zoning                = Str(rdr, "zoning");
+            e.CharacteristicZoning1 = Str(rdr, "characteristic_zoning1");
+            e.CharacteristicZoning2 = Str(rdr, "characteristic_zoning2");
+            e.CharacteristicView    = Str(rdr, "characteristic_view");
+            e.VisibilityAccessCd    = Str(rdr, "visibility_access_cd");
+            e.RoadAccess            = Str(rdr, "road_access");
+            e.Utilities             = Str(rdr, "utilities");
+            e.Topography            = Str(rdr, "topography");
+            e.SchoolId              = Int(rdr, "school_id");
+            e.CityId                = Int(rdr, "city_id");
+            e.LastAppraisalDate     = Dt(rdr, "last_appraisal_dt");
+
+            // Mobile home
+            e.MobileHomeMake      = Str(rdr, "mbl_hm_make");
+            e.MobileHomeModel     = Str(rdr, "mbl_hm_model");
+            e.MobileHomeSerialNum = Str(rdr, "mbl_hm_sn");
+            e.MobileHomeHudNum    = Str(rdr, "mbl_hm_hud_num");
+            e.MobileHomeTitleNum  = Str(rdr, "mbl_hm_title_num");
+
+            e.LastPacsSync = DateTime.UtcNow;
+
+            batch.Add(e);
+            if (batch.Count >= BatchSize)
+            {
+                total += await UpsertAsync(batch, ct);
+                batch.Clear();
+            }
+        }
+
+        if (batch.Count > 0) total += await UpsertAsync(batch, ct);
+        _logger.LogInformation("[PacsSeeder] PacsPropertyProfile: {Total}", total);
+        return total;
+    }
+
     // ── Generic Batch Upsert ─────────────────────────────────────────────
 
     private async Task<int> UpsertAsync<T>(List<T> batch, CancellationToken ct)
@@ -1837,14 +2076,17 @@ public sealed record PacsSeederResult
     public int ImprovementAttributes  { get; set; }
     public int LandDetails            { get; set; }
     public int Owners                 { get; set; }
+    public int OwnerVals              { get; set; }
     public int Sales                  { get; set; }
     public int Exemptions             { get; set; }
     public int Appeals                { get; set; }
     public int TaxAreas               { get; set; }
+    public int PropertyProfiles        { get; set; }
 
     public override string ToString() =>
         $"Parcels={Parcels} Situs={Situs} Vals={Valuations} " +
         $"Imprv={Improvements} Det={ImprovementDetails} Attr={ImprovementAttributes} " +
-        $"Land={LandDetails} Owners={Owners} Sales={Sales} " +
-        $"Exemptions={Exemptions} Appeals={Appeals} TaxAreas={TaxAreas}";
+        $"Land={LandDetails} Owners={Owners} OwnerVals={OwnerVals} Sales={Sales} " +
+        $"Exemptions={Exemptions} Appeals={Appeals} TaxAreas={TaxAreas} " +
+        $"Profiles={PropertyProfiles}";
 }
