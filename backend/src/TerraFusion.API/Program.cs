@@ -362,6 +362,9 @@ builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyService, TerraFusi
 // Register Codex 3-6-9 Framework service (CodexController)
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICodexService, TerraFusion.Core.Services.CodexService>();
 
+// Register governed tool audit service (FISMA-compliant Dais tool invocation logging)
+builder.Services.AddScoped<TerraFusion.API.Services.IGovernedToolAuditService, TerraFusion.API.Services.GovernedToolAuditService>();
+
 // Register Dais CRUD services (appeals, exemptions, certifications, notices, queue)
 builder.Services.AddScoped<TerraFusion.Core.Services.IExemptionService, TerraFusion.Core.Services.ExemptionService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.IAppealService, TerraFusion.Core.Services.AppealService>();
