@@ -1,0 +1,206 @@
+# ============================================================================
+# TerraFusion OS - Network Policies
+# Phase 35: Fine-grained traffic restrictions per service
+# ============================================================================
+# Traffic flow:
+#   ingress-nginx -> gateway (3002)
+#   gateway       -> api (5000), consciousness (3004)
+#   api           -> postgres (5432), redis (6379)
+#   consciousness -> postgres (5432), redis (6379)
+#   default       -> deny all other ingress
+# ============================================================================
+
+# -- Default deny all ingress in namespace ------------------------------------
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: terrafusion-platform
+    compliance: fisma-high
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+
+---
+# -- Gateway: accept from ingress controller only ----------------------------
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-to-gateway
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: terrafusion-platform
+    compliance: fisma-high
+spec:
+  podSelector:
+    matchLabels:
+      app: terrafusion-gateway
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3002
+
+---
+# -- API: accept from gateway ------------------------------------------------
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-gateway-to-api
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: terrafusion-platform
+    compliance: fisma-high
+spec:
+  podSelector:
+    matchLabels:
+      app: terrafusion-api
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: terrafusion-gateway
+      ports:
+        - protocol: TCP
+          port: 5000
+
+---
+# -- Consciousness: accept from gateway --------------------------------------
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-gateway-to-consciousness
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: terrafusion-platform
+    compliance: fisma-high
+spec:
+  podSelector:
+    matchLabels:
+      app: terrafusion-consciousness
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: terrafusion-gateway
+      ports:
+        - protocol: TCP
+          port: 3004
+
+---
+# -- PostgreSQL: accept from api and consciousness ----------------------------
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-services-to-postgres
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: terrafusion-platform
+    compliance: fisma-high
+spec:
+  podSelector:
+    matchLabels:
+      app: postgresql
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: terrafusion-api
+        - podSelector:
+            matchLabels:
+              app: terrafusion-consciousness
+      ports:
+        - protocol: TCP
+          port: 5432
+
+---
+# -- Redis: accept from api and consciousness ---------------------------------
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-services-to-redis
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: terrafusion-platform
+    compliance: fisma-high
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: terrafusion-api
+        - podSelector:
+            matchLabels:
+              app: terrafusion-consciousness
+      ports:
+        - protocol: TCP
+          port: 6379
+
+---
+# -- Prometheus: allow scraping metrics from all services ---------------------
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-prometheus-scrape
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: terrafusion-platform
+    compliance: fisma-high
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: terrafusion-platform
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+      ports:
+        - protocol: TCP
+          port: 8080
+
+# ============================================================================
+# Apply Instructions
+# ============================================================================
+# Apply network policies:
+#   kubectl apply -f network-policies.yaml
+#
+# Verify policies:
+#   kubectl get networkpolicy -n terrafusion
+#   kubectl describe networkpolicy -n terrafusion
+# ============================================================================
