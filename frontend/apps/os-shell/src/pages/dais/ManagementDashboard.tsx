@@ -15,6 +15,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
+import { WorkbenchSourceBadge } from '@/components/workbench/WorkbenchSourceBadge';
+import type { DisclosureSource } from '@/components/workbench/WorkbenchSourceBadge';
 import { useSession } from '@/auth/useSession';
 import { getCertificationStatus, getAllAppeals } from '@/services/suites/daisService';
 import { getQueueMetrics, getAppraiserProductivity } from '@/services/suites/queueService';
@@ -123,6 +125,12 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
   const [appraisers, setAppraisers] = useState<Appraiser[]>(APPRAISERS_FIXTURE);
   const [isFixture, setIsFixture] = useState(true);
 
+  // Per-section source tracking for WorkbenchSourceBadge
+  const [overviewSource, setOverviewSource] = useState<DisclosureSource>('fallback');
+  const [certSource, setCertSource] = useState<DisclosureSource>('fallback');
+  const [appealsSource, setAppealsSource] = useState<DisclosureSource>('fallback');
+  const [workloadSource, setWorkloadSource] = useState<DisclosureSource>('fallback');
+
   const fetchDashboardData = useCallback(async () => {
     let anyApi = false;
 
@@ -131,6 +139,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       const certData = await getCertificationStatus();
       if (certData && certData.length > 0) {
         setCertificationAreas(certData.map(mapCertToArea));
+        setCertSource('live');
         anyApi = true;
       }
     } catch { /* fixture fallback — already set */ }
@@ -141,6 +150,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       if (appealsData && appealsData.length > 0) {
         setRecentAppeals(mapAppealsToRecent(appealsData));
         setAppealsSummary(computeAppealsSummary(appealsData));
+        setAppealsSource('live');
         anyApi = true;
 
         // Update overview stats with real appeal count
@@ -159,6 +169,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       const prodData = await getAppraiserProductivity({ throwOnError: true });
       if (prodData && prodData.length > 0) {
         setAppraisers(mapProductivityToAppraisers(prodData));
+        setWorkloadSource('live');
         anyApi = true;
       }
     } catch { /* fixture fallback */ }
@@ -172,6 +183,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
             s.label === 'Pending Reviews' ? { ...s, value: String(metrics.totalPendingReview ?? s.value) } : s,
           ),
         );
+        setOverviewSource('live');
         anyApi = true;
       }
     } catch { /* fixture fallback */ }
@@ -217,6 +229,10 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       {/* Overview Tab */}
       {activeTab === 'overview' && (
         <div data-testid="tab-overview">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-muted-foreground">Overview Stats</span>
+            <WorkbenchSourceBadge source={overviewSource} />
+          </div>
           <div data-testid="overview-stats" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {overviewStats.map((stat) => (
               <Card key={stat.label} data-material="bento">
@@ -255,7 +271,10 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
         <div data-testid="tab-certification">
           <Card>
             <CardHeader>
-              <CardTitle>Certification Readiness by Area</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Certification Readiness by Area</CardTitle>
+                <WorkbenchSourceBadge source={certSource} />
+              </div>
             </CardHeader>
             <CardContent>
               <table data-testid="cert-table" className="w-full text-sm">
@@ -307,6 +326,10 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       {/* Appeals Tab */}
       {activeTab === 'appeals' && (
         <div data-testid="tab-appeals">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-muted-foreground">Appeals Data</span>
+            <WorkbenchSourceBadge source={appealsSource} />
+          </div>
           <div data-testid="appeals-summary" className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card>
               <CardContent className="pt-4 pb-4 text-center">
@@ -379,7 +402,10 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
         <div data-testid="tab-workload">
           <Card>
             <CardHeader>
-              <CardTitle>Staff Workload Assignments</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Staff Workload Assignments</CardTitle>
+                <WorkbenchSourceBadge source={workloadSource} />
+              </div>
             </CardHeader>
             <CardContent>
               <table data-testid="workload-table" className="w-full text-sm">
