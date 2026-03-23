@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.API.Controllers;
+using IGovernedToolAuditService = TerraFusion.API.Services.IGovernedToolAuditService;
 using IExemptionService = TerraFusion.Core.Services.IExemptionService;
 using IAppealService = TerraFusion.Core.Services.IAppealService;
 using ICertificationService = TerraFusion.Core.Services.ICertificationService;
@@ -111,7 +112,8 @@ public sealed class R2FullPlanHandlerAlignmentTests
         certMock.Object,
         noticeMock.Object,
         queueMock.Object,
-        new Mock<IRequestUserContextAccessor>().Object);
+        new Mock<IRequestUserContextAccessor>().Object,
+        new Mock<IGovernedToolAuditService>().Object);
     AttachPrincipal(controller, principal ?? CreatePrincipal(BentonCountyId));
     return controller;
   }

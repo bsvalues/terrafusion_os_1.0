@@ -18,6 +18,7 @@ using IQueueService = TerraFusion.Core.Services.IQueueService;
 using TerraFusion.Core.Auth;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
+using IGovernedToolAuditService = TerraFusion.API.Services.IGovernedToolAuditService;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.PACS;
 using Xunit;
@@ -1384,7 +1385,8 @@ public sealed class R1Week5CxR1ClosureTests
         new Mock<ICertificationService>().Object,
         new Mock<INoticeService>().Object,
         new Mock<IQueueService>().Object,
-        new Mock<IRequestUserContextAccessor>().Object);
+        new Mock<IRequestUserContextAccessor>().Object,
+        new Mock<IGovernedToolAuditService>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
     var result = controller.GetPermitTypes();
@@ -1404,7 +1406,8 @@ public sealed class R1Week5CxR1ClosureTests
         new Mock<ICertificationService>().Object,
         new Mock<INoticeService>().Object,
         new Mock<IQueueService>().Object,
-        new Mock<IRequestUserContextAccessor>().Object);
+        new Mock<IRequestUserContextAccessor>().Object,
+        new Mock<IGovernedToolAuditService>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
     var result = controller.GetWorkflowStages();
@@ -1424,7 +1427,8 @@ public sealed class R1Week5CxR1ClosureTests
         new Mock<ICertificationService>().Object,
         new Mock<INoticeService>().Object,
         new Mock<IQueueService>().Object,
-        new Mock<IRequestUserContextAccessor>().Object);
+        new Mock<IRequestUserContextAccessor>().Object,
+        new Mock<IGovernedToolAuditService>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
     var result = controller.GetFeeSchedule();
@@ -1444,7 +1448,8 @@ public sealed class R1Week5CxR1ClosureTests
         new Mock<ICertificationService>().Object,
         new Mock<INoticeService>().Object,
         new Mock<IQueueService>().Object,
-        new Mock<IRequestUserContextAccessor>().Object);
+        new Mock<IRequestUserContextAccessor>().Object,
+        new Mock<IGovernedToolAuditService>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
     var result = controller.GetClassificationRules();
@@ -1464,7 +1469,8 @@ public sealed class R1Week5CxR1ClosureTests
         new Mock<ICertificationService>().Object,
         new Mock<INoticeService>().Object,
         new Mock<IQueueService>().Object,
-        new Mock<IRequestUserContextAccessor>().Object);
+        new Mock<IRequestUserContextAccessor>().Object,
+        new Mock<IGovernedToolAuditService>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
     var request = new DaisController.PermitClassifyRequest("New construction dwelling", null);
@@ -1489,7 +1495,8 @@ public sealed class R1Week5CxR1ClosureTests
         new Mock<ICertificationService>().Object,
         new Mock<INoticeService>().Object,
         new Mock<IQueueService>().Object,
-        new Mock<IRequestUserContextAccessor>().Object);
+        new Mock<IRequestUserContextAccessor>().Object,
+        new Mock<IGovernedToolAuditService>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
     var result = controller.ClassifyPermit(null!);
@@ -1507,7 +1514,8 @@ public sealed class R1Week5CxR1ClosureTests
         new Mock<ICertificationService>().Object,
         new Mock<INoticeService>().Object,
         new Mock<IQueueService>().Object,
-        new Mock<IRequestUserContextAccessor>().Object);
+        new Mock<IRequestUserContextAccessor>().Object,
+        new Mock<IGovernedToolAuditService>().Object);
     AttachPrincipal(controller, CreateEmptyPrincipal());
 
     var result = await controller.GetPermitAssessmentImpact("12345");
@@ -1529,7 +1537,8 @@ public sealed class R1Week5CxR1ClosureTests
         new Mock<ICertificationService>().Object,
         new Mock<INoticeService>().Object,
         new Mock<IQueueService>().Object,
-        new Mock<IRequestUserContextAccessor>().Object);
+        new Mock<IRequestUserContextAccessor>().Object,
+        new Mock<IGovernedToolAuditService>().Object);
     AttachPrincipal(controller, CreatePrincipal(countyId, "BENTON"));
 
     var result = await controller.GetPermitAssessmentImpact("NONEXISTENT");
@@ -1553,7 +1562,8 @@ public sealed class R1Week5CxR1ClosureTests
         new Mock<ICertificationService>().Object,
         new Mock<INoticeService>().Object,
         new Mock<IQueueService>().Object,
-        new Mock<IRequestUserContextAccessor>().Object);
+        new Mock<IRequestUserContextAccessor>().Object,
+        new Mock<IGovernedToolAuditService>().Object);
     controller.ControllerContext.HttpContext = new DefaultHttpContext
     {
       User = CreatePrincipal(countyId, "BENTON"),
