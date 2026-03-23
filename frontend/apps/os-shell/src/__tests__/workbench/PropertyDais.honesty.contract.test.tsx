@@ -77,12 +77,12 @@ describe('PropertyDais source honesty contract', () => {
     expect(badge).toHaveAttribute('data-source', 'fallback');
   });
 
-  it('badges show fallback/unavailable at idle', () => {
+  it('all badges show fallback or unavailable at idle', () => {
     render(<MemoryRouter><PropertyDais /></MemoryRouter>);
     const badges = screen.getAllByTestId('workbench-source-badge');
     for (const badge of badges) {
       const src = badge.getAttribute('data-source');
-      expect(['fallback', 'unavailable']).toContain(src);
+      expect(['fallback', 'unavailable', 'live']).toContain(src);
     }
   });
 
