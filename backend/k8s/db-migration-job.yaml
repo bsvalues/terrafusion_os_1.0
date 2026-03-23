@@ -1,0 +1,95 @@
+# ============================================================================
+# TerraFusion OS - Database Migration Job
+# Phase 35: One-shot EF Core migration before deployment
+# ============================================================================
+# Runs `dotnet ef database update` using the API image with an overridden
+# entrypoint. Intended to run as a pre-deploy step in CI/CD or via
+# kubectl apply before rolling out new API versions.
+# ============================================================================
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: terrafusion-db-migrate
+  namespace: terrafusion
+  labels:
+    app: terrafusion-db-migrate
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: db-migration
+    app.kubernetes.io/part-of: terrafusion-platform
+    compliance: fisma-high
+  annotations:
+    description: 'EF Core database migration job — run before each deployment'
+spec:
+  backoffLimit: 3
+  activeDeadlineSeconds: 300
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app: terrafusion-db-migrate
+        app.kubernetes.io/name: terrafusion-os
+        app.kubernetes.io/component: db-migration
+        app.kubernetes.io/part-of: terrafusion-platform
+    spec:
+      serviceAccountName: terrafusion-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: terrafusion-api:1.0.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - dotnet
+            - TerraFusion.API.dll
+            - --migrate-only
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: 'Production'
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: DB_CONNECTION_STRING
+            - name: DOTNET_SYSTEM_GLOBALIZATION_INVARIANT
+              value: 'false'
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: '1'
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
+
+# ============================================================================
+# Apply Instructions
+# ============================================================================
+# Run migration job:
+#   kubectl apply -f db-migration-job.yaml
+#
+# Monitor progress:
+#   kubectl get job terrafusion-db-migrate -n terrafusion
+#   kubectl logs -f job/terrafusion-db-migrate -n terrafusion
+#
+# Re-run (delete old job first):
+#   kubectl delete job terrafusion-db-migrate -n terrafusion
+#   kubectl apply -f db-migration-job.yaml
+#
+# CI/CD usage — stamp image tag before apply:
+#   sed -i "s|terrafusion-api:1.0.0|terrafusion-api:${TAG}|" db-migration-job.yaml
+#   kubectl apply -f db-migration-job.yaml
+#   kubectl wait --for=condition=complete job/terrafusion-db-migrate -n terrafusion --timeout=300s
+# ============================================================================
