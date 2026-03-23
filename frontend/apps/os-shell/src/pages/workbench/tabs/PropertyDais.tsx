@@ -1049,6 +1049,7 @@ export const PropertyDais: React.FC = () => {
                   <span className='tf-text-muted'>ID:</span>
                   <code className='tf-suite-accent-text font-mono'>{piltState.correlationId.slice(0, 16)}...</code>
                   <button onClick={() => copyToClipboard(piltState.correlationId!)} className='tf-text-tertiary' aria-label='Copy'>📋</button>
+                  <WorkbenchSourceBadge source='live' />
                 </div>
               )}
             </div>
@@ -1139,6 +1140,7 @@ export const PropertyDais: React.FC = () => {
                 <span className='tf-text-muted'>ID:</span>
                 <code className='tf-suite-accent-text font-mono'>{exemptionState.correlationId.slice(0, 16)}...</code>
                 <button onClick={() => copyToClipboard(exemptionState.correlationId!)} className='tf-text-tertiary' aria-label='Copy'>📋</button>
+                <WorkbenchSourceBadge source='live' />
               </div>
             )}
           </div>
@@ -1204,6 +1206,7 @@ export const PropertyDais: React.FC = () => {
                   <span>ID:</span>
                   <code className='tf-suite-accent-text font-mono'>{memoState.correlationId.slice(0, 16)}...</code>
                   <button onClick={() => copyToClipboard(memoState.correlationId!)} className='tf-text-tertiary hover:tf-text' aria-label='Copy correlation ID'>📋</button>
+                  <WorkbenchSourceBadge source='live' />
                 </span>
               )}
             </div>
@@ -1228,7 +1231,7 @@ export const PropertyDais: React.FC = () => {
               <p className='text-xs tf-text-dim mt-2'>Shows the returned draft title, body, and disclaimer for this value-change notice request.</p>
             </div>
             <div className='text-xs tf-text-dim italic'>{noticeState.result.disclaimer}</div>
-            {noticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{noticeState.correlationId.slice(0, 16)}...</code></div>}
+            {noticeState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{noticeState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {noticeState.status === 'error' && noticeState.error && <ErrorDisplay error={{ message: noticeState.error.message, errorCode: noticeState.error.code, correlationId: noticeState.correlationId }} />}
@@ -1261,7 +1264,7 @@ export const PropertyDais: React.FC = () => {
             </div>
             <div className='flex items-center gap-4 text-xs tf-text-dim'>
               <span>Returned word count: {appealState.result.wordCount} words</span>
-              {appealState.correlationId && <span>ID: <code className='tf-suite-accent-text font-mono'>{appealState.correlationId.slice(0, 16)}...</code></span>}
+              {appealState.correlationId && <span className='flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{appealState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></span>}
             </div>
           </div>
         )}
@@ -1291,7 +1294,7 @@ export const PropertyDais: React.FC = () => {
               <div className='text-xs tf-text-dim mt-1'>Notice ID: <code className='tf-suite-accent-text font-mono'>{draftNoticeState.result.noticeId}</code></div>
               <p className='text-xs tf-text-dim mt-2'>Shows the returned notice ID, notice type, and status for this notice-draft request.</p>
             </div>
-            {draftNoticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{draftNoticeState.correlationId.slice(0, 16)}...</code></div>}
+            {draftNoticeState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{draftNoticeState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {draftNoticeState.status === 'error' && draftNoticeState.error && <ErrorDisplay error={{ message: draftNoticeState.error.message, errorCode: draftNoticeState.error.code, correlationId: draftNoticeState.correlationId }} />}
@@ -1319,7 +1322,7 @@ export const PropertyDais: React.FC = () => {
               <div className='text-sm tf-text-secondary'>Returned assignee ID: <strong>{assignTaskState.result.assignedTo}</strong></div>
               <p className='text-xs tf-text-dim mt-2'>Shows the returned task ID, assigned-to value, and status for this assignment request.</p>
             </div>
-            {assignTaskState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{assignTaskState.correlationId.slice(0, 16)}...</code></div>}
+            {assignTaskState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{assignTaskState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {assignTaskState.status === 'error' && assignTaskState.error && <ErrorDisplay error={{ message: assignTaskState.error.message, errorCode: assignTaskState.error.code, correlationId: assignTaskState.correlationId }} />}
@@ -1370,7 +1373,7 @@ export const PropertyDais: React.FC = () => {
                 {boePacketState.result.sections.map(s => <span key={s} className='text-xs tf-badge px-2 py-0.5 rounded'>{s}</span>)}
               </div>
             </div>
-            {boePacketState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{boePacketState.correlationId.slice(0, 16)}...</code></div>}
+            {boePacketState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{boePacketState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {boePacketState.status === 'error' && boePacketState.error && <ErrorDisplay error={{ message: boePacketState.error.message, errorCode: boePacketState.error.code, correlationId: boePacketState.correlationId }} />}
@@ -1405,7 +1408,7 @@ export const PropertyDais: React.FC = () => {
                 {boeAppealState.result.citations.map(c => <span key={c} className='text-xs tf-badge px-2 py-0.5 rounded font-mono'>{c}</span>)}
               </div>
             )}
-            {boeAppealState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{boeAppealState.correlationId.slice(0, 16)}...</code></div>}
+            {boeAppealState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{boeAppealState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {boeAppealState.status === 'error' && boeAppealState.error && <ErrorDisplay error={{ message: boeAppealState.error.message, errorCode: boeAppealState.error.code, correlationId: boeAppealState.correlationId }} />}
@@ -1431,7 +1434,7 @@ export const PropertyDais: React.FC = () => {
               <p className='tf-text-dim text-xs mt-1'>Returned program: {eligibilityState.result.program} | Returned threshold: ${eligibilityState.result.incomeThreshold.toLocaleString()}</p>
               <p className='text-xs tf-text-dim mt-2'>Shows the returned eligibility flag, program, reason, and income threshold for this parcel request.</p>
             </div>
-            {eligibilityState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{eligibilityState.correlationId.slice(0, 16)}...</code></div>}
+            {eligibilityState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{eligibilityState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {eligibilityState.status === 'error' && eligibilityState.error && <ErrorDisplay error={{ message: eligibilityState.error.message, errorCode: eligibilityState.error.code, correlationId: eligibilityState.correlationId }} />}
@@ -1448,7 +1451,7 @@ export const PropertyDais: React.FC = () => {
         {renewalState.status === 'success' && renewalState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'><span className='font-semibold tf-text'>Returned status: {renewalState.result.status}</span><p className='tf-text-secondary text-sm'>Exemption ID: {renewalState.result.exemptionId} | Tax year: {renewalState.result.taxYear}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned exemption ID, tax year, and renewal status for this request.</p></div>
-            {renewalState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{renewalState.correlationId.slice(0, 16)}...</code></div>}
+            {renewalState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{renewalState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {renewalState.status === 'error' && renewalState.error && <ErrorDisplay error={{ message: renewalState.error.message, errorCode: renewalState.error.code, correlationId: renewalState.correlationId }} />}
@@ -1467,7 +1470,7 @@ export const PropertyDais: React.FC = () => {
         {fileAppealState.status === 'success' && fileAppealState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'><span className='font-semibold tf-text'>Returned appeal ID: {fileAppealState.result.appealId}</span><p className='tf-text-secondary text-sm'>Returned status: {fileAppealState.result.status} | Filed at: {formatDate(fileAppealState.result.filedAt)}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned appeal ID, status, and filed-at timestamp for this appeal request.</p></div>
-            {fileAppealState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{fileAppealState.correlationId.slice(0, 16)}...</code></div>}
+            {fileAppealState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{fileAppealState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {fileAppealState.status === 'error' && fileAppealState.error && <ErrorDisplay error={{ message: fileAppealState.error.message, errorCode: fileAppealState.error.code, correlationId: fileAppealState.correlationId }} />}
@@ -1494,7 +1497,7 @@ export const PropertyDais: React.FC = () => {
           <div className='space-y-2'>
             <div className='tf-panel p-4'><span className='font-semibold tf-text'>Returned hearing ID: {hearingState.result.hearingId}</span><p className='tf-text-secondary text-sm'>Scheduled date: {formatDate(hearingState.result.scheduledDate)} | Panel: {hearingState.result.panelSize} members</p></div>
             <div className='text-xs tf-text-secondary'>Shows the returned hearing ID, scheduled date, and panel size for this hearing request.</div>
-            {hearingState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{hearingState.correlationId.slice(0, 16)}...</code></div>}
+            {hearingState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{hearingState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {hearingState.status === 'error' && hearingState.error && <ErrorDisplay error={{ message: hearingState.error.message, errorCode: hearingState.error.code, correlationId: hearingState.correlationId }} />}
@@ -1521,7 +1524,7 @@ export const PropertyDais: React.FC = () => {
               {certProgressState.result.blockers.length > 0 && <div className='mt-2 text-xs text-red-400'>Blockers: {certProgressState.result.blockers.join(', ')}</div>}
               <p className='text-xs tf-text-dim mt-2'>Shows the returned percent complete, checklist steps, and blockers for this certification progress request.</p>
             </div>
-            {certProgressState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{certProgressState.correlationId.slice(0, 16)}...</code></div>}
+            {certProgressState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{certProgressState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {certProgressState.status === 'error' && certProgressState.error && <ErrorDisplay error={{ message: certProgressState.error.message, errorCode: certProgressState.error.code, correlationId: certProgressState.correlationId }} />}
@@ -1547,7 +1550,7 @@ export const PropertyDais: React.FC = () => {
         {signOffState.status === 'success' && signOffState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'><span className='font-semibold tf-text'>Returned step ID: {signOffState.result.stepId}</span><p className='tf-text-secondary text-sm'>Returned signer: {signOffState.result.signedBy} | Returned signed-at: {formatDate(signOffState.result.signedAt)}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned step ID, signer, and signed-at timestamp for this certification sign-off request.</p></div>
-            {signOffState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{signOffState.correlationId.slice(0, 16)}...</code></div>}
+            {signOffState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{signOffState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {signOffState.status === 'error' && signOffState.error && <ErrorDisplay error={{ message: signOffState.error.message, errorCode: signOffState.error.code, correlationId: signOffState.correlationId }} />}
@@ -1566,7 +1569,7 @@ export const PropertyDais: React.FC = () => {
         {queueNoticeState.status === 'success' && queueNoticeState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'><span className='font-semibold tf-text'>Returned queued count: {queueNoticeState.result.queued}</span><p className='tf-text-secondary text-sm'>Batch ID: {queueNoticeState.result.batchId} | Delivery method: {queueNoticeState.result.deliveryMethod}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned queued count, batch ID, and delivery method for this notice-queue request.</p></div>
-            {queueNoticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{queueNoticeState.correlationId.slice(0, 16)}...</code></div>}
+            {queueNoticeState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{queueNoticeState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {queueNoticeState.status === 'error' && queueNoticeState.error && <ErrorDisplay error={{ message: queueNoticeState.error.message, errorCode: queueNoticeState.error.code, correlationId: queueNoticeState.correlationId }} />}
@@ -1602,7 +1605,7 @@ export const PropertyDais: React.FC = () => {
               </div>
               <p className='text-xs tf-text-dim mt-2'>Shows the total tasks, completed tasks, overdue count, and SLA compliance returned by this request.</p>
             </div>
-            {queueStatsState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{queueStatsState.correlationId.slice(0, 16)}...</code></div>}
+            {queueStatsState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{queueStatsState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {queueStatsState.status === 'error' && queueStatsState.error && <ErrorDisplay error={{ message: queueStatsState.error.message, errorCode: queueStatsState.error.code, correlationId: queueStatsState.correlationId }} />}
@@ -1622,7 +1625,7 @@ export const PropertyDais: React.FC = () => {
         {escalateState.status === 'success' && escalateState.result && (
           <div className='space-y-2'>
               <div className='tf-panel p-4'><span className='font-semibold tf-text'>Returned task ID: {escalateState.result.taskId}</span><p className='tf-text-secondary text-sm'>Returned escalation target: {escalateState.result.escalatedTo} | Returned status: {escalateState.result.status}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned task ID, escalation target, and status for this escalation request.</p></div>
-            {escalateState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{escalateState.correlationId.slice(0, 16)}...</code></div>}
+            {escalateState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{escalateState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {escalateState.status === 'error' && escalateState.error && <ErrorDisplay error={{ message: escalateState.error.message, errorCode: escalateState.error.code, correlationId: escalateState.correlationId }} />}
