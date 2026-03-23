@@ -40,22 +40,25 @@ describe('PropertySummary source honesty contract', () => {
 
   it('renders WorkbenchSourceBadge disclosing data source', () => {
     render(<MemoryRouter><PropertySummary /></MemoryRouter>);
-    const badge = screen.getByTestId('workbench-source-badge');
-    expect(badge).toBeInTheDocument();
+    const badges = screen.getAllByTestId('workbench-source-badge');
+    expect(badges.length).toBeGreaterThanOrEqual(1);
   });
 
   it('badge source matches the propertyData source (snapshot → fallback)', () => {
     render(<MemoryRouter><PropertySummary /></MemoryRouter>);
-    const badge = screen.getByTestId('workbench-source-badge');
+    const badges = screen.getAllByTestId('workbench-source-badge');
     // MOCK_PROPERTY.source is 'snapshot' which is not 'live' or 'polled', so badge should be fallback
-    expect(badge).toHaveAttribute('data-source');
-    const src = badge.getAttribute('data-source');
-    expect(['fallback', 'unavailable', 'live', 'partial']).toContain(src);
+    badges.forEach((badge) => {
+      expect(badge).toHaveAttribute('data-source');
+      const src = badge.getAttribute('data-source');
+      expect(['fallback', 'unavailable', 'live', 'partial']).toContain(src);
+    });
   });
 
   it('does not render a source label that contradicts the data origin', () => {
     render(<MemoryRouter><PropertySummary /></MemoryRouter>);
     // The key invariant is the badge EXISTS for all data states
-    expect(screen.getByTestId('workbench-source-badge')).toBeInTheDocument();
+    const badges = screen.getAllByTestId('workbench-source-badge');
+    expect(badges.length).toBeGreaterThanOrEqual(1);
   });
 });

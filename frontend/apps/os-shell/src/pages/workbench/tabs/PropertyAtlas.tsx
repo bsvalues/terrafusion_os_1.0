@@ -214,6 +214,13 @@ function ParcelMapVisualization({
         {result.centroid && (
           <span className='text-white/50 font-mono'>
             {result.centroid.lat.toFixed(4)}°N, {Math.abs(result.centroid.lng).toFixed(4)}°W
+            <span
+              data-testid="atlas-centroid-disclosure"
+              className="ml-1 text-white/30"
+              style={{ fontSize: 9 }}
+            >
+              (preview centroid)
+            </span>
           </span>
         )}
         <span className='text-white/50'>
@@ -376,7 +383,15 @@ export const PropertyAtlas: React.FC = () => {
 
       {/* Parcel Context from Store */}
       {activeParcel && (
-        <BentoGrid columns="auto" gap={0.75} padding={0}>
+        <div>
+          <p
+            data-testid="atlas-parcel-context-source"
+            className="text-xs mb-1"
+            style={{ color: 'hsl(215 16% 47%)' }}
+          >
+            Parcel context returned from property store (PACS mirror)
+          </p>
+          <BentoGrid columns="auto" gap={0.75} padding={0}>
           <BentoCard variant="stat" title="Address">
             <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
               {activeParcel.address || '—'}
@@ -402,7 +417,8 @@ export const PropertyAtlas: React.FC = () => {
               {activeParcel.landUseDescription || activeParcel.propertyType || '—'}
             </p>
           </BentoCard>
-        </BentoGrid>
+          </BentoGrid>
+        </div>
       )}
 
       {/* Main Content Grid */}
@@ -487,6 +503,13 @@ export const PropertyAtlas: React.FC = () => {
           <div className='flex items-center justify-between mb-3'>
             <h4 className='font-semibold flex items-center gap-2' style={{ color: 'hsl(var(--tf-success))' }}>
               <span>✅</span> Query Results
+              <span
+                data-testid="atlas-results-source"
+                className="font-normal text-xs"
+                style={{ color: 'hsl(215 16% 47%)' }}
+              >
+                — returned from query_parcel_layers
+              </span>
             </h4>
             {queryState.correlationId && (
               <div className='flex items-center gap-2 text-xs'>

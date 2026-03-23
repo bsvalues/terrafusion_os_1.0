@@ -120,17 +120,57 @@ export const PropertySummary: React.FC = () => {
             {fmt(propertyData.marketValue)}
           </p>
         </BentoCard>
-        <BentoCard variant="stat" title="Assessed Value" promote>
+        <BentoCard
+          variant="stat"
+          title="Assessed Value"
+          promote
+          actions={
+            <WorkbenchSourceBadge
+              source={
+                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                  ? 'live'
+                  : 'fallback'
+              }
+              className="ml-2"
+            />
+          }
+        >
           <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-success))' }}>
             {fmt(propertyData.assessedValue)}
           </p>
         </BentoCard>
-        <BentoCard variant="stat" title="Land Value">
+        <BentoCard
+          variant="stat"
+          title="Land Value"
+          actions={
+            <WorkbenchSourceBadge
+              source={
+                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                  ? 'live'
+                  : 'fallback'
+              }
+              className="ml-2"
+            />
+          }
+        >
           <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-text))' }}>
             {fmt(propertyData.landValue)}
           </p>
         </BentoCard>
-        <BentoCard variant="stat" title="Improvement Value">
+        <BentoCard
+          variant="stat"
+          title="Improvement Value"
+          actions={
+            <WorkbenchSourceBadge
+              source={
+                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                  ? 'live'
+                  : 'fallback'
+              }
+              className="ml-2"
+            />
+          }
+        >
           <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-text))' }}>
             {fmt(propertyData.improvementValue)}
           </p>
@@ -170,7 +210,20 @@ export const PropertySummary: React.FC = () => {
       {activeParcel && (activeParcel.hasActivePermits || activeParcel.hasAppeals || (activeParcel.exemptionAmount > 0)) && (
         <BentoGrid columns="auto" gap={0.75} padding={0}>
           {activeParcel.exemptionAmount > 0 && (
-            <BentoCard variant="stat" title="Exemptions">
+            <BentoCard
+              variant="stat"
+              title="Exemptions"
+              actions={
+                <WorkbenchSourceBadge
+                  source={
+                    propertyData?.source === 'live' || propertyData?.source === 'polled'
+                      ? 'live'
+                      : 'fallback'
+                  }
+                  className="ml-2"
+                />
+              }
+            >
               <p className="text-lg font-bold" style={{ color: 'hsl(var(--tf-warning, 45 90% 55%))' }}>
                 {fmt(activeParcel.exemptionAmount)}
               </p>
@@ -206,7 +259,20 @@ export const PropertySummary: React.FC = () => {
 
       {/* Assessment History — from eagerly loaded store data */}
       {assessments.length > 0 && (
-        <BentoCard variant="table" title="Assessment History">
+        <BentoCard
+          variant="table"
+          title="Assessment History"
+          actions={
+            <WorkbenchSourceBadge
+              source={
+                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                  ? 'live'
+                  : 'fallback'
+              }
+              className="ml-2"
+            />
+          }
+        >
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
               <thead>
@@ -308,7 +374,20 @@ export const PropertySummary: React.FC = () => {
               {new Date(activeParcel.lastSaleDate).toLocaleDateString()}
             </p>
           </BentoCard>
-          <BentoCard variant="stat" title="Last Sale Price">
+          <BentoCard
+            variant="stat"
+            title="Last Sale Price"
+            actions={
+              <WorkbenchSourceBadge
+                source={
+                  propertyData?.source === 'live' || propertyData?.source === 'polled'
+                    ? 'live'
+                    : 'fallback'
+                }
+                className="ml-2"
+              />
+            }
+          >
             <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
               {activeParcel.lastSalePrice ? fmt(activeParcel.lastSalePrice) : '—'}
             </p>
