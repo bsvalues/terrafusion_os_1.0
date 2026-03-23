@@ -23,7 +23,43 @@ const defaultCodeTargets = [
   "os-platform/core/pilot",
   "os-platform/core/types",
 ];
+const defaultFrontendCodeTargets = ["frontend/apps/os-shell"];
 const defaultIacTargets = ["charts"];
+const cliOptions = parseCliOptions(process.argv.slice(2));
+
+function parseCliOptions(args) {
+  const options = {
+    includeFrontend: false,
+    explicitTargets: [],
+  };
+
+  for (const arg of args) {
+    if (arg === "--include-frontend") {
+      options.includeFrontend = true;
+      continue;
+    }
+
+    if (arg === "--frontend-only") {
+      options.explicitTargets.push(...defaultFrontendCodeTargets);
+      continue;
+    }
+
+    if (arg.startsWith("--targets=")) {
+      options.explicitTargets.push(
+        ...arg
+          .slice("--targets=".length)
+          .split(",")
+          .map((value) => value.trim())
+          .filter(Boolean),
+      );
+    }
+  }
+
+  return {
+    includeFrontend: options.includeFrontend,
+    explicitTargets: [...new Set(options.explicitTargets)],
+  };
+}
 
 function writeStatusReport(status, details = {}) {
   fs.writeFileSync(
@@ -56,7 +92,10 @@ function runSnyk(args) {
 }
 
 function resolveTargets() {
-  const configuredTargets = (
+  const cliConfiguredTargets = cliOptions.explicitTargets.length > 0
+    ? cliOptions.explicitTargets
+    : [];
+  const envConfiguredTargets = (
     process.env.SNYK_TARGETS ||
     (scanMode === "iac" ? process.env.SNYK_IAC_TARGETS : process.env.SNYK_CODE_TARGETS) ||
     ""
@@ -66,8 +105,21 @@ function resolveTargets() {
     .filter(Boolean);
 
   const defaultTargets = scanMode === "iac" ? defaultIacTargets : defaultCodeTargets;
+  const implicitTargets =
+    scanMode === "iac"
+      ? defaultTargets
+      : cliOptions.includeFrontend
+        ? [...defaultCodeTargets, ...defaultFrontendCodeTargets]
+        : defaultTargets;
 
-  const targets = (configuredTargets.length > 0 ? configuredTargets : defaultTargets)
+  const requestedTargets =
+    cliConfiguredTargets.length > 0
+      ? cliConfiguredTargets
+      : envConfiguredTargets.length > 0
+        ? envConfiguredTargets
+        : implicitTargets;
+
+  const targets = requestedTargets
     .map((target) => path.resolve(repoRoot, target))
     .filter((targetPath) => fs.existsSync(targetPath));
 
@@ -209,8 +261,15 @@ if (targets.length === 0) {
   process.exit(0);
 }
 
+const targetScopeLabel =
+  scanMode === "iac"
+    ? "configured"
+    : cliOptions.explicitTargets.length > 0 || cliOptions.includeFrontend
+      ? "configured"
+      : "governed";
+
 console.log(
-  `Scanning governed ${scanMode} targets: ${targets
+  `Scanning ${targetScopeLabel} ${scanMode} targets: ${targets
     .map((target) => path.relative(repoRoot, target))
     .join(", ")}`,
 );

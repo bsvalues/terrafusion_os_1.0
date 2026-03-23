@@ -19,6 +19,11 @@ Default governed targets:
 - `os-platform/core/pilot`
 - `os-platform/core/types`
 
+Optional frontend scan targets:
+
+- `frontend/apps/os-shell` via `pnpm run security:scan:frontend`
+- governed core plus `frontend/apps/os-shell` via `pnpm run security:scan:first-party`
+
 Default IaC targets when `SNYK_SCAN_MODE=iac`:
 
 - `charts`
@@ -31,10 +36,13 @@ The VS Code extension is optional convenience only. It is not the release-closur
 
 - If `snyk` is on `PATH` and authenticated, the command runs `snyk code test` and writes `snyk-code-report.json`.
 - If no explicit target list is supplied, the command scans the governed core targets above instead of attempting an unbounded full-repo crawl.
+- If a frontend shell slice needs first-party coverage, the repo-owned runner can scan `frontend/apps/os-shell` explicitly without redefining the default governed-core baseline.
 - If `snyk` is missing from `PATH`, the command records `CAPABILITY UNAVAILABLE` and does not pretend a scan ran.
 - If `snyk` is installed but not authenticated, the command records `CAPABILITY UNAVAILABLE` and instructs the operator to run `snyk auth` or provide `SNYK_TOKEN`.
 - If a target scan exceeds the configured timeout, the command fails truthfully instead of hanging indefinitely.
 - In IaC mode, `snyk` exit code `3` is treated as a truthful skip for optional targets with no supported IaC files detected.
+
+Frontend shell scans remain opt-in so the ratified `pnpm run security:scan` baseline and `pnpm run security:check` ceiling stay anchored to the governed core lane.
 
 This keeps local release work truthful without pretending the extension or the CLI is always present.
 

@@ -30,8 +30,10 @@ Bounded verification was executed on 2026-03-22.
 
 Results:
 
-- `pnpm run security:scan` = `PASS (exit 0; governed-core lane preserved)`
-- `pnpm run security:scan:frontend` = `PASS (runner executed against frontend/apps/os-shell and produced a report)`
+- `pnpm run security:scan` = `PASS (exit 0; governed-core targets only; 69 findings)`
+- `pnpm run security:check` = `PASS (governed-core baseline enforcement still passes after the runner extension)`
+- `pnpm run security:scan:frontend` = `PASS (exit 0; frontend/apps/os-shell only; 18 findings)`
+- `pnpm run security:scan:first-party` = `PASS (exit 0; governed core plus frontend/apps/os-shell; 87 findings)`
 - `pnpm run type-check` = `PASS`
 - `node --test os-platform/core/tests/phase83-tools.test.mjs` = `PASS`
 
