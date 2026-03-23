@@ -1,0 +1,71 @@
+# ============================================================================
+# TerraFusion OS - Pod Disruption Budgets
+# Phase 35: Production hardening for all core services
+# ============================================================================
+# Ensures at least 1 pod remains available during voluntary disruptions
+# (node drains, cluster upgrades, etc.) for each core service.
+# ============================================================================
+
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: terrafusion-api-pdb
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: api-pdb
+    app.kubernetes.io/part-of: terrafusion-platform
+    compliance: fisma-high
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: terrafusion-api
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: terrafusion-consciousness-pdb
+  namespace: terrafusion
+  labels:
+    app: terrafusion-consciousness
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: consciousness-pdb
+    app.kubernetes.io/part-of: terrafusion-platform
+    compliance: fisma-high
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: terrafusion-consciousness
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: terrafusion-gateway-pdb
+  namespace: terrafusion
+  labels:
+    app: terrafusion-gateway
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: gateway-pdb
+    app.kubernetes.io/part-of: terrafusion-platform
+    compliance: fisma-high
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: terrafusion-gateway
+
+# ============================================================================
+# Apply Instructions
+# ============================================================================
+# Apply PDBs:
+#   kubectl apply -f pdb.yaml
+#
+# Verify PDB status:
+#   kubectl get pdb -n terrafusion
+#   kubectl describe pdb -n terrafusion
+# ============================================================================
