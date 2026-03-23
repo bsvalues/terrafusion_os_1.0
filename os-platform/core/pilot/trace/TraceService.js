@@ -83,9 +83,9 @@ class TraceService {
                     this.devAdapter = require('./devSqliteAdapter.cjs');
                 }
                 else {
-                    // fallback to file-based ESM adapter
+                    // fallback to file-based CommonJS adapter (works in CI/container)
                     // eslint-disable-next-line global-require, import/no-dynamic-require
-                    this.devAdapter = require('./devAuditAdapter.mjs');
+                    this.devAdapter = require('./devAuditAdapter.cjs');
                 }
             }
             catch (e) {

@@ -83,6 +83,15 @@ vi.mock('../../services/incomeValuationService', () => ({
   saveIncomeValuationRecord: vi.fn().mockResolvedValue(undefined),
 }));
 
+// ── Mock: useForgeValuation (avoids QueryClientProvider requirement) ─────────
+
+vi.mock('../../hooks/forge/useForgeValuation', () => ({
+  useCostApproach: vi.fn(() => ({ status: 'idle', data: null, error: null, refetch: vi.fn() })),
+  useSalesComparison: vi.fn(() => ({ status: 'idle', data: null, error: null, refetch: vi.fn() })),
+  useIncomeApproach: vi.fn(() => ({ status: 'idle', data: null, error: null, refetch: vi.fn() })),
+  useReconciliation: vi.fn(() => ({ status: 'idle', data: null, error: null, refetch: vi.fn() })),
+}));
+
 // ── Mock: lucide-react ──────────────────────────────────────────────────────
 
 vi.mock('lucide-react', () => {
