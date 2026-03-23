@@ -1267,6 +1267,57 @@ public class DaisController : ControllerBase
   }
 
   /// <summary>
+  /// GET api/dais/queue — Workload summary (total parcels, reviewed, remaining, active appraisers).
+  /// Used by the Management Dashboard MorningBriefingStrip workload card.
+  /// Returns structured fallback when queue service data is sparse.
+  /// </summary>
+  [HttpGet("queue")]
+  public async Task<IActionResult> GetQueueSummary()
+  {
+    var countyAccess = await RequireCountyAccessAsync();
+    if (countyAccess.ErrorResult is not null)
+      return countyAccess.ErrorResult;
+
+    var effectiveCountyId = countyAccess.CountyId!.Value;
+
+    try
+    {
+      var metrics = await _queueService.GetMetricsAsync(effectiveCountyId);
+      var productivity = await _queueService.GetProductivityAsync(effectiveCountyId);
+
+      var totalParcels = (metrics?.TotalQueued ?? 0) + (metrics?.TotalInProgress ?? 0) + (metrics?.TotalCompleted ?? 0);
+      var parcelsReviewed = metrics?.TotalCompleted ?? 0;
+      var parcelsRemaining = totalParcels - parcelsReviewed;
+      var appraisersActive = productivity?.Count ?? 0;
+      double? utilizationPct = totalParcels > 0
+          ? Math.Round((double)parcelsReviewed / totalParcels * 100, 1)
+          : null;
+
+      return Ok(new
+      {
+        source = "live",
+        totalParcels,
+        parcelsReviewed,
+        parcelsRemaining,
+        appraisersActive,
+        utilizationPct,
+      });
+    }
+    catch
+    {
+      return Ok(new
+      {
+        source = "fallback",
+        totalParcels = 0,
+        parcelsReviewed = 0,
+        parcelsRemaining = 0,
+        appraisersActive = 0,
+        utilizationPct = (double?)null,
+      });
+    }
+  }
+
+  /// <summary>
   /// POST api/dais/queue/review — Approve or reject a queue item.
   /// </summary>
   [HttpPost("queue/review")]
