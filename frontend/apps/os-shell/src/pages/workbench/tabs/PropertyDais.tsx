@@ -822,8 +822,18 @@ export const PropertyDais: React.FC = () => {
         icon='📊'
         title='TerraDais'
         parcelId={parcelId}
-        subtitle={`Workflow orchestration for ${parcelId}`}
+        subtitle={`Governed workflow tools requested via TerraDais for ${parcelId}`}
       />
+
+      {/* Baseline Disclosure */}
+      <div className="tf-status-info rounded-xl p-4" data-testid="dais-baseline-disclosure">
+        <div className="flex items-start justify-between gap-3">
+          <p className="tf-text">
+            All tool sections below are idle until you submit a request. Results are returned from governed tool invocations and displayed with their correlation IDs. No data is simulated or pre-loaded.
+          </p>
+          <WorkbenchSourceBadge source="fallback" className="shrink-0" />
+        </div>
+      </div>
 
       {/* Loaded Appeals from Store */}
       {appeals.length > 0 && (

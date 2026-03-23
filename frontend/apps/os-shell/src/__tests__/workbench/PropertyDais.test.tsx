@@ -48,7 +48,7 @@ describe('PropertyDais', () => {
       render(<TestWrapper parcelId='12345-001' />);
 
       expect(screen.getByTestId('property-dais-tab')).toBeInTheDocument();
-      expect(screen.getByText(/TerraDais/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/TerraDais/i).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/12345-001/).length).toBeGreaterThan(0);
     });
 
