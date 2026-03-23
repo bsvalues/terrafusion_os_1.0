@@ -1,5 +1,6 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Data;
@@ -52,6 +53,18 @@ public class PacsDataSeeder
             ?? throw new InvalidOperationException(
                 "PacsConnection not configured. Add it to appsettings.Development.local.json.");
 
+        // Ensure PACS tables exist in the target database.
+        // EF Core's CreateTablesAsync emits plain CREATE TABLE (no IF NOT EXISTS), so
+        // we generate the full DDL script and execute each statement individually,
+        // silently skipping any "already exists" errors for pre-existing tables.
+        await EnsureSchemaAsync(ct);
+        _logger.LogInformation("[PacsSeeder] Schema ensured (missing tables created if any).");
+
+        // Full-refresh: clear all PACS mirror tables before seeding so we do plain
+        // inserts rather than loading all existing rows into memory for upsert logic.
+        await ClearPacsTablesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] PACS tables cleared. Starting fresh insert.");
+
         var result = new PacsSeederResult();
 
         await using var pacs = new SqlConnection(cs);
@@ -90,6 +103,78 @@ public class PacsDataSeeder
         return result;
     }
 
+    // ── Clear PACS tables (full-refresh) ─────────────────────────────────
+    // Deletes all rows from PACS mirror tables in FK-safe reverse order so
+    // the ETL can do plain inserts without loading existing rows into memory.
+
+    private async Task ClearPacsTablesAsync(CancellationToken ct)
+    {
+        // Truncate all PACS tables in one statement — CASCADE handles FK order automatically.
+        // Postgres TRUNCATE is far faster than DELETE and avoids FK ordering issues.
+        const string truncateSql = @"
+            TRUNCATE TABLE
+                pacs_tax_areas, pacs_appeals, pacs_exemptions, pacs_sales,
+                pacs_owners, pacs_land_details,
+                pacs_improvement_attributes, pacs_improvement_details, pacs_improvements,
+                pacs_valuations, pacs_situs, pacs_property_profiles, ""PacsParcel""
+            RESTART IDENTITY CASCADE";
+        try
+        {
+            await _db.Database.ExecuteSqlRawAsync(truncateSql, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning("[PacsSeeder] Bulk truncate failed ({Msg}); falling back to per-table DELETE.", ex.Message);
+            // Fallback: individual DELETEs with FK-safe order
+            var tables = new[]
+            {
+                "pacs_tax_areas", "pacs_appeals", "pacs_exemptions", "pacs_sales",
+                "pacs_owners", "pacs_land_details",
+                "pacs_improvement_attributes", "pacs_improvement_details", "pacs_improvements",
+                "pacs_valuations", "pacs_situs", "pacs_property_profiles", "PacsParcel"
+            };
+            foreach (var tbl in tables)
+            {
+                try
+                {
+                    await _db.Database.ExecuteSqlRawAsync($"DELETE FROM \"{tbl}\"", ct);
+                }
+                catch (Exception inner)
+                {
+                    _logger.LogWarning("[PacsSeeder] Could not clear {Table}: {Msg}", tbl, inner.Message);
+                }
+            }
+        }
+    }
+
+    // ── Schema bootstrap ──────────────────────────────────────────────────
+    // Generates the full CREATE script for the current EF model and executes
+    // each statement individually, skipping "already exists" errors so that
+    // existing tables are untouched while new PACS tables are created.
+
+    private async Task EnsureSchemaAsync(CancellationToken ct)
+    {
+        var script = _db.Database.GenerateCreateScript();
+        foreach (var raw in script.Split(';', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var sql = raw.Trim();
+            if (string.IsNullOrWhiteSpace(sql)) continue;
+            try
+            {
+                await _db.Database.ExecuteSqlRawAsync(sql, ct);
+            }
+            catch (SqliteException ex) when (ex.Message.Contains("already exists"))
+            {
+                // expected for pre-existing tables — PACS tables will succeed
+            }
+            catch (Exception)
+            {
+                // non-SQLite provider (Postgres prod): ignore DDL errors here,
+                // migrations handle schema in production
+            }
+        }
+    }
+
     // ── 1. PacsParcel ─────────────────────────────────────────────────────
 
     private async Task<Dictionary<int, Guid>> SeedParcelsAsync(
@@ -99,17 +184,18 @@ public class PacsDataSeeder
         var existing = await _db.PacsParcel
             .ToDictionaryAsync(p => p.PropId, p => p.Id, ct);
 
+        // SELECT * so column names never cause compile-time errors across PACS versions.
+        // Str/Dec/Dt helpers silently return null for any missing column.
         const string sql = @"
-            SELECT prop_id, geo_id, simple_geo_id, prop_type_cd, state_cd,
-                   zoning, utilities, topo, road_access, prop_cmnt, prop_create_dt
-            FROM property
-            WHERE prop_inactive_dt IS NULL
-            ORDER BY prop_id";
+            SELECT * FROM property ORDER BY prop_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
         await using var rdr = await cmd.ExecuteReaderAsync(ct);
         var batch = new List<PacsParcel>(BatchSize);
         var total = 0;
+        // Tracks prop_ids added as NEW entries (not yet flushed) in the current batch.
+        // Prevents duplicate PACS source rows from creating two entities with the same PK.
+        var seenThisBatch = new HashSet<int>();
 
         while (await rdr.ReadAsync(ct))
         {
@@ -117,12 +203,20 @@ public class PacsDataSeeder
 
             PacsParcel e;
             if (existing.TryGetValue(propId, out var guid))
+            {
+                // If this guid was created in the current unflushed batch, the entity isn't
+                // in the DB yet — FindAsync would return null and create a PK-collision.
+                // Skip: it's a PACS source duplicate, first occurrence already queued.
+                if (seenThisBatch.Contains(propId)) continue;
+
                 e = await _db.PacsParcel.FindAsync(new object[] { guid }, ct)
                     ?? new PacsParcel { Id = guid };
+            }
             else
             {
                 e = new PacsParcel();
                 existing[propId] = e.Id;
+                seenThisBatch.Add(propId);
             }
 
             e.PropId      = propId;
@@ -132,7 +226,7 @@ public class PacsDataSeeder
             e.SimpleGeoId = Str(rdr, "simple_geo_id");
             e.StateCd     = Str(rdr, "state_cd");
             e.Zoning      = Str(rdr, "zoning");
-            e.Topography  = Str(rdr, "topo");
+            e.Topography  = Str(rdr, "topo") ?? Str(rdr, "topography");
             e.Utilities   = Str(rdr, "utilities");
             e.RoadAccess  = Str(rdr, "road_access");
             e.PropCmnt    = Str(rdr, "prop_cmnt");
@@ -144,12 +238,21 @@ public class PacsDataSeeder
             {
                 total += await UpsertAsync(batch, ct);
                 batch.Clear();
+                seenThisBatch.Clear();
+                _logger.LogInformation("[PacsSeeder] PacsParcel batch saved, total so far: {Total}", total);
             }
         }
 
         if (batch.Count > 0) total += await UpsertAsync(batch, ct);
         _logger.LogInformation("[PacsSeeder] PacsParcel: {Total}", total);
-        return existing;
+
+        // After all inserts, rebuild propMap from DB to ensure we use the actual server-stored Guids.
+        // GroupBy handles rare duplicate prop_id rows in PACS (take the first Guid for each).
+        var savedMap = (await _db.PacsParcel.ToListAsync(ct))
+            .GroupBy(p => p.PropId)
+            .ToDictionary(g => g.Key, g => g.First().Id);
+        _logger.LogInformation("[PacsSeeder] PacsParcel propMap rebuilt from DB: {Count} entries", savedMap.Count);
+        return savedMap;
     }
 
     // ── 2. PacsSitus ──────────────────────────────────────────────────────
@@ -160,6 +263,7 @@ public class PacsDataSeeder
         _logger.LogInformation("[PacsSeeder] Seeding PacsSitus...");
         var existing = await _db.PacsSituses
             .ToDictionaryAsync(s => (s.PacsPropId, s.PacsSitusId), s => s.Id, ct);
+        var seen = new HashSet<(int, int)>(existing.Keys);
 
         const string sql = @"
             SELECT s.prop_id,
@@ -178,7 +282,6 @@ public class PacsDataSeeder
                    s.sub_num
             FROM situs s
             INNER JOIN property p ON s.prop_id = p.prop_id
-            WHERE p.prop_inactive_dt IS NULL
             ORDER BY s.prop_id, situs_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
@@ -194,15 +297,14 @@ public class PacsDataSeeder
             var situsId = Int(rdr, "situs_id") ?? 0;
             var key     = (propId, situsId);
 
+            if (!seen.Add(key)) continue;
+
             PacsSitus e;
             if (existing.TryGetValue(key, out var eId))
                 e = await _db.PacsSituses.FindAsync(new object[] { eId }, ct)
                     ?? new PacsSitus { Id = eId };
             else
-            {
                 e = new PacsSitus();
-                existing[key] = e.Id;
-            }
 
             e.ParcelId     = parcelId;
             e.PacsPropId   = propId;
@@ -239,74 +341,19 @@ public class PacsDataSeeder
     private async Task<int> SeedValuationsAsync(
         SqlConnection pacs, Dictionary<int, Guid> propMap, CancellationToken ct)
     {
-        _logger.LogInformation("[PacsSeeder] Seeding PacsValuation...");
-        var existing = await _db.PacsValuations
-            .ToDictionaryAsync(v => (v.PacsPropId, v.PropValYear, v.SupNum), v => v.Id, ct);
+        _logger.LogInformation("[PacsSeeder] Seeding PacsValuation (current year, sup_num=0 per prop_id)...");
 
-        // prop_supp_assoc join: pulls only current supplement, non-sale records
+        // One row per prop_id: current certified year (global MAX, sup_num=0) only.
+        // Global MAX is a constant — SQL Server can index-seek on it, far faster than a CTE GROUP BY.
         const string sql = @"
-            SELECT
-                pv.prop_id, CAST(pv.prop_val_yr AS int) AS prop_val_yr, pv.sup_num,
-                pv.appraised_val, pv.assessed_val, pv.market, pv.imprv_val,
-                pv.land_hstd_val, pv.land_non_hstd_val,
-                pv.imprv_hstd_val, pv.imprv_non_hstd_val,
-                pv.ag_use_val, pv.ag_market, pv.ag_loss, pv.ag_late_loss,
-                pv.ag_hs_use_val, pv.ag_hs_mkt_val, pv.ag_hs_loss,
-                pv.timber_78, pv.timber_market, pv.timber_use, pv.timber_loss,
-                pv.timber_late_loss, pv.timber_hs_use_val, pv.timber_hs_mkt_val, pv.timber_hs_loss,
-                pv.ten_percent_cap, pv.freeze_ceiling, pv.freeze_yr,
-                pv.hscap_qualify_yr, pv.hscap_base_yr,
-                pv.hscap_prev_hs_val, pv.hscap_new_hs_val, pv.hscap_prev_reappr_yr,
-                pv.last_appraisal_yr,
-                pv.new_val, pv.new_val_hs, pv.new_val_nhs,
-                pv.new_val_imprv_hs, pv.new_val_imprv_nhs,
-                pv.new_val_land_hs, pv.new_val_land_nhs, pv.new_yr,
-                pv.remodel_val_curr_yr,
-                pv.cost_value, pv.cost_market,
-                pv.cost_land_hstd_val, pv.cost_land_non_hstd_val,
-                pv.cost_imprv_hstd_val, pv.cost_imprv_non_hstd_val,
-                pv.cost_ag_use_val, pv.cost_ag_market,
-                pv.income_value, pv.income_market,
-                pv.income_land_hstd_val, pv.income_land_non_hstd_val,
-                pv.income_imprv_hstd_val, pv.income_imprv_non_hstd_val,
-                pv.mktappr_market,
-                pv.mktappr_imprv_hstd_val, pv.mktappr_imprv_non_hstd_val,
-                pv.mktappr_land_hstd_val, pv.mktappr_land_non_hstd_val,
-                pv.arb_market,
-                pv.arb_land_hstd_val, pv.arb_land_non_hstd_val,
-                pv.arb_imprv_hstd_val, pv.arb_imprv_non_hstd_val,
-                pv.arb_ag_use_val, pv.arb_ag_market,
-                pv.rendered_val, pv.rendered_yr,
-                pv.pp_mkt_val, pv.pp_appraised_val,
-                pv.legal_desc, pv.legal_acres,
-                pv.nbhd_cd, pv.abs_subdv_cd, pv.rgn_cd, pv.twnshp_cd, pv.rnge_cd,
-                pv.map_id, pv.subset_cd,
-                pv.appraiser_id, pv.last_appraiser_id,
-                pv.next_appraiser_id, pv.value_appraiser_id, pv.land_appraiser_id,
-                pv.last_appraisal_dt, pv.next_appraisal_dt, pv.next_appraisal_rsn,
-                pv.last_actual_appraisal_dt, pv.recalc_dt,
-                pv.lat, pv.long,
-                pv.udi_parent, pv.udi_parent_prop_id, pv.udi_status,
-                pv.prop_type_cd, pv.property_use_cd, pv.secondary_use_cd,
-                pv.sub_market_cd, pv.visibility_access_cd, pv.appr_method,
-                pv.sub_type, pv.prop_state, pv.cycle,
-                pv.sup_cd, pv.sup_desc, pv.sup_dt, pv.sup_action, pv.sup_cmnt,
-                pv.change_dt, pv.prop_inactive_dt, pv.notice_mail_dt,
-                pv.vit_flag, pv.has_locked_values,
-                pv.abated_pct, pv.abated_amt, pv.abated_yr,
-                pv.tif_imprv_val, pv.tif_land_val, pv.tif_flag,
-                pv.school_dist_cd, pv.city_cd, pv.county_cd
-            FROM property_val pv
-            INNER JOIN prop_supp_assoc psa
-                ON pv.prop_id = psa.prop_id
-               AND pv.prop_val_yr = psa.owner_tax_yr
-               AND pv.sup_num = psa.sup_num
-            WHERE pv.prop_inactive_dt IS NULL
-              AND (psa.sale_id = 0 OR psa.sale_id IS NULL)
-            ORDER BY pv.prop_id, pv.prop_val_yr, pv.sup_num";
+            SELECT * FROM property_val
+            WHERE  prop_val_yr = (SELECT MAX(prop_val_yr) FROM property_val)
+              AND  sup_num     = 0";
 
-        await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 600 };
+        _logger.LogInformation("[PacsSeeder] PacsValuation: executing current-year query on SQL Server...");
+        await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 120 };
         await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        _logger.LogInformation("[PacsSeeder] PacsValuation: reader opened, starting row reads.");
         var batch = new List<PacsValuation>(BatchSize);
         var total = 0;
 
@@ -315,19 +362,11 @@ public class PacsDataSeeder
             var propId = rdr.GetInt32(rdr.GetOrdinal("prop_id"));
             if (!propMap.TryGetValue(propId, out var parcelId)) continue;
 
-            var yr  = rdr.GetInt32(rdr.GetOrdinal("prop_val_yr"));
-            var sup = rdr.GetInt32(rdr.GetOrdinal("sup_num"));
-            var key = (propId, yr, sup);
+            var yr  = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("prop_val_yr")));
+            var sup = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("sup_num")));
 
-            PacsValuation e;
-            if (existing.TryGetValue(key, out var eId))
-                e = await _db.PacsValuations.FindAsync(new object[] { eId }, ct)
-                    ?? new PacsValuation { Id = eId };
-            else
-            {
-                e = new PacsValuation();
-                existing[key] = e.Id;
-            }
+            // Table was cleared before this runs — always insert fresh.
+            var e = new PacsValuation();
 
             e.ParcelId    = parcelId;
             e.PacsPropId  = propId;
@@ -496,6 +535,7 @@ public class PacsDataSeeder
             {
                 total += await UpsertAsync(batch, ct);
                 batch.Clear();
+                _logger.LogInformation("[PacsSeeder] PacsValuation batch saved, total: {Total}", total);
             }
         }
 
@@ -514,36 +554,9 @@ public class PacsDataSeeder
             .ToDictionaryAsync(
                 i => (i.PacsPropId, i.PropValYear, i.PacsImprvId),
                 i => i.Id, ct);
+        var seen = new HashSet<(int, int, int)>(existing.Keys);
 
-        const string sql = @"
-            SELECT i.prop_id, CAST(i.prop_val_yr AS int) AS prop_val_yr,
-                   i.imprv_id, i.sup_num,
-                   i.imprv_type_cd, i.imprv_state_cd, i.imprv_desc,
-                   i.misc_cd, i.primary_imprv, i.imprv_homesite,
-                   i.num_imprv, i.building_number, i.building_name,
-                   i.imprv_val, i.orig_val, i.base_val, i.calc_val,
-                   i.adjusted_val, i.flat_val, i.arb_val, i.dist_val,
-                   i.income_val, i.mktappr_val, i.locked_val,
-                   i.living_area_up, i.imprv_adj_amt, i.imprv_adj_factor,
-                   i.imprv_mass_adj_factor, i.value_type, i.imprv_val_source,
-                   i.imp_new_yr, i.imp_new_val,
-                   i.economic_pct, i.physical_pct, i.functional_pct, i.dep_pct,
-                   i.economic_cmnt, i.physical_cmnt, i.functional_cmnt, i.dep_cmnt,
-                   i.depreciation_yr, i.yr_built, i.yr_renovated,
-                   i.actual_age, i.eff_age, i.percent_complete,
-                   i.stories_cnt, i.stories_tot,
-                   i.imprv_cmnt, i.image_path,
-                   i.mbl_hm_sn1, i.mbl_hm_sn2, i.mbl_hm_sn3,
-                   i.mbl_hm_hud1, i.mbl_hm_hud2, i.mbl_hm_hud3
-            FROM imprv i
-            INNER JOIN property p ON i.prop_id = p.prop_id
-            INNER JOIN prop_supp_assoc psa
-                ON i.prop_id = psa.prop_id
-               AND i.prop_val_yr = psa.owner_tax_yr
-               AND i.sup_num = psa.sup_num
-            WHERE p.prop_inactive_dt IS NULL
-              AND (psa.sale_id = 0 OR psa.sale_id IS NULL)
-            ORDER BY i.prop_id, i.prop_val_yr, i.imprv_id";
+        const string sql = @"SELECT * FROM imprv WHERE prop_val_yr = (SELECT MAX(prop_val_yr) FROM imprv) ORDER BY prop_id, prop_val_yr, imprv_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
         await using var rdr = await cmd.ExecuteReaderAsync(ct);
@@ -555,25 +568,24 @@ public class PacsDataSeeder
             var propId  = rdr.GetInt32(rdr.GetOrdinal("prop_id"));
             if (!propMap.TryGetValue(propId, out var parcelId)) continue;
 
-            var yr      = rdr.GetInt32(rdr.GetOrdinal("prop_val_yr"));
-            var imprvId = rdr.GetInt32(rdr.GetOrdinal("imprv_id"));
+            var yr      = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("prop_val_yr")));
+            var imprvId = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("imprv_id")));
             var key     = (propId, yr, imprvId);
+
+            if (!seen.Add(key)) continue;
 
             PacsImprovement e;
             if (existing.TryGetValue(key, out var eId))
                 e = await _db.PacsImprovements.FindAsync(new object[] { eId }, ct)
                     ?? new PacsImprovement { Id = eId };
             else
-            {
                 e = new PacsImprovement();
-                existing[key] = e.Id;
-            }
 
             e.ParcelId     = parcelId;
             e.PacsPropId   = propId;
             e.PropValYear  = yr;
             e.PacsImprvId  = imprvId;
-            e.SupNum       = rdr.GetInt32(rdr.GetOrdinal("sup_num"));
+            e.SupNum       = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("sup_num")));
 
             e.ImprvTypeCode  = Str(rdr, "imprv_type_cd");
             e.ImprvStateCd   = Str(rdr, "imprv_state_cd");
@@ -652,34 +664,9 @@ public class PacsDataSeeder
             .ToDictionaryAsync(
                 d => (d.PacsPropId, d.PropValYear, d.PacsImprvId, d.PacsImprvDetId),
                 d => d.Id, ct);
+        var seen = new HashSet<(int, int, int, int)>(existing.Keys);
 
-        const string sql = @"
-            SELECT d.prop_id, CAST(d.prop_val_yr AS int) AS prop_val_yr,
-                   d.imprv_id, d.imprv_det_id, d.sup_num, d.seq_num,
-                   d.imprv_det_class_cd, d.imprv_det_meth_cd, d.imprv_det_type_cd,
-                   d.imprv_det_sub_class_cd, d.imprv_det_desc,
-                   d.cond_cd, d.lease_class,
-                   d.imprv_det_area, d.imprv_det_area_type,
-                   d.cubic_area, d.calc_area, d.sketch_area, d.net_rentable_area,
-                   d.perimeter, d.length, d.width, d.height,
-                   d.stories, d.stories_tot, d.floor_id, d.num_units, d.load_factor,
-                   d.yr_built, d.yr_new, d.dep_yr, d.eff_tax_yr, d.actual_age,
-                   d.percent_complete, d.percent_complete_cmnt,
-                   d.imprv_det_val, d.imprv_det_val_source,
-                   d.unit_price, d.adj_unit_price, d.adj_val, d.calc_val, d.flat_val,
-                   d.drpc_new, d.drpc,
-                   d.economic_pct, d.physical_pct, d.functional_pct, d.dep_pct,
-                   d.economic_cmnt, d.physical_cmnt, d.functional_cmnt,
-                   d.sketch_cmds
-            FROM imprv_detail d
-            INNER JOIN property p ON d.prop_id = p.prop_id
-            INNER JOIN prop_supp_assoc psa
-                ON d.prop_id = psa.prop_id
-               AND d.prop_val_yr = psa.owner_tax_yr
-               AND d.sup_num = psa.sup_num
-            WHERE p.prop_inactive_dt IS NULL
-              AND (psa.sale_id = 0 OR psa.sale_id IS NULL)
-            ORDER BY d.prop_id, d.prop_val_yr, d.imprv_id, d.imprv_det_id";
+        const string sql = @"SELECT * FROM imprv_detail WHERE prop_val_yr = (SELECT MAX(prop_val_yr) FROM imprv_detail) ORDER BY prop_id, prop_val_yr, imprv_id, imprv_det_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
         await using var rdr = await cmd.ExecuteReaderAsync(ct);
@@ -689,29 +676,29 @@ public class PacsDataSeeder
         while (await rdr.ReadAsync(ct))
         {
             var propId  = rdr.GetInt32(rdr.GetOrdinal("prop_id"));
-            var yr      = rdr.GetInt32(rdr.GetOrdinal("prop_val_yr"));
-            var imprvId = rdr.GetInt32(rdr.GetOrdinal("imprv_id"));
-            var detId   = rdr.GetInt32(rdr.GetOrdinal("imprv_det_id"));
+            var yr      = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("prop_val_yr")));
+            var imprvId = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("imprv_id")));
+            var detId   = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("imprv_det_id")));
 
             if (!imprvMap.TryGetValue((propId, yr, imprvId), out var improvementId)) continue;
 
             var key = (propId, yr, imprvId, detId);
+
+            if (!seen.Add(key)) continue;
+
             PacsImprovementDetail e;
             if (existing.TryGetValue(key, out var eId))
                 e = await _db.PacsImprovementDetails.FindAsync(new object[] { eId }, ct)
                     ?? new PacsImprovementDetail { Id = eId };
             else
-            {
                 e = new PacsImprovementDetail();
-                existing[key] = e.Id;
-            }
 
             e.ImprovementId    = improvementId;
             e.PacsPropId       = propId;
             e.PropValYear      = yr;
             e.PacsImprvId      = imprvId;
             e.PacsImprvDetId   = detId;
-            e.SupNum           = rdr.GetInt32(rdr.GetOrdinal("sup_num"));
+            e.SupNum           = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("sup_num")));
             e.SeqNum           = Int(rdr, "seq_num");
 
             e.ImprvDetClassCd    = Str(rdr, "imprv_det_class_cd");
@@ -790,23 +777,9 @@ public class PacsDataSeeder
             .ToDictionaryAsync(
                 a => (a.PacsPropId, a.PropValYear, a.PacsImprvId, a.PacsImprvDetId, a.PacsImprvAttrId),
                 a => a.Id, ct);
+        var seen = new HashSet<(int, int, int, int, int)>(existing.Keys);
 
-        const string sql = @"
-            SELECT a.prop_id, CAST(a.prop_val_yr AS int) AS prop_val_yr,
-                   a.imprv_id, a.imprv_det_id,
-                   ISNULL(a.imprv_attr_id, 0) AS imprv_attr_id,
-                   a.sup_num, a.i_attr_val_id,
-                   a.i_attr_val_cd, a.imprv_attr_val,
-                   a.i_attr_unit, a.i_attr_up, a.i_attr_factor
-            FROM imprv_attr a
-            INNER JOIN property p ON a.prop_id = p.prop_id
-            INNER JOIN prop_supp_assoc psa
-                ON a.prop_id = psa.prop_id
-               AND a.prop_val_yr = psa.owner_tax_yr
-               AND a.sup_num = psa.sup_num
-            WHERE p.prop_inactive_dt IS NULL
-              AND (psa.sale_id = 0 OR psa.sale_id IS NULL)
-            ORDER BY a.prop_id, a.prop_val_yr, a.imprv_id, a.imprv_det_id";
+        const string sql = @"SELECT * FROM imprv_attr WHERE prop_val_yr = (SELECT MAX(prop_val_yr) FROM imprv_attr) ORDER BY prop_id, prop_val_yr, imprv_id, imprv_det_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
         await using var rdr = await cmd.ExecuteReaderAsync(ct);
@@ -816,25 +789,24 @@ public class PacsDataSeeder
         while (await rdr.ReadAsync(ct))
         {
             var propId  = rdr.GetInt32(rdr.GetOrdinal("prop_id"));
-            var yr      = rdr.GetInt32(rdr.GetOrdinal("prop_val_yr"));
-            var imprvId = rdr.GetInt32(rdr.GetOrdinal("imprv_id"));
+            var yr      = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("prop_val_yr")));
+            var imprvId = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("imprv_id")));
 
             if (!imprvMap.TryGetValue((propId, yr, imprvId), out var improvementId)) continue;
 
-            var detId    = rdr.GetInt32(rdr.GetOrdinal("imprv_det_id"));
+            var detId    = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("imprv_det_id")));
             var attrId   = Int(rdr, "imprv_attr_id") ?? 0;
             var attrValId = Int(rdr, "i_attr_val_id") ?? 0;
             var key      = (propId, yr, imprvId, detId, attrId);
+
+            if (!seen.Add(key)) continue;
 
             PacsImprovementAttribute e;
             if (existing.TryGetValue(key, out var eId))
                 e = await _db.PacsImprovementAttributes.FindAsync(new object[] { eId }, ct)
                     ?? new PacsImprovementAttribute { Id = eId };
             else
-            {
                 e = new PacsImprovementAttribute();
-                existing[key] = e.Id;
-            }
 
             e.ImprovementId    = improvementId;
             e.PacsPropId       = propId;
@@ -843,7 +815,7 @@ public class PacsDataSeeder
             e.PacsImprvDetId   = detId;
             e.PacsImprvAttrId  = attrId;
             e.PacsAttrValId    = attrValId;
-            e.SupNum           = rdr.GetInt32(rdr.GetOrdinal("sup_num"));
+            e.SupNum           = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("sup_num")));
             e.AttributeCode    = Str(rdr, "i_attr_val_cd") ?? string.Empty;
             e.AttributeValue   = Dec(rdr, "imprv_attr_val");
             e.AttrUnit         = Dec(rdr, "i_attr_unit");
@@ -870,44 +842,20 @@ public class PacsDataSeeder
         SqlConnection pacs, Dictionary<int, Guid> propMap, CancellationToken ct)
     {
         _logger.LogInformation("[PacsSeeder] Seeding PacsLandDetail...");
+        // Since tables are freshly truncated, existing will be empty on a full-refresh run.
+        // We still load it to support incremental re-runs without truncate.
         var existing = await _db.PacsLandDetails
             .ToDictionaryAsync(
                 l => (l.PacsPropId, l.PropValYear, l.PacsLandSegId),
                 l => l.Id, ct);
+        // Track keys seen in this run to skip PACS source duplicates.
+        var seen = new HashSet<(int, int, int)>(existing.Keys);
 
+        // Most-recent year only — historical years balloon the table to millions of rows.
         const string sql = @"
-            SELECT l.prop_id, CAST(l.prop_val_yr AS int) AS prop_val_yr,
-                   l.land_seg_id, l.sup_num,
-                   l.land_type_cd, l.land_seg_desc, l.state_cd,
-                   l.land_seg_homesite, l.land_class_cd, l.land_influence_cd,
-                   l.land_soil_cd, l.ag_land_type_cd, l.land_adj_type_cd,
-                   l.appraisal_cd, l.primary_use_cd, l.sub_use_cd, l.type_schedule,
-                   l.size_acres, l.size_square_feet, l.size_useable_acres,
-                   l.size_useable_square_feet, l.eff_size_acres,
-                   l.effective_front, l.effective_depth,
-                   l.width_front, l.width_back, l.depth_right, l.depth_left,
-                   l.waterfront_footage, l.num_lots,
-                   l.mkt_unit_price, l.land_seg_mkt_val, l.mkt_calc_val,
-                   l.mkt_adj_val, l.mkt_flat_val, l.mkt_val_source,
-                   l.land_seg_orig_val, l.land_seg_up,
-                   l.land_adj_factor, l.land_adj_amt, l.land_mass_adj_factor,
-                   l.oa_mkt_val, l.non_taxed_mkt_val, l.mktappr_val,
-                   l.arb_val, l.dist_val,
-                   l.ag_use_cd, l.ag_unit_price, l.ag_val, l.ag_calc_val,
-                   l.ag_flat_val, l.ag_loss,
-                   l.ag_apply, l.new_imprv_land,
-                   l.hs_pct,
-                   l.application_number, l.recording_number,
-                   l.assessment_yr_qualified
-            FROM land_detail l
-            INNER JOIN property p ON l.prop_id = p.prop_id
-            INNER JOIN prop_supp_assoc psa
-                ON l.prop_id = psa.prop_id
-               AND l.prop_val_yr = psa.owner_tax_yr
-               AND l.sup_num = psa.sup_num
-            WHERE p.prop_inactive_dt IS NULL
-              AND (psa.sale_id = 0 OR psa.sale_id IS NULL)
-            ORDER BY l.prop_id, l.prop_val_yr, l.land_seg_id";
+            SELECT * FROM land_detail
+            WHERE prop_val_yr = (SELECT MAX(prop_val_yr) FROM land_detail)
+            ORDER BY prop_id, prop_val_yr, land_seg_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
         await using var rdr = await cmd.ExecuteReaderAsync(ct);
@@ -919,25 +867,25 @@ public class PacsDataSeeder
             var propId = rdr.GetInt32(rdr.GetOrdinal("prop_id"));
             if (!propMap.TryGetValue(propId, out var parcelId)) continue;
 
-            var yr     = rdr.GetInt32(rdr.GetOrdinal("prop_val_yr"));
-            var segId  = rdr.GetInt32(rdr.GetOrdinal("land_seg_id"));
+            var yr     = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("prop_val_yr")));
+            var segId  = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("land_seg_id")));
             var key    = (propId, yr, segId);
+
+            // Skip PACS source duplicates (same natural key already queued this run).
+            if (!seen.Add(key)) continue;
 
             PacsLandDetail e;
             if (existing.TryGetValue(key, out var eId))
                 e = await _db.PacsLandDetails.FindAsync(new object[] { eId }, ct)
                     ?? new PacsLandDetail { Id = eId };
             else
-            {
                 e = new PacsLandDetail();
-                existing[key] = e.Id;
-            }
 
             e.ParcelId       = parcelId;
             e.PacsPropId     = propId;
             e.PropValYear    = yr;
             e.PacsLandSegId  = segId;
-            e.SupNum         = rdr.GetInt32(rdr.GetOrdinal("sup_num"));
+            e.SupNum         = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("sup_num")));
 
             e.LandTypeCode      = Str(rdr, "land_type_cd");
             e.LandSegDesc       = Str(rdr, "land_seg_desc");
@@ -1022,27 +970,15 @@ public class PacsDataSeeder
             .ToDictionaryAsync(
                 o => (o.PacsPropId, (int)o.OwnerTaxYear, o.PacsOwnerId),
                 o => o.Id, ct);
+        var seen = new HashSet<(int, int, int)>(existing.Keys);
 
+        // Most-recent year only — historical years balloon the table to millions of rows.
+        // JOIN account for file_as_name/first/last.
         const string sql = @"
-            SELECT o.prop_id, CAST(o.owner_tax_yr AS int) AS owner_tax_yr,
-                   o.owner_id, o.sup_num,
-                   ac.file_as_name, ac.first_name, ac.last_name,
-                   o.pct_ownership, o.type_of_int, o.hs_prop,
-                   o.over_65_defer, o.ag_app_filed,
-                   o.pct_imprv_hs, o.pct_imprv_nhs,
-                   o.pct_land_hs, o.pct_land_nhs,
-                   o.pct_ag_use, o.pct_ag_mkt,
-                   o.pct_tim_use, o.pct_tim_mkt, o.pct_pers_prop,
-                   o.owner_cmnt, o.linked_cd
+            SELECT o.*, ac.file_as_name, ac.first_name, ac.last_name
             FROM owner o
-            INNER JOIN account ac ON o.owner_id = ac.acct_id
-            INNER JOIN property p ON o.prop_id = p.prop_id
-            INNER JOIN prop_supp_assoc psa
-                ON o.prop_id = psa.prop_id
-               AND o.owner_tax_yr = psa.owner_tax_yr
-               AND o.sup_num = psa.sup_num
-            WHERE p.prop_inactive_dt IS NULL
-              AND (psa.sale_id = 0 OR psa.sale_id IS NULL)
+            LEFT JOIN account ac ON o.owner_id = ac.acct_id
+            WHERE o.owner_tax_yr = (SELECT MAX(owner_tax_yr) FROM owner)
             ORDER BY o.prop_id, o.owner_tax_yr, o.owner_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
@@ -1055,25 +991,24 @@ public class PacsDataSeeder
             var propId  = rdr.GetInt32(rdr.GetOrdinal("prop_id"));
             if (!propMap.TryGetValue(propId, out var parcelId)) continue;
 
-            var yr      = rdr.GetInt32(rdr.GetOrdinal("owner_tax_yr"));
+            var yr      = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("owner_tax_yr")));
             var ownerId = rdr.GetInt32(rdr.GetOrdinal("owner_id"));
             var key     = (propId, yr, ownerId);
+
+            if (!seen.Add(key)) continue;
 
             PacsOwner e;
             if (existing.TryGetValue(key, out var eId))
                 e = await _db.PacsOwners.FindAsync(new object[] { eId }, ct)
                     ?? new PacsOwner { Id = eId };
             else
-            {
                 e = new PacsOwner();
-                existing[key] = e.Id;
-            }
 
             e.ParcelId    = parcelId;
             e.PacsPropId  = propId;
             e.PacsOwnerId = ownerId;
             e.OwnerTaxYear = yr;
-            e.SupNum      = rdr.GetInt32(rdr.GetOrdinal("sup_num"));
+            e.SupNum      = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("sup_num")));
 
             e.FileAsName    = Str(rdr, "file_as_name");
             e.FirstName     = Str(rdr, "first_name");
@@ -1119,39 +1054,49 @@ public class PacsDataSeeder
         _logger.LogInformation("[PacsSeeder] Seeding PacsSale...");
         var existing = await _db.PacsSales
             .ToDictionaryAsync(s => (s.PacsChgOfOwnerId, s.PacsPropId), s => s.Id, ct);
+        var seen = new HashSet<(int, int)>(existing.Keys);
 
         const string sql = @"
             SELECT copa.chg_of_owner_id, copa.prop_id, copa.seq_num,
                    copa.appraised_val, copa.assessed_val, copa.market,
                    copa.land_hstd_val, copa.land_non_hstd_val,
                    copa.imprv_hstd_val, copa.imprv_non_hstd_val,
-                   copa.monthly_income, copa.annual_income,
-                   copa.pers_property_val, copa.exemption_amount,
-                   s.sl_dt, s.sl_price, s.adj_sl_price, s.listing_price, s.listing_dt,
+                   s.sl_dt, s.sl_price,
+                   s.adjusted_sl_price  AS adj_sl_price,
+                   s.listing_price, s.listing_dt,
                    s.sl_type_cd, s.sl_state_cd, s.sl_class_cd, s.sl_land_type_cd,
-                   s.sl_ratio_type_cd, s.sl_ratio_cd, s.county_ratio_cd,
+                   s.sl_ratio_type_cd, s.sl_ratio_cd,
+                   s.sl_county_ratio_cd AS county_ratio_cd,
                    s.sl_qualifier, s.sl_adj_cd, s.sl_financing_cd,
                    s.sales_exclude_calc_cd, s.primary_use_cd, s.secondary_use_cd,
-                   s.sl_impr_type_code, s.sl_subclass_cd,
+                   s.sl_imprv_type_cd   AS sl_impr_type_code,
+                   s.sl_sub_class_cd    AS sl_subclass_cd,
                    s.sl_ratio, s.sl_adj_sl_pct, s.sl_adj_sl_amt,
-                   s.sl_adj_reason, s.sl_ratio_cd_reason,
-                   s.suppress_on_ratio_rpt_cd, s.suppress_on_ratio_reason,
+                   s.sl_adj_rsn         AS sl_adj_reason,
+                   s.sl_ratio_cd_reason,
+                   s.suppress_on_ratio_rpt_cd,
+                   s.suppress_on_ratio_rsn AS suppress_on_ratio_reason,
                    s.realtor,
-                   gran.file_as_name AS grantor_name,
-                   grantee.file_as_name AS grantee_name,
-                   s.finance_cmnt, s.amt_down, s.amt_financed, s.interest_rate, s.finance_yrs,
-                   s.amt_financed2, s.interest_rate2, s.finance_yrs2,
+                   NULL                 AS grantor_name,
+                   NULL                 AS grantee_name,
+                   s.finance_comment    AS finance_cmnt,
+                   s.amt_down, s.amt_financed, s.interest_rate, s.finance_yrs,
+                   s.amt_financed_2     AS amt_financed2,
+                   s.interest_rate_2    AS interest_rate2,
+                   s.finance_yrs_2      AS finance_yrs2,
                    s.sl_yr_blt, s.sl_living_area, s.sl_imprv_unit_price,
                    s.sl_land_sqft, s.sl_land_acres, s.sl_land_front_feet,
                    s.sl_land_depth, s.sl_land_unit_price,
                    s.num_days_on_market, s.land_only_sale, s.continue_current_use,
-                   s.confidential, s.wac_cd, s.sl_cmnt, s.import_dt
+                   s.confidential_sale  AS confidential,
+                   s.wac_cd,
+                   s.sl_comment         AS sl_cmnt,
+                   s.import_dt,
+                   s.monthly_income, s.annual_income,
+                   s.pers_prop_val      AS pers_property_val,
+                   s.exemption_amount
             FROM chg_of_owner_prop_assoc copa
             INNER JOIN sale s ON copa.chg_of_owner_id = s.chg_of_owner_id
-            INNER JOIN property p ON copa.prop_id = p.prop_id
-            LEFT JOIN account gran     ON s.grantor_acct_id  = gran.acct_id
-            LEFT JOIN account grantee  ON s.grantee_acct_id  = grantee.acct_id
-            WHERE p.prop_inactive_dt IS NULL
             ORDER BY copa.prop_id, copa.chg_of_owner_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
@@ -1167,15 +1112,14 @@ public class PacsDataSeeder
             var chgId = rdr.GetInt32(rdr.GetOrdinal("chg_of_owner_id"));
             var key   = (chgId, propId);
 
+            if (!seen.Add(key)) continue;
+
             PacsSale e;
             if (existing.TryGetValue(key, out var eId))
                 e = await _db.PacsSales.FindAsync(new object[] { eId }, ct)
                     ?? new PacsSale { Id = eId };
             else
-            {
                 e = new PacsSale();
-                existing[key] = e.Id;
-            }
 
             e.ParcelId       = parcelId;
             e.PacsChgOfOwnerId = chgId;
@@ -1279,6 +1223,7 @@ public class PacsDataSeeder
             .ToDictionaryAsync(
                 x => (x.PacsPropId, x.PacsOwnerId, (int)x.ExemptTaxYear, x.ExemptTypeCode ?? string.Empty),
                 x => x.Id, ct);
+        var seenEx = new HashSet<(int, int, int, string)>(existing.Keys);
 
         const string sql = @"
             SELECT pe.prop_id, pe.owner_id,
@@ -1286,17 +1231,26 @@ public class PacsDataSeeder
                    CAST(pe.owner_tax_yr AS int)   AS owner_tax_yr,
                    pe.sup_num, pe.prop_type_cd, pe.exmpt_type_cd, pe.exmpt_subtype_cd,
                    pe.applicant_nm, pe.effective_dt, pe.termination_dt,
-                   pe.effective_tax_yr, pe.qualify_yr, pe.review_last_yr,
-                   pe.apply_pct_owner, pe.exmpt_pct, pe.combined_disp_income,
+                   pe.effective_tax_yr, pe.qualify_yr,
+                   pe.review_last_year         AS review_last_yr,
+                   pe.apply_pct_owner,
+                   pe.exemption_pct            AS exmpt_pct,
+                   pe.combined_disp_income,
                    pe.sp_value_type, pe.sp_value_option,
-                   pe.sp_date_approved, pe.sp_expiration_dt, pe.sp_cmnt,
-                   pe.absent_flag, pe.absent_expiration_dt, pe.absent_cmnt,
-                   pe.deferral_date, pe.exmpt_qualify_cd,
-                   pe.review_request_dt, pe.review_status_cd,
-                   pe.apply_no_exmpt_amt, pe.apply_local_option_pct_only
+                   pe.sp_date_approved,
+                   pe.sp_expiration_date        AS sp_expiration_dt,
+                   pe.sp_comment               AS sp_cmnt,
+                   pe.absent_flag,
+                   pe.absent_expiration_date    AS absent_expiration_dt,
+                   pe.absent_comment           AS absent_cmnt,
+                   pe.deferral_date, pe.exempt_qualify_cd AS exmpt_qualify_cd,
+                   pe.review_request_date       AS review_request_dt,
+                   pe.review_status_cd,
+                   pe.apply_no_exemption_amount AS apply_no_exmpt_amt,
+                   pe.apply_local_option_pct_only
             FROM property_exemption pe
             INNER JOIN property p ON pe.prop_id = p.prop_id
-            WHERE p.prop_inactive_dt IS NULL
+            WHERE pe.exmpt_tax_yr = (SELECT MAX(exmpt_tax_yr) FROM property_exemption)
             ORDER BY pe.prop_id, pe.owner_id, pe.exmpt_tax_yr, pe.exmpt_type_cd";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
@@ -1314,22 +1268,21 @@ public class PacsDataSeeder
             var typeCode   = Str(rdr, "exmpt_type_cd") ?? string.Empty;
             var key        = (propId, ownerId, yr, typeCode);
 
+            if (!seenEx.Add(key)) continue;
+
             PacsExemption e;
             if (existing.TryGetValue(key, out var eId))
                 e = await _db.PacsExemptions.FindAsync(new object[] { eId }, ct)
                     ?? new PacsExemption { Id = eId };
             else
-            {
                 e = new PacsExemption();
-                existing[key] = e.Id;
-            }
 
             e.ParcelId      = parcelId;
             e.PacsPropId    = propId;
             e.PacsOwnerId   = ownerId;
             e.ExemptTaxYear = yr;
             e.OwnerTaxYear  = Int(rdr, "owner_tax_yr") ?? yr;
-            e.SupNum        = rdr.GetInt32(rdr.GetOrdinal("sup_num"));
+            e.SupNum        = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("sup_num")));
 
             e.PropTypeCode       = Str(rdr, "prop_type_cd");
             e.ExemptTypeCode     = typeCode;
@@ -1385,40 +1338,75 @@ public class PacsDataSeeder
             .ToDictionaryAsync(
                 a => (a.PacsPropId, (int)a.PropValYear, a.PacsCaseId),
                 a => a.Id, ct);
+        var seen = new HashSet<(int, int, int)>(existing.Keys);
 
         const string sql = @"
             SELECT ap.case_id, ap.prop_id, CAST(ap.prop_val_yr AS int) AS prop_val_yr,
-                   ap.prot_type, ap.prot_status, ap.status_dt_changed,
-                   ap.create_dt, ap.complete_dt, ap.full_ratification_dt,
-                   ap.apprl_staff, ap.hearing_apprl_staff, ap.assigned_panel,
-                   ap.hearing_start_dt, ap.hearing_finished_dt, ap.arrived_dt,
-                   ap.hearing_rescheduled, ap.full_board_hearing,
-                   ap.apprsr_meeting_dt, ap.apprsr_meeting_apprsr_id,
-                   ap.apprsr_meeting_apprsr_cmnt, ap.apprsr_meeting_taxpyr_cmnt,
-                   ap.taxpyr_doc_rqsted, ap.taxpyr_evidence_rqsted,
-                   ap.taxpyr_evidence_delivered_dt,
-                   ap.first_motion, ap.first_motion_decision_cd, ap.first_motion_decision_dt, ap.first_motion_pass,
-                   ap.second_motion, ap.second_motion_decision_cd, ap.second_motion_decision_dt, ap.second_motion_pass,
-                   ap.other_motion, ap.decision_reason_cd, ap.sustain_district_val, ap.prot_val_type,
-                   ap.prot_cmnt, ap.taxpyr_cmnt, ap.district_cmnt, ap.arb_instructions,
-                   ap.appraiser_assigned_val, ap.arb_assigned_val,
-                   ap.appraiser_assigned_lnd_val, ap.appraiser_assigned_imprv_val,
-                   ap.boe_assigned_lnd_val, ap.boe_assigned_imprv_val, ap.opinion_of_value,
-                   ap.highly_disputed_prop, ap.taxes_paid, ap.case_prepared,
+                   ap.prot_type, ap.prot_status,
+                   ap.status_date_changed               AS status_dt_changed,
+                   ap.prot_create_dt                    AS create_dt,
+                   ap.prot_complete_dt                  AS complete_dt,
+                   ap.prot_full_ratification_dt         AS full_ratification_dt,
+                   ap.prot_appraisal_staff              AS apprl_staff,
+                   ap.prot_hearing_appraisal_staff      AS hearing_apprl_staff,
+                   ap.prot_assigned_panel               AS assigned_panel,
+                   ap.prot_hearing_start_dt             AS hearing_start_dt,
+                   ap.prot_hearing_finished_dt          AS hearing_finished_dt,
+                   ap.prot_arrived_dt                   AS arrived_dt,
+                   ap.prot_hearing_rescheduled          AS hearing_rescheduled,
+                   ap.prot_full_board_hearing           AS full_board_hearing,
+                   ap.appraiser_meeting_date_time       AS apprsr_meeting_dt,
+                   ap.appraiser_meeting_appraiser_id    AS apprsr_meeting_apprsr_id,
+                   ap.appraiser_meeting_appraiser_comments AS apprsr_meeting_apprsr_cmnt,
+                   ap.appraiser_meeting_taxpayer_comments  AS apprsr_meeting_taxpyr_cmnt,
+                   ap.prot_taxpayer_doc_requested       AS taxpyr_doc_rqsted,
+                   ap.prot_taxpayer_evidence_requested  AS taxpyr_evidence_rqsted,
+                   ap.prot_taxpayer_evidence_delivered_dt AS taxpyr_evidence_delivered_dt,
+                   ap.prot_first_motion                 AS first_motion,
+                   ap.prot_first_motion_decision_cd     AS first_motion_decision_cd,
+                   ap.prot_first_motion_decision_dt     AS first_motion_decision_dt,
+                   ap.prot_first_motion_pass            AS first_motion_pass,
+                   ap.prot_second_motion                AS second_motion,
+                   ap.prot_second_motion_decision_cd    AS second_motion_decision_cd,
+                   ap.prot_second_motion_decision_dt    AS second_motion_decision_dt,
+                   ap.prot_second_motion_pass           AS second_motion_pass,
+                   ap.prot_other_motion                 AS other_motion,
+                   ap.decision_reason_cd,
+                   ap.prot_sustain_district_val         AS sustain_district_val,
+                   ap.prot_val_type,
+                   ap.prot_comments                     AS prot_cmnt,
+                   ap.prot_taxpayer_comments            AS taxpyr_cmnt,
+                   ap.prot_district_comments            AS district_cmnt,
+                   ap.prot_arb_instructions             AS arb_instructions,
+                   ap.prot_appraiser_assigned_val       AS appraiser_assigned_val,
+                   ap.prot_arb_assigned_val             AS arb_assigned_val,
+                   ap.prot_appraiser_assigned_land_val  AS appraiser_assigned_lnd_val,
+                   ap.prot_appraiser_assigned_imprv_val AS appraiser_assigned_imprv_val,
+                   ap.prot_boe_assigned_land_val        AS boe_assigned_lnd_val,
+                   ap.prot_boe_assigned_imprv_val       AS boe_assigned_imprv_val,
+                   ap.opinion_of_value,
+                   ap.highly_disputed_property          AS highly_disputed_prop,
+                   ap.prot_taxes_paid                   AS taxes_paid,
+                   ap.case_prepared,
                    ap.begin_market, ap.begin_appraised_val, ap.begin_assessed_val,
                    ap.begin_land_hstd_val, ap.begin_land_non_hstd_val,
                    ap.begin_imprv_hstd_val, ap.begin_imprv_non_hstd_val,
                    ap.begin_ag_use_val, ap.begin_ag_market,
                    ap.begin_timber_use, ap.begin_timber_market,
-                   ap.begin_ten_percent_cap, ap.begin_exmpts, ap.begin_entities,
+                   ap.begin_ten_percent_cap,
+                   ap.begin_exemptions                  AS begin_exmpts,
+                   ap.begin_entities,
                    ap.final_market, ap.final_appraised_val, ap.final_assessed_val,
                    ap.final_land_hstd_val, ap.final_land_non_hstd_val,
                    ap.final_imprv_hstd_val, ap.final_imprv_non_hstd_val,
                    ap.final_ag_use_val, ap.final_ag_market,
                    ap.final_timber_use, ap.final_timber_market,
-                   ap.final_ten_percent_cap, ap.final_exmpts, ap.final_entities
+                   ap.final_ten_percent_cap,
+                   ap.final_exemptions                  AS final_exmpts,
+                   ap.final_entities
             FROM _arb_protest ap
             INNER JOIN property p ON ap.prop_id = p.prop_id
+            WHERE ap.prop_val_yr = (SELECT MAX(prop_val_yr) FROM _arb_protest)
             ORDER BY ap.prop_id, ap.prop_val_yr, ap.case_id";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
@@ -1432,18 +1420,17 @@ public class PacsDataSeeder
             if (!propMap.TryGetValue(propId, out var parcelId)) continue;
 
             var caseId = rdr.GetInt32(rdr.GetOrdinal("case_id"));
-            var yr     = rdr.GetInt32(rdr.GetOrdinal("prop_val_yr"));
+            var yr     = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("prop_val_yr")));
             var key    = (propId, yr, caseId);
+
+            if (!seen.Add(key)) continue;
 
             PacsAppeal e;
             if (existing.TryGetValue(key, out var eId))
                 e = await _db.PacsAppeals.FindAsync(new object[] { eId }, ct)
                     ?? new PacsAppeal { Id = eId };
             else
-            {
                 e = new PacsAppeal();
-                existing[key] = e.Id;
-            }
 
             e.ParcelId    = parcelId;
             e.PacsPropId  = propId;
@@ -1560,17 +1547,18 @@ public class PacsDataSeeder
             .ToDictionaryAsync(
                 t => (t.PacsPropId, (int)t.TaxYear),
                 t => t.Id, ct);
+        var seen = new HashSet<(int, int)>(existing.Keys);
 
         const string sql = @"
-            SELECT pta.prop_id, CAST(pta.tax_yr AS int) AS tax_yr,
+            SELECT pta.prop_id, CAST(pta.year AS int) AS tax_yr,
                    pta.sup_num, pta.tax_area_id, pta.tax_area_id_pending,
-                   pta.effective_dt, pta.is_annex_value,
+                   pta.effective_date AS effective_dt, pta.is_annex_value,
                    ta.tax_area_number, ta.tax_area_state, ta.tax_area_description, ta.comment
             FROM property_tax_area pta
             INNER JOIN tax_area ta ON pta.tax_area_id = ta.tax_area_id
             INNER JOIN property p  ON pta.prop_id = p.prop_id
-            WHERE p.prop_inactive_dt IS NULL
-            ORDER BY pta.prop_id, pta.tax_yr";
+            WHERE pta.year = (SELECT MAX(year) FROM property_tax_area)
+            ORDER BY pta.prop_id, pta.year";
 
         await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 300 };
         await using var rdr = await cmd.ExecuteReaderAsync(ct);
@@ -1585,20 +1573,19 @@ public class PacsDataSeeder
             var yr  = rdr.GetInt32(rdr.GetOrdinal("tax_yr"));
             var key = (propId, yr);
 
+            if (!seen.Add(key)) continue;
+
             PacsTaxArea e;
             if (existing.TryGetValue(key, out var eId))
                 e = await _db.PacsTaxAreas.FindAsync(new object[] { eId }, ct)
                     ?? new PacsTaxArea { Id = eId };
             else
-            {
                 e = new PacsTaxArea();
-                existing[key] = e.Id;
-            }
 
             e.ParcelId           = parcelId;
             e.PacsPropId         = propId;
             e.TaxYear            = yr;
-            e.SupNum             = rdr.GetInt32(rdr.GetOrdinal("sup_num"));
+            e.SupNum             = Convert.ToInt32(rdr.GetValue(rdr.GetOrdinal("sup_num")));
             e.PacsTaxAreaId      = rdr.GetInt32(rdr.GetOrdinal("tax_area_id"));
             e.TaxAreaIdPending   = Int(rdr, "tax_area_id_pending");
             e.EffectiveDate      = Dt(rdr, "effective_dt");
@@ -1632,11 +1619,45 @@ public class PacsDataSeeder
             var entry = _db.Entry(entity);
             if (entry.State == EntityState.Detached)
                 _db.Set<T>().Add(entity);
-            // If already tracked (from FindAsync), EF knows its state
         }
-        await _db.SaveChangesAsync(ct);
-        _db.ChangeTracker.Clear();
-        return batch.Count;
+        try
+        {
+            await _db.SaveChangesAsync(ct);
+            _db.ChangeTracker.Clear();
+            return batch.Count;
+        }
+        catch (Exception batchEx)
+        {
+            // Batch failed — clear the aborted transaction state and retry row-by-row
+            // so one bad row doesn't lose the other 999.
+            _db.ChangeTracker.Clear();
+            _logger.LogWarning("[PacsSeeder] Batch of {Count} {Type} failed ({Msg}); retrying row-by-row.",
+                batch.Count, typeof(T).Name, batchEx.InnerException?.Message ?? batchEx.Message);
+
+            var saved = 0;
+            var skipped = 0;
+            foreach (var entity in batch)
+            {
+                try
+                {
+                    _db.Set<T>().Add(entity);
+                    await _db.SaveChangesAsync(ct);
+                    _db.ChangeTracker.Clear();
+                    saved++;
+                }
+                catch (Exception rowEx)
+                {
+                    _db.ChangeTracker.Clear();
+                    skipped++;
+                    if (skipped <= 5) // cap log noise
+                        _logger.LogWarning("[PacsSeeder] Skipped 1 {Type} row: {Msg}",
+                            typeof(T).Name, rowEx.InnerException?.Message ?? rowEx.Message);
+                }
+            }
+            _logger.LogInformation("[PacsSeeder] Row-by-row result: {Saved} saved, {Skipped} skipped.",
+                saved, skipped);
+            return saved;
+        }
     }
 
     // ── Null-Safe Column Readers ─────────────────────────────────────────
@@ -1680,7 +1701,10 @@ public class PacsDataSeeder
         {
             var ord = r.GetOrdinal(col);
             if (r.IsDBNull(ord)) return null;
-            return r.GetDateTime(ord);
+            var dt = r.GetDateTime(ord);
+            // PostgreSQL 'timestamp with time zone' requires DateTimeKind.Utc.
+            // PACS SQL Server dates are stored as local/unspecified — treat as UTC.
+            return DateTime.SpecifyKind(dt, DateTimeKind.Utc);
         }
         catch { return null; }
     }

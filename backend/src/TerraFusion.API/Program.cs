@@ -38,6 +38,51 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using System.Threading.RateLimiting;
 
+// ── Standalone PACS seed mode ──────────────────────────────────────────────
+// Run as: dotnet run --project TerraFusion.API -- --seed-pacs
+// Runs the seeder directly without HTTP server or background services.
+if (args.Contains("--seed-pacs"))
+{
+    // Determine environment from ASPNETCORE_ENVIRONMENT or DOTNET_ENVIRONMENT
+    var seedEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                  ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                  ?? "Production";
+
+    var seedHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(seedEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{seedEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{seedEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.API.Seeds.PacsDataSeeder>();
+        })
+        .Build();
+
+    using var scope = seedHost.Services.CreateScope();
+    var seeder = scope.ServiceProvider.GetRequiredService<TerraFusion.API.Seeds.PacsDataSeeder>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsDataSeeder>>();
+    try
+    {
+        logger.LogInformation("[PacsSeeder] Standalone mode: starting full ETL...");
+        var result = await seeder.SeedAllAsync();
+        logger.LogInformation("[PacsSeeder] DONE: {Result}", result);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "[PacsSeeder] FAILED");
+        Environment.Exit(1);
+    }
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Local developer override — appsettings.Development.local.json is gitignored.
@@ -1047,13 +1092,50 @@ app.MapGet("/api/test", () => new
 // ── PACS ETL seed trigger (admin only) ───────────────────────────────────────
 // POST /api/admin/pacs/seed  — pulls all 13 tables from tf-mssql pacs_oltp
 // into TerraFusionDbContext. Idempotent upsert. Safe to re-run.
-app.MapPost("/api/admin/pacs/seed", async (
-    TerraFusion.API.Seeds.PacsDataSeeder seeder,
-    CancellationToken ct) =>
+// Runs as a background Task — returns 202 immediately; watch server logs for progress.
 {
-    var result = await seeder.SeedAllAsync(ct);
-    return Results.Ok(result.ToString());
-}).WithTags("Admin").WithName("SeedPacsData");
+    // Shared state for last run result
+    var _pacsLastResult = "";
+    var _pacsSeedRunning = false;
+
+    app.MapPost("/api/admin/pacs/seed", (
+        IServiceScopeFactory scopeFactory,
+        ILogger<TerraFusion.API.Seeds.PacsDataSeeder> logger) =>
+    {
+        if (_pacsSeedRunning)
+            return Results.Conflict("PACS seed already running. Check /api/admin/pacs/seed/status.");
+
+        _pacsSeedRunning = true;
+        _pacsLastResult = "running";
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await using var scope = scopeFactory.CreateAsyncScope();
+                var seeder = scope.ServiceProvider.GetRequiredService<TerraFusion.API.Seeds.PacsDataSeeder>();
+                var result = await seeder.SeedAllAsync();
+                _pacsLastResult = result.ToString();
+                logger.LogInformation("[PacsSeeder] Complete: {Result}", _pacsLastResult);
+            }
+            catch (Exception ex)
+            {
+                // Walk inner exceptions to surface the real Postgres/SqlClient error
+                var inner = ex;
+                while (inner.InnerException != null) inner = inner.InnerException;
+                _pacsLastResult = $"ERROR: {ex.Message} | INNER: {inner.Message}";
+                logger.LogError(ex, "[PacsSeeder] Seed failed");
+            }
+            finally { _pacsSeedRunning = false; }
+        });
+
+        return Results.Accepted("/api/admin/pacs/seed/status",
+            new { message = "PACS seed started in background. Poll /api/admin/pacs/seed/status." });
+    }).WithTags("Admin").WithName("SeedPacsData");
+
+    app.MapGet("/api/admin/pacs/seed/status", () =>
+        Results.Ok(new { running = _pacsSeedRunning, lastResult = _pacsLastResult })
+    ).WithTags("Admin").WithName("SeedPacsStatus");
+}
 
 // Minimal transcendence health probe (previously returned 404 in some checks)
 // Returns a simple OK payload without invoking heavy services
