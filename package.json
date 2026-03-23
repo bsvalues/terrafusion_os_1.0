@@ -210,6 +210,8 @@
     "workflow:government": "node -e \"import('./claude-code-workflows.js').then(m => m.WorkflowOrchestrator.executeWorkflow('government-compliance-audit'))\"",
     "workflow:ai-swarm": "node -e \"import('./claude-code-workflows.js').then(m => m.WorkflowOrchestrator.executeWorkflow('ai-swarm-development'))\"",
     "security:scan": "node tools/registry/security-scan-runner.mjs",
+    "security:scan:frontend": "node tools/registry/security-scan-runner.mjs --frontend-only",
+    "security:scan:first-party": "node tools/registry/security-scan-runner.mjs --include-frontend",
     "security:check": "node tools/registry/check-snyk-findings.mjs snyk-code-report.json",
     "audit:contracts": "deno task -c tools/deno/terra_audit/deno.json audit:contracts",
     "compliance:audit": "npm run mcp:validate && npm run security:scan && npm run security:check",

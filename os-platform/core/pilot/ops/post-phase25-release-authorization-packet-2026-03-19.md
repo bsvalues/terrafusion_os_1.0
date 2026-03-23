@@ -42,6 +42,8 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/leak-guard-governance-drift-2026-03-19.md`
 - `os-platform/core/pilot/ops/leak-guard-remediation-status-2026-03-20.md`
 - `os-platform/core/pilot/ops/snyk-findings-rerun-reconciliation-2026-03-21.md`
+- `os-platform/core/pilot/ops/snyk-frontend-scan-lane-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-os-shell-snyk-triage-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-terracanon-continuity-rerun-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-root-vitest-reconciliation-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-shell-honesty-indicators-2026-03-21.md`
@@ -66,19 +68,43 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/frontend-property-dais-loaded-appeals-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-reported-step-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-notice-queue-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-notice-queue-request-wording-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-boe-packet-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-boe-packet-returned-fields-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-certification-sign-off-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-certification-sign-off-returned-fields-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-file-appeal-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-file-appeal-returned-fields-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-escalate-task-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-escalate-task-returned-fields-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-assign-task-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-assign-task-returned-fields-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-exemption-eligibility-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-exemption-eligibility-returned-fields-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-certification-progress-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-certification-progress-returned-fields-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-boe-appeal-response-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-value-change-notice-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-appeal-response-draft-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-appeal-response-draft-returned-summary-text-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-draft-notice-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-levy-rate-components-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-commissioner-memo-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-pilt-calculator-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-pilt-calculator-returned-summary-text-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-pilt-calculator-placement-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-senior-exemption-impact-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-senior-exemption-impact-returned-summary-text-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-certification-status-request-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-appeal-certification-panel-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-appeal-deadline-panel-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-appeal-hearing-panel-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-appeal-notice-panel-honesty-2026-03-22.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-queue-statistics-source-badge-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-exemption-renewal-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-exemption-renewal-request-wording-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-hearing-schedule-honesty-2026-03-21.md`
+- `os-platform/core/pilot/ops/frontend-property-dais-hearing-schedule-request-wording-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-dais-queue-statistics-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-dossier-casefile-summary-honesty-2026-03-21.md`
 - `os-platform/core/pilot/ops/frontend-property-dossier-loaded-documents-honesty-2026-03-21.md`
@@ -211,6 +237,20 @@ A governed Snyk rerun reconciliation slice also landed on 2026-03-21:
 That note records that the bounded `dev-pilot-runtime.mjs` fix cleared the live `javascript/reDOS` regression and that the two over-baseline PT warnings were removed from the repo-owned checker scripts, bringing the governed warning count back to the ratified `40` ceiling without changing baseline policy.
 
 It remains separate from the live traffic-opening blockers in this packet, and it restores the truthful sealed security posture for the repo-owned Snyk code lane.
+
+A bounded frontend scan-lane extension then landed on 2026-03-22:
+
+- authoritative infrastructure note: `os-platform/core/pilot/ops/snyk-frontend-scan-lane-2026-03-22.md`
+- current truth: `pnpm run security:scan` remains the governed-core baseline lane, while `pnpm run security:scan:frontend` and `pnpm run security:scan:first-party` now provide repo-owned frontend shell coverage without redefining the ratified warning ceiling
+
+That slice closes the earlier frontend coverage caveat for future shell honesty work by adding an explicit first-party scan path instead of overstating the default governed-core command.
+
+A bounded frontend shell scan triage then landed on 2026-03-22:
+
+- authoritative triage note: `os-platform/core/pilot/ops/frontend-os-shell-snyk-triage-2026-03-22.md`
+- current truth: the `18` frontend shell findings are mostly timer/download/test-pattern noise, while the strongest follow-up candidates are the iframe and pop-out URL flows in `PWAShell.tsx`, `ProfessionalDashboard.tsx`, and `TerraPrimeSuite.tsx`
+
+That triage confirms the new frontend shell scan lane did not surface an immediate blocker tied to the recent PropertyDais/PILT honesty work, and it narrows the next real security review lane to shell-host URL provenance.
 
 A bounded shell honesty/provenance follow-on slice then landed on 2026-03-21:
 
@@ -414,12 +454,30 @@ That slice removed mounted PropertyDais notice-queue wording that promised deliv
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
+A bounded PropertyDais notice-queue request-wording honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-notice-queue-request-wording-honesty-2026-03-22.md`
+- PropertyDais notice-queue request-wording honesty: `37 passed`, `0 failed`
+
+That slice removes the remaining mounted PropertyDais notice-queue direct-action mailing wording and button states that implied the route directly queued mailing work before the tool result exists, and replaces them with governed request-submission wording plus a returned-queue disclosure that names the returned queued count, batch ID, and delivery method.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
 A bounded PropertyDais exemption-renewal honesty follow-on slice also landed on 2026-03-21:
 
 - authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-exemption-renewal-honesty-2026-03-21.md`
 - PropertyDais exemption-renewal honesty: `14 passed`, `0 failed`
 
 That slice removed mounted PropertyDais renewal wording that promised documentation verification, and replaced it with returned-renewal wording plus a short disclosure that the card shows the renewal status returned by the `process_exemption_renewal` request for the selected exemption and tax year.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais exemption-renewal request-wording honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-exemption-renewal-request-wording-honesty-2026-03-22.md`
+- PropertyDais exemption-renewal request-wording honesty: `37 passed`, `0 failed`
+
+That slice removes the remaining mounted PropertyDais exemption-renewal direct-action wording and button states that implied the route directly processes the renewal before the tool result exists, and replaces them with governed request-submission wording plus a returned-renewal disclosure that names the returned exemption ID, tax year, and renewal status.
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
@@ -432,12 +490,30 @@ That slice removed mounted PropertyDais hearing wording that promised panel assi
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
+A bounded PropertyDais hearing-schedule request-wording honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-hearing-schedule-request-wording-honesty-2026-03-22.md`
+- PropertyDais hearing-schedule request-wording honesty: `37 passed`, `0 failed`
+
+That slice removes the remaining mounted PropertyDais BOE hearing direct-action request wording and button states that implied the route directly schedules the hearing before the tool result exists, and replaces them with governed request-submission wording plus a returned-hearing disclosure that names the returned hearing ID, scheduled date, and panel size.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
 A bounded PropertyDais queue-statistics honesty follow-on slice also landed on 2026-03-21:
 
 - authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-queue-statistics-honesty-2026-03-21.md`
 - PropertyDais queue-statistics honesty: `19 passed`, `0 failed`
 
 That slice removed mounted PropertyDais queue-statistics wording that described the card as generic SLA metrics, and replaced it with request-returned wording plus a short disclosure that the card shows the total tasks, completed tasks, overdue count, and SLA compliance returned by the `get_queue_statistics` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais queue-statistics source-badge honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-queue-statistics-source-badge-honesty-2026-03-22.md`
+- PropertyDais queue-statistics source-badge honesty: `37 passed`, `0 failed`
+
+That slice removes the mounted PropertyDais queue-statistics `Live` source badge that was being shown after a successful request even though the route only proves the returned queue fields for that request, and leaves the source badge in the idle unavailable state while relying on the existing request-return disclosure after success.
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
@@ -450,12 +526,30 @@ That slice removes mounted PropertyDais write-high wording that presented the ro
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
+A bounded PropertyDais BOE packet returned-fields honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-boe-packet-returned-fields-honesty-2026-03-22.md`
+- PropertyDais BOE packet returned-fields honesty: `37 passed`, `0 failed`
+
+That slice removes the remaining mounted PropertyDais broad returned-summary phrasing on the BOE packet card and replaces it with explicit returned-field disclosure that names the returned case ID and section list shown from the `assemble_boe_packet` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
 A bounded PropertyDais certification sign-off honesty follow-on slice also landed on 2026-03-22:
 
 - authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-certification-sign-off-honesty-2026-03-22.md`
 - PropertyDais certification sign-off honesty: `21 passed`, `0 failed`
 
 That slice removes mounted PropertyDais write-high wording that presented the route as directly signing off a certification checklist step on mount, and replaces it with certification sign-off request wording plus a short disclosure that the card shows the returned step ID, signer, and signed-at timestamp from the `sign_off_certification_step` request for the selected step.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais certification sign-off returned-fields honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-certification-sign-off-returned-fields-honesty-2026-03-22.md`
+- PropertyDais certification sign-off returned-fields honesty: `37 passed`, `0 failed`
+
+That slice removes the remaining mounted PropertyDais broad returned-summary phrasing on the certification sign-off card and replaces it with explicit returned-field disclosure that names the returned step ID, signer, and signed-at timestamp shown from the `sign_off_certification_step` request.
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
@@ -468,12 +562,30 @@ That slice removes mounted PropertyDais write-low wording that presented the rou
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
+A bounded PropertyDais file-appeal returned-fields honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-file-appeal-returned-fields-honesty-2026-03-22.md`
+- PropertyDais file-appeal returned-fields honesty: `37 passed`, `0 failed`
+
+That slice removes the remaining mounted PropertyDais broad returned-summary phrasing on the file-appeal card and replaces it with explicit returned-field disclosure that names the returned appeal ID, status, and filed-at timestamp shown from the `file_appeal` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
 A bounded PropertyDais escalate-task honesty follow-on slice also landed on 2026-03-22:
 
 - authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-escalate-task-honesty-2026-03-22.md`
 - PropertyDais escalate-task honesty: `23 passed`, `0 failed`
 
 That slice removes mounted PropertyDais write-low wording that presented the route as directly escalating an overdue or high-priority task on mount, and replaces it with escalation-request wording plus a short disclosure that the card shows the returned task ID, escalation target, and status from the `escalate_task` request for the selected task.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais escalate-task returned-fields honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-escalate-task-returned-fields-honesty-2026-03-22.md`
+- PropertyDais escalate-task returned-fields honesty: `37 passed`, `0 failed`
+
+That slice removes the remaining mounted PropertyDais broad returned-summary phrasing on the escalate-task card and replaces it with explicit returned-field disclosure that names the returned task ID, escalation target, and status shown from the `escalate_task` request.
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
@@ -486,6 +598,15 @@ That slice removes mounted PropertyDais write-low wording that presented the rou
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
+A bounded PropertyDais assign-task returned-fields honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-assign-task-returned-fields-honesty-2026-03-22.md`
+- PropertyDais assign-task returned-fields honesty: `37 passed`, `0 failed`
+
+That slice removes the remaining mounted PropertyDais broad returned-summary phrasing on the assign-task card and replaces it with explicit returned-field disclosure that names the returned task ID, assignee ID, and status shown from the `assign_task` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
 A bounded PropertyDais exemption-eligibility honesty follow-on slice also landed on 2026-03-22:
 
 - authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-exemption-eligibility-honesty-2026-03-22.md`
@@ -495,12 +616,30 @@ That slice removes mounted PropertyDais read-only wording that presented the rou
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
+A bounded PropertyDais exemption-eligibility returned-fields honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-exemption-eligibility-returned-fields-honesty-2026-03-22.md`
+- PropertyDais exemption-eligibility returned-fields honesty: `37 passed`, `0 failed`
+
+That slice removes the remaining mounted PropertyDais broad returned-summary phrasing on the exemption-eligibility card and replaces it with explicit returned-field disclosure that names the returned eligibility flag, program, reason, and income threshold shown from the `check_exemption_eligibility` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
 A bounded PropertyDais certification-progress honesty follow-on slice also landed on 2026-03-22:
 
 - authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-certification-progress-honesty-2026-03-22.md`
 - PropertyDais certification-progress honesty: `26 passed`, `0 failed`
 
 That slice removes mounted PropertyDais read-only wording that presented the route as an unqualified assessment-roll certification progress surface on mount, and replaces it with certification-progress request wording plus a short disclosure that the card shows the returned percent complete, checklist steps, and blockers from the `get_certification_progress` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais certification-progress returned-fields honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-certification-progress-returned-fields-honesty-2026-03-22.md`
+- PropertyDais certification-progress returned-fields honesty: `37 passed`, `0 failed`
+
+That slice removes the remaining mounted PropertyDais broad returned-summary phrasing on the certification-progress card and replaces it with explicit returned-field disclosure that names the returned percent complete, returned tax year, checklist steps, and blockers shown from the `get_certification_progress` request.
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
@@ -531,12 +670,129 @@ That slice removes mounted PropertyDais write-low wording that presented the rou
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
+A bounded PropertyDais appeal-response draft returned-summary-text honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-appeal-response-draft-returned-summary-text-honesty-2026-03-22.md`
+- PropertyDais appeal-response draft returned-summary-text honesty: `37 passed`, `0 failed`
+
+That slice tightens the remaining mounted PropertyDais broad returned draft-summary phrasing on the appeal-response card and replaces it with explicit returned draft-summary-text disclosure while preserving the returned appeal ID, position, and word count shown from the `draft_appeal_response` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
 A bounded PropertyDais Draft Notice honesty follow-on slice also landed on 2026-03-22:
 
 - authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-draft-notice-honesty-2026-03-22.md`
 - PropertyDais Draft Notice honesty: `30 passed`, `0 failed`
 
 That slice removes mounted PropertyDais write-low wording that presented the route as an unqualified notice-drafting surface on mount, and replaces it with notice-draft request wording plus a short disclosure that the card shows the returned notice ID, notice type, and status from the `draft_notice` request for the selected parcel and notice type.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais Levy Rate Components honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-levy-rate-components-honesty-2026-03-22.md`
+- PropertyDais Levy Rate Components honesty: `31 passed`, `0 failed`
+
+That slice removes mounted PropertyDais read-only wording that presented the route as a specific state, school, and local levy breakdown on mount, and replaces it with levy-summary request wording plus a short disclosure that the card shows the returned rate components, total rate, and explanation from the `summarize_levy_rate_components` request for Benton County and the current tax year.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais Commissioner Memo honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-commissioner-memo-honesty-2026-03-22.md`
+- PropertyDais Commissioner Memo honesty: `32 passed`, `0 failed`
+
+That slice removes mounted PropertyDais read-only wording that presented the route as an unqualified commissioner-memo generation surface on mount, and replaces it with commissioner-memo draft request wording plus a short disclosure that the card shows the returned memo title, body, and word count from the `generate_commissioner_memo` request for the selected topic and current tax year.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais PILT Calculator honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-pilt-calculator-honesty-2026-03-22.md`
+- PropertyDais PILT Calculator honesty: `33 passed`, `0 failed`
+
+That slice removes mounted PropertyDais read-only wording and result presentation that treated the route as a district-breakdown calculator on mount, aligns the request to the real `calculate_pilt_payment` contract with `fiscalYear`, and replaces the unsupported district-detail surface with PILT summary request wording plus a short disclosure that the card shows the returned total due, district count, assessed value, and summary for Benton County and the current fiscal year.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais PILT Calculator returned-summary-text honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-pilt-calculator-returned-summary-text-honesty-2026-03-22.md`
+- PropertyDais PILT Calculator returned-summary-text honesty: `37 passed`, `0 failed`
+
+That slice tightens the remaining mounted PropertyDais broad returned-summary phrasing on the PILT card and replaces it with explicit returned summary-text disclosure while preserving the returned total due, district count, and assessed value shown from the `calculate_pilt_payment` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais PILT Calculator placement honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-pilt-calculator-placement-honesty-2026-03-22.md`
+- PropertyDais PILT Calculator placement honesty: `37 passed`, `0 failed`
+
+That slice adds a limited-applicability disclosure to the mounted PropertyDais PILT card so the parcel tab no longer implies that PILT is a universal parcel-level concern, and instead frames it as a standalone TerraPILT-style county or fiscal calculation module when needed.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais Senior Exemption Impact honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-senior-exemption-impact-honesty-2026-03-22.md`
+- PropertyDais Senior Exemption Impact honesty: `34 passed`, `0 failed`
+
+That slice removes mounted PropertyDais read-only wording and result expectations that presented the route as a broader senior/disabled exemption analysis on mount, aligns the request to the real `explain_senior_exemption_impact` contract with `year` plus explicit `exemptionProgram: 'senior'`, and replaces unsupported result expectations with senior-exemption request wording plus a short disclosure that the card shows the returned summary, assumptions, and impact bands for the selected parcel and current tax year.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais Senior Exemption Impact returned-summary-text honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-senior-exemption-impact-returned-summary-text-honesty-2026-03-22.md`
+- PropertyDais Senior Exemption Impact returned-summary-text honesty: `37 passed`, `0 failed`
+
+That slice tightens the remaining mounted PropertyDais broad returned-summary phrasing on the Senior Exemption card and replaces it with explicit returned summary-text disclosure while preserving the returned assumptions and impact bands shown from the `explain_senior_exemption_impact` request.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais Certification Status Request honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-certification-status-request-honesty-2026-03-22.md`
+- PropertyDais Certification Status Request honesty: `32 passed`, `0 failed`
+
+That slice removes mounted PropertyDais workflow-status wording and parameters that presented the route as a broader workflow surface on mount, aligns the request to the real `check_cert_status` contract with `county` plus `taxYear`, and replaces unsupported result expectations with certification-status request wording plus a short disclosure that the panel shows the returned county, tax year, status, completed steps, remaining steps, and certified-at timestamp.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais Appeal Certification Panel honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-appeal-certification-panel-honesty-2026-03-22.md`
+- PropertyDais Appeal Certification Panel honesty: `33 passed`, `0 failed`
+
+That slice removes mounted PropertyDais appeal-certification wording that presented a hardcoded parcel status as if it were a live appeal outcome or certification-readiness result, and replaces it with placeholder wording plus a short disclosure that the mounted panel is a parcel-scoped shell and does not load a live appeal outcome or certification-readiness result.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais Appeal Deadline Panel honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-appeal-deadline-panel-honesty-2026-03-22.md`
+- PropertyDais Appeal Deadline Panel honesty: `34 passed`, `0 failed`
+
+That slice removes mounted PropertyDais appeal-deadline wording that presented a hardcoded parcel status as if it were a live filing-deadline, hearing-milestone, or hearing-state result, and replaces it with placeholder wording plus a short disclosure that the mounted panel is a parcel-scoped shell and does not load a live filing deadline, hearing milestone, or hearing-state result.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais Appeal Hearing Panel honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-appeal-hearing-panel-honesty-2026-03-22.md`
+- PropertyDais Appeal Hearing Panel honesty: `35 passed`, `0 failed`
+
+That slice removes mounted PropertyDais appeal-hearing wording that presented a hardcoded parcel status as if it were a live hearing schedule, hearing date, or hearing-state result, and replaces it with placeholder wording plus a short disclosure that the mounted panel is a parcel-scoped shell and does not load a live hearing schedule, hearing date, or hearing-state result.
+
+It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
+
+A bounded PropertyDais Appeal Notice Panel honesty follow-on slice also landed on 2026-03-22:
+
+- authoritative quality-lane note: `os-platform/core/pilot/ops/frontend-property-dais-appeal-notice-panel-honesty-2026-03-22.md`
+- PropertyDais Appeal Notice Panel honesty: `36 passed`, `0 failed`
+
+That slice removes mounted PropertyDais appeal-notice wording that presented a hardcoded parcel status as if it were a live hearing notice, notice queue, or notice-delivery result, and replaces it with placeholder wording plus a short disclosure that the mounted panel is a parcel-scoped shell and does not load a live hearing notice, notice queue, or notice-delivery result.
 
 It is also a quality-lane refinement only and does not change the traffic-opening blockers in this packet.
 
