@@ -1,0 +1,115 @@
+SELECT pv.prop_id
+     , i.imprv_desc
+     , idt.imprv_det_type_cd
+     , i_attr_val_cd
+     , i_attr_unit
+     , pv.appraised_val
+     , pv.assessed_val
+     , pv.legal_acreage
+     , pv.recalc_flag
+     , pv.last_appraisal_yr
+     , pv.last_appraiser_id
+     , pv.next_appraiser_id
+     , pv.last_appraisal_dt
+     , pv.next_appraisal_dt
+     , pv.property_use_cd
+     , pv.imprv_val
+     , i.imprv_id
+     , i.imprv_type_cd
+     , i.imprv_state_cd
+     , i.imprv_homesite
+     , i.imprv_desc
+     , i.imprv_adj_amt
+     , i.imprv_adj_factor
+     , i.imprv_mass_adj_factor
+     , i.imprv_val_source
+     , i.effective_yr_blt
+     , i.percent_complete
+     , i.actual_year_built
+     , idt.imprv_det_id
+     , idt.imprv_det_class_cd
+     , idt.imprv_det_meth_cd
+     , idt.imprv_det_type_cd
+     , idt.imprv_det_val
+     , idt.imprv_det_val_source
+     , idt.imprv_det_desc
+     , idt.imprv_det_area
+     , idt.imprv_det_area_type
+     , idt.condition_cd
+     , idt.calc_area
+     , idt.sketch_area
+     , idt.override_area
+     , idt.length
+     , idt.width
+     , idt.height
+     , idt.unit_price
+     , idt.yr_built
+     , idt.depreciation_yr
+     , idt.depreciation_yr_override
+     , idt.imprv_det_adj_factor
+     , idt.imprv_det_adj_amt
+     , idt.percent_complete
+     , idt.percent_complete_override
+     , idt.percent_complete_cmnt
+     , idt.use_up_for_pct_base
+     , idt.dep_pct
+     , idt.imprv_det_sub_class_cd
+     , idt.actual_year_built_override
+
+
+FROM
+   dbo.property_val pv WITH (nolock)
+
+-- Join Improvement Table
+  FULL OUTER JOIN
+     dbo.imprv i WITH (nolock) 
+     ON pv.prop_id = i.prop_id
+     AND pv.prop_val_yr = i.prop_val_yr
+     AND pv.sup_num = i.sup_num
+     AND i.sale_id = 0
+     AND pv.prop_val_yr = 2017
+
+-- Join Improvement Detail Table
+  FULL OUTER JOIN
+     dbo.imprv_detail idt WITH (nolock)
+     ON pv.prop_id = idt.prop_id
+     AND pv.prop_val_yr = idt.prop_val_yr
+     AND pv.sup_num = idt.sup_num
+     AND idt.sale_id = 0
+     AND i.imprv_id = idt.imprv_id
+     AND idt.prop_val_yr = 2017
+
+-- Join Improvement Attribute Table
+  FULL OUTER JOIN
+     dbo.imprv_attr iat WITH (nolock)
+     ON pv.prop_id = iat.prop_id
+     AND pv.prop_val_yr = iat.prop_val_yr
+     AND pv.sup_num = iat.sup_num
+     AND iat.sale_id = 0
+     AND idt.imprv_det_id = iat.imprv_det_id
+     AND iat.prop_val_yr = 2017
+
+-- Join Land Table
+  FULL OUTER JOIN
+     dbo.land_detail ld WITH (nolock)
+     ON pv.prop_id = ld.prop_id
+     AND pv.prop_val_yr = ld.prop_val_yr
+     AND pv.sup_num = ld.sup_num
+     AND ld.sale_id = 0
+     AND ld.prop_val_yr = 2017
+
+-- Join Property Group Code Table
+  FULL OUTER JOIN
+     dbo.prop_group_assoc pga WITH (nolock)
+     ON pv.prop_id = pga.prop_id
+
+WHERE
+     pv.prop_val_yr = 2017
+     AND pga.prop_group_cd = 'Res - Reval 3 - SMS'
+
+ORDER BY 
+      pv.prop_id ASC
+      , i.imprv_val DESC
+      , idt.imprv_det_val DESC
+      , iat.imprv_attr_id ASC
+

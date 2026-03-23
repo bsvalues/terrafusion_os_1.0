@@ -1,0 +1,63 @@
+SELECT pv.prop_id
+     ,pv.hood_cd
+     ,pv.cycle
+     ,idt.imprv_det_class_cd
+     ,idt.imprv_det_sub_class_cd
+
+
+
+
+FROM
+   dbo.property_val pv WITH (nolock)
+
+-- Join Improvement Table
+  FULL OUTER JOIN
+     dbo.imprv i WITH (nolock) 
+     ON pv.prop_id = i.prop_id
+     AND pv.prop_val_yr = i.prop_val_yr
+     AND pv.sup_num = i.sup_num
+     AND i.sale_id = 0
+     AND pv.prop_val_yr = 2017
+
+-- Join Improvement Detail Table
+  FULL OUTER JOIN
+     dbo.imprv_detail idt WITH (nolock)
+     ON pv.prop_id = idt.prop_id
+     AND pv.prop_val_yr = idt.prop_val_yr
+     AND pv.sup_num = idt.sup_num
+     AND idt.sale_id = 0
+     AND i.imprv_id = idt.imprv_id
+     AND idt.prop_val_yr = 2017
+
+-- Join Improvement Attribute Table
+  FULL OUTER JOIN
+     dbo.imprv_attr iat WITH (nolock)
+     ON pv.prop_id = iat.prop_id
+     AND pv.prop_val_yr = iat.prop_val_yr
+     AND pv.sup_num = iat.sup_num
+     AND iat.sale_id = 0
+     AND idt.imprv_det_id = iat.imprv_det_id
+     AND iat.prop_val_yr = 2017
+
+-- Join Land Table
+  FULL OUTER JOIN
+     dbo.land_detail ld WITH (nolock)
+     ON pv.prop_id = ld.prop_id
+     AND pv.prop_val_yr = ld.prop_val_yr
+     AND pv.sup_num = ld.sup_num
+     AND ld.sale_id = 0
+     AND ld.prop_val_yr = 2017
+
+-- Join Property Group Code Table
+  FULL OUTER JOIN
+     dbo.prop_group_assoc pga WITH (nolock)
+     ON pv.prop_id = pga.prop_id
+
+
+WHERE
+     pv.prop_val_yr = 2017
+AND
+     pv.cycle = 4
+AND
+    --AND
+     pv.hood_cd <= 500000

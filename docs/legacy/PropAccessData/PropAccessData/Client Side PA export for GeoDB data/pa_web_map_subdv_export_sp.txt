@@ -1,0 +1,26 @@
+USE [pacs_oltp]
+GO
+/****** Object:  StoredProcedure [dbo].[PA_WebMapAbsSubdv]    Script Date: 03/24/2016 12:59:44 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+CREATE PROCEDURE [dbo].[PA_WebMapAbsSubdv]
+	@szServerDBSource sysname
+
+
+as
+
+
+declare @sql varchar(8000);
+
+set @sql = 'select
+		p.abs_subdv_cd,
+		p.abs_subdv_desc
+	from '+@szServerDBSource+'.dbo._clientdb_abs_subdv as p with (nolock)'
+
+exec(@sql)

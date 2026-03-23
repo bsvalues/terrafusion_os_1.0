@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Region>WA</Region>
+  <PageSize>250</PageSize>
+  <LookupItemsPerPage>50000</LookupItemsPerPage>
+  <PhotosPerPageForUpload>10</PhotosPerPageForUpload>
+  <PhotosPerPageForDownload>10</PhotosPerPageForDownload>
+  <ServiceConnectionString>Data Source=JCHARRISPACS;Initial Catalog=SyncService;User ID=chpacssa;Password=benton-28-2600;</ServiceConnectionString>
+  <PACSConnectionString>Data Source=JCHARRISPACS;Initial Catalog=pacs_oltp;User ID=chpacssa;Password=benton-28-2600;</PACSConnectionString>
+  <PACSPropertySelectionString>SELECT  psa.prop_id, psa.owner_tax_yr as prop_val_yr, psa.sup_num, ccp.mobile_assignment_group_id  
+FROM prop_supp_assoc psa  (nolock)
+join property p (nolock)
+on p.prop_id = psa.prop_id 
+join pacs_system ps (nolock)
+on psa.owner_tax_yr = ps.appr_yr 
+join property_val pv (nolock)
+on p.prop_id = pv.prop_id 
+and psa.owner_tax_yr = pv.prop_val_yr
+join ccProperty ccp (nolock)
+on ccp.prop_id = pv.prop_id and
+      ccp.prop_val_yr = pv.prop_val_yr and
+      ccp.sup_num = pv.sup_num
+WHERE p.prop_type_cd in ('R', 'MH') 
+and (pv.prop_inactive_dt is null or udi_parent = 'T')
+and udi_parent_prop_id is null
+</PACSPropertySelectionString>
+  <CamaCloudApiBaseUrl>http://api.pacs.camacloud.com/</CamaCloudApiBaseUrl>
+  <CamaCloudAccessKey>XRXTNFLKJSDXOOWJ</CamaCloudAccessKey>
+  <CamaCloudPassKey>VMWQE8C@@O5WGHT?P8VLFHX9JL56M9</CamaCloudPassKey>
+  <DefaultUserRoles>DataSetup,MobileAssessor,TaskManager,Tracking,QC,Reports</DefaultUserRoles>
+  <EventTypeCodeFilters>appr_note</EventTypeCodeFilters>
+  <Tasks>
+    <SyncTask Name="PushPACSData" Enabled="true">
+      <Schedule Enabled="true">
+        <Jobs>
+          <Job Enabled="true" Start="12:01 AM" End="12:00 AM" FrequencyType="DAILY" />
+        </Jobs>
+      </Schedule>
+    </SyncTask>
+    <SyncTask Name="DownSyncData" Enabled="true">
+      <Schedule Enabled="true">
+        <Jobs>
+          <Job Enabled="true" Start="12:01 AM" End="12:00 AM" FrequencyType="DAILY" />
+        </Jobs>
+      </Schedule>
+    </SyncTask>
+    <SyncTask Name="RefreshData" Enabled="true">
+      <Schedule Enabled="true">
+        <Jobs>
+          <Job Enabled="true" Start="12:01 AM" End="12:00 AM" FrequencyType="DAILY" />
+        </Jobs>
+      </Schedule>
+    </SyncTask>
+    <SyncTask Name="ChangeSchema" Enabled="false">
+      <Schedule Enabled="false">
+        <Jobs>
+          <Job Enabled="false" Start="12:01 AM" End="12:00 AM" FrequencyType="DAILY" />
+        </Jobs>
+      </Schedule>
+    </SyncTask>
+    <SyncTask Name="ReassociateAssignmentGroups" Enabled="true">
+      <Schedule Enabled="true">
+        <Jobs>
+          <Job Enabled="true" Start="12:01 AM" End="12:00 AM" FrequencyType="DAILY" />
+        </Jobs>
+      </Schedule>
+    </SyncTask>
+    <SyncTask Name="RelinkAssignementGroup" Enabled="true">
+      <Schedule Enabled="true">
+        <Jobs>
+          <Job Enabled="true" Start="12:01 AM" End="12:00 AM" FrequencyType="DAILY" />
+        </Jobs>
+      </Schedule>
+    </SyncTask>
+    <SyncTask Name="PurgeHistoryGroup" Enabled="true">
+      <Schedule Enabled="true">
+        <Jobs>
+          <Job Enabled="true" Start="12:01 AM" End="12:00 AM" FrequencyType="DAILY" />
+        </Jobs>
+      </Schedule>
+    </SyncTask>
+    <SyncTask Name="Uninstall" Enabled="false">
+      <Schedule Enabled="false">
+        <Jobs>
+          <Job Enabled="false" Start="11/5/2013 12:00:00 AM" FrequencyType="ONCE" />
+        </Jobs>
+      </Schedule>
+    </SyncTask>
+  </Tasks>
+  <ImageSettings ImageType="MOBILE" SubType="MOBILE" RectType="MOBILE" SystemType="A" />
+  <SyncIntervalSize>15</SyncIntervalSize>
+  <CCRequestTimeOut>8</CCRequestTimeOut>
+  <UpSyncChunkSize>100</UpSyncChunkSize>
+  <APIRequestNumberOfAttempts>3</APIRequestNumberOfAttempts>
+  <APIRequestRetryIntervalInSeconds>10</APIRequestRetryIntervalInSeconds>
+  <PACSDBConnectionTimeoutInMinutes>50</PACSDBConnectionTimeoutInMinutes>
+  <LogRequests>true</LogRequests>
+  <LogRequestsPath />
+  <PhotoBuffer>50</PhotoBuffer>
+  <PushImages>true</PushImages>
+  <MaxPCILogCount>250000</MaxPCILogCount>
+  <EnableDebugging>true</EnableDebugging>
+  <SchemaChangeFilePath>SchemaUpdate</SchemaChangeFilePath>
+  <RecalculateOnSync>true</RecalculateOnSync>
+  <SaveSketchToDisk>false</SaveSketchToDisk>
+  <SketchDataSavePath />
+  <PurgeAndReSync>false</PurgeAndReSync>
+  <MaxImageWidth>800</MaxImageWidth>
+  <MaxImageHeight>600</MaxImageHeight>
+  <ClientName />
+  <AgAppraiserIDs />
+  <MarshallAndSwiftEnabled>false</MarshallAndSwiftEnabled>
+  <ReadMarshallSwiftCodefilesIfNotFound>false</ReadMarshallSwiftCodefilesIfNotFound>
+  <ReadMarshallSwiftCodefilesAfterEveryPurge>false</ReadMarshallSwiftCodefilesAfterEveryPurge>
+</Settings>

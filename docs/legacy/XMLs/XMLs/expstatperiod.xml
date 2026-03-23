@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<FormattedReport xmlns = 'urn:crystal-reports:schemas' xmlns:xsi = 'http://www.w3.org/2000/10/XMLSchema-instance'
+>
+<FormattedAreaPair Level="0" Type="Report">
+<FormattedArea Type="Header">
+<FormattedSections>
+<FormattedSection SectionNumber="0">
+<FormattedReportObjects>
+<FormattedReportObject xsi:type="CTFormattedSubreport">
+<ObjectName>Subreport1</ObjectName>
+<FormattedAreaPair Level="0" Type="Report">
+<FormattedArea Type="Header">
+<FormattedSections>
+</FormattedSections>
+</FormattedArea>
+<FormattedArea Type="Footer">
+<FormattedSections>
+</FormattedSections>
+</FormattedArea>
+</FormattedAreaPair>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedSubreport">
+<ObjectName>Subreport2</ObjectName>
+<FormattedAreaPair Level="0" Type="Report">
+</FormattedAreaPair>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedSubreport">
+<ObjectName>Subreport3</ObjectName>
+<FormattedAreaPair Level="0" Type="Report">
+</FormattedAreaPair>
+</FormattedReportObject>
+<FormattedReportObject xsi:type="CTFormattedSubreport">
+<ObjectName>Subreport4</ObjectName>
+<FormattedAreaPair Level="0" Type="Report">
+</FormattedAreaPair>

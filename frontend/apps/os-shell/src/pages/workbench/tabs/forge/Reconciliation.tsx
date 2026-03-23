@@ -76,7 +76,7 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
 
   /* Seed indications from live API data when available */
   useEffect(() => {
-    if (reconAPI.data && !seededFromAPI) {
+    if (reconAPI.data && reconAPI.data.costApproach && reconAPI.data.salesApproach && reconAPI.data.incomeApproach && !seededFromAPI) {
       const liveIndications: ApproachIndication[] = [
         {
           approach: 'cost',

@@ -1,0 +1,33 @@
+SELECT DISTINCT t1.prop_id AS 'PID'
+  , t1.hood_cd AS 'Neighborhood'
+  , t1.next_appraiser_id AS 'Appraiser'
+  , t1.land_hstd_val AS '17 Land HS'
+  , t1.land_non_hstd_val AS '17 Land Non HS'
+  , t1.imprv_hstd_val AS '17 Imprv HS'
+  , t1.imprv_non_hstd_val AS '17 Imprv Non HS'
+  , t1.market AS '17 Total'
+  , t2.land_hstd_val AS '16 Land HS'
+  , t2.land_non_hstd_val AS '16 Land Non HS'
+  , t2.imprv_hstd_val AS '16 Imprv HS'
+  , t2.imprv_non_hstd_val AS '16 Imprv Non HS'
+  , t2.market AS '16 Total'
+  , (t1.market - t2.market) AS 'Difference'
+
+  
+FROM (SELECT *
+          FROM dbo.property_val with (nolock)
+          WHERE prop_val_yr = 2017
+            AND sup_num = 0) t1
+
+JOIN (SELECT *
+          FROM dbo.property_val
+          WHERE prop_val_yr = 2016
+            AND sup_num = 0) t2
+   ON t1.prop_id = t2.prop_id
+
+ JOIN dbo.prop_group_assoc pga with (nolock)
+   ON t1.prop_id = pga.prop_id
+
+WHERE pga.prop_group_cd = 'Res - Reval 3'
+
+ORDER BY t1.next_appraiser_id

@@ -1,0 +1,11 @@
+{
+  "payload-1665e86b-c102-47d5-be84-517460308b7f": {
+    "ref": "payload-1665e86b-c102-47d5-be84-517460308b7f",
+    "storeType": "dev",
+    "createdAt": "2026-03-23T19:33:49.223Z",
+    "payload": {
+      "secret": "xxx",
+      "note": "dev-only"
+    }
+  }
+}

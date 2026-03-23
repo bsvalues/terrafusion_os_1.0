@@ -1,0 +1,5 @@
+Name	Type	Description
+Routing and Remote Access	Routing and Remote Access	Routing and Remote Access
+Services		Starts, stops, and configures Windows services.
+WMI Control	Extension Snap-in	Configures and controls the Windows Management Instrumentation (WMI) service.
+SQL Server Configuration Manager	SQL Server Configuration Manager	SQL Server Configuration Manager

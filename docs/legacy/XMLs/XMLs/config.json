@@ -1,0 +1,6 @@
+{
+    "ConnectionStrings": {
+        "SqlConnection": "Server=your_server;Database=your_database;User Id=your_username;Password=your_password;",
+        "MySqlConnection": "Server=your_mysql_server;Database=your_mysql_database;User Id=your_mysql_username;Password=your_mysql_password;"
+    }
+}

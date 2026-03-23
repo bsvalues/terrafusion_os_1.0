@@ -1,18 +1,18 @@
 # SRE-O1-OPS AKS Pager Proof Attempt
 
-Date: 2026-03-20
+Date: 2026-03-21
 Status: BLOCKED
-Scope: Sanitized execution receipt for the authorized off-box pager/on-call closure path for `SRE-O1-OPS`
+Scope: Sanitized historical execution receipt for the repo-documented Azure/AKS pager/on-call proof attempt for `SRE-O1-OPS`
 
 ## Attempt Objective
 
-Execute the real pager/on-call proof on the authorized AKS observability surface for the Benton release lane.
+Attempt to execute the repo-documented Azure/AKS pager/on-call proof path as a claimed alternate lane for the Benton release lane.
 
-This artifact does not claim incident routing success. It records the current workstation attempt and the exact access blockers that prevented truthful execution.
+This artifact does not claim incident routing success. It records the workstation attempt and the exact access blockers that prevented truthful execution.
 
-## Authorized Target Surface
+## Attempted Target Surface
 
-The repo-documented off-box target surface is:
+The repo-documented Azure/AKS target surface used for this attempt was:
 
 - Azure resource group: `terrafusion-prod`
 - AKS cluster: `terrafusion-aks-prod`
@@ -51,12 +51,21 @@ No truthful claim can be made for any of the following on 2026-03-20 from this w
 
 `SRE-O1-OPS` therefore remains open.
 
+This receipt records only a blocked attempt against the repo-documented Azure/AKS path.
+
+It does not establish that Azure/AKS is the required or verified closure surface for this lane.
+
 ## Blocker Classification
 
+- `attempted_surface = repo-documented-azure-aks-path`
 - `pager_proof_execution_status = blocked-by-missing-azure-auth`
 - `cluster_access_status = blocked-by-invalid-repo-kubeconfig`
 - `available_local_kube_context = docker-desktop-only`
 
 ## Required Next Operator Step
 
-The next truthful closure attempt must begin with a usable Azure principal and a valid AKS kube context for `terrafusion-aks-prod`, then execute the live critical-alert drill on the monitoring surface and publish the routed incident evidence bundle.
+The next truthful closure attempt must begin by verifying the real pager-capable execution surface for this lane.
+
+If Azure/AKS is still claimed as that surface, the operator must first prove that it is live, reachable, receiver-capable, and bound to the Benton release lane before reusing this path.
+
+If Azure/AKS cannot be proven, this receipt remains historical evidence of one blocked alternate-lane attempt and not a directive for the next operator step.

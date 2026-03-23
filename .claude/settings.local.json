@@ -325,7 +325,9 @@
       "Bash(export DatabaseProvider=\"Postgres\")",
       "Bash(pnpm run:*)",
       "Bash(pnpm -w run r1:verify-evidence)",
-      "Bash(find /c/Users/bsval/terrafusion_os_1.0 -type f \\\\\\(-name *wave* -o -name *ledger* -o -name *governance* \\\\\\))"
+      "Bash(find /c/Users/bsval/terrafusion_os_1.0 -type f \\\\\\(-name *wave* -o -name *ledger* -o -name *governance* \\\\\\))",
+      "Bash(pnpm exec:*)",
+      "Bash(git worktree:*)"
     ],
     "deny": [],
     "ask": [],

@@ -1,0 +1,12 @@
+select
+	p1.[geo_id],
+	p1.[prop_id],
+	pv1.[cycle],
+	pv1.[hood_cd]
+from dbo.property as p1 with(nolock)
+join dbo.property_val as pv1 with(nolock) on
+	pv1.[prop_id] = p1.[prop_id]
+where
+	p1.[geo_id] like '4%' and
+	pv1.[prop_val_yr] = 2017 and
+	pv1.[prop_inactive_dt] is null

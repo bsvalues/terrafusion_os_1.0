@@ -1,0 +1,7524 @@
+ 
+
+PACS Queries 
+
+Light vertical
+2018 
+
+Matthew Chidsey 
+
+Island County 
+
+9/25/2018 
+
+ 
+
+
+ 
+
+
+Table of Contents 
+1 COMMERCIAL QUERIES .................................................................................................................... 1 
+1.1 Land Query .................................................................................................................................................................... 1 
+1.2 Acreage Valuation Query .............................................................................................................................................. 1 
+1.3 Building Criteria ............................................................................................................................................................. 2 
+1.4 Condo Query ................................................................................................................................................................. 2 
+1.5 Commercial Income And Expense Properties ............................................................................................................... 3 
+1.6 Commercial Imprv Value Change From Prior Year ........................................................................................................ 3 
+1.7 Commercial Imprv Value Change From Prior Year – BAS Only...................................................................................... 4 
+1.8 Marshall & Swift – Component Details ......................................................................................................................... 4 
+1.9 Marshall & Swift – Estimate Details .............................................................................................................................. 5 
+1.10 Marshall & Swift – Occupancy Details ........................................................................................................................... 5 
+1.11 Marshall & Swift – Section Details ................................................................................................................................ 6 
+2 DOR – DEPARTMENT OF REVENUE .................................................................................................... 7 
+2.1 ---This Is For The Number Of Parcels Scheduled For Reappraisal ................................................................................. 7 
+2.2 ---This Will Show The Number Of Parcels That Are EX & U500 ..................................................................................... 7 
+2.3 ---This Will Show The Count Of Properties Changed Between Current and Previous Year .......................................... 7 
+2.4 ---This Will Show The Count Of EX & U500 Properties Changed Between Current and Previous Year......................... 8 
+2.5 --this finds single family residential improvement exemptions .................................................................................... 8 
+2.6 --total real property non exempt .................................................................................................................................. 8 
+2.7 --total real property exempt ......................................................................................................................................... 8 
+2.8 --current cycle non exempt real property total (-) commercial .................................................................................... 9 
+2.9 --current cycle non exempt commecial property total ................................................................................................. 9 
+2.10 --current cycle exempt real property total (-) commercial ........................................................................................... 9 
+2.11 --current cycle exempt commerial properties .............................................................................................................. 9 
+2.12 --real non exempt property total (-) current cycle & (-) commercial .......................................................................... 10 
+2.13 --commericial non exempt property total (-) current cycle ........................................................................................ 10 
+2.14 --real exempt property total (-) current cycle & (-) commercial ................................................................................. 10 
+2.15 --commercial exempt property total (-) current cycle ................................................................................................ 10 
+2.16 --this finds permits by issue date ................................................................................................................................ 11 
+2.17 DFL Compsite Query .................................................................................................................................................... 11 
+2.18 DOR Assessment Roll for Real Property ...................................................................................................................... 12 
+2.19 DOR Assessment Roll for Personal Property ............................................................................................................... 13 
+3 EXEMPTION QUERIES ...................................................................................................................... 14 
+3.1 Exempt Status Properties With ‘EX’ Group Code ........................................................................................................ 14 
+3.2 Senior/Disability Query ............................................................................................................................................... 14 
+3.3 Senior/Disability Renewal Tracker Query .................................................................................................................... 15 
+3.4 Senior/Disabled Query ................................................................................................................................................ 15 
+3.5 Senior Query ................................................................................................................................................................ 16 
+4 FOREST PROTECTION ....................................................................................................................... 17 
+4.1 FP Update .................................................................................................................................................................... 17 
+4.2 Another Fp Query ........................................................................................................................................................ 17 
+4.3 ---Returns The Total Acres In FP .................................................................................................................................. 17 
+4.4 ---Returns The Number Of Props Less Than 50 ........................................................................................................... 18 
+4.5 ---Returns The Number Of Props At 50 Or More Acres ............................................................................................... 18 
+4.6 ---Returns The Number Of Acres On Accounts With Over 50 Acres, Less 50 Acres .................................................... 18 
+5 LEVY QUERIES .................................................................................................................................. 19 
+5.1 List Of Taxing Districts, Name, Address, Email And Phone Number, Along With Misc Other Info: ............................ 19 
+5.2 Levy Information ......................................................................................................................................................... 19 
+5.3 Estimated Certified Values per Taxing District ............................................................................................................ 20 
+6 MISCELLANEOUS QUERIES ............................................................................................................... 21 
+6.1 Commercial Properties With Farm Assest Flagged ..................................................................................................... 21 
+6.2 Current Use Parcels: .................................................................................................................................................... 21 
+6.3 Mosquito Benefit Fee Review ..................................................................................................................................... 21 
+6.4 New Construction ........................................................................................................................................................ 22 
+6.5 PACS Table And Field Locator ...................................................................................................................................... 22 
+6.6 Search Remarks Field .................................................................................................................................................. 22 
+6.7 Supplement Query One ............................................................................................................................................... 22 
+6.8 Supplement Query Two ............................................................................................................................................... 22 
+7 MONITOR QUERIES ......................................................................................................................... 23 
+7.1 Monitor Query ............................................................................................................................................................. 23 
+8 PERSONAL PROPERTY QUERIES ........................................................................................................ 24 
+8.1 Rendition Not Recieved Monitor................................................................................................................................. 24 
+8.2 Foreclosure Query ....................................................................................................................................................... 24 
+9 PROPERTY COUNTS ......................................................................................................................... 25 
+9.1 Property Counts .......................................................................................................................................................... 25 
+10 ROUTINE QUERIES ........................................................................................................................... 26 
+10.1 Blank Sub-Type ............................................................................................................................................................ 26 
+10.2 Cycle And Region Check .............................................................................................................................................. 26 
+10.3 Effective Year Built Override Check ............................................................................................................................. 26 
+10.4 Ghost Account Search ................................................................................................................................................. 27 
+10.5 Invalid Property Use Codes Review ............................................................................................................................. 27 
+10.6 Vacant Property Use With Improvement Value .......................................................................................................... 28 
+10.7 Non Vacant Property Use With No Improvement Value ............................................................................................. 28 
+10.8 Vacant Property Use With Non Vacant Tax Area ........................................................................................................ 29 
+10.9 Non Vacant Property Use With No Improvement Value ............................................................................................. 30 
+10.10 Suspect Last Appraisal Dates ....................................................................................................................................... 30 
+10.11 Recalculation Errors .................................................................................................................................................... 31 
+11 SALES QUERIES ................................................................................................................................ 32 
+11.1 Sales Improved Qualified ............................................................................................................................................ 32 
+11.3 Sales Improved Unqualified ........................................................................................................................................ 34 
+11.5 Sales Vacant Qualified ................................................................................................................................................. 37 
+11.7 Sales Vacant Unqualified ............................................................................................................................................. 39 
+12 SEGREGATIONS AND MAPPING/GIS QUERIES ................................................................................... 42 
+12.1 To Map Appraiser Areas: If Changing Areas ............................................................................................................... 42 
+12.2 To Calculate Building Size ............................................................................................................................................ 42 
+12.3 Gis Version 1 ................................................................................................................................................................ 42 
+12.4 Gis Version 2 ................................................................................................................................................................ 43 
+12.5 Adjustment Hold & Pending BLA ................................................................................................................................. 43 
+13 BUILDING PERMIT QUERIES ............................................................................................................. 44 
+13.1 Permits By Issue Date .................................................................................................................................................. 44 
+13.2 Permits By Issue Date – Inactive ................................................................................................................................. 44 
+13.3 Permits By Issue Date – Active .................................................................................................................................... 44 
+13.4 Parcel List With Permit Details .................................................................................................................................... 44 
+13.5 Structures Details By Parcel ........................................................................................................................................ 45 
+13.6 Structures Details ........................................................................................................................................................ 45 
+14 SUPRESSED/CONFIDENTIAL QUERIES ............................................................................................... 46 
+14.1 Confidential Name ....................................................................................................................................................... 46 
+14.2 Confidential & Web Suppressed Accounts .................................................................................................................. 46 
+15 REVAL/VALUATION QUERIES ........................................................................................................... 47 
+15.1 Percent Difference from Prior Year ............................................................................................................................. 47 
+15.2 BAS Improvement – Flat Valued .................................................................................................................................. 47 
+15.3 New Value Activity ...................................................................................................................................................... 48 
+15.4 Reval Progress ............................................................................................................................................................. 48 
+
+1 COMMERCIAL QUERIES 
+
+1.1 Land Query 
+
+ 
+
+SELECT p1.[prop_id] 
+
+ ,p1.[geo_id] 
+
+ ,pv1.[rgn_cd] 
+
+ ,pv1.[last_appraiser_id] 
+
+ ,pv1.[prop_val_yr] 
+
+ ,pv1.[property_use_cd] 
+
+ ,ld1.[land_type_cd] 
+
+ ,ld1.[mkt_flat_val] 
+
+ ,ld1.[mkt_calc_val] 
+
+ ,ld1.[mkt_adj_val] 
+
+ ,ld1.[size_square_feet] 
+
+ ,p1.[dba_name] 
+
+FROM dbo.land_detail AS ld1 WITH (NOLOCK) 
+
+JOIN dbo.prop_supp_assoc AS psa1 WITH (NOLOCK) ON 
+psa1.[prop_id] = ld1.[prop_id] 
+
+ AND psa1.[owner_tax_yr] = ld1.[prop_val_yr] 
+
+ AND psa1.[sup_num] = ld1.[sup_num] 
+
+JOIN dbo.property AS p1 WITH (NOLOCK) ON p1.[prop_id] = 
+psa1.[prop_id] 
+
+JOIN dbo.property_val AS pv1 WITH (NOLOCK) ON pv1.[prop_id] 
+= ld1.[prop_id] 
+
+ AND pv1.[prop_val_yr] = ld1.[prop_val_yr] 
+
+ AND pv1.[sup_num] = ld1.[sup_num] 
+
+INNER JOIN pacs_system ON pv1.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv1.[last_appraiser_id] = 643 
+
+ AND pv1.[prop_inactive_dt] IS NULL 
+
+1.2 Acreage Valuation Query 
+
+ 
+
+SELECT p1.[prop_id] 
+
+ ,p1.[geo_id] 
+
+ ,pv1.[last_appraiser_id] 
+
+ ,pv1.[prop_val_yr] 
+
+ ,pv1.[rgn_cd] 
+
+ ,ld1.[land_type_cd] 
+
+ ,ld1.[mkt_flat_val] 
+
+ ,ld1.[mkt_calc_val] 
+
+ ,ld1.[mkt_adj_val] 
+
+ ,ld1.[mkt_unit_price] 
+
+ ,pv1.[legal_acreage] 
+
+ ,pv1.[property_use_cd] 
+
+FROM dbo.land_detail AS ld1 WITH (NOLOCK) 
+
+JOIN dbo.prop_supp_assoc AS psa1 WITH (NOLOCK) ON 
+psa1.[prop_id] = ld1.[prop_id] 
+
+ AND psa1.[owner_tax_yr] = ld1.[prop_val_yr] 
+
+ AND psa1.[sup_num] = ld1.[sup_num] 
+
+JOIN dbo.property AS p1 WITH (NOLOCK) ON p1.[prop_id] = 
+psa1.[prop_id] 
+
+JOIN dbo.property_val AS pv1 WITH (NOLOCK) ON pv1.[prop_id] 
+= ld1.[prop_id] 
+
+ AND pv1.[prop_val_yr] = ld1.[prop_val_yr] 
+
+ AND pv1.[sup_num] = ld1.[sup_num] 
+
+INNER JOIN pacs_system ON pv1.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv1.[last_appraiser_id] = 643 
+
+ AND ld1.[land_type_cd] IN ( 
+
+ '32' 
+
+ ,'35' 
+
+ ,'37' 
+
+ ) 
+
+ AND pv1.[prop_inactive_dt] IS NULL 
+
+ 
+
+
+1.3 Building Criteria 
+
+ 
+
+SELECT p1.[prop_id] 
+
+ ,p1.[geo_id] 
+
+ ,pv1.[rgn_cd] 
+
+ ,pv1.[last_appraiser_id] 
+
+ ,id1.[imprv_det_type_cd] 
+
+ ,id1.[yr_built] 
+
+ ,id1.[sketch_area] 
+
+ ,id1.[calc_area] 
+
+ ,ld1.[land_type_cd] 
+
+ ,id1.[depreciation_yr] 
+
+FROM dbo.imprv AS i1 WITH (NOLOCK) 
+
+JOIN dbo.imprv_detail AS id1 WITH (NOLOCK) ON id1.[imprv_id] 
+= i1.[imprv_id] 
+
+ AND id1.[prop_id] = i1.[prop_id] 
+
+ AND id1.[prop_val_yr] = i1.[prop_val_yr] 
+
+ AND id1.[sale_id] = i1.[sale_id] 
+
+ AND id1.[sup_num] = i1.[sup_num] 
+
+JOIN dbo.land_detail AS ld1 WITH (NOLOCK) ON ld1.[prop_id] = 
+i1.[prop_id] 
+
+ AND ld1.[prop_val_yr] = i1.[prop_val_yr] 
+
+ AND ld1.[sale_id] = i1.[sale_id] 
+
+ AND ld1.[sup_num] = i1.[sup_num] 
+
+JOIN dbo.prop_supp_assoc AS psa1 WITH (NOLOCK) ON 
+psa1.[prop_id] = i1.[prop_id] 
+
+ AND psa1.[owner_tax_yr] = i1.[prop_val_yr] 
+
+ AND psa1.[sup_num] = i1.[sup_num] 
+
+JOIN dbo.property AS p1 WITH (NOLOCK) ON p1.[prop_id] = 
+psa1.[prop_id] 
+
+JOIN dbo.property_val AS pv1 WITH (NOLOCK) ON pv1.[prop_id] 
+= i1.[prop_id] 
+
+ AND pv1.[prop_val_yr] = i1.[prop_val_yr] 
+
+ AND pv1.[sup_num] = i1.[sup_num] 
+
+INNER JOIN pacs_system ON pv1.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv1.[last_appraiser_id] = 643 
+
+ AND id1.[imprv_det_type_cd] IN ('BAS') 
+
+ AND id1.[sketch_area] BETWEEN 2000 
+
+ AND 4000 
+
+ AND id1.[depreciation_yr] < 2000 
+
+ AND pv1.[prop_inactive_dt] IS NULL 
+
+ 
+
+1.4 Condo Query 
+
+ 
+
+SELECT property.dba_name 
+
+ ,property_val.legal_desc 
+
+ ,property_val.prop_id 
+
+ ,appraiser.appraiser_full_name 
+
+ ,property.geo_id 
+
+ ,property_val.land_hstd_val 
+
+ ,property_val.land_non_hstd_val 
+
+ ,property_val.imprv_hstd_val 
+
+ ,property_val.imprv_non_hstd_val 
+
+ ,imprv_detail.imprv_det_type_cd 
+
+ ,imprv.adjusted_val 
+
+ ,imprv.flat_val 
+
+ ,property_profile.living_area 
+
+ ,imprv_detail.imprv_det_class_cd 
+
+ ,imprv_detail.condition_cd 
+
+ ,imprv_detail.yr_built 
+
+ ,imprv.effective_yr_blt 
+
+FROM ( 
+
+ ( 
+
+ ( 
+
+ ( 
+
+ ( 
+
+ ( 
+
+ property_val INNER JOIN property ON 
+property_val.prop_id = property.prop_id 
+
+ ) INNER JOIN OWNER ON 
+(property_val.prop_val_yr = OWNER.owner_tax_yr) 
+
+ AND (property_val.prop_id = 
+OWNER.prop_id) 
+
+ ) INNER JOIN pacs_system ON 
+property_val.prop_val_yr = pacs_system.appr_yr 
+
+ ) INNER JOIN appraiser ON 
+property_val.last_appraiser_id = appraiser.appraiser_id 
+
+ ) INNER JOIN imprv ON (property_val.sup_num = 
+imprv.sup_num) 
+
+ AND (property_val.prop_val_yr = 
+imprv.prop_val_yr) 
+
+ AND (property_val.prop_id = imprv.prop_id) 
+
+ ) INNER JOIN property_profile ON 
+(property_val.sup_num = property_profile.sup_num) 
+
+ AND (property_val.prop_val_yr = 
+property_profile.prop_val_yr) 
+
+ AND (property_val.prop_id = 
+property_profile.prop_id) 
+
+ ) 
+
+INNER JOIN imprv_detail ON (imprv.sale_id = 
+imprv_detail.sale_id) 
+
+ AND (property_val.sup_num = imprv_detail.sup_num) 
+
+ AND (imprv.imprv_id = imprv_detail.imprv_id) 
+
+ AND (property_val.prop_val_yr = 
+imprv_detail.prop_val_yr) 
+
+ AND (property_val.prop_id = imprv_detail.prop_id) 
+
+WHERE ( 
+
+ ( 
+
+ (property.dba_name) LIKE '%condo%' 
+
+ OR [property_val].[legal_desc] LIKE '%condo%' 
+
+ ) 
+
+ AND ((property_val.sup_num) = 0) 
+
+ AND ((property_val.prop_inactive_dt) IS NULL) 
+
+ AND ((imprv.sale_id) = 0) 
+
+ AND ((imprv_detail.imprv_det_type_cd) = 'bas') 
+
+ ); 
+
+ 
+
+
+1.5 Commercial Income And Expense 
+Properties 
+
+Used by the Commercial Appraiser during valuations 
+review. The query pulls only those properties that 
+have had an Income Valuation created. If the 
+property has been converted to Marshall & Swift the 
+Occupancy Type(s) are provided. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,pv.prop_val_yr 
+
+ ,p.geo_id 
+
+ ,ac.file_as_name 
+
+ ,cmso.occupancy_code AS 'type' 
+
+ ,cmso.occupancy_description 
+
+ ,inc.income_id 
+
+ ,inc.econ_area 
+
+ ,inc.prop_type_cd 
+
+ ,'$' + convert(VARCHAR(12), ipa.income_value, 1) AS 
+income_value 
+
+FROM property_val pv 
+
+JOIN income_prop_assoc ipa ON pv.prop_id = ipa.prop_id 
+
+ AND pv.prop_val_yr = ipa.prop_val_yr 
+
+ AND pv.sup_num = ipa.sup_num 
+
+JOIN property p ON pv.prop_id = p.prop_id 
+
+JOIN OWNER AS o ON ipa.prop_id = o.prop_id 
+
+ AND ipa.prop_val_yr = o.owner_tax_yr 
+
+ AND ipa.sup_num = o.sup_num 
+
+JOIN account AS ac ON o.owner_id = ac.acct_id 
+
+LEFT JOIN imprv_detail_cms_occupancy AS cmso ON ipa.prop_id 
+= cmso.prop_id 
+
+ AND ipa.prop_val_yr = cmso.prop_val_yr 
+
+ AND ipa.sup_num = cmso.sup_num 
+
+ AND cmso.sale_id = 0 
+
+JOIN income AS inc ON ipa.income_id = inc.income_id 
+
+ AND ipa.prop_val_yr = inc.income_yr 
+
+ AND ipa.sup_num = inc.sup_num 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.last_appraiser_id = 643 
+
+ AND pv.prop_inactive_dt IS NULL 
+
+ORDER BY pv.prop_id 
+
+ ,pv.prop_val_yr 
+
+1.6 Commercial Imprv Value Change From 
+Prior Year 
+
+Used by the Commercial Appraiser to compare 
+Improvement value changes from the prior year. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,ac.file_as_name 
+
+ ,(pv.imprv_hstd_val + pv.imprv_non_hstd_val) AS 'imprv 
+val' 
+
+ ,pv.cycle 
+
+ ,pv.prop_val_yr 
+
+ ,pv.last_appraiser_id 
+
+FROM property_val pv 
+
+JOIN prop_supp_assoc psa ON pv.prop_id = psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+JOIN property p ON pv.prop_id = p.prop_id 
+
+JOIN OWNER AS o ON psa.prop_id = o.prop_id 
+
+ AND psa.owner_tax_yr = o.owner_tax_yr 
+
+ AND psa.sup_num = o.sup_num 
+
+JOIN account AS ac ON o.owner_id = ac.acct_id 
+
+WHERE pv.prop_val_yr IN ( 
+
+ 2018 
+
+ ,2019 
+
+ ) 
+
+ AND pv.last_appraiser_id = 643 
+
+ AND pv.prop_inactive_dt IS NULL 
+
+ORDER BY pv.prop_id 
+
+
+1.7 Commercial Imprv Value Change From 
+Prior Year – BAS Only 
+
+Used by the Commercial Appraiser (Harold) to 
+compare Improvement value changes from the prior 
+year. Very similar to the previous query—but this 
+pulls only the ‘BAS’ improvement detail. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,ac.file_as_name 
+
+ ,id.imprv_id 
+
+ , 
+
+ --id.imprv_det_id, 
+
+ id.imprv_det_val 
+
+ ,pv.prop_val_yr 
+
+FROM property_val pv 
+
+JOIN prop_supp_assoc psa ON pv.prop_id = psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+JOIN property p ON pv.prop_id = p.prop_id 
+
+JOIN OWNER AS o ON psa.prop_id = o.prop_id 
+
+ AND psa.owner_tax_yr = o.owner_tax_yr 
+
+ AND psa.sup_num = o.sup_num 
+
+JOIN account AS ac ON o.owner_id = ac.acct_id 
+
+JOIN imprv AS i ON psa.prop_id = i.prop_id 
+
+ AND psa.owner_tax_yr = i.prop_val_yr 
+
+ AND psa.sup_num = i.sup_num 
+
+ AND i.sale_id = 0 
+
+JOIN imprv_detail AS id ON i.prop_id = id.prop_id 
+
+ AND i.prop_val_yr = id.prop_val_yr 
+
+ AND i.sup_num = id.sup_num 
+
+ AND i.sale_id = id.sale_id 
+
+WHERE pv.prop_val_yr IN ( 
+
+ '2018' 
+
+ ,'2019' 
+
+ ) 
+
+ AND pv.last_appraiser_id = 643 
+
+ AND pv.prop_inactive_dt IS NULL 
+
+ AND id.imprv_det_type_cd = 'bas' 
+
+ORDER BY pv.prop_id 
+
+ 
+
+1.8 Marshall & Swift – Component Details 
+
+Used by the Commercial Appraiser during valuations 
+review—for those properties that have been 
+converted to Marshall & Swift. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,ac.file_as_name 
+
+ ,pv.cycle 
+
+ ,pv.prop_val_yr 
+
+ ,pv.last_appraiser_id 
+
+ ,cmsc.imprv_id 
+
+ ,cmsc.imprv_det_id 
+
+ ,cmsc.section_id 
+
+ ,cmsc.component_id 
+
+ ,cmsc.component_code 
+
+ ,cmsc.component_description 
+
+ ,cmsc.component_system_description 
+
+ ,cmsc.component_pct 
+
+ ,cmsc.quality_rank 
+
+ ,cmsc.total_cost_new 
+
+ ,cmsc.calc_unit_cost 
+
+ ,cmsc.depreciation_amount 
+
+ ,cmsc.depreciated_cost 
+
+FROM property_val pv 
+
+JOIN prop_supp_assoc psa ON pv.prop_id = psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+JOIN property p ON pv.prop_id = p.prop_id 
+
+JOIN OWNER AS o ON psa.prop_id = o.prop_id 
+
+ AND psa.owner_tax_yr = o.owner_tax_yr 
+
+ AND psa.sup_num = o.sup_num 
+
+JOIN account AS ac ON o.owner_id = ac.acct_id 
+
+JOIN imprv_detail_cms_component AS cmsc ON pv.prop_id = 
+cmsc.prop_id 
+
+ AND pv.prop_val_yr = cmsc.prop_val_yr 
+
+ AND pv.sup_num = cmsc.sup_num 
+
+ AND cmsc.sale_id = 0 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.last_appraiser_id = 643 
+
+ AND pv.prop_inactive_dt IS NULL 
+
+ORDER BY pv.prop_id 
+
+
+1.9 Marshall & Swift – Estimate Details 
+
+Used by the Commercial Appraiser during valuations 
+review—for those properties that have been 
+converted to Marshall & Swift. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,ac.file_as_name 
+
+ ,pv.cycle 
+
+ ,pv.prop_val_yr 
+
+ ,pv.last_appraiser_id 
+
+ ,cmse.imprv_id 
+
+ ,cmse.imprv_det_id 
+
+ ,id.imprv_det_type_cd 
+
+ ,idt.imprv_det_typ_desc 
+
+ ,cmse.quality_rank 
+
+ ,cmse.effective_year_built 
+
+ ,cmse.base_date 
+
+ ,cmse.calculated_date 
+
+FROM property_val pv 
+
+JOIN prop_supp_assoc psa ON pv.prop_id = psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+JOIN property p ON pv.prop_id = p.prop_id 
+
+JOIN OWNER AS o ON psa.prop_id = o.prop_id 
+
+ AND psa.owner_tax_yr = o.owner_tax_yr 
+
+ AND psa.sup_num = o.sup_num 
+
+JOIN account AS ac ON o.owner_id = ac.acct_id 
+
+JOIN imprv_detail_cms_estimate AS cmse ON pv.prop_id = 
+cmse.prop_id 
+
+ AND pv.prop_val_yr = cmse.prop_val_yr 
+
+ AND pv.sup_num = cmse.sup_num 
+
+ AND cmse.sale_id = 0 
+
+JOIN imprv_detail AS id ON cmse.prop_id = id.prop_id 
+
+ AND cmse.prop_val_yr = id.prop_val_yr 
+
+ AND cmse.sup_num = id.sup_num 
+
+ AND cmse.imprv_id = id.imprv_id 
+
+ AND cmse.imprv_det_id = id.imprv_det_id 
+
+JOIN imprv_det_type AS idt ON id.imprv_det_type_cd = 
+idt.imprv_det_type_cd 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.last_appraiser_id = 643 
+
+ AND pv.prop_inactive_dt IS NULL 
+
+ORDER BY pv.prop_id 
+
+1.10 Marshall & Swift – Occupancy Details 
+
+Used by the Commercial Appraiser during valuations 
+review—for those properties that have been 
+converted to Marshall & Swift. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,ac.file_as_name 
+
+ ,pv.cycle 
+
+ ,pv.prop_val_yr 
+
+ ,pv.last_appraiser_id 
+
+ ,cmso.imprv_id 
+
+ ,cmso.imprv_det_id 
+
+ ,cmso.section_id 
+
+ ,cmso.occupancy_id 
+
+ ,cmso.occupancy_code AS 'type' 
+
+ ,cmso.occupancy_description 
+
+ ,cmso.occupancy_pct 
+
+ ,cmso.basement_type AS 'bsmt_type' 
+
+ ,cmso.basement_area 
+
+ ,cmso.basement_effective_year_built 
+
+ ,cmso.class 
+
+ ,cmso.height 
+
+ ,cmso.quality_rank 
+
+FROM property_val pv 
+
+JOIN prop_supp_assoc psa ON pv.prop_id = psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+JOIN property p ON pv.prop_id = p.prop_id 
+
+JOIN OWNER AS o ON psa.prop_id = o.prop_id 
+
+ AND psa.owner_tax_yr = o.owner_tax_yr 
+
+ AND psa.sup_num = o.sup_num 
+
+JOIN account AS ac ON o.owner_id = ac.acct_id 
+
+JOIN imprv_detail_cms_occupancy AS cmso ON pv.prop_id = 
+cmso.prop_id 
+
+ AND pv.prop_val_yr = cmso.prop_val_yr 
+
+ AND pv.sup_num = cmso.sup_num 
+
+ AND cmso.sale_id = 0 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.last_appraiser_id = 643 
+
+ AND pv.prop_inactive_dt IS NULL 
+
+ORDER BY pv.prop_id 
+
+
+1.11 Marshall & Swift – Section Details 
+
+Used by the Commercial Appraiser during valuations 
+review—for those properties that have been 
+converted to Marshall & Swift. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,ac.file_as_name 
+
+ ,pv.cycle 
+
+ ,pv.prop_val_yr 
+
+ ,pv.last_appraiser_id 
+
+ ,cmss.imprv_id 
+
+ ,cmss.imprv_det_id 
+
+ ,cmss.section_id 
+
+ ,cmss.section_description 
+
+ ,cmss.area 
+
+ ,cmss.stories 
+
+ ,cmss.effective_year_built 
+
+ ,cmss.dep_pct 
+
+ ,cmss.remarks 
+
+ ,cmss.basement_building_section_id 
+
+ ,cmss.total_cost_new 
+
+ ,cmss.depreciation_amount 
+
+ ,cmss.depreciated_cost 
+
+FROM property_val pv 
+
+JOIN prop_supp_assoc psa ON pv.prop_id = psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+JOIN property p ON pv.prop_id = p.prop_id 
+
+JOIN OWNER AS o ON psa.prop_id = o.prop_id 
+
+ AND psa.owner_tax_yr = o.owner_tax_yr 
+
+ AND psa.sup_num = o.sup_num 
+
+JOIN account AS ac ON o.owner_id = ac.acct_id 
+
+JOIN imprv_detail_cms_section AS cmss ON pv.prop_id = 
+cmss.prop_id 
+
+ AND pv.prop_val_yr = cmss.prop_val_yr 
+
+ AND pv.sup_num = cmss.sup_num 
+
+ AND cmss.sale_id = 0 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.last_appraiser_id = 643 
+
+ AND pv.prop_inactive_dt IS NULL 
+
+ORDER BY pv.prop_id 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+2 DOR – DEPARTMENT OF REVENUE 
+
+Used to complete the DOR County Reval Report due after the rolls are closed (Sept/Oct). 
+
+2.1 ---This Is For The Number Of Parcels 
+Scheduled For Reappraisal 
+
+ 
+
+SELECT DISTINCT pv.property_use_cd 
+
+ ,pu.property_use_desc 
+
+ ,count(pv.prop_id) AS #_of_Props 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+INNER JOIN property_use pu WITH (NOLOCK) ON 
+pv.property_use_cd = pu.property_use_cd 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+ AND pv.prop_inactive_dt IS NULL 
+
+ AND pv.cycle = 2 
+
+GROUP BY pv.property_use_cd 
+
+ ,pu.property_use_desc 
+
+ORDER BY pv.property_use_cd 
+
+2.2 ---This Will Show The Number Of 
+Parcels That Are EX & U500 
+
+ 
+
+SELECT DISTINCT pv.property_use_cd 
+
+ ,pu.property_use_desc 
+
+ ,count(pv.prop_id) AS #_of_Props 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+INNER JOIN property_use pu WITH (NOLOCK) ON 
+pv.property_use_cd = pu.property_use_cd 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND pv.cycle = 2 
+
+ AND pv.prop_id IN ( 
+
+ SELECT prop_id 
+
+ FROM property_exemption 
+
+ WHERE exmpt_tax_yr = property_val.prop_val_yr 
+
+ AND exmpt_type_cd IN ( 
+
+ 'U500' 
+
+ ,'EX' 
+
+ ) 
+
+ ) 
+
+GROUP BY pv.property_use_cd 
+
+ ,pu.property_use_desc 
+
+ORDER BY pv.property_use_cd 
+
+2.3 ---This Will Show The Count Of 
+Properties Changed Between Current 
+and Previous Year 
+
+ 
+
+SELECT DISTINCT pv.property_use_cd 
+
+ ,pu.property_use_desc 
+
+ ,count(pv.prop_id) AS #_of_Props_Changed 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.sup_num = psa.sup_num 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+INNER JOIN property_use pu WITH (NOLOCK) ON 
+pv.property_use_cd = pu.property_use_cd 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+LEFT OUTER JOIN ( 
+
+ SELECT pv1.prop_id 
+
+ ,pv1.prop_val_yr 
+
+ ,pv1.sup_num 
+
+ ,pv1.market AS last_year_market 
+
+ FROM property_val pv1 WITH (NOLOCK) 
+
+ INNER JOIN prop_supp_assoc psa1 WITH (NOLOCK) ON 
+psa1.prop_id = pv1.prop_id 
+
+ AND psa1.owner_tax_yr = pv1.prop_val_yr 
+
+ AND psa1.sup_num = pv1.sup_num 
+
+ INNER JOIN pacs_system ON pv1.prop_val_yr = 
+pacs_system.appr_yr - 1 
+
+ ) AS pv2 ON pv.prop_id = pv2.prop_id 
+
+WHERE ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR udi_parent = 'T' 
+
+ ) 
+
+ AND pv.market <> last_year_market 
+
+ AND pv.cycle = 2 
+
+GROUP BY pv.property_use_cd 
+
+ ,pu.property_use_desc 
+
+ORDER BY pv.property_use_cd 
+
+
+2.4 ---This Will Show The Count Of EX & 
+U500 Properties Changed Between 
+Current and Previous Year 
+
+ 
+
+SELECT DISTINCT pv.property_use_cd 
+
+ ,pu.property_use_desc 
+
+ ,count(pv.prop_id) AS #_of_Props_Changed 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.sup_num = psa.sup_num 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+INNER JOIN property_use pu WITH (NOLOCK) ON 
+pv.property_use_cd = pu.property_use_cd 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+LEFT OUTER JOIN ( 
+
+ SELECT pv1.prop_id 
+
+ ,pv1.prop_val_yr 
+
+ ,pv1.sup_num 
+
+ ,pv1.market AS last_year_market 
+
+ FROM property_val pv1 WITH (NOLOCK) 
+
+ INNER JOIN prop_supp_assoc psa1 WITH (NOLOCK) ON 
+psa1.prop_id = pv1.prop_id 
+
+ AND psa1.owner_tax_yr = pv1.prop_val_yr 
+
+ AND psa1.sup_num = pv1.sup_num 
+
+ INNER JOIN pacs_system ON pv1.prop_val_yr = 
+pacs_system.appr_yr - 1 
+
+ ) AS pv2 ON pv.prop_id = pv2.prop_id 
+
+WHERE ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR udi_parent = 'T' 
+
+ ) 
+
+ AND pv.market <> last_year_market 
+
+ AND pv.cycle = 2 
+
+ 
+
+2.5 --this finds single family residential 
+improvement exemptions 
+
+ 
+
+SELECT imprv_adj.prop_val_yr 
+
+ ,imprv_adj.imprv_adj_type_cd 
+
+ ,sum(imprv_adj.imprv_adj_amt) AS sumofimprv_adj_amt 
+
+ ,imprv_adj.prop_id 
+
+ ,imprv_adj.year_added 
+
+FROM imprv_adj 
+
+WHERE ( 
+
+ ((imprv_adj.prop_val_yr) = 2019) 
+
+ AND ( 
+
+ (imprv_adj.imprv_adj_type_cd) = 'hist' 
+
+ OR (imprv_adj.imprv_adj_type_cd) = 'sfr' 
+
+ ) 
+
+ ) 
+
+GROUP BY imprv_adj.prop_val_yr 
+
+ ,imprv_adj.imprv_adj_type_cd 
+
+ ,imprv_adj.prop_id 
+
+ ,imprv_adj.year_added 
+
+HAVING (((imprv_adj.year_added) = 2019)); 
+
+ 
+
+2.6 --total real property non exempt 
+
+This query will list all real property no total 
+exemption 
+
+SELECT DISTINCT p.prop_type_cd 
+
+ ,count(pv.prop_id) AS 'count' 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR udi_parent = 't' 
+
+ ) 
+
+ AND p.prop_type_cd = 'r' 
+
+ AND pv.sup_num = 0 
+
+ AND pv.prop_id NOT IN ( 
+
+ SELECT prop_id 
+
+ FROM property_exemption 
+
+ WHERE owner_tax_yr = 2019 
+
+ AND exmpt_type_cd = 'ex' 
+
+ ) 
+
+GROUP BY p.prop_type_cd 
+
+ORDER BY p.prop_type_cd 
+
+ 
+
+2.7 --total real property exempt 
+
+Tthis query will list all real property with total 
+exemption 
+
+SELECT count(pv.prop_id) AS number_of_props 
+
+ ,pe.exmpt_type_cd 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN property_exemption pe WITH (NOLOCK) ON pv.prop_id 
+= pe.prop_id 
+
+ AND pv.prop_val_yr = pe.owner_tax_yr 
+
+ AND pv.sup_num = pe.sup_num 
+
+ AND pe.exmpt_type_cd = 'ex' 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR pv.udi_parent = 't' 
+
+ ) 
+
+ AND p.prop_type_cd = 'r' 
+
+ AND pv.sup_num = 0 
+
+GROUP BY pe.exmpt_type_cd 
+
+ORDER BY pe.exmpt_type_cd 
+
+ 
+
+
+2.8 --current cycle non exempt real 
+property total (-) commercial 
+
+This query will list all real properties no total 
+exemption in cycle and appraiser not equal to 
+commercial 
+
+SELECT DISTINCT p.prop_type_cd 
+
+ ,count(pv.prop_id) AS 'count' 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR udi_parent = 't' 
+
+ ) 
+
+ AND p.prop_type_cd = 'r' 
+
+ AND pv.sup_num = 0 
+
+ AND pv.cycle = 2 
+
+ AND pv.last_appraiser_id <> 643 
+
+ AND pv.prop_id NOT IN ( 
+
+ SELECT prop_id 
+
+ FROM property_exemption 
+
+ WHERE owner_tax_yr = 2019 
+
+ AND exmpt_type_cd = 'ex' 
+
+ ) 
+
+GROUP BY p.prop_type_cd 
+
+ORDER BY p.prop_type_cd 
+
+ 
+
+2.9 --current cycle non exempt commecial 
+property total 
+
+This query will list all real properties no total 
+exemption in cycle and appraiser equal to 
+commercial 
+
+SELECT DISTINCT p.prop_type_cd 
+
+ ,count(pv.prop_id) AS 'count' 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR udi_parent = 't' 
+
+ ) 
+
+ AND p.prop_type_cd = 'r' 
+
+ AND pv.sup_num = 0 
+
+ AND pv.cycle = 2 
+
+ AND pv.last_appraiser_id = 643 
+
+ AND pv.prop_id NOT IN ( 
+
+ SELECT prop_id 
+
+ FROM property_exemption 
+
+ WHERE owner_tax_yr = 2019 
+
+ AND exmpt_type_cd = 'ex' 
+
+ ) 
+
+GROUP BY p.prop_type_cd 
+
+ORDER BY p.prop_type_cd 
+
+ 
+
+2.10 --current cycle exempt real property 
+total (-) commercial 
+
+This query will list all real properties with total 
+exemption in cycle 3 and appraiser not equal to 
+commercial 
+
+SELECT count(pv.prop_id) AS number_of_props 
+
+ ,pe.exmpt_type_cd 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN property_exemption pe WITH (NOLOCK) ON pv.prop_id 
+= pe.prop_id 
+
+ AND pv.prop_val_yr = pe.owner_tax_yr 
+
+ AND pv.sup_num = pe.sup_num 
+
+ AND pe.exmpt_type_cd = 'ex' 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR pv.udi_parent = 't' 
+
+ ) 
+
+ AND p.prop_type_cd = 'r' 
+
+ AND pv.sup_num = 0 
+
+ AND pv.cycle = 2 
+
+ AND pv.last_appraiser_id <> 643 
+
+GROUP BY pe.exmpt_type_cd 
+
+ORDER BY pe.exmpt_type_cd 
+
+ 
+
+2.11 --current cycle exempt commerial 
+properties 
+
+This query will list all real properties no total 
+exemption 
+
+SELECT count(pv.prop_id) AS number_of_props 
+
+ ,pe.exmpt_type_cd 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN property_exemption pe WITH (NOLOCK) ON pv.prop_id 
+= pe.prop_id 
+
+ AND pv.prop_val_yr = pe.owner_tax_yr 
+
+ AND pv.sup_num = pe.sup_num 
+
+ AND pe.exmpt_type_cd = 'ex' 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR pv.udi_parent = 't' 
+
+ ) 
+
+ AND p.prop_type_cd = 'r' 
+
+ AND pv.sup_num = 0 
+
+ AND pv.cycle = 2 
+
+ AND pv.last_appraiser_id = 643 
+
+GROUP BY pe.exmpt_type_cd 
+
+ORDER BY pe.exmpt_type_cd 
+
+ 
+
+
+2.12 --real non exempt property total (-) 
+current cycle & (-) commercial 
+
+This query will list all real properties no total 
+exemption not in cycle and appraiser not equal to 
+commercial 
+
+SELECT DISTINCT p.prop_type_cd 
+
+ ,count(pv.prop_id) AS 'count' 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR udi_parent = 't' 
+
+ ) 
+
+ AND p.prop_type_cd = 'r' 
+
+ AND pv.sup_num = 0 
+
+ AND pv.cycle <> 2 
+
+ AND pv.last_appraiser_id <> 643 
+
+ AND pv.prop_id NOT IN ( 
+
+ SELECT prop_id 
+
+ FROM property_exemption 
+
+ WHERE owner_tax_yr = 2019 
+
+ AND exmpt_type_cd = 'ex' 
+
+ ) 
+
+GROUP BY p.prop_type_cd 
+
+ORDER BY p.prop_type_cd 
+
+ 
+
+2.13 --commericial non exempt property 
+total (-) current cycle 
+
+This query will list all real properties no total 
+exemption not in cycle and appraiser equal to 
+commercial 
+
+SELECT DISTINCT p.prop_type_cd 
+
+ ,count(pv.prop_id) AS 'count' 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR udi_parent = 't' 
+
+ ) 
+
+ AND p.prop_type_cd = 'r' 
+
+ AND pv.sup_num = 0 
+
+ AND pv.cycle <> 2 
+
+ AND pv.last_appraiser_id = 643 
+
+ AND pv.prop_id NOT IN ( 
+
+ SELECT prop_id 
+
+ FROM property_exemption 
+
+ WHERE owner_tax_yr = 2019 
+
+ AND exmpt_type_cd = 'ex' 
+
+ ) 
+
+GROUP BY p.prop_type_cd 
+
+ORDER BY p.prop_type_cd 
+
+ 
+
+2.14 --real exempt property total (-) current 
+cycle & (-) commercial 
+
+This query will list all real properties with total 
+exemption not in cycle and appraiser not equal to 
+commercial 
+
+SELECT count(pv.prop_id) AS number_of_props 
+
+ ,pe.exmpt_type_cd 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN property_exemption pe WITH (NOLOCK) ON pv.prop_id 
+= pe.prop_id 
+
+ AND pv.prop_val_yr = pe.owner_tax_yr 
+
+ AND pv.sup_num = pe.sup_num 
+
+ AND pe.exmpt_type_cd = 'ex' 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR pv.udi_parent = 't' 
+
+ ) 
+
+ AND p.prop_type_cd = 'r' 
+
+ AND pv.sup_num = 0 
+
+ AND pv.cycle <> 2 
+
+ AND pv.last_appraiser_id <> 643 
+
+GROUP BY pe.exmpt_type_cd 
+
+ORDER BY pe.exmpt_type_cd 
+
+ 
+
+2.15 --commercial exempt property total (-) 
+current cycle 
+
+This query will list all real properties with total 
+exemption not in cycle and appraiser equal to 
+commercial 
+
+SELECT count(pv.prop_id) AS number_of_props 
+
+ ,pe.exmpt_type_cd 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN property_exemption pe WITH (NOLOCK) ON pv.prop_id 
+= pe.prop_id 
+
+ AND pv.prop_val_yr = pe.owner_tax_yr 
+
+ AND pv.sup_num = pe.sup_num 
+
+ AND pe.exmpt_type_cd = 'ex' 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR pv.udi_parent = 't' 
+
+ ) 
+
+ AND p.prop_type_cd = 'r' 
+
+ AND pv.sup_num = 0 
+
+ AND pv.cycle <> 2 
+
+ AND pv.last_appraiser_id = 643 
+
+GROUP BY pe.exmpt_type_cd 
+
+ORDER BY pe.exmpt_type_cd 
+
+ 
+
+
+2.16 --this finds permits by issue date 
+
+ 
+
+SELECT DISTINCT count(pv.prop_id) AS num_of_permits 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_building_permit_assoc bpa WITH (NOLOCK) ON 
+bpa.prop_id = pv.prop_id 
+
+INNER JOIN building_permit bp WITH (NOLOCK) ON 
+bp.bldg_permit_id = bpa.bldg_permit_id 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND pv.prop_inactive_dt IS NULL 
+
+ AND bp.bldg_permit_issue_dt BETWEEN '2018-08-01' 
+
+ AND '2019-07-31' 
+
+ 
+
+2.17 DFL Compsite Query 
+
+ 
+
+SELECT tax_district.tax_district_id 
+
+ ,tax_district.tax_district_desc 
+
+ ,dcr.levy_rate_sum 
+
+ ,sum(isnull(appr_method_land_value_vw.ag_value_nhs, 0) + 
+isnull(appr_method_land_value_vw.ag_value_hs, 0)) AS 'dfl 
+assessed value' 
+
+ ,sum(isnull(appr_method_land_value_vw.ag_value_nhs, 0) + 
+isnull(appr_method_land_value_vw.ag_value_hs, 0)) * 
+levy_rate_sum / 1000 AS 'taxes' 
+
+ ,sum(isnull(land_detail.size_acres, 0)) AS 'acres' 
+
+FROM ( 
+
+ ( 
+
+ ( 
+
+ ( 
+
+ ( 
+
+ ( 
+
+ ( 
+
+ ( 
+
+ property_val INNER JOIN 
+property ON property_val.prop_id = property.prop_id 
+
+ ) INNER JOIN land_detail ON 
+(property_val.sup_num = land_detail.sup_num) 
+
+ AND 
+(property_val.prop_val_yr = land_detail.prop_val_yr) 
+
+ AND (property_val.prop_id = 
+land_detail.prop_id) 
+
+ ) JOIN appr_method_land_value_vw 
+ON (land_detail.sale_id = appr_method_land_value_vw.sale_id) 
+
+ AND (land_detail.sup_num = 
+appr_method_land_value_vw.sup_num) 
+
+ AND (land_detail.land_seg_id = 
+appr_method_land_value_vw.land_seg_id) 
+
+ AND (land_detail.prop_val_yr = 
+appr_method_land_value_vw.prop_val_yr) 
+
+ AND (land_detail.prop_id = 
+appr_method_land_value_vw.prop_id) 
+
+ ) INNER JOIN ag_use ON 
+land_detail.ag_use_cd = ag_use.ag_use_cd 
+
+ ) INNER JOIN 
+wash_prop_owner_tax_area_assoc ON (property_val.sup_num = 
+wash_prop_owner_tax_area_assoc.sup_num) 
+
+ AND (property_val.prop_val_yr = 
+wash_prop_owner_tax_area_assoc.year) 
+
+ AND (property_val.prop_id = 
+wash_prop_owner_tax_area_assoc.prop_id) 
+
+ ) INNER JOIN ( 
+
+ SELECT DISTINCT tax_area_fund_assoc.Year 
+
+ ,tax_area_fund_assoc.tax_district_id 
+
+ ,tax_area_fund_assoc.tax_area_id 
+
+ FROM tax_area_fund_assoc 
+
+ ) AS tafa ON (property_val.prop_val_yr = 
+tafa.Year) 
+
+ AND 
+(wash_prop_owner_tax_area_assoc.tax_area_id = 
+tafa.tax_area_id) 
+
+ ) INNER JOIN ( 
+
+ SELECT levy.Year 
+
+ ,tax_district.tax_district_id 
+
+ ,tax_district.tax_district_desc 
+
+ ,sum(isnull(levy.levy_rate, 0.0)) AS 
+levy_rate_sum 
+
+ FROM tax_district 
+
+ INNER JOIN levy ON tax_district.tax_district_id 
+= levy.tax_district_id 
+
+ WHERE (((tax_district.tax_district_type_cd) <> 
+'st')) 
+
+ GROUP BY levy.Year 
+
+ ,tax_district.tax_district_id 
+
+ ,tax_district.tax_district_desc 
+
+ HAVING (((levy.Year) = 2018)) 
+
+ ) AS dcr ON tafa.tax_district_id = 
+dcr.tax_district_id 
+
+ ) LEFT JOIN property_sub_type ON 
+property_val.sub_type = property_sub_type.property_sub_cd 
+
+ ) 
+
+INNER JOIN tax_district ON tafa.tax_district_id = 
+tax_district.tax_district_id 
+
+WHERE ( 
+
+ ((land_detail.sale_id) = 0) 
+
+ AND ((property_val.prop_val_yr) = 2018) 
+
+ AND ((property_val.prop_inactive_dt) IS NULL) 
+
+ AND ((property_val.sup_num) >= 0) 
+
+ AND ((land_detail.ag_apply) = 't') 
+
+ AND ((ag_use.dfl) = 1) 
+
+ AND ((tax_district.tax_district_type_cd) <> 'st') 
+
+ AND isnull(property_val.prop_state, '') <> 'p' 
+
+ AND isnull(property.reference_flag, '') <> 't' 
+
+ AND isnull(property_sub_type.state_assessed_utility, 
+0) = 0 
+
+ AND isnull(property_sub_type.local_assessed_utility, 
+0) = 0 
+
+ AND ( 
+
+ (property_val.prop_id) NOT IN ( 
+
+ SELECT property_exemption.prop_id 
+
+ FROM property_exemption 
+
+ WHERE property_exemption.owner_tax_yr = 2018 
+
+ AND property_exemption.sup_num = 0 
+
+ AND property_exemption.exmpt_type_cd IN 
+( 
+
+ 'EX' 
+
+ ,'U500' 
+
+ ) 
+
+ ) 
+
+ ) 
+
+ ) 
+
+GROUP BY tax_district.tax_district_id 
+
+ ,tax_district.tax_district_desc 
+
+ ,dcr.levy_rate_sum; 
+
+ 
+
+
+2.18 DOR Assessment Roll for Real Property 
+
+ 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,ac.file_as_name 
+
+ ,ad.addr_line1 
+
+ ,ad.addr_line2 
+
+ ,ad.addr_line3 
+
+ ,ad.addr_city 
+
+ ,ad.addr_state 
+
+ ,ad.addr_zip 
+
+ ,s.situs_display 
+
+ ,ta.tax_area_number 
+
+ ,pv.property_use_cd 
+
+ ,pv.secondary_use_cd 
+
+ ,pv.legal_acreage 
+
+ ,(wpov.imprv_hstd_val + wpov.imprv_non_hstd_val) AS 
+Imprv_Mkt_Val 
+
+ ,(wpov.land_hstd_val + wpov.land_non_hstd_val + 
+wpov.timber_market + wpov.ag_market + wpov.timber_hs_market 
++ wpov.ag_hs_market) AS Land_Mkt_Val 
+
+ ,(wpov.new_val_hs + wpov.new_val_nhs) AS 
+New_Construction_Value 
+
+ ,wpov.appraised_classified 
+
+ ,wpov.appraised_non_classified 
+
+ ,(wpov.appraised_classified + 
+wpov.appraised_non_classified) AS Total_Appraised_Value 
+
+ ,(wpov.ag_use_val + wpov.ag_hs_use_val + 
+wpov.timber_use_val + wpov.timber_hs_use_val) AS 
+Current_Use_Value 
+
+ ,wpov.taxable_classified 
+
+ ,wpov.taxable_non_classified 
+
+ ,(wpov.taxable_classified + wpov.taxable_non_classified) 
+AS Total_Taxable_Value 
+
+ ,dbo.fn_GetExemptions(pv.prop_id, pv.prop_val_yr, 
+pv.sup_num) AS Exemptions 
+
+ ,wpoe.exempt_qualify_cd 
+
+ ,pv.prop_val_yr 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN OWNER o 
+
+WITH (NOLOCK) ON pv.prop_id = o.prop_id 
+
+ AND pv.prop_val_yr = o.owner_tax_yr 
+
+ AND pv.sup_num = o.sup_num 
+
+INNER JOIN account ac WITH (NOLOCK) ON o.owner_id = 
+ac.acct_id 
+
+INNER JOIN address ad WITH (NOLOCK) ON ac.acct_id = 
+ad.acct_id 
+
+ AND isnull(ad.primary_addr, 'N') = 'Y' 
+
+INNER JOIN wash_prop_owner_tax_area_assoc wta WITH (NOLOCK) 
+ON pv.prop_id = wta.prop_id 
+
+ AND pv.prop_val_yr = wta.year 
+
+ AND pv.sup_num = wta.sup_num 
+
+ AND o.owner_id = wta.owner_id 
+
+INNER JOIN tax_area ta WITH (NOLOCK) ON wta.tax_area_id = 
+ta.tax_area_id 
+
+INNER JOIN wash_prop_owner_val wpov WITH (NOLOCK) ON 
+pv.prop_id = wpov.prop_id 
+
+ AND pv.prop_val_yr = wpov.year 
+
+ AND pv.sup_num = wpov.sup_num 
+
+ AND o.owner_id = wpov.owner_id 
+
+LEFT OUTER JOIN wash_prop_owner_exemption wpoe WITH (NOLOCK) 
+ON pv.prop_id = wpoe.prop_id 
+
+ AND pv.prop_val_yr = wpoe.year 
+
+ AND pv.sup_num = wpoe.sup_num 
+
+ AND o.owner_id = wpoe.owner_id 
+
+LEFT OUTER JOIN situs s WITH (NOLOCK) ON pv.prop_id = 
+s.prop_id 
+
+ AND isnull(s.primary_situs, 'N') = 'Y' 
+
+LEFT OUTER JOIN property_sub_type pst WITH (NOLOCK) ON 
+pv.sub_type = pst.property_sub_cd 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR udi_parent = 'T' 
+
+ ) 
+
+ AND p.prop_type_cd = 'R' 
+
+ AND isnull(pst.state_assessed_utility, 0) <> 1 
+
+ AND isnull(pst.local_assessed_utility, 0) <> 1 
+
+ORDER BY p.geo_id 
+
+ 
+
+
+2.19 DOR Assessment Roll for Personal 
+Property 
+
+ 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,ac.file_as_name 
+
+ ,ad.addr_line1 
+
+ ,ad.addr_line2 
+
+ ,ad.addr_line3 
+
+ ,ad.addr_city 
+
+ ,ad.addr_state 
+
+ ,ad.addr_zip 
+
+ ,s.situs_display 
+
+ ,ta.tax_area_number 
+
+ ,wpov.appraised_classified 'If populated, this is Farm 
+Asset' 
+
+ ,wpov.appraised_non_classified 
+
+ ,(wpov.appraised_classified + 
+wpov.appraised_non_classified) AS Total_Appraised_Value 
+
+ ,wpov.taxable_classified 'If populated, this is a Farm 
+Asset' 
+
+ ,wpov.taxable_non_classified 
+
+ ,(wpov.taxable_classified + wpov.taxable_non_classified) 
+AS Total_Taxable_Value 
+
+ ,dbo.fn_GetExemptions(pv.prop_id, pv.prop_val_yr, 
+pv.sup_num) AS Exemptions 
+
+ ,p.dba_name 
+
+ ,pv.prop_val_yr 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN OWNER o 
+
+WITH (NOLOCK) ON pv.prop_id = o.prop_id 
+
+ AND pv.prop_val_yr = o.owner_tax_yr 
+
+ AND pv.sup_num = o.sup_num 
+
+INNER JOIN account ac WITH (NOLOCK) ON o.owner_id = 
+ac.acct_id 
+
+INNER JOIN address ad WITH (NOLOCK) ON ac.acct_id = 
+ad.acct_id 
+
+ AND isnull(ad.primary_addr, 'N') = 'Y' 
+
+INNER JOIN pers_prop_seg pps WITH (NOLOCK) ON pv.prop_id = 
+pps.prop_id 
+
+ AND pv.prop_val_yr = pps.prop_val_yr 
+
+ AND pv.sup_num = pps.sup_num 
+
+ AND pps.sale_id = 0 
+
+INNER JOIN wash_prop_owner_tax_area_assoc wta WITH (NOLOCK) 
+ON pv.prop_id = wta.prop_id 
+
+ AND pv.prop_val_yr = wta.year 
+
+ AND pv.sup_num = wta.sup_num 
+
+ AND o.owner_id = wta.owner_id 
+
+INNER JOIN tax_area ta WITH (NOLOCK) ON wta.tax_area_id = 
+ta.tax_area_id 
+
+INNER JOIN wash_prop_owner_val wpov WITH (NOLOCK) ON 
+pv.prop_id = wpov.prop_id 
+
+ AND pv.prop_val_yr = wpov.year 
+
+ AND pv.sup_num = wpov.sup_num 
+
+ AND o.owner_id = wpov.owner_id 
+
+LEFT OUTER JOIN situs s WITH (NOLOCK) ON pv.prop_id = 
+s.prop_id 
+
+ AND isnull(s.primary_situs, 'N') = 'Y' 
+
+LEFT OUTER JOIN property_sub_type pst WITH (NOLOCK) ON 
+pv.sub_type = pst.property_sub_cd 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND pv.prop_inactive_dt IS NULL 
+
+ AND p.prop_type_cd = 'P' 
+
+ AND isnull(pst.state_assessed_utility, 0) <> 1 
+
+ AND isnull(pst.local_assessed_utility, 0) <> 1 
+
+ORDER BY ac.file_as_name 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+3 EXEMPTION QUERIES 
+
+3.1 Exempt Status Properties With ‘EX’ 
+Group Code 
+
+Query pulls properties with an exemption status that 
+also have an ‘EX’ property group code. 
+
+SELECT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,ac.file_as_name 
+
+ ,pv.legal_desc 
+
+ ,s.situs_display 
+
+ ,pv.property_use_cd 
+
+ ,dbo.fn_getPropGroupCodes(pv.prop_id) AS Group_Codes 
+
+ ,dbo.fn_GetExemptions(pv.prop_id, pv.prop_val_yr, 
+pv.sup_num) AS Exemptions 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN property p WITH (NOLOCK) ON p.prop_id = 
+pv.prop_id 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON psa.prop_id 
+= pv.prop_id 
+
+ AND psa.owner_tax_yr = pv.prop_val_yr 
+
+ AND psa.sup_num = pv.sup_num 
+
+INNER JOIN OWNER o 
+
+WITH (NOLOCK) ON pv.prop_id = o.prop_id 
+
+ AND pv.prop_val_yr = o.owner_tax_yr 
+
+ AND pv.sup_num = o.sup_num 
+
+INNER JOIN account ac WITH (NOLOCK) ON o.owner_id = 
+ac.acct_id 
+
+INNER JOIN property_exemption pe WITH (NOLOCK) ON pv.prop_id 
+= pe.prop_id 
+
+ AND pv.prop_val_yr = pe.owner_tax_yr 
+
+ AND pv.sup_num = pe.sup_num 
+
+ AND o.owner_id = pe.owner_id 
+
+LEFT OUTER JOIN situs s WITH (NOLOCK) ON pv.prop_id = 
+s.prop_id 
+
+ AND s.primary_situs = 'Y' 
+
+ INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND pe.exmpt_type_cd = 'EX' 
+
+ AND pv.prop_id IN ( 
+
+ SELECT prop_id 
+
+ FROM prop_group_assoc 
+
+ WHERE prop_group_cd = 'EX' 
+
+ ) 
+
+ORDER BY ac.file_as_name 
+
+3.2 Senior/Disability Query 
+
+* Query pulls properties that have a Group Code of 
+‘DS’. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,ac.file_as_name 
+
+ ,pga.prop_group_cd 
+
+ ,pv.prop_val_yr 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+INNER JOIN OWNER o 
+
+WITH (NOLOCK) ON pv.prop_id = o.prop_id 
+
+ AND pv.prop_val_yr = o.owner_tax_yr 
+
+ AND pv.sup_num = o.sup_num 
+
+INNER JOIN account ac WITH (NOLOCK) ON ac.acct_id = 
+o.owner_id 
+
+INNER JOIN prop_group_assoc pga WITH (NOLOCK) ON pv.prop_id 
+= pga.prop_id 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND pga.prop_group_cd = 'ds' 
+
+ORDER BY ac.file_as_name 
+
+
+3.3 Senior/Disability Renewal Tracker 
+Query 
+
+* Pulls properties with a ‘SNR/DSBL’ exemption code 
+for names that begin with ‘A’ thru ‘E’. 
+
+SELECT DISTINCT pe1.[exmpt_type_cd] AS [ex code] 
+
+ ,pv1.[prop_id] 
+
+ ,p1.[geo_id] 
+
+ ,oev1.[file_as_name] 
+
+ ,pv1.[prop_val_yr] 
+
+ ,min(pgc1.group_cd) AS group_cd 
+
+FROM dbo.prop_supp_assoc AS psa1 WITH (NOLOCK) 
+
+JOIN dbo.property AS p1 WITH (NOLOCK) ON p1.[prop_id] = 
+psa1.[prop_id] 
+
+JOIN dbo.property_exemption AS pe1 WITH (NOLOCK) ON 
+pe1.[exmpt_tax_yr] = psa1.[owner_tax_yr] 
+
+ AND pe1.[owner_tax_yr] = psa1.[owner_tax_yr] 
+
+ AND pe1.[prop_id] = psa1.[prop_id] 
+
+ AND pe1.[sup_num] = psa1.[sup_num] 
+
+JOIN dbo.property_val AS pv1 WITH (NOLOCK) ON pv1.[prop_id] 
+= psa1.[prop_id] 
+
+ AND pv1.[prop_val_yr] = psa1.[owner_tax_yr] 
+
+ AND pv1.[sup_num] = psa1.[sup_num] 
+
+JOIN dbo.query_builder_owner_everything_vw AS oev1 WITH 
+(NOLOCK) ON oev1.[owner_tax_yr] = pe1.[exmpt_tax_yr] 
+
+ AND oev1.[owner_id] = pe1.[owner_id] 
+
+ AND oev1.[owner_tax_yr] = pe1.[owner_tax_yr] 
+
+ AND oev1.[prop_id] = pe1.[prop_id] 
+
+ AND oev1.[sup_num] = pe1.[sup_num] 
+
+JOIN dbo.wash_prop_owner_val AS wpov1 WITH (NOLOCK) ON 
+wpov1.[prop_id] = psa1.[prop_id] 
+
+ AND wpov1.[sup_num] = psa1.[sup_num] 
+
+ AND wpov1.[year] = psa1.[owner_tax_yr] 
+
+JOIN dbo.wash_property_val AS wpv1 WITH (NOLOCK) ON 
+wpv1.[prop_id] = psa1.[prop_id] 
+
+ AND wpv1.[prop_val_yr] = psa1.[owner_tax_yr] 
+
+ AND wpv1.[sup_num] = psa1.[sup_num] 
+
+INNER JOIN prop_group_assoc AS pga1 WITH (NOLOCK) ON 
+pga1.prop_id = psa1.prop_id 
+
+LEFT OUTER JOIN prop_group_code AS pgc1 WITH (NOLOCK) ON 
+pgc1.group_cd = pga1.prop_group_cd 
+
+ AND pgc1.group_cd IN ('snrren') 
+
+INNER JOIN pacs_system ON pv1.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pe1.[exmpt_type_cd] = 'snr/dsbl' 
+
+ AND pe1.[exmpt_tax_yr] = pv1.prop_val_yr 
+
+ AND pv1.[prop_inactive_dt] IS NULL 
+
+ AND oev1.[file_as_name] BETWEEN 'a%' 
+
+ AND 'e%' 
+
+GROUP BY pe1.[exmpt_type_cd] 
+
+ ,pv1.[prop_id] 
+
+ ,p1.[geo_id] 
+
+ ,oev1.[file_as_name] 
+
+ ,pv1.[prop_val_yr] 
+
+--,pgc1.group_cd 
+
+ORDER BY oev1.[file_as_name] 
+
+3.4 Senior/Disabled Query 
+
+ 
+
+SELECT pe1.[exmpt_type_cd] AS [ex code] 
+
+ ,ta.tax_area_number 
+
+ ,pv1.[prop_id] 
+
+ ,p1.[geo_id] 
+
+ ,oev1.[file_as_name] 
+
+ ,pe1.[applicant_nm] AS [qualified senior] 
+
+ ,wpv1.[snr_frz_imprv_hs] AS [imprv] 
+
+ ,wpv1.[snr_frz_land_hs] AS [land] 
+
+ ,(wpv1.[snr_frz_imprv_hs] + wpv1.[snr_frz_land_hs]) AS 
+[total frz] 
+
+ ,wpov1.[taxable_classified] AS [senior] 
+
+ ,wpov1.[taxable_non_classified] AS [non-snr] 
+
+ ,pe1.[combined_disp_income] AS [income] 
+
+ ,pe1.[qualify_yr] 
+
+ ,pv1.[prop_val_yr] 
+
+FROM dbo.prop_supp_assoc AS psa1 WITH (NOLOCK) 
+
+JOIN dbo.property AS p1 WITH (NOLOCK) ON p1.[prop_id] = 
+psa1.[prop_id] 
+
+JOIN dbo.property_exemption AS pe1 WITH (NOLOCK) ON 
+pe1.[exmpt_tax_yr] = psa1.[owner_tax_yr] 
+
+ AND pe1.[owner_tax_yr] = psa1.[owner_tax_yr] 
+
+ AND pe1.[prop_id] = psa1.[prop_id] 
+
+ AND pe1.[sup_num] = psa1.[sup_num] 
+
+JOIN dbo.property_val AS pv1 WITH (NOLOCK) ON pv1.[prop_id] 
+= psa1.[prop_id] 
+
+ AND pv1.[prop_val_yr] = psa1.[owner_tax_yr] 
+
+ AND pv1.[sup_num] = psa1.[sup_num] 
+
+JOIN dbo.query_builder_owner_everything_vw AS oev1 WITH 
+(NOLOCK) ON oev1.[owner_tax_yr] = pe1.[exmpt_tax_yr] 
+
+ AND oev1.[owner_id] = pe1.[owner_id] 
+
+ AND oev1.[owner_tax_yr] = pe1.[owner_tax_yr] 
+
+ AND oev1.[prop_id] = pe1.[prop_id] 
+
+ AND oev1.[sup_num] = pe1.[sup_num] 
+
+JOIN dbo.wash_prop_owner_val AS wpov1 WITH (NOLOCK) ON 
+wpov1.[prop_id] = psa1.[prop_id] 
+
+ AND wpov1.[sup_num] = psa1.[sup_num] 
+
+ AND wpov1.[year] = psa1.[owner_tax_yr] 
+
+JOIN dbo.wash_property_val AS wpv1 WITH (NOLOCK) ON 
+wpv1.[prop_id] = psa1.[prop_id] 
+
+ AND wpv1.[prop_val_yr] = psa1.[owner_tax_yr] 
+
+ AND wpv1.[sup_num] = psa1.[sup_num] 
+
+INNER JOIN property_tax_area AS pta ON pv1.prop_id = 
+pta.prop_id 
+
+ AND pv1.prop_val_yr = pta.year 
+
+ AND pv1.sup_num = pta.sup_num 
+
+INNER JOIN tax_area AS ta ON pta.tax_area_id = 
+ta.tax_area_id 
+
+INNER JOIN pacs_system ON pv1.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pe1.[exmpt_type_cd] = 'snr/dsbl' 
+
+ AND pv1.[prop_inactive_dt] IS NULL 
+
+ORDER BY oev1.[file_as_name] 
+
+
+3.5 Senior Query 
+
+This query will give you the PID, what exemption 
+level they are on, their birthdate, their age (based on 
+current year less their birth year) and their 
+disposable income. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,wpoe.exempt_qualify_cd 
+
+ ,convert(VARCHAR(20), pe.birth_dt, 101) AS 'Birth Date' 
+
+ ,datepart(yyyy, pe.birth_dt) AS 'Year of Birth' 
+
+ ,(pv.prop_val_yr - datepart(yyyy, pe.birth_dt)) AS 
+'Approx Age' 
+
+ ,pe.combined_disp_income 
+
+ ,pv.prop_val_yr 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+INNER JOIN property_exemption pe WITH (NOLOCK) ON pv.prop_id 
+= pe.prop_id 
+
+ AND pv.prop_val_yr = pe.exmpt_tax_yr 
+
+ AND pv.sup_num = pe.sup_num 
+
+ AND pe.exmpt_type_cd = 'SNR/DSBL' 
+
+INNER JOIN wash_prop_owner_exemption wpoe WITH (NOLOCK) ON 
+pe.prop_id = wpoe.prop_id 
+
+ AND pe.sup_num = wpoe.sup_num 
+
+ AND pe.exmpt_tax_yr = wpoe.year 
+
+ AND pe.exmpt_type_cd = wpoe.exmpt_type_cd 
+
+INNER JOIN wash_property_val wpv WITH (NOLOCK) ON pv.prop_id 
+= wpv.prop_id 
+
+ AND pv.prop_val_yr = wpv.prop_val_yr 
+
+ AND pv.sup_num = wpv.sup_num 
+
+ AND wpv.snr_qualify_yr <> 0 
+
+ INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE prop_inactive_dt IS NULL 
+
+ORDER BY wpoe.exempt_qualify_cd 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+4 FOREST PROTECTION 
+
+4.1 FP Update 
+
+This may end up being only used on time. Kristina 
+used this query to accurately update the ‘benefit 
+acres’ in PACS. 
+
+SELECT DISTINCT ta.tax_area_number 
+
+ ,pv.legal_acreage 
+
+ ,pv.prop_val_yr 
+
+ ,pv.property_use_cd 
+
+ ,pv.prop_id 
+
+ ,pv.sup_num 
+
+ ,p.geo_id 
+
+ ,isnull(min(saa.assessment_description), '') AS 'forest 
+protection' 
+
+ ,o.owner_id 
+
+ ,ac.file_as_name 
+
+ ,pga.prop_group_cd 
+
+ ,up.is_primary 
+
+ ,paav.benefit_acres 
+
+ ,up.benefit_acres_sum 
+
+FROM property_val AS pv 
+
+JOIN property AS p ON p.prop_id = pv.prop_id 
+
+JOIN OWNER AS o ON pv.prop_id = o.prop_id 
+
+ AND pv.prop_val_yr = o.owner_tax_yr 
+
+ AND pv.sup_num = o.sup_num 
+
+JOIN account AS ac ON o.owner_id = ac.acct_id 
+
+JOIN prop_supp_assoc AS m ON pv.prop_id = m.prop_id 
+
+ AND pv.prop_val_yr = m.owner_tax_yr 
+
+ AND pv.sup_num = m.sup_num 
+
+JOIN property_tax_area pta ON pv.prop_id = pta.prop_id 
+
+ AND pv.prop_val_yr = pta.year 
+
+ AND pv.sup_num = pta.sup_num 
+
+JOIN tax_area ta ON ta.tax_area_id = pta.tax_area_id 
+
+JOIN property_assessment_attribute_val AS paav ON pv.prop_id 
+= paav.prop_id 
+
+ AND pv.prop_val_yr = paav.prop_val_yr 
+
+ AND pv.sup_num = paav.sup_num 
+
+LEFT OUTER JOIN user_property_val AS up ON m.prop_id = 
+up.prop_id 
+
+ AND m.owner_tax_yr = up.prop_val_yr 
+
+ AND m.sup_num = up.sup_num 
+
+LEFT OUTER JOIN property_special_assessment psa ON 
+psa.prop_id = pv.prop_id 
+
+ AND psa.year = pv.prop_val_yr 
+
+ AND psa.sup_num = pv.sup_num 
+
+LEFT OUTER JOIN special_assessment_agency AS saa ON 
+saa.agency_id = psa.agency_id 
+
+ AND saa.assessment_description IN ('forest protection') 
+
+LEFT OUTER JOIN prop_group_assoc pga ON pga.prop_id = 
+pv.prop_id 
+
+ AND pga.prop_group_cd IN ( 
+
+ 'dnc' 
+
+ ,'dnm' 
+
+ ) 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND pv.property_use_cd IN ( 
+
+ '91' 
+
+ ,'99' 
+
+ ,'11' 
+
+ ,'83' 
+
+ ,'88' 
+
+ ,'95' 
+
+ ,'93' 
+
+ ,'94' 
+
+ ) 
+
+ AND ( 
+
+ ta.tax_area_number LIKE ('%1') 
+
+ OR ta.tax_area_number LIKE ('%2') 
+
+ OR ta.tax_area_number LIKE ('%5') 
+
+ OR ta.tax_area_number LIKE ('%7') 
+
+ OR ta.tax_area_number LIKE ('%9') 
+
+ ) 
+
+GROUP BY ta.tax_area_number 
+
+ ,pv.legal_acreage 
+
+ ,pv.prop_val_yr 
+
+ ,pv.property_use_cd 
+
+ ,pv.prop_id 
+
+ ,pv.sup_num 
+
+ ,p.geo_id 
+
+ ,o.owner_id 
+
+ ,ac.file_as_name 
+
+ ,pga.prop_group_cd 
+
+ ,up.is_primary 
+
+ ,paav.benefit_acres 
+
+ ,up.benefit_acres_sum 
+
+4.2 Another Fp Query 
+
+ 
+
+SELECT pgc1.[group_cd] 
+
+ ,p1.[geo_id] 
+
+ ,p1.[prop_id] 
+
+ ,oev1.[file_as_name] 
+
+FROM dbo.prop_group_assoc AS pga1 WITH (NOLOCK) 
+
+JOIN dbo.prop_group_code AS pgc1 WITH (NOLOCK) ON 
+pgc1.[group_cd] = pga1.[prop_group_cd] 
+
+JOIN dbo.prop_supp_assoc AS psa1 WITH (NOLOCK) ON 
+psa1.[prop_id] = pga1.[prop_id] 
+
+JOIN dbo.property AS p1 WITH (NOLOCK) ON p1.[prop_id] = 
+pga1.[prop_id] 
+
+JOIN dbo.property_val AS pv1 WITH (NOLOCK) ON pv1.[prop_id] 
+= psa1.[prop_id] 
+
+ AND pv1.[prop_val_yr] = psa1.[owner_tax_yr] 
+
+ AND pv1.[sup_num] = psa1.[sup_num] 
+
+JOIN dbo.query_builder_owner_everything_vw AS oev1 WITH 
+(NOLOCK) ON oev1.[owner_tax_yr] = psa1.[owner_tax_yr] 
+
+ AND oev1.[prop_id] = psa1.[prop_id] 
+
+ AND oev1.[sup_num] = psa1.[sup_num] 
+
+INNER JOIN pacs_system ON pv1.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pgc1.[group_cd] IN ('FP') 
+
+ AND pv1.[prop_inactive_dt] IS NULL 
+
+4.3 ---Returns The Total Acres In FP 
+
+ 
+
+SELECT sum(upv.benefit_acres) 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN user_property_val upv WITH (NOLOCK) ON 
+upv.prop_id = pv.prop_id 
+
+ AND upv.prop_val_yr = pv.prop_val_yr 
+
+ AND upv.sup_num = pv.sup_num 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON psa.prop_id 
+= pv.prop_id 
+
+ AND psa.owner_tax_yr = pv.prop_val_yr 
+
+ AND psa.sup_num = pv.sup_num 
+
+INNER JOIN property_special_assessment sa WITH (NOLOCK) ON 
+sa.year = pv.prop_val_yr 
+
+ AND sa.sup_num = pv.sup_num 
+
+ AND sa.prop_id = pv.prop_id 
+
+
+ AND sa.agency_id = 256637 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND upv.is_primary = 1 
+
+4.4 ---Returns The Number Of Props Less 
+Than 50 
+
+ 
+
+ELECT count(pv.prop_id) 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN user_property_val upv WITH (NOLOCK) ON 
+upv.prop_id = pv.prop_id 
+
+ AND upv.prop_val_yr = pv.prop_val_yr 
+
+ AND upv.sup_num = pv.sup_num 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON psa.prop_id 
+= pv.prop_id 
+
+ AND psa.owner_tax_yr = pv.prop_val_yr 
+
+ AND psa.sup_num = pv.sup_num 
+
+INNER JOIN property_special_assessment sa WITH (NOLOCK) ON 
+sa.year = pv.prop_val_yr 
+
+ AND sa.sup_num = pv.sup_num 
+
+ AND sa.prop_id = pv.prop_id 
+
+ AND sa.agency_id = 256637 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND upv.is_primary = 1 
+
+ AND upv.benefit_acres < 50 
+
+4.5 ---Returns The Number Of Props At 50 
+Or More Acres 
+
+ 
+
+SELECT count(pv.prop_id) 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN user_property_val upv WITH (NOLOCK) ON 
+upv.prop_id = pv.prop_id 
+
+ AND upv.prop_val_yr = pv.prop_val_yr 
+
+ AND upv.sup_num = pv.sup_num 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON psa.prop_id 
+= pv.prop_id 
+
+ AND psa.owner_tax_yr = pv.prop_val_yr 
+
+ AND psa.sup_num = pv.sup_num 
+
+INNER JOIN property_special_assessment sa WITH (NOLOCK) ON 
+sa.year = pv.prop_val_yr 
+
+ AND sa.sup_num = pv.sup_num 
+
+ AND sa.prop_id = pv.prop_id 
+
+ AND sa.agency_id = 256637 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND upv.is_primary = 1 
+
+ AND upv.benefit_acres >= 50 
+
+4.6 ---Returns The Number Of Acres On 
+Accounts With Over 50 Acres, Less 50 
+Acres 
+
+ 
+
+SELECT sum(upv.benefit_acres - 50) 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN user_property_val upv WITH (NOLOCK) ON 
+upv.prop_id = pv.prop_id 
+
+ AND upv.prop_val_yr = pv.prop_val_yr 
+
+ AND upv.sup_num = pv.sup_num 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON psa.prop_id 
+= pv.prop_id 
+
+ AND psa.owner_tax_yr = pv.prop_val_yr 
+
+ AND psa.sup_num = pv.sup_num 
+
+INNER JOIN property_special_assessment sa WITH (NOLOCK) ON 
+sa.year = pv.prop_val_yr 
+
+ AND sa.sup_num = pv.sup_num 
+
+ AND sa.prop_id = pv.prop_id 
+
+ AND sa.agency_id = 256637 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND upv.is_primary = 1 
+
+ AND upv.benefit_acres >= 50 
+
+ 
+
+ 
+
+
+5 LEVY QUERIES 
+
+5.1 List Of Taxing Districts, Name, Address, 
+Email And Phone Number, Along With 
+Misc Other Info: 
+
+ 
+
+SELECT DISTINCT td.tax_district_id AS 'TAX DISTRICT ID' 
+
+ ,td.tax_district_cd AS 'TAX DIST CD' 
+
+ ,td.tax_district_desc AS 'TAX DIST DESC' 
+
+ ,ac.file_as_name AS 'POINT OF CONTACT' 
+
+ ,CASE 
+
+ WHEN acca.is_primary <> 0 
+
+ THEN 'X' 
+
+ ELSE '' 
+
+ END AS 'PRIMARY CONTACT' 
+
+ ,wc.contact_text AS 'EMAIL' 
+
+ ,CASE 
+
+ WHEN wc.is_primary <> 0 
+
+ THEN 'X' 
+
+ ELSE '' 
+
+ END AS 'PRIMARY EMAIL' 
+
+ ,ph.phone_num AS 'PHONE NUMBER' 
+
+ ,ph.phone_type_cd AS 'PHONE TYPE' 
+
+ ,CASE 
+
+ WHEN ph.is_primary <> 0 
+
+ THEN 'X' 
+
+ ELSE '' 
+
+ END AS 'PRIMARY PHONE' 
+
+FROM tax_district td WITH (NOLOCK) 
+
+LEFT JOIN account_contact_assoc acca WITH (NOLOCK) ON 
+td.tax_district_id = acca.acct_id 
+
+LEFT JOIN account ac WITH (NOLOCK) ON acca.acct_contact_id = 
+ac.acct_id 
+
+LEFT JOIN address ad WITH (NOLOCK) ON acca.acct_contact_id = 
+ad.acct_id 
+
+LEFT JOIN phone ph WITH (NOLOCK) ON acca.acct_contact_id = 
+ph.acct_id 
+
+LEFT JOIN web_contact wc WITH (NOLOCK) ON 
+acca.acct_contact_id = wc.acct_id 
+
+ORDER BY td.tax_district_cd 
+
+5.2 Levy Information 
+
+SELECT tax_district.tax_district_id AS 'TAX DISTRICT ID' 
+
+ ,tax_district.tax_district_desc AS 'TAX DISTRICT 
+DESCRIPTION' 
+
+ ,tax_district_type.tax_district_desc AS 'TAX DISTRICT 
+TYPE' 
+
+ ,levy.levy_cd AS 'LEVY CODE' 
+
+ ,levy.levy_type_cd AS 'LEVY TYPE CODE' 
+
+ ,levy.end_year AS 'LEVY END YEAR' 
+
+ ,levy.voted AS VOTED 
+
+ ,levy.levy_rate AS 'LEVY RATE' 
+
+ ,levy.levy_description AS 'LEVY DESCRIPTION' 
+
+ ,levy.include_in_levy_certification AS 'INCLUDE IN LEVY 
+CERTIFICATION' 
+
+ ,levy.primary_fund_number AS 'PRIMARY FUND NUMBER' 
+
+ ,fund.fund_id AS 'FUND ID' 
+
+ ,fund.fund_number AS 'FUND NUMBER' 
+
+ ,fund.fund_description AS 'FUND DESCRIPTION' 
+
+ ,fund.begin_date AS 'FUND BEGIN DATE' 
+
+ ,fund.end_date AS 'FUND END DATE' 
+
+ ,levy.timber_assessed_cd AS 'TIMBER ASSESSED CD' 
+
+ ,levy.timber_assessed_full AS 'TIMBER FULL' 
+
+ ,levy.timber_assessed_half AS 'TIMBER HALF' 
+
+ ,levy.timber_assessed_roll AS 'TIMBER ROLL' 
+
+FROM ( 
+
+ ( 
+
+ tax_district INNER JOIN tax_district_type ON 
+tax_district.tax_district_type_cd = 
+tax_district_type.tax_district_type_cd 
+
+ ) INNER JOIN levy ON tax_district.tax_district_id = 
+levy.tax_district_id 
+
+ ) 
+
+INNER JOIN fund ON (levy.year = fund.year) 
+
+ AND (levy.levy_cd = fund.levy_cd) 
+
+ AND (levy.tax_district_id = fund.tax_district_id) 
+
+WHERE (((levy.year) = 2018)); 
+
+
+5.3 Estimated Certified Values per Taxing 
+District 
+
+ 
+
+SELECT tax_district.tax_district_desc 
+
+ ,levy.levy_description 
+
+ ,tax_area.tax_area_number 
+
+ ,assessed_total.SumOfmarket AS [Total AV1] 
+
+ ,captured_value.real_pers_value + 
+captured_value.senior_value + 
+captured_value.exempted_senior_value + 
+captured_value.state_value AS [Taxable AV Regular Levy1] 
+
+ ,captured_value.real_pers_value + 
+captured_value.state_value AS [Taxable AV Excess Levy1] 
+
+ ,captured_value.senior_value + 
+captured_value.exempted_senior_value AS [Farm/Senior Taxable 
+AV1] 
+
+ ,captured_value.new_const_value AS [New Construction 
+Value1] 
+
+FROM ( 
+
+ ( 
+
+ ( 
+
+ captured_value INNER JOIN tax_district ON 
+captured_value.tax_district_id = 
+tax_district.tax_district_id 
+
+ ) INNER JOIN tax_area ON 
+captured_value.tax_area_id = tax_area.tax_area_id 
+
+ ) INNER JOIN levy ON (captured_value.levy_cd = 
+levy.levy_cd) 
+
+ AND (captured_value.tax_district_id = 
+levy.tax_district_id) 
+
+ AND (captured_value.year = levy.year) 
+
+ ) 
+
+LEFT JOIN ( 
+
+ SELECT Sum(property_val.assessed_val) AS 
+SumOfassessed_val 
+
+ ,tax_area.tax_area_number 
+
+ ,Sum(property_val.appraised_val) AS 
+SumOfappraised_val 
+
+ ,Sum(property_val.market) AS SumOfmarket 
+
+ ,property_tax_area.tax_area_id 
+
+ FROM ( 
+
+ property_val LEFT JOIN property_tax_area ON 
+(property_val.sup_num = property_tax_area.sup_num) 
+
+ AND (property_val.prop_val_yr = 
+property_tax_area.year) 
+
+ AND (property_val.prop_id = 
+property_tax_area.prop_id) 
+
+ ) 
+
+ LEFT JOIN tax_area ON property_tax_area.tax_area_id = 
+tax_area.tax_area_id 
+
+ GROUP BY tax_area.tax_area_number 
+
+ ,property_tax_area.tax_area_id 
+
+ ,property_val.prop_val_yr 
+
+ ,property_val.prop_inactive_dt 
+
+ ,property_val.sup_num 
+
+ HAVING ( 
+
+ ((property_val.prop_val_yr) = 2018) 
+
+ AND ((property_val.prop_inactive_dt) IS NULL) 
+
+ AND ((property_val.sup_num) = 0) 
+
+ ) 
+
+ ) AS assessed_total ON tax_area.tax_area_id = 
+assessed_total.tax_area_id 
+
+WHERE ( 
+
+ ((captured_value.captured_value_run_id) = 146) 
+
+ AND ((captured_value.Year) = 2018) 
+
+ AND ((levy.include_in_levy_certification) <> 0) 
+
+ ); 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+6 MISCELLANEOUS QUERIES 
+
+6.1 Commercial Properties With Farm 
+Assest Flagged 
+
+This query looks for commercial (‘C’) properties that 
+have Farm Asset field flagged in PACS. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN pers_prop_seg pps WITH (NOLOCK) ON pv.prop_id = 
+pps.prop_id 
+
+ AND pv.prop_val_yr = pps.prop_val_yr 
+
+ AND pv.sup_num = pps.sup_num 
+
+ AND pps.sale_id = 0 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+AND p.prop_type_cd = 'P' 
+
+ AND pv.sub_type NOT IN ( 
+
+ 'UP' 
+
+ ,'UR' 
+
+ ) 
+
+ AND pps.farm_asset = 1 
+
+ORDER BY p.geo_id 
+
+6.2 Current Use Parcels: 
+
+Defining all current use parcels (change 
+property_use_code for specific program) 
+
+SELECT pv1.[prop_id] 
+
+ ,pv1.[last_appraiser_id] 
+
+ ,p1.[geo_id] 
+
+ ,oev1.[file_as_name] 
+
+ ,pv1.[property_use_cd] 
+
+ ,pv1.[cycle] 
+
+FROM dbo.property AS p1 WITH (NOLOCK) 
+
+JOIN dbo.property_val AS pv1 WITH (NOLOCK) ON pv1.[prop_id] 
+= p1.[prop_id] 
+
+JOIN dbo.query_builder_owner_everything_vw AS oev1 WITH 
+(NOLOCK) ON oev1.[prop_id] = pv1.[prop_id] 
+
+ AND oev1.[owner_tax_yr] = pv1.[prop_val_yr] 
+
+ AND oev1.[sup_num] = pv1.[sup_num] 
+
+INNER JOIN pacs_system ON pv1.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv1.[property_use_cd] IN ( 
+
+ '88' 
+
+ ,'95' 
+
+ ,'83' 
+
+ ,'94' 
+
+ ,'97' 
+
+ ) 
+
+ AND pv1.[prop_inactive_dt] IS NULL 
+
+6.3 Mosquito Benefit Fee Review 
+
+This query pulls those properties billed a Mosquito 
+Benefit Fee. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,et.exmpt_type_cd 
+
+ ,et.exmpt_desc 
+
+ ,b.current_amount_due 
+
+FROM property_val AS pv 
+
+JOIN property AS p ON p.prop_id = pv.prop_id 
+
+JOIN prop_supp_assoc AS psa ON pv.prop_id = psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+JOIN OWNER AS o ON psa.prop_id = o.prop_id 
+
+ AND psa.owner_tax_yr = o.owner_tax_yr 
+
+ AND psa.sup_num = o.sup_num 
+
+JOIN account AS ac ON o.owner_id = ac.acct_id 
+
+LEFT OUTER JOIN property_exemption AS pe ON psa.prop_id = 
+pe.prop_id 
+
+ AND psa.owner_tax_yr = pe.owner_tax_yr 
+
+ AND psa.sup_num = pe.sup_num 
+
+LEFT OUTER JOIN exmpt_type AS et ON pe.exmpt_type_cd = 
+et.exmpt_type_cd 
+
+JOIN bill AS b ON psa.prop_id = b.prop_id 
+
+ AND psa.owner_tax_yr = b.year 
+
+--psa.sup_num = b.sup_num 
+
+JOIN ( 
+
+ SELECT ab.bill_id 
+
+ FROM assessment_bill AS ab 
+
+ WHERE ab.year = 2018 
+
+ AND ab.agency_id = 251040 
+
+ ) AS ab ON b.bill_id = ab.bill_id 
+
+WHERE pv.prop_val_yr = 2018 
+
+ 
+
+
+6.4 New Construction 
+
+Parcels that have new construction added. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,pv.map_id 
+
+ ,bp.bldg_permit_id 
+
+ ,pv.cycle 
+
+ ,pv.last_appraiser_id 
+
+ ,a.appraiser_nm 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN prop_building_permit_assoc bpa WITH (NOLOCK) ON 
+bpa.prop_id = pv.prop_id 
+
+INNER JOIN building_permit bp WITH (NOLOCK) ON 
+bp.bldg_permit_id = bpa.bldg_permit_id 
+
+LEFT OUTER JOIN appraiser a WITH (NOLOCK) ON 
+pv.last_appraiser_id = a.appraiser_id 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND bp.bldg_permit_active = 't' 
+
+ORDER BY p.geo_id 
+
+6.5 PACS Table And Field Locator 
+
+VERY handy query that is used to find the 
+appropriate PACS back-end table & field when 
+building a new query. This excludes ‘views’ which 
+per TA do not always contain accurate info. Line 4 
+of the code uses a wild-card at the beginning and 
+end of a word or phrase that is used to search all of 
+the PACS back-end tables & fields for a match. 
+
+DECLARE @colname NVARCHAR(50) 
+
+ ,@tblname NVARCHAR(50) 
+
+ 
+
+SET @colname = '%imprv%' 
+
+ 
+
+SELECT table_catalog 
+
+ ,table_schema 
+
+ ,table_name 
+
+ ,column_name 
+
+ ,data_type 
+
+ ,character_maximum_length 
+
+ ,is_nullable 
+
+FROM information_schema.columns 
+
+WHERE column_name LIKE coalesce(@colname, '%') 
+
+ AND table_name NOT LIKE '%vw%' 
+
+ORDER BY table_name 
+
+ 
+
+6.6 Search Remarks Field 
+
+ 
+
+DECLARE @remarks NVARCHAR(4000) 
+
+ 
+
+SET @remarks = '%Reval%' ---put what you want to look for 
+between the percent signs 
+
+ 
+
+SELECT prop_id AS 'PID' 
+
+ ,remarks AS 'REMARKS' 
+
+FROM property 
+
+WHERE remarks LIKE coalesce(@remarks, '%') 
+
+ORDER BY prop_id ASC 
+
+6.7 Supplement Query One 
+
+ 
+
+SELECT DISTINCT COUNT(pv.prop_id) AS '# of Props' 
+
+ ,s.sup_tax_yr 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN supplement s WITH (NOLOCK) ON pv.prop_val_yr = 
+s.sup_tax_yr 
+
+ AND pv.sup_num = s.sup_num 
+
+WHERE s.sup_num <> 0 
+
+GROUP BY s.sup_tax_yr 
+
+ 
+
+6.8 Supplement Query Two 
+
+ 
+
+SELECT DISTINCT COUNT(pv.prop_id) AS '# of Props' 
+
+ ,s.sup_tax_yr 
+
+ ,s.sup_group_id 
+
+ ,s.sup_num 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN supplement s WITH (NOLOCK) ON pv.prop_val_yr = 
+s.sup_tax_yr 
+
+ AND pv.sup_num = s.sup_num 
+
+WHERE s.sup_num <> 0 
+
+GROUP BY s.sup_tax_yr 
+
+ ,s.sup_group_id 
+
+ ,s.sup_num 
+
+
+7 MONITOR QUERIES 
+
+7.1 Monitor Query 
+
+This query allows the user to search for all monitor 
+queries, giving the name of the employee using the 
+monitor and the associated query. 
+
+SELECT dbo.pacs_user.pacs_user_name 
+
+ ,dbo.monitors.NAME 
+
+ ,dbo.monitors.query 
+
+FROM dbo.pacs_user 
+
+INNER JOIN dbo.monitors_users ON dbo.pacs_user.pacs_user_id 
+= dbo.monitors_users.pacs_user_id 
+
+INNER JOIN dbo.monitors ON dbo.monitors_users.monitor_id = 
+dbo.monitors.monitor_id 
+
+ORDER BY dbo.pacs_user.pacs_user_name 
+
+ ,dbo.monitors.NAME 
+
+ 
+
+ 
+
+
+8 PERSONAL PROPERTY QUERIES 
+
+8.1 Rendition Not Recieved Monitor 
+
+ 
+
+SET ANSI_NULLS ON 
+
+SET QUOTED_IDENTIFIER ON 
+
+GO 
+
+ 
+
+CREATE PROCEDURE [dbo].[IslandRenditionNOTReceived] 
+
+AS 
+
+SET NOCOUNT ON 
+
+ 
+
+DECLARE @appr_year NUMERIC(4, 0) 
+
+ 
+
+EXEC GetApprYear @appr_year OUTPUT 
+
+ 
+
+SELECT ppr.prop_id 
+
+ ,max(ppr.rendition_year) AS max_rendition_year 
+
+INTO #randy_max_rendition_year 
+
+FROM pers_prop_rendition AS ppr WITH (NOLOCK) 
+
+GROUP BY ppr.prop_id 
+
+ 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,pv.prop_val_yr 
+
+ ,ac.file_as_name AS owner_name 
+
+ ,rm.max_rendition_year AS last_rendition_year 
+
+ ,cst.orig_cost 
+
+ ,cst.mkt_val 
+
+ ,tax_area.tax_area_number 
+
+ ,situs.situs_city 
+
+FROM property_val AS pv WITH (NOLOCK) 
+
+INNER JOIN property AS p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN OWNER AS o 
+
+WITH (NOLOCK) ON pv.prop_val_yr = o.owner_tax_yr 
+
+ AND pv.sup_num = o.sup_num 
+
+ AND pv.prop_id = o.prop_id 
+
+INNER JOIN account AS ac WITH (NOLOCK) ON o.owner_id = 
+ac.acct_id 
+
+INNER JOIN property_tax_area ON pv.sup_num = 
+property_tax_area.sup_num 
+
+ AND pv.prop_val_yr = property_tax_area.year 
+
+ AND pv.prop_id = property_tax_area.prop_id 
+
+INNER JOIN tax_area ON property_tax_area.tax_area_id = 
+tax_area.tax_area_id 
+
+LEFT OUTER JOIN situs ON pv.prop_id = situs.prop_id 
+
+LEFT OUTER JOIN #randy_max_rendition_year AS rm WITH 
+(NOLOCK) ON p.prop_id = rm.prop_id 
+
+LEFT OUTER JOIN ( 
+
+ SELECT pers_prop_seg.prop_id 
+
+ ,Sum(pers_prop_seg.pp_orig_cost) AS orig_cost 
+
+ ,Sum(pers_prop_seg.pp_mkt_val) AS mkt_val 
+
+ FROM pers_prop_seg 
+
+ GROUP BY pers_prop_seg.prop_id 
+
+ ,pers_prop_seg.prop_val_yr 
+
+ ,pers_prop_seg.sup_num 
+
+ HAVING ( 
+
+ ((pers_prop_seg.prop_val_yr) = 2019) 
+
+ AND ((pers_prop_seg.sup_num) = 0) 
+
+ ) 
+
+ ) AS cst ON pv.prop_id = cst.prop_id 
+
+WHERE pv.prop_val_yr = @appr_year 
+
+ AND pv.prop_inactive_dt IS NULL 
+
+ AND p.prop_type_cd = 'P' 
+
+ AND pv.sub_type <> 'UP' 
+
+ AND pv.prop_id NOT IN ( 
+
+ SELECT prop_id 
+
+ FROM pers_prop_rendition WITH (NOLOCK) 
+
+ WHERE rendition_year = @appr_year 
+
+ ) 
+
+ORDER BY 2 
+
+ ,1 
+
+ 
+
+IF (object_id('#randy_max_rendition_year') IS NOT NULL) 
+
+BEGIN 
+
+ DROP TABLE #randy_max_rendition_year 
+
+END 
+
+8.2 Foreclosure Query 
+
+ 
+
+SELECT pgc1.[group_cd] 
+
+ ,p1.[geo_id] 
+
+ ,p1.[prop_id] 
+
+FROM dbo.prop_group_assoc AS pga1 WITH (NOLOCK) 
+
+JOIN dbo.prop_group_code AS pgc1 WITH (NOLOCK) ON 
+pgc1.[group_cd] = pga1.[prop_group_cd] 
+
+JOIN dbo.prop_supp_assoc AS psa1 WITH (NOLOCK) ON 
+psa1.[prop_id] = pga1.[prop_id] 
+
+JOIN dbo.property AS p1 WITH (NOLOCK) ON p1.[prop_id] = 
+pga1.[prop_id] 
+
+JOIN dbo.property_val AS pv1 WITH (NOLOCK) ON pv1.[prop_id] 
+= psa1.[prop_id] 
+
+ AND pv1.[prop_val_yr] = psa1.[owner_tax_yr] 
+
+ AND pv1.[sup_num] = psa1.[sup_num] 
+
+INNER JOIN pacs_system ON pv1.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pgc1.[group_cd] IN ('Foreclosures') 
+
+
+9 PROPERTY COUNTS 
+
+9.1 Property Counts 
+
+ 
+
+SELECT [ ] = ISNULL(appraiser_full_name, 'Totals') 
+
+ ,[Area 1] = SUM([1]) 
+
+ ,[Area 2] = SUM([2]) 
+
+ ,[Area 3] = SUM([3]) 
+
+ ,[Area 4] = SUM([4]) 
+
+ ,[Area 5] = SUM([5]) 
+
+ ,[Area 6] = SUM([6]) 
+
+ ,Total = SUM([1] + [2] + [3] + [4] + [5] + [6]) 
+
+FROM ( 
+
+ SELECT appraiser_full_name 
+
+ ,cycle 
+
+ FROM property_val 
+
+ INNER JOIN appraiser ON property_val.last_appraiser_id = 
+appraiser.appraiser_id 
+
+ INNER JOIN property ON property_val.prop_id = 
+property.prop_id 
+
+ INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+ WHERE prop_inactive_dt IS NULL 
+
+ AND property.prop_type_cd = 'R' 
+
+ ) p 
+
+Pivot(Count(cycle) FOR cycle IN ( 
+
+ [1] 
+
+ ,[2] 
+
+ ,[3] 
+
+ ,[4] 
+
+ ,[5] 
+
+ ,[6] 
+
+ )) AS pvt 
+
+GROUP BY (appraiser_full_name) 
+
+WITH rollup 
+
+ 
+
+
+10 ROUTINE QUERIES 
+
+10.1 Blank Sub-Type 
+
+This query finds those active properties without a 
+subtype assigned. a property without a subtype does 
+not get included in a notice run nor does it calculate 
+correctly. 
+
+SELECT DISTINCT property_val.prop_val_yr AS 'blank_sub_type' 
+
+ ,property_val.prop_id 
+
+ ,appraiser.appraiser_full_name AS 'appraiser' 
+
+ ,property_val.cycle 
+
+ ,property_val.sub_type 
+
+ ,property.prop_type_cd 
+
+FROM property_val AS property_val WITH (NOLOCK) 
+
+INNER JOIN property AS property WITH (NOLOCK) ON 
+property_val.prop_id = property.prop_id 
+
+INNER JOIN appraiser appraiser WITH (NOLOCK) ON 
+appraiser.appraiser_id = property_val.last_appraiser_id 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE property_val.prop_inactive_dt IS NULL 
+
+ AND property_val.sub_type IS NULL 
+
+ORDER BY property_val.prop_id 
+
+ 
+
+10.2 Cycle And Region Check 
+
+This query pulls those parcels that have a Cycle and 
+Range Code in PACS that do not agree. If any 
+records are found they are forwarded to the 
+appraiser(s) for investigation. 
+
+SELECT DISTINCT property_val.prop_val_yr AS 'cycle-
+region_check' 
+
+ ,property_val.prop_id 
+
+ ,appraiser.appraiser_full_name AS 'appraiser' 
+
+ ,property.geo_id 
+
+ ,property_val.cycle 
+
+ ,property_val.rgn_cd AS 'region' 
+
+ ,property_val.hood_cd AS 'neighborhood_cd' 
+
+FROM property_val AS property_val 
+
+INNER JOIN property AS property ON property_val.prop_id = 
+property.prop_id 
+
+INNER JOIN prop_supp_assoc AS prop_supp_assoc ON 
+property_val.prop_id = prop_supp_assoc.prop_id 
+
+ AND property_val.prop_val_yr = 
+prop_supp_assoc.owner_tax_yr 
+
+ AND property_val.sup_num = prop_supp_assoc.sup_num 
+
+LEFT JOIN appraiser AS appraiser ON 
+property_val.last_appraiser_id = appraiser.appraiser_id 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE property_val.prop_inactive_dt IS NULL 
+
+ AND property_val.rgn_cd IS NOT NULL 
+
+ AND (property_val.cycle <> left(property_val.rgn_cd, 1)) 
+
+ORDER BY property_val.prop_id 
+
+10.3 Effective Year Built Override Check 
+
+This query pulls those parcels with an Effective Year 
+Built or Depreciation Year override checked. 
+
+SELECT DISTINCT property_val.prop_val_yr AS 
+'effective_year_built_over_ride' 
+
+ ,property_val.prop_id 
+
+ ,appraiser.appraiser_full_name AS 'appraiser' 
+
+ ,property.geo_id 
+
+ ,property_val.cycle 
+
+ ,impv.effective_yr_blt AS 'eff_yr_built' 
+
+ ,imprv_detail.depreciation_yr AS 'deprec_yr' 
+
+ ,CASE 
+
+ WHEN impv.effective_yr_blt = 
+imprv_detail.depreciation_yr 
+
+ THEN 'match' 
+
+ ELSE 'different' 
+
+ END AS 'eff_yr-deprec_yr' 
+
+ ,impv.actual_year_built AS 'act_yr_built' 
+
+ ,imprv_detail.yr_built AS 'built_yr' 
+
+ ,CASE 
+
+ WHEN impv.actual_year_built = imprv_detail.yr_built 
+
+ THEN 'match' 
+
+ ELSE 'different' 
+
+ END AS 'act_yr_built-built_yr' 
+
+ ,imprv_detail.imprv_det_id AS 'detail_id' 
+
+ ,imprv_detail.imprv_det_type_cd AS 'detail_type' 
+
+ --,imprv_detail.override_area as 'areaoverride' 
+
+ ,impv.imprv_id AS 'improv_id' 
+
+ ,imprv_detail.actual_year_built_override 
+
+ ,imprv_detail.depreciation_yr_override 
+
+FROM property_val AS property_val 
+
+INNER JOIN property AS property ON property_val.prop_id = 
+property.prop_id 
+
+INNER JOIN prop_supp_assoc AS prop_supp_assoc ON 
+property_val.prop_id = prop_supp_assoc.prop_id 
+
+ AND property_val.prop_val_yr = 
+prop_supp_assoc.owner_tax_yr 
+
+ AND property_val.sup_num = prop_supp_assoc.sup_num 
+
+LEFT JOIN appraiser AS appraiser ON 
+property_val.last_appraiser_id = appraiser.appraiser_id 
+
+INNER JOIN imprv AS impv ON prop_supp_assoc.prop_id = 
+impv.prop_id 
+
+ AND prop_supp_assoc.owner_tax_yr = impv.prop_val_yr 
+
+ AND prop_supp_assoc.sup_num = impv.sup_num 
+
+INNER JOIN imprv_detail AS imprv_detail ON impv.prop_id = 
+imprv_detail.prop_id 
+
+ AND impv.prop_val_yr = imprv_detail.prop_val_yr 
+
+ AND impv.sup_num = imprv_detail.sup_num 
+
+ AND impv.sale_id = imprv_detail.sale_id 
+
+ AND impv.imprv_id = imprv_detail.imprv_id 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE ( 
+
+ imprv_detail.actual_year_built_override = 'true' 
+
+ OR imprv_detail.depreciation_yr_override = 't' 
+
+ ) 
+
+ AND property_val.prop_inactive_dt IS NULL 
+
+ AND impv.sale_id = 0 
+
+ AND property_val.sup_num = 0 
+
+ORDER BY property_val.prop_id 
+
+
+10.4 Ghost Account Search 
+
+Looks for ‘Ghost’ parcels in PACS and if found need 
+investigating. A ‘Ghost' account is an active parcel 
+that does not have an owner assigned. 
+
+SELECT DISTINCT property_val.prop_val_yr AS 
+'active_parcel_no_owner' 
+
+ ,property_val.prop_id 
+
+ ,property.geo_id 
+
+ ,OWNER.owner_id 
+
+ ,account.acct_id 
+
+ ,appraiser.appraiser_full_name AS 'appraiser' 
+
+FROM property_val AS property_val 
+
+INNER JOIN prop_supp_assoc AS prop_supp_assoc ON 
+property_val.prop_id = prop_supp_assoc.prop_id 
+
+ AND property_val.prop_val_yr = 
+prop_supp_assoc.owner_tax_yr 
+
+ AND property_val.sup_num = prop_supp_assoc.sup_num 
+
+INNER JOIN property AS property ON property_val.prop_id = 
+property.prop_id 
+
+INNER JOIN OWNER AS OWNER ON prop_supp_assoc.prop_id = 
+OWNER.prop_id 
+
+ AND prop_supp_assoc.owner_tax_yr = OWNER.owner_tax_yr 
+
+ AND prop_supp_assoc.sup_num = OWNER.sup_num 
+
+INNER JOIN account AS account ON OWNER.owner_id = 
+account.acct_id 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+INNER JOIN appraiser ON property_val.last_appraiser_id = 
+appraiser.appraiser_id 
+
+WHERE OWNER.owner_id IS NULL 
+
+ AND property_val.prop_inactive_dt IS NULL 
+
+ORDER BY property_val.prop_id 
+
+10.5 Invalid Property Use Codes Review 
+
+Pulls any active property that has been assigned an 
+incorrect Property Use Code. 
+
+ SELECT DISTINCT property_val.prop_val_yr AS 
+'incorrect_property_use' 
+
+ ,property_val.prop_id 
+
+ ,property.geo_id 
+
+ ,property_val.property_use_cd 
+
+ ,appraiser.appraiser_full_name AS 'appraiser' 
+
+ ,property_val.last_appraisal_dt 
+
+FROM property_val AS property_val 
+
+INNER JOIN prop_supp_assoc AS prop_supp_assoc ON 
+property_val.prop_id = prop_supp_assoc.prop_id 
+
+ AND property_val.prop_val_yr = 
+prop_supp_assoc.owner_tax_yr 
+
+ AND property_val.sup_num = prop_supp_assoc.sup_num 
+
+INNER JOIN property AS property ON property_val.prop_id = 
+property.prop_id 
+
+INNER JOIN appraiser ON property_val.last_appraiser_id = 
+appraiser.appraiser_id 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE property_val.property_use_cd IN ( 
+
+ 36 
+
+ ,37 
+
+ ,38 
+
+ ,77 
+
+ ,78 
+
+ ,86 
+
+ ,87 
+
+ ,96 
+
+ ,97 
+
+ ,98 
+
+ ) 
+
+ AND property_val.prop_inactive_dt IS NULL 
+
+ORDER BY property_val.prop_id 
+
+
+10.6 Vacant Property Use With 
+Improvement Value 
+
+Extracts active properties that have a vacant 
+property use code assigned but has over $10,000 in 
+improvements. If found (like with any of the Routine 
+Queries…they need to be forwarded to the 
+appraisers for investigation). 
+
+SELECT DISTINCT property_val.prop_val_yr AS 
+'vacant_property_use_with_improvement_value' 
+
+ ,property_val.prop_id 
+
+ ,appraiser.appraiser_full_name AS 'appraiser' 
+
+ ,property_val.property_use_cd 
+
+ ,property_use.property_use_desc 
+
+ ,([property_val].[imprv_hstd_val] + 
+[property_val].[imprv_non_hstd_val]) AS imp_val 
+
+ ,imprv.imprv_type_cd 
+
+ ,imprv_type.imprv_type_desc 
+
+ ,imprv.imprv_desc 
+
+ ,imprv_detail.imprv_det_type_cd 
+
+ ,imprv_det_type.imprv_det_typ_desc 
+
+FROM ( 
+
+ ( 
+
+ ( 
+
+ ( 
+
+ ( 
+
+ property_val INNER JOIN property_use ON 
+property_val.property_use_cd = property_use.property_use_cd 
+
+ ) INNER JOIN appraiser ON 
+property_val.last_appraiser_id = appraiser.appraiser_id 
+
+ ) INNER JOIN imprv ON (property_val.sup_num 
+= imprv.sup_num) 
+
+ AND (property_val.prop_val_yr = 
+imprv.prop_val_yr) 
+
+ AND (property_val.prop_id = imprv.prop_id) 
+
+ ) INNER JOIN imprv_detail ON (imprv.sale_id = 
+imprv_detail.sale_id) 
+
+ AND (imprv.sup_num = imprv_detail.sup_num) 
+
+ AND (imprv.imprv_id = imprv_detail.imprv_id) 
+
+ AND (imprv.prop_val_yr = 
+imprv_detail.prop_val_yr) 
+
+ AND (imprv.prop_id = imprv_detail.prop_id) 
+
+ ) INNER JOIN imprv_det_type ON 
+imprv_detail.imprv_det_type_cd = 
+imprv_det_type.imprv_det_type_cd 
+
+ ) 
+
+INNER JOIN imprv_type ON imprv.imprv_type_cd = 
+imprv_type.imprv_type_cd 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE ( 
+
+ ((property_val.sup_num) = 0) 
+
+ AND ((property_val.prop_inactive_dt) IS NULL) 
+
+ AND ( 
+
+ (property_val.property_use_cd) = '91' 
+
+ OR (property_val.property_use_cd) = '99' 
+
+ ) 
+
+ AND ((([property_val].[imprv_hstd_val] + 
+[property_val].[imprv_non_hstd_val])) > 0) 
+
+ AND ((imprv.sale_id) = 0) 
+
+ ) 
+
+10.7 Non Vacant Property Use With No 
+Improvement Value 
+
+This extracts active properties that have a non 
+vacant property use assigned but no improvements 
+
+SELECT property_val.prop_val_yr AS 
+'non_vacant_property_use_with_no_improvement_value' 
+
+ ,property_val.prop_id 
+
+ ,appraiser.appraiser_full_name AS 'appraiser' 
+
+ ,property_val.property_use_cd 
+
+ ,property_use.property_use_desc 
+
+ ,([property_val].[imprv_hstd_val] + 
+[property_val].[imprv_non_hstd_val]) AS imp_val 
+
+ ,property.remarks 
+
+FROM ( 
+
+ ( 
+
+ property_val INNER JOIN property_use ON 
+property_val.property_use_cd = property_use.property_use_cd 
+
+ ) INNER JOIN appraiser ON 
+property_val.last_appraiser_id = appraiser.appraiser_id 
+
+ ) 
+
+INNER JOIN property ON property_val.prop_id = 
+property.prop_id 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE ( 
+
+ ((property_val.sup_num) = 0) 
+
+ AND ((property_val.prop_inactive_dt) IS NULL) 
+
+ AND ( 
+
+ (property_val.property_use_cd) IN ( 
+
+ '11' 
+
+ ,'12' 
+
+ ,'14' 
+
+ ,'112' 
+
+ ,'111' 
+
+ ,'50' 
+
+ ) 
+
+ ) 
+
+ AND ((([property_val].[imprv_hstd_val] + 
+[property_val].[imprv_non_hstd_val])) = 0) 
+
+ ) 
+
+ 
+
+
+10.8 Vacant Property Use With Non Vacant 
+Tax Area 
+
+Extracts active properties that have a vacant 
+property use code assigned but has an incorrect 
+(non-vacant) Tax Area code assigned. 
+
+SELECT DISTINCT property_val.prop_val_yr AS 
+'vacant_property_use_with_non_vacant_tax_area' 
+
+ ,property_val.prop_id 
+
+ ,appraiser.appraiser_full_name AS 'appraiser' 
+
+ ,property.geo_id 
+
+ ,tax_area.tax_area_number 
+
+ ,property_val.property_use_cd 
+
+ ,property_val.cycle 
+
+ ,property_val.imprv_val 
+
+FROM property AS property 
+
+INNER JOIN property_val AS property_val ON property.prop_id 
+= property_val.prop_id 
+
+INNER JOIN appraiser AS appraiser ON 
+property_val.last_appraiser_id = appraiser.appraiser_id 
+
+INNER JOIN property_tax_area AS property_tax_area ON 
+property_val.prop_id = property_tax_area.prop_id 
+
+ AND property_val.prop_val_yr = property_tax_area.year 
+
+ AND property_val.sup_num = property_tax_area.sup_num 
+
+INNER JOIN tax_area AS tax_area ON 
+property_tax_area.tax_area_id = tax_area.tax_area_id 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE property_val.prop_inactive_dt IS NULL 
+
+ AND property_val.imprv_val > 0 
+
+ AND ( 
+
+ ( 
+
+ tax_area.tax_area_number LIKE '%0' 
+
+ AND property_val.property_use_cd IN ( 
+
+ 91 
+
+ ,99 
+
+ ) 
+
+ ) 
+
+ OR ( 
+
+ tax_area.tax_area_number LIKE '%1' 
+
+ AND property_val.property_use_cd NOT IN ( 
+
+ 91 
+
+ ,99 
+
+ ) 
+
+ ) 
+
+ OR ( 
+
+ tax_area.tax_area_number LIKE '%2' 
+
+ AND property_val.property_use_cd IN ( 
+
+ 91 
+
+ ,99 
+
+ ) 
+
+ ) 
+
+ OR ( 
+
+ tax_area.tax_area_number LIKE '%3' 
+
+ AND property_val.property_use_cd NOT IN ( 
+
+ 91 
+
+ ,99 
+
+ ) 
+
+ ) 
+
+ OR ( 
+
+ tax_area.tax_area_number LIKE '%5' 
+
+ AND property_val.property_use_cd NOT IN ( 
+
+ 91 
+
+ ,99 
+
+ ) 
+
+ ) 
+
+ OR ( 
+
+ tax_area.tax_area_number LIKE '%7' 
+
+ AND property_val.property_use_cd IN ( 
+
+ 91 
+
+ ,99 
+
+ ) 
+
+ ) 
+
+ OR ( 
+
+ tax_area.tax_area_number LIKE '%9' 
+
+ AND property_val.property_use_cd NOT IN ( 
+
+ 91 
+
+ ,99 
+
+ ) 
+
+ ) 
+
+ ) 
+
+ORDER BY property_val.prop_id 
+
+ 
+
+
+10.9 Non Vacant Property Use With No 
+Improvement Value 
+
+This extracts active properties that have a non 
+vacant property use assigned but no improvements 
+
+SELECT property_val.prop_val_yr AS 
+'non_vacant_property_use_with_no_improvement_value' 
+
+ ,property_val.prop_id 
+
+ ,appraiser.appraiser_full_name AS 'appraiser' 
+
+ ,property_val.property_use_cd 
+
+ ,property_use.property_use_desc 
+
+ ,([property_val].[imprv_hstd_val] + 
+[property_val].[imprv_non_hstd_val]) AS imp_val 
+
+ ,property.remarks 
+
+FROM ( 
+
+ ( 
+
+ property_val INNER JOIN property_use ON 
+property_val.property_use_cd = property_use.property_use_cd 
+
+ ) INNER JOIN appraiser ON 
+property_val.last_appraiser_id = appraiser.appraiser_id 
+
+ ) 
+
+INNER JOIN property ON property_val.prop_id = 
+property.prop_id 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE ( 
+
+ ((property_val.sup_num) = 0) 
+
+ AND ((property_val.prop_inactive_dt) IS NULL) 
+
+ AND ( 
+
+ (property_val.property_use_cd) IN ( 
+
+ '11' 
+
+ ,'12' 
+
+ ,'14' 
+
+ ,'112' 
+
+ ,'111' 
+
+ ,'50' 
+
+ ) 
+
+ ) 
+
+ AND ((([property_val].[imprv_hstd_val] + 
+[property_val].[imprv_non_hstd_val])) = 0) 
+
+ ) 
+
+ 
+
+10.10 Suspect Last Appraisal Dates 
+
+This query will find input dates that occur on a 
+sunday or saturday or any date greater than the 
+current date. This typically happens when a typo is 
+made updating this field by the appraiser. 
+
+SELECT DISTINCT property_val.prop_val_yr AS 
+'suspect_appraisal_dates' 
+
+ ,property_val.prop_id 
+
+ ,appraiser.appraiser_full_name AS 'appraiser' 
+
+ ,property.geo_id 
+
+ ,property_val.cycle 
+
+ ,property_val.last_appraisal_dt AS 'date' 
+
+ ,datename(dw, property_val.last_appraisal_dt) AS 'day' 
+
+ ,datepart(yyyy, property_val.last_appraisal_dt) AS 
+'year' 
+
+FROM prop_supp_assoc AS prop_supp_assoc 
+
+INNER JOIN property AS property ON property.prop_id = 
+prop_supp_assoc.prop_id 
+
+INNER JOIN property_val AS property_val ON 
+property_val.prop_id = prop_supp_assoc.prop_id 
+
+ AND property_val.prop_val_yr = 
+prop_supp_assoc.owner_tax_yr 
+
+ AND property_val.sup_num = prop_supp_assoc.sup_num 
+
+INNER JOIN appraiser AS appraiser ON 
+property_val.last_appraiser_id = appraiser.appraiser_id 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE convert(VARCHAR(24), getdate(), 112) < 
+convert(VARCHAR(24), property_val.last_appraisal_dt, 112) 
+
+ AND property_val.prop_inactive_dt IS NULL 
+
+ OR datepart(dw, property_val.last_appraisal_dt) = 1 
+
+ AND property_val.prop_inactive_dt IS NULL 
+
+ OR datepart(dw, property_val.last_appraisal_dt) = 7 
+
+ AND property_val.prop_inactive_dt IS NULL 
+
+ORDER BY property_val.prop_id 
+
+
+10.11 Recalculation Errors 
+
+ 
+
+SELECT property_val.prop_val_yr AS 'recalculation_errors' 
+
+ ,property_val.prop_id 
+
+ ,property.geo_id 
+
+ ,property_val.cycle 
+
+ ,appraiser.appraiser_full_name AS 'appraiser' 
+
+ ,property.prop_type_cd 
+
+ ,prop_recalc_errors.error 
+
+FROM property_val 
+
+INNER JOIN appraiser ON property_val.last_appraiser_id = 
+appraiser.appraiser_id 
+
+INNER JOIN property ON property_val.prop_id = 
+property.prop_id 
+
+INNER JOIN prop_supp_assoc ON property_val.sup_num = 
+prop_supp_assoc.sup_num 
+
+ AND property_val.prop_val_yr = 
+prop_supp_assoc.owner_tax_yr 
+
+ AND property_val.prop_id = prop_supp_assoc.prop_id 
+
+INNER JOIN wash_prop_owner_val ON property_val.prop_val_yr = 
+wash_prop_owner_val.year 
+
+ AND property_val.prop_id = wash_prop_owner_val.prop_id 
+
+ AND property_val.sup_num = wash_prop_owner_val.sup_num 
+
+INNER JOIN prop_recalc_errors ON property_val.sup_num = 
+prop_recalc_errors.sup_num 
+
+ AND property_val.prop_val_yr = prop_recalc_errors.sup_yr 
+
+ AND property.prop_id = prop_recalc_errors.prop_id 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE property_val.sup_num = 0 
+
+ AND property_val.prop_inactive_dt IS NULL 
+
+GROUP BY property_val.prop_val_yr 
+
+ ,property_val.prop_id 
+
+ ,property.geo_id 
+
+ ,property_val.cycle 
+
+ ,appraiser.appraiser_full_name 
+
+ ,property.prop_type_cd 
+
+ ,prop_recalc_errors.error 
+
+ORDER BY property_val.prop_id 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+11 SALES QUERIES 
+
+11.1 Sales Improved Qualified 
+
+SELECT property_val.prop_val_yr AS 'ASSESSMENT YEAR' 
+
+ ,chg_of_owner_prop_assoc.prop_id AS 'PID' 
+
+ ,property.geo_id AS 'GEO ID' 
+
+ ,CASE 
+
+ WHEN property.geo_id LIKE 'R%' 
+
+ THEN LEFT(property.geo_id, 6) 
+
+ WHEN property.geo_id LIKE 'S%' 
+
+ THEN LEFT(property.geo_id, 5) 
+
+ WHEN property.geo_id LIKE 'M%' 
+
+ THEN 'Mobile Home' 
+
+ END AS 'GEO AREA' 
+
+ ,CASE 
+
+ WHEN property.geo_id LIKE 'R%' 
+
+ THEN 'Metes & Bounds' 
+
+ WHEN property.geo_id LIKE 'S%' 
+
+ THEN 'Plats' 
+
+ WHEN property.geo_id LIKE 'M%' 
+
+ THEN 'Mobile Home' 
+
+ END AS 'GEO TYPE' 
+
+ ,property_val.cycle AS 'AREA' 
+
+ ,appraiser.appraiser_full_name AS 'APPRAISER' 
+
+ ,tax_area.tax_area_number AS 'TAN' 
+
+ ,tax_area.tax_area_location AS 'LOCATION' 
+
+ ,CASE 
+
+ WHEN tax_area.tax_area_number BETWEEN 500 
+
+ AND 599 
+
+ THEN 'Camano island' 
+
+ ELSE 'Whidbey Island' 
+
+ END AS 'ISLAND' 
+
+ ,sale.primary_use_cd AS 'USE' 
+
+ ,[property_use].[property_use_cd] + ' - ' + [property_use].[property_use_desc] AS 'USE DESCRIPTION' 
+
+ ,sale.sl_land_type_cd AS 'LAND TYPE' 
+
+ ,RTrim([land_type].[land_type_cd]) + ' - ' + [land_type].[land_type_desc] AS 'LAND DESCRIPTION' 
+
+ ,property_profile.land_sqft AS 'LAND SQFT' 
+
+ ,property_profile.land_acres AS 'LAND ACRES' 
+
+ ,[property_val].[land_hstd_val] + [property_val].[land_non_hstd_val] + [property_val].[ag_market] + 
+[property_val].[timber_market] AS 'CURRENT LAND VALUE' 
+
+ ,[property_val].[imprv_hstd_val] + [property_val].[imprv_non_hstd_val] AS 'CURRENT IMPROVEMENT VALUE' 
+
+ ,[property_val].[imprv_hstd_val] + [property_val].[imprv_non_hstd_val] + [property_val].[land_hstd_val] + 
+[property_val].[land_non_hstd_val] + [property_val].[ag_market] + [property_val].[timber_market] AS 'CURRENT ASSESSED 
+VALUE' 
+
+ ,[chg_of_owner_prop_assoc].[land_hstd_val] + [chg_of_owner_prop_assoc].[land_non_hstd_val] + 
+[chg_of_owner_prop_assoc].[ag_market] + [chg_of_owner_prop_assoc].[timber_market] AS 'SALE LAND VALUE' 
+
+ ,[chg_of_owner_prop_assoc].[imprv_hstd_val] + [chg_of_owner_prop_assoc].[imprv_non_hstd_val] AS 'SALE IMPROVEMENT 
+VALUE' 
+
+ ,[chg_of_owner_prop_assoc].[imprv_hstd_val] + [chg_of_owner_prop_assoc].[imprv_non_hstd_val] + 
+[chg_of_owner_prop_assoc].[land_hstd_val] + [chg_of_owner_prop_assoc].[land_non_hstd_val] + 
+[chg_of_owner_prop_assoc].[ag_market] + [chg_of_owner_prop_assoc].[timber_market] AS 'SALE ASSESSED VALUE' 
+
+ ,[sl_price] AS 'ACTUAL SALE PRICE' 
+
+ ,([sl_price] * .99) AS 'ADJUSTED SALE PRICE' 
+
+ ,(([property_val].[imprv_hstd_val] + [property_val].[imprv_non_hstd_val] + [property_val].[land_hstd_val] + 
+[property_val].[land_non_hstd_val] + [property_val].[ag_market] + [property_val].[timber_market]) / (([sl_price] * .99)) * 
+100) AS 'SALE RATIO' 
+
+ ,(([sl_price] * .99) - ([property_val].[imprv_hstd_val] + [property_val].[imprv_non_hstd_val])) AS 'LAND RESIDUAL' 
+
+ ,sale.chg_of_owner_id AS 'SALE NUMBER' 
+
+ ,sale.sl_dt AS 'SALE DATE' 
+
+ ,year([sale].[sl_dt]) AS 'SALE YEAR' 
+
+ ,DATEDIFF(M, sale.sl_dt, GETDATE()) AS 'MONTHS' 
+
+ ,DATEDIFF(YY, sale.sl_dt, GETDATE()) AS 'YEARS' 
+
+ ,chg_of_owner_prop_assoc.market AS 'SALE MARKET' 
+
+ ,CASE 
+
+ WHEN sale.sl_price < = 250000 
+
+ THEN '<$250K' 
+
+ WHEN sale.sl_price BETWEEN 250001 
+
+ AND 500000 
+
+
+ THEN '$250K - $500K' 
+
+ WHEN sale.sl_price BETWEEN 500001 
+
+ AND 750000 
+
+ THEN '$500K - $750K' 
+
+ WHEN sale.sl_price BETWEEN 750001 
+
+ AND 999999 
+
+ THEN '$750K - $1M' 
+
+ WHEN sale.sl_price > 999999 
+
+ THEN '$1M+' 
+
+ END AS 'PRICE RANGE' 
+
+ ,RTrim([sale_ratio_type].[sl_ratio_type_cd]) + ' - ' + [sale_ratio_type].[sl_ratio_desc] AS 'RATIO TYPE' 
+
+ ,RTrim([deed_type].[deed_type_cd]) + ' - ' + [deed_type].[deed_type_desc] AS 'DEED TYPE' 
+
+ ,chg_of_owner.deed_num AS 'DEED NUMBER' 
+
+ ,chg_of_owner.excise_number AS 'EXCISE NUMBER' 
+
+ ,sale.sl_living_area AS 'SALE SQFT' 
+
+ ,property_profile.class_cd AS 'CLASS' 
+
+ ,property_profile.condition_cd AS 'CONDITION' 
+
+ ,property_profile.actual_year_built AS 'YEAR BUILT' 
+
+ ,(property_val.prop_val_yr - property_profile.yr_blt) AS 'ACTUAL AGE' 
+
+ ,property_profile.eff_yr_blt AS 'EFFECTIVE YEAR' 
+
+ ,(property_val.prop_val_yr - property_profile.eff_yr_blt) AS 'EFFECTIVE AGE' 
+
+ ,dbo.fn_getviewqcodes(property_val.prop_id) AS 'VIEW CODES' 
+
+ ,CASE 
+
+ WHEN dbo.fn_getviewFACINGcodes(property_val.prop_id) IS NULL 
+
+ THEN '' 
+
+ ELSE pgc1.group_desc 
+
+ END AS 'VIEW DIRECTION' 
+
+ ,CASE 
+
+ WHEN prop_group_code.group_cd_value IS NULL 
+
+ THEN 0 
+
+ ELSE prop_group_code.group_cd_value 
+
+ END AS 'VIEW VALUE' 
+
+ ,dbo.fn_getactivepropgroupcodes(property_val.prop_id) AS 'GROUP CODES' 
+
+FROM chg_of_owner_prop_assoc 
+
+INNER JOIN sale ON chg_of_owner_prop_assoc.chg_of_owner_id = sale.chg_of_owner_id 
+
+INNER JOIN chg_of_owner ON chg_of_owner_prop_assoc.chg_of_owner_id = chg_of_owner.chg_of_owner_id 
+
+INNER JOIN property_val ON chg_of_owner_prop_assoc.prop_id = property_val.prop_id 
+
+INNER JOIN deed_type ON chg_of_owner.deed_type_cd = deed_type.deed_type_cd 
+
+INNER JOIN sale_ratio_type ON sale.sl_ratio_type_cd = sale_ratio_type.sl_ratio_type_cd 
+
+INNER JOIN land_type ON sale.sl_land_type_cd = land_type.land_type_cd 
+
+INNER JOIN property_use ON sale.primary_use_cd = property_use.property_use_cd 
+
+INNER JOIN property_tax_area 
+
+INNER JOIN tax_area ON property_tax_area.tax_area_id = tax_area.tax_area_id ON property_val.sup_num = 
+property_tax_area.sup_num 
+
+ AND property_val.prop_val_yr = property_tax_area.year 
+
+ AND property_val.prop_id = property_tax_area.prop_id INNER JOIN property ON property_tax_area.prop_id = 
+property.prop_id INNER JOIN property_profile ON property_val.prop_val_yr = property_profile.prop_val_yr 
+
+ AND property_val.prop_id = property_profile.prop_id LEFT JOIN prop_group_code WITH (NOLOCK) ON 
+dbo.fn_getviewQcodes(property_val.prop_id) = prop_group_code.group_cd LEFT JOIN prop_group_code pgc1 WITH (NOLOCK) ON 
+dbo.fn_getviewFACINGcodes(property_val.prop_id) = pgc1.group_cd INNER JOIN appraiser ON property_val.last_appraiser_id = 
+appraiser.appraiser_id WHERE property_val.prop_val_yr = 2019 
+
+ AND sale.sl_dt BETWEEN '5/1/2018' 
+
+ AND '4/30/2019' 
+
+ AND sale.sl_living_area > 0 
+
+ AND sale.sl_type_cd = 'q' 
+
+ AND sale.sl_ratio_type_cd = '104'; 
+
+ 
+
+ 
+
+
+11.3 Sales Improved Unqualified 
+
+SELECT property_val.prop_id AS 'PID' 
+
+ ,property.geo_id AS 'GEO ID' 
+
+ ,CASE 
+
+ WHEN property.geo_id LIKE 'R%' 
+
+ THEN LEFT(property.geo_id, 6) 
+
+ WHEN property.geo_id LIKE 'S%' 
+
+ THEN LEFT(property.geo_id, 5) 
+
+ WHEN property.geo_id LIKE 'M%' 
+
+ THEN 'Mobile Home' 
+
+ END AS 'GEO AREA' 
+
+ ,CASE 
+
+ WHEN property.geo_id LIKE 'R%' 
+
+ THEN 'Metes & Bounds' 
+
+ WHEN property.geo_id LIKE 'S%' 
+
+ THEN 'Plats' 
+
+ WHEN property.geo_id LIKE 'M%' 
+
+ THEN 'Mobile Home' 
+
+ END AS 'GEO TYPE' 
+
+ ,property_val.cycle AS 'AREA' 
+
+ ,appraiser.appraiser_full_name AS 'APPRAISER' 
+
+ ,tax_area.tax_area_number AS 'TAN' 
+
+ ,tax_area.tax_area_location AS 'LOCATION' 
+
+ ,CASE 
+
+ WHEN tax_area.tax_area_number BETWEEN 500 
+
+ AND 599 
+
+ THEN 'Camano island' 
+
+ ELSE 'Whidbey Island' 
+
+ END AS 'ISLAND' 
+
+ ,property_val.property_use_cd AS 'USE' 
+
+ ,property_use.property_use_cd + ' - ' + property_use.property_use_desc AS 'USE DESCRIPTION' 
+
+ ,property_profile.land_type_cd AS 'LAND TYPE' 
+
+ ,rTrim([land_type].[land_type_cd]) + ' - ' + [land_type].[land_type_desc] AS 'LAND DESCRIPTION' 
+
+ ,property_val.legal_acreage AS 'ACRES' 
+
+ ,[imprv_hstd_val] + [imprv_non_hstd_val] AS 'CURRENT IMPROVEMENT VALUE' 
+
+ ,[land_hstd_val] + [land_non_hstd_val] + [ag_market] + [timber_market] AS 'CURRENT LAND VALUE' 
+
+ ,[land_hstd_val] + [land_non_hstd_val] + [ag_market] + [timber_market] + [imprv_hstd_val] + [imprv_non_hstd_val] AS 
+'CURRENT ASSESSED VALUE' 
+
+ ,sale_i_value AS 'SALE IMPROVEMENT VALUE' 
+
+ ,sale_l_value AS 'SALE LAND VALUE' 
+
+ ,sale_a_value AS 'SALE ASSESSED VALUE' 
+
+ ,sale_price AS 'SALE PRICE' 
+
+ ,land_residual AS 'LAND RESIDUAL' 
+
+ ,land_variance AS 'VARIANCE' 
+
+ ,sale_number AS 'SALE NUMBER' 
+
+ ,sale_date AS 'SALE DATE' 
+
+ ,sale_year AS 'SALE YEAR' 
+
+ ,DATEDIFF(M, sale_date, GETDATE()) AS 'MONTHS' 
+
+ ,DATEDIFF(YY, sale_date, GETDATE()) AS 'YEARS' 
+
+ ,CASE 
+
+ WHEN sale_price < = 250000 
+
+ THEN '<$250K' 
+
+ WHEN sale_price BETWEEN 250001 
+
+ AND 500000 
+
+ THEN '$250K - $500K' 
+
+ WHEN sale_price BETWEEN 500001 
+
+ AND 750000 
+
+ THEN '$500K - $750K' 
+
+ WHEN sale_price BETWEEN 750001 
+
+ AND 999999 
+
+ THEN '$750K - $1M' 
+
+ WHEN sale_price > 999999 
+
+ THEN '$1M+' 
+
+ END AS 'PRICE RANGE' 
+
+ ,sale_type AS 'SALE TYPE' 
+
+ ,sale_ratio AS 'SALE RATIO' 
+
+ ,ratio_type AS 'RATIO TYPE' 
+
+ ,deed_info AS 'DEED INFO' 
+
+ ,land_only AS 'LAND ONLY' 
+
+ ,sale_sqft AS 'SALE SQFT' 
+
+ ,property_profile.living_area AS 'CURRENT SQFT' 
+
+
+ ,property_profile.yr_blt AS 'YEAR BUILT' 
+
+ ,(2017 - property_profile.yr_blt) AS 'ACTUAL AGE' 
+
+ ,property_profile.eff_yr_blt AS 'EFFECTIVE YEAR' 
+
+ ,(2017 - property_profile.eff_yr_blt) AS 'EFFECTIVE AGE' 
+
+ ,property_profile.class_cd AS 'CLASS' 
+
+ ,property_profile.condition_cd AS 'CONDITION' 
+
+ ,property_profile.class_cd * 1 AS 'CLASS CODE VALUE' 
+
+ ,CASE 
+
+ WHEN property_profile.condition_cd = 'A' 
+
+ THEN 1 
+
+ WHEN property_profile.condition_cd = 'B' 
+
+ THEN 2 
+
+ WHEN property_profile.condition_cd = 'C' 
+
+ THEN 3 
+
+ WHEN property_profile.condition_cd = 'D' 
+
+ THEN 4 
+
+ WHEN property_profile.condition_cd = 'E' 
+
+ THEN 5 
+
+ WHEN property_profile.condition_cd = 'F' 
+
+ THEN 6 
+
+ WHEN property_profile.condition_cd = 'G' 
+
+ THEN 7 
+
+ WHEN property_profile.condition_cd = 'H' 
+
+ THEN 8 
+
+ WHEN property_profile.condition_cd = 'I' 
+
+ THEN 9 
+
+ ELSE 0 
+
+ END AS 'CONDITION CODE VALUE' 
+
+ ,property_profile.class_cd + property_profile.condition_cd AS 'CC' 
+
+ ,dbo.fn_getviewqcodes(property_val.prop_id) AS 'VIEW CODES' 
+
+ --,dbo.fn_getviewFACINGcodes(property_val.prop_id) AS 'VIEW FACING' 
+
+ ,CASE 
+
+ WHEN dbo.fn_getviewFACINGcodes(property_val.prop_id) IS NULL 
+
+ THEN '' 
+
+ ELSE pgc1.group_desc 
+
+ END AS 'VIEW DIRECTION' 
+
+ ,CASE 
+
+ WHEN prop_group_code.group_cd_value IS NULL 
+
+ THEN 0 
+
+ ELSE prop_group_code.group_cd_value 
+
+ END AS 'VIEW VALUE' 
+
+ ,dbo.fn_getactivepropgroupcodes(property_val.prop_id) AS 'GROUP CODES' 
+
+ ,CASE 
+
+ WHEN dbo.fn_getactivepropgroupcodes(property_val.prop_id) LIKE '%GCV%' 
+
+ THEN 'Yes' 
+
+ ELSE 'No' 
+
+ END AS 'GOLF COURSE VIEW' 
+
+ ,CASE 
+
+ WHEN dbo.fn_getactivepropgroupcodes(property_val.prop_id) LIKE '%NZN%' 
+
+ THEN 'Yes' 
+
+ ELSE 'No' 
+
+ END AS 'NOISE ZONE' 
+
+ ,CASE 
+
+ WHEN dbo.fn_getactivepropgroupcodes(property_val.prop_id) LIKE '%LAV%' 
+
+ OR dbo.fn_getactivepropgroupcodes(property_val.prop_id) LIKE '%LAK%' 
+
+ THEN 'Yes' 
+
+ ELSE 'No' 
+
+ END AS 'LAKE VIEW' 
+
+ ,CASE 
+
+ WHEN dbo.fn_getactivepropgroupcodes(property_val.prop_id) LIKE '%TV%' 
+
+ THEN 'Yes' 
+
+ ELSE 'No' 
+
+ END AS 'TERRITORIAL VIEW' 
+
+ ,CASE 
+
+ WHEN dbo.fn_getactivepropgroupcodes(property_val.prop_id) LIKE '%LAG%' 
+
+ THEN 'Yes' 
+
+ ELSE 'No' 
+
+ END AS 'LAGOON VIEW' 
+
+FROM property_val WITH (NOLOCK) 
+
+INNER JOIN property WITH (NOLOCK) ON property_val.prop_id = property.prop_id 
+
+INNER JOIN property_profile WITH (NOLOCK) ON property_val.sup_num = property_profile.sup_num 
+
+ AND property_val.prop_val_yr = property_profile.prop_val_yr 
+
+ AND property_val.prop_id = property_profile.prop_id 
+
+
+INNER JOIN appraiser WITH (NOLOCK) ON property_val.last_appraiser_id = appraiser.appraiser_id 
+
+INNER JOIN property_tax_area WITH (NOLOCK) ON property_val.sup_num = property_tax_area.sup_num 
+
+ AND property_val.prop_id = property_tax_area.prop_id 
+
+ AND property_val.prop_val_yr = property_tax_area.year 
+
+INNER JOIN tax_area WITH (NOLOCK) ON property_tax_area.tax_area_id = tax_area.tax_area_id 
+
+LEFT JOIN land_type WITH (NOLOCK) ON property_profile.land_type_cd = land_type.land_type_cd 
+
+LEFT JOIN prop_group_code WITH (NOLOCK) ON dbo.fn_getviewQcodes(property_val.prop_id) = prop_group_code.group_cd 
+
+LEFT JOIN prop_group_code pgc1 WITH (NOLOCK) ON dbo.fn_getviewFACINGcodes(property_val.prop_id) = pgc1.group_cd 
+
+LEFT JOIN property_use WITH (NOLOCK) ON property_use.property_use_cd = property_val.property_use_cd 
+
+LEFT JOIN ( 
+
+ SELECT chg_of_owner_prop_assoc.prop_id 
+
+ ,sale.chg_of_owner_id AS sale_number 
+
+ ,sale.sl_type_cd AS sale_type 
+
+ ,sale.sl_land_type_cd AS land_type 
+
+ ,sale.sl_price AS sale_price 
+
+ ,sale.sl_dt AS sale_date 
+
+ ,rtrim(sale_ratio_type.sl_ratio_type_cd) + ' - ' + sale_ratio_type.sl_ratio_desc AS ratio_type 
+
+ ,rtrim(chg_of_owner.deed_type_cd) + ' - ' + deed_type.deed_type_desc AS deed_info 
+
+ ,sale.sl_living_area AS sale_sqft 
+
+ ,year(sale.sl_dt) AS sale_year 
+
+ ,chg_of_owner_prop_assoc.sup_tax_yr 
+
+ ,pv1.assessed_val AS sale_a_value 
+
+ ,(pv1.assessed_val / ([sl_price] + 0.0001) * 100) AS sale_ratio 
+
+ ,pv1.imprv_hstd_val + pv1.imprv_non_hstd_val AS sale_i_value 
+
+ ,pv1.land_hstd_val + pv1.land_non_hstd_val + pv1.ag_market + pv1.timber_market AS sale_l_value 
+
+ ,([sl_price] - (pv1.imprv_hstd_val + pv1.imprv_non_hstd_val)) AS land_residual 
+
+ ,(pv1.land_hstd_val + pv1.land_non_hstd_val + pv1.ag_market + pv1.timber_market) - ([sl_price] - 
+(pv1.imprv_hstd_val + pv1.imprv_non_hstd_val)) AS land_variance 
+
+ ,sale.land_only_sale AS land_only 
+
+ FROM chg_of_owner_prop_assoc 
+
+ LEFT JOIN sale ON chg_of_owner_prop_assoc.chg_of_owner_id = sale.chg_of_owner_id 
+
+ LEFT JOIN property_val AS pv1 ON chg_of_owner_prop_assoc.prop_id = pv1.prop_id 
+
+ AND pv1.prop_val_yr = 2019 
+
+ LEFT JOIN sale_ratio_type ON sale_ratio_type.sl_ratio_type_cd = sale.sl_ratio_type_cd 
+
+ LEFT JOIN chg_of_owner ON chg_of_owner.chg_of_owner_id = sale.chg_of_owner_id 
+
+ LEFT JOIN deed_type ON deed_type.deed_type_cd = chg_of_owner.deed_type_cd 
+
+ WHERE sale.land_only_sale IS NULL 
+
+ AND pv1.sup_num = 0 
+
+ AND sale.sl_price > 0 
+
+ AND sale.sl_type_cd IN ('u') 
+
+ AND sale.sl_dt BETWEEN '5/1/2018' 
+
+ AND '4/30/2019' 
+
+ ) AS sval ON sval.prop_id = property_val.prop_id 
+
+WHERE property_val.prop_val_yr = 2019 
+
+ AND property_val.sup_num = 0 
+
+ AND property_val.prop_inactive_dt IS NULL 
+
+ AND property_profile.living_area > 0 
+
+ AND sale_date IS NOT NULL 
+
+ORDER BY property_val.prop_id; 
+
+ 
+
+ 
+
+
+11.5 Sales Vacant Qualified 
+
+SELECT property_val.prop_val_yr AS 'ASSESSMENT YEAR' 
+
+ ,chg_of_owner_prop_assoc.prop_id AS 'PID' 
+
+ ,property.geo_id AS 'GEO ID' 
+
+ ,CASE 
+
+ WHEN property.geo_id LIKE 'R%' 
+
+ THEN LEFT(property.geo_id, 6) 
+
+ WHEN property.geo_id LIKE 'S%' 
+
+ THEN LEFT(property.geo_id, 5) 
+
+ WHEN property.geo_id LIKE 'M%' 
+
+ THEN 'Mobile Home' 
+
+ END AS 'GEO AREA' 
+
+ ,CASE 
+
+ WHEN property.geo_id LIKE 'R%' 
+
+ THEN 'Metes & Bounds' 
+
+ WHEN property.geo_id LIKE 'S%' 
+
+ THEN 'Plats' 
+
+ WHEN property.geo_id LIKE 'M%' 
+
+ THEN 'Mobile Home' 
+
+ END AS 'GEO TYPE' 
+
+ ,property_val.cycle AS 'AREA' 
+
+ ,appraiser.appraiser_full_name AS 'APPRAISER' 
+
+ ,tax_area.tax_area_number AS 'TAN' 
+
+ ,tax_area.tax_area_location AS 'LOCATION' 
+
+ ,CASE 
+
+ WHEN tax_area.tax_area_number BETWEEN 500 
+
+ AND 599 
+
+ THEN 'Camano island' 
+
+ ELSE 'Whidbey Island' 
+
+ END AS 'ISLAND' 
+
+ ,sale.primary_use_cd AS 'USE' 
+
+ ,[property_use].[property_use_cd] + ' - ' + [property_use].[property_use_desc] AS 'USE DESCRIPTION' 
+
+ ,sale.sl_land_type_cd AS 'LAND TYPE' 
+
+ ,RTrim([land_type].[land_type_cd]) + ' - ' + [land_type].[land_type_desc] AS 'LAND DESCRIPTION' 
+
+ ,property_profile.land_sqft AS 'LAND SQFT' 
+
+ ,property_profile.land_acres AS 'LAND ACRES' 
+
+ ,[property_val].[land_hstd_val] + [property_val].[land_non_hstd_val] + [property_val].[ag_market] + 
+[property_val].[timber_market] AS 'CURRENT LAND VALUE' 
+
+ ,[property_val].[imprv_hstd_val] + [property_val].[imprv_non_hstd_val] AS 'CURRENT IMPROVEMENT VALUE' 
+
+ ,[property_val].[imprv_hstd_val] + [property_val].[imprv_non_hstd_val] + [property_val].[land_hstd_val] + 
+[property_val].[land_non_hstd_val] + [property_val].[ag_market] + [property_val].[timber_market] AS 'CURRENT ASSESSED 
+VALUE' 
+
+ ,[chg_of_owner_prop_assoc].[land_hstd_val] + [chg_of_owner_prop_assoc].[land_non_hstd_val] + 
+[chg_of_owner_prop_assoc].[ag_market] + [chg_of_owner_prop_assoc].[timber_market] AS 'SALE LAND VALUE' 
+
+ ,[chg_of_owner_prop_assoc].[imprv_hstd_val] + [chg_of_owner_prop_assoc].[imprv_non_hstd_val] AS 'SALE IMPROVEMENT 
+VALUE' 
+
+ ,[chg_of_owner_prop_assoc].[imprv_hstd_val] + [chg_of_owner_prop_assoc].[imprv_non_hstd_val] + 
+[chg_of_owner_prop_assoc].[land_hstd_val] + [chg_of_owner_prop_assoc].[land_non_hstd_val] + 
+[chg_of_owner_prop_assoc].[ag_market] + [chg_of_owner_prop_assoc].[timber_market] AS 'SALE ASSESSED VALUE' 
+
+ ,[sl_price] AS 'ACTUAL SALE PRICE' 
+
+ ,([sl_price] * .99) AS 'ADJUSTED SALE PRICE' 
+
+ ,(([property_val].[imprv_hstd_val] + [property_val].[imprv_non_hstd_val] + [property_val].[land_hstd_val] + 
+[property_val].[land_non_hstd_val] + [property_val].[ag_market] + [property_val].[timber_market]) / (([sl_price] * .99)) * 
+100) AS 'SALE RATIO' 
+
+ ,(([sl_price] * .99) - ([property_val].[imprv_hstd_val] + [property_val].[imprv_non_hstd_val])) AS 'LAND RESIDUAL' 
+
+ ,sale.chg_of_owner_id AS 'SALE NUMBER' 
+
+ ,sale.sl_dt AS 'SALE DATE' 
+
+ ,year([sale].[sl_dt]) AS 'SALE YEAR' 
+
+ ,DATEDIFF(M, sale.sl_dt, GETDATE()) AS 'MONTHS' 
+
+ ,DATEDIFF(YY, sale.sl_dt, GETDATE()) AS 'YEARS' 
+
+ ,chg_of_owner_prop_assoc.market AS 'SALE MARKET' 
+
+ ,CASE 
+
+ WHEN sale.sl_price < = 250000 
+
+ THEN '<$250K' 
+
+ WHEN sale.sl_price BETWEEN 250001 
+
+ AND 500000 
+
+ THEN '$250K - $500K' 
+
+ WHEN sale.sl_price BETWEEN 500001 
+
+ AND 750000 
+
+ THEN '$500K - $750K' 
+
+ WHEN sale.sl_price BETWEEN 750001 
+
+
+ AND 999999 
+
+ THEN '$750K - $1M' 
+
+ WHEN sale.sl_price > 999999 
+
+ THEN '$1M+' 
+
+ END AS 'PRICE RANGE' 
+
+ ,RTrim([sale_ratio_type].[sl_ratio_type_cd]) + ' - ' + [sale_ratio_type].[sl_ratio_desc] AS 'RATIO TYPE' 
+
+ ,RTrim([deed_type].[deed_type_cd]) + ' - ' + [deed_type].[deed_type_desc] AS 'DEED TYPE' 
+
+ ,chg_of_owner.deed_num AS 'DEED NUMBER' 
+
+ ,chg_of_owner.excise_number AS 'EXCISE NUMBER' 
+
+ ,dbo.fn_getviewqcodes(property_val.prop_id) AS 'VIEW CODES' 
+
+ ,CASE 
+
+ WHEN dbo.fn_getviewFACINGcodes(property_val.prop_id) IS NULL 
+
+ THEN '' 
+
+ ELSE pgc1.group_desc 
+
+ END AS 'VIEW DIRECTION' 
+
+ ,CASE 
+
+ WHEN prop_group_code.group_cd_value IS NULL 
+
+ THEN 0 
+
+ ELSE prop_group_code.group_cd_value 
+
+ END AS 'VIEW VALUE' 
+
+ ,dbo.fn_getactivepropgroupcodes(property_val.prop_id) AS 'GROUP CODES' 
+
+FROM chg_of_owner_prop_assoc 
+
+INNER JOIN sale ON chg_of_owner_prop_assoc.chg_of_owner_id = sale.chg_of_owner_id 
+
+INNER JOIN chg_of_owner ON chg_of_owner_prop_assoc.chg_of_owner_id = chg_of_owner.chg_of_owner_id 
+
+INNER JOIN property_val ON chg_of_owner_prop_assoc.prop_id = property_val.prop_id 
+
+INNER JOIN deed_type ON chg_of_owner.deed_type_cd = deed_type.deed_type_cd 
+
+INNER JOIN sale_ratio_type ON sale.sl_ratio_type_cd = sale_ratio_type.sl_ratio_type_cd 
+
+INNER JOIN land_type ON sale.sl_land_type_cd = land_type.land_type_cd 
+
+INNER JOIN property_use ON sale.primary_use_cd = property_use.property_use_cd 
+
+INNER JOIN property_tax_area 
+
+INNER JOIN tax_area ON property_tax_area.tax_area_id = tax_area.tax_area_id ON property_val.sup_num = 
+property_tax_area.sup_num 
+
+ AND property_val.prop_val_yr = property_tax_area.year 
+
+ AND property_val.prop_id = property_tax_area.prop_id INNER JOIN property ON property_tax_area.prop_id = 
+property.prop_id INNER JOIN property_profile ON property_val.prop_val_yr = property_profile.prop_val_yr 
+
+ AND property_val.prop_id = property_profile.prop_id LEFT JOIN prop_group_code WITH (NOLOCK) ON 
+dbo.fn_getviewQcodes(property_val.prop_id) = prop_group_code.group_cd LEFT JOIN prop_group_code pgc1 WITH (NOLOCK) ON 
+dbo.fn_getviewFACINGcodes(property_val.prop_id) = pgc1.group_cd INNER JOIN appraiser ON property_val.last_appraiser_id = 
+appraiser.appraiser_id WHERE property_val.prop_val_yr = 2019 
+
+ AND sale.sl_dt BETWEEN '5/1/2018' 
+
+ AND '4/30/2019' 
+
+ AND [property_val].[imprv_hstd_val] + [property_val].[imprv_non_hstd_val] = 0 
+
+ AND sale.sl_type_cd = 'q' 
+
+ AND sale.sl_ratio_type_cd = '104'; 
+
+ 
+
+ 
+
+
+11.7 Sales Vacant Unqualified 
+
+SELECT property_val.prop_id AS 'PID' 
+
+ ,property.geo_id AS 'GEO ID' 
+
+ ,CASE 
+
+ WHEN property.geo_id LIKE 'R%' 
+
+ THEN LEFT(property.geo_id, 6) 
+
+ WHEN property.geo_id LIKE 'S%' 
+
+ THEN LEFT(property.geo_id, 5) 
+
+ WHEN property.geo_id LIKE 'M%' 
+
+ THEN 'Mobile Home' 
+
+ END AS 'GEO AREA' 
+
+ ,CASE 
+
+ WHEN property.geo_id LIKE 'R%' 
+
+ THEN 'Metes & Bounds' 
+
+ WHEN property.geo_id LIKE 'S%' 
+
+ THEN 'Plats' 
+
+ WHEN property.geo_id LIKE 'M%' 
+
+ THEN 'Mobile Home' 
+
+ END AS 'GEO TYPE' 
+
+ ,property_val.cycle AS 'AREA' 
+
+ ,appraiser.appraiser_full_name AS 'APPRAISER' 
+
+ ,tax_area.tax_area_number AS 'TAN' 
+
+ ,tax_area.tax_area_location AS 'LOCATION' 
+
+ ,CASE 
+
+ WHEN tax_area.tax_area_number BETWEEN 500 
+
+ AND 599 
+
+ THEN 'Camano island' 
+
+ ELSE 'Whidbey Island' 
+
+ END AS 'ISLAND' 
+
+ ,property_val.property_use_cd AS 'USE' 
+
+ ,property_use.property_use_cd + ' - ' + property_use.property_use_desc AS 'USE DESCRIPTION' 
+
+ ,property_profile.land_type_cd AS 'LAND TYPE' 
+
+ ,rTrim([land_type].[land_type_cd]) + ' - ' + [land_type].[land_type_desc] AS 'LAND DESCRIPTION' 
+
+ ,property_val.legal_acreage AS 'ACRES' 
+
+ ,[imprv_hstd_val] + [imprv_non_hstd_val] AS 'CURRENT IMPROVEMENT VALUE' 
+
+ ,[land_hstd_val] + [land_non_hstd_val] + [ag_market] + [timber_market] AS 'CURRENT LAND VALUE' 
+
+ ,[land_hstd_val] + [land_non_hstd_val] + [ag_market] + [timber_market] + [imprv_hstd_val] + [imprv_non_hstd_val] AS 
+'CURRENT ASSESSED VALUE' 
+
+ ,sale_i_value AS 'SALE IMPROVEMENT VALUE' 
+
+ ,sale_l_value AS 'SALE LAND VALUE' 
+
+ ,sale_a_value AS 'SALE ASSESSED VALUE' 
+
+ ,sale_price AS 'SALE PRICE' 
+
+ ,land_residual AS 'LAND RESIDUAL' 
+
+ ,land_variance AS 'VARIANCE' 
+
+ ,sale_number AS 'SALE NUMBER' 
+
+ ,sale_date AS 'SALE DATE' 
+
+ ,sale_year AS 'SALE YEAR' 
+
+ ,DATEDIFF(M, sale_date, GETDATE()) AS 'MONTHS' 
+
+ ,DATEDIFF(YY, sale_date, GETDATE()) AS 'YEARS' 
+
+ ,CASE 
+
+ WHEN sale_price < = 250000 
+
+ THEN '<$250K' 
+
+ WHEN sale_price BETWEEN 250001 
+
+ AND 500000 
+
+ THEN '$250K - $500K' 
+
+ WHEN sale_price BETWEEN 500001 
+
+ AND 750000 
+
+ THEN '$500K - $750K' 
+
+ WHEN sale_price BETWEEN 750001 
+
+ AND 999999 
+
+ THEN '$750K - $1M' 
+
+ WHEN sale_price > 999999 
+
+ THEN '$1M+' 
+
+ END AS 'PRICE RANGE' 
+
+ ,sale_type AS 'SALE TYPE' 
+
+ ,sale_ratio AS 'SALE RATIO' 
+
+ ,ratio_type AS 'RATIO TYPE' 
+
+ ,deed_info AS 'DEED INFO' 
+
+ ,land_only AS 'LAND ONLY' 
+
+ ,dbo.fn_getviewqcodes(property_val.prop_id) AS 'VIEW CODES' 
+
+ --,dbo.fn_getviewFACINGcodes(property_val.prop_id) AS 'VIEW FACING' 
+
+
+ ,CASE 
+
+ WHEN dbo.fn_getviewFACINGcodes(property_val.prop_id) IS NULL 
+
+ THEN '' 
+
+ ELSE pgc1.group_desc 
+
+ END AS 'VIEW DIRECTION' 
+
+ ,CASE 
+
+ WHEN prop_group_code.group_cd_value IS NULL 
+
+ THEN 0 
+
+ ELSE prop_group_code.group_cd_value 
+
+ END AS 'VIEW VALUE' 
+
+ ,dbo.fn_getactivepropgroupcodes(property_val.prop_id) AS 'GROUP CODES' 
+
+ ,CASE 
+
+ WHEN dbo.fn_getactivepropgroupcodes(property_val.prop_id) LIKE '%GCV%' 
+
+ THEN 'Yes' 
+
+ ELSE 'No' 
+
+ END AS 'GOLF COURSE VIEW' 
+
+ ,CASE 
+
+ WHEN dbo.fn_getactivepropgroupcodes(property_val.prop_id) LIKE '%NZN%' 
+
+ THEN 'Yes' 
+
+ ELSE 'No' 
+
+ END AS 'NOISE ZONE' 
+
+ ,CASE 
+
+ WHEN dbo.fn_getactivepropgroupcodes(property_val.prop_id) LIKE '%LAV%' 
+
+ OR dbo.fn_getactivepropgroupcodes(property_val.prop_id) LIKE '%LAK%' 
+
+ THEN 'Yes' 
+
+ ELSE 'No' 
+
+ END AS 'LAKE VIEW' 
+
+ ,CASE 
+
+ WHEN dbo.fn_getactivepropgroupcodes(property_val.prop_id) LIKE '%TV%' 
+
+ THEN 'Yes' 
+
+ ELSE 'No' 
+
+ END AS 'TERRITORIAL VIEW' 
+
+ ,CASE 
+
+ WHEN dbo.fn_getactivepropgroupcodes(property_val.prop_id) LIKE '%LAG%' 
+
+ THEN 'Yes' 
+
+ ELSE 'No' 
+
+ END AS 'LAGOON VIEW' 
+
+FROM property_val WITH (NOLOCK) 
+
+INNER JOIN property WITH (NOLOCK) ON property_val.prop_id = property.prop_id 
+
+INNER JOIN property_profile WITH (NOLOCK) ON property_val.sup_num = property_profile.sup_num 
+
+ AND property_val.prop_val_yr = property_profile.prop_val_yr 
+
+ AND property_val.prop_id = property_profile.prop_id 
+
+INNER JOIN appraiser WITH (NOLOCK) ON property_val.last_appraiser_id = appraiser.appraiser_id 
+
+INNER JOIN property_tax_area WITH (NOLOCK) ON property_val.sup_num = property_tax_area.sup_num 
+
+ AND property_val.prop_id = property_tax_area.prop_id 
+
+ AND property_val.prop_val_yr = property_tax_area.year 
+
+INNER JOIN tax_area WITH (NOLOCK) ON property_tax_area.tax_area_id = tax_area.tax_area_id 
+
+LEFT JOIN land_type WITH (NOLOCK) ON property_profile.land_type_cd = land_type.land_type_cd 
+
+LEFT JOIN prop_group_code WITH (NOLOCK) ON dbo.fn_getviewQcodes(property_val.prop_id) = prop_group_code.group_cd 
+
+LEFT JOIN prop_group_code pgc1 WITH (NOLOCK) ON dbo.fn_getviewFACINGcodes(property_val.prop_id) = pgc1.group_cd 
+
+LEFT JOIN property_use WITH (NOLOCK) ON property_use.property_use_cd = property_val.property_use_cd 
+
+LEFT JOIN ( 
+
+ SELECT chg_of_owner_prop_assoc.prop_id 
+
+ ,sale.chg_of_owner_id AS sale_number 
+
+ ,sale.sl_type_cd AS sale_type 
+
+ ,sale.sl_land_type_cd AS land_type 
+
+ ,sale.sl_price AS sale_price 
+
+ ,sale.sl_dt AS sale_date 
+
+ ,rtrim(sale_ratio_type.sl_ratio_type_cd) + ' - ' + sale_ratio_type.sl_ratio_desc AS ratio_type 
+
+ ,rtrim(chg_of_owner.deed_type_cd) + ' - ' + deed_type.deed_type_desc AS deed_info 
+
+ ,sale.sl_living_area AS sale_sqft 
+
+ ,year(sale.sl_dt) AS sale_year 
+
+ ,chg_of_owner_prop_assoc.sup_tax_yr 
+
+ ,pv1.assessed_val AS sale_a_value 
+
+ ,(pv1.assessed_val / ([sl_price] + 0.0001) * 100) AS sale_ratio 
+
+ ,pv1.imprv_hstd_val + pv1.imprv_non_hstd_val AS sale_i_value 
+
+ ,pv1.land_hstd_val + pv1.land_non_hstd_val + pv1.ag_market + pv1.timber_market AS sale_l_value 
+
+ ,([sl_price] - (pv1.imprv_hstd_val + pv1.imprv_non_hstd_val)) AS land_residual 
+
+ ,(pv1.land_hstd_val + pv1.land_non_hstd_val + pv1.ag_market + pv1.timber_market) - ([sl_price] - 
+(pv1.imprv_hstd_val + pv1.imprv_non_hstd_val)) AS land_variance 
+
+ ,sale.land_only_sale AS land_only 
+
+ FROM chg_of_owner_prop_assoc 
+
+ LEFT JOIN sale ON chg_of_owner_prop_assoc.chg_of_owner_id = sale.chg_of_owner_id 
+
+
+ LEFT JOIN property_val AS pv1 ON chg_of_owner_prop_assoc.prop_id = pv1.prop_id 
+
+ AND pv1.prop_val_yr = 2019 
+
+ LEFT JOIN sale_ratio_type ON sale_ratio_type.sl_ratio_type_cd = sale.sl_ratio_type_cd 
+
+ LEFT JOIN chg_of_owner ON chg_of_owner.chg_of_owner_id = sale.chg_of_owner_id 
+
+ LEFT JOIN deed_type ON deed_type.deed_type_cd = chg_of_owner.deed_type_cd 
+
+ WHERE sale.land_only_sale IS NOT NULL 
+
+ AND pv1.sup_num = 0 
+
+ AND sale.sl_price > 0 
+
+ AND sale.sl_type_cd IN ('U') 
+
+ AND (pv1.imprv_hstd_val + pv1.imprv_non_hstd_val) = 0 
+
+ AND sale.sl_dt BETWEEN '5/1/2018' 
+
+ AND '4/30/2019' 
+
+ ) AS sval ON sval.prop_id = property_val.prop_id 
+
+WHERE property_val.prop_val_yr = 2019 
+
+ AND property_val.sup_num = 0 
+
+ AND property_val.prop_inactive_dt IS NULL 
+
+ AND sale_date IS NOT NULL 
+
+ORDER BY property_val.prop_id; 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+12 SEGREGATIONS AND MAPPING/GIS QUERIES 
+
+12.1 To Map Appraiser Areas: If Changing 
+Areas 
+
+ 
+
+SELECT pv1.[last_appraiser_id] 
+
+ ,pv1.[prop_id] 
+
+ ,pv1.[map_id] 
+
+ ,pv1.[cycle] 
+
+ ,pv1.[rgn_cd] 
+
+ ,p1.[geo_id] 
+
+ ,pp1.[neighborhood] 
+
+ ,oev1.[file_as_name] 
+
+FROM dbo.prop_supp_assoc AS psa1 WITH (NOLOCK) 
+
+JOIN dbo.property AS p1 WITH (NOLOCK) ON p1.[prop_id] = 
+psa1.[prop_id] 
+
+JOIN dbo.property_profile AS pp1 WITH (NOLOCK) ON 
+pp1.[prop_id] = psa1.[prop_id] 
+
+ AND pp1.[prop_val_yr] = psa1.[owner_tax_yr] 
+
+JOIN dbo.property_val AS pv1 WITH (NOLOCK) ON pv1.[prop_id] 
+= psa1.[prop_id] 
+
+ AND pv1.[prop_val_yr] = psa1.[owner_tax_yr] 
+
+ AND pv1.[sup_num] = psa1.[sup_num] 
+
+JOIN dbo.query_builder_owner_everything_vw AS oev1 WITH 
+(NOLOCK) ON oev1.[owner_tax_yr] = psa1.[owner_tax_yr] 
+
+ AND oev1.[prop_id] = psa1.[prop_id] 
+
+ AND oev1.[sup_num] = psa1.[sup_num] 
+
+JOIN dbo.query_builder_owner_vw AS o1 WITH (NOLOCK) ON 
+o1.[owner_tax_yr] = psa1.[owner_tax_yr] 
+
+ AND o1.[prop_id] = psa1.[prop_id] 
+
+ AND o1.[sup_num] = psa1.[sup_num] 
+
+INNER JOIN pacs_system ON pv1.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv1.[prop_inactive_dt] IS NULL 
+
+12.2 To Calculate Building Size 
+
+(all buildings.. not just houses): 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,pp.living_area 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN property_profile pp WITH (NOLOCK) ON pv.prop_id = 
+pp.prop_id 
+
+ AND pv.prop_val_yr = pp.prop_val_yr 
+
+ AND pv.sup_num = pp.sup_num 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR udi_parent = 't' 
+
+ ) 
+
+ AND p.prop_type_cd = 'r' 
+
+12.3 Gis Version 1 
+
+A query used to extract data from PACS for purposes 
+of updating a GIS data layer. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,ac.file_as_name 
+
+ ,ad.addr_line1 
+
+ ,ad.addr_line2 
+
+ ,ad.addr_line3 
+
+ ,ad.addr_city 
+
+ ,ad.addr_state 
+
+ ,ad.zip 
+
+ ,s.situs_num 
+
+ ,s.situs_street_prefx 
+
+ ,s.situs_street 
+
+ ,s.situs_street_sufix 
+
+ ,s.situs_city 
+
+ ,s.situs_state 
+
+ ,s.situs_zip 
+
+ ,pv.market 
+
+ ,(wpov.taxable_non_classified + wpov.taxable_classified) 
+AS 'assessed value' 
+
+ ,(pv.imprv_hstd_val + pv.imprv_non_hstd_val) AS 'imprv 
+value' 
+
+ ,(pv.land_hstd_val + pv.land_non_hstd_val + pv.ag_market 
++ pv.timber_market) AS 'land val' 
+
+ ,pv.legal_acreage 
+
+ ,dbo.fn_getexemptions(pv.prop_id, pv.prop_val_yr, 
+pv.sup_num) AS exemptions 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+INNER JOIN OWNER o 
+
+WITH (NOLOCK) ON pv.prop_id = o.prop_id 
+
+ AND pv.prop_val_yr = o.owner_tax_yr 
+
+ AND pv.sup_num = o.sup_num 
+
+INNER JOIN account ac WITH (NOLOCK) ON o.owner_id = 
+ac.acct_id 
+
+INNER JOIN address ad WITH (NOLOCK) ON ac.acct_id = 
+ad.acct_id 
+
+ AND ad.primary_addr = 'y' 
+
+INNER JOIN wash_prop_owner_val wpov WITH (NOLOCK) ON 
+pv.prop_id = wpov.prop_id 
+
+ AND pv.prop_val_yr = wpov.year 
+
+ AND pv.sup_num = wpov.sup_num 
+
+ AND o.owner_id = wpov.owner_id 
+
+LEFT OUTER JOIN situs s WITH (NOLOCK) ON pv.prop_id = 
+s.prop_id 
+
+ AND s.primary_situs = 'y' 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND p.prop_type_cd = 'r' 
+
+ORDER BY ac.file_as_name 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+12.4 Gis Version 2 
+
+A query used to extract data from PACS for purposes 
+of updating a GIS data layer. Very similar to the 
+previous query…but this has been augmented by TA 
+in an attempt to capture split\merge & parent\child 
+information. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,ac.file_as_name 
+
+ ,ad.addr_line1 
+
+ ,ad.addr_line2 
+
+ ,ad.addr_line3 
+
+ ,ad.addr_city 
+
+ ,ad.addr_state 
+
+ ,ad.zip 
+
+ ,s.situs_num 
+
+ ,s.situs_street_prefx 
+
+ ,s.situs_street 
+
+ ,s.situs_street_sufix 
+
+ ,s.situs_city 
+
+ ,s.situs_state 
+
+ ,s.situs_zip 
+
+ ,pv.market 
+
+ ,(wpov.taxable_non_classified + wpov.taxable_classified) 
+AS 'assessed value' 
+
+ ,(pv.imprv_hstd_val + pv.imprv_non_hstd_val) AS 'imprv 
+value' 
+
+ ,(pv.land_hstd_val + pv.land_non_hstd_val + pv.ag_market 
++ pv.timber_market) AS 'land val' 
+
+ ,pv.legal_acreage 
+
+ ,dbo.fn_getexemptions(pv.prop_id, pv.prop_val_yr, 
+pv.sup_num) AS exemptions 
+
+ ,deed_dt 
+
+ ,excise_# 
+
+ ,deed_# 
+
+ ,convert(VARCHAR(20), sa.split_dt, 101) AS split_date 
+
+ ,si.parent_id AS 'split parent id' 
+
+ ,si.child_id AS 'split child id' 
+
+ ,convert(VARCHAR(20), ma.merge_dt, 101) AS merge_date 
+
+ ,mf.parent_id AS 'merge parent id' 
+
+ ,mf.child_id AS 'merge child id' 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN OWNER o 
+
+WITH (NOLOCK) ON pv.prop_id = o.prop_id 
+
+ AND pv.prop_val_yr = o.owner_tax_yr 
+
+ AND pv.sup_num = o.sup_num 
+
+INNER JOIN account ac WITH (NOLOCK) ON o.owner_id = 
+ac.acct_id 
+
+INNER JOIN address ad WITH (NOLOCK) ON ac.acct_id = 
+ad.acct_id 
+
+ AND isnull(ad.primary_addr, 'n') = 'y' 
+
+INNER JOIN wash_prop_owner_val wpov WITH (NOLOCK) ON 
+pv.prop_id = wpov.prop_id 
+
+ AND pv.prop_val_yr = wpov.year 
+
+ AND pv.sup_num = wpov.sup_num 
+
+ AND o.owner_id = wpov.owner_id 
+
+LEFT OUTER JOIN situs s WITH (NOLOCK) ON pv.prop_id = 
+s.prop_id 
+
+ AND isnull(s.primary_situs, 'n') = 'y' 
+
+LEFT OUTER JOIN ( 
+
+ SELECT copa.prop_id 
+
+ ,coo.deed_dt AS deed_dt 
+
+ ,coo.excise_number AS excise_# 
+
+ ,coo.deed_num AS deed_# 
+
+ FROM chg_of_owner_prop_assoc copa WITH (NOLOCK) 
+
+ INNER JOIN chg_of_owner coo WITH (NOLOCK) ON 
+copa.chg_of_owner_id = coo.chg_of_owner_id 
+
+ WHERE copa.seq_num = 0 
+
+ ) AS x ON pv.prop_id = x.prop_id 
+
+LEFT OUTER JOIN split_assoc sa WITH (NOLOCK) ON pv.prop_id = 
+sa.prop_id 
+
+LEFT OUTER JOIN split_into si WITH (NOLOCK) ON sa.split_id = 
+si.split_id 
+
+LEFT OUTER JOIN merge_assoc ma WITH (NOLOCK) ON pv.prop_id = 
+ma.prop_id 
+
+LEFT OUTER JOIN merge_from mf WITH (NOLOCK) ON ma.merge_id = 
+mf.merge_id 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND p.prop_type_cd = 'r' 
+
+ORDER BY ac.file_as_name 
+
+12.5 Adjustment Hold & Pending BLA 
+
+Searches properties with property group codes of 
+Adjustment Hold & Pending BLA/ADJ. 
+
+SELECT pgc1.[group_cd] 
+
+ ,p1.[geo_id] 
+
+ ,p1.[prop_id] 
+
+FROM dbo.prop_group_assoc AS pga1 WITH (NOLOCK) 
+
+JOIN dbo.prop_group_code AS pgc1 WITH (NOLOCK) ON 
+pgc1.[group_cd] = pga1.[prop_group_cd] 
+
+JOIN dbo.prop_supp_assoc AS psa1 WITH (NOLOCK) ON 
+psa1.[prop_id] = pga1.[prop_id] 
+
+JOIN dbo.property AS p1 WITH (NOLOCK) ON p1.[prop_id] = 
+pga1.[prop_id] 
+
+JOIN dbo.property_val AS pv1 WITH (NOLOCK) ON pv1.[prop_id] 
+= psa1.[prop_id] 
+
+ AND pv1.[prop_val_yr] = psa1.[owner_tax_yr] 
+
+ AND pv1.[sup_num] = psa1.[sup_num] 
+
+INNER JOIN pacs_system ON pv1.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pgc1.[group_cd] IN ( 
+
+ 'Adjustment Hold' 
+
+ ,'PENDING BLA/ADJ' 
+
+ ) 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+13 BUILDING PERMIT QUERIES 
+
+13.1 Permits By Issue Date 
+
+ 
+
+SELECT DISTINCT count(pv.prop_id) AS Num_of_Permits 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_building_permit_assoc bpa WITH (NOLOCK) ON 
+bpa.prop_id = pv.prop_id 
+
+INNER JOIN building_permit bp WITH (NOLOCK) ON 
+bp.bldg_permit_id = bpa.bldg_permit_id 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE p pv.prop_inactive_dt IS NULL 
+
+ AND bp.bldg_permit_issue_dt BETWEEN '2018-08-01' 
+
+ AND '2019-07-31' 
+
+13.2 Permits By Issue Date – Inactive 
+
+ 
+
+SELECT DISTINCT count(pv.prop_id) AS Num_of_Permits 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_building_permit_assoc bpa WITH (NOLOCK) ON 
+bpa.prop_id = pv.prop_id 
+
+INNER JOIN building_permit bp WITH (NOLOCK) ON 
+bp.bldg_permit_id = bpa.bldg_permit_id 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND isnull(bp.bldg_permit_active, 'F') = 'F' 
+
+ AND bp.bldg_permit_issue_dt BETWEEN '2018-08-01' 
+
+ AND '2019-07-31' 
+
+13.3 Permits By Issue Date – Active 
+
+ 
+
+SELECT DISTINCT count(pv.prop_id) AS Num_of_Permits 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_building_permit_assoc bpa WITH (NOLOCK) ON 
+bpa.prop_id = pv.prop_id 
+
+INNER JOIN building_permit bp WITH (NOLOCK) ON 
+bp.bldg_permit_id = bpa.bldg_permit_id 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND isnull(bp.bldg_permit_active, 'F') = 'T' 
+
+ AND bp.bldg_permit_issue_dt BETWEEN '2018-08-01' 
+
+ AND '2019-07-31' 
+
+13.4 Parcel List With Permit Details 
+
+ 
+
+SELECT DISTINCT pv.prop_id AS 'Prop ID' 
+
+ ,pv.prop_val_yr 
+
+ ,bp.bldg_permit_id AS 'Permit ID' 
+
+ ,bp.bldg_permit_num AS 'Permit #' 
+
+ ,bp.bldg_permit_type_cd AS 'Permit Type' 
+
+ ,convert(VARCHAR(2), datepart(month, 
+bp.bldg_permit_issue_dt)) + '/' + convert(VARCHAR(2), 
+datepart(day, bp.bldg_permit_issue_dt)) + '/' + 
+convert(VARCHAR(4), datepart(year, bp.bldg_permit_issue_dt)) 
+AS 'Issue Date' 
+
+ ,bp.bldg_permit_issuer AS 'Permit Issuer' 
+
+ ,bp.bldg_permit_val AS 'Permit Value' 
+
+ ,bp.bldg_permit_active AS 'Active???' 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_building_permit_assoc bpa WITH (NOLOCK) ON 
+bpa.prop_id = pv.prop_id 
+
+INNER JOIN building_permit bp WITH (NOLOCK) ON 
+bp.bldg_permit_id = bpa.bldg_permit_id 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND isnull(bp.bldg_permit_active, 'F') = 'T' 
+
+ AND bp.bldg_permit_issue_dt BETWEEN '2018-08-01' 
+
+ AND '2019-07-31' 
+
+ORDER BY pv.prop_id 
+
+
+13.5 Structures Details By Parcel 
+
+This query lists every structure component from the 
+sketch and provides additional details about Each 
+component, including Bas, UPS, GAR, etc. It will 
+produce multiple rows for property that has multiple 
+types of living area or multiple structures. 
+
+SELECT p1.[geo_id] 
+
+ ,pv1.[prop_id] 
+
+ ,pta1.[tax_area_id] 
+
+ ,ta1.[tax_area_number] 
+
+ ,p1.[prop_type_cd] 
+
+ ,i1.[actual_year_built] 
+
+ ,i1.[effective_yr_blt] 
+
+ ,i1.[imprv_type_cd] 
+
+ ,id1.[imprv_det_area_type] 
+
+ ,id1.[imprv_det_area] 
+
+ ,id1.[calc_area] 
+
+ ,id1.[sketch_area] 
+
+ ,id1.[imprv_det_type_cd] 
+
+FROM dbo.imprv AS i1 WITH (NOLOCK) 
+
+JOIN dbo.imprv_detail AS id1 WITH (NOLOCK) ON id1.[imprv_id] 
+= i1.[imprv_id] 
+
+ AND id1.[prop_id] = i1.[prop_id] 
+
+ AND id1.[prop_val_yr] = i1.[prop_val_yr] 
+
+ AND id1.[sale_id] = i1.[sale_id] 
+
+ AND id1.[sup_num] = i1.[sup_num] 
+
+JOIN dbo.property AS p1 WITH (NOLOCK) ON p1.[prop_id] = 
+i1.[prop_id] 
+
+JOIN dbo.property_tax_area AS pta1 WITH (NOLOCK) ON 
+pta1.[prop_id] = i1.[prop_id] 
+
+ AND pta1.[year] = i1.[prop_val_yr] 
+
+ AND pta1.[sup_num] = i1.[sup_num] 
+
+JOIN dbo.property_val AS pv1 WITH (NOLOCK) ON pv1.[prop_id] 
+= i1.[prop_id] 
+
+ AND pv1.[prop_val_yr] = i1.[prop_val_yr] 
+
+ AND pv1.[sup_num] = i1.[sup_num] 
+
+JOIN dbo.tax_area AS ta1 WITH (NOLOCK) ON ta1.[tax_area_id] 
+= pta1.[tax_area_id] 
+
+INNER JOIN pacs_system ON pv1.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE ta1.[tax_area_number] LIKE '%' 
+
+ AND i1.[imprv_type_cd] NOT IN ( 
+
+ 'C' 
+
+ ,'Misc' 
+
+ ) 
+
+ AND p1.[prop_type_cd] IN ('R') 
+
+ AND pv1.[prop_inactive_dt] IS NULL 
+
+13.6 Structures Details 
+
+This query produces all commercial buildings, 
+residential houses, and mobile properties with living 
+area located in Island County and the total market 
+value of each. It includes the property use code as 
+well. It combines all living area on the parcel, and 
+does not produce multiple rows for each type of 
+living area. 
+
+SELECT DISTINCT pv.prop_id 
+
+ ,p.geo_id 
+
+ ,pv.[property_use_cd] 
+
+ ,pp.living_area 
+
+ ,pv.[market] 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) ON pv.prop_id = 
+psa.prop_id 
+
+ AND pv.prop_val_yr = psa.owner_tax_yr 
+
+ AND pv.sup_num = psa.sup_num 
+
+INNER JOIN property p WITH (NOLOCK) ON pv.prop_id = 
+p.prop_id 
+
+INNER JOIN property_profile pp WITH (NOLOCK) ON pv.prop_id = 
+pp.prop_id 
+
+ AND pv.prop_val_yr = pp.prop_val_yr 
+
+ AND pv.sup_num = pp.sup_num 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE ( 
+
+ pv.prop_inactive_dt IS NULL 
+
+ OR udi_parent = 't' 
+
+ ) 
+
+ AND p.prop_type_cd NOT IN ( 
+
+ 'c' 
+
+ ,'misc' 
+
+ ) 
+
+ AND p.geo_id NOT LIKE ('c%') 
+
+ AND p.geo_id NOT LIKE ('u%') 
+
+ AND p.geo_id NOT LIKE ('f%') 
+
+ AND pp.living_area > 0 
+
+ORDER BY p.geo_id 
+
+ 
+
+
+14 SUPRESSED/CONFIDENTIAL QUERIES 
+
+14.1 Confidential Name 
+
+This query allows the user to search for all properties 
+that contain a confidential name. 
+
+SELECT oev1.[confidential_flag] 
+
+ ,oev1.[prop_id] 
+
+ ,p1.[geo_id] 
+
+ ,oev1.[web_suppression] 
+
+FROM dbo.property AS p1 WITH (NOLOCK) 
+
+JOIN dbo.query_builder_owner_everything_vw AS oev1 WITH 
+(NOLOCK) ON oev1.[owner_id] = p1.[col_owner_id] 
+
+ AND oev1.[prop_id] = p1.[prop_id] 
+
+INNER JOIN pacs_system ON oev1.[owner_tax_yr] = 
+pacs_system.appr_yr 
+
+WHERE oev1.[confidential_flag] = 'T' 
+
+14.2 Confidential & Web Suppressed 
+Accounts 
+
+Very similar to the above but also grabs web 
+suppressed accounts. This query is run routinely. 
+
+SELECT pv.prop_id 
+
+ ,a.acct_id 
+
+ ,a.first_name 
+
+ ,a.last_name 
+
+ ,a.file_as_name 
+
+ ,a.confidential_flag 
+
+ ,a.confidential_file_as_name 
+
+ ,a.web_suppression 
+
+FROM property_val pv WITH (NOLOCK) 
+
+JOIN OWNER AS o 
+
+WITH (NOLOCK) ON pv.prop_id = o.prop_id 
+
+ AND pv.prop_val_yr = o.owner_tax_yr 
+
+ AND pv.sup_num = o.sup_num 
+
+JOIN account a WITH (NOLOCK) ON o.owner_id = a.acct_id 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND ( 
+
+ a.confidential_flag = 't' 
+
+ OR a.web_suppression = 1 
+
+ ) 
+
+ORDER BY a.file_as_name 
+
+
+15 REVAL/VALUATION QUERIES 
+
+15.1 Percent Difference from Prior Year 
+
+ 
+
+SELECT pv.prop_id AS 'PID' 
+
+ , p.geo_id AS 'GEO ID' 
+
+ , pv.map_id AS 'MAP ID' 
+
+ , pv.hood_cd 
+
+ , pv.last_appraiser_id AS 'APPRAISER ID' 
+
+ , ap.appraiser_full_name AS 'APPRAISER NAME' 
+
+ , pv.prop_val_yr AS 'PROPERTY VALUE YEAR' 
+
+ , pv.sup_num AS 'SUP NUMBER' 
+
+ , pv.cycle AS 'CYCLE' 
+
+ , pv.last_appraisal_dt AS 'LAST APPRAISAL DATE' 
+
+ , pp.land_type_cd AS 'LAND TYPE CD' 
+
+ , pv.land_hstd_val + pv.land_non_hstd_val + pv.ag_market 
++ pv.timber_market AS 'CURR LAND VALUE' 
+
+ , PREVLANDVALUE AS 'PREV LAND VALUE' 
+
+ , pv.imprv_hstd_val + pv.imprv_non_hstd_val AS 
+'IMPROVEMEMT VALUE' 
+
+ , wpov.new_val_hs + wpov.new_val_nhs + wpov.new_val_p AS 
+'NEW VALUE' 
+
+ , pv.market AS 'CURRENT MARKET' 
+
+ , pvp.market AS 'PRIOR MARKET' 
+
+ , pv.market - pvp.market AS 'DIFFERENCE' 
+
+ , cast(((pv.market - pvp.market) / (nullif(pvp.market, 
+0))) AS DECIMAL(10, 2)) * 100 AS '% DIFFERENCE' 
+
+ , dbo.fn_getviewcodes(pv.prop_id) AS 'VIEW' 
+
+ , dbo.fn_getactivepropgroupcodes(pv.prop_id) AS 'GROUP 
+CODES' 
+
+ , pv.property_use_cd AS 'PRIMARY USE' 
+
+ , pv.legal_acreage AS 'ACRES' 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN property p WITH (NOLOCK) 
+
+ ON p.prop_id = pv.prop_id 
+
+INNER JOIN appraiser ap WITH (NOLOCK) 
+
+ ON ap.appraiser_id = pv.last_appraiser_id 
+
+INNER JOIN prop_supp_assoc psa WITH (NOLOCK) 
+
+ ON psa.prop_id = pv.prop_id 
+
+ AND psa.owner_tax_yr = pv.prop_val_yr 
+
+ AND psa.sup_num = pv.sup_num 
+
+INNER JOIN property_profile pp WITH (NOLOCK) 
+
+ ON pv.prop_id = pp.prop_id 
+
+ AND pv.prop_val_yr = pp.prop_val_yr 
+
+ AND pv.sup_num = pp.sup_num 
+
+INNER JOIN wash_prop_owner_val wpov 
+
+ ON wpov.year = pv.prop_val_yr 
+
+ AND wpov.prop_id = pv.prop_id 
+
+ AND wpov.sup_num = pv.sup_num 
+
+ INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+LEFT JOIN ( 
+
+ SELECT pv1.prop_id 
+
+ , pv1.prop_val_yr 
+
+ , pv1.market 
+
+ ,pv1.land_hstd_val + pv1.land_non_hstd_val + 
+pv1.ag_market + pv1.timber_market AS 'PREVLANDVALUE' 
+
+ FROM property_val pv1 WITH (NOLOCK) 
+
+ INNER JOIN prop_supp_assoc ps1 WITH (NOLOCK) 
+
+ ON ps1.prop_id = pv1.prop_id 
+
+ AND ps1.owner_tax_yr = pv1.prop_val_yr 
+
+ AND ps1.sup_num = pv1.sup_num 
+
+ INNER JOIN pacs_system py WITH (NOLOCK) 
+
+ ON (py.appr_yr - 1) = pv1.prop_val_yr 
+
+ WHERE pv1.prop_inactive_dt IS NULL 
+
+ ) AS pvp 
+
+ ON pvp.prop_id = pv.prop_id 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ORDER BY p.geo_id ASC 
+
+ 
+
+15.2 BAS Improvement – Flat Valued 
+
+Used during the valuations review by the appraisers. 
+It identifies BAS improvements that have been 
+flagged as ‘Flat Value’. 
+
+SELECT property_val.prop_id 
+
+ ,property.geo_id 
+
+ ,property_val.cycle 
+
+ ,appraiser.appraiser_full_name 
+
+ ,imprv.calc_val 
+
+ ,imprv.flat_val 
+
+ ,imprv.imprv_val_source 
+
+ ,CASE 
+
+ WHEN imprv.calc_val = imprv.flat_val 
+
+ THEN imprv.calc_val - imprv.flat_val 
+
+ WHEN imprv.calc_val > imprv.flat_val 
+
+ THEN imprv.calc_val - imprv.flat_val 
+
+ WHEN imprv.flat_val > imprv.calc_val 
+
+ THEN imprv.flat_val - imprv.calc_val 
+
+ END AS 'difference' 
+
+ ,CASE 
+
+ WHEN imprv.calc_val = imprv.flat_val 
+
+ THEN 'values_the_same' 
+
+ WHEN imprv.calc_val > imprv.flat_val 
+
+ THEN 'calculated_value_larger' 
+
+ WHEN imprv.flat_val > imprv.calc_val 
+
+ THEN 'flat_value_larger' 
+
+ END AS 'flat_or_calculated' 
+
+ ,dbo.fn_getactivepropgroupcodes(property_val.prop_id) AS 
+'group_codes' 
+
+ ,property.remarks 
+
+FROM property_val 
+
+INNER JOIN appraiser ON property_val.last_appraiser_id = 
+appraiser.appraiser_id 
+
+INNER JOIN property ON property_val.prop_id = 
+property.prop_id 
+
+INNER JOIN imprv ON (property_val.sup_num = imprv.sup_num) 
+
+ AND (property_val.prop_val_yr = imprv.prop_val_yr) 
+
+ AND (property_val.prop_id = imprv.prop_id) 
+
+INNER JOIN pacs_system ON property_val.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE ( 
+
+ ((imprv.imprv_val_source) = 'f') 
+
+ AND ((property_val.prop_inactive_dt) IS NULL) 
+
+ AND ((property_val.sup_num) = 0) 
+
+ AND ((imprv.sale_id) = 0) 
+
+ ) 
+
+ORDER BY property_val.prop_id; 
+
+
+15.3 New Value Activity 
+
+Pulls those properties that have a ‘New Value’ 
+amount entered on an improvement. 
+
+SELECT app.appraiser_full_name AS appraiser 
+
+ ,p.prop_id pid 
+
+ ,p.geo_id 
+
+ ,i.imprv_id 
+
+ ,i.imprv_desc 
+
+ ,id.imprv_det_id 
+
+ ,id.imprv_det_type_cd 
+
+ ,id.new_value_flag 
+
+ ,id.new_value 
+
+FROM property AS p 
+
+INNER JOIN property_val AS pv ON p.prop_id = pv.prop_id 
+
+INNER JOIN appraiser AS app ON pv.last_appraiser_id = 
+app.appraiser_id 
+
+INNER JOIN imprv AS i ON pv.prop_id = i.prop_id 
+
+ AND pv.prop_val_yr = i.prop_val_yr 
+
+ AND pv.sup_num = i.sup_num 
+
+INNER JOIN imprv_detail AS id ON i.prop_id = id.prop_id 
+
+ AND i.prop_val_yr = id.prop_val_yr 
+
+ AND i.sup_num = id.sup_num 
+
+ AND i.imprv_id = id.imprv_id 
+
+INNER JOIN pacs_system ON pv.prop_val_yr = 
+pacs_system.appr_yr 
+
+WHERE pv.prop_inactive_dt IS NULL 
+
+ AND id.new_value > 0 
+
+ 
+
+15.4 Reval Progress 
+
+ 
+
+SELECT CASE 
+
+ WHEN (GROUPING((upper(a1.[appraiser_full_name]))) = 
+1) 
+
+ THEN 'TOTALS' 
+
+ ELSE ISNULL(((upper(a1.[appraiser_full_name]))), 
+'UNKNOWN') 
+
+ END AS 'APPRAISER' 
+
+ ,count(CASE 
+
+ WHEN pv.last_appraisal_dt > '8/01/2018' 
+
+ THEN 1 
+
+ END) AS 'COMPLETE' 
+
+ ,( 
+
+ count(pv.[prop_id]) - ( 
+
+ count(CASE 
+
+ WHEN pv.[last_appraisal_dt] > 
+'8/01/2018' 
+
+ THEN 1 
+
+ ELSE NULL 
+
+ END) 
+
+ ) 
+
+ ) AS 'NOT COMPLETE' 
+
+ ,count(*) AS 'TOTAL' 
+
+ ,convert(VARCHAR, ( 
+
+ convert(DECIMAL(5, 2), round(( 
+
+ ( 
+
+ cast(( 
+
+ count(CASE 
+
+ WHEN 
+pv.last_appraisal_dt > '8/01/2018' 
+
+ THEN 1 
+
+ END) 
+
+ ) AS DECIMAL(10, 2)) / 
+cast((count(*)) AS DECIMAL(10, 2)) 
+
+ ) * 100 
+
+ ), 2)) 
+
+ )) + '%' AS 'PERCENT COMPLETE' 
+
+FROM property_val pv WITH (NOLOCK) 
+
+INNER JOIN appraiser a1 WITH (NOLOCK) ON 
+pv.last_appraiser_id = a1.appraiser_id 
+
+WHERE pv.prop_val_yr = 2019 
+
+ AND pv.prop_inactive_dt IS NULL 
+
+ AND pv.cycle = 2 
+
+GROUP BY (upper(a1.[appraiser_full_name])) 
+
+WITH rollup 
+
+ 
+
+ 
+
+
+ 
+
+

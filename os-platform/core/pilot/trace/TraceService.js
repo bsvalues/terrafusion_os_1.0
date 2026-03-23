@@ -71,6 +71,19 @@ class TraceService {
         this.ringBufferSize = options.ringBufferSize ?? DEFAULT_RING_BUFFER_SIZE;
         this.enablePayloadStore = options.enablePayloadStore ?? true;
         this.payloadStore = new PayloadReferenceStore();
+        this.devAuditEnabled = !!process.env.TF_DEV_AUDIT;
+        if (this.devAuditEnabled) {
+            try {
+                // lazy-load dev adapter
+                this.devAdapter = require('./devAuditAdapter.mjs');
+            }
+            catch (e) {
+                // ignore - adapter optional
+                // eslint-disable-next-line no-console
+                console.error('Dev audit adapter failed to load', e && e.message);
+                this.devAdapter = null;
+            }
+        }
     }
     /**
      * Emit a trace event.
@@ -85,6 +98,15 @@ class TraceService {
         };
         // Append to ring buffer
         this.events.push(event);
+        // Persist to dev-adapter if enabled (best-effort)
+        if (this.devAuditEnabled && this.devAdapter && typeof this.devAdapter.persistEvent === 'function') {
+            try {
+                this.devAdapter.persistEvent(event);
+            }
+            catch (_err) {
+                // swallow dev persistence errors
+            }
+        }
         // Trim if over capacity
         if (this.events.length > this.ringBufferSize) {
             const trimCount = this.events.length - this.ringBufferSize;
@@ -115,6 +137,15 @@ class TraceService {
             const ref = this.payloadStore.store(rawPayload, targetStore);
             processedInput.payloadRef = ref;
             processedInput.payloadStore = targetStore;
+            // persist payload in dev adapter if enabled
+            if (this.devAuditEnabled && this.devAdapter && typeof this.devAdapter.storePayload === 'function') {
+                try {
+                    this.devAdapter.storePayload(ref, rawPayload, targetStore);
+                }
+                catch (_err) {
+                    // swallow
+                }
+            }
         }
         // piiHandling === 'none': no processing needed
         return this.emit(processedInput);

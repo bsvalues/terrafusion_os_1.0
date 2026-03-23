@@ -7,6 +7,7 @@ import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers } from "./index.js";
 import { traceService } from "../trace/index.js";
+import { preInvokeCheck, buildExecutionContextFromRequest } from "./src/router/index.mjs";
 
 /** Alias for traceService.emit — used by Canon tool routes */
 const traceEvent = traceService?.emit?.bind(traceService);
@@ -965,6 +966,43 @@ const server = createServer(async (req, res) => {
           return;
         }
 
+        // Mode mismatch short-circuit: ensure request mode aligns with manifest
+        if (body.mode && tool.mode && body.mode !== tool.mode) {
+          writeJson(
+            res,
+            200,
+            buildInvokeEnvelope({
+              ok: false,
+              correlationId: `err-${Date.now()}`,
+              result: null,
+              error: `Mode mismatch: tool requires ${tool.mode}, got ${body.mode}`,
+              errorCode: "MODE_MISMATCH",
+              traceEventId: null,
+            })
+          );
+          return;
+        }
+
+        // Policy pre-invoke check
+        const execCtx = buildExecutionContextFromRequest(req, body);
+        const policy = preInvokeCheck(tool, execCtx, { ...normalizedParams, supervisorApproval: body.supervisorApproval, reasonCode: body.reasonCode || body.reason });
+        if (!policy.allowed) {
+          const code = policy.errors[0] || 'PERMISSION_DENIED';
+          writeJson(
+            res,
+            200,
+            buildInvokeEnvelope({
+              ok: false,
+              correlationId: `err-${Date.now()}`,
+              result: null,
+              error: `policy_violation: ${policy.errors.join('; ')}`,
+              errorCode: code,
+              traceEventId: null,
+            })
+          );
+          return;
+        }
+
         const result = await runner.execute({
           toolId,
           params: normalizedParams,
@@ -1060,11 +1098,20 @@ const server = createServer(async (req, res) => {
         params: normalizedParams,
         context: executionContext,
       });
+
+      // Only run policy preflight if mode did not already fail (e.g., MODE_MISMATCH)
+      const modeMismatch = validation.violations && validation.violations.some(v => String(v).includes('Mode mismatch'));
+      let policyViolations = [];
+      if (!modeMismatch) {
+        const preflightCtx = buildExecutionContextFromRequest(req, body);
+        const preflightPolicy = preInvokeCheck(tool, preflightCtx, { ...normalizedParams, supervisorApproval: body.supervisorApproval, reasonCode: body.reasonCode || body.reason });
+        policyViolations = preflightPolicy.allowed ? [] : preflightPolicy.errors;
+      }
       const missingRequiredParams = collectMissingRequiredParams(tool, normalizedParams);
       const ingressViolations = missingRequiredParams.length > 0
         ? [requiredParamsViolation(missingRequiredParams)]
         : [];
-      const violations = [...validation.violations, ...ingressViolations];
+      const violations = [...validation.violations, ...ingressViolations, ...policyViolations];
 
       const confirmationRequired = tool.requiresConfirmation || false;
       const reasonCodeRequired = tool.reasonCodeRequired || false;

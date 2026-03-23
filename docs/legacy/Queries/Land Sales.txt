@@ -1,0 +1,61 @@
+select distinct pv.prop_id, 
+p.geo_id as 'geo id',
+pv.cycle as 'cycle',
+pv.hood_cd as 'nbhd',
+pp.living_area, 
+idt.imprv_det_area as 'bsmt sq ft',
+i.imprv_desc as 'imprv desc', 
+pp.class_cd as 'class', 
+pp.imprv_det_sub_class_cd as 'sub class',
+pp.yr_blt as 'year blt',
+pp.eff_yr_blt as 'eff yr blt',
+pp.condition_cd as 'condition',
+coo.deed_type_cd as 'deed type',
+s.sl_ratio_type_cd as 'ratio code', 
+pv.legal_acreage as 'acreage',
+coo.excise_number as 'excise #',
+convert(varchar(20), s.sl_dt, 101) as 'sale date', 
+s.sl_price as 'sale price', 
+s.adjusted_sl_price as 'adj sale price',
+pv.market,
+case when pv.market <> 0 then cast(round((pv.market / s.sl_price), 2) 
+	as decimal(10, 2)) else 0 end as current_ratio,
+si.situs_num, si.situs_street_prefx, si.situs_street, si.situs_street_sufix
+from property_val pv with (nolock) 
+inner join prop_supp_assoc psa with (nolock) on
+	pv.prop_id = psa.prop_id 
+	and pv.prop_val_yr = psa.owner_tax_yr
+	and pv.sup_num = psa.sup_num
+inner join property p with (nolock) on
+	pv.prop_id = p.prop_id
+inner join property_profile pp with (nolock) on
+	pv.prop_id = pp.prop_id 
+	and pv.prop_val_yr = pp.prop_val_yr
+inner join chg_of_owner_prop_assoc copa with (nolock) on
+	pv.prop_id = copa.prop_id 
+inner join chg_of_owner coo with (nolock) on
+	copa.chg_of_owner_id = coo.chg_of_owner_id
+inner join sale s with (nolock) on
+	copa.chg_of_owner_id = s.chg_of_owner_id
+left outer join imprv i with (nolock) on
+	pv.prop_id = i.prop_id
+	and pv.prop_val_yr = i.prop_val_yr
+	and pv.sup_num = i.sup_num
+	and i.sale_id = 0 
+left outer join imprv_detail idt with (nolock) on
+	pv.prop_id = idt.prop_id
+	and pv.prop_val_yr = idt.prop_val_yr
+	and pv.sup_num = idt.sup_num
+	and idt.sale_id = 0 
+	and idt.imprv_det_type_cd = 'bsmt'
+left outer join situs si with (nolock) on	
+	pv.prop_id = si.prop_id
+	and isnull(si.primary_situs, 'n') = 'y'
+where pv.prop_val_yr = 2017---you can change year as needed
+and pp.living_area = 0
+---and pv.cycle = 3
+and pv.prop_inactive_dt is null 
+and s.sl_price > 0
+---and pv.hood_cd = '133794'--you can change the nbhd code
+and coo.deed_dt >= '01/01/2014'--you can change the date
+order by pv.prop_id
