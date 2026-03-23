@@ -58,14 +58,14 @@ public class PacsLandDetail
     public decimal? NumLots { get; set; }
 
     // ── Market Value ─────────────────────────────────────────────────────
-    [Column(TypeName = "decimal(10,4)")] public decimal? MktUnitPrice { get; set; }
+    [Column(TypeName = "decimal(18,2)")] public decimal? MktUnitPrice { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? LandSegMktVal { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? MktCalcVal { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? MktAdjVal { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? MktFlatVal { get; set; }
     [MaxLength(1)] public string? MktValSource { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? LandSegOrigVal { get; set; }
-    [Column(TypeName = "decimal(10,4)")] public decimal? LandSegUp { get; set; }
+    [Column(TypeName = "decimal(18,2)")] public decimal? LandSegUp { get; set; }
     [Column(TypeName = "decimal(5,4)")] public decimal? LandAdjFactor { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? LandAdjAmt { get; set; }
     [Column(TypeName = "decimal(5,4)")] public decimal? LandMassAdjFactor { get; set; }
@@ -77,7 +77,7 @@ public class PacsLandDetail
 
     // ── Agricultural Values ──────────────────────────────────────────────
     [MaxLength(5)]  public string? AgUseCd { get; set; }
-    [Column(TypeName = "decimal(10,4)")] public decimal? AgUnitPrice { get; set; }
+    [Column(TypeName = "decimal(18,2)")] public decimal? AgUnitPrice { get; set; }
     [MaxLength(1)]  public string? AgApply { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? AgVal { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? AgCalcVal { get; set; }

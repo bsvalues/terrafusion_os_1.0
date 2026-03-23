@@ -138,8 +138,8 @@ public class PacsValuation
     [Column(TypeName = "decimal(18,2)")] public decimal? NonTaxedMktVal { get; set; }
 
     // ── Legal Description ────────────────────────────────────────────────
-    [MaxLength(255)] public string? LegalDesc { get; set; }
-    [MaxLength(255)] public string? LegalDesc2 { get; set; }
+    [MaxLength(2000)] public string? LegalDesc { get; set; }
+    [MaxLength(2000)] public string? LegalDesc2 { get; set; }
     [Column(TypeName = "decimal(10,4)")] public decimal? LegalAcreage { get; set; }
     [Column(TypeName = "decimal(10,4)")] public decimal? EffSizeAcres { get; set; }
 
