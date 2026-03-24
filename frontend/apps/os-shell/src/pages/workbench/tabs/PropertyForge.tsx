@@ -188,11 +188,24 @@ export const PropertyForge: React.FC = () => {
         aria-labelledby="forge-tab-cost"
         style={{ display: activeSubTab === 'cost' ? 'block' : 'none' }}
       >
-        <CostApproach
-          taxYear={taxYear}
-          onHistoryRecord={addHistoryRecord}
-          onValueIndicated={handleValueIndicated}
-        />
+        {forgeProbe.loading ? (
+          <div
+            role="status"
+            aria-label="Loading cost data"
+            className="flex items-center gap-3 py-8 px-4"
+          >
+            <div className="tf-spinner h-6 w-6 flex-shrink-0" />
+            <span style={{ color: 'hsl(var(--tf-text) / 0.5)' }} className="text-sm">
+              Loading cost approach data…
+            </span>
+          </div>
+        ) : (
+          <CostApproach
+            taxYear={taxYear}
+            onHistoryRecord={addHistoryRecord}
+            onValueIndicated={handleValueIndicated}
+          />
+        )}
       </div>
 
       <div
@@ -201,11 +214,24 @@ export const PropertyForge: React.FC = () => {
         aria-labelledby="forge-tab-sales"
         style={{ display: activeSubTab === 'sales' ? 'block' : 'none' }}
       >
-        <SalesComparison
-          taxYear={taxYear}
-          onHistoryRecord={addHistoryRecord}
-          onValueIndicated={handleValueIndicated}
-        />
+        {forgeProbe.loading ? (
+          <div
+            role="status"
+            aria-label="Loading sales data"
+            className="flex items-center gap-3 py-8 px-4"
+          >
+            <div className="tf-spinner h-6 w-6 flex-shrink-0" />
+            <span style={{ color: 'hsl(var(--tf-text) / 0.5)' }} className="text-sm">
+              Loading sales comparison data…
+            </span>
+          </div>
+        ) : (
+          <SalesComparison
+            taxYear={taxYear}
+            onHistoryRecord={addHistoryRecord}
+            onValueIndicated={handleValueIndicated}
+          />
+        )}
       </div>
 
       <div

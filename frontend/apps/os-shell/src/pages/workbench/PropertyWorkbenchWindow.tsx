@@ -733,7 +733,12 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
               showAll={showAll}
               onToggleShowAll={toggleShowAll}
             />
-            <main className="flex-1 overflow-auto">
+            <main
+              className="flex-1 overflow-auto"
+              id={`panel-${activeTab}`}
+              role="tabpanel"
+              aria-labelledby={`compass-tab-${activeTab}`}
+            >
               {hostViolation ? (
                 <WorkbenchHostViolationNotice violation={hostViolation} />
               ) : loading ? (

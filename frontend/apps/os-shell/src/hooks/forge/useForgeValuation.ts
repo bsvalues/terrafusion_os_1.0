@@ -182,40 +182,6 @@ export interface ParcelYearLayersResult {
 
 /* ── useParcelYears ─────────────────────────────────────────── */
 
-export interface ParcelYearsHookResult {
-  data: ParcelYearLayersResult | undefined;
-  loading: boolean;
-  error: Error | null;
-  /** The year to use when initializing taxYear state — defaultYear from API, or current year */
-  resolvedDefault: number;
-}
-
-export function useParcelYears(parcelId: string | undefined): ParcelYearsHookResult {
-  const query = useQuery<ParcelYearLayersResult>({
-    queryKey: ['forge', 'years', parcelId],
-    queryFn: async () => {
-      const res = await fetch(`/api/forge/${encodeURIComponent(parcelId!)}/years`);
-      if (!res.ok) {
-        throw new Error(`Forge /years fetch failed: ${res.status} ${res.statusText}`);
-      }
-      return res.json();
-    },
-    enabled: !!parcelId,
-    retry: 1,
-    staleTime: 300_000,
-  });
-
-  const resolvedDefault =
-    query.data?.defaultYear ?? new Date().getFullYear();
-
-  return {
-    data: query.data,
-    loading: query.isLoading || query.isFetching,
-    error: query.error as Error | null,
-    resolvedDefault,
-  };
-}
-
 /* ── Year-layer types (mirror backend ParcelYearLayersResult) ── */
 
 export interface ProgramEnrollment {

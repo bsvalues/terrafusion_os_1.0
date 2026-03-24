@@ -636,6 +636,23 @@ export const PropertyAtlas: React.FC = () => {
                 <p className='tf-text-tertiary'>Select layers and query to view map data</p>
               </div>
             )}
+
+            {/* GIS data loading overlay — appears while boundary/layers fetch on mount */}
+            {(boundary.loading || layers.loading) && (
+              <div
+                role="status"
+                aria-label="Loading map data"
+                className="absolute inset-0 flex items-center justify-center"
+                style={{ background: 'hsl(var(--tf-bg) / 0.6)', backdropFilter: 'blur(4px)', zIndex: 10 }}
+              >
+                <div className="flex flex-col items-center gap-3">
+                  <div className="tf-spinner h-8 w-8" />
+                  <span style={{ color: 'hsl(var(--tf-text) / 0.5)' }} className="text-xs">
+                    Loading parcel geometry…
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </BentoCard>
       </BentoGrid>
