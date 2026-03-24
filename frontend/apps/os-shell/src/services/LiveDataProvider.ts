@@ -121,8 +121,7 @@ function mapPacsDetailToProperty(dto: PacsPropertyDetailDto): Property {
     longitude: -119.2687,
     hasActivePermits: false,
     hasAppeals: false,
-    // Data is live from Harris PACS SQL Server
-    dataSource: 'harris-pacs-live',
+    dataSource: 'live',
   };
 }
 

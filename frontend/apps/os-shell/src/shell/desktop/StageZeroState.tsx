@@ -252,8 +252,8 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
   }, []);
 
   const handleSelectParcel = useCallback((parcelId: string) => {
-    import('../../context/parcelContext').then(({ selectRecentParcel }) => {
-      selectRecentParcel(parcelId);
+    import('../../context/parcelContext').then(({ openWorkbenchWindow }) => {
+      openWorkbenchWindow(parcelId);
     });
   }, []);
 
