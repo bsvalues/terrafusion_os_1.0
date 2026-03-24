@@ -37,7 +37,7 @@ const ATLAS_MODULES: SuiteModuleDef[] = [
   { id: 'terra-gis-pro', label: 'TerraGIS Pro', icon: Map, description: 'Full county-wide GIS platform — advanced cartography & spatial analysis', launchMode: 'standalone', moduleId: 'terra-gis' },
 ];
 
-const fmtNum = (n: number) => n.toLocaleString();
+const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 
 export default function AtlasSuiteHome() {
   const navigate = useNavigate();
@@ -87,7 +87,7 @@ export default function AtlasSuiteHome() {
       {/* Module Grid + Operational Queue */}
       <main className="flex-1 min-h-0 overflow-y-auto">
         <div data-testid="atlas-modules"><SuiteModuleGrid modules={ATLAS_MODULES} accentVar="--tf-suite-atlas" /></div>
-        <div data-testid="atlas-queue"><OperationalQueue title="Recent GIS Queries" accentVar="--tf-suite-atlas" emptyMessage="No recent spatial queries" /></div>
+        <div data-testid="atlas-queue"><OperationalQueue title="Recent Parcels" accentVar="--tf-suite-atlas" emptyMessage="No recent parcel activity" /></div>
       </main>
     </div>
   );

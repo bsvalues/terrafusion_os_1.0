@@ -113,6 +113,19 @@ function extractTargetRelPath(source: string, constants: Map<string, string>): s
  *  - any variable name for the first argument (not necessarily "content")
  */
 function extractLabelValue(source: string, constants: Map<string, string>): string | null {
+  const helperRe = /registerLeakGuard\(\s*(?:[A-Za-z_$][\w$]*|(["'`])([\s\S]*?)\1)\s*,\s*(?:(['"`])([\s\S]*?)\3|([A-Za-z_$][\w$]*))\s*\)/m;
+  const helperMatch = source.match(helperRe);
+  if (helperMatch) {
+    const helperLiteral = helperMatch[4] ?? null;
+    if (helperLiteral !== null) return helperLiteral.trim();
+
+    const helperIdent = helperMatch[5] ?? null;
+    if (helperIdent) {
+      const resolved = constants.get(helperIdent);
+      return resolved ? resolved.trim() : null;
+    }
+  }
+
   const callRe = /assertNoRawColorLeaks\(\s*[\s\S]*?,\s*\{([\s\S]*?)\}\s*\)/m;
   const callMatch = source.match(callRe);
   if (!callMatch) return null;

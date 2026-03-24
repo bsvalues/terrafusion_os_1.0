@@ -8,7 +8,23 @@ import { defineConfig } from 'vite';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      // Stub monaco-editor web worker imports that cannot resolve in jsdom/vitest
+      name: 'monaco-worker-stub',
+      resolveId(id: string) {
+        if (id.includes('monaco-editor') && id.includes('?worker')) {
+          return id;
+        }
+      },
+      load(id: string) {
+        if (id.includes('monaco-editor') && id.includes('?worker')) {
+          return 'export default class MonacoWorkerStub {}';
+        }
+      },
+    },
+  ],
   css: {
     // Keep test runs isolated from parent-directory PostCSS configs.
     postcss: {
@@ -22,6 +38,7 @@ export default defineConfig({
       'os-platform/core/pilot/**/*.test.ts',
       'os-platform/core/terratrc/**/*.test.ts',
       'frontend/apps/os-shell/src/__tests__/**/*.test.{ts,tsx}',
+      'frontend/apps/os-shell/src/**/__tests__/**/*.test.{ts,tsx}',
     ],
     exclude: [
       'node_modules/**',
@@ -36,6 +53,7 @@ export default defineConfig({
       '**/ULTIMATE_*/**',
       'tests/e2e/**/*.spec.ts',
       'tests/**/*.spec.ts',
+      'tests/deployment-truth-gate.test.mjs',
     ],
     globals: true,
     environment: 'jsdom',

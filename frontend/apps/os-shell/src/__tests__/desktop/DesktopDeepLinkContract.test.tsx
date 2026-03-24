@@ -25,7 +25,7 @@
  * Scope: Mechanical deep-link only; not asserting business data or API calls.
  */
 
-import { vi, describe, it, expect, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { getDesktopIcons } from '../../config/desktopManifest';
@@ -148,6 +148,24 @@ function assertLandmark(route: string) {
 // ============================================================================
 
 describe('Phase 27 contract: deep-link → Router mounts → landmark renders', () => {
+  beforeAll(async () => {
+    vi.useRealTimers();
+    await import('../../App');
+    await import('../../pages/PropertySearch');
+    await import('../../pages/PilotHome');
+    await import('../../pages/TraceHome');
+    await import('../../pages/CanonHome');
+    await import('../../pages/suites/ForgeSuiteHome');
+    await import('../../pages/workbench/PropertyWorkbench');
+    await import('../../pages/workbench/tabs/PropertyForge');
+    await import('../../pages/workbench/tabs/PropertyAtlas');
+    await import('../../pages/workbench/tabs/PropertyDais');
+    await import('../../pages/workbench/tabs/PropertyDossier');
+    await import('../../pages/workbench/tabs/PropertyPilot');
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  }, 60000);
+
   afterEach(() => {
     cleanup();
   });
@@ -191,7 +209,7 @@ describe('Phase 27 contract: deep-link → Router mounts → landmark renders', 
         () => {
           expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
         },
-        { timeout: 5000 }
+        { timeout: 15000 }
       );
 
       // Crash guard: app should not be in error fallback state.

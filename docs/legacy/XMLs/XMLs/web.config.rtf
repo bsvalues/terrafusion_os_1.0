@@ -1,0 +1,141 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
+{\*\generator Riched20 10.0.16299}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang9 <?xml version="1.0" encoding="UTF-8"?>\par
+<configuration>\par
+  <appSettings>\par
+    <!--<add key="ConnectionString" value="server=svdevdb03e\\sql2005;uid=sa;pwd=monitor107;database=PropertyAccess" />-->\par
+    <add key="ConnectionString" value="server=VJCPACSWEB;uid=sa;pwd=benton-28-2600;database=ta" />\par
+    <add key="ClientDBSitePath" value="/PropertyAccess" />\par
+    <add key="MapSitePath" value="/Map/View" />\par
+    <add key="MDNWebRefURL" value="http://SVITWEB03/MapDotNetMapWebService5.0/MapWebService.asmx" />\par
+    <add key="TAAppSvrRemote" value="false" />\par
+  </appSettings>\par
+  <system.web>\par
+\par
+    <caching>\par
+      <outputCacheSettings>\par
+        <outputCacheProfiles>\par
+          <add name="Default" enabled="false" duration="3600" varyByParam="*" varyByCustom="browser" />\par
+          <add name="StreetName" enabled="false" duration="3600" varyByParam="cid;q;limit" />\par
+          <add name="Image" enabled="true" duration="2592000" varyByParam="*" />\par
+        </outputCacheProfiles>\par
+      </outputCacheSettings>\par
+    </caching>\par
+    <!--  DYNAMIC DEBUG COMPILATION\par
+          Set compilation debug="true" to enable ASPX debugging.  Otherwise, setting this value to\par
+          false will improve runtime performance of this application. \par
+          Set compilation debug="true" to insert debugging symbols (.pdb information)\par
+          into the compiled page. Because this creates a larger file that executes\par
+          more slowly, you should set this value to true only when debugging and to\par
+          false at all other times. For more information, refer to the documentation about\par
+          debugging ASP.NET files.\par
+    -->\par
+    <compilation defaultLanguage="c#" debug="true" targetFramework="4.0">\par
+      <assemblies>\par
+        <add assembly="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />\par
+        <add assembly="System.Web.Abstractions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />\par
+        <add assembly="System.Web.Routing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />\par
+      </assemblies>\par
+    </compilation>\par
+    <!--  CUSTOM ERROR MESSAGES\par
+          Set customErrors mode="On" or "RemoteOnly" to enable custom error messages, "Off" to disable. \par
+          Add <error> tags for each of the errors you want to handle.\par
+\par
+          "On" Always display custom (friendly) messages.\par
+          "Off" Always display detailed ASP.NET error information.\par
+          "RemoteOnly" Display custom (friendly) messages only to users not running \par
+           on the local Web server. This setting is recommended for security purposes, so \par
+           that you do not display application detail information to remote clients.\par
+    -->\par
+\tab\tab <customErrors defaultRedirect="./customdisplay.htm" mode="RemoteOnly" >\par
+    \tab\tab\tab <error statusCode="500" redirect="./customdisplay.htm"></error>\par
+    \tab\tab </customErrors>\par
+    <!--  AUTHENTICATION \par
+          This section sets the authentication policies of the application. Possible modes are "Windows", \par
+          "Forms", "Passport" and "None"\par
+\par
+          "None" No authentication is performed. \par
+          "Windows" IIS performs authentication (Basic, Digest, or Integrated Windows) according to \par
+           its settings for the application. Anonymous access must be disabled in IIS. \par
+          "Forms" You provide a custom form (Web page) for users to enter their credentials, and then \par
+           you authenticate them in your application. A user credential token is stored in a cookie.\par
+          "Passport" Authentication is performed via a centralized authentication service provided\par
+           by Microsoft that offers a single logon and core profile services for member sites.\par
+    -->\par
+    <authentication mode="Forms">\par
+      <forms loginUrl="~/Admin.aspx/Login" timeout="20" />\par
+    </authentication>\par
+    <!--  AUTHORIZATION \par
+          This section sets the authorization policies of the application. You can allow or deny access\par
+          to application resources by user or role. Wildcards: "*" mean everyone, "?" means anonymous \par
+          (unauthenticated) users.\par
+    -->\par
+    <authorization>\par
+      <allow users="*" />\par
+      <!-- Allow all users -->\par
+      <!--  <allow users="[comma separated list of users]"\par
+                             roles="[comma separated list of roles]"/>\par
+                  <deny      users="[comma separated list of users]"\par
+                             roles="[comma separated list of roles]"/>\par
+            -->\par
+    </authorization>\par
+    <!--  APPLICATION-LEVEL TRACE LOGGING\par
+          Application-level tracing enables trace log output for every page within an application. \par
+          Set trace enabled="true" to enable application trace logging.  If pageOutput="true", the\par
+          trace information will be displayed at the bottom of each page.  Otherwise, you can view the \par
+          application trace log by browsing the "trace.axd" page from your web application\par
+          root. \par
+    -->\par
+    <trace enabled="false" requestLimit="50" pageOutput="true" traceMode="SortByTime" localOnly="true" />\par
+    <!--  SESSION STATE SETTINGS\par
+          By default ASP.NET uses cookies to identify which requests belong to a particular session. \par
+          If cookies are not available, a session can be tracked by adding a session identifier to the URL. \par
+          To disable cookies, set sessionState cookieless="true".\par
+    -->\par
+    <!--\par
+    <sessionState \par
+      mode="SQLServer"\par
+      stateConnectionString="tcpip=127.0.0.1:42424"\par
+      sqlConnectionString="server=192.168.1.247;uid=sa;pwd=monitor107;"\par
+            timeout="20" \par
+    -->\par
+    <sessionState mode="InProc" stateConnectionString="tcpip=127.0.0.1:42424" sqlConnectionString="data source=127.0.0.1;Trusted_Connection=true" cookieless="false" timeout="20" />\par
+    <!--  GLOBALIZATION\par
+          This section sets the globalization settings of the application. \par
+    -->\par
+    <globalization requestEncoding="utf-8" responseEncoding="utf-8" />\par
+    <pages controlRenderingCompatibilityVersion="3.5" clientIDMode="AutoID">\par
+      <namespaces>\par
+        <add namespace="System.Web.Mvc" />\par
+        <add namespace="System.Web.Mvc.Ajax" />\par
+        <add namespace="System.Web.Mvc.Html" />\par
+        <add namespace="System.Web.Routing" />\par
+        <add namespace="System.Linq" />\par
+        <add namespace="System.Collections.Generic" />\par
+      </namespaces>\par
+    </pages>\par
+  </system.web>\par
+  <system.webServer>\par
+    <modules runAllManagedModulesForAllRequests="true" />\par
+    <defaultDocument>\par
+      <files>\par
+        <add value="PropertySearch.aspx" />\par
+      </files>\par
+    </defaultDocument>\par
+\tab <handlers>\par
+            <clear />\par
+            <add name="PageHandlerFactory-ISAPI-4.0_32bit" path="*.aspx" verb="GET,HEAD,POST,DEBUG" type="" modules="IsapiModule" scriptProcessor="C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\aspnet_isapi.dll" resourceType="Unspecified" requireAccess="Script" allowPathInfo="false" preCondition="classicMode,runtimeVersionv4.0,bitness32" responseBufferLimit="0" />\par
+            <add name="StaticFile" path="*" verb="*" type="" modules="StaticFileModule,DefaultDocumentModule,DirectoryListingModule" scriptProcessor="" resourceType="Either" requireAccess="Read" allowPathInfo="false" preCondition="" responseBufferLimit="4194304" />\par
+\tab </handlers>\par
+  </system.webServer>\par
+  <runtime>\par
+    <assemblyBinding appliesTo="v2.0.50727" xmlns="urn:schemas-microsoft-com:asm.v1">\par
+      <dependentAssembly xmlns="">\par
+        <assemblyIdentity name="System.Web.Mvc" publicKeyToken="31bf3856ad364e35" />\par
+        <bindingRedirect oldVersion="1.0.0.0" newVersion="2.0.0.0" />\par
+      </dependentAssembly>\par
+    </assemblyBinding>\par
+  </runtime>\par
+</configuration>\par
+}
+ 

@@ -40,7 +40,7 @@ services:
   # PostgreSQL Database - Primary Data Store
   # ==========================================================================
   postgres:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     container_name: terrafusion-postgres-dev
     restart: unless-stopped
     environment:
@@ -52,6 +52,7 @@ services:
       - '5432:5432'
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./init-scripts/:/docker-entrypoint-initdb.d/
     networks:
       terrafusion-network:
         ipv4_address: 172.20.0.10

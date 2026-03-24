@@ -1,0 +1,34 @@
+SELECT bpa.prop_id
+   , t1.cycle
+   , t1.hood_cd
+   , t1.next_appraiser_id
+   , bp.bldg_permit_id
+   , bpt.bld_permit_desc
+   , bp.bldg_permit_num
+   , bp.bldg_permit_issue_dt
+   , bp.bldg_permit_dt_complete
+   , bp.bldg_permit_val
+   , bp.bldg_permit_area
+   , bp.bldg_permit_cmnt
+   , bp.bldg_permit_desc
+   , ccp.mobile_assignment_group_id
+
+FROM dbo.building_permit bp WITH (nolock)
+  LEFT JOIN dbo.prop_building_permit_assoc bpa
+     ON bp.bldg_permit_id = bpa.bldg_permit_id
+  LEFT JOIN (
+                   SELECT prop_id, cycle, hood_cd, next_appraiser_id
+                   FROM dbo.property_val WITH (nolock)
+                   WHERE prop_val_yr =2017
+                      AND sup_num = 0) t1
+    ON bpa.prop_id = t1.prop_id
+  LEFT JOIN dbo.bld_permit_type bpt WITH (nolock)
+    ON bp.bldg_permit_type_cd = bpt.bld_permit_type_cd
+  LEFT JOIN dbo.ccProperty ccp WITH (nolock)
+    ON bpa.prop_id = ccp.prop_id
+
+WHERE bp.bldg_permit_active = 'T'
+  AND t1.hood_cd < 300000
+
+ORDER BY ccp.mobile_assignment_group_id
+  , bpa.prop_id

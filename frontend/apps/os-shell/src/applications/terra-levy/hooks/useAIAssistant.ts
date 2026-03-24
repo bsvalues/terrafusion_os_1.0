@@ -236,7 +236,6 @@ export const useAIAssistant = ({
         setPersonalizedModel(newModel);
         setAccuracy(newModel.accuracy);
 
-        console.log('Personalized AI model updated:', newModel);
       } catch (error) {
         console.error('Error training personalized model:', error);
       } finally {

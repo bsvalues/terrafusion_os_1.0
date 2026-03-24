@@ -27,6 +27,7 @@ import {
   FileText,
 } from 'lucide-react';
 import { TactileButton } from '@/ui/materials';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import {
   type AuditAction,
   type ValuationAuditEntry,
@@ -71,7 +72,7 @@ const DEMO_ENTRIES: ValuationAuditEntry[] = [
   {
     id: 'demo-4', parcelId: '1-0935-200-0004-002', action: 'INCOME_CALCULATED',
     timestamp: '2026-02-21T14:20:00Z', userId: 'appraiser-002',
-    previousValue: null, newValue: 1925000, module: 'IncomeForgeModule',
+    previousValue: null, newValue: 1925000, module: 'IncomeApproachModule',
     details: { noi: 154000, capRate: 0.08, propertyType: 'Multi-Family', units: 12 },
     notes: 'Direct cap for 12-unit apartment complex',
   },
@@ -191,6 +192,8 @@ export default function ValueAuditModule() {
 
   return (
     <div className='p-6 space-y-6'>
+      {/* Provenance disclosure: DEMO_ENTRIES are always merged into the audit trail */}
+      <DemoDataBanner module="Value Audit" />
       {/* Title */}
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-3'>

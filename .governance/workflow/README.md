@@ -19,6 +19,16 @@ This directory contains the **canonical workflow artifacts** required for any no
 | `plan.md` | Define phases, tasks, acceptance criteria | After research, before execution |
 | `progress.md` | Track status, completed work, next steps | During and after execution |
 
+## Operator Playbooks
+
+These workflow documents remain the canonical governance artifacts. Supporting operator playbooks may sit beside them when they tighten execution without replacing the workflow itself.
+
+- [`CODEX_DIRECTIVE_PACK_v1.md`](./CODEX_DIRECTIVE_PACK_v1.md) - TerraFusion-specific Codex operating doctrine and six bounded prompt frames for recon, execution, and review work
+- [`COFOUNDER_EXECUTION_PROMPT_v1.md`](./COFOUNDER_EXECUTION_PROMPT_v1.md) - TerraFusion-ready single-slice execution wrapper that preserves save-state discipline while reusing the Codex directive pack contract
+
+The Codex directive pack complements `discovery.md`, `research.md`, `plan.md`, and `progress.md`. It does not replace workflow governance, discovery requirements, or human merge judgment.
+The co-founder execution prompt is a wrapper on top of the Codex directive pack for bounded implementation sessions. It does not create a second governance path.
+
 ## Workflow Sequence (MANDATORY)
 
 ```
@@ -147,9 +157,11 @@ This prevents "we'll fix governance later" drift. The gates ARE the constitution
 - [research.md](./research.md) - Domain research template
 - [plan.md](./plan.md) - Execution planning template
 - [progress.md](./progress.md) - Status tracking template
+- [CODEX_DIRECTIVE_PACK_v1.md](./CODEX_DIRECTIVE_PACK_v1.md) - Bounded Codex operator pack for TerraFusion-specific slices
+- [COFOUNDER_EXECUTION_PROMPT_v1.md](./COFOUNDER_EXECUTION_PROMPT_v1.md) - Co-founder execution wrapper for single-slice implementation, proof, commit, and save-state handoff
 
 ---
 
-**Last Updated:** 2026-02-07
-**Version:** 1.0.0
+**Last Updated:** 2026-03-18
+**Version:** 1.1.0
 **Owner:** TerraFusion Governance

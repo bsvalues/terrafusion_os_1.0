@@ -103,6 +103,16 @@ public class PropertyService : IPropertyService
         return property != null ? MapPropertyDto(property) : null;
     }
 
+    public async Task<PropertyDto?> GetPropertyByParcelAsync(string parcelNumber, Guid countyId)
+    {
+        var property = await _context.Properties
+            .Include(p => p.County)
+            .Include(p => p.Valuations)
+            .FirstOrDefaultAsync(p => p.ParcelNumber == parcelNumber && p.CountyId == countyId);
+
+        return property != null ? MapPropertyDto(property) : null;
+    }
+
     public async Task<IEnumerable<ValuationDto>> GetPropertyValuationsAsync(Guid propertyId)
     {
         var valuations = await _context.Valuations
@@ -112,6 +122,20 @@ public class PropertyService : IPropertyService
             .ToListAsync();
 
         return valuations.Select(MapValuationDto).ToList();
+    }
+
+    public async Task<IEnumerable<ValuationDto>> GetPropertyValuationsAsync(Guid propertyId, Guid countyId)
+    {
+        var propertyExists = await _context.Properties
+            .AsNoTracking()
+            .AnyAsync(p => p.Id == propertyId && p.CountyId == countyId);
+
+        if (!propertyExists)
+        {
+            return Array.Empty<ValuationDto>();
+        }
+
+        return await GetPropertyValuationsAsync(propertyId);
     }
 
     public async Task<ValuationDto> CreateValuationAsync(CreateValuationDto createDto)
@@ -187,6 +211,40 @@ public class PropertyService : IPropertyService
         };
     }
 
+    public async Task<PropertyStatsDto> GetPropertyStatsAsync(Guid countyId)
+    {
+        var countyProperties = _context.Properties
+            .AsNoTracking()
+            .Where(p => p.CountyId == countyId);
+
+        var totalProperties = await countyProperties.CountAsync();
+        var totalAssessedValue = (await countyProperties
+            .Select(p => p.AssessedValue)
+            .ToListAsync())
+            .Sum();
+        var avgAssessedValue = totalProperties > 0 ? totalAssessedValue / totalProperties : 0;
+        var countyName = await _context.Counties
+            .AsNoTracking()
+            .Where(c => c.Id == countyId)
+            .Select(c => c.Name)
+            .FirstOrDefaultAsync();
+        var propertiesByCounty = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        if (!string.IsNullOrWhiteSpace(countyName))
+        {
+            propertiesByCounty[countyName] = totalProperties;
+        }
+
+        return new PropertyStatsDto
+        {
+            TotalProperties = totalProperties,
+            TotalAssessedValue = totalAssessedValue,
+            AverageAssessedValue = avgAssessedValue,
+            CountiesCount = propertiesByCounty.Count,
+            PropertiesByCounty = propertiesByCounty
+        };
+    }
+
     public async Task<IEnumerable<PropertyDto>> ImportPropertiesAsync(IEnumerable<ImportPropertyDto> properties)
     {
         var propertyEntities = new List<Property>();
@@ -239,6 +297,11 @@ public class PropertyService : IPropertyService
             AssessedValue = property.AssessedValue,
             LandValue = property.LandValue,
             ImprovementValue = property.ImprovementValue,
+            MarketValue = property.MarketValue,
+            PropertyType = property.PropertyType,
+            YearBuilt = property.YearBuilt,
+            TaxYear = property.TaxYear,
+            AssessmentDate = property.AssessmentDate,
             CountyId = property.CountyId,
             CountyName = property.County?.Name ?? string.Empty,
             CreatedAt = property.CreatedAt,

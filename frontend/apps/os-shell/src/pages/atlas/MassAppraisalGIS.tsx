@@ -7,6 +7,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -322,6 +323,8 @@ export default function MassAppraisalGIS() {
 
   return (
     <div data-testid="mass-appraisal-gis" className="flex h-full bg-terra-midnight text-white">
+      {/* Provenance disclosure: DEMO_PARCELS are always rendered — no live GIS data path yet */}
+      <DemoDataBanner module="Mass Appraisal GIS" />
       {/* Layer panel */}
       <aside className="flex-shrink-0 p-4 space-y-4 overflow-y-auto border-r border-white/10">
         <LayerTogglePanel

@@ -14,6 +14,7 @@
 
 import { cn } from '@/lib/utils';
 import React, { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Hammer,
@@ -29,11 +30,11 @@ import { useWindowPeek } from '../../hooks/useWindowPeek';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { Z } from './zIndex';
 import { useStartMenuStore } from '../../stores/startMenuStore';
-import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
+
 import { useDataMode } from '../../hooks/useDataMode';
 import { TerraSphere } from '../../ui/brand/TerraSphere';
 import { LiquidPanel } from '../../ui/materials';
-import { activateModule } from '../../orchestration/moduleActivation';
+
 import { TaskbarContextMenu } from './TaskbarContextMenu';
 import { VirtualDesktopSwitcher } from './VirtualDesktopSwitcher';
 
@@ -94,17 +95,11 @@ const DockSuiteButton: React.FC<{
   onContextMenu?: (e: React.MouseEvent, suiteId: string) => void;
 }> = ({ suite, isRunning, isActive, onContextMenu }) => {
   const Icon = getSuiteIcon(suite.iconName);
-  const focusWindow = useDesktopStore((s) => s.focusWindow);
-  const windows = useDesktopStore((s) => s.windows);
+  const navigate = useNavigate();
 
   const handleClick = () => {
-    // If the suite is running, toggle focus/minimize instead of re-launching
-    const suiteWindow = windows.find((w) => w.moduleId === suite.id);
-    if (suiteWindow) {
-      focusWindow(suiteWindow.id);
-    } else {
-      activateModule(suite.id, { source: 'dock' });
-    }
+    // Navigate to suite route — no window creation, no stuck taskbar entries
+    navigate(suite.route);
   };
 
   return (
@@ -344,19 +339,19 @@ const DockDivider: React.FC = () => (
 );
 
 // ============================================================================
-// Data Mode Indicator — MOCK (amber) or LIVE (green)
+// Data Mode Indicator — mock data fallback or backend health available
 // ============================================================================
 
 const DataModeIndicator: React.FC = () => {
   const { mode, connected } = useDataMode();
-  const isLive = mode === 'live' && connected;
+  const hasBackendHealth = mode === 'live' && connected;
 
   return (
     <div
-      title={isLive ? 'Connected to live backend' : 'Using local mock data'}
+      title={hasBackendHealth ? 'Backend health responding' : 'Backend health unavailable; mock data active'}
       className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg cursor-default select-none'
       style={{
-        background: isLive
+        background: hasBackendHealth
           ? 'hsl(142 71% 45% / 0.15)'
           : 'hsl(38 92% 50% / 0.15)',
       }}
@@ -366,8 +361,8 @@ const DataModeIndicator: React.FC = () => {
           width: 6,
           height: 6,
           borderRadius: '50%',
-          background: isLive ? 'hsl(142 71% 45%)' : 'hsl(38 92% 50%)',
-          boxShadow: isLive
+          background: hasBackendHealth ? 'hsl(142 71% 45%)' : 'hsl(38 92% 50%)',
+          boxShadow: hasBackendHealth
             ? '0 0 6px hsl(142 71% 45% / 0.6)'
             : '0 0 6px hsl(38 92% 50% / 0.6)',
         }}
@@ -375,10 +370,10 @@ const DataModeIndicator: React.FC = () => {
       <span
         className='text-[10px] font-semibold tracking-wider'
         style={{
-          color: isLive ? 'hsl(142 71% 45%)' : 'hsl(38 92% 50%)',
+          color: hasBackendHealth ? 'hsl(142 71% 45%)' : 'hsl(38 92% 50%)',
         }}
       >
-        {isLive ? 'LIVE' : 'MOCK'}
+        {hasBackendHealth ? 'HEALTH' : 'MOCK'}
       </span>
     </div>
   );

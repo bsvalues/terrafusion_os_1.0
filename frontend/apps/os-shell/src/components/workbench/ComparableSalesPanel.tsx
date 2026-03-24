@@ -36,6 +36,22 @@ import {
   type CompFilter,
 } from '../../services/comparableSalesService';
 
+const SUCCESS_COLOR = 'hsl(var(--tf-success))';
+const SUCCESS_BG = 'hsl(var(--tf-success) / 0.15)';
+const SUCCESS_BG_SUBTLE = 'hsl(var(--tf-success) / 0.12)';
+const WARNING_COLOR = 'hsl(var(--tf-warning))';
+const WARNING_BG = 'hsl(var(--tf-warning) / 0.15)';
+const WARNING_BG_SUBTLE = 'hsl(var(--tf-warning) / 0.12)';
+const WARNING_BANNER_BG = 'hsl(var(--tf-warning) / 0.1)';
+const WARNING_BANNER_BG_SUBTLE = 'hsl(var(--tf-warning) / 0.06)';
+const WARNING_BORDER = '1px solid hsl(var(--tf-warning) / 0.2)';
+const ERROR_COLOR = 'hsl(var(--tf-error))';
+const ERROR_BG = 'hsl(var(--tf-error) / 0.15)';
+
+interface ComparableSalesPanelProps {
+  onReconciledValue?: (result: ReconciliationResult) => void;
+}
+
 // ═══════════════════════════════════════════════════════════════
 // Helpers
 // ═══════════════════════════════════════════════════════════════
@@ -114,16 +130,16 @@ const ReconciliationSummary: React.FC<{ result: ReconciliationResult }> = ({ res
         style={{
           background:
             result.confidence === 'HIGH'
-              ? 'hsl(142 71% 45% / 0.15)'
+              ? SUCCESS_BG
               : result.confidence === 'MODERATE'
-                ? 'hsl(43 96% 56% / 0.15)'
-                : 'hsl(0 84% 60% / 0.15)',
+                ? WARNING_BG
+                : ERROR_BG,
           color:
             result.confidence === 'HIGH'
-              ? 'hsl(142 71% 45%)'
+              ? SUCCESS_COLOR
               : result.confidence === 'MODERATE'
-                ? 'hsl(43 96% 56%)'
-                : 'hsl(0 84% 60%)',
+                ? WARNING_COLOR
+                : ERROR_COLOR,
         }}
       >
         {result.confidence} confidence
@@ -163,7 +179,9 @@ const ReconciliationSummary: React.FC<{ result: ReconciliationResult }> = ({ res
 // Main Component
 // ═══════════════════════════════════════════════════════════════
 
-export const ComparableSalesPanel: React.FC = () => {
+export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
+  onReconciledValue,
+}) => {
   const { parcelId } = useWorkbenchTab();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
 
@@ -288,12 +306,13 @@ export const ComparableSalesPanel: React.FC = () => {
         })),
       );
       setReconciliation(result);
+      onReconciledValue?.(result);
     } catch {
       setReconError('Backend unavailable — connect to CostForge API for reconciliation');
     } finally {
       setReconLoading(false);
     }
-  }, [selectedComps, adjustments]);
+  }, [selectedComps, adjustments, onReconciledValue]);
 
   // Auto-reconcile when we have enough adjusted comps
   const adjustedCount = selectedComps.filter(
@@ -341,14 +360,18 @@ export const ComparableSalesPanel: React.FC = () => {
   // No subject
   if (!subject) {
     return (
-      <div className="flex items-center justify-center h-32 text-sm" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+      <div
+        className="flex items-center justify-center h-32 text-sm"
+        data-testid="comparable-sales-empty-state"
+        style={{ color: 'hsl(var(--tf-text) / 0.5)' }}
+      >
         Select a parcel to view comparable sales
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col" style={{ color: 'hsl(var(--tf-text))' }}>
+    <div className="flex flex-col" data-testid="comparable-sales-panel" style={{ color: 'hsl(var(--tf-text))' }}>
       {/* Subject context */}
       <SubjectBar subject={subject} />
 
@@ -436,15 +459,15 @@ export const ComparableSalesPanel: React.FC = () => {
                         style={{
                           background:
                             comp.similarityScore >= 0.7
-                              ? 'hsl(142 71% 45% / 0.12)'
+                              ? SUCCESS_BG_SUBTLE
                               : comp.similarityScore >= 0.4
-                                ? 'hsl(43 96% 56% / 0.12)'
+                                ? WARNING_BG_SUBTLE
                                 : 'hsl(var(--tf-text) / 0.06)',
                           color:
                             comp.similarityScore >= 0.7
-                              ? 'hsl(142 71% 45%)'
+                              ? SUCCESS_COLOR
                               : comp.similarityScore >= 0.4
-                                ? 'hsl(43 96% 56%)'
+                                ? WARNING_COLOR
                                 : 'hsl(var(--tf-text) / 0.5)',
                         }}
                       >
@@ -473,9 +496,9 @@ export const ComparableSalesPanel: React.FC = () => {
             <div
               className="text-xs px-3 py-2 rounded mb-2"
               style={{
-                background: 'hsl(43 96% 56% / 0.1)',
-                color: 'hsl(43 96% 56%)',
-                border: '1px solid hsl(43 96% 56% / 0.2)',
+                background: WARNING_BANNER_BG,
+                color: WARNING_COLOR,
+                border: WARNING_BORDER,
               }}
             >
               {adjustError}
@@ -597,8 +620,8 @@ export const ComparableSalesPanel: React.FC = () => {
         <div
           className="px-4 py-2 text-xs"
           style={{
-            color: 'hsl(43 96% 56%)',
-            background: 'hsl(43 96% 56% / 0.06)',
+              color: WARNING_COLOR,
+              background: WARNING_BANNER_BG_SUBTLE,
             borderTop: '1px solid hsl(var(--tf-border) / 0.1)',
           }}
         >

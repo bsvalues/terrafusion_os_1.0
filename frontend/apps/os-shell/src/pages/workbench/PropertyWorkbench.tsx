@@ -34,6 +34,7 @@ import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import { ContextRibbon } from '../../components/workbench/ContextRibbon';
 import { SuiteCompass } from '../../components/workbench/SuiteCompass';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
+import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
@@ -42,6 +43,7 @@ import { usePropertyStore } from '../../stores/propertyStore';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
 import { useSession } from '../../auth/useSession';
+import { useAuthContext, toOsActor } from '../../auth/useAuthContext';
 import type { SuiteCompassItem } from '../../components/workbench/SuiteCompass';
 
 // ============================================================================
@@ -160,10 +162,10 @@ const TabNavigation: React.FC<{
   onTabClick: (tab: WorkbenchTab, isActive: boolean) => void;
 }> = ({ parcelId, tabs, currentTabId, emphasizedTabId, onTabClick }) => (
   <nav
-    className="border-b px-4 flex gap-1 overflow-x-auto"
+    className="border-b px-2 flex gap-0 overflow-x-auto"
     style={{
-      borderColor: 'hsl(var(--tf-border) / 0.15)',
-      background: 'hsl(var(--tf-bg-surface) / 0.5)',
+      borderColor: 'hsl(var(--tf-border) / 0.2)',
+      background: 'hsl(var(--tf-bg-surface) / 0.6)',
     }}
   >
     {tabs.map((tab) => {
@@ -173,7 +175,7 @@ const TabNavigation: React.FC<{
           key={tab.id}
           to={tab.path ? `/property/${parcelId}/${tab.path}` : `/property/${parcelId}`}
           end={tab.path === ''}
-          className="flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
+          className="flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold transition-colors whitespace-nowrap uppercase tracking-wide"
           style={({ isActive }) => {
             const isEmphasized = emphasizedTabId === tab.id && !isActive;
             return {
@@ -233,6 +235,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const navigate = useNavigate();
   const location = useLocation();
   const session = useSession();
+  const auth = useAuthContext();
 
   // Track whether this is initial mount (to avoid trace on mount)
   const isInitialMount = useRef(true);
@@ -274,8 +277,13 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   // ── Work Mode state ──
   const [workMode, setWorkMode] = useState<WorkMode>('overview');
 
-  // ── Role-based tab visibility (wired to session.role — Wave 1) ──
-  const roles = useMemo(() => (session.role ? [session.role] : []), [session.role]);
+  // ── Role-based tab visibility (auth claims first, session fallback) ──
+  const countyId = auth.countyId ?? session.countyId;
+  const userId = auth.userId ?? session.userId;
+  const roles = useMemo(
+    () => (auth.roles.length > 0 ? [...auth.roles] : session.role ? [session.role] : []),
+    [auth.roles, session.role]
+  );
   const { visibleTabs, hiddenCount, showAll, toggleShowAll } = useWorkbenchRoles(roles);
 
   /** Tabs filtered by role visibility — order preserved, never mutated */
@@ -287,15 +295,15 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   /** SuiteCompass items filtered by role visibility */
   const compassItems = useMemo<SuiteCompassItem[]>(() => {
     const compassMap: Record<WorkbenchTabSlug, SuiteCompassItem> = {
-      summary:  { slug: 'summary',  label: 'Summary',       shortLabel: 'Sum',     icon: '\uD83D\uDCCA', affordance: 'Parcel at a glance',  color: 'var(--tf-accent)' },
-      forge:    { slug: 'forge',    label: 'TerraForge',    shortLabel: 'Forge',   icon: '\uD83D\uDD28', affordance: 'Build value',         color: 'var(--tf-suite-forge)' },
-      atlas:    { slug: 'atlas',    label: 'TerraAtlas',    shortLabel: 'Atlas',   icon: '\uD83D\uDDFA\uFE0F', affordance: 'See the county',      color: 'var(--tf-suite-atlas)' },
-      dais:     { slug: 'dais',     label: 'TerraDais',     shortLabel: 'Dais',    icon: '\u2696\uFE0F', affordance: 'Operate value',       color: 'var(--tf-suite-dais)' },
-      clerk:    { slug: 'clerk',    label: 'TerraClerk',    shortLabel: 'Clerk',   icon: '\uD83D\uDCDC', affordance: 'Record & title',      color: 'var(--tf-accent)' },
-      treasury: { slug: 'treasury', label: 'TerraTreasury', shortLabel: 'Treas',   icon: '\uD83D\uDCB0', affordance: 'Tax collection',      color: 'var(--tf-accent)' },
-      audit:    { slug: 'audit',    label: 'TerraAudit',    shortLabel: 'Audit',   icon: '\uD83D\uDD0D', affordance: 'Financial compliance', color: 'var(--tf-accent)' },
-      dossier:  { slug: 'dossier',  label: 'TerraDossier',  shortLabel: 'Dossier', icon: '\uD83D\uDCCB', affordance: 'Prove the decision',  color: 'var(--tf-suite-dossier)' },
-      pilot:    { slug: 'pilot',    label: 'TerraPilot',    shortLabel: 'Pilot',   icon: '\uD83E\uDD16', affordance: 'Act or draft',        color: 'var(--tf-accent)' },
+      summary:  { slug: 'summary',  label: 'Summary',       shortLabel: 'Sum',     icon: '📊', affordance: 'Parcel at a glance',  color: 'var(--tf-accent)' },
+      forge:    { slug: 'forge',    label: 'TerraForge',    shortLabel: 'Forge',   icon: '🔨', affordance: 'Build value',         color: 'var(--tf-suite-forge)' },
+      atlas:    { slug: 'atlas',    label: 'TerraAtlas',    shortLabel: 'Atlas',   icon: '🗺️', affordance: 'See the county',      color: 'var(--tf-suite-atlas)' },
+      dais:     { slug: 'dais',     label: 'TerraDais',     shortLabel: 'Dais',    icon: '⚖️', affordance: 'Operate value',       color: 'var(--tf-suite-dais)' },
+      clerk:    { slug: 'clerk',    label: 'TerraClerk',    shortLabel: 'Clerk',   icon: '📜', affordance: 'Record & title',      color: 'var(--tf-accent)' },
+      treasury: { slug: 'treasury', label: 'TerraTreasury', shortLabel: 'Treas',   icon: '💰', affordance: 'Tax collection',      color: 'var(--tf-accent)' },
+      audit:    { slug: 'audit',    label: 'TerraAudit',    shortLabel: 'Audit',   icon: '🔍', affordance: 'Financial compliance', color: 'var(--tf-accent)' },
+      dossier:  { slug: 'dossier',  label: 'TerraDossier',  shortLabel: 'Dossier', icon: '📋', affordance: 'Prove the decision',  color: 'var(--tf-suite-dossier)' },
+      pilot:    { slug: 'pilot',    label: 'TerraPilot',    shortLabel: 'Pilot',   icon: '🤖', affordance: 'Act or draft',        color: 'var(--tf-accent)' },
     };
     return visibleTabs.map((slug) => compassMap[slug]);
   }, [visibleTabs]);
@@ -308,9 +316,9 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: session.countyId,
-      userId: session.userId,
-      roles: [],
+      countyId,
+      userId,
+      roles,
       parcelId,
       workMode,
     };
@@ -327,7 +335,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     });
 
     return () => { cancelled = true; };
-  }, [parcelId, workMode]);
+  }, [countyId, parcelId, roles, userId, workMode]);
 
   // ── Quick Actions — mode-aware, collected from providers ──
   const [quickActions, setQuickActions] = useState<QuickActionDefinition[]>([]);
@@ -337,9 +345,9 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     let cancelled = false;
 
     const ctx: WorkbenchContext = {
-      countyId: session.countyId,
-      userId: session.userId,
-      roles: [],
+      countyId,
+      userId,
+      roles,
       parcelId,
       workMode,
     };
@@ -356,7 +364,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     });
 
     return () => { cancelled = true; };
-  }, [parcelId, workMode]);
+  }, [countyId, parcelId, roles, userId, workMode]);
 
   // ── Activity Feed — collapsible bottom panel ──
   const [activityOpen, setActivityOpen] = useState(false);
@@ -401,6 +409,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
         moduleId: 'workbench_tabs',
         parcelIdHash: parcelId ? hashParcelId(parcelId) : undefined,
         tabId: tab.id,
+        actor: toOsActor(auth),
       };
 
       executeOsAction(action, context);
@@ -441,7 +450,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   if (propertyLoading) {
     return (
       <div
-        className="flex items-center justify-center min-h-screen"
+        className="flex items-center justify-center h-full"
         style={{ background: 'hsl(var(--tf-bg))' }}
       >
         <div className="text-center p-8">
@@ -462,7 +471,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
 
   // ── Spec-compliant layout ──
   return (
-    <div className={`flex flex-col h-screen ${className}`} style={{ background: 'hsl(var(--tf-bg))' }}>
+    <div className={`flex flex-col h-full ${className}`} style={{ background: 'hsl(var(--tf-bg))' }}>
       {/* Context Ribbon — parcel identity, badges, work mode, pop-out */}
       <ContextRibbon
         parcelId={propertyData.parcelId}
@@ -488,16 +497,17 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
               surface: 'context-ribbon',
               moduleId: 'quick-actions',
               parcelIdHash: parcelId ? hashParcelId(parcelId) : undefined,
+              actor: toOsActor(auth),
             }
           );
         }}
         onPopOut={handlePopOut}
       />
 
-      {/* Workbench content: SuiteCompass (left) + Tab bar + Outlet (center) */}
+      {/* Workbench content: SuiteCompass (left on desktop) + Tab bar + Outlet */}
       <div className="flex flex-1 min-h-0">
-        {/* Suite Compass — left rail navigation */}
-        <div className="shrink-0">
+        {/* Suite Compass — left rail (desktop only, SuiteCompass handles responsive internally) */}
+        <div className="shrink-0 hidden lg:block">
           <SuiteCompass
             activeTab={currentTabId}
             onTabChange={(slug) => {
@@ -515,7 +525,8 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
 
         {/* Main content area */}
         <div className="flex flex-col flex-1 min-w-0">
-          {/* Tab Navigation — filtered by role visibility (Phase 2) */}
+
+          {/* Tab Navigation — filtered by role visibility */}
           <div className="flex items-center">
             <div className="flex-1 min-w-0">
               <TabNavigation
@@ -542,12 +553,14 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
           </div>
 
           {/* Tab Content via React Router Outlet */}
-          <main className="flex-1 overflow-auto">
-            <ErrorBoundary>
-              <Suspense fallback={<TabLoader />}>
-                <Outlet context={{ parcelId, propertyData, workMode }} />
-              </Suspense>
-            </ErrorBoundary>
+          <main className="flex-1 overflow-auto p-2">
+            <LiquidPanel variant="interactive" radius="md" className="min-h-full">
+              <ErrorBoundary>
+                <Suspense fallback={<TabLoader />}>
+                  <Outlet context={{ parcelId, propertyData, workMode }} />
+                </Suspense>
+              </ErrorBoundary>
+            </LiquidPanel>
           </main>
         </div>
       </div>
@@ -559,7 +572,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
       >
         <button
           onClick={() => setActivityOpen((o) => !o)}
-          className="flex items-center gap-2 w-full px-4 py-1.5 text-xs font-medium transition-colors"
+          className="flex items-center gap-2 w-full px-3 py-1 text-xs font-medium transition-colors"
           style={{
             color: 'hsl(var(--tf-text) / 0.5)',
             background: 'hsl(var(--tf-bg-surface) / 0.3)',

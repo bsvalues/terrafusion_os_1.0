@@ -8,6 +8,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as pilotApi from '../../api/pilotApi';
 import PropertyForge from '../../pages/workbench/tabs/PropertyForge';
 
@@ -16,23 +17,29 @@ vi.mock('../../api/pilotApi');
 
 const mockInvokeTool = pilotApi.invokeTool as vi.MockedFunction<typeof pilotApi.invokeTool>;
 
-// Test wrapper providing parcel context via outlet
+// Test wrapper providing parcel context via outlet + QueryClientProvider
 const TestWrapper: React.FC<{ parcelId: string }> = ({ parcelId }) => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+
   return (
-    <MemoryRouter initialEntries={[`/property/${parcelId}/forge`]}>
-      <Routes>
-        <Route
-          path='/property/:parcelId'
-          element={
-            <div>
-              <Outlet context={{ parcelId }} />
-            </div>
-          }
-        >
-          <Route path='forge' element={<PropertyForge />} />
-        </Route>
-      </Routes>
-    </MemoryRouter>
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[`/property/${parcelId}/forge`]}>
+        <Routes>
+          <Route
+            path='/property/:parcelId'
+            element={
+              <div>
+                <Outlet context={{ parcelId }} />
+              </div>
+            }
+          >
+            <Route path='forge' element={<PropertyForge />} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>
   );
 };
 
@@ -55,12 +62,16 @@ describe('PropertyForge', () => {
 
       expect(screen.getAllByLabelText(/tax year/i).length).toBeGreaterThan(0);
       expect(screen.getByRole('button', { name: /explain valuation/i })).toBeInTheDocument();
+      expect(screen.getByTestId('forge-baseline-disclosure')).toHaveTextContent(/Overview baseline values reflect the parcel snapshot already loaded in the workbench/i);
+      expect(screen.getByTestId('forge-baseline-disclosure')).toHaveTextContent(/Changing Tax Year here changes the governed tool requests below/i);
     });
 
     it('displays audience selector', () => {
       render(<TestWrapper parcelId='12345-001' />);
 
       expect(screen.getByLabelText(/audience/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Current Market Value/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Current Assessed/i)).not.toBeInTheDocument();
     });
   });
 
@@ -238,7 +249,7 @@ describe('PropertyForge', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /explain valuation/i }));
 
-      expect(screen.getByRole('status')).toBeInTheDocument();
+      expect(screen.getAllByRole('status').length).toBeGreaterThan(0);
     });
   });
 
@@ -270,6 +281,35 @@ describe('PropertyForge', () => {
   });
 
   describe('Value Display', () => {
+    it('labels value change results with selected-year wording instead of current wording', async () => {
+      mockInvokeTool.mockResolvedValue({
+        success: true,
+        correlationId: 'corr-value-change-test',
+        result: {
+          toolId: 'explain_value_change',
+          output: JSON.stringify({
+            parcelId: '12345-001',
+            previousValue: 300000,
+            currentValue: 325000,
+            changeAmount: 25000,
+            changePercent: 8.3,
+          }),
+        },
+      });
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      fireEvent.change(screen.getAllByLabelText(/tax year/i)[0], { target: { value: '2025' } });
+      fireEvent.click(screen.getByRole('button', { name: /Explain Value Change \(2025\)/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Compares the selected tax year to the prior year returned for this parcel\./i)).toBeInTheDocument();
+        expect(screen.getByText(/Prior Year \(2024\)/i)).toBeInTheDocument();
+        expect(screen.getByText(/Selected Year \(2025\)/i)).toBeInTheDocument();
+        expect(screen.queryByText(/^Current$/i)).not.toBeInTheDocument();
+      });
+    });
+
     it('displays value drivers when available', async () => {
       mockInvokeTool.mockResolvedValue({
         success: true,

@@ -5,33 +5,37 @@ using Microsoft.Extensions.Configuration;
 namespace TerraFusion.Data;
 
 /// <summary>
-/// Design-time DbContext factory for EF Core migrations
+/// Design-time DbContext factory for EF Core migrations.
+/// Targets the local dev Postgres container (terrafusion-postgres-dev).
 /// </summary>
 public class TerraFusionDbContextFactory : IDesignTimeDbContextFactory<TerraFusionDbContext>
 {
     public TerraFusionDbContext CreateDbContext(string[] args)
     {
-        // Build configuration from TerraFusion.API appsettings (where Production config lives)
         var apiPath = Path.Combine(Directory.GetCurrentDirectory(), "../TerraFusion.API");
+        if (!Directory.Exists(apiPath))
+            apiPath = Directory.GetCurrentDirectory();
+
         var configuration = new ConfigurationBuilder()
             .SetBasePath(apiPath)
             .AddJsonFile("appsettings.json", optional: false)
-            .AddJsonFile("appsettings.Production.json", optional: true)
+            .AddJsonFile("appsettings.Development.json", optional: true)
+            .AddJsonFile("appsettings.Development.local.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
 
-        // Create DbContext options
         var optionsBuilder = new DbContextOptionsBuilder<TerraFusionDbContext>();
 
-        // PRODUCTION POSTGRESQL: Force PostgreSQL for migrations (no SQLite fallback)
-        // This ensures EF Core migrations create tables in the actual terrafusion_production database
-        var connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? "Host=localhost;Database=terrafusion_production;Username=terrafusion;Password=terrafusion_production_secure_2025";
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+        if (string.IsNullOrEmpty(connectionString) || !connectionString.Contains("Host="))
+            connectionString = "Host=localhost;Port=5432;Database=terrafusion;Username=postgres;Password=devpassword123";
 
         optionsBuilder.UseNpgsql(connectionString, npgsqlOptions =>
         {
             npgsqlOptions.MigrationsAssembly("TerraFusion.Data");
             npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3);
+            npgsqlOptions.UseVector();
         });
 
         return new TerraFusionDbContext(optionsBuilder.Options, configuration);

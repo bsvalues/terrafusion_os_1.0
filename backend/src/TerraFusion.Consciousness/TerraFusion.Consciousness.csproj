@@ -7,7 +7,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <UseAppHost>false</UseAppHost>
-    <OutputType>Library</OutputType>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <!-- Prevent appsettings collision when referenced by TerraFusion.API -->
     <EnableDefaultContentItems>false</EnableDefaultContentItems>

@@ -15,7 +15,7 @@
 
 import { vi, describe, it, expect } from 'vitest';
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import TerraPrimeSuiteWithBoundary, { TerraPrimeSuite } from '../../pages/suites/TerraPrimeSuite';
@@ -194,6 +194,23 @@ describe('TerraPrimeSuite - Smoke Tests', () => {
       // Component should still render correctly
       const elements = screen.getAllByText(/TerraPrime/i);
       expect(elements.length).toBeGreaterThan(0);
+    });
+
+    it('opens pop-out with hardened popup features', async () => {
+      const openSpy = vi.spyOn(window, 'open').mockReturnValue({ opener: window } as Window);
+
+      renderWithRouter(<TerraPrimeSuite />);
+
+      const button = await screen.findByTitle('Open in new tab');
+      fireEvent.click(button);
+
+      expect(openSpy).toHaveBeenCalledWith(
+        'http://localhost:5184/',
+        '_blank',
+        'noopener,noreferrer'
+      );
+
+      openSpy.mockRestore();
     });
   });
 

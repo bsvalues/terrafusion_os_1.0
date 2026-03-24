@@ -368,6 +368,9 @@ jobs:
       - name: Run Vitest (full suite — 0 failures required)
         run: cd frontend && npx vitest run --reporter=verbose --reporter=json --outputFile=vitest-results.json
 
+      - name: Enforce skip ceiling (222 — sealed 2026-03-21)
+        run: cd frontend && node ../tools/registry/check-skip-ceiling.mjs vitest-results.json
+
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4

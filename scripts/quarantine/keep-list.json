@@ -80,6 +80,8 @@
     "ui-token-baseline.json",
     "ui-token-compliance.contract.json",
     "ui-token-ratchet.contract.json",
-    "vitest.config.ts"
+    "vitest.config.ts",
+    "vitest.known-fail.config.ts",
+    "sovereign.yaml"
   ]
 }

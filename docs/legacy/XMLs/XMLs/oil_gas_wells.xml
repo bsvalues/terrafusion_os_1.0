@@ -1,0 +1,612 @@
+﻿<metadata>
+  <idinfo>
+    <citation>
+      <citeinfo>
+        <origin>Washington Division of Geology and Earth Resources</origin>
+        <pubdate>20160712</pubdate>
+        <title>Oil and Gas Wells in Washington State</title>
+        <edition>version 3.3</edition>
+        <geoform>vector digital data</geoform>
+        <serinfo>
+          <sername>Digital Data Series</sername>
+          <issue>11</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>Olympia, Washington</pubplace>
+          <publish>Washington Division of Geology and Earth Resources</publish>
+        </pubinfo>
+        <onlink>https://fortress.wa.gov/dnr/geologydata/download_zip_files/ger_portal_oil_gas_wells.zip</onlink>
+      </citeinfo>
+    </citation>
+    <descript>
+      <abstract>These data contain point locations that represent oil and gas test well sites in Washington State from 1890 to present. Oil seeps were first reported in Washington about 1881 along the sea cliffs on the west side of the Olympic Peninsula. Natural gas seeps associated with mud cones and mounds were also reported in this same general area. Of all the exploratory wells that have been drilled in Washington to date, 249 reported shows for oil and gas. In 1965 the Jackson Prairie natural gas storage project was developed, which remains the Northwest's largest natural gas storage facility.</abstract>
+      <purpose>This feature class was produced to provide information on oil and gas exploration, and natural gas storage capabilities in Washington State.</purpose>
+    </descript>
+    <timeperd>
+      <timeinfo>
+        <rngdates>
+          <begdate>19120101</begdate>
+          <enddate>20160712</enddate>
+        </rngdates>
+      </timeinfo>
+      <current>Unknown</current>
+    </timeperd>
+    <status>
+      <progress>Complete</progress>
+      <update>As needed</update>
+    </status>
+    <spdom>
+      <bounding>
+        <westbc>-124.686082</westbc>
+        <eastbc>-116.893031</eastbc>
+        <northbc>49.008944</northbc>
+        <southbc>45.563213</southbc>
+      </bounding>
+    </spdom>
+    <keywords>
+      <theme>
+        <themekt>Jackson, Julia A. (ed.), Mehl, James P., Jr. (ed.), Neuendorf, Klaus K. E. (ed.), 2005, Glossary of Geology; 5th ed.: American Geological Institute, 779 p.</themekt>
+        <themekey>storage</themekey>
+        <themekey>gas</themekey>
+        <themekey>oil</themekey>
+        <themekey>natural gas</themekey>
+        <themekey>petroleum</themekey>
+        <themekey>well</themekey>
+        <themekey>nitrogen</themekey>
+        <themekey>exploration</themekey>
+        <themekey>carbon dioxide</themekey>
+        <themekey>test well</themekey>
+      </theme>
+      <place>
+        <placekt>USGS Geographic Names Information System (GNIS) http://geonames.usgs.gov/</placekt>
+        <placekey>USA</placekey>
+        <placekey>Washington State</placekey>
+      </place>
+    </keywords>
+    <accconst>None</accconst>
+    <useconst>The Washington Division of Geology and Earth Resources (DGER) shall not be held liable for improper or incorrect use of the data described and/or contained herein. This product is provided 'as is' without warranty of any kind, either expressed or implied, including, but not limited to, the implied warranties of merchantability and fitness for a particular use. The Washington State Department of Natural Resources and the authors of this product will not be liable to the user of this product for any activity involving the product with respect to the following: (a) lost profits, lost savings, or any other consequential damages; (b) the fitness of the product for a particular purpose; or (c) use of the product or results obtained from use of the product. Although these data have been processed successfully on computers of DGER, no warranty, expressed or implied, is made by DGER regarding the use of these data on any other system, nor does the fact of distribution constitute or imply any such warranty.</useconst>
+    <ptcontac>
+      <cntinfo>
+        <cntorgp>
+          <cntorg>Washington State Department of Natural Resources, Division of Geology and Earth Resources</cntorg>
+        </cntorgp>
+        <cntaddr>
+          <addrtype>mailing and physical</addrtype>
+          <address>1111 Washington St SE</address>
+          <address>PO Box 47007</address>
+          <city>Olympia</city>
+          <state>Washington</state>
+          <postal>98504-7007</postal>
+        </cntaddr>
+        <cntvoice>360-902-1450</cntvoice>
+        <cntfax>360-902-1785</cntfax>
+        <cntemail>geology@dnr.wa.gov</cntemail>
+      </cntinfo>
+    </ptcontac>
+    <datacred>Washington Division of Geology and Earth Resources</datacred>
+    <native>Microsoft Windows 7 Version 6.1 (Build 7601) Service Pack 1; Esri ArcGIS 10.3.1.4959</native>
+  </idinfo>
+  <dataqual>
+    <attracc>
+      <attraccr>Information was provided to us by the well operator. The accuracy of this data is therefore reliant on the accuracy of the information reported. The amount and quality of data in the files have increased greatly since 1954 when the Oil and Gas Conservation Act, Chapter 146 (RCW78.52.001 to 78.52.550) was put into effect which requires that a drilling permit be obtained and all logs, histories and tests be filed with the Division of Geology and Earth Resources upon completion or abandonment of a well. The more current or more documented the information is, the more accurate it is considered to be.</attraccr>
+    </attracc>
+    <logic>Each place in this data set is represented as an attributed point feature. There are no known point attribute values outside the appropriate value domains. All points are correctly coded. Overlapping points occur when wells were reentered with different permit numbers.</logic>
+    <complete>This dataset includes only wells that were drilled. Information concerning wells that were permitted but not drilled are on file at the Department of Natural Resources. The completeness of the data reflects the content of the field work and the sources indicated in this metadata report.</complete>
+    <posacc>
+      <horizpa>
+        <horizpar>Location information was provided to us by the operator. An indication of the accuracy can be ascertained by studying the location fields in the attribute table. An entry with a location "In Stanwood Station or Machias" would be considered less accurate than an entry with a location "1,512 ft from N line, 630.5 ft from W line, 110 ft SW of Old Well No. 10". All location information was checked against the location description within original hard-copy files maintained by the Washington Division of Geology and Earth Resources and corrected as necessary.</horizpar>
+      </horizpa>
+      <vertacc>
+        <vertaccr>Elevation and drilled depth measurements reported in this feature class are only as accurate as the method used by the driller recording the measurement at the time of drilling. For elevation, typical methods used may include the use of topographic maps, a ground survey, or GPS. Typically, the driller determines borehole depth by the length and number of drill rods used, when measured from an established reference point.</vertaccr>
+      </vertacc>
+    </posacc>
+    <lineage>
+      <srcinfo>
+        <srccite>
+          <citeinfo>
+            <origin>McFarland, Carl R.</origin>
+            <pubdate>19830101</pubdate>
+            <title>Oil and gas exploration in Washington, 1900-1982</title>
+            <serinfo>
+              <sername>Information Circular</sername>
+              <issue>IC-75</issue>
+            </serinfo>
+            <pubinfo>
+              <pubplace>Olympia, Washington</pubplace>
+              <publish>Washington Division of Geology and Earth Resources</publish>
+            </pubinfo>
+            <othercit>119 p.</othercit>
+            <onlink>http://www.dnr.wa.gov/Publications/ger_ic75_oil_gas_exploration.pdf</onlink>
+          </citeinfo>
+        </srccite>
+        <typesrc>onLine</typesrc>
+        <srctime>
+          <timeinfo>
+            <sngdate>
+              <caldate>19830101</caldate>
+            </sngdate>
+          </timeinfo>
+          <srccurr>publication date</srccurr>
+        </srctime>
+        <srccitea>Oil and gas exploration in Washington, 1900-1982</srccitea>
+        <srccontr>Provided location and description of oil and gas wells in the state of Washington</srccontr>
+      </srcinfo>
+      <srcinfo>
+        <srccite>
+          <citeinfo>
+            <origin>Livingston, V. E., Jr.</origin>
+            <pubdate>19580101</pubdate>
+            <title>Oil and gas exploration in Washington, 1900-1957</title>
+            <geoform>PDF</geoform>
+            <serinfo>
+              <sername>Information Circular</sername>
+              <issue>IC-29</issue>
+            </serinfo>
+            <pubinfo>
+              <pubplace>Olympia, Washington</pubplace>
+              <publish>Washington Division of Mines and Geology</publish>
+            </pubinfo>
+            <othercit>61 p., 1 plate</othercit>
+            <onlink>http://www.dnr.wa.gov/publications/ger_ic29_oil_gas_exploration_wa_1900-57.pdf</onlink>
+          </citeinfo>
+        </srccite>
+        <typesrc>onLine</typesrc>
+        <srctime>
+          <timeinfo>
+            <sngdate>
+              <caldate>19580101</caldate>
+            </sngdate>
+          </timeinfo>
+          <srccurr>publication date</srccurr>
+        </srctime>
+        <srccitea>Oil and gas exploration in Washington, 1900-1957</srccitea>
+        <srccontr>Provided location and description of oil and gas wells in the state of Washington</srccontr>
+      </srcinfo>
+      <srcinfo>
+        <srccite>
+          <citeinfo>
+            <origin> McFarland, Carl R.</origin>
+            <pubdate>19810101</pubdate>
+            <title>Oil and gas exploration in Washington, 1900-1981</title>
+            <serinfo>
+              <sername>Information Circular</sername>
+              <issue>IC-67R</issue>
+            </serinfo>
+            <pubinfo>
+              <pubplace>Olympia, Washington</pubplace>
+              <publish>Washington Division of Geology and Earth Resources</publish>
+            </pubinfo>
+            <othercit>119 p.</othercit>
+            <onlink>http://www.dnr.wa.gov/publications/ger_ic67r_oil_gas_exploration_wa_1900-81.pdf</onlink>
+          </citeinfo>
+        </srccite>
+        <typesrc>onLine</typesrc>
+        <srctime>
+          <timeinfo>
+            <sngdate>
+              <caldate>19810101</caldate>
+            </sngdate>
+          </timeinfo>
+          <srccurr>publication date</srccurr>
+        </srctime>
+        <srccitea>Oil and gas exploration in Washington, 1900-1981</srccitea>
+        <srccontr>Provided location and description of oil and gas wells in the state of Washington</srccontr>
+      </srcinfo>
+      <srcinfo>
+        <srccite>
+          <citeinfo>
+            <origin>Washington Division of Geology and Earth Resources</origin>
+            <pubdate>20090101</pubdate>
+            <title>Addendum to Information Circular 75</title>
+            <serinfo>
+              <sername>Addendum</sername>
+              <issue>Addendum to IC-75</issue>
+            </serinfo>
+            <pubinfo>
+              <pubplace>Olympia, Washington</pubplace>
+              <publish>Washington Division of Geology and Earth Resources</publish>
+            </pubinfo>
+            <othercit>15 p.</othercit>
+            <onlink>http://www.dnr.wa.gov/Publications/ger_ic75_oil_gas_exploration_addendum.pdf</onlink>
+          </citeinfo>
+        </srccite>
+        <typesrc>onLine</typesrc>
+        <srctime>
+          <timeinfo>
+            <sngdate>
+              <caldate>20090101</caldate>
+            </sngdate>
+          </timeinfo>
+          <srccurr>Unknown</srccurr>
+        </srctime>
+        <srccitea>Addendum to Information Circular 75</srccitea>
+        <srccontr>Provided location and description of oil and gas wells in the state of Washington</srccontr>
+      </srcinfo>
+      <procstep>
+        <procdesc>Information was provided to the Division of Geology and Earth Resources by operators and filed. Beginning in 1947, Information Circulars were created from the filed information provided by the operators. Points were created and attributed from information contained in these Information Circulars and addendums. Different methods were used to generate these points. Some were programmatically generated, some approximated using section divisions, and others were electronically measured from section lines. It was known that some of the well locations were in error for two reasons. Firstly, the spreadsheet data came from sources one or more iterations removed from the original data. Original data is located in hard-copy files maintained by the Washington Division of Geology and Earth Resources (Livingston, 1958; McFarland, 1981; McFarland, 1983; oil and gas addendum) pursuant to the Oil and Gas Conservation Act, Chapter 146 (RCW 78.52.001 to 78.52-550), and in hard-copy files for some wells drilled prior to 1954 when the Oil and Gas Conservation Act went into effect. Secondly, the program used to generate the initial latitude-longitude locations did not yield locations as precise as the original file information would allow. Therefore, we reviewed the locations in the hard-copy files and 1) corrected the township, range, section, and within section location data in the spreadsheet, and 2) added information for wells that had been permitted under the Oil and Gas Conservation Act but not drilled. For most records the location in the original hard-copy files is in the form of township, range, section, distance from the north or south section line, and distance from the east or west section line. In other cases, especially for wells drilled prior to the Oil and Gas Conservation Act, that degree of detail is not available. The spreadsheet with the inexact latitude-longitude information but corrected township, range, section, and within-section information was used to create a point feature class. That feature class was loaded into an ArcMap session with a line shapefile showing detailed, precisely-located township, range, and section lines. The location of each well was adjusted to agree with the most precise, corrected, township, range, section, within-section location and correct latitudes and longitudes calculated. 
+
+Version History
+
+Version 3.3 (July, 2016) 
+More complete attribution is provided. Records for scanned documents which are not associated with any drilled well have been removed. 
+
+Version 3.2 (August, 2014) 
+Undrilled wells were removed for clarity and attributes were edited for consistency and accuracy. 
+
+Version 3.1 (May, 2012) 
+The field WELL_STATUS was fully attributed to describe more clearly the status of the well based upon the contents of the documents on file with the Washington Division of Geology and Earth Resources, namely if the well was drilled or not drilled. In addition, attributes were edited for grammar and consistency.
+
+ Version 3.0 (May, 2011) 
+The location of the features within this dataset were checked against the original hard-copy files maintained by the Washington Division of Geology and Earth Resources and corrected accordingly using the process described above, in addition to addition of some boreholes that were permitted but never drilled, and some verification of other attributes. 
+
+Version 2.0 (June, 2010) 
+This dataset was migrated from a shapefile to a feature class within a geodatabase. Feature class names and attribute names were changed, and metadata for the entire dataset was updated. 
+
+Version 1.0 (October, 2008) 
+Original data in shapefile format.</procdesc>
+        <procdate>20160712</procdate>
+      </procstep>
+    </lineage>
+  </dataqual>
+  <spdoinfo>
+    <direct>Vector</direct>
+    <ptvctinf>
+      <sdtsterm>
+        <sdtstype>Entity point</sdtstype>
+        <ptvctcnt>830</ptvctcnt>
+      </sdtsterm>
+    </ptvctinf>
+  </spdoinfo>
+  <spref>
+    <horizsys>
+      <planar>
+        <mapproj>
+          <mapprojn>NAD 1983 HARN StatePlane Washington South FIPS 4602 Feet</mapprojn>
+          <lambertc>
+            <stdparll>45.83333333333334</stdparll>
+            <stdparll>47.33333333333334</stdparll>
+            <longcm>-120.5</longcm>
+            <latprjo>45.33333333333334</latprjo>
+            <feast>1640416.666666667</feast>
+            <fnorth>0.0</fnorth>
+          </lambertc>
+        </mapproj>
+        <planci>
+          <plance>coordinate pair</plance>
+          <coordrep>
+            <absres>0.00048828125</absres>
+            <ordres>0.00048828125</ordres>
+          </coordrep>
+          <plandu>foot_us</plandu>
+        </planci>
+      </planar>
+      <geodetic>
+        <horizdn>D North American 1983 HARN</horizdn>
+        <ellips>GRS 1980</ellips>
+        <semiaxis>6378137.0</semiaxis>
+        <denflat>298.257222101</denflat>
+      </geodetic>
+    </horizsys>
+  </spref>
+  <eainfo>
+    <detailed>
+      <enttyp>
+        <enttypl>oil_gas_wells</enttypl>
+        <enttypd>This dataset contains API numbers, permit numbers, file numbers, operators, well names, county location, section township range locations, site area location, lattitude and longitude, elevation, depth, start and stop dates, status, indicates possession of cuttings or core samples, shows, tools used, possession of logs reports and tests, stratigraphy, production and other pertinent information.</enttypd>
+        <enttypds>Washington Division of Geology and Earth Resources</enttypds>
+      </enttyp>
+      <attr>
+        <attrlabl>OBJECTID</attrlabl>
+        <attrdef>Internal feature number.</attrdef>
+        <attrdefs>Esri</attrdefs>
+        <attrdomv>
+          <udom>Sequential unique whole numbers that are automatically generated.</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>Shape</attrlabl>
+        <attrdef>Feature geometry.</attrdef>
+        <attrdefs>Esri</attrdefs>
+        <attrdomv>
+          <udom>Coordinates defining the features.</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>OIL_GAS_ID</attrlabl>
+        <attrdef>Unique point identifier</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique numerical identifier</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>API_NUMBER</attrlabl>
+        <attrdef>American Petroleum Institute's nationwide system for identifying all oil and gas wells in the country.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique numerical identifier</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>WA_FILE_NUMBER</attrlabl>
+        <attrdef>Internal Washington Division of Geology and Earth Resources file number.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique alphanumerical identifier</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>WELL_NAME</attrlabl>
+        <attrdef>Name given to well, if any.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique text description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>ALTERNATE_NAMES</attrlabl>
+        <attrdef>Alternate names given to wells, if any.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique text description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>COMPANY_NAME</attrlabl>
+        <attrdef>The person or company, either proprietor or lessee, actually operating a well or lease, generally the oil or gas company that engages the drilling, service and workover contractors.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique text description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>COUNTY</attrlabl>
+        <attrdef>The county in which the site is located.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique text description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>ELEVATION_REFERENCE</attrlabl>
+        <attrdef>Point of reference used to determine elevation.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Descriptive text</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>ELEVATION_FEET</attrlabl>
+        <attrdef>Elevation of the well in feet. A value of -9999 indicates no data.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Numerical description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>DEPTH_FEET</attrlabl>
+        <attrdef>Total drilled depth measured in feet.  A value of -9999 represents a lack of data.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Numerical description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>PERMIT_DATE</attrlabl>
+        <attrdef>Date permit was filed.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Temporal description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>DRILL_START_DATE</attrlabl>
+        <attrdef>Date drilling started. Also known as the spud date.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Temporal description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>DATE_COMMENTS</attrlabl>
+        <attrdef>General information</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Free text field</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>DRILL_STOP_DATE</attrlabl>
+        <attrdef>Date drilling ended</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Temporal description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>HYDROCARBON_SHOW</attrlabl>
+        <attrdef>Whether oil and/or gas were found in the well.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <edom>
+            <edomv>gas</edomv>
+            <edomvd>Natural gas was found</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>gas, oil</edomv>
+            <edomvd>Both natural gas and petroleum were found</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>oil</edomv>
+            <edomvd>Petroleum was found</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>LATITUDE</attrlabl>
+        <attrdef>The latitude of the location in decimal degrees.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Coordinate</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>LONGITUDE</attrlabl>
+        <attrdef>The longitude of the location in decimal degrees.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Coordinate</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>TOWNSHIP</attrlabl>
+        <attrdef>Township number</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Location description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>RANGE</attrlabl>
+        <attrdef>Range number</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Location description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>SECTION</attrlabl>
+        <attrdef>Section identifier</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Location description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>LOCATION_DESCRIPTION</attrlabl>
+        <attrdef>Textual description of site location as recorded in the permit files.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Free text description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>WELL_STATUS</attrlabl>
+        <attrdef>Status of the well. Blank field indicates that status has not been reported by operator.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Free text description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>ARCHIVED_SAMPLES</attrlabl>
+        <attrdef>Description of cutting or core samples archived with the Washington State Department of Natural Resources, if any.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Free text description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>SCANNED_DOCUMENTS_FLAG</attrlabl>
+        <attrdef>Indicates the availability of scanned documents pertaining to the permitted borehole, either  geophysical logs or permit documents.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <edom>
+            <edomv>Yes</edomv>
+            <edomvd>Scanned docuements associated with the well are available</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>No</edomv>
+            <edomvd>Scanned docuements associated with the well are not available</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>PERMIT_FLAG</attrlabl>
+        <attrdef>Indicates whether or not the borehole was permitted by the Washington State Department of Natural Resources Division of Geology and Earth Resources.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <edom>
+            <edomv>Yes</edomv>
+            <edomvd>Borehole was permitted for oil and gas exploration by the Washington State Division of Geology and Earth Resources.</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>No</edomv>
+            <edomvd>Borehole was not permitted by the Washington State Division of Geology and Earth Resources for oil and gas exploration.</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>COMMENTS</attrlabl>
+        <attrdef>Additional information provided about the site.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Free text field</udom>
+        </attrdomv>
+      </attr>
+    </detailed>
+  </eainfo>
+  <distinfo>
+    <distrib>
+      <cntinfo>
+        <cntorgp>
+          <cntorg>Division of Geology and Earth Resources, Washington State Department of Natural Resources</cntorg>
+        </cntorgp>
+        <cntaddr>
+          <addrtype>mailing and physical</addrtype>
+          <address>1111 Washington St SE</address>
+          <address>PO Box 47007</address>
+          <city>Olympia</city>
+          <state>Washington</state>
+          <postal>98504-7007</postal>
+        </cntaddr>
+        <cntvoice>360-902-1450</cntvoice>
+        <cntfax>360-902-1785</cntfax>
+        <cntemail>geology@dnr.wa.gov</cntemail>
+      </cntinfo>
+    </distrib>
+    <distliab>This digital data and metadata, (hereinafter collectively referred to as the "information"), are provided on an "AS IS", "AS AVAILABLE" and "WITH ALL FAULTS" basis. Neither Department of Natural Resources nor any of its officials and employees makes any warranty of any kind for this information, express or implied, including but not limited to any warranties of merchantability or fitness for a particular purpose, nor shall the distribution of this information constitute any warranty. The information is collected from various sources and will change over time without notice. DNR and its officials and employees assume no responsibility or legal liability for the accuracy, completeness, reliability, timeliness, or usefulness of any of the information provided nor do they represent that the use of any of the information will not infringe privately owned rights. The information is not intended to constitute advice nor is it to be used as a substitute for specific advice from a licensed professional. You should not act (or refrain from acting) based upon the information without independently verifying the information and, as necessary, obtaining professional advice regarding your particular facts and circumstances. References to any specific commercial product, process, and service by trade name, trademark, or manufacturer do not constitute or imply endorsement, recommendation, or favoring by DNR and its officials and employees. IN NO EVENT WILL DNR BE LIABLE TO YOU OR ANY THIRD PARTY FOR ANY DAMAGES ARISING OUT OF THE USE OF OR INABILITY TO USE THE DIGITAL DATA, EVEN IF DNR IS ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</distliab>
+    <stdorder>
+      <digform>
+        <digtinfo>
+          <formname>geodatabase</formname>
+          <filedec>no compression applied</filedec>
+        </digtinfo>
+      </digform>
+      <fees>None</fees>
+      <ordering>Available upon request through Washington Division of Geology and Earth Resources Email: geology@dnr.wa.gov Phone: 360-902-1450</ordering>
+    </stdorder>
+    <techpreq>ESRI ArcInfo 10.0 or higher</techpreq>
+  </distinfo>
+  <metainfo>
+    <metd>20160712</metd>
+    <metc>
+      <cntinfo>
+        <cntorgp>
+          <cntorg>Division of Geology and Earth Resources, Washington State Department of Natural Resources</cntorg>
+        </cntorgp>
+        <cntaddr>
+          <addrtype>mailing and physical</addrtype>
+          <address>PO Box 47007</address>
+          <address>1111 Washington St SE</address>
+          <city>Olympia</city>
+          <state>Washington</state>
+          <postal>98504-7007</postal>
+        </cntaddr>
+        <cntvoice>360-902-1450</cntvoice>
+        <cntfax>360-902-1785</cntfax>
+        <cntemail>geology@dnr.wa.gov</cntemail>
+      </cntinfo>
+    </metc>
+    <metstdn>FGDC Content Standard for Digital Geospatial Metadata</metstdn>
+    <metstdv>FGDC-STD-001-1998</metstdv>
+    <mettc>local time</mettc>
+  </metainfo>
+</metadata>

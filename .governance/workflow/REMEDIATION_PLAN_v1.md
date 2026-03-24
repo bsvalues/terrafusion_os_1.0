@@ -5,15 +5,71 @@
 
 ---
 
+## EXECUTION OVERRIDE — MARCH 18, 2026
+
+This memo remains useful as a remediation inventory, but it is not the authoritative execution order for the active lane.
+
+**Canonical execution order now lives in:**
+- `plan.md` Slice 25.4
+- `progress.md` Slice 25.4
+- `proof-posture.md` for the current Muse/Workbench-host proof boundary
+- `WAVE0_DEBT_LEDGER_v1.md` for the current hygiene inventory baseline
+
+**Current gate order through Wave 2:**
+1. Workflow truth reconciliation ✅
+2. Workbench real-host gate stabilization ✅
+3. Forge lane F1 — Comparable Sales rehost proof ✅
+4. Forge lane F2 — Income Valuation rehost proof ✅
+5. Wave 0 inventory and governance pass ✅
+6. Wave 1 auth/context threading ✅
+7. Wave 2 backend truth inventory
+8. Wave 2 frontend GPT/RAG wiring
+9. Hard stop / review before Waves 3-5
+
+**Non-negotiable proof rule:**
+No later-wave expansion opens until these three truths are green at the same time:
+- workflow canon matches reality
+- Workbench real-host proof is resolved
+- the first live Forge rehost surfaces are proven or explicitly bounded by evidence
+
+**Checkpoint truth:**
+- Muse-first pilot is sealed on committed code only
+- No lawful staged-cache proof exists at this checkpoint
+- Phase 2 is closed via bounded real-host harness stabilization in `workbenchRealHosting.gate.test.tsx`
+- Wave 0 inventory is now grounded by current measured counts, not the older zero-console assumption
+- Wave 1 auth/context threading is closed with proof on the named surfaces
+- The next unblocked implementation lane is Wave 2 backend truth inventory
+
+**Immediate next-lane rule:**
+- If Wave 0 inventory/debt ledger is not explicitly closed, do Wave 0 next.
+- If Wave 0 is already explicitly closed, proceed to Wave 1 auth/context threading.
+- If Wave 1 auth/context threading is explicitly closed, proceed to Wave 2 backend truth inventory.
+- Current repo state: `WAVE0_DEBT_LEDGER_v1.md` is published and Wave 1 auth/context threading is now closed, so Wave 2 backend truth inventory is next.
+
+### Phase 7B governed-core evidence packet (for 7E intake)
+
+- Evidence artifact: [`PHASE_7B_EVIDENCE_SUMMARY.md`](./PHASE_7B_EVIDENCE_SUMMARY.md)
+- Status: 7B is evidence-closed on governed-core proof obligations.
+- Constraint: this is an intake artifact, not a dependency override.
+- Dependency wall remains:
+  - `7A -> 7C`
+  - `7C/7D -> 7E`
+  - `7A + 7B + 7C (+7D) + 7E -> 8`
+- Execution update (2026-03-19): `7C` is now closed via Wave 2 proof closure (`W2.2` + `W2.CLOSE`), `7D` remains optional/not-invoked, and the 7E dependency-prep blocker is satisfied.
+
+---
+
 ## TOOLS & CONSTRAINTS
 
 | Tool | Status | Best For |
 |------|--------|----------|
 | **Copilot (Claude Opus 4.6)** | Available now | Interactive editing, complex refactors, contract tests, type work, multi-file coordination |
 | **Claude Code (Claude Desktop)** | Available now | Large autonomous tasks, bulk sweeps, cross-file analysis, backend .NET work |
-| **Codex (VS Code Insiders)** | Out until 3/18 | Batch operations, parallel file edits, mechanical transforms (console sweep, type fixes) |
+| **Codex (VS Code Insiders)** | Available now | Bounded recon, parallel audits, mechanical transforms, test backfills, proof loops |
 
-**Strategy**: Use Copilot + Claude Code for Weeks 1–2. Reserve Codex for mechanical bulk work starting 3/18.
+**Strategy**: Use Copilot + Claude Code for architecture-heavy and risky slices. Use Codex for bounded execution, audits, test backfills, and mechanical proof work.
+
+**Codex operating rule**: When Codex is assigned a slice in this plan, use the bounded prompt frames in [`CODEX_DIRECTIVE_PACK_v1.md`](./CODEX_DIRECTIVE_PACK_v1.md). Codex stays in recon, execution, and review lanes; scope, governance exceptions, architecture, and merge judgment stay with the human operator.
 
 ---
 
@@ -23,12 +79,12 @@ The original audit was directionally correct but overstated several claims. Vali
 
 | Claim | Audit Said | Actual | Delta |
 |-------|-----------|--------|-------|
-| Console statements | 999 across 224 files | 200+ in os-shell (rest in QUARANTINE/archive) | Actionable scope ~200 |
+| Console statements | 999 across 224 files | 0 in active `frontend/apps/os-shell/src` (current probe) | Audit stale for the active surface |
 | TODO comments | 42 critical | 152 total (8 critical RAG stubs confirmed) | More than reported |
 | Workbench tab stubs | 8 stub pages | 0 stubs — all tabs have real MWUX governed tools | Audit wrong |
 | describe.skip/it.skip | 40+ | 0 found | Audit wrong (likely counted quarantined tests) |
-| @ts-ignore | 5 | 6 (Recharts + Chrome APIs) | Close |
-| `any` types | 50+ | 200+ | Worse than reported |
+| @ts-ignore | 5 | 0 in active `frontend/apps/os-shell/src` (current probe) | Closed in current surface |
+| `any` types | 50+ | 1010 raw references in active `frontend/apps/os-shell/src` (current probe) | Much worse than reported; requires triage |
 | marketplace/ | Empty directory | Directory doesn't exist at all | Worse |
 | Backend AI stubs | 11 methods | 3 confirmed bare returns in Orchestrator | Overstated |
 | PropertyValuation stubs | Hardcoded 425000m | Has real implementation structure | Partially wrong |
@@ -57,20 +113,20 @@ The original audit was directionally correct but overstated several claims. Vali
 
 ### WAVE 0: HYGIENE SWEEP (Mar 16–18)
 **Goal**: Remove noise, establish clean baselines.
-**Tools**: Copilot + Claude Code (Codex joins 3/18)
+**Tools**: Copilot + Claude Code + Codex
 
 | # | Task | Files | Tool | Status |
 |---|------|-------|------|--------|
 | 0.1 | Commit 48 pending changes (clean working tree) | 48 files | Copilot | |
-| 0.2 | Console.log sweep — replace with structured logger or remove | ~200 in os-shell | Codex (3/18) or Claude Code | |
-| 0.3 | Create `useLogger()` hook to replace console.log in key paths | 1 new file | Copilot | |
-| 0.4 | Audit `any` types — triage into fixable/Recharts-compat/test-only | grep results | Claude Code (research) | |
-| 0.5 | Fix 6 @ts-ignore with proper type assertions | 2 files | Copilot | |
+| 0.2 | Inventory raw console usage in active `os-shell` and stop claiming a zero-console baseline | `frontend/apps/os-shell/src` | Codex or Claude Code | Raw `console.` count = `960` |
+| 0.3 | Create `useLogger()` hook candidate only after a bounded cleanup slice is approved | 1 new file | Copilot | Deferred behind inventory |
+| 0.4 | Audit `any` types — triage into fixable/Recharts-compat/test-only | grep results | Claude Code (research) | Ledger now published |
+| 0.5 | Preserve the zero-`@ts-ignore` baseline and only remediate new regressions | `frontend/apps/os-shell/src` | Copilot | Baseline now `0` |
 
 **Exit Criteria**:
 - `git status` clean
-- Console statements < 50 (monitoring/debug-only, gated behind `import.meta.env.DEV`)
-- @ts-ignore count = 0
+- Console usage is inventoried honestly and future cleanup slices are file-fenced against the measured baseline
+- @ts-ignore count remains `0`
 
 ---
 
@@ -78,20 +134,27 @@ The original audit was directionally correct but overstated several claims. Vali
 **Goal**: Thread real auth through all surfaces. Kill hardcoded user IDs.
 **Tools**: Copilot (primary) + Codex (bulk replacements)
 
-| # | Task | Files | Tool |
-|---|------|-------|------|
-| 1.1 | Implement `useAuthContext()` hook with RBAC claims | 1 new hook | Copilot |
-| 1.2 | Wire auth to PropertyWorkbench (replace `[]` roles) | PropertyWorkbench.tsx | Copilot |
-| 1.3 | Wire auth to GPTManagementDashboard (replace hardcoded user ID) | GPTManagementDashboard.tsx | Copilot |
-| 1.4 | Wire auth to ResearchPortal (replace `phd-researcher-001`) | ResearchPortal.tsx | Copilot |
-| 1.5 | Wire auth to QuantumModuleManager (replace permission stub) | QuantumModuleManager.ts | Copilot |
-| 1.6 | Wire `useTodaysWork` to real backend task API | useTodaysWork.ts + contract test | Copilot |
-| 1.7 | Wire `useBudgetData` to R2 backend | useBudgetData.ts + contract test | Copilot |
+| # | Task | Files | Tool | Status |
+|---|------|-------|------|--------|
+| 1.1 | Implement `useAuthContext()` hook with RBAC claims | 1 new hook | Copilot | Already present |
+| 1.2 | Wire auth to PropertyWorkbench (replace `[]` roles) | PropertyWorkbench.tsx | Copilot | ✅ |
+| 1.3 | Wire auth to GPTManagementDashboard (replace hardcoded user ID) | GPTManagementDashboard.tsx | Copilot | ✅ |
+| 1.4 | Wire auth to ResearchPortal (replace `phd-researcher-001`) | ResearchPortal.tsx | Copilot | ✅ |
+| 1.5 | Wire auth to QuantumModuleManager (replace permission stub) | QuantumModuleManager.ts | Copilot | ✅ |
+| 1.6 | Wire `useTodaysWork` to real backend task API | useTodaysWork.ts + contract test | Copilot | ✅ |
+| 1.7 | Wire `useBudgetData` to R2 backend | useBudgetData.ts + contract test | Copilot | ✅ |
 
 **Exit Criteria**:
 - Zero hardcoded user IDs in production code
 - Auth context flows from shell → workbench → suite tabs
 - Contract tests for each wired hook
+
+**Execution Outcome (2026-03-18):**
+- `PropertyWorkbench.tsx` and `PropertyWorkbenchWindow.tsx` now thread auth-derived `countyId`, `userId`, and `roles` into Workbench context with session fallback.
+- `ResearchPortal.tsx` now uses governed auth/session identity plus `researchSessionAPI` instead of hardcoded researcher/institution strings in production code.
+- `QuantumModuleManager.ts` now derives module permissions and security level from canonical auth/session helpers instead of direct `tf.session.dev` reads.
+- `useTodaysWork.ts` and `useBudgetData.ts` are now API-first hooks with explicit fallback provenance.
+- Proof passed through the targeted Wave 1 auth bundle (`161/161`), `pnpm run type-check`, and `phase83-tools` (`54/54`).
 
 ---
 
@@ -194,9 +257,9 @@ The original audit was directionally correct but overstated several claims. Vali
 |-----------|-----------|-----|
 | Interactive component edits | **Copilot** | File context, preview, iterative refinement |
 | Contract test writing | **Copilot** | Needs conversation context, test patterns |
-| Bulk find-and-replace | **Codex** | Parallel file edits, mechanical transforms |
-| Console.log sweep | **Codex** | 200+ locations, mechanical |
-| `any` type fixing | **Codex** | Repetitive, per-file |
+| Bulk find-and-replace | **Codex** | Parallel file edits, mechanical transforms inside a bounded prompt pack |
+| Console.log sweep | **Codex** | 200+ locations, mechanical, and suited to execution-mode proof loops |
+| `any` type fixing | **Codex** | Repetitive, per-file, and safer when constrained to approved files plus proof commands |
 | Backend .NET service impl | **Claude Code** | Large file context, autonomous work |
 | Cross-file refactors | **Claude Code** | Multi-file reasoning |
 | Auth context threading | **Copilot** | Needs understanding of component tree |
@@ -205,6 +268,8 @@ The original audit was directionally correct but overstated several claims. Vali
 | Type definitions | **Copilot** | os-platform/core/types/ is allowed scope |
 | Research/investigation | **Claude Code** | Autonomous exploration |
 
+For Codex task framing, see [`CODEX_DIRECTIVE_PACK_v1.md`](./CODEX_DIRECTIVE_PACK_v1.md) for the standard `Objective` → `Output` operator contract and the TerraFusion-specific recon, execution, and review prompts.
+
 ---
 
 ## DAILY CADENCE
@@ -212,7 +277,7 @@ The original audit was directionally correct but overstated several claims. Vali
 ### Week 1 (Mar 16–18): Wave 0 — Hygiene
 - **Mon 3/16**: Commit pending changes, start console sweep research
 - **Tue 3/17**: Create useLogger hook, begin console replacement (Claude Code)
-- **Wed 3/18**: Codex available — finish console sweep, fix @ts-ignore
+- **Wed 3/18**: Codex available — verify hygiene baselines, reconcile workflow drift, start bounded `any` triage
 
 ### Week 2 (Mar 18–21): Wave 1 — Auth Context
 - **Thu 3/19**: useAuthContext hook, wire to PropertyWorkbench
@@ -283,8 +348,8 @@ No modifications to: `**/ARCHIVE/**`, `specialized/**`, `applications/**`, `os-p
 
 ```bash
 # Wave 0 exit
-git grep -c "console\." frontend/apps/os-shell/src/ | wc -l  # Target: < 50
-git grep "@ts-ignore" frontend/apps/os-shell/src/              # Target: 0
+git grep -c "console\." frontend/apps/os-shell/src/ | wc -l  # Target: 0 in active surface
+git grep "@ts-ignore" frontend/apps/os-shell/src/              # Target: 0 (already true)
 
 # Wave 1 exit
 git grep "hardcoded\|phd-researcher\|TODO.*auth\|TODO.*user ID" frontend/apps/os-shell/src/  # Target: 0

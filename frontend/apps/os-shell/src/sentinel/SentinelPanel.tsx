@@ -412,7 +412,7 @@ export function SentinelPanel({ open, onClose }: SentinelPanelProps) {
 
               {autoScroll && (
                 <div className='inline-flex items-center gap-1 text-[9px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded border border-indigo-500/30 w-fit'>
-                  LIVE
+                  AUTO-SCROLL
                 </div>
               )}
 

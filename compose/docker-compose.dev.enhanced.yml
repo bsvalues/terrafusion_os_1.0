@@ -17,9 +17,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:5001;http://+:5000
-      - ConnectionStrings__DefaultConnection=Host=postgres;Database=terrafusion_dev;Username=terrafusion;Password=dev_password_2024
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=terrafusion_dev;Username=terrafusion;Password=${TF_DEV_DB_PASSWORD}
       - ConnectionStrings__Redis=redis:6379
-      - Harris_PACS_ConnectionString=Host=postgres;Database=harris_pacs_dev;Username=harris;Password=pacs_dev_2024
+      - Harris_PACS_ConnectionString=Host=postgres;Database=harris_pacs_dev;Username=harris;Password=${TF_DEV_PACS_PASSWORD}
       - AI_Swarm_Size=1008
       - Quantum_Performance_Enabled=true
       - Benton_County_Mode=true
@@ -74,7 +74,7 @@ services:
     environment:
       - POSTGRES_DB=terrafusion_dev
       - POSTGRES_USER=terrafusion
-      - POSTGRES_PASSWORD=dev_password_2024
+      - POSTGRES_PASSWORD=${TF_DEV_DB_PASSWORD}
       - POSTGRES_MULTIPLE_DATABASES=harris_pacs_dev
     ports:
       - "5432:5432"
@@ -141,7 +141,7 @@ services:
     ports:
       - "3001:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=terrafusion_dev_2024
+      - GF_SECURITY_ADMIN_PASSWORD=${TF_DEV_GRAFANA_PASSWORD}
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - grafana_data:/var/lib/grafana

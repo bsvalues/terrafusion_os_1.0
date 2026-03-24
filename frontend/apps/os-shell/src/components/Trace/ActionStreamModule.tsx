@@ -409,7 +409,7 @@ export const ActionStreamModule: React.FC<ActionStreamModuleProps> = ({
 
       const context: OsActionContext = {
         navigate,
-        suiteId: 'trace',
+        suiteId: 'os', // Trace is an OS-level feature (OsFeatureId), not a suite
         surface: 'trace',
       };
 

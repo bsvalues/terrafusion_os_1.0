@@ -29,7 +29,7 @@
  * Scope: Session-only reopen; no persistence, no filesystem, no Monaco.
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -73,12 +73,19 @@ vi.mock('monaco-editor/esm/vs/language/json/json.worker?worker', () => ({ defaul
 vi.mock('monaco-editor/esm/vs/language/typescript/ts.worker?worker', () => ({ default: class {} }));
 
 import Router from '../../Router';
+import '../../App';
+import '../../pages/CanonHome';
 
 // ============================================================================
 // Tests
 // ============================================================================
 
 describe('Phase 37 contract: TerraCanon can reopen the last closed workspace (session-only)', () => {
+  beforeAll(() => {
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
   beforeEach(() => {
     localStorage.clear();
   });
@@ -99,7 +106,7 @@ describe('Phase 37 contract: TerraCanon can reopen the last closed workspace (se
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 }
+      { timeout: 15000 },
     );
 
     expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();

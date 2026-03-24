@@ -63,7 +63,7 @@ describe('Governance evidence + execution surfaces', () => {
     const events: PilotTraceEvent[] = [
       {
         eventId: 'evt-1',
-        type: 'tool_completed',
+        type: 'tool_succeeded',
         toolId: 'explain_value_change',
         correlationId: 'corr-1',
         summary: 'Value change explained.',
@@ -88,7 +88,7 @@ describe('Governance evidence + execution surfaces', () => {
     const events: PilotTraceEvent[] = [
       {
         eventId: 'evt-2',
-        type: 'tool_completed',
+        type: 'tool_succeeded',
         toolId: 'summarize_dossier',
         correlationId: 'corr-2',
         summary: 'Dossier summary generated.',
@@ -282,7 +282,7 @@ describe('Governance evidence + execution surfaces', () => {
       events: [
         {
           eventId: 'evt-diag-1',
-          type: 'tool_completed',
+          type: 'tool_succeeded',
           toolId: 'explain_value_change',
           correlationId: 'corr-diag-1',
           summary: 'Completed with trace payload.',
@@ -363,7 +363,7 @@ describe('Governance evidence + execution surfaces', () => {
       events: [
         {
           eventId: 'evt-diag-403',
-          type: 'tool_completed',
+          type: 'tool_succeeded',
           toolId: 'explain_value_change',
           correlationId: 'corr-diag-403',
           summary: 'Completed with trace payload.',

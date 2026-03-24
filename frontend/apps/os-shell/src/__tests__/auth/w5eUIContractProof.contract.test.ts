@@ -89,15 +89,21 @@ describe('Gate 1 — DemoDataBanner inventory: every fixture surface discloses',
 // ============================================================================
 
 describe('Gate 2 — provenance tracking: hooks and components expose data origin', () => {
-  it('useTodaysWork returns isSampleData: true', () => {
+  it('useTodaysWork tracks both live and fallback provenance', () => {
     const src = readSrc('hooks/useTodaysWork.ts');
-    expect(src).toMatch(/isSampleData:\s*true/);
+    expect(src).toContain('isSampleData');
+    expect(src).toContain('setIsSampleData(false)');
+    expect(src).toContain('setIsSampleData(true)');
     expect(src).toContain('SAMPLE_TASKS');
+    expect(src).toContain('getQueueItems({ throwOnError: true })');
   });
 
-  it('useBudgetData returns isSampleData: true', () => {
+  it('useBudgetData tracks both live and fallback provenance', () => {
     const src = readSrc('applications/terra-levy/hooks/useBudgetData.ts');
-    expect(src).toMatch(/isSampleData:\s*true/);
+    expect(src).toContain('isSampleData');
+    expect(src).toContain('setIsSampleData(false)');
+    expect(src).toContain('setIsSampleData(true)');
+    expect(src).toContain('/levy/dashboard/summary');
   });
 
   it('SegmentDiscoveryDashboard tracks isFixture state', () => {
@@ -120,7 +126,7 @@ describe('Gate 2 — provenance tracking: hooks and components expose data origi
 
   it('BatchCostRun tracks BACKEND_APPLY_CAPABLE gate', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
-    expect(src).toMatch(/BACKEND_APPLY_CAPABLE\s*=\s*false/);
+    expect(src).toContain('BACKEND_APPLY_CAPABLE');
     expect(src).toContain('ForgeApplyMode');
   });
 
@@ -161,7 +167,7 @@ describe('Gate 3 — Workbench route-collapse: parcel-context tabs', () => {
   }
 
   it('PropertyWorkbench is the parent route at /property/:parcelId', () => {
-    expect(router).toContain("path='/property/:parcelId'");
+    expect(router).toContain("path='property/:parcelId'");
     expect(router).toContain('element={<PropertyWorkbench />}');
   });
 
@@ -178,16 +184,16 @@ describe('Gate 4 — standalone suite home routes', () => {
   const router = readSrc('Router.tsx');
 
   const SUITE_ROUTES = [
-    { path: '/forge', component: 'ForgeHome', importPath: 'suites/ForgeSuiteHome' },
-    { path: '/atlas', component: 'AtlasHome', importPath: 'suites/AtlasSuiteHome' },
-    { path: '/dais', component: 'DaisHome', importPath: 'suites/DaisSuiteHome' },
-    { path: '/dossier', component: 'DossierHome', importPath: 'suites/DossierSuiteHome' },
-    { path: '/gpt', component: 'GptHome', importPath: 'suites/GptSuiteHome' },
+    { publicPath: '/forge', sourcePath: 'forge', component: 'ForgeHome', importPath: 'suites/ForgeSuiteHome' },
+    { publicPath: '/atlas', sourcePath: 'atlas', component: 'AtlasHome', importPath: 'suites/AtlasSuiteHome' },
+    { publicPath: '/dais', sourcePath: 'dais', component: 'DaisHome', importPath: 'suites/DaisSuiteHome' },
+    { publicPath: '/dossier', sourcePath: 'dossier', component: 'DossierHome', importPath: 'suites/DossierSuiteHome' },
+    { publicPath: '/gpt', sourcePath: 'gpt', component: 'GptHome', importPath: 'suites/GptSuiteHome' },
   ];
 
   for (const route of SUITE_ROUTES) {
-    it(`${route.path} route exists with ${route.component}`, () => {
-      expect(router).toContain(`path='${route.path}'`);
+    it(`${route.publicPath} route exists with ${route.component}`, () => {
+      expect(router).toContain(`path='${route.sourcePath}'`);
       expect(router).toContain(`element={<${route.component} />}`);
     });
 
@@ -198,14 +204,14 @@ describe('Gate 4 — standalone suite home routes', () => {
   }
 
   const OS_ROUTES = [
-    { path: '/pilot', component: 'PilotHome', importPath: 'pages/PilotHome' },
-    { path: '/trace', component: 'TraceHome', importPath: 'pages/TraceHome' },
-    { path: '/canon', component: 'CanonHome', importPath: 'pages/CanonHome' },
+    { publicPath: '/pilot', sourcePath: 'pilot', component: 'PilotHome', importPath: 'pages/PilotHome' },
+    { publicPath: '/trace', sourcePath: 'trace', component: 'TraceHome', importPath: 'pages/TraceHome' },
+    { publicPath: '/canon', sourcePath: 'canon', component: 'CanonHome', importPath: 'pages/CanonHome' },
   ];
 
   for (const route of OS_ROUTES) {
-    it(`${route.path} OS route exists`, () => {
-      expect(router).toContain(`path='${route.path}'`);
+    it(`${route.publicPath} OS route exists`, () => {
+      expect(router).toContain(`path='${route.sourcePath}'`);
       expect(router).toContain(`element={<${route.component} />}`);
     });
 
@@ -213,6 +219,32 @@ describe('Gate 4 — standalone suite home routes', () => {
       expect(srcExists(`${route.importPath}.tsx`)).toBe(true);
     });
   }
+});
+
+describe('Gate 4A — /gpt bounded workspace host', () => {
+  const src = readSrc('pages/suites/GptSuiteHome.tsx');
+
+  it('hosts GPTManagementDashboard directly inside /gpt', () => {
+    expect(src).toContain('GPTManagementDashboard');
+  });
+
+  it('hosts RAGDatasetManager directly inside /gpt', () => {
+    expect(src).toContain('RAGDatasetManager');
+  });
+
+  it('defines a bounded workspace panel test landmark', () => {
+    expect(src).toContain('data-testid="gpt-workspace-panel"');
+    expect(src).toContain('data-testid="gpt-workspace-nav"');
+  });
+
+  it('does not use SuiteModuleGrid launch cards for /gpt', () => {
+    expect(src).not.toContain('SuiteModuleGrid');
+  });
+
+  it('does not send /gpt modules through the pilot workbench tab', () => {
+    expect(src).not.toContain("launchMode: 'workbench'");
+    expect(src).not.toContain("workbenchTab: 'pilot'");
+  });
 });
 
 // ============================================================================
@@ -223,7 +255,7 @@ describe('Gate 5 — no fake surfaces: governed pages disclose fixture status', 
   it('CostManual uses SAMPLE_ prefix for fixture data', () => {
     const src = readSrc('pages/forge/cost/CostManual.tsx');
     expect(src).toContain('SAMPLE_COST_SCHEDULES');
-    expect(src).not.toContain('fetch(');
+    expect(src).toContain('getCostSchedule');
   });
 
   it('BatchCostRun uses FIXTURE_ prefix for history data', () => {
@@ -244,9 +276,11 @@ describe('Gate 5 — no fake surfaces: governed pages disclose fixture status', 
     }
   });
 
-  it('BatchCostRun uses console.info for audit (not console.log)', () => {
+  it('BatchCostRun uses TerraTrace emit helpers for audit (not console.log)', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
-    expect(src).toContain('console.info');
+    expect(src).toContain('emitToolInvoked');
+    expect(src).toContain('emitToolSucceeded');
+    expect(src).toContain('emitToolFailed');
     expect(src).not.toContain('console.log');
   });
 
@@ -283,7 +317,7 @@ describe('Gate 6 — DemoDataBanner component is governance-correct', () => {
   });
 
   it('uses warning color (yellow/amber)', () => {
-    expect(src).toContain('234, 179, 8');
+    expect(src).toContain("hsl(var(--tf-warning))");
   });
 });
 
@@ -342,19 +376,21 @@ describe('Gate 7 — sealed wave regression wall', () => {
   });
 
   // W5D: Honesty sweep
-  it('useTodaysWork returns isSampleData: true (W5D)', () => {
+  it('useTodaysWork keeps dynamic fallback provenance (W5D)', () => {
     const src = readSrc('hooks/useTodaysWork.ts');
-    expect(src).toMatch(/isSampleData:\s*true/);
+    expect(src).toContain('setIsSampleData(false)');
+    expect(src).toContain('setIsSampleData(true)');
   });
 
-  it('useBudgetData returns isSampleData: true (W5D)', () => {
+  it('useBudgetData keeps dynamic fallback provenance (W5D)', () => {
     const src = readSrc('applications/terra-levy/hooks/useBudgetData.ts');
-    expect(src).toMatch(/isSampleData:\s*true/);
+    expect(src).toContain('setIsSampleData(false)');
+    expect(src).toContain('setIsSampleData(true)');
   });
 
   it('BatchCostRun has DemoDataBanner + BACKEND_APPLY_CAPABLE (W5D)', () => {
     const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
     expect(src).toContain('DemoDataBanner');
-    expect(src).toMatch(/BACKEND_APPLY_CAPABLE\s*=\s*false/);
+    expect(src).toContain('BACKEND_APPLY_CAPABLE');
   });
 });

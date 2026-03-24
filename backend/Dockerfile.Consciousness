@@ -17,30 +17,34 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy solution and project files for dependency restoration
-COPY ["TerraFusion.sln", "./"]
-COPY ["TerraFusion.Consciousness/TerraFusion.Consciousness.csproj", "TerraFusion.Consciousness/"]
-COPY ["TerraFusion.AI/TerraFusion.AI.csproj", "TerraFusion.AI/"]
-COPY ["TerraFusion.Data/TerraFusion.Data.csproj", "TerraFusion.Data/"]
+COPY TerraFusion.sln ./
+COPY Directory.Packages.props ./
+COPY src/Directory.Build.targets src/
+COPY src/TerraFusion.Consciousness/TerraFusion.Consciousness.csproj src/TerraFusion.Consciousness/
+COPY src/TerraFusion.Core/TerraFusion.Core.csproj src/TerraFusion.Core/
+COPY src/TerraFusion.Data/TerraFusion.Data.csproj src/TerraFusion.Data/
+COPY src/TerraFusion.Abstractions/TerraFusion.Abstractions.csproj src/TerraFusion.Abstractions/
 
 # Restore NuGet packages with caching optimization
-RUN dotnet restore "TerraFusion.Consciousness/TerraFusion.Consciousness.csproj" --runtime linux-x64
+RUN dotnet restore "src/TerraFusion.Consciousness/TerraFusion.Consciousness.csproj" --runtime linux-x64
 
 # Copy all source code
 COPY . .
 
 # Build application in Release mode with AI optimization
-WORKDIR "/src/TerraFusion.Consciousness"
+WORKDIR "/src/src/TerraFusion.Consciousness"
 RUN dotnet build "TerraFusion.Consciousness.csproj" -c Release -o /app/build --runtime linux-x64 --no-restore
 
 # ============================================================================
 # Stage 2: Publish Stage - Create Self-Contained Deployment
 # ============================================================================
 FROM build AS publish
+WORKDIR "/src/src/TerraFusion.Consciousness"
 RUN dotnet publish "TerraFusion.Consciousness.csproj" -c Release -o /app/publish \
     --runtime linux-x64 \
     --self-contained false \
     --no-restore \
-    /p:PublishReadyToRun=true \
+    /p:PublishReadyToRun=false \
     /p:PublishSingleFile=false \
     /p:DebugType=None \
     /p:DebugSymbols=false

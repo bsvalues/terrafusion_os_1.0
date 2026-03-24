@@ -1,0 +1,32 @@
+
+select distinct pv.prop_id as 'prop id', 
+p.geo_id as 'geo id',
+pv.hood_cd as 'neighborhood',
+pv.cycle as 'cycle',
+bp.bldg_permit_id as 'permit id',
+bp.bldg_permit_issue_dt as 'issue date',
+bp.bldg_permit_num as 'permit #',  
+bp.bldg_permit_active as 'active?', 
+bp.bldg_permit_pct_complete as 'issuer % complete',
+bp.bldg_permit_county_percent_complete as '% complete',
+ap.appraiser_nm as 'appraiser',
+pv.last_appraisal_dt as 'appraisal date'
+from property_val pv with (nolock)
+inner join prop_supp_assoc psa with (nolock) on
+       pv.prop_id = psa.prop_id
+       and pv.prop_val_yr = psa.owner_tax_yr 
+       and  pv.sup_num = psa.sup_num 
+inner join property p with (nolock) on
+       pv.prop_id = p.prop_id
+inner join prop_building_permit_assoc bpa with (nolock) on
+       pv.prop_id = bpa.prop_id
+inner join building_permit bp with (nolock) on
+       bpa.bldg_permit_id = bp.bldg_permit_id
+inner join pacs_system ps with (nolock) on
+       pv.prop_val_yr = ps.appr_yr
+left outer join appraiser ap with (nolock) on
+       pv.last_appraiser_id = ap.appraiser_id
+where pv.prop_val_yr = ps.appr_yr
+and (pv.prop_inactive_dt is null or udi_parent = 't')
+order by p.geo_id
+

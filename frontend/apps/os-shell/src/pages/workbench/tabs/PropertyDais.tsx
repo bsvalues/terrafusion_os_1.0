@@ -3,9 +3,9 @@
  *
  * Phase 5.5 + R2.9: Property Dais Tab - Workflow MWUX Slice
  * Real MWUX with governed tool invocations:
- * - check_cert_status: Certification workflow status
+ * - check_cert_status: Certification roll status
  * - calculate_pilt_payment: PILT payment calculation (RCW, Hanford)
- * - explain_senior_exemption_impact: Senior/disabled exemption impact bands
+ * - explain_senior_exemption_impact: Senior exemption impact bands
  * - summarize_levy_rate_components: Levy rate breakdown
  * - generate_commissioner_memo: AI memo drafting
  * - draft_value_change_notice: Value change notice (write_low)
@@ -35,6 +35,7 @@ import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
     InvocationHistory,
     ParcelContextHeader,
+    WorkbenchSourceBadge,
     type InvocationRecord,
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
@@ -47,31 +48,18 @@ import AppealHearingPanel from '../../../components/dais/AppealHearingPanel';
 import AppealNoticePanel from '../../../components/dais/AppealNoticePanel';
 import AppealCertificationPanel from '../../../components/dais/AppealCertificationPanel';
 
-/** Workflow type options */
-const WORKFLOW_TYPES = [
-  { value: 'certification', label: 'Certification', description: 'Annual certification workflow' },
-  { value: 'appeal', label: 'Appeal', description: 'Property value appeal' },
-  { value: 'exemption', label: 'Exemption', description: 'Exemption application' },
-  { value: 'review', label: 'Review', description: 'Property review request' },
-] as const;
-
-type WorkflowType = (typeof WORKFLOW_TYPES)[number]['value'];
-
 interface WorkflowStep {
   name: string;
-  status: 'completed' | 'current' | 'pending';
+  status: 'completed' | 'pending';
 }
 
 interface StatusResult {
-  parcelId: string;
-  certificationStatus?: string;
-  lastUpdated?: string;
-  currentStep?: string;
-  completedSteps?: string[];
-  pendingSteps?: string[];
-  assignedTo?: string;
-  dueDate?: string;
-  workflowType?: string;
+  county: string;
+  taxYear: number;
+  status: string;
+  completedSteps: string[];
+  remainingSteps: string[];
+  certifiedAt?: string;
 }
 
 interface StatusState {
@@ -82,19 +70,13 @@ interface StatusState {
 }
 
 /** PILT district result from calculate_pilt_payment */
-interface PiltDistrict {
-  districtName: string;
-  federalAcres: number;
-  piltDue: number;
-  levyRate: number;
-}
-
 interface PiltResult {
   county: string;
-  taxYear: number;
+  fiscalYear: number;
+  totalAssessedValue: number;
   totalPiltDue: number;
-  districtsCount: number;
-  districts: PiltDistrict[];
+  districtCount: number;
+  summary: string;
 }
 
 interface PiltState {
@@ -106,16 +88,15 @@ interface PiltState {
 
 /** Exemption impact result from explain_senior_exemption_impact */
 interface ExemptionBand {
-  incomeRange: string;
-  exemptionLevel: string;
-  estimatedSavings: number;
+  tier: string;
+  estTaxChange: number;
 }
 
 interface ExemptionResult {
-  parcelId: string;
-  bands: ExemptionBand[];
-  eligibilitySummary?: string;
-  rcwReference?: string;
+  summary: string;
+  assumptions: string[];
+  impactBands?: ExemptionBand[];
+  payloadRef?: string;
 }
 
 interface ExemptionState {
@@ -190,7 +171,6 @@ export const PropertyDais: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const appeals = usePropertyStore((s) => s.appeals);
 
-  const [workflowType, setWorkflowType] = useState<WorkflowType>('certification');
   const [statusState, setStatusState] = useState<StatusState>({ status: 'idle' });
   const [piltState, setPiltState] = useState<PiltState>({ status: 'idle' });
   const [exemptionState, setExemptionState] = useState<ExemptionState>({ status: 'idle' });
@@ -243,9 +223,11 @@ export const PropertyDais: React.FC = () => {
   const handleCheckStatus = useCallback(async () => {
     setStatusState({ status: 'loading' });
 
-    const params: Record<string, unknown> = {
-      parcelId,
-      workflowType,
+    const taxYear = new Date().getFullYear();
+
+    const params = {
+      county: 'benton',
+      taxYear,
     };
 
     try {
@@ -263,7 +245,7 @@ export const PropertyDais: React.FC = () => {
               ? JSON.parse(response.result.output)
               : response.result.output;
         } catch {
-          parsed = { parcelId };
+          parsed = { county: 'benton', taxYear, status: 'unknown', completedSteps: [], remainingSteps: [] };
         }
 
         setStatusState({
@@ -279,7 +261,7 @@ export const PropertyDais: React.FC = () => {
             status: 'success',
             correlationId: response.correlationId || 'unknown',
             timestamp: new Date(),
-            meta: { workflow: workflowType },
+            meta: { county: 'benton', taxYear },
           },
           ...prev.slice(0, 9),
         ]);
@@ -305,7 +287,7 @@ export const PropertyDais: React.FC = () => {
             correlationId: response.correlationId || 'unknown',
             timestamp: new Date(),
             errorCode: response.error?.code || 'STATUS_CHECK_FAILED',
-            meta: { workflow: workflowType },
+            meta: { county: 'benton', taxYear },
           },
           ...prev.slice(0, 9),
         ]);
@@ -333,32 +315,49 @@ export const PropertyDais: React.FC = () => {
           correlationId: clientCorrelationId,
           timestamp: new Date(),
           errorCode: 'NETWORK_ERROR',
-          meta: { workflow: workflowType },
+          meta: { county: 'benton', taxYear },
         },
         ...prev.slice(0, 9),
       ]);
     }
-  }, [parcelId, workflowType]);
+  }, [parcelId]);
 
   /** calculate_pilt_payment — PILT district payment calculation */
   const handleCalculatePilt = useCallback(async () => {
     setPiltState({ status: 'loading' });
+    const fiscalYear = new Date().getFullYear();
 
     try {
       const response = await invokeTool({
         toolId: 'calculate_pilt_payment',
-        params: { county: 'benton', taxYear: new Date().getFullYear() },
+        params: { county: 'benton', fiscalYear },
         parcelId,
       });
 
       if (response.success && response.result) {
         let parsed: PiltResult;
         try {
-          parsed = typeof response.result.output === 'string'
+          const rawParsed = typeof response.result.output === 'string'
             ? JSON.parse(response.result.output)
             : response.result.output;
+          parsed = {
+            county: rawParsed.county ?? 'BENTON',
+            fiscalYear: rawParsed.fiscalYear ?? rawParsed.taxYear ?? fiscalYear,
+            totalAssessedValue: rawParsed.totalAssessedValue ?? 0,
+            totalPiltDue: rawParsed.totalPiltDue ?? 0,
+            districtCount: rawParsed.districtCount ?? rawParsed.districtsCount ?? rawParsed.districts?.length ?? 0,
+            summary: rawParsed.summary
+              ?? `PILT request returned ${rawParsed.districtCount ?? rawParsed.districtsCount ?? rawParsed.districts?.length ?? 0} districts with total due $${(rawParsed.totalPiltDue ?? 0).toLocaleString()}.`,
+          };
         } catch {
-          parsed = { county: 'benton', taxYear: new Date().getFullYear(), totalPiltDue: 0, districtsCount: 0, districts: [] };
+          parsed = {
+            county: 'BENTON',
+            fiscalYear,
+            totalAssessedValue: 0,
+            totalPiltDue: 0,
+            districtCount: 0,
+            summary: 'No PILT summary returned.',
+          };
         }
 
         setPiltState({ status: 'success', result: parsed, correlationId: response.correlationId });
@@ -390,14 +389,16 @@ export const PropertyDais: React.FC = () => {
     }
   }, [parcelId]);
 
-  /** explain_senior_exemption_impact — exemption impact bands */
+  /** explain_senior_exemption_impact — senior exemption impact summary */
   const handleExemptionImpact = useCallback(async () => {
     setExemptionState({ status: 'loading' });
+
+    const year = new Date().getFullYear();
 
     try {
       const response = await invokeTool({
         toolId: 'explain_senior_exemption_impact',
-        params: { county: 'benton', parcelId, taxYear: new Date().getFullYear() },
+        params: { county: 'benton', parcelId, year, exemptionProgram: 'senior' },
         parcelId,
       });
 
@@ -408,7 +409,7 @@ export const PropertyDais: React.FC = () => {
             ? JSON.parse(response.result.output)
             : response.result.output;
         } catch {
-          parsed = { parcelId, bands: [] };
+          parsed = { summary: '', assumptions: [], impactBands: [] };
         }
 
         setExemptionState({ status: 'success', result: parsed, correlationId: response.correlationId });
@@ -803,12 +804,8 @@ export const PropertyDais: React.FC = () => {
       });
     }
 
-    if (result.currentStep) {
-      steps.push({ name: result.currentStep, status: 'current' });
-    }
-
-    if (result.pendingSteps) {
-      result.pendingSteps.forEach((step) => {
+    if (result.remainingSteps) {
+      result.remainingSteps.forEach((step) => {
         steps.push({ name: step, status: 'pending' });
       });
     }
@@ -819,21 +816,34 @@ export const PropertyDais: React.FC = () => {
   const isDev = getEnv('MODE') === 'development';
 
   return (
-    <div className='tf-suite-dais space-y-6' data-testid='property-dais-tab'>
+    <div className='tf-suite-dais space-y-4' data-testid='property-dais-tab'>
       {/* Header */}
       <ParcelContextHeader
         icon='📊'
         title='TerraDais'
         parcelId={parcelId}
-        subtitle={`Workflow orchestration for ${parcelId}`}
+        subtitle={`Governed workflow tools requested via TerraDais for ${parcelId}`}
       />
 
-      {/* Active Appeals from Store */}
+      {/* Baseline Disclosure */}
+      <div className="tf-status-info rounded-xl p-4" data-testid="dais-baseline-disclosure">
+        <div className="flex items-start justify-between gap-3">
+          <p className="tf-text">
+            All tool sections below are idle until you submit a request. Results are returned from governed tool invocations and displayed with their correlation IDs. No data is simulated or pre-loaded.
+          </p>
+          <WorkbenchSourceBadge source="fallback" className="shrink-0" />
+        </div>
+      </div>
+
+      {/* Loaded Appeals from Store */}
       {appeals.length > 0 && (
-        <BentoGrid columns={3} gap={0.75} padding={0}>
-          <BentoCard variant="stat" title="Active Appeals">
+        <BentoGrid columns="auto" gap={0.75} padding={0}>
+          <BentoCard variant="stat" title="Loaded Appeals">
             <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}>
               {appeals.length} appeal{appeals.length !== 1 ? 's' : ''}
+            </p>
+            <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+              Shown from the appeal records currently loaded for this parcel.
             </p>
           </BentoCard>
           {appeals.slice(0, 2).map((a) => (
@@ -850,31 +860,12 @@ export const PropertyDais: React.FC = () => {
       )}
 
       {/* Main Content Grid */}
-      <BentoGrid columns={3} gap={1.5} padding={0}>
+      <BentoGrid columns="auto" gap={1.5} padding={0}>
         {/* Controls Panel */}
-        <BentoCard variant="form" title="Workflow Parameters" actions={<span>⚙️</span>}>
-
-          {/* Workflow Type Selector */}
-          <div className='mb-4'>
-            <label htmlFor='workflow-type' className='block tf-text-secondary text-sm mb-2'>
-              Workflow Type
-            </label>
-            <select
-              id='workflow-type'
-              value={workflowType}
-              onChange={(e) => setWorkflowType(e.target.value as WorkflowType)}
-              className='tf-input'
-            >
-              {WORKFLOW_TYPES.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <p className='tf-text-dim text-xs mt-1'>
-              {WORKFLOW_TYPES.find((t) => t.value === workflowType)?.description}
-            </p>
-          </div>
+        <BentoCard variant="form" title="Certification Status Request" actions={<span>⚙️</span>}>
+          <p className='tf-text-tertiary text-sm mb-4'>
+            Submit a governed certification-status request for Benton County and the current tax year, then review the returned county, tax year, status, completed steps, remaining steps, and certified-at timestamp
+          </p>
 
           {/* Check Status Button */}
           <button
@@ -882,7 +873,7 @@ export const PropertyDais: React.FC = () => {
             disabled={statusState.status === 'loading'}
             className='tf-suite-dais-cta w-full py-2 px-4 rounded-lg font-semibold transition-all'
           >
-            {statusState.status === 'loading' ? 'Checking...' : 'Check Status'}
+            {statusState.status === 'loading' ? 'Submitting...' : 'Submit Certification Status Request'}
           </button>
         </BentoCard>
 
@@ -891,14 +882,14 @@ export const PropertyDais: React.FC = () => {
           {statusState.status === 'loading' ? (
             <div role='status' className='flex flex-col items-center justify-center py-12 gap-3'>
               <div className='tf-spinner h-10 w-10' />
-              <span className='tf-text-tertiary'>Checking workflow status...</span>
+              <span className='tf-text-tertiary'>Submitting certification-status request...</span>
             </div>
           ) : statusState.status === 'success' && statusState.result ? (
             <div className='space-y-4'>
               {/* Status Summary */}
               <div className='flex items-center justify-between mb-3'>
                 <h4 className='tf-suite-accent-text font-semibold flex items-center gap-2'>
-                  <span>✅</span> Workflow Status
+                  <span>✅</span> Certification Status
                 </h4>
                 {statusState.correlationId && (
                   <div className='flex items-center gap-2 text-xs'>
@@ -918,45 +909,46 @@ export const PropertyDais: React.FC = () => {
               </div>
 
               {/* Status Cards */}
-              <div className='grid grid-cols-2 gap-4'>
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
                 <div className='tf-panel p-4'>
                   <div className='tf-text-tertiary text-sm'>Status</div>
                   <div className='text-xl font-bold tf-text'>
-                    {statusState.result.certificationStatus || 'Unknown'}
+                    {statusState.result.status || 'unknown'}
                   </div>
                 </div>
                 <div className='tf-panel p-4'>
-                  <div className='tf-text-tertiary text-sm'>Current Step</div>
+                  <div className='tf-text-tertiary text-sm'>County</div>
                   <div className='text-xl font-bold tf-text'>
-                    {statusState.result.currentStep || 'N/A'}
+                    {statusState.result.county || 'unknown'}
+                  </div>
+                </div>
+                <div className='tf-panel p-4'>
+                  <div className='tf-text-tertiary text-sm'>Tax Year</div>
+                  <div className='text-xl font-bold tf-text'>
+                    {statusState.result.taxYear}
                   </div>
                 </div>
               </div>
 
+              <p className='tf-text-tertiary text-sm'>
+                Shows the returned county, tax year, status, completed steps, remaining steps, and certified-at timestamp for this certification-status request.
+              </p>
+
               {/* Workflow Steps */}
               {(statusState.result.completedSteps?.length ||
-                statusState.result.pendingSteps?.length ||
-                statusState.result.currentStep) && (
+                statusState.result.remainingSteps?.length) && (
                 <div className='tf-panel p-4'>
                   <h5 className='tf-text-secondary font-medium mb-3'>📋 Workflow Steps</h5>
                   <div className='space-y-2'>
                     {buildWorkflowSteps(statusState.result).map((step, idx) => (
                       <div
                         key={idx}
-                        className={`flex items-center gap-3 py-2 px-3 rounded ${
-                          step.status === 'current'
-                            ? 'tf-suite-active'
-                            : step.status === 'completed'
-                              ? 'tf-status-success'
-                              : 'tf-panel'
-                        }`}
+                        className={`flex items-center gap-3 py-2 px-3 rounded ${step.status === 'completed' ? 'tf-status-success' : 'tf-panel'}`}
                       >
                         <span>{getStepIcon(step.status)}</span>
                         <span
                           className={
-                            step.status === 'current'
-                              ? 'tf-text font-medium'
-                              : step.status === 'completed'
+                            step.status === 'completed'
                                 ? ''
                                 : 'tf-text-muted'
                           }
@@ -974,30 +966,10 @@ export const PropertyDais: React.FC = () => {
                 </div>
               )}
 
-              {/* Assignment Info */}
-              {(statusState.result.assignedTo || statusState.result.dueDate) && (
-                <div className='grid grid-cols-2 gap-4'>
-                  {statusState.result.assignedTo && (
-                    <div className='tf-panel p-3'>
-                      <div className='tf-text-tertiary text-sm'>Assigned To</div>
-                      <div className='tf-text font-medium'>{statusState.result.assignedTo}</div>
-                    </div>
-                  )}
-                  {statusState.result.dueDate && (
-                    <div className='tf-panel p-3'>
-                      <div className='tf-text-tertiary text-sm'>Due Date</div>
-                      <div className='tf-text font-medium'>
-                        {formatDate(statusState.result.dueDate)}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Last Updated */}
-              {statusState.result.lastUpdated && (
+              {/* Certified At */}
+              {statusState.result.certifiedAt && (
                 <div className='text-xs tf-text-dim'>
-                  Last updated: {formatDate(statusState.result.lastUpdated)}
+                  Certified at: {formatDate(statusState.result.certifiedAt)}
                 </div>
               )}
 
@@ -1016,9 +988,9 @@ export const PropertyDais: React.FC = () => {
           ) : statusState.status === 'idle' ? (
             <div className='flex flex-col items-center justify-center py-12 text-center'>
               <div className='text-4xl mb-2'>📊</div>
-              <p className='tf-text-tertiary'>Select workflow type and check status</p>
+              <p className='tf-text-tertiary'>Submit a certification-status request to view the returned status and steps</p>
               <p className='tf-text-dim text-sm mt-1'>
-                View certification status, workflow steps, and assignments
+                Review the returned county, tax year, completed steps, remaining steps, and certified-at timestamp
               </p>
             </div>
           ) : null}
@@ -1039,17 +1011,20 @@ export const PropertyDais: React.FC = () => {
       {/* ================================================================ */}
       {/* PILT Calculator — calculate_pilt_payment governed tool            */}
       {/* ================================================================ */}
-      <BentoGrid columns={2} gap={1.5} padding={0}>
+      <BentoGrid columns="auto" gap={1.5} padding={0}>
         <BentoCard title="PILT Calculator" actions={<span>🏛️</span>}>
           <p className='tf-text-dim text-sm mb-3'>
-            Payment in Lieu of Taxes — Hanford Nuclear Reservation (RCW 84.33)
+            Submit a governed PILT summary request for Benton County and the current fiscal year, then review the returned total due, district count, assessed value, and summary text
+          </p>
+          <p className='text-xs tf-text-tertiary mb-3'>
+            Limited applicability: this TerraPILT-style calculation does not apply to every parcel and is better treated as a standalone county or fiscal module when needed.
           </p>
           <button
             onClick={handleCalculatePilt}
             disabled={piltState.status === 'loading'}
             className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'
           >
-            {piltState.status === 'loading' ? 'Calculating...' : 'Calculate PILT'}
+            {piltState.status === 'loading' ? 'Submitting...' : 'Submit PILT Summary Request'}
           </button>
 
           {piltState.status === 'success' && piltState.result && (
@@ -1061,14 +1036,20 @@ export const PropertyDais: React.FC = () => {
                 </span>
               </div>
               <div className='flex items-center justify-between text-sm'>
-                <span className='tf-text-dim'>Districts</span>
-                <span className='tf-text'>{piltState.result.districtsCount}</span>
+                <span className='tf-text-dim'>District Count</span>
+                <span className='tf-text'>{piltState.result.districtCount}</span>
               </div>
+              <div className='flex items-center justify-between text-sm'>
+                <span className='tf-text-dim'>Assessed Value</span>
+                <span className='tf-text'>${piltState.result.totalAssessedValue?.toLocaleString() ?? '0'}</span>
+              </div>
+              <p className='text-xs tf-text-dim'>Shows the returned total due, district count, assessed value, and summary text for this PILT request.</p>
               {piltState.correlationId && (
                 <div className='flex items-center gap-2 text-xs'>
                   <span className='tf-text-muted'>ID:</span>
                   <code className='tf-suite-accent-text font-mono'>{piltState.correlationId.slice(0, 16)}...</code>
                   <button onClick={() => copyToClipboard(piltState.correlationId!)} className='tf-text-tertiary' aria-label='Copy'>📋</button>
+                  <WorkbenchSourceBadge source='live' />
                 </div>
               )}
             </div>
@@ -1081,27 +1062,22 @@ export const PropertyDais: React.FC = () => {
           )}
         </BentoCard>
 
-        {/* PILT District Detail */}
-        <BentoCard title="PILT Districts" actions={<span>📋</span>}>
-          {piltState.status === 'success' && piltState.result?.districts?.length ? (
-            <div className='space-y-2 max-h-64 overflow-y-auto'>
-              {piltState.result.districts.map((d, idx) => (
-                <div key={idx} className='tf-overlay rounded-lg px-3 py-2 text-sm'>
-                  <div className='flex justify-between'>
-                    <span className='tf-text font-medium'>{d.districtName}</span>
-                    <span className='tf-text font-semibold'>${d.piltDue?.toLocaleString() ?? '0'}</span>
-                  </div>
-                  <div className='flex justify-between mt-1 text-xs tf-text-dim'>
-                    <span>{d.federalAcres?.toLocaleString()} federal acres</span>
-                    <span>Rate: {d.levyRate?.toFixed(4)}</span>
-                  </div>
-                </div>
-              ))}
+        {/* PILT Request Summary */}
+        <BentoCard title="PILT Request Summary" actions={<span>📋</span>}>
+          {piltState.status === 'success' && piltState.result ? (
+            <div className='space-y-3'>
+              <div className='tf-panel p-4'>
+                <p className='tf-text-secondary text-sm whitespace-pre-wrap'>Returned summary text: {piltState.result.summary}</p>
+              </div>
+              <div className='flex items-center justify-between text-xs tf-text-dim'>
+                <span>County: {piltState.result.county}</span>
+                <span>FY {piltState.result.fiscalYear}</span>
+              </div>
             </div>
           ) : piltState.status === 'idle' ? (
             <div className='flex flex-col items-center justify-center py-8 text-center'>
               <div className='text-3xl mb-2'>🏛️</div>
-              <p className='tf-text-tertiary text-sm'>Run PILT calculation to view district breakdown</p>
+              <p className='tf-text-tertiary text-sm'>Submit a PILT summary request to view the returned summary text</p>
             </div>
           ) : piltState.status === 'loading' ? (
             <div className='flex items-center justify-center py-8' role='status'>
@@ -1114,48 +1090,57 @@ export const PropertyDais: React.FC = () => {
       {/* ================================================================ */}
       {/* Senior Exemption Impact — explain_senior_exemption_impact tool    */}
       {/* ================================================================ */}
-      <BentoCard title="Senior/Disabled Exemption Impact" actions={<span>🏠</span>}>
+      <BentoCard title="Senior Exemption Impact" actions={<span>🏠</span>}>
         <div className='flex items-start justify-between gap-4 flex-wrap mb-3'>
           <p className='tf-text-dim text-sm'>
-            RCW 84.36.381 exemption impact analysis by income band
+            Submit a governed senior-exemption impact request for this parcel and the current tax year, then review the returned summary text, assumptions, and impact bands
           </p>
           <button
             onClick={handleExemptionImpact}
             disabled={exemptionState.status === 'loading'}
             className='px-4 py-2 rounded-lg font-semibold transition-all tf-suite-dais-cta'
           >
-            {exemptionState.status === 'loading' ? 'Analyzing...' : 'Analyze Impact'}
+            {exemptionState.status === 'loading' ? 'Submitting...' : 'Submit Senior Exemption Impact Request'}
           </button>
         </div>
 
         {exemptionState.status === 'success' && exemptionState.result && (
           <div className='space-y-3'>
-            {exemptionState.result.eligibilitySummary && (
-              <p className='tf-text-secondary text-sm'>{exemptionState.result.eligibilitySummary}</p>
+            {exemptionState.result.summary && (
+              <p className='tf-text-secondary text-sm'>Returned summary text: {exemptionState.result.summary}</p>
             )}
-            {exemptionState.result.bands?.length ? (
+            {exemptionState.result.assumptions?.length ? (
+              <div className='tf-panel p-4 rounded-xl'>
+                <div className='tf-text-dim text-xs uppercase tracking-wide mb-2'>Returned Assumptions</div>
+                <ul className='space-y-1 text-sm tf-text-secondary list-disc pl-5'>
+                  {exemptionState.result.assumptions.map((assumption, idx) => (
+                    <li key={idx}>{assumption}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {exemptionState.result.impactBands?.length ? (
               <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
-                {exemptionState.result.bands.map((band, idx) => (
+                {exemptionState.result.impactBands.map((band, idx) => (
                   <div key={idx} className='tf-panel p-4 rounded-xl'>
-                    <div className='tf-text-dim text-xs uppercase tracking-wide'>{band.incomeRange}</div>
-                    <div className='tf-text font-bold text-lg mt-1'>{band.exemptionLevel}</div>
+                    <div className='tf-text-dim text-xs uppercase tracking-wide'>{band.tier}</div>
+                    <div className='tf-text font-bold text-lg mt-1'>Estimated Tax Change</div>
                     <div className='tf-text-secondary text-sm mt-1'>
-                      Saves ${band.estimatedSavings?.toLocaleString() ?? '0'}
+                      ${band.estTaxChange?.toLocaleString() ?? '0'}
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className='tf-text-dim text-sm italic'>No exemption bands returned.</p>
+              <p className='tf-text-dim text-sm italic'>No impact bands returned.</p>
             )}
-            {exemptionState.result.rcwReference && (
-              <p className='tf-text-dim text-xs'>Ref: {exemptionState.result.rcwReference}</p>
-            )}
+            <p className='tf-text-tertiary text-xs'>Shows the returned summary text, assumptions, and impact bands for this senior-exemption impact request.</p>
             {exemptionState.correlationId && (
               <div className='flex items-center gap-2 text-xs'>
                 <span className='tf-text-muted'>ID:</span>
                 <code className='tf-suite-accent-text font-mono'>{exemptionState.correlationId.slice(0, 16)}...</code>
                 <button onClick={() => copyToClipboard(exemptionState.correlationId!)} className='tf-text-tertiary' aria-label='Copy'>📋</button>
+                <WorkbenchSourceBadge source='live' />
               </div>
             )}
           </div>
@@ -1168,11 +1153,11 @@ export const PropertyDais: React.FC = () => {
 
       {/* Levy Rate Breakdown */}
       <BentoCard title='📊 Levy Rate Components' actions={<span>💲</span>}>
-        <p className='tf-text-tertiary text-sm mb-4'>Breakdown of levy rate by component (state, school, local)</p>
+        <p className='tf-text-tertiary text-sm mb-4'>Submit a governed levy-summary request for Benton County and the current tax year, then review the returned rate components, total rate, and explanation</p>
         <button onClick={handleLevyBreakdown} disabled={levyState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {levyState.status === 'loading' ? 'Loading...' : 'Get Levy Breakdown'}
+          {levyState.status === 'loading' ? 'Submitting...' : 'Submit Levy Summary Request'}
         </button>
-        {levyState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Calculating levy rates...</span></div>}
+        {levyState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Submitting levy-summary request...</span></div>}
         {levyState.status === 'success' && levyState.result && (
           <div className='space-y-3'>
             <div className='space-y-1'>
@@ -1187,7 +1172,10 @@ export const PropertyDais: React.FC = () => {
                 <span className='font-mono tf-suite-accent-text'>${levyState.result.totalRate.toFixed(2)}</span>
               </div>
             </div>
-            <div className='tf-panel p-3'><p className='tf-text-secondary text-sm'>{levyState.result.explanation}</p></div>
+            <div className='tf-panel p-3'>
+              <p className='tf-text-secondary text-sm'>{levyState.result.explanation}</p>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned rate components, total rate, and explanation for this levy-summary request.</p>
+            </div>
           </div>
         )}
         {levyState.status === 'error' && levyState.error && <ErrorDisplay error={{ message: levyState.error.message, errorCode: levyState.error.code, correlationId: levyState.correlationId }} />}
@@ -1195,20 +1183,21 @@ export const PropertyDais: React.FC = () => {
 
       {/* Commissioner Memo */}
       <BentoCard title='📝 Commissioner Memo' actions={<span>🏛️</span>}>
-        <p className='tf-text-tertiary text-sm mb-4'>Generate a briefing memo for commissioner review</p>
+        <p className='tf-text-tertiary text-sm mb-4'>Submit a governed commissioner-memo draft request for the selected topic and current tax year, then review the returned memo title, body, and word count</p>
         <div className='mb-4'>
           <label htmlFor='memo-topic' className='block tf-text-secondary text-sm mb-2'>Topic</label>
           <input id='memo-topic' type='text' value={memoTopic} onChange={e => setMemoTopic(e.target.value)} placeholder='e.g. Annual revaluation summary' className='w-full tf-input px-3 py-2' />
         </div>
         <button onClick={handleCommissionerMemo} disabled={memoState.status === 'loading' || !memoTopic.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {memoState.status === 'loading' ? 'Generating...' : 'Generate Memo'}
+          {memoState.status === 'loading' ? 'Submitting...' : 'Submit Commissioner Memo Draft Request'}
         </button>
-        {memoState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Generating memo...</span></div>}
+        {memoState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Submitting commissioner-memo draft request...</span></div>}
         {memoState.status === 'success' && memoState.result && (
           <div className='space-y-3'>
             <div className='tf-panel p-4'>
               <h5 className='tf-text font-semibold mb-2'>{memoState.result.memo.title}</h5>
               <p className='tf-text-secondary whitespace-pre-wrap'>{memoState.result.memo.body}</p>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned memo title, body, and word count for this commissioner-memo draft request.</p>
             </div>
             <div className='flex items-center gap-4 text-xs tf-text-dim'>
               <span>{memoState.result.wordCount} words</span>
@@ -1217,6 +1206,7 @@ export const PropertyDais: React.FC = () => {
                   <span>ID:</span>
                   <code className='tf-suite-accent-text font-mono'>{memoState.correlationId.slice(0, 16)}...</code>
                   <button onClick={() => copyToClipboard(memoState.correlationId!)} className='tf-text-tertiary hover:tf-text' aria-label='Copy correlation ID'>📋</button>
+                  <WorkbenchSourceBadge source='live' />
                 </span>
               )}
             </div>
@@ -1227,20 +1217,21 @@ export const PropertyDais: React.FC = () => {
 
       {/* Value Change Notice (write_low) */}
       <BentoCard title='📨 Value Change Notice' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Draft a value change notice for parcel {parcelId}</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed value-change notice draft request for this parcel and selected reason codes, then review the returned draft title, body, and disclaimer</p>
         <input type='text' value={noticeReasons} onChange={e => setNoticeReasons(e.target.value)} placeholder='Reason codes (comma-separated, e.g. revaluation, new_construction)' className='w-full p-2 rounded-lg tf-input mb-3' data-testid='notice-reasons-input' />
         <button onClick={handleDraftNotice} disabled={noticeState.status === 'loading' || !noticeReasons.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {noticeState.status === 'loading' ? 'Drafting...' : 'Draft Value Change Notice'}
+          {noticeState.status === 'loading' ? 'Submitting...' : 'Submit Value-Change Notice Draft Request'}
         </button>
-        {noticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Generating notice...</span></div>}
+        {noticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting value-change notice draft request...</span></div>}
         {noticeState.status === 'success' && noticeState.result && (
           <div className='space-y-3'>
             <div className='tf-panel p-4'>
               <h4 className='font-semibold tf-text mb-2'>{noticeState.result.document.title}</h4>
               <p className='tf-text-secondary whitespace-pre-line text-sm'>{noticeState.result.document.body}</p>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned draft title, body, and disclaimer for this value-change notice request.</p>
             </div>
             <div className='text-xs tf-text-dim italic'>{noticeState.result.disclaimer}</div>
-            {noticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{noticeState.correlationId.slice(0, 16)}...</code></div>}
+            {noticeState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{noticeState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {noticeState.status === 'error' && noticeState.error && <ErrorDisplay error={{ message: noticeState.error.message, errorCode: noticeState.error.code, correlationId: noticeState.correlationId }} />}
@@ -1248,7 +1239,7 @@ export const PropertyDais: React.FC = () => {
 
       {/* Appeal Response Draft (write_low) */}
       <BentoCard title='⚖️ Appeal Response Draft' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Draft an appeal response for parcel {parcelId}</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed appeal-response draft request for this parcel, appeal, and selected position, then review the returned appeal ID, position, draft summary text, and word count</p>
         <div className='flex gap-2 mb-3'>
           <input type='text' value={appealId} onChange={e => setAppealId(e.target.value)} placeholder='Appeal ID (e.g. APL-2026-001)' className='flex-1 p-2 rounded-lg tf-input' data-testid='appeal-id-input' />
           <select value={appealPosition} onChange={e => setAppealPosition(e.target.value as 'uphold' | 'adjust' | 'partial')} className='p-2 rounded-lg tf-input'>
@@ -1258,21 +1249,22 @@ export const PropertyDais: React.FC = () => {
           </select>
         </div>
         <button onClick={handleDraftAppealResponse} disabled={appealState.status === 'loading' || !appealId.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {appealState.status === 'loading' ? 'Drafting...' : 'Draft Appeal Response'}
+          {appealState.status === 'loading' ? 'Submitting...' : 'Submit Appeal Response Draft Request'}
         </button>
-        {appealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Drafting response...</span></div>}
+        {appealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting appeal-response draft request...</span></div>}
         {appealState.status === 'success' && appealState.result && (
           <div className='space-y-3'>
             <div className='tf-panel p-4'>
               <div className='flex items-center justify-between mb-2'>
-                <span className='font-semibold tf-text'>Appeal: {appealState.result.appealId}</span>
-                <span className='text-xs tf-badge px-2 py-0.5 rounded'>{appealState.result.position}</span>
+                <span className='font-semibold tf-text'>Returned appeal ID: {appealState.result.appealId}</span>
+                <span className='text-xs tf-badge px-2 py-0.5 rounded'>Returned position: {appealState.result.position}</span>
               </div>
-              <p className='tf-text-secondary text-sm'>{appealState.result.draftSummary}</p>
+              <p className='tf-text-secondary text-sm'>Returned draft summary text: {appealState.result.draftSummary}</p>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned appeal ID, position, draft summary text, and word count for this appeal-response request.</p>
             </div>
             <div className='flex items-center gap-4 text-xs tf-text-dim'>
-              <span>{appealState.result.wordCount} words</span>
-              {appealState.correlationId && <span>ID: <code className='tf-suite-accent-text font-mono'>{appealState.correlationId.slice(0, 16)}...</code></span>}
+              <span>Returned word count: {appealState.result.wordCount} words</span>
+              {appealState.correlationId && <span className='flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{appealState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></span>}
             </div>
           </div>
         )}
@@ -1281,7 +1273,7 @@ export const PropertyDais: React.FC = () => {
 
       {/* General Notice Draft (write_low) */}
       <BentoCard title='📝 Draft Notice' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Create a notice draft for parcel {parcelId}</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed notice-draft request for this parcel and selected notice type, then review the returned notice ID, notice type, and status</p>
         <select value={draftNoticeType} onChange={e => setDraftNoticeType(e.target.value)} className='w-full p-2 rounded-lg tf-input mb-3' data-testid='notice-type-select'>
           <option value='assessment'>Assessment Notice</option>
           <option value='exemption'>Exemption Notice</option>
@@ -1289,9 +1281,9 @@ export const PropertyDais: React.FC = () => {
           <option value='certification'>Certification Notice</option>
         </select>
         <button onClick={handleGeneralNotice} disabled={draftNoticeState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {draftNoticeState.status === 'loading' ? 'Drafting...' : 'Create Notice Draft'}
+          {draftNoticeState.status === 'loading' ? 'Submitting...' : 'Submit Notice Draft Request'}
         </button>
-        {draftNoticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Creating draft...</span></div>}
+        {draftNoticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting notice-draft request...</span></div>}
         {draftNoticeState.status === 'success' && draftNoticeState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'>
@@ -1300,8 +1292,9 @@ export const PropertyDais: React.FC = () => {
                 <span className='text-xs tf-badge px-2 py-0.5 rounded'>{draftNoticeState.result.status}</span>
               </div>
               <div className='text-xs tf-text-dim mt-1'>Notice ID: <code className='tf-suite-accent-text font-mono'>{draftNoticeState.result.noticeId}</code></div>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned notice ID, notice type, and status for this notice-draft request.</p>
             </div>
-            {draftNoticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{draftNoticeState.correlationId.slice(0, 16)}...</code></div>}
+            {draftNoticeState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{draftNoticeState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {draftNoticeState.status === 'error' && draftNoticeState.error && <ErrorDisplay error={{ message: draftNoticeState.error.message, errorCode: draftNoticeState.error.code, correlationId: draftNoticeState.correlationId }} />}
@@ -1309,26 +1302,27 @@ export const PropertyDais: React.FC = () => {
 
       {/* Assign Task (write_low) */}
       <BentoCard title='👤 Assign Task' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Assign a workflow task to a queue or user</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed task-assignment request, then review the returned task ID, assignee ID, and status</p>
         <div className='space-y-2 mb-3'>
           <input type='text' value={assignTaskId} onChange={e => setAssignTaskId(e.target.value)} placeholder='Task ID (e.g. TSK-2026-042)' className='w-full p-2 rounded-lg tf-input' data-testid='assign-task-id' />
           <input type='text' value={assignAssigneeId} onChange={e => setAssignAssigneeId(e.target.value)} placeholder='Assignee ID (e.g. usr-jdoe)' className='w-full p-2 rounded-lg tf-input' data-testid='assign-assignee-id' />
           <input type='text' value={assignReason} onChange={e => setAssignReason(e.target.value)} placeholder='Reason (optional)' className='w-full p-2 rounded-lg tf-input' />
         </div>
         <button onClick={handleAssignTask} disabled={assignTaskState.status === 'loading' || !assignTaskId.trim() || !assignAssigneeId.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {assignTaskState.status === 'loading' ? 'Assigning...' : 'Assign Task'}
+          {assignTaskState.status === 'loading' ? 'Submitting...' : 'Submit Assignment Request'}
         </button>
-        {assignTaskState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Assigning task...</span></div>}
+        {assignTaskState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting assignment request...</span></div>}
         {assignTaskState.status === 'success' && assignTaskState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'>
               <div className='flex items-center justify-between mb-1'>
-                <span className='font-semibold tf-text'>Task: {assignTaskState.result.taskId}</span>
-                <span className='text-xs tf-badge px-2 py-0.5 rounded'>{assignTaskState.result.status}</span>
+                <span className='font-semibold tf-text'>Returned task ID: {assignTaskState.result.taskId}</span>
+                <span className='text-xs tf-badge px-2 py-0.5 rounded'>Returned status: {assignTaskState.result.status}</span>
               </div>
-              <div className='text-sm tf-text-secondary'>Assigned to: <strong>{assignTaskState.result.assignedTo}</strong></div>
+              <div className='text-sm tf-text-secondary'>Returned assignee ID: <strong>{assignTaskState.result.assignedTo}</strong></div>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned task ID, assigned-to value, and status for this assignment request.</p>
             </div>
-            {assignTaskState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{assignTaskState.correlationId.slice(0, 16)}...</code></div>}
+            {assignTaskState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{assignTaskState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {assignTaskState.status === 'error' && assignTaskState.error && <ErrorDisplay error={{ message: assignTaskState.error.message, errorCode: assignTaskState.error.code, correlationId: assignTaskState.correlationId }} />}
@@ -1336,7 +1330,7 @@ export const PropertyDais: React.FC = () => {
 
       {/* Assemble BOE Packet (write_high) */}
       <BentoCard title='📦 BOE Evidence Packet' actions={<span className='text-xs tf-badge-error px-2 py-0.5 rounded'>write_high</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Assemble a Board of Equalization evidence packet — requires confirmation</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed BOE packet request for this case and selected sections, then review the returned case ID and section list</p>
         <div className='space-y-3 mb-4'>
           <input type='text' value={boeCaseId} onChange={e => setBoeCaseId(e.target.value)} placeholder='Case ID (e.g. BOE-2026-001)' className='w-full p-2 rounded-lg tf-input' data-testid='boe-case-id' />
           <div>
@@ -1359,26 +1353,27 @@ export const PropertyDais: React.FC = () => {
           <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
             <label className='flex items-center gap-3 cursor-pointer'>
               <input type='checkbox' checked={boeConfirmed} onChange={e => setBoeConfirmed(e.target.checked)} className='h-4 w-4' data-testid='boe-confirm-checkbox' />
-              <span className='text-sm tf-text'>I confirm this write_high operation: assemble BOE packet for case <strong>{boeCaseId || '...'}</strong></span>
+              <span className='text-sm tf-text'>I confirm this BOE packet request is ready for submission for case <strong>{boeCaseId || '...'}</strong></span>
             </label>
           </div>
         </div>
         <button onClick={handleAssembleBoePacket} disabled={boePacketState.status === 'loading' || !boeCaseId.trim() || !boeConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-          {boePacketState.status === 'loading' ? 'Assembling...' : boeConfirmed ? 'Assemble BOE Packet' : '⚠️ Confirm Above to Enable'}
+          {boePacketState.status === 'loading' ? 'Submitting...' : boeConfirmed ? 'Submit BOE Packet Request' : '⚠️ Confirm Above to Enable'}
         </button>
-        {boePacketState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Assembling BOE packet...</span></div>}
+        {boePacketState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting BOE packet request...</span></div>}
         {boePacketState.status === 'success' && boePacketState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'>
+              <p className='text-xs tf-text-dim mb-2'>Shows the returned case ID and section list for this BOE packet request.</p>
               <div className='flex items-center justify-between mb-2'>
-                <span className='font-semibold tf-text'>Case: {boePacketState.result.caseId}</span>
-                <span className='text-xs tf-badge px-2 py-0.5 rounded'>{boePacketState.result.sections.length} sections</span>
+                <span className='font-semibold tf-text'>Returned case ID: {boePacketState.result.caseId}</span>
+                <span className='text-xs tf-badge px-2 py-0.5 rounded'>Returned sections: {boePacketState.result.sections.length}</span>
               </div>
               <div className='flex flex-wrap gap-1'>
                 {boePacketState.result.sections.map(s => <span key={s} className='text-xs tf-badge px-2 py-0.5 rounded'>{s}</span>)}
               </div>
             </div>
-            {boePacketState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{boePacketState.correlationId.slice(0, 16)}...</code></div>}
+            {boePacketState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{boePacketState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {boePacketState.status === 'error' && boePacketState.error && <ErrorDisplay error={{ message: boePacketState.error.message, errorCode: boePacketState.error.code, correlationId: boePacketState.correlationId }} />}
@@ -1386,7 +1381,7 @@ export const PropertyDais: React.FC = () => {
 
       {/* BOE Appeal Response (write_low) */}
       <BentoCard title='⚖️ BOE Appeal Response' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Draft a formal BOE appeal response with legal citations</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Submit a governed BOE appeal-response draft request for this case and position, then review the returned draft title, body, and citations</p>
         <div className='space-y-2 mb-3'>
           <input type='text' value={boeAppealCaseId} onChange={e => setBoeAppealCaseId(e.target.value)} placeholder='Case ID (e.g. BOE-2026-001)' className='w-full p-2 rounded-lg tf-input' data-testid='boe-appeal-case-id' />
           <select value={boeAppealPosition} onChange={e => setBoeAppealPosition(e.target.value)} className='w-full p-2 rounded-lg tf-input'>
@@ -1398,21 +1393,22 @@ export const PropertyDais: React.FC = () => {
           </div>
         </div>
         <button onClick={handleBoeAppealResponse} disabled={boeAppealState.status === 'loading' || !boeAppealCaseId.trim() || !boeAppealPoints.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {boeAppealState.status === 'loading' ? 'Drafting...' : 'Draft BOE Appeal Response'}
+          {boeAppealState.status === 'loading' ? 'Submitting...' : 'Submit BOE Response Draft Request'}
         </button>
-        {boeAppealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Drafting BOE response...</span></div>}
+        {boeAppealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting BOE response draft request...</span></div>}
         {boeAppealState.status === 'success' && boeAppealState.result && (
           <div className='space-y-3'>
             <div className='tf-panel p-4'>
               <h4 className='font-semibold tf-text mb-2'>{boeAppealState.result.document.title}</h4>
               <p className='tf-text-secondary whitespace-pre-line text-sm'>{boeAppealState.result.document.body}</p>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned draft title, body, and citations for this BOE appeal-response request.</p>
             </div>
             {boeAppealState.result.citations && boeAppealState.result.citations.length > 0 && (
               <div className='flex flex-wrap gap-1'>
                 {boeAppealState.result.citations.map(c => <span key={c} className='text-xs tf-badge px-2 py-0.5 rounded font-mono'>{c}</span>)}
               </div>
             )}
-            {boeAppealState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{boeAppealState.correlationId.slice(0, 16)}...</code></div>}
+            {boeAppealState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{boeAppealState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {boeAppealState.status === 'error' && boeAppealState.error && <ErrorDisplay error={{ message: boeAppealState.error.message, errorCode: boeAppealState.error.code, correlationId: boeAppealState.correlationId }} />}
@@ -1422,22 +1418,23 @@ export const PropertyDais: React.FC = () => {
 
       {/* Exemption Eligibility Check (read_only) */}
       <BentoCard title='🛡️ Exemption Eligibility' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Check senior/disabled exemption eligibility per RCW 84.36.381</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Request the returned exemption eligibility fields for this parcel, then review the returned eligibility flag, program, reason, and income-threshold details</p>
         <button onClick={handleCheckEligibility} disabled={eligibilityState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {eligibilityState.status === 'loading' ? 'Checking...' : 'Check Eligibility'}
+          {eligibilityState.status === 'loading' ? 'Requesting...' : 'Request Eligibility Summary'}
         </button>
-        {eligibilityState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Checking eligibility...</span></div>}
+        {eligibilityState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Requesting eligibility summary...</span></div>}
         {eligibilityState.status === 'success' && eligibilityState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'>
               <div className='flex items-center gap-2 mb-2'>
                 <span className={`text-lg ${eligibilityState.result.eligible ? '' : ''}`}>{eligibilityState.result.eligible ? '✅' : '❌'}</span>
-                <span className='font-semibold tf-text'>{eligibilityState.result.eligible ? 'Eligible' : 'Not Eligible'}</span>
+                <span className='font-semibold tf-text'>Returned eligibility flag: {eligibilityState.result.eligible ? 'Eligible' : 'Not Eligible'}</span>
               </div>
-              <p className='tf-text-secondary text-sm'>{eligibilityState.result.reason}</p>
-              <p className='tf-text-dim text-xs mt-1'>Program: {eligibilityState.result.program} | Threshold: ${eligibilityState.result.incomeThreshold.toLocaleString()}</p>
+              <p className='tf-text-secondary text-sm'>Returned reason: {eligibilityState.result.reason}</p>
+              <p className='tf-text-dim text-xs mt-1'>Returned program: {eligibilityState.result.program} | Returned threshold: ${eligibilityState.result.incomeThreshold.toLocaleString()}</p>
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned eligibility flag, program, reason, and income threshold for this parcel request.</p>
             </div>
-            {eligibilityState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{eligibilityState.correlationId.slice(0, 16)}...</code></div>}
+            {eligibilityState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{eligibilityState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {eligibilityState.status === 'error' && eligibilityState.error && <ErrorDisplay error={{ message: eligibilityState.error.message, errorCode: eligibilityState.error.code, correlationId: eligibilityState.correlationId }} />}
@@ -1445,16 +1442,16 @@ export const PropertyDais: React.FC = () => {
 
       {/* Exemption Renewal (write_low) */}
       <BentoCard title='🔄 Exemption Renewal' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Process annual exemption renewal with documentation verification</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed exemption-renewal request for this exemption, then review the returned exemption ID, tax year, and renewal status</p>
         <input type='text' value={renewalExemptionId} onChange={e => setRenewalExemptionId(e.target.value)} placeholder='Exemption ID (e.g. EXM-2026-001)' className='w-full p-2 rounded-lg tf-input mb-3' />
         <button onClick={handleProcessRenewal} disabled={renewalState.status === 'loading' || !renewalExemptionId.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-          {renewalState.status === 'loading' ? 'Processing...' : 'Process Renewal'}
+          {renewalState.status === 'loading' ? 'Submitting...' : 'Submit Renewal Request'}
         </button>
-        {renewalState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Processing renewal...</span></div>}
+        {renewalState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting exemption-renewal request...</span></div>}
         {renewalState.status === 'success' && renewalState.result && (
           <div className='space-y-2'>
-            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Status: {renewalState.result.status}</span><p className='tf-text-secondary text-sm'>Exemption {renewalState.result.exemptionId} renewed for {renewalState.result.taxYear}</p></div>
-            {renewalState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{renewalState.correlationId.slice(0, 16)}...</code></div>}
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Returned status: {renewalState.result.status}</span><p className='tf-text-secondary text-sm'>Exemption ID: {renewalState.result.exemptionId} | Tax year: {renewalState.result.taxYear}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned exemption ID, tax year, and renewal status for this request.</p></div>
+            {renewalState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{renewalState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {renewalState.status === 'error' && renewalState.error && <ErrorDisplay error={{ message: renewalState.error.message, errorCode: renewalState.error.code, correlationId: renewalState.correlationId }} />}
@@ -1464,16 +1461,16 @@ export const PropertyDais: React.FC = () => {
 
       {/* File Appeal (write_low) */}
       <BentoCard title='📋 File Appeal' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>File a new Board of Equalization appeal for parcel {parcelId}</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed Board of Equalization appeal request for this parcel, then review the returned appeal ID, status, and filed-at timestamp</p>
         <textarea value={appealGrounds} onChange={e => setAppealGrounds(e.target.value)} placeholder='Grounds for appeal...' rows={3} className='w-full p-2 rounded-lg tf-input resize-y mb-3' />
         <button onClick={handleFileAppeal} disabled={fileAppealState.status === 'loading' || !appealGrounds.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-          {fileAppealState.status === 'loading' ? 'Filing...' : 'File Appeal'}
+          {fileAppealState.status === 'loading' ? 'Submitting...' : 'Submit Appeal Request'}
         </button>
-        {fileAppealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Filing appeal...</span></div>}
+        {fileAppealState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting appeal request...</span></div>}
         {fileAppealState.status === 'success' && fileAppealState.result && (
           <div className='space-y-2'>
-            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Appeal {fileAppealState.result.appealId}</span><p className='tf-text-secondary text-sm'>Status: {fileAppealState.result.status} | Filed: {formatDate(fileAppealState.result.filedAt)}</p></div>
-            {fileAppealState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{fileAppealState.correlationId.slice(0, 16)}...</code></div>}
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Returned appeal ID: {fileAppealState.result.appealId}</span><p className='tf-text-secondary text-sm'>Returned status: {fileAppealState.result.status} | Filed at: {formatDate(fileAppealState.result.filedAt)}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned appeal ID, status, and filed-at timestamp for this appeal request.</p></div>
+            {fileAppealState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{fileAppealState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {fileAppealState.status === 'error' && fileAppealState.error && <ErrorDisplay error={{ message: fileAppealState.error.message, errorCode: fileAppealState.error.code, correlationId: fileAppealState.correlationId }} />}
@@ -1481,25 +1478,26 @@ export const PropertyDais: React.FC = () => {
 
       {/* Schedule BOE Hearing (write_high) */}
       <BentoCard title='📅 Schedule BOE Hearing' actions={<span className='text-xs tf-badge-danger px-2 py-0.5 rounded'>write_high</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Schedule a Board of Equalization hearing with panel assignment</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed BOE hearing request for this appeal, then review the returned hearing ID, scheduled date, and panel size</p>
         <div className='space-y-2 mb-3'>
           <input type='text' value={hearingAppealId} onChange={e => setHearingAppealId(e.target.value)} placeholder='Appeal ID' className='w-full p-2 rounded-lg tf-input' />
           <input type='date' value={hearingDate} onChange={e => setHearingDate(e.target.value)} className='w-full p-2 rounded-lg tf-input' />
           <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
             <label className='flex items-center gap-3 cursor-pointer'>
               <input type='checkbox' checked={hearingConfirmed} onChange={e => setHearingConfirmed(e.target.checked)} className='h-4 w-4' />
-              <span className='text-sm tf-text'>I confirm scheduling this hearing</span>
+              <span className='text-sm tf-text'>I confirm this BOE hearing request is ready for submission</span>
             </label>
           </div>
         </div>
         <button onClick={handleScheduleHearing} disabled={hearingState.status === 'loading' || !hearingAppealId.trim() || !hearingDate.trim() || !hearingConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-          {hearingState.status === 'loading' ? 'Scheduling...' : hearingConfirmed ? 'Schedule Hearing' : '⚠️ Confirm Above to Enable'}
+          {hearingState.status === 'loading' ? 'Submitting...' : hearingConfirmed ? 'Submit Hearing Request' : '⚠️ Confirm Above to Enable'}
         </button>
-        {hearingState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Scheduling hearing...</span></div>}
+        {hearingState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting BOE hearing request...</span></div>}
         {hearingState.status === 'success' && hearingState.result && (
           <div className='space-y-2'>
-            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Hearing {hearingState.result.hearingId}</span><p className='tf-text-secondary text-sm'>Date: {formatDate(hearingState.result.scheduledDate)} | Panel: {hearingState.result.panelSize} members</p></div>
-            {hearingState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{hearingState.correlationId.slice(0, 16)}...</code></div>}
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Returned hearing ID: {hearingState.result.hearingId}</span><p className='tf-text-secondary text-sm'>Scheduled date: {formatDate(hearingState.result.scheduledDate)} | Panel: {hearingState.result.panelSize} members</p></div>
+            <div className='text-xs tf-text-secondary'>Shows the returned hearing ID, scheduled date, and panel size for this hearing request.</div>
+            {hearingState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{hearingState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {hearingState.status === 'error' && hearingState.error && <ErrorDisplay error={{ message: hearingState.error.message, errorCode: hearingState.error.code, correlationId: hearingState.correlationId }} />}
@@ -1509,23 +1507,24 @@ export const PropertyDais: React.FC = () => {
 
       {/* Certification Progress (read_only) */}
       <BentoCard title='📊 Certification Progress' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Assessment roll certification progress with checklist and blockers</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Request the returned certification progress fields, then review the returned percent complete, checklist steps, and blockers</p>
         <button onClick={handleGetCertProgress} disabled={certProgressState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {certProgressState.status === 'loading' ? 'Loading...' : 'Get Certification Progress'}
+          {certProgressState.status === 'loading' ? 'Requesting...' : 'Request Certification Progress'}
         </button>
-        {certProgressState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Loading progress...</span></div>}
+        {certProgressState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Requesting certification progress...</span></div>}
         {certProgressState.status === 'success' && certProgressState.result && (
           <div className='space-y-2'>
             <div className='tf-panel p-4'>
               <div className='flex items-center justify-between mb-2'>
-                <span className='font-semibold tf-text'>{certProgressState.result.percentComplete}% Complete</span>
-                <span className='text-xs tf-badge px-2 py-0.5 rounded'>{certProgressState.result.taxYear}</span>
+                <span className='font-semibold tf-text'>Returned percent complete: {certProgressState.result.percentComplete}%</span>
+                <span className='text-xs tf-badge px-2 py-0.5 rounded'>Returned tax year: {certProgressState.result.taxYear}</span>
               </div>
-              <div className='w-full bg-gray-700 rounded-full h-2 mb-3'><div className='bg-green-500 h-2 rounded-full transition-all' style={{ width: `${certProgressState.result.percentComplete}%` }} /></div>
+              <div className='w-full tf-border rounded-full h-2 mb-3'><div className='bg-[color:var(--terra-green,#22c55e)] h-2 rounded-full transition-all' style={{ width: `${certProgressState.result.percentComplete}%` }} /></div>
               {certProgressState.result.steps.length > 0 && <div className='space-y-1'>{certProgressState.result.steps.map(s => <div key={s.id} className='flex items-center gap-2 text-sm'><span>{s.complete ? '✅' : '⏳'}</span><span className='tf-text'>{s.name}</span></div>)}</div>}
               {certProgressState.result.blockers.length > 0 && <div className='mt-2 text-xs text-red-400'>Blockers: {certProgressState.result.blockers.join(', ')}</div>}
+              <p className='text-xs tf-text-dim mt-2'>Shows the returned percent complete, checklist steps, and blockers for this certification progress request.</p>
             </div>
-            {certProgressState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{certProgressState.correlationId.slice(0, 16)}...</code></div>}
+            {certProgressState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{certProgressState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {certProgressState.status === 'error' && certProgressState.error && <ErrorDisplay error={{ message: certProgressState.error.message, errorCode: certProgressState.error.code, correlationId: certProgressState.correlationId }} />}
@@ -1533,25 +1532,25 @@ export const PropertyDais: React.FC = () => {
 
       {/* Certification Sign-Off (write_high) */}
       <BentoCard title='✍️ Certification Sign-Off' actions={<span className='text-xs tf-badge-danger px-2 py-0.5 rounded'>write_high</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Sign off a certification checklist step</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed certification sign-off request for this step, then review the returned step ID, signer, and signed-at timestamp</p>
         <div className='space-y-2 mb-3'>
           <input type='text' value={signOffStepId} onChange={e => setSignOffStepId(e.target.value)} placeholder='Step ID (e.g. step-review-001)' className='w-full p-2 rounded-lg tf-input' />
           <input type='text' value={signOffName} onChange={e => setSignOffName(e.target.value)} placeholder='Signer name' className='w-full p-2 rounded-lg tf-input' />
           <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
             <label className='flex items-center gap-3 cursor-pointer'>
               <input type='checkbox' checked={signOffConfirmed} onChange={e => setSignOffConfirmed(e.target.checked)} className='h-4 w-4' />
-              <span className='text-sm tf-text'>I confirm this write_high sign-off for step <strong>{signOffStepId || '...'}</strong></span>
+              <span className='text-sm tf-text'>I confirm this certification sign-off request is ready for submission for step <strong>{signOffStepId || '...'}</strong></span>
             </label>
           </div>
         </div>
         <button onClick={handleSignOff} disabled={signOffState.status === 'loading' || !signOffStepId.trim() || !signOffName.trim() || !signOffConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-          {signOffState.status === 'loading' ? 'Signing...' : signOffConfirmed ? 'Sign Off Step' : '⚠️ Confirm Above to Enable'}
+          {signOffState.status === 'loading' ? 'Submitting...' : signOffConfirmed ? 'Submit Certification Sign-Off Request' : '⚠️ Confirm Above to Enable'}
         </button>
-        {signOffState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Processing sign-off...</span></div>}
+        {signOffState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting certification sign-off request...</span></div>}
         {signOffState.status === 'success' && signOffState.result && (
           <div className='space-y-2'>
-            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Step {signOffState.result.stepId} signed off</span><p className='tf-text-secondary text-sm'>By: {signOffState.result.signedBy} at {formatDate(signOffState.result.signedAt)}</p></div>
-            {signOffState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{signOffState.correlationId.slice(0, 16)}...</code></div>}
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Returned step ID: {signOffState.result.stepId}</span><p className='tf-text-secondary text-sm'>Returned signer: {signOffState.result.signedBy} | Returned signed-at: {formatDate(signOffState.result.signedAt)}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned step ID, signer, and signed-at timestamp for this certification sign-off request.</p></div>
+            {signOffState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{signOffState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {signOffState.status === 'error' && signOffState.error && <ErrorDisplay error={{ message: signOffState.error.message, errorCode: signOffState.error.code, correlationId: signOffState.correlationId }} />}
@@ -1561,16 +1560,16 @@ export const PropertyDais: React.FC = () => {
 
       {/* Queue Notice for Mailing (write_low) */}
       <BentoCard title='📬 Queue Notices for Mailing' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Queue generated notices for batch mailing with delivery tracking</p>
+        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed notice-queue request for these notice IDs, then review the returned queued count, batch ID, and delivery method</p>
         <input type='text' value={queueNoticeIds} onChange={e => setQueueNoticeIds(e.target.value)} placeholder='Notice IDs (comma-separated)' className='w-full p-2 rounded-lg tf-input mb-3' />
         <button onClick={handleQueueNotice} disabled={queueNoticeState.status === 'loading' || !queueNoticeIds.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-          {queueNoticeState.status === 'loading' ? 'Queuing...' : 'Queue for Mailing'}
+          {queueNoticeState.status === 'loading' ? 'Submitting...' : 'Submit Notice-Queue Request'}
         </button>
-        {queueNoticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Queuing notices...</span></div>}
+        {queueNoticeState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting notice-queue request...</span></div>}
         {queueNoticeState.status === 'success' && queueNoticeState.result && (
           <div className='space-y-2'>
-            <div className='tf-panel p-4'><span className='font-semibold tf-text'>{queueNoticeState.result.queued} notice(s) queued</span><p className='tf-text-secondary text-sm'>Batch: {queueNoticeState.result.batchId} | Method: {queueNoticeState.result.deliveryMethod}</p></div>
-            {queueNoticeState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{queueNoticeState.correlationId.slice(0, 16)}...</code></div>}
+            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Returned queued count: {queueNoticeState.result.queued}</span><p className='tf-text-secondary text-sm'>Batch ID: {queueNoticeState.result.batchId} | Delivery method: {queueNoticeState.result.deliveryMethod}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned queued count, batch ID, and delivery method for this notice-queue request.</p></div>
+            {queueNoticeState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{queueNoticeState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {queueNoticeState.status === 'error' && queueNoticeState.error && <ErrorDisplay error={{ message: queueNoticeState.error.message, errorCode: queueNoticeState.error.code, correlationId: queueNoticeState.correlationId }} />}
@@ -1579,8 +1578,18 @@ export const PropertyDais: React.FC = () => {
       {/* ═══ R2.9 TerraQueue Module ═══ */}
 
       {/* Queue Statistics (read_only) */}
-      <BentoCard title='📈 Queue Statistics' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Task queue statistics with SLA compliance metrics</p>
+      <BentoCard
+        title='📈 Queue Statistics'
+        actions={
+          <>
+            <span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>
+            {queueStatsState.status !== 'success' && (
+              <WorkbenchSourceBadge source='unavailable' className='ml-2' />
+            )}
+          </>
+        }
+      >
+        <p className='tf-text-tertiary text-sm mb-3'>Request returned queue totals, completion count, overdue count, and SLA compliance for this request</p>
         <button onClick={handleGetQueueStats} disabled={queueStatsState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
           {queueStatsState.status === 'loading' ? 'Loading...' : 'Get Queue Statistics'}
         </button>
@@ -1594,8 +1603,9 @@ export const PropertyDais: React.FC = () => {
                 <div><span className='text-xs tf-text-dim'>SLA Compliance</span><p className='font-semibold tf-text'>{queueStatsState.result.slaCompliance}%</p></div>
                 <div><span className='text-xs tf-text-dim'>Overdue</span><p className='font-semibold text-red-400'>{queueStatsState.result.overdueCount}</p></div>
               </div>
+              <p className='text-xs tf-text-dim mt-2'>Shows the total tasks, completed tasks, overdue count, and SLA compliance returned by this request.</p>
             </div>
-            {queueStatsState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{queueStatsState.correlationId.slice(0, 16)}...</code></div>}
+            {queueStatsState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{queueStatsState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {queueStatsState.status === 'error' && queueStatsState.error && <ErrorDisplay error={{ message: queueStatsState.error.message, errorCode: queueStatsState.error.code, correlationId: queueStatsState.correlationId }} />}
@@ -1603,19 +1613,19 @@ export const PropertyDais: React.FC = () => {
 
       {/* Escalate Task (write_low) */}
       <BentoCard title='🚨 Escalate Task' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Escalate an overdue or high-priority task</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Submit a governed escalation request for this task, then review the returned task ID, escalation target, and status</p>
         <div className='space-y-2 mb-3'>
           <input type='text' value={escalateTaskId} onChange={e => setEscalateTaskId(e.target.value)} placeholder='Task ID' className='w-full p-2 rounded-lg tf-input' />
           <input type='text' value={escalateReason} onChange={e => setEscalateReason(e.target.value)} placeholder='Escalation reason' className='w-full p-2 rounded-lg tf-input' />
         </div>
         <button onClick={handleEscalateTask} disabled={escalateState.status === 'loading' || !escalateTaskId.trim() || !escalateReason.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-          {escalateState.status === 'loading' ? 'Escalating...' : 'Escalate Task'}
+          {escalateState.status === 'loading' ? 'Submitting...' : 'Submit Escalation Request'}
         </button>
-        {escalateState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Escalating task...</span></div>}
+        {escalateState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting escalation request...</span></div>}
         {escalateState.status === 'success' && escalateState.result && (
           <div className='space-y-2'>
-            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Task {escalateState.result.taskId} escalated</span><p className='tf-text-secondary text-sm'>To: {escalateState.result.escalatedTo} | Status: {escalateState.result.status}</p></div>
-            {escalateState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{escalateState.correlationId.slice(0, 16)}...</code></div>}
+              <div className='tf-panel p-4'><span className='font-semibold tf-text'>Returned task ID: {escalateState.result.taskId}</span><p className='tf-text-secondary text-sm'>Returned escalation target: {escalateState.result.escalatedTo} | Returned status: {escalateState.result.status}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned task ID, escalation target, and status for this escalation request.</p></div>
+            {escalateState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{escalateState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
           </div>
         )}
         {escalateState.status === 'error' && escalateState.error && <ErrorDisplay error={{ message: escalateState.error.message, errorCode: escalateState.error.code, correlationId: escalateState.correlationId }} />}

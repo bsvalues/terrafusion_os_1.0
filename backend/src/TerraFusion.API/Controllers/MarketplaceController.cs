@@ -1,23 +1,20 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TerraFusion.Core.DTOs;
-using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Services;
-using TerraFusion.API.Services;
 using System.Threading.Tasks;
 
 namespace TerraFusion.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,SystemAdmin")]
     public class MarketplaceController : ControllerBase
     {
-        private readonly IMarketplaceService _marketplaceService;
         private readonly IModuleService _moduleService;
         private readonly ILogger<MarketplaceController> _logger;
 
-        public MarketplaceController(IMarketplaceService marketplaceService, IModuleService moduleService, ILogger<MarketplaceController> logger)
+        public MarketplaceController(IModuleService moduleService, ILogger<MarketplaceController> logger)
         {
-            _marketplaceService = marketplaceService;
             _moduleService = moduleService;
             _logger = logger;
         }
@@ -33,15 +30,13 @@ namespace TerraFusion.API.Controllers
                 var plugins = modules.Select(m => new
                 {
                     id = m.Name?.ToLower().Replace(" ", "-"),
-                    name = m.Name,
+                    name = string.IsNullOrWhiteSpace(m.DisplayName) ? m.Name : m.DisplayName,
                     version = m.Version ?? "1.0.0",
                     description = m.Description,
                     author = "TerraFusion",
-                    category = "Government", // ModuleDto doesn't have Category
+                    category = m.IsCore ? "Core" : m.Tier.ToString(),
                     tags = new[] { m.Tier.ToString().ToLower(), "government", "terrafusion" },
-                    downloads = GetDownloadCount(m.Name ?? ""),
-                    rating = GetRating(m.Name ?? ""),
-                    ratingCount = GetRatingCount(m.Name ?? "")
+                    metricsAvailable = false
                 }).ToList();
 
                 // Apply search filter
@@ -62,10 +57,8 @@ namespace TerraFusion.API.Controllers
                 // Apply sorting
                 plugins = sort switch
                 {
-                    "rating" => plugins.OrderByDescending(p => p.rating).ToList(),
                     "name" => plugins.OrderBy(p => p.name).ToList(),
-                    "updated" => plugins.OrderByDescending(p => p.version).ToList(),
-                    _ => plugins.OrderByDescending(p => p.downloads).ToList()
+                    _ => plugins.OrderByDescending(p => p.version).ToList()
                 };
 
                 return Ok(new { plugins });
@@ -129,54 +122,6 @@ namespace TerraFusion.API.Controllers
             }
         }
 
-        [HttpPost("plugins/{id}/rate")]
-        public async Task<ActionResult> RatePlugin(string id, [FromBody] RatingDto rating)
-        {
-            try
-            {
-                // Government-grade: Log rating submission for audit compliance
-                await Task.Run(() => _logger.LogInformation("Plugin rating submitted: {PluginId}, Rating: {Rating}", id, rating.Rating));
-
-                // For now, just return success - implement rating storage later
-                return Ok(new { message = "Rating submitted successfully" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error rating plugin {PluginId}", id);
-                return StatusCode(500, "Internal server error");
-            }
-        }
-
-        private static int GetDownloadCount(string moduleName) => moduleName switch
-        {
-            "CostForge AI" => 15420,
-            "Harris PACS" => 8930,
-            "GIS Core" => 12750,
-            "CAMA Core" => 6840,
-            "Valuation Tools" => 9320,
-            _ => new Random().Next(1000, 20000)
-        };
-
-        private static double GetRating(string moduleName) => moduleName switch
-        {
-            "CostForge AI" => 4.8,
-            "Harris PACS" => 4.6,
-            "GIS Core" => 4.9,
-            "CAMA Core" => 4.5,
-            "Valuation Tools" => 4.7,
-            _ => Math.Round(4.0 + new Random().NextDouble(), 1)
-        };
-
-        private static int GetRatingCount(string moduleName) => moduleName switch
-        {
-            "CostForge AI" => 342,
-            "Harris PACS" => 156,
-            "GIS Core" => 289,
-            "CAMA Core" => 198,
-            "Valuation Tools" => 234,
-            _ => new Random().Next(50, 400)
-        };
-
         private static string GetCategoryIcon(string category) => category switch
         {
             "AI" => "Zap",
@@ -187,46 +132,5 @@ namespace TerraFusion.API.Controllers
             _ => "Package"
         };
 
-        [HttpPost("submit")]
-        public async Task<IActionResult> SubmitPlugin([FromBody] PluginSubmissionDto submissionDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var result = await _marketplaceService.ProcessPluginSubmissionAsync(submissionDto);
-
-            if (result.Success)
-            {
-                return Ok(new { message = result.Message });
-            }
-
-            // Use BadRequest for validation failures, and a more general error for others.
-            if (result.Message.Contains("validation failed"))
-            {
-                return BadRequest(new { message = result.Message });
-            }
-
-            return StatusCode(500, new { message = result.Message });
-        }
-
-        [HttpPost("publish")]
-        public async Task<IActionResult> PublishPlugin([FromBody] PluginPublishDto publishDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var result = await _marketplaceService.PublishPluginAsync(publishDto);
-
-            if (result.Success)
-            {
-                return Ok(new { message = result.Message });
-            }
-
-            return BadRequest(new { message = result.Message });
-        }
     }
 }

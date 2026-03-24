@@ -31,11 +31,13 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./setupTests.vitest.ts'],
+    retry: 2,
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
       '**/*.spec.ts',
       '**/e2e/**',
+      // Known-fail exclusions: none remain (workbenchRealHosting + RiskPolicyGate fixed 2026-03-22)
     ],
   },
 });

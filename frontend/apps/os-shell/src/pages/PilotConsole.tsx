@@ -16,6 +16,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
+  filterMuseReadOnlyTools,
     getPilotHealth,
     getPilotTrace,
     getRiskBadgeColor,
@@ -23,7 +24,6 @@ import {
     invokePilotTool,
     listPilotTools,
     validatePilotTool,
-    type Mode,
     type PilotInvokeResponse,
     type PilotTool,
     type PilotTraceEvent,
@@ -70,7 +70,6 @@ export function PilotConsole(): React.ReactElement {
   const [tools, setTools] = useState<PilotTool[]>([]);
   const [toolsLoading, setToolsLoading] = useState(false);
   const [toolsError, setToolsError] = useState<string | null>(null);
-  const [modeFilter, setModeFilter] = useState<Mode | 'all'>('all');
 
   // Health state
   const [health, setHealth] = useState<{
@@ -114,15 +113,14 @@ export function PilotConsole(): React.ReactElement {
     setToolsLoading(true);
     setToolsError(null);
     try {
-      const mode = modeFilter === 'all' ? undefined : modeFilter;
-      const response = await listPilotTools(mode);
-      setTools(response.tools);
+      const response = await listPilotTools('muse');
+      setTools(filterMuseReadOnlyTools(response.tools));
     } catch (err) {
       setToolsError(err instanceof Error ? err.message : 'Failed to load tools');
     } finally {
       setToolsLoading(false);
     }
-  }, [modeFilter]);
+  }, []);
 
   const loadHealth = useCallback(async () => {
     try {
@@ -188,6 +186,7 @@ export function PilotConsole(): React.ReactElement {
       const validation = await validatePilotTool({
         toolId: tool.toolId,
         params: parsedParams,
+        mode: 'muse',
         confirmation: confirmed,
         reasonCode: reasonCode || undefined,
       });
@@ -285,6 +284,7 @@ export function PilotConsole(): React.ReactElement {
       const result = await invokePilotTool({
         toolId: tool.toolId,
         params: parsedParams,
+        mode: 'muse',
         confirmation: confirmed,
         reasonCode: reasonCode || undefined,
         supervisorApproval,
@@ -754,16 +754,10 @@ export function PilotConsole(): React.ReactElement {
           <div className='lg:col-span-2'>
             <div className='flex justify-between items-center mb-4'>
               <h2 className='text-lg font-semibold'>Available Tools</h2>
-              <div className='flex gap-2'>
-                <select
-                  value={modeFilter}
-                  onChange={(e) => setModeFilter(e.target.value as Mode | 'all')}
-                  className='bg-slate-800 border border-slate-600 rounded px-3 py-1 text-sm'
-                >
-                  <option value='all'>All Modes</option>
-                  <option value='pilot'>Pilot Mode</option>
-                  <option value='muse'>Muse Mode</option>
-                </select>
+              <div className='flex gap-2 items-center'>
+                <span className='px-3 py-1 text-xs uppercase tracking-[0.2em] rounded border border-cyan-500/30 text-cyan-300 bg-cyan-500/10'>
+                  Muse / Read-Only
+                </span>
                 <button
                   onClick={loadTools}
                   disabled={toolsLoading}
@@ -782,7 +776,7 @@ export function PilotConsole(): React.ReactElement {
 
             {tools.length === 0 && !toolsLoading && !toolsError && (
               <div className='p-8 text-center text-slate-500 border border-dashed border-slate-700 rounded'>
-                Click "Load Tools" to fetch available tools from the registry
+                Click "Load Tools" to fetch Muse-first read-only tools from the registry
               </div>
             )}
 

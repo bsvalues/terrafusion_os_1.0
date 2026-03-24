@@ -7,7 +7,8 @@
  * Shows: county stats (appeals, levy revenue), module launcher grid,
  * recent parcel queue. Does NOT host parcel execution.
  *
- * Note: County-level stats from useCountyStats provide appeals/levy data.
+ * Note: TerraDais API metrics are composed via useDaisSuiteStats.
+ * Falls back to county-provider aggregates when live Dais endpoints are unavailable.
  * Per-parcel appeal work routes to the Workbench Dais tab.
  */
 
@@ -18,7 +19,7 @@ import { OperationalQueue } from '../../components/suites/OperationalQueue';
 import NoticeBatchQueuePanel from '../../components/dais/NoticeBatchQueuePanel';
 import CertRollPanel from '../../components/dais/CertRollPanel';
 import ManagementDashboardPanel from '../../components/dais/ManagementDashboardPanel';
-import { useCountyStats } from '../../hooks/useCountyStats';
+import { useDaisSuiteStats } from './useDaisSuiteStats';
 import {
   ArrowLeft,
   Scale,
@@ -52,12 +53,12 @@ const DAIS_MODULES: SuiteModuleDef[] = [
   { id: 'terra-notice', label: 'TerraNotice', icon: Mail, description: 'Batch notice dispatch — mail/print queue and delivery tracking', launchMode: 'standalone', moduleId: 'terra-notice' },
 ];
 
-const fmtNum = (n: number) => n.toLocaleString();
-const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
+const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
+const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
 
 export default function DaisSuiteHome() {
   const navigate = useNavigate();
-  const { stats, loading, error } = useCountyStats();
+  const { stats, loading, error, source } = useDaisSuiteStats();
 
   return (
     <div data-testid="suite-dais-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
@@ -70,13 +71,28 @@ export default function DaisSuiteHome() {
         <div data-testid="dais-error" role="alert" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-suite-dais))' }}>{error}</div>
       )}
 
+      {stats && source === 'county-provider' && (
+        <div
+          data-testid="dais-source-disclosure"
+          role="status"
+          className="px-6 py-3 text-sm"
+          style={{
+            color: 'hsl(var(--tf-warning))',
+            background: 'hsl(var(--tf-warning) / 0.12)',
+            borderBottom: '1px solid hsl(var(--tf-warning) / 0.24)',
+          }}
+        >
+          County aggregate fallback active: TerraDais overview, certification, and notice panels are currently using county-wide provider aggregates, not TerraDais API metrics.
+        </div>
+      )}
+
       {/* Stats Strip */}
       {stats && (
         <div data-testid="dais-stats" className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Active Appeals</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-suite-dais))' }}>{fmtNum(stats.activeAppeals)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Levy Revenue</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtCurrency(stats.totalLevyRevenue)}</span></div>
           <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Pending</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.pendingAssessments)}</span></div>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Completion</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{stats.assessmentCompletionPercent.toFixed(1)}%</span></div>
+          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Completion</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{(stats.assessmentCompletionPercent ?? 0).toFixed(1)}%</span></div>
         </div>
       )}
 
@@ -105,16 +121,16 @@ export default function DaisSuiteHome() {
           <SuiteModuleGrid modules={DAIS_MODULES} accentVar="--tf-suite-dais" />
         </div>
         <div data-testid="dais-mgmt-ops">
-          <ManagementDashboardPanel />
+          <ManagementDashboardPanel stats={stats} />
         </div>
         <div data-testid="dais-cert-ops">
-          <CertRollPanel />
+          <CertRollPanel stats={stats} />
         </div>
         <div data-testid="dais-notice-ops">
-          <NoticeBatchQueuePanel />
+          <NoticeBatchQueuePanel stats={stats} />
         </div>
         <div data-testid="dais-queue">
-          <OperationalQueue title="Pending Appeals" accentVar="--tf-suite-dais" emptyMessage="No recent appeal activity" />
+          <OperationalQueue title="Recent Parcels" accentVar="--tf-suite-dais" emptyMessage="No recent parcel activity" />
         </div>
       </main>
     </div>

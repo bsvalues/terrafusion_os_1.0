@@ -35,6 +35,8 @@ import type {
 
 // Static import — SnapshotDataProvider is the default, always bundled
 import { SnapshotDataProvider } from '../data/dev-snapshots/SnapshotDataProvider';
+import { LiveDataProvider } from './LiveDataProvider';
+import { getToken } from '../auth/authStorage';
 
 // ---------------------------------------------------------------------------
 // Data Mode
@@ -103,11 +105,18 @@ let _provider: DataProvider | null = null;
 
 /**
  * Get the active DataProvider.
- * Auto-initializes with SnapshotDataProvider on first access.
+ * Uses LiveDataProvider when a real JWT token is available (backend reachable).
+ * Falls back to SnapshotDataProvider otherwise.
  */
 export function getDataProvider(): DataProvider {
   if (!_provider) {
-    _provider = new SnapshotDataProvider();
+    const token = getToken();
+    // Use live provider when we have a real JWT (starts with eyJ)
+    if (token && token.startsWith('eyJ')) {
+      _provider = new LiveDataProvider();
+    } else {
+      _provider = new SnapshotDataProvider();
+    }
   }
   return _provider;
 }
@@ -142,7 +151,13 @@ export async function createDataProvider(
   return _provider;
 }
 
-/** Reset provider (for testing or mode switch). */
+/** Reset provider (for testing, mode switch, or auth change). */
 export function resetDataProvider(): void {
   _provider = null;
+}
+
+/** Called after auth token changes to switch to live provider if available. */
+export function refreshDataProvider(): void {
+  _provider = null;
+  // Re-initialize on next access
 }

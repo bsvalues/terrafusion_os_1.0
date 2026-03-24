@@ -52,6 +52,33 @@ vi.mock('@/components/ui/badge', () => ({
   ),
 }));
 
+// Phase 8 live hooks — must be mocked before ManagementDashboard import to prevent
+// SignalR connection attempts in jsdom (Cannot resolve '/hubs/swarm')
+const FRESH_UNAVAILABLE = {
+  data: null, isLoading: false, error: null,
+  lastUpdated: null, source: 'unavailable' as const, isStale: false,
+};
+vi.mock('../../hooks/useSwarmLive', () => ({ useSwarmLive: () => FRESH_UNAVAILABLE }));
+vi.mock('../../hooks/usePacsStatus', () => ({ usePacsStatus: () => FRESH_UNAVAILABLE }));
+vi.mock('../../hooks/useAppealsQueue', () => ({ useAppealsQueue: () => FRESH_UNAVAILABLE }));
+vi.mock('../../hooks/useWorkloadSummary', () => ({ useWorkloadSummary: () => FRESH_UNAVAILABLE }));
+
+// Service layer — prevent real HTTP calls
+vi.mock('@/services/suites/daisService', () => ({
+  getCertificationStatus: vi.fn().mockResolvedValue([]),
+  getAllAppeals: vi.fn().mockResolvedValue([]),
+}));
+vi.mock('@/services/suites/queueService', () => ({
+  getQueueMetrics: vi.fn().mockResolvedValue(null),
+  getAppraiserProductivity: vi.fn().mockResolvedValue([]),
+}));
+
+// Auth + governance
+vi.mock('@/auth/useSession', () => ({ useSession: () => ({ user: { name: 'Test User' }, countyId: 'benton' }) }));
+vi.mock('@/components/governance/DemoDataBanner', () => ({
+  DemoDataBanner: () => <div data-testid="demo-data-banner" />,
+}));
+
 // ---------------------------------------------------------------------------
 // Import under test
 // ---------------------------------------------------------------------------

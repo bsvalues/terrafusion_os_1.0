@@ -1,0 +1,1011 @@
+﻿<metadata>
+  <idinfo>
+    <citation>
+      <citeinfo>
+        <origin>Washington Division of Geology and Earth Resources</origin>
+        <pubdate>20160712</pubdate>
+        <title>Oil and Gas Scanned Documents Table</title>
+        <edition>Version 3.3</edition>
+        <geoform>tabular digital data</geoform>
+        <pubinfo>
+          <pubplace>MS 47007, Olympia, WA, 98506</pubplace>
+          <publish>Washington Division of Geology and Earth Resources</publish>
+        </pubinfo>
+      </citeinfo>
+    </citation>
+    <descript>
+      <abstract>These data contain information about scans of geophysical logs and permit file documents regarding oil and gas test well sites drilled in Washington State from 1890 to present. Scanned documents are available in PDF format.</abstract>
+      <purpose>This dataset was generated to summarize pertinent information regarding oil and gas documents on file at the Washington Department of Natural Resources that were scanned into PDF format and made available to the public. Previously, someone interested in obtaining oil and gas documents would be required to visit the DNR and make paper copies. Links to scanned documents can be found in this dataset along with a description of each document.</purpose>
+    </descript>
+    <status>
+      <update>As needed</update>
+    </status>
+    <spdom>
+      <bounding>
+        <westbc>-124.686082</westbc>
+        <eastbc>-116.893031</eastbc>
+        <northbc>49.008944</northbc>
+        <southbc>45.563213</southbc>
+      </bounding>
+    </spdom>
+    <keywords>
+      <theme>
+        <themekt>Jackson, Julia A. (ed.), Mehl, James P., Jr. (ed.), Neuendorf, Klaus K. E. (ed.), 2005, Glossary of Geology; 5th ed.: American Geological Institute, 779 p.</themekt>
+        <themekey>oil, gas, geophysical, temperature, bottom-hole, permit files, gas storage, logs</themekey>
+      </theme>
+      <place>
+        <placekt>USGS Geographic Names Information System (GNIS) http://geonames.usgs.gov/</placekt>
+        <placekey>USA, Washington State</placekey>
+      </place>
+    </keywords>
+    <accconst>None</accconst>
+    <useconst>The Washington Division of Geology and Earth Resources (DGER) shall not be held liable for improper or incorrect use of the data described and/or contained herein. This product is provided 'as is' without warranty of any kind, either expressed or implied, including, but not limited to, the implied warranties of merchantability and fitness for a particular use. The Washington State Department of Natural Resources and the authors of this product will not be liable to the user of this product for any activity involving the product with respect to the following: (a) lost profits, lost savings, or any other consequential damages; (b) the fitness of the product for a particular purpose; or (c) use of the product or results obtained from use of the product. Although these data have been processed successfully on computers of DGER, no warranty, expressed or implied, is made by DGER regarding the use of these data on any other system, nor does the fact of distribution constitute or imply any such warranty.</useconst>
+    <ptcontac>
+      <cntinfo>
+        <cntorgp>
+          <cntorg>Washington Division of Geology and Earth Resources</cntorg>
+        </cntorgp>
+      </cntinfo>
+    </ptcontac>
+    <native>Microsoft Windows 7 Version 6.1 (Build 7601) Service Pack 1; Esri ArcGIS 10.3.1.4959</native>
+  </idinfo>
+  <dataqual>
+    <lineage>
+      <procstep>
+        <procdesc>Information was provided to the Division of Geology and Earth Resources by operators and filed. Beginning in 1947, Information Circulars were created from the filed information provided by the operators. Points were created and attributed from information contained in these Information Circulars and addendums. Different methods were used to generate these points. Some were programmatically generated, some approximated using section divisions, and others were electronically measured from section lines. It was known that some of the well locations were in error for two reasons. Firstly, the spreadsheet data came from sources one or more iterations removed from the original data. Original data is located in hard-copy files maintained by the Washington Division of Geology and Earth Resources (Livingston, 1958; McFarland, 1981; McFarland, 1983; oil and gas addendum) pursuant to the Oil and Gas Conservation Act, Chapter 146 (RCW 78.52.001 to 78.52-550), and in hard-copy files for some wells drilled prior to 1954 when the Oil and Gas Conservation Act went into effect. Secondly, the program used to generate the initial latitude-longitude locations did not yield locations as precise as the original file information would allow. Therefore, we reviewed the locations in the hard-copy files and 1) corrected the township, range, section, and within section location data in the spreadsheet, and 2) added information for wells that had been permitted under the Oil and Gas Conservation Act but not drilled. For most records the location in the original hard-copy files is in the form of township, range, section, distance from the north or south section line, and distance from the east or west section line. In other cases, especially for wells drilled prior to the Oil and Gas Conservation Act, that degree of detail is not available. The spreadsheet with the inexact latitude-longitude information but corrected township, range, section, and within-section information was used to create a point feature class. That feature class was loaded into an ArcMap session with a line shapefile showing detailed, precisely-located township, range, and section lines. The location of each well was adjusted to agree with the most precise, corrected, township, range, section, within-section location and correct latitudes and longitudes calculated. 
+
+Version History
+
+Version 3.3 (July, 2016) 
+More complete attribution is provided. Records for scanned documents which are not associated with any drilled well have been removed. 
+
+Version 3.2 (August, 2014) 
+Undrilled wells were removed for clarity and attributes were edited for consistency and accuracy. 
+
+Version 3.1 (May, 2012) 
+The field WELL_STATUS was fully attributed to describe more clearly the status of the well based upon the contents of the documents on file with the Washington Division of Geology and Earth Resources, namely if the well was drilled or not drilled. In addition, attributes were edited for grammar and consistency.
+
+ Version 3.0 (May, 2011) 
+The location of the features within this dataset were checked against the original hard-copy files maintained by the Washington Division of Geology and Earth Resources and corrected accordingly using the process described above, in addition to addition of some boreholes that were permitted but never drilled, and some verification of other attributes. 
+
+Version 2.0 (June, 2010) 
+This dataset was migrated from a shapefile to a feature class within a geodatabase. Feature class names and attribute names were changed, and metadata for the entire dataset was updated. 
+
+Version 1.0 (October, 2008) 
+Original data in shapefile format.</procdesc>
+      </procstep>
+    </lineage>
+  </dataqual>
+  <eainfo>
+    <detailed>
+      <enttyp>
+        <enttypl>oil_gas_scanned_documents</enttypl>
+        <enttypd>Permit files include scans of official State documents issued to oil and gas permit holders, or forms/data summaries included in the permit holder's data submission to the permitting agency (Washington Department of Natural Resources) regarding the permitted borehole. Examples include: Well Record and History, Intent to Drill or Deepen, and Driller's Logs. Geophysical logs include recordings of numerous types of physical and geophysical properties along a specified length of a oil and gas borehole. Examples include: Gamma Ray Logs, Electrical Logs, and Cement Bond Logs. This dataset includes a link to each scanned file and other attributes of the documents, such as logged depth, log date, and temperature.</enttypd>
+        <enttypds>Washington Department of Natural Resources</enttypds>
+      </enttyp>
+      <attr>
+        <attrlabl>OBJECTID</attrlabl>
+        <attrdef>Internal feature number.</attrdef>
+        <attrdefs>ESRI</attrdefs>
+        <attrdomv>
+          <udom>Sequential unique whole numbers that are automatically generated.</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>LOG_ID_NUMBER</attrlabl>
+        <attrdef>Identification number of the scanned document</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique numerical identifier</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>WA_FILE_NUMBER</attrlabl>
+        <attrdef>Unique Identification number of the oil and gas well location used to link the scanned_documents related table to the oil_gas_wells feature class</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique alphanumeric identifier</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>FILE_NAME</attrlabl>
+        <attrdef>Name of scanned file</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique text description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>LOG_TYPE_CODE</attrlabl>
+        <attrdef>Code indicating the type of document represented by scanned file</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <edom>
+            <edomv>3DV</edomv>
+            <edomvd>3-Dimensional Velocity Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>AIT</edomv>
+            <edomvd>Array Induction Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>AVL</edomv>
+            <edomvd>Acoustic Velocity Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>BCS</edomv>
+            <edomvd>Borehole Compensated Sonic</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>BDL</edomv>
+            <edomvd>Bulk Density</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>BTL</edomv>
+            <edomvd>Borehole Televiewer</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>BVL</edomv>
+            <edomvd>Borehole Volume</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CAL</edomv>
+            <edomvd>Caliper</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CAV</edomv>
+            <edomvd>Compensated Acoustic Velocity</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CBL</edomv>
+            <edomvd>Cement Bond Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CBLA</edomv>
+            <edomvd>Acoustic Cement Bond/Cement Bond/Sonic Bond</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CLK</edomv>
+            <edomvd>Cyberlook</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CCL</edomv>
+            <edomvd>Casing Collar Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CCLO</edomv>
+            <edomvd>Casing Collar Locator</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CDC</edomv>
+            <edomvd>Compensated Density Caliper</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CDCN</edomv>
+            <edomvd>Compensated Density Compensated Neutron</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CDI</edomv>
+            <edomvd>Continuous Dipmeter</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CDL</edomv>
+            <edomvd>Compensated Density Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CDMR</edomv>
+            <edomvd>Continuous Dipmeter/Diplog/Resistivity Dip</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CDS</edomv>
+            <edomvd>Continuous Directional Survey</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CEL</edomv>
+            <edomvd>Cement Evaluaton Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CFD</edomv>
+            <edomvd>Compensated Formation Density</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CND</edomv>
+            <edomvd>Compensated Neutron Density</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CNFD</edomv>
+            <edomvd>Compensated Neutron Formation Density</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CNL</edomv>
+            <edomvd>Compensated Neutron</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CNLD</edomv>
+            <edomvd>Compensated Neutron Lithodensity</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CORL</edomv>
+            <edomvd>Correlation</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CPL</edomv>
+            <edomvd>Computer Processed Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CPO</edomv>
+            <edomvd>Computed Porosity</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CSL</edomv>
+            <edomvd>Compensated Sonic Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>CSNG</edomv>
+            <edomvd>Compensated Spectral Natural Gamma</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>CYBD</edomv>
+            <edomvd>Cyberdip</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DCR</edomv>
+            <edomvd>Dipmeter Computed Result</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DD</edomv>
+            <edomvd>Depth Determination Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DEN</edomv>
+            <edomvd>Density</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DI</edomv>
+            <edomvd>Dual Induction</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DIFS</edomv>
+            <edomvd>Dual Induction Spherically Focused Laterolog</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DIGL</edomv>
+            <edomvd>Dual Induction Guard Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DILL</edomv>
+            <edomvd>Dual Induction Laterolog</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DIP</edomv>
+            <edomvd>Dipmeter</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DIPME</edomv>
+            <edomvd>Dual Dipmeter</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DIR</edomv>
+            <edomvd>Directional Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DISF</edomv>
+            <edomvd>Dual Induction - Spherically Focused</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DITE</edomv>
+            <edomvd>Phaser Induction Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>DL</edomv>
+            <edomvd>Drillers Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DLLM</edomv>
+            <edomvd>Dual Laterolog Micro Spherically Focused Laterolog</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DNL</edomv>
+            <edomvd>Density Neutron Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DSCN</edomv>
+            <edomvd>Dual Spaced Compensated Neutron</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DSI</edomv>
+            <edomvd>Dipole Sonic Imager</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DSTD</edomv>
+            <edomvd>Dual Spacing Thermal Neutron Decay Time</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>DTL</edomv>
+            <edomvd>Differential Temperature</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>ECS</edomv>
+            <edomvd>Elemental Capture Spectroscopy</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>EL</edomv>
+            <edomvd>Electric Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>EMTT</edomv>
+            <edomvd>Electromagnetic Thickness Tool</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>EPI</edomv>
+            <edomvd>Epilog</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>FAL</edomv>
+            <edomvd>Formation Analysis</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>FDC</edomv>
+            <edomvd>Formation Density Caliper</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>FDN</edomv>
+            <edomvd>Formation Density</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>FFF</edomv>
+            <edomvd>Fracture Finder/Failure Id</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>FGL</edomv>
+            <edomvd>Focused/Guard/Lateral</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>FMF</edomv>
+            <edomvd>Formation Factor</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>FMI</edomv>
+            <edomvd>Formation Micro Imager</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>FTL</edomv>
+            <edomvd>Formation Tester</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>GASD</edomv>
+            <edomvd>Gas Detection</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>GR</edomv>
+            <edomvd>Gamma Ray</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>GRDC</edomv>
+            <edomvd>Gamma Ray Density/Caliper</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>GRDN</edomv>
+            <edomvd>Gamma Ray Dual Neutron Density</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>GRI</edomv>
+            <edomvd>Gamma Ray Induction Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>GRN</edomv>
+            <edomvd>Gamma Ray Neutron</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>GR-RES</edomv>
+            <edomvd>Gamma Ray - Resistivity</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>HCP</edomv>
+            <edomvd>Hydrocarbon Profile</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>HDDIP</edomv>
+            <edomvd>High Density Dipmeter</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>HI</edomv>
+            <edomvd>Hydrocarbon Identifier</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>HRD</edomv>
+            <edomvd>High Resolution Dipmeter</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>HRT</edomv>
+            <edomvd>High Resolution Temperature Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>IDD</edomv>
+            <edomvd>Intent to Drill or Deepen</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>IEL</edomv>
+            <edomvd>Induction Electrical Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>IL</edomv>
+            <edomvd>Induction Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>IPA</edomv>
+            <edomvd>Intent to Plug and Abandon</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>LDT</edomv>
+            <edomvd>Lithodensity</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>LITH</edomv>
+            <edomvd>Lithology</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>LLD</edomv>
+            <edomvd>Dual Laterolog</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>LSS</edomv>
+            <edomvd>Long Spaced Sonic</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>MAC</edomv>
+            <edomvd>Multipole Array Acoustilog</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>MAIC</edomv>
+            <edomvd>Multi-arm Inspection Caliper Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>MEL</edomv>
+            <edomvd>Micro-Electrical Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>MICL</edomv>
+            <edomvd>Microlog</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>MINL</edomv>
+            <edomvd>Minilog</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>MLAT</edomv>
+            <edomvd>Microlateral/Microlaterolog</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>MSC</edomv>
+            <edomvd>Mechanical Sidewall Core Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>MSMG</edomv>
+            <edomvd>Micro-Seismogram Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>MUD</edomv>
+            <edomvd>Mud Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>NEL</edomv>
+            <edomvd>Neutron</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>NGRS</edomv>
+            <edomvd>Natural Gamma Ray Spectroscopy</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>NP</edomv>
+            <edomvd>Neutron Porosty</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>NPGR</edomv>
+            <edomvd>Neutron Porosity-Gamma Ray</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>PDC</edomv>
+            <edomvd>Perforated Depth Control</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>PERF</edomv>
+            <edomvd>Perforating Record</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>PERFD</edomv>
+            <edomvd>Perforating Depth Control Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>PFC</edomv>
+            <edomvd>Perforating Formation Collar</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>PIT</edomv>
+            <edomvd>Phaser Induction Tool</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>POR</edomv>
+            <edomvd>Porosity</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>PORC</edomv>
+            <edomvd>Compensated Porosity Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>PR</edomv>
+            <edomvd>Pressures</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>PRXL</edomv>
+            <edomvd>Proximity Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>PXML</edomv>
+            <edomvd>Proximity Microlog</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>RA</edomv>
+            <edomvd>Radioactivity</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>RAD</edomv>
+            <edomvd>Radiation Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>RAT</edomv>
+            <edomvd>Radioactive Tracer Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>RES</edomv>
+            <edomvd>Resistivity</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>RFT</edomv>
+            <edomvd>Repeat Formation Tester</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>ROP</edomv>
+            <edomvd>Drilling Rate</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>RPA</edomv>
+            <edomvd>Report of Plugging and Abandonment</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SAL</edomv>
+            <edomvd>Sonic Amplitude Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SBL</edomv>
+            <edomvd>Segmented Bond Tool</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SCAL</edomv>
+            <edomvd>Sonic compressional amplitude</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SDDSN</edomv>
+            <edomvd>Spectral Density Dual Spaced Neutron</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SDIP</edomv>
+            <edomvd>Stratigraphic Dipmeter</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SED</edomv>
+            <edomvd>Six Electro Dipmeter</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SEG</edomv>
+            <edomvd>Section Gauge</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SFL</edomv>
+            <edomvd>Spherically Focused Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>SGR</edomv>
+            <edomvd>Spectral Gamma Ray</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SL</edomv>
+            <edomvd>Sonic Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SML</edomv>
+            <edomvd>Seismic Monitor Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SN</edomv>
+            <edomvd>Sidewall Neutron Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SNFD</edomv>
+            <edomvd>Sidewall Neutron Formation Density</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SNP</edomv>
+            <edomvd>Sidewall Neutron Porosity Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SPP</edomv>
+            <edomvd>Spontaneous Potential</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SPCL</edomv>
+            <edomvd>Spectralog</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>STAR</edomv>
+            <edomvd>Simultaneous Acoustic/Resistivity</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SVS</edomv>
+            <edomvd>Seismic Velocity Survey</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>SW</edomv>
+            <edomvd>Sonic Waveform</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>TDE</edomv>
+            <edomvd>Thermal Decay</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>TDT</edomv>
+            <edomvd>Thermal Decay Time</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>TL</edomv>
+            <edomvd>Temperature Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>UIL</edomv>
+            <edomvd>Ultrasonic Imager</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>V3D</edomv>
+            <edomvd>3-D Velocity or Seismic Survey</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>VDL</edomv>
+            <edomvd>Variable Density Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>VEL</edomv>
+            <edomvd>Velocity Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>VSP</edomv>
+            <edomvd>Vertical Seismic Profile</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>WFO</edomv>
+            <edomvd>Wave Forms</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>WRH</edomv>
+            <edomvd>Well Report or History</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>WST</edomv>
+            <edomvd>Well Seismic Reporting</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>XMAC</edomv>
+            <edomvd>Cross-multipole Array Acoustilog</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources and Ontario Oil, Gas and Salt Research Library</edomvds>
+          </edom>
+          <edom>
+            <edomv>XRMI</edomv>
+            <edomvd>Extended Range Micro Imager Log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>CBVD</edomv>
+            <edomvd>Cement bond varial density</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>DIPC</edomv>
+            <edomvd>Computed result dipmeter</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>GRSC</edomv>
+            <edomvd>Spectral gamma ray - natural compensated</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>QUAD</edomv>
+            <edomvd>Quad combo</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>SSCS</edomv>
+            <edomvd>Sonic scanner compressional and shear</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>CVL</edomv>
+            <edomvd>Cement volume log</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>CNTDD</edomv>
+            <edomvd>Compensated neutron three detector density</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>LOG_TYPE</attrlabl>
+        <attrdef>Text description of type of document represented by scanned file</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique text description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>DEPTH_DATUM</attrlabl>
+        <attrdef>Reference point used by geophysical logging company from which logs depths are measured.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique text description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>LOG_START_DEPTH_FEET</attrlabl>
+        <attrdef>Highest logged level in borehole in feet.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique numerical value</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>LOG_END_DEPTH_FEET</attrlabl>
+        <attrdef>Lowest logged level in borehole, in feet</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique numerical value</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>TEMPERATURE_FAHRENHEIT</attrlabl>
+        <attrdef>Temperature in Fahrenheit recorded on the geophysical log within the logged interval. Note that in the case of multiple runs displayed on a single log, the latest (most recent) recorded temperature was reported.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique numerical value</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>TEMPERATURE_TYPE</attrlabl>
+        <attrdef>Indicates type of temperature recorded</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <edom>
+            <edomv>MAX</edomv>
+            <edomvd>Maximum recorded temperature measured within logged interval</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>BHT</edomv>
+            <edomvd>Temperature recorded at or near the bottom of the drilled interval. This value is temporally sensitive, and may be reported numerous times before drilling is complete.</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+          <edom>
+            <edomv>BHCT</edomv>
+            <edomvd>Bottom-hole circulating temperature; the temperature at or near the bottom of the borehole after fluid has been circulating for several hours.</edomvd>
+            <edomvds>Washington Division of Geology and Earth Resources</edomvds>
+          </edom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>TIME_SINCE_CIRC_HRS</attrlabl>
+        <attrdef>Duration of time in hours between the end of fluid circulation and geophysical logging</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique numerical value</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>FLUID_TYPE</attrlabl>
+        <attrdef>Fluid in borehole at the time of logging. No effort was made to interpret what what meant by the fluid type recorded on the logs, such that abbreviations and shorthand were maintained from the scanned documents for this attribute.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique text description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>LOG_DATE</attrlabl>
+        <attrdef>Date of geophysical logging. Note that in the case of multiple runs reported on one log having more than one date, the latest (most recent) date was reported.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique temporal value</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>COMMENTS</attrlabl>
+        <attrdef>Additional description of contents of scanned documents, such as additional measured parameters, run number, or indication  of a composite log.</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique text description</udom>
+        </attrdomv>
+      </attr>
+      <attr>
+        <attrlabl>DOCUMENT_URL</attrlabl>
+        <attrdef>Hyperlink to scanned document</attrdef>
+        <attrdefs>Washington Division of Geology and Earth Resources</attrdefs>
+        <attrdomv>
+          <udom>Unique document location description</udom>
+        </attrdomv>
+      </attr>
+    </detailed>
+  </eainfo>
+  <metainfo>
+    <metd>20160712</metd>
+    <metc>
+      <cntinfo>
+        <cntorgp>
+          <cntorg>Washington Division of Geology and Earth Resources</cntorg>
+        </cntorgp>
+        <cntaddr>
+          <addrtype>mailing</addrtype>
+          <address>MS 47007</address>
+          <city>Olympia</city>
+          <state>WA</state>
+          <postal>98506</postal>
+        </cntaddr>
+        <cntvoice>360-902-1450</cntvoice>
+      </cntinfo>
+    </metc>
+    <metstdn>FGDC Content Standard for Digital Geospatial Metadata</metstdn>
+    <metstdv>FGDC-STD-001-1998</metstdv>
+    <mettc>local time</mettc>
+    <metuc>The Washington Division of Geology and Earth Resources (DGER) shall not be held liable for improper or incorrect use of the data described and/or contained herein. This product is provided 'as is' without warranty of any kind, either expressed or implied, including, but not limited to, the implied warranties of merchantability and fitness for a particular use.The Washington State Department of Natural Resources and the authors of this product will not be liable to the user of this product for any activity involving the product with respect to the following: (a) lost profits, lost savings, or any other consequential damages; (b) the fitness of the product for a particular purpose; or (c) use of the product or results obtained from use of the product.Although these data have been processed successfully on computers of DGER, no warranty, expressed or implied, is made by DGER regarding the use of these data on any other system, nor does the fact of distribution constitute or imply any such warranty.</metuc>
+  </metainfo>
+</metadata>

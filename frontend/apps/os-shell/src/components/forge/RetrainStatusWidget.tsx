@@ -77,7 +77,7 @@ export function RetrainStatusWidget({ status, loading }: RetrainStatusWidgetProp
                 <Line
                   type="monotone"
                   dataKey="accuracy"
-                  stroke="#22c55e"
+                  stroke="hsl(var(--tf-success))"
                   strokeWidth={1.5}
                   dot={false}
                 />

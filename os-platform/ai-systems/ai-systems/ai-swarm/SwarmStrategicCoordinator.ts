@@ -147,7 +147,7 @@ export class SwarmStrategicCoordinator extends EventEmitter {
    * Setup WebSocket communication network
    */
   private setupCommunicationNetwork(): void {
-    this.webSocketServer = new WebSocket.Server({ port: 8080 });
+    this.webSocketServer = new WebSocket.Server({ port: Number(process.env.TF_SWARM_WS_PORT) || 8081 });
     
     this.webSocketServer.on('connection', (ws: WebSocket, req) => {
       const agentId = this.extractAgentId(req.url || '');
@@ -157,7 +157,8 @@ export class SwarmStrategicCoordinator extends EventEmitter {
       }
     });
 
-    console.log('🔗 Swarm communication network established on port 8080');
+    const wsPort = Number(process.env.TF_SWARM_WS_PORT) || 8081;
+    console.log(`🔗 Swarm communication network established on port ${wsPort}`);
   }
 
   private extractAgentId(url: string): string | null {

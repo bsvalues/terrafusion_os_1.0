@@ -105,7 +105,6 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
             countyId={countyId}
             department={department}
             onWorkflowExecute={(workflowId) => {
-              console.log(`✅ Workflow ${workflowId} completed successfully`);
               setNotificationCount((prev) => prev + 1);
             }}
           />
@@ -235,19 +234,19 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
             <div className='hidden md:flex items-center gap-3 px-4 py-2 bg-terra-cyan/10 rounded-lg border border-terra-cyan/20'>
               <Brain className='w-4 h-4 text-terra-cyan quantum-pulse' />
               <div className='text-xs'>
-                <span className='text-slate-400'>AI Swarm:</span>
+                <span className='text-slate-400'>Swarm status (30s refresh):</span>
                 <span className='text-terra-cyan font-bold ml-2'>
-                  {swarmStatus.activeAgents.toLocaleString()} agents
+                  {swarmStatus.activeAgents.toLocaleString()} agents reported
                 </span>
               </div>
               <div className='text-xs'>
-                <span className='text-slate-400'>Activity:</span>
+                <span className='text-slate-400'>Reported activity:</span>
                 <span className='text-green-400 font-bold ml-2'>
                   {(swarmStatus.swarmActivity * 100).toFixed(0)}%
                 </span>
               </div>
               <Badge variant='quantum' className='text-xs quantum-pulse'>
-                Factor {swarmStatus.quantumOptimizationFactor}
+                Latest factor {swarmStatus.quantumOptimizationFactor}
               </Badge>
             </div>
           )}
@@ -332,7 +331,7 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
           {/* AI Status Panel (Bottom of Sidebar) */}
           {sidebarOpen && swarmStatus && (
             <div className='absolute bottom-4 left-4 right-4 p-4 bg-terra-midnight/50 rounded-lg border border-terra-cyan/20'>
-              <div className='text-xs text-slate-400 mb-2'>AI Consciousness</div>
+              <div className='text-xs text-slate-400 mb-2'>AI Status Snapshot</div>
               <div className='space-y-2'>
                 <div className='flex justify-between text-xs'>
                   <span className='text-slate-400'>Accuracy</span>
@@ -388,7 +387,7 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
                 {activeView === 'dashboard' && 'Your personalized AI-enhanced workspace'}
                 {activeView === 'workflows' &&
                   'Intelligent task orchestration with quantum optimization'}
-                {activeView === 'insights' && 'Real-time predictive analytics and AI intelligence'}
+                {activeView === 'insights' && 'Auto-refresh predictive analytics and AI insight snapshots'}
                 {activeView === 'settings' && 'Configure your workspace preferences'}
               </p>
             </div>
@@ -400,8 +399,9 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
             <div className='mt-8 p-4 bg-terra-slate rounded-lg border border-slate-700'>
               <div className='flex items-center justify-between'>
                 <div className='text-sm text-slate-400'>
-                  Government. Transcended. | Quantum Optimization Factor: 949 |
-                  {swarmStatus && ` ${swarmStatus.activeAgents.toLocaleString()} AI Agents Active`}
+                  Government. Transcended. | Workspace status snapshot
+                  {swarmStatus &&
+                    ` | Latest factor ${swarmStatus.quantumOptimizationFactor} | ${swarmStatus.activeAgents.toLocaleString()} agents reported`}
                 </div>
                 <Badge variant='quantum' className='quantum-pulse'>
                   Elite Mode Active

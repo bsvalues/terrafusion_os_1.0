@@ -52,7 +52,7 @@ export function NeighborhoodTrendCard({ neighborhood, onClick }: NeighborhoodTre
               <Line
                 type="monotone"
                 dataKey="value"
-                stroke={isPositive ? '#22c55e' : '#ef4444'}
+                stroke={isPositive ? 'hsl(var(--tf-success))' : 'hsl(var(--tf-error))'}
                 strokeWidth={1.5}
                 dot={false}
               />

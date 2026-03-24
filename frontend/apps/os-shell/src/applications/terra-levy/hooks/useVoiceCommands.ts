@@ -42,6 +42,7 @@ export const useVoiceCommands = ({
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- SpeechRecognition/webkitSpeechRecognition are Web Speech API, not in TypeScript lib
     const SpeechRecognition =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognitionInstance = new SpeechRecognition();

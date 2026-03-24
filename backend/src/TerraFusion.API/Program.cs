@@ -38,7 +38,60 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using System.Threading.RateLimiting;
 
+// ── Standalone PACS seed mode ──────────────────────────────────────────────
+// Run as: dotnet run --project TerraFusion.API -- --seed-pacs
+// Runs the seeder directly without HTTP server or background services.
+if (args.Contains("--seed-pacs"))
+{
+    // Determine environment from ASPNETCORE_ENVIRONMENT or DOTNET_ENVIRONMENT
+    var seedEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                  ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                  ?? "Production";
+
+    var seedHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(seedEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{seedEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{seedEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.API.Seeds.PacsDataSeeder>();
+        })
+        .Build();
+
+    using var scope = seedHost.Services.CreateScope();
+    var seeder = scope.ServiceProvider.GetRequiredService<TerraFusion.API.Seeds.PacsDataSeeder>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsDataSeeder>>();
+    try
+    {
+        logger.LogInformation("[PacsSeeder] Standalone mode: starting full ETL...");
+        var result = await seeder.SeedAllAsync();
+        logger.LogInformation("[PacsSeeder] DONE: {Result}", result);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "[PacsSeeder] FAILED");
+        Environment.Exit(1);
+    }
+}
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Local developer override — appsettings.Development.local.json is gitignored.
+// Use it to set real connection strings without committing credentials.
+// Example: copy appsettings.Development.json, fill in real passwords, save as .local.json.
+builder.Configuration.AddJsonFile(
+    $"appsettings.{builder.Environment.EnvironmentName}.local.json",
+    optional: true,
+    reloadOnChange: true);
 
 static string ResolveSqliteConnectionString(string connectionString, string contentRootPath)
 {
@@ -239,6 +292,10 @@ builder.Services.AddScoped<IAdvancedSecurityFrameworkService, AdvancedSecurityFr
 // ✅ RE-ENABLED: Registration of workflow and assistant services needed for Controllers
 builder.Services.AddScoped<TerraFusion.AI.Services.IWorkflowAutomationService, TerraFusion.AI.Services.WorkflowAutomationService>();
 builder.Services.AddScoped<TerraFusion.AI.Services.IAIAssistantService, TerraFusion.AI.Services.AIAssistantService>();
+// Phase 9B: Muse Mode explain service
+builder.Services.AddScoped<IMuseService, TerraFusion.AI.Services.MuseService>();
+// Phase 10: HITL Drafter Mode — draft/approve/reject pipeline
+builder.Services.AddScoped<IDraftService, TerraFusion.AI.Services.DraftService>();
 // ✅ STUB: Consciousness Engine stub for DI resolution
 builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services
@@ -256,6 +313,7 @@ builder.Services.AddScoped<ICognitiveFrameworkService, CognitiveFrameworkService
 // 🔮 TESLA 3-6-9 FRAMEWORK - Universal Harmonic Metrics Engine
 // "If you only knew the magnificence of the 3, 6 and 9, then you would have a key to the universe." - Nikola Tesla
 builder.Services.AddScoped<TerraFusion.AI.Services.Framework369MetricsEngine>();
+builder.Services.AddScoped<TerraFusion.AI.Services.ICodex369FrameworkService, TerraFusion.AI.Services.Codex369FrameworkService>();
 
 // 🧠 GOVERNMENT-GRADE RESEARCH ANALYTICS SERVICES - PhD-Level Excellence
 // Elite research coordination and quantum-enhanced analytics services
@@ -267,9 +325,13 @@ builder.Services.AddScoped<IForgeStatisticsService, ForgeStatisticsService>();
 builder.Services.AddScoped<IPredictiveModelingService, PredictiveModelingService>();
 builder.Services.AddScoped<TerraFusion.API.Interfaces.IPerformanceMonitor, TerraFusion.API.Services.PerformanceMonitorService>();
 
+// Phase 10: PropertyForge valuation service (cost/sales/income/reconciliation)
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.IValuationService, TerraFusion.API.Services.ValuationService>();
+
 // Register flexible module catalog system (no hardcoding!)
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IModuleCatalog, DbModuleCatalog>();
 builder.Services.AddScoped<ModuleSeedService>();
+builder.Services.AddScoped<TerraFusion.API.Seeds.PacsDataSeeder>();
 builder.Services.AddScoped<TerraFusion.API.Health.IFileSystemModuleDiscovery, FileSystemModuleDiscovery>();
 builder.Services.AddScoped<TerraFusion.API.Health.IOrchestratorView, OrchestratorModuleView>();
 
@@ -281,6 +343,9 @@ builder.Services.AddHostedService<ModuleLoaderService>(provider =>
 
 // Agent telemetry buffer (read-only feed)
 builder.Services.AddSingleton<IAgentTelemetryService>(_ => new AgentTelemetryService(capacity: 1000));
+
+// Trace ingestion ring-buffer service (Phase 35-G-1)
+builder.Services.AddSingleton<ITraceIngestionService, TraceIngestionService>();
 
 // Register module services
 builder.Services.AddScoped<TerraFusion.Core.Services.IModuleService, TerraFusion.Core.Services.ModuleService>();
@@ -294,12 +359,21 @@ builder.Services.AddScoped<TerraFusion.Core.Services.IDynamicPropertyService, Te
 // Register Property Service (REQUIRED by PropertiesController, SystemHub, QuantumMetricsHub)
 builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyService, TerraFusion.Core.Services.PropertyService>();
 
+// Register Codex 3-6-9 Framework service (CodexController)
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICodexService, TerraFusion.Core.Services.CodexService>();
+
+// Register governed tool audit service (FISMA-compliant Dais tool invocation logging)
+builder.Services.AddScoped<TerraFusion.API.Services.IGovernedToolAuditService, TerraFusion.API.Services.GovernedToolAuditService>();
+
 // Register Dais CRUD services (appeals, exemptions, certifications, notices, queue)
 builder.Services.AddScoped<TerraFusion.Core.Services.IExemptionService, TerraFusion.Core.Services.ExemptionService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.IAppealService, TerraFusion.Core.Services.AppealService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICertificationService, TerraFusion.Core.Services.CertificationService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.INoticeService, TerraFusion.Core.Services.NoticeService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.IQueueService, TerraFusion.Core.Services.QueueService>();
+
+// Phase 11: GIS data service — PACS-sourced parcel boundary & layer data
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.IGisDataService, TerraFusion.API.Services.GisDataService>();
 
 // 🏛️ PACS Adapter - pacscontract.v1 compliant read-only boundary
 builder.Services.AddPacsAdapter();
@@ -377,6 +451,11 @@ builder.Services.AddAutoMapper(typeof(TerraFusion.API.Program).Assembly, typeof(
 // TEMPORARILY DISABLED - ffi_bridge.dll is placeholder, may cause issues
 // builder.Services.AddSingleton<RustFFIService>();
 
+// Wave 4: Wire GPT/RAG AI entity configurations into TerraFusionDbContext via static hook.
+// This avoids a circular assembly reference (Data → AI → Data).
+// Program.cs references both assemblies, so it can bridge them safely.
+TerraFusion.Data.TerraFusionDbContext.OnModelCreatingExtensions = TerraFusion.AI.Data.GptAiEntityConfigurations.Apply;
+
 // Register database context with SQLite fallback
 builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
 {
@@ -389,8 +468,8 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
   }
   else if (connectionString.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
   {
-    // PostgreSQL for production
-    options.UseNpgsql(connectionString);
+    // PostgreSQL for production — UseVector() enables pgvector(1536) type mapping
+    options.UseNpgsql(connectionString, o => o.UseVector());
   }
   else
   {
@@ -411,7 +490,7 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
   }
   else if (connectionString.Contains("Host=") || string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase))
   {
-    options.UseNpgsql(connectionString);
+    options.UseNpgsql(connectionString, o => o.UseVector());
   }
   else
   {
@@ -496,7 +575,23 @@ builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
     return new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
   }
 });
-builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGEmbeddingRepository, TerraFusion.AI.Repositories.InMemoryRAGEmbeddingRepository>();
+// Register RAG Embedding Repository — pgvector for Postgres, in-memory for SQLite/dev
+{
+    var ragConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
+    var ragProvider = builder.Configuration["DatabaseProvider"] ?? "";
+    var usePostgres = ragConnStr.Contains("Host=", StringComparison.OrdinalIgnoreCase)
+        || ragProvider.Equals("Postgres", StringComparison.OrdinalIgnoreCase);
+    var ragRepoName = usePostgres ? "PgVectorRAGEmbeddingRepository" : "InMemoryRAGEmbeddingRepository";
+    Console.WriteLine("[RAG] Embedding repository: {0}", ragRepoName);
+    if (usePostgres)
+    {
+        builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGEmbeddingRepository, TerraFusion.AI.Repositories.PgVectorRAGEmbeddingRepository>();
+    }
+    else
+    {
+        builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGEmbeddingRepository, TerraFusion.AI.Repositories.InMemoryRAGEmbeddingRepository>();
+    }
+}
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGService, TerraFusion.AI.Services.RAGService>();
 
 // Phase 15.4: SystemGPT Health Evaluator for Herald threshold-based alerts
@@ -692,6 +787,9 @@ else
   Console.WriteLine("ℹ️ QuantumMetricsBackgroundService disabled by default. Set TF_ENABLE_QUANTUM_METRICS_BACKGROUND_SERVICE=true to enable.");
 }
 
+// Phase 11 — Sovereign Guard: verify sovereign.yaml manifest at startup
+builder.Services.AddSingleton<SovereignGuard>();
+
 // Configure CORS — restrict to known frontend origins
 builder.Services.AddCors(options =>
 {
@@ -712,6 +810,17 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Phase 11 — Sovereign Guard: fail fast if manifest is missing or tampered
+{
+  var sovereignGuard = app.Services.GetRequiredService<SovereignGuard>();
+  var verification = sovereignGuard.Verify();
+  if (!verification.IsValid)
+  {
+    Console.Error.WriteLine($"[SOVEREIGN VIOLATION] {verification.Violation}. Startup blocked.");
+    Environment.Exit(1);
+  }
+}
 
 // 🤖 Seed GPT configurations on startup (PropertyAssessmentGPT, etc.)
 using (var scope = app.Services.CreateScope())
@@ -978,6 +1087,7 @@ app.MapHub<TerraFusion.AI.Hubs.NotebookHub>("/hubs/notebook");
 app.MapHub<TerraFusion.AI.Hubs.AnalyticsHub>("/hubs/analytics");
 app.MapHub<TerraFusion.AI.Hubs.WorkflowHub>("/hubs/workflow");
 app.MapHub<TerraFusion.AI.Hubs.CollaborationHub>("/hubs/collaboration");
+app.MapHub<TerraFusion.AI.Hubs.Codex369Hub>("/hubs/codex369");
 
 // Add test endpoints
 app.MapGet("/api/test", () => new
@@ -987,6 +1097,54 @@ app.MapGet("/api/test", () => new
   version = "1.0.0",
   environment = app.Environment.EnvironmentName
 });
+
+// ── PACS ETL seed trigger (admin only) ───────────────────────────────────────
+// POST /api/admin/pacs/seed  — pulls all 13 tables from tf-mssql pacs_oltp
+// into TerraFusionDbContext. Idempotent upsert. Safe to re-run.
+// Runs as a background Task — returns 202 immediately; watch server logs for progress.
+{
+    // Shared state for last run result
+    var _pacsLastResult = "";
+    var _pacsSeedRunning = false;
+
+    app.MapPost("/api/admin/pacs/seed", (
+        IServiceScopeFactory scopeFactory,
+        ILogger<TerraFusion.API.Seeds.PacsDataSeeder> logger) =>
+    {
+        if (_pacsSeedRunning)
+            return Results.Conflict("PACS seed already running. Check /api/admin/pacs/seed/status.");
+
+        _pacsSeedRunning = true;
+        _pacsLastResult = "running";
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await using var scope = scopeFactory.CreateAsyncScope();
+                var seeder = scope.ServiceProvider.GetRequiredService<TerraFusion.API.Seeds.PacsDataSeeder>();
+                var result = await seeder.SeedAllAsync();
+                _pacsLastResult = result.ToString();
+                logger.LogInformation("[PacsSeeder] Complete: {Result}", _pacsLastResult);
+            }
+            catch (Exception ex)
+            {
+                // Walk inner exceptions to surface the real Postgres/SqlClient error
+                var inner = ex;
+                while (inner.InnerException != null) inner = inner.InnerException;
+                _pacsLastResult = $"ERROR: {ex.Message} | INNER: {inner.Message}";
+                logger.LogError(ex, "[PacsSeeder] Seed failed");
+            }
+            finally { _pacsSeedRunning = false; }
+        });
+
+        return Results.Accepted("/api/admin/pacs/seed/status",
+            new { message = "PACS seed started in background. Poll /api/admin/pacs/seed/status." });
+    }).WithTags("Admin").WithName("SeedPacsData");
+
+    app.MapGet("/api/admin/pacs/seed/status", () =>
+        Results.Ok(new { running = _pacsSeedRunning, lastResult = _pacsLastResult })
+    ).WithTags("Admin").WithName("SeedPacsStatus");
+}
 
 // Minimal transcendence health probe (previously returned 404 in some checks)
 // Returns a simple OK payload without invoking heavy services

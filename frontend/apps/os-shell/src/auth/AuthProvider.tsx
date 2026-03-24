@@ -5,23 +5,22 @@
  * Initializes from localStorage via authStorage.
  * Registers a bridge so non-React code (axios interceptor) can trigger logout.
  */
-import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { getToken, setToken as persistToken, clearToken } from './authStorage';
 import { registerLogoutHandler, unregisterLogoutHandler } from './authBridge';
 import { useAuth } from './useAuth';
 import { isDevPreviewMode, shouldForceLoginRedirect } from './authPolicy';
+import { decodeAuthClaims } from '@/auth/useAuthContext';
+import { initTraceContext } from '@/services/terraTrace';
+import { resetDataProvider } from '@/services/dataProvider';
+// AuthContext and AuthContextValue live in authContextDef.ts to break the circular
+// import between this file and useAuthContext.ts.
+// Re-exported here for backward compatibility with existing importers.
+import { AuthContext } from './authContextDef';
+export { AuthContext } from './authContextDef';
+export type { AuthContextValue } from './authContextDef';
 
-export interface AuthContextValue {
-  token: string | null;
-  isAuthenticated: boolean;
-  login: (token: string) => void;
-  logout: (reason?: string) => void;
-}
-
-export const AuthContext = createContext<AuthContextValue | null>(null);
-
-const DEV_PREVIEW_TOKEN = 'dev-preview-token';
 const DEV_SESSION_KEY = 'tf.session.dev';
 
 function seedDevPreviewSession(): void {
@@ -32,26 +31,42 @@ function seedDevPreviewSession(): void {
     DEV_SESSION_KEY,
     JSON.stringify({
       userId: 'dev-user',
-      countyId: '12345',
+      countyId: '19190019-1919-1919-1919-191919191919',
       role: 'dev',
       mode: 'pilot',
     })
   );
 }
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setTokenState] = useState<string | null>(() => {
-    const existing = getToken();
-    if (existing) return existing;
-
-    if (isDevPreviewMode()) {
-      persistToken(DEV_PREVIEW_TOKEN);
-      seedDevPreviewSession();
-      return DEV_PREVIEW_TOKEN;
-    }
-
+/** Fetch a real JWT from the backend dev-token endpoint. */
+async function fetchDevToken(): Promise<string | null> {
+  try {
+    const res = await fetch('/api/auth/dev-token');
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.token ?? null;
+  } catch {
     return null;
-  });
+  }
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [token, setTokenState] = useState<string | null>(() => getToken());
+
+  // In dev preview mode, automatically obtain a real JWT from the backend.
+  useEffect(() => {
+    if (!isDevPreviewMode()) return;
+    if (token && token !== 'dev-preview-token') return; // already have a real token
+
+    let cancelled = false;
+    fetchDevToken().then((jwt) => {
+      if (cancelled || !jwt) return;
+      persistToken(jwt);
+      setTokenState(jwt);
+      seedDevPreviewSession();
+    });
+    return () => { cancelled = true; };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const login = useCallback((newToken: string) => {
     persistToken(newToken);
@@ -68,6 +83,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     registerLogoutHandler((reason) => logout(reason));
     return () => unregisterLogoutHandler();
   }, [logout]);
+
+  // Wave 1: sync TerraTrace session context whenever token changes.
+  // Also reset DataProvider so it picks up live mode with the new JWT.
+  useEffect(() => {
+    resetDataProvider();
+    if (!token) { initTraceContext('', ''); return; }
+    const claims = decodeAuthClaims(token);
+    initTraceContext(claims.countyId ?? '', claims.userId ?? '');
+  }, [token]);
 
   const value = useMemo<AuthContextValue>(
     () => ({

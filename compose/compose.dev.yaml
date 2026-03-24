@@ -26,9 +26,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5000
-      - ConnectionStrings__DefaultConnection=Host=postgres-dev;Database=terrafusion_benton_dev;Username=terrafusion_dev;Password=dev_password
+      - ConnectionStrings__DefaultConnection=Host=postgres-dev;Database=terrafusion_benton_dev;Username=terrafusion_dev;Password=${TF_DEV_DB_PASSWORD}
       - Redis__ConnectionString=redis://redis-dev:6379
-      - JwtSettings__SecretKey=dev_jwt_secret_key
+      - JwtSettings__SecretKey=${TF_DEV_JWT_SECRET}
       - County__Name=Benton County
       - County__State=WA
     depends_on:
@@ -44,7 +44,7 @@ services:
       - "5432:5432"
     environment:
       - POSTGRES_USER=terrafusion_dev
-      - POSTGRES_PASSWORD=dev_password
+      - POSTGRES_PASSWORD=${TF_DEV_DB_PASSWORD}
       - POSTGRES_DB=terrafusion_benton_dev
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8
     volumes:
@@ -82,7 +82,7 @@ services:
       - SWARM_ENVIRONMENT=development
       - SWARM_COUNTY=benton
       - SWARM_AGENT_COUNT=10
-      - DATABASE_CONNECTION=Host=postgres-dev;Database=terrafusion_benton_dev;Username=terrafusion_dev;Password=dev_password
+      - DATABASE_CONNECTION=Host=postgres-dev;Database=terrafusion_benton_dev;Username=terrafusion_dev;Password=${TF_DEV_DB_PASSWORD}
       - REDIS_CONNECTION=redis://redis-dev:6379
     depends_on:
       - postgres-dev

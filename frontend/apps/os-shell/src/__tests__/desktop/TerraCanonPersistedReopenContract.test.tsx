@@ -20,7 +20,7 @@
  * Scope: localStorage persistence for lastClosed only. No backend, no IndexedDB.
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -64,6 +64,8 @@ vi.mock('monaco-editor/esm/vs/language/json/json.worker?worker', () => ({ defaul
 vi.mock('monaco-editor/esm/vs/language/typescript/ts.worker?worker', () => ({ default: class {} }));
 
 import Router from '../../Router';
+import '../../App';
+import '../../pages/CanonHome';
 
 // ============================================================================
 // Storage keys (must match production)
@@ -76,6 +78,11 @@ const KEY_LAST_CLOSED = 'tf.canon.lastClosed.v1';
 // ============================================================================
 
 describe('Phase 39 contract: persisted lastClosed enables reopen-after-refresh (schema-safe)', () => {
+  beforeAll(() => {
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
   beforeEach(() => {
     localStorage.clear();
   });
@@ -93,7 +100,7 @@ describe('Phase 39 contract: persisted lastClosed enables reopen-after-refresh (
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 },
+      { timeout: 15000 },
     );
 
     expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();

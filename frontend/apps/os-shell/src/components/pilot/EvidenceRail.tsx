@@ -69,6 +69,7 @@ interface EventTypeVisual {
 
 const EVENT_TYPE_CONFIG: Record<string, EventTypeVisual> = {
   tool_invoked:        { icon: '⚡', severity: 'info' },
+  tool_succeeded:      { icon: '✅', severity: 'success' },
   tool_completed:      { icon: '✅', severity: 'success' },
   tool_failed:         { icon: '❌', severity: 'error' },
   value_changed:       { icon: '📝', severity: 'info' },
@@ -296,7 +297,7 @@ export const EvidenceRail: React.FC<EvidenceRailProps> = ({
         <p className="text-xs text-white/50">
           {isFiltered
             ? 'No matches for current filters.'
-            : 'No trace events in the last 30 days.'}
+            : 'No trace events returned for this parcel.'}
         </p>
       </LiquidPanel>
     );

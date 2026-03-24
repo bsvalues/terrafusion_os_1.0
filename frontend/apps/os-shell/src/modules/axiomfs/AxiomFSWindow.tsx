@@ -25,7 +25,6 @@ export const AxiomFSWindow = ({ windowId, metadata }: Props) => {
     let timer: NodeJS.Timeout;
 
     if (!activeObject && targetId) {
-      console.log(`[Shell] Requesting Bridge Access for: ${targetId}`);
       loadObject(targetId);
 
       // UX: If bridge takes > 1s, we show a specialized "Connecting" message

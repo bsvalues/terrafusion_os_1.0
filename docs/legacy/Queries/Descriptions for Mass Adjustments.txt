@@ -1,0 +1,14 @@
+select distinct pv.prop_id, pv.cycle, pv.hood_cd, 
+i.imprv_id, i.imprv_desc
+from property_val as pv with(nolock)
+join property p with(nolock) on
+                pv.prop_id = p.prop_id
+join imprv i with(nolock) on
+    pv.prop_id = i.prop_id 
+    and pv.prop_val_yr = i.prop_val_yr 
+    and pv.sup_num = i.sup_num
+                and i.sale_id = 0
+where pv.prop_val_yr = 2017 
+and pv.prop_inactive_dt is null
+and pv.cycle = 3 
+order by pv.hood_cd, pv.prop_id, i.imprv_id

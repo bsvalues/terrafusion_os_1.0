@@ -26,6 +26,7 @@ import { GptStudioView } from '../GptStudioView';
 
 const mockGpts = [
   {
+    id: 'PropertyAssessmentGPT',
     key: 'PropertyAssessmentGPT',
     name: 'Property Assessment GPT',
     description: 'Helps with property valuation.',
@@ -121,7 +122,7 @@ describe('GptStudioView Feature Tests', () => {
 
     // Assert sendMessage was called
     await waitFor(() => {
-      expect(gptClient.sendMessage).toHaveBeenCalledWith('convo-1', 'Hello GPT');
+      expect(gptClient.sendMessage).toHaveBeenCalledWith('convo-1', 'Hello GPT', 'PropertyAssessmentGPT');
     });
   });
 

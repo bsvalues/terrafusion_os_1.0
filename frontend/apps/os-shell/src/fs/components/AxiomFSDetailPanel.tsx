@@ -49,7 +49,6 @@ export const AxiomFSDetailPanel = () => {
   const handleShowRelations = () => {
     if (!selectedObject) return;
     // TODO: Implement relation highlighting in lattice
-    console.log('[AxiomFS] Show relations for:', selectedObject.id);
   };
 
   return (

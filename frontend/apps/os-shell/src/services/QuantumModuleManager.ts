@@ -6,7 +6,9 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { moduleAPI } from './moduleAPI';
+import { getToken } from '../auth/authStorage';
+import { getSession, type Session } from '../auth/session';
+import { decodeAuthClaims } from '../auth/useAuthContext';
 
 export interface QuantumModule {
   id: string;
@@ -46,6 +48,85 @@ export interface ModuleRegistry {
   };
 }
 
+const MAXIMUM_SECURITY_ROLES = new Set(['admin', 'administrator', 'dev', 'devops', 'it', 'it-director']);
+const ELEVATED_SECURITY_ROLES = new Set([
+  'appraiser',
+  'assessor',
+  'chief-appraiser',
+  'chief appraiser',
+  'reviewer',
+  'supervisor',
+  'levyclerk',
+  'levy clerk',
+]);
+
+function normalizeRoles(session: Session | null, token: string | null): readonly string[] {
+  const decodedRoles = decodeAuthClaims(token).roles;
+  if (decodedRoles.length > 0) {
+    return decodedRoles;
+  }
+
+  return session?.role ? [session.role] : [];
+}
+
+function dedupePermissions(permissions: readonly string[]): string[] {
+  return Array.from(new Set(permissions.filter((permission) => permission.length > 0)));
+}
+
+export function resolveModulePermissions(session: Session | null, roles: readonly string[]): string[] {
+  if (session?.permissions && session.permissions.length > 0) {
+    return dedupePermissions(session.permissions);
+  }
+
+  const normalizedRoles = roles.map((role) => role.toLowerCase());
+  if (normalizedRoles.some((role) => MAXIMUM_SECURITY_ROLES.has(role))) {
+    return ['read', 'write', 'execute', 'admin'];
+  }
+
+  if (normalizedRoles.some((role) => ELEVATED_SECURITY_ROLES.has(role))) {
+    return ['read', 'write', 'execute'];
+  }
+
+  return ['read'];
+}
+
+export function resolveModuleSecurityLevel(
+  session: Session | null,
+  roles: readonly string[]
+): ModuleLoadingContext['securityLevel'] {
+  const normalizedRoles = roles.map((role) => role.toLowerCase());
+
+  if (normalizedRoles.some((role) => MAXIMUM_SECURITY_ROLES.has(role))) {
+    return 'MAXIMUM';
+  }
+
+  if (
+    normalizedRoles.some((role) => ELEVATED_SECURITY_ROLES.has(role)) ||
+    (session?.permissions?.length ?? 0) > 1
+  ) {
+    return 'ELEVATED';
+  }
+
+  return 'STANDARD';
+}
+
+export function buildModuleLoadingContext(
+  generateSessionId: () => string,
+  session: Session | null = getSession(),
+  token: string | null = getToken()
+): ModuleLoadingContext {
+  const claims = decodeAuthClaims(token);
+  const roles = normalizeRoles(session, token);
+
+  return {
+    countyId: claims.countyId ?? session?.countyId ?? 'default',
+    sessionId: generateSessionId(),
+    permissions: resolveModulePermissions(session, roles),
+    securityLevel: resolveModuleSecurityLevel(session, roles),
+    quantumOptimization: 949,
+  };
+}
+
 class QuantumModuleManagerService {
   private moduleRegistry: ModuleRegistry = {};
   private loadedModules: Map<string, QuantumModule> = new Map();
@@ -55,10 +136,8 @@ class QuantumModuleManagerService {
    * Initialize the quantum module manager with government excellence
    */
   async initialize(): Promise<void> {
-    console.log('🚀 Initializing TerraFusion Quantum Module Manager...');
     await this.registerGovernmentModules();
     await this.loadCoreModules();
-    console.log('✅ Quantum Module Manager initialized with government excellence!');
   }
 
   /**
@@ -179,9 +258,7 @@ class QuantumModuleManagerService {
       };
 
       this.loadedModules.set(quantumModule.id, quantumModule);
-      console.log(`✅ Registered quantum module: ${quantumModule.displayName}`);
     } catch (error) {
-      console.warn(`⚠️ Failed to register plugin ${pluginName}:`, error);
     }
   }
 
@@ -193,7 +270,6 @@ class QuantumModuleManagerService {
       const response = await fetch(manifestPath);
       return await response.json();
     } catch (error) {
-      console.warn(`Could not load manifest from ${manifestPath}:`, error);
       return {};
     }
   }
@@ -210,7 +286,6 @@ class QuantumModuleManagerService {
       try {
         module.status = 'loading';
         // Pre-initialize core modules for instant availability
-        console.log(`🔄 Pre-loading core module: ${module.displayName}`);
         module.status = 'active';
       } catch (error) {
         console.error(`❌ Failed to load core module ${module.displayName}:`, error);
@@ -235,16 +310,8 @@ class QuantumModuleManagerService {
       // Create mounting element if not provided
       const mountElement = targetElement || this.createModuleContainer(module);
 
-      // Create quantum loading context
-      const sessionRaw = typeof localStorage !== 'undefined' ? localStorage.getItem('tf.session.dev') : null;
-      const session = sessionRaw ? JSON.parse(sessionRaw) : {};
-      const context: ModuleLoadingContext = {
-        countyId: session.countyId ?? 'default',
-        sessionId: this.generateSessionId(),
-        permissions: ['read', 'write', 'execute'], // TODO: Get from user permissions
-        securityLevel: 'STANDARD', // TODO: Get from security context
-        quantumOptimization: 949, // Golden quantum factor
-      };
+      // Create quantum loading context from the canonical auth/session surfaces.
+      const context = buildModuleLoadingContext(() => this.generateSessionId());
 
       // Mount the module with quantum enhancement
       const moduleRegistration = this.moduleRegistry[moduleId];
@@ -255,7 +322,6 @@ class QuantumModuleManagerService {
       module.status = 'active';
       module.mountedElement = mountElement;
 
-      console.log(`🚀 Successfully launched quantum module: ${module.displayName}`);
       return true;
     } catch (error) {
       console.error(`❌ Failed to launch module ${module.displayName}:`, error);
@@ -287,7 +353,6 @@ class QuantumModuleManagerService {
       module.status = 'inactive';
       module.mountedElement = undefined;
 
-      console.log(`🛑 Successfully stopped quantum module: ${module.displayName}`);
       return true;
     } catch (error) {
       console.error(`❌ Failed to stop module ${module.displayName}:`, error);
@@ -360,7 +425,6 @@ class QuantumModuleManagerService {
    * OS API methods for modules to interact with the system
    */
   async invoke(command: string, params: any): Promise<any> {
-    console.log(`🔧 TerraFusion OS API call: ${command}`, params);
 
     // Mock API responses for common commands
     switch (command) {

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.API.Controllers;
+using IGovernedToolAuditService = TerraFusion.API.Services.IGovernedToolAuditService;
 using IExemptionService = TerraFusion.Core.Services.IExemptionService;
 using IAppealService = TerraFusion.Core.Services.IAppealService;
 using ICertificationService = TerraFusion.Core.Services.ICertificationService;
@@ -111,7 +112,8 @@ public sealed class R2FullPlanHandlerAlignmentTests
         certMock.Object,
         noticeMock.Object,
         queueMock.Object,
-        new Mock<IRequestUserContextAccessor>().Object);
+        new Mock<IRequestUserContextAccessor>().Object,
+        new Mock<IGovernedToolAuditService>().Object);
     AttachPrincipal(controller, principal ?? CreatePrincipal(BentonCountyId));
     return controller;
   }
@@ -279,6 +281,7 @@ public sealed class R2FullPlanHandlerAlignmentTests
   public async Task Handler14_CertificationStatus_Benton()
   {
     using var db = CreateDbContext("handler-14");
+    await SeedCounty(db, BentonCountyId);
     var controller = CreateDaisController(db);
     var result = await controller.GetCertificationStatus("benton", 2026);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
@@ -290,6 +293,7 @@ public sealed class R2FullPlanHandlerAlignmentTests
   public async Task Cert_AltStatus_ReturnsOk()
   {
     using var db = CreateDbContext("cert-alt-status");
+    await SeedCounty(db, BentonCountyId);
     var controller = CreateDaisController(db);
     var result = await controller.GetCertStatus("benton", 2026);
     result.Should().BeOfType<OkObjectResult>();

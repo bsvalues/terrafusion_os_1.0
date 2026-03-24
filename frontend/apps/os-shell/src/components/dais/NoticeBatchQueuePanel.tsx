@@ -9,8 +9,19 @@
  */
 
 import React from 'react';
+import type { DaisOperationalStats } from '../../pages/suites/daisOperationalStats';
 
-export default function NoticeBatchQueuePanel() {
+interface NoticeBatchQueuePanelProps {
+  stats: DaisOperationalStats | null;
+}
+
+export default function NoticeBatchQueuePanel({ stats }: NoticeBatchQueuePanelProps) {
+  // Notice batches are driven by active appeals — show appeal count as the queue depth proxy.
+  // Full batch aggregation (daisNoticeBatch.ts) activates in a later bounded slice.
+  const queueLabel = stats !== null
+    ? `${stats.activeAppeals.toLocaleString()} active appeals`
+    : '— notices';
+
   return (
     <div data-testid="notice-batch-queue-panel" className="space-y-2">
       <div className="flex items-center gap-3 rounded-md border border-border px-3 py-2 text-sm">
@@ -22,9 +33,10 @@ export default function NoticeBatchQueuePanel() {
         </div>
         <span
           data-testid="batch-queue-count"
-          className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-slate-600 text-white"
+          className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold"
+          style={{ background: 'hsl(var(--tf-suite-dais) / 0.15)', color: 'hsl(var(--tf-suite-dais))' }}
         >
-          0 Batches
+          {queueLabel}
         </span>
       </div>
     </div>

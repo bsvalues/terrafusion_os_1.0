@@ -123,6 +123,16 @@ jobs:
           done
           echo "::endgroup::"
 
+      - name: Helm lint — all service charts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for chart in backend/helm/terrafusion-api backend/helm/terrafusion-consciousness backend/helm/terrafusion-gateway backend/helm/terrafusion-operations; do
+            echo "Linting $chart..."
+            helm lint "$chart" --strict
+          done
+          echo "All service charts lint clean"
+
       - name: Validate Kubernetes manifests
         if: steps.detect-charts.outputs.present == 'true'
         run: |
@@ -342,28 +352,6 @@ jobs:
           done
           echo "::endgroup::"
 
-      - name: Run Snyk IaC scan
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: |
-          if [ -n "$SNYK_TOKEN" ]; then
-            echo "::group::Snyk IaC Scanning"
-            npm install -g snyk
-            snyk auth $SNYK_TOKEN
-
-            for chart in charts/*; do
-              if [ -d "$chart" ]; then
-                echo "Snyk scan: $chart"
-                snyk iac test "$chart" --severity-threshold=high || true
-              fi
-            done
-            echo "::endgroup::"
-          else
-            echo "Snyk token not configured, skipping Snyk scan"
-          fi
-
       - name: Upload Trivy results to GitHub Security
         if: always()
         uses: github/codeql-action/upload-sarif@v3
@@ -378,7 +366,54 @@ jobs:
           name: security-scan-results
           path: |
             trivy-*.sarif
-            trivy-*.json
+            snyk-iac-report.json
+
+  security-snyk-iac:
+    name: security-snyk-iac
+    runs-on: ubuntu-latest
+    needs: [lint-and-format, opa-policy-tests]
+    if: always() && (needs.opa-policy-tests.result == 'success' || needs.opa-policy-tests.result == 'skipped')
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Run repo-standard Snyk IaC contract
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_SCAN_MODE: 'iac'
+          SNYK_IAC_TARGETS: 'charts'
+          SNYK_REPORT_PATH: 'snyk-iac-report.json'
+        run: |
+          if [ -n "$SNYK_TOKEN" ]; then
+            echo "::group::security-snyk-iac"
+            npm install -g snyk
+            npm run security:scan
+            echo "::endgroup::"
+          else
+            echo "SKIP: SNYK_TOKEN not configured for security-snyk-iac"
+          fi
+
+      - name: Report skip for non-main invocations
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        run: |
+          echo "SKIP: security-snyk-iac runs only on push to main."
+
+      - name: Upload Snyk IaC report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-snyk-iac-report
+          path: snyk-iac-report.json
           retention-days: 30
 
       - name: Check for critical vulnerabilities

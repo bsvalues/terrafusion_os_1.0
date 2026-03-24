@@ -14,6 +14,18 @@ import PropertyAtlas from '../../pages/workbench/tabs/PropertyAtlas';
 // Mock the pilotApi module
 vi.mock('../../api/pilotApi');
 
+// Mock the useAtlasGis hooks — default to 'unavailable' so existing tests pass unchanged
+const mockUseParcelBoundary = vi.fn().mockReturnValue({
+  data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn(),
+});
+const mockUseParcelLayers = vi.fn().mockReturnValue({
+  data: null, loading: false, error: null, source: 'unavailable', refetch: vi.fn(),
+});
+vi.mock('../../hooks/useAtlasGis', () => ({
+  useParcelBoundary: (...args: unknown[]) => mockUseParcelBoundary(...args),
+  useParcelLayers: (...args: unknown[]) => mockUseParcelLayers(...args),
+}));
+
 const mockInvokeTool = pilotApi.invokeTool as vi.MockedFunction<typeof pilotApi.invokeTool>;
 
 // Test wrapper providing parcel context via outlet
@@ -151,6 +163,13 @@ describe('PropertyAtlas', () => {
         expect(screen.getAllByText(/Parcel Boundary/i).length).toBeGreaterThan(0);
         expect(screen.getByText(/Zoning Districts/i)).toBeInTheDocument();
         expect(screen.getByText(/Not exposed on this route yet/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches/i)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/Atlas layer availability is confirmed for this parcel, but the boundary and centroid shown on this route are preview sketches/i)
+        ).toBeInTheDocument();
+        expect(screen.queryByText(/Live Atlas layer truth is available/i)).not.toBeInTheDocument();
         // Truncated display shows first 16 chars
         expect(screen.getAllByText(/corr-atlas-abc/).length).toBeGreaterThan(0);
       });
@@ -266,7 +285,7 @@ describe('PropertyAtlas', () => {
 
       // Verify history section exists with entry
       expect(screen.getByText(/Query History/i)).toBeInTheDocument();
-      expect(screen.getByText(/query_parcel_layers/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/query_parcel_layers/i).length).toBeGreaterThan(0);
 
       // Verify there's a copy button in history
       const copyButtons = screen.getAllByRole('button', { name: /copy/i });

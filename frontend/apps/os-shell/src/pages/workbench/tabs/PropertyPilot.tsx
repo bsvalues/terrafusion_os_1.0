@@ -3,16 +3,21 @@
  *
  * PR-UI1: Property Workbench Pilot Tab — Governed Tool Invocation
  *
- * Dynamically loads tools from the Pilot manifest via listPilotTools().
+ * Dynamically loads Muse-only, read-only tools from the Pilot manifest.
  * All invocations go through useToolInvocation → preflight → confirm → execute.
- * Write-risk tools enforce Gate 5 (confirmation + reason code) via RiskConfirmationModal.
+ * The first R3 shell slice exposes reasoning tools only; no write-capable tools appear here.
  *
  * Production-only tool and trace flows.
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
-import { listPilotTools, type PilotTool, type Risk } from '../../../api/pilotApi';
+import {
+  filterMuseReadOnlyTools,
+  listPilotTools,
+  type PilotTool,
+  type Risk,
+} from '../../../api/pilotApi';
 import {
   InvocationHistory,
   ParcelContextHeader,
@@ -23,6 +28,7 @@ import { EvidenceRail } from '../../../components/pilot/EvidenceRail';
 import { useToolInvocation } from '../../../hooks/useToolInvocation';
 import { usePilotTraceList } from '../../../hooks/usePilotTraceList';
 import { usePropertyStore } from '../../../stores/propertyStore';
+import { BentoCard } from '../../../ui/materials/BentoCard';
 
 // ============================================================================
 // Risk level display helpers
@@ -75,10 +81,10 @@ export const PropertyPilot: React.FC = () => {
     setToolsLoading(true);
     setToolsError(null);
 
-    listPilotTools()
+    listPilotTools('muse')
       .then((response) => {
         if (!cancelled) {
-          setTools(response.tools);
+          setTools(filterMuseReadOnlyTools(response.tools));
           setToolsLoading(false);
         }
       })
@@ -136,13 +142,13 @@ export const PropertyPilot: React.FC = () => {
   const traceList = usePilotTraceList({ parcelId });
 
   return (
-    <div className='tf-suite-pilot space-y-6' data-testid='property-pilot-tab'>
+    <div className='tf-suite-pilot space-y-4' data-testid='property-pilot-tab'>
       {/* Header */}
       <ParcelContextHeader
         icon='🎮'
         title='Pilot'
         parcelId={parcelId}
-        subtitle={`Tool execution for parcel ${parcelId}`}
+        subtitle={`Muse-first reasoning tools for parcel ${parcelId}`}
         actions={
           <button
             onClick={() => window.open(`/property/${encodeURIComponent(parcelId)}/pilot`, '_blank')}
@@ -153,9 +159,16 @@ export const PropertyPilot: React.FC = () => {
         }
       />
 
-      {/* Recent Operations from Store */}
+      {!toolsLoading && !toolsError && (
+        <div className='tf-status-info rounded-xl p-4' data-testid='pilot-muse-scope'>
+          <p className='tf-text'>Muse-first shell: only read-only reasoning and explanation tools are exposed here.</p>
+        </div>
+      )}
+
+      {/* Loaded operation history from store */}
       {operations.length > 0 && (
-        <BentoCard variant="table" title={`Recent Operations (${operations.length})`}>
+        <BentoCard variant="table" title={`Loaded Operation History (${operations.length})`}>
+          <p className='tf-text-tertiary text-sm mb-3'>Shown from the operation history currently loaded for this parcel.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
               <thead>
@@ -202,8 +215,8 @@ export const PropertyPilot: React.FC = () => {
             onClick={() => {
               setToolsLoading(true);
               setToolsError(null);
-              listPilotTools()
-                .then((r) => { setTools(r.tools); setToolsLoading(false); })
+              listPilotTools('muse')
+                .then((r) => { setTools(filterMuseReadOnlyTools(r.tools)); setToolsLoading(false); })
                 .catch((e) => { setToolsError(e instanceof Error ? e.message : 'Retry failed'); setToolsLoading(false); });
             }}
             className='mt-2 px-3 py-1 text-sm tf-hover-surface rounded'
@@ -257,7 +270,7 @@ export const PropertyPilot: React.FC = () => {
 
       {!toolsLoading && !toolsError && tools.length === 0 && (
         <div className='tf-status-info rounded-xl p-4'>
-          <p className='tf-text-muted text-center'>No tools available in the manifest.</p>
+          <p className='tf-text-muted text-center'>No Muse read-only tools are available in the manifest.</p>
         </div>
       )}
 

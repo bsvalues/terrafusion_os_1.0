@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Data;
 using TerraFusion.Core.Interfaces;
@@ -7,6 +9,7 @@ using TerraFusion.Consciousness.Interfaces;
 using TerraFusion.Consciousness.Hubs;
 using Serilog;
 using System.Diagnostics;
+using System.Threading.RateLimiting;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
@@ -52,6 +55,17 @@ namespace TerraFusion.Consciousness
 
             // Add basic services
             builder.Services.AddControllers();
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.AddFixedWindowLimiter("consciousness-default", limiterOptions =>
+                {
+                    limiterOptions.PermitLimit = builder.Configuration.GetValue("RateLimiting:ConsciousnessPermitLimit", 200);
+                    limiterOptions.Window = TimeSpan.FromSeconds(1);
+                    limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    limiterOptions.QueueLimit = 50;
+                });
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            });
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -123,6 +137,7 @@ namespace TerraFusion.Consciousness
             builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IBentonCountyDataService, BentonCountyDataService>();
             builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IHybridConsciousnessManager, HybridConsciousnessManager>();
             builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceValidator, ComplianceValidator>();
+            builder.Services.AddScoped<TerraFusion.Core.Interfaces.IQuantumConsciousnessOrchestrator, CoreQuantumConsciousnessOrchestrator>();
             builder.Services.AddScoped<IElitePerformanceMonitor, ElitePerformanceMonitor>();
             builder.Services.AddScoped<IStatisticalAnalysisEngine, StatisticalAnalysisEngine>();
             builder.Services.AddScoped<ICrossWorkspaceSync, CrossWorkspaceSync>();
@@ -163,6 +178,7 @@ namespace TerraFusion.Consciousness
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseRateLimiter();
 
             // Add Prometheus metrics (comment out until package is verified)
             // app.UseHttpMetrics();

@@ -1,7 +1,9 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Data.Configurations;
@@ -34,16 +36,17 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<AIModel> AIModels { get; set; }
   public DbSet<PerformanceMetric> PerformanceMetrics { get; set; }
 
-  // NOTE: AI GPT & RAG Entities cannot be added here due to circular dependency
-  // TerraFusion.Data → TerraFusion.AI would create circular reference
-  // These entities are managed directly in TerraFusion.AI services via raw DbContext access
-  // public DbSet<GPTConfiguration> GPTConfigurations { get; set; }
-  // public DbSet<GPTConversation> GPTConversations { get; set; }
-  // public DbSet<GPTMessage> GPTMessages { get; set; }
-  // public DbSet<RAGDataset> RAGDatasets { get; set; }
-  // public DbSet<RAGDocument> RAGDocuments { get; set; }
-  // public DbSet<GPTMarketplaceInstall> GPTMarketplaceInstalls { get; set; }
-  // public DbSet<GPTUsageMetric> GPTUsageMetrics { get; set; }
+  // GPT Core Entities (TerraFusion.Core.Entities — no circular dep)
+  public DbSet<GPTConfiguration> GPTConfigurations { get; set; }
+  public DbSet<GPTConversation> GPTConversations { get; set; }
+
+  // GPT/RAG AI Entities (TerraFusion.AI.Entities — registered via OnModelCreatingExtensions
+  // hook to avoid circular dependency Data → AI → Data).
+  // Extension method: TerraFusion.AI.Data.GptAiEntityConfigurations.Apply(ModelBuilder, string?)
+  // Wire in Program.cs: TerraFusionDbContext.OnModelCreatingExtensions = GptAiEntityConfigurations.Apply;
+  // The second parameter receives Database.ProviderName so vector-specific type mapping
+  // is skipped for non-Postgres providers (e.g. InMemory used in unit tests).
+  public static Action<ModelBuilder, string?>? OnModelCreatingExtensions { get; set; }
 
   // Module System Entities
   public DbSet<Module> Modules { get; set; }
@@ -150,6 +153,27 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<CertificationStep> CertificationSteps { get; set; } = null!;
   public DbSet<Notice> Notices { get; set; } = null!;
   public DbSet<QueueItem> QueueItems { get; set; } = null!;
+
+  // HITL Drafter — AI-proposed assessment actions awaiting human approval (Phase 10)
+  public DbSet<PilotDraft> PilotDrafts { get; set; } = null!;
+
+  // PACS Mirror — Harris PACS 9.0 data replicated to local store (Phase 33)
+  // Source: tf-mssql pacs_oltp (89,247 Benton County parcels)
+  public DbSet<PacsParcel> PacsParcel { get; set; } = null!;
+  public DbSet<PacsPropertyProfile> PacsPropertyProfiles { get; set; } = null!;
+  public DbSet<PacsSitus> PacsSituses { get; set; } = null!;
+  public DbSet<PacsValuation> PacsValuations { get; set; } = null!;
+  public DbSet<PacsImprovement> PacsImprovements { get; set; } = null!;
+  public DbSet<PacsImprovementDetail> PacsImprovementDetails { get; set; } = null!;
+  public DbSet<PacsImprovementAttribute> PacsImprovementAttributes { get; set; } = null!;
+  public DbSet<PacsLandDetail> PacsLandDetails { get; set; } = null!;
+  public DbSet<PacsOwner> PacsOwners { get; set; } = null!;
+  public DbSet<PacsSale> PacsSales { get; set; } = null!;
+  public DbSet<PacsExemption> PacsExemptions { get; set; } = null!;
+  public DbSet<PacsAppeal> PacsAppeals { get; set; } = null!;
+  public DbSet<PacsTaxArea> PacsTaxAreas { get; set; } = null!;
+  public DbSet<PacsOwnerVal> PacsOwnerVals { get; set; } = null!;
+  public DbSet<PacsTaxAreaAssoc> PacsTaxAreaAssocs { get; set; } = null!;
 
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
@@ -624,6 +648,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.Property(e => e.Status).HasMaxLength(20);
       entity.HasIndex(e => new { e.CountyId, e.TaxYear });
     });
+
+    // GPT Core Entities (Wave 4 — entities are in TerraFusion.Core, no circular dep)
+    modelBuilder.ApplyConfiguration(new GptCoreEntityConfigurations.GPTConfigurationConfiguration());
+    modelBuilder.ApplyConfiguration(new GptCoreEntityConfigurations.GPTConversationConfiguration());
+
+    // GPT/RAG AI Entities (Wave 4 — entities in TerraFusion.AI, registered via hook)
+    // Wire in Program.cs: TerraFusionDbContext.OnModelCreatingExtensions = GptAiEntityConfigurations.Apply;
+    // Database.ProviderName is available here; pass it so the AI config can skip
+    // vector-specific type mapping when the provider is not Postgres (e.g. InMemory tests).
+    OnModelCreatingExtensions?.Invoke(modelBuilder, Database.ProviderName);
 
     // Configure encryption for sensitive fields
     ConfigureEncryption(modelBuilder);

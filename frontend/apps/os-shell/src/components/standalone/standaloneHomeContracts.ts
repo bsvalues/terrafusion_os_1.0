@@ -12,6 +12,7 @@
 
 import type { ReactNode } from 'react';
 import type { OsFeatureId } from '../../config/suiteRegistry';
+import type { OsActor } from '../../auth/useAuthContext';
 
 // ============================================================================
 // Module Contracts (Slice 13)
@@ -147,6 +148,9 @@ export interface StandaloneHomeContext {
   parcelContext: StandaloneParcelContext | null;
   /** Navigate to workbench with current parcel context */
   openInWorkbench: () => void;
+
+  /** Wave 3: authenticated actor. null = unauthenticated. */
+  actor?: OsActor | null;
 }
 
 // ============================================================================

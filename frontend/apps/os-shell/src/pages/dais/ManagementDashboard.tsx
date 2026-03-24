@@ -1,12 +1,13 @@
 /**
- * ManagementDashboard.tsx (ADR-003 → Wave 3)
+ * ManagementDashboard.tsx (ADR-003 → Wave 3 / Phase 8)
  *
  * County-wide assessor operations oversight dashboard.
  * Standalone window component for the TerraDais suite.
  * Tabs: Overview, Certification, Appeals, Workload.
  *
- * API-first: composes from DaisController + QueueService endpoints.
- * Falls back to fixtures when backend is unavailable.
+ * Phase 8: wired to live hooks (useSwarmLive, usePacsStatus,
+ * useAppealsQueue, useWorkloadSummary) via MorningBriefingStrip.
+ * Falls back to fixtures for tab data when backend is unavailable.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -14,19 +15,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
+import { WorkbenchSourceBadge } from '@/components/workbench/WorkbenchSourceBadge';
+import type { DisclosureSource } from '@/components/workbench/WorkbenchSourceBadge';
 import { useSession } from '@/auth/useSession';
 import { getCertificationStatus, getAllAppeals } from '@/services/suites/daisService';
 import { getQueueMetrics, getAppraiserProductivity } from '@/services/suites/queueService';
 import type { CertificationStatus, Appeal } from '@/services/suites/daisService';
 import type { QueueMetrics, AppraiserProductivity } from '@/data/queueFixtures';
-import {
-  OVERVIEW_STATS_FIXTURE,
-  KEY_DEADLINES_FIXTURE,
-  CERT_AREAS_FIXTURE,
-  APPEALS_SUMMARY_FIXTURE,
-  RECENT_APPEALS_FIXTURE,
-  APPRAISERS_FIXTURE,
-} from '@/data/managementDashboardFixtures';
 import type {
   OverviewStat,
   KeyDeadline,
@@ -35,6 +30,19 @@ import type {
   RecentAppeal,
   Appraiser,
 } from '@/data/managementDashboardFixtures';
+import {
+  OVERVIEW_STATS_FIXTURE,
+  KEY_DEADLINES_FIXTURE,
+  CERT_AREAS_FIXTURE,
+  RECENT_APPEALS_FIXTURE,
+  APPEALS_SUMMARY_FIXTURE,
+  APPRAISERS_FIXTURE,
+} from '@/data/managementDashboardFixtures';
+import { useSwarmLive } from '../../hooks/useSwarmLive';
+import { usePacsStatus } from '../../hooks/usePacsStatus';
+import { useAppealsQueue } from '../../hooks/useAppealsQueue';
+import { useWorkloadSummary } from '../../hooks/useWorkloadSummary';
+import { MorningBriefingStrip } from '../../components/dashboard/MorningBriefingStrip';
 
 type Tab = 'overview' | 'certification' | 'appeals' | 'workload';
 
@@ -83,7 +91,7 @@ function computeAppealsSummary(appeals: Appeal[]): AppealsSummary {
     totalFiled: appeals.length,
     pendingHearing: appeals.filter((a) => a.status === 'filed' || a.status === 'scheduled').length,
     decided: appeals.filter((a) => a.status === 'decided').length,
-    avgDaysToResolution: APPEALS_SUMMARY_FIXTURE.avgDaysToResolution, // Not calculable from appeal list alone
+    avgDaysToResolution: 0, // Not calculable from appeal list alone — Phase 9 will wire a real metric
   };
 }
 
@@ -102,7 +110,13 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
   const session = useSession();
   const [activeTab, setActiveTab] = useState<Tab>('overview');
 
-  // State with fixture defaults — replaced by API data when available
+  // Phase 8: live data hooks for MorningBriefingStrip
+  const swarm    = useSwarmLive();
+  const pacs     = usePacsStatus();
+  const appeals  = useAppealsQueue();
+  const workload = useWorkloadSummary();
+
+  // Seeded from fixtures — API calls update individual fields when backend is available
   const [overviewStats, setOverviewStats] = useState<OverviewStat[]>(OVERVIEW_STATS_FIXTURE);
   const [keyDeadlines] = useState<KeyDeadline[]>(KEY_DEADLINES_FIXTURE);
   const [certificationAreas, setCertificationAreas] = useState<CertArea[]>(CERT_AREAS_FIXTURE);
@@ -110,6 +124,12 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
   const [recentAppeals, setRecentAppeals] = useState<RecentAppeal[]>(RECENT_APPEALS_FIXTURE);
   const [appraisers, setAppraisers] = useState<Appraiser[]>(APPRAISERS_FIXTURE);
   const [isFixture, setIsFixture] = useState(true);
+
+  // Per-section source tracking for WorkbenchSourceBadge
+  const [overviewSource, setOverviewSource] = useState<DisclosureSource>('fallback');
+  const [certSource, setCertSource] = useState<DisclosureSource>('fallback');
+  const [appealsSource, setAppealsSource] = useState<DisclosureSource>('fallback');
+  const [workloadSource, setWorkloadSource] = useState<DisclosureSource>('fallback');
 
   const fetchDashboardData = useCallback(async () => {
     let anyApi = false;
@@ -119,6 +139,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       const certData = await getCertificationStatus();
       if (certData && certData.length > 0) {
         setCertificationAreas(certData.map(mapCertToArea));
+        setCertSource('live');
         anyApi = true;
       }
     } catch { /* fixture fallback — already set */ }
@@ -129,6 +150,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       if (appealsData && appealsData.length > 0) {
         setRecentAppeals(mapAppealsToRecent(appealsData));
         setAppealsSummary(computeAppealsSummary(appealsData));
+        setAppealsSource('live');
         anyApi = true;
 
         // Update overview stats with real appeal count
@@ -147,6 +169,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       const prodData = await getAppraiserProductivity({ throwOnError: true });
       if (prodData && prodData.length > 0) {
         setAppraisers(mapProductivityToAppraisers(prodData));
+        setWorkloadSource('live');
         anyApi = true;
       }
     } catch { /* fixture fallback */ }
@@ -160,6 +183,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
             s.label === 'Pending Reviews' ? { ...s, value: String(metrics.totalPendingReview ?? s.value) } : s,
           ),
         );
+        setOverviewSource('live');
         anyApi = true;
       }
     } catch { /* fixture fallback */ }
@@ -184,6 +208,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       className="space-y-4 p-4"
       style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}
     >
+      <MorningBriefingStrip swarm={swarm} pacs={pacs} appeals={appeals} workload={workload} />
       {isFixture && <DemoDataBanner module="Management Dashboard" />}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Management Dashboard</h1>
@@ -204,6 +229,10 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       {/* Overview Tab */}
       {activeTab === 'overview' && (
         <div data-testid="tab-overview">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-muted-foreground">Overview Stats</span>
+            <WorkbenchSourceBadge source={overviewSource} />
+          </div>
           <div data-testid="overview-stats" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {overviewStats.map((stat) => (
               <Card key={stat.label} data-material="bento">
@@ -242,7 +271,10 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
         <div data-testid="tab-certification">
           <Card>
             <CardHeader>
-              <CardTitle>Certification Readiness by Area</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Certification Readiness by Area</CardTitle>
+                <WorkbenchSourceBadge source={certSource} />
+              </div>
             </CardHeader>
             <CardContent>
               <table data-testid="cert-table" className="w-full text-sm">
@@ -294,6 +326,10 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       {/* Appeals Tab */}
       {activeTab === 'appeals' && (
         <div data-testid="tab-appeals">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-muted-foreground">Appeals Data</span>
+            <WorkbenchSourceBadge source={appealsSource} />
+          </div>
           <div data-testid="appeals-summary" className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card>
               <CardContent className="pt-4 pb-4 text-center">
@@ -366,7 +402,10 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
         <div data-testid="tab-workload">
           <Card>
             <CardHeader>
-              <CardTitle>Staff Workload Assignments</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Staff Workload Assignments</CardTitle>
+                <WorkbenchSourceBadge source={workloadSource} />
+              </div>
             </CardHeader>
             <CardContent>
               <table data-testid="workload-table" className="w-full text-sm">
@@ -381,7 +420,7 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
                 </thead>
                 <tbody>
                   {appraisers.map((appraiser) => {
-                    const pct = ((appraiser.completed / appraiser.assigned) * 100).toFixed(1);
+                    const pct = ((appraiser.completed / Math.max(appraiser.assigned, 1)) * 100).toFixed(1);
                     return (
                       <tr
                         key={appraiser.name}

@@ -77,7 +77,6 @@ export function useQuantumAnalyticsStatus(
       } catch (err: any) {
         if (!isMounted) return;
 
-        console.warn('QuantumAnalytics health check failed:', err.message);
         setIsHealthy(false);
         setError(err.message);
         setServiceInfo(null);

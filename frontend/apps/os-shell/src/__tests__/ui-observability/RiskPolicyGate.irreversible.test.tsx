@@ -12,7 +12,7 @@
  */
 
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RiskPolicyGate } from '../../components/pilot/RiskPolicyGate';
 
@@ -34,10 +34,12 @@ const mockRequestApprovalToken = requestApprovalToken as vi.MockedFunction<
 describe('RiskPolicyGate - Irreversible Tools', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
+    // Ensure real timers are always the baseline; fake timers are scoped per-describe
+    vi.useRealTimers();
   });
 
   afterEach(() => {
+    // Belt-and-suspenders: restore real timers after every test regardless of which describe ran
     vi.useRealTimers();
   });
 
@@ -134,7 +136,7 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         correlationId: 'corr-approval-123',
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup();
 
       render(
         <RiskPolicyGate
@@ -177,7 +179,7 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
     it('requires reason code before allowing approval', async () => {
       mockValidatePilotTool.mockResolvedValue(mockIrreversibleValidation);
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup();
 
       render(
         <RiskPolicyGate
@@ -211,7 +213,7 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         correlationId: 'corr-approval-123',
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup();
 
       render(
         <RiskPolicyGate
@@ -263,7 +265,7 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         result: { toolId: 'dais.delete_assessment', output: 'Deleted' },
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup();
       const onComplete = vi.fn();
 
       render(
@@ -322,7 +324,7 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         correlationId: 'corr-approval-123',
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup();
 
       render(
         <RiskPolicyGate
@@ -338,16 +340,15 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
       });
 
       // Complete flow
-      await user.click(screen.getByText(/correction/i));
-      await user.type(
-        screen.getByPlaceholderText(/type.*to confirm/i),
-        'EXECUTE dais.delete_assessment'
-      );
+      fireEvent.click(screen.getByText(/correction/i));
+      fireEvent.change(screen.getByPlaceholderText(/type.*to confirm/i), {
+        target: { value: 'EXECUTE dais.delete_assessment' },
+      });
 
       await waitFor(() => {
         expect(screen.getByRole('button', { name: /generate.*approval/i })).not.toBeDisabled();
       });
-      await user.click(screen.getByRole('button', { name: /generate.*approval/i }));
+      fireEvent.click(screen.getByRole('button', { name: /generate.*approval/i }));
 
       // Token info should be displayed
       await waitFor(() => {
@@ -357,6 +358,15 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
   });
 
   describe('token_expires_and_flow_rejects', () => {
+    // Fake timers are required for this describe; scope them here to prevent
+    // parallel-suite timer bleed that causes flake under full-suite load.
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it('shows expiration warning and disables execution after token expires', async () => {
       mockValidatePilotTool.mockResolvedValue(mockIrreversibleValidation);
 
@@ -372,8 +382,6 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         correlationId: 'corr-approval-123',
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-
       render(
         <RiskPolicyGate
           toolId='dais.delete_assessment'
@@ -388,31 +396,27 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
       });
 
       // Complete flow and get token
-      await user.click(screen.getByText(/correction/i));
-      await user.type(
-        screen.getByPlaceholderText(/type.*to confirm/i),
-        'EXECUTE dais.delete_assessment'
-      );
+      fireEvent.click(screen.getByText(/correction/i));
+      fireEvent.change(screen.getByPlaceholderText(/type.*to confirm/i), {
+        target: { value: 'EXECUTE dais.delete_assessment' },
+      });
 
       await waitFor(() => {
         expect(screen.getByRole('button', { name: /generate.*approval/i })).not.toBeDisabled();
       });
-      await user.click(screen.getByRole('button', { name: /generate.*approval/i }));
+      fireEvent.click(screen.getByRole('button', { name: /generate.*approval/i }));
 
       // Token received, confirm button enabled
       await waitFor(() => {
         expect(screen.getByRole('button', { name: /confirm/i })).not.toBeDisabled();
       });
 
-      // Advance time past expiration
-      vi.advanceTimersByTime(15000);
-
-      // Confirm button should be disabled again
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /confirm/i })).toBeDisabled();
+      // Advance time past expiration and flush the interval-driven state update.
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(15000);
       });
 
-      // Should show expiration message
+      expect(screen.getByRole('button', { name: /confirm/i })).toBeDisabled();
       expect(screen.getByText(/expired/i)).toBeInTheDocument();
     });
 
@@ -430,7 +434,7 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         correlationId: 'corr-approval-123',
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup();
 
       render(
         <RiskPolicyGate
@@ -446,24 +450,26 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
       });
 
       // Complete flow
-      await user.click(screen.getByText(/correction/i));
-      await user.type(
-        screen.getByPlaceholderText(/type.*to confirm/i),
-        'EXECUTE dais.delete_assessment'
-      );
+      fireEvent.click(screen.getByText(/correction/i));
+      fireEvent.change(screen.getByPlaceholderText(/type.*to confirm/i), {
+        target: { value: 'EXECUTE dais.delete_assessment' },
+      });
 
       await waitFor(() => {
         expect(screen.getByRole('button', { name: /generate.*approval/i })).not.toBeDisabled();
       });
-      await user.click(screen.getByRole('button', { name: /generate.*approval/i }));
+      fireEvent.click(screen.getByRole('button', { name: /generate.*approval/i }));
 
-      // Advance time past expiration
-      vi.advanceTimersByTime(10000);
-
-      // Regenerate button should appear
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /regenerate/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /confirm/i })).not.toBeDisabled();
       });
+
+      // Advance time past expiration and flush the interval-driven state update.
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(10000);
+      });
+
+      expect(screen.getByRole('button', { name: /regenerate/i })).toBeInTheDocument();
     });
   });
 
@@ -476,7 +482,7 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         correlationId: 'corr-error-789',
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup();
 
       render(
         <RiskPolicyGate
@@ -529,7 +535,7 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         },
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup();
       const onComplete = vi.fn();
 
       render(
@@ -601,7 +607,7 @@ describe('RiskPolicyGate - Irreversible Tools', () => {
         result: { toolId: 'dais.approve_assessment', output: 'Approved' },
       });
 
-      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      const user = userEvent.setup();
 
       render(
         <RiskPolicyGate

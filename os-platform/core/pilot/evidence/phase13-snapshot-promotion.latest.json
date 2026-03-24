@@ -1,17 +1,17 @@
 {
-  "generatedAt": "2026-03-13T11:58:41.937Z",
+  "generatedAt": "2026-03-21T04:45:09.861Z",
   "scope": "Phase 13 snapshot promotion spine packet",
-  "decision": "GO",
+  "decision": "NO_GO",
   "checks": [
     {
       "name": "phase12.runtime_track",
-      "ok": true,
-      "detail": "exit=0",
+      "ok": false,
+      "detail": "exit=1",
       "payload": {
-        "stdout": "\n> terrafusion-os@1.0.0 proof:phase12 C:\\Users\\bsval\\terrafusion_os_1.0\n> cross-env TF_API_PORT=5000 node os-platform/core/pilot/phase12-pacs-connected-runtime-packet.mjs\n\n\n> terrafusion-os@1.0.0 proof:benton:sync C:\\Users\\bsval\\terrafusion_os_1.0\n> cross-env TF_API_PORT=5000 node os-platform/core/pilot/benton-sync-proof.mjs\n\nPASS auth.login - admin@gov.\nPASS backend.health - Healthy\nPASS sync.status.before - status available\nPASS sync.county.benton - recordsProcessed=0, salesAdded=0, salesUpdated=288, salesSkipped=77001\nPASS sync.status.after - status available\nEvidence written to C:\\Users\\bsval\\terrafusion_os_1.0\\os-platform\\core\\pilot\\evidence\\benton-sync-proof.latest.json\n",
-        "stderr": ""
+        "stdout": "\n> terrafusion-os@1.0.0 proof:phase12 C:\\Users\\bsval\\terrafusion_os_1.0\n> cross-env TF_API_PORT=5000 node os-platform/core/pilot/phase12-pacs-connected-runtime-packet.mjs\n\n\n> terrafusion-os@1.0.0 proof:benton:sync C:\\Users\\bsval\\terrafusion_os_1.0\n> cross-env TF_API_PORT=5000 node os-platform/core/pilot/benton-sync-proof.mjs\n\nEvidence written to C:\\Users\\bsval\\terrafusion_os_1.0\\os-platform\\core\\pilot\\evidence\\benton-sync-proof.latest.json\n ELIFECYCLE  Command failed with exit code 1.\n ELIFECYCLE  Command failed with exit code 1.\n",
+        "stderr": "FAIL benton.sync.proof - Pilot auth failed: Backend unreachable: fetch failed\n"
       },
-      "blocker": null
+      "blocker": "Phase 12 runtime-track proof failed"
     },
     {
       "name": "snapshot.local.canonical_manifest",
@@ -30,7 +30,7 @@
           ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
           ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
         ],
-        "snapshotSha256": "067eeae1ec7eeb43647a58afed75840c5a55cc86e056b681f2c62dec783f9ae0",
+        "snapshotSha256": "8d343d0de119388e81c0798d9f2331cba766015af16483bc33184738d7a4b9ed",
         "snapshotSize": 359325696,
         "snapshotPath": "C:\\Users\\bsval\\AppData\\Local\\Temp\\phase13-local-promoted-snapshot.db"
       },
@@ -54,7 +54,7 @@
             ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
             ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
           ],
-          "snapshotSha256": "067eeae1ec7eeb43647a58afed75840c5a55cc86e056b681f2c62dec783f9ae0",
+          "snapshotSha256": "8d343d0de119388e81c0798d9f2331cba766015af16483bc33184738d7a4b9ed",
           "snapshotSize": 359325696,
           "snapshotPath": "C:\\Users\\bsval\\AppData\\Local\\Temp\\phase13-local-promoted-snapshot.db"
         },
@@ -71,8 +71,8 @@
             ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
             ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
           ],
-          "snapshotSha256": "32cccc74aa39147555e86d155ccbee4b9a4f3ce4ea3c95add5b4f70e2792df54",
-          "snapshotSize": 359514112,
+          "snapshotSha256": "f013dd3a35f5df0e4694d7489be40514c6010217951b29ee43de7707fd7e4b60",
+          "snapshotSize": 380747776,
           "snapshotPath": "/opt/terrafusion/staging/data/terrafusion.db"
         }
       },
@@ -96,7 +96,7 @@
             ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
             ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
           ],
-          "snapshotSha256": "067eeae1ec7eeb43647a58afed75840c5a55cc86e056b681f2c62dec783f9ae0",
+          "snapshotSha256": "8d343d0de119388e81c0798d9f2331cba766015af16483bc33184738d7a4b9ed",
           "snapshotSize": 359325696,
           "snapshotPath": "C:\\Users\\bsval\\AppData\\Local\\Temp\\phase13-local-promoted-snapshot.db"
         },
@@ -113,8 +113,8 @@
             ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
             ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
           ],
-          "snapshotSha256": "3a935db0bd579702ef19a367719e278f2716be10d27a2fc9afda1da54559c0fd",
-          "snapshotSize": 359514112,
+          "snapshotSha256": "b974a25824ba5661613e314c207ed0a111f2c9106ee101cda5e9c15fd8c3b4b8",
+          "snapshotSize": 380727296,
           "snapshotPath": "/opt/terrafusion/production/data/terrafusion.db"
         }
       },
@@ -138,8 +138,8 @@
             ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
             ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
           ],
-          "snapshotSha256": "32cccc74aa39147555e86d155ccbee4b9a4f3ce4ea3c95add5b4f70e2792df54",
-          "snapshotSize": 359514112,
+          "snapshotSha256": "f013dd3a35f5df0e4694d7489be40514c6010217951b29ee43de7707fd7e4b60",
+          "snapshotSize": 380747776,
           "snapshotPath": "/opt/terrafusion/staging/data/terrafusion.db"
         },
         "production": {
@@ -155,8 +155,8 @@
             ["10157100000200A", "709933.0", "2012-11-13 00:00:00"],
             ["10157100000200A", "128500.0", "2012-12-17 00:00:00"]
           ],
-          "snapshotSha256": "3a935db0bd579702ef19a367719e278f2716be10d27a2fc9afda1da54559c0fd",
-          "snapshotSize": 359514112,
+          "snapshotSha256": "b974a25824ba5661613e314c207ed0a111f2c9106ee101cda5e9c15fd8c3b4b8",
+          "snapshotSize": 380727296,
           "snapshotPath": "/opt/terrafusion/production/data/terrafusion.db"
         }
       },
@@ -165,11 +165,11 @@
     {
       "name": "snapshot.file_hash.informational",
       "ok": true,
-      "detail": "local=067eeae1ec7eeb43647a58afed75840c5a55cc86e056b681f2c62dec783f9ae0, staging=32cccc74aa39147555e86d155ccbee4b9a4f3ce4ea3c95add5b4f70e2792df54, production=3a935db0bd579702ef19a367719e278f2716be10d27a2fc9afda1da54559c0fd",
+      "detail": "local=8d343d0de119388e81c0798d9f2331cba766015af16483bc33184738d7a4b9ed, staging=f013dd3a35f5df0e4694d7489be40514c6010217951b29ee43de7707fd7e4b60, production=b974a25824ba5661613e314c207ed0a111f2c9106ee101cda5e9c15fd8c3b4b8",
       "payload": {
-        "localSha256": "067eeae1ec7eeb43647a58afed75840c5a55cc86e056b681f2c62dec783f9ae0",
-        "stagingSha256": "32cccc74aa39147555e86d155ccbee4b9a4f3ce4ea3c95add5b4f70e2792df54",
-        "productionSha256": "3a935db0bd579702ef19a367719e278f2716be10d27a2fc9afda1da54559c0fd",
+        "localSha256": "8d343d0de119388e81c0798d9f2331cba766015af16483bc33184738d7a4b9ed",
+        "stagingSha256": "f013dd3a35f5df0e4694d7489be40514c6010217951b29ee43de7707fd7e4b60",
+        "productionSha256": "b974a25824ba5661613e314c207ed0a111f2c9106ee101cda5e9c15fd8c3b4b8",
         "note": "Raw SQLite file hashes are informational only because mutable runtime metadata tables like EtlSyncJobs can diverge after startup."
       },
       "blocker": null
@@ -197,10 +197,10 @@
       "ok": true,
       "detail": "login succeeded",
       "payload": {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJjMzY0MTI1Ny01YzJjLTRjNmYtOTM2Ni1kNzUzMWVlMDI5N2QiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6ImY1M2ZhZjQwLTdmZmEtNDA3My1iOTFiLTVlYjUxNDU3NjI1NSIsImlhdCI6MTc3MzQwMzEyMiwidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJjb3VudHlJZCI6IjE5MTkwMDE5LTE5MTktMTkxOS0xOTE5LTE5MTkxOTE5MTkxOSIsImNvdW50eUNvZGUiOiI1MzAwNSIsIm5iZiI6MTc3MzQwMzEyMiwiZXhwIjoxNzczNDA2NzIyLCJpc3MiOiJUZXJyYWZ1c2lvbi5BUEkiLCJhdWQiOiJUZXJyYWZ1c2lvbi5DbGllbnQifQ.UWB5fm0D9M6I0eF4YAAX9p8BSjQymhO0t6D_A2gnDPc",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI3Yjg4MWYwNi1mNGI0LTQwODAtYmQ3Yi05ZDlmODBlNzQ5NTciLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6Ijk4MmUyZDYzLTExMjYtNDM2Zi1iOTFmLTViZDRiMzA0ZTU0NiIsImlhdCI6MTc3NDA2ODMxMCwidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJjb3VudHlJZCI6IjE5MTkwMDE5LTE5MTktMTkxOS0xOTE5LTE5MTkxOTE5MTkxOSIsImNvdW50eUNvZGUiOiI1MzAwNSIsIm5iZiI6MTc3NDA2ODMxMCwiZXhwIjoxNzc0MDcxOTEwLCJpc3MiOiJUZXJyYWZ1c2lvbi5BUEkiLCJhdWQiOiJUZXJyYWZ1c2lvbi5DbGllbnQifQ.hEQzfU1NIqqwtAlJolSXFxad_OZnyDiakiTUtbrZQCQ",
         "email": "admin@terrafusionmarket.com",
         "roles": ["GovernmentUser", "Administrator"],
-        "expiresAt": "2026-03-13T19:58:42.6089177Z",
+        "expiresAt": "2026-03-21T12:45:10.6648364Z",
         "refreshToken": null
       },
       "blocker": null
@@ -529,7 +529,7 @@
           "coefficient_of_dispersion": 6.2
         },
         "includesAdjustments": true,
-        "retrievedAt": "2026-03-13T11:58:42.9172859Z"
+        "retrievedAt": "2026-03-21T04:45:11.2093135Z"
       },
       "blocker": null
     },
@@ -538,10 +538,10 @@
       "ok": true,
       "detail": "login succeeded",
       "payload": {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIzMTMxYWI2Yy04NTBhLTRiM2UtYTM2My05M2MzZWU2OGRmM2MiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6ImRmNGZjNWY0LWQ5MDQtNDM0Yy1iYmNjLTI4NWU2NzNiMDQ0NiIsImlhdCI6MTc3MzQwMzEyMywidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJjb3VudHlJZCI6IjE5MTkwMDE5LTE5MTktMTkxOS0xOTE5LTE5MTkxOTE5MTkxOSIsImNvdW50eUNvZGUiOiI1MzAwNSIsIm5iZiI6MTc3MzQwMzEyMywiZXhwIjoxNzczNDA2NzIzLCJpc3MiOiJUZXJyYWZ1c2lvbi5BUEkiLCJhdWQiOiJUZXJyYWZ1c2lvbi5DbGllbnQifQ.q8Cm140KV_zV_m7xBt5euhgFoFG1Jsxh06KTa2qaoFU",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJlMGZhYzRmOS0xNjNhLTRhMWQtOTZmNS05MGZhNmQ2MzNkYWMiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6IjU0OGI0OTk4LTE4Y2MtNDY3My1iNGZlLTE4N2M2MjQyZmY0ZiIsImlhdCI6MTc3NDA2ODMxMSwidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJjb3VudHlJZCI6IjE5MTkwMDE5LTE5MTktMTkxOS0xOTE5LTE5MTkxOTE5MTkxOSIsImNvdW50eUNvZGUiOiI1MzAwNSIsIm5iZiI6MTc3NDA2ODMxMSwiZXhwIjoxNzc0MDcxOTExLCJpc3MiOiJUZXJyYWZ1c2lvbi5BUEkiLCJhdWQiOiJUZXJyYWZ1c2lvbi5DbGllbnQifQ.YUQfzIvSIc25foUhDRN6AuD_k-Rmjbf7SWxZS9DV1g4",
         "email": "admin@terrafusionmarket.com",
         "roles": ["GovernmentUser", "Administrator"],
-        "expiresAt": "2026-03-13T19:58:43.4478511Z",
+        "expiresAt": "2026-03-21T12:45:11.7468781Z",
         "refreshToken": null
       },
       "blocker": null
@@ -870,15 +870,15 @@
           "coefficient_of_dispersion": 6.2
         },
         "includesAdjustments": true,
-        "retrievedAt": "2026-03-13T11:58:43.7154735Z"
+        "retrievedAt": "2026-03-21T04:45:12.1010716Z"
       },
       "blocker": null
     }
   ],
   "summary": {
-    "ok": true,
-    "failures": 0,
-    "blockers": [],
+    "ok": false,
+    "failures": 1,
+    "blockers": ["Phase 12 runtime-track proof failed"],
     "promotionContract": "The promoted Benton artifact is a logical operational snapshot contract sourced from the PACS-connected runtime and served by Hostinger snapshot runtimes."
   }
 }

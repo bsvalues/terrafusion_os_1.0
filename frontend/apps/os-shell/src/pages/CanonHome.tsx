@@ -106,6 +106,14 @@ import { StandaloneHomeShell } from '../components/standalone';
 import '../styles/canon-ide.css';
 import '../styles/canon.css';
 import { LiquidPanel } from '../ui/materials';
+import { explainContext } from '../api/explainApi';
+import {
+  generateCorrelationId,
+  emitToolInvoked,
+  emitToolSucceeded,
+  emitToolFailed,
+  getTraceContext,
+} from '../services/terraTrace';
 
 // ============================================================================
 // Workspace File types
@@ -469,6 +477,7 @@ function EditorPane({
 const STORAGE_KEY_WORKSPACES = 'tf.canon.workspaces.v1';
 const STORAGE_KEY_ACTIVE = 'tf.canon.activeIndex.v1';
 const STORAGE_KEY_FILES = 'tf.canon.files.v1';
+const STORAGE_KEY_TABS = 'tf.canon.tabs.v1';
 // STORAGE_KEY_LAST_CLOSED imported from @/canon/governance (barrel)
 
 function isValidWorkspaceArray(data: unknown): data is Workspace[] {
@@ -526,6 +535,43 @@ function loadPersistedFiles(): Record<string, WorkspaceFile[]> {
 
 function persistFiles(filesByWorkspace: Record<string, WorkspaceFile[]>): void {
   localStorage.setItem(STORAGE_KEY_FILES, JSON.stringify(filesByWorkspace));
+}
+
+// ─── Phase 51: Tab session persistence ───────────────────────────────────────
+
+/** Per-workspace open tab list + active file. */
+interface TabSession {
+  tabs: string[];
+  activeFileId: string | null;
+}
+
+/** Load persisted tab sessions from localStorage. Fails closed to {} on any error. */
+function loadPersistedTabs(): Record<string, TabSession> {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_TABS);
+    if (raw === null) return {};
+    const parsed = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {};
+    const result: Record<string, TabSession> = {};
+    for (const [wsId, session] of Object.entries(parsed)) {
+      if (
+        typeof session === 'object' &&
+        session !== null &&
+        Array.isArray((session as TabSession).tabs) &&
+        (session as TabSession).tabs.every((t) => typeof t === 'string') &&
+        ('activeFileId' in (session as TabSession))
+      ) {
+        result[wsId] = session as TabSession;
+      }
+    }
+    return result;
+  } catch {
+    return {};
+  }
+}
+
+function persistTabs(tabsByWorkspace: Record<string, TabSession>): void {
+  localStorage.setItem(STORAGE_KEY_TABS, JSON.stringify(tabsByWorkspace));
 }
 
 // isValidWorkspace imported from @/canon/governance (Phase 41 dedup, Phase 47 barrel)
@@ -594,8 +640,24 @@ function CanonContent(): React.ReactElement {
   const [filesByWorkspace, setFilesByWorkspace] = useState<Record<string, WorkspaceFile[]>>(() =>
     loadPersistedFiles()
   );
-  const [openTabs, setOpenTabs] = useState<string[]>([]);
-  const [activeFileId, setActiveFileId] = useState<string | null>(null);
+  // Phase 51: tab session persistence — restore active workspace's session on mount
+  const [tabsByWorkspace, setTabsByWorkspace] = useState<Record<string, TabSession>>(() =>
+    loadPersistedTabs()
+  );
+  const [openTabs, setOpenTabs] = useState<string[]>(() => {
+    const persisted = loadPersistedState();
+    if (!persisted) return [];
+    const tabs = loadPersistedTabs();
+    const activeWsId = persisted.workspaces[persisted.activeIndex]?.id;
+    return activeWsId ? (tabs[activeWsId]?.tabs ?? []) : [];
+  });
+  const [activeFileId, setActiveFileId] = useState<string | null>(() => {
+    const persisted = loadPersistedState();
+    if (!persisted) return null;
+    const tabs = loadPersistedTabs();
+    const activeWsId = persisted.workspaces[persisted.activeIndex]?.id;
+    return activeWsId ? (tabs[activeWsId]?.activeFileId ?? null) : null;
+  });
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [sidebarTab, setSidebarTab] = useState<'explorer' | 'search' | 'outline' | 'bookmarks' | 'snippets' | 'settings'>('explorer');
   const [bottomTab, setBottomTab] = useState<'gates' | 'terminal' | 'problems'>('gates');
@@ -803,6 +865,27 @@ function CanonContent(): React.ReactElement {
     refreshGitStatus();
   }, [activeFilePath, activeFileId, notify]);
 
+  /** Explain the active file context via TerraPilot Muse (read-only). */
+  const handleCanonExplain = useCallback(async () => {
+    const { countyId } = getTraceContext();
+    const correlationId = generateCorrelationId();
+    const contextId = activeFilePath ?? 'canon';
+    emitToolInvoked({ suite: 'os', correlationId, countyId, inputSummary: `canon.explain:${contextId}`, risk: 'read_only' });
+    try {
+      const result = await explainContext({
+        contextType: 'TerraCanon',
+        contextId,
+        metadata: { filePath: activeFilePath },
+      });
+      emitToolSucceeded({ suite: 'os', correlationId, countyId, outputSummary: `explained:${contextId}` });
+      notify(result.explanation?.slice(0, 120) ?? 'Explanation ready', 'success');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      emitToolFailed({ suite: 'os', correlationId, countyId, outputSummary: message });
+      notify(`Explain failed: ${message}`, 'error');
+    }
+  }, [activeFilePath, notify]);
+
   /** Create a new file on disk and open it in the editor. */
   const handleNewFile = useCallback(
     async (filePath: string) => {
@@ -1005,6 +1088,24 @@ function CanonContent(): React.ReactElement {
     persistFiles(filesByWorkspace);
   }, [filesByWorkspace]);
 
+  // Phase 51: Keep active workspace tab session in sync with live openTabs/activeFileId.
+  // This ensures the session is persisted even without an explicit workspace switch
+  // (e.g., after opening/closing a file, before a reload).
+  const activeWsId = active?.id;
+  useEffect(() => {
+    if (!activeWsId) return;
+    setTabsByWorkspace((prev) => ({
+      ...prev,
+      [activeWsId]: { tabs: openTabs, activeFileId },
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openTabs, activeFileId, activeWsId]);
+
+  // Phase 51: Persist tab sessions on change
+  useEffect(() => {
+    persistTabs(tabsByWorkspace);
+  }, [tabsByWorkspace]);
+
   // Phase O: Fetch git status on mount and refresh helper
   const refreshGitStatus = useCallback(async () => {
     const result = await fetchGitStatus();
@@ -1096,12 +1197,24 @@ function CanonContent(): React.ReactElement {
   };
 
   const switchWorkspace = (index: number) => {
-    if (index >= 0 && index < workspaces.length) {
-      setActiveIndex(index);
-      setRenameDraft('');
-      setOpenTabs([]);
-      setActiveFileId(null);
+    if (index < 0 || index >= workspaces.length || index === activeIndex) return;
+    // Phase 51: save current workspace tab session before switching
+    const currentWsId = active?.id;
+    const savedTabs = openTabs;
+    const savedActiveFileId = activeFileId;
+    if (currentWsId) {
+      setTabsByWorkspace((prev) => ({
+        ...prev,
+        [currentWsId]: { tabs: savedTabs, activeFileId: savedActiveFileId },
+      }));
     }
+    // Restore new workspace tab session (read from current state — not yet updated above)
+    const newWsId = workspaces[index].id;
+    const session = tabsByWorkspace[newWsId];
+    setActiveIndex(index);
+    setRenameDraft('');
+    setOpenTabs(session?.tabs ?? []);
+    setActiveFileId(session?.activeFileId ?? null);
   };
 
   const closeWorkspace = () => {
@@ -1117,6 +1230,12 @@ function CanonContent(): React.ReactElement {
     // Keep files in localStorage (persist through close/reopen)
     setOpenTabs([]);
     setActiveFileId(null);
+    // Phase 51: Remove closed workspace tab session (reopen starts fresh)
+    setTabsByWorkspace((prev) => {
+      const next2 = { ...prev };
+      delete next2[closed.id];
+      return next2;
+    });
   };
 
   const reopenLastClosed = () => {
@@ -1457,6 +1576,12 @@ function CanonContent(): React.ReactElement {
         group: 'Multi-Cursor',
         onRun: () => { canonEditorRef.current?.selectToBracket(); },
       },
+      {
+        id: 'explain-active-file',
+        label: 'Explain with Pilot (Muse)',
+        group: 'AI',
+        onRun: () => { void handleCanonExplain(); },
+      },
     ],
     [] // eslint-disable-line react-hooks/exhaustive-deps
   );
@@ -1599,10 +1724,10 @@ function CanonContent(): React.ReactElement {
           className={`canon-header__status canon-header__status--${connection.status}`}
           data-testid='terracanon-connection-status'
           title={connection.status === 'connected'
-            ? `Connected — ${connection.toolCount} tools`
+            ? `Pilot health responding — ${connection.toolCount} tools loaded`
             : connection.status === 'disconnected'
-              ? `Disconnected: ${connection.error ?? 'unknown'}`
-              : 'Connecting…'}
+              ? `Pilot health unavailable: ${connection.error ?? 'unknown'}`
+              : 'Checking Pilot health…'}
         />
         <LiquidPanel variant='shell' radius='none' className='flex-1'>
           <CanonCommandPalette

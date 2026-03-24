@@ -16,10 +16,17 @@ import { useWorkbenchTab } from '../../../../context/workbenchTabContext';
 import { invokeTool } from '../../../../api/pilotApi';
 import { ErrorDisplay } from '../../../../components/errors/ErrorDisplay';
 import { InvocationHistory, type InvocationRecord } from '../../../../components/workbench';
+import { WorkbenchSourceBadge } from '../../../../components/workbench/WorkbenchSourceBadge';
 import { getEnv } from '../../../../runtime/env';
 import { usePropertyStore } from '../../../../stores/propertyStore';
 import { BentoGrid } from '../../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../../ui/materials/BentoCard';
+import {
+  useCostApproach,
+  useSalesComparison,
+  useIncomeApproach,
+  useReconciliation,
+} from '../../../../hooks/forge/useForgeValuation';
 import {
   type ForgeSubTabProps,
   type ExplainState,
@@ -53,6 +60,19 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
   const { parcelId } = useWorkbenchTab();
   const assessments = usePropertyStore((s) => s.assessments);
   const activeParcel = usePropertyStore((s) => s.activeParcel);
+
+  /* ── Live Forge API data for overview cards ─────────────── */
+  const costAPI = useCostApproach(parcelId, taxYear);
+  const salesAPI = useSalesComparison(parcelId, taxYear);
+  const incomeAPI = useIncomeApproach(parcelId, taxYear);
+  const reconAPI = useReconciliation(parcelId, taxYear);
+
+  /** Determine overall data source from API results */
+  const apiSources = [costAPI, salesAPI, incomeAPI, reconAPI];
+  const liveCount = apiSources.filter((a) => a.source === 'live').length;
+  const overviewSource = liveCount === 4 ? 'live' as const
+    : liveCount > 0 ? 'partial' as const
+    : 'fallback' as const;
 
   const [audience, setAudience] = useState<AudienceType>('internal');
   const [compareEnabled, setCompareEnabled] = useState(false);
@@ -170,19 +190,66 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
   /* ── Render ───────────────────────────────────────────── */
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      {/* Live Forge API Summary */}
+      <BentoCard
+        title="&#128293; Forge Valuation Summary"
+        variant="default"
+        actions={<WorkbenchSourceBadge source={overviewSource} />}
+      >
+        {(costAPI.loading || salesAPI.loading || incomeAPI.loading || reconAPI.loading) && (
+          <div role="status" className="flex items-center justify-center py-4 gap-3">
+            <div className="tf-spinner h-6 w-6" />
+            <span className="tf-text-tertiary text-sm">Loading forge valuation data...</span>
+          </div>
+        )}
+        {liveCount > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3" data-testid="forge-overview-live">
+            {costAPI.data && (
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Cost Indicated</div>
+                <div className="text-lg font-bold tf-text">{fmtCurrency(costAPI.data.indicatedValue)}</div>
+              </div>
+            )}
+            {salesAPI.data && (
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Sales Indicated</div>
+                <div className="text-lg font-bold tf-text">{fmtCurrency(salesAPI.data.indicatedValue)}</div>
+              </div>
+            )}
+            {incomeAPI.data && (
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Income Indicated</div>
+                <div className="text-lg font-bold tf-text">{fmtCurrency(incomeAPI.data.valuation)}</div>
+              </div>
+            )}
+            {reconAPI.data && (
+              <div className="tf-panel p-3 text-center">
+                <div className="tf-text-tertiary text-xs">Reconciled</div>
+                <div className="text-lg font-bold tf-suite-accent-text">{fmtCurrency(reconAPI.data.reconciledValue)}</div>
+              </div>
+            )}
+          </div>
+        )}
+        {!costAPI.loading && !salesAPI.loading && liveCount === 0 && (
+          <p className="tf-text-tertiary text-sm py-2">
+            Forge API data not yet available. Use the tools below to generate valuations.
+          </p>
+        )}
+      </BentoCard>
+
       {/* Valuation Context from Store */}
       {(activeParcel || assessments.length > 0) && (
-        <BentoGrid columns={4} gap={0.75} padding={0}>
+        <BentoGrid columns="auto" gap={0.75} padding={0}>
           {activeParcel && (
-            <BentoCard variant="stat" title="Current Market Value">
+            <BentoCard variant="stat" title="Loaded Market Value">
               <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}>
                 {fmtCurrency(activeParcel.marketValue)}
               </p>
             </BentoCard>
           )}
           {activeParcel && (
-            <BentoCard variant="stat" title="Current Assessed">
+            <BentoCard variant="stat" title="Loaded Assessed">
               <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-success))' }}>
                 {fmtCurrency(activeParcel.totalAssessedValue)}
               </p>
@@ -202,7 +269,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
       )}
 
       {/* Main Content Grid — Controls + Results */}
-      <BentoGrid columns={3} gap={1.5} padding={0}>
+      <BentoGrid columns="auto" gap={1.5} padding={0}>
         {/* Controls Panel */}
         <BentoCard variant="form" title="Valuation Parameters" actions={<span>&#9881;&#65039;</span>}>
           {/* Audience Selector */}
@@ -225,7 +292,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
                 compareEnabled ? 'tf-suite-active' : 'tf-panel tf-text-secondary tf-hover-surface'
               }`}
             >
-              <span>{compareEnabled ? '\uD83D\uDCCA' : '\uD83D\uDCC8'}</span>
+              <span>{compareEnabled ? '📊' : '📈'}</span>
               <span>Year-over-Year Comparison</span>
               {compareEnabled && <span className="ml-auto tf-suite-accent-text">&check;</span>}
             </button>
@@ -254,7 +321,15 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
         </BentoCard>
 
         {/* Results Panel */}
-        <BentoCard span="2x1">
+        <BentoCard
+          span="2x1"
+          actions={
+            <WorkbenchSourceBadge
+              source={explainState.status === 'success' ? 'live' : 'unavailable'}
+              className="ml-2"
+            />
+          }
+        >
           {explainState.status === 'loading' ? (
             <div role="status" className="flex flex-col items-center justify-center py-12 gap-3">
               <div className="tf-spinner h-10 w-10" />
@@ -331,7 +406,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="text-4xl mb-2">&#128293;</div>
               <p className="tf-text-tertiary">Configure parameters and click Explain Valuation</p>
-              <p className="tf-text-dim text-sm mt-1">Get AI-powered analysis of valuation model results</p>
+              <p className="tf-text-dim text-sm mt-1">Get tool-generated analysis of the selected valuation model results</p>
             </div>
           ) : null}
         </BentoCard>
@@ -343,8 +418,18 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
       )}
 
       {/* Value Change Analysis */}
-      <BentoCard title="&#128200; Value Change Analysis" variant="default">
+      <BentoCard
+        title="&#128200; Value Change Analysis"
+        variant="default"
+        actions={
+          <WorkbenchSourceBadge
+            source={valueChangeState.status === 'success' ? 'live' : 'unavailable'}
+            className="ml-2"
+          />
+        }
+      >
         <p className="tf-text-tertiary text-sm mb-4">Year-over-year value change breakdown for {parcelId}</p>
+        <p className="tf-text-tertiary text-sm mb-4">Compares the selected tax year to the prior year returned for this parcel.</p>
         <button onClick={handleValueChange} disabled={valueChangeState.status === 'loading'} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4">
           {valueChangeState.status === 'loading' ? 'Analyzing...' : `Explain Value Change (${taxYear})`}
         </button>
@@ -360,11 +445,11 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
           <div className="space-y-4">
             <div className="grid grid-cols-3 gap-3">
               <div className="tf-panel p-3 text-center">
-                <div className="tf-text-tertiary text-xs">Previous</div>
+                <div className="tf-text-tertiary text-xs">Prior Year ({taxYear - 1})</div>
                 <div className="text-lg font-bold tf-text">{formatCurrency(valueChangeState.result.previousValue)}</div>
               </div>
               <div className="tf-panel p-3 text-center">
-                <div className="tf-text-tertiary text-xs">Current</div>
+                <div className="tf-text-tertiary text-xs">Selected Year ({taxYear})</div>
                 <div className="text-lg font-bold tf-text">{formatCurrency(valueChangeState.result.currentValue)}</div>
               </div>
               <div className="tf-panel p-3 text-center">
@@ -415,7 +500,16 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
       </BentoCard>
 
       {/* Value History Trend */}
-      <BentoCard title="&#128202; Value History Trend" variant="default">
+      <BentoCard
+        title="&#128202; Value History Trend"
+        variant="default"
+        actions={
+          <WorkbenchSourceBadge
+            source={historyState.status === 'success' ? 'live' : 'unavailable'}
+            className="ml-2"
+          />
+        }
+      >
         <p className="tf-text-tertiary text-sm mb-4">Multi-year assessed value comparison for {parcelId}</p>
         <button onClick={handleValueHistory} disabled={historyState.status === 'loading'} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4">
           {historyState.status === 'loading' ? 'Loading...' : 'Compare Value History'}
@@ -444,7 +538,18 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
       </BentoCard>
 
       {/* Run Valuation Model (write_high) */}
-      <BentoCard title="&#127959;&#65039; Run Valuation Model" actions={<span className="text-xs tf-badge-error px-2 py-0.5 rounded">write_high</span>}>
+      <BentoCard
+        title="&#127959;&#65039; Run Valuation Model"
+        actions={
+          <>
+            <span className="text-xs tf-badge-error px-2 py-0.5 rounded">write_high</span>
+            <WorkbenchSourceBadge
+              source={valuationState.status === 'success' ? 'live' : 'unavailable'}
+              className="ml-2"
+            />
+          </>
+        }
+      >
         <p className="tf-text-tertiary text-sm mb-3">Execute a valuation model for parcel {parcelId} — requires confirmation</p>
         <div className="space-y-3 mb-4">
           <div>

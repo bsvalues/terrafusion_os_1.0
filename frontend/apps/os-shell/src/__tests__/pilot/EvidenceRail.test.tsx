@@ -51,7 +51,7 @@ const MOCK_EVENTS: PilotTraceEvent[] = [
   },
   {
     eventId: 'evt-2',
-    type: 'tool_completed',
+    type: 'tool_succeeded',
     toolId: 'explain_value_change',
     correlationId: 'corr-abc-123',
     summary: 'Value change explained — market adjustment +4.2 %',
@@ -70,12 +70,13 @@ describe('EvidenceRail — empty state', () => {
   it('renders empty message when phase is "empty"', () => {
     render(<EvidenceRail phase="empty" events={[]} error={null} onRetry={vi.fn()} />);
     expect(screen.getByTestId('evidence-empty')).toBeInTheDocument();
-    expect(screen.getByText(/no trace events in the last 30 days/i)).toBeInTheDocument();
+    expect(screen.getByText(/no trace events returned for this parcel/i)).toBeInTheDocument();
   });
 
   it('renders empty message when phase is "ready" but events array is empty', () => {
     render(<EvidenceRail phase="ready" events={[]} error={null} onRetry={vi.fn()} />);
     expect(screen.getByTestId('evidence-empty')).toBeInTheDocument();
+    expect(screen.getByText(/no trace events returned for this parcel/i)).toBeInTheDocument();
   });
 });
 
@@ -131,7 +132,7 @@ describe('EvidenceRail — timeline display', () => {
     const badges = screen.getAllByTestId('event-type-badge');
     expect(badges).toHaveLength(2);
     expect(badges[0]).toHaveTextContent('tool_invoked');
-    expect(badges[1]).toHaveTextContent('tool_completed');
+    expect(badges[1]).toHaveTextContent('tool_succeeded');
   });
 
   it('renders event summaries', () => {

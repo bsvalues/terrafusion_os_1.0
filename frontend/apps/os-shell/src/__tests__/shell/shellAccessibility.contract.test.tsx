@@ -187,9 +187,10 @@ describe('Taskbar Accessibility Contracts (source inspection)', () => {
   let taskbarSource: string;
 
   beforeAll(async () => {
-    const fs = await import('fs');
-    taskbarSource = fs.readFileSync(
-      'apps/os-shell/src/shell/desktop/Taskbar.tsx',
+    const { readFileSync } = await import('fs');
+    const { resolve } = await import('path');
+    taskbarSource = readFileSync(
+      resolve(import.meta.dirname, '../../shell/desktop/Taskbar.tsx'),
       'utf-8'
     );
   });
@@ -230,9 +231,10 @@ describe('Top Bar Accessibility Contracts (source inspection)', () => {
   let desktopSource: string;
 
   beforeAll(async () => {
-    const fs = await import('fs');
-    desktopSource = fs.readFileSync(
-      'apps/os-shell/src/shell/desktop/Desktop.tsx',
+    const { readFileSync } = await import('fs');
+    const { resolve } = await import('path');
+    desktopSource = readFileSync(
+      resolve(import.meta.dirname, '../../shell/desktop/Desktop.tsx'),
       'utf-8'
     );
   });

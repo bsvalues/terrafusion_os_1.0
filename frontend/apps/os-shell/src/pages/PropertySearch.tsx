@@ -26,26 +26,33 @@ const PropertySearch: React.FC = () => {
   const [totalCount, setTotalCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [initialLoaded, setInitialLoaded] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mountedRef = useRef(true);
+  const requestIdRef = useRef(0);
 
   const doSearch = useCallback(async (text: string) => {
+    const requestId = ++requestIdRef.current;
     setLoading(true);
+    setError(null);
     try {
-      const page = await getPacsProperties(1, PAGE_SIZE);
-      const q = text.toLowerCase().trim();
-      const filtered = q
-        ? page.items.filter(
-            (p) =>
-              p.geoId.toLowerCase().includes(q) ||
-              p.address.toLowerCase().includes(q),
-          )
-        : page.items;
-      setResults(filtered);
+      const page = await getPacsProperties(1, PAGE_SIZE, text.trim() || undefined);
+      if (!mountedRef.current || requestId !== requestIdRef.current) {
+        return;
+      }
+      setResults(page.items);
       setTotalCount(page.totalCount);
-    } catch {
+    } catch (err) {
+      if (!mountedRef.current || requestId !== requestIdRef.current) {
+        return;
+      }
       setResults([]);
       setTotalCount(null);
+      setError(err instanceof Error ? err : new Error(String(err)));
     } finally {
+      if (!mountedRef.current || requestId !== requestIdRef.current) {
+        return;
+      }
       setLoading(false);
       setInitialLoaded(true);
     }
@@ -54,6 +61,15 @@ const PropertySearch: React.FC = () => {
   // Load initial results on mount
   useEffect(() => {
     doSearch('');
+
+    return () => {
+      mountedRef.current = false;
+      requestIdRef.current += 1;
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+        debounceRef.current = null;
+      }
+    };
   }, [doSearch]);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,6 +141,9 @@ const PropertySearch: React.FC = () => {
             <Loader2
               size={18}
               className="animate-spin"
+              data-testid="search-loading"
+              role="status"
+              aria-label="Searching…"
               style={{
                 position: 'absolute',
                 right: '1rem',
@@ -178,6 +197,7 @@ const PropertySearch: React.FC = () => {
             {results.map((p) => (
               <button
                 key={p.geoId}
+                data-testid={`search-result-${p.geoId}`}
                 onClick={() => openParcel(p.geoId)}
                 style={{
                   all: 'unset',
@@ -219,13 +239,31 @@ const PropertySearch: React.FC = () => {
           </div>
         )}
 
-        {initialLoaded && results.length === 0 && !loading && (
-          <div style={{ textAlign: 'center', padding: '2rem', color: 'hsl(var(--tf-muted-foreground))' }}>
+        {initialLoaded && results.length === 0 && !loading && !error && (
+          <div data-testid="search-empty-state" style={{ textAlign: 'center', padding: '2rem', color: 'hsl(var(--tf-muted-foreground))' }}>
             <MapPin size={32} style={{ margin: '0 auto 0.5rem', opacity: 0.3 }} />
             <p>No parcels found{query ? ` matching "${query}"` : ''}</p>
             <p style={{ fontSize: '0.8rem', marginTop: '0.25rem' }}>
               Try a different GeoID or address
             </p>
+          </div>
+        )}
+
+        {error && (
+          <div
+            data-testid="search-error-state"
+            role="alert"
+            style={{
+              textAlign: 'center',
+              padding: '2rem',
+              color: 'hsl(var(--tf-muted-foreground))',
+              border: '1px solid hsl(var(--tf-border) / 0.4)',
+              borderRadius: '0.75rem',
+              marginTop: '1rem',
+            }}
+          >
+            <p style={{ fontWeight: 600, marginBottom: '0.25rem' }}>Search failed</p>
+            <p style={{ fontSize: '0.8rem' }}>{error.message || 'An error occurred. Please try again.'}</p>
           </div>
         )}
       </div>

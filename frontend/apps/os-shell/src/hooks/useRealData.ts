@@ -62,7 +62,6 @@ export const useRealData = (
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       setConnectionError(errorMessage);
-      console.error('Failed to fetch connection status:', error);
     } finally {
       setIsConnectionLoading(false);
     }
@@ -79,7 +78,6 @@ export const useRealData = (
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       setStatsError(errorMessage);
-      console.error('Failed to fetch property stats:', error);
     } finally {
       setIsStatsLoading(false);
     }
@@ -96,7 +94,6 @@ export const useRealData = (
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       setHealthError(errorMessage);
-      console.error('Failed to fetch database health:', error);
     } finally {
       setIsHealthLoading(false);
     }
@@ -171,7 +168,6 @@ export const usePropertySearch = (): UsePropertySearchResult => {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Search failed';
       setError(errorMessage);
-      console.error('Property search failed:', error);
     } finally {
       setIsLoading(false);
     }
@@ -214,7 +210,6 @@ export const usePermits = (): UsePermitsResult => {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to load permits';
       setError(errorMessage);
-      console.error('Failed to load permits:', error);
     } finally {
       setIsLoading(false);
     }

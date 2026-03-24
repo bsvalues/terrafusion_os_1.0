@@ -21,4 +21,5 @@ export { ActivityFeed, type ActivityEntry, type ActivityFeedProps, type Activity
 export { EvidenceSnapshotPanel, type EvidenceSnapshotPanelProps } from './EvidenceSnapshotPanel';
 export { ParcelContextBanner, type ParcelContextBannerProps } from './ParcelContextBanner';
 export { PolicyGuardUI, type PolicyGuardUIProps, type RiskLevel, type PilotMode } from './PolicyGuardUI';
+export { WorkbenchSourceBadge, type DisclosureSource } from './WorkbenchSourceBadge';
 

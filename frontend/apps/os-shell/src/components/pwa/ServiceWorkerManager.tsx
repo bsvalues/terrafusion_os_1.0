@@ -38,7 +38,6 @@ export const ServiceWorkerManager: React.FC = () => {
   // Register service worker
   const registerServiceWorker = useCallback(async () => {
     if (!swState.isSupported) {
-      console.warn('Service Worker not supported');
       return;
     }
 

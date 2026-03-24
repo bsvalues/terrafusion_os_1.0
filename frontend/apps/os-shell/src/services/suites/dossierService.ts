@@ -87,7 +87,8 @@ export async function getDocuments(parcelId: string): Promise<Document[]> {
     `${API}/documents?parcelId=${encodeURIComponent(parcelId)}`
   );
   if (!res.ok) throw new Error(`Failed to fetch documents: ${res.statusText}`);
-  return res.json();
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
 }
 
 export async function deleteDocument(documentId: string): Promise<void> {
@@ -129,7 +130,8 @@ export async function getNarratives(parcelId: string): Promise<Narrative[]> {
     `${API}/narratives?parcelId=${encodeURIComponent(parcelId)}`
   );
   if (!res.ok) throw new Error(`Failed to fetch narratives: ${res.statusText}`);
-  return res.json();
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
 }
 
 export async function updateNarrative(
@@ -172,7 +174,8 @@ export async function getPackets(parcelId: string): Promise<Packet[]> {
     `${API}/packets?parcelId=${encodeURIComponent(parcelId)}`
   );
   if (!res.ok) throw new Error(`Failed to fetch packets: ${res.statusText}`);
-  return res.json();
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
 }
 
 export async function finalizePacket(packetId: string): Promise<Packet> {
@@ -208,5 +211,6 @@ export async function getEvidence(parcelId: string): Promise<Evidence[]> {
     `${API}/evidence?parcelId=${encodeURIComponent(parcelId)}`
   );
   if (!res.ok) throw new Error(`Failed to fetch evidence: ${res.statusText}`);
-  return res.json();
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
 }

@@ -24,11 +24,14 @@
  */
 
 import React, { useCallback, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import {
   ParcelContextHeader,
+  WorkbenchSourceBadge,
   type InvocationRecord,
 } from '../../../components/workbench';
+import { useCostApproach } from '../../../hooks/forge/useForgeValuation';
 import { ForgeOverview } from './forge/ForgeOverview';
 import { CostApproach } from './forge/CostApproach';
 import { SalesComparison } from './forge/SalesComparison';
@@ -41,20 +44,50 @@ import { CURRENT_YEAR, TAX_YEARS } from './forge/types';
 type ForgeSubTab = 'overview' | 'cost' | 'sales' | 'income' | 'reconcile';
 
 const SUB_TABS: { id: ForgeSubTab; label: string; icon: string }[] = [
-  { id: 'overview',   label: 'Overview',       icon: '\uD83D\uDD25' },
-  { id: 'cost',       label: 'Cost',           icon: '\uD83C\uDFD7\uFE0F' },
-  { id: 'sales',      label: 'Sales',          icon: '\uD83C\uDFD8\uFE0F' },
-  { id: 'income',     label: 'Income',         icon: '\uD83D\uDCB0' },
-  { id: 'reconcile',  label: 'Reconciliation', icon: '\u2696\uFE0F' },
+  { id: 'overview',   label: 'Overview',       icon: '🔥' },
+  { id: 'cost',       label: 'Cost',           icon: '🏗️' },
+  { id: 'sales',      label: 'Sales',          icon: '🏘️' },
+  { id: 'income',     label: 'Income',         icon: '💰' },
+  { id: 'reconcile',  label: 'Reconciliation', icon: '⚖️' },
 ];
+
+const FORGE_SUB_TABS = new Set<ForgeSubTab>(SUB_TABS.map((tab) => tab.id));
+
+function readInitialSubTab(search: string, state: unknown): ForgeSubTab {
+  const params = new URLSearchParams(search);
+  const queryHint = params.get('tab') ?? params.get('subTab') ?? params.get('initialSubTab');
+  if (queryHint && FORGE_SUB_TABS.has(queryHint as ForgeSubTab)) {
+    return queryHint as ForgeSubTab;
+  }
+
+  if (state && typeof state === 'object') {
+    const launchState = state as Record<string, unknown>;
+    const rawSubTab = launchState.initialSubTab ?? launchState.subTab ?? launchState.tab;
+    if (typeof rawSubTab === 'string' && FORGE_SUB_TABS.has(rawSubTab as ForgeSubTab)) {
+      return rawSubTab as ForgeSubTab;
+    }
+
+    if (launchState.moduleId === 'comparable-sales') {
+      return 'sales';
+    }
+  }
+
+  return 'overview';
+}
 
 /* ── PropertyForge ──────────────────────────────────────── */
 
 export const PropertyForge: React.FC = () => {
+  const location = useLocation();
   const { parcelId } = useWorkbenchTab();
 
+  /* Probe the cost endpoint to determine if the Forge API is reachable */
+  const forgeProbe = useCostApproach(parcelId, CURRENT_YEAR);
+
   /* Shared state */
-  const [activeSubTab, setActiveSubTab] = useState<ForgeSubTab>('overview');
+  const [activeSubTab, setActiveSubTab] = useState<ForgeSubTab>(() =>
+    readInitialSubTab(location.search, location.state)
+  );
   const [taxYear, setTaxYear] = useState<number>(CURRENT_YEAR);
   const [history, setHistory] = useState<InvocationRecord[]>([]);
 
@@ -66,17 +99,16 @@ export const PropertyForge: React.FC = () => {
   /** Called when a sub-tab produces an indicated value */
   const handleValueIndicated = useCallback((approach: string, value: number) => {
     // Future: update overview summary cards with approach-specific indicated values
-    console.debug(`[Forge] Value indicated: ${approach} = $${value.toLocaleString()}`);
   }, []);
 
   return (
     <div className="tf-suite-forge space-y-4" data-testid="property-forge-tab">
       {/* Header */}
       <ParcelContextHeader
-        icon="\uD83D\uDD25"
+        icon="🔥"
         title="TerraForge"
         parcelId={parcelId}
-        subtitle={`AI-powered valuation analysis for ${parcelId}`}
+        subtitle={`Governed valuation tools requested via Forge for ${parcelId}`}
       />
 
       {/* Shared Tax Year Selector */}
@@ -94,6 +126,16 @@ export const PropertyForge: React.FC = () => {
             <option key={year} value={year}>{year}</option>
           ))}
         </select>
+      </div>
+
+      <div className="tf-status-info rounded-xl p-4" data-testid="forge-baseline-disclosure">
+        <div className="flex items-start justify-between gap-3">
+          <p className="tf-text">
+            Overview baseline values reflect the parcel snapshot already loaded in the workbench.
+            Changing Tax Year here changes the governed tool requests below; it does not relabel those baseline cards until a tool result is returned from the selected tool.
+          </p>
+          <WorkbenchSourceBadge source={forgeProbe.source} className="shrink-0" />
+        </div>
       </div>
 
       {/* Sub-Tab Bar */}

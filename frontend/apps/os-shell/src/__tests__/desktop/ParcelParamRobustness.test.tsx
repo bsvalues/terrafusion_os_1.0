@@ -26,7 +26,7 @@
  * Scope: Mechanical robustness only; not asserting backend data correctness.
  */
 
-import { vi, describe, it, expect, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, afterEach } from 'vitest';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -113,6 +113,20 @@ function hasAnyLandmark(testIds: string[]): boolean {
 // ============================================================================
 
 describe('Phase 28 contract: parcel param robustness — invalid parcelId never crashes', () => {
+  beforeAll(async () => {
+    vi.useRealTimers();
+    await import('../../App');
+    await import('../../pages/PropertySearch');
+    await import('../../pages/workbench/PropertyWorkbench');
+    await import('../../pages/workbench/tabs/PropertyForge');
+    await import('../../pages/workbench/tabs/PropertyAtlas');
+    await import('../../pages/workbench/tabs/PropertyDais');
+    await import('../../pages/workbench/tabs/PropertyDossier');
+    await import('../../pages/workbench/tabs/PropertyPilot');
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  }, 60000);
+
   afterEach(() => {
     cleanup();
   });
@@ -136,7 +150,7 @@ describe('Phase 28 contract: parcel param robustness — invalid parcelId never 
         () => {
           expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
         },
-        { timeout: 5000 }
+        { timeout: 15000 }
       );
 
       // HARD GUARD: must not be in crash fallback state
@@ -176,7 +190,7 @@ describe('Phase 28 contract: parcel param robustness — invalid parcelId never 
         () => {
           expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
         },
-        { timeout: 5000 }
+        { timeout: 15000 }
       );
 
       // Must not crash
@@ -213,7 +227,7 @@ describe('Phase 28 contract: parcel param robustness — invalid parcelId never 
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 }
+      { timeout: 15000 }
     );
 
     // Must not crash

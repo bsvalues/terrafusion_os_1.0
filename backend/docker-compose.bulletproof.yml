@@ -35,14 +35,14 @@ x-common-variables: &common-variables
   POSTGRES_PORT: 5432
   POSTGRES_DB: terrafusion_os
   POSTGRES_USER: ${POSTGRES_USER:-terrafusion}
-  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-TerraFusion2024!}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
 
   # Cache Configuration (Redis Cluster)
   REDIS_CLUSTER_ENABLED: 'true'
   REDIS_PRIMARY_HOST: redis-primary
   REDIS_REPLICA_HOST: redis-replica
   REDIS_PORT: 6379
-  REDIS_PASSWORD: ${REDIS_PASSWORD:-TerraFusion2024!}
+  REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
 
   # Message Broker (RabbitMQ Cluster)
   RABBITMQ_CLUSTER_ENABLED: 'true'
@@ -50,11 +50,11 @@ x-common-variables: &common-variables
   RABBITMQ_REPLICA_HOST: rabbitmq-replica
   RABBITMQ_PORT: 5672
   RABBITMQ_USER: ${RABBITMQ_USER:-terrafusion}
-  RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-TerraFusion2024!}
+  RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD is required}
 
   # Security Configuration
-  JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-for-production}
-  ENCRYPTION_KEY: ${ENCRYPTION_KEY:-your-256-bit-encryption-key}
+  JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+  ENCRYPTION_KEY: ${ENCRYPTION_KEY:?ENCRYPTION_KEY is required}
 
   # Government Compliance
   FISMA_COMPLIANCE_LEVEL: 'HIGH'
@@ -240,7 +240,7 @@ services:
     command: >
       redis-server /usr/local/etc/redis/redis.conf
       --appendonly yes
-      --requirepass ${REDIS_PASSWORD:-TerraFusion2024!}
+      --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
       --replica-announce-ip redis-primary
       --replica-announce-port 6379
     labels: *common-labels
@@ -264,8 +264,8 @@ services:
     command: >
       redis-server /usr/local/etc/redis/redis.conf
       --replicaof redis-primary 6379
-      --masterauth ${REDIS_PASSWORD:-TerraFusion2024!}
-      --requirepass ${REDIS_PASSWORD:-TerraFusion2024!}
+      --masterauth ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
+      --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
     depends_on:
       - redis-primary
     labels: *common-labels
@@ -454,7 +454,7 @@ services:
       - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-TerraFusion2024!}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:?GRAFANA_PASSWORD is required}
       GF_INSTALL_PLUGINS: 'grafana-piechart-panel,grafana-worldmap-panel,grafana-clock-panel'
       GF_FEATURE_TOGGLES_ENABLE: 'ngalert'
     depends_on:

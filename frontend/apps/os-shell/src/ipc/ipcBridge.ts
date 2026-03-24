@@ -217,7 +217,6 @@ export function installIpcBridge(deps: IpcBridgeDeps): () => void {
 
       // Unknown message type - log for debugging but don't crash
       if (getViteEnv().DEV) {
-        console.warn(`[IPC] Unknown message type from ${appId}:`, msg.type);
       }
     } catch (err) {
       // Error handling a message - log but don't crash the shell

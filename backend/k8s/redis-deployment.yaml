@@ -1,0 +1,170 @@
+# ============================================================================
+# TerraFusion OS - Redis Deployment
+# Phase 35: Persistent Redis with PVC for production caching
+# ============================================================================
+# Redis 7-alpine with AOF persistence, password auth, and resource limits.
+# ============================================================================
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data-pvc
+  namespace: terrafusion
+  labels:
+    app: redis
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: redis-storage
+    app.kubernetes.io/part-of: terrafusion-platform
+    compliance: fisma-high
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-redis
+  namespace: terrafusion
+  labels:
+    app: redis
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: redis
+    app.kubernetes.io/part-of: terrafusion-platform
+    app.kubernetes.io/version: '7'
+    tier: cache
+    compliance: fisma-high
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: redis
+        app.kubernetes.io/name: terrafusion-os
+        app.kubernetes.io/component: redis
+        app.kubernetes.io/part-of: terrafusion-platform
+        tier: cache
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          imagePullPolicy: IfNotPresent
+          command:
+            - redis-server
+            - --requirepass
+            - $(REDIS_PASSWORD)
+            - --maxmemory
+            - '256mb'
+            - --maxmemory-policy
+            - allkeys-lru
+            - --appendonly
+            - 'yes'
+            - --appendfsync
+            - everysec
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-redis-secret
+                  key: password
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 512Mi
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - -a
+                - $(REDIS_PASSWORD)
+                - ping
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - -a
+                - $(REDIS_PASSWORD)
+                - ping
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+            - name: redis-tmp
+              mountPath: /tmp
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-data-pvc
+        - name: redis-tmp
+          emptyDir: {}
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-redis
+  namespace: terrafusion
+  labels:
+    app: redis
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: redis
+    app.kubernetes.io/part-of: terrafusion-platform
+spec:
+  type: ClusterIP
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: 6379
+      protocol: TCP
+  selector:
+    app: redis
+
+# ============================================================================
+# Apply Instructions
+# ============================================================================
+# Apply Redis deployment:
+#   kubectl apply -f redis-deployment.yaml
+#
+# Verify:
+#   kubectl get deployment terrafusion-redis -n terrafusion
+#   kubectl get pvc redis-data-pvc -n terrafusion
+#   kubectl get svc terrafusion-redis -n terrafusion
+# ============================================================================

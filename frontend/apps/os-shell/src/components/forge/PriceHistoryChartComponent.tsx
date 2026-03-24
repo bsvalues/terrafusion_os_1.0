@@ -38,7 +38,7 @@ export function PriceHistoryChartComponent({ parcelId }: PriceHistoryChartCompon
         ) : (
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--tf-border) / 0.6)" />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} />
               <YAxis tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} tick={{ fontSize: 11 }} />
               <Tooltip
@@ -55,7 +55,7 @@ export function PriceHistoryChartComponent({ parcelId }: PriceHistoryChartCompon
               <Line
                 type="monotone"
                 dataKey="assessedValue"
-                stroke="#3b82f6"
+                stroke="hsl(var(--primary))"
                 strokeWidth={2}
                 dot={false}
                 name="Assessed"
@@ -63,7 +63,7 @@ export function PriceHistoryChartComponent({ parcelId }: PriceHistoryChartCompon
               <Line
                 type="monotone"
                 dataKey="marketValue"
-                stroke="#22c55e"
+                stroke="hsl(var(--tf-success))"
                 strokeWidth={2}
                 dot={false}
                 name="Market"
@@ -71,7 +71,7 @@ export function PriceHistoryChartComponent({ parcelId }: PriceHistoryChartCompon
               <Line
                 type="monotone"
                 dataKey="salePrice"
-                stroke="#f59e0b"
+                stroke="hsl(var(--tf-warning))"
                 strokeWidth={2}
                 dot={{ r: 3 }}
                 connectNulls={false}

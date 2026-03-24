@@ -1,7 +1,7 @@
 /**
  * ResearchPortal.tsx
  *
- * Elite PhD-Level Research Portal - Main orchestration component for Harvard/MIT researchers
+ * Elite research portal - main orchestration component for authenticated research users
  * Integrates all 5 specialized research panels into a unified immersive environment with
  * tabbed navigation, session management, real-time synchronization, and cross-panel analytics.
  *
@@ -36,6 +36,8 @@ import { InfinitePrecisionAnalyticsPanel } from './InfinitePrecisionAnalyticsPan
 import { QuantumResearchDashboard } from './QuantumResearchDashboard';
 import { StatisticalValidationWorkbench } from './StatisticalValidationWorkbench';
 import { useAuthContext } from '@/auth/useAuthContext';
+import { useSession } from '@/auth/useSession';
+import { researchSessionAPI } from '@/api/researchServices';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS - Research Portal DTOs
@@ -121,6 +123,63 @@ interface ResearchExportConfig {
   includeRecommendations: boolean;
 }
 
+interface ResearchIdentity {
+  researcherId: string;
+  researcherName: string;
+  institutionName: string;
+}
+
+function formatResearcherName(userId: string | null): string {
+  if (!userId) return 'TerraFusion Researcher';
+
+  return userId
+    .split(/[-_]/)
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(' ');
+}
+
+function formatInstitutionName(countyId: string | null): string {
+  if (!countyId) return 'TerraFusion Research Workspace';
+  return `${countyId.charAt(0).toUpperCase() + countyId.slice(1)} County Research Workspace`;
+}
+
+function buildResearchSession(identity: ResearchIdentity, sessionId: string, startTime: Date): ResearchSession {
+  return {
+    sessionId,
+    researcherId: identity.researcherId,
+    researcherName: identity.researcherName,
+    institutionName: identity.institutionName,
+    startTime,
+    lastActivityTime: startTime,
+    activePanel: 'quantum-dashboard',
+    quantumParameters: {
+      quantumCoherence: 0.995,
+      entanglementStrength: 0.99,
+      consciousnessLevel: 9.5,
+      optimizationFactor: 949,
+    },
+    aiSwarmMetrics: {
+      activeAgents: 50000,
+      coordinationMode: 'quantum',
+      swarmEfficiency: 0.985,
+      avgResponseTime: 8.5,
+    },
+    statisticalContext: {
+      selectedCounty: 'king',
+      assessmentPeriod: '2024',
+      propertyType: 'residential',
+      certificationTarget: 'championship',
+    },
+    analyticsState: {
+      selectedVariables: ['AssessedValue', 'SalePrice', 'QuantumCoherence'],
+      correlationMethod: 'pearson',
+      hypothesisTestType: 'independent-t-test',
+      confidenceLevel: 0.95,
+    },
+  };
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // MAIN RESEARCH PORTAL COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -131,6 +190,17 @@ export const ResearchPortal: React.FC = () => {
   // ─────────────────────────────────────────────────────────────────────────────
 
   const auth = useAuthContext();
+  const sessionIdentity = useSession();
+  const researchIdentity = useMemo<ResearchIdentity>(() => {
+    const researcherId = auth.userId ?? sessionIdentity.userId;
+    const countyId = auth.countyId ?? sessionIdentity.countyId;
+
+    return {
+      researcherId: researcherId ?? 'authenticated-researcher',
+      researcherName: formatResearcherName(researcherId ?? sessionIdentity.userId),
+      institutionName: formatInstitutionName(countyId),
+    };
+  }, [auth.countyId, auth.userId, sessionIdentity.countyId, sessionIdentity.userId]);
 
   const [activePanel, setActivePanel] = useState<ResearchPanelType>('quantum-dashboard');
   const [session, setSession] = useState<ResearchSession | null>(null);
@@ -149,26 +219,56 @@ export const ResearchPortal: React.FC = () => {
   // SESSION INITIALIZATION
   // ─────────────────────────────────────────────────────────────────────────────
 
-  useEffect(() => {
-    initializeResearchSession();
+  const initializeResearchSession = useCallback(async () => {
+    const startTime = performance.now();
 
-    // Session duration ticker (update every second)
+    try {
+      const response = await researchSessionAPI.initialize({
+        researcherId: researchIdentity.researcherId,
+        researcherName: researchIdentity.researcherName,
+        institutionName: researchIdentity.institutionName,
+        preferences: {
+          defaultPanel: 'quantum-dashboard',
+          autoSaveInterval: 30000,
+          performanceMonitoring: true,
+        },
+      });
+
+      if (!response.success) {
+        throw new Error(response.error?.message ?? 'Session initialization failed');
+      }
+
+      const sessionData = response.data;
+      const startedAt = new Date(sessionData.startTime);
+
+      setSession(buildResearchSession(researchIdentity, sessionData.sessionId, startedAt));
+
+      setIsSessionActive(true);
+      sessionStartRef.current = startedAt;
+
+      const loadTime = performance.now() - startTime;
+    } catch (error) {
+      console.error('❌ Failed to initialize research session:', error);
+      const startedAt = new Date();
+      setSession(buildResearchSession(researchIdentity, `local-${Date.now()}`, startedAt));
+      sessionStartRef.current = startedAt;
+      setIsSessionActive(false);
+    }
+  }, [researchIdentity]);
+
+  useEffect(() => {
+    void initializeResearchSession();
+  }, [initializeResearchSession]);
+
+  useEffect(() => {
     const durationInterval = setInterval(() => {
       setSessionDuration(Math.floor((Date.now() - sessionStartRef.current.getTime()) / 1000));
     }, 1000);
 
-    // Auto-save interval (every 30 seconds)
-    const autoSaveInterval = setInterval(() => {
-      if (autoSaveEnabled && session) {
-        handleAutoSave();
-      }
-    }, 30000);
-
-    // Keyboard shortcuts
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key >= '1' && e.key <= '5') {
         e.preventDefault();
-        const panelIndex = parseInt(e.key) - 1;
+        const panelIndex = parseInt(e.key, 10) - 1;
         const panels: ResearchPanelType[] = [
           'quantum-dashboard',
           'consciousness-tuning',
@@ -176,7 +276,20 @@ export const ResearchPortal: React.FC = () => {
           'swarm-management',
           'statistical-validation',
         ];
-        handlePanelSwitch(panels[panelIndex]);
+        const targetPanel = panels[panelIndex];
+        const switchStartTime = performance.now();
+
+        setSession((prev) =>
+          prev
+            ? {
+                ...prev,
+                activePanel: targetPanel,
+                lastActivityTime: new Date(),
+              }
+            : null
+        );
+        panelSwitchTimeRef.current = performance.now() - switchStartTime;
+        setActivePanel(targetPanel);
       }
     };
 
@@ -184,79 +297,8 @@ export const ResearchPortal: React.FC = () => {
 
     return () => {
       clearInterval(durationInterval);
-      clearInterval(autoSaveInterval);
       window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [autoSaveEnabled, session]);
-
-  const initializeResearchSession = useCallback(async () => {
-    const startTime = performance.now();
-
-    try {
-      // Initialize research session with backend
-      const response = await fetch('/api/research-session/initialize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          researcherId: auth.userId ?? 'phd-researcher-001',
-          researcherName: 'Dr. Sarah Chen',
-          institutionName: 'Harvard University - MIT Joint Program',
-          preferences: {
-            defaultPanel: 'quantum-dashboard',
-            autoSaveInterval: 30000,
-            performanceMonitoring: true,
-          },
-        }),
-      });
-
-      if (!response.ok) throw new Error('Session initialization failed');
-
-      const sessionData = await response.json();
-
-      setSession({
-        sessionId: sessionData.sessionId,
-        researcherId: sessionData.researcherId,
-        researcherName: sessionData.researcherName,
-        institutionName: sessionData.institutionName,
-        startTime: new Date(sessionData.startTime),
-        lastActivityTime: new Date(),
-        activePanel: 'quantum-dashboard',
-        quantumParameters: {
-          quantumCoherence: 0.995,
-          entanglementStrength: 0.99,
-          consciousnessLevel: 9.5,
-          optimizationFactor: 949,
-        },
-        aiSwarmMetrics: {
-          activeAgents: 50000,
-          coordinationMode: 'quantum',
-          swarmEfficiency: 0.985,
-          avgResponseTime: 8.5,
-        },
-        statisticalContext: {
-          selectedCounty: 'king',
-          assessmentPeriod: '2024',
-          propertyType: 'residential',
-          certificationTarget: 'championship',
-        },
-        analyticsState: {
-          selectedVariables: ['AssessedValue', 'SalePrice', 'QuantumCoherence'],
-          correlationMethod: 'pearson',
-          hypothesisTestType: 'independent-t-test',
-          confidenceLevel: 0.95,
-        },
-      });
-
-      setIsSessionActive(true);
-      sessionStartRef.current = new Date();
-
-      const loadTime = performance.now() - startTime;
-      console.log(`✅ Research session initialized in ${loadTime.toFixed(2)}ms`);
-    } catch (error) {
-      console.error('❌ Failed to initialize research session:', error);
-      // Fallback to local session
-      setIsSessionActive(false);
-    }
   }, []);
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -286,7 +328,6 @@ export const ResearchPortal: React.FC = () => {
 
       setActivePanel(targetPanel);
 
-      console.log(`🔄 Panel switched to ${targetPanel} in ${switchDuration.toFixed(2)}ms`);
     },
     [session]
   );
@@ -299,22 +340,28 @@ export const ResearchPortal: React.FC = () => {
     if (!session) return;
 
     try {
-      await fetch('/api/research-session/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sessionId: session.sessionId,
-          sessionState: session,
-          timestamp: new Date().toISOString(),
-        }),
-      });
+      const response = await researchSessionAPI.save(session.sessionId, session);
+      if (!response.success) {
+        throw new Error(response.error?.message ?? 'Auto-save failed');
+      }
 
       setLastSaveTime(new Date());
-      console.log('💾 Research session auto-saved');
     } catch (error) {
       console.error('❌ Auto-save failed:', error);
     }
   }, [session]);
+
+  useEffect(() => {
+    if (!autoSaveEnabled || !session) return;
+
+    const autoSaveInterval = setInterval(() => {
+      void handleAutoSave();
+    }, 30000);
+
+    return () => {
+      clearInterval(autoSaveInterval);
+    };
+  }, [autoSaveEnabled, handleAutoSave, session]);
 
   // ─────────────────────────────────────────────────────────────────────────────
   // CROSS-PANEL INSIGHTS & COORDINATION
@@ -384,7 +431,6 @@ export const ResearchPortal: React.FC = () => {
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
 
-        console.log(`📊 Research exported as ${config.format}`);
       } catch (error) {
         console.error('❌ Export failed:', error);
       }
@@ -504,7 +550,7 @@ export const ResearchPortal: React.FC = () => {
                 margin: 0,
               }}
             >
-              Elite PhD-Level Research Environment • Harvard/MIT Quantum AI Research Lab
+              Elite Research Environment • County-scoped authenticated workspace
             </p>
           </div>
 

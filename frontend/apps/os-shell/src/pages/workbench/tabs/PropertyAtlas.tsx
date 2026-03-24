@@ -1,13 +1,15 @@
 /**
  * PropertyAtlas.tsx
  *
- * Phase 5.3: Property Atlas Tab - GIS/Mapping MWUX Slice
- * Real MWUX with layer selection, live layer availability, and query_parcel_layers tool invocation.
+ * Phase 5.3 + Atlas GIS wiring: Property Atlas Tab - GIS/Mapping MWUX Slice
  *
- * Map visualization is a deterministic preview driven by the live layer-availability payload.
- * Full GIS geometry is not yet available on this route.
- *
- * Architecture: UI → select layers → query_parcel_layers tool → correlationId UX
+ * Architecture:
+ *   1. On mount, fetches boundary + layer data from live GIS endpoints:
+ *        GET /api/atlas/gis/parcels/{parcelId}/boundary
+ *        GET /api/atlas/gis/parcels/{parcelId}/layers
+ *   2. When source="pacs", renders real PACS data in boundary info & layer panels.
+ *   3. Falls back to SVG deterministic preview when API data is unavailable.
+ *   4. Existing query_parcel_layers tool invocation preserved for interactive queries.
  */
 
 import React, { useCallback, useState } from 'react';
@@ -17,6 +19,7 @@ import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
     InvocationHistory,
     ParcelContextHeader,
+    WorkbenchSourceBadge,
     type InvocationRecord,
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
@@ -24,6 +27,11 @@ import { getEnv } from '../../../runtime/env';
 import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
+import {
+  useParcelBoundary,
+  useParcelLayers,
+  type AtlasGisSource,
+} from '../../../hooks/useAtlasGis';
 
 /** Available map layers */
 const MAP_LAYERS = [
@@ -202,7 +210,7 @@ function ParcelMapVisualization({
 
       {/* Preview disclaimer */}
       <p className="tf-text-dim text-xs mt-1 text-center italic">
-        Live layer availability preview — full GIS geometry is not yet available on this route
+        Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches until full GIS geometry ships on this route
       </p>
 
       {/* Map info bar */}
@@ -213,6 +221,13 @@ function ParcelMapVisualization({
         {result.centroid && (
           <span className='text-white/50 font-mono'>
             {result.centroid.lat.toFixed(4)}°N, {Math.abs(result.centroid.lng).toFixed(4)}°W
+            <span
+              data-testid="atlas-centroid-disclosure"
+              className="ml-1 text-white/30"
+              style={{ fontSize: 9 }}
+            >
+              (preview centroid)
+            </span>
           </span>
         )}
         <span className='text-white/50'>
@@ -224,10 +239,35 @@ function ParcelMapVisualization({
 }
 
 /* ------------------------------------------------------------------ */
+/*  Helper: map AtlasGisSource → WorkbenchSourceBadge DisclosureSource */
+/* ------------------------------------------------------------------ */
+
+function gisSourceToDisclosure(
+  boundarySource: AtlasGisSource,
+  layersSource: AtlasGisSource,
+  querySuccess: boolean,
+): 'live' | 'partial' | 'fallback' | 'unavailable' {
+  // If the interactive query succeeded, that path was already 'live'
+  if (querySuccess) {
+    // Overlay with GIS endpoint info
+    if (boundarySource === 'pacs' || layersSource === 'pacs') return 'live';
+    return 'live';
+  }
+  if (boundarySource === 'pacs' && layersSource === 'pacs') return 'live';
+  if (boundarySource === 'pacs' || layersSource === 'pacs') return 'partial';
+  if (boundarySource === 'fallback' || layersSource === 'fallback') return 'fallback';
+  return 'unavailable';
+}
+
+/* ------------------------------------------------------------------ */
 
 export const PropertyAtlas: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
+
+  // Live GIS hooks
+  const boundary = useParcelBoundary(parcelId);
+  const layers = useParcelLayers(parcelId);
 
   const [selectedLayers, setSelectedLayers] = useState<Set<LayerId>>(new Set());
   const [queryState, setQueryState] = useState<QueryState>({ status: 'idle' });
@@ -363,8 +403,15 @@ export const PropertyAtlas: React.FC = () => {
       ? getLayerCards(queryState.result)
       : [];
 
+  // Compute overall data source for the badge
+  const badgeSource = gisSourceToDisclosure(
+    boundary.source,
+    layers.source,
+    queryState.status === 'success',
+  );
+
   return (
-    <div className='tf-suite-atlas space-y-6' data-testid='property-atlas-tab'>
+    <div className='tf-suite-atlas space-y-4' data-testid='property-atlas-tab'>
       {/* Header */}
       <ParcelContextHeader
         icon='🗺️'
@@ -375,7 +422,15 @@ export const PropertyAtlas: React.FC = () => {
 
       {/* Parcel Context from Store */}
       {activeParcel && (
-        <BentoGrid columns={4} gap={0.75} padding={0}>
+        <div>
+          <p
+            data-testid="atlas-parcel-context-source"
+            className="text-xs mb-1"
+            style={{ color: 'hsl(215 16% 47%)' }}
+          >
+            Parcel context returned from property store (PACS mirror)
+          </p>
+          <BentoGrid columns="auto" gap={0.75} padding={0}>
           <BentoCard variant="stat" title="Address">
             <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
               {activeParcel.address || '—'}
@@ -401,11 +456,114 @@ export const PropertyAtlas: React.FC = () => {
               {activeParcel.landUseDescription || activeParcel.propertyType || '—'}
             </p>
           </BentoCard>
-        </BentoGrid>
+          </BentoGrid>
+        </div>
+      )}
+
+      {/* ── Live GIS Boundary Data ──────────────────────────── */}
+      {boundary.source === 'pacs' && boundary.data && (
+        <div data-testid="atlas-gis-boundary">
+          <p className="text-xs mb-1" style={{ color: 'hsl(142 76% 36%)' }}>
+            Boundary data from PACS (source: {boundary.data.source})
+          </p>
+          <BentoGrid columns="auto" gap={0.75} padding={0}>
+            <BentoCard variant="stat" title="Situs">
+              <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                {boundary.data.situsDisplay || '—'}
+              </p>
+            </BentoCard>
+            <BentoCard variant="stat" title="Area">
+              <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                {boundary.data.areaAcres != null
+                  ? `${boundary.data.areaAcres.toFixed(2)} ac`
+                  : boundary.data.areaSqFt != null
+                    ? `${boundary.data.areaSqFt.toLocaleString()} sq ft`
+                    : '—'}
+              </p>
+            </BentoCard>
+            <BentoCard variant="stat" title="Lot Dimensions">
+              <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                {boundary.data.dimensions?.effectiveFront && boundary.data.dimensions?.effectiveDepth
+                  ? `${boundary.data.dimensions.effectiveFront}' x ${boundary.data.dimensions.effectiveDepth}'`
+                  : boundary.data.dimensions?.frontFeet && boundary.data.dimensions?.depthFeet
+                    ? `${boundary.data.dimensions.frontFeet}' x ${boundary.data.dimensions.depthFeet}'`
+                    : '—'}
+              </p>
+            </BentoCard>
+            {boundary.data.centroid && (
+              <BentoCard variant="stat" title="Centroid">
+                <p className="text-sm font-mono" style={{ color: 'hsl(var(--tf-text))' }}>
+                  {boundary.data.centroid.lat.toFixed(6)}, {boundary.data.centroid.lng.toFixed(6)}
+                </p>
+                <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                  derived from: {boundary.data.centroid.derivedFrom}
+                </p>
+              </BentoCard>
+            )}
+          </BentoGrid>
+        </div>
+      )}
+
+      {/* ── Live GIS Layer Data ─────────────────────────────── */}
+      {layers.source === 'pacs' && layers.data && (
+        <div data-testid="atlas-gis-layers">
+          <p className="text-xs mb-1" style={{ color: 'hsl(142 76% 36%)' }}>
+            Layer overlays from PACS (source: {layers.data.source})
+          </p>
+          <BentoGrid columns="auto" gap={0.75} padding={0}>
+            {layers.data.zoning && (
+              <BentoCard variant="stat" title="Zoning" data-testid="gis-layer-zoning">
+                <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                  {layers.data.zoning.zoneCode || layers.data.zoning.characteristicZoning1 || '—'}
+                </p>
+                {layers.data.zoning.description && (
+                  <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                    {layers.data.zoning.description}
+                  </p>
+                )}
+              </BentoCard>
+            )}
+            {layers.data.flood && (
+              <BentoCard variant="stat" title="Flood Zone" data-testid="gis-layer-flood">
+                <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                  {layers.data.flood.zone}
+                </p>
+                <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                  Risk: {layers.data.flood.risk} (source: {layers.data.flood.source})
+                </p>
+              </BentoCard>
+            )}
+            {layers.data.taxArea && (
+              <BentoCard variant="stat" title="Tax Area" data-testid="gis-layer-taxarea">
+                <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                  {layers.data.taxArea.taxAreaNumber || '—'}
+                </p>
+                {layers.data.taxArea.taxAreaDescription && (
+                  <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                    {layers.data.taxArea.taxAreaDescription}
+                  </p>
+                )}
+              </BentoCard>
+            )}
+            {layers.data.landClass && (
+              <BentoCard variant="stat" title="Land Classification" data-testid="gis-layer-landclass">
+                <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
+                  {layers.data.landClass.landClassCode || layers.data.landClass.landTypeCode || '—'}
+                </p>
+                {layers.data.landClass.primaryUseCd && (
+                  <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                    Use: {layers.data.landClass.primaryUseCd}
+                    {layers.data.landClass.subUseCd ? ` / ${layers.data.landClass.subUseCd}` : ''}
+                  </p>
+                )}
+              </BentoCard>
+            )}
+          </BentoGrid>
+        </div>
       )}
 
       {/* Main Content Grid */}
-      <BentoGrid columns={3} gap={1.5} padding={0}>
+      <BentoGrid columns="auto" gap={1.5} padding={0}>
         {/* Layer Controls */}
         <BentoCard variant="form" title="Map Layers" actions={<span>📚</span>}>
 
@@ -443,6 +601,20 @@ export const PropertyAtlas: React.FC = () => {
 
         {/* Map Container */}
         <BentoCard span="2x1" variant="map">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs tf-text-muted">Layer data</span>
+            <WorkbenchSourceBadge
+              source={badgeSource}
+            />
+          </div>
+          <p
+            data-testid="atlas-geometry-disclosure"
+            style={{ fontSize: 11, color: 'hsl(215 16% 47%)', marginBottom: 6 }}
+          >
+            {boundary.source === 'pacs'
+              ? 'Boundary info from PACS — SVG preview, not full GIS geometry'
+              : 'Layer preview — full GIS geometry not yet available on this route'}
+          </p>
           <div
             data-testid='map-container'
             className='aspect-video relative overflow-hidden'
@@ -474,6 +646,13 @@ export const PropertyAtlas: React.FC = () => {
           <div className='flex items-center justify-between mb-3'>
             <h4 className='font-semibold flex items-center gap-2' style={{ color: 'hsl(var(--tf-success))' }}>
               <span>✅</span> Query Results
+              <span
+                data-testid="atlas-results-source"
+                className="font-normal text-xs"
+                style={{ color: 'hsl(215 16% 47%)' }}
+              >
+                — returned from query_parcel_layers
+              </span>
             </h4>
             {queryState.correlationId && (
               <div className='flex items-center gap-2 text-xs'>
@@ -518,7 +697,7 @@ export const PropertyAtlas: React.FC = () => {
 
           {queryState.result.geometryAvailable === false && (
             <div className='mt-4 tf-panel p-3 text-sm tf-text-tertiary'>
-              Live Atlas layer truth is available, but parcel geometry, centroid, and zoning detail remain deferred until the fuller GIS surface ships.
+              Atlas layer availability is confirmed for this parcel, but the boundary and centroid shown on this route are preview sketches. Full GIS geometry and route-level spatial detail remain deferred until the fuller Atlas surface ships.
             </div>
           )}
 
@@ -544,6 +723,18 @@ export const PropertyAtlas: React.FC = () => {
             correlationId: queryState.correlationId,
           }}
         />
+      )}
+
+      {/* GIS endpoint errors (non-blocking) */}
+      {boundary.error && (
+        <div className="text-xs tf-text-muted p-2" data-testid="atlas-boundary-error">
+          Boundary endpoint: {boundary.error}
+        </div>
+      )}
+      {layers.error && (
+        <div className="text-xs tf-text-muted p-2" data-testid="atlas-layers-error">
+          Layers endpoint: {layers.error}
+        </div>
       )}
 
       {/* Query History */}

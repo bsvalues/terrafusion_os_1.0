@@ -427,7 +427,7 @@ jobs:
           # Check 2: Legacy frontend
           echo ""
           echo "📋 Check: Legacy frontend..."
-          LEGACY=$(echo "$CHANGED" | grep -E '^frontend/' | grep -v -E '^frontend-v2/|^frontend/apps/os-shell/|^frontend/electron/|^frontend/__mocks__/|^frontend/scripts/|^frontend/package\.json$|^frontend/vitest\.config\.ts$|^frontend/vite\.config\.ts$|^frontend/jest\.config\.cjs$|^frontend/jest-import-meta-transformer\.cjs$|^frontend/lighthouserc\.cjs$|^frontend/Dockerfile$|^frontend/nginx\.conf$|^frontend/pnpm-lock\.yaml$|^frontend/\.dockerignore$|^frontend/\.eslintrc\.(cjs|json|js)$|^frontend/tsconfig(\..+)?\.json$|^frontend/\.env' || true)
+          LEGACY=$(echo "$CHANGED" | grep -E '^frontend/' | grep -v -E '^frontend-v2/|^frontend/apps/os-shell/|^frontend/electron/|^frontend/__mocks__/|^frontend/scripts/|^frontend/package\.json$|^frontend/vitest\.config\.ts$|^frontend/vite\.config\.ts$|^frontend/jest\.config\.cjs$|^frontend/jest-import-meta-transformer\.cjs$|^frontend/lighthouserc\.cjs$|^frontend/Dockerfile$|^frontend/nginx\.conf$|^frontend/pnpm-lock\.yaml$|^frontend/\.dockerignore$|^frontend/\.eslintrc\.(cjs|json|js)$|^frontend/tsconfig(\..+)?\.json$|^frontend/\.env$|^frontend/setupTests\.vitest\.ts$' || true)
           if [ -n "$LEGACY" ]; then
             echo "::error::Legacy frontend modified (use frontend-v2/ or frontend/apps/os-shell/ instead)"
             echo "$LEGACY" | while read -r f; do echo "  ❌ $f"; done
@@ -565,8 +565,14 @@ jobs:
         run: node scripts/governance/workflow-inventory.mjs --check
         continue-on-error: true
 
+      - name: Deployment truth gate (63 specs)
+        id: deployment-truth-gate
+        shell: bash
+        run: node --test tests/deployment-truth-gate.test.mjs
+        continue-on-error: true
+
       - name: Governance test escape hatch (expires 2026-06-30)
-        if: steps.quarantine-tests.outcome == 'failure' || steps.phase83-tests.outcome == 'failure' || steps.write-lane-tests.outcome == 'failure' || steps.workbench-tests.outcome == 'failure' || steps.workflow-tests.outcome == 'failure' || steps.inventory-tests.outcome == 'failure' || steps.inventory-snapshot.outcome == 'failure'
+        if: steps.quarantine-tests.outcome == 'failure' || steps.phase83-tests.outcome == 'failure' || steps.write-lane-tests.outcome == 'failure' || steps.workbench-tests.outcome == 'failure' || steps.workflow-tests.outcome == 'failure' || steps.inventory-tests.outcome == 'failure' || steps.inventory-snapshot.outcome == 'failure' || steps.deployment-truth-gate.outcome == 'failure'
         shell: bash
         run: |
           set -euo pipefail

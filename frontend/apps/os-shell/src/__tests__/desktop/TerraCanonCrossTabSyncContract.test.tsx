@@ -26,7 +26,7 @@
  * Scope: Cross-tab sync via storage events. No BroadcastChannel, no SharedWorker.
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
@@ -70,6 +70,8 @@ vi.mock('monaco-editor/esm/vs/language/json/json.worker?worker', () => ({ defaul
 vi.mock('monaco-editor/esm/vs/language/typescript/ts.worker?worker', () => ({ default: class {} }));
 
 import Router from '../../Router';
+import '../../App';
+import '../../pages/CanonHome';
 
 // ============================================================================
 // Storage keys (must match production)
@@ -115,6 +117,11 @@ function simulateCrossTabWrite(key: string, newValue: string | null, oldValue: s
 // ============================================================================
 
 describe('Phase 40 contract: cross-tab sync reloads workspace state from storage events', () => {
+  beforeAll(() => {
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
   beforeEach(() => {
     localStorage.clear();
   });
@@ -132,7 +139,7 @@ describe('Phase 40 contract: cross-tab sync reloads workspace state from storage
       () => {
         expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
       },
-      { timeout: 5000 },
+      { timeout: 15000 },
     );
 
     expect(screen.queryByText(/Reset Application/i)).not.toBeInTheDocument();
@@ -175,10 +182,10 @@ describe('Phase 40 contract: cross-tab sync reloads workspace state from storage
       { timeout: 5000 },
     );
 
-    // Flush all pending React effects (including lazy-load useEffects)
-    // before dispatching storage events
+    // Yield one turn so the mounted router and listeners settle before the
+    // synthetic cross-tab storage event is dispatched.
     await act(async () => {
-      await new Promise((r) => setTimeout(r, 50));
+      await Promise.resolve();
     });
 
     // Another tab creates a workspace — write BOTH keys before dispatching

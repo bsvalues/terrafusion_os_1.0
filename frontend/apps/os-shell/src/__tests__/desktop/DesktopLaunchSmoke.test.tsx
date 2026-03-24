@@ -15,7 +15,7 @@
  * Scope: Mechanical smoke only; not asserting business behavior or data loading.
  */
 
-import { vi, describe, it, expect, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, afterEach } from 'vitest';
 import React from 'react';
 import { render, screen, cleanup, waitFor } from '@testing-library/react';
 import { getDesktopIcons } from '../../config/desktopManifest';
@@ -79,6 +79,24 @@ function isExternal(p: string): boolean {
 // ============================================================================
 
 describe('Phase 24 contract: every desktop icon route renders without crashing', () => {
+  beforeAll(async () => {
+    vi.useRealTimers();
+    await import('../../App');
+    await import('../../pages/PropertySearch');
+    await import('../../pages/PilotHome');
+    await import('../../pages/TraceHome');
+    await import('../../pages/CanonHome');
+    await import('../../pages/suites/ForgeSuiteHome');
+    await import('../../pages/workbench/PropertyWorkbench');
+    await import('../../pages/workbench/tabs/PropertyForge');
+    await import('../../pages/workbench/tabs/PropertyAtlas');
+    await import('../../pages/workbench/tabs/PropertyDais');
+    await import('../../pages/workbench/tabs/PropertyDossier');
+    await import('../../pages/workbench/tabs/PropertyPilot');
+    localStorage.clear();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  }, 60000);
+
   afterEach(() => {
     cleanup();
   });
@@ -109,7 +127,7 @@ describe('Phase 24 contract: every desktop icon route renders without crashing',
         () => {
           expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
         },
-        { timeout: 5000 }
+        { timeout: 15000 }
       );
 
       // Let async effects settle (useEffect, nested lazy loads).

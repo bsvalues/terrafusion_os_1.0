@@ -19,6 +19,7 @@ import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../ui/materials/BentoCard';
+import { WorkbenchSourceBadge } from '../../../components/workbench/WorkbenchSourceBadge';
 
 const fmt = (v: number) => (v ? `$${v.toLocaleString()}` : '—');
 const num = (v: number | undefined) => (v != null ? v.toLocaleString() : '—');
@@ -48,11 +49,13 @@ export const PropertySummary: React.FC = () => {
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const assessments = usePropertyStore((s) => s.assessments);
   const appeals = usePropertyStore((s) => s.appeals);
+  const valuationAssessmentYear = activeParcel?.assessmentYear;
+  const valuationSource = propertyData.source || 'Unknown';
 
   return (
-    <div className="space-y-6 p-1">
+    <div className="space-y-4 p-4">
       {/* Identity Grid */}
-      <BentoGrid columns={4} gap={0.75} padding={0}>
+      <BentoGrid columns="auto" gap={0.75} padding={0}>
         <BentoCard variant="stat" title="Parcel ID">
           <p className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
             {propertyData.parcelId}
@@ -85,9 +88,31 @@ export const PropertySummary: React.FC = () => {
         </BentoCard>
       </BentoGrid>
 
+      <BentoCard variant="table" title="Valuation Snapshot">
+        <p className="text-sm leading-relaxed" style={{ color: 'hsl(var(--tf-text) / 0.75)' }}>
+          Displayed values reflect the loaded parcel summary for assessment year {valuationAssessmentYear ?? 'unknown'}.
+          This route does not show a more precise as-of timestamp than that assessment year.
+          {' '}Source: {valuationSource}.
+        </p>
+      </BentoCard>
+
       {/* Valuation Breakdown */}
-      <BentoGrid columns={4} gap={0.75} padding={0}>
-        <BentoCard variant="stat" title="Market Value" promote>
+      <BentoGrid columns="auto" gap={0.75} padding={0}>
+        <BentoCard
+          variant="stat"
+          title="Market Value"
+          promote
+          actions={
+            <WorkbenchSourceBadge
+              source={
+                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                  ? 'live'
+                  : 'fallback'
+              }
+              className="ml-2"
+            />
+          }
+        >
           <p
             className="text-2xl font-bold"
             style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}
@@ -95,17 +120,57 @@ export const PropertySummary: React.FC = () => {
             {fmt(propertyData.marketValue)}
           </p>
         </BentoCard>
-        <BentoCard variant="stat" title="Assessed Value" promote>
+        <BentoCard
+          variant="stat"
+          title="Assessed Value"
+          promote
+          actions={
+            <WorkbenchSourceBadge
+              source={
+                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                  ? 'live'
+                  : 'fallback'
+              }
+              className="ml-2"
+            />
+          }
+        >
           <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-success))' }}>
             {fmt(propertyData.assessedValue)}
           </p>
         </BentoCard>
-        <BentoCard variant="stat" title="Land Value">
+        <BentoCard
+          variant="stat"
+          title="Land Value"
+          actions={
+            <WorkbenchSourceBadge
+              source={
+                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                  ? 'live'
+                  : 'fallback'
+              }
+              className="ml-2"
+            />
+          }
+        >
           <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-text))' }}>
             {fmt(propertyData.landValue)}
           </p>
         </BentoCard>
-        <BentoCard variant="stat" title="Improvement Value">
+        <BentoCard
+          variant="stat"
+          title="Improvement Value"
+          actions={
+            <WorkbenchSourceBadge
+              source={
+                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                  ? 'live'
+                  : 'fallback'
+              }
+              className="ml-2"
+            />
+          }
+        >
           <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-text))' }}>
             {fmt(propertyData.improvementValue)}
           </p>
@@ -114,7 +179,7 @@ export const PropertySummary: React.FC = () => {
 
       {/* Property Details — from full Property record */}
       {activeParcel && (
-        <BentoGrid columns={4} gap={0.75} padding={0}>
+        <BentoGrid columns="auto" gap={0.75} padding={0}>
           <BentoCard variant="stat" title="Year Built">
             <p className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
               {activeParcel.yearBuilt || '—'}
@@ -143,9 +208,22 @@ export const PropertySummary: React.FC = () => {
 
       {/* Status Flags + Exemptions */}
       {activeParcel && (activeParcel.hasActivePermits || activeParcel.hasAppeals || (activeParcel.exemptionAmount > 0)) && (
-        <BentoGrid columns={3} gap={0.75} padding={0}>
+        <BentoGrid columns="auto" gap={0.75} padding={0}>
           {activeParcel.exemptionAmount > 0 && (
-            <BentoCard variant="stat" title="Exemptions">
+            <BentoCard
+              variant="stat"
+              title="Exemptions"
+              actions={
+                <WorkbenchSourceBadge
+                  source={
+                    propertyData?.source === 'live' || propertyData?.source === 'polled'
+                      ? 'live'
+                      : 'fallback'
+                  }
+                  className="ml-2"
+                />
+              }
+            >
               <p className="text-lg font-bold" style={{ color: 'hsl(var(--tf-warning, 45 90% 55%))' }}>
                 {fmt(activeParcel.exemptionAmount)}
               </p>
@@ -157,16 +235,22 @@ export const PropertySummary: React.FC = () => {
             </BentoCard>
           )}
           {activeParcel.hasAppeals && (
-            <BentoCard variant="stat" title="Active Appeals">
+            <BentoCard variant="stat" title="Loaded Appeals">
               <p className="text-lg font-bold" style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}>
                 {appeals.length} appeal{appeals.length !== 1 ? 's' : ''}
+              </p>
+              <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                Shown from the appeal records currently loaded for this parcel.
               </p>
             </BentoCard>
           )}
           {activeParcel.hasActivePermits && (
             <BentoCard variant="stat" title="Permits">
               <p className="text-lg font-bold" style={{ color: 'hsl(var(--tf-info, 200 80% 60%))' }}>
-                Active permits on file
+                Loaded parcel is marked with active permits.
+              </p>
+              <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+                Shown from the parcel summary currently loaded for this parcel.
               </p>
             </BentoCard>
           )}
@@ -175,7 +259,20 @@ export const PropertySummary: React.FC = () => {
 
       {/* Assessment History — from eagerly loaded store data */}
       {assessments.length > 0 && (
-        <BentoCard variant="table" title="Assessment History">
+        <BentoCard
+          variant="table"
+          title="Assessment History"
+          actions={
+            <WorkbenchSourceBadge
+              source={
+                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                  ? 'live'
+                  : 'fallback'
+              }
+              className="ml-2"
+            />
+          }
+        >
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
               <thead>
@@ -209,7 +306,7 @@ export const PropertySummary: React.FC = () => {
       )}
 
       {/* Legal Description + Quick Actions */}
-      <BentoGrid columns={2} gap={0.75} padding={0}>
+      <BentoGrid columns="auto" gap={0.75} padding={0}>
         {propertyData.legalDescription && (
           <BentoCard variant="table" title="Legal Description">
             <p
@@ -271,13 +368,26 @@ export const PropertySummary: React.FC = () => {
 
       {/* Sale History — if available */}
       {activeParcel?.lastSaleDate && (
-        <BentoGrid columns={2} gap={0.75} padding={0}>
+        <BentoGrid columns="auto" gap={0.75} padding={0}>
           <BentoCard variant="stat" title="Last Sale Date">
             <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
               {new Date(activeParcel.lastSaleDate).toLocaleDateString()}
             </p>
           </BentoCard>
-          <BentoCard variant="stat" title="Last Sale Price">
+          <BentoCard
+            variant="stat"
+            title="Last Sale Price"
+            actions={
+              <WorkbenchSourceBadge
+                source={
+                  propertyData?.source === 'live' || propertyData?.source === 'polled'
+                    ? 'live'
+                    : 'fallback'
+                }
+                className="ml-2"
+              />
+            }
+          >
             <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
               {activeParcel.lastSalePrice ? fmt(activeParcel.lastSalePrice) : '—'}
             </p>

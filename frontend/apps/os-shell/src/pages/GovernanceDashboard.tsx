@@ -292,7 +292,7 @@ export function GovernanceDashboard(): React.ReactElement {
         <div className='flex justify-between items-center mb-8'>
           <div>
             <h1 className='text-2xl font-bold text-cyan-400 mb-1'>GovernanceLock Dashboard</h1>
-            <p className='text-slate-400 text-sm'>Real-time metrics • County-scoped • Phase 7.4</p>
+            <p className='text-slate-400 text-sm'>Auto-refresh metrics (30s poll) • County-scoped • Phase 7.4</p>
           </div>
           <div className='flex gap-4 items-center'>
             {/* Time window selector */}
@@ -484,7 +484,7 @@ export function GovernanceDashboard(): React.ReactElement {
         {/* Footer */}
         <div className='mt-12 pt-6 border-t border-slate-800 text-center text-slate-500 text-xs'>
           <p>
-            TerraFusion GovernanceLock • Phase 7.4 • Real-Time Metrics
+            TerraFusion GovernanceLock • Phase 7.4 • Auto-Refresh Metrics (30s Poll)
             {summary && (
               <span className='ml-2'>
                 • Last updated: {new Date(summary.timestamp).toLocaleString()}

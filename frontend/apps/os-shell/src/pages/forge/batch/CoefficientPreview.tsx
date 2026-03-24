@@ -16,6 +16,7 @@ import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 
 // ---------------------------------------------------------------------------
 // 1E: Apply-mode types & audit event emitter
@@ -51,7 +52,6 @@ function emitAuditEvent(
     timestamp: new Date().toISOString(),
   };
   // eslint-disable-next-line no-console
-  console.info('[TerraTrace] CoefficientPreview audit event:', evt);
   return evt;
 }
 
@@ -93,16 +93,16 @@ interface PreviewResult {
 }
 
 const FIXTURE_MODELS = [
-  { id: 'mdl-prod-2024', name: 'Residential OLS 2024 (Production)' },
-  { id: 'mdl-cand-2025a', name: 'Residential OLS 2025a (Candidate)' },
-  { id: 'mdl-cand-2025b', name: 'Residential OLS 2025b (Alt Candidate)' },
+  { id: 'mdl-prod-2024', name: 'Residential OLS 2024 (Fixture Baseline)' },
+  { id: 'mdl-cand-2025a', name: 'Residential OLS 2025a (Fixture Candidate)' },
+  { id: 'mdl-cand-2025b', name: 'Residential OLS 2025b (Alt Fixture Candidate)' },
 ];
 
 const FIXTURE_PREVIEW: PreviewResult = {
   sourceModelId: 'mdl-prod-2024',
-  sourceModelName: 'Residential OLS 2024 (Production)',
+  sourceModelName: 'Residential OLS 2024 (Fixture Baseline)',
   candidateModelId: 'mdl-cand-2025a',
-  candidateModelName: 'Residential OLS 2025a (Candidate)',
+  candidateModelName: 'Residential OLS 2025a (Fixture Candidate)',
   deltas: [
     { variable: 'Living Area (sqft)', currentValue: 48.32, proposedValue: 51.07, delta: 2.75, deltaPct: 5.69 },
     { variable: 'Lot Size (acres)', currentValue: 12400, proposedValue: 11800, delta: -600, deltaPct: -4.84 },
@@ -185,6 +185,7 @@ export function CoefficientPreview() {
 
   return (
     <div data-testid="coefficient-preview" className="space-y-4 p-4">
+      <DemoDataBanner module="Coefficient Preview" />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-fg))' }}>Coefficient Application Preview</h1>
         <Badge variant="outline">Preview Only</Badge>
@@ -196,7 +197,7 @@ export function CoefficientPreview() {
         <CardContent className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Current (Production)</label>
+              <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Current (Fixture Baseline)</label>
               <select
                 data-testid="coeff-source-select"
                 value={sourceId}
@@ -210,7 +211,7 @@ export function CoefficientPreview() {
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Proposed (Candidate)</label>
+              <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Proposed (Fixture Candidate)</label>
               <select
                 data-testid="coeff-candidate-select"
                 value={candidateId}
@@ -259,7 +260,7 @@ export function CoefficientPreview() {
               }}>
                 {applyMode === 'preview_only' && 'Mode: Preview Only — coefficients NOT applied'}
                 {applyMode === 'apply_pending_backend' && 'Mode: Apply Blocked — backend capability not available. Request recorded.'}
-                {applyMode === 'apply_executed' && 'Mode: Applied — coefficients committed to production model'}
+                {applyMode === 'apply_executed' && 'Mode: Applied — coefficients committed to target model'}
               </div>
             </div>
           )}

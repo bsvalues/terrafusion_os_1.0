@@ -23,7 +23,7 @@ export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ classNam
         setDataSource(response.source);
       }
     } catch (error) {
-      console.info('📊 Government AI: Loading elite metrics');
+      // Error silently handled
     } finally {
       setLoading(false);
     }

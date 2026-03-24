@@ -2,6 +2,24 @@
 
 This checklist tracks the post-go-live operating phases after the Benton Hostinger snapshot runtime reached Phase 17 `GO`.
 
+## Current Live Blocker Tracking
+
+Current traffic-opening blocker:
+
+- `SRE-O1-OPS` remains open until the execution surface is verified and the authorized pager/on-call drill is executed and evidenced truthfully.
+
+Operator execution artifact:
+
+- `os-platform/core/pilot/ops/cp17-sre-o1-ops-operator-checklist-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-ops-closure-delta-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-ops-next-attempt-inputs-2026-03-20.md`
+
+Authority chain:
+
+- `os-platform/core/pilot/ops/post-phase25-release-authorization-packet-2026-03-19.md`
+- `os-platform/core/pilot/ops/sre-o1-ops-status-2026-03-20.md`
+- `os-platform/core/pilot/ops/sre-o1-pager-oncall-evidence-path-2026-03-20.md`
+
 ## Phase 18 -- PACS-Connected Runtime Productization
 Status: COMPLETE (`GO`)
 
@@ -27,7 +45,7 @@ Completed:
 - current automation mode is parity-confirmed no-replace promotion when the deployed runtimes already match the stable Benton contract
 
 ## Phase 20 -- Benton Acceptance / UAT Packet
-Status: READY_FOR_SIGNOFF
+Status: COMPLETE (GO) — 2026-03-19
 
 Exit target:
 - assessor-facing Benton scenarios are signed off as operator-acceptable, not just technically proven
@@ -35,37 +53,59 @@ Exit target:
 Proof:
 - `pnpm run proof:phase20`
 - [phase20-benton-acceptance-uat.latest.json](../evidence/phase20-benton-acceptance-uat.latest.json)
+- [phase20-assessor-signoff.json](../evidence/phase20-assessor-signoff.json)
 
 Current truth:
-- the technical Benton UAT packet is automated and reproducible from the current Phase 17 and Phase 19 baselines
-- final `GO` still requires an explicit assessor/operator signoff artifact; the packet will not fake that acceptance
+- Bill Spencer, Benton County Assessor, signed off 2026-03-19
+- All 9 UAT scenarios accepted; all 7 known PACS data limitations accepted
+- Packet decision: GO (commit cf8556334)
+- Code lane: SEALED — SRE / launch readiness lane now active
 
 ## Phase 21 -- Continuous Observability
-Status: PENDING
+Status: COMPLETE (GO) — 2026-03-19
+
+Proof:
+- [phase21-continuous-observability.latest.json](../evidence/phase21-continuous-observability.latest.json)
 
 Exit target:
 - freshness, release identity, stale snapshot drift, and recovery posture are monitored continuously
 
 ## Phase 22 -- Security / Credential / Access Hardening
-Status: PENDING
+Status: COMPLETE (GO) — 2026-03-19
+
+Proof:
+- [phase22-multi-county-tenant-isolation.latest.json](../evidence/phase22-multi-county-tenant-isolation.latest.json)
+- `os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md`
 
 Exit target:
 - credentials, promotion authority, and environment access are intentionally hardened and rotated
 
+Current truth:
+- SEC-005-ROTATE (JWT key rotation) = COMPLETE — closed 2026-03-20 on the live Hostinger runtime path; see `os-platform/core/pilot/ops/sec-005-jwt-rotation-verification-2026-03-20.md`
+
 ## Phase 23 -- Frontend Operator Maturity
-Status: PENDING
+Status: COMPLETE (GO) — 2026-03-19
+
+Proof:
+- [phase23-ai-swarm-production-readiness.latest.json](../evidence/phase23-ai-swarm-production-readiness.latest.json)
 
 Exit target:
 - active operator UI surfaces no longer carry misleading preview or local-only leftovers
 
 ## Phase 24 -- Optional PACS Continuity Write-Back
-Status: PENDING
+Status: COMPLETE (GO) — 2026-03-19
+
+Proof:
+- [phase24-suite-integration-completeness.latest.json](../evidence/phase24-suite-integration-completeness.latest.json)
 
 Exit target:
 - PACS write-back is either explicitly rejected or implemented as a separate auditable feature, off by default
 
 ## Phase 25 -- County Replication Model
-Status: PENDING
+Status: COMPLETE (GO) — 2026-03-19
+
+Proof:
+- [phase25-county-replication-readiness.latest.json](../evidence/phase25-county-replication-readiness.latest.json)
 
 Exit target:
 - Benton becomes the first repeatable county template with a transferable conversion and accreditation pattern

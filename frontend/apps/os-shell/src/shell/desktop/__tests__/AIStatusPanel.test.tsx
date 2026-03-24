@@ -37,6 +37,7 @@ const mockAIStatus = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.clearAllTimers(); // prevent 100ms click-outside timer leaks from prior tests
 });
 
 afterEach(() => {
@@ -88,12 +89,16 @@ describe('AIStatusIndicator', () => {
     });
 
     it('closes panel on second click', async () => {
+      // Use delay:null so both clicks are instantaneous — prevents the
+      // AIStatusPanel 100ms click-outside debounce timer from firing
+      // between clicks when running under shouldAdvanceTime fake timers.
+      const user = userEvent.setup({ delay: null });
       render(<AIStatusIndicator status={mockAIStatus} />);
 
-      await userEvent.click(screen.getByTestId('ai-status-indicator'));
+      await user.click(screen.getByTestId('ai-status-indicator'));
       expect(screen.getByTestId('ai-status-panel')).toBeInTheDocument();
 
-      await userEvent.click(screen.getByTestId('ai-status-indicator'));
+      await user.click(screen.getByTestId('ai-status-indicator'));
       expect(screen.queryByTestId('ai-status-panel')).not.toBeInTheDocument();
     });
 

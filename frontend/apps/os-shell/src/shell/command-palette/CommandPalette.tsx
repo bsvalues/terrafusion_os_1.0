@@ -104,24 +104,30 @@ function useCommandRegistry(): CommandItem[] {
       },
       {
         id: 'costforge',
-        label: 'CostForge',
+        label: 'TerraForge Legacy',
         iconName: 'Calculator',
         iconVariant: 'tax' as TerraSphereIconVariant,
-        keywords: ['cost', 'property', 'assessment'],
+        description: 'Launch the legacy CostForge valuation panel',
+        keywords: ['terraforge', 'costforge', 'legacy', 'cost', 'property', 'assessment'],
+        shortcutTerms: ['costforge', 'terraforge'],
       },
       {
         id: 'terra-gaia',
-        label: 'TerraGaia',
+        label: 'TerraGPT Legacy',
         iconName: 'Globe',
         iconVariant: 'mapping' as TerraSphereIconVariant,
-        keywords: ['earth', 'gis', 'map', 'geo'],
+        description: 'Launch the legacy TerraGaia assistant panel',
+        keywords: ['terragpt', 'terragaia', 'legacy', 'earth', 'gis', 'map', 'geo', 'assistant'],
+        shortcutTerms: ['terragaia', 'terragpt'],
       },
       {
         id: 'atlas-ai',
-        label: 'ATLAS AI',
+        label: 'TerraAtlas Legacy AI',
         iconName: 'Brain',
         iconVariant: 'ai' as TerraSphereIconVariant,
-        keywords: ['ai', 'assistant', 'intelligence'],
+        description: 'Launch the legacy ATLAS AI assistant panel',
+        keywords: ['terraatlas', 'atlas ai', 'atlas', 'legacy', 'ai', 'assistant', 'intelligence'],
+        shortcutTerms: ['atlas ai', 'terraatlas'],
       },
       {
         id: 'reporting',
@@ -175,14 +181,15 @@ function useCommandRegistry(): CommandItem[] {
     ];
 
     modules.forEach((mod) => {
+      const shortcutTerms = mod.shortcutTerms ?? [mod.label.toLowerCase().split(' ')[0]];
       const shortcut = keyboardShortcuts.find(
-        (s) => s.action.toLowerCase().includes(mod.label.toLowerCase().split(' ')[0])
+        (s) => shortcutTerms.some((term) => s.action.toLowerCase().includes(term))
       );
 
       commands.push({
         id: `module:${mod.id}`,
         label: `Open ${mod.label}`,
-        description: `Launch the ${mod.label} module`,
+        description: mod.description ?? `Launch the ${mod.label} module`,
         iconName: mod.iconName,
         iconVariant: mod.iconVariant,
         category: 'modules',

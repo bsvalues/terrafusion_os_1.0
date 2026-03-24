@@ -16,9 +16,10 @@
 
 import '@testing-library/jest-dom';
 import React, { Suspense } from 'react';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { vi, describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // ---------------------------------------------------------------------------
 // Mocks — pilotApi (all tab components that invoke tools)
@@ -26,7 +27,8 @@ import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom';
 
 vi.mock('../../api/pilotApi', () => ({
   invokeTool: vi.fn().mockResolvedValue({ success: true, data: {} }),
-  listPilotTools: vi.fn().mockResolvedValue([]),
+  listPilotTools: vi.fn().mockResolvedValue({ count: 0, tools: [] }),
+  filterMuseReadOnlyTools: (tools: unknown[]) => tools,
 }));
 
 // ---------------------------------------------------------------------------
@@ -87,7 +89,7 @@ vi.mock('../../hooks/useToolInvocation', () => ({
 }));
 
 vi.mock('../../hooks/usePilotTraceList', () => ({
-  usePilotTraceList: () => ({ traces: [], loading: false }),
+  usePilotTraceList: () => ({ phase: 'ready', events: [], error: null, refresh: vi.fn() }),
 }));
 
 vi.mock('../../hooks/useEvidenceSnapshot', () => ({
@@ -208,6 +210,10 @@ vi.mock('../../components/workbench', () => ({
   ),
   InvocationHistory: () => <div data-testid="invocation-history" />,
   EvidenceSnapshotPanel: () => <div data-testid="evidence-snapshot-panel" />,
+  // WorkbenchSourceBadge added in Round A honesty pass — mock must include it
+  WorkbenchSourceBadge: ({ source }: any) => (
+    <span data-testid="workbench-source-badge" data-source={source} />
+  ),
 }));
 
 vi.mock('../../components/errors/ErrorDisplay', () => ({
@@ -233,7 +239,9 @@ vi.mock('../../ui/materials/BentoCard', () => ({
 // ---------------------------------------------------------------------------
 
 function TabTestWrapper({ children, tabSlug }: { children: React.ReactNode; tabSlug: string }) {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return (
+    <QueryClientProvider client={qc}>
     <MemoryRouter initialEntries={[`/property/GATE-TEST-001/${tabSlug}`]}>
       <Routes>
         <Route
@@ -265,6 +273,7 @@ function TabTestWrapper({ children, tabSlug }: { children: React.ReactNode; tabS
         </Route>
       </Routes>
     </MemoryRouter>
+    </QueryClientProvider>
   );
 }
 
@@ -278,9 +287,7 @@ const LazyForge = React.lazy(() =>
 const LazyAtlas = React.lazy(() =>
   import('../../pages/workbench/tabs/PropertyAtlas').then((m) => ({ default: m.PropertyAtlas }))
 );
-const LazyDais = React.lazy(() =>
-  import('../../pages/workbench/tabs/PropertyDais').then((m) => ({ default: m.PropertyDais }))
-);
+const LazyDais = React.lazy(() => import('../../pages/workbench/tabs/PropertyDais'));
 const LazyDossier = React.lazy(() =>
   import('../../pages/workbench/tabs/PropertyDossier').then((m) => ({ default: m.PropertyDossier }))
 );
@@ -293,6 +300,16 @@ const LazyPilot = React.lazy(() =>
 // =========================================================================
 
 describe('Workbench Real Hosting Gate', () => {
+  beforeAll(async () => {
+    await Promise.all([
+      import('../../pages/workbench/tabs/PropertyForge'),
+      import('../../pages/workbench/tabs/PropertyAtlas'),
+      import('../../pages/workbench/tabs/PropertyDais'),
+      import('../../pages/workbench/tabs/PropertyDossier'),
+      import('../../pages/workbench/tabs/PropertyPilot'),
+    ]);
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -384,9 +401,9 @@ describe('Workbench Real Hosting Gate', () => {
         </TabTestWrapper>
       );
 
-      await waitFor(() => {
-        expect(screen.getByTestId('property-dais-tab')).toBeInTheDocument();
-      });
+      expect(
+        await screen.findByTestId('property-dais-tab', {}, { timeout: 5000 })
+      ).toBeInTheDocument();
 
       expect(screen.queryByTestId('placeholder-module')).not.toBeInTheDocument();
     });
@@ -400,9 +417,9 @@ describe('Workbench Real Hosting Gate', () => {
         </TabTestWrapper>
       );
 
-      await waitFor(() => {
-        expect(screen.getByTestId('property-dais-tab')).toBeInTheDocument();
-      });
+      expect(
+        await screen.findByTestId('property-dais-tab', {}, { timeout: 5000 })
+      ).toBeInTheDocument();
 
       // Dais has workflow type select + check status button + inputs
       const interactiveElements = [

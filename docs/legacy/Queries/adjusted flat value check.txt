@@ -1,0 +1,21 @@
+select
+	p1.[prop_id],
+	pv1.[cycle],
+	pv1.[hood_cd],
+	i1.[imprv_val_source],
+	ld1.[mkt_val_source]
+from dbo.imprv as i1 with(nolock)
+join dbo.land_detail as ld1 with(nolock) on
+	ld1.[prop_id] = i1.[prop_id] and
+	ld1.[prop_val_yr] = i1.[prop_val_yr] and
+	ld1.[sale_id] = i1.[sale_id] and
+	ld1.[sup_num] = i1.[sup_num]
+join dbo.property as p1 with(nolock) on
+	p1.[prop_id] = i1.[prop_id]
+join dbo.property_val as pv1 with(nolock) on
+	pv1.[prop_id] = i1.[prop_id] and
+	pv1.[prop_val_yr] = i1.[prop_val_yr] and
+	pv1.[sup_num] = i1.[sup_num]
+where
+	pv1.[prop_val_yr] = 2017 and
+	pv1.[prop_inactive_dt] is null

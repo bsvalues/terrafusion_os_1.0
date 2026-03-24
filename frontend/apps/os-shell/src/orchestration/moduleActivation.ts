@@ -26,6 +26,7 @@ import { useDesktopStore } from '../stores/desktopStore';
 import { useModuleLoaderStore } from '../stores/moduleLoaderStore';
 import { useNotificationStore } from '../stores/notificationStore';
 import { telemetry } from '../services/telemetry';
+import type { OsActor } from '../auth/useAuthContext';
 
 // ============================================================================
 // Types
@@ -62,6 +63,9 @@ export interface ActivateModuleOptions {
   
   /** Additional metadata for telemetry and deep link context */
   metadata?: Record<string, unknown>;
+
+  /** Wave 3: authenticated actor for audit trail. null = unauthenticated. */
+  actor?: OsActor | null;
 }
 
 // ============================================================================

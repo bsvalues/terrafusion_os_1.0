@@ -29,7 +29,7 @@ function getOriginMap(): Map<string, string> {
   originToModuleCache = new Map();
 
   for (const module of ALL_MODULES) {
-    const entry = (module as any).entry;
+    const entry = module.entry;
     if (!entry) continue;
 
     // Only URL-type entries have origins
@@ -39,7 +39,6 @@ function getOriginMap(): Map<string, string> {
         originToModuleCache.set(origin, module.id);
       } catch {
         // Invalid URL - skip
-        console.warn(`[ipc/originAllowlist] Invalid URL for module: ${module.id}`);
       }
     }
   }

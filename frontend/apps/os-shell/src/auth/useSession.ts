@@ -30,11 +30,14 @@ export function useSession(): TFSession {
       const raw = localStorage.getItem(SESSION_KEY);
       if (!raw) return FALLBACK;
       const parsed = JSON.parse(raw);
+      // Use trim-or-fallback for all string fields so empty-string values from
+      // corrupt or partially-written session objects never reach the header builder
+      // as empty strings (which assertCountyContext would reject, leaving x-county-id absent).
       return {
-        userId: parsed.userId ?? FALLBACK.userId,
-        countyId: parsed.countyId ?? FALLBACK.countyId,
-        role: parsed.role ?? FALLBACK.role,
-        mode: parsed.mode ?? FALLBACK.mode,
+        userId: parsed.userId?.trim() || FALLBACK.userId,
+        countyId: parsed.countyId?.trim() || FALLBACK.countyId,
+        role: parsed.role?.trim() || FALLBACK.role,
+        mode: parsed.mode?.trim() || FALLBACK.mode,
       };
     } catch {
       return FALLBACK;

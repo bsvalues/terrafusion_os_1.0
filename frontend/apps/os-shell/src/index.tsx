@@ -15,18 +15,7 @@ import { registerPWA } from './pwa';
 // Set VITE_FORCE_REDUCE_MOTION=1 to force reduced motion in development.
 if (import.meta.env.DEV && import.meta.env.VITE_FORCE_REDUCE_MOTION === '1') {
   document.documentElement.classList.add('reduce-motion-force');
-  console.log(
-    '%c[TerraFusion] Forced reduced motion enabled (VITE_FORCE_REDUCE_MOTION=1).',
-    'color: hsl(var(--tf-transcend-cyan-hs) 50%)'
-  );
 }
-
-// Console Badge for IT Admins
-console.log(
-  `%c TERRAFUSION OS v1.0 %c SOVEREIGNTY: ${import.meta.env.VITE_SOVEREIGN_DOMAIN || 'unknown'} `,
-  'background: var(--tf-bg-surface); color: var(--tf-transcend-highlight); padding: 4px; border-radius: 4px 0 0 4px;',
-  'background: var(--tf-transcend-highlight); color: var(--tf-void-black); padding: 4px; border-radius: 0 4px 4px 0;'
-);
 
 console.table(FEATURES); // Transparency for the operator
 

@@ -12,10 +12,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -117,18 +121,28 @@ public interface ICoPilotService
 
 public class CoPilotService : ICoPilotService
 {
+    private const string ConversationCachePrefix = "copilot:conversation:";
     private readonly Kernel _semanticKernel;
     private readonly IChatCompletionService _chatService;
     private readonly ICodeAnalysisService _analysisService;
+    private readonly IDistributedCache _conversationCache;
+    private readonly ILogger<CoPilotService> _logger;
+    private readonly TimeSpan _conversationHistoryTtl;
 
     public CoPilotService(
         Kernel semanticKernel,
         IChatCompletionService chatService,
-        ICodeAnalysisService analysisService)
+        ICodeAnalysisService analysisService,
+        IDistributedCache conversationCache,
+        IConfiguration configuration,
+        ILogger<CoPilotService> logger)
     {
         _semanticKernel = semanticKernel;
         _chatService = chatService;
         _analysisService = analysisService;
+        _conversationCache = conversationCache;
+        _logger = logger;
+        _conversationHistoryTtl = ResolveConversationHistoryTtl(configuration);
     }
 
     public async Task<List<CodeBlock>> GenerateCodeAsync(string prompt, GenerationContext context)
@@ -448,16 +462,143 @@ Return ONLY the modified code.";
 
     private async Task<ChatHistory> GetConversationHistoryAsync(string conversationId)
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
-        // TODO: Retrieve from database or Redis cache
-        return new ChatHistory();
+        if (string.IsNullOrWhiteSpace(conversationId))
+        {
+            return new ChatHistory();
+        }
+
+        try
+        {
+            var payload = await _conversationCache.GetAsync(BuildConversationCacheKey(conversationId));
+            if (payload is null || payload.Length == 0)
+            {
+                return new ChatHistory();
+            }
+
+            var storedHistory = JsonSerializer.Deserialize<StoredConversationHistory>(payload);
+            if (storedHistory?.Messages is null || storedHistory.Messages.Count == 0)
+            {
+                return new ChatHistory();
+            }
+
+            var history = new ChatHistory();
+            foreach (var message in storedHistory.Messages)
+            {
+                if (string.IsNullOrWhiteSpace(message.Content))
+                {
+                    continue;
+                }
+
+                switch (message.Role)
+                {
+                    case "system":
+                        history.AddSystemMessage(message.Content);
+                        break;
+                    case "assistant":
+                        history.AddAssistantMessage(message.Content);
+                        break;
+                    case "user":
+                        history.AddUserMessage(message.Content);
+                        break;
+                    default:
+                        history.AddMessage(new AuthorRole(message.Role), message.Content);
+                        break;
+                }
+            }
+
+            return history;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to restore CoPilot conversation history for {ConversationId}", conversationId);
+            return new ChatHistory();
+        }
     }
 
     private async Task SaveConversationHistoryAsync(string conversationId, ChatHistory history)
     {
-        // TODO: Save to database or Redis cache
-        await Task.CompletedTask;
+        if (string.IsNullOrWhiteSpace(conversationId))
+        {
+            return;
+        }
+
+        try
+        {
+            var payload = new StoredConversationHistory
+            {
+                SavedAtUtc = DateTimeOffset.UtcNow,
+                Messages = history
+                    .Select(message => new StoredConversationMessage
+                    {
+                        Role = NormalizeRole(message.Role),
+                        Content = message.Content ?? message.ToString() ?? string.Empty
+                    })
+                    .Where(message => !string.IsNullOrWhiteSpace(message.Content))
+                    .ToList()
+            };
+
+            var options = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = _conversationHistoryTtl
+            };
+
+            await _conversationCache.SetAsync(
+                BuildConversationCacheKey(conversationId),
+                JsonSerializer.SerializeToUtf8Bytes(payload),
+                options);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to persist CoPilot conversation history for {ConversationId}", conversationId);
+        }
+    }
+
+    private static TimeSpan ResolveConversationHistoryTtl(IConfiguration configuration)
+    {
+        var configuredHours = configuration.GetValue<double?>("CoPilot:ConversationHistoryTtlHours");
+        if (configuredHours.HasValue && configuredHours.Value > 0)
+        {
+            return TimeSpan.FromHours(configuredHours.Value);
+        }
+
+        return TimeSpan.FromHours(24);
+    }
+
+    private static string NormalizeRole(AuthorRole role)
+    {
+        if (role == AuthorRole.System)
+        {
+            return "system";
+        }
+
+        if (role == AuthorRole.Assistant)
+        {
+            return "assistant";
+        }
+
+        if (role == AuthorRole.User)
+        {
+            return "user";
+        }
+
+        return role.Label.ToLowerInvariant();
+    }
+
+    private static string BuildConversationCacheKey(string conversationId)
+        => $"{ConversationCachePrefix}{conversationId}";
+
+    private sealed class StoredConversationHistory
+    {
+        public DateTimeOffset SavedAtUtc { get; set; }
+
+        public List<StoredConversationMessage> Messages { get; set; } = new();
+    }
+
+    private sealed class StoredConversationMessage
+    {
+        public string Role { get; set; } = string.Empty;
+
+        public string Content { get; set; } = string.Empty;
     }
 }
 

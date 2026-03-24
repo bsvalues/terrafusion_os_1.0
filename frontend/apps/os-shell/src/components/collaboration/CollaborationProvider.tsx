@@ -176,10 +176,8 @@ export function CollaborationProvider({ children, hubUrl = '/hubs/collaboration'
       .start()
       .then(() => {
         setIsConnected(true);
-        console.log('Collaboration hub connected');
       })
       .catch((error) => {
-        console.error('Failed to connect to collaboration hub:', error);
       });
 
     return () => {
@@ -237,7 +235,6 @@ export function CollaborationProvider({ children, hubUrl = '/hubs/collaboration'
 
     // User joined
     connection.on('UserJoined', (data: { userId: string; userName: string }) => {
-      console.log(`User ${data.userName} joined the session`);
     });
 
     // User left
@@ -257,7 +254,6 @@ export function CollaborationProvider({ children, hubUrl = '/hubs/collaboration'
 
     // Receive notification
     connection.on('ReceiveNotification', (data: { type: string; message: string }) => {
-      console.log(`Notification [${data.type}]:`, data.message);
     });
   };
 
@@ -292,23 +288,16 @@ export function CollaborationProvider({ children, hubUrl = '/hubs/collaboration'
     async (newSessionId: string, user: User): Promise<void> => {
       if (!connectionRef.current) throw new Error('Not connected');
 
-      try {
-        const session = await connectionRef.current.invoke('JoinSession', newSessionId, {
-          userId: parseInt(user.userId),
-          userName: user.userName,
-          avatar: user.avatar,
-        });
+      const session = await connectionRef.current.invoke('JoinSession', newSessionId, {
+        userId: parseInt(user.userId),
+        userName: user.userName,
+        avatar: user.avatar,
+      });
 
-        setSessionId(newSessionId);
-        setCurrentUser(user);
-        setParticipants(session.participants || []);
-        setServerVersion(session.version || 0);
-
-        console.log(`Joined session ${newSessionId} with ${session.participants?.length || 0} participants`);
-      } catch (error) {
-        console.error('Failed to join session:', error);
-        throw error;
-      }
+      setSessionId(newSessionId);
+      setCurrentUser(user);
+      setParticipants(session.participants || []);
+      setServerVersion(session.version || 0);
     },
     []
   );
@@ -325,9 +314,7 @@ export function CollaborationProvider({ children, hubUrl = '/hubs/collaboration'
       setRemoteCursors([]);
       setPendingChanges([]);
 
-      console.log('Left session');
     } catch (error) {
-      console.error('Failed to leave session:', error);
     }
   }, [sessionId, currentUser]);
 
@@ -356,7 +343,6 @@ export function CollaborationProvider({ children, hubUrl = '/hubs/collaboration'
         // Clear sent changes from pending
         setPendingChanges((prev) => prev.slice(operations.length));
       } catch (error) {
-        console.error('Failed to sync changes:', error);
       }
     },
     [sessionId, currentUser, localVersion]
