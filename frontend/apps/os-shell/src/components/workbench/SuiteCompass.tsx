@@ -141,6 +141,16 @@ export const SuiteCompass: React.FC<SuiteCompassProps> = ({
 
   return (
     <>
+      {/*
+        Both desktop and tablet tablists are always in the DOM.
+        Only one is ever visible at a time:
+          desktop → "hidden lg:flex"  (display:none below lg breakpoint)
+          tablet  → "flex lg:hidden"  (display:none at lg and above)
+        display:none removes elements from the AT accessibility tree entirely
+        (NVDA, JAWS, VoiceOver all comply). No aria-hidden override needed.
+        Tablet button IDs use a "tablet-" prefix so DOM ids remain unique.
+      */}
+
       {/* Desktop: Vertical left rail */}
       <LiquidPanel
         variant="shell"

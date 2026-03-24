@@ -733,23 +733,42 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
               showAll={showAll}
               onToggleShowAll={toggleShowAll}
             />
-            <main
-              className="flex-1 overflow-auto"
-              id={`panel-${activeTab}`}
-              role="tabpanel"
-              aria-labelledby={`compass-tab-${activeTab}`}
-            >
-              {hostViolation ? (
-                <WorkbenchHostViolationNotice violation={hostViolation} />
-              ) : loading ? (
-                <TabLoader />
-              ) : (
-                <ErrorBoundary>
-                  <Suspense fallback={<TabLoader />}>
-                    <ActiveTabComponent />
-                  </Suspense>
-                </ErrorBoundary>
-              )}
+            {/*
+              Stable tabpanel containers — one per SuiteCompass entry.
+              All sections remain in the DOM so every aria-controls reference
+              on compass tab buttons always resolves to a real element.
+              Inactive panels use the HTML `hidden` attribute (display:none),
+              meaning AT skips them and they cost nothing in layout.
+              Content is only mounted when the tab is active (lazy).
+            */}
+            <main className="flex-1 overflow-auto">
+              {compassItems.map((compassItem) => {
+                const isActive = activeTab === compassItem.slug;
+                const TabComponent = TAB_COMPONENTS[compassItem.slug];
+                return (
+                  <section
+                    key={compassItem.slug}
+                    id={`panel-${compassItem.slug}`}
+                    role="tabpanel"
+                    aria-label={compassItem.label}
+                    hidden={!isActive}
+                  >
+                    {isActive && (
+                      hostViolation ? (
+                        <WorkbenchHostViolationNotice violation={hostViolation} />
+                      ) : loading ? (
+                        <TabLoader />
+                      ) : (
+                        <ErrorBoundary>
+                          <Suspense fallback={<TabLoader />}>
+                            <TabComponent />
+                          </Suspense>
+                        </ErrorBoundary>
+                      )
+                    )}
+                  </section>
+                );
+              })}
             </main>
           </div>
         </div>
