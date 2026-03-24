@@ -50,7 +50,13 @@ export const PropertySummary: React.FC = () => {
   const assessments = usePropertyStore((s) => s.assessments);
   const appeals = usePropertyStore((s) => s.appeals);
   const valuationAssessmentYear = activeParcel?.assessmentYear;
-  const valuationSource = propertyData.source || 'Unknown';
+  // Determine disclosure tier from dataSource.
+  // Vendor/system names (harris-*, pacs_*) must never appear in operator UI.
+  // LiveDataProvider emits 'live'; 'polled' is a future streaming variant.
+  const isLiveSource =
+    propertyData?.source === 'live' ||
+    propertyData?.source === 'polled';
+  const disclosureSource: 'live' | 'fallback' = isLiveSource ? 'live' : 'fallback';
 
   return (
     <div className="space-y-4 p-4">
@@ -88,13 +94,15 @@ export const PropertySummary: React.FC = () => {
         </BentoCard>
       </BentoGrid>
 
-      <BentoCard variant="table" title="Valuation Snapshot">
-        <p className="text-sm leading-relaxed" style={{ color: 'hsl(var(--tf-text) / 0.75)' }}>
-          Displayed values reflect the loaded parcel summary for assessment year {valuationAssessmentYear ?? 'unknown'}.
-          This route does not show a more precise as-of timestamp than that assessment year.
-          {' '}Source: {valuationSource}.
-        </p>
-      </BentoCard>
+      {/* Provenance footer — honest without vendor leak */}
+      {valuationAssessmentYear != null && (
+        <div
+          className="px-1"
+          style={{ color: 'hsl(var(--tf-text) / 0.4)', fontSize: '0.6875rem' }}
+        >
+          Historical assessment snapshot· Data vintage: {valuationAssessmentYear}
+        </div>
+      )}
 
       {/* Valuation Breakdown */}
       <BentoGrid columns="auto" gap={0.75} padding={0}>
@@ -102,16 +110,7 @@ export const PropertySummary: React.FC = () => {
           variant="stat"
           title="Market Value"
           promote
-          actions={
-            <WorkbenchSourceBadge
-              source={
-                propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
-                  ? 'live'
-                  : 'fallback'
-              }
-              className="ml-2"
-            />
-          }
+          actions={<WorkbenchSourceBadge source={disclosureSource} className="ml-2" />}
         >
           <p
             className="text-2xl font-bold"
@@ -124,16 +123,7 @@ export const PropertySummary: React.FC = () => {
           variant="stat"
           title="Assessed Value"
           promote
-          actions={
-            <WorkbenchSourceBadge
-              source={
-                propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
-                  ? 'live'
-                  : 'fallback'
-              }
-              className="ml-2"
-            />
-          }
+          actions={<WorkbenchSourceBadge source={disclosureSource} className="ml-2" />}
         >
           <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-success))' }}>
             {fmt(propertyData.assessedValue)}
@@ -142,16 +132,7 @@ export const PropertySummary: React.FC = () => {
         <BentoCard
           variant="stat"
           title="Land Value"
-          actions={
-            <WorkbenchSourceBadge
-              source={
-                propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
-                  ? 'live'
-                  : 'fallback'
-              }
-              className="ml-2"
-            />
-          }
+          actions={<WorkbenchSourceBadge source={disclosureSource} className="ml-2" />}
         >
           <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-text))' }}>
             {fmt(propertyData.landValue)}
@@ -160,16 +141,7 @@ export const PropertySummary: React.FC = () => {
         <BentoCard
           variant="stat"
           title="Improvement Value"
-          actions={
-            <WorkbenchSourceBadge
-              source={
-                propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
-                  ? 'live'
-                  : 'fallback'
-              }
-              className="ml-2"
-            />
-          }
+          actions={<WorkbenchSourceBadge source={disclosureSource} className="ml-2" />}
         >
           <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-text))' }}>
             {fmt(propertyData.improvementValue)}
@@ -213,16 +185,7 @@ export const PropertySummary: React.FC = () => {
             <BentoCard
               variant="stat"
               title="Exemptions"
-              actions={
-                <WorkbenchSourceBadge
-                  source={
-                    propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
-                      ? 'live'
-                      : 'fallback'
-                  }
-                  className="ml-2"
-                />
-              }
+              actions={<WorkbenchSourceBadge source={disclosureSource} className="ml-2" />}
             >
               <p className="text-lg font-bold" style={{ color: 'hsl(var(--tf-warning, 45 90% 55%))' }}>
                 {fmt(activeParcel.exemptionAmount)}
@@ -262,16 +225,7 @@ export const PropertySummary: React.FC = () => {
         <BentoCard
           variant="table"
           title="Assessment History"
-          actions={
-            <WorkbenchSourceBadge
-              source={
-                propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
-                  ? 'live'
-                  : 'fallback'
-              }
-              className="ml-2"
-            />
-          }
+          actions={<WorkbenchSourceBadge source={disclosureSource} className="ml-2" />}
         >
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
@@ -320,19 +274,7 @@ export const PropertySummary: React.FC = () => {
         <BentoCard
           variant="form"
           title="Quick Actions"
-          actions={
-            propertyData.source ? (
-              <span
-                className="text-xs px-2 py-0.5 rounded"
-                style={{
-                  color: 'hsl(var(--tf-text) / 0.4)',
-                  background: 'hsl(var(--tf-surface) / 0.3)',
-                }}
-              >
-                Source: {propertyData.source}
-              </span>
-            ) : undefined
-          }
+          actions={undefined}
         >
           <div className="flex flex-wrap gap-2">
             <button
@@ -379,11 +321,7 @@ export const PropertySummary: React.FC = () => {
             title="Last Sale Price"
             actions={
               <WorkbenchSourceBadge
-                source={
-                  propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
-                    ? 'live'
-                    : 'fallback'
-                }
+                source={disclosureSource}
                 className="ml-2"
               />
             }
