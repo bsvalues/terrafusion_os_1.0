@@ -28,7 +28,10 @@ public class StartupOrchestrationService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("🚀 StartupOrchestrationService: Beginning service registration...");
-        
+
+        // Ensure registry file exists (seeded from platform.json) before registration fires
+        await _registry.EnsureSeededAsync();
+
         // Wait for Kestrel to actually start
         _lifetime.ApplicationStarted.Register(() =>
         {
