@@ -1,3 +1,4 @@
+// GENERATED - DO NOT EDIT
 // Simple emitter for local dev-audit verification
 const path = require('path');
 const { traceService } = require(path.resolve(__dirname, '..', 'TraceService.js'));

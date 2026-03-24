@@ -1,3 +1,4 @@
+// GENERATED - DO NOT EDIT
 // Quick runner to validate dev-adapter persistence without node --test worker isolation
 const fs = require('fs');
 const path = require('path');

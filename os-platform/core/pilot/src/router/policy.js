@@ -1,3 +1,4 @@
+// GENERATED - DO NOT EDIT
 function validateInvocation(tool, ctx, params) {
   const errors = [];
 

@@ -30,7 +30,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install sqlite3 for CI (no-save)
-        run: npm install sqlite3 --no-save
+        run: npm install sqlite3@5.1.7 --no-save --ignore-scripts=false
 
       - name: Prepare sqlite test environment
         run: |

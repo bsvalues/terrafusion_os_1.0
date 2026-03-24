@@ -1,3 +1,4 @@
+// GENERATED - DO NOT EDIT
 import { validateInvocation } from './policy.js';
 
 function preInvokeCheck(tool, ctx, params) {
