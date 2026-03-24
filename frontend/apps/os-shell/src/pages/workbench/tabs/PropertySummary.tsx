@@ -1,15 +1,20 @@
 /**
- * Property Summary Tab - Overview of parcel data
+ * Property Summary Tab — High-density assessor CAMA workbench surface
  *
- * Displays real assessment data using BentoGrid layout:
- * - Identity cards (Parcel ID, Address, Owner, Property Type)
- * - Valuation breakdown (Market, Assessed, Land, Improvement)
- * - Property details (Year Built, SqFt, Acreage, Assessment Year)
- * - Assessment history mini-table
- * - Legal description + status flags
+ * Layout (7 blocks, tight grid):
+ *   1. IDENTITY     — parcelId, address, owner, legal description
+ *   2. ADMIN        — tax district, neighborhood, use code
+ *   3. VALUATION    — 6-cell 2×3: assessment year, land, improvement, total, market, status
+ *   4. PHYSICAL     — year built, sq ft, bedrooms, bathrooms, land acres
+ *   5. LAST SALE    — date, price, days since sale
+ *   6. HISTORY      — assessment history table (up to 5 rows)
+ *   7. EXEMPTIONS   — amount, types (only when non-zero)
  *
- * Data flows from propertyStore (snapshot/live/fixtures) via useWorkbenchTab context
- * and direct store subscription for richer data (assessments, flags).
+ * Data honesty rules:
+ *   - No vendor/system names in rendered text (harris-*, pacs_*, oltp)
+ *   - assessmentYear always visible so operator knows data vintage
+ *   - Null/empty fields render '—', never blank or 'undefined'
+ *   - Source badge shows 'live' or 'fallback', not raw source string
  *
  * @module pages/workbench/tabs/PropertySummary
  */
@@ -17,335 +22,315 @@
 import React from 'react';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { usePropertyStore } from '../../../stores/propertyStore';
-import { BentoGrid } from '../../../ui/materials/BentoGrid';
-import { BentoCard } from '../../../ui/materials/BentoCard';
 import { WorkbenchSourceBadge } from '../../../components/workbench/WorkbenchSourceBadge';
 
-const fmt = (v: number) => (v ? `$${v.toLocaleString()}` : '—');
-const num = (v: number | undefined) => (v != null ? v.toLocaleString() : '—');
+// ─── Formatters ──────────────────────────────────────────────────────────────
+const fmt = (v: number | undefined | null) => (v ? `$${v.toLocaleString()}` : '—');
+const num = (v: number | undefined | null) => (v != null ? v.toLocaleString() : '—');
+const dash = (v: string | number | undefined | null) => (v != null && v !== '' ? String(v) : '—');
 
-const typeLabels: Record<string, string> = {
-  residential: 'Residential',
-  commercial: 'Commercial',
-  industrial: 'Industrial',
-  agricultural: 'Agricultural',
-  'vacant-land': 'Vacant Land',
-  'multi-family': 'Multi-Family',
-  'mixed-use': 'Mixed Use',
-  exempt: 'Exempt',
-  other: 'Other',
-  // Legacy PACS codes
-  R: 'Residential',
-  C: 'Commercial',
-  I: 'Industrial',
-  A: 'Agricultural',
-  E: 'Exempt',
+function daysSince(dateStr: string | undefined | null): string {
+  if (!dateStr) return '';
+  const ms = Date.now() - new Date(dateStr).getTime();
+  const days = Math.floor(ms / 86_400_000);
+  if (days < 1) return 'Today';
+  if (days < 365) return `${days}d ago`;
+  const years = Math.floor(days / 365);
+  return `${years}yr ago`;
+}
+
+// ─── Block primitives ─────────────────────────────────────────────────────────
+
+const BlockHeader: React.FC<{ label: string; badge?: React.ReactNode }> = ({ label, badge }) => (
+  <div className="flex items-center gap-2 mb-2">
+    <span
+      className="text-[9px] font-semibold tracking-widest uppercase"
+      style={{ color: 'hsl(var(--tf-text) / 0.35)' }}
+    >
+      {label}
+    </span>
+    {badge}
+  </div>
+);
+
+const Block: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
+  <div
+    className={`rounded-lg p-3 ${className}`}
+    style={{
+      background: 'hsl(var(--tf-surface) / 0.25)',
+      border: '1px solid hsl(var(--tf-border) / 0.12)',
+    }}
+  >
+    {children}
+  </div>
+);
+
+const Field: React.FC<{ label: string; value: React.ReactNode; mono?: boolean; accent?: string }> = ({
+  label, value, mono = false, accent
+}) => (
+  <div className="flex flex-col gap-0.5">
+    <span className="text-[10px] uppercase tracking-wide" style={{ color: 'hsl(var(--tf-text) / 0.38)' }}>
+      {label}
+    </span>
+    <span
+      className={`text-sm leading-snug ${mono ? 'font-mono tabular-nums' : 'font-medium'}`}
+      style={{ color: accent || 'hsl(var(--tf-text) / 0.9)' }}
+    >
+      {value}
+    </span>
+  </div>
+);
+
+// ─── Property type map ────────────────────────────────────────────────────────
+const TYPE_LABELS: Record<string, string> = {
+  residential: 'Residential', commercial: 'Commercial', industrial: 'Industrial',
+  agricultural: 'Agricultural', 'vacant-land': 'Vacant Land', 'multi-family': 'Multi-Family',
+  'mixed-use': 'Mixed Use', exempt: 'Exempt', other: 'Other',
+  R: 'Residential', C: 'Commercial', I: 'Industrial', A: 'Agricultural', E: 'Exempt',
 };
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export const PropertySummary: React.FC = () => {
   const { propertyData } = useWorkbenchTab();
-
-  // Richer data from store (eagerly loaded on parcel selection)
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const assessments = usePropertyStore((s) => s.assessments);
   const appeals = usePropertyStore((s) => s.appeals);
-  const valuationAssessmentYear = activeParcel?.assessmentYear;
-  // Determine disclosure tier from dataSource.
-  // Vendor/system names (harris-*, pacs_*) must never appear in operator UI.
-  // LiveDataProvider emits 'live'; 'polled' is a future streaming variant.
-  const isLiveSource =
-    propertyData?.source === 'live' ||
-    propertyData?.source === 'polled';
+
+  // Disclosure tier — vendor names must never appear in operator UI
+  const isLiveSource = propertyData?.source === 'live' || propertyData?.source === 'polled';
   const disclosureSource: 'live' | 'fallback' = isLiveSource ? 'live' : 'fallback';
 
   return (
-    <div className="space-y-4 p-4">
-      {/* Identity Grid */}
-      <BentoGrid columns="auto" gap={0.75} padding={0}>
-        <BentoCard variant="stat" title="Parcel ID">
-          <p className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-            {propertyData.parcelId}
-          </p>
-        </BentoCard>
-        <BentoCard variant="stat" title="Address">
-          <p className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-            {propertyData.address || '—'}
-          </p>
-          {activeParcel && (
-            <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-              {activeParcel.city}{activeParcel.zip ? `, ${activeParcel.zip}` : ''}
-            </p>
-          )}
-        </BentoCard>
-        <BentoCard variant="stat" title="Owner">
-          <p className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-            {propertyData.owner || '—'}
-          </p>
-        </BentoCard>
-        <BentoCard variant="stat" title="Property Type">
-          <p className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-            {typeLabels[propertyData.propertyType] || propertyData.propertyType || '—'}
-          </p>
-          {activeParcel?.landUseDescription && (
-            <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-              {activeParcel.landUseDescription}
-            </p>
-          )}
-        </BentoCard>
-      </BentoGrid>
+    <div className="p-3 flex flex-col gap-2.5 overflow-y-auto">
 
-      {/* Provenance footer — honest without vendor leak */}
-      {valuationAssessmentYear != null && (
-        <div
-          className="px-1"
-          style={{ color: 'hsl(var(--tf-text) / 0.4)', fontSize: '0.6875rem' }}
-        >
-          Historical assessment snapshot· Data vintage: {valuationAssessmentYear}
+      {/* ── 1. IDENTITY ───────────────────────────────────────────────────── */}
+      <Block>
+        <BlockHeader label="Identity" />
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+          <Field label="Parcel ID" value={propertyData.parcelId} mono />
+          <Field label="Owner" value={dash(propertyData.owner)} />
+          <Field
+            label="Situs Address"
+            value={
+              <>
+                {dash(propertyData.address)}
+                {activeParcel?.city && (
+                  <span className="text-xs ml-1" style={{ color: 'hsl(var(--tf-text) / 0.45)' }}>
+                    {activeParcel.city}{activeParcel.zip ? `, ${activeParcel.zip}` : ''}
+                  </span>
+                )}
+              </>
+            }
+          />
+          <Field
+            label="Property Type"
+            value={`${TYPE_LABELS[propertyData.propertyType] || propertyData.propertyType || '—'}${activeParcel?.landUseDescription ? ` · ${activeParcel.landUseDescription}` : ''}`}
+          />
+          {propertyData.legalDescription && (
+            <div className="col-span-2 flex flex-col gap-0.5 pt-0.5">
+              <span className="text-[10px] uppercase tracking-wide" style={{ color: 'hsl(var(--tf-text) / 0.38)' }}>
+                Legal Description
+              </span>
+              <span className="text-xs font-mono leading-relaxed" style={{ color: 'hsl(var(--tf-text) / 0.7)' }}>
+                {propertyData.legalDescription}
+              </span>
+            </div>
+          )}
         </div>
-      )}
+      </Block>
 
-      {/* Valuation Breakdown */}
-      <BentoGrid columns="auto" gap={0.75} padding={0}>
-        <BentoCard
-          variant="stat"
-          title="Market Value"
-          promote
-          actions={<WorkbenchSourceBadge source={disclosureSource} className="ml-2" />}
-        >
-          <p
-            className="text-2xl font-bold"
-            style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}
-          >
-            {fmt(propertyData.marketValue)}
-          </p>
-        </BentoCard>
-        <BentoCard
-          variant="stat"
-          title="Assessed Value"
-          promote
-          actions={<WorkbenchSourceBadge source={disclosureSource} className="ml-2" />}
-        >
-          <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-success))' }}>
-            {fmt(propertyData.assessedValue)}
-          </p>
-        </BentoCard>
-        <BentoCard
-          variant="stat"
-          title="Land Value"
-          actions={<WorkbenchSourceBadge source={disclosureSource} className="ml-2" />}
-        >
-          <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-text))' }}>
-            {fmt(propertyData.landValue)}
-          </p>
-        </BentoCard>
-        <BentoCard
-          variant="stat"
-          title="Improvement Value"
-          actions={<WorkbenchSourceBadge source={disclosureSource} className="ml-2" />}
-        >
-          <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-text))' }}>
-            {fmt(propertyData.improvementValue)}
-          </p>
-        </BentoCard>
-      </BentoGrid>
-
-      {/* Property Details — from full Property record */}
+      {/* ── 2. ADMINISTRATIVE ─────────────────────────────────────────────── */}
       {activeParcel && (
-        <BentoGrid columns="auto" gap={0.75} padding={0}>
-          <BentoCard variant="stat" title="Year Built">
-            <p className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-              {activeParcel.yearBuilt || '—'}
-            </p>
-          </BentoCard>
-          <BentoCard variant="stat" title="Building SqFt">
-            <p className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-              {num(activeParcel.buildingSquareFeet)}
-            </p>
-          </BentoCard>
-          <BentoCard variant="stat" title="Land Acreage">
-            <p className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-              {activeParcel.landAcreage ? activeParcel.landAcreage.toFixed(2) : '—'}
-            </p>
-          </BentoCard>
-          <BentoCard variant="stat" title="Assessment Year">
-            <p className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-              {activeParcel.assessmentYear}
-            </p>
-            <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-              Status: {activeParcel.assessmentStatus}
-            </p>
-          </BentoCard>
-        </BentoGrid>
+        <Block>
+          <BlockHeader label="Administrative" />
+          <div className="grid grid-cols-3 gap-x-4 gap-y-2.5">
+            <Field
+              label="Tax District"
+              value={
+                activeParcel.taxDistrictName
+                  ? `${activeParcel.taxDistrictName}${activeParcel.taxDistrictCode ? ` (${activeParcel.taxDistrictCode})` : ''}`
+                  : '—'
+              }
+            />
+            <Field label="Neighborhood" value={dash(activeParcel.neighborhood)} />
+            <Field
+              label="Use Code"
+              value={
+                activeParcel.propertyUseCode
+                  ? `${activeParcel.propertyUseCode}${activeParcel.landUseDescription ? ` · ${activeParcel.landUseDescription}` : ''}`
+                  : '—'
+              }
+            />
+          </div>
+        </Block>
       )}
 
-      {/* Status Flags + Exemptions */}
-      {activeParcel && (activeParcel.hasActivePermits || activeParcel.hasAppeals || (activeParcel.exemptionAmount > 0)) && (
-        <BentoGrid columns="auto" gap={0.75} padding={0}>
-          {activeParcel.exemptionAmount > 0 && (
-            <BentoCard
-              variant="stat"
-              title="Exemptions"
-              actions={<WorkbenchSourceBadge source={disclosureSource} className="ml-2" />}
-            >
-              <p className="text-lg font-bold" style={{ color: 'hsl(var(--tf-warning, 45 90% 55%))' }}>
-                {fmt(activeParcel.exemptionAmount)}
-              </p>
-              {activeParcel.exemptionTypes && (
-                <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-                  {activeParcel.exemptionTypes.join(', ')}
-                </p>
-              )}
-            </BentoCard>
-          )}
-          {activeParcel.hasAppeals && (
-            <BentoCard variant="stat" title="Loaded Appeals">
-              <p className="text-lg font-bold" style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}>
-                {appeals.length} appeal{appeals.length !== 1 ? 's' : ''}
-              </p>
-              <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-                Shown from the appeal records currently loaded for this parcel.
-              </p>
-            </BentoCard>
-          )}
-          {activeParcel.hasActivePermits && (
-            <BentoCard variant="stat" title="Permits">
-              <p className="text-lg font-bold" style={{ color: 'hsl(var(--tf-info, 200 80% 60%))' }}>
-                Loaded parcel is marked with active permits.
-              </p>
-              <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-                Shown from the parcel summary currently loaded for this parcel.
-              </p>
-            </BentoCard>
-          )}
-        </BentoGrid>
+      {/* ── 3. VALUATION ──────────────────────────────────────────────────── */}
+      <Block>
+        <BlockHeader
+          label={
+            activeParcel?.assessmentYear
+              ? `Valuation · Assessment Year ${activeParcel.assessmentYear}`
+              : 'Valuation'
+          }
+          badge={<WorkbenchSourceBadge source={disclosureSource} />}
+        />
+        <div className="grid grid-cols-3 gap-x-4 gap-y-2.5">
+          <Field
+            label="Market Value"
+            value={fmt(propertyData.marketValue)}
+            mono
+            accent="hsl(var(--tf-transcend-cyan-hs) 65%)"
+          />
+          <Field label="Land Value" value={fmt(propertyData.landValue)} mono />
+          <Field label="Improvement Value" value={fmt(propertyData.improvementValue)} mono />
+          <Field
+            label="Assessed Value"
+            value={fmt(propertyData.assessedValue)}
+            mono
+            accent="hsl(var(--tf-success))"
+          />
+          <Field label="Assessment Year" value={dash(activeParcel?.assessmentYear)} mono />
+          <Field
+            label="Status"
+            value={dash(activeParcel?.assessmentStatus)}
+            accent={
+              activeParcel?.assessmentStatus === 'certified'
+                ? 'hsl(var(--tf-success))'
+                : undefined
+            }
+          />
+        </div>
+        {/* Provenance — honest vintage, no vendor names */}
+        {activeParcel?.assessmentYear && (
+          <p className="mt-2 text-[10px]" style={{ color: 'hsl(var(--tf-text) / 0.3)' }}>
+            Historical assessment snapshot · Data vintage: {activeParcel.assessmentYear}
+          </p>
+        )}
+      </Block>
+
+      {/* ── 4. PHYSICAL CHARACTERISTICS ───────────────────────────────────── */}
+      {activeParcel && (
+        <Block>
+          <BlockHeader label="Physical Characteristics" />
+          <div className="grid grid-cols-5 gap-x-4 gap-y-2.5">
+            <Field label="Year Built" value={dash(activeParcel.yearBuilt)} mono />
+            <Field label="Sq Ft" value={num(activeParcel.buildingSquareFeet)} mono />
+            <Field label="Bedrooms" value={dash(activeParcel.bedrooms)} mono />
+            <Field label="Bathrooms" value={dash(activeParcel.bathrooms)} mono />
+            <Field label="Land Acres" value={activeParcel.landAcreage ? activeParcel.landAcreage.toFixed(2) : '—'} mono />
+          </div>
+        </Block>
       )}
 
-      {/* Assessment History — from eagerly loaded store data */}
+      {/* ── 5. LAST SALE ──────────────────────────────────────────────────── */}
+      {activeParcel?.lastSaleDate && (
+        <Block>
+          <BlockHeader label="Last Sale" badge={<WorkbenchSourceBadge source={disclosureSource} />} />
+          <div className="grid grid-cols-3 gap-x-4 gap-y-2.5">
+            <Field
+              label="Sale Date"
+              value={
+                <>
+                  {new Date(activeParcel.lastSaleDate).toLocaleDateString()}
+                  <span className="ml-1.5 text-[10px]" style={{ color: 'hsl(var(--tf-text) / 0.4)' }}>
+                    {daysSince(activeParcel.lastSaleDate)}
+                  </span>
+                </>
+              }
+            />
+            <Field label="Sale Price" value={fmt(activeParcel.lastSalePrice)} mono />
+          </div>
+        </Block>
+      )}
+
+      {/* ── 6. ASSESSMENT HISTORY ─────────────────────────────────────────── */}
       {assessments.length > 0 && (
-        <BentoCard
-          variant="table"
-          title="Assessment History"
-          actions={<WorkbenchSourceBadge source={disclosureSource} className="ml-2" />}
-        >
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
+        <Block>
+          <BlockHeader label="Assessment History" />
+          <div className="overflow-x-auto -mx-1">
+            <table className="w-full text-xs" style={{ color: 'hsl(var(--tf-text) / 0.85)' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)' }}>
-                  <th className="text-left py-2 px-3 font-medium">Year</th>
-                  <th className="text-right py-2 px-3 font-medium">Land</th>
-                  <th className="text-right py-2 px-3 font-medium">Improvement</th>
-                  <th className="text-right py-2 px-3 font-medium">Total</th>
-                  <th className="text-right py-2 px-3 font-medium">Market</th>
-                  <th className="text-right py-2 px-3 font-medium">Taxable</th>
+                  {['Year', 'Land', 'Improvement', 'Total', 'Market', 'Taxable'].map((h) => (
+                    <th
+                      key={h}
+                      className={`py-1.5 px-2 font-medium ${h === 'Year' ? 'text-left' : 'text-right'}`}
+                      style={{ color: 'hsl(var(--tf-text) / 0.45)' }}
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {assessments.slice(0, 5).map((a) => (
-                  <tr
-                    key={a.assessmentId}
-                    style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.08)' }}
-                  >
-                    <td className="py-2 px-3 font-medium">{a.assessmentYear}</td>
-                    <td className="py-2 px-3 text-right">{fmt(a.landValue)}</td>
-                    <td className="py-2 px-3 text-right">{fmt(a.improvementValue)}</td>
-                    <td className="py-2 px-3 text-right font-medium">{fmt(a.totalAssessedValue)}</td>
-                    <td className="py-2 px-3 text-right">{fmt(a.marketValue)}</td>
-                    <td className="py-2 px-3 text-right">{fmt(a.taxableValue)}</td>
+                  <tr key={a.assessmentId} style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.07)' }}>
+                    <td className="py-1.5 px-2 font-mono font-medium">{a.assessmentYear}</td>
+                    <td className="py-1.5 px-2 text-right font-mono">{fmt(a.landValue)}</td>
+                    <td className="py-1.5 px-2 text-right font-mono">{fmt(a.improvementValue)}</td>
+                    <td className="py-1.5 px-2 text-right font-mono font-medium">{fmt(a.totalAssessedValue)}</td>
+                    <td className="py-1.5 px-2 text-right font-mono">{fmt(a.marketValue)}</td>
+                    <td className="py-1.5 px-2 text-right font-mono">{fmt(a.taxableValue)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </BentoCard>
+        </Block>
       )}
 
-      {/* Legal Description + Quick Actions */}
-      <BentoGrid columns="auto" gap={0.75} padding={0}>
-        {propertyData.legalDescription && (
-          <BentoCard variant="table" title="Legal Description">
-            <p
-              className="text-sm leading-relaxed font-mono"
-              style={{ color: 'hsl(var(--tf-text) / 0.9)' }}
-            >
-              {propertyData.legalDescription}
-            </p>
-          </BentoCard>
-        )}
-        <BentoCard
-          variant="form"
-          title="Quick Actions"
-          actions={undefined}
-        >
-          <div className="flex flex-wrap gap-2">
-            <button
-              className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-              style={{
-                background: 'hsl(var(--tf-transcend-cyan-hs) 50%)',
-                color: 'hsl(var(--tf-bg))',
-              }}
-            >
-              View on Map
-            </button>
-            <button
-              className="px-4 py-2 rounded-lg text-sm transition-colors"
-              style={{
-                background: 'hsl(var(--tf-surface) / 0.3)',
-                color: 'hsl(var(--tf-text) / 0.8)',
-              }}
-            >
-              Generate Report
-            </button>
-            <button
-              className="px-4 py-2 rounded-lg text-sm transition-colors"
-              style={{
-                background: 'hsl(var(--tf-surface) / 0.3)',
-                color: 'hsl(var(--tf-text) / 0.8)',
-              }}
-            >
-              View History
-            </button>
+      {/* ── 7. EXEMPTIONS ─────────────────────────────────────────────────── */}
+      {activeParcel && activeParcel.exemptionAmount > 0 && (
+        <Block>
+          <BlockHeader label="Exemptions" />
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+            <Field
+              label="Exemption Amount"
+              value={fmt(activeParcel.exemptionAmount)}
+              mono
+              accent="hsl(var(--tf-warning, 45 90% 55%))"
+            />
+            <Field
+              label="Exemption Types"
+              value={activeParcel.exemptionTypes?.length ? activeParcel.exemptionTypes.join(', ') : '—'}
+            />
           </div>
-        </BentoCard>
-      </BentoGrid>
-
-      {/* Sale History — if available */}
-      {activeParcel?.lastSaleDate && (
-        <BentoGrid columns="auto" gap={0.75} padding={0}>
-          <BentoCard variant="stat" title="Last Sale Date">
-            <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-              {new Date(activeParcel.lastSaleDate).toLocaleDateString()}
-            </p>
-          </BentoCard>
-          <BentoCard
-            variant="stat"
-            title="Last Sale Price"
-            actions={
-              <WorkbenchSourceBadge
-                source={disclosureSource}
-                className="ml-2"
-              />
-            }
-          >
-            <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-              {activeParcel.lastSalePrice ? fmt(activeParcel.lastSalePrice) : '—'}
-            </p>
-          </BentoCard>
-        </BentoGrid>
+        </Block>
       )}
 
-      {/* Tax District */}
-      {activeParcel?.taxDistrictName && (
-        <BentoCard variant="stat" title="Tax District">
-          <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
-            {activeParcel.taxDistrictName}
-          </p>
-          {activeParcel.taxDistrictCode && (
-            <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-              Code: {activeParcel.taxDistrictCode}
-            </p>
-          )}
-        </BentoCard>
+      {/* ── FLAGS: Appeals + Permits ───────────────────────────────────────── */}
+      {activeParcel && (activeParcel.hasAppeals || activeParcel.hasActivePermits) && (
+        <Block>
+          <BlockHeader label="Active Flags" />
+          <div className="flex flex-wrap gap-2">
+            {activeParcel.hasAppeals && (
+              <span
+                className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                style={{
+                  background: 'hsl(var(--tf-error, 0 80% 60%) / 0.15)',
+                  color: 'hsl(var(--tf-error, 0 80% 60%))',
+                }}
+              >
+                {appeals.length} Appeal{appeals.length !== 1 ? 's' : ''} on record
+              </span>
+            )}
+            {activeParcel.hasActivePermits && (
+              <span
+                className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                style={{
+                  background: 'hsl(var(--tf-info, 200 80% 60%) / 0.15)',
+                  color: 'hsl(var(--tf-info, 200 80% 60%))',
+                }}
+              >
+                Active permits
+              </span>
+            )}
+          </div>
+        </Block>
       )}
+
     </div>
   );
 };
