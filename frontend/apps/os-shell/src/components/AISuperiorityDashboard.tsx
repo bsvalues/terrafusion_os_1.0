@@ -570,7 +570,7 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
 
         <Card variant='glass'>
           <CardHeader>
-            <h3 className='text-lg font-semibold text-red-400'>📉 Harris PACS Baseline</h3>
+            <h3 className='text-lg font-semibold text-red-400'>📉 Legacy System Baseline</h3>
           </CardHeader>
           <CardBody>
             <div className='space-y-4'>

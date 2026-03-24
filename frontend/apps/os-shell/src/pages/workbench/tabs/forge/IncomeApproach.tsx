@@ -147,8 +147,8 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
           </div>
         )}
         {!incomeAPI.loading && !incomeAPI.data && incomeAPI.error && (
-          <div className="py-4 text-center">
-            <p className="tf-text-tertiary text-sm">Income approach data unavailable from API</p>
+          <div className="py-4 text-center" data-testid="income-approach-empty">
+            <p className="tf-text-tertiary text-sm">No income approach data for tax year {taxYear}</p>
             <p className="tf-text-dim text-xs mt-1">{incomeAPI.error.message}</p>
           </div>
         )}

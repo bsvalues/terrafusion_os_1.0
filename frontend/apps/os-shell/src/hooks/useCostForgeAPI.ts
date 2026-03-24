@@ -135,8 +135,8 @@ interface AgentScaleResult {
   scalingStatus: string;
 }
 
-/** Minimal response shape for /api/costforge/sync/harris-pacs */
-interface HarrisPACSSyncResult {
+/** Minimal response shape for /api/costforge/sync/county-data */
+interface CountyDataSyncResult {
   countyId: string;
   syncType: string;
   recordsSynced: number;
@@ -145,6 +145,9 @@ interface HarrisPACSSyncResult {
   syncCompleted: string;
   status: string;
 }
+
+/** @deprecated Use CountyDataSyncResult */
+type HarrisPACSSyncResult = CountyDataSyncResult;
 
 /**
  * TerraFusion CostForge API Integration Hook
@@ -319,10 +322,10 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
     return apiCall<PerformanceMetrics>('/api/costforge/metrics');
   }, [apiCall]);
 
-  // Harris PACS Sync for government data integration
-  const syncWithHarrisPACS = useCallback(
-    async (countyId: string, syncType: string = 'full'): Promise<APIResponse<HarrisPACSSyncResult>> => {
-      return apiCall<HarrisPACSSyncResult>('/api/costforge/sync/harris-pacs', {
+  // County data sync for government data integration
+  const syncWithCountyData = useCallback(
+    async (countyId: string, syncType: string = 'full'): Promise<APIResponse<CountyDataSyncResult>> => {
+      return apiCall<CountyDataSyncResult>('/api/costforge/sync/county-data', {
         method: 'POST',
         body: JSON.stringify({
           countyId,
@@ -334,6 +337,9 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
     },
     [apiCall]
   );
+
+  /** @deprecated Use syncWithCountyData */
+  const syncWithHarrisPACS = syncWithCountyData;
 
   // Connection health check
   const healthCheck = useCallback(async (): Promise<boolean> => {
@@ -366,6 +372,8 @@ export const useCostForgeAPI = (config: CostForgeAPIConfig) => {
     getPerformanceMetrics,
 
     // External Integration
+    syncWithCountyData,
+    /** @deprecated Use syncWithCountyData */
     syncWithHarrisPACS,
 
     // Utilities

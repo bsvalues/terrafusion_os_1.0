@@ -250,11 +250,11 @@ function gisSourceToDisclosure(
   // If the interactive query succeeded, that path was already 'live'
   if (querySuccess) {
     // Overlay with GIS endpoint info
-    if (boundarySource === 'pacs' || layersSource === 'pacs') return 'live';
+    if (boundarySource === 'live' || layersSource === 'live') return 'live';
     return 'live';
   }
-  if (boundarySource === 'pacs' && layersSource === 'pacs') return 'live';
-  if (boundarySource === 'pacs' || layersSource === 'pacs') return 'partial';
+  if (boundarySource === 'live' && layersSource === 'live') return 'live';
+  if (boundarySource === 'live' || layersSource === 'live') return 'partial';
   if (boundarySource === 'fallback' || layersSource === 'fallback') return 'fallback';
   return 'unavailable';
 }
@@ -461,10 +461,10 @@ export const PropertyAtlas: React.FC = () => {
       )}
 
       {/* ── Live GIS Boundary Data ──────────────────────────── */}
-      {boundary.source === 'pacs' && boundary.data && (
+      {boundary.source === 'live' && boundary.data && (
         <div data-testid="atlas-gis-boundary">
           <p className="text-xs mb-1" style={{ color: 'hsl(142 76% 36%)' }}>
-            Boundary data from PACS (source: {boundary.data.source})
+            Boundary data from county records (source: {boundary.data.source})
           </p>
           <BentoGrid columns="auto" gap={0.75} padding={0}>
             <BentoCard variant="stat" title="Situs">
@@ -505,10 +505,10 @@ export const PropertyAtlas: React.FC = () => {
       )}
 
       {/* ── Live GIS Layer Data ─────────────────────────────── */}
-      {layers.source === 'pacs' && layers.data && (
+      {layers.source === 'live' && layers.data && (
         <div data-testid="atlas-gis-layers">
           <p className="text-xs mb-1" style={{ color: 'hsl(142 76% 36%)' }}>
-            Layer overlays from PACS (source: {layers.data.source})
+            Layer overlays from county records (source: {layers.data.source})
           </p>
           <BentoGrid columns="auto" gap={0.75} padding={0}>
             {layers.data.zoning && (
@@ -611,8 +611,8 @@ export const PropertyAtlas: React.FC = () => {
             data-testid="atlas-geometry-disclosure"
             style={{ fontSize: 11, color: 'hsl(215 16% 47%)', marginBottom: 6 }}
           >
-            {boundary.source === 'pacs'
-              ? 'Boundary info from PACS — SVG preview, not full GIS geometry'
+            {boundary.source === 'live'
+              ? 'Boundary info from county records — SVG preview, not full GIS geometry'
               : 'Layer preview — full GIS geometry not yet available on this route'}
           </p>
           <div

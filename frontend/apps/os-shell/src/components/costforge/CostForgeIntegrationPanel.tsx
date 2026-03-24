@@ -100,7 +100,7 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
               performanceScore: 0.992,
             },
             {
-              groupName: 'Harris PACS Sync',
+              groupName: 'County Data Sync',
               agentCount: 7500,
               status: 'active',
               performanceScore: 0.975,
@@ -157,10 +157,10 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
     }
   }, []);
 
-  // Sync with Harris PACS
-  const handleHarrisSync = async (countyId: string) => {
+  // Sync with County Data
+  const handleCountySync = async (countyId: string) => {
     try {
-      const response = await costForgeAPI.syncWithHarrisPACS(countyId);
+      const response = await costForgeAPI.syncWithCountyData(countyId);
       if (response.success) {
         await loadSystemData(); // Refresh data after sync
       }
@@ -718,7 +718,7 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
           <div className='space-y-4'>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
               <Button
-                onClick={() => handleHarrisSync('benton')}
+                onClick={() => handleCountySync('benton')}
                 className='bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white'
                 disabled={loading}
               >
@@ -726,7 +726,7 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
               </Button>
 
               <Button
-                onClick={() => handleHarrisSync('franklin')}
+                onClick={() => handleCountySync('franklin')}
                 className='bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white'
                 disabled={loading}
               >
@@ -734,7 +734,7 @@ export const CostForgeIntegrationPanel: React.FC<CostForgeIntegrationPanelProps>
               </Button>
 
               <Button
-                onClick={() => handleHarrisSync('yakima')}
+                onClick={() => handleCountySync('yakima')}
                 className='bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white'
                 disabled={loading}
               >

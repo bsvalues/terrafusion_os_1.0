@@ -327,7 +327,9 @@
       "Bash(pnpm -w run r1:verify-evidence)",
       "Bash(find /c/Users/bsval/terrafusion_os_1.0 -type f \\\\\\(-name *wave* -o -name *ledger* -o -name *governance* \\\\\\))",
       "Bash(pnpm exec:*)",
-      "Bash(git worktree:*)"
+      "Bash(git worktree:*)",
+      "Bash(find /c/Users/bsval/terrafusion_os_1.0/frontend/src -type f \\\\\\(-name *.ts -o -name *.tsx \\\\\\))",
+      "Bash(pnpm --filter os-shell test -- --run --reporter=verbose)"
     ],
     "deny": [],
     "ask": [],

@@ -544,8 +544,8 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
   },
   {
     "id": "pacs-bridge",
-    "displayName": "PACS DataBridge",
-    "description": "System/admin — import/export bridge for Harris PACS TrueAutomation, data sync, and field mapping. Legacy: PACS-DataBridge.",
+    "displayName": "County Data Bridge",
+    "description": "System/admin — import/export bridge for county assessment systems, data sync, and field mapping. Legacy: PACS-DataBridge.",
     "iconName": "Cable",
     "category": "system",
     "tier": 1,

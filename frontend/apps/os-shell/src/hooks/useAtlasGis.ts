@@ -81,7 +81,7 @@ export interface ParcelLayersData {
 
 // ── Hook result type ────────────────────────────────────────────────
 
-export type AtlasGisSource = 'pacs' | 'fallback' | 'unavailable';
+export type AtlasGisSource = 'live' | 'fallback' | 'unavailable';
 
 export interface AtlasGisResult<T> {
   data: T | null;
@@ -101,10 +101,10 @@ async function atlasGisFetch<T>(path: string): Promise<{ data: T; source: AtlasG
   }
   const data: T = await res.json();
   // The backend sets a "source" field on every response.
-  // If the source field contains "pacs" it is live PACS data; otherwise fallback.
+  // If the source field contains "pacs" or other live-system indicators, it is live data.
   const raw = data as Record<string, unknown>;
   const src = typeof raw.source === 'string' && raw.source.toLowerCase().includes('pacs')
-    ? 'pacs'
+    ? 'live'
     : typeof raw.source === 'string' && raw.source !== ''
       ? 'fallback'
       : 'unavailable';

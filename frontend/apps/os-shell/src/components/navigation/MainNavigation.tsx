@@ -67,7 +67,7 @@ const MainNavigation: React.FC = () => {
             startIcon={<Description />}
             onClick={() => navigate('/harris-pacs')}
           >
-            Harris PACS
+            Data Bridge
           </Button>
 
           <IconButton

@@ -54,7 +54,7 @@ describe('SystemMonitor', () => {
     render(<SystemMonitor />);
 
     expect(screen.getByTestId('system-monitor-footer-text')).toHaveTextContent(
-      'Benton County • Harris PACS 9.0 • Workspace monitor • Reported DB Health: ✅ Healthy'
+      'Benton County • County Records • Workspace monitor • Reported DB Health: ✅ Healthy'
     );
     expect(screen.queryByText(/Production Mode/i)).not.toBeInTheDocument();
   });

@@ -632,7 +632,7 @@ export class SnapshotDataProvider implements DataProvider {
       {
         auditId: `AUD-${parcelId}-1`,
         parcelId,
-        action: 'PACS Sync Import',
+        action: 'County Data Import',
         userId: 'terrafusionsync',
         userName: 'TerraFusion Sync Service',
         timestamp: '2025-01-15T08:00:00Z',
@@ -707,7 +707,7 @@ export class SnapshotDataProvider implements DataProvider {
         { name: 'TerraFusion API (Kernel)', status: 'healthy', latencyMs: 12, lastChecked: new Date().toISOString() },
         { name: 'TerraFusion Gateway (Shell)', status: 'healthy', latencyMs: 8, lastChecked: new Date().toISOString() },
         { name: 'TerraFusion Consciousness', status: 'healthy', latencyMs: 15, lastChecked: new Date().toISOString() },
-        { name: 'PACS Adapter', status: 'healthy', latencyMs: 45, lastChecked: new Date().toISOString(), details: 'pacscontract.v1 validated' },
+        { name: 'County Data Connector', status: 'healthy', latencyMs: 45, lastChecked: new Date().toISOString(), details: 'pacscontract.v1 validated' },
       ],
       lastChecked: new Date().toISOString(),
     };

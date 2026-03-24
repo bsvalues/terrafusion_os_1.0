@@ -305,7 +305,7 @@ function StudyPeriodsPanel() {
 
 function ScrapeJobsPanel() {
   const jobs: ScrapeJob[] = [
-    { id: '1', source: 'Harris PACS 9.0', status: 'completed', startedAt: '2026-03-15T02:00:00Z', completedAt: '2026-03-15T04:32:00Z', recordsProcessed: 89247, errors: 3 },
+    { id: '1', source: 'County CAMA', status: 'completed', startedAt: '2026-03-15T02:00:00Z', completedAt: '2026-03-15T04:32:00Z', recordsProcessed: 89247, errors: 3 },
     { id: '2', source: 'GIS Parcel Layer', status: 'running', startedAt: '2026-03-15T06:00:00Z', completedAt: null, recordsProcessed: 45200, errors: 0 },
     { id: '3', source: 'Tyler Vision Sync', status: 'queued', startedAt: '2026-03-15T08:00:00Z', completedAt: null, recordsProcessed: 0, errors: 0 },
     { id: '4', source: 'Aumentum Import', status: 'failed', startedAt: '2026-03-14T22:00:00Z', completedAt: '2026-03-14T22:15:00Z', recordsProcessed: 1200, errors: 48 },

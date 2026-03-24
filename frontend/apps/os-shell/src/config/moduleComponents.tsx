@@ -757,9 +757,9 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
     case 'pacs-bridge':
       return (
         <PlaceholderModule
-          name='PACS DataBridge'
+          name='County Data Bridge'
           icon='🔗'
-          description='Import/export bridge for Harris PACS TrueAutomation — data sync, field mapping, and batch operations.'
+          description='Import/export bridge for county assessment systems — data sync, field mapping, and batch operations.'
           status='placeholder'
           legacySource='PACS-DataBridge'
           domain='system'

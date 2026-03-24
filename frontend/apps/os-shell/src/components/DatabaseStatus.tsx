@@ -197,7 +197,7 @@ const DatabaseStatus: React.FC = () => {
               color: 'hsl(var(--tf-text-primary-hs) 100% / 0.7)',
             }}
           >
-            Harris Parcels
+            County Parcels
           </div>
         </div>
 
@@ -223,7 +223,7 @@ const DatabaseStatus: React.FC = () => {
         </div>
       </div>
 
-      {/* Harris PACS Sync Status */}
+      {/* County Records Sync Status */}
       <div className='p-4'>
         <div className='flex items-center justify-between'>
           <div
@@ -233,7 +233,7 @@ const DatabaseStatus: React.FC = () => {
               color: 'var(--tf-transcend-cyan)',
             }}
           >
-            🏛️ Harris PACS Integration
+            🏩 County Records Integration
           </div>
           <div
             style={{

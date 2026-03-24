@@ -158,8 +158,8 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
           </div>
         )}
         {!salesAPI.loading && !salesAPI.data && salesAPI.error && (
-          <div className="py-4 text-center">
-            <p className="tf-text-tertiary text-sm">Sales comparison data unavailable from API</p>
+          <div className="py-4 text-center" data-testid="sales-comparison-empty">
+            <p className="tf-text-tertiary text-sm">No sales comparison data for tax year {taxYear}</p>
             <p className="tf-text-dim text-xs mt-1">{salesAPI.error.message}</p>
           </div>
         )}

@@ -100,8 +100,8 @@ export function WorkflowDesigner() {
     },
     {
       id: '3',
-      name: 'Harris PACS Integration',
-      description: 'Bi-directional sync with Harris PACS v12.4.7 property data',
+      name: 'County Data Sync',
+      description: 'Bi-directional sync with county property data systems',
       nodes: 15,
       category: 'integration',
       complexity: 'complex',

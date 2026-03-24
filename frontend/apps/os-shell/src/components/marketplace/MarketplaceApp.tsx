@@ -75,9 +75,9 @@ export const MarketplaceApp: React.FC = () => {
         },
         {
           id: 'harris-pacs',
-          name: 'Harris PACS Integration',
+          name: 'County Data Connector',
           version: '1.5.2',
-          description: 'Direct integration with Harris PACS property assessment systems',
+          description: 'Integration with county property assessment and records systems',
           author: 'Terrafusion',
           category: 'Data Integration',
           tags: ['harris', 'pacs', 'integration', 'property'],

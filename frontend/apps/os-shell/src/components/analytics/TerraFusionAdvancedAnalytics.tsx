@@ -95,7 +95,7 @@ export const TerraFusionAdvancedAnalytics: React.FC<AdvancedAnalyticsProps> = ({
         name: 'Real-Time Property Assessment Analytics',
         type: 'REAL_TIME',
         status: 'ACTIVE',
-        dataSource: 'Harris PACS + Tyler + Aumentum',
+        dataSource: 'County Assessment Systems',
         processingRate: 15847,
         totalProcessed: 25847392,
         accuracy: 99.7,

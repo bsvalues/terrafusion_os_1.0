@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using TerraFusion.API.Services;
@@ -22,6 +23,7 @@ namespace TerraFusion.API.Controllers
     /// - Create compelling ROI case for complete TerraFusion transformation
     /// </summary>
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class HarrisPACSEnhancementController : ControllerBase
     {
