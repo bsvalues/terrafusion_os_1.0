@@ -40,7 +40,9 @@
     "prGates": [
       "seal-gate-fast.yml",
       "core-governance-gates.yml",
-      "tier1-ui-harness.yml"
+      "tier1-ui-harness.yml",
+      "terrafusion-ci.yml",
+      "sqlite-dev-adapter-test.yml"
     ],
     "eventReactive": [
       "autonomy-break-glass-guard.yml",
