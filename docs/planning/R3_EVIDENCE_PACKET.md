@@ -350,4 +350,19 @@ Commits: `a2f2ba2df` → `d5400b231` → `2619ca6f2`
 
 ---
 
+## r3.4.0 — Gate Closure Confirmation (2026-03-23)
+
+All 4 gate commands confirmed green on branch `feat/stage2-stage3-r3-closure`:
+
+| Gate | Command | Result |
+|------|---------|--------|
+| Build | `dotnet build backend/TerraFusion.sln --no-restore` | ✅ 0 errors |
+| Type-check | `pnpm run type-check` | ✅ 0 errors |
+| Backend tests | `dotnet test TerraFusion.Unit.Tests.csproj --no-build -q` | ✅ 1811/1811 |
+| R1 evidence | `pnpm -w run r1:verify-evidence` | ✅ exit 0 — signed SHA eef0874933 intact |
+
+R3 is sealed. Frozen R1 SHA: `eef087493343d292efa2681bddc217b76e0ee6b3`. Next active lane: **Honesty Sweep**.
+
+---
+
 **Government. Transcended.**
