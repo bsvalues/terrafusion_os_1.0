@@ -343,6 +343,12 @@
   border-color: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
 }
 
+/* ─── Global spin keyframe (consumed by .tf-spinner in workbench-tokens.css) ─── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 /* ========================================
    QUANTUM ANIMATIONS & EFFECTS
    ======================================== */
