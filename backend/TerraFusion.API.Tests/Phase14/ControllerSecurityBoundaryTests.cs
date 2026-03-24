@@ -176,6 +176,7 @@ public sealed class ControllerSecurityBoundaryTests
             Mock.Of<ICertificationService>(),
             Mock.Of<INoticeService>(),
             Mock.Of<IQueueService>(),
-            userContextAccessor.Object);
+            userContextAccessor.Object,
+            Mock.Of<IGovernedToolAuditService>());
     }
 }
