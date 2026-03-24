@@ -62,31 +62,25 @@ Reviewer:       Claude Code (contract alignment check)
 
 ---
 
-### CARD-03 — Forge /years Backend Endpoint
+### ~~CARD-03 — Forge /years Backend Endpoint~~ ✅ CLOSED (stale — already live)
 
-```
-Task:           Implement GET /api/forge/{parcelId}/years in backend
-Owner:          Claude Code
-Mode:           Single-builder
-Repo:           terrafusion_os_1.0
-Allowed files:
-  - backend/src/TerraFusion.API/Controllers/ForgeController.cs
-  - backend/src/TerraFusion.Core/PACS/IPacsAdapter.cs
-  - backend/src/TerraFusion.API/Services/PacsEfAdapter.cs
-  - backend/src/TerraFusion.Core/PACS/PacsSqlAdapter.cs
-  - related DTOs and tests
-Out of scope:
-  - frontend/ (any file)
-  - ForgeYearSelector.tsx (done — do not touch)
-  - ForgeYearContextPanel.tsx (done — do not touch)
-Acceptance test:
-  - curl http://localhost:5000/api/forge/{known-parcel-id}/years
-  - Returns { parcelId, layers: [...], defaultYear: NNNN }
-  - Each layer has: year, supNum, isLocked, propState, programs, assessedValue, marketValue
-  - If no layers exist, returns { layers: [], defaultYear: null } not 404
-  - Frontend ForgeYearSelector shows real PACS years for the test parcel
-Reviewer:       Copilot (frontend contract verification)
-```
+> **Truth gate result (2026-03-24):** endpoint is fully implemented and live on main.
+> No implementation work needed.
+
+**Evidence:**
+- `ForgeController.cs` line 36: `[HttpGet("{parcelId}/years")]` ✅
+- `IValuationService.cs` line 22: `Task<ParcelYearLayersResult> GetAvailableYearsAsync(...)` ✅
+- `ValuationService.cs` line 378: full implementation present ✅
+- Build: `0 errors` ✅
+- curl `http://localhost:5000/api/forge/101843030001006/years` → **200** ✅
+- curl `http://localhost:5000/api/forge/101562000001000/years` → **200** ✅ (`currentUseAg: true`)
+
+**Data observation (not a code bug):**
+Both test parcels return a single 2015 layer with `isEarliestKnownLayer: true`.
+That is the PACS ETL migration baseline — only the base year was seeded in dev SQLite.
+Multi-year layers require production SQL Server data. Not a blocker; document in Reality Report.
+
+> CARD-03 is closed. Card was stale. Concrete was not poured twice.
 
 ---
 
@@ -114,9 +108,9 @@ Reviewer:       Benton County Assessor (sole human)
 
 ---
 
-## Completed Cards (Phase 33A.3)
+## Completed Cards
 
-| Card | Task | Owner | Commit |
+| Card | Task | Owner | Commit / Note |
 |------|------|-------|--------|
 | A | Benton Reality Bridge (PACS search, EfAdapter, SQL search) | Claude Code | 1263b3062 |
 | B | Honest surface sweep (no demo badges on real data) | Claude Code | 1263b3062 |
@@ -124,3 +118,4 @@ Reviewer:       Benton County Assessor (sole human)
 | D | Dual-dialog fix (Launcher → startMenuStore) | Claude Code | 7e0704bd8 |
 | E | Internal alpha harness (/alpha.html) | Claude Code | 7e0704bd8 |
 | F | Forge year-layer truth UI (selector + context panel wired) | Claude Code | 7e0704bd8 |
+| 03 | Forge /years endpoint — **already live on main, truth gate closed it** | Truth gate | curl 200 confirmed |
