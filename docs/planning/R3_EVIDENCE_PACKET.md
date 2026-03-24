@@ -1,18 +1,19 @@
 # R3 Multi-Office Expansion — Evidence Packet
 
-Date: March 10, 2026  
-Branch: `r3/full-execution`  
-Tags: `r3.0.0` → `r3.1.0` → `r3.2.0` (promoted) · `r3.3.0` (CX lane — branch-only, PR #656, not on protected main)  
+Date: March 10, 2026 · Updated: March 23, 2026
+Branch: `r3/full-execution`
+Tags: `r3.0.0` → `r3.1.0` → `r3.2.0` (promoted) · `r3.3.0` (CX lane — **MERGED via PR #656**, 2026-03-23)  
 
 ---
 
 ## Executive Summary
 
-R3 CP and CC lanes are promoted to protected main; CX lane is branch-only (PR #656,
-pending merge). Three new county office verticals — **TerraClerk**, **TerraTreasury**,
-and **TerraAudit** — have 18 real tool handlers and 3 frontend workbench tabs on the
-promoted surface. Backend controllers (3 controllers, 18 endpoints, 10 entities) exist
-on the CX branch only. Acceptance criteria: **30 promoted** + **34 branch-only** = 64 total.
+All three R3 lanes — CP, CC, and CX — are on protected main. PR #656 merged
+2026-03-23. Three new county office verticals — **TerraClerk**, **TerraTreasury**,
+and **TerraAudit** — have 18 real tool handlers, 3 backend controllers (18 endpoints,
+10 entities), and 3 frontend workbench tabs. Acceptance criteria: **64/64 total** (30 CP/CC
++ 34 CX). Backend tests: **1811/1811**. Stage 2 (TerraDais persistence) +38 tests;
+Stage 3 (ServiceRegistry activation) +8 tests.
 
 ---
 
@@ -23,7 +24,7 @@ on the CX branch only. Acceptance criteria: **30 promoted** + **34 branch-only**
 | `r3.0.0` | `a581ae2d0` | 53 governed tools, v2.0.0 manifest, 9 workbench tabs, 3 new verticals |
 | `r3.1.0` | `00eed894b` | Office registry, RBAC vocabulary expansion, officeScope on all tools, 27 ACs |
 | `r3.2.0` | `bfa315b9e` | Cross-office trace tests, county isolation verification, 3-office chain, evidence |
-| `r3.3.0` | `012f7fe3a` | CX lane: 3 backend controllers, 10 entities, 18 endpoints, 34 CX tests — **branch-only (PR #656)** |
+| `r3.3.0` | `012f7fe3a` | CX lane: 3 backend controllers, 10 entities, 18 endpoints, 34 CX tests — **MERGED (PR #656, 2026-03-23)** |
 
 ---
 
@@ -128,12 +129,13 @@ on the CX branch only. Acceptance criteria: **30 promoted** + **34 branch-only**
 | Gate | Result |
 |------|--------|
 | `pnpm run type-check` | ✅ Clean (0 errors) |
-| `node --test phase83-tools.test.mjs` | ✅ 32/32 pass |
+| `node --test phase83-tools.test.mjs` | ✅ 56/56 pass |
 | `node --test r1-acceptance-criteria.test.mjs` | ✅ 84/84 pass |
 | `node --test r3-acceptance-criteria.test.mjs` | ✅ 30/30 pass |
-| `node --test r3-cx-acceptance-criteria.test.mjs` | ✅ 34/34 pass — ⏳ branch-only (PR #656) |
+| `node --test r3-cx-acceptance-criteria.test.mjs` | ✅ 34/34 pass (MERGED — PR #656) |
 | `npx vitest run` | ✅ 920 pass (416 files) |
-| `dotnet build TerraFusion.sln -c Release` | ✅ 0 errors, 0 warnings — ⏳ branch-only (PR #656) |
+| `dotnet test TerraFusion.Unit.Tests` | ✅ 1811/1811 pass (0 failures) |
+| `dotnet build TerraFusion.sln -c Release` | ✅ 0 errors, 0 warnings |
 
 ---
 
@@ -199,7 +201,7 @@ All 9 tabs: visible in tab bar, routed via React Router, lazy-loaded via Suspens
 | All permanent gates pass | ✅ All green (promoted surface) |
 | 18+ new acceptance criteria | ✅ 30 tests passing (promoted) |
 | No stubs/mocks in production surface | ✅ All real handlers |
-| Backend controllers (CX lane) | ⏳ Branch-only (PR #656) — 3 controllers, 18 endpoints, 10 entities |
+| Backend controllers (CX lane) | ✅ MERGED (PR #656) — 3 controllers, 18 endpoints, 10 entities |
 | TerraDais persistence (Stage 2) | ✅ Migration `20260317074518_AddDaisEntities` committed |
 | Frontend honesty sweep | ✅ MOCK_TASKS/PLACEHOLDER_DATA = 0 matches |
 
@@ -210,9 +212,9 @@ All 9 tabs: visible in tab bar, routed via React Router, lazy-loaded via Suspens
 | Gate | Result | Detail |
 |------|--------|--------|
 | `dotnet build backend/TerraFusion.sln` | ✅ | 0 errors, 6 NuGet warnings |
-| `dotnet test backend/TerraFusion.sln` | ✅ | 1592 passed, 2 accepted pre-existing failures |
+| `dotnet test backend/TerraFusion.sln` | ✅ | 1811 passed, 0 failures (Stage 2+3 included) |
 | `tsc --noEmit` (frontend) | ✅ | 0 errors |
-| `node --test phase83-tools.test.mjs` | ✅ | 54/54 pass |
+| `node --test phase83-tools.test.mjs` | ✅ | 56/56 pass |
 | `npm run r1:verify-evidence` | ✅ | R1 evidence chain verified |
 | `MOCK_TASKS\|PLACEHOLDER_DATA` grep | ✅ | 0 matches in frontend |
 | Integration tests | ✅ | 671/671 pass |
@@ -301,8 +303,50 @@ r2.8.0 (55d6baffa) — R2 complete: 26 tools, 23/23 workbench
   └── r3.0.0 (a581ae2d0) — R3 multi-office: 53 tools, v2.0.0, 9 tabs
        └── r3.1.0 (00eed894b) — office registry, RBAC, officeScope, 27 ACs
             └── r3.2.0 (bfa315b9e) — cross-office trace, isolation, 3-office chain, 30 ACs
-                 └── r3.3.0 (012f7fe3a) — CX lane: 3 controllers, 18 endpoints, 10 entities, 34 CX ACs ⏳ BRANCH-ONLY (PR #656, pending merge)
+                 └── r3.3.0 (012f7fe3a) — CX lane: 3 controllers, 18 endpoints, 10 entities, 34 CX ACs ✅ MERGED (PR #656, 2026-03-23)
+                      └── Stage 2 (2fac6f124–bba07ea88) — TerraDais persistence: 38 tests, 5 services, county isolation, 1803→1811 total
+                           └── Stage 3 (a2f2ba2df–2619ca6f2) — ServiceRegistry activation: 8 tests, EnsureSeededAsync, platform.json seeding, 1811/1811
 ```
+
+---
+
+---
+
+## Stage 2 — TerraDais Persistence Contract (2026-03-23)
+
+Commits: `2fac6f124` → `2262fa8dc` → `bba07ea88`
+
+| File | Tests | Content |
+|------|-------|---------|
+| `Stage2/AppealServiceTests.cs` | 6 | CreateAsync, GetById, WrongCounty=null, GetByParcel isolation, UpdateStatus, GetByTaxYear |
+| `Stage2/ExemptionServiceTests.cs` | 5 | CreateAsync, GetById, WrongCounty=null, GetByParcel isolation, UpdateStatus |
+| `Stage2/CertificationServiceTests.cs` | 5 | CreateAsync, GetById, WrongCounty=null, GetByTaxYear, CompleteStepAsync |
+| `Stage2/NoticeServiceTests.cs` | 5 | CreateAsync, GetById, WrongCounty=null, GetByParcel isolation, UpdateStatus |
+| `Stage2/QueueServiceTests.cs` | 7 | CreateAsync, GetById, WrongCounty=null, GetPending isolation, UpdateStatus valid/invalid, AssignAsync |
+| `Stage2/DaisEndpointContractTests.cs` | 10 | 201 Created contract, 400 validation guards, county isolation GET, 5 EF schema presence |
+
+**Total**: +38 new tests. Suite: 1765 → 1803 (no regressions).
+
+---
+
+## Stage 3 — ServiceRegistry Activation (2026-03-23)
+
+Commits: `a2f2ba2df` → `d5400b231` → `2619ca6f2`
+
+| Test | Result |
+|------|--------|
+| `EnsureSeededAsync_CreatesRegistryFileWhenMissing` | ✅ |
+| `EnsureSeededAsync_SeedsAllServicesFromPlatformJson` | ✅ |
+| `EnsureSeededAsync_SetsDefaultPortsFromPlatformJson` | ✅ |
+| `EnsureSeededAsync_IsIdempotent_DoesNotOverwriteExistingFile` | ✅ |
+| `RegisterServiceAsync_AddsNewServiceIfNotInRegistry` | ✅ |
+| `RegisterServiceAsync_UpdatesExistingService` | ✅ |
+| `RegisterServiceAsync_HandlesFileMissingGracefully` | ✅ |
+| `GetServiceUrlAsync_ReturnsSeedUrl` | ✅ |
+
+**Production changes**: `EnsureSeededAsync()` reads `platform.json` ports section → seeds `service-registry.json` on first boot; `RegisterServiceAsync` fixed (handles missing file, adds new entries); `GetServiceUrlAsync` no longer logs spurious errors on missing file. `StartupOrchestrationService` calls `EnsureSeededAsync()` before `ApplicationStarted`.
+
+**Total**: +8 tests. Suite: 1803 → 1811 (no regressions).
 
 ---
 
