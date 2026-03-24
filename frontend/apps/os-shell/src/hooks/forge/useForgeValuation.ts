@@ -148,3 +148,133 @@ export function useIncomeApproach(parcelId: string | undefined, taxYear: number)
 export function useReconciliation(parcelId: string | undefined, taxYear: number): ForgeHookResult<ReconciliationData> {
   return useForgeQuery<ReconciliationData>('reconciliation', parcelId, 'reconciliation', taxYear);
 }
+
+/* ── /years endpoint types ─────────────────────────────────── */
+
+export interface ProgramEnrollment {
+  currentUseAg: boolean;
+  agLossDeferred: number;
+  agLateLossDeferred: number;
+  currentUseTimber: boolean;
+  timberLossDeferred: number;
+  exemptionCodes: string[];
+}
+
+export interface ParcelYearLayer {
+  year: number;
+  supNum: number;
+  layerType: 'base' | 'supplemental';
+  propState: string | null;
+  isLocked: boolean;
+  isEarliestKnownLayer: boolean;
+  revaluationCycle: number | null;
+  lastAppraisalDate: string | null;
+  assessedValue: number | null;
+  marketValue: number | null;
+  programs: ProgramEnrollment;
+}
+
+export interface ParcelYearLayersResult {
+  parcelId: string;
+  layers: ParcelYearLayer[];
+  defaultYear: number | null;
+}
+
+/* ── useParcelYears ─────────────────────────────────────────── */
+
+export interface ParcelYearsHookResult {
+  data: ParcelYearLayersResult | undefined;
+  loading: boolean;
+  error: Error | null;
+  /** The year to use when initializing taxYear state — defaultYear from API, or current year */
+  resolvedDefault: number;
+}
+
+export function useParcelYears(parcelId: string | undefined): ParcelYearsHookResult {
+  const query = useQuery<ParcelYearLayersResult>({
+    queryKey: ['forge', 'years', parcelId],
+    queryFn: async () => {
+      const res = await fetch(`/api/forge/${encodeURIComponent(parcelId!)}/years`);
+      if (!res.ok) {
+        throw new Error(`Forge /years fetch failed: ${res.status} ${res.statusText}`);
+      }
+      return res.json();
+    },
+    enabled: !!parcelId,
+    retry: 1,
+    staleTime: 300_000,
+  });
+
+  const resolvedDefault =
+    query.data?.defaultYear ?? new Date().getFullYear();
+
+  return {
+    data: query.data,
+    loading: query.isLoading || query.isFetching,
+    error: query.error as Error | null,
+    resolvedDefault,
+  };
+}
+
+/* ── Year-layer types (mirror backend ParcelYearLayersResult) ── */
+
+export interface ProgramEnrollment {
+  currentUseAg: boolean;
+  agLossDeferred: number | null;
+  agLateLossDeferred: number | null;
+  currentUseTimber: boolean;
+  timberLossDeferred: number | null;
+  exemptionCodes: string[];
+}
+
+export interface ParcelYearLayer {
+  year: number;
+  supNum: number;
+  layerType: 'base' | 'supplemental';
+  propState: string | null;
+  isLocked: boolean;
+  isEarliestKnownLayer: boolean;
+  revaluationCycle: number | null;
+  lastAppraisalDate: string | null;
+  assessedValue: number | null;
+  marketValue: number | null;
+  programs: ProgramEnrollment;
+}
+
+export interface ParcelYearLayersResult {
+  parcelId: string;
+  layers: ParcelYearLayer[];
+  defaultYear: number | null;
+}
+
+export interface ParcelYearsHookResult {
+  data: ParcelYearLayersResult | undefined;
+  loading: boolean;
+  error: Error | null;
+  refetch: () => void;
+}
+
+/* ── useParcelYears ─────────────────────────────────────── */
+
+export function useParcelYears(parcelId: string | undefined): ParcelYearsHookResult {
+  const query = useQuery<ParcelYearLayersResult>({
+    queryKey: ['forge', 'years', parcelId],
+    queryFn: async () => {
+      const res = await fetch(`/api/forge/${encodeURIComponent(parcelId!)}/years`);
+      if (!res.ok) {
+        throw new Error(`Forge /years fetch failed: ${res.status} ${res.statusText}`);
+      }
+      return res.json();
+    },
+    enabled: !!parcelId,
+    retry: 1,
+    staleTime: 300_000,
+  });
+
+  return {
+    data: query.data,
+    loading: query.isLoading || query.isFetching,
+    error: query.error as Error | null,
+    refetch: query.refetch,
+  };
+}

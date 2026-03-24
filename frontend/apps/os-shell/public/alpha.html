@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TerraFusion Internal Alpha — Benton County</title>
+  <style>
+    /* ── TF tokens ────────────────────────────────────────── */
+    :root {
+      --void:   #0a0e1a;
+      --panel:  #0f1729;
+      --border: rgba(0,220,255,.15);
+      --cyan:   #00dcff;
+      --green:  #00e599;
+      --amber:  #f5a623;
+      --red:    #ff4455;
+      --text:   #e2e8f0;
+      --muted:  #64748b;
+      --radius: 12px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--void);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.55;
+    }
+
+    /* ── Layout ─────────────────────────────────────────────── */
+    .wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* ── Header ──────────────────────────────────────────────── */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 28px;
+      margin-bottom: 36px;
+    }
+    .header-top { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+    .logo {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--cyan), #0077cc);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    h1 { font-size: 1.6rem; font-weight: 700; color: #fff; }
+    .sub { color: var(--muted); font-size: .9rem; margin-top: 4px; }
+    .badge {
+      display: inline-block; padding: 2px 10px; border-radius: 20px;
+      font-size: .75rem; font-weight: 600; letter-spacing: .04em;
+      background: rgba(0,220,255,.12); color: var(--cyan); border: 1px solid rgba(0,220,255,.3);
+    }
+
+    /* ── Section ─────────────────────────────────────────────── */
+    section { margin-bottom: 40px; }
+    h2 {
+      font-size: 1rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--cyan); margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    h2::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── Cards / Panels ──────────────────────────────────────── */
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 12px;
+    }
+    .card h3 { font-size: .95rem; font-weight: 600; color: #fff; margin-bottom: 8px; }
+    .card p, .card li { font-size: .88rem; color: var(--muted); line-height: 1.6; }
+    .card ul { padding-left: 20px; }
+    .card ul li { margin-bottom: 4px; }
+
+    /* ── Charter table ───────────────────────────────────────── */
+    .charter-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    @media (max-width: 600px) { .charter-grid { grid-template-columns: 1fr; } }
+
+    /* ── Scenario table ──────────────────────────────────────── */
+    table {
+      width: 100%; border-collapse: collapse; font-size: .85rem;
+      border-radius: var(--radius); overflow: hidden;
+    }
+    thead tr { background: rgba(0,220,255,.08); }
+    th {
+      text-align: left; padding: 10px 14px; font-size: .75rem;
+      text-transform: uppercase; letter-spacing: .06em; color: var(--cyan);
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,.04);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,.02); }
+    .pass  { color: var(--green); font-weight: 600; }
+    .stub  { color: var(--amber); font-weight: 600; }
+    .empty { color: var(--muted); font-weight: 600; }
+    code {
+      font-family: 'Consolas', monospace; font-size: .82rem;
+      background: rgba(0,220,255,.08); padding: 1px 6px;
+      border-radius: 4px; color: var(--cyan);
+    }
+
+    /* ── Step list ───────────────────────────────────────────── */
+    .steps { counter-reset: step; list-style: none; padding: 0; }
+    .steps li {
+      counter-increment: step;
+      display: flex; gap: 14px; margin-bottom: 10px;
+      font-size: .88rem; align-items: flex-start;
+    }
+    .steps li::before {
+      content: counter(step);
+      min-width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(0,220,255,.12); color: var(--cyan);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+
+    /* ── Defect form ─────────────────────────────────────────── */
+    .form-row { margin-bottom: 16px; }
+    label { display: block; font-size: .8rem; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+    input[type="text"], select, textarea {
+      width: 100%;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-size: .88rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .15s;
+    }
+    input[type="text"]:focus, select:focus, textarea:focus {
+      border-color: rgba(0,220,255,.5);
+    }
+    select option { background: #1a2035; }
+    textarea { resize: vertical; min-height: 90px; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 600px) { .form-row-2 { grid-template-columns: 1fr; } }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 22px; border-radius: 8px;
+      font-size: .88rem; font-weight: 600; cursor: pointer;
+      border: none; transition: opacity .15s;
+    }
+    .btn:hover { opacity: .85; }
+    .btn-primary { background: var(--cyan); color: #000; }
+    .btn-secondary {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-row { display: flex; gap: 10px; margin-top: 6px; }
+
+    /* ── Notice banner ───────────────────────────────────────── */
+    .notice {
+      padding: 12px 16px; border-radius: 8px; font-size: .85rem;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .notice-info  { background: rgba(0,220,255,.07); border: 1px solid rgba(0,220,255,.2); }
+    .notice-warn  { background: rgba(245,166,35,.07); border: 1px solid rgba(245,166,35,.2); color: var(--amber); }
+    .notice-icon  { font-size: 1rem; flex-shrink: 0; }
+
+    /* ── Submitted state ─────────────────────────────────────── */
+    #submitted { display: none; text-align: center; padding: 28px 0; }
+    #submitted .big { font-size: 2.5rem; margin-bottom: 10px; }
+    #submitted p { color: var(--muted); font-size: .9rem; }
+
+    /* ── Pill tag ────────────────────────────────────────────── */
+    .tag {
+      display: inline-block; padding: 1px 8px; border-radius: 20px;
+      font-size: .72rem; font-weight: 600;
+      background: rgba(0,229,153,.1); color: var(--green);
+      border: 1px solid rgba(0,229,153,.25); margin-left: 6px;
+    }
+    .tag-stub {
+      background: rgba(245,166,35,.1); color: var(--amber);
+      border-color: rgba(245,166,35,.25);
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-top">
+      <div class="logo">🔥</div>
+      <div>
+        <h1>TerraFusion OS — Internal Alpha</h1>
+        <p class="sub">Benton County Assessor's Office &nbsp;·&nbsp; Staff Use Only</p>
+      </div>
+      <span class="badge">ALPHA</span>
+    </div>
+    <p class="sub" style="margin-top:10px;">
+      Real PACS data. 89,247 parcels. This is not a demo.<br>
+      Report every gap, every wrong number, every weird UI moment — that's the job.
+    </p>
+  </header>
+
+  <!-- Charter -->
+  <section>
+    <h2>📋 Tester Charter</h2>
+    <div class="charter-grid">
+      <div class="card">
+        <h3>What you're testing</h3>
+        <ul>
+          <li>Property search returns real Benton parcels</li>
+          <li>Clicking a result opens the Workbench with live data</li>
+          <li>All 9 tabs show honest state (real / no-data, never fake)</li>
+          <li>Forge year selector reflects actual PACS layers</li>
+          <li>No "Demo data" badges on parcels loaded from PACS</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>What you are <em>not</em> testing (yet)</h3>
+        <ul>
+          <li>Atlas / GIS mapping</li>
+          <li>AI valuation suggestions</li>
+          <li>Tax statement workflow</li>
+          <li>Appeals filing</li>
+          <li>Anything labeled "Coming soon" or "Stub"</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Success criteria</h3>
+        <ul>
+          <li>Search works for any parcel by ID, address, or owner</li>
+          <li>Parcel detail loads within 3 seconds</li>
+          <li>Values match what you see in Harris PACS for the same parcel</li>
+          <li>No crashes, no infinite spinners, no blank tabs without explanation</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Your role</h3>
+        <ul>
+          <li>Use the app as you would in a real work session</li>
+          <li>Look up parcels you know well — spot any wrong data immediately</li>
+          <li>Open exploration: 30 min free-form + 30 min scenarios</li>
+          <li>File a defect for every discrepancy you notice, however small</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Setup -->
+  <section>
+    <h2>🚀 Setup</h2>
+    <div class="card">
+      <h3>Before you start</h3>
+      <ol class="steps" style="margin-top:10px;">
+        <li>Open <code>http://localhost:5173</code> in Chrome or Edge</li>
+        <li>You should see the TerraFusion OS desktop (dark background, cyan accents)</li>
+        <li>Press <kbd style="background:rgba(255,255,255,.08);padding:1px 6px;border-radius:4px;font-family:monospace;">Ctrl+K</kbd> to open the command palette search bar</li>
+        <li>Type any parcel ID, address, or owner name and press Enter</li>
+        <li>Click a result — the Workbench should open in a floating window</li>
+        <li>Verify the "Live" badge appears (not "Demo data")</li>
+      </ol>
+      <div class="notice notice-info" style="margin-top:14px;">
+        <span class="notice-icon">ℹ️</span>
+        <span>Backend must be running at <code>localhost:5000</code>. If you see "Backend offline" in the status bar, contact the dev team before testing.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tab Truth Matrix -->
+  <section>
+    <h2>📊 Tab Truth Matrix — What's Real</h2>
+    <div class="notice notice-warn" style="margin-bottom:14px;">
+      <span class="notice-icon">⚠️</span>
+      <span>Tabs marked <strong>Stub (honest)</strong> show a clear "no data" state. They do not fabricate values. That is correct behavior — report it only if they show fake data instead.</span>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table>
+        <thead>
+          <tr>
+            <th>Tab</th>
+            <th>Status</th>
+            <th>What to verify</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Summary</strong></td>
+            <td><span class="pass">✅ Real</span></td>
+            <td>Owner, address, AV, MV, land/improvement split, legal desc — all from PACS live</td>
+          </tr>
+          <tr>
+            <td><strong>Forge</strong></td>
+            <td><span class="pass">✅ Real</span></td>
+            <td>Year selector pulls PACS layers; lock state badge (🔒/🔓); AV/MV per year; fallback to static years if API down</td>
+          </tr>
+          <tr>
+            <td><strong>Assessment</strong></td>
+            <td><span class="pass">✅ Real</span></td>
+            <td>Assessment history built from PACS property data</td>
+          </tr>
+          <tr>
+            <td><strong>Dossier</strong></td>
+            <td><span class="stub">⚪ Stub</span></td>
+            <td>Should show "no documents" — not fake docs</td>
+          </tr>
+          <tr>
+            <td><strong>Atlas</strong></td>
+            <td><span class="stub">⚪ Stub</span></td>
+            <td>Should show "no GIS layers" — not a fake map</td>
+          </tr>
+          <tr>
+            <td><strong>Appeals</strong></td>
+            <td><span class="stub">⚪ Stub</span></td>
+            <td>Should show empty or "no appeals on file"</td>
+          </tr>
+          <tr>
+            <td><strong>Tax</strong></td>
+            <td><span class="stub">⚪ Stub</span></td>
+            <td>Should show empty or "no tax statements available"</td>
+          </tr>
+          <tr>
+            <td><strong>Recording</strong></td>
+            <td><span class="stub">⚪ Stub</span></td>
+            <td>Should show empty or "no recording history"</td>
+          </tr>
+          <tr>
+            <td><strong>Audit</strong></td>
+            <td><span class="stub">⚪ Stub</span></td>
+            <td>Should show empty or "no audit trail"</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Scenarios -->
+  <section>
+    <h2>🧪 Test Scenarios</h2>
+
+    <div class="card">
+      <h3>Scenario 1 — Parcel ID search</h3>
+      <p style="margin-bottom:10px;">Pick any parcel ID you know from Benton County. Type it in Ctrl+K.</p>
+      <ol class="steps">
+        <li>Press <code>Ctrl+K</code> — command palette opens (no launcher dialog)</li>
+        <li>Type the parcel ID (e.g. <code>101843030001006</code>)</li>
+        <li>Select the result from the dropdown</li>
+        <li>Workbench opens — Summary tab is active</li>
+        <li>Check: owner name, address, and AV match PACS</li>
+        <li>Check: "Live" badge visible, no "Demo data" badge</li>
+      </ol>
+      <div style="margin-top:10px;"><span class="tag">Pass when:</span> <span style="font-size:.85rem;color:var(--muted)">Values match PACS. No demo badge. No crash.</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Scenario 2 — Address search</h3>
+      <p style="margin-bottom:10px;">Search by a street address you know in Benton County.</p>
+      <ol class="steps">
+        <li>Press <code>Ctrl+K</code></li>
+        <li>Type a partial street name (e.g. <code>Clearwater</code>)</li>
+        <li>Multiple results should appear — select one</li>
+        <li>Workbench opens with correct property</li>
+        <li>Navigate to Forge tab — verify year selector appears</li>
+      </ol>
+      <div style="margin-top:10px;"><span class="tag">Pass when:</span> <span style="font-size:.85rem;color:var(--muted)">Address search returns relevant results. Forge year selector shows ≥1 layer.</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Scenario 3 — Forge year layers</h3>
+      <p style="margin-bottom:10px;">Verify the Forge tab shows real PACS year history, not a static dropdown.</p>
+      <ol class="steps">
+        <li>Open any parcel in the Workbench</li>
+        <li>Click the <strong>Forge</strong> tab</li>
+        <li>The "Tax Year" selector should show year options pulled from PACS</li>
+        <li>If years have lock state, look for 🔒 or 🔓 badge next to the year</li>
+        <li>Change the year — context panel below the selector should update</li>
+        <li>Check AV/MV values in the context panel match PACS for that year</li>
+      </ol>
+      <div style="margin-top:10px;"><span class="tag">Pass when:</span> <span style="font-size:.85rem;color:var(--muted)">Year list comes from PACS (shows "PACS · N layers" badge). Values update per year.</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Scenario 4 — Multi-parcel session</h3>
+      <p style="margin-bottom:10px;">Open 3 different parcels in the same session.</p>
+      <ol class="steps">
+        <li>Open parcel A → Workbench window appears</li>
+        <li>Press <code>Ctrl+K</code> again → search for parcel B → open it</li>
+        <li>A second Workbench window opens (or focuses existing if same parcel)</li>
+        <li>Open parcel C the same way</li>
+        <li>Verify each window shows the correct parcel's data independently</li>
+        <li>Switch between windows — no data bleed between parcels</li>
+      </ol>
+      <div style="margin-top:10px;"><span class="tag">Pass when:</span> <span style="font-size:.85rem;color:var(--muted)">3 parcels open, each shows its own data, no cross-contamination.</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Scenario 5 — Stub honesty check</h3>
+      <p style="margin-bottom:10px;">Verify stub tabs say "no data" instead of showing fake information.</p>
+      <ol class="steps">
+        <li>Open any parcel</li>
+        <li>Click each stub tab: Dossier, Atlas, Appeals, Tax, Recording, Audit</li>
+        <li>Each should show a clear empty state or "no data available" message</li>
+        <li>None should show placeholder/fixture data that looks real</li>
+      </ol>
+      <div style="margin-top:10px;"><span class="tag">Pass when:</span> <span style="font-size:.85rem;color:var(--muted)">All stub tabs show honest empty state. Zero fabricated values.</span></div>
+    </div>
+  </section>
+
+  <!-- Defect Form -->
+  <section>
+    <h2>🐛 Report a Defect</h2>
+    <div class="card">
+      <div id="defect-form">
+        <div class="form-row-2">
+          <div class="form-row" style="margin-bottom:0;">
+            <label for="df-reporter">Your name</label>
+            <input type="text" id="df-reporter" placeholder="e.g. Jane Smith" />
+          </div>
+          <div class="form-row" style="margin-bottom:0;">
+            <label for="df-parcel">Parcel ID (if applicable)</label>
+            <input type="text" id="df-parcel" placeholder="e.g. 101843030001006" />
+          </div>
+        </div>
+
+        <div class="form-row" style="margin-top:14px;">
+          <label for="df-tab">Which tab / area?</label>
+          <select id="df-tab">
+            <option value="">— select —</option>
+            <option>Search / Command palette</option>
+            <option>Summary tab</option>
+            <option>Forge tab</option>
+            <option>Assessment tab</option>
+            <option>Dossier tab</option>
+            <option>Atlas tab</option>
+            <option>Appeals tab</option>
+            <option>Tax tab</option>
+            <option>Recording tab</option>
+            <option>Audit tab</option>
+            <option>Keyboard shortcut / navigation</option>
+            <option>Wrong data / value mismatch</option>
+            <option>Crash / blank screen</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="df-severity">Severity</label>
+          <select id="df-severity">
+            <option value="P0">P0 — Crash / data loss / blocking</option>
+            <option value="P1">P1 — Wrong data shown (value mismatch)</option>
+            <option value="P2" selected>P2 — Broken feature, workaround exists</option>
+            <option value="P3">P3 — Bad UX / confusing / cosmetic</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="df-description">What happened?</label>
+          <textarea id="df-description" rows="4"
+            placeholder="1. I searched for parcel 101843030001006&#10;2. I clicked on the result&#10;3. Expected: Workbench opened with parcel data&#10;4. Actual: Blank white screen appeared"></textarea>
+        </div>
+
+        <div class="form-row">
+          <label for="df-expected">Expected vs Actual (optional — include if not in description above)</label>
+          <input type="text" id="df-expected" placeholder="Expected: AV = $245,000   Actual: AV = $0" />
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="submitDefect()">📧 Send defect report</button>
+          <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+        </div>
+      </div>
+
+      <div id="submitted">
+        <div class="big">✅</div>
+        <h3 style="color:#fff;margin-bottom:8px;">Report sent</h3>
+        <p>Your email client should have opened a draft. Send it to complete the report.</p>
+        <button class="btn btn-secondary" style="margin-top:16px;" onclick="resetForm()">Report another</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="border-top:1px solid var(--border);padding-top:20px;color:var(--muted);font-size:.8rem;text-align:center;">
+    TerraFusion OS · Internal Alpha · Benton County Assessor's Office ·
+    <a href="http://localhost:5173" style="color:var(--cyan);text-decoration:none;">Open the OS →</a>
+  </footer>
+
+</div>
+
+<script>
+  function submitDefect() {
+    const reporter    = document.getElementById('df-reporter').value.trim();
+    const parcel      = document.getElementById('df-parcel').value.trim();
+    const tab         = document.getElementById('df-tab').value;
+    const severity    = document.getElementById('df-severity').value;
+    const description = document.getElementById('df-description').value.trim();
+    const expected    = document.getElementById('df-expected').value.trim();
+
+    if (!description) {
+      alert('Please describe what happened before sending.');
+      return;
+    }
+
+    const subject = `[TF Alpha ${severity}] ${tab || 'General'} — ${parcel || 'no parcel'}`;
+
+    let body = `TerraFusion OS Internal Alpha Defect Report\n`;
+    body    += `==========================================\n\n`;
+    body    += `Reporter:  ${reporter || 'unknown'}\n`;
+    body    += `Parcel ID: ${parcel || 'N/A'}\n`;
+    body    += `Area:      ${tab || 'N/A'}\n`;
+    body    += `Severity:  ${severity}\n\n`;
+    body    += `Description:\n${description}\n`;
+    if (expected) body += `\nExpected vs Actual:\n${expected}\n`;
+    body    += `\n--- sent from TerraFusion Internal Alpha Harness ---\n`;
+
+    // Open mailto — replace with your defect email address
+    const mailto = `mailto:alpha-defects@benton.wa.gov?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailto;
+
+    document.getElementById('defect-form').style.display = 'none';
+    document.getElementById('submitted').style.display   = 'block';
+  }
+
+  function clearForm() {
+    ['df-reporter','df-parcel','df-description','df-expected'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('df-tab').selectedIndex = 0;
+    document.getElementById('df-severity').selectedIndex = 2;
+  }
+
+  function resetForm() {
+    clearForm();
+    document.getElementById('defect-form').style.display = 'block';
+    document.getElementById('submitted').style.display   = 'none';
+  }
+</script>
+</body>
+</html>
