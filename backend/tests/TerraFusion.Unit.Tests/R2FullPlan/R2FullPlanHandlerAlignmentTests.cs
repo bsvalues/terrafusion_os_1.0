@@ -281,6 +281,7 @@ public sealed class R2FullPlanHandlerAlignmentTests
   public async Task Handler14_CertificationStatus_Benton()
   {
     using var db = CreateDbContext("handler-14");
+    await SeedCounty(db, BentonCountyId);
     var controller = CreateDaisController(db);
     var result = await controller.GetCertificationStatus("benton", 2026);
     var ok = result.Should().BeOfType<OkObjectResult>().Subject;
@@ -292,6 +293,7 @@ public sealed class R2FullPlanHandlerAlignmentTests
   public async Task Cert_AltStatus_ReturnsOk()
   {
     using var db = CreateDbContext("cert-alt-status");
+    await SeedCounty(db, BentonCountyId);
     var controller = CreateDaisController(db);
     var result = await controller.GetCertStatus("benton", 2026);
     result.Should().BeOfType<OkObjectResult>();
