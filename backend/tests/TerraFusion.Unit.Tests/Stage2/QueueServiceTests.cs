@@ -183,7 +183,7 @@ public sealed class QueueServiceTests
         Func<Task> act = async () => await svc.UpdateStatusAsync(created.Id, "completed", BentonCountyId);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*queued*completed*");
+            .WithMessage("*from 'queued' to 'completed'*");
     }
 
     [Fact]

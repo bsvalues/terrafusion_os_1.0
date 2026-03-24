@@ -258,34 +258,34 @@ public sealed class DaisEndpointContractTests
     public void DbContext_HasAppealDbSet()
     {
         using var db = CreateDbContext("schema-appeal");
-        db.Appeals.Should().NotBeNull();
+        db.Model.FindEntityType(typeof(Appeal)).Should().NotBeNull();
     }
 
     [Fact]
     public void DbContext_HasExemptionDbSet()
     {
         using var db = CreateDbContext("schema-exemption");
-        db.Exemptions.Should().NotBeNull();
+        db.Model.FindEntityType(typeof(Exemption)).Should().NotBeNull();
     }
 
     [Fact]
     public void DbContext_HasCertificationStepDbSet()
     {
         using var db = CreateDbContext("schema-certificationstep");
-        db.CertificationSteps.Should().NotBeNull();
+        db.Model.FindEntityType(typeof(CertificationStep)).Should().NotBeNull();
     }
 
     [Fact]
     public void DbContext_HasNoticeDbSet()
     {
         using var db = CreateDbContext("schema-notice");
-        db.Notices.Should().NotBeNull();
+        db.Model.FindEntityType(typeof(Notice)).Should().NotBeNull();
     }
 
     [Fact]
     public void DbContext_HasQueueItemDbSet()
     {
         using var db = CreateDbContext("schema-queueitem");
-        db.QueueItems.Should().NotBeNull();
+        db.Model.FindEntityType(typeof(QueueItem)).Should().NotBeNull();
     }
 }
