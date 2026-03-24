@@ -105,17 +105,29 @@ let _provider: DataProvider | null = null;
 
 /**
  * Get the active DataProvider.
- * Uses LiveDataProvider when a real JWT token is available (backend reachable).
- * Falls back to SnapshotDataProvider otherwise.
+ *
+ * Priority:
+ *   1. If VITE_DATA_MODE is 'snapshot' or 'fixtures', use that explicitly.
+ *   2. Otherwise, default to LiveDataProvider (PACS endpoints are AllowAnonymous).
+ *   3. LiveDataProvider gracefully falls back when backend is unreachable.
+ *
+ * Note: PACS endpoints (/api/pacs/*, /ops/pacs/*) do NOT require JWT.
+ * No token check needed for live mode.
  */
 export function getDataProvider(): DataProvider {
   if (!_provider) {
-    const token = getToken();
-    // Use live provider when we have a real JWT (starts with eyJ)
-    if (token && token.startsWith('eyJ')) {
-      _provider = new LiveDataProvider();
-    } else {
+    const envMode = (typeof import.meta !== 'undefined'
+      ? (import.meta as any).env?.VITE_DATA_MODE
+      : undefined) as string | undefined;
+
+    if (envMode === 'snapshot') {
       _provider = new SnapshotDataProvider();
+    } else if (envMode === 'fixtures') {
+      // Synchronous fallback — async fixtures loaded via createDataProvider
+      _provider = new SnapshotDataProvider();
+    } else {
+      // Default: live PACS (works with or without JWT)
+      _provider = new LiveDataProvider();
     }
   }
   return _provider;

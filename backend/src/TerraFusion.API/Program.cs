@@ -376,7 +376,19 @@ builder.Services.AddScoped<TerraFusion.Core.Services.IQueueService, TerraFusion.
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IGisDataService, TerraFusion.API.Services.GisDataService>();
 
 // 🏛️ PACS Adapter - pacscontract.v1 compliant read-only boundary
-builder.Services.AddPacsAdapter();
+// When PacsConnection is configured: SQL Server via Dapper (PacsSqlAdapter)
+// When absent: seeded PACS data from EF Core / SQLite (PacsEfAdapter) for local dev
+var pacsConn = builder.Configuration.GetConnectionString("PacsConnection");
+// Connection string is "configured" only if it exists AND doesn't contain unresolved env vars
+var pacsConfigured = !string.IsNullOrEmpty(pacsConn) && !pacsConn.Contains("${");
+if (pacsConfigured)
+{
+  builder.Services.AddPacsAdapter();
+}
+else
+{
+  builder.Services.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.API.Services.PacsEfAdapter>();
+}
 // Conditionally register Redis-backed cache or NoOp fallback
 if (redisAvailable)
 {
