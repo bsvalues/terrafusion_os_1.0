@@ -32,6 +32,7 @@ import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useRecentParcels } from '../../context/parcelContext';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { useTodaysWork, type TodaysWorkItem } from '../../hooks/useTodaysWork';
+import { DemoDataBanner } from '../../components/governance/DemoDataBanner';
 import { LiquidPanel } from '../../ui/materials';
 import { Z } from './zIndex';
 
@@ -238,7 +239,7 @@ const CountyMapOverview: React.FC<{ onClick: () => void }> = ({ onClick }) => (
 export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = '' }) => {
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
   const recentParcels = useRecentParcels();
-  const { tasks: todaysTasks } = useTodaysWork();
+  const { tasks: todaysTasks, isSampleData } = useTodaysWork();
 
   const handleOpenAtlas = useCallback(() => {
     activateModule('suite-atlas', { source: 'desktop' });
@@ -333,6 +334,7 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
         {/* ═══ Right Panel: Today's Work + Quick Actions ═══ */}
         <div className='w-[240px] shrink-0 flex flex-col gap-3'>
           <GlassCard className='flex-1'>
+            {isSampleData && <DemoDataBanner module="Today's Work" />}
             <TodaysWorkPanel tasks={todaysTasks} onActivate={(route) => activateModule(route)} />
           </GlassCard>
           <GlassCard className='shrink-0'>

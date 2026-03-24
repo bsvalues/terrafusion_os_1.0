@@ -27,6 +27,7 @@ import {
   FileText,
 } from 'lucide-react';
 import { TactileButton } from '@/ui/materials';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import {
   type AuditAction,
   type ValuationAuditEntry,
@@ -191,6 +192,8 @@ export default function ValueAuditModule() {
 
   return (
     <div className='p-6 space-y-6'>
+      {/* Provenance disclosure: DEMO_ENTRIES are always merged into the audit trail */}
+      <DemoDataBanner module="Value Audit" />
       {/* Title */}
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-3'>

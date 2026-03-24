@@ -211,3 +211,70 @@ describe('Gate 5 — sealed wave regression', () => {
     expect(src).toContain('throwOnError: true');
   });
 });
+
+// ============================================================================
+// Gate 6 — StageZeroState: Today's Work panel wires isSampleData to DemoDataBanner
+// ============================================================================
+
+describe('Gate 6 — StageZeroState wires useTodaysWork.isSampleData to DemoDataBanner', () => {
+  const src = readSrc('shell/desktop/StageZeroState.tsx');
+
+  it('imports DemoDataBanner from governance', () => {
+    expect(src).toMatch(/from\s+['"].*governance\/DemoDataBanner['"]/);
+  });
+
+  it('destructures isSampleData from useTodaysWork', () => {
+    expect(src).toContain('isSampleData');
+  });
+
+  it('conditionally renders DemoDataBanner when isSampleData is true', () => {
+    expect(src).toMatch(/isSampleData\s*&&\s*.*DemoDataBanner|DemoDataBanner.*isSampleData/);
+  });
+
+  it('uses module="Today\'s Work" on the banner', () => {
+    expect(src).toContain("module=\"Today's Work\"");
+  });
+});
+
+// ============================================================================
+// Gate 7 — ValueAuditModule: DEMO_ENTRIES always present → DemoDataBanner required
+// ============================================================================
+
+describe('Gate 7 — ValueAuditModule renders DemoDataBanner for DEMO_ENTRIES', () => {
+  const src = readSrc('pages/suites/modules/ValueAuditModule.tsx');
+
+  it('imports DemoDataBanner from governance', () => {
+    expect(src).toContain('DemoDataBanner');
+    expect(src).toMatch(/from\s+['"].*governance\/DemoDataBanner['"]/);
+  });
+
+  it('renders DemoDataBanner with module="Value Audit"', () => {
+    expect(src).toContain('module="Value Audit"');
+  });
+
+  it('still merges DEMO_ENTRIES with stored entries', () => {
+    expect(src).toContain('DEMO_ENTRIES');
+    expect(src).toMatch(/\[\s*\.\.\.DEMO_ENTRIES/);
+  });
+});
+
+// ============================================================================
+// Gate 8 — MassAppraisalGIS: DEMO_PARCELS unconditional → DemoDataBanner required
+// ============================================================================
+
+describe('Gate 8 — MassAppraisalGIS renders DemoDataBanner for DEMO_PARCELS', () => {
+  const src = readSrc('pages/atlas/MassAppraisalGIS.tsx');
+
+  it('imports DemoDataBanner from governance', () => {
+    expect(src).toContain('DemoDataBanner');
+    expect(src).toMatch(/from\s+['"].*governance\/DemoDataBanner['"]/);
+  });
+
+  it('renders DemoDataBanner with module="Mass Appraisal GIS"', () => {
+    expect(src).toContain('module="Mass Appraisal GIS"');
+  });
+
+  it('still defines DEMO_PARCELS constant', () => {
+    expect(src).toContain('DEMO_PARCELS');
+  });
+});
