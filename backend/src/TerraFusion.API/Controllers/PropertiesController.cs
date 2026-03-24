@@ -71,7 +71,7 @@ public class PropertiesController : ControllerBase
         countyId = Guid.Empty;
         var claim = User.FindFirst("countyId")?.Value?.Trim();
         if (string.IsNullOrWhiteSpace(claim) || !Guid.TryParse(claim, out countyId))
-            return BadRequest(new { error = "A valid countyId claim is required." });
+            return Forbid();
 
         if (requestedCountyId.HasValue && requestedCountyId.Value != countyId)
             return Forbid();

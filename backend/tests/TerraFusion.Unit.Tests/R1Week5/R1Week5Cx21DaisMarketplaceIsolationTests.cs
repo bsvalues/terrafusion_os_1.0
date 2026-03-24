@@ -23,7 +23,7 @@ namespace TerraFusion.Unit.Tests.R1Week5;
 // ─────────────────────────────────────────────────────────────────────────────
 // G3: DaisController — County Isolation Contract
 // Proves [Authorize] + RequireCountyAccessAsync() form a closed gate.
-// No sentinel GUID fallback path. Missing county claim → 401.
+// No sentinel GUID fallback path. Missing county claim → 403 (Forbid — authenticated but missing required claim).
 // ─────────────────────────────────────────────────────────────────────────────
 
 [Trait("Category", "R1Week5")]
@@ -64,22 +64,23 @@ public sealed class R1Week5Cx21DaisCountyIsolationTests
     // ── G3-B: RequireCountyAccessAsync() blocks auth'd requests with no county claim ──
 
     [Fact]
-    public async Task Authenticated_NoCountyClaim_GetCertStatus_Returns401()
+    public async Task Authenticated_NoCountyClaim_GetCertStatus_Returns403()
     {
         using var client = CreateAuthenticatedClient(countyId: null);
         var response = await client.GetAsync("/api/dais/cert/status");
 
-        // RequireCountyAccessAsync returns Unauthorized when no claim resolves
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        // RequireCountyAccessAsync returns Forbid (403) when no claim resolves —
+        // authenticated user is missing required county claim → authorization failure, not authentication failure
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]
-    public async Task Authenticated_NoCountyClaim_GetAppeals_Returns401()
+    public async Task Authenticated_NoCountyClaim_GetAppeals_Returns403()
     {
         using var client = CreateAuthenticatedClient(countyId: null);
         var response = await client.GetAsync("/api/dais/appeals");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     // ── G3-C: authenticated with county claim reaches static endpoints ────────

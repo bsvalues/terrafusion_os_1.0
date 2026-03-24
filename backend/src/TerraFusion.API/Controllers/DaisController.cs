@@ -127,7 +127,7 @@ public class DaisController : ControllerBase
   {
     var countyId = await ResolveCountyIdAsync();
     if (countyId is null)
-      return (null, Unauthorized(new { error = "A valid countyId or countyCode claim is required." }));
+      return (null, Forbid());
 
     if (string.IsNullOrWhiteSpace(requestedCounty))
       return (countyId.Value, null);
