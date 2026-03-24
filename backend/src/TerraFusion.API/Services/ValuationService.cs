@@ -144,8 +144,8 @@ public class ValuationService : IValuationService
             compQuery = compQuery.Where(s => neighborhoodParcelIds.Contains(s.ParcelId));
         }
 
-        var cutoffStart = new DateTime(taxYear - 2, 1, 1);
-        var cutoffEnd = new DateTime(taxYear, 12, 31);
+        var cutoffStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var cutoffEnd = new DateTime(taxYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
         compQuery = compQuery.Where(s => s.SaleDate >= cutoffStart && s.SaleDate <= cutoffEnd);
 
         var comps = await compQuery
@@ -285,16 +285,10 @@ public class ValuationService : IValuationService
     public async Task<ReconciliationResult> ReconcileAsync(
         string parcelId, int taxYear, CancellationToken ct)
     {
-        // Run all three approaches
-        var costTask = CalculateCostApproachAsync(parcelId, taxYear, ct);
-        var salesTask = CalculateSalesComparisonAsync(parcelId, taxYear, ct);
-        var incomeTask = CalculateIncomeApproachAsync(parcelId, taxYear, ct);
-
-        await Task.WhenAll(costTask, salesTask, incomeTask);
-
-        var cost = costTask.Result;
-        var sales = salesTask.Result;
-        var income = incomeTask.Result;
+        // Run sequentially — DbContext is not thread-safe for concurrent operations
+        var cost = await CalculateCostApproachAsync(parcelId, taxYear, ct);
+        var sales = await CalculateSalesComparisonAsync(parcelId, taxYear, ct);
+        var income = await CalculateIncomeApproachAsync(parcelId, taxYear, ct);
 
         // Standard residential weights: Sales 45%, Cost 40%, Income 15%
         const int costWeight = 40;
