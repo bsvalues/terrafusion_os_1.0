@@ -38,22 +38,24 @@ public class ValuationService : IValuationService
             return BuildFallbackCostApproach(parcelId, taxYear);
         }
 
+        var effectiveTaxYear = await ResolveEffectiveTaxYearAsync(parcel.Id, taxYear, ct);
+
         // Get valuation record for the given year
         var valuation = await _db.PacsValuations
             .AsNoTracking()
-            .Where(v => v.ParcelId == parcel.Id && v.PropValYear == taxYear && v.SupNum == 0)
+            .Where(v => v.ParcelId == parcel.Id && v.PropValYear == effectiveTaxYear && v.SupNum == 0)
             .FirstOrDefaultAsync(ct);
 
         // Get land details
         var landDetails = await _db.PacsLandDetails
             .AsNoTracking()
-            .Where(l => l.ParcelId == parcel.Id && l.PropValYear == taxYear)
+            .Where(l => l.ParcelId == parcel.Id && l.PropValYear == effectiveTaxYear)
             .ToListAsync(ct);
 
         // Get improvement details for RCN/depreciation
         var improvements = await _db.PacsImprovementDetails
             .AsNoTracking()
-            .Where(i => i.PacsPropId == parcel.PropId && i.PropValYear == taxYear)
+            .Where(i => i.PacsPropId == parcel.PropId && i.PropValYear == effectiveTaxYear)
             .ToListAsync(ct);
 
         var landValue = landDetails.Sum(l => l.LandSegMktVal ?? 0m);
@@ -89,6 +91,7 @@ public class ValuationService : IValuationService
         {
             ParcelId = parcelId,
             TaxYear = taxYear,
+            EffectiveTaxYear = effectiveTaxYear,
             ReplacementCostNew = rcn,
             PhysicalDepreciation = physicalDep,
             FunctionalObsolescence = functionalDep,
@@ -118,16 +121,18 @@ public class ValuationService : IValuationService
             return BuildFallbackSalesComparison(parcelId, taxYear);
         }
 
+        var effectiveTaxYear = await ResolveEffectiveTaxYearAsync(parcel.Id, taxYear, ct);
+
         // Get valuation for market approach indicated value
         var valuation = await _db.PacsValuations
             .AsNoTracking()
-            .Where(v => v.ParcelId == parcel.Id && v.PropValYear == taxYear && v.SupNum == 0)
+            .Where(v => v.ParcelId == parcel.Id && v.PropValYear == effectiveTaxYear && v.SupNum == 0)
             .FirstOrDefaultAsync(ct);
 
         // Get the neighborhood code for finding comps
         var hood = valuation?.NeighborhoodCode;
 
-        // Find comparable sales: same neighborhood, within 2 years of taxYear
+        // Find comparable sales: same neighborhood, within 2 years of effectiveTaxYear
         var compQuery = _db.PacsSales.AsNoTracking()
             .Where(s => s.SalePrice > 0 && s.SaleDate != null);
 
@@ -136,7 +141,7 @@ public class ValuationService : IValuationService
             // Find parcel IDs in same neighborhood
             var neighborhoodParcelIds = await _db.PacsValuations
                 .AsNoTracking()
-                .Where(v => v.NeighborhoodCode == hood && v.PropValYear == taxYear)
+                .Where(v => v.NeighborhoodCode == hood && v.PropValYear == effectiveTaxYear)
                 .Select(v => v.ParcelId)
                 .Distinct()
                 .ToListAsync(ct);
@@ -144,8 +149,8 @@ public class ValuationService : IValuationService
             compQuery = compQuery.Where(s => neighborhoodParcelIds.Contains(s.ParcelId));
         }
 
-        var cutoffStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var cutoffEnd = new DateTime(taxYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
+        var cutoffStart = new DateTime(effectiveTaxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var cutoffEnd = new DateTime(effectiveTaxYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
         compQuery = compQuery.Where(s => s.SaleDate >= cutoffStart && s.SaleDate <= cutoffEnd);
 
         var comps = await compQuery
@@ -181,6 +186,7 @@ public class ValuationService : IValuationService
         {
             ParcelId = parcelId,
             TaxYear = taxYear,
+            EffectiveTaxYear = effectiveTaxYear,
             IndicatedValue = indicated,
             ComparableCount = comps.Count,
             MedianAdjustedPrice = median,
@@ -195,7 +201,7 @@ public class ValuationService : IValuationService
                 Notes = BuildSaleNotes(c),
             }).ToList(),
             Rationale = comps.Count > 0
-                ? $"{comps.Count} comparable sales found in neighborhood {hood ?? "N/A"} within {taxYear - 2}–{taxYear}. Median adjusted price: ${median:N0}."
+                ? $"{comps.Count} comparable sales found in neighborhood {hood ?? "N/A"} within {effectiveTaxYear - 2}–{effectiveTaxYear}. Median adjusted price: ${median:N0}."
                 : "No comparable sales found for this parcel and tax year. Market approach indicated value from PACS valuation record used where available.",
             Source = hasData ? "pacs" : "fallback",
             Confidence = hasData ? (comps.Count >= 3 ? 0.90 : 0.70) : 0.35,
@@ -217,9 +223,11 @@ public class ValuationService : IValuationService
             return BuildFallbackIncomeApproach(parcelId, taxYear);
         }
 
+        var effectiveTaxYear = await ResolveEffectiveTaxYearAsync(parcel.Id, taxYear, ct);
+
         var valuation = await _db.PacsValuations
             .AsNoTracking()
-            .Where(v => v.ParcelId == parcel.Id && v.PropValYear == taxYear && v.SupNum == 0)
+            .Where(v => v.ParcelId == parcel.Id && v.PropValYear == effectiveTaxYear && v.SupNum == 0)
             .FirstOrDefaultAsync(ct);
 
         // Check for income data from sales records (monthly/annual income fields)
@@ -269,6 +277,7 @@ public class ValuationService : IValuationService
         {
             ParcelId = parcelId,
             TaxYear = taxYear,
+            EffectiveTaxYear = effectiveTaxYear,
             NetOperatingIncome = noi,
             CapRate = capRate,
             Valuation = valuation_,
@@ -312,9 +321,11 @@ public class ValuationService : IValuationService
 
         if (parcel != null)
         {
+            // Use the same effective year the sub-approaches resolved to
+            var effectiveTaxYear = cost.EffectiveTaxYear;
             var valuation = await _db.PacsValuations
                 .AsNoTracking()
-                .Where(v => v.ParcelId == parcel.Id && v.PropValYear == taxYear && v.SupNum == 0)
+                .Where(v => v.ParcelId == parcel.Id && v.PropValYear == effectiveTaxYear && v.SupNum == 0)
                 .FirstOrDefaultAsync(ct);
 
             assessedVal = valuation?.AssessedVal;
@@ -327,6 +338,7 @@ public class ValuationService : IValuationService
         {
             ParcelId = parcelId,
             TaxYear = taxYear,
+            EffectiveTaxYear = cost.EffectiveTaxYear,
             CostApproach = new ApproachSummary
             {
                 Approach = "cost",
@@ -358,6 +370,40 @@ public class ValuationService : IValuationService
             Source = anyReal ? "pacs" : "fallback",
             Confidence = anyReal ? 0.82 : 0.35,
         };
+    }
+
+    // ── Year Resolution ────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns the best available PropValYear for a parcel.
+    /// If <paramref name="requestedYear"/> has no pacs_valuations row (SupNum=0),
+    /// returns the most recent year that does — so Forge always shows real data
+    /// rather than silently falling back to synthetic $0 values.
+    /// </summary>
+    private async Task<int> ResolveEffectiveTaxYearAsync(
+        Guid parcelDbId, int requestedYear, CancellationToken ct)
+    {
+        var exists = await _db.PacsValuations
+            .AsNoTracking()
+            .AnyAsync(v => v.ParcelId == parcelDbId && v.PropValYear == requestedYear && v.SupNum == 0, ct);
+
+        if (exists) return requestedYear;
+
+        var latestYear = await _db.PacsValuations
+            .AsNoTracking()
+            .Where(v => v.ParcelId == parcelDbId && v.SupNum == 0)
+            .MaxAsync(v => (int?)v.PropValYear, ct);
+
+        if (latestYear.HasValue)
+        {
+            _logger.LogInformation(
+                "No pacs_valuations for parcel {ParcelDbId} in {RequestedYear}; using latest available year {LatestYear}",
+                parcelDbId, requestedYear, latestYear.Value);
+            return latestYear.Value;
+        }
+
+        // No valuation rows at all — queries will return empty → fallback
+        return requestedYear;
     }
 
     // ── Fallback Builders ──────────────────────────────────────────────

@@ -11,6 +11,8 @@ public record CostApproachResult
 {
     public string ParcelId { get; init; } = string.Empty;
     public int TaxYear { get; init; }
+    /// <summary>Actual year used for data lookup; may differ from TaxYear if that year has no pacs_valuations row.</summary>
+    public int EffectiveTaxYear { get; init; }
 
     /// <summary>Replacement cost new (sum of improvement detail RCN).</summary>
     public decimal ReplacementCostNew { get; init; }
@@ -63,6 +65,8 @@ public record SalesComparisonResult
 {
     public string ParcelId { get; init; } = string.Empty;
     public int TaxYear { get; init; }
+    /// <summary>Actual year used for data lookup; may differ from TaxYear if that year has no pacs_valuations row.</summary>
+    public int EffectiveTaxYear { get; init; }
 
     /// <summary>Indicated value from market approach (pacs_valuations.MktapprMarket).</summary>
     public decimal IndicatedValue { get; init; }
@@ -106,6 +110,8 @@ public record IncomeApproachResult
 {
     public string ParcelId { get; init; } = string.Empty;
     public int TaxYear { get; init; }
+    /// <summary>Actual year used for data lookup; may differ from TaxYear if that year has no pacs_valuations row.</summary>
+    public int EffectiveTaxYear { get; init; }
 
     public decimal NetOperatingIncome { get; init; }
     public decimal CapRate { get; init; }
@@ -129,6 +135,8 @@ public record ReconciliationResult
 {
     public string ParcelId { get; init; } = string.Empty;
     public int TaxYear { get; init; }
+    /// <summary>Actual year used for data lookups; may differ from TaxYear if that year has no pacs_valuations row.</summary>
+    public int EffectiveTaxYear { get; init; }
 
     public ApproachSummary CostApproach { get; init; } = new();
     public ApproachSummary SalesApproach { get; init; } = new();
