@@ -108,6 +108,7 @@ export type AssessmentStatus =
 
 export type DataSource =
   | 'harris-pacs'
+  | 'harris-pacs-live'
   | 'manual-entry'
   | 'ai-enhancement'
   | 'batch-import'

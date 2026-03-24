@@ -172,6 +172,110 @@ namespace TerraFusion.API.Services
         }
 
         // ═══════════════════════════════════════════════════════════════
+        // SEARCH (server-side text match on situs address/city/GeoId)
+        // ═══════════════════════════════════════════════════════════════
+
+        /// <summary>
+        /// Server-side search across GeoId, situs display/street/city.
+        /// Returns paginated results filtered at the SQL level (not in-page).
+        /// </summary>
+        public async Task<PacsPagedResult<PacsPropertyCore>> SearchPropertiesAsync(
+            string searchText, int page = 1, int pageSize = 20,
+            CancellationToken cancellationToken = default)
+        {
+            var likePattern = $"%{searchText}%";
+
+            // Match by situs address fields
+            var matchingSitusParcelIds = await _db.PacsSituses
+                .AsNoTracking()
+                .Where(s =>
+                    (s.SitusDisplay != null && EF.Functions.Like(s.SitusDisplay, likePattern)) ||
+                    (s.StreetName != null && EF.Functions.Like(s.StreetName, likePattern)) ||
+                    (s.City != null && EF.Functions.Like(s.City, likePattern)))
+                .Select(s => s.ParcelId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+
+            // Also match by GeoId substring
+            var matchingGeoIdParcelIds = await _db.PacsParcel
+                .AsNoTracking()
+                .Where(p => p.GeoId != null && EF.Functions.Like(p.GeoId, likePattern))
+                .Select(p => p.Id)
+                .ToListAsync(cancellationToken);
+
+            var allMatchingIds = matchingSitusParcelIds
+                .Union(matchingGeoIdParcelIds)
+                .Distinct()
+                .ToList();
+
+            var totalCount = allMatchingIds.Count;
+
+            if (totalCount == 0)
+            {
+                return new PacsPagedResult<PacsPropertyCore>
+                {
+                    Items = Array.Empty<PacsPropertyCore>(),
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalCount = 0,
+                };
+            }
+
+            var parcels = await _db.PacsParcel
+                .AsNoTracking()
+                .Where(p => allMatchingIds.Contains(p.Id))
+                .OrderBy(p => p.PropId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            if (parcels.Count == 0)
+            {
+                return new PacsPagedResult<PacsPropertyCore>
+                {
+                    Items = Array.Empty<PacsPropertyCore>(),
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount,
+                };
+            }
+
+            var parcelIds = parcels.Select(p => p.Id).ToList();
+            var propIds = parcels.Select(p => p.PropId).ToList();
+
+            var situses = await _db.PacsSituses
+                .AsNoTracking()
+                .Where(s => parcelIds.Contains(s.ParcelId))
+                .ToListAsync(cancellationToken);
+
+            var valuations = await _db.PacsValuations
+                .AsNoTracking()
+                .Where(v => propIds.Contains(v.PacsPropId))
+                .ToListAsync(cancellationToken);
+
+            var items = parcels.Select(p =>
+            {
+                var situs = situses
+                    .Where(s => s.ParcelId == p.Id)
+                    .OrderByDescending(s => s.PrimaryFlag == "Y")
+                    .FirstOrDefault();
+                var val = valuations
+                    .Where(v => v.PacsPropId == p.PropId)
+                    .OrderByDescending(v => v.PropValYear)
+                    .FirstOrDefault();
+                return MapToCore(p, situs, val);
+            }).ToList();
+
+            return new PacsPagedResult<PacsPropertyCore>
+            {
+                Items = items,
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+            };
+        }
+
+        // ═══════════════════════════════════════════════════════════════
         // OWNERSHIP QUERIES
         // ═══════════════════════════════════════════════════════════════
 

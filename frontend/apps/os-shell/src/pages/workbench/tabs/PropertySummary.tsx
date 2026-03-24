@@ -105,7 +105,7 @@ export const PropertySummary: React.FC = () => {
           actions={
             <WorkbenchSourceBadge
               source={
-                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
                   ? 'live'
                   : 'fallback'
               }
@@ -127,7 +127,7 @@ export const PropertySummary: React.FC = () => {
           actions={
             <WorkbenchSourceBadge
               source={
-                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
                   ? 'live'
                   : 'fallback'
               }
@@ -145,7 +145,7 @@ export const PropertySummary: React.FC = () => {
           actions={
             <WorkbenchSourceBadge
               source={
-                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
                   ? 'live'
                   : 'fallback'
               }
@@ -163,7 +163,7 @@ export const PropertySummary: React.FC = () => {
           actions={
             <WorkbenchSourceBadge
               source={
-                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
                   ? 'live'
                   : 'fallback'
               }
@@ -216,7 +216,7 @@ export const PropertySummary: React.FC = () => {
               actions={
                 <WorkbenchSourceBadge
                   source={
-                    propertyData?.source === 'live' || propertyData?.source === 'polled'
+                    propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
                       ? 'live'
                       : 'fallback'
                   }
@@ -265,7 +265,7 @@ export const PropertySummary: React.FC = () => {
           actions={
             <WorkbenchSourceBadge
               source={
-                propertyData?.source === 'live' || propertyData?.source === 'polled'
+                propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
                   ? 'live'
                   : 'fallback'
               }
@@ -380,7 +380,7 @@ export const PropertySummary: React.FC = () => {
             actions={
               <WorkbenchSourceBadge
                 source={
-                  propertyData?.source === 'live' || propertyData?.source === 'polled'
+                  propertyData?.source === 'live' || propertyData?.source === 'polled' || propertyData?.source === 'harris-pacs-live' || propertyData?.source === 'harris-pacs'
                     ? 'live'
                     : 'fallback'
                 }

@@ -23,8 +23,9 @@ interface PropertyLookupState {
 }
 
 /**
- * Fetches a single property from PACS by geo_id (parcel ID).
- * Uses the /ops/pacs/property/{geoId} endpoint backed by real SQL Server data.
+ * Fetches a single property by geo_id (parcel ID).
+ * Uses the /api/properties/parcel/{geoId} endpoint (TerraFusion native store).
+ * Falls back to /ops/pacs/property/{geoId} if the primary endpoint fails.
  */
 export function usePropertyLookup(geoId: string | undefined) {
   const [state, setState] = useState<PropertyLookupState>({
@@ -36,9 +37,20 @@ export function usePropertyLookup(geoId: string | undefined) {
   const fetchProperty = useCallback(async (id: string) => {
     setState({ data: null, loading: true, error: null });
     try {
-      const res = await fetch(`/ops/pacs/property/${encodeURIComponent(id)}`);
-      if (res.status === 404) {
-        setState({ data: null, loading: false, error: `No property found for ${id}` });
+      const res = await fetch(`/api/properties/parcel/${encodeURIComponent(id)}`);
+      // Fall back to PACS ops endpoint for parcels not in native store or when auth is not available
+      if (res.status === 404 || res.status === 401 || res.status === 403) {
+        const fallback = await fetch(`/ops/pacs/property/${encodeURIComponent(id)}`);
+        if (fallback.status === 404) {
+          setState({ data: null, loading: false, error: `No property found for ${id}` });
+          return;
+        }
+        if (!fallback.ok) {
+          const body = await fallback.json().catch(() => ({}));
+          throw new Error(body.error || `HTTP ${fallback.status}`);
+        }
+        const data: PacsProperty = await fallback.json();
+        setState({ data, loading: false, error: null });
         return;
       }
       if (!res.ok) {

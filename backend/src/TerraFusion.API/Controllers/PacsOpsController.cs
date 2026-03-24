@@ -230,15 +230,15 @@ public class PacsOpsController : ControllerBase
             return Ok(new
             {
                 propId = property.PropId,
-                geoId = property.GeoId,
+                geoId = (property.GeoId ?? string.Empty).Trim(),
                 address = FormatAddress(property),
-                ownerName = ownership?.OwnerName ?? "N/A",
+                ownerName = (ownership?.OwnerName ?? "N/A").Trim(),
                 assessedValue = property.AssessedVal ?? 0m,
                 marketValue = property.MarketVal ?? 0m,
                 landValue = property.LandVal ?? 0m,
                 improvementValue = property.ImprvVal ?? 0m,
-                propertyType = property.PropTypeCd ?? "Unknown",
-                legalDescription = property.LegalDesc ?? "",
+                propertyType = (property.PropTypeCd ?? "Unknown").Trim(),
+                legalDescription = (property.LegalDesc ?? string.Empty).Trim(),
                 appraisalYear = property.ApprYear,
                 lastModified = property.LastModified,
                 source = "pacs_oltp",
@@ -272,11 +272,11 @@ public class PacsOpsController : ControllerBase
                 items = result.Items.Select(p => new
                 {
                     propId = p.PropId,
-                    geoId = p.GeoId,
+                    geoId = (p.GeoId ?? string.Empty).Trim(),
                     address = FormatAddress(p),
                     assessedValue = p.AssessedVal ?? 0m,
                     marketValue = p.MarketVal ?? 0m,
-                    propertyType = p.PropTypeCd ?? "Unknown",
+                    propertyType = (p.PropTypeCd ?? "Unknown").Trim(),
                 }),
                 page,
                 pageSize,
@@ -293,7 +293,8 @@ public class PacsOpsController : ControllerBase
     private static string FormatAddress(PacsPropertyCore p)
     {
         var parts = new[] { p.SitusAddr, p.SitusCity, "WA", p.SitusZip }
-            .Where(s => !string.IsNullOrWhiteSpace(s));
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Select(s => s!.Trim());
         return string.Join(", ", parts);
     }
 
