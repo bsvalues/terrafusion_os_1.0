@@ -186,6 +186,11 @@ public class ServiceRegistry
 
             return null;
         }
+        catch (FileNotFoundException)
+        {
+            // Registry not yet seeded — expected during early startup
+            return null;
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to get service URL for {Service}", serviceName);
