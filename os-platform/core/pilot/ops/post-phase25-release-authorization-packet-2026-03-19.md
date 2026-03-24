@@ -1,7 +1,7 @@
 # Post-Phase-25 Release Authorization Packet
 
 Date: 2026-03-19
-Updated: 2026-03-22
+Updated: 2026-03-23
 Status: READY
 Owner lane: Agent C
 Purpose: Reconcile sealed code/static proof with the remaining live pre-traffic conditions after Phase 25
@@ -131,6 +131,10 @@ Primary sources reconciled in this packet:
 - `os-platform/core/pilot/ops/frontend-property-treasury-tax-breakdown-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-treasury-tax-sale-honesty-2026-03-22.md`
 - `os-platform/core/pilot/ops/frontend-property-treasury-tax-statement-honesty-2026-03-22.md`
+- `os-platform/core/pilot/trace/tests/dev-audit.test.mjs`
+- `.github/workflows/sqlite-dev-adapter-test.yml`
+- `os-platform/core/pilot/ops/DEV-ADAPTER-README.md`
+- `os-platform/core/pilot/ops/dev-adapter-runbook-2026-03-23.md`
 
 Traceability index:
 
@@ -259,6 +263,20 @@ A bounded shell-host URL provenance hardening slice then landed on 2026-03-22:
 - current truth: the shared `trustedShellUrl.ts` helper now gates iframe and popup URL resolution in `PWAShell.tsx`, `ProfessionalDashboard.tsx`, and `TerraPrimeSuite.tsx`, and those patched files no longer appear in the fresh frontend Snyk report
 
 That slice closes the strongest real follow-up exposed by the earlier frontend scan triage without changing the governed-core Snyk baseline contract or overstating the remaining frontend-only findings.
+
+A bounded TerraTrace dev-audit persistence slice landed on 2026-03-23:
+
+- authoritative runbook: `os-platform/core/pilot/ops/dev-adapter-runbook-2026-03-23.md`
+- CI workflow: `.github/workflows/sqlite-dev-adapter-test.yml`
+- quick-enable guide: `os-platform/core/pilot/ops/DEV-ADAPTER-README.md`
+- test results (local): `2 passed`, `0 failed` (file adapter: 241ms, sqlite adapter: 553ms)
+- git artifact: commit `6e277b7f5` — `test(trace): add sqlite adapter test path and update dev-audit test for dual-adapter coverage`
+- large-file remediation commit: `a2a4f2f50` — `fix(git): remove .build-verify from tracking, add to .gitignore`
+- branch pushed: `feature/dev-adapter-ci-cleanup` (PR pending: branch protection requires PR to merge to `main`)
+
+That slice adds dual-adapter dev persistence to TerraTrace (file and sqlite) behind the `TF_DEV_AUDIT` / `TF_DEV_AUDIT_STORE` environment toggle, wires a CI workflow to guard the sqlite path on every PR and push to main/develop, and adds a runbook and README for operator enable/disable. It also discovered and remediated accidentally-committed `dotnet publish` build artifacts (59 files including a 126 MB ONNX runtime binary) that were blocking the push, and added `backend/.build-verify/` to `.gitignore` as a permanent policy fix.
+
+This is a solo-dev quality-and-tooling lane only. It does not change the traffic-opening blockers in this packet.
 
 A bounded shell honesty/provenance follow-on slice then landed on 2026-03-21:
 
