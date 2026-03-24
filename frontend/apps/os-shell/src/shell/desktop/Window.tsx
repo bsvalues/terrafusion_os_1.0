@@ -422,8 +422,13 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
   }, [isTier0, isMaximized, maximizeWindow, restoreWindow, windowData.id]);
 
   const handleFocus = useCallback(() => {
-    focusWindow(windowData.id);
-  }, [focusWindow, windowData.id]);
+    // Only bring to front if this is NOT already the active window.
+    // If it is already active, clicking inside the content should do nothing.
+    // Toggle-minimize belongs on the taskbar, not the window body.
+    if (windowData.id !== activeWindowId) {
+      focusWindow(windowData.id);
+    }
+  }, [focusWindow, windowData.id, activeWindowId]);
 
   const handleDragStart = useCallback(() => {
     setIsDragging(true);
