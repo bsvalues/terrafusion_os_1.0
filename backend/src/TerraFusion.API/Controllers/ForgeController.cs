@@ -23,6 +23,27 @@ public class ForgeController : ControllerBase
         _logger = logger;
     }
 
+    /// <summary>
+    /// GET /api/forge/{parcelId}/years
+    /// Returns all pacs_valuations year layers for a parcel with program enrollment metadata.
+    /// Call this on parcel load to populate the year selector. Use DefaultYear as the
+    /// starting point — it is the most recent base-roll (SupNum=0) layer.
+    ///
+    /// IsEarliestKnownLayer=true identifies the migration baseline layer (2015 for Benton County).
+    /// Programs.CurrentUseAg=true with AgLossDeferred > 0 indicates RCW 84.34 enrollment
+    /// with a deferred tax balance — the basis for removal penalty calculations.
+    /// </summary>
+    [HttpGet("{parcelId}/years")]
+    [ProducesResponseType(typeof(ParcelYearLayersResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAvailableYears(
+        string parcelId,
+        CancellationToken ct)
+    {
+        _logger.LogInformation("Forge available years requested for {ParcelId}", parcelId);
+        var result = await _valuationService.GetAvailableYearsAsync(parcelId, ct);
+        return Ok(result);
+    }
+
     /// <summary>GET /api/forge/{parcelId}/cost?taxYear=2025</summary>
     [HttpGet("{parcelId}/cost")]
     [ProducesResponseType(typeof(CostApproachResult), StatusCodes.Status200OK)]
