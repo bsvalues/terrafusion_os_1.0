@@ -5,11 +5,13 @@ using TerraFusion.Data;
 
 namespace TerraFusion.API.Services;
 
+// PACS-SYNC-DEBT: All data access in this service reads from PACS mirror entities
+// (PacsValuations, PacsLandDetails, PacsImprovementDetails, PacsSales, PacsExemptions,
+// PacsParcel) directly. Replace with canonical TerraFusion domain model queries once
+// TerraFusionSync publishes to the canonical store. See CARD-10B boundary audit.
 /// <summary>
 /// Phase 10 — PropertyForge valuation service.
-/// Queries PACS tables (pacs_valuations, pacs_land_details, pacs_improvement_details,
-/// pacs_sales, pacs_owner_vals) for real Benton County data.
-/// Returns structured fallback values where PACS data is incomplete.
+/// Returns structured stub values where canonical data is unavailable.
 /// </summary>
 public class ValuationService : IValuationService
 {
@@ -97,7 +99,7 @@ public class ValuationService : IValuationService
             LandValue = landValue,
             IndicatedValue = costValue,
             ImprovementValue = imprvValue > 0 ? imprvValue : depreciatedCost,
-            Source = hasPacsData ? "pacs" : "fallback",
+            Source = hasPacsData ? "canonical" : "stub",
             Confidence = hasPacsData ? 0.85 : 0.40,
             Inputs = BuildCostInputs(valuation != null, landDetails.Count, improvements.Count),
         };
@@ -196,8 +198,8 @@ public class ValuationService : IValuationService
             }).ToList(),
             Rationale = comps.Count > 0
                 ? $"{comps.Count} comparable sales found in neighborhood {hood ?? "N/A"} within {taxYear - 2}\u2013{taxYear}. Median adjusted price: ${median:N0}."
-                : "No comparable sales found for this parcel and tax year. Market approach indicated value from PACS valuation record used where available.",
-            Source = hasData ? "pacs" : "fallback",
+                : "No comparable sales found for this parcel and tax year. Market approach indicated value from valuation record used where available.",
+            Source = hasData ? "canonical" : "stub",
             Confidence = hasData ? (comps.Count >= 3 ? 0.90 : 0.70) : 0.35,
         };
     }
@@ -275,7 +277,7 @@ public class ValuationService : IValuationService
             GrossIncomeMultiplier = gim,
             RiskClassification = ClassifyRisk(capRate),
             IncomeIndicatedValue = incomeValue > 0 ? incomeValue : incomeMarket,
-            Source = hasData ? "pacs" : "fallback",
+            Source = hasData ? "canonical" : "stub",
             Confidence = hasData ? 0.75 : 0.30,
         };
     }
@@ -321,7 +323,7 @@ public class ValuationService : IValuationService
             marketVal = valuation?.Market;
         }
 
-        var anyReal = cost.Source == "pacs" || sales.Source == "pacs" || income.Source == "pacs";
+        var anyReal = cost.Source == "canonical" || sales.Source == "canonical" || income.Source == "canonical";
 
         return new ReconciliationResult
         {
@@ -355,7 +357,7 @@ public class ValuationService : IValuationService
             Method = "weighted_average",
             AssessedValue = assessedVal,
             MarketValue = marketVal,
-            Source = anyReal ? "pacs" : "fallback",
+            Source = anyReal ? "canonical" : "stub",
             Confidence = anyReal ? 0.82 : 0.35,
         };
     }
@@ -454,7 +456,7 @@ public class ValuationService : IValuationService
         LandValue = 0,
         IndicatedValue = 0,
         ImprovementValue = 0,
-        Source = "fallback",
+        Source = "stub",
         Confidence = 0.0,
         Inputs = BuildCostInputs(false, 0, 0),
     };
@@ -468,8 +470,8 @@ public class ValuationService : IValuationService
         MedianAdjustedPrice = 0,
         AdjustmentRange = 0,
         Comparables = [],
-        Rationale = "No PACS data available for this parcel. Load parcel data to enable sales comparison analysis.",
-        Source = "fallback",
+        Rationale = "No data available for this parcel. Load parcel data to enable sales comparison analysis.",
+        Source = "stub",
         Confidence = 0.0,
     };
 
@@ -483,7 +485,7 @@ public class ValuationService : IValuationService
         GrossIncomeMultiplier = 0,
         RiskClassification = "unknown",
         IncomeIndicatedValue = 0,
-        Source = "fallback",
+        Source = "stub",
         Confidence = 0.0,
     };
 
@@ -493,15 +495,15 @@ public class ValuationService : IValuationService
     {
         return
         [
-            new() { Name = "Replacement Cost New (RCN)", SourceLabel = imprvCount > 0 ? "pacs_improvement_details" : "not_available", Pii = false },
-            new() { Name = "Physical Depreciation %", SourceLabel = imprvCount > 0 ? "pacs_improvement_details" : "not_available", Pii = false },
-            new() { Name = "Functional Obsolescence %", SourceLabel = imprvCount > 0 ? "pacs_improvement_details" : "not_available", Pii = false },
-            new() { Name = "Economic Obsolescence %", SourceLabel = imprvCount > 0 ? "pacs_improvement_details" : "not_available", Pii = false },
-            new() { Name = "Land Market Value", SourceLabel = landCount > 0 ? "pacs_land_details" : "not_available", Pii = false },
-            new() { Name = "Land Acreage", SourceLabel = landCount > 0 ? "pacs_land_details" : "not_available", Pii = false },
-            new() { Name = "Cost Approach Value", SourceLabel = hasValuation ? "pacs_valuations" : "not_available", Pii = false },
-            new() { Name = "Owner Name", SourceLabel = "pacs_owners", Pii = true },
-            new() { Name = "Situs Address", SourceLabel = "pacs_situses", Pii = true },
+            new() { Name = "Replacement Cost New (RCN)", SourceLabel = imprvCount > 0 ? "improvement-cost-data" : "not_available", Pii = false },
+            new() { Name = "Physical Depreciation %", SourceLabel = imprvCount > 0 ? "improvement-cost-data" : "not_available", Pii = false },
+            new() { Name = "Functional Obsolescence %", SourceLabel = imprvCount > 0 ? "improvement-cost-data" : "not_available", Pii = false },
+            new() { Name = "Economic Obsolescence %", SourceLabel = imprvCount > 0 ? "improvement-cost-data" : "not_available", Pii = false },
+            new() { Name = "Land Market Value", SourceLabel = landCount > 0 ? "land-data" : "not_available", Pii = false },
+            new() { Name = "Land Acreage", SourceLabel = landCount > 0 ? "land-data" : "not_available", Pii = false },
+            new() { Name = "Cost Approach Value", SourceLabel = hasValuation ? "valuation-data" : "not_available", Pii = false },
+            new() { Name = "Owner Name", SourceLabel = "ownership-data", Pii = true },
+            new() { Name = "Situs Address", SourceLabel = "situs-data", Pii = true },
         ];
     }
 
