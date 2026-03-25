@@ -202,6 +202,7 @@ namespace TerraFusion.API.Controllers
         [HttpPost("enhance")]
         [ProducesResponseType(typeof(PropertyValuationResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PropertyValuationResult>> EnhancePropertyValuation(
             [FromBody] PropertyValuationRequest request)
@@ -256,6 +257,21 @@ namespace TerraFusion.API.Controllers
 
                 // Execute AI-enhanced valuation
                 var result = await _valuationService.ExecuteAIEnhancedValuationAsync(request);
+
+                if (result.Status == ValuationStatus.PropertyNotSynced)
+                {
+                    _logger.LogWarning(
+                        "⚠️ Canonical miss: Parcel {ParcelId} not synced to TerraFusion store (County={CountyCode})",
+                        request.ParcelId, request.CountyCode);
+
+                    return NotFound(new ProblemDetails
+                    {
+                        Title = "Parcel not synced",
+                        Detail = $"Parcel '{request.ParcelId}' is not in the TerraFusion canonical store. Run sync first.",
+                        Status = StatusCodes.Status404NotFound,
+                        Extensions = { ["errorCode"] = "PROPERTY_NOT_SYNCED" }
+                    });
+                }
 
                 if (result.Status == ValuationStatus.Failed)
                 {
