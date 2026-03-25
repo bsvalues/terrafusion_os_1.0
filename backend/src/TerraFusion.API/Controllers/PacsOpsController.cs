@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Core.PACS;
 
@@ -28,18 +29,22 @@ namespace TerraFusion.API.Controllers;
 [Produces("application/json")]
 public class PacsOpsController : ControllerBase
 {
-    private readonly IPacsAdapter _pacsAdapter;
+    private readonly IServiceProvider _services;
     private readonly ILogger<PacsOpsController> _logger;
 
     private const string ContractName = "pacscontract.v1";
     private const string ContractVersion = "1.0.0";
     private const string SpecLockPath = "docs/spec-lock/locks/pacscontract/pacscontract.v1/speclock.spec.json";
 
+    // Adapter is resolved lazily per-request so that a missing PACS connection
+    // string (PacsSqlAdapter throws in constructor) does not crash DI activation
+    // and cause HTTP 500. Instead the try/catch in each action method handles it.
+    // Mirrors PacsController pattern.
     public PacsOpsController(
-        IPacsAdapter pacsAdapter,
+        IServiceProvider services,
         ILogger<PacsOpsController> logger)
     {
-        _pacsAdapter = pacsAdapter ?? throw new ArgumentNullException(nameof(pacsAdapter));
+        _services = services ?? throw new ArgumentNullException(nameof(services));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -66,13 +71,54 @@ public class PacsOpsController : ControllerBase
     {
         var startTime = DateTime.UtcNow;
 
+        IPacsAdapter adapter;
+        try
+        {
+            adapter = _services.GetRequiredService<IPacsAdapter>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning("PACS adapter not available for proof: {Message}", ex.Message);
+            return Ok(new PacsProofResponse
+            {
+                Enabled = false,
+                Contract = new ContractInfo
+                {
+                    Name = ContractName,
+                    Version = ContractVersion,
+                    ManifestSha256 = ComputeManifestHash()
+                },
+                Databases = new DatabaseStatus { PacsOltp = "not_configured", Ciaps = "not_configured" },
+                Views = new ViewStatus
+                {
+                    VwTerraFusionPropertyCore = "unknown",
+                    VwTerraFusionPropertyOwnership = "unknown",
+                    VwTerraFusionAssessmentHistory = "unknown"
+                },
+                Indexes = new IndexStatus
+                {
+                    IxTerraFusionPropertyGeoId = "unknown",
+                    IxTerraFusionPropertyValPropYear = "unknown",
+                    IxTerraFusionSitusProperty = "unknown"
+                },
+                Procedures = new ProcedureStatus { SpTerraFusionHealthCheck = "unknown" },
+                HealthCheckExecution = "not_attempted",
+                LastVerifiedUtc = DateTime.UtcNow,
+                LatencyMs = 0,
+                ReadOnly = true,
+                ContractValid = false,
+                Errors = new[] { "PACS adapter not available. Check server logs for details." },
+                Warnings = Array.Empty<string>()
+            });
+        }
+
         try
         {
             _logger.LogInformation("PACS proof requested at {Timestamp}", startTime);
 
             // Get contract proof from adapter (no retries, fail-fast)
-            var proof = await _pacsAdapter.ValidateContractAsync(cancellationToken);
-            var connectionStatus = await _pacsAdapter.GetConnectionStatusAsync(cancellationToken);
+            var proof = await adapter.ValidateContractAsync(cancellationToken);
+            var connectionStatus = await adapter.GetConnectionStatusAsync(cancellationToken);
 
             var latencyMs = (DateTime.UtcNow - startTime).TotalMilliseconds;
 
@@ -184,7 +230,8 @@ public class PacsOpsController : ControllerBase
     {
         try
         {
-            var status = await _pacsAdapter.GetConnectionStatusAsync(cancellationToken);
+            var adapter = _services.GetRequiredService<IPacsAdapter>();
+            var status = await adapter.GetConnectionStatusAsync(cancellationToken);
             return Ok(new
             {
                 pacs = status.IsConnected ? "ok" : "unreachable",
@@ -213,14 +260,15 @@ public class PacsOpsController : ControllerBase
     {
         try
         {
-            var property = await _pacsAdapter.GetPropertyByGeoIdAsync(geoId, cancellationToken);
+            var adapter = _services.GetRequiredService<IPacsAdapter>();
+            var property = await adapter.GetPropertyByGeoIdAsync(geoId, cancellationToken);
             if (property == null)
                 return NotFound(new { error = $"No property found for geo_id '{geoId}'" });
 
             PacsPropertyOwnership? ownership = null;
             try
             {
-                ownership = await _pacsAdapter.GetOwnershipAsync(property.PropId, cancellationToken);
+                ownership = await adapter.GetOwnershipAsync(property.PropId, cancellationToken);
             }
             catch
             {
@@ -266,7 +314,8 @@ public class PacsOpsController : ControllerBase
 
         try
         {
-            var result = await _pacsAdapter.GetPropertiesAsync(page, pageSize, cancellationToken);
+            var adapter = _services.GetRequiredService<IPacsAdapter>();
+            var result = await adapter.GetPropertiesAsync(page, pageSize, cancellationToken);
             return Ok(new
             {
                 items = result.Items.Select(p => new
