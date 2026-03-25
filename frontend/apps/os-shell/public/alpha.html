@@ -265,6 +265,10 @@
         <span class="notice-icon">ℹ️</span>
         <span>Backend must be running at <code>localhost:5000</code>. If you see "Backend offline" in the status bar, contact the dev team before testing.</span>
       </div>
+      <div class="notice notice-warn" style="margin-top:8px;">
+        <span class="notice-icon">⚠️</span>
+        <span><strong>Pilot Runtime also required.</strong> Dais, Clerk, Treasury, Audit, Dossier, and Pilot tabs route all tool invocations through a separate process at <code>localhost:4317</code>. If that process is not running, those 6 tabs will render but every tool card invocation will fail with a network error. Contact the dev team if tool cards show errors on first click.</span>
+      </div>
     </div>
   </section>
 
