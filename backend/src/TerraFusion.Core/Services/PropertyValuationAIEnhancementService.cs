@@ -8,7 +8,7 @@ using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.Metrics;
 using TerraFusion.Abstractions.Interfaces;
-using TerraFusion.Core.PACS;
+using Microsoft.EntityFrameworkCore;
 // Resolve type ambiguity: Use all property valuation types from interface namespace
 using PropertyValuationRequest = TerraFusion.Core.Models.PropertyValuationRequest;
 using PropertyValuationResult = TerraFusion.Core.Models.PropertyValuationResult;
@@ -34,7 +34,7 @@ namespace TerraFusion.Core.Services
     public class PropertyValuationAIEnhancementService : IPropertyValuationAIEnhancementService
     {
         private readonly ILogger<PropertyValuationAIEnhancementService> _logger;
-        private readonly IPacsAdapter _pacsAdapter;
+        private readonly ITerraFusionDbContext _db;
         private readonly IPropertyDataValidationService _validationService;
         private readonly IRedisCacheService _cacheService;
         private readonly TerraFusionMetricsExporter _metricsExporter;
@@ -46,7 +46,7 @@ namespace TerraFusion.Core.Services
 
         public PropertyValuationAIEnhancementService(
             ILogger<PropertyValuationAIEnhancementService> logger,
-            IPacsAdapter pacsAdapter,
+            ITerraFusionDbContext db,
             IPropertyDataValidationService validationService,
             IRedisCacheService cacheService,
             TerraFusionMetricsExporter metricsExporter,
@@ -54,7 +54,7 @@ namespace TerraFusion.Core.Services
             ITerraFusionSyncService terraSyncService)
         {
             _logger = logger;
-            _pacsAdapter = pacsAdapter;
+            _db = db;
             _validationService = validationService;
             _cacheService = cacheService;
             _metricsExporter = metricsExporter;
@@ -93,7 +93,15 @@ namespace TerraFusion.Core.Services
 
                 if (!result.IngestionResult.Success)
                 {
-                    throw new InvalidOperationException($"Property data ingestion failed for parcel {request.ParcelId}");
+                    overallStopwatch.Stop();
+                    result.TotalDuration = overallStopwatch.Elapsed;
+                    result.Status = result.IngestionResult.ErrorCode == "PROPERTY_NOT_SYNCED"
+                        ? ValuationStatus.PropertyNotSynced
+                        : ValuationStatus.Failed;
+                    result.ErrorMessage = result.IngestionResult.ErrorCode == "PROPERTY_NOT_SYNCED"
+                        ? $"Parcel {request.ParcelId} is not in the canonical TerraFusion store. Run sync first."
+                        : $"Property data ingestion failed for parcel {request.ParcelId}";
+                    return result;
                 }
 
                 _logger.LogInformation(
@@ -286,25 +294,39 @@ namespace TerraFusion.Core.Services
                     return result;
                 }
 
-                _logger.LogInformation("🔄 Cache MISS - Fetching from Harris PACS...");
+                _logger.LogInformation("🔄 Cache MISS - Querying canonical TerraFusion store...");
 
-                // Fetch from Harris PACS (primary source)
-                var pacsProperty = await GetPacsPropertyAsync(parcelId);
+                // Query canonical TerraFusion store.
+                // PACS terminates at TerraFusionSync; this service does not reach PACS directly.
+                var property = await _db.Properties
+                    .AsNoTracking()
+                    .Where(p => p.ParcelId == parcelId)
+                    .FirstOrDefaultAsync();
 
-                if (pacsProperty == null)
+                if (property == null)
                 {
-                    throw new InvalidOperationException($"Property not found in Harris PACS: {parcelId}");
+                    _logger.LogWarning(
+                        "Parcel {ParcelId} not found in canonical TerraFusion store (county {CountyCode}). Sync required.",
+                        parcelId, countyCode);
+                    stopwatch.Stop();
+                    result.Duration = stopwatch.Elapsed;
+                    result.Success = false;
+                    result.ErrorCode = "PROPERTY_NOT_SYNCED";
+                    return result;
                 }
 
-                // Map PACS data to PropertyData model
-                result.PropertyData = MapPACSToPropertyData(pacsProperty, countyCode);
-                result.DataSources.Add("HarrisPACS");
-                result.SystemsIngested++;
+                // Enrich with CAMA characteristics (most recent tax year available).
+                var cama = await _db.Set<TerraFusion.Core.Entities.CamaCharacteristic>()
+                    .AsNoTracking()
+                    .Where(c => c.ParcelId == parcelId)
+                    .OrderByDescending(c => c.TaxYear)
+                    .FirstOrDefaultAsync();
 
-                // TODO: Add Tyler Technologies integration when available
-                // TODO: Add Aumentum Systems integration when available
+                result.PropertyData = MapCanonicalToPropertyData(property, cama, countyCode);
+                result.DataSources.Add("CanonicalStore");
+                result.SystemsIngested = 1;
 
-                // Cache the result for 30 minutes
+                // Cache the result for 30 minutes.
                 await _cacheService.SetAsync(cacheKey, result.PropertyData, TimeSpan.FromMinutes(30));
 
                 result.Success = true;
@@ -781,77 +803,33 @@ namespace TerraFusion.Core.Services
 
         #region Helper Methods
 
-        private PropertyData MapPACSToPropertyData(PacsPropertyCore pacsProperty, string countyCode)
+        private static PropertyData MapCanonicalToPropertyData(
+            TerraFusion.Core.Entities.Property property,
+            TerraFusion.Core.Entities.CamaCharacteristic? cama,
+            string countyCode)
         {
-            // Map Harris PACS property to internal PropertyData model
             return new PropertyData
             {
                 CountyCode = countyCode,
-                ParcelId = GetParcelId(pacsProperty),
-                PropertyType = DeterminePropertyType(pacsProperty),
-                SquareFootage = 0,
-                YearBuilt = 1900,
-                Bedrooms = 0,
-                Bathrooms = 0,
-                Quality = "Average",
-                Condition = "Average",
-                LandAcres = 0,
-                Zoning = "Residential",
+                ParcelId = property.ParcelId,
+                PropertyType = property.PropertyType ?? "Residential",
+                SquareFootage = cama?.SquareFeet ?? 0m,
+                YearBuilt = property.YearBuilt ?? 0,
+                Quality = cama?.QualityGrade ?? string.Empty,
+                Condition = cama?.ConditionGrade ?? string.Empty,
                 AdditionalAttributes = new Dictionary<string, object>
                 {
-                    ["propId"] = pacsProperty.PropId,
-                    ["geoId"] = pacsProperty.GeoId,
-                    ["situsAddress"] = pacsProperty.SitusAddr ?? string.Empty,
-                    ["situsCity"] = pacsProperty.SitusCity ?? string.Empty,
-                    ["situsZip"] = pacsProperty.SitusZip ?? string.Empty,
-                    ["legalDescription"] = pacsProperty.LegalDesc ?? string.Empty,
-                    ["assessedValue"] = pacsProperty.AssessedVal ?? 0m,
-                    ["marketValue"] = pacsProperty.MarketVal ?? 0m,
-                    ["landValue"] = pacsProperty.LandVal ?? 0m,
-                    ["improvementValue"] = pacsProperty.ImprvVal ?? 0m,
-                    ["appraisalYear"] = pacsProperty.ApprYear ?? 0,
-                    ["lastModified"] = pacsProperty.LastModified ?? DateTime.MinValue
+                    ["propertyId"] = property.PropertyId,
+                    ["address"] = property.Address,
+                    ["ownerName"] = property.OwnerName ?? string.Empty,
+                    ["assessedValue"] = property.AssessedValue,
+                    ["marketValue"] = property.MarketValue,
+                    ["landValue"] = property.LandValue,
+                    ["improvementValue"] = property.ImprovementValue,
+                    ["taxYear"] = property.TaxYear,
+                    ["lastUpdated"] = property.LastUpdated
                 }
             };
-        }
-
-        private string DeterminePropertyType(PacsPropertyCore pacsProperty)
-        {
-            // Determine property type from PACS data
-            var typeCode = pacsProperty.PropTypeCd?.Trim() ?? string.Empty;
-            if (typeCode.StartsWith("1", StringComparison.OrdinalIgnoreCase) ||
-                typeCode.StartsWith("R", StringComparison.OrdinalIgnoreCase))
-            {
-                return "Residential";
-            }
-            if (typeCode.StartsWith("2", StringComparison.OrdinalIgnoreCase) ||
-                typeCode.StartsWith("C", StringComparison.OrdinalIgnoreCase))
-            {
-                return "Commercial";
-            }
-            if (typeCode.StartsWith("3", StringComparison.OrdinalIgnoreCase) ||
-                typeCode.StartsWith("I", StringComparison.OrdinalIgnoreCase))
-            {
-                return "Industrial";
-            }
-            return "Residential";
-        }
-
-        private async Task<PacsPropertyCore?> GetPacsPropertyAsync(string parcelId)
-        {
-            if (int.TryParse(parcelId, out var propId))
-            {
-                return await _pacsAdapter.GetPropertyByIdAsync(propId);
-            }
-
-            return await _pacsAdapter.GetPropertyByGeoIdAsync(parcelId);
-        }
-
-        private static string GetParcelId(PacsPropertyCore pacsProperty)
-        {
-            return string.IsNullOrWhiteSpace(pacsProperty.GeoId)
-                ? pacsProperty.PropId.ToString()
-                : pacsProperty.GeoId;
         }
 
         private decimal CalculateDataCompletenessScore(PropertyData propertyData)
