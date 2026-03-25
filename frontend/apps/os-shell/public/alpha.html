@@ -271,10 +271,6 @@
   <!-- Tab Truth Matrix -->
   <section>
     <h2>📊 Tab Truth Matrix — What's Real</h2>
-    <div class="notice notice-warn" style="margin-bottom:14px;">
-      <span class="notice-icon">⚠️</span>
-      <span>Tabs marked <strong>Stub (honest)</strong> show a clear "no data" state. They do not fabricate values. That is correct behavior — report it only if they show fake data instead.</span>
-    </div>
     <div class="card" style="padding:0;overflow:hidden;">
       <table>
         <thead>
@@ -296,39 +292,39 @@
             <td>Year selector pulls PACS layers; lock state badge (🔒/🔓); AV/MV per year; fallback to static years if API down</td>
           </tr>
           <tr>
-            <td><strong>Assessment</strong></td>
-            <td><span class="pass">✅ Real</span></td>
-            <td>Assessment history built from PACS property data</td>
-          </tr>
-          <tr>
-            <td><strong>Dossier</strong></td>
-            <td><span class="stub">⚪ Stub</span></td>
-            <td>Should show "no documents" — not fake docs</td>
-          </tr>
-          <tr>
             <td><strong>Atlas</strong></td>
-            <td><span class="stub">⚪ Stub</span></td>
-            <td>Should show "no GIS layers" — not a fake map</td>
+            <td><span class="pass">✅ Real (GIS)</span></td>
+            <td>Boundary and layer data from GIS endpoint; deterministic SVG fallback when GIS unavailable — fallback is labeled, not fake</td>
           </tr>
           <tr>
-            <td><strong>Appeals</strong></td>
-            <td><span class="stub">⚪ Stub</span></td>
-            <td>Should show empty or "no appeals on file"</td>
+            <td><strong>Dais</strong></td>
+            <td><span class="pass">✅ MWUX</span></td>
+            <td>Tool cards visible before invocation: cert status, PILT, exemptions, levy, appeals, BOE, notices, queue — invocations via pilot API</td>
           </tr>
           <tr>
-            <td><strong>Tax</strong></td>
-            <td><span class="stub">⚪ Stub</span></td>
-            <td>Should show empty or "no tax statements available"</td>
+            <td><strong>Clerk</strong></td>
+            <td><span class="pass">✅ MWUX</span></td>
+            <td>Tool cards visible before invocation: recorded docs search, title chain, recording fees, document registry</td>
           </tr>
           <tr>
-            <td><strong>Recording</strong></td>
-            <td><span class="stub">⚪ Stub</span></td>
-            <td>Should show empty or "no recording history"</td>
+            <td><strong>Treasury</strong></td>
+            <td><span class="pass">✅ MWUX</span></td>
+            <td>Tool cards visible before invocation: tax statement, delinquency status, payments, installment plans</td>
           </tr>
           <tr>
             <td><strong>Audit</strong></td>
-            <td><span class="stub">⚪ Stub</span></td>
-            <td>Should show empty or "no audit trail"</td>
+            <td><span class="pass">✅ MWUX</span></td>
+            <td>Tool cards visible before invocation: roll summary, levy compliance, compliance report</td>
+          </tr>
+          <tr>
+            <td><strong>Dossier</strong></td>
+            <td><span class="pass">✅ MWUX</span></td>
+            <td>Parcel details from API + document/evidence registry; evidence snapshot panel</td>
+          </tr>
+          <tr>
+            <td><strong>Pilot</strong></td>
+            <td><span class="pass">✅ MWUX</span></td>
+            <td>Read-only Muse tools loaded from pilot manifest; tool list shows with risk labels before invocation</td>
           </tr>
         </tbody>
       </table>
@@ -395,15 +391,16 @@
     </div>
 
     <div class="card">
-      <h3>Scenario 5 — Stub honesty check</h3>
-      <p style="margin-bottom:10px;">Verify stub tabs say "no data" instead of showing fake information.</p>
+      <h3>Scenario 5 — MWUX tab surface check</h3>
+      <p style="margin-bottom:10px;">Verify every tab loads a working surface before you invoke any tools — no blank screens, no stuck spinners.</p>
       <ol class="steps">
-        <li>Open any parcel</li>
-        <li>Click each stub tab: Dossier, Atlas, Appeals, Tax, Recording, Audit</li>
-        <li>Each should show a clear empty state or "no data available" message</li>
-        <li>None should show placeholder/fixture data that looks real</li>
+        <li>Open any parcel in the Workbench</li>
+        <li>Click through all 9 tabs: Summary, Forge, Atlas, Dais, Clerk, Treasury, Audit, Dossier, Pilot</li>
+        <li>Each tab should finish loading within 3 seconds</li>
+        <li>MWUX tabs (Dais, Clerk, Treasury, Audit, Dossier, Pilot) should show tool cards or panels — not a blank screen</li>
+        <li>If a tab shows an error banner, note the correlationId and report it as a defect</li>
       </ol>
-      <div style="margin-top:10px;"><span class="tag">Pass when:</span> <span style="font-size:.85rem;color:var(--muted)">All stub tabs show honest empty state. Zero fabricated values.</span></div>
+      <div style="margin-top:10px;"><span class="tag">Pass when:</span> <span style="font-size:.85rem;color:var(--muted)">All 9 tabs load. MWUX tabs show their tool surfaces. No stuck spinners.</span></div>
     </div>
   </section>
 
@@ -430,13 +427,13 @@
             <option>Search / Command palette</option>
             <option>Summary tab</option>
             <option>Forge tab</option>
-            <option>Assessment tab</option>
-            <option>Dossier tab</option>
             <option>Atlas tab</option>
-            <option>Appeals tab</option>
-            <option>Tax tab</option>
-            <option>Recording tab</option>
+            <option>Dais tab</option>
+            <option>Clerk tab</option>
+            <option>Treasury tab</option>
             <option>Audit tab</option>
+            <option>Dossier tab</option>
+            <option>Pilot tab</option>
             <option>Keyboard shortcut / navigation</option>
             <option>Wrong data / value mismatch</option>
             <option>Crash / blank screen</option>
