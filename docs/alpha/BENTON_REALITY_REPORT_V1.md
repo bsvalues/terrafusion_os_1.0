@@ -251,9 +251,9 @@ The following items were not verified and represent known unknowns:
 
 ---
 
-## 7. Recommended Follow-On Cards
+## 7. Candidate Follow-On Cards (Captured From This Truth Pass)
 
-These are scoped recommendations for future cards. No implementation is authorized from this report.
+These are candidate cards surfaced by this truth pass. This report does not authorize implementation. Each entry requires its own scoped card before any work begins.
 
 | ID | Title | Priority | Scope |
 |---|---|---|---|
