@@ -108,6 +108,32 @@ Reviewer:       Benton County Assessor (sole human)
 
 ---
 
+### CARD-05 — Publish Module Integration Map ✅ DONE
+
+```
+Task:           Publish the living module integration map
+Owner:          Copilot
+Mode:           Single-builder
+Repo:           terrafusion_os_1.0
+Deliverable:    docs/module-integration-map.md — source-truth index of all 14 modules
+Allowed files:
+  - docs/module-integration-map.md (new file)
+  - SPRINT.md (this card only)
+Out of scope:
+  - No code changes
+  - No QUARANTINE moves
+  - No wiring, manifests, or platform registration
+  - Module wiring work requires its own task card + governance discovery/plan
+Acceptance:
+  - docs/module-integration-map.md exists with all 14 module rows ✅
+  - GitHub org is bsvalues (not bsvalverde) throughout ✅
+  - TerraFUsionPermit capital U confirmed ✅
+  - No implementation phases in the doc ✅
+Commit:         docs(modules): add living module integration map
+```
+
+---
+
 ## Completed Cards
 
 | Card | Task | Owner | Commit / Note |
