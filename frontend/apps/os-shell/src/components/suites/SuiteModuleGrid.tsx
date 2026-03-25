@@ -27,6 +27,7 @@ import type { LucideIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
 import { usePropertyStore } from '../../stores/propertyStore';
+import { activateModule } from '../../orchestration/moduleActivation';
 
 export interface SuiteModuleDef {
   id: string;
@@ -77,7 +78,7 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
       if (!targetId) {
         return;
       }
-      navigate(`/${targetId}`);
+      void activateModule(targetId, { source: 'start_menu' });
     }
   };
 
@@ -88,7 +89,7 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
     <div className="flex flex-col">
       {/* ── Primary tier: large hero cards ── */}
       {primaryModules.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 px-6 pt-5 pb-3">
+        <div data-testid="suite-module-grid-primary" className="grid grid-cols-1 sm:grid-cols-3 gap-3 px-6 pt-5 pb-3">
           {primaryModules.map((mod) => {
             const Icon = mod.icon;
             return (
@@ -147,7 +148,7 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
               style={{ height: 1, background: 'hsl(var(--tf-border) / 0.1)' }}
             />
           )}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 px-6 pb-5">
+          <div data-testid="suite-module-grid-secondary" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 px-6 pb-5">
             {secondaryModules.map((mod) => {
               const Icon = mod.icon;
               return (
