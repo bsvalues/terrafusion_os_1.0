@@ -245,9 +245,17 @@ The following items were not verified and represent known unknowns:
 
 3. **`IGisDataService` concrete registration**: The `AtlasGisController` injects `IGisDataService` via constructor. Whether this interface has a working implementation registered in `Program.cs` for dev was not read.
 
-4. **`LiveDataProvider.ts` fallback path**: When the `.NET` backend is running but returns 503 for PACS routes, what data does `LiveDataProvider.getParcel()` actually return? Does it fall back to snapshot or return null?
+4. **`VITE_DATA_MODE` in actual dev `.env`**: Only `.env.example` was found. No `.env.development` or `.env` file was found in this pass. The active mode at runtime is unknown.
 
-5. **`VITE_DATA_MODE` in actual dev `.env`**: Only `.env.example` was found. No `.env.development` or `.env` file was found in this pass. The active mode at runtime is unknown.
+---
+
+## 6a. Investigative Items Resolved (2026-03-26, CARD-01 truth gate)
+
+**Item 4 resolved — LiveDataProvider fallback path confirmed:**
+`LiveDataProvider.getParcel()` calls `GET /ops/pacs/property/{geoId}`. This route exists in `PacsOpsController` and is backed by `PacsEfAdapter` (dev SQLite) when no PACS SQL Server connection string is configured. The EF chain: `PacsOpsController.GetProperty()` → `IPacsAdapter.GetPropertyByGeoIdAsync()` → `PacsEfAdapter` → `_db.PacsParcel.FirstOrDefaultAsync(p => p.GeoId == geoId)`. When the parcel is found in SQLite, it returns `source=pacs_oltp`. When not found, it returns HTTP 404, `LiveDataProvider.getParcel()` catches and returns `null`, `propertyStore.selectParcel()` sets `activeParcel = null` and exits. There is no automatic fallback to snapshot from `getParcel()` in live mode — the caller sees null data. Setting `VITE_DATA_MODE=snapshot` avoids this entirely.
+
+**P1-4 (LegacyDatabaseService phantom loop) confirmed latent-only:**
+`LegacyDatabaseService` is decorated `[Obsolete]` and is NOT registered in the DI container in `Program.cs` for `TerraFusion.API`. No active endpoint reaches `HarrisPacsAdapter.ImportPropertiesAsync()`. The phantom loop is dead code at runtime. Risk is latent (only reachable if DI registration is added), not active.
 
 ---
 

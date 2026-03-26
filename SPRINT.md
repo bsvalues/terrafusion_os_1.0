@@ -9,30 +9,27 @@
 
 ---
 
-### CARD-01 — Alpha Defect Triage & Backend Fixes
+### ~~CARD-01 — Alpha Defect Triage & Backend Fixes~~ ✅ CLOSED (stale — truth gate, no active defects)
 
-```
-Task:           Triage and fix backend issues found during staff alpha
-Owner:          Claude Code
-Mode:           Single-builder
-Repo:           terrafusion_os_1.0
-Allowed files:
-  - backend/src/TerraFusion.API/Controllers/PacsController.cs
-  - backend/src/TerraFusion.API/Controllers/PacsOpsController.cs
-  - backend/src/TerraFusion.API/Controllers/ForgeController.cs
-  - backend/src/TerraFusion.API/Services/ValuationService.cs
-  - backend/src/TerraFusion.Core/PACS/*
-  - related DTOs and tests
-Out of scope:
-  - frontend/ (any file)
-  - shell components
-  - launcher / workbench window manager
-Acceptance test:
-  - Any defect with severity P0 or P1 from alpha is fixed and tested
-  - Backend build clean: dotnet build TerraFusion.sln
-  - Relevant curl checks pass
-Reviewer:       Copilot (ergonomics + contract shape check)
-```
+> **Truth gate result (2026-03-26):** All CARD-01 allowed files are clean. Backend build: 0 errors, 0 warnings.
+> No P0/P1 defects exist within the scoped file set. Real backend blockers are outside this scope.
+
+**Evidence:**
+- `PacsController.cs`: Clean. Fail-fast 503 when PACS not configured; geoId exact lookup routes correctly. ✅
+- `PacsOpsController.cs`: Clean. `GET /ops/pacs/property/{geoId}` route present and complete. ✅
+- `ForgeController.cs`: Clean. Delegates to `ValuationService` correctly. ✅
+- `ValuationService.cs`: Clean. Returns honest fallback when dev SQLite has no data for requested year. ✅
+- `TerraFusion.Core/PACS/*`: Clean. `PacsEfAdapter` registered in dev (no PACS SQL Server required). ✅
+- `dotnet build TerraFusion.sln`: 0 errors, 0 warnings ✅
+- `LegacyDatabaseService` phantom loop (P1-4): Already `[Obsolete]`, not registered in DI, dead code — latent risk only, no active trigger path. ✅
+- Live data flow chain: `LiveDataProvider.getParcel()` → `GET /ops/pacs/property/{geoId}` → `PacsEfAdapter.GetPropertyByGeoIdAsync()` → SQLite — all links present and functional. ✅
+
+**Remaining backend blockers (need new scoped cards):**
+- P1-3: `DossierController.GetParcelDetails` returns 404 when `Properties` EF table has no matching row — outside CARD-01 scope
+- P2-1: `AnalyticsReportingService` hardcoded `TotalProperties = 89247` — outside scope
+- P2-2/P2-3: `GovernmentController` / `DaisController` hardcoded parcel counts — outside scope
+
+> CARD-01 is closed. Card was stale. The PACS/Forge backend spine is solid.
 
 ---
 
@@ -147,3 +144,4 @@ Commit:         docs(modules): add living module integration map
 | 03 | Forge /years endpoint — **already live on main, truth gate closed it** | Truth gate | curl 200 confirmed |
 | 02 | Alpha UX Polish — alpha.html truth matrix, Pilot Runtime setup, Atlas SVG correction | Copilot | 80471948d (satisfied, no new staff feedback) |
 | 04 | Benton Product Reality Report v1 — frontend truth section | Copilot | 1a01c00bc |
+| 01 | Alpha Defect Triage — **truth gate found no P0/P1 in allowed files; backend spine verified clean** | Truth gate | `dotnet build` 0 errors; PacsEfAdapter chain confirmed |
