@@ -149,7 +149,7 @@ namespace TerraFusion.Consciousness
             builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IMultiCountyDataService, MultiCountyDataService>();
 
             // Add AutoMapper for DTO mapping
-            builder.Services.AddAutoMapper(typeof(Program).Assembly);
+            builder.Services.AddAutoMapper(_ => { }, typeof(Program).Assembly);
 
             // Add MediatR for CQRS pattern
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));

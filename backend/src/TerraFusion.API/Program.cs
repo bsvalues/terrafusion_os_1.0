@@ -457,7 +457,10 @@ builder.Services.AddScoped<TerraFusionOperationsInterfaces.IEliteOperationalServ
 // builder.Services.AddHostedService<PluginHotReloadService>();
 
 // Add AutoMapper
-builder.Services.AddAutoMapper(typeof(TerraFusion.API.Program).Assembly, typeof(TerraFusion.Core.Services.ModuleService).Assembly);
+builder.Services.AddAutoMapper(
+    _ => { },
+    typeof(TerraFusion.API.Program).Assembly,
+    typeof(TerraFusion.Core.Services.ModuleService).Assembly);
 
 // Register Rust FFI Service
 // TEMPORARILY DISABLED - ffi_bridge.dll is placeholder, may cause issues
