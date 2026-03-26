@@ -97,6 +97,12 @@ Commit:         docs(modules): add living module integration map
 
 ---
 
+### ~~CARD-13 — Atlas source classification fix~~ ✅ CLOSED
+
+> **Closure (2026-03-26):** `atlasGisFetch` in `useAtlasGis.ts` classified `"canonical"` (actual `GisDataService` output) as `'fallback'` instead of `'live'`, preventing live boundary/layer panels from rendering for any parcel in the PACS mirror. Fixed: `"canonical"` → `'live'`; `"stub"` → `'unavailable'`. alpha.html Atlas label corrected from "SVG fallback" to "Real (PACS mirror)". Section 6b of reality report corrected.
+
+---
+
 ## Completed Cards
 
 | Card | Task | Owner | Commit / Note |
@@ -111,3 +117,4 @@ Commit:         docs(modules): add living module integration map
 | 02 | Alpha UX Polish — alpha.html truth matrix, Pilot Runtime setup, Atlas SVG correction | Copilot | 80471948d (satisfied, no new staff feedback) |
 | 04 | Benton Product Reality Report v1 — frontend truth section | Copilot | 1a01c00bc |
 | 01 | Alpha Defect Triage — **truth gate found no P0/P1 in allowed files; backend spine verified clean** | Truth gate | `dotnet build` 0 errors; PacsEfAdapter chain confirmed |
+| 13 | Atlas source classification fix — `atlasGisFetch`: `canonical` → `live`, `stub` → `unavailable` | Copilot | see HEAD commit |

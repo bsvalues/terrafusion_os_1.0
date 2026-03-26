@@ -270,7 +270,7 @@ builder.Services.AddScoped<TerraFusion.Core.Interfaces.IGisDataService, TerraFus
 
 **CARD-07 fully resolved.** DI is wired; implementation is real (not a stub). The Atlas backend path is functional for parcels in the PACS mirror.
 
-**Important distinction:** `PropertyAtlas.tsx` (frontend) still renders SVG locally and does NOT call `GET /api/atlas/{parcelId}/boundary` at runtime. The alpha.html label `"SVG fallback"` is accurate for the *frontend* behavior. The GIS backend is ready; the Atlas tab frontend wiring is the remaining gap (not a backend gap).
+**Correction (2026-03-26, Phase 33B-4):** The earlier note that `PropertyAtlas.tsx` does not call the Atlas API was wrong. `PropertyAtlas.tsx` IS wired to call `GET /api/atlas/gis/parcels/{parcelId}/boundary` and `GET /api/atlas/gis/parcels/{parcelId}/layers` via `useParcelBoundary` / `useParcelLayers` hooks. The actual bug was in `atlasGisFetch` (frontend): the source classification only recognized sources containing `"pacs"` as `'live'`, so `"canonical"` (what `GisDataService` actually returns for real data) was misclassified as `'fallback'` — causing live boundary and layer panels to never render. Fixed in Phase 33B-4: `"canonical"` → `'live'`, `"stub"` → `'unavailable'`.
 
 ---
 
@@ -284,7 +284,7 @@ These are candidate cards surfaced by this truth pass. This report does not auth
 | CARD-05B | Correct alpha.html "89,247 parcels" claim to reflect dev reality | P0 | `docs` |
 | CARD-05C | Correct alpha.html "Atlas ✅ Real (GIS)" to "SVG fallback when GIS unavailable" | P0 | `docs` |
 | CARD-06 | Verify `Properties` EF table seeding for snapshot parcel IDs | P1 | `backend` |
-| ~~CARD-07~~ | ~~Verify `IGisDataService` DI registration; document Atlas GIS dev status~~ | ✅ Resolved | `GisDataService` confirmed real (reads PACS mirror); frontend Atlas tab not yet wired to API — remaining gap is frontend, not backend |
+| ~~CARD-07~~ | ~~Verify `IGisDataService` DI registration; document Atlas GIS dev status~~ | ✅ Resolved | `GisDataService` confirmed real; `PropertyAtlas.tsx` IS wired to Atlas API; source classification bug (`canonical` ≠ `pacs`) fixed in Phase 33B-4 |
 | CARD-08 | Verify Pilot manifest tool count in dev; document which tools are available | P1 | `os-platform` |
 | CARD-09 | Audit write_high tool surface in alpha; confirm `supervisorApproval` gating | P2 | `os-platform` |
 | CARD-10 | Replace hardcoded `89247` in `GovernmentController`, `AnalyticsReportingService`, `DaisController` with live DB query or clearly-labeled stub constant | P2 | `backend` |
