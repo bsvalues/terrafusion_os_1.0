@@ -788,7 +788,7 @@ public class DaisController : ControllerBase
           new { step = 6, name = "DOR_ACCEPTANCE", status = "not_started", completedAt = (string?)null, assignee = "WA Dept of Revenue" },
         };
 
-    var totalParcels = county.Equals("benton", StringComparison.OrdinalIgnoreCase) ? 89247 : 50000;
+    var totalParcels = await _db.Properties.CountAsync(p => p.CountyId == effectiveCountyId, HttpContext.RequestAborted);
     var certifiedParcels = (int)Math.Round(totalParcels * ((decimal)completedCount / totalSteps));
 
     return Ok(new
