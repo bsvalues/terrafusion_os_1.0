@@ -261,12 +261,16 @@ The following items were not verified and represent known unknowns:
 
 ## 6b. Investigative Items Resolved (2026-03-26, Phase 33B planning)
 
-**Item 3 resolved — `IGisDataService` DI registration confirmed:**
+**Item 3 resolved — `IGisDataService` DI registration + implementation audited:**
 `Program.cs` (dev, `TerraFusion.API`) registers at line 376:
 ```
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IGisDataService, TerraFusion.API.Services.GisDataService>()
 ```
-`GisDataService` is the concrete implementation wired to `AtlasGisController`. The Atlas backend path exists in dev. Whether `GisDataService` returns real GIS data or a stub is not yet audited — CARD-07 is **partially resolved** (DI wired; implementation quality TBD).
+`GisDataService` reads real PACS mirror tables (`PacsParcel`, `PacsSituses`, `PacsLandDetails`, `PacsTaxAreas`) from the EF DbContext. For parcels found in the PACS mirror it returns `Source: "canonical"` with real land dimensions, acreage, and situs address. Coordinates are approximated — a deterministic offset from Benton County courthouse (lat 46.2304, lng −119.2752) derived from `PropId` since no external geocoder is available in dev. For parcels not found it returns `Source: "stub"`.
+
+**CARD-07 fully resolved.** DI is wired; implementation is real (not a stub). The Atlas backend path is functional for parcels in the PACS mirror.
+
+**Important distinction:** `PropertyAtlas.tsx` (frontend) still renders SVG locally and does NOT call `GET /api/atlas/{parcelId}/boundary` at runtime. The alpha.html label `"SVG fallback"` is accurate for the *frontend* behavior. The GIS backend is ready; the Atlas tab frontend wiring is the remaining gap (not a backend gap).
 
 ---
 
@@ -280,7 +284,7 @@ These are candidate cards surfaced by this truth pass. This report does not auth
 | CARD-05B | Correct alpha.html "89,247 parcels" claim to reflect dev reality | P0 | `docs` |
 | CARD-05C | Correct alpha.html "Atlas ✅ Real (GIS)" to "SVG fallback when GIS unavailable" | P0 | `docs` |
 | CARD-06 | Verify `Properties` EF table seeding for snapshot parcel IDs | P1 | `backend` |
-| CARD-07 | Verify `IGisDataService` DI registration; document Atlas GIS dev status | P1 | `backend` |
+| ~~CARD-07~~ | ~~Verify `IGisDataService` DI registration; document Atlas GIS dev status~~ | ✅ Resolved | `GisDataService` confirmed real (reads PACS mirror); frontend Atlas tab not yet wired to API — remaining gap is frontend, not backend |
 | CARD-08 | Verify Pilot manifest tool count in dev; document which tools are available | P1 | `os-platform` |
 | CARD-09 | Audit write_high tool surface in alpha; confirm `supervisorApproval` gating | P2 | `os-platform` |
 | CARD-10 | Replace hardcoded `89247` in `GovernmentController`, `AnalyticsReportingService`, `DaisController` with live DB query or clearly-labeled stub constant | P2 | `backend` |
