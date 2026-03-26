@@ -269,6 +269,10 @@
         <span class="notice-icon">⚠️</span>
         <span><strong>Pilot Runtime also required.</strong> Dais, Clerk, Treasury, Audit, Dossier, and Pilot tabs route all tool invocations through a separate process at <code>localhost:4317</code>. If that process is not running, those 6 tabs will render but every tool card invocation will fail with a network error. Contact the dev team if tool cards show errors on first click.</span>
       </div>
+      <div class="notice notice-info" style="margin-top:8px;">
+        <span class="notice-icon">ℹ️</span>
+        <span><strong>Data mode:</strong> If PACS SQL Server is not configured in your dev environment, set <code>VITE_DATA_MODE=snapshot</code> in the frontend <code>.env</code> file before starting the dev server. Without this, the app defaults to live requests that will silently fall back to the 200-parcel snapshot. The Summary tab will show a <code>fallback</code> source badge — this is expected, not a bug, when PACS is unavailable.</span>
+      </div>
     </div>
   </section>
 
@@ -351,6 +355,10 @@
         <li>Check: "Live" badge visible, no "Demo data" badge</li>
       </ol>
       <div style="margin-top:10px;"><span class="tag">Pass when:</span> <span style="font-size:.85rem;color:var(--muted)">Values match PACS. No demo badge. No crash.</span></div>
+      <div class="notice notice-warn" style="margin-top:10px;">
+        <span class="notice-icon">⚠️</span>
+        <span><strong>Dev data note:</strong> In dev SQLite, parcel <code>101843030001006</code> has only one tax year available (2015 — the PACS ETL base layer). The Forge tab will show a single year in the selector. This is not a bug; it reflects dev seeding. If you expect multiple years, you are looking at the right surface — it just needs production SQL Server data to populate.</span>
+      </div>
     </div>
 
     <div class="card">

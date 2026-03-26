@@ -145,3 +145,5 @@ Commit:         docs(modules): add living module integration map
 | E | Internal alpha harness (/alpha.html) | Claude Code | 7e0704bd8 |
 | F | Forge year-layer truth UI (selector + context panel wired) | Claude Code | 7e0704bd8 |
 | 03 | Forge /years endpoint — **already live on main, truth gate closed it** | Truth gate | curl 200 confirmed |
+| 02 | Alpha UX Polish — alpha.html truth matrix, Pilot Runtime setup, Atlas SVG correction | Copilot | 80471948d (satisfied, no new staff feedback) |
+| 04 | Benton Product Reality Report v1 — frontend truth section | Copilot | 1a01c00bc |
