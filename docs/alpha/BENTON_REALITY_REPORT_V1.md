@@ -259,6 +259,17 @@ The following items were not verified and represent known unknowns:
 
 ---
 
+## 6b. Investigative Items Resolved (2026-03-26, Phase 33B planning)
+
+**Item 3 resolved — `IGisDataService` DI registration confirmed:**
+`Program.cs` (dev, `TerraFusion.API`) registers at line 376:
+```
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.IGisDataService, TerraFusion.API.Services.GisDataService>()
+```
+`GisDataService` is the concrete implementation wired to `AtlasGisController`. The Atlas backend path exists in dev. Whether `GisDataService` returns real GIS data or a stub is not yet audited — CARD-07 is **partially resolved** (DI wired; implementation quality TBD).
+
+---
+
 ## 7. Candidate Follow-On Cards (Captured From This Truth Pass)
 
 These are candidate cards surfaced by this truth pass. This report does not authorize implementation. Each entry requires its own scoped card before any work begins.

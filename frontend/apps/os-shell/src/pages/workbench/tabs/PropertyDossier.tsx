@@ -648,19 +648,27 @@ export const PropertyDossier: React.FC = () => {
 
         {/* Error state */}
         {dossierDetails.error && (
-          <div className='tf-status-error rounded-xl p-4 mb-4'>
-            <div className='flex items-center justify-between'>
+          dossierDetails.error.code === 'NOT_FOUND' ? (
+            <div className='tf-status-error rounded-xl p-4 mb-4'>
               <p className='tf-text text-sm'>
-                Failed to load details: {dossierDetails.error.message}
+                Parcel details not available — Properties table has no row for this parcel in the current environment (dev data gap, not an application error).
               </p>
-              <button
-                onClick={dossierDetails.refetch}
-                className='px-3 py-1 text-xs tf-hover-surface rounded'
-              >
-                Retry
-              </button>
             </div>
-          </div>
+          ) : (
+            <div className='tf-status-error rounded-xl p-4 mb-4'>
+              <div className='flex items-center justify-between'>
+                <p className='tf-text text-sm'>
+                  Failed to load details: {dossierDetails.error.message}
+                </p>
+                <button
+                  onClick={dossierDetails.refetch}
+                  className='px-3 py-1 text-xs tf-hover-surface rounded'
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          )
         )}
 
         {/* Details sections — 4 BentoGrid cards */}

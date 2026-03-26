@@ -33,29 +33,11 @@
 
 ---
 
-### CARD-02 — Alpha UX Polish
+### ~~CARD-02 — Alpha UX Polish~~ ✅ CLOSED (satisfied — no new staff feedback)
 
-```
-Task:           Polish internal alpha UX based on staff feedback
-Owner:          Copilot
-Mode:           Single-builder
-Repo:           terrafusion_os_1.0
-Allowed files:
-  - frontend/apps/os-shell/public/alpha.html
-  - frontend/apps/os-shell/src/pages/workbench/tabs/PropertySummary.tsx
-  - frontend/apps/os-shell/src/components/workbench/*
-  - frontend/apps/os-shell/src/pages/workbench/PropertyWorkbenchWindow.tsx
-Out of scope:
-  - backend/ (any file)
-  - Launcher.tsx (done — do not touch)
-  - useKeyboardShortcuts.ts (done — do not touch)
-  - PropertyForge.tsx (done — do not touch)
-Acceptance test:
-  - /alpha.html reflects any staff feedback on scenarios
-  - Tab empty states are clearly labeled (no ambiguity)
-  - TypeScript compiles clean
-Reviewer:       Claude Code (contract alignment check)
-```
+> **Closure (2026-03-24):** No new staff feedback received. Acceptance criteria met at `80471948d`: alpha.html truth matrix updated, Pilot Runtime setup notice added, Atlas SVG fallback correctly labeled (CARD-05C).
+
+> CARD-02 is closed.
 
 ---
 
@@ -81,27 +63,11 @@ Multi-year layers require production SQL Server data. Not a blocker; document in
 
 ---
 
-### CARD-04 — Benton Product Reality Report v1
+### ~~CARD-04 — Benton Product Reality Report v1~~ ✅ CLOSED (both sections written)
 
-```
-Task:           Write the Benton Product Reality Report after alpha testing
-Owner:          Claude Code (backend truth section) + Copilot (frontend truth section)
-Mode:           Discovery Handoff → both write their own section, human assembles
-Repo:           terrafusion_os_1.0
-Allowed files:
-  - docs/alpha/BENTON_REALITY_REPORT_V1.md (new file)
-Out of scope:
-  - No code changes — document only
-Acceptance test:
-  - Parcel search: pass/fail
-  - Parcel detail load: pass/fail
-  - Forge overview/cost/sales: pass/fail
-  - Every Workbench tab status (real / fallback / broken / empty)
-  - Exact remaining blockers
-  - Any still-fake surfaces
-  - Exact seeded parcel count verified in dev
-Reviewer:       Benton County Assessor (sole human)
-```
+> **Closure (2026-03-24 / 2026-03-26):** Both sections written. Claude Code backend truth section in initial commit. Copilot frontend truth section sealed at `1a01c00bc`. Report continues accumulating resolved investigative items (Sections 6a, 6b).
+
+> CARD-04 is closed.
 
 ---
 
