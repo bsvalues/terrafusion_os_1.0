@@ -261,6 +261,25 @@ The following items were not verified and represent known unknowns:
 
 ## 6b. Investigative Items Resolved (2026-03-26, Phase 33B planning)
 
+## 6c. Write_high Tool Surface Audit (2026-03-26, Phase 33C)
+
+**CARD-09 read phase complete.** Findings for `PropertyTreasury.tsx` and `PropertyClerk.tsx`:
+
+| Tool | Risk | Frontend gate | `supervisorApproval` in pilotApi call |
+|---|---|---|---|
+| `record_payment` | `write_high` | ✅ Checkbox (`paymentConfirmed`) — button disabled until checked | ❌ Not populated |
+| `initiate_tax_sale` | `write_high` | ✅ Checkbox (`taxSaleConfirmed`) + non-empty `taxSaleReason` required | ❌ Not populated |
+| `record_document` | `write_high` | ✅ Checkbox (`recordConfirmed`) + non-empty grantor/grantee required | ❌ Not populated |
+| `release_lien` | `write_low` | ❌ No confirmation gate (button fires directly) | N/A (write_low) |
+
+**Summary:** All write_high tools are protected by a checkbox confirmation gate — accidental invocation is prevented at the UI level. None populate `confirmation.supervisorApproval` in the `invokeTool()` call (the field exists in `pilotApi.ts` but is unused). Whether the Pilot Runtime backend enforces supervisor approval independently is not verified.
+
+**Co-founder decision required before implementation:** Add `confirmation.supervisorApproval` gating to all write_high `invokeTool` calls, OR document that supervisor approval is backend-enforced and checkbox gate is sufficient for alpha. This is a governance decision, not an engineering one.
+
+**alpha.html disclosure gap (P2-4):** The write_high tool descriptions do not disclose the confirmation gate or the absence of `supervisorApproval`. A tester reading alpha.html would not know the checkbox gate exists or what it means for alpha risk.
+
+---
+
 **Item 3 resolved — `IGisDataService` DI registration + implementation audited:**
 `Program.cs` (dev, `TerraFusion.API`) registers at line 376:
 ```
@@ -283,13 +302,13 @@ These are candidate cards surfaced by this truth pass. This report does not auth
 | CARD-05A | Add Pilot Runtime to alpha.html setup instructions | P0 | `docs` |
 | CARD-05B | Correct alpha.html "89,247 parcels" claim to reflect dev reality | P0 | `docs` |
 | CARD-05C | Correct alpha.html "Atlas ✅ Real (GIS)" to "SVG fallback when GIS unavailable" | P0 | `docs` |
-| CARD-06 | Verify `Properties` EF table seeding for snapshot parcel IDs | P1 | `backend` |
+| CARD-06 | Verify `Properties` EF table seeding for snapshot parcel IDs | P1 | `backend` — task card written in SPRINT.md |
 | ~~CARD-07~~ | ~~Verify `IGisDataService` DI registration; document Atlas GIS dev status~~ | ✅ Resolved | `GisDataService` confirmed real; `PropertyAtlas.tsx` IS wired to Atlas API; source classification bug (`canonical` ≠ `pacs`) fixed in Phase 33B-4 |
 | CARD-08 | Verify Pilot manifest tool count in dev; document which tools are available | P1 | `os-platform` |
-| CARD-09 | Audit write_high tool surface in alpha; confirm `supervisorApproval` gating | P2 | `os-platform` |
-| CARD-10 | Replace hardcoded `89247` in `GovernmentController`, `AnalyticsReportingService`, `DaisController` with live DB query or clearly-labeled stub constant | P2 | `backend` |
-| CARD-11 | Investigate `LegacyDatabaseService.ImportPropertiesAsync` call paths; gate phantom-loop execution | P1 | `backend` |
-| CARD-12 | Document dev `.env` configuration requirements (VITE_DATA_MODE, ports) in alpha.html or README | P1 | `docs` |
+| ~~CARD-09~~ | ~~Audit write_high tool surface in alpha; confirm `supervisorApproval` gating~~ | ✅ Audited (2026-03-26) | See Section 6c — checkbox gates confirmed; supervisorApproval not populated; co-founder decision required for pilotApi-level enforcement |
+| CARD-10 | Replace hardcoded `89247` in `GovernmentController`, `AnalyticsReportingService`, `DaisController` with live DB query or clearly-labeled stub constant | P2 | `backend` — task card written in SPRINT.md |
+| ~~CARD-11~~ | ~~Investigate `LegacyDatabaseService.ImportPropertiesAsync` call paths~~ | ✅ Resolved (CARD-01 truth gate) | `[Obsolete]`, not in DI, dead code — confirmed Section 6a |
+| ~~CARD-12~~ | ~~Document dev `.env` configuration requirements~~ | ✅ Resolved | alpha.html Pilot Runtime setup notice added at `80471948d` |
 
 ---
 
@@ -310,11 +329,12 @@ These are candidate cards surfaced by this truth pass. This report does not auth
 | Pilot Runtime `/pilot/tools` endpoint confirmed | ✅ |
 | Backend hardcoded 89,247 locations mapped | ✅ (20 hits, 8 files) |
 | `alpha.html` full claims read | ✅ |
-| GIS runtime availability in dev | ⬜ Not verified |
+| GIS runtime availability in dev | ✅ `GisDataService` reads PACS mirror tables; deterministic centroid coords |
 | Pilot manifest tool count | ⬜ Not verified |
-| `Properties` table seeded parcel count | ⬜ Not verified |
-| `LiveDataProvider.ts` fallback path | ⬜ Not verified |
+| `Properties` table seeded parcel count | ⬜ Not verified (CARD-06 open) |
+| `LiveDataProvider.ts` fallback path | ✅ Confirmed Section 6a — returns null on 404, no snapshot fallback in live mode |
 | Active dev `.env` file contents | ⬜ Not found |
+| write_high tool gating state | ✅ Audited Section 6c — checkbox gates present; supervisorApproval not populated |
 
 ---
 
