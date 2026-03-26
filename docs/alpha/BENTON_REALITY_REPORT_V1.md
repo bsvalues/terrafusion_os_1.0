@@ -311,3 +311,97 @@ CARD-04 truth pass. Source honesty check; no browser-render proof.
 
 No code changed. Report only.
 ```
+
+---
+
+## 10. Frontend Truth Section
+
+*Copilot lane — 2026-03-26. Source-code analysis only; no browser-render proof. Base SHA: f932464ee.*
+*Reader: Benton County Assessor. This section answers the CARD-04 acceptance criteria directly.*
+
+---
+
+### FT-1: Per-Tab Status Matrix
+
+Every workbench tab is classified as one of four states:
+
+| State | Meaning |
+|---|---|
+| **Real** | Tab displays data from the live API (database or PACS). |
+| **Fallback** | Tab displays data, but from a JSON snapshot file — not the live API. |
+| **MWUX** | Tab renders a tool shell (tool cards, invocation buttons). No data is pre-loaded. Tools execute against real endpoints when invoked. |
+| **Broken** | Tab renders an error or blank in the current dev configuration. |
+
+| Tab | State | Source | What the tester sees |
+|---|---|---|---|
+| Summary | **Fallback** (expected Real) | `LiveDataProvider` → snapshot fallback when PACS SQL Server absent | Parcel data loads. `source='fallback'` badge is visible. Values come from `benton-snapshot-mini.json` (200 parcels), not Harris PACS. |
+| Forge | **Fallback** | `GET /api/forge/{parcelId}/years` → SQLite dev has only one 2015 layer per parcel | Year selector shows 1 year (2015). All approach panels (Cost/Sales/Income) return `Confidence: 0.0`. Surface renders; data is not representative of real appraisal values. |
+| Atlas | **Fallback** | SVG deterministic approximation | GIS endpoint exists in backend code; runtime availability in dev is unverified. Tester sees an SVG-approximated boundary, not real GIS parcel geometry. |
+| Dais | **MWUX** | Pilot Runtime at `localhost:4317` | Tool cards render. Invocations route to Pilot Runtime. If Pilot Runtime is not started, all tool invocations return network error. No data is pre-loaded. |
+| Clerk | **MWUX** | Pilot Runtime at `localhost:4317` | Same as Dais. |
+| Treasury | **MWUX** | Pilot Runtime at `localhost:4317` | Same as Dais. `initiate_tax_sale` (write_high risk) and `record_payment` (write_high) are present in the tool manifest. Inhibition state in alpha is unverified (see P2-4). |
+| Audit | **MWUX** | Pilot Runtime at `localhost:4317` | Same as Dais. |
+| Dossier | **MWUX / Broken** | `GET /api/dossier/parcels/{parcelId}/details` queries `Properties` EF table | Tool shell renders. Detail panel returns HTTP 404 if `Properties` table has no matching row for the parcel ID (see P1-3). Invocations work if Pilot Runtime is running. |
+| Pilot | **MWUX** | `GET /pilot/tools` → Pilot Runtime manifest on mount | Tool list loads from runtime manifest at first paint. If Pilot Runtime is not running, tool list is empty or error state. |
+
+---
+
+### FT-2: CARD-04 Acceptance Criteria Answers
+
+| Acceptance test | Verdict | Detail |
+|---|---|---|
+| **Parcel search: pass/fail** | Conditional pass | With `VITE_DATA_MODE=snapshot`: 200 Benton parcels are searchable. Without the env var, `LiveDataProvider` attempts PACS SQL Server and falls back to snapshot if unavailable. Either path surfaces parcels. |
+| **Parcel detail load: pass/fail** | Conditional pass | Summary tab loads parcel data (fallback source). Dossier detail panel returns 404 if the `Properties` EF table has no row for that parcel — an open unknown (see Section 6, item 2). |
+| **Forge overview/cost/sales: pass/fail** | Conditional pass | Forge renders. Year selector shows 2015 only (dev SQLite has one layer per parcel). Cost/Sales/Income panels load with `Confidence: 0.0`. Tabs are present; values are not real appraisal data. |
+| **Every Workbench tab status** | ✅ See FT-1 above | — |
+| **Exact remaining blockers** | ✅ See FT-3 below | — |
+| **Any still-fake surfaces** | ✅ See FT-4 below | — |
+| **Exact seeded parcel count, verified in dev** | Snapshot JSON: **200 parcels** (verified — `benton-snapshot-mini.json` line count). SQLite `Properties` table row count: **not verified in this pass** (see Section 6, item 2). |
+
+---
+
+### FT-3: Remaining Blockers for a Benton Tester
+
+These are the issues a county staff member will hit if they start only the .NET backend at `localhost:5000`:
+
+| # | Blocker | Impact | Finding |
+|---|---|---|---|
+| 1 | Pilot Runtime (`localhost:4317`) not listed in alpha.html setup steps | Dais, Clerk, Treasury, Audit, Dossier, and Pilot tabs — all 6 MWUX tabs — fail silently on any tool invocation | P0-3 |
+| 2 | `VITE_DATA_MODE` not set in `.env.example` | Tester does not know why the Summary tab shows `source='fallback'`; no guidance exists | P1-1 |
+| 3 | Forge year selector shows only 2015 | Tester trained on Harris PACS expects a multi-year view; single-year result is confusing without context | P1-2 |
+| 4 | Dossier detail panel returns 404 if `Properties` table is not seeded | Dossier reads from a different table than the PACS parcel snapshot; seeding alignment unverified | P1-3 |
+| 5 | `LegacyDatabaseService.ImportPropertiesAsync` phantom loop unguarded | If triggered, populates 89,247 synthetic parcels with IDs like `BN-000001-2024` — not real Benton parcel IDs | P1-4 |
+
+---
+
+### FT-4: Still-Fake Surfaces
+
+These surfaces display numbers or labels that look real but are sourced from hardcoded values, not live Benton County data:
+
+| Surface | Displayed claim | Actual source |
+|---|---|---|
+| `alpha.html` header subtitle | "89,247 parcels" | Hardcoded integer in `alpha.html` markup |
+| Analytics dashboard (if visible) | `TotalProperties = 89247`, `PropertiesAssessed = 89247` | Hardcoded in `AnalyticsReportingService.GenerateSummaryAsync` |
+| Government status panel | `"1008_AGENTS_ACTIVE"`, `quantumOptimization: ENABLED`, `FISMA-HIGH` | Static fallback in `GovernmentController` |
+| Forge approach panels in dev | Cost/Sales/Income `Confidence: 0.0`, `source: fallback` | SQLite has only one 2015 CAMA layer per seeded parcel |
+| Levy district display | Single district `DIST-BENTON-SMOKE` | Snapshot data; real Benton has multiple TIDs |
+| Summary `assessmentYear` | 2025 for all parcels | Snapshot JSON lacks `taxYear` field; `SnapshotDataProvider` defaults to 2025 |
+
+---
+
+### FT-5: Frontend Code Verified in This Pass
+
+| File | Status | What was confirmed |
+|---|---|---|
+| `frontend/apps/os-shell/public/alpha.html` | ✅ Committed (`80471948d`) | Atlas corrected from "Real GIS" to "SVG fallback"; setup instructions still missing Pilot Runtime |
+| `PropertySummary.tsx` | ✅ Real | 7 data blocks; `live`/`fallback` source badge; nulls render `'—'` |
+| `PropertyForge.tsx` | ✅ Real (limited by dev data) | Year selector from `useParcelYears`; lock state badge; approach panels per year |
+| `PropertyAtlas.tsx` | ⚠️ SVG fallback | Renders SVG approximation; GIS endpoint confirmed in backend, runtime status unverified |
+| `PropertyDais.tsx` | ✅ MWUX shell | Tool cards from manifest; invocations via `pilotApi.invokePilotTool()` |
+| `PropertyClerk.tsx` | ✅ MWUX shell | Same pattern as Dais |
+| `PropertyTreasury.tsx` | ✅ MWUX shell | Same pattern; `write_high` tools present |
+| `PropertyAudit.tsx` | ✅ MWUX shell | Same pattern |
+| `PropertyDossier.tsx` | ✅ MWUX shell | Detail panel endpoint confirmed; seeding alignment not verified |
+| `PropertyPilot.tsx` | ✅ MWUX shell | Tool manifest from `GET /pilot/tools` on mount |
+| `pilotApi.ts` | ✅ Reviewed | All MWUX invocations route to `POST /pilot/invoke` via Vite proxy → port 4317 |
+| `dataProvider.ts` | ✅ Reviewed | Mode resolution: `VITE_DATA_MODE=snapshot` → snapshot; unset → `LiveDataProvider` → fallback |
