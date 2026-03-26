@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Text.Json;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
 using Xunit;
@@ -163,5 +164,28 @@ public sealed class NoticeServiceTests
 
         updated.Status.Should().Be("sent");
         updated.SentAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Notice_CreateAsync_Command_EnforcesCountyAndSerializesFields()
+    {
+        await using var db = CreateDbContext(nameof(Notice_CreateAsync_Command_EnforcesCountyAndSerializesFields));
+        await SeedCounty(db, BentonCountyId);
+        var svc = new NoticeService(db, NullLogger<NoticeService>.Instance);
+
+        var created = await svc.CreateAsync(
+            BentonCountyId,
+            new GenerateNoticeCommand(
+                "VALUE_CHANGE",
+                "PARCEL-303",
+                null,
+                new Dictionary<string, string> { ["ownerName"] = "Jane Smith" }),
+            "notices@test");
+
+        created.CountyId.Should().Be(BentonCountyId);
+        created.DeliveryMethod.Should().Be("mail");
+        created.Status.Should().Be("generated");
+        created.CreatedBy.Should().Be("notices@test");
+        JsonDocument.Parse(created.Fields!).RootElement.GetProperty("ownerName").GetString().Should().Be("Jane Smith");
     }
 }

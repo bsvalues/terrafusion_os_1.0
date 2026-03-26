@@ -765,38 +765,30 @@ public class DaisController : ControllerBase
 
     var steps = await _certificationService.GetByTaxYearAsync(taxYear, effectiveCountyId);
 
-    var totalSteps = steps.Count > 0 ? steps.Count : 6;
+    var totalSteps = steps.Count;
     var completedCount = steps.Count(s => string.Equals(s.Status, "complete", StringComparison.OrdinalIgnoreCase)
                                         || string.Equals(s.Status, "completed", StringComparison.OrdinalIgnoreCase));
 
-    var stepList = steps.Count > 0
-      ? steps.Select((s, i) => new
-        {
-          step = i + 1,
-          name = s.StepCode,
-          status = s.Status,
-          completedAt = s.CompletedAt?.ToString("o"),
-          assignee = s.CompletedBy ?? "Unassigned",
-        }).ToArray()
-      : new object[]
-        {
-          new { step = 1, name = "DATA_VALIDATION", status = "pending", completedAt = (string?)null, assignee = "Data Quality Team" },
-          new { step = 2, name = "RATIO_STUDY", status = "not_started", completedAt = (string?)null, assignee = "Senior Appraiser" },
-          new { step = 3, name = "SUPERVISORY_REVIEW", status = "not_started", completedAt = (string?)null, assignee = "Chief Appraiser" },
-          new { step = 4, name = "ASSESSOR_SIGNOFF", status = "not_started", completedAt = (string?)null, assignee = "County Assessor" },
-          new { step = 5, name = "DOR_SUBMISSION", status = "not_started", completedAt = (string?)null, assignee = "Assessor Admin" },
-          new { step = 6, name = "DOR_ACCEPTANCE", status = "not_started", completedAt = (string?)null, assignee = "WA Dept of Revenue" },
-        };
+    var stepList = steps.Select((s, i) => new
+      {
+        step = i + 1,
+        name = s.StepCode,
+        status = s.Status,
+        completedAt = s.CompletedAt?.ToString("o"),
+        assignee = s.CompletedBy ?? GetDefaultCertificationAssignee(s.StepCode),
+      }).ToArray();
 
     var totalParcels = await _db.Properties.CountAsync(p => p.CountyId == effectiveCountyId, HttpContext.RequestAborted);
-    var certifiedParcels = (int)Math.Round(totalParcels * ((decimal)completedCount / totalSteps));
+    var certifiedParcels = totalSteps > 0
+      ? (int)Math.Round(totalParcels * ((decimal)completedCount / totalSteps))
+      : 0;
 
     return Ok(new
     {
       county,
       taxYear,
-      rollStatus = completedCount == totalSteps ? "certified" : "in_progress",
-      completionPct = Math.Round((decimal)completedCount / totalSteps * 100, 1),
+      rollStatus = totalSteps > 0 && completedCount == totalSteps ? "certified" : "in_progress",
+      completionPct = totalSteps > 0 ? Math.Round((decimal)completedCount / totalSteps * 100, 1) : 0,
       steps = stepList,
       totalParcelCount = totalParcels,
       certifiedParcelCount = certifiedParcels,
@@ -867,19 +859,10 @@ public class DaisController : ControllerBase
     if (countyAccess.ErrorResult is not null)
       return countyAccess.ErrorResult;
 
-    var effectiveCountyId = countyAccess.CountyId!.Value;
-
-    var notice = new Notice
-    {
-      ParcelId = request.ParcelId ?? string.Empty,
-      TemplateId = request.TemplateId,
-      DeliveryMethod = request.DeliveryMethod ?? "mail",
-      Status = "generated",
-      Fields = request.Fields is not null ? JsonSerializer.Serialize(request.Fields) : null,
-      CountyId = effectiveCountyId,
-    };
-
-    var created = await _noticeService.CreateAsync(notice);
+    var created = await _noticeService.CreateAsync(
+      countyAccess.CountyId!.Value,
+      new GenerateNoticeCommand(request.TemplateId, request.ParcelId, request.DeliveryMethod, request.Fields),
+      User.Identity?.Name);
 
     return Ok(new
     {
@@ -926,32 +909,10 @@ public class DaisController : ControllerBase
     if (countyAccess.ErrorResult is not null)
       return countyAccess.ErrorResult;
 
-    var effectiveCountyId = countyAccess.CountyId!.Value;
-
-    var slaHours = request.TaskType switch
-    {
-      "FIELD_INSPECTION" => 72,
-      "DESK_REVIEW" => 48,
-      "APPEAL_PREPARATION" => 120,
-      "EXEMPTION_REVIEW" => 96,
-      "DATA_CORRECTION" => 24,
-      "SUPERVISORY_REVIEW" => 48,
-      _ => 72,
-    };
-
-    var item = new QueueItem
-    {
-      ParcelId = request.ParcelId ?? string.Empty,
-      TaskType = request.TaskType,
-      Priority = request.Priority ?? "normal",
-      Status = "queued",
-      AssignedTo = request.AssignedTo,
-      SlaHours = slaHours,
-      SlaDeadline = DateTime.UtcNow.AddHours(slaHours),
-      CountyId = effectiveCountyId,
-    };
-
-    var created = await _queueService.CreateAsync(item);
+    var created = await _queueService.CreateAsync(
+      countyAccess.CountyId!.Value,
+      new CreateQueueItemCommand(request.TaskType, request.ParcelId, request.AssignedTo, request.Priority),
+      User.Identity?.Name);
 
     return Ok(new
     {
@@ -985,22 +946,16 @@ public class DaisController : ControllerBase
     if (countyAccess.ErrorResult is not null)
       return countyAccess.ErrorResult;
 
-    var effectiveCountyId = countyAccess.CountyId!.Value;
-
-    var appeal = new Appeal
-    {
-      ParcelId = request.ParcelId,
-      AppealGround = request.AppealGround ?? "MARKET_VALUE",
-      PetitionerName = request.PetitionerName,
-      CurrentValue = request.CurrentValue,
-      RequestedValue = request.RequestedValue,
-      TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
-      FiledDate = DateTime.UtcNow,
-      Status = "filed",
-      CountyId = effectiveCountyId,
-    };
-
-    var created = await _appealService.CreateAsync(appeal);
+    var created = await _appealService.CreateAsync(
+      countyAccess.CountyId!.Value,
+      new CreateAppealCommand(
+        request.ParcelId,
+        request.AppealGround,
+        request.PetitionerName,
+        request.CurrentValue,
+        request.RequestedValue,
+        request.TaxYear),
+      User.Identity?.Name);
 
     await _audit.LogInvocationAsync("file_appeal", request.ParcelId!,
       User.Identity?.Name ?? "anonymous", "filed", HttpContext.RequestAborted);
@@ -1107,22 +1062,16 @@ public class DaisController : ControllerBase
     if (countyAccess.ErrorResult is not null)
       return countyAccess.ErrorResult;
 
-    var effectiveCountyId = countyAccess.CountyId!.Value;
-
-    var exemption = new Exemption
-    {
-      ParcelId = request.ParcelId,
-      ProgramCode = request.ProgramCode ?? "SENIOR_DISABLED",
-      ApplicantName = request.ApplicantName,
-      ApplicationDate = DateTime.UtcNow,
-      ExemptionAmount = request.ExemptionAmount,
-      RcwReference = request.RcwReference,
-      Notes = request.Notes,
-      Status = "pending",
-      CountyId = effectiveCountyId,
-    };
-
-    var created = await _exemptionService.CreateAsync(exemption);
+    var created = await _exemptionService.CreateAsync(
+      countyAccess.CountyId!.Value,
+      new CreateExemptionCommand(
+        request.ParcelId,
+        request.ProgramCode,
+        request.ApplicantName,
+        request.ExemptionAmount,
+        request.RcwReference,
+        request.Notes),
+      User.Identity?.Name);
 
     await _audit.LogInvocationAsync("create_exemption", request.ParcelId!,
       User.Identity?.Name ?? "anonymous", "created", HttpContext.RequestAborted);
@@ -1632,24 +1581,16 @@ public class DaisController : ControllerBase
     var effectiveCountyId = countyAccess.CountyId!.Value;
     var steps = await _certificationService.GetByTaxYearAsync(taxYear, effectiveCountyId);
 
-    var totalSteps = steps.Count > 0 ? steps.Count : 6;
+    var totalSteps = steps.Count;
     var completedCount = steps.Count(s =>
       string.Equals(s.Status, "complete", StringComparison.OrdinalIgnoreCase) ||
       string.Equals(s.Status, "completed", StringComparison.OrdinalIgnoreCase));
 
-    var pct = Math.Round((decimal)completedCount / totalSteps * 100, 1);
+    var pct = totalSteps > 0 ? Math.Round((decimal)completedCount / totalSteps * 100, 1) : 0;
 
-    var stepList = steps.Count > 0
-      ? steps.Select(s => new { id = s.Id.ToString(), name = s.StepCode, complete = s.Status == "completed" || s.Status == "complete" }).ToArray()
-      : new object[]
-      {
-        new { id = "step-1", name = "DATA_VALIDATION", complete = false },
-        new { id = "step-2", name = "RATIO_STUDY", complete = false },
-        new { id = "step-3", name = "SUPERVISORY_REVIEW", complete = false },
-        new { id = "step-4", name = "ASSESSOR_SIGNOFF", complete = false },
-        new { id = "step-5", name = "DOR_SUBMISSION", complete = false },
-        new { id = "step-6", name = "DOR_ACCEPTANCE", complete = false },
-      };
+    var stepList = steps
+        .Select(s => new { id = s.Id.ToString(), name = s.StepCode, complete = s.Status == "completed" || s.Status == "complete" })
+        .ToArray();
 
     var blockers = new List<string>();
     if (pct < 100m)
@@ -1869,4 +1810,15 @@ public class DaisController : ControllerBase
   public sealed record HistoricPropertyRequest(decimal AssessedValue, decimal RehabilitationCost, int YearsInProgram);
   public sealed record GenerateNoticeRequest(string? TemplateId, string? ParcelId, string? DeliveryMethod, Dictionary<string, string>? Fields);
   public sealed record QueueAssignRequest(string? TaskType, string? ParcelId, string? AssignedTo, string? Priority);
+
+  private static string GetDefaultCertificationAssignee(string stepCode) => stepCode switch
+  {
+    "DATA_VALIDATION" => "Data Quality Team",
+    "RATIO_STUDY" => "Senior Appraiser",
+    "SUPERVISORY_REVIEW" => "Chief Appraiser",
+    "ASSESSOR_SIGNOFF" => "County Assessor",
+    "DOR_SUBMISSION" => "Assessor Admin",
+    "DOR_ACCEPTANCE" => "WA Dept of Revenue",
+    _ => "Unassigned",
+  };
 }

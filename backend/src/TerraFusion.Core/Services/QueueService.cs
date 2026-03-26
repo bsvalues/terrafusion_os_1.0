@@ -5,9 +5,16 @@ using TerraFusion.Core.Interfaces;
 
 namespace TerraFusion.Core.Services;
 
+public sealed record CreateQueueItemCommand(
+    string TaskType,
+    string? ParcelId,
+    string? AssignedTo,
+    string? Priority);
+
 public interface IQueueService
 {
     Task<QueueItem> CreateAsync(QueueItem entity);
+    Task<QueueItem> CreateAsync(Guid countyId, CreateQueueItemCommand request, string? createdBy = null, DateTime? utcNow = null);
     Task<QueueItem?> GetByIdAsync(Guid id, Guid countyId);
     Task<List<QueueItem>> GetPendingAsync(Guid countyId, string? taskType = null);
     Task<List<QueueItem>> GetAllAsync(Guid countyId, string? status = null, string? assignedTo = null, string? taskType = null);
@@ -63,9 +70,8 @@ public class QueueService : IQueueService
 
     public async Task<QueueItem> CreateAsync(QueueItem entity)
     {
-        entity.Id = Guid.NewGuid();
-        entity.CreatedAt = DateTime.UtcNow;
-        entity.UpdatedAt = DateTime.UtcNow;
+        var now = DateTime.UtcNow;
+        PrepareForCreate(entity, now);
 
         _context.QueueItems.Add(entity);
         await _context.SaveChangesAsync();
@@ -75,6 +81,27 @@ public class QueueService : IQueueService
             entity.Id, entity.ParcelId, entity.CountyId, entity.TaskType, entity.Priority);
 
         return entity;
+    }
+
+    public Task<QueueItem> CreateAsync(Guid countyId, CreateQueueItemCommand request, string? createdBy = null, DateTime? utcNow = null)
+    {
+        var now = utcNow ?? DateTime.UtcNow;
+        var slaHours = GetDefaultSlaHours(request.TaskType);
+        var entity = new QueueItem
+        {
+            ParcelId = request.ParcelId ?? string.Empty,
+            TaskType = request.TaskType,
+            Priority = request.Priority ?? "normal",
+            Status = "queued",
+            AssignedTo = request.AssignedTo,
+            SlaHours = slaHours,
+            SlaDeadline = now.AddHours(slaHours),
+            CountyId = countyId,
+            CreatedBy = createdBy,
+            UpdatedBy = createdBy,
+        };
+
+        return CreateAsync(entity);
     }
 
     public async Task<QueueItem?> GetByIdAsync(Guid id, Guid countyId)
@@ -258,5 +285,32 @@ public class QueueService : IQueueService
             id, action, newStatus, countyId);
 
         return entity;
+    }
+
+    private static void PrepareForCreate(QueueItem entity, DateTime now)
+    {
+        if (entity.Id == Guid.Empty)
+            entity.Id = Guid.NewGuid();
+
+        entity.Priority = string.IsNullOrWhiteSpace(entity.Priority) ? "normal" : entity.Priority;
+        entity.Status = string.IsNullOrWhiteSpace(entity.Status) ? "queued" : entity.Status;
+        entity.SlaHours ??= GetDefaultSlaHours(entity.TaskType);
+        entity.SlaDeadline ??= now.AddHours(entity.SlaHours.Value);
+        entity.CreatedAt = entity.CreatedAt == default ? now : entity.CreatedAt;
+        entity.UpdatedAt = now;
+    }
+
+    private static int GetDefaultSlaHours(string taskType)
+    {
+        return taskType switch
+        {
+            "FIELD_INSPECTION" => 72,
+            "DESK_REVIEW" => 48,
+            "APPEAL_PREPARATION" => 120,
+            "EXEMPTION_REVIEW" => 96,
+            "DATA_CORRECTION" => 24,
+            "SUPERVISORY_REVIEW" => 48,
+            _ => 72,
+        };
     }
 }

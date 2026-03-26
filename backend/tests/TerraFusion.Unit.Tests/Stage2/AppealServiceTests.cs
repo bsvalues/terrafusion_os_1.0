@@ -220,4 +220,24 @@ public sealed class AppealServiceTests
         results2026.Should().HaveCount(1);
         results2026[0].ParcelId.Should().Be("A-2026");
     }
+
+    [Fact]
+    public async Task Appeal_CreateAsync_Command_EnforcesCountyAndDefaults()
+    {
+        await using var db = CreateDbContext(nameof(Appeal_CreateAsync_Command_EnforcesCountyAndDefaults));
+        await SeedCounty(db, BentonCountyId);
+        var svc = new AppealService(db, NullLogger<AppealService>.Instance);
+
+        var created = await svc.CreateAsync(
+            BentonCountyId,
+            new CreateAppealCommand("PARCEL-101", null, "Jane Smith", 450_000m, 400_000m, 0),
+            "appeals@test");
+
+        created.CountyId.Should().Be(BentonCountyId);
+        created.AppealGround.Should().Be("MARKET_VALUE");
+        created.Status.Should().Be("filed");
+        created.PetitionerName.Should().Be("Jane Smith");
+        created.CreatedBy.Should().Be("appeals@test");
+        created.TaxYear.Should().BeGreaterThan(2000);
+    }
 }

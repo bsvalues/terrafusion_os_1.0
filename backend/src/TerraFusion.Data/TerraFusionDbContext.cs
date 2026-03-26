@@ -483,6 +483,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new AnalysisResultConfiguration());
     modelBuilder.ApplyConfiguration(new WorkflowConfiguration());
     modelBuilder.ApplyConfiguration(new WorkflowExecutionConfiguration());
+    modelBuilder.ApplyConfiguration(new ExemptionConfiguration());
+    modelBuilder.ApplyConfiguration(new AppealConfiguration());
+    modelBuilder.ApplyConfiguration(new CertificationStepConfiguration());
+    modelBuilder.ApplyConfiguration(new NoticeConfiguration());
+    modelBuilder.ApplyConfiguration(new QueueItemConfiguration());
 
     // NOTE: TerraFusionGPT Suite configurations temporarily disabled due to circular dependency
     // These configurations are defined in TerraFusion.Data\Configurations\GPTConfiguration.cs.disabled
