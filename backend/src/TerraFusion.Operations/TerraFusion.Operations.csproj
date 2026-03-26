@@ -32,10 +32,8 @@
     <WarningLevel>5</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
-    <!-- 1591: missing XML doc; NU1903: NuGet known-vulnerability warning suppressed because
-         AutoMapper 12.0.1 CVE (GHSA-rvv3-g6hj-g44x) has no patched version on nuget.org
-         for the Extensions.DI companion package. Tracked for future remediation. -->
-    <NoWarn>1591;NU1903</NoWarn>
+    <!-- 1591: missing XML doc comments -->
+    <NoWarn>1591</NoWarn>
     <!-- Prevent appsettings collision when referenced by TerraFusion.API -->
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
   </PropertyGroup>
@@ -62,7 +60,6 @@
     <PackageReference Include="Serilog.Sinks.File" />
     <PackageReference Include="System.Text.Json" />
     <PackageReference Include="AutoMapper" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="FluentValidation.AspNetCore" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="MediatR" />
