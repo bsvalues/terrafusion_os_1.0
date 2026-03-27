@@ -1,8 +1,10 @@
 # TerraFusion OS — Phase 34 Copilot Lanes
 **Date**: 2026-03-27  
-**Status**: WAVE 2 OPEN — Wave 1 fully sealed (W1A `a35a2e32a`, W1B `c96ef3eeb`, W1C `4e77ce758`)  
-**Authority**: Co-Founder planning session, 2026-03-27 + correction 2026-03-27  
+**Status**: W2A SEALED `5b6a9f495` — W2B B1 ACTIVE  
+**Authority**: Co-Founder planning session, 2026-03-27 + collapse to Copilot-only 2026-03-27  
 **Supersedes**: `2026-03-23-tier1-tier2-validation-wiring.md` (partial execution credit carried forward below)
+
+> **Execution model**: Copilot only. Claude Code and Codex are retired from execution planning.
 
 ---
 
@@ -47,14 +49,16 @@ After merge: all Phase 34 work starts from `main`.
 
 | Item | Value |
 |------|-------|
-| HEAD | `4e77ce758` on `fix/workbench-loading-aria` |
+| HEAD | `5b6a9f495` on `fix/workbench-loading-aria` |
 | Tree | Clean |
 | Backend build | 0 errors, 0 warnings |
 | `pnpm type-check` | EXIT 0 |
 | UI token ratchet | 790 ≤ 812 |
 | Stage2 tests | 52/52 (+4 from W1C) |
+| Dais workbench tests | 44/44 (W2A proof) |
 | PR #706 | Open, awaiting merge decision |
-| Active sprint | Phase 34 — Wave 2 open |
+| Active sprint | Phase 34 — W2B B1 active |
+| Execution model | Copilot only |
 
 ---
 
@@ -66,7 +70,7 @@ After merge: all Phase 34 work starts from `main`.
 | V2: GovernedToolAuditService E2E | Copilot (reassigned) | ✅ SEALED `4e77ce758` | Real proof coverage; stale SQLite state was root cause |
 | F1: Forge Frontend Wiring | Copilot | ✅ SEALED `a35a2e32a` | L221 guard added; Forge vitest 126/126 |
 | F2: Atlas Frontend Wiring | Copilot | ✅ SEALED `c96ef3eeb` | Unavailable states + flood stub label; Atlas vitest 78/78 |
-| D1: Dais E2E Tool Pipeline | Copilot | 🔲 Open — Wave 2A this plan | — |
+| D1: Dais E2E Tool Pipeline | Copilot | ✅ SEALED `5b6a9f495` | Proof-only pass; 44/44 tests; pipeline was already wired |
 
 ---
 
@@ -82,7 +86,8 @@ After merge: all Phase 34 work starts from `main`.
 - [x] **W1A** — IncomeApproach L221 `?? 0` guard + Forge vitest 126/126 (`a35a2e32a`)
 - [x] **W1B** — Atlas unavailable-state disclosure + flood stub label + Atlas vitest 78/78 (`c96ef3eeb`)
 - [x] **W1C** — GovernedToolAuditService E2E proof coverage, 4 tests, Stage2 52/52 (`4e77ce758`)
-- [x] **W2B B2** — `/api/government/stats` live endpoint (`GovernmentController.cs` — `_db.Properties.CountAsync()`, `dataSource = "LIVE_DB"`);
+- [x] **W2A** — Dais invokeTool → result display pipeline proof/seal, 44/44 tests (`5b6a9f495`)
+- [x] **W2B B2** — `/api/government/stats` live endpoint (`GovernmentController.cs` — `_db.Properties.CountAsync()`, `dataSource = "LIVE_DB"`);  
   `BentonParcelCountStub` const retained as dead-named-stub; dead code cleanup deferred
 
 ---
@@ -112,8 +117,8 @@ After merge: all Phase 34 work starts from `main`.
 
 | Gap | File(s) | Wave |
 |-----|---------|------|
-| Dais invokeTool → result display pipeline missing | `PropertyDais.tsx`, `handlers.real.ts` | W2A (Copilot) |
-| PACS Phase 3: `PacsTaxAreaAssoc` entity missing | `TerraFusion.Data`, `PacsDataSeeder.cs` | W2B B1 (Codex / TF-OS) |
+| ~~Dais invokeTool → result display pipeline missing~~ | ~~`PropertyDais.tsx`, `handlers.real.ts`~~ | ~~W2A~~ ✅ SEALED `5b6a9f495` |
+| PACS Phase 3: `PacsTaxAreaAssoc` entity missing | `TerraFusion.Data`, `PacsDataSeeder.cs` | W2B B1 (Copilot) |
 | 89_247 hardcoded in 5 production frontend components | TrustRegistry, AdminDashboard, AVMStudio, GeometryHealth, TerraExportModule | W3A (Copilot — unblocked; stats endpoint is live) |
 | Management Dashboard not wired to live API + SignalR | `ManagementDashboard.tsx` | W3B (Copilot) |
 
@@ -143,13 +148,13 @@ After merge: all Phase 34 work starts from `main`.
 ┌───────────────────────────────────────────────────────────────────────┐
 │                       WAVE 2 (parallel)                               │
 │                                                                       │
-│  W2A 🔲 ACTIVE (Copilot)              W2B (Codex / TF-OS)            │
+│  W2A ✅ SEALED 5b6a9f495             W2B B1 🔲 ACTIVE (Copilot)     │
 │  ┌──────────────────────────┐        ┌──────────────────────────┐    │
 │  │ Dais E2E Tool Pipeline   │        │ PACS Phase 3 B1:         │    │
-│  │ (invokeTool → result     │        │ PacsTaxAreaAssoc entity  │    │
-│  │  display panels)         │        │ (B2 stats endpoint done) │    │
+│  │ (proof-only seal;        │        │ PacsTaxAreaAssoc entity  │    │
+│  │  pipeline was wired)     │        │ (B2 stats endpoint done) │    │
 │  └──────────────────────────┘        └──────────────────────────┘    │
-│  frontend only                        backend only                    │
+│  44/44 tests; type-check 0            backend only (Copilot)          │
 └───────────────────────────────────────────────────────────────────────┘
                                   │
                                   ▼
@@ -330,67 +335,32 @@ AI-Collaboration: GitHub Copilot
 
 ---
 
-## WAVE 2A — Dais E2E Tool Pipeline 🔲 ACTIVE (Copilot)
+## WAVE 2A — Dais E2E Tool Pipeline ✅ SEALED `5b6a9f495`
 
-**Scope:** Wire the full frontend `invokeTool → DaisController → result display` pipeline.  
+**Scope:** Verify the full frontend `invokeTool → DaisController → result display` pipeline.  
 **Owner:** Copilot  
-**Gate:** W1C sealed ✅ — Wave 2 unblocked  
+**Sealed:** `5b6a9f495` — proof-only pass (pipeline was already wired)  
 **Isolation:** `PropertyDais.tsx`, Pilot `handlers.real.ts`, result panel components
 
-- [ ] **Step 1: Read current invocation state**
+### Result (proof-only seal)
 
-```
-frontend/apps/os-shell/src/pages/workbench/tabs/dais/PropertyDais.tsx
-frontend/apps/os-shell/src/services/pilot/handlers.real.ts
-```
-
-For each tool card category (cert, PILT, exemptions, levy, appeals, BOE, notices, queue): map what happens after a card is clicked. Does the invocation reach the backend?
-
-- [ ] **Step 2: Identify tool categories with missing result panels**
-
-Per alpha.html truth table: "Tool cards visible before invocation: cert status, PILT, exemptions, levy, appeals, BOE, notices, queue — invocations via pilot API."  
-The gap is result display after invoke, not the tool cards themselves.
-
-- [ ] **Step 3: Wire result display for each category**
-
-For each tool category with a missing result panel:
-- On `invokeTool` success: render the returned result fields in the sub-panel
-- On error: display error message with `correlationId` (standard ErrorDisplay pattern)
-- Add invocation history entry (if history recording is missing for any category)
-
-Pattern from existing Pilot implementation: use the correlationId-first UX (ErrorDisplay with copy button, dev-mode trace query hint).
-
-- [ ] **Step 4: Run Dais tests**
-
-```bash
-pnpm --filter terrafusion-frontend vitest run src/__tests__/workbench/ --reporter=verbose
-```
-
-- [ ] **Step 5: Run full vitest suite + type-check**
-
-- [ ] **Step 6: Commit**
-
-```
-feat(dais): wire invokeTool result display panels for all tool categories
-
-Evidence:
-- PropertyDais.tsx: result panels wired for [list categories]
-- handlers.real.ts: invocation history recording complete
-- ErrorDisplay: correlationId shown on tool invocation failures
-- Dais vitest: [N] pass, 0 failures
-- Full vitest suite: [N] pass, 0 regressions
-- pnpm type-check: EXIT 0
-
-Government: FISMA compliance
-AI-Collaboration: GitHub Copilot
-```
+- [x] `PropertyDais.tsx` at `frontend/apps/os-shell/src/pages/workbench/tabs/PropertyDais.tsx` — NOT in a `/dais/` subdirectory
+- [x] `handlers.real.ts` at `os-platform/core/pilot/handlers.real.ts` — NOT at the plan's claimed frontend path
+- [x] All 8 categories had complete `invokeTool → JSON.parse(output) → panel state` pipelines already wired
+- [x] All 9 R2.9 handlers registered (lines 2553-2561), all calling real backend endpoints
+- [x] `ErrorDisplay` with `correlationId` on every category error path
+- [x] `WorkbenchSourceBadge source='live'` on success rows; `fallback/unavailable` at idle
+- [x] `InvocationHistory` on success + error for all categories
+- [x] `PropertyDais.test.tsx` + `PropertyDais.honesty.contract.test.tsx` = **44/44 pass**
+- [x] `pnpm run type-check` = **EXIT 0**
+- [x] Frontend files were clean vs HEAD before seal — empty commit used
 
 ---
 
-## WAVE 2B — PACS Phase 3 (Codex / TF-OS)
+## WAVE 2B — PACS Phase 3 🔲 ACTIVE (Copilot)
 
 **Scope:** One remaining deliverable (B2 already done).  
-**Owner:** Codex / TF-OS agent
+**Owner:** Copilot (reassigned from Codex — single-agent model)
 
 ### ✅ B2: Live Parcel Count Stats Endpoint — DONE
 
@@ -403,6 +373,22 @@ Per `2026-03-23-phases-8-11-35-pacs3-parallel.md` — `PacsTaxAreaAssoc` entity 
 - [ ] Entity + EF migration + `SeedTaxAreaAssocsAsync` method added to `PacsDataSeeder`
 - [ ] `dotnet build` 0 errors
 - [ ] EF migration applied to dev SQLite
+
+### Commit template
+
+```
+feat(pacs): PacsTaxAreaAssoc entity + EF migration + seeder (W2B B1)
+
+Evidence:
+- TerraFusion.Data: PacsTaxAreaAssoc.cs entity added
+- EF migration: [migration name]
+- PacsDataSeeder: SeedTaxAreaAssocsAsync added
+- dotnet build TerraFusion.sln: 0 errors, 0 warnings
+- pnpm type-check: EXIT 0
+
+Government: FISMA compliance
+AI-Collaboration: GitHub Copilot
+```
 
 ---
 
@@ -523,22 +509,24 @@ node --test os-platform/core/tests/phase83-tools.test.mjs
 
 ## Agent Ownership Summary
 
-| Wave | Lane | Owner | Key Deliverable |
-|------|------|-------|----------------|
-| Gate 0 | — | Human | Merge PR #706 or new card |
-| 1A | Forge F1 completion | Copilot | IncomeApproach L221 guard + vitest |
-| 1B | Atlas F2 wiring | Copilot | PropertyAtlas → live boundary/layer panels |
-| 1C | AuditService E2E | Claude Code | 0 audit rows bug fixed |
-| 2A | Dais tool pipeline | Copilot | invokeTool → result display for all categories |
-| 2B | PACS 3 + stats endpoint | Claude Code | PacsTaxAreaAssoc + GET /api/government/stats |
-| 3A | ParcelCount stub elimination | Copilot | useParcelCount() hook, 5 prod files |
-| 3B | Management Dashboard | Copilot | Live API + SignalR wiring |
+| Wave | Lane | Owner | Key Deliverable | Status |
+|------|------|-------|----------------|--------|
+| Gate 0 | — | Human | Merge PR #706 or new card | Deferred |
+| 1A | Forge F1 completion | Copilot | IncomeApproach L221 guard + vitest | ✅ `a35a2e32a` |
+| 1B | Atlas F2 wiring | Copilot | PropertyAtlas → live boundary/layer panels | ✅ `c96ef3eeb` |
+| 1C | AuditService E2E | Copilot | 0 audit rows bug fixed | ✅ `4e77ce758` |
+| 2A | Dais tool pipeline | Copilot | invokeTool → result display for all categories | ✅ `5b6a9f495` |
+| 2B B1 | PacsTaxAreaAssoc | Copilot | PacsTaxAreaAssoc entity + migration + seeder | 🔲 ACTIVE |
+| 2B B2 | Stats endpoint | Copilot | GET /api/government/stats | ✅ Done |
+| 3A | ParcelCount stub elimination | Copilot | useParcelCount() hook, 5 prod files | 🔲 After W2B |
+| 3B | Management Dashboard | Copilot | Live API + SignalR wiring | 🔲 After W3A |
 
-**Hard rules:**
-- No dual coding on the same lane. One agent codes, one reviews.
-- No lane opens until Gate Zero is resolved.
+**Hard rules (Copilot-only model):**
+- Single owner per card. Copilot is the only execution agent.
+- One bounded card at a time. No card opens until the previous seals.
 - All gates must pass before any card is declared done (no "probably works").
 - Test fixtures (89247 without underscore in `__tests__/` files) are **exempt** from stub elimination per CARD-10 policy.
+- Task card closes only when acceptance evidence is posted, not when the agent says "done".
 
 ---
 
