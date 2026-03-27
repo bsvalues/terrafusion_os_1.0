@@ -100,7 +100,7 @@ public sealed class RTreeIndex : IRTreeIndex
         {
             var target = ChooseLeaf(_root, item.BBox);
             target.Children.Add(leaf);
-            target.BBox = target.BBox.Union(item.BBox);
+            target.BBox = (target.BBox ?? item.BBox).Union(item.BBox);
 
             if (target.Children.Count > _maxEntries)
                 SplitNode(target);
@@ -162,15 +162,22 @@ public sealed class RTreeIndex : IRTreeIndex
             var parent = new RTreeNode { IsLeaf = false };
             foreach (var n in nodes)
             {
+                var bbox = GetRequiredBBox(n);
                 parent.Children.Add(n);
-                parent.BBox = parent.BBox is null ? n.BBox : parent.BBox.Union(n.BBox);
+                parent.BBox = parent.BBox is null ? bbox : parent.BBox.Union(bbox);
             }
             return parent;
         }
 
         // Sort by X, then slice into vertical strips
         var sliceCount = (int)Math.Ceiling(Math.Sqrt(Math.Ceiling((double)nodes.Count / _maxEntries)));
-        var sortedByX = nodes.OrderBy(n => (n.BBox.MinX + n.BBox.MaxX) / 2).ToList();
+        var sortedByX = nodes
+            .OrderBy(n =>
+            {
+                var bbox = GetRequiredBBox(n);
+                return (bbox.MinX + bbox.MaxX) / 2;
+            })
+            .ToList();
         var sliceSize = (int)Math.Ceiling((double)sortedByX.Count / sliceCount);
 
         var parentNodes = new List<RTreeNode>();
@@ -178,7 +185,12 @@ public sealed class RTreeIndex : IRTreeIndex
         for (var i = 0; i < sortedByX.Count; i += sliceSize)
         {
             var slice = sortedByX.Skip(i).Take(sliceSize)
-                .OrderBy(n => (n.BBox.MinY + n.BBox.MaxY) / 2).ToList();
+                .OrderBy(n =>
+                {
+                    var bbox = GetRequiredBBox(n);
+                    return (bbox.MinY + bbox.MaxY) / 2;
+                })
+                .ToList();
 
             for (var j = 0; j < slice.Count; j += _maxEntries)
             {
@@ -186,8 +198,9 @@ public sealed class RTreeIndex : IRTreeIndex
                 var parent = new RTreeNode { IsLeaf = false };
                 foreach (var n in group)
                 {
+                    var bbox = GetRequiredBBox(n);
                     parent.Children.Add(n);
-                    parent.BBox = parent.BBox is null ? n.BBox : parent.BBox.Union(n.BBox);
+                    parent.BBox = parent.BBox is null ? bbox : parent.BBox.Union(bbox);
                 }
                 parentNodes.Add(parent);
             }
@@ -237,33 +250,36 @@ public sealed class RTreeIndex : IRTreeIndex
             for (var j = i + 1; j < children.Count; j++)
             {
                 if (children[i].BBox is null || children[j].BBox is null) continue;
-                var combined = children[i].BBox.Union(children[j].BBox);
-                var waste = combined.Area - children[i].BBox.Area - children[j].BBox.Area;
+                var firstBBox = GetRequiredBBox(children[i]);
+                var secondBBox = GetRequiredBBox(children[j]);
+                var combined = firstBBox.Union(secondBBox);
+                var waste = combined.Area - firstBBox.Area - secondBBox.Area;
                 if (waste > maxWaste) { maxWaste = waste; seed1 = i; seed2 = j; }
             }
         }
 
         var group1 = new List<RTreeNode> { children[seed1] };
         var group2 = new List<RTreeNode> { children[seed2] };
-        var bbox1 = children[seed1].BBox!;
-        var bbox2 = children[seed2].BBox!;
+        var bbox1 = GetRequiredBBox(children[seed1]);
+        var bbox2 = GetRequiredBBox(children[seed2]);
 
         for (var i = 0; i < children.Count; i++)
         {
             if (i == seed1 || i == seed2 || children[i].BBox is null) continue;
+            var childBBox = GetRequiredBBox(children[i]);
 
-            var e1 = bbox1.EnlargementTo(children[i].BBox);
-            var e2 = bbox2.EnlargementTo(children[i].BBox);
+            var e1 = bbox1.EnlargementTo(childBBox);
+            var e2 = bbox2.EnlargementTo(childBBox);
 
             if (e1 < e2 || (e1 == e2 && group1.Count <= group2.Count))
             {
                 group1.Add(children[i]);
-                bbox1 = bbox1.Union(children[i].BBox);
+                bbox1 = bbox1.Union(childBBox);
             }
             else
             {
                 group2.Add(children[i]);
-                bbox2 = bbox2.Union(children[i].BBox);
+                bbox2 = bbox2.Union(childBBox);
             }
         }
 
@@ -332,6 +348,9 @@ public sealed class RTreeIndex : IRTreeIndex
 
         return false;
     }
+
+    private static RTreeBBox GetRequiredBBox(RTreeNode node) =>
+        node.BBox ?? throw new InvalidOperationException("R-tree invariant violated: node bounding box is null.");
 
     // ── Node ─────────────────────────────────────────────────────────
 
