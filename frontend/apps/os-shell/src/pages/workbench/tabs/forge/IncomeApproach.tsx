@@ -218,7 +218,7 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
               <div className="tf-panel p-3">
                 <span className="tf-text-tertiary text-xs">GIM</span>
                 <span className="ml-2 font-mono tf-text">
-                  {incomeState.result.grossIncomeMultiplier.toFixed(2)}
+                  {(incomeState.result.grossIncomeMultiplier ?? 0).toFixed(2)}
                 </span>
               </div>
               <div className="tf-panel p-3">
