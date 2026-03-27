@@ -163,7 +163,7 @@ Multi-year layers require production SQL Server data. Not a blocker; document in
 | 02 | Alpha UX Polish — alpha.html truth matrix, Pilot Runtime setup, Atlas SVG correction | Copilot | 80471948d (satisfied, no new staff feedback) |
 | 04 | Benton Product Reality Report v1 — frontend truth section | Copilot | 1a01c00bc |
 | 01 | Alpha Defect Triage — **truth gate found no P0/P1 in allowed files; backend spine verified clean** | Truth gate | `dotnet build` 0 errors; PacsEfAdapter chain confirmed |
-| 13 | Atlas source classification fix — `atlasGisFetch`: `canonical` → `live`, `stub` → `unavailable` | Copilot | see HEAD commit |
+| 13 | Atlas source classification fix — `atlasGisFetch`: `canonical` → `live`, `stub` → `unavailable` | Copilot | `00b1f3daf` |
 | 10 | CARD-10: Replace hardcoded 89247 in 9 live backend files with `89_247` named stubs | Copilot | `2638e5f82` |
 | 06 | CARD-06: `DevPropertySeeder.cs` — project `PacsParcel` → `Properties` on startup (dev-only, idempotent) | Copilot | `2638e5f82` |
 | 14 | CARD-14: alpha.html Dossier row corrected → `⚠️ MWUX (seed required)`; `--seed-pacs` notice added to setup section | Copilot | `455dd5cb4` |
