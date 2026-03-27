@@ -246,6 +246,7 @@ builder.Services.AddControllers()
     });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<ITerrasyncService, TerrasyncService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddRateLimiter(options =>
 {

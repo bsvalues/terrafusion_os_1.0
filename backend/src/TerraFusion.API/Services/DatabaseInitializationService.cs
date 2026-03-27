@@ -563,6 +563,25 @@ public class DatabaseInitializationService : IDatabaseInitializationService
                     "CompletedAt" TEXT NULL
                 );
                 """
+            },
+            ["pacs_tax_area_assocs"] = new[]
+            {
+                """
+                CREATE TABLE IF NOT EXISTS "pacs_tax_area_assocs" (
+                    "Id" TEXT NOT NULL CONSTRAINT "PK_pacs_tax_area_assocs" PRIMARY KEY,
+                    "ParcelId" TEXT NOT NULL,
+                    "PacsPropId" INTEGER NOT NULL,
+                    "PropValYear" INTEGER NOT NULL,
+                    "SupNum" INTEGER NOT NULL,
+                    "PacsOwnerId" INTEGER NOT NULL,
+                    "TaxAreaId" TEXT NOT NULL,
+                    "CreatedAt" TEXT NOT NULL,
+                    "UpdatedAt" TEXT NOT NULL,
+                    "LastPacsSync" TEXT NULL
+                );
+                """,
+                """CREATE INDEX IF NOT EXISTS "IX_PacsTaxAreaAssoc_ParcelId" ON "pacs_tax_area_assocs" ("ParcelId");""",
+                """CREATE UNIQUE INDEX IF NOT EXISTS "IX_PacsTaxAreaAssoc_PropYearSupOwnerArea" ON "pacs_tax_area_assocs" ("PacsPropId", "PropValYear", "SupNum", "PacsOwnerId", "TaxAreaId");"""
             }
         };
 

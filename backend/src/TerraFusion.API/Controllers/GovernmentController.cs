@@ -9,7 +9,9 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using TerraFusion.API.Services;
+using TerraFusion.Data;
 
 namespace TerraFusion.API.Controllers;
 
@@ -23,13 +25,54 @@ public class GovernmentController : ControllerBase
 {
     private readonly ILogger<GovernmentController> _logger;
     private readonly ITerrasyncService _terrasyncService;
+    private readonly TerraFusionDbContext _db;
     // CARD-10: static stub — replace with live DB query once CARD-06 Properties seeding is verified.
     private const int BentonParcelCountStub = 89_247;
 
-    public GovernmentController(ILogger<GovernmentController> logger, ITerrasyncService terrasyncService)
+    public GovernmentController(
+        ILogger<GovernmentController> logger,
+        ITerrasyncService terrasyncService,
+        TerraFusionDbContext db)
     {
         _logger = logger;
         _terrasyncService = terrasyncService;
+        _db = db;
+    }
+
+    /// <summary>
+    /// Get live parcel count and basic backend stats for Benton County surfaces.
+    /// </summary>
+    [HttpGet("stats")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    public async Task<ActionResult> GetGovernmentStats()
+    {
+        try
+        {
+            var totalParcels = await _db.Properties.AsNoTracking().CountAsync();
+
+            return Ok(new
+            {
+                county = new
+                {
+                    name = "Benton County",
+                    state = "Washington",
+                    fips = "53005",
+                },
+                stats = new
+                {
+                    totalParcels,
+                    dataSource = "LIVE_DB",
+                    stubbed = false,
+                },
+                timestamp = DateTime.UtcNow,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "❌ Failed to get live government stats");
+            return StatusCode(500, new { error = "Failed to retrieve government stats", message = ex.Message });
+        }
     }
 
     /// <summary>
