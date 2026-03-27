@@ -280,3 +280,4 @@ Response: parcelId=101841060001002, countyId=19190019-1919-1919-1919-19191919191
 | 15 | CARD-15: DevPropertySeeder static regression pass — PASS; call chain + entity types verified; no code changes | Copilot | static analysis only |
 | 16 | CARD-16: DevPropertySeeder live runtime proof — PASS (112,057 PacsParcel / 112,059 Properties / join verified); Dossier 200 BLOCKED (empty GovernmentUsers) → CARD-17 | Copilot | DB query evidence |
 | 17 | CARD-17: Dossier end-to-end 200 — PASS; `TF_DEV_USE_SQLITE=true` routes server to SQLite; `GET /api/dossier/parcels/101841060001002/details` → 200; `assessedValue=49990.0`; `levies.total=31` | Copilot | HTTP proof 2026-03-27 |
+| 18 | CARD-18: `DevGovernmentUserSeeder.cs` — idempotent dev admin upsert into `GovernmentUsers`; `Program.cs` DI + startup wiring; DX04 unit tests 2/2; `TF_DEV_USE_SQLITE` resolver in Program.cs | Copilot | `084ffdded` |
