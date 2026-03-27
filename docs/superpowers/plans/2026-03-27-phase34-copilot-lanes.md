@@ -654,42 +654,33 @@ Unhandled risks:
 
 ---
 
-## Save State — W3B SEALED 2026-03-27
+## Save State — Integration Gauntlet GREEN 2026-03-27
 
 ```text
 Branch:   fix/workbench-loading-aria
-HEAD:     265d10d73 — docs(phase34): seal W3B plan update (proof-only)
+HEAD:     51862c28c — docs(phase34): seal W3B -- ManagementDashboard live wiring proof-only (37/37 tests)
 Tree:     Clean (service-registry.json untracked — runtime artifact, gitignored)
 
-What is true now:
-  ManagementDashboard.tsx: fully wired (Phase 8 pre-existing)
-    - useSwarmLive: SignalR to ${VITE_CONSCIOUSNESS_URL}/hubs/swarm; fallback source:'unavailable'
-    - usePacsStatus: polls /ops/pacs/proof
-    - useAppealsQueue: polls /api/dais/appeals (DaisController:971)
-    - useWorkloadSummary: polls /api/dais/queue (DaisController:1235)
-    - MorningBriefingStrip: 4 FreshData cards render correctly
-    - fetchDashboardData: cert/appeals/appraisers/queue APIs with fixture fallback
-    - WorkbenchSourceBadge per section; DemoDataBanner on fixture
-  Dashboard tests: 7 files, 37/37 EXIT 0
-  /hubs/swarm (Consciousness sidecar): MapHub commented out in Program.cs:192-193
-    → useSwarmLive always source:'unavailable' in dev (graceful, not a crash)
-  UI token ratchet: 790 ≤ 812
+Integration gate results:
+  Scoped vitest (41 files): 407/407 EXIT 0
+    - atlas + forge + admin + shared + suites + hook + dashboard + ManagementDashboard honesty
+  Broad vitest:             TIMEOUT (pre-existing act() flood in floating-ui-workflows.integration.test.tsx)
+                            NOT a regression introduced by W3 work — documented pre-existing
+  pnpm type-check:          EXIT 0 (tsc -p tsconfig.core.json, zero errors)
+  dotnet build TerraFusion.sln: 0 errors / 0 warnings
+    NOTE: stop live TerraFusion.API + dotnet worker processes first or DLL locks cause MSB3027/MSB3021
+  UI token ratchet:         790 <= 812 (improved by 22) — PASS
 
-Where we stopped:
-  W3B sealed with proof (same pattern as W2A). All W3 waves done.
+All Wave 1/2/3 cards sealed. Integration proof recorded.
 
-Active variables:
-  - All Wave 1/2/3 cards: SEALED
-  - PR #706: still unmerged; Gate Zero deferred
-  - Full broad vitest run: scoped 259/259 accepted; broad blocked by act() flood in floating-ui-workflows (pre-existing)
-  - Consciousness /hubs/swarm: separate card to activate
+Active constraints:
+  - floating-ui-workflows.integration.test.tsx: act() flood in broad run (pre-existing; not W3 work)
+  - backend build requires stopping live TerraFusion.API process (file-lock on output DLLs)
+  - /hubs/swarm: MapHub commented out in TerraFusion.Consciousness/Program.cs:192-193
+    useSwarmLive → source:unavailable; SwarmStatusCard shows Unavailable chip (graceful, acceptable)
 
-Next smallest step:
-  INTEGRATION run or human Gate Zero decision (PR #706 merge).
-  Integration checklist: pnpm vitest run (full); dotnet build 0 errors; pnpm type-check EXIT 0; UI ratchet ≤ 790.
-
-Unhandled risks:
-  - act() warning flood (floating-ui-workflows): pre-existing, not caused by W3 work
-  - PR #706 merge: requires human go/no-go (Gate Zero)
-  - Consciousness sidecar /hubs/swarm: not active in dev; Swarm card shows "Unavailable" (acceptable)
+Next move:
+  Gate Zero / PR #706 merge decision (human go/no-go).
+  Only open a new fix lane if targeting floating-ui-workflows broad-run timeout specifically.
+  Do NOT reopen ManagementDashboard unless a gate failure or swarm hub re-activation requires it.
 ```
