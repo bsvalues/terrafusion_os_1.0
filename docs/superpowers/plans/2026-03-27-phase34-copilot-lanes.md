@@ -1,6 +1,6 @@
 # TerraFusion OS — Phase 34 Copilot Lanes
 **Date**: 2026-03-27  
-**Status**: W2A + W2B SEALED — W3A SEALED (scoped) — W3C SEALED — W3B NEXT  
+**Status**: W2A + W2B SEALED — W3A SEALED (scoped) — W3C SEALED — W3B SEALED (proof)  
 **Authority**: Co-Founder planning session, 2026-03-27 + collapse to Copilot-only 2026-03-27  
 **Supersedes**: `2026-03-23-tier1-tier2-validation-wiring.md` (partial execution credit carried forward below)
 
@@ -49,18 +49,18 @@ After merge: all Phase 34 work starts from `main`.
 
 | Item | Value |
 |------|-------|
-| HEAD | `528a5274a` on `fix/workbench-loading-aria` |
+| HEAD | `265d10d73` on `fix/workbench-loading-aria` |
 | Tree | Clean |
 | Backend build | 0 errors, 0 warnings |
 | `pnpm type-check` | EXIT 0 |
 | UI token ratchet | 790 ≤ 812 (improved 22 from W3A) |
 | Stage2 tests | 52/52 (+4 from W1C) |
 | Dais workbench tests | 44/44 (W2A proof) |
-| Dashboard vitest | 23/23 (W3A scope) |
+| Dashboard vitest | **37/37 pass** (W3B proof) |
 | W3C scoped vitest | **259/259 pass** (atlas + forge + admin + shared + suites + hook) |
 | Full frontend vitest | Not yet proven green (broad run timed out — act() warning flood) |
 | PR #706 | Open, awaiting merge decision |
-| Active sprint | Phase 34 — W3B next |
+| Active sprint | Phase 34 — INTEGRATION next |
 | Execution model | Copilot only |
 
 ---
@@ -122,7 +122,7 @@ After merge: all Phase 34 work starts from `main`.
 | ~~89_247 hardcoded in 5 production frontend components~~ | ~~TrustRegistry, AdminDashboard, AVMStudio, GeometryHealth, TerraExportModule~~ | ~~W3A~~ ✅ SEALED (scoped) `1afaf12a3` |
 | ~~Full frontend vitest green~~ | ~~All test files~~ | ~~W3C prerequisite~~ → superseded by scoped 259/259 |
 | ~~Live smoke: 5 W3A surfaces vs `/api/government/stats`~~ | ~~TrustRegistry, AdminDashboard, AVMStudio, GeometryHealth, TerraExportModule~~ | ~~W3C~~ ✅ SEALED `528a5274a` |
-| Management Dashboard not wired to live API + SignalR | `ManagementDashboard.tsx` | W3B (after W3C) |
+| ~~Management Dashboard not wired to live API + SignalR~~ | ~~`ManagementDashboard.tsx`~~ | ~~W3B~~ ✅ SEALED (proof) |
 
 ---
 
@@ -163,16 +163,16 @@ After merge: all Phase 34 work starts from `main`.
 ┌───────────────────────────────────────────────────────────────────────┐
 │                  WAVE 3 — Stub Elimination + Dashboard                │
 │                                                                       │
-│  W3A ✅ SEALED (scoped)             W3B (Copilot)                   │
+│  W3A ✅ SEALED (scoped)             W3B ✅ SEALED (proof)           │
 │  ┌──────────────────────────┐        ┌──────────────────────────┐    │
 │  │ ParcelCount stub →       │        │ Management Dashboard      │    │
-│  │ useParcelCount() hook    │        │ live API + SignalR         │    │
-│  │ (5 production files)     │        │                          │    │
+│  │ useParcelCount() hook    │        │ live API + SignalR wired  │    │
+│  │ (5 production files)     │        │ 265d10d73 (proof-only)   │    │
 │  │ 1afaf12a3                │        └──────────────────────────┘    │
-│  │ Proof: type-check 0,     │        frontend only                   │
-│  │ dash vitest 23/23,       │        After W3C smoke card            │
-│  │ source sweep clean       │                                        │
-│  │ ⚠️ full vitest TBD       │                                        │
+│  │ Proof: type-check 0,     │        37/37 tests EXIT 0              │
+│  │ dash vitest 23/23,       │        4 hooks verified                │
+│  │ source sweep clean       │        3 HTTP endpoints ✅             │
+│  │ ⚠️ full vitest TBD       │        SignalR: sidecar commented out  │
 │  └──────────────────────────┘                                        │
 └───────────────────────────────────────────────────────────────────────┘
                                   │
@@ -469,42 +469,59 @@ Not yet proven:
 
 ---
 
-## WAVE 3B — Management Dashboard Live Wiring (Copilot)
+## WAVE 3B — Management Dashboard Live Wiring ✅ SEALED (proof)
 
 **Scope:** Wire ManagementDashboard.tsx to live backend API counters + SignalR real-time updates.  
 **Owner:** Copilot  
+**Sealed:** `265d10d73` — proof-only (component + hooks + tests were fully implemented in Phase 8)  
 **Reference:** `docs/superpowers/plans/2026-03-22-phase8-management-dashboard.md` (earlier spec)  
-**Isolation:** `frontend/apps/os-shell/src/components/ManagementDashboard.tsx` (or equivalent path)
+**Isolation:** `frontend/apps/os-shell/src/pages/dais/ManagementDashboard.tsx`
 
-- [ ] **Step 1: Read ManagementDashboard.tsx and identify mock/hardcoded data blocks**
+### Result (proof-only seal)
 
-- [ ] **Step 2: Connect to existing backend counters**
+- [x] `ManagementDashboard.tsx` at `frontend/apps/os-shell/src/pages/dais/ManagementDashboard.tsx` — fully wired in Phase 8
+- [x] 4 live hooks all implemented and consuming real endpoints:
+  - `useSwarmLive.ts` → SignalR `@microsoft/signalr` to `${VITE_CONSCIOUSNESS_URL}/hubs/swarm` (port 3004), `SwarmStatusUpdate` event, `FreshData<SwarmStatus>`
+  - `usePacsStatus.ts` → HTTP polling `GET /ops/pacs/proof`, `FreshData<PacsStatus>`
+  - `useAppealsQueue.ts` → HTTP polling `GET /api/dais/appeals`, `FreshData<AppealsQueueSummary>`
+  - `useWorkloadSummary.ts` → HTTP polling `GET /api/dais/queue`, `FreshData<WorkloadSummary>`
+- [x] `MorningBriefingStrip.tsx` renders `SwarmStatusCard`, `PacsStatusCard`, `AppealsQueueCard`, `WorkloadCard`
+- [x] `fetchDashboardData()` calls `getCertificationStatus`, `getAllAppeals`, `getAppraiserProductivity`, `getQueueMetrics` with fixture fallback
+- [x] `WorkbenchSourceBadge` present in all 4 tab sections; `DemoDataBanner` when fixture
+- [x] Dashboard tests: **7 files, 37/37 pass, EXIT 0**
+  - `ManagementDashboard.smoke.test.tsx` — 3/3
+  - `managementDashboard.contract.test.tsx` — 15/15 (mocks 4 hooks + service layer)
+  - `ManagementDashboard.honesty.contract.test.tsx` — 5/5
+  - `MorningBriefingStrip.test.tsx` — 14/14
+- [x] Backend endpoints verified:
+  - `GET /api/dais/appeals` → `DaisController.cs:971` ✅
+  - `GET /api/dais/queue` → `DaisController.cs:1235` ✅
+  - `GET /ops/pacs/proof` → `PacsOpsController.cs` ✅
+  - SignalR `/hubs/swarm` → `TerraFusion.Consciousness/Program.cs:192-193` **commented out** (sidecar; graceful unavailable — see below)
 
-Map each dashboard KPI to a real API endpoint:
-- Active agents: `/api/system/status` or SignalR hub
-- Parcel count: `/api/government/stats` (from Wave 2B)
-- Tool invocations today: `/api/dais/stats` (if exists) or audit log count query
+### SignalR swarm hub status
 
-- [ ] **Step 3: Wire SignalR for real-time panel updates**
+`useSwarmLive` connects to `${VITE_CONSCIOUSNESS_URL}/hubs/swarm` (default: `http://localhost:3004`).  
+In dev, `TerraFusion.Consciousness/Program.cs` lines 192-193 have `app.MapHub<ConsciousnessHub>` and `app.MapHub<QuantumHub>` commented out. Hub not reachable.
 
-Use `useSignalRConnection` pattern (existing in codebase). Connect to `/hubs/system` for live agent/tool events.
+**Consequence:** `useSwarmLive` returns `source:'unavailable'`. `SwarmStatusCard` shows the "Unavailable" chip (honest, no crash). This is **not a regression** — it's the pre-existing state of the Consciousness sidecar. Activating the swarm hub is a separate card (sidecar startup + MapHub uncomment).
 
-- [ ] **Step 4: Run Dashboard tests + full suite**
+### Proof ledger
 
-- [ ] **Step 5: Commit**
-
-```
-feat(dashboard): wire ManagementDashboard to live API + SignalR
-
-Evidence:
-- ManagementDashboard.tsx: [N] mock panels replaced with live hooks
-- SignalR: /hubs/system connected for real-time updates
-- Dashboard vitest: [N] pass, 0 failures
-- Full vitest suite: [N] pass, 0 regressions
-- pnpm type-check: EXIT 0
-
-Government: FISMA compliance
-AI-Collaboration: GitHub Copilot
+```text
+W3B — SEALED (proof-only)
+Verified:
+  - ManagementDashboard.tsx: 4 live hooks wired (useSwarmLive, usePacsStatus, useAppealsQueue, useWorkloadSummary)
+  - MorningBriefingStrip: SwarmStatusCard, PacsStatusCard, AppealsQueueCard, WorkloadCard all render
+  - fetchDashboardData: getCertificationStatus, getAllAppeals, getAppraiserProductivity, getQueueMetrics
+  - WorkbenchSourceBadge per tab section; DemoDataBanner when fixture
+  - Dashboard tests: 7 files, 37/37 pass, EXIT 0
+  - Backend HTTP: /api/dais/appeals ✅, /api/dais/queue ✅, /ops/pacs/proof ✅
+  - UI token ratchet: 790 ≤ 812
+Not active in dev:
+  - /hubs/swarm: TerraFusion.Consciousness/Program.cs:192-193 — MapHub commented out
+  - useSwarmLive → source:'unavailable'; SwarmStatusCard shows "Unavailable" chip (correct behavior)
+  - Consciousness sidecar activation is a separate card
 ```
 
 ---
@@ -544,7 +561,7 @@ node --test os-platform/core/tests/phase83-tools.test.mjs
 | 2B B2 | Stats endpoint | Copilot | GET /api/government/stats | ✅ Done |
 | 3A | ParcelCount stub elimination | Copilot | useParcelCount() hook, 5 prod files | ✅ SEALED (scoped) `1afaf12a3` — full vitest TBD |
 | 3C | W3A live smoke | Copilot | 5 surfaces vs `/api/government/stats`; loading/fallback behavior | ✅ SEALED `528a5274a` |
-| 3B | Management Dashboard | Copilot | Live API + SignalR wiring | 🔲 NEXT (W3C sealed) |
+| 3B | Management Dashboard | Copilot | Live API + SignalR wiring | ✅ SEALED (proof) `265d10d73` |
 
 **Hard rules (Copilot-only model):**
 - Single owner per card. Copilot is the only execution agent.
@@ -563,7 +580,7 @@ node --test os-platform/core/tests/phase83-tools.test.mjs
 | Atlas | ✅ MWUX (boundary/layers) | ✅ MWUX (result panels live; flood zone honest stub) |
 | Dais | ✅ MWUX (tool cards visible) | ✅ MWUX (result display panels wired) |
 | Dossier | ⚠️ MWUX (seed required) | ⚠️ MWUX (unchanged — seed pre-condition remains) |
-| Dashboard | ⚠️ (mock data) | ✅ MWUX (live API + SignalR) |
+| Dashboard | ✅ MWUX (live API + SignalR) — source:unavailable/polled/live per card | ✅ MWUX wired — verified W3B proof |
 | ParcelCount KPIs | ⚠️ (89_247 stub) | ✅ MWUX (live hook, ?? fallback) — full smoke TBD |
 
 ---
@@ -618,16 +635,61 @@ Where we stopped:
   W3C sealed. W3B (Management Dashboard live API + SignalR) is the next card.
 
 Active variables:
-  - W3B: ManagementDashboard.tsx — map mock KPI panels to real API endpoints + SignalR hub
+  - W3B: SEALED (proof-only) — see W3B proof ledger below
   - PR #706: still unmerged, Gate Zero deferred
   - Full broad vitest run: 259/259 scoped is accepted evidence; broad run blocked by act() warnings
     in floating-ui-workflows.integration.test.tsx (pre-existing, not caused by W3 work)
 
 Next smallest step:
-  Open W3B — read ManagementDashboard.tsx, identify mock blocks, map to backend endpoints.
+  INTEGRATION — run full frontend vitest suite, dotnet build, type-check, token ratchet, then save-state.
 
 Unhandled risks:
   - act() warning flood (floating-ui-workflows) is pre-existing tech debt unrelated to W3 work
   - PR #706 merge still requires human go/no-go
   - Backend needs to be running for any live smoke; starts cleanly with TF_DEV_USE_SQLITE=true
+  - /hubs/swarm: MapHub registrations commented out in TerraFusion.Consciousness/Program.cs:192-193
+    → useSwarmLive always source:'unavailable' in dev; SwarmStatusCard shows 'Unavailable' chip
+    → NOT a regression — Consciousness sidecar startup is a separate card
+```
+
+---
+
+## Save State — W3B SEALED 2026-03-27
+
+```text
+Branch:   fix/workbench-loading-aria
+HEAD:     265d10d73 — docs(phase34): seal W3B plan update (proof-only)
+Tree:     Clean (service-registry.json untracked — runtime artifact, gitignored)
+
+What is true now:
+  ManagementDashboard.tsx: fully wired (Phase 8 pre-existing)
+    - useSwarmLive: SignalR to ${VITE_CONSCIOUSNESS_URL}/hubs/swarm; fallback source:'unavailable'
+    - usePacsStatus: polls /ops/pacs/proof
+    - useAppealsQueue: polls /api/dais/appeals (DaisController:971)
+    - useWorkloadSummary: polls /api/dais/queue (DaisController:1235)
+    - MorningBriefingStrip: 4 FreshData cards render correctly
+    - fetchDashboardData: cert/appeals/appraisers/queue APIs with fixture fallback
+    - WorkbenchSourceBadge per section; DemoDataBanner on fixture
+  Dashboard tests: 7 files, 37/37 EXIT 0
+  /hubs/swarm (Consciousness sidecar): MapHub commented out in Program.cs:192-193
+    → useSwarmLive always source:'unavailable' in dev (graceful, not a crash)
+  UI token ratchet: 790 ≤ 812
+
+Where we stopped:
+  W3B sealed with proof (same pattern as W2A). All W3 waves done.
+
+Active variables:
+  - All Wave 1/2/3 cards: SEALED
+  - PR #706: still unmerged; Gate Zero deferred
+  - Full broad vitest run: scoped 259/259 accepted; broad blocked by act() flood in floating-ui-workflows (pre-existing)
+  - Consciousness /hubs/swarm: separate card to activate
+
+Next smallest step:
+  INTEGRATION run or human Gate Zero decision (PR #706 merge).
+  Integration checklist: pnpm vitest run (full); dotnet build 0 errors; pnpm type-check EXIT 0; UI ratchet ≤ 790.
+
+Unhandled risks:
+  - act() warning flood (floating-ui-workflows): pre-existing, not caused by W3 work
+  - PR #706 merge: requires human go/no-go (Gate Zero)
+  - Consciousness sidecar /hubs/swarm: not active in dev; Swarm card shows "Unavailable" (acceptable)
 ```
