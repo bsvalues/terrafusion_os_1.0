@@ -1,4 +1,4 @@
-# TerraFusion Sprint — Phase 33A.4
+# TerraFusion Sprint — Phase 33E
 
 > Started: 2026-03-24
 > Mode: Post-discovery. One builder per task. See AGENT_OPERATING_MODEL.md.
@@ -166,4 +166,4 @@ Multi-year layers require production SQL Server data. Not a blocker; document in
 | 13 | Atlas source classification fix — `atlasGisFetch`: `canonical` → `live`, `stub` → `unavailable` | Copilot | see HEAD commit |
 | 10 | CARD-10: Replace hardcoded 89247 in 9 live backend files with `89_247` named stubs | Copilot | `2638e5f82` |
 | 06 | CARD-06: `DevPropertySeeder.cs` — project `PacsParcel` → `Properties` on startup (dev-only, idempotent) | Copilot | `2638e5f82` |
-| 14 | CARD-14: alpha.html Dossier row corrected → `⚠️ MWUX (seed required)`; `--seed-pacs` notice added to setup section | Copilot | see next commit |
+| 14 | CARD-14: alpha.html Dossier row corrected → `⚠️ MWUX (seed required)`; `--seed-pacs` notice added to setup section | Copilot | `455dd5cb4` |
