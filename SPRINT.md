@@ -131,6 +131,24 @@ Multi-year layers require production SQL Server data. Not a blocker; document in
 
 ---
 
+### ~~CARD-14 — Dossier tab alpha.html truth correction~~ ✅ CLOSED
+
+> **Closure (2026-03-26, Phase 33E, Copilot):** `alpha.html` Dossier tab row corrected from
+> `✅ MWUX` to `⚠️ MWUX (seed required)`. Pre-condition documented inline: `--seed-pacs` must
+> run once before normal backend startup so `DevPropertySeeder` can populate the `Properties` table.
+> Without it, the detail panel returns 404 with no visible error context.
+> Setup section "Before you start" updated with a `⚠️` notice block explaining the same pre-condition.
+
+**Evidence:**
+- `alpha.html` line ~274: new `notice-warn` block — `--seed-pacs` + `DevPropertySeeder` requirement
+- `alpha.html` line ~332: Dossier row `✅ MWUX` → `⚠️ MWUX (seed required)` with inline pre-condition text
+- No other rows modified
+- `pnpm run type-check`: EXIT 0 (doc-only change; gate still required)
+
+> CARD-14 is closed.
+
+---
+
 ## Completed Cards
 
 | Card | Task | Owner | Commit / Note |
@@ -148,3 +166,4 @@ Multi-year layers require production SQL Server data. Not a blocker; document in
 | 13 | Atlas source classification fix — `atlasGisFetch`: `canonical` → `live`, `stub` → `unavailable` | Copilot | see HEAD commit |
 | 10 | CARD-10: Replace hardcoded 89247 in 9 live backend files with `89_247` named stubs | Copilot | `2638e5f82` |
 | 06 | CARD-06: `DevPropertySeeder.cs` — project `PacsParcel` → `Properties` on startup (dev-only, idempotent) | Copilot | `2638e5f82` |
+| 14 | CARD-14: alpha.html Dossier row corrected → `⚠️ MWUX (seed required)`; `--seed-pacs` notice added to setup section | Copilot | see next commit |
