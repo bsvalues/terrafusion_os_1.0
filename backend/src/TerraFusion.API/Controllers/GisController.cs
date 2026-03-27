@@ -36,6 +36,7 @@ public class GisController : ControllerBase
     /// <summary>Geocode a street address to lat/lng coordinates.</summary>
     /// <param name="address">Full street address to geocode.</param>
     /// <returns>Geocode result with coordinates and confidence score.</returns>
+    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("geocode")]
     [ProducesResponseType(typeof(GeoEnrichmentResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -63,6 +64,7 @@ public class GisController : ControllerBase
     /// <summary>Query parcels within a bounding box with optional attribute filter.</summary>
     /// <param name="bbox">Bounding box as "minLng,minLat,maxLng,maxLat".</param>
     /// <param name="filter">Optional attribute filter (SQL WHERE clause).</param>
+    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("parcels/spatial")]
     [ProducesResponseType(typeof(FeatureCollection), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -94,6 +96,7 @@ public class GisController : ControllerBase
 
     /// <summary>Get the boundary polygon for a specific parcel.</summary>
     /// <param name="id">Parcel ID.</param>
+    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("parcels/{id}/boundary")]
     [ProducesResponseType(typeof(Polygon), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -136,6 +139,7 @@ public class GisController : ControllerBase
     /// <param name="lat">Latitude of the center point.</param>
     /// <param name="lng">Longitude of the center point.</param>
     /// <param name="radius">Search radius in miles (default 1).</param>
+    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("proximity")]
     [ProducesResponseType(typeof(ProximityResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

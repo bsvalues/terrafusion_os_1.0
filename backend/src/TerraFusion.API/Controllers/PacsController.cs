@@ -50,7 +50,10 @@ public class PacsController : ControllerBase
     /// Bound as raw string — leading zeroes and non-numeric values are preserved.
     /// Routes to GetPropertyByGeoIdAsync (WHERE geo_id = @GeoId), not a table scan.
     /// </param>
+    /// <param name="page">1-based page number for paged results.</param>
+    /// <param name="pageSize">Maximum number of rows to return.</param>
     /// <param name="search">Free-text in-page filter on address/city (best-effort, not SQL-pushed).</param>
+    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("properties")]
     [AllowAnonymous]
     public async Task<ActionResult<PacsPropertiesResponse>> GetProperties(
