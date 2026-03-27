@@ -149,6 +149,38 @@ Multi-year layers require production SQL Server data. Not a blocker; document in
 
 ---
 
+### ~~CARD-15 — DevPropertySeeder static regression pass~~ ✅ CLOSED
+
+> **Opened & closed (2026-03-26, Phase 33E, Copilot)**
+> **Scope:** Static analysis only — no code changes. Source-code read of seeder + startup wiring.
+
+**Verdict: PASS — seeder is correctly implemented and wired.**
+
+**Call chain verified:**
+1. `--seed-pacs` standalone mode (Program.cs L44): runs `PacsDataSeeder.SeedAllAsync()` → exits. Populates `PacsParcel` mirror tables. Does **not** call `DevPropertySeeder` — correct, that is normal-startup responsibility only.
+2. Normal startup (Program.cs L1601): `if (app.Environment.IsDevelopment())` → creates DI scope → calls `DevPropertySeeder.SeedAsync()`.
+3. `DevPropertySeeder.SeedAsync()`: idempotent guard (`Properties.AnyAsync`), Benton County row upsert, bulk-loads `PacsParcel` with CountyId filter + fallback to all parcels if count=0, dictionary joins for situs/valuation/profile (no N+1), 500-row batch inserts.
+
+**No defects found:**
+- `(decimal)(val?.LandHstdVal ?? 0m)` — fields are `decimal?`; outer cast is redundant but not harmful. ✅
+- Fallback to all-parcels if `CountyId` filter returns 0 mirrors the expected dev scenario where `PacsParcel.CountyId` may not match the seeded Benton `County.Id`. ✅
+- `GeoId ?? SimpleGeoId ?? PropId.ToString()` parcel-number fallback chain is defensive and correct. ✅
+- `MapPropertyType` defaults to `propertyUseCd ?? "Residential"` — honest fallback for unknown codes. ✅
+
+**One live regression step still needed (requires running server — not automatable statically):**
+- Confirm actual row count in `Properties` after `--seed-pacs` + normal Dev startup.
+- Confirm `DossierController.GetParcelDetails(parcelId)` returns 200 for a known snapshot parcel ID.
+
+**Evidence:**
+- `DevPropertySeeder.cs` read in full (231 lines) — no logic errors ✅
+- `Program.cs` L44–83 (`--seed-pacs` standalone block) read ✅
+- `Program.cs` L1601–1609 (IsDevelopment seeder call) read ✅
+- `PacsValuation.cs` entity fields verified as `decimal?` — seeder cast pattern sound ✅
+
+> CARD-15 is closed (static pass). Live runtime verification is a separate optional step — no code changes required.
+
+---
+
 ## Completed Cards
 
 | Card | Task | Owner | Commit / Note |
@@ -167,3 +199,4 @@ Multi-year layers require production SQL Server data. Not a blocker; document in
 | 10 | CARD-10: Replace hardcoded 89247 in 9 live backend files with `89_247` named stubs | Copilot | `2638e5f82` |
 | 06 | CARD-06: `DevPropertySeeder.cs` — project `PacsParcel` → `Properties` on startup (dev-only, idempotent) | Copilot | `2638e5f82` |
 | 14 | CARD-14: alpha.html Dossier row corrected → `⚠️ MWUX (seed required)`; `--seed-pacs` notice added to setup section | Copilot | `455dd5cb4` |
+| 15 | CARD-15: DevPropertySeeder static regression pass — PASS; call chain + entity types verified; no code changes | Copilot | static analysis only |
