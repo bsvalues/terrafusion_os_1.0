@@ -224,6 +224,41 @@ PacsParcel.GeoId = "101841060001002"
 
 ---
 
+### CARD-17 — Dossier end-to-end 200 (auth + route verification)
+
+> **Opened: 2026-03-26, Phase 33E, Copilot**
+> **Scope:** Live HTTP round-trip — start backend, login, GET Dossier detail. No code changes unless a real defect is found.
+
+**Problem:** CARD-16 could not complete the Dossier 200 proof without a running server.
+
+**Auth chain analysis (completed pre-server):**
+- `POST /api/auth/login` does NOT query `GovernmentUsers`
+- `ValidateUserCredentials`: email domain suffix check only
+- `IsValidGovernmentUserAsync`: domain list check only
+- `admin@terrafusionmarket.com` passes both checks; gets roles `["GovernmentUser","Administrator"]`
+- `ResolvePermissionsForRoles`: `GovernmentUser` → `read:dossier` claim in JWT ✅
+- `DefaultCounty:Id` = `19190019-1919-1919-1919-191919191919` → `countyId` claim injected into JWT
+- `DX-01` fallback: even without `countyId` claim, Development env resolves Benton automatically
+- Properties table for `ParcelId = "101841060001002"` confirmed present with `AssessedValue = 49990.0`
+
+**DB path discovery (during CARD-17):**
+- `appsettings.Development.local.json` (gitignored) overrides `DefaultConnection` to `Host=localhost` (Postgres)
+- Postgres dev DB has 3 stub rows; SQLite `terrafusion-dev.db` has 112K PACS-seeded rows
+- `ResolvePrimaryConnectionString` (Program.cs L118): checks env var `TF_DEV_USE_SQLITE=true` first → returns `Data Source=terrafusion-dev.db`
+- Fix: start server with `TF_DEV_USE_SQLITE=true` to route through SQLite
+
+**HTTP Proof (2026-03-27):**
+```
+POST /api/auth/login → 200; TOKEN_LEN=1296
+GET  /api/dossier/parcels/101841060001002/details → 200
+Response: parcelId=101841060001002, countyId=19190019-1919-1919-1919-191919191919,
+          assessedValue=49990.0, piiRedacted=true, levies=31
+```
+
+**Status: SEALED ✅**
+
+---
+
 ## Completed Cards
 
 | Card | Task | Owner | Commit / Note |
@@ -244,3 +279,4 @@ PacsParcel.GeoId = "101841060001002"
 | 14 | CARD-14: alpha.html Dossier row corrected → `⚠️ MWUX (seed required)`; `--seed-pacs` notice added to setup section | Copilot | `455dd5cb4` |
 | 15 | CARD-15: DevPropertySeeder static regression pass — PASS; call chain + entity types verified; no code changes | Copilot | static analysis only |
 | 16 | CARD-16: DevPropertySeeder live runtime proof — PASS (112,057 PacsParcel / 112,059 Properties / join verified); Dossier 200 BLOCKED (empty GovernmentUsers) → CARD-17 | Copilot | DB query evidence |
+| 17 | CARD-17: Dossier end-to-end 200 — PASS; `TF_DEV_USE_SQLITE=true` routes server to SQLite; `GET /api/dossier/parcels/101841060001002/details` → 200; `assessedValue=49990.0`; `levies.total=31` | Copilot | HTTP proof 2026-03-27 |
