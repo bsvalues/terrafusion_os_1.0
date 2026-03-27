@@ -1,6 +1,6 @@
 # TerraFusion OS — Phase 34 Copilot Lanes
 **Date**: 2026-03-27  
-**Status**: W2A + W2B SEALED — W3A ACTIVE  
+**Status**: W2A + W2B SEALED — W3A SEALED (scoped) — W3B NEXT  
 **Authority**: Co-Founder planning session, 2026-03-27 + collapse to Copilot-only 2026-03-27  
 **Supersedes**: `2026-03-23-tier1-tier2-validation-wiring.md` (partial execution credit carried forward below)
 
@@ -49,15 +49,17 @@ After merge: all Phase 34 work starts from `main`.
 
 | Item | Value |
 |------|-------|
-| HEAD | `5b6a9f495`+ on `fix/workbench-loading-aria` |
+| HEAD | `1afaf12a3` on `fix/workbench-loading-aria` |
 | Tree | Clean |
 | Backend build | 0 errors, 0 warnings |
 | `pnpm type-check` | EXIT 0 |
-| UI token ratchet | 790 ≤ 812 |
+| UI token ratchet | 790 ≤ 812 (improved 22 from W3A) |
 | Stage2 tests | 52/52 (+4 from W1C) |
 | Dais workbench tests | 44/44 (W2A proof) |
+| Dashboard vitest | 23/23 (W3A scope) |
+| Full frontend vitest | **Not yet proven green** (broad run timed out) |
 | PR #706 | Open, awaiting merge decision |
-| Active sprint | Phase 34 — W3A active |
+| Active sprint | Phase 34 — W3B next |
 | Execution model | Copilot only |
 
 ---
@@ -87,12 +89,10 @@ After merge: all Phase 34 work starts from `main`.
 - [x] **W1B** — Atlas unavailable-state disclosure + flood stub label + Atlas vitest 78/78 (`c96ef3eeb`)
 - [x] **W1C** — GovernedToolAuditService E2E proof coverage, 4 tests, Stage2 52/52 (`4e77ce758`)
 - [x] **W2A** — Dais invokeTool → result display pipeline proof/seal, 44/44 tests (`5b6a9f495`)
+- [x] **W3A** — `useParcelCount()` hook created; 5 production surfaces rewired off hardcoded parcel counts; bare `89247` literals eliminated from production pages (`1afaf12a3`)
+  > **Proof scope:** type-check EXIT 0, dashboard vitest 23/23, source sweep clean. Full frontend vitest not yet proven green.
 - [x] **W2B B2** — `/api/government/stats` live endpoint (`GovernmentController.cs` — `_db.Properties.CountAsync()`, `dataSource = "LIVE_DB"`);  
   `BentonParcelCountStub` const retained as dead-named-stub; dead code cleanup deferred
-
----
-
-## Open Gaps (inputs for this plan)
 
 ### Copilot-owned gaps:
 
@@ -101,7 +101,7 @@ After merge: all Phase 34 work starts from `main`.
 | `IncomeApproach.tsx` L221 — `grossIncomeMultiplier.toFixed(2)` unguarded | `forge/IncomeApproach.tsx` |
 | Atlas frontend not wired to `/api/atlas/gis/parcels/{id}/boundary` + `layers` | `PropertyAtlas.tsx`, `useAtlasGis.ts` |
 | Dais invokeTool → result display pipeline missing | `PropertyDais.tsx`, `handlers.real.ts` |
-| 89_247 hardcoded in production frontend components (not test fixtures) | TrustRegistry, AdminDashboard, AVMStudio, GeometryHealth, TerraExportModule |
+| ~~89_247 hardcoded in production frontend components (not test fixtures)~~ | ~~TrustRegistry, AdminDashboard, AVMStudio, GeometryHealth, TerraExportModule~~ | ~~W3A~~ ✅ SEALED (scoped) `1afaf12a3` |
 | Management Dashboard not wired to live API + SignalR | `ManagementDashboard.tsx` |
 
 ### ✅ Gaps closed this plan:
@@ -118,9 +118,10 @@ After merge: all Phase 34 work starts from `main`.
 | Gap | File(s) | Wave |
 |-----|---------|------|
 | ~~PACS Phase 3: `PacsTaxAreaAssoc` entity missing~~ | ~~`TerraFusion.Data`, `PacsDataSeeder.cs`~~ | ~~W2B B1~~ ✅ Proof-sealed |
-| 89_247 hardcoded in 5 production frontend components | TrustRegistry, AdminDashboard, AVMStudio, GeometryHealth, TerraExportModule | W3A (Copilot) |
-| 89_247 hardcoded in 5 production frontend components | TrustRegistry, AdminDashboard, AVMStudio, GeometryHealth, TerraExportModule | W3A (Copilot — unblocked; stats endpoint is live) |
-| Management Dashboard not wired to live API + SignalR | `ManagementDashboard.tsx` | W3B (Copilot) |
+| ~~89_247 hardcoded in 5 production frontend components~~ | ~~TrustRegistry, AdminDashboard, AVMStudio, GeometryHealth, TerraExportModule~~ | ~~W3A~~ ✅ SEALED (scoped) `1afaf12a3` |
+| Full frontend vitest green | All test files | **W3C prerequisite** |
+| Live smoke: 5 W3A surfaces vs `/api/government/stats` | TrustRegistry, AdminDashboard, AVMStudio, GeometryHealth, TerraExportModule | W3C (bounded smoke card) |
+| Management Dashboard not wired to live API + SignalR | `ManagementDashboard.tsx` | W3B (after W3C) |
 
 ---
 
@@ -161,14 +162,17 @@ After merge: all Phase 34 work starts from `main`.
 ┌───────────────────────────────────────────────────────────────────────┐
 │                  WAVE 3 — Stub Elimination + Dashboard                │
 │                                                                       │
-│  W3A (Copilot) — UNBLOCKED            W3B (Copilot)                   │
+│  W3A ✅ SEALED (scoped)             W3B (Copilot)                   │
 │  ┌──────────────────────────┐        ┌──────────────────────────┐    │
 │  │ ParcelCount stub →       │        │ Management Dashboard      │    │
 │  │ useParcelCount() hook    │        │ live API + SignalR         │    │
 │  │ (5 production files)     │        │                          │    │
-│  └──────────────────────────┘        └──────────────────────────┘    │
-│  Stats endpoint is LIVE — can         frontend only                   │
-│  start after W2A                                                       │
+│  │ 1afaf12a3                │        └──────────────────────────┘    │
+│  │ Proof: type-check 0,     │        frontend only                   │
+│  │ dash vitest 23/23,       │        After W3C smoke card            │
+│  │ source sweep clean       │                                        │
+│  │ ⚠️ full vitest TBD       │                                        │
+│  └──────────────────────────┘                                        │
 └───────────────────────────────────────────────────────────────────────┘
                                   │
                                   ▼
@@ -387,56 +391,44 @@ Called from `SeedAllAsync` at line 128 on the current-year PACS snapshot.
 
 ---
 
-## WAVE 3A — ParcelCount Stub Elimination (Copilot) — UNBLOCKED
+## WAVE 3A — ParcelCount Stub Elimination ✅ SEALED (scoped) `1afaf12a3`
 
 **Scope:** Replace `89_247` hardcoded literals in **production** frontend components with a live `useParcelCount()` hook backed by the `/api/government/stats` endpoint.  
 **Owner:** Copilot  
-**Depends on:** ~~Wave 2B stats endpoint~~ — **already live** (`GovernmentController.cs`). Can open after W2A.  
-**Isolation:** Only these 5 production files (test fixtures exempt per CARD-10 policy):
+**Sealed:** `1afaf12a3`
 
-| File | Line(s) |
-|------|---------|
-| `TrustRegistry.tsx` | 97, 124 |
-| `AdminDashboard.tsx` | 159 |
-| `AVMStudio.tsx` | 55, 56 |
-| `GeometryHealth.tsx` | 39 |
-| `TerraExportModule.tsx` | 54, 73 |
+### Result
 
-- [ ] **Step 1: Create `useParcelCount()` hook**
+| Artifact | Status |
+|----------|--------|
+| `useParcelCount.ts` | ✅ Created — `apiFetch('/government/stats')`, 5 min stale time |
+| `TrustRegistry.tsx` L97, L124 | ✅ Wired — `parcelCount` from hook, `SAMPLE_CONNECTORS` moved inside component |
+| `AVMStudio.tsx` L55, L56 | ✅ Wired — derived `pipeline` array overrides stage 0–1 `recordsProcessed` |
+| `GeometryHealth.tsx` L39 | ✅ Wired — `overallScore` memo + JSX Total Parcels display use live count |
+| `AdminDashboard.tsx` L159–164 | ✅ Wired — `DataQualityPanel` calls hook; all 6 `total` fields use live count |
+| `AdminDashboard.tsx` L280, L308 | ✅ Normalized to `89_247` — static historical rows (2026 study period + CAMA scrape job); not live KPIs |
+| `TerraExportModule.tsx` L54, L73 | ✅ Wired — `useEffect` updates parcels layer features + `exp-001` featureCount on stats arrival |
+| Bare `89247` in production pages | ✅ Clean — source sweep confirmed 0 matches |
+| CARD-10 test fixtures | ✅ Untouched — 7 `__tests__/` files exempt |
 
-```typescript
-// frontend/apps/os-shell/src/hooks/useParcelCount.ts
-export function useParcelCount(countyId?: string) {
-  return useQuery({
-    queryKey: ['parcel-count', countyId],
-    queryFn: () => fetch(`/api/government/stats`).then(r => r.json()),
-    staleTime: 5 * 60 * 1000,  // 5min — gov stats don't thrash
-  });
-}
+### Proof ledger
+
+```text
+W3A — SEALED (scoped proof)
+Proven:
+  - source replacement complete (bare 89247 sweep: 0 hits in production pages)
+  - type-check EXIT 0
+  - dashboard vitest 23/23
+  - UI token ratchet 790 ≤ 812 (improved 22)
+Not yet proven:
+  - full frontend vitest green (broad run timed out)
+  - live browser smoke across all five updated screens vs /api/government/stats
 ```
 
-- [ ] **Step 2: Replace literals in each production file**
+### Open follow-on cards
 
-For each file: import `useParcelCount`, replace numeric literal with `data?.totalProperties ?? 89_247` (safe fallback = named stub until API responds).
-
-- [ ] **Step 3: Run tests + type-check**
-
-- [ ] **Step 4: Commit**
-
-```
-feat(stats): replace 89_247 hardcoded stub with useParcelCount() live hook
-
-Evidence:
-- useParcelCount.ts: new hook calling /api/government/stats
-- 5 production files patched (TrustRegistry, AdminDashboard, AVMStudio, GeometryHealth, TerraExportModule)
-- Fallback: ?? 89_247 until API responds (safe for tests)
-- Test fixtures: unchanged (CARD-10 policy: only live-code hits)
-- Full vitest suite: [N] pass, 0 regressions
-- pnpm type-check: EXIT 0
-
-Government: FISMA compliance
-AI-Collaboration: GitHub Copilot
-```
+- **W3C** (bounded): live smoke of the five touched surfaces against a running `/api/government/stats` backend. Verify loading / live / fallback (`?? 89_247`) behavior. Gate: must pass before full-suite vitest is counted as proven.
+- **Full frontend vitest**: run to completion once before W3B is considered integration-ready.
 
 ---
 
@@ -513,8 +505,9 @@ node --test os-platform/core/tests/phase83-tools.test.mjs
 | 2A | Dais tool pipeline | Copilot | invokeTool → result display for all categories | ✅ `5b6a9f495` |
 | 2B B1 | PacsTaxAreaAssoc | Copilot | PacsTaxAreaAssoc entity + migration + seeder | ✅ Proof-sealed |
 | 2B B2 | Stats endpoint | Copilot | GET /api/government/stats | ✅ Done |
-| 3A | ParcelCount stub elimination | Copilot | useParcelCount() hook, 5 prod files | 🔲 ACTIVE |
-| 3B | Management Dashboard | Copilot | Live API + SignalR wiring | 🔲 After W3A |
+| 3A | ParcelCount stub elimination | Copilot | useParcelCount() hook, 5 prod files | ✅ SEALED (scoped) `1afaf12a3` — full vitest TBD |
+| 3C | W3A live smoke | Copilot | 5 surfaces vs `/api/government/stats`; loading/fallback behavior | 🔲 Before W3B integration |
+| 3B | Management Dashboard | Copilot | Live API + SignalR wiring | 🔲 After W3C |
 
 **Hard rules (Copilot-only model):**
 - Single owner per card. Copilot is the only execution agent.
@@ -534,4 +527,42 @@ node --test os-platform/core/tests/phase83-tools.test.mjs
 | Dais | ✅ MWUX (tool cards visible) | ✅ MWUX (result display panels wired) |
 | Dossier | ⚠️ MWUX (seed required) | ⚠️ MWUX (unchanged — seed pre-condition remains) |
 | Dashboard | ⚠️ (mock data) | ✅ MWUX (live API + SignalR) |
-| ParcelCount KPIs | ⚠️ (89_247 stub) | ✅ MWUX (live hook, ?? fallback) |
+| ParcelCount KPIs | ⚠️ (89_247 stub) | ✅ MWUX (live hook, ?? fallback) — full smoke TBD |
+
+---
+
+## Save State — 2026-03-27 end of W3A
+
+```text
+Branch:   fix/workbench-loading-aria
+HEAD:     1afaf12a3 — feat(stats): replace 89_247 hardcoded stubs with useParcelCount() live hook (W3A)
+Tree:     Clean
+
+What is true now:
+  - useParcelCount() hook exists at src/hooks/useParcelCount.ts
+  - 5 production surfaces consume live /api/government/stats instead of frozen 89_247
+  - Static historical rows (AdminDashboard L280/L308) explicitly left as 89_247 named stubs
+  - Bare 89247 source sweep: 0 hits in production pages
+  - Test fixtures in __tests__/: untouched per CARD-10
+  - type-check EXIT 0, ratchet 790, dashboard vitest 23/23
+  - Full frontend vitest: NOT yet proven green (broad run timed out)
+
+Where we stopped:
+  W3A sealed with scoped proof. Co-founder accepted the seal with labeling correction:
+  "W3A passed for scoped proof" — not full vitest green.
+
+Active variables:
+  - full frontend vitest: must run to completion before W3B is integration-ready
+  - W3C: bounded live smoke of 5 W3A surfaces against running backend
+    (loading / live / fallback ?? 89_247 behavior)
+  - W3B: Management Dashboard live API + SignalR — opens after W3C
+
+Next smallest step:
+  W3C — run pnpm --filter terrafusion-frontend vitest run to completion,
+  capture summary line. Then open bounded live smoke card for the 5 surfaces.
+
+Unhandled risks:
+  - /api/government/stats may 404 if backend not running with --seed-pacs (CARD-14 pre-condition)
+  - ?? 89_247 fallback is correct behavior; live smoke must verify it fires on fetch failure
+  - PR #706 still unmerged — Gate Zero is still a human decision
+```
