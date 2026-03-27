@@ -504,6 +504,13 @@ export const PropertyAtlas: React.FC = () => {
         </div>
       )}
 
+      {/* ── Boundary unavailable state ────────────────────── */}
+      {!boundary.loading && !boundary.error && boundary.source === 'unavailable' && (
+        <div className="text-xs tf-text-muted p-2 tf-panel" data-testid="atlas-boundary-unavailable">
+          Boundary data not available in PACS mirror for this parcel.
+        </div>
+      )}
+
       {/* ── Live GIS Layer Data ─────────────────────────────── */}
       {layers.source === 'live' && layers.data && (
         <div data-testid="atlas-gis-layers">
@@ -529,7 +536,10 @@ export const PropertyAtlas: React.FC = () => {
                   {layers.data.flood.zone}
                 </p>
                 <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-                  Risk: {layers.data.flood.risk} (source: {layers.data.flood.source})
+                  Risk: {layers.data.flood.risk}
+                  {layers.data.flood.source === 'stub'
+                    ? ' — Stub (no FEMA data in PACS)'
+                    : ` (source: ${layers.data.flood.source})`}
                 </p>
               </BentoCard>
             )}
@@ -559,6 +569,13 @@ export const PropertyAtlas: React.FC = () => {
               </BentoCard>
             )}
           </BentoGrid>
+        </div>
+      )}
+
+      {/* ── Layers unavailable state ─────────────────────── */}
+      {!layers.loading && !layers.error && layers.source === 'unavailable' && (
+        <div className="text-xs tf-text-muted p-2 tf-panel" data-testid="atlas-layers-unavailable">
+          Layer data not available in PACS mirror for this parcel.
         </div>
       )}
 
