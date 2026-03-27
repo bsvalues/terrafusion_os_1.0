@@ -181,6 +181,49 @@ Multi-year layers require production SQL Server data. Not a blocker; document in
 
 ---
 
+### ~~CARD-16 — DevPropertySeeder live runtime proof~~ ✅ CLOSED
+
+> **Opened & closed (2026-03-26, Phase 33E, Copilot)**
+> **Scope:** DB-level runtime verification — no code changes. Queries `terrafusion-dev.db` directly.
+
+**Verdict: PASS (rows confirmed) / BLOCKED (Dossier 200 — auth prerequisite missing)**
+
+**DB evidence — seeder ran successfully:**
+
+| Table | Row Count | Notes |
+|-------|-----------|-------|
+| `PacsParcel` | 112,057 | PACS mirror populated (`--seed-pacs` ran) |
+| `Properties` | 112,059 | DevPropertySeeder projection complete (3 stub rows pre-date seeder) |
+| `Properties` (seeder-generated) | 112,056 | Non-stub GUIDs — real PACS data |
+| `Counties` (Benton) | 1 | Benton County upsert confirmed (`Name="Benton"`, `State="WA"`) |
+| `pacs_valuations` | 1,014,000 | ETL complete |
+
+**Join integrity verified:**
+```
+PacsParcel.GeoId = "101841060001002"
+→ Properties.ParcelId = "101841060001002"
+→ Properties.ParcelNumber = "101841060001002"
+→ Properties.AssessedValue = 49990.0
+```
+`GeoId → ParcelId` fallback chain is correct and live in the DB. ✅
+
+**Idempotent guard confirmed:**
+- Next server startup will emit: `[DevPropertySeeder] Properties table already populated — skipping.`
+- Properties table is non-empty → guard fires → no double-seed risk. ✅
+
+**Dossier 200 test — BLOCKED:**
+- Route: `GET /api/dossier/parcels/{parcelId}/details`
+- Requires: `[RequiresPermission("read:dossier")]` → valid JWT bearer token
+- Blocker: `GovernmentUsers` table is empty (0 rows); no dev user exists to authenticate
+- Valid parcel ID for when blocker is resolved: `101841060001002` (Benton, AssessedValue 49990)
+- Resolution path: CARD-17 — seed a dev admin user (`GovernmentUsers`) so auth/Dossier end-to-end can be tested
+
+**No code changes required.**
+
+> CARD-16 is closed. DB proof of seeder success is definitive. Dossier 200 test is blocked on empty GovernmentUsers — escalated to CARD-17.
+
+---
+
 ## Completed Cards
 
 | Card | Task | Owner | Commit / Note |
@@ -200,3 +243,4 @@ Multi-year layers require production SQL Server data. Not a blocker; document in
 | 06 | CARD-06: `DevPropertySeeder.cs` — project `PacsParcel` → `Properties` on startup (dev-only, idempotent) | Copilot | `2638e5f82` |
 | 14 | CARD-14: alpha.html Dossier row corrected → `⚠️ MWUX (seed required)`; `--seed-pacs` notice added to setup section | Copilot | `455dd5cb4` |
 | 15 | CARD-15: DevPropertySeeder static regression pass — PASS; call chain + entity types verified; no code changes | Copilot | static analysis only |
+| 16 | CARD-16: DevPropertySeeder live runtime proof — PASS (112,057 PacsParcel / 112,059 Properties / join verified); Dossier 200 BLOCKED (empty GovernmentUsers) → CARD-17 | Copilot | DB query evidence |
