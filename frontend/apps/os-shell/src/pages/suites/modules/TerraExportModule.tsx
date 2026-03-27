@@ -5,7 +5,8 @@
  * Owns: Data export (Shapefile, GeoJSON, KML, CSV), batch operations.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
+import { useParcelCount } from '../../../hooks/useParcelCount';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -93,6 +94,19 @@ export default function TerraExportModule() {
   const [exportName, setExportName] = useState('');
   const [coordSystem, setCoordSystem] = useState('epsg-4326');
   const [jobs, setJobs] = useState<ExportJob[]>(RECENT_EXPORTS);
+
+  const { data: statsData } = useParcelCount();
+
+  useEffect(() => {
+    if (statsData?.totalParcels) {
+      setExportLayers((prev) =>
+        prev.map((l) => (l.id === 'parcels' ? { ...l, features: statsData.totalParcels } : l))
+      );
+      setJobs((prev) =>
+        prev.map((j) => (j.id === 'exp-001' ? { ...j, featureCount: statsData.totalParcels } : j))
+      );
+    }
+  }, [statsData?.totalParcels]);
 
   const toggleLayer = useCallback((id: string) => {
     setExportLayers((prev) => prev.map((l) => (l.id === id ? { ...l, selected: !l.selected } : l)));
