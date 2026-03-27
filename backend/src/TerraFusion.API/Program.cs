@@ -115,6 +115,20 @@ static string ResolveSqliteConnectionString(string connectionString, string cont
   return sqliteBuilder.ToString();
 }
 
+static string ResolvePrimaryConnectionString(IConfiguration configuration, IHostEnvironment environment)
+{
+  var connectionString = configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
+
+  if (environment.IsDevelopment() &&
+      TryReadBoolean(Environment.GetEnvironmentVariable("TF_DEV_USE_SQLITE"), out var forceSqlite) &&
+      forceSqlite)
+  {
+    return "Data Source=terrafusion-dev.db";
+  }
+
+  return connectionString;
+}
+
 static bool TryReadBoolean(string? value, out bool parsed)
 {
   if (bool.TryParse(value, out parsed))
@@ -334,6 +348,7 @@ builder.Services.AddScoped<TerraFusion.Core.Interfaces.IModuleCatalog, DbModuleC
 builder.Services.AddScoped<ModuleSeedService>();
 builder.Services.AddScoped<TerraFusion.API.Seeds.PacsDataSeeder>();
 builder.Services.AddScoped<TerraFusion.API.Seeds.DevPropertySeeder>(); // CARD-06: dev property projection seeder
+builder.Services.AddScoped<TerraFusion.API.Seeds.DevGovernmentUserSeeder>(); // CARD-17: dev admin user seeder
 builder.Services.AddScoped<TerraFusion.API.Health.IFileSystemModuleDiscovery, FileSystemModuleDiscovery>();
 builder.Services.AddScoped<TerraFusion.API.Health.IOrchestratorView, OrchestratorModuleView>();
 
@@ -476,7 +491,7 @@ TerraFusion.Data.TerraFusionDbContext.OnModelCreatingExtensions = TerraFusion.AI
 // Register database context with SQLite fallback
 builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
 {
-  var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
+  var connectionString = ResolvePrimaryConnectionString(builder.Configuration, builder.Environment);
   var provider = builder.Configuration["DatabaseProvider"];
 
   if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
@@ -498,7 +513,7 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(options =>
 // Register TerraFusionContext (Identity context for TerraGaiaService)
 builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>
 {
-  var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
+  var connectionString = ResolvePrimaryConnectionString(builder.Configuration, builder.Environment);
   var provider = builder.Configuration["DatabaseProvider"];
 
   if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
@@ -527,7 +542,7 @@ builder.Services.AddScoped<ITerraFusionDbContext>(provider =>
 builder.Services.AddScoped<IDbConnection>(sp =>
 {
   var cfg = sp.GetRequiredService<IConfiguration>();
-  var connStr = cfg.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
+  var connStr = ResolvePrimaryConnectionString(cfg, builder.Environment);
   var provider = cfg["DatabaseProvider"];
 
   if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase))
@@ -544,6 +559,17 @@ builder.Services.AddScoped<IDbConnection>(sp =>
         ResolveSqliteConnectionString(connStr, builder.Environment.ContentRootPath));
   }
 });
+
+var startupConnectionString = ResolvePrimaryConnectionString(builder.Configuration, builder.Environment);
+if (startupConnectionString.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+{
+  Console.WriteLine("[DB] Effective SQLite connection: {0}",
+      ResolveSqliteConnectionString(startupConnectionString, builder.Environment.ContentRootPath));
+}
+else
+{
+  Console.WriteLine("[DB] Effective non-SQLite connection configured for development/runtime.");
+}
 
 // 📊 TerraFlow Quantum Command Center Repositories (Phase 1 Week 4)
 builder.Services.AddScoped<IQuantumNotebookRepository, TerraFusion.Data.Repositories.QuantumNotebookRepository>();
@@ -1603,6 +1629,10 @@ try
     var devPropSeeder = devSeedScope.ServiceProvider
         .GetRequiredService<TerraFusion.API.Seeds.DevPropertySeeder>();
     await devPropSeeder.SeedAsync();
+
+    var devGovernmentUserSeeder = devSeedScope.ServiceProvider
+        .GetRequiredService<TerraFusion.API.Seeds.DevGovernmentUserSeeder>();
+    await devGovernmentUserSeeder.SeedAsync();
   }
 
   Console.WriteLine($"⏳ Calling app.Run()... This should block until shutdown");
