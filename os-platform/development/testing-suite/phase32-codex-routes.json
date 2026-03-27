@@ -1,0 +1,32 @@
+[
+  {
+    "name": "realtime",
+    "method": "GET",
+    "path": "/api/codex369/realtime",
+    "expectedStatus": [200]
+  },
+  {
+    "name": "foundation",
+    "method": "GET",
+    "path": "/api/codex369/foundation",
+    "expectedStatus": [200]
+  },
+  {
+    "name": "amplification",
+    "method": "GET",
+    "path": "/api/codex369/amplification",
+    "expectedStatus": [200]
+  },
+  {
+    "name": "ultimate-power",
+    "method": "GET",
+    "path": "/api/codex369/ultimate-power",
+    "expectedStatus": [200]
+  },
+  {
+    "name": "health-summary",
+    "method": "GET",
+    "path": "/api/codex369/health-summary",
+    "expectedStatus": [200]
+  }
+]

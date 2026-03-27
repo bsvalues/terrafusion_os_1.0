@@ -61,6 +61,10 @@ interface ComplianceMetrics {
 
 const FOUNDATION_MAX = 12;
 
+function createCorrelationId() {
+  return `codex-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export function CodexDashboard() {
   const [codex, setCodex] = useState<SystemWideCodex | null>(null);
   const [loading, setLoading] = useState(true);
@@ -74,7 +78,12 @@ export function CodexDashboard() {
 
   const fetchCodex = async () => {
     try {
-      const response = await fetch('/api/codex/system-wide');
+      const correlationId = createCorrelationId();
+      const response = await fetch('/api/codex369/realtime', {
+        headers: {
+          'X-Correlation-ID': correlationId,
+        },
+      });
       if (!response.ok) throw new Error('Failed to fetch codex');
       const data = await response.json();
       setCodex(data);
