@@ -32,6 +32,7 @@ import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useRecentParcels } from '../../context/parcelContext';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { useTodaysWork, type TodaysWorkItem } from '../../hooks/useTodaysWork';
+import { useParcelCount } from '../../hooks/useParcelCount';
 import { DemoDataBanner } from '../../components/governance/DemoDataBanner';
 import { LiquidPanel } from '../../ui/materials';
 import { Z } from './zIndex';
@@ -240,6 +241,8 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
   const recentParcels = useRecentParcels();
   const { tasks: todaysTasks, isSampleData } = useTodaysWork();
+  const { data: statsData } = useParcelCount();
+  const parcelCount = statsData?.totalParcels ?? 89_247;
 
   const handleOpenAtlas = useCallback(() => {
     activateModule('suite-atlas', { source: 'desktop' });
@@ -320,7 +323,7 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
               <span className='font-medium' style={{ color: 'hsl(var(--tf-text-primary-hs) 65%)' }}>
                 Benton County, WA
               </span>
-              <span>89,247 parcels</span>
+              <span>{parcelCount.toLocaleString()} parcels</span>
               <span>Last sync: 2 min ago</span>
               <span>3 appeals pending</span>
               <span className='flex items-center gap-1'>

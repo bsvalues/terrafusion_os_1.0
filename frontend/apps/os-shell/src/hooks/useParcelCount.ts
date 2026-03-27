@@ -20,7 +20,10 @@ export interface ParcelCountStats {
 async function fetchParcelStats(): Promise<ParcelCountStats> {
   const res = await apiFetch('/government/stats');
   if (!res.ok) throw new Error(`government/stats fetch failed: ${res.status}`);
-  return res.json();
+  const body = await res.json();
+  // Backend wraps stats: { county, stats: { totalParcels, ... }, timestamp }
+  // Support both nested (real API) and flat (test mocks / legacy)
+  return (body.stats ?? body) as ParcelCountStats;
 }
 
 export function useParcelCount() {

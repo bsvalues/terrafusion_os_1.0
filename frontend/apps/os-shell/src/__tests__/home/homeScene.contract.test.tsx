@@ -85,6 +85,18 @@ vi.mock('../../lib/utils', () => ({
   cn: (...args: any[]) => args.filter(Boolean).join(' '),
 }));
 
+// Mock useTodaysWork (StageZeroState dependency)
+vi.mock('../../hooks/useTodaysWork', () => ({
+  __esModule: true,
+  useTodaysWork: () => ({ tasks: [], loading: false, isSampleData: false }),
+}));
+
+// Mock useParcelCount — no QueryClientProvider in this test tree
+vi.mock('../../hooks/useParcelCount', () => ({
+  __esModule: true,
+  useParcelCount: () => ({ data: undefined, isLoading: false, error: null }),
+}));
+
 // Import the REAL StageZeroState (with mocked dependencies above)
 // so we test actual rendered structure
 import { StageZeroState } from '../../shell/desktop/StageZeroState';
