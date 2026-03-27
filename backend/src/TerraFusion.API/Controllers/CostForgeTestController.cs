@@ -120,7 +120,7 @@ public class CostForgeTestController : ControllerBase
 
         var propertiesSynced = request.CountyId?.ToLower() switch
         {
-            "benton" => 89247, // Benton County property count
+            "benton" => 89_247, // CARD-10: Benton County parcel count stub
             "franklin" => 34156,
             "yakima" => 127834,
             "king" => 534927,

@@ -31,6 +31,8 @@ namespace TerraFusion.AI.Services
     public class AnalyticsReportingService : IAnalyticsReportingService
     {
         private readonly ILogger<AnalyticsReportingService> _logger;
+        // CARD-10: static stub — replace with live DB query once CARD-06 Properties seeding is verified.
+        private const int BentonParcelCountStub = 89_247;
 
         public AnalyticsReportingService(ILogger<AnalyticsReportingService> logger)
         {
@@ -88,8 +90,8 @@ namespace TerraFusion.AI.Services
             {
                 TotalCounties = 10,
                 ActiveCounties = 10,
-                TotalProperties = 89247, // Benton County property count
-                PropertiesAssessed = 89247, // Benton County property count
+                TotalProperties = BentonParcelCountStub,
+                PropertiesAssessed = BentonParcelCountStub,
                 AverageProcessingTime = 125.4,
                 ComplianceRate = 99.2
             };
@@ -558,7 +560,7 @@ namespace TerraFusion.AI.Services
         {
             return new List<DataAggregation>
             {
-                new() { GroupName = "Benton County", Value = 89247, Percentage = 22.9 }, // Benton County property count
+                new() { GroupName = "Benton County", Value = BentonParcelCountStub, Percentage = 22.9 },
                 new() { GroupName = "King County", Value = 156789, Percentage = 40.3 },
                 new() { GroupName = "Yakima County", Value = 67890, Percentage = 17.4 },
                 new() { GroupName = "Others", Value = 75321, Percentage = 19.4 }

@@ -221,7 +221,8 @@ builder.Services.AddControllers()
 
       manager.FeatureProviders.Add(
           new TerraFusion.API.Controllers.NamespaceExcludingControllerFeatureProvider(
-              "TerraFusion.AI.Controllers"));
+              "TerraFusion.AI.Controllers",
+              "Codex369Controller"));
     })
     .AddJsonOptions(options =>
     {
@@ -332,6 +333,7 @@ builder.Services.AddScoped<TerraFusion.Core.Interfaces.IValuationService, TerraF
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IModuleCatalog, DbModuleCatalog>();
 builder.Services.AddScoped<ModuleSeedService>();
 builder.Services.AddScoped<TerraFusion.API.Seeds.PacsDataSeeder>();
+builder.Services.AddScoped<TerraFusion.API.Seeds.DevPropertySeeder>(); // CARD-06: dev property projection seeder
 builder.Services.AddScoped<TerraFusion.API.Health.IFileSystemModuleDiscovery, FileSystemModuleDiscovery>();
 builder.Services.AddScoped<TerraFusion.API.Health.IOrchestratorView, OrchestratorModuleView>();
 
@@ -1103,6 +1105,10 @@ app.MapHub<TerraFusion.AI.Hubs.AnalyticsHub>("/hubs/analytics");
 app.MapHub<TerraFusion.AI.Hubs.WorkflowHub>("/hubs/workflow");
 app.MapHub<TerraFusion.AI.Hubs.CollaborationHub>("/hubs/collaboration");
 app.MapHub<TerraFusion.AI.Hubs.Codex369Hub>("/hubs/codex369");
+app.MapHealthChecks("/health/codex369", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+  Predicate = check => check.Name.Contains("codex-369", StringComparison.OrdinalIgnoreCase)
+});
 
 // Add test endpoints
 app.MapGet("/api/test", () => new
@@ -1589,6 +1595,15 @@ try
   // 🌟 Initialize Ultimate CostForge AI Consciousness
   // RE-ENABLED: Championship-level 1M agent deployment with quantum Factor 999
   await app.Services.InitializeUltimateCostForgeAsync();
+
+  // CARD-06: Seed Properties from PacsParcel in Development (idempotent).
+  if (app.Environment.IsDevelopment())
+  {
+    using var devSeedScope = app.Services.CreateScope();
+    var devPropSeeder = devSeedScope.ServiceProvider
+        .GetRequiredService<TerraFusion.API.Seeds.DevPropertySeeder>();
+    await devPropSeeder.SeedAsync();
+  }
 
   Console.WriteLine($"⏳ Calling app.Run()... This should block until shutdown");
   Console.WriteLine($"   Time: {DateTime.Now:HH:mm:ss.fff}");

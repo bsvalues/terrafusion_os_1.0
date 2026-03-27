@@ -23,6 +23,8 @@ public class GovernmentController : ControllerBase
 {
     private readonly ILogger<GovernmentController> _logger;
     private readonly ITerrasyncService _terrasyncService;
+    // CARD-10: static stub — replace with live DB query once CARD-06 Properties seeding is verified.
+    private const int BentonParcelCountStub = 89_247;
 
     public GovernmentController(ILogger<GovernmentController> logger, ITerrasyncService terrasyncService)
     {
@@ -64,7 +66,7 @@ public class GovernmentController : ControllerBase
                         name = "Benton County",
                         state = "Washington",
                         fips = "53005",
-                        parcels = 89247, // Benton County property count
+                        parcels = BentonParcelCountStub,
                         assessmentSystem = "Harris PACS 9.0"
                     },
                     excellence = new
@@ -137,7 +139,7 @@ public class GovernmentController : ControllerBase
                         state = "Washington",
                         fips = "53005",
                         timezone = "America/Los_Angeles",
-                        parcelCount = 89247 // Benton County property count
+                        parcelCount = BentonParcelCountStub
                     },
                     legacySystem = new
                     {
