@@ -12,7 +12,7 @@
  * blocker display, and audit event emission on every interaction.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -213,6 +213,12 @@ export function BatchCostRun() {
   const [applyMode, setApplyMode] = useState<ForgeApplyMode>('preview_only');
   const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
   const [historyIsFixtureBacked, setHistoryIsFixtureBacked] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/forge/cost/batch/history')
+      .then((res) => { if (res.ok) setHistoryIsFixtureBacked(false); })
+      .catch(() => { /* endpoint unreachable — fixture banner stays */ });
+  }, []);
 
   const sourceSummary = isSampleData
     ? 'Fixture-backed run history and sample preview fallback'

@@ -134,4 +134,17 @@ public class ForgeController : ControllerBase
             },
         });
     }
+
+    /// <summary>
+    /// GET /api/forge/cost/batch/history — Dev stub for batch cost run history.
+    /// Returns an empty array (no completed runs yet in dev), which signals
+    /// BatchCostRun that the history endpoint is reachable so historyIsFixtureBacked
+    /// clears. An empty array is honest: no runs have been applied in dev mode.
+    /// </summary>
+    [AllowAnonymous]
+    [HttpGet("cost/batch/history")]
+    public IActionResult GetBatchCostHistory()
+    {
+        return Ok(Array.Empty<object>());
+    }
 }
