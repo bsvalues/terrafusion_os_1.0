@@ -338,6 +338,8 @@ builder.Services.AddScoped<IResearchAnalyticsService, ResearchAnalyticsService>(
 builder.Services.AddScoped<ICrossWorkspaceSyncService, CrossWorkspaceSyncService>();
 builder.Services.AddScoped<IStatisticalAnalysisService, StatisticalAnalysisService>();
 builder.Services.AddScoped<IForgeStatisticsService, ForgeStatisticsService>();
+// Dev stub: returns empty until a real CAMA service is registered
+builder.Services.AddScoped<TerraFusion.API.Controllers.IMassAppraisalService, TerraFusion.API.Controllers.MassAppraisalServiceStub>();
 builder.Services.AddScoped<IPredictiveModelingService, PredictiveModelingService>();
 builder.Services.AddScoped<TerraFusion.API.Interfaces.IPerformanceMonitor, TerraFusion.API.Services.PerformanceMonitorService>();
 

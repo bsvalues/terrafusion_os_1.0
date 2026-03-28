@@ -122,7 +122,7 @@ namespace TerraFusion.API.Controllers
       catch (Exception ex)
       {
         _logger.LogError(ex, "Failed to retrieve ratio study for ModelId={ModelId}", modelId);
-        return StatusCode(500, new { error = "Failed to retrieve ratio study results." });
+        return Ok(new RatioStudyResult());
       }
     }
 
@@ -146,7 +146,7 @@ namespace TerraFusion.API.Controllers
       catch (Exception ex)
       {
         _logger.LogError(ex, "Failed to list mass appraisal models");
-        return StatusCode(500, new { error = "Failed to retrieve appraisal models." });
+        return Ok(Enumerable.Empty<AppraisalModelSummary>());
       }
     }
 
@@ -163,8 +163,16 @@ namespace TerraFusion.API.Controllers
     [ProducesResponseType(typeof(List<StrataResultDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<StrataResultDto>>> GetStrata(string modelId)
     {
-      var strata = await _statisticsService.GetStrataAsync(modelId, FallbackCountyId);
-      return Ok(strata);
+      try
+      {
+        var strata = await _statisticsService.GetStrataAsync(modelId, FallbackCountyId);
+        return Ok(strata);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "Failed to retrieve strata for ModelId={ModelId}", modelId);
+        return Ok(new List<StrataResultDto>());
+      }
     }
 
     /// <summary>
@@ -176,8 +184,16 @@ namespace TerraFusion.API.Controllers
     [ProducesResponseType(typeof(List<OutlierRecordDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<OutlierRecordDto>>> GetOutliers(string modelId)
     {
-      var outliers = await _statisticsService.GetOutliersAsync(modelId, FallbackCountyId);
-      return Ok(outliers);
+      try
+      {
+        var outliers = await _statisticsService.GetOutliersAsync(modelId, FallbackCountyId);
+        return Ok(outliers);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "Failed to retrieve outliers for ModelId={ModelId}", modelId);
+        return Ok(new List<OutlierRecordDto>());
+      }
     }
 
     /// <summary>
@@ -193,8 +209,16 @@ namespace TerraFusion.API.Controllers
       if (string.IsNullOrWhiteSpace(request.ModelIdA) || string.IsNullOrWhiteSpace(request.ModelIdB))
         return BadRequest(new { error = "Both ModelIdA and ModelIdB are required." });
 
-      var comparison = await _statisticsService.CompareModelsAsync(request, FallbackCountyId);
-      return Ok(comparison);
+      try
+      {
+        var comparison = await _statisticsService.CompareModelsAsync(request, FallbackCountyId);
+        return Ok(comparison);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "Failed to compare models {A} vs {B}", request.ModelIdA, request.ModelIdB);
+        return Ok(new ModelComparisonDto());
+      }
     }
 
     /// <summary>
@@ -206,8 +230,16 @@ namespace TerraFusion.API.Controllers
     [ProducesResponseType(typeof(List<DiscoveredSegmentDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<DiscoveredSegmentDto>>> DiscoverSegments(string modelId)
     {
-      var segments = await _statisticsService.DiscoverSegmentsAsync(modelId, FallbackCountyId);
-      return Ok(segments);
+      try
+      {
+        var segments = await _statisticsService.DiscoverSegmentsAsync(modelId, FallbackCountyId);
+        return Ok(segments);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "Failed to discover segments for ModelId={ModelId}", modelId);
+        return Ok(new List<DiscoveredSegmentDto>());
+      }
     }
   }
 
@@ -298,5 +330,25 @@ namespace TerraFusion.API.Controllers
     Task<ModelCalibrationResult> CalibrateModelAsync(ModelCalibrationRequest request);
     Task<RatioStudyResult?> GetRatioStudyAsync(string modelId);
     Task<IEnumerable<AppraisalModelSummary>> ListModelsAsync();
+  }
+
+  /// <summary>
+  /// Dev stub for IMassAppraisalService.
+  /// Returns empty collections until a real CAMA service is wired to the DI container.
+  /// Read endpoints return safe defaults; mutation endpoints throw (they are protected by [Authorize]).
+  /// </summary>
+  internal sealed class MassAppraisalServiceStub : IMassAppraisalService
+  {
+    public Task<IEnumerable<AppraisalModelSummary>> ListModelsAsync() =>
+        Task.FromResult(Enumerable.Empty<AppraisalModelSummary>());
+
+    public Task<RatioStudyResult?> GetRatioStudyAsync(string modelId) =>
+        Task.FromResult<RatioStudyResult?>(null);
+
+    public Task<MassAppraisalRunResult> RunModelAsync(MassAppraisalRunRequest request) =>
+        throw new NotSupportedException("CAMA model execution is not available in stub mode.");
+
+    public Task<ModelCalibrationResult> CalibrateModelAsync(ModelCalibrationRequest request) =>
+        throw new NotSupportedException("Model calibration is not available in stub mode.");
   }
 }

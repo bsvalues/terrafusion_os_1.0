@@ -79,6 +79,7 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
         return;
       }
       void activateModule(targetId, { source: 'start_menu' });
+      navigate('/');
     }
   };
 

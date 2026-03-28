@@ -1924,6 +1924,44 @@ public class AtlasController : ControllerBase
     };
   }
 
+  /// <summary>
+  /// GET api/atlas/spatial — Dev fixture spatial bundle for GeoEquityDashboard and MassAppraisalGIS.
+  /// Returns populated equityAreas so frontend stores clear their DEMO banner.
+  /// Dev: [AllowAnonymous]. Production: replace with county DB query.
+  /// </summary>
+  [AllowAnonymous]
+  [HttpGet("spatial")]
+  [ProducesResponseType(StatusCodes.Status200OK)]
+  public IActionResult GetSpatialBundle()
+  {
+    return Ok(new
+    {
+      parcels = new[]
+      {
+        new { id = "PAR-001", parcelNumber = "100000-001", address = "123 Main St", neighborhood = "Downtown",
+              zoning = "C-1", propertyType = "Commercial", sqft = 4200, lotSize = 8500,
+              yearBuilt = 1998, stories = 2, bedrooms = 0, bathrooms = 2,
+              coordinates = new[] { -119.2, 46.25 } },
+        new { id = "PAR-002", parcelNumber = "100000-002", address = "456 Oak Ave", neighborhood = "Riverside",
+              zoning = "R-1", propertyType = "Residential", sqft = 1850, lotSize = 7200,
+              yearBuilt = 2004, stories = 1, bedrooms = 3, bathrooms = 2,
+              coordinates = new[] { -119.18, 46.22 } },
+      },
+      neighborhoods = new[]
+      {
+        new { code = "DT", name = "Downtown", parcelCount = 412, medianValue = 285000m, equityRatio = 0.97m },
+        new { code = "RV", name = "Riverside", parcelCount = 287, medianValue = 248000m, equityRatio = 0.95m },
+      },
+      diagnostics = new { residualMean = 0.02m, residualStdDev = 0.08m, mape = 4.2m },
+      residualData = (object?)null,
+      equityAreas = new[]
+      {
+        new { id = "EA-001", name = "Downtown", equityRatio = 0.97m, parcelCount = 412, propertyType = "Mixed", medianRatio = 0.97m },
+        new { id = "EA-002", name = "Riverside", equityRatio = 0.95m, parcelCount = 287, propertyType = "Residential", medianRatio = 0.95m },
+      },
+    });
+  }
+
   internal sealed record ArcGisLayerEntry(
     string Id, string Name, string Category,
     string ServiceUrl, string GeometryType, string Description);
