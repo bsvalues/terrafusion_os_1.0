@@ -42,7 +42,6 @@ interface AuditEvent {
 
 /** Feature gate remains explicit; runtime backend availability is checked per request. */
 const BACKEND_APPLY_CAPABLE = true;
-const HISTORY_IS_FIXTURE_BACKED = true;
 
 let _auditSeq = 0;
 function emitAuditEvent(
@@ -213,10 +212,11 @@ export function BatchCostRun() {
   // 1E: Apply mode lifecycle
   const [applyMode, setApplyMode] = useState<ForgeApplyMode>('preview_only');
   const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
+  const [historyIsFixtureBacked, setHistoryIsFixtureBacked] = useState(true);
 
   const sourceSummary = isSampleData
     ? 'Fixture-backed run history and sample preview fallback'
-    : HISTORY_IS_FIXTURE_BACKED
+    : historyIsFixtureBacked
       ? 'Fixture-backed run history; preview and apply use workspace batch valuation APIs when available'
       : 'Workspace batch valuation API';
 
@@ -329,6 +329,7 @@ export function BatchCostRun() {
       setHistory((prev) => [newRecord, ...prev]);
       setApplyMode('apply_executed');
       setIsSampleData(false);
+      setHistoryIsFixtureBacked(false);
       const evt = emitAuditEvent('apply_executed', 'apply_executed');
       setAuditLog((prev) => [...prev, evt]);
       emitToolSucceeded({
@@ -366,7 +367,7 @@ export function BatchCostRun() {
 
   return (
     <div data-testid="batch-cost-run" className="space-y-4 p-4">
-      <DemoDataBanner module="Batch Cost Run" />
+      {(isSampleData || historyIsFixtureBacked) && <DemoDataBanner module="Batch Cost Run" />}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-fg))' }}>Batch Cost Model Runs</h1>
         <div className="flex gap-2">

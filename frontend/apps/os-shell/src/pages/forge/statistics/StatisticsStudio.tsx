@@ -33,9 +33,9 @@ type Tab = 'ratio-study' | 'trends' | 'equity' | 'outliers' | 'comparison';
 
 function useRatioData() {
   const studyResult = useForgeStatisticsStore((s) => s.studyResult);
+  const isFixtureStudy = useForgeStatisticsStore((s) => s.isFixture.studyResult);
   if (studyResult) {
-    // If the store fell back to fixture data, still flag as fixture
-    const isFixture = studyResult === RATIO_STUDY_RESULT;
+    const isFixture = isFixtureStudy;
     return {
       medianRatio: studyResult.medianRatio,
       weightedMeanRatio: studyResult.weightedMeanRatio,

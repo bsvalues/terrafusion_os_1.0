@@ -51,7 +51,8 @@ export default function GeoEquityDashboard() {
   useEffect(() => {
     fetchSpatialData().then(() => {
       const areas = useAtlasSpatialStore.getState().equityAreas;
-      setIsFixture(areas.length === 0);
+      // Reference equality detects fixture fallback: store sets equityAreas = EQUITY_AREAS on API failure
+      setIsFixture(areas.length === 0 || areas === FALLBACK_EQUITY_AREAS);
     });
   }, [fetchSpatialData]);
 

@@ -12,7 +12,7 @@
  * backend-capability gate, blocker display, and audit event emission.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -141,18 +141,74 @@ export function CoefficientPreview() {
   const [sourceId, setSourceId] = useState(FIXTURE_MODELS[0].id);
   const [candidateId, setCandidateId] = useState(FIXTURE_MODELS[1].id);
   const [preview, setPreview] = useState<PreviewResult | null>(null);
+  const [models, setModels] = useState<{ id: string; name: string }[]>(FIXTURE_MODELS);
+  const [isFixtureModels, setIsFixtureModels] = useState(true);
+  const [isFixturePreview, setIsFixturePreview] = useState(true);
+
+  // Load live models on mount; fall back to FIXTURE_MODELS if unavailable
+  useEffect(() => {
+    fetch('/api/MassAppraisal/models')
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((data: Array<{ modelId?: string; id?: string; name?: string; Name?: string }>) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((m) => ({
+            id: m.modelId ?? m.id ?? '',
+            name: m.name ?? m.Name ?? m.modelId ?? m.id ?? 'Unknown',
+          }));
+          setModels(mapped);
+          setSourceId(mapped[0].id);
+          if (mapped.length > 1) setCandidateId(mapped[1].id);
+          setIsFixtureModels(false);
+        }
+      })
+      .catch(() => {
+        // Keep FIXTURE_MODELS; banner remains visible
+      });
+  }, []);
 
   // 1E: Apply mode lifecycle
   const [applyMode, setApplyMode] = useState<ForgeApplyMode>('preview_only');
   const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
 
-  const handlePreview = useCallback(() => {
-    // Fixture response — preview-only, non-destructive
-    setPreview(FIXTURE_PREVIEW);
+  const handlePreview = useCallback(async () => {
+    try {
+      const response = await fetch('/api/MassAppraisal/compare', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ModelIdA: sourceId, ModelIdB: candidateId }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const livePreview: PreviewResult = {
+          sourceModelId: sourceId,
+          sourceModelName: data.modelA?.label ?? sourceId,
+          candidateModelId: candidateId,
+          candidateModelName: data.modelB?.label ?? candidateId,
+          deltas: [],
+          metrics: {
+            codDelta: data.deltas?.cod ?? 0,
+            prdDelta: data.deltas?.prd ?? 0,
+            meanRatioDelta: data.deltas?.medianRatio ?? 0,
+            medianRatioDelta: data.deltas?.medianRatio ?? 0,
+          },
+          impactedParcelCount: data.modelA?.sampleSize ?? 0,
+          totalParcelsEvaluated: data.modelA?.sampleSize ?? 0,
+          impactBuckets: [],
+        };
+        setPreview(livePreview);
+        setIsFixturePreview(false);
+      } else {
+        setPreview(FIXTURE_PREVIEW);
+        setIsFixturePreview(true);
+      }
+    } catch {
+      setPreview(FIXTURE_PREVIEW);
+      setIsFixturePreview(true);
+    }
     setApplyMode('preview_only');
     const evt = emitAuditEvent('preview_only', 'preview_generated');
     setAuditLog((prev) => [...prev, evt]);
-  }, []);
+  }, [sourceId, candidateId]);
 
   const handleApplyRequest = useCallback(() => {
     if (BACKEND_APPLY_CAPABLE) {
@@ -185,7 +241,7 @@ export function CoefficientPreview() {
 
   return (
     <div data-testid="coefficient-preview" className="space-y-4 p-4">
-      <DemoDataBanner module="Coefficient Preview" />
+      {(isFixtureModels || isFixturePreview) && <DemoDataBanner module="Coefficient Preview" />}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-fg))' }}>Coefficient Application Preview</h1>
         <Badge variant="outline">Preview Only</Badge>
@@ -197,7 +253,7 @@ export function CoefficientPreview() {
         <CardContent className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Current (Fixture Baseline)</label>
+              <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Current (Baseline)</label>
               <select
                 data-testid="coeff-source-select"
                 value={sourceId}
@@ -205,13 +261,13 @@ export function CoefficientPreview() {
                 className="w-full px-3 py-2 rounded border text-sm"
                 style={{ background: 'hsl(var(--tf-card-bg) / 0.5)', borderColor: 'hsl(var(--tf-border) / 0.3)', color: 'hsl(var(--tf-fg))' }}
               >
-                {FIXTURE_MODELS.map((m) => (
+                {models.map((m) => (
                   <option key={m.id} value={m.id}>{m.name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Proposed (Fixture Candidate)</label>
+              <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Proposed (Candidate)</label>
               <select
                 data-testid="coeff-candidate-select"
                 value={candidateId}
@@ -219,7 +275,7 @@ export function CoefficientPreview() {
                 className="w-full px-3 py-2 rounded border text-sm"
                 style={{ background: 'hsl(var(--tf-card-bg) / 0.5)', borderColor: 'hsl(var(--tf-border) / 0.3)', color: 'hsl(var(--tf-fg))' }}
               >
-                {FIXTURE_MODELS.map((m) => (
+                {models.map((m) => (
                   <option key={m.id} value={m.id}>{m.name}</option>
                 ))}
               </select>

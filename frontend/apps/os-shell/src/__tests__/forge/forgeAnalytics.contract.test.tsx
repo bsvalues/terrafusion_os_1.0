@@ -170,6 +170,7 @@ vi.mock('@/stores/forgeStatisticsStore', () => ({
       qualification: null,
       loading: false,
       error: null,
+      isFixture: { studyResult: true, outliers: true, strata: true, comparison: true },
       fetchStudy: vi.fn(),
       setFilter: vi.fn(),
       reviewOutlier: vi.fn(),

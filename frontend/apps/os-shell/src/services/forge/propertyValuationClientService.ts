@@ -39,12 +39,19 @@ export async function getCostSchedule(params?: {
   qualityClass?: string;
   search?: string;
 }): Promise<CostScheduleEntry[]> {
-  const query = new URLSearchParams();
-  if (params?.qualityClass) query.set('qualityClass', params.qualityClass);
-  if (params?.search) query.set('search', params.search);
-  const res = await fetch(`${API_BASE}/valuation/cost-schedule?${query}`, { headers: authHeadersReadOnly() });
-  if (!res.ok) throw new Error(`Failed to fetch cost schedule: ${res.statusText}`);
-  return res.json();
+  // Wire to CostForge factors endpoint (BC-RICHLAND = Benton County region).
+  // Falls back to SAMPLE_COST_SCHEDULES in CostManual if this fails.
+  const res = await fetch(`${API_BASE}/CostForge/factors/BC-RICHLAND`, { headers: authHeadersReadOnly() });
+  if (!res.ok) throw new Error(`Failed to fetch cost factors: ${res.statusText}`);
+  const factors: Array<{ name?: string; factor?: number; description?: string; effectiveDate?: string }> = await res.json();
+  return factors.map((f) => ({
+    code: f.name ?? 'UNKNOWN',
+    description: f.description ?? f.name ?? 'Cost Factor',
+    qualityClass: params?.qualityClass ?? 'Standard',
+    baseCost: f.factor ?? 0,
+    unit: 'factor',
+    effectiveDate: f.effectiveDate ? new Date(f.effectiveDate).toLocaleDateString('en-US') : 'Unknown',
+  }));
 }
 
 export async function calculateDepreciation(
