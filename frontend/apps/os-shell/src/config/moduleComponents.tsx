@@ -14,6 +14,7 @@ import { GenericModuleHost } from '../shell/desktop/GenericModuleHost';
 import { MODULES, type ModuleDefinition } from './modules';
 import { validateSuiteRendering } from '../contracts/objectPlacement';
 import { createLogger } from '@/hooks/useLogger';
+import QueuedModuleSurface from '../components/suites/QueuedModuleSurface';
 
 const logger = createLogger('ModuleRenderer');
 
@@ -159,6 +160,8 @@ export const MODULE_REGISTRY = new Set<string>([
   'terra-levy',
   'terra-pilt',
   'terra-permit',
+  'terra-cert',
+  'terra-notice',
   'terra-flow',
   'management-dashboard',
   'terra-queue',
@@ -653,15 +656,10 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
     case 'terra-gis':
     case 'gis-pro':
       return (
-        <PlaceholderModule
-          name='TerraGIS Pro'
-          icon='🗺️'
-          description='Full GIS with parcel boundaries, zoning overlays, aerial imagery, and measurement tools.'
-          status='placeholder'
-          legacySource='BCBSGISPRO, bcbspacsmapping'
-          domain='mapping'
-          scope='county-wide'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="TerraGIS Pro"
+          description="Full GIS with parcel boundaries, zoning overlays, aerial imagery, and measurement tools."
+          moduleId="terra-gis"
         />
       );
 
@@ -712,14 +710,10 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'vei':
       return (
-        <PlaceholderModule
-          name='Vertical Equality Index'
-          icon='🔍'
-          description='Vertical Equality Index — measures assessment progressivity/regressivity across value ranges, PRB analysis, IAAO equity compliance.'
-          status='placeholder'
-          domain='assessment'
-          scope='county-wide'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="Vertical Equality Index"
+          description="Vertical Equality Index — measures assessment progressivity/regressivity across value ranges, PRB analysis, IAAO equity compliance."
+          moduleId="vei"
         />
       );
 
@@ -739,71 +733,46 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'terra-gama':
       return (
-        <PlaceholderModule
-          name='TerraGAMA'
-          icon='📍'
-          description='Geographic Area Market Analysis — neighborhood delineation, market trend analysis, and area-based valuation.'
-          status='placeholder'
-          legacySource='TerraGama, TerraFusionGama'
-          domain='assessment'
-          scope='county-wide'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="TerraGAMA"
+          description="Geographic Area Market Analysis — neighborhood delineation, market trend analysis, and area-based valuation."
+          moduleId="terra-gama"
         />
       );
 
     case 'terra-pilt':
       return (
-        <PlaceholderModule
-          name='TerraPILT'
-          icon='🏛️'
-          description='Payment in Lieu of Taxes — federal property calculations, PILT reporting, and compliance tracking.'
-          status='placeholder'
-          legacySource='TerraPILT'
-          domain='tax'
-          scope='county-wide'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="TerraPILT"
+          description="Payment in Lieu of Taxes — federal property calculations, PILT reporting, and compliance tracking."
+          moduleId="terra-pilt"
         />
       );
 
     case 'property-tax-ai':
       return (
-        <PlaceholderModule
-          name='PropertyTax AI'
-          icon='🤖'
-          description='AI-powered assessment assistant — LangChain agents for valuation analysis and appeal preparation.'
-          status='placeholder'
-          legacySource='PropertyTaxAI'
-          domain='ai'
-          scope='county-wide'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="PropertyTax AI"
+          description="AI-powered assessment assistant — LangChain agents for valuation analysis and appeal preparation."
+          moduleId="property-tax-ai"
         />
       );
 
     case 'pacs-bridge':
       return (
-        <PlaceholderModule
-          name='County Data Bridge'
-          icon='🔗'
-          description='Import/export bridge for county assessment systems — data sync, field mapping, and batch operations.'
-          status='placeholder'
-          legacySource='PACS-DataBridge'
-          domain='system'
-          scope='system'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="County Data Bridge"
+          description="Import/export bridge for county assessment systems — data sync, field mapping, and batch operations."
+          moduleId="pacs-bridge"
         />
       );
 
     case 'terra-sync':
       return (
-        <PlaceholderModule
-          name='TerraSync'
-          icon='🔄'
-          description='County data synchronization & ETL — multi-source ingestion, conflict resolution, and audit trails.'
-          status='placeholder'
-          legacySource='TerraFusionSync, CountyDataSync'
-          domain='system'
-          scope='system'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="TerraSync"
+          description="County data synchronization & ETL — multi-source ingestion, conflict resolution, and audit trails."
+          moduleId="terra-sync"
         />
       );
 
@@ -816,15 +785,28 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'terra-permit':
       return (
-        <PlaceholderModule
-          name='TerraPermit'
-          icon='🏗️'
-          description='Building permit tracking — permit intake, inspection scheduling, and valuation impact updates.'
-          status='placeholder'
-          legacySource='TerraFUsionPermit'
-          domain='assessment'
-          scope='county-wide'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="TerraPermit"
+          description="Building permit tracking — permit intake, inspection scheduling, and valuation impact updates."
+          moduleId="terra-permit"
+        />
+      );
+
+    case 'terra-cert':
+      return (
+        <QueuedModuleSurface
+          name="TerraCert"
+          description="Roll certification checklists and sign-offs — certification workflows, deadline tracking, and statutory compliance."
+          moduleId="terra-cert"
+        />
+      );
+
+    case 'terra-notice':
+      return (
+        <QueuedModuleSurface
+          name="TerraNotice"
+          description="Notice templates, batch generation, and mail queue — assessment notice production and delivery tracking."
+          moduleId="terra-notice"
         />
       );
 
