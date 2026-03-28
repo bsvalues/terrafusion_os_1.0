@@ -22,6 +22,8 @@ import {
   Printer,
   Download,
   Database,
+  BarChart2,
+  Globe,
 } from 'lucide-react';
 
 const ATLAS_MODULES: SuiteModuleDef[] = [
@@ -35,6 +37,8 @@ const ATLAS_MODULES: SuiteModuleDef[] = [
   { id: 'terra-query', label: 'TerraQuery', icon: Database, description: 'SQL-like spatial queries across county data', launchMode: 'workbench', workbenchTab: 'atlas' },
   // Standalone-mode (county-wide, opens standalone window)
   { id: 'terra-gis-pro', label: 'TerraGIS Pro', icon: Map, description: 'Full county-wide GIS platform — advanced cartography & spatial analysis', launchMode: 'standalone', moduleId: 'terra-gis' },
+  { id: 'geo-equity-dashboard', label: 'Geo Equity', icon: BarChart2, description: 'Geographic equity analysis — market-value equity by area, district, and property class', launchMode: 'standalone', moduleId: 'geo-equity-dashboard' },
+  { id: 'mass-appraisal-gis', label: 'Appraisal GIS', icon: Globe, description: 'Mass appraisal spatial visualization — value heat maps, sale ratio overlays, and cluster analysis', launchMode: 'standalone', moduleId: 'mass-appraisal-gis' },
 ];
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');

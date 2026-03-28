@@ -103,6 +103,7 @@ namespace TerraFusion.API.Controllers
     /// </summary>
     /// <param name="modelId">The unique identifier of the appraisal model.</param>
     /// <returns>Ratio study with uniformity and equity statistics.</returns>
+    [AllowAnonymous]
     [HttpGet("ratio-study/{modelId}")]
     [ProducesResponseType(typeof(RatioStudyResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -130,6 +131,7 @@ namespace TerraFusion.API.Controllers
     /// Includes model metadata, last calibration date, and performance metrics.
     /// </summary>
     /// <returns>List of appraisal models with summary statistics.</returns>
+    [AllowAnonymous]
     [HttpGet("models")]
     [ProducesResponseType(typeof(IEnumerable<AppraisalModelSummary>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<AppraisalModelSummary>>> ListModels()
@@ -156,6 +158,7 @@ namespace TerraFusion.API.Controllers
     /// GET api/massappraisal/ratio-study/{modelId}/strata —
     /// Strata breakdown by neighborhood × property type for a given model.
     /// </summary>
+    [AllowAnonymous]
     [HttpGet("ratio-study/{modelId}/strata")]
     [ProducesResponseType(typeof(List<StrataResultDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<StrataResultDto>>> GetStrata(string modelId)
@@ -168,6 +171,7 @@ namespace TerraFusion.API.Controllers
     /// GET api/massappraisal/ratio-study/{modelId}/outliers —
     /// Flagged outlier parcels for a given model (IQR / trim methods).
     /// </summary>
+    [AllowAnonymous]
     [HttpGet("ratio-study/{modelId}/outliers")]
     [ProducesResponseType(typeof(List<OutlierRecordDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<OutlierRecordDto>>> GetOutliers(string modelId)
@@ -180,6 +184,7 @@ namespace TerraFusion.API.Controllers
     /// POST api/massappraisal/compare — Compare two appraisal models.
     /// Returns delta metrics and improved/degraded classification.
     /// </summary>
+    [AllowAnonymous]
     [HttpPost("compare")]
     [ProducesResponseType(typeof(ModelComparisonDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -196,6 +201,7 @@ namespace TerraFusion.API.Controllers
     /// GET api/massappraisal/segments/{modelId} — Discover property segments
     /// using deterministic neighborhood grouping.
     /// </summary>
+    [AllowAnonymous]
     [HttpGet("segments/{modelId}")]
     [ProducesResponseType(typeof(List<DiscoveredSegmentDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<DiscoveredSegmentDto>>> DiscoverSegments(string modelId)

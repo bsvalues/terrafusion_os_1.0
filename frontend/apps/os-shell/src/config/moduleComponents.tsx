@@ -183,6 +183,11 @@ export const MODULE_REGISTRY = new Set<string>([
   'os-pilot',
   'os-trace',
   'os-canon',
+  // Atlas & Forge standalone modules (Phase 36)
+  'geo-equity-dashboard',
+  'mass-appraisal-gis',
+  'cost-manual',
+  'value-audit-module',
 ]);
 
 /**
@@ -289,6 +294,19 @@ const BatchCostRun = lazy(
 const CoefficientPreview = lazy(
   () => import('../pages/forge/batch/CoefficientPreview')
 );
+// Phase 36: Atlas & Forge standalone modules
+const GeoEquityDashboard = lazy(
+  () => import('../pages/atlas/GeoEquityDashboard')
+);
+const MassAppraisalGIS = lazy(
+  () => import('../pages/atlas/MassAppraisalGIS')
+);
+const CostManual = lazy(
+  () => import('../pages/forge/cost/CostManual').then(m => ({ default: m.CostManual }))
+);
+const ValueAuditModule = lazy(
+  () => import('../pages/suites/modules/ValueAuditModule')
+);
 const ManagementDashboard = lazy(
   () => import('../pages/dais/ManagementDashboard')
 );
@@ -362,6 +380,11 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'os-pilot': { Component: PilotHome },
   'os-trace': { Component: TraceHome },
   'os-canon': { Component: CanonHome },
+  // Atlas & Forge standalone modules (Phase 36)
+  'geo-equity-dashboard': { Component: GeoEquityDashboard },
+  'mass-appraisal-gis': { Component: MassAppraisalGIS },
+  'cost-manual': { Component: CostManual },
+  'value-audit-module': { Component: ValueAuditModule },
 };
 
 export function getModuleEntry(moduleId: string): ModuleEntry | undefined {
@@ -1076,6 +1099,42 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
           scope='county-wide'
           launchSurface='GPT suite → Standalone window'
         />
+      );
+
+    // ========================================================================
+    // ATLAS STANDALONE MODULES (Phase 36)
+    // ========================================================================
+
+    case 'geo-equity-dashboard':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <GeoEquityDashboard />
+        </Suspense>
+      );
+
+    case 'mass-appraisal-gis':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <MassAppraisalGIS />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // FORGE STANDALONE MODULES (Phase 36)
+    // ========================================================================
+
+    case 'cost-manual':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <CostManual />
+        </Suspense>
+      );
+
+    case 'value-audit-module':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <ValueAuditModule />
+        </Suspense>
       );
 
     // ========================================================================

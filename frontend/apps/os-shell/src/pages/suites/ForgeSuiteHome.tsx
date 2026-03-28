@@ -149,6 +149,22 @@ const FORGE_MODULES: SuiteModuleDef[] = [
     launchMode: 'workbench',
     workbenchTab: 'forge',
   },
+  {
+    id: 'cost-manual',
+    label: 'Cost Manual',
+    icon: Hammer,
+    description: 'Manual cost schedule — replacement cost tables, depreciation, and RCNLD inputs',
+    launchMode: 'standalone',
+    moduleId: 'cost-manual',
+  },
+  {
+    id: 'value-audit-module',
+    label: 'Value Audit Log',
+    icon: FileSearch,
+    description: 'Per-parcel value change audit log — FISMA-compliant history of all assessment changes',
+    launchMode: 'standalone',
+    moduleId: 'value-audit-module',
+  },
 ];
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');

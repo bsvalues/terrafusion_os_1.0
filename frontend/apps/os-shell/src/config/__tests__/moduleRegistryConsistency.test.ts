@@ -213,6 +213,14 @@ describe('moduleActivation displayNames/icons coverage', () => {
       'os-canon': 'TerraCanon',
       // Levy (legacy canonical kept for backward compat)
       'terra-levy': 'Levy Calculator',
+      // Forge standalone modules (Phase 35 + Phase 36)
+      'batch-cost-run': 'Batch Cost Runs',
+      'coefficient-preview': 'Coefficient Preview',
+      'cost-manual': 'Cost Manual',
+      'value-audit-module': 'Value Audit Module',
+      // Atlas standalone modules (Phase 36)
+      'geo-equity-dashboard': 'Geo Equity Dashboard',
+      'mass-appraisal-gis': 'Appraisal GIS',
     };
 
     const missing: string[] = [];
