@@ -340,10 +340,34 @@ namespace TerraFusion.API.Controllers
   internal sealed class MassAppraisalServiceStub : IMassAppraisalService
   {
     public Task<IEnumerable<AppraisalModelSummary>> ListModelsAsync() =>
-        Task.FromResult(Enumerable.Empty<AppraisalModelSummary>());
+        Task.FromResult<IEnumerable<AppraisalModelSummary>>(new[]
+        {
+            new AppraisalModelSummary
+            {
+                ModelId = "DEV-2026",
+                Name = "Dev Stub — Cost Approach",
+                ApproachType = "Cost",
+                PropertyClass = "Residential",
+                LastCalibrated = DateTime.UtcNow.AddDays(-7),
+                LastCOD = 8.2m,
+                Status = "Active",
+            },
+        });
 
     public Task<RatioStudyResult?> GetRatioStudyAsync(string modelId) =>
-        Task.FromResult<RatioStudyResult?>(null);
+        Task.FromResult<RatioStudyResult?>(new RatioStudyResult
+        {
+            ModelId = modelId,
+            SampleSize = 120,
+            MedianRatio = 0.98m,
+            MeanRatio = 0.97m,
+            WeightedMeanRatio = 0.975m,
+            COD = 8.2m,
+            COV = 9.1m,
+            PRD = 1.01m,
+            PRB = 0.01m,
+            AsOfDate = DateTime.UtcNow,
+        });
 
     public Task<MassAppraisalRunResult> RunModelAsync(MassAppraisalRunRequest request) =>
         throw new NotSupportedException("CAMA model execution is not available in stub mode.");

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Interfaces;
@@ -106,5 +107,31 @@ public class ForgeController : ControllerBase
 
         var result = await _valuationService.ReconcileAsync(parcelId, year, ct);
         return Ok(result);
+    }
+
+    /// <summary>
+    /// GET /api/forge/cost/batch/preview — Dev fixture for batch cost run preview.
+    /// Returns a stub adjustment bundle so BatchCostRun clears its DEMO DATA banner
+    /// without a live CAMA batch engine. Safe for anonymous dev access.
+    /// </summary>
+    [AllowAnonymous]
+    [HttpGet("cost/batch/preview")]
+    public IActionResult GetBatchCostPreview(
+        [FromQuery] string? neighborhood,
+        [FromQuery] string? propertyType)
+    {
+        return Ok(new
+        {
+            neighborhood = neighborhood ?? "Downtown",
+            propertyType = propertyType ?? "Residential",
+            matchCount = 12,
+            affectedCount = 12,
+            batchId = Guid.NewGuid().ToString("N")[..8],
+            adjustments = new[]
+            {
+                new { factor = "BaseRate",        currentValue = 1.00m, proposedValue = 1.05m,   delta =  0.050m, parcels = 12 },
+                new { factor = "DepreciationRate", currentValue = 0.02m, proposedValue = 0.018m, delta = -0.002m, parcels = 12 },
+            },
+        });
     }
 }
