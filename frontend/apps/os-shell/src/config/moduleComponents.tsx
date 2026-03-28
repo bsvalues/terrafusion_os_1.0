@@ -148,6 +148,8 @@ export const MODULE_REGISTRY = new Set<string>([
   // absorbed into Workbench → Forge → Income/Sales sub-tabs
   'regression-studio',
   'statistics-studio',
+  'batch-cost-run',
+  'coefficient-preview',
   'vei',
   'property-tax-ai',
   'pacs-bridge',
