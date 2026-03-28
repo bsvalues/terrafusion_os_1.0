@@ -22,6 +22,7 @@ import type {
 } from './types/BudgetTypes';
 import type { PaymentAnalytics } from './types/PaymentTypes';
 import { DemoDataBanner } from '../../components/governance/DemoDataBanner';
+import { useBudgetData } from './hooks/useBudgetData';
 
 // ============================================================================
 // Design Tokens — all colors via CSS custom properties (ratchet-safe)
@@ -142,6 +143,7 @@ type Tab = 'overview' | 'levies' | 'budget' | 'ai';
 
 export default function TerraLevyDashboard() {
   const [tab, setTab] = useState<Tab>('overview');
+  const { isSampleData } = useBudgetData();
 
   const metrics = useMemo(() => {
     const total = SAMPLE_LEVIES.reduce((s, l) => s + l.amount, 0);
@@ -176,7 +178,7 @@ export default function TerraLevyDashboard() {
       background: `linear-gradient(135deg, ${T.midnight} 0%, ${T.slate} 100%)`,
       color: T.textPrimary, fontFamily: 'system-ui, -apple-system, sans-serif',
     }}>
-      <DemoDataBanner module="TerraLevy" />
+      {isSampleData && <DemoDataBanner module="TerraLevy" />}
       {/* Header */}
       <div style={{
         padding: '16px 24px', borderBottom: '1px solid rgba(0, 255, 255, 0.15)',

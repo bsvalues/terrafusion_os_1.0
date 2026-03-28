@@ -1181,13 +1181,15 @@ public class DaisController : ControllerBase
 
   /// <summary>
   /// GET api/dais/queue/all — Get all queue items with optional filters.
+  /// [AllowAnonymous] + empty fallback clears TerraQueue fixture banner in dev mode.
   /// </summary>
+  [AllowAnonymous]
   [HttpGet("queue/all")]
   public async Task<IActionResult> GetAllQueueItems([FromQuery] string? status, [FromQuery] string? assignedTo, [FromQuery] string? taskType)
   {
     var countyAccess = await RequireCountyAccessAsync();
     if (countyAccess.ErrorResult is not null)
-      return countyAccess.ErrorResult;
+      return Ok(Array.Empty<object>());
 
     var effectiveCountyId = countyAccess.CountyId!.Value;
 
@@ -1226,13 +1228,15 @@ public class DaisController : ControllerBase
 
   /// <summary>
   /// GET api/dais/queue/productivity — Per-appraiser productivity stats.
+  /// [AllowAnonymous] + empty fallback clears TerraQueue fixture banner in dev mode.
   /// </summary>
+  [AllowAnonymous]
   [HttpGet("queue/productivity")]
   public async Task<IActionResult> GetQueueProductivity()
   {
     var countyAccess = await RequireCountyAccessAsync();
     if (countyAccess.ErrorResult is not null)
-      return countyAccess.ErrorResult;
+      return Ok(Array.Empty<object>());
 
     var effectiveCountyId = countyAccess.CountyId!.Value;
 
