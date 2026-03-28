@@ -108,6 +108,7 @@ const FORGE_MODULES: SuiteModuleDef[] = [
     description: 'MRA regression models & IAAO compliance',
     launchMode: 'standalone',
     moduleId: 'regression-studio',
+    truthState: 'queued',
   },
   {
     id: 'terra-gama',
@@ -116,6 +117,7 @@ const FORGE_MODULES: SuiteModuleDef[] = [
     description: 'Geographic Area Market Analysis',
     launchMode: 'standalone',
     moduleId: 'terra-gama',
+    truthState: 'queued',
   },
   {
     id: 'coefficient-preview',
@@ -124,6 +126,7 @@ const FORGE_MODULES: SuiteModuleDef[] = [
     description: 'Current vs proposed coefficient comparison',
     launchMode: 'standalone',
     moduleId: 'coefficient-preview',
+    truthState: 'queued',
   },
   {
     id: 'appeal',

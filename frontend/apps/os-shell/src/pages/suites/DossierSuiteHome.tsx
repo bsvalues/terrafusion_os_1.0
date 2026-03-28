@@ -8,13 +8,11 @@
  * Does NOT host parcel execution — that lives in the Property Workbench.
  */
 
-import { useNavigate } from 'react-router-dom';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
-  ArrowLeft,
   FolderOpen,
   Shield,
   Package,
@@ -35,20 +33,46 @@ const DOSSIER_MODULES: SuiteModuleDef[] = [
   { id: 'photos', label: 'Photo Manager', icon: Camera, description: 'Geotagged property photos with metadata', launchMode: 'workbench', workbenchTab: 'dossier' },
   { id: 'search', label: 'Deep Search', icon: FileSearch, description: 'Full-text search across all documents and evidence', launchMode: 'workbench', workbenchTab: 'dossier' },
   // Standalone-mode (system/admin, opens standalone window)
-  { id: 'pacs-bridge', label: 'PACS DataBridge', icon: Plug, description: 'Harris PACS 9.0 data import/export & sync management', launchMode: 'standalone', moduleId: 'pacs-bridge' },
-  { id: 'terra-sync', label: 'TerraSync', icon: RefreshCw, description: 'County data synchronization — multi-source ETL pipeline', launchMode: 'standalone', moduleId: 'terra-sync' },
+  { id: 'pacs-bridge', label: 'PACS DataBridge', icon: Plug, description: 'Harris PACS 9.0 data import/export & sync management', launchMode: 'standalone', moduleId: 'pacs-bridge', truthState: 'queued' },
+  { id: 'terra-sync', label: 'TerraSync', icon: RefreshCw, description: 'County data synchronization — multi-source ETL pipeline', launchMode: 'standalone', moduleId: 'terra-sync', truthState: 'queued' },
   { id: 'terra-flow', label: 'TerraFlow', icon: Zap, description: 'Workflow automation engine — assessment pipeline orchestration', launchMode: 'standalone', moduleId: 'terra-flow' },
 ];
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 
+function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): string | null {
+  if (source === 'snapshot') {
+    return 'Snapshot-backed county aggregates: TerraDossier stats are using bundled county snapshot data, not live backend metrics.';
+  }
+  if (source === 'fixtures') {
+    return 'Fixture-backed county aggregates: TerraDossier stats are using test fixture data, not live backend metrics.';
+  }
+  return null;
+}
+
 export default function DossierSuiteHome() {
-  const navigate = useNavigate();
-  const { stats, loading, error } = useCountyStats();
+  const { stats, loading, error, source } = useCountyStats();
+  const sourceDisclosure = getSourceDisclosure(source);
 
   return (
     <div data-testid="suite-dossier-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="dossier" />
+
+      {/* Source disclosure — only when not live */}
+      {stats && sourceDisclosure && (
+        <div
+          data-testid="dossier-source-disclosure"
+          role="status"
+          className="px-6 py-2 text-xs"
+          style={{
+            color: 'hsl(var(--tf-warning))',
+            background: 'hsl(var(--tf-warning) / 0.10)',
+            borderBottom: '1px solid hsl(var(--tf-warning) / 0.2)',
+          }}
+        >
+          {sourceDisclosure}
+        </div>
+      )}
 
       {loading && !stats && (
         <div data-testid="dossier-loading" role="status" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Loading stats...</div>
@@ -72,9 +96,6 @@ export default function DossierSuiteHome() {
         className="backdrop-blur-xl shrink-0"
       >
         <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4">
-          <button onClick={() => navigate('/')} className="p-2 rounded-lg hover:bg-white/5 transition-colors">
-            <ArrowLeft size={20} style={{ color: 'hsl(var(--tf-muted))' }} />
-          </button>
           <div className="p-2 rounded-lg" style={{ background: 'hsl(var(--tf-suite-dossier) / 0.15)' }}>
             <FolderOpen size={24} style={{ color: 'hsl(var(--tf-suite-dossier))' }} />
           </div>

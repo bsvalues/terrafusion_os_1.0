@@ -51,6 +51,11 @@ export interface SuiteModuleDef {
    * Static strings are fine for alpha; live wiring is Phase 2.
    */
   telemetryLabel?: string;
+  /**
+   * Surface matrix truth state. 'queued' = module is on roadmap but not
+   * yet implemented; renders an amber "Queued" badge on the card.
+   */
+  truthState?: 'live' | 'queued' | 'unavailable';
 }
 
 interface SuiteModuleGridProps {
@@ -104,8 +109,8 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
                   minHeight: 148,
                 }}
               >
-                {/* Telemetry badge — top right */}
-                {mod.telemetryLabel && (
+                {/* Telemetry badge — top right (hidden when truthState is set) */}
+                {mod.telemetryLabel && !mod.truthState && (
                   <span
                     className="absolute top-3 right-3 text-[10px] font-semibold px-2 py-0.5 rounded-full"
                     style={{
@@ -114,6 +119,18 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
                     }}
                   >
                     {mod.telemetryLabel}
+                  </span>
+                )}
+                {/* Queued badge — top right */}
+                {mod.truthState === 'queued' && (
+                  <span
+                    className="absolute top-3 right-3 text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                    style={{
+                      background: 'hsl(var(--tf-warning) / 0.15)',
+                      color: 'hsl(var(--tf-warning))',
+                    }}
+                  >
+                    Queued
                   </span>
                 )}
 
@@ -156,12 +173,23 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
                 <button
                   key={mod.id}
                   onClick={() => handleLaunch(mod)}
-                  className="flex items-center gap-2.5 p-3 rounded-lg text-left transition-all hover:scale-[1.01] active:scale-[0.99]"
+                  className="relative flex items-center gap-2.5 p-3 rounded-lg text-left transition-all hover:scale-[1.01] active:scale-[0.99]"
                   style={{
                     background: 'hsl(var(--tf-card-bg) / 0.3)',
                     border: '1px solid hsl(var(--tf-border) / 0.1)',
                   }}
                 >
+                  {mod.truthState === 'queued' && (
+                    <span
+                      className="absolute top-1.5 right-1.5 text-[9px] px-1.5 py-0.5 rounded"
+                      style={{
+                        background: 'hsl(var(--tf-warning) / 0.15)',
+                        color: 'hsl(var(--tf-warning))',
+                      }}
+                    >
+                      Queued
+                    </span>
+                  )}
                   <div
                     className="shrink-0 p-1.5 rounded-md"
                     style={{ background: `hsl(var(${accentVar}) / 0.10)` }}
