@@ -1,9 +1,16 @@
 // TFR-099: Admin Dashboard
 // Tabbed administration interface: County Config, Data Quality, Security Audit,
 // Users, Study Periods, Scrape Jobs.
+//
+// DATA POSTURE: ALL tab panels (County Config, Data Quality, Security Audit, Users,
+// Study Periods, Scrape Jobs) use hardcoded sample fixtures scoped to Benton County.
+// No backend connection exists. County selector, security events, user list,
+// study periods, scrape jobs, and data quality metrics are all static sample data.
+// Mutations are in-memory only and do not persist.
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { useParcelCount } from '../../hooks/useParcelCount';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -396,6 +403,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <DemoDataBanner module="Administration" />
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
