@@ -10,6 +10,14 @@
  *
  * 1E additions: ForgeApplyMode lifecycle, backend-capability gate,
  * blocker display, and audit event emission on every interaction.
+ *
+ * DATA POSTURE:
+ * - Run history starts with `FIXTURE_HISTORY` (sample runs) until the backend
+ *   confirms live history at `/api/forge/cost/batch/runs`.
+ * - DemoDataBanner shown while `isSampleData` OR `historyIsFixtureBacked` is true.
+ * - `BACKEND_APPLY_CAPABLE = true`: the `/api/forge/cost/batch/apply` endpoint is
+ *   implemented. Unlike `CoefficientPreview` (which sets this to `false` because
+ *   its apply path is not yet wired), BatchCostRun CAN call apply when live.
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
@@ -40,7 +48,8 @@ interface AuditEvent {
   timestamp: string;
 }
 
-/** Feature gate remains explicit; runtime backend availability is checked per request. */
+/** Apply is backend-wired: /api/forge/cost/batch/apply is implemented.
+ * Set to false in CoefficientPreview (apply not yet wired there). */
 const BACKEND_APPLY_CAPABLE = true;
 
 let _auditSeq = 0;

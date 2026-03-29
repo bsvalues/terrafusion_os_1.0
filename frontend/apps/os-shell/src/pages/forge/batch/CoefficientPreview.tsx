@@ -10,6 +10,12 @@
  *
  * 1E additions: ForgeApplyMode lifecycle, preview-only enforcement,
  * backend-capability gate, blocker display, and audit event emission.
+ *
+ * DATA POSTURE:
+ * - `FIXTURE_MODELS` and `FIXTURE_PREVIEW` are used when the backend is
+ *   unavailable. DemoDataBanner shown while `isFixtureModels || isFixturePreview`.
+ * - `BACKEND_APPLY_CAPABLE = false`: the coefficient apply endpoint is not yet
+ *   wired. Apply is blocked at the UI layer until this flag is set to true.
  */
 
 import React, { useState, useCallback, useEffect } from 'react';

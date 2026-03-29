@@ -7,6 +7,14 @@
  * reconciliations, appeal filings/decisions, manual overrides.
  *
  * Source: Harris PACS change_of_value_report + TerraTrace audit spine
+ *
+ * DATA POSTURE:
+ * - `DEMO_ENTRIES` are defined as reference fixtures but are NOT pre-seeded
+ *   into the `entries` state. `loadAuditEntries()` populates entries from
+ *   persistent storage; if the service seeds demo entries, they will have
+ *   `id` values starting with 'demo-'.
+ * - DemoDataBanner shows when entries is empty OR when loaded entries contain
+ *   demo-prefixed IDs, indicating storage was seeded with sample data.
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -189,8 +197,8 @@ export default function ValueAuditModule() {
 
   return (
     <div className='p-6 space-y-6'>
-      {/* Show banner only when audit trail is empty (no real activity yet) */}
-      {entries.length === 0 && <DemoDataBanner module="Value Audit" />}
+      {/* Show banner when audit trail is empty OR contains seeded demo entries */}
+      {(entries.length === 0 || entries.some(e => e.id.startsWith('demo-'))) && <DemoDataBanner module="Value Audit" />}
       {/* Title */}
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-3'>

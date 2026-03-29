@@ -4,6 +4,14 @@
  * Statistics Studio orchestrator for the TerraForge suite.
  * Tabbed dashboard integrating ratio study, trend charts, equity (VEI) analysis,
  * outlier review, and model comparison. (Phase 16: +Outliers, +Comparison tabs)
+ *
+ * DATA POSTURE:
+ * - Ratio Study tab: from `useForgeStatisticsStore` (API-backed with fixture fallback).
+ * - Trends tab: `COD_TREND` and `PRD_TREND` are hardcoded fixture imports — no live path.
+ * - Equity (VEI) tab: `VEI_METRICS`, `NEIGHBORHOODS`, `TAX_YEARS` are hardcoded fixture
+ *   imports — no live path.
+ * - Because at least two tabs always display fixture data, DemoDataBanner is shown
+ *   unconditionally until all data sources are live.
  */
 
 import React, { useEffect, useState } from 'react';
@@ -82,7 +90,7 @@ export function StatisticsStudio() {
 
   return (
     <div data-testid="statistics-studio" className="space-y-4 p-4">
-      {ratioData.isFixture && <DemoDataBanner module="Statistics Studio" />}
+      <DemoDataBanner module="Statistics Studio" />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
