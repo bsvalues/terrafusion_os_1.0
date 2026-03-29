@@ -51,7 +51,7 @@ Use each status family only in its own plane:
    - `46B` may appear only in the repacketization seal, CP-52 inventory context, or historical notes inside the master plan.
 2. `50B` is closed as `NO-OP`.
 3. `50D` is closed as `ALREADY-SATISFIED`.
-4. Remaining live holds are only `45D` and `50E`.
+4. The remaining live hold is only `45D`.
 5. `45C`, `46C`, `47B`, `49B`, `50A`, and `50C` are promoted clear cards, not hold inventory.
 
 ## Link Hygiene Rules
@@ -66,7 +66,8 @@ Use each status family only in its own plane:
 After this phase:
 
 - the active queue reads `44A`, `44B`, `45A`, `45B`, `45C`, `46A`, `46B1`, `46B2`, `46B3`, `46C`, `47A`, `47B`, `48A`, `49A`, `49B`, `50A`, `50C`
-- the remaining hold list reads only `45D`, `50E`
+- the remaining hold list reads only `45D`
+- `50E` is normalized as a bounded `SERIAL-CLEAR` sidecar sealed by CP-55
 - the historical aliases `46B`, stale `50B`, and stale `50D` no longer behave like live queue items
 
 ## Update Rule

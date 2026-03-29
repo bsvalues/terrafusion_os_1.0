@@ -4,6 +4,13 @@
 **Authority**: Co-Founder approval, March 20 2026 planning session
 **Supersedes**: Dual-track spaghetti (go-live roadmap vs. Claude Code TDD phases)
 
+**Historical strategy note**: This document remains useful as the historical phase map, but the current client-demo canon now lives in the March 28 control-plane stack:
+- [2026-03-28-full-ecosystem-design-audit-and-realization.md](../plans/2026-03-28-full-ecosystem-design-audit-and-realization.md)
+- [2026-03-28-full-ecosystem-demo-gui-canon-design.md](./2026-03-28-full-ecosystem-demo-gui-canon-design.md)
+- [2026-03-28-full-ecosystem-demo-surface-matrix.md](../catalog/2026-03-28-full-ecosystem-demo-surface-matrix.md)
+
+For current truth-state, readiness, and demo-claim decisions, defer to the March 28 stack rather than this March 20 phase map.
+
 ---
 
 ## Decision

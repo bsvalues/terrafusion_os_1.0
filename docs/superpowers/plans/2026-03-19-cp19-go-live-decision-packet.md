@@ -8,6 +8,11 @@ Parent Artifacts:
 - docs/superpowers/plans/2026-03-19-cp13-production-gate-catalog.md
 - docs/superpowers/plans/2026-03-19-cp18-security-compliance-seal-packet.md
 
+Historical packet note:
+- This packet remains valid as historical CP-19 go-live evidence and rollback contract.
+- It is not the active source of truth for March 28 client-demo surface readiness, truth-state labeling, or execution-lane ownership.
+- For current demo canon, defer to the March 28 control-plane stack under `docs/superpowers/plans/`, `docs/superpowers/specs/`, and `docs/superpowers/catalog/`.
+
 ## Purpose
 
 Define the CP-19 execution and proof contract for:

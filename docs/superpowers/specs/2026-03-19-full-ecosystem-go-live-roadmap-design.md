@@ -5,6 +5,13 @@
 **Authority**: Founder + March 17 2026 governance docs
 **Supersedes**: Any single-county or Benton-only launch scoping
 
+**Historical strategy note**: This document remains important as historical go-live strategy, but the current client-demo canon now lives in the March 28 control-plane stack:
+- [2026-03-28-full-ecosystem-design-audit-and-realization.md](../plans/2026-03-28-full-ecosystem-design-audit-and-realization.md)
+- [2026-03-28-full-ecosystem-demo-gui-canon-design.md](./2026-03-28-full-ecosystem-demo-gui-canon-design.md)
+- [2026-03-28-full-ecosystem-demo-surface-matrix.md](../catalog/2026-03-28-full-ecosystem-demo-surface-matrix.md)
+
+For current truth-state, readiness, and demo-claim decisions, defer to the March 28 stack rather than this March 19 roadmap.
+
 ---
 
 ## Target Definition

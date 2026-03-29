@@ -7,6 +7,14 @@ Authority Input:
 - docs/superpowers/plans/2026-03-19-multi-agent-subagent-parallel-execution-plan.md
 - docs/superpowers/plans/2026-03-19-cp13-production-gate-catalog.md
 
+Historical strategy note:
+- This document remains useful as March 19 launch-planning history.
+- For current client-demo readiness, truth-state, and execution-lane decisions, defer to the March 28 control-plane stack:
+  - docs/superpowers/plans/2026-03-28-full-ecosystem-design-audit-and-realization.md
+  - docs/superpowers/specs/2026-03-28-full-ecosystem-demo-gui-canon-design.md
+  - docs/superpowers/catalog/2026-03-28-full-ecosystem-demo-surface-matrix.md
+  - docs/superpowers/catalog/2026-03-28-full-ecosystem-demo-tranche-backlog.md
+
 ## Purpose
 
 Translate the locked full-ecosystem go-live roadmap into a Copilot-executable lane plan that preserves governance constraints and phase ordering while making each step operationally concrete.

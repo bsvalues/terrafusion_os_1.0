@@ -4,6 +4,13 @@
 **Authority**: Co-Founder planning session, 2026-03-27 + collapse to Copilot-only 2026-03-27  
 **Supersedes**: `2026-03-23-tier1-tier2-validation-wiring.md` (partial execution credit carried forward below)
 
+**Top-level strategy note:** This document is now a bounded execution ledger under the 2026-03-28 GUI-canon plan set:
+- [Full-Ecosystem Design Audit and Realization Plan](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\plans\2026-03-28-full-ecosystem-design-audit-and-realization.md)
+- [Full-Ecosystem Demo GUI Canon](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\specs\2026-03-28-full-ecosystem-demo-gui-canon-design.md)
+- [Full-Ecosystem Demo Surface Matrix](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-28-full-ecosystem-demo-surface-matrix.md)
+
+Phase 34 proof remains valid, but any remaining UI realization must be judged against those artifacts rather than this file alone.
+
 > **Execution model**: Copilot only. Claude Code and Codex are retired from execution planning.
 
 ---

@@ -12,11 +12,15 @@
 - [2026-03-28-hot-file-collision-matrix.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-28-hot-file-collision-matrix.md)
 - [2026-03-28-hold-card-unlock-ledger.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-28-hold-card-unlock-ledger.md)
 - [2026-03-28-execution-scoreboard.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-28-execution-scoreboard.md)
-- [2026-03-29-codex-phase-program.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-codex-phase-program.md)
-- [2026-03-29-codex-phase-board.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-codex-phase-board.md)
 - [2026-03-29-next-codex-phase-program.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\plans\2026-03-29-next-codex-phase-program.md)
 - [2026-03-29-codex-phase-board.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-codex-phase-board.md)
-- [2026-03-29-next-codex-phase-program.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\plans\2026-03-29-next-codex-phase-program.md)
+- [2026-03-29-cp-51-pilot-trace-file-proof-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-51-pilot-trace-file-proof-seal.md)
+- [2026-03-29-cp-52-forge-renderer-inventory-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-52-forge-renderer-inventory-seal.md)
+- [2026-03-29-cp-53-atlas-dossier-proof-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-53-atlas-dossier-proof-seal.md)
+- [2026-03-29-cp-54-governance-admin-host-proof-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-54-governance-admin-host-proof-seal.md)
+- [2026-03-29-46b-repacketization-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-46b-repacketization-seal.md)
+- [2026-03-29-cp-56-parent-sub-agent-split-packs.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-56-parent-sub-agent-split-packs.md)
+- [2026-03-29-cp-59-no-card-canon-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-59-no-card-canon-seal.md)
 
 ## Authority Stack
 
@@ -45,6 +49,7 @@ These apply to every remaining card:
 - no widening into `QueuedModuleSurface.tsx`
 - no `WorkbenchTabSlug` changes
 - no Clerk, Treasury, Audit, Recorder, or other reserved vertical promotion
+- suite, OS, system-workspace, and workbench ownership follows [2026-03-29-cp-61-ownership-boundary-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-61-ownership-boundary-seal.md)
 - no backup, dead-shell, ARCHIVE, or QUARANTINE archaeology during runtime work
 - no docs edits during runtime execution
 - if a change requires a file outside Allowed Files, stop and report
@@ -68,32 +73,35 @@ These cards are execution-ready, but must run alone:
 
 These cards are execution-ready and use disjoint write sets:
 
-1. `45B` Canon mixed-family gating
-2. `46A` CostForge quarantine honesty seal
-3. `47A` Atlas breadth queued-posture seal
-4. `48A` Management Dashboard conditional-live cleanup
-5. `49A` Dossier suite-home proof seal
-
-### Wave 3 - Parallel Pool B
-
-These cards are now sealed and execution-ready. Write sets are disjoint; run in any parallel subset:
-
 1. `45C` Pilot/Trace standalone posture alignment
-2. `46B` Forge fixture-risk renderer sweep
-3. `46C` Regression Studio proof seal (host-only scope)
-4. `47B` Atlas renderer truth sweep
-5. `49B` Workbench Dossier proof sweep
-6. `50A` Governance Dashboard role seal
-7. `50C` Admin Dashboard static-data cleanup
-8. `50D` User Admin honesty correction
-9. `50E` Desktop shell proof seal
+2. `45B` Canon mixed-family gating
+3. `46A` CostForge quarantine honesty seal
+4. `46B1` Statistics Studio proof seal
+5. `46B2` Batch/Preview proof seal
+6. `46B3` Cost Manual / Value Audit proof seal
+7. `46C` Regression Studio proof seal
+8. `47A` Atlas breadth queued-posture seal
+9. `47B` Atlas renderer truth sweep
+10. `48A` Management Dashboard conditional-live cleanup
+11. `49A` Dossier suite-home proof seal
+12. `49B` Workbench Dossier proof sweep
+13. `50A` Governance Dashboard role seal
+14. `50C` Admin Dashboard static-data cleanup
 
 ### Wave 3 - Remaining Hold
 
-These cards remain HOLD per explicit co-founder ruling (2026-03-29):
+These cards remain HOLD:
 
-1. `45D` Shell launcher truth-dialect reconciliation — HOLD pending explicit architectural-risk authorization; shared launcher surfaces are OS-owned high-blast-radius infrastructure, not ordinary parallel-pack candidates
-2. `50B` Monitoring simulation framing — NO-OP; existing page-level framing on `Monitoring.tsx` already satisfies the card intent; do not widen scope unless a contradictory child-surface claim is later proven
+1. `45D` Shell launcher truth-dialect reconciliation
+
+### Ready Serial Sidecar
+
+1. `50E` Desktop shell proof seal
+
+### Closed / No Runtime Needed
+
+1. `50B` Monitoring simulation framing
+2. `50D` User Admin honesty correction
 
 ## Immediate Packet Reference
 
@@ -545,7 +553,6 @@ Why:
 ### Allowed Files
 
 - `frontend/apps/os-shell/src/pages/PilotHome.tsx`
-- `frontend/apps/os-shell/src/pages/PilotConsoleContent.tsx`
 - `frontend/apps/os-shell/src/pages/TraceHome.tsx`
 
 ### Forbidden Files
@@ -558,7 +565,7 @@ Why:
 
 ### Required Changes
 
-1. Add explicit posture disclosure to `PilotHome` or `PilotConsoleContent` where architecture claims (e.g. "Single Choke Point") are asserted without runtime proof.
+1. Add explicit posture disclosure to `PilotHome` where architecture claims (e.g. "Single Choke Point") are asserted without runtime proof.
 2. Add fixture-fallback truth boundary disclosure to `TraceHome` where telemetry store fallback is active.
 3. Do not change any invocation logic, hook, or service file.
 
@@ -574,7 +581,7 @@ Only the three allowed files change and both surfaces exit their current undiscl
 
 ---
 
-## Card 46B - Forge Fixture-Risk Renderer Sweep
+## Card 46B - Historical Bundled Hold (Superseded)
 
 ### Authority Snapshot
 
@@ -594,13 +601,14 @@ Only the three allowed files change and both surfaces exit their current undiscl
 
 ### Execution Status
 
-`PARALLEL-CLEAR`
+`SUPERSEDED`
 
 Why:
-- all five renderers are standalone module pages; write set stays inside five named files
-- disjoint from all other Pool B cards
+- the exact five-file host inventory is sealed
+- the bundled card was broader than necessary for Copilot execution
+- [2026-03-29-46b-repacketization-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-46b-repacketization-seal.md) replaced this coarse hold with `46B1` / `46B2` / `46B3`
 
-### Allowed Files
+### Exact Host Inventory
 
 - `frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx`
 - `frontend/apps/os-shell/src/pages/forge/batch/BatchCostRun.tsx`
@@ -608,31 +616,33 @@ Why:
 - `frontend/apps/os-shell/src/pages/forge/cost/CostManual.tsx`
 - `frontend/apps/os-shell/src/pages/suites/modules/ValueAuditModule.tsx`
 
-### Forbidden Files
+### Successor Cards
 
-- any file outside Allowed Files
-- `docs/superpowers/**`
-- `backend/**`
-- any Forge store, service, or data file
-- `CostForgeQuantumDashboard.tsx`
-- `RegressionStudio.tsx`
+Do not issue this historical bundled card.
 
-### Required Changes
+1. `46B1` Statistics Studio truth boundary
+   - Allowed Files:
+     - `frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx`
+   - Target Status:
+     - `PARALLEL-CLEAR`
 
-1. Ensure `DemoDataBanner` or equivalent fixture disclosure is present and wired correctly in all five renderers.
-2. Resolve `BACKEND_APPLY_CAPABLE` inconsistency in `BatchCostRun.tsx` (currently `true`; must match `CoefficientPreview.tsx` pattern of `false` or add explicit runtime gate disclosure).
-3. Ensure `ValueAuditModule` discloses its `DEMO_ENTRIES` fixture state with a visible banner.
-4. Do not change any store, service, fixture data file, or non-listed renderer.
+2. `46B2` Batch apply/disclosure alignment
+   - Allowed Files:
+     - `frontend/apps/os-shell/src/pages/forge/batch/BatchCostRun.tsx`
+     - `frontend/apps/os-shell/src/pages/forge/batch/CoefficientPreview.tsx`
+   - Target Status:
+     - `PARALLEL-CLEAR`
 
-### Proof Gates
-
-```bash
-pnpm run type-check
-```
+3. `46B3` Reference-data disclosure sweep
+   - Allowed Files:
+     - `frontend/apps/os-shell/src/pages/forge/cost/CostManual.tsx`
+     - `frontend/apps/os-shell/src/pages/suites/modules/ValueAuditModule.tsx`
+   - Target Status:
+     - `PARALLEL-CLEAR`
 
 ### Stop Condition
 
-Only the five allowed files change and all five renderers exit their current undisclosed or inconsistent fixture-risk posture.
+Do not issue `46B` from this section. Issue `46B1`, `46B2`, or `46B3` only, using [2026-03-29-46b-repacketization-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-46b-repacketization-seal.md).
 
 ---
 
@@ -856,7 +866,7 @@ Only `GovernanceDashboard.tsx` changes and the surface includes a clear demo-con
   - Readiness ledger: `Admin Dashboard | OS | Active/Canonical | tabbed admin surface; hardcoded fixture interfaces present for counties, security events, users, study periods, scrape jobs; DemoDataBanner absent | Full App | OS | mock-labeled | Fixture risk | Recovery`
 - `scope sealed`: 2026-03-29 co-founder discovery ruling
 - `explicitly out of scope`:
-  - `UserAdmin.tsx` (separate card 50D)
+  - `UserAdmin.tsx` (closed `50D`; do not reopen)
   - any backend admin API or auth change
 
 ### Execution Status
@@ -894,51 +904,25 @@ Only `AdminDashboard.tsx` changes and the static data sections include visible s
 
 ---
 
-## Card 50D - User Admin Honesty Correction
+## Card 50D - Closed As Already Satisfied
 
 ### Authority Snapshot
 
 - `canonical_status`: `Active/Canonical`
-- `readiness_label`: `Quarantine`
+- `readiness_label`: `Recovery`
 - `source rows`:
-  - Readiness ledger: `User Admin | OS | Active/Canonical | hardcoded INITIAL_USERS and AUDIT_LOG const arrays with Benton County sample data presented as-is; no DemoDataBanner; no disclosure | Full App | OS | silently fake | Sample-fiction honesty violation | Quarantine`
+  - Readiness ledger: `User Admin | Admin | Active/Canonical | Real route exists; INITIAL_USERS and AUDIT_LOG remain sample-data-driven, but the page now discloses that posture via DemoDataBanner and explicit file-level sample-fixture notes | Full App | OS Core | mock-labeled | Static-data risk; proof gap | Recovery`
 - `scope sealed`: 2026-03-29 co-founder discovery ruling
-- `explicitly out of scope`:
-  - `AdminDashboard.tsx` (separate card 50C)
-  - any backend user management API or auth change
+- `exact host`: `frontend/apps/os-shell/src/pages/admin/UserAdmin.tsx`
 
-### Execution Status
+### Runtime State
 
-`PARALLEL-CLEAR`
+Closed.
 
 Why:
-- single-file host scope; disjoint from all other Pool B cards
-
-### Allowed Files
-
-- `frontend/apps/os-shell/src/pages/admin/UserAdmin.tsx`
-
-### Forbidden Files
-
-- any file outside Allowed Files
-- `docs/superpowers/**`
-- `backend/**`
-- `AdminDashboard.tsx`
-
-### Required Changes
-
-1. Add `DemoDataBanner` or equivalent disclosure making clear that `INITIAL_USERS` and `AUDIT_LOG` are sample/demonstration records, not live county data.
-2. Do not change any sample data values, user management logic, or auth behavior.
-
-### Proof Gates
-
-```bash
-pnpm run type-check
-```
-
-### Stop Condition
-
-Only `UserAdmin.tsx` changes and the `INITIAL_USERS` and `AUDIT_LOG` displays include visible sample-data disclosure.
+- the page already renders `DemoDataBanner` unconditionally
+- the file header already states that `INITIAL_USERS` and `AUDIT_LOG` are in-memory sample fixtures
+- reopening this as a runtime card would send Copilot after stale control-plane memory rather than current runtime truth
 
 ---
 
@@ -960,41 +944,20 @@ Only `UserAdmin.tsx` changes and the `INITIAL_USERS` and `AUDIT_LOG` displays in
 
 ### Execution Status
 
-`PARALLEL-CLEAR`
+`SERIAL-CLEAR`
 
 Why:
-- single idle-scene file; write set stays inside one file
-- does not overlap with 45D launcher scope
-- disjoint from all other Pool B cards
+- [2026-03-29-cp-55-shell-hot-surface-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-55-shell-hot-surface-seal.md) sealed `StageZeroState.tsx` as the sole write surface
+- the card remains separate from launcher-dialect work in `45D`
+- implementation work already exists in branch history at `51c59c0c0`; the remaining task is bounded proof verification and closeout
 
-### Allowed Files
+### Allowed File
 
 - `frontend/apps/os-shell/src/shell/desktop/StageZeroState.tsx`
 
-### Forbidden Files
+### Execution Rule
 
-- any file outside Allowed Files
-- `docs/superpowers/**`
-- `backend/**`
-- `DesktopShell.tsx`
-- `ModuleLauncher.tsx`
-- `moduleComponents.tsx`
-- any hook, context, or activation file
-
-### Required Changes
-
-1. Ensure `DemoDataBanner` is wired with an appropriate condition so the idle desktop scene discloses when county-status or Recent Work data is empty/fixture rather than live.
-2. Do not change any hook, store, or module activation logic.
-
-### Proof Gates
-
-```bash
-pnpm run type-check
-```
-
-### Stop Condition
-
-Only `StageZeroState.tsx` changes and the idle desktop scene no longer presents county-status or Recent Work data without appropriate live-data disclosure.
+Issue this card only as a single-owner serial sidecar. Do not widen beyond `StageZeroState.tsx`, and do not treat CP-55 as authorization for any launcher or registry file.
 
 ---
 
@@ -1032,24 +995,24 @@ Use the master remaining card plan only after Phase 44A and 44B are complete.
 
 Issue order:
 1. Phase 45A alone
-2. Then choose any disjoint subset from Parallel Pool A:
+2. Then choose any disjoint subset from the current parallel-clear pool:
    - Phase 45B
+   - Phase 45C
    - Phase 46A
+   - Phase 46B1
+   - Phase 46B2
+   - Phase 46B3
+   - Phase 46C
    - Phase 47A
+   - Phase 47B
    - Phase 48A
    - Phase 49A
-3. Then choose any disjoint subset from Parallel Pool B (Wave 3 sealed 2026-03-29):
-   - Phase 45C
-   - Phase 46B
-   - Phase 46C
-   - Phase 47B
    - Phase 49B
    - Phase 50A
    - Phase 50C
-   - Phase 50D
-   - Phase 50E
-4. Do not issue 45D until explicit architectural-risk authorization is granted.
-5. 50B is closed as no-op; do not execute.
+3. `50E` may be issued as a single-owner serial sidecar on `StageZeroState.tsx`.
+4. `45D` remains on hold until its architectural-risk condition is cleared.
+5. `50B` is closed as no-op; `50D` is already satisfied. Do not execute either.
 
 Sub-agent rule:
 - one parent card owns the slice

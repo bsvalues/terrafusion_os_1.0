@@ -65,8 +65,8 @@
 
 ### OS And Shell
 
-- `45D` and `50E` remain the only shell/launcher hold cards.
-- `50E` is limited to the `StageZeroState.tsx` proof question once cleared.
+- `50E` is the bounded idle-scene proof card and is limited to `StageZeroState.tsx`.
+- `45D` remains the only shell/launcher hold card.
 - `45D` is a launcher/config dialect card and remains outside normal parallel issue.
 
 ## Copilot Guardrail Text
