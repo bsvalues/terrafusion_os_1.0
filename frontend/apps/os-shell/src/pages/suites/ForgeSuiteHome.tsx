@@ -41,7 +41,7 @@ const FORGE_MODULES: SuiteModuleDef[] = [
     id: 'costforge',
     label: 'CostForge',
     icon: Calculator,
-    description: 'Benton County Cost Approach — replacement cost, depreciation, and RCNLD',
+    description: 'Benton County Cost Approach — replacement cost, depreciation, and RCNLD (sample analytics — not county-runtime truth)',
     launchMode: 'standalone',
     moduleId: 'costforge',
     priority: 'primary',

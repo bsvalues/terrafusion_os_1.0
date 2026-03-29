@@ -8,7 +8,6 @@
 
 import { Activity, Calculator, Cpu, Database, Gauge, Shield, TrendingUp } from 'lucide-react';
 import { DemoDataBanner } from '../governance/DemoDataBanner';
-import { useEffect, useState } from 'react';
 import {
   Area,
   AreaChart,
@@ -57,23 +56,12 @@ const realTimeMetrics = [
 ];
 
 export function CostForgeQuantumDashboard() {
-  const [totalEstimates, setTotalEstimates] = useState(52847);
-  const [systemHealth, setSystemHealth] = useState('TRANSCENDENT');
-  const [quantumAccuracy, setQuantumAccuracy] = useState(99.5);
-  const [aiAgentsActive, setAiAgentsActive] = useState(8450);
-  const [costSavings, setCostSavings] = useState(2.8);
-
-  // Simulate real-time CostForge metrics updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTotalEstimates((prev) => prev + Math.floor(Math.random() * 50));
-      setQuantumAccuracy((prev) => Math.min(100, prev + (Math.random() - 0.5) * 0.1));
-      setAiAgentsActive((prev) => prev + Math.floor(Math.random() * 20 - 10));
-      setCostSavings((prev) => prev + (Math.random() - 0.5) * 0.1);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
+  // Sample analytics — static fixture values, not county-runtime truth
+  const totalEstimates = 52847;
+  const systemHealth = 'TRANSCENDENT';
+  const quantumAccuracy = 99.5;
+  const aiAgentsActive = 8450;
+  const costSavings = 2.8;
 
   return (
     <div className='min-h-full bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6'>
