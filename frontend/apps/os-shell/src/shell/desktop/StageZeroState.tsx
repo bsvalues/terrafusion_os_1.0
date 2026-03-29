@@ -11,12 +11,12 @@
  * content (recent parcels, stats) but the layout is department-agnostic.
  * Search lives in ⌘K — NOT as the home hero.
  *
- * DATA POSTURE:
+ * DATA POSTURE (proof-sealed 2026-03-29, card 50E):
  * - Recent Work: live parcel browsing history from OS session state (not sample).
  * - Parcel count: from useParcelCount() → API-backed, falls back to 89,247 if offline.
  * - Today's Work: DemoDataBanner conditioned on `isSampleData` from useTodaysWork().
- * - County status strip: Last sync, appeal count, and system status fields are
- *   hardcoded sample strings. They do not reflect live backend state.
+ * - County status strip: Last sync, appeal count, and system status fields render
+ *   "–" (dash) because no live backend source exists yet. They do not claim live state.
  *
  * @module shell/desktop/StageZeroState
  */
