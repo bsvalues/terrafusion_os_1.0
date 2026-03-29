@@ -32,6 +32,7 @@ March 29 Codex prep artifacts now also include:
 - [2026-03-29-cp-59-no-card-canon-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-59-no-card-canon-seal.md)
 - [2026-03-29-cp-60-control-plane-link-alias-hygiene.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-60-control-plane-link-alias-hygiene.md)
 - [2026-03-29-cp-61-ownership-boundary-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-61-ownership-boundary-seal.md)
+- [2026-03-29-cp-55-shell-hot-surface-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-55-shell-hot-surface-seal.md)
 
 ## Verified Current State
 
