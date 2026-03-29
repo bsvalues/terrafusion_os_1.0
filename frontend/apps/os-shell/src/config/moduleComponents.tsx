@@ -341,6 +341,8 @@ const AtlasSuiteHome = lazy(() => import('../pages/suites/AtlasSuiteHome'));
 const DaisSuiteHome = lazy(() => import('../pages/suites/DaisSuiteHome'));
 const DossierSuiteHome = lazy(() => import('../pages/suites/DossierSuiteHome'));
 const GptSuiteHome = lazy(() => import('../pages/suites/GptSuiteHome'));
+const GPTManagementDashboard = lazy(() => import('../components/gpt/GPTManagementDashboard'));
+const RAGDatasetManager = lazy(() => import('../components/gpt/RAGDatasetManager'));
 
 // ============================================================================
 // Module Entries (lazy components for bespoke modules)
@@ -1035,15 +1037,9 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'gpt-management':
       return (
-        <PlaceholderModule
-          name='GPT Management'
-          icon='⚙️'
-          description='GPT administration — API key management, usage quotas, model configuration, and access control.'
-          status='placeholder'
-          domain='ai'
-          scope='system'
-          launchSurface='GPT suite → Standalone window'
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <GPTManagementDashboard />
+        </Suspense>
       );
 
     case 'gpt-builder':
@@ -1074,15 +1070,9 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'gpt-rag':
       return (
-        <PlaceholderModule
-          name='GPT RAG'
-          icon='📚'
-          description='Retrieval-Augmented Generation — document indexing, vector search, and context-aware AI responses over county data.'
-          status='placeholder'
-          domain='ai'
-          scope='county-wide'
-          launchSurface='GPT suite → Standalone window'
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <RAGDatasetManager />
+        </Suspense>
       );
 
     // ========================================================================
