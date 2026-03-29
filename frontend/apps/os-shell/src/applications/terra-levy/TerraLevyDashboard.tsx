@@ -196,10 +196,17 @@ export default function TerraLevyDashboard() {
             fontSize: 11, padding: '3px 10px', borderRadius: 12,
             background: 'rgba(0, 255, 255, 0.1)', border: '1px solid rgba(0, 255, 255, 0.3)', color: T.cyan,
           }}>FISMA-HIGH</span>
-          <span style={{
-            fontSize: 11, padding: '3px 10px', borderRadius: 12,
-            background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: T.success,
-          }}>Live</span>
+          {isSampleData ? (
+            <span style={{
+              fontSize: 11, padding: '3px 10px', borderRadius: 12,
+              background: 'hsl(var(--tf-warning) / 0.1)', border: '1px solid hsl(var(--tf-warning) / 0.3)', color: 'hsl(var(--tf-warning))',
+            }}>Sample Data</span>
+          ) : (
+            <span style={{
+              fontSize: 11, padding: '3px 10px', borderRadius: 12,
+              background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: T.success,
+            }}>Live</span>
+          )}
         </div>
       </div>
 

@@ -40,7 +40,7 @@ const DAIS_MODULES: SuiteModuleDef[] = [
   { id: 'appeals', label: 'Appeals', icon: Scale, description: 'BOE appeal tracking, scheduling, and outcomes', launchMode: 'workbench', workbenchTab: 'dais' },
   { id: 'calendar', label: 'Calendar', icon: Calendar, description: 'Assessment cycle deadlines and scheduling', launchMode: 'workbench', workbenchTab: 'dais' },
   // Standalone-mode (county-wide, opens standalone window)
-  { id: 'terra-levy', label: 'TerraLevy', icon: Receipt, description: 'County-wide property tax levy rates by district', launchMode: 'standalone', moduleId: 'terra-levy' },
+  { id: 'terra-levy', label: 'TerraLevy', icon: Receipt, description: 'County-wide property tax levy rates by district', launchMode: 'standalone', moduleId: 'terra-levy', truthState: 'queued' },
   { id: 'terra-pilt', label: 'TerraPILT', icon: Landmark, description: 'Payment In Lieu of Taxes — federal/state land values', launchMode: 'standalone', moduleId: 'terra-pilt', truthState: 'queued' },
   { id: 'terra-permit', label: 'TerraPermit', icon: HardHat, description: 'Building permit intake and workflow tracking', launchMode: 'standalone', moduleId: 'terra-permit', truthState: 'queued' },
   { id: 'vei', label: 'VEI', icon: Search, description: 'Vertical Equality Index — assessment equity & PRB analysis', launchMode: 'standalone', moduleId: 'vei', truthState: 'queued' },
