@@ -35,7 +35,7 @@
 | `49B` Workbench Dossier proof | Wave 2 | Dossier | `COMPLETED-IN-BRANCH` | parallel | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` | none | local execution recorded at `4ab4a96d7` |
 | `50A` Governance Dashboard | Wave 2 | Governance | `COMPLETED-IN-BRANCH` | parallel | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` | none | local execution recorded at `fa6b34c6c` |
 | `50C` Admin Dashboard | Wave 2 | Admin | `COMPLETED-IN-BRANCH` | parallel | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` | none | local execution recorded at `21d0b8fde` |
-| `50E` Desktop shell proof | Ready serial sidecar | OS | `READY-NOW` | serial | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` | none | implementation already exists at `51c59c0c0`; CP-55 sealed sole file `StageZeroState.tsx` |
+| `50E` Desktop shell proof | Ready serial sidecar | OS | `COMPLETED-IN-BRANCH` | serial | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` → exit 0 ✅ | none | DATA POSTURE comment proof-sealed 2026-03-29; implementation at `51c59c0c0`; proof comment in file header (card 50E) |
 
 ## Hold Board
 
@@ -53,7 +53,7 @@
 ## Queue Truth
 
 1. Waves 0 through 3 are execution-complete in branch.
-2. `50E` is the only remaining issuable runtime sidecar.
+2. `50E` is **COMPLETED-IN-BRANCH** (proof-sealed 2026-03-29). All runtime sidecars are done.
 3. `45D` is the only remaining real hold.
 4. No queued breadth, reserved workbench tabs, or placeholder hosts should re-enter the runtime queue without a new control-plane ruling.
 
