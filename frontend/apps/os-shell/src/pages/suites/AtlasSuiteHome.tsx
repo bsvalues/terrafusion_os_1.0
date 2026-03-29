@@ -109,6 +109,20 @@ export default function AtlasSuiteHome() {
         </div>
       </header>
 
+      {/* Breadth posture disclosure — always visible; breadth modules are queued pending implementation */}
+      <div
+        data-testid="atlas-breadth-posture-note"
+        role="note"
+        className="px-6 py-2 text-xs shrink-0"
+        style={{
+          color: 'hsl(var(--tf-muted))',
+          background: 'hsl(var(--tf-card-bg) / 0.25)',
+          borderBottom: '1px solid hsl(var(--tf-border) / 0.10)',
+        }}
+      >
+        TerraGIS Pro, Geo Equity, and Appraisal GIS are queued — these modules open placeholder surfaces and do not reflect live county data.
+      </div>
+
       {/* Module Grid + Operational Queue */}
       <main className="flex-1 min-h-0 overflow-y-auto">
         <div data-testid="atlas-modules"><SuiteModuleGrid modules={ATLAS_MODULES} accentVar="--tf-suite-atlas" /></div>
