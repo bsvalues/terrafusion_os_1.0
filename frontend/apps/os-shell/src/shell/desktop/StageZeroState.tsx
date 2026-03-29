@@ -11,6 +11,13 @@
  * content (recent parcels, stats) but the layout is department-agnostic.
  * Search lives in ⌘K — NOT as the home hero.
  *
+ * DATA POSTURE:
+ * - Recent Work: live parcel browsing history from OS session state (not sample).
+ * - Parcel count: from useParcelCount() → API-backed, falls back to 89,247 if offline.
+ * - Today's Work: DemoDataBanner conditioned on `isSampleData` from useTodaysWork().
+ * - County status strip: Last sync, appeal count, and system status fields are
+ *   hardcoded sample strings. They do not reflect live backend state.
+ *
  * @module shell/desktop/StageZeroState
  */
 
@@ -324,11 +331,11 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
                 Benton County, WA
               </span>
               <span>{parcelCount.toLocaleString()} parcels</span>
-              <span>Last sync: 2 min ago</span>
-              <span>3 appeals pending</span>
+              <span>Last sync: –</span>
+              <span>Appeals: –</span>
               <span className='flex items-center gap-1'>
                 <span className='inline-block w-1.5 h-1.5 rounded-full bg-green-400' />
-                All systems operational
+                Status: –
               </span>
             </div>
           </LiquidPanel>
