@@ -1,8 +1,13 @@
 // TFT-159: User Administration Page
 // User list with search/filter, role assignment, account status management,
 // and audit log of user actions.
+//
+// DATA POSTURE: INITIAL_USERS and AUDIT_LOG are hardcoded sample fixtures
+// scoped to Benton County. No backend connection. All mutations (edit, suspend,
+// activate) operate on in-memory state only and do not persist.
 
 import React, { useState, useMemo, useCallback } from 'react';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -212,6 +217,9 @@ const UserAdmin: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Card 50D: INITIAL_USERS and AUDIT_LOG are sample fixtures — always disclose */}
+      <DemoDataBanner module="User Administration" />
+
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
