@@ -108,6 +108,16 @@ export default function DossierSuiteHome() {
 
       {/* Module Grid + Operational Queue */}
       <main className="flex-1 min-h-0 overflow-y-auto">
+        {/* Proof posture note — workbench tools are parcel-scoped; system integrations are queued */}
+        <p
+          data-testid="dossier-proof-note"
+          role="note"
+          className="px-6 pt-4 pb-2 text-xs"
+          style={{ color: 'hsl(var(--tf-muted))' }}
+        >
+          Document and evidence tools open in the Property Workbench for parcel-scoped operations.
+          PACS DataBridge, TerraSync, and TerraFlow are queued — these integrations are not yet implemented in this build.
+        </p>
         <SuiteModuleGrid modules={DOSSIER_MODULES} accentVar="--tf-suite-dossier" />
         <OperationalQueue title="Recent Parcels" accentVar="--tf-suite-dossier" emptyMessage="No recent parcel activity" />
       </main>
