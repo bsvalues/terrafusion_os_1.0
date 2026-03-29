@@ -1741,6 +1741,22 @@ function CanonContent(): React.ReactElement {
         <kbd className='canon-header__shortcut'>Ctrl+K</kbd>
       </header>
 
+      {/* ── Posture Disclosure ─ core IDE live / collab+Codex queued ── */}
+      <div
+        className='flex items-center gap-3 px-4 py-1 text-xs'
+        style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.4)' }}
+      >
+        <span style={{ color: 'hsl(var(--tf-fg))' }}>Core IDE Shell</span>
+        <span style={{ color: 'hsl(var(--tf-success))', background: 'hsl(var(--tf-success) / 0.12)', padding: '1px 8px', borderRadius: '9999px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.16em' }}>
+          Live
+        </span>
+        <span style={{ color: 'hsl(var(--tf-border) / 0.6)', margin: '0 4px' }}>·</span>
+        <span style={{ color: 'hsl(var(--tf-muted))' }}>Collaboration / Codex</span>
+        <span style={{ color: 'hsl(var(--tf-warning))', background: 'hsl(var(--tf-warning) / 0.12)', padding: '1px 8px', borderRadius: '9999px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.16em' }}>
+          Queued
+        </span>
+      </div>
+
       {/* ── Dev Cockpit ─ primary surface ─────────────────────────── */}
       <section className='canon-devCockpit' data-testid='canon-devCockpit'>
         <div className='canon-devCockpit__inner canon-ide'>
