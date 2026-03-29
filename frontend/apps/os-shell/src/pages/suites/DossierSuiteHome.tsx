@@ -35,7 +35,7 @@ const DOSSIER_MODULES: SuiteModuleDef[] = [
   // Standalone-mode (system/admin, opens standalone window)
   { id: 'pacs-bridge', label: 'PACS DataBridge', icon: Plug, description: 'Harris PACS 9.0 data import/export & sync management', launchMode: 'standalone', moduleId: 'pacs-bridge', truthState: 'queued' },
   { id: 'terra-sync', label: 'TerraSync', icon: RefreshCw, description: 'County data synchronization — multi-source ETL pipeline', launchMode: 'standalone', moduleId: 'terra-sync', truthState: 'queued' },
-  { id: 'terra-flow', label: 'TerraFlow', icon: Zap, description: 'Workflow automation engine — assessment pipeline orchestration', launchMode: 'standalone', moduleId: 'terra-flow' },
+  { id: 'terra-flow', label: 'TerraFlow', icon: Zap, description: 'Workflow automation engine — assessment pipeline orchestration', launchMode: 'standalone', moduleId: 'terra-flow', truthState: 'queued' },
 ];
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');

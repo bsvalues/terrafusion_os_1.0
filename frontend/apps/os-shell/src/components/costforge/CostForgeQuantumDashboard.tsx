@@ -7,6 +7,7 @@
  */
 
 import { Activity, Calculator, Cpu, Database, Gauge, Shield, TrendingUp } from 'lucide-react';
+import { DemoDataBanner } from '../governance/DemoDataBanner';
 import { useEffect, useState } from 'react';
 import {
   Area,
@@ -76,6 +77,7 @@ export function CostForgeQuantumDashboard() {
 
   return (
     <div className='min-h-full bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6'>
+      <DemoDataBanner module="CostForge" />
       {/* CostForge Header */}
       <div className='mb-8'>
         <div className='bg-white/10 backdrop-blur-lg border border-cyan-400/20 rounded-2xl p-6 relative overflow-hidden'>

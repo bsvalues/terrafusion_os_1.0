@@ -778,9 +778,11 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'terra-flow':
       return (
-        <Suspense fallback={<ModuleLoadingFallback />}>
-          <TerraFlowCommandCenter />
-        </Suspense>
+        <QueuedModuleSurface
+          name="TerraFlow"
+          description="Quantum workflow orchestration — multi-agent task routing, event-driven workflows, and county process automation."
+          moduleId="terra-flow"
+        />
       );
 
     case 'terra-permit':
