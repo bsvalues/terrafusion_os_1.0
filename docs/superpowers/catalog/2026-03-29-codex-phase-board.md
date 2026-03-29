@@ -27,11 +27,11 @@
 | `CP-55` Shell hot-surface seal | Unlock | `COMPLETED` | explicit hot-file window plus stable collision matrix | exact `45D` / `50E` shell proof | `50E` HOLD lifted → READY; `45D` remains ARCH-RISK-HOLD |
 | `CP-56` parent/sub-agent split packs | Ops | `COMPLETED` | current collision matrix | split map for clear cards | safer multi-agent Copilot execution |
 | `CP-57` evidence and handoff packetization | Ops | `COMPLETED` | `CP-56` preferred | proof/evidence templates | faster Copilot handoffs |
-| `CP-58` execution rhythm board | Ops | `INHERITS` | `CP-57` preferred | stale-card closure and promotion rules | less queue drift during execution |
+| `CP-58` execution rhythm board | Ops | `COMPLETED` | `CP-57` preferred | stale-card closure and promotion rules | less queue drift during execution |
 | `CP-59` no-card canon seal | Hygiene | `COMPLETED` | exhaustive atlas | stronger no-card boundaries | fewer false reopenings |
 | `CP-60` control-plane link and alias hygiene | Hygiene | `COMPLETED` | `CP-59` preferred | canonical-path and duplicate suppression | less authority drift |
 | `CP-61` ownership boundary seal | Hygiene | `COMPLETED` | `CP-59` preferred | suite/workbench/OS ownership notes | less boundary leakage in coding lane |
-| `CP-62` Copilot readiness seal | Cross-track | `BLOCKED` | `CP-51` through `CP-61` | consolidated readiness summary and next-ready pack list | confident Copilot scaling |
+| `CP-62` Copilot readiness seal | Cross-track | `COMPLETED` | `CP-51` through `CP-61` | consolidated readiness summary and next-ready pack list | confident Copilot scaling |
 
 ## Suggested Parent Assignments
 
@@ -40,7 +40,7 @@
 | Pack A | `CP-51`, `CP-52`, `CP-53` |
 | Pack B | `CP-56`, `CP-59`, `CP-54` (completed) |
 | Pack C | `CP-57`, `CP-60`, `CP-61` (completed) |
-| Pack D | `CP-58`, `CP-55`, `CP-62` |
+| Pack D | `CP-58` (completed), `CP-55` (completed), `CP-62` (completed) |
 
 ## Use Rule
 
