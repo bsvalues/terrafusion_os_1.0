@@ -46,7 +46,7 @@ const DAIS_MODULES: SuiteModuleDef[] = [
   { id: 'vei', label: 'VEI', icon: Search, description: 'Vertical Equality Index — assessment equity & PRB analysis', launchMode: 'standalone', moduleId: 'vei', truthState: 'queued' },
   { id: 'property-tax-ai', label: 'PropertyTax AI', icon: Bot, description: 'AI-driven property tax analysis & anomaly detection', launchMode: 'standalone', moduleId: 'property-tax-ai', truthState: 'queued' },
   { id: 'management-dashboard', label: 'Management', icon: LayoutDashboard, description: 'Assessor operations — certification, workload, staff assignment (ADR-003)', launchMode: 'standalone', moduleId: 'management-dashboard' },
-  { id: 'terra-queue', label: 'TerraQueue', icon: ClipboardList, description: 'Cross-parcel work queue — assignment, progress, quality review', launchMode: 'standalone', moduleId: 'terra-queue' },
+  { id: 'terra-queue', label: 'TerraQueue', icon: ClipboardList, description: 'Cross-parcel work queue — assignment, progress, quality review', launchMode: 'standalone', moduleId: 'terra-queue', truthState: 'queued' },
   { id: 'terra-cert', label: 'TerraCert', icon: FileCheck, description: 'Roll sign-off, statutory export, and certification operations', launchMode: 'standalone', moduleId: 'terra-cert', truthState: 'queued' },
   { id: 'terra-notice', label: 'TerraNotice', icon: Mail, description: 'Batch notice dispatch — mail/print queue and delivery tracking', launchMode: 'standalone', moduleId: 'terra-notice', truthState: 'queued' },
 ];
