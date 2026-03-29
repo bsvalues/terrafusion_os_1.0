@@ -45,6 +45,7 @@ import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
 import { useSession } from '../../auth/useSession';
 import { useAuthContext, toOsActor } from '../../auth/useAuthContext';
 import type { SuiteCompassItem } from '../../components/workbench/SuiteCompass';
+import QueuedModuleSurface from '../../components/suites/QueuedModuleSurface';
 
 // ============================================================================
 // Types
@@ -56,6 +57,7 @@ interface WorkbenchTab {
   icon: string;
   path: string;
   enabled: boolean;
+  truthState?: 'queued';
 }
 
 // ============================================================================
@@ -104,9 +106,9 @@ const WORKBENCH_TABS: WorkbenchTab[] = [
   { id: 'forge', label: 'Forge', icon: '🔥', path: 'forge', enabled: true },
   { id: 'atlas', label: 'Atlas', icon: '🗺️', path: 'atlas', enabled: true },
   { id: 'dais', label: 'Dais', icon: '📋', path: 'dais', enabled: true },
-  { id: 'clerk', label: 'Clerk', icon: '📜', path: 'clerk', enabled: true },
-  { id: 'treasury', label: 'Treasury', icon: '💰', path: 'treasury', enabled: true },
-  { id: 'audit', label: 'Audit', icon: '🔍', path: 'audit', enabled: true },
+  { id: 'clerk', label: 'Clerk', icon: '📜', path: 'clerk', enabled: true, truthState: 'queued' },
+  { id: 'treasury', label: 'Treasury', icon: '💰', path: 'treasury', enabled: true, truthState: 'queued' },
+  { id: 'audit', label: 'Audit', icon: '🔍', path: 'audit', enabled: true, truthState: 'queued' },
   { id: 'dossier', label: 'Dossier', icon: '📁', path: 'dossier', enabled: true },
   { id: 'pilot', label: 'Pilot', icon: '🎮', path: 'pilot', enabled: true },
 ];
@@ -244,6 +246,12 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   const currentTabId = useMemo(
     () => (parcelId ? getCurrentTabFromPath(location.pathname, parcelId) : 'summary'),
     [location.pathname, parcelId]
+  );
+
+  // Resolve tab config for truth-state gating
+  const currentTabConfig = useMemo(
+    () => WORKBENCH_TABS.find((t) => t.id === currentTabId),
+    [currentTabId]
   );
 
   // Property data from store (backed by DataProvider → snapshot/live/fixtures)
@@ -557,7 +565,15 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
             <LiquidPanel variant="interactive" radius="md" className="min-h-full">
               <ErrorBoundary>
                 <Suspense fallback={<TabLoader />}>
-                  <Outlet context={{ parcelId, propertyData, workMode }} />
+                  {currentTabConfig?.truthState === 'queued' ? (
+                    <QueuedModuleSurface
+                      name={currentTabConfig.label}
+                      description={`${currentTabConfig.label} tools are reserved for a future TerraFusion vertical. This surface is not yet active.`}
+                      moduleId={currentTabConfig.id}
+                    />
+                  ) : (
+                    <Outlet context={{ parcelId, propertyData, workMode }} />
+                  )}
                 </Suspense>
               </ErrorBoundary>
             </LiquidPanel>
