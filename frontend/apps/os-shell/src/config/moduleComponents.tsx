@@ -342,6 +342,10 @@ const DaisSuiteHome = lazy(() => import('../pages/suites/DaisSuiteHome'));
 const DossierSuiteHome = lazy(() => import('../pages/suites/DossierSuiteHome'));
 const GptSuiteHome = lazy(() => import('../pages/suites/GptSuiteHome'));
 
+// GPT Live Modules (R3 — registered live in GptSuiteHome)
+const GPTManagementDashboard = lazy(() => import('../components/gpt/GPTManagementDashboard'));
+const RAGDatasetManager = lazy(() => import('../components/gpt/RAGDatasetManager'));
+
 // ============================================================================
 // Module Entries (lazy components for bespoke modules)
 // ============================================================================
@@ -1009,80 +1013,56 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'gpt-studio':
       return (
-        <PlaceholderModule
+        <QueuedModuleSurface
           name='GPT Studio'
-          icon='🧪'
           description='Interactive GPT prompt studio — prompt engineering, template management, and AI workflow design.'
-          status='placeholder'
-          domain='ai'
-          scope='county-wide'
-          launchSurface='GPT suite → Standalone window'
+          moduleId='gpt-studio'
+          suiteAccentVar='--tf-suite-gpt'
         />
       );
 
     case 'gpt-marketplace':
       return (
-        <PlaceholderModule
+        <QueuedModuleSurface
           name='GPT Marketplace'
-          icon='🏪'
           description='GPT model & prompt marketplace — browse, install, and manage AI models and prompt templates.'
-          status='placeholder'
-          domain='ai'
-          scope='system'
-          launchSurface='GPT suite → Standalone window'
+          moduleId='gpt-marketplace'
+          suiteAccentVar='--tf-suite-gpt'
         />
       );
 
     case 'gpt-management':
       return (
-        <PlaceholderModule
-          name='GPT Management'
-          icon='⚙️'
-          description='GPT administration — API key management, usage quotas, model configuration, and access control.'
-          status='placeholder'
-          domain='ai'
-          scope='system'
-          launchSurface='GPT suite → Standalone window'
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <GPTManagementDashboard />
+        </Suspense>
       );
 
     case 'gpt-builder':
       return (
-        <PlaceholderModule
+        <QueuedModuleSurface
           name='GPT Builder'
-          icon='🔨'
           description='Custom GPT builder — create domain-specific AI agents for county workflows with no-code configuration.'
-          status='placeholder'
-          domain='ai'
-          scope='county-wide'
-          launchSurface='GPT suite → Standalone window'
+          moduleId='gpt-builder'
+          suiteAccentVar='--tf-suite-gpt'
         />
       );
 
     case 'gpt-analytics':
       return (
-        <PlaceholderModule
+        <QueuedModuleSurface
           name='GPT Analytics'
-          icon='📊'
           description='GPT usage analytics — token consumption, model performance, cost tracking, and ROI metrics.'
-          status='placeholder'
-          domain='ai'
-          scope='system'
-          launchSurface='GPT suite → Standalone window'
+          moduleId='gpt-analytics'
+          suiteAccentVar='--tf-suite-gpt'
         />
       );
 
     case 'gpt-rag':
       return (
-        <PlaceholderModule
-          name='GPT RAG'
-          icon='📚'
-          description='Retrieval-Augmented Generation — document indexing, vector search, and context-aware AI responses over county data.'
-          status='placeholder'
-          domain='ai'
-          scope='county-wide'
-          launchSurface='GPT suite → Standalone window'
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <RAGDatasetManager />
+        </Suspense>
       );
 
     // ========================================================================
