@@ -12,6 +12,11 @@
  *   - Top tools invoked
  *   - Recent high-risk activity feed
  *
+ * DATA POSTURE: Live-only dashboard. All metrics are fetched from
+ * /api/pilot/metrics/* (MetricsService backend). No fixture fallback exists.
+ * When the backend is unreachable, the component enters an error state and
+ * all metric cards display 'No data'. There is no sample/demo data path.
+ *
  * Government. Transcended.
  * ═══════════════════════════════════════════════════════════════
  */
@@ -335,9 +340,13 @@ export function GovernanceDashboard(): React.ReactElement {
         </div>
 
         {/* Error display */}
+        {/* Card 50A: add posture note — live-only, no demo-data fallback */}
         {error && (
           <div className='p-4 bg-red-500/20 border border-red-500/30 rounded mb-6 text-red-400'>
             {error}
+            <div className='mt-2 pt-2 text-xs' style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.3)', color: 'hsl(var(--tf-muted))' }}>
+              GovernanceLock Dashboard requires a live Pilot API. No fixture fallback — metrics are only available when the backend is reachable.
+            </div>
           </div>
         )}
 
