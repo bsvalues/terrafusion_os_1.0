@@ -3,6 +3,13 @@
  * Spatial VISUALIZATION of assessment equity data.
  * Choropleth map by neighborhood/area showing equity distribution.
  * Atlas renders the map -- Forge computed the ratios.
+ *
+ * DATA POSTURE:
+ * - Equity areas come from `useAtlasSpatialStore` (API-backed via `fetchSpatialData`).
+ * - When the store returns no data (API unavailable or empty), `FALLBACK_EQUITY_AREAS`
+ *   fixtures are displayed. DemoDataBanner is shown until backend confirms live data.
+ * - `isFixture` starts `true` (conservative default) and is cleared only when
+ *   the store holds a non-empty live result after `fetchSpatialData` resolves.
  */
 import { useEffect, useMemo, useState } from 'react';
 
@@ -41,7 +48,7 @@ function equityLabel(ratio: number): string {
 export default function GeoEquityDashboard() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [propertyTypeFilter, setPropertyTypeFilter] = useState<PropertyTypeFilter>('All');
-  const [isFixture, setIsFixture] = useState(false);
+  const [isFixture, setIsFixture] = useState(true);
 
   // Consume from store if available, fall back to fixtures
   const storeAreas = useAtlasSpatialStore((s) => s.equityAreas);
@@ -51,8 +58,9 @@ export default function GeoEquityDashboard() {
   useEffect(() => {
     fetchSpatialData().then(() => {
       const areas = useAtlasSpatialStore.getState().equityAreas;
-      // Reference equality detects fixture fallback: store sets equityAreas = EQUITY_AREAS on API failure
-      setIsFixture(areas.length === 0 || areas === FALLBACK_EQUITY_AREAS);
+      // Banner clears only when backend returns non-empty live data.
+      // Length-only check avoids fragile reference-equality against the import.
+      setIsFixture(areas.length === 0);
     });
   }, [fetchSpatialData]);
 

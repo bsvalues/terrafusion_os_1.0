@@ -3,6 +3,12 @@
  * GIS visualization for mass appraisal spatial display.
  * Parcel map with color-coded overlays (neighborhood, zoning, property type).
  * Atlas renders spatial data -- it does NOT compute values or run sync.
+ *
+ * DATA POSTURE:
+ * - `DEMO_PARCELS` (5 sample parcels) are displayed when the API is unavailable.
+ * - DemoDataBanner shown while `isFixtureParcels === true` (starts `true`, cleared
+ *   on successful `/api/atlas/parcels/search` response with ≥1 result).
+ * - Live-mapped parcels have partial attributes only (sqft/yearBuilt/bedroom = 0).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
