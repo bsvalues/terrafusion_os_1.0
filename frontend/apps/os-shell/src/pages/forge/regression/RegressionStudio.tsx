@@ -3,9 +3,14 @@
  *
  * Regression studio landing page. Model list, create new, version
  * comparison, coefficient detail. Store-driven via forgeRegressionStore.
+ *
+ * DATA POSTURE: The Saved Models list is always sourced from REGRESSION_MODELS
+ * fixtures. No live path exists for model records. Run history may be API-backed
+ * when the backend is available; the store discloses fixture fallback via error state.
  */
 
 import React, { useEffect, useState } from 'react';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -88,6 +93,8 @@ export function RegressionStudio() {
       {/* View: Models List */}
       {view === 'list' && (
         <>
+          {/* Card 46C: Saved Models list is always REGRESSION_MODELS fixtures — no live path */}
+          <DemoDataBanner module="Regression Studio" />
           <Card>
             <CardHeader>
               <CardTitle>Saved Models</CardTitle>
