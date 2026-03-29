@@ -7,6 +7,14 @@
  * @module pages/TraceHome
  * @see Slice 6.1: Unskip + Harden Standalone Contract Suite
  * @see Slice 17: Action Observability Surface
+ *
+ * DATA POSTURE: Metrics are derived from the local telemetry store (client-side
+ * IndexedDB when available, in-memory fallback otherwise). This is a local-only
+ * trace store, not a backend API. When IndexedDB is unavailable, events persist
+ * only for the current session and metrics reset on page reload. The "Live"
+ * description applies only once OS actions are being recorded; an empty store
+ * produces 0-value metrics with no visual distinction from an actively-monitored
+ * idle state.
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -279,7 +287,8 @@ function TraceConsoleContent({ telemetryStore }: TraceHomeProps): React.ReactEle
     <div className='trace-console' data-testid='trace-console-content'>
       <section className='trace-console__overview'>
         <h2>System Telemetry</h2>
-        <p>Live action stream with 15-second telemetry refresh and audit trail visualization.</p>
+        {/* Card 45C: removed absolute "Live" claim; store may be empty or in-memory fallback */}
+        <p>Telemetry trace stream — 15s local refresh. Events appear as OS actions are performed.</p>
 
         <div className='trace-console__stats'>
           <div className='trace-console__stat'>
@@ -301,6 +310,15 @@ function TraceConsoleContent({ telemetryStore }: TraceHomeProps): React.ReactEle
             </span>
           </div>
         </div>
+        {/* Card 45C: fixture-fallback boundary disclosure when store is empty */}
+        {metrics && metrics.totalEvents === 0 && (
+          <p style={{ color: 'hsl(var(--tf-muted))', fontSize: '0.75rem', marginTop: '0.5rem' }}>
+            No trace events recorded. Events will appear when OS actions are performed.
+            {typeof indexedDB === 'undefined'
+              ? ' (⚠ IndexedDB unavailable — using in-memory fallback; events will not persist.)'
+              : null}
+          </p>
+        )}
       </section>
 
       {/* Metrics Dashboard — hourly event histogram */}

@@ -829,8 +829,14 @@ export function PilotConsoleContent(): React.ReactElement {
       </div>
 
       {/* Footer */}
+      {/* Card 45C: surface enforcement claim only when backend is live */}
       <div className='mt-12 pt-6 border-t border-slate-800 text-center text-slate-500 text-xs'>
-        <p>TerraFusion GovernanceLock • Phase 6.2 • Preflight-First Enforcement</p>
+        <p>
+          TerraFusion GovernanceLock • Phase 6.2 •{' '}
+          {health?.status === 'ok'
+            ? 'Preflight-First Enforcement • Live'
+            : 'Preflight Gate (backend required to enforce)'}
+        </p>
         <p className='mt-1 text-cyan-500/50'>Government. Transcended.</p>
       </div>
 
