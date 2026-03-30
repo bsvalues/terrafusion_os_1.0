@@ -1,0 +1,100 @@
+{
+  "gate_id": "INCOME-APPROACH-EXEC-PATH-001",
+  "gate_description": "Is the IncomeApproachPanel standalone page on the real os-platform execution path, or is it bypassing the fabric via direct REST calls?",
+  "trace_mode": "read_only",
+  "trace_date": "2026",
+  "chosen_action": "Run Income Approach Valuation (standalone page)",
+  "ui_entrypoint_file": "frontend/apps/os-shell/src/pages/forge/income/IncomeApproachPanel.tsx",
+  "before_wiring": {
+    "execution_path": [
+      {
+        "step": 1,
+        "caller": "IncomeApproachPanel.tsx:handleDirectCap()",
+        "call_site": "IncomeApproachPanel.tsx:44",
+        "method": "fetch('/api/valuation/income/direct-capitalization', { method: 'POST' })",
+        "via_aingl": false,
+        "note": "Direct REST — bypasses pilotApi and ToolRunner entirely. No gate enforcement. No trace event emitted."
+      },
+      {
+        "step": 2,
+        "caller": "IncomeApproachPanel.tsx:handleGrm()",
+        "call_site": "IncomeApproachPanel.tsx:67",
+        "method": "fetch('/api/valuation/income/grm', { method: 'POST' })",
+        "via_aingl": false,
+        "note": "Direct REST — bypasses pilotApi and ToolRunner entirely. No gate enforcement. No trace event emitted."
+      }
+    ],
+    "toolrunner_in_path": false,
+    "governance_in_path": false,
+    "trace_in_path": false,
+    "direct_rest_bypass_detected": true,
+    "pilot_api_imported": false
+  },
+  "fabric_exists_and_is_real": true,
+  "fabric_structural_evidence": [
+    "os-platform/core/ToolRunner.js — Gate 4 (write lane), Gate 5 (risk/confirmation/supervisor), Gate 6 (PII/trace) fully implemented with emitTraceEvent on invoke/complete/fail",
+    "frontend/apps/os-shell/src/api/pilotApi.ts — 'All tool invocations MUST go through POST /pilot/invoke. This client enforces the single execution path from the UI.'",
+    "os-platform/core/pilot/handlers.real.ts:2550 — runner.registerHandler('run_income_valuation', runIncomeValuationRealHandler)",
+    "os-platform/core/pilot/handlers.real.ts:1605 — runIncomeValuationRealHandler POST /api/costforge/income-approach/calculate-valuation (live handler, Wave 3)"
+  ],
+  "fabric_used_by_other_surfaces": true,
+  "fabric_used_by_surfaces": [
+    "PropertyForge workbench tab (IncomeApproach.tsx) — already uses invokeTool('run_income_valuation') at line 48",
+    "PropertyTreasury — pilotApi.invokeTool used",
+    "DefensePacket — wired at commit 44e2daa15 (first fabric-corrected route)"
+  ],
+  "real_handler_for_action": {
+    "tool_id": "run_income_valuation",
+    "file": "os-platform/core/pilot/handlers.real.ts",
+    "line": 1605,
+    "registration_line": 2550,
+    "endpoint": "POST /api/costforge/income-approach/calculate-valuation",
+    "risk_level": "read_only",
+    "params": {
+      "county": "string (required)",
+      "annualRentalIncome": "number (required)",
+      "vacancyRate": "number (optional, default 5)",
+      "capRate": "number (optional, default 7.5, percentage scale)",
+      "propertyType": "string (optional, default 'commercial')",
+      "location": "string (optional)"
+    },
+    "output": {
+      "netOperatingIncome": "number",
+      "capRate": "number (percentage scale, e.g. 7.5 = 7.5%)",
+      "valuation": "number",
+      "grossIncomeMultiplier": "number",
+      "riskClassification": "string",
+      "source": "string"
+    }
+  },
+  "after_wiring": {
+    "execution_path": [
+      {
+        "step": 1,
+        "caller": "IncomeApproachPanel.tsx:handleDirectCap()",
+        "call_site": "IncomeApproachPanel.tsx",
+        "method": "invokeTool({ toolId: 'run_income_valuation', params: { county, annualRentalIncome, vacancyRate, capRate }, parcelId: '' })",
+        "via_aingl": true,
+        "note": "Routes through POST /pilot/invoke → ToolRunner Gate 4/5/6 → runIncomeValuationRealHandler → POST /api/costforge/income-approach/calculate-valuation"
+      },
+      {
+        "step": 2,
+        "caller": "IncomeApproachPanel.tsx:handleGrm()",
+        "call_site": "IncomeApproachPanel.tsx",
+        "method": "invokeTool({ toolId: 'run_income_valuation', params: { county, annualRentalIncome: monthlyRent * 12 }, parcelId: '' })",
+        "via_aingl": true,
+        "note": "GRM path also routes through fabric. Backend computes market-based grossIncomeMultiplier instead of user-supplied multiplier. More honest."
+      }
+    ],
+    "toolrunner_in_path": true,
+    "governance_in_path": true,
+    "trace_in_path": true,
+    "direct_rest_bypass_detected": false,
+    "pilot_api_imported": true
+  },
+  "verdict_before": "bypassed",
+  "verdict_after": "fabric_correct",
+  "verdict_rationale": "IncomeApproachPanel.tsx had 2 direct fetch() bypasses: POST /api/valuation/income/direct-capitalization and POST /api/valuation/income/grm. The real handler run_income_valuation (handlers.real.ts:2550, Wave 3) covers both calculations. The workbench tab IncomeApproach.tsx was already correctly wired — the standalone page was the only bypass. After wiring, both handleDirectCap and handleGrm route through POST /pilot/invoke → ToolRunner gates → backend. Second fabric-corrected route.",
+  "note_on_grm_input": "The user-supplied Gross Rent Multiplier input was removed. The old calculation was user_grm * monthlyRent (arbitrary multiplier). The fabric-correct version returns a market-informed grossIncomeMultiplier from backend data. This is more honest: the backend derives the multiplier from Benton County market data, not an arbitrary user value.",
+  "commit_ref": "pending — see next commit on feat/r0-surface-honesty"
+}

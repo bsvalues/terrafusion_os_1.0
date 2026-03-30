@@ -5,18 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { invokeTool } from '../../../api/pilotApi';
 
-interface IncomeResult {
-  indicatedValue: number;
+interface IncomeValuationResult {
+  netOperatingIncome: number;
   capRate: number;
-  noi: number;
-  effectiveGrossIncome: number;
-}
-
-interface GrmResult {
-  indicatedValue: number;
-  grm: number;
-  monthlyRent: number;
+  valuation: number;
+  grossIncomeMultiplier: number;
+  riskClassification: string;
+  source: string;
 }
 
 export function IncomeApproachPanel() {
@@ -25,34 +22,37 @@ export function IncomeApproachPanel() {
   // Direct capitalization inputs
   const [grossIncome, setGrossIncome] = useState('');
   const [vacancy, setVacancy] = useState('5');
-  const [expenses, setExpenses] = useState('');
   const [capRate, setCapRate] = useState('');
 
   // GRM inputs
   const [monthlyRent, setMonthlyRent] = useState('');
-  const [grm, setGrm] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [incomeResult, setIncomeResult] = useState<IncomeResult | null>(null);
-  const [grmResult, setGrmResult] = useState<GrmResult | null>(null);
+  const [result, setResult] = useState<IncomeValuationResult | null>(null);
 
   const handleDirectCap = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/valuation/income/direct-capitalization', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          grossIncome: Number(grossIncome),
-          vacancyRate: Number(vacancy) / 100,
-          operatingExpenses: Number(expenses),
-          capRate: Number(capRate) / 100,
-        }),
+      const response = await invokeTool({
+        toolId: 'run_income_valuation',
+        params: {
+          county: 'benton',
+          annualRentalIncome: Number(grossIncome),
+          vacancyRate: Number(vacancy),
+          capRate: Number(capRate),
+        },
+        parcelId: '',
       });
-      if (!res.ok) throw new Error('Income valuation failed');
-      setIncomeResult(await res.json());
+      if (response.success && response.result) {
+        const parsed: IncomeValuationResult = typeof response.result.output === 'string'
+          ? JSON.parse(response.result.output)
+          : response.result.output;
+        setResult(parsed);
+      } else {
+        throw new Error(response.error?.message ?? 'Income valuation failed');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -64,16 +64,22 @@ export function IncomeApproachPanel() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/valuation/income/grm', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          monthlyRent: Number(monthlyRent),
-          grossRentMultiplier: Number(grm),
-        }),
+      const response = await invokeTool({
+        toolId: 'run_income_valuation',
+        params: {
+          county: 'benton',
+          annualRentalIncome: Number(monthlyRent) * 12,
+        },
+        parcelId: '',
       });
-      if (!res.ok) throw new Error('GRM calculation failed');
-      setGrmResult(await res.json());
+      if (response.success && response.result) {
+        const parsed: IncomeValuationResult = typeof response.result.output === 'string'
+          ? JSON.parse(response.result.output)
+          : response.result.output;
+        setResult(parsed);
+      } else {
+        throw new Error(response.error?.message ?? 'GRM calculation failed');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -113,10 +119,6 @@ export function IncomeApproachPanel() {
                   <Input type="number" value={vacancy} onChange={(e) => setVacancy(e.target.value)} placeholder="5" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Operating Expenses ($)</Label>
-                  <Input type="number" value={expenses} onChange={(e) => setExpenses(e.target.value)} placeholder="45000" />
-                </div>
-                <div className="space-y-2">
                   <Label>Capitalization Rate (%)</Label>
                   <Input type="number" value={capRate} onChange={(e) => setCapRate(e.target.value)} placeholder="7.5" />
                 </div>
@@ -129,15 +131,15 @@ export function IncomeApproachPanel() {
               <CardHeader><CardTitle>Direct Cap Result</CardTitle></CardHeader>
               <CardContent>
                 {error && <div className="text-destructive text-sm mb-4">{error}</div>}
-                {!incomeResult && !error && (
+                {!result && !error && (
                   <p className="text-muted-foreground">Enter income data to see the indicated value.</p>
                 )}
-                {incomeResult && (
+                {result && (
                   <div className="space-y-3">
-                    <div className="flex justify-between"><span className="text-muted-foreground">NOI</span><span>${incomeResult.noi.toLocaleString()}</span></div>
-                    <div className="flex justify-between"><span className="text-muted-foreground">Cap Rate</span><span>{(incomeResult.capRate * 100).toFixed(2)}%</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">NOI</span><span>${result.netOperatingIncome.toLocaleString()}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Cap Rate</span><span>{result.capRate.toFixed(2)}%</span></div>
                     <div className="border-t pt-3 flex justify-between font-semibold">
-                      <span>Indicated Value</span><span>${incomeResult.indicatedValue.toLocaleString()}</span>
+                      <span>Indicated Value</span><span>${result.valuation.toLocaleString()}</span>
                     </div>
                   </div>
                 )}
@@ -155,10 +157,6 @@ export function IncomeApproachPanel() {
                   <Label>Monthly Rent ($)</Label>
                   <Input type="number" value={monthlyRent} onChange={(e) => setMonthlyRent(e.target.value)} placeholder="2500" />
                 </div>
-                <div className="space-y-2">
-                  <Label>Gross Rent Multiplier</Label>
-                  <Input type="number" value={grm} onChange={(e) => setGrm(e.target.value)} placeholder="120" />
-                </div>
                 <Button onClick={handleGrm} disabled={loading} className="w-full">
                   {loading ? 'Calculating...' : 'Calculate Value'}
                 </Button>
@@ -168,15 +166,15 @@ export function IncomeApproachPanel() {
               <CardHeader><CardTitle>GRM Result</CardTitle></CardHeader>
               <CardContent>
                 {error && <div className="text-destructive text-sm mb-4">{error}</div>}
-                {!grmResult && !error && (
-                  <p className="text-muted-foreground">Enter rent and GRM to see the indicated value.</p>
+                {!result && !error && (
+                  <p className="text-muted-foreground">Enter rent to see the indicated value.</p>
                 )}
-                {grmResult && (
+                {result && (
                   <div className="space-y-3">
-                    <div className="flex justify-between"><span className="text-muted-foreground">Monthly Rent</span><span>${grmResult.monthlyRent.toLocaleString()}</span></div>
-                    <div className="flex justify-between"><span className="text-muted-foreground">GRM</span><span>{grmResult.grm.toFixed(1)}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">GIM</span><span>{result.grossIncomeMultiplier.toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Risk</span><span>{result.riskClassification}</span></div>
                     <div className="border-t pt-3 flex justify-between font-semibold">
-                      <span>Indicated Value</span><span>${grmResult.indicatedValue.toLocaleString()}</span>
+                      <span>Indicated Value</span><span>${result.valuation.toLocaleString()}</span>
                     </div>
                   </div>
                 )}
