@@ -167,6 +167,46 @@ export const SCENE_LIBRARY: Scene[] = [
     ],
     keywords: ['ai', 'research', 'gpt', 'analysis', 'assistant'],
   },
+  {
+    id: 'calibration-run',
+    label: 'Calibration Run',
+    description:
+      'Ratio study execution: run mass appraisal model calibration, tune coefficients, and validate output against IAAO standards.',
+    category: 'analysis',
+    icon: '⚙️',
+    windows: [
+      { moduleId: 'suite-forge' },
+      { moduleId: 'suite-gpt' },
+    ],
+    keywords: ['calibration', 'model', 'tuning', 'ratio', 'study', 'IAAO', 'validation', 'run'],
+  },
+  {
+    id: 'time-adjustment',
+    label: 'Time Adjustment Cockpit',
+    description:
+      'Sales timeline analysis with time adjustment matrix and compliance verification for assessment date alignment.',
+    category: 'compliance',
+    icon: '📅',
+    windows: [
+      { moduleId: 'suite-forge' },
+      { moduleId: 'suite-dais' },
+    ],
+    keywords: ['time', 'adjustment', 'sales', 'timeline', 'compliance', 'assessment', 'date'],
+  },
+  {
+    id: 'drift-warning',
+    label: 'Drift Warning',
+    description:
+      'Monitor assessment drift: drift indicators, QA checklist review, and governance alert triage for at-risk parcels.',
+    category: 'compliance',
+    icon: '⚠️',
+    windows: [
+      { moduleId: 'suite-forge' },
+      { moduleId: 'suite-dais' },
+      { moduleId: 'suite-gpt' },
+    ],
+    keywords: ['drift', 'warning', 'monitor', 'QA', 'governance', 'alert', 'compliance'],
+  },
 ];
 
 // ============================================================================
