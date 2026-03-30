@@ -707,7 +707,7 @@ describe('Launcher Truth Contracts', () => {
         expect(suite.iconName).toBeDefined();
         expect(suite.route).toBeDefined();
         expect(suite.color).toBeDefined();
-        expect(suite.status).toMatch(/^(live|wip|planned)$/);
+        expect(suite.status).toMatch(/^(live|queued|unavailable)$/);
       }
     });
 
@@ -767,18 +767,18 @@ describe('Launcher Truth Contracts', () => {
       expect(isLegacyModule('forge')).toBe(false);
     });
 
-    it('wip_suites_are_still_suites_not_legacy', () => {
-      // A WIP suite is still a suite (just not live yet)
-      for (const suite of CONSTITUTIONAL_SUITES.filter((s) => s.status === 'wip')) {
+    it('queued_suites_are_still_suites_not_legacy', () => {
+      // A queued suite is still a suite (just not live yet)
+      for (const suite of CONSTITUTIONAL_SUITES.filter((s) => s.status === 'queued')) {
         expect(getModuleLabel(suite.id)).toBe('Suite');
         expect(isConstitutionalSuite(suite.id)).toBe(true);
       }
     });
 
     it('workbench_tab_suites_have_workbenchTab_true', () => {
-      // All 5 constitutional suites should appear in workbench
+      // Only the parcel-scoped suite family should appear in workbench.
       const workbenchSuites = CONSTITUTIONAL_SUITES.filter((s) => s.workbenchTab === true);
-      expect(workbenchSuites).toHaveLength(5);
+      expect(workbenchSuites).toHaveLength(4);
     });
   });
 });
