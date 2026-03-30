@@ -54,11 +54,12 @@ export interface TactileButtonProps extends ButtonHTMLAttributes<HTMLButtonEleme
 const SPRING_CONFIG = {
   type: 'spring' as const,
   stiffness: 400,
-  damping: 30,
+  damping: 10,
+  mass: 0.6,
 };
 
 const HOVER_SCALE = 1.02;
-const TAP_SCALE = 0.97;
+const TAP_SCALE = 0.96;
 
 // ============================================================================
 // Component

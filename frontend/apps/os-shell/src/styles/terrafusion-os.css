@@ -109,10 +109,6 @@
   transition: all 0.3s ease;
 }
 
-.terrafusion-os-header:hover {
-  box-shadow: var(--shadow-quantum);
-}
-
 /* Navigation Sidebar */
 .terrafusion-os-navigation {
   width: 280px;
@@ -219,7 +215,6 @@
   background: linear-gradient(135deg, var(--terra-cyan), var(--terra-blue));
   color: var(--terra-midnight);
   font-weight: bold;
-  box-shadow: var(--shadow-quantum);
 }
 
 /* View Toggle Button Enhancement */
@@ -233,7 +228,6 @@
 
 .terrafusion-view-toggle:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
 }
 
 .terrafusion-view-toggle::before {
