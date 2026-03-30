@@ -120,9 +120,9 @@ public sealed class DaisEndpointContractTests
     // ── 201 Contract ───────────────────────────────────────────────────
 
     [Fact]
-    public async Task CreateAppeal_ValidRequest_Returns201Created()
+    public async Task DaisController_PostAppeal_Returns201Created()
     {
-        await using var db = CreateDbContext(nameof(CreateAppeal_ValidRequest_Returns201Created));
+        await using var db = CreateDbContext(nameof(DaisController_PostAppeal_Returns201Created));
         await SeedCounty(db, BentonCountyId);
 
         // Use the real AppealService so the full end-to-end path is exercised.
@@ -143,6 +143,115 @@ public sealed class DaisEndpointContractTests
         var created = (CreatedAtActionResult)result;
         created.StatusCode.Should().Be(201);
         created.ActionName.Should().Be("GetAppealById");
+    }
+
+    [Fact]
+    public async Task DaisController_GetAppeal_ByUnauthorizedCounty_DoesNotLeakRecord()
+    {
+        await using var db = CreateDbContext(nameof(DaisController_GetAppeal_ByUnauthorizedCounty_DoesNotLeakRecord));
+        await SeedCounty(db, BentonCountyId, "Benton", "003");
+        await SeedCounty(db, OtherCountyId, "Franklin", "021");
+
+        var svc = new AppealService(db, NullLogger<AppealService>.Instance);
+        var created = await svc.CreateAsync(BentonCountyId,
+            new CreateAppealCommand("12345-000-000", "MARKET_VALUE", "Jane Smith", 450_000m, 400_000m, 2026),
+            "stage2-test-user");
+
+        var otherCountyPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
+        [
+            new Claim("countyId", OtherCountyId.ToString()),
+            new Claim("countyCode", "FRANKLIN"),
+            new Claim("sub", "stage2-other-county-user"),
+        ], "TestAuth"));
+
+        var controller = CreateDaisController(db, svc, principal: otherCountyPrincipal);
+
+        var result = await controller.GetAppealById(created.Id);
+
+        result.Should().BeOfType<NotFoundObjectResult>();
+    }
+
+    [Fact]
+    public async Task DaisController_PostAppeal_EmitsGovernedAuditTrace()
+    {
+        await using var db = CreateDbContext(nameof(DaisController_PostAppeal_EmitsGovernedAuditTrace));
+        await SeedCounty(db, BentonCountyId);
+
+        var appealMock = new Mock<IAppealService>();
+        appealMock.Setup(s => s.CreateAsync(
+                BentonCountyId,
+                It.IsAny<CreateAppealCommand>(),
+                It.IsAny<string?>(),
+                It.IsAny<DateTime?>()))
+            .ReturnsAsync((Guid countyId, CreateAppealCommand cmd, string? createdBy, DateTime? utcNow) => new Appeal
+            {
+                Id = Guid.NewGuid(),
+                ParcelId = cmd.ParcelId,
+                AppealGround = cmd.AppealGround ?? "MARKET_VALUE",
+                PetitionerName = cmd.PetitionerName,
+                CurrentValue = cmd.CurrentValue,
+                RequestedValue = cmd.RequestedValue,
+                TaxYear = cmd.TaxYear,
+                CountyId = countyId,
+                CreatedBy = createdBy,
+                UpdatedBy = createdBy,
+                FiledDate = utcNow ?? DateTime.UtcNow,
+            });
+
+        var auditMock = new Mock<IGovernedToolAuditService>();
+        auditMock.Setup(a => a.LogInvocationAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        var userContextMock = new Mock<IRequestUserContextAccessor>();
+        userContextMock.Setup(a => a.Current)
+            .Returns(new RequestUserContext(true, "stage2-test-user", BentonCountyId.ToString(), Array.Empty<string>()));
+
+        var controller = new DaisController(
+            db,
+            NullLogger<DaisController>.Instance,
+            new Mock<IExemptionService>().Object,
+            appealMock.Object,
+            new Mock<ICertificationService>().Object,
+            new Mock<INoticeService>().Object,
+            new Mock<IQueueService>().Object,
+            userContextMock.Object,
+            auditMock.Object);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(
+                [
+                    new Claim("countyId", BentonCountyId.ToString()),
+                    new Claim("countyCode", "BENTON"),
+                    new Claim("sub", "stage2-test-user"),
+                ], "TestAuth"))
+            }
+        };
+
+        var result = await controller.CreateAppeal(new DaisController.CreateAppealRequest(
+            ParcelId: "TRACE-123",
+            AppealGround: "MARKET_VALUE",
+            PetitionerName: "Jane Smith",
+            CurrentValue: 450_000m,
+            RequestedValue: 400_000m,
+            TaxYear: 2026));
+
+        result.Should().BeOfType<CreatedAtActionResult>();
+        appealMock.Verify(s => s.CreateAsync(
+            BentonCountyId,
+            It.Is<CreateAppealCommand>(cmd => cmd.ParcelId == "TRACE-123"),
+            It.IsAny<string?>(),
+            It.IsAny<DateTime?>()), Times.Once);
+        auditMock.Verify(a => a.LogInvocationAsync(
+            "file_appeal",
+            "TRACE-123",
+            It.IsAny<string>(),
+            "filed",
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     // ── Validation ─────────────────────────────────────────────────────

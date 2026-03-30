@@ -43,9 +43,21 @@ public sealed class AppealServiceTests
     }
 
     [Fact]
-    public async Task Appeal_CreateAsync_PersistsToDb()
+    public void AppealEntity_ConformsToAuditableCountyPattern()
     {
-        await using var db = CreateDbContext(nameof(Appeal_CreateAsync_PersistsToDb));
+        typeof(Appeal).GetProperty(nameof(Appeal.Id))!.PropertyType.Should().Be(typeof(Guid));
+        typeof(Appeal).GetProperty(nameof(Appeal.CountyId))!.PropertyType.Should().Be(typeof(Guid));
+        typeof(Appeal).GetProperty(nameof(Appeal.County))!.PropertyType.Should().Be(typeof(County));
+        typeof(Appeal).GetProperty(nameof(Appeal.CreatedAt))!.PropertyType.Should().Be(typeof(DateTime));
+        typeof(Appeal).GetProperty(nameof(Appeal.UpdatedAt))!.PropertyType.Should().Be(typeof(DateTime));
+        typeof(Appeal).GetProperty(nameof(Appeal.CreatedBy))!.PropertyType.Should().Be(typeof(string));
+        typeof(Appeal).GetProperty(nameof(Appeal.UpdatedBy))!.PropertyType.Should().Be(typeof(string));
+    }
+
+    [Fact]
+    public async Task AppealService_CreateAsync_PersistsAppealForResolvedCounty()
+    {
+        await using var db = CreateDbContext(nameof(AppealService_CreateAsync_PersistsAppealForResolvedCounty));
         await SeedCounty(db, BentonCountyId);
         var svc = new AppealService(db, NullLogger<AppealService>.Instance);
 
@@ -67,10 +79,11 @@ public sealed class AppealServiceTests
     }
 
     [Fact]
-    public async Task Appeal_GetByIdAsync_ReturnsSavedAppeal()
+    public async Task AppealService_GetByIdAsync_ReturnsOnlyWhenCountyMatches()
     {
-        await using var db = CreateDbContext(nameof(Appeal_GetByIdAsync_ReturnsSavedAppeal));
+        await using var db = CreateDbContext(nameof(AppealService_GetByIdAsync_ReturnsOnlyWhenCountyMatches));
         await SeedCounty(db, BentonCountyId);
+        await SeedCounty(db, OtherCountyId);
         var svc = new AppealService(db, NullLogger<AppealService>.Instance);
 
         var entity = new Appeal
@@ -85,36 +98,13 @@ public sealed class AppealServiceTests
         };
 
         var created = await svc.CreateAsync(entity);
-        var fetched = await svc.GetByIdAsync(created.Id, BentonCountyId);
+        var sameCounty = await svc.GetByIdAsync(created.Id, BentonCountyId);
+        var otherCounty = await svc.GetByIdAsync(created.Id, OtherCountyId);
 
-        fetched.Should().NotBeNull();
-        fetched!.ParcelId.Should().Be("99999-001-001");
-        fetched.AppealGround.Should().Be("UNIFORMITY");
-    }
-
-    [Fact]
-    public async Task Appeal_GetByIdAsync_WrongCounty_ReturnsNull()
-    {
-        await using var db = CreateDbContext(nameof(Appeal_GetByIdAsync_WrongCounty_ReturnsNull));
-        await SeedCounty(db, BentonCountyId);
-        await SeedCounty(db, OtherCountyId);
-        var svc = new AppealService(db, NullLogger<AppealService>.Instance);
-
-        var entity = new Appeal
-        {
-            ParcelId = "55555-000-000",
-            AppealGround = "CLASSIFICATION",
-            FiledDate = DateTime.UtcNow,
-            CurrentValue = 200_000m,
-            RequestedValue = 180_000m,
-            TaxYear = 2026,
-            CountyId = BentonCountyId,
-        };
-
-        var created = await svc.CreateAsync(entity);
-        var fetched = await svc.GetByIdAsync(created.Id, OtherCountyId);
-
-        fetched.Should().BeNull();
+        sameCounty.Should().NotBeNull();
+        sameCounty!.ParcelId.Should().Be("99999-001-001");
+        sameCounty.AppealGround.Should().Be("UNIFORMITY");
+        otherCounty.Should().BeNull();
     }
 
     [Fact]
@@ -187,38 +177,40 @@ public sealed class AppealServiceTests
     }
 
     [Fact]
-    public async Task Appeal_GetByTaxYearAsync_FiltersCorrectly()
+    public async Task AppealService_ListAsync_FiltersAllRowsByCountyId()
     {
-        await using var db = CreateDbContext(nameof(Appeal_GetByTaxYearAsync_FiltersCorrectly));
+        await using var db = CreateDbContext(nameof(AppealService_ListAsync_FiltersAllRowsByCountyId));
         await SeedCounty(db, BentonCountyId);
+        await SeedCounty(db, OtherCountyId);
         var svc = new AppealService(db, NullLogger<AppealService>.Instance);
 
         await svc.CreateAsync(new Appeal
         {
-            ParcelId = "A-2025",
+            ParcelId = "BENTON-2026",
             AppealGround = "MARKET_VALUE",
             FiledDate = DateTime.UtcNow,
             CurrentValue = 200_000m,
             RequestedValue = 180_000m,
-            TaxYear = 2025,
+            TaxYear = 2026,
             CountyId = BentonCountyId,
         });
 
         await svc.CreateAsync(new Appeal
         {
-            ParcelId = "A-2026",
+            ParcelId = "A-OTHER-2026",
             AppealGround = "MARKET_VALUE",
             FiledDate = DateTime.UtcNow,
             CurrentValue = 220_000m,
             RequestedValue = 200_000m,
             TaxYear = 2026,
-            CountyId = BentonCountyId,
+            CountyId = OtherCountyId,
         });
 
         var results2026 = await svc.GetByTaxYearAsync(2026, BentonCountyId);
 
         results2026.Should().HaveCount(1);
-        results2026[0].ParcelId.Should().Be("A-2026");
+        results2026[0].ParcelId.Should().Be("BENTON-2026");
+        results2026[0].CountyId.Should().Be(BentonCountyId);
     }
 
     [Fact]
@@ -239,5 +231,29 @@ public sealed class AppealServiceTests
         created.PetitionerName.Should().Be("Jane Smith");
         created.CreatedBy.Should().Be("appeals@test");
         created.TaxYear.Should().BeGreaterThan(2000);
+    }
+
+    [Fact]
+    public async Task AppealService_UpdateAsync_RejectsCrossCountyMutation()
+    {
+        await using var db = CreateDbContext(nameof(AppealService_UpdateAsync_RejectsCrossCountyMutation));
+        await SeedCounty(db, BentonCountyId);
+        await SeedCounty(db, OtherCountyId);
+        var svc = new AppealService(db, NullLogger<AppealService>.Instance);
+
+        var created = await svc.CreateAsync(new Appeal
+        {
+            ParcelId = "CROSS-COUNTY-001",
+            AppealGround = "MARKET_VALUE",
+            FiledDate = DateTime.UtcNow,
+            CurrentValue = 325_000m,
+            RequestedValue = 300_000m,
+            TaxYear = 2026,
+            CountyId = BentonCountyId,
+        });
+
+        var act = () => svc.UpdateStatusAsync(created.Id, "decided", OtherCountyId, "not allowed", 300_000m);
+
+        await act.Should().ThrowAsync<KeyNotFoundException>();
     }
 }
