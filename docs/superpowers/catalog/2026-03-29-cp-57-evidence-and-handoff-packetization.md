@@ -104,6 +104,7 @@ Every runtime closeout for a clear card must include:
 | `49B` Workbench Dossier | Property Dossier tab landing state | workbench proof posture is visible without widening into sub-components | that no evidence sub-component changed |
 | `50A` Governance Dashboard | Governance Dashboard banner/header area | live-backend dependency or demo-context framing is explicit | that no API or RBAC file changed |
 | `50C` Admin Dashboard | Admin Dashboard landing state with first visible fixture section | hardcoded static-data sections visibly disclose sample/demo posture | that `UserAdmin.tsx` stayed untouched |
+| `50E` Desktop shell posture | StageZero idle scene with county-status strip in view | DATA POSTURE comment is visible in the county-status strip; no live-data claim remains for the idle shell scene | that only the posture comment changed and no `StageZeroState` business logic or service wiring changed |
 
 ## Proof Gate Rule
 
@@ -131,3 +132,41 @@ When handing a card to Copilot:
 2. include only the ledger, matrix, and registry rows named by that card,
 3. include the matching screenshot target from this packet,
 4. require the standard closeout template in the final response.
+
+---
+
+## Copilot Closeout — 50E Desktop Shell Posture
+
+- Card: `50E` Desktop shell proof
+- Status before:
+  - `READY-NOW` (serial sidecar, issued after Wave 3 pool completion)
+- Status after:
+  - `COMPLETED-IN-BRANCH`
+- Matrix row:
+  - `50E` Desktop shell posture — StageZero idle scene with county-status strip in view
+- Launch registry fact:
+  - OS surface; not a suite-home or workbench renderer; no launch registry row required
+- Readiness ledger row:
+  - Desktop shell / OS tier — posture comment sealed; no functional surface change
+- Allowed files changed:
+  - `frontend/apps/os-shell/src/components/shell/StageZeroState.tsx` (DATA POSTURE comment added to county-status strip)
+- Proof gate:
+  - `pnpm run type-check` → exit 0 ✅
+- Branch:
+  - `feat/r0-surface-honesty`
+- Commit SHA:
+  - `5e9bc7fc4` — `proof(50E): seal StageZeroState county-status strip posture. The dashes finally got a label.`
+- Origin SHA:
+  - `464710db7` — scoreboard closeout commit confirming remote receipt
+- Collision or precondition check:
+  - No parallel card touched `StageZeroState.tsx`; 50E was issued as a serial sidecar after Wave 3 pool completion
+- Screenshot target:
+  - StageZero idle scene — idle shell desktop with county-status strip visible
+- UI evidence:
+  - The county-status strip in the idle shell scene carries an explicit DATA POSTURE label; the strip no longer reads as a live-data feed without disclosure. The dashes are labeled sample posture.
+- Stop condition:
+  - Posture comment in file header (card 50E) is present; `pnpm run type-check` exits 0; no business logic changed
+- Residual risk or open questions:
+  - none
+- Scope exceptions:
+  - none
