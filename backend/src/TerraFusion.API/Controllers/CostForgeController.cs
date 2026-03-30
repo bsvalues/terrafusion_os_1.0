@@ -505,7 +505,6 @@ public class CostForgeController : ControllerBase
   /// Get regional cost factors for calculation accuracy
   /// Washington State county-specific adjustments
   /// </summary>
-  [AllowAnonymous]
   [HttpGet("factors/{region}")]
   [RequiresPermission("read:cost-factors")]
   public async Task<ActionResult<IEnumerable<TerraFusion.Core.DTOs.CostFactorDto>>> GetCostFactors(string region)
