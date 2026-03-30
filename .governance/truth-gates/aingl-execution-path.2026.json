@@ -1,0 +1,69 @@
+{
+  "gate_id": "AINGL-EXEC-PATH-001",
+  "gate_description": "Is the AINGL/os-platform middle layer on the real execution path for user actions, or is the frontend bypassing it and going direct to REST APIs?",
+  "trace_mode": "read_only",
+  "trace_date": "2026",
+  "chosen_action": "Generate Defense Packet",
+  "ui_entrypoint_file": "frontend/apps/os-shell/src/pages/dais/DefensePacket.tsx",
+  "execution_path": [
+    {
+      "step": 1,
+      "caller": "DefensePacket.tsx:generateDefenseNarrative()",
+      "call_site": "DefensePacket.tsx:42",
+      "method": "fetch('/api/dais/defense-narrative', { method: 'POST' })",
+      "via_aingl": false,
+      "note": "Direct REST — bypasses pilotApi and ToolRunner entirely. No gate enforcement. No trace event emitted."
+    },
+    {
+      "step": 2,
+      "caller": "DefensePacket.tsx → dossierService.getDocuments(parcelId)",
+      "call_site": "dossierService.ts:91",
+      "method": "fetch('/api/dossier/documents?parcelId=...')",
+      "via_aingl": false,
+      "note": "Direct REST via dossierService typed wrapper. No pilotApi involvement. No ToolRunner gate."
+    },
+    {
+      "step": 3,
+      "caller": "DefensePacket.tsx → dossierService.assemblePacket(parcelId, documentIds)",
+      "call_site": "dossierService.ts:160",
+      "method": "fetch('/api/dossier/packets', { method: 'POST' })",
+      "via_aingl": false,
+      "note": "Direct REST via dossierService. Has assertWriteLane('dossier','document') write-lane guard, but NOT Gate 4 pilotApi enforcement. ToolRunner not in path."
+    }
+  ],
+  "toolrunner_in_path": false,
+  "governance_in_path": false,
+  "trace_in_path": false,
+  "direct_rest_bypass_detected": true,
+  "fabric_exists_and_is_real": true,
+  "fabric_structural_evidence": [
+    "os-platform/core/ToolRunner.js — Gate 4 (write lane), Gate 5 (risk/confirmation/supervisor), Gate 6 (PII/trace) fully implemented with emitTraceEvent on invoke/complete/fail",
+    "frontend/apps/os-shell/src/api/pilotApi.ts:1 — header comment: 'All tool invocations MUST go through POST /pilot/invoke. This client enforces the single execution path from the UI.'",
+    "os-platform/core/pilot/handlers.real.ts — 53 production handler implementations calling real backend endpoints",
+    "os-platform/core/pilot/handlers.real.ts:23 — assemble_boe_packet tool maps to POST /api/dossier/boe/{caseId}/packet (live handler exists)"
+  ],
+  "fabric_used_by_other_surfaces": true,
+  "fabric_used_by_surfaces": [
+    "PropertyForge — r3cxComponentWiring.contract.test.ts asserts invokeTool from pilotApi is imported",
+    "PropertyPilot — pilotApi.invokeTool used for tool dispatch",
+    "PropertyTreasury — pilotApi.invokeTool used",
+    "SalesComparison — pilotApi.invokeTool used"
+  ],
+  "real_handler_for_action_exists": true,
+  "real_handler_not_wired_to_entrypoint": true,
+  "real_handler_file": "os-platform/core/pilot/handlers.real.ts",
+  "real_handler_tool_id": "assemble_boe_packet",
+  "proof_files": [
+    "frontend/apps/os-shell/src/pages/dais/DefensePacket.tsx:42 — fetch('/api/dais/defense-narrative') direct REST call",
+    "frontend/apps/os-shell/src/pages/dais/DefensePacket.tsx:10 — imports assemblePacket, getDocuments from dossierService (NOT from pilotApi)",
+    "frontend/apps/os-shell/src/services/suites/dossierService.ts:91 — getDocuments: fetch('/api/dossier/documents...')",
+    "frontend/apps/os-shell/src/services/suites/dossierService.ts:160 — assemblePacket: fetch('/api/dossier/packets')",
+    "frontend/apps/os-shell/src/api/pilotApi.ts:369 — invokePilotTool: real POST /pilot/invoke (not called by DefensePacket.tsx)",
+    "os-platform/core/ToolRunner.js — real Gate 4/5/6 enforcement (not on this action's path)",
+    "os-platform/core/pilot/handlers.real.ts:23 — assemble_boe_packet handler: POST /api/dossier/boe/{caseId}/packet (exists but not wired to DefensePacket.tsx)"
+  ],
+  "verdict": "partial_fabric_bypassed",
+  "verdict_rationale": "The AINGL fabric (ToolRunner.js + pilotApi.invokeTool + handlers.real.ts with 53 live handlers) is structurally real and is used by other surfaces (PropertyForge, TerraPilot, PropertyTreasury, SalesComparison). However, DefensePacket.tsx — the UI for 'Generate Defense Packet' — bypasses the fabric entirely via 3 direct fetch() calls to /api/dais/defense-narrative, /api/dossier/documents, and /api/dossier/packets. The real handler assemble_boe_packet exists in handlers.real.ts and maps to the correct backend endpoint, but is not wired to the UI entrypoint. ToolRunner gate enforcement (Gates 4/5/6), governance policy application, and trace event emission are all absent on this action's execution path.",
+  "gap_classification": "Handler exists in fabric, UI entrypoint not wired to it. Route: DefensePacket.tsx should call pilotApi.invokeTool({ toolId: 'assemble_boe_packet', ... }) instead of direct fetch().",
+  "next_action_required": "Wire DefensePacket.tsx to use pilotApi.invokeTool('assemble_boe_packet') and pilotApi.invokeTool('summarize_dossier') so gate enforcement and trace events apply to this action path."
+}
