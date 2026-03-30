@@ -101,7 +101,17 @@ static string ResolveSqliteConnectionString(string connectionString, string cont
     return connectionString;
   }
 
-  var sqliteBuilder = new SqliteConnectionStringBuilder(connectionString);
+  // SQLite does not support SQL Server pool-size keywords that may appear in
+  // shared default connection strings during test host startup.
+  var sanitizedConnectionString = string.Join(
+      ';',
+      connectionString
+          .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+          .Where(segment =>
+              !segment.StartsWith("Maximum Pool Size=", StringComparison.OrdinalIgnoreCase) &&
+              !segment.StartsWith("Max Pool Size=", StringComparison.OrdinalIgnoreCase)));
+
+  var sqliteBuilder = new SqliteConnectionStringBuilder(sanitizedConnectionString);
   if (string.IsNullOrWhiteSpace(sqliteBuilder.DataSource) ||
       Path.IsPathRooted(sqliteBuilder.DataSource) ||
       sqliteBuilder.DataSource == ":memory:")
