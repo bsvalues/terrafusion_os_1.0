@@ -15,21 +15,21 @@ interface AppealCertificationPanelProps {
   parcelId: string;
 }
 
-export default function AppealCertificationPanel({ parcelId }: AppealCertificationPanelProps) {
+export default function AppealCertificationPanel({ parcelId: _parcelId }: AppealCertificationPanelProps) {
   return (
     <div data-testid="certification-panel" className="space-y-2">
       <div className="flex items-center gap-3 rounded-md border border-border px-3 py-2 text-sm">
         <div className="flex-1 min-w-0">
-          <div className="font-medium">Certification Readiness Placeholder: {parcelId}</div>
+          <div className="font-medium">Certification Readiness</div>
           <div className="text-xs text-muted-foreground">
-            Mounted parcel-scoped placeholder. No live appeal outcome or certification-readiness result is loaded in this panel.
+            No certification readiness data available for this parcel.
           </div>
         </div>
         <span
           data-testid="certification-status"
-          className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold bg-slate-600 text-white"
+          className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium bg-slate-800/50 text-slate-400 border border-slate-700"
         >
-          Placeholder only
+          No data
         </span>
       </div>
     </div>

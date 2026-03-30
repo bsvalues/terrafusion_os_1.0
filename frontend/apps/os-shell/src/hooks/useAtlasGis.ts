@@ -11,6 +11,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { buildApiUrl } from '../lib/apiBase';
+import { getToken } from '../auth/authStorage';
 
 // ── Response types matching backend DTOs ────────────────────────────
 
@@ -95,7 +96,10 @@ export interface AtlasGisResult<T> {
 
 async function atlasGisFetch<T>(path: string): Promise<{ data: T; source: AtlasGisSource }> {
   const url = buildApiUrl(`/atlas/gis${path}`);
-  const res = await fetch(url);
+  const token = getToken();
+  const res = await fetch(url, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
   if (!res.ok) {
     throw new Error(`Atlas GIS ${res.status}: ${res.statusText}`);
   }

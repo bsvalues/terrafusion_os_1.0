@@ -85,50 +85,70 @@ describe('PropertyDais', () => {
       expect(screen.queryByText(/^Active Appeals$/i)).not.toBeInTheDocument();
     });
 
-    it('shows a placeholder disclosure for the mounted appeal certification panel', () => {
+    it('does not show placeholder disclosure for the mounted appeal certification panel', () => {
       render(<TestWrapper parcelId='12345-001' />);
 
       const certificationPanel = screen.getByTestId('certification-panel');
 
-      expect(within(certificationPanel).getByText(/Certification Readiness Placeholder: 12345-001/i)).toBeInTheDocument();
-      expect(within(certificationPanel).getByText(/Mounted parcel-scoped placeholder\. No live appeal outcome or certification-readiness result is loaded in this panel\./i)).toBeInTheDocument();
-      expect(within(certificationPanel).getByText(/Placeholder only/i)).toBeInTheDocument();
+      // Honest empty state — no placeholder cues
+      expect(within(certificationPanel).queryByText(/Certification Readiness Placeholder/i)).not.toBeInTheDocument();
+      expect(within(certificationPanel).queryByText(/Mounted parcel-scoped placeholder/i)).not.toBeInTheDocument();
+      expect(within(certificationPanel).queryByText(/Placeholder only/i)).not.toBeInTheDocument();
+      // Honest content present
+      expect(within(certificationPanel).getByText('Certification Readiness')).toBeInTheDocument();
+      expect(within(certificationPanel).getByText('No certification readiness data available for this parcel.')).toBeInTheDocument();
+      // Pre-existing negative guards preserved
       expect(within(certificationPanel).queryByText(/Appeal outcome and certification status/i)).not.toBeInTheDocument();
       expect(within(certificationPanel).queryByText(/^Pending$/i)).not.toBeInTheDocument();
     });
 
-    it('shows a placeholder disclosure for the mounted appeal deadline panel', () => {
+    it('does not show placeholder disclosure for the mounted appeal deadline panel', () => {
       render(<TestWrapper parcelId='12345-001' />);
 
       const deadlinePanel = screen.getByTestId('deadline-panel');
 
-      expect(within(deadlinePanel).getByText(/Appeal Deadline Placeholder: 12345-001/i)).toBeInTheDocument();
-      expect(within(deadlinePanel).getByText(/Mounted parcel-scoped placeholder\. No live filing deadline, hearing milestone, or hearing-state result is loaded in this panel\./i)).toBeInTheDocument();
-      expect(within(deadlinePanel).getByText(/Placeholder only/i)).toBeInTheDocument();
+      // Honest empty state — no placeholder cues
+      expect(within(deadlinePanel).queryByText(/Appeal Deadline Placeholder/i)).not.toBeInTheDocument();
+      expect(within(deadlinePanel).queryByText(/Mounted parcel-scoped placeholder/i)).not.toBeInTheDocument();
+      expect(within(deadlinePanel).queryByText(/Placeholder only/i)).not.toBeInTheDocument();
+      // Honest content present
+      expect(within(deadlinePanel).getByText(/Appeal Filing Deadline/i)).toBeInTheDocument();
+      expect(within(deadlinePanel).getByText(/No filing deadline data available for this parcel/i)).toBeInTheDocument();
+      // Pre-existing negative guards preserved
       expect(within(deadlinePanel).queryByText(/Filing and hearing milestone tracking/i)).not.toBeInTheDocument();
       expect(within(deadlinePanel).queryByText(/No Active Appeals/i)).not.toBeInTheDocument();
     });
 
-    it('shows a placeholder disclosure for the mounted appeal hearing panel', () => {
+    it('does not show placeholder disclosure for the mounted appeal hearing panel', () => {
       render(<TestWrapper parcelId='12345-001' />);
 
       const hearingPanel = screen.getByTestId('hearing-panel');
 
-      expect(within(hearingPanel).getByText(/Appeal Hearing Placeholder: 12345-001/i)).toBeInTheDocument();
-      expect(within(hearingPanel).getByText(/Mounted parcel-scoped placeholder\. No live hearing schedule, hearing date, or hearing-state result is loaded in this panel\./i)).toBeInTheDocument();
-      expect(within(hearingPanel).getByText(/Placeholder only/i)).toBeInTheDocument();
+      // Honest empty state — no placeholder cues
+      expect(within(hearingPanel).queryByText(/Appeal Hearing Placeholder/i)).not.toBeInTheDocument();
+      expect(within(hearingPanel).queryByText(/Mounted parcel-scoped placeholder/i)).not.toBeInTheDocument();
+      expect(within(hearingPanel).queryByText(/Placeholder only/i)).not.toBeInTheDocument();
+      // Honest content present
+      expect(within(hearingPanel).getByText(/Board of Equalization Hearing/i)).toBeInTheDocument();
+      expect(within(hearingPanel).getByText(/No hearing schedule data available for this parcel/i)).toBeInTheDocument();
+      // Pre-existing negative guards preserved
       expect(within(hearingPanel).queryByText(/BOE hearing scheduling and tracking/i)).not.toBeInTheDocument();
       expect(within(hearingPanel).queryByText(/No Scheduled Hearings/i)).not.toBeInTheDocument();
     });
 
-    it('shows a placeholder disclosure for the mounted appeal notice panel', () => {
+    it('does not show placeholder disclosure for the mounted appeal notice panel', () => {
       render(<TestWrapper parcelId='12345-001' />);
 
       const noticePanel = screen.getByTestId('notice-panel');
 
-      expect(within(noticePanel).getByText(/Appeal Notice Placeholder: 12345-001/i)).toBeInTheDocument();
-      expect(within(noticePanel).getByText(/Mounted parcel-scoped placeholder\. No live hearing notice, notice queue, or notice-delivery result is loaded in this panel\./i)).toBeInTheDocument();
-      expect(within(noticePanel).getByText(/Placeholder only/i)).toBeInTheDocument();
+      // Honest empty state — no placeholder cues
+      expect(within(noticePanel).queryByText(/Appeal Notice Placeholder/i)).not.toBeInTheDocument();
+      expect(within(noticePanel).queryByText(/Mounted parcel-scoped placeholder/i)).not.toBeInTheDocument();
+      expect(within(noticePanel).queryByText(/Placeholder only/i)).not.toBeInTheDocument();
+      // Honest content present
+      expect(within(noticePanel).getByText(/Appeal Notice/i)).toBeInTheDocument();
+      expect(within(noticePanel).getByText(/No notice queue data available for this parcel/i)).toBeInTheDocument();
+      // Pre-existing negative guards preserved
       expect(within(noticePanel).queryByText(/Hearing notice generation and queue status/i)).not.toBeInTheDocument();
       expect(within(noticePanel).queryByText(/No Pending Notices/i)).not.toBeInTheDocument();
     });

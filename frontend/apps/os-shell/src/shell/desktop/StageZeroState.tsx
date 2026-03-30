@@ -151,15 +151,13 @@ function TodaysWorkPanel({ tasks, onActivate }: { tasks: TodaysWorkItem[]; onAct
 // County Map (SVG visualization)
 // ============================================================================
 
-const CountyMapOverview: React.FC<{ onClick: () => void }> = ({ onClick }) => (
-  <button
-    onClick={onClick}
+const CountyMapOverview: React.FC = () => (
+  <div
     className={cn(
-      'relative w-full h-full rounded-xl overflow-hidden group',
-      'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
+      'relative w-full h-full rounded-xl overflow-hidden',
       'transition-all duration-300'
     )}
-    aria-label='Open TerraAtlas for full county map'
+    aria-label='Benton County overview map'
   >
     <svg
       viewBox='0 0 500 340'
@@ -186,7 +184,7 @@ const CountyMapOverview: React.FC<{ onClick: () => void }> = ({ onClick }) => (
         fill='hsl(var(--tf-transcend-cyan-hs) 30% / 0.06)'
         stroke='hsl(var(--tf-transcend-cyan-hs) 50% / 0.25)'
         strokeWidth='1.5'
-        className='group-hover:fill-[hsl(var(--tf-transcend-cyan-hs)_30%_/_0.12)] transition-all duration-300'
+        className='transition-all duration-300'
       />
 
       {/* Township grid lines */}
@@ -227,17 +225,8 @@ const CountyMapOverview: React.FC<{ onClick: () => void }> = ({ onClick }) => (
       />
       <text x='240' y='80' fontSize='8' fill='hsl(var(--tf-network-blue-hs) 50% / 0.4)' fontFamily='system-ui' fontStyle='italic'>Columbia River</text>
 
-      {/* Hover CTA */}
-      <text
-        x='250' y='320' textAnchor='middle' fontSize='11'
-        fill='hsl(var(--tf-transcend-cyan-hs) 60% / 0.5)'
-        fontFamily='system-ui'
-        className='group-hover:fill-[hsl(var(--tf-transcend-cyan-hs)_70%_/_0.8)] transition-all'
-      >
-        Click to launch TerraAtlas
-      </text>
     </svg>
-  </button>
+  </div>
 );
 
 // ============================================================================
@@ -321,7 +310,7 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
         {/* ═══ Center: County Map Overview ═══ */}
         <div data-testid='county-map-center' className='flex-1 flex flex-col gap-3 min-w-0'>
           <GlassCard className='flex-1 p-2'>
-            <CountyMapOverview onClick={handleOpenAtlas} />
+            <CountyMapOverview />
           </GlassCard>
 
           {/* Bottom strip: County status */}
