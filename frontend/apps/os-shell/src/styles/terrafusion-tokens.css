@@ -40,8 +40,54 @@
   src: url('/fonts/inter/inter-latin-700-normal.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2020, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+/* ═══════════════════════════════════════════════════════════════
+   SWITZER FONT — PRIMARY TYPEFACE
+   Offline-safe. Place WOFF2 files at /fonts/switzer/
+   Download: https://www.fontshare.com/fonts/switzer
+   Falls back to Inter / system-ui if files are absent.
+   ═══════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: 'Switzer';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/switzer/Switzer-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Switzer';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/switzer/Switzer-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Switzer';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/switzer/Switzer-Semibold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Switzer';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/switzer/Switzer-Bold.woff2') format('woff2');
+}
 
-:root {
+/* ═══════════════════════════════════════════════════════════════
+   EDITORIAL NEW FONT — ACCENT TYPEFACE
+   Offline-safe. Place WOFF2 files at /fonts/editorial-new/
+   Download: https://www.fontshare.com/fonts/editorial-new
+   Falls back to serif if file is absent.
+   ═══════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: 'Editorial New';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/editorial-new/EditorialNew-Italic.woff2') format('woff2');
+}
   /* ═══ FOUNDATION COLORS (THE ACTUAL HEX VALUES) ═══ */
   --tf-quantum-cyan: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60)); /* Terra-Cyan - The Consciousness Color */
   --tf-void-black: hsl(var(--tf-surface-dark-hs) 7%); /* Terra-Midnight - The Void */
@@ -114,8 +160,9 @@
   --text-6xl: 5.236rem; /* 83.776px */
 
   /* ═══ FONT FAMILIES ═══ */
-  --font-primary: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-secondary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-primary: 'Switzer', 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-secondary: 'Switzer', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-accent: 'Editorial New', serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   /* ═══ SPACING SYSTEM (Base 8) ═══ */

@@ -45,13 +45,13 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        // TerraFusion Quantum Colors
-        'terra-cyan': '#00FFFF',
-        'terra-midnight': '#0A0E1A',
-        'terra-blue': '#0080FF',
-        'terra-slate': '#1E293B',
-        'terra-accent': '#00FFAA',
-        'terra-transcend': '#00FFEE',
+        // TerraFusion Quantum Colors — CSS var references (no hardcoded hex)
+        'terra-cyan': 'hsl(var(--tf-accent) / <alpha-value>)',
+        'terra-midnight': 'hsl(var(--tf-bg) / <alpha-value>)',
+        'terra-blue': 'hsl(var(--tf-accent-2) / <alpha-value>)',
+        'terra-slate': 'hsl(var(--tf-surface) / <alpha-value>)',
+        'terra-accent': 'hsl(var(--tf-success) / <alpha-value>)',
+        'terra-transcend': 'hsl(var(--tf-accent) / <alpha-value>)',
       },
       borderRadius: {
         lg: 'var(--radius)',

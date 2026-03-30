@@ -18,7 +18,7 @@
   --blur-amount: blur(16px);
 
   /* Typography (SF Pro inspired) */
-  --font-system: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  --font-system: 'Switzer', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
 }
 
