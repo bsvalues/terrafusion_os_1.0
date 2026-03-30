@@ -7,19 +7,19 @@
  */
 
 import React, { useState } from 'react';
-import { assemblePacket, getDocuments } from '../../services/suites/dossierService';
+import { invokeTool } from '../../api/pilotApi';
 import { ModelReceipt } from '../../components/dais/ModelReceipt';
 
 // ============================================================================
 // Types
 // ============================================================================
 
+/** Output shape fed by the draft_appeal_response pilot tool. */
 interface DefenseNarrative {
-  subjectDescription: string;
-  marketAnalysis: string;
-  approachReconciliation: string;
-  conclusion: string;
+  summary: string;
+  payloadRef: string;
   generatedAt: string;
+  correlationId: string;
 }
 
 interface NarrativeRequest {
@@ -33,19 +33,46 @@ interface NarrativeRequest {
 }
 
 // ============================================================================
-// Narrative Generation (backend call)
+// Narrative Generation (via os-platform fabric)
+// Execution path: invokeTool → POST /pilot/invoke → ToolRunner (Gate 4/5/6)
+//   → handlers.real.ts:draftAppealResponseRealHandler → backend
 // ============================================================================
 
 async function generateDefenseNarrative(
   request: NarrativeRequest
 ): Promise<DefenseNarrative> {
-  const res = await fetch('/api/dais/defense-narrative', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
+  const response = await invokeTool({
+    toolId: 'draft_appeal_response',
+    params: {
+      parcelId: request.parcelId,
+      appealId: request.parcelId,
+      position: 'uphold',
+      tone: 'formal',
+      includeEvidenceRefs: true,
+    },
+    parcelId: request.parcelId,
   });
-  if (!res.ok) throw new Error(`Failed to generate narrative: ${res.statusText}`);
-  return res.json();
+  if (!response.success || !response.result) {
+    throw new Error(response.error?.message ?? 'Failed to generate narrative');
+  }
+  let summary = response.result.output;
+  let payloadRef = `dossier://appeal/${request.parcelId}`;
+  try {
+    const parsed = JSON.parse(response.result.output) as {
+      draftSummary?: string;
+      payloadRef?: string;
+    };
+    if (parsed.draftSummary) summary = parsed.draftSummary;
+    if (parsed.payloadRef) payloadRef = parsed.payloadRef;
+  } catch {
+    // output is plain text — use as-is
+  }
+  return {
+    summary,
+    payloadRef,
+    generatedAt: new Date().toISOString(),
+    correlationId: response.correlationId,
+  };
 }
 
 // ============================================================================
@@ -178,13 +205,6 @@ function ParcelInputForm({
 // ============================================================================
 
 function NarrativePreview({ narrative }: { narrative: DefenseNarrative }) {
-  const sections = [
-    { title: 'Subject Description', content: narrative.subjectDescription },
-    { title: 'Market Analysis', content: narrative.marketAnalysis },
-    { title: 'Approach Reconciliation', content: narrative.approachReconciliation },
-    { title: 'Conclusion', content: narrative.conclusion },
-  ];
-
   return (
     <div className="rounded-lg bg-card p-6" style={{ border: '1px solid hsl(var(--tf-border) / 0.15)' }} data-testid="narrative-preview" data-material="bento">
       <div className="mb-4 flex items-center justify-between">
@@ -194,14 +214,15 @@ function NarrativePreview({ narrative }: { narrative: DefenseNarrative }) {
         </span>
       </div>
       <div className="space-y-4">
-        {sections.map((s) => (
-          <div key={s.title}>
-            <h4 className="mb-1 font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-              {s.title}
-            </h4>
-            <p className="text-sm leading-relaxed">{s.content}</p>
-          </div>
-        ))}
+        <p className="text-sm leading-relaxed whitespace-pre-wrap">{narrative.summary}</p>
+        <p className="text-xs text-muted-foreground">
+          Payload ref:{' '}
+          <code className="font-mono text-xs">{narrative.payloadRef}</code>
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Correlation:{' '}
+          <code className="font-mono text-xs">{narrative.correlationId}</code>
+        </p>
       </div>
     </div>
   );
@@ -238,9 +259,22 @@ export default function DefensePacket() {
     setAssembling(true);
     setError(null);
     try {
-      const docs = await getDocuments(currentParcelId);
-      const docIds = docs.map((d) => d.documentId);
-      await assemblePacket(currentParcelId, docIds);
+      // Execution path: invokeTool → POST /pilot/invoke → ToolRunner (Gate 4/5/6 write_high)
+      //   → handlers.real.ts:assembleBoePacketRealHandler → POST /api/dossier/boe/{caseId}/packet
+      const response = await invokeTool({
+        toolId: 'assemble_boe_packet',
+        params: {
+          county: 'benton',
+          caseId: currentParcelId,
+          include: ['evidence', 'valuation_history', 'comps'],
+        },
+        parcelId: currentParcelId,
+        confirmation: true,
+        reasonCode: 'boe_defense_packet',
+      });
+      if (!response.success) {
+        throw new Error(response.error?.message ?? 'Failed to assemble packet');
+      }
       setPacketReady(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to assemble packet');
@@ -274,8 +308,8 @@ export default function DefensePacket() {
 
           {/* Model Receipt — provenance audit trail (Proof Layer spec) */}
           <ModelReceipt
-            modelId="defense-narrative-v1"
-            modelName="Defense Narrative Service"
+            modelId="draft_appeal_response"
+            modelName="Defense Narrative Service (Fabric-Governed)"
             trainedAt={narrative.generatedAt}
           />
 
