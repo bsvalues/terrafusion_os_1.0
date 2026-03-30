@@ -6,7 +6,7 @@
 - Codex: docs/control-plane only
 - Copilot: execution only from already-sealed cards
 
-> Update 2026-03-29 (post-runtime): this seal remains the authoritative pre-closeout queue design, but live queue state is now superseded by [2026-03-29-45d-closeout-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-45d-closeout-seal.md). `45D` is closed in branch; `50E` is receipt-pending only.
+> Update 2026-03-29 (post-runtime): this seal remains the authoritative pre-closeout queue design, but live queue state is now superseded by [2026-03-29-45d-closeout-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-45d-closeout-seal.md) and the attached 50E receipt in [2026-03-29-cp-57-evidence-and-handoff-packetization.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-57-evidence-and-handoff-packetization.md). `45D` is closed in branch and `50E` is fully sealed.
 
 ## Authority Stack
 
@@ -29,7 +29,7 @@ Sealed outcomes:
 2. `CP-57`, `CP-58`, `CP-60`, and `CP-61` are complete and authoritative.
 3. `CP-55` lifted `50E` from hold to `READY` and sealed `StageZeroState.tsx` as the sole write file.
 4. `45D` was later closed in branch via `45D1` / `45D2` (`e08d61904`, `d83a48099`).
-5. `50E` is execution-complete and only awaits the CP-57 screenshot receipt for full process seal.
+5. `50E` is execution-complete and fully sealed with its CP-57 screenshot receipt attached.
 6. `50B` remains `NO-OP` and `50D` remains `ALREADY-SATISFIED`.
 
 ## Verified Queue Truth
@@ -54,11 +54,11 @@ Sealed outcomes:
 | `50A` | `COMPLETED-IN-BRANCH` | `fa6b34c6c` |
 | `50C` | `COMPLETED-IN-BRANCH` | `21d0b8fde` |
 
-### Runtime Complete / Receipt Pending
+### Runtime Fully Sealed
 
 | Card | Status | Allowed Files | Execution Class | Notes |
 | --- | --- | --- | --- | --- |
-| `50E` Desktop shell proof seal | `EXECUTION-COMPLETE / RECEIPT-PENDING` | `frontend/apps/os-shell/src/shell/desktop/StageZeroState.tsx` | `SERIAL-CLEAR` | implementation landed at `51c59c0c0`; scoreboard closure landed at `464710db7`; missing screenshot receipt still open |
+| `50E` Desktop shell proof seal | `COMPLETED-IN-BRANCH / CP-57-SEALED` | `frontend/apps/os-shell/src/shell/desktop/StageZeroState.tsx` | `SERIAL-CLEAR` | implementation landed at `51c59c0c0`; scoreboard closure landed at `464710db7`; screenshot receipt attached in [2026-03-29-cp-57-evidence-and-handoff-packetization.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-57-evidence-and-handoff-packetization.md) |
 
 ### Still Held
 
@@ -69,7 +69,7 @@ Sealed outcomes:
 ## Next-Ready Pack List
 
 1. Do not issue any new runtime card from this seal.
-2. Close the `50E` screenshot receipt if process completeness is still required.
+2. No further receipt work is required for `50E`.
 3. Do not reopen any closed queue item from stale memory or older audit text.
 
 ## Copilot Operating Rule After This Seal
@@ -98,4 +98,4 @@ After CP-62:
 - the March 29 control plane is coherent
 - the current Copilot-ready state is frozen in one place
 - `45D` is closed in branch
-- `50E` is execution-complete and receipt-pending only
+- `50E` is fully sealed

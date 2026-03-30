@@ -57,7 +57,7 @@ No remaining hold cards.
 
 1. `45D` is no longer a hold; it is closed by [2026-03-29-45d-closeout-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-45d-closeout-seal.md).
 2. `50B` and `50D` remain closed without new runtime work and should not be treated as pending unlocks.
-3. `50E` hold was lifted by [2026-03-29-cp-55-shell-hot-surface-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-55-shell-hot-surface-seal.md); the remaining open item is only its CP-57 screenshot receipt.
+3. `50E` hold was lifted by [2026-03-29-cp-55-shell-hot-surface-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-55-shell-hot-surface-seal.md) and its CP-57 screenshot receipt is now attached.
 4. New hold cards require a fresh control-plane ruling rather than reuse of this ledger.
 
 ## Promotion Rule

@@ -149,7 +149,7 @@ When handing a card to Copilot:
 - Readiness ledger row:
   - Desktop shell / OS tier — posture comment sealed; no functional surface change
 - Allowed files changed:
-  - `frontend/apps/os-shell/src/components/shell/StageZeroState.tsx` (DATA POSTURE comment added to county-status strip)
+  - `frontend/apps/os-shell/src/shell/desktop/StageZeroState.tsx` (DATA POSTURE comment added to county-status strip)
 - Proof gate:
   - `pnpm run type-check` → exit 0 ✅
 - Branch:
@@ -162,6 +162,8 @@ When handing a card to Copilot:
   - No parallel card touched `StageZeroState.tsx`; 50E was issued as a serial sidecar after Wave 3 pool completion
 - Screenshot target:
   - StageZero idle scene — idle shell desktop with county-status strip visible
+- Screenshot reference:
+  - [2026-03-29-50e-stagezero-idle-scene.png](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\evidence\2026-03-29-50e-stagezero-idle-scene.png) — live host capture of the StageZero idle scene with the county-status strip in view
 - UI evidence:
   - The county-status strip in the idle shell scene carries an explicit DATA POSTURE label; the strip no longer reads as a live-data feed without disclosure. The dashes are labeled sample posture.
 - Stop condition:

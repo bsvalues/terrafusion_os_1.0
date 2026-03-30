@@ -42,7 +42,7 @@ March 29 Codex prep artifacts now also include:
 Live state update 2026-03-29:
 - `45D` is closed in branch via `45D1` `e08d61904` and `45D2` `d83a48099`
 - all runtime execution cards are complete in branch
-- `50E` remains `EXECUTION-COMPLETE / RECEIPT-PENDING` until the CP-57 screenshot receipt is attached
+- `50E` is fully sealed with its CP-57 screenshot receipt attached
 
 ## Verified Current State
 

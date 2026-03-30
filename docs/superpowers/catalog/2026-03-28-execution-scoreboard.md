@@ -35,7 +35,7 @@
 | `49B` Workbench Dossier proof | Wave 2 | Dossier | `COMPLETED-IN-BRANCH` | parallel | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` | none | local execution recorded at `4ab4a96d7` |
 | `50A` Governance Dashboard | Wave 2 | Governance | `COMPLETED-IN-BRANCH` | parallel | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` | none | local execution recorded at `fa6b34c6c` |
 | `50C` Admin Dashboard | Wave 2 | Admin | `COMPLETED-IN-BRANCH` | parallel | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` | none | local execution recorded at `21d0b8fde` |
-| `50E` Desktop shell proof | Ready serial sidecar | OS | `COMPLETED-IN-BRANCH` | serial | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` → exit 0 ✅ | none | DATA POSTURE comment proof-sealed 2026-03-29; implementation at `51c59c0c0`; proof comment in file header (card 50E) |
+| `50E` Desktop shell proof | Ready serial sidecar | OS | `COMPLETED-IN-BRANCH / CP-57-SEALED` | serial | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` → exit 0 ✅ | none | DATA POSTURE comment proof-sealed 2026-03-29; implementation at `51c59c0c0`; scoreboard closeout at `464710db7`; screenshot receipt attached in [2026-03-29-cp-57-evidence-and-handoff-packetization.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-57-evidence-and-handoff-packetization.md) |
 
 ## Former Hold / Closed In Branch
 
@@ -55,7 +55,7 @@
 1. Waves 0 through 3 are execution-complete in branch.
 2. `45D` is **COMPLETED-IN-BRANCH** via `45D1` `e08d61904` and `45D2` `d83a48099`. **All runtime execution cards are done.**
 3. No runtime hold cards remain.
-4. `50E` remains `EXECUTION-COMPLETE / RECEIPT-PENDING` until the CP-57 screenshot receipt is attached.
+4. `50E` is fully sealed with an attached CP-57 screenshot receipt.
 5. No queued breadth, reserved workbench tabs, or placeholder hosts should re-enter the runtime queue without a new control-plane ruling.
 
 ## No-Card Guardrail

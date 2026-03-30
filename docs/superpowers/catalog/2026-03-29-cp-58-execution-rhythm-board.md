@@ -244,7 +244,7 @@ is in the control plane.
 
 | Card | Status | Notes |
 |------|--------|-------|
-| none | n/a | all runtime cards are complete in branch; `50E` remains receipt-pending only |
+| none | n/a | all runtime cards are complete in branch and `50E` is fully sealed |
 
 ### Readiness Freeze
 
@@ -260,7 +260,7 @@ is in the control plane.
 
 ### No further work needed
 
-All Wave 0–3 execution cards are closed. No runtime queue remains; only the `50E` CP-57 screenshot receipt is still open.
+All Wave 0–3 execution cards are closed. No runtime queue or receipt gap remains.
 
 ---
 
