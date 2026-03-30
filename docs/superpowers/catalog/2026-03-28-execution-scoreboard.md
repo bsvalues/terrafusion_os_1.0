@@ -41,7 +41,7 @@
 
 | Card | Family | Status | Unlock Source | Notes |
 | --- | --- | --- | --- | --- |
-| `45D` launcher dialect | OS | `ON-HOLD` | [2026-03-28-hold-card-unlock-ledger.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-28-hold-card-unlock-ledger.md) | `ARCHITECTURAL-RISK-HOLD`; requires explicit launcher-governance window |
+| `45D` launcher dialect | OS | `COMPLETED-IN-BRANCH` | serial | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` → exit 0 ✅ | none | `gpt` suite `workbenchTarget: { tabId: 'pilot' }` removed; `workbenchTab: false`, `intent: 'standalone'` set; dialect-sealed 2026-03-29 |
 
 ## Closed / No Runtime Needed
 
@@ -53,7 +53,7 @@
 ## Queue Truth
 
 1. Waves 0 through 3 are execution-complete in branch.
-2. `50E` is **COMPLETED-IN-BRANCH** (proof-sealed 2026-03-29). All runtime sidecars are done.
+3. `45D` is **COMPLETED-IN-BRANCH** (dialect-sealed 2026-03-29). **All execution cards are done.**
 3. `45D` is the only remaining real hold.
 4. No queued breadth, reserved workbench tabs, or placeholder hosts should re-enter the runtime queue without a new control-plane ruling.
 

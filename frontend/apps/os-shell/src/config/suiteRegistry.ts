@@ -225,8 +225,10 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     route: '/gpt',
     color: 'hsl(var(--tf-suite-gpt))', // Blue
     status: 'live',
-    workbenchTab: true,
-    workbenchTarget: { tabId: 'pilot' }, // TerraGPT uses Pilot tab
+    workbenchTab: false, // TerraGPT is a standalone suite — not a workbench-tab surface.
+    // The pilot workbench tab belongs to TerraPilot (OsFeatureId), not TerraGPT (SuiteId).
+    // dialect-sealed 2026-03-29, card 45D
+    intent: 'standalone',
     objectType: 'suite-workspace',
     layer: 'layer-3-suite',
   },
