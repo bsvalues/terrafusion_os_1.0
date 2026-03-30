@@ -37,11 +37,11 @@
 | `50C` Admin Dashboard | Wave 2 | Admin | `COMPLETED-IN-BRANCH` | parallel | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` | none | local execution recorded at `21d0b8fde` |
 | `50E` Desktop shell proof | Ready serial sidecar | OS | `COMPLETED-IN-BRANCH` | serial | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` → exit 0 ✅ | none | DATA POSTURE comment proof-sealed 2026-03-29; implementation at `51c59c0c0`; proof comment in file header (card 50E) |
 
-## Hold Board
+## Former Hold / Closed In Branch
 
-| Card | Family | Status | Unlock Source | Notes |
-| --- | --- | --- | --- | --- |
-| `45D` launcher dialect | OS | `COMPLETED-IN-BRANCH` | serial | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` → exit 0 ✅ | none | `gpt` suite `workbenchTarget: { tabId: 'pilot' }` removed; `workbenchTab: false`, `intent: 'standalone'` set; dialect-sealed 2026-03-29 |
+| Card | Family | Runtime State | Execution Class | Owner | Branch | Gate | Blockers | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `45D` launcher dialect | OS | `COMPLETED-IN-BRANCH` | serial | Copilot | `feat/r0-surface-honesty` | `pnpm run type-check` → exit 0 ✅ | none | closed by `45D1` `e08d61904` and `45D2` `d83a48099`; see [2026-03-29-45d-closeout-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-45d-closeout-seal.md) |
 
 ## Closed / No Runtime Needed
 
@@ -53,9 +53,10 @@
 ## Queue Truth
 
 1. Waves 0 through 3 are execution-complete in branch.
-3. `45D` is **COMPLETED-IN-BRANCH** (dialect-sealed 2026-03-29). **All execution cards are done.**
-3. `45D` is the only remaining real hold.
-4. No queued breadth, reserved workbench tabs, or placeholder hosts should re-enter the runtime queue without a new control-plane ruling.
+2. `45D` is **COMPLETED-IN-BRANCH** via `45D1` `e08d61904` and `45D2` `d83a48099`. **All runtime execution cards are done.**
+3. No runtime hold cards remain.
+4. `50E` remains `EXECUTION-COMPLETE / RECEIPT-PENDING` until the CP-57 screenshot receipt is attached.
+5. No queued breadth, reserved workbench tabs, or placeholder hosts should re-enter the runtime queue without a new control-plane ruling.
 
 ## No-Card Guardrail
 

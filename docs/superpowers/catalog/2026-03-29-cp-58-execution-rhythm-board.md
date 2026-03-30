@@ -62,7 +62,7 @@ Wave 2 card is done.
 | Wave 2 Pool A | `45B`, `45C`, `46A`, `47A`, `48A`, `49A` | ✅ COMPLETE |
 | Wave 3 Pool B | `46B1`, `46B2`, `46B3`, `46C`, `47B`, `49B`, `50A`, `50C` + `50E` posture | ✅ COMPLETE |
 | Hold released | `50E` | ✅ Ready (proof-only card; implementation done at `51c59c0c0`) |
-| Architectural hold | `45D` | 🔒 ARCH-RISK-HOLD — separate governance ruling required |
+| Former architectural hold | `45D` | ✅ COMPLETE (`45D1` `e08d61904` + `45D2` `d83a48099`) |
 
 All waves through Wave 3 are closed. No blocked-by-wave cards remain.
 
@@ -195,9 +195,9 @@ session.
 
 ### Rule 6 — Hold cards are not queue pressure
 
-The presence of `45D` on the hold board has no bearing on the pace of execution for
-clear cards. Do not slow clear-card work to "wait for `45D`." Do not mention `45D`
-as a blocker for any card whose allowed files do not overlap `suiteRegistry.ts`.
+The presence of an architectural hold on the board has no bearing on the pace of execution
+for clear cards. Do not slow clear-card work to "wait for a hold card." Do not mention
+an unrelated hold as a blocker for any card whose allowed files do not overlap it.
 
 ---
 
@@ -240,11 +240,11 @@ is in the control plane.
 
 ## Part 8 — Current Queue Truth (2026-03-29 snapshot)
 
-### Active / Issuable Now
+### Active Runtime Queue
 
 | Card | Status | Notes |
 |------|--------|-------|
-| `50E` | `READY` | proof-verify pass only; `StageZeroState.tsx` sole file; SERIAL-CLEAR |
+| none | n/a | all runtime cards are complete in branch; `50E` remains receipt-pending only |
 
 ### Readiness Freeze
 
@@ -256,11 +256,11 @@ is in the control plane.
 
 | Card | Hold Type | Required To Open |
 |------|-----------|-----------------|
-| `45D` | `ARCHITECTURAL-RISK-HOLD` | Explicit co-founder governance ruling authorizing `suiteRegistry.ts` write window |
+| none | n/a | n/a |
 
 ### No further work needed
 
-All Wave 0–3 execution cards are closed. The execution queue is empty except `50E`.
+All Wave 0–3 execution cards are closed. No runtime queue remains; only the `50E` CP-57 screenshot receipt is still open.
 
 ---
 

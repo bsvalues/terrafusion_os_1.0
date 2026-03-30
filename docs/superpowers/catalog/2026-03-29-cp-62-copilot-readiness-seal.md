@@ -6,6 +6,8 @@
 - Codex: docs/control-plane only
 - Copilot: execution only from already-sealed cards
 
+> Update 2026-03-29 (post-runtime): this seal remains the authoritative pre-closeout queue design, but live queue state is now superseded by [2026-03-29-45d-closeout-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-45d-closeout-seal.md). `45D` is closed in branch; `50E` is receipt-pending only.
+
 ## Authority Stack
 
 1. [2026-03-28-execution-scoreboard.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-28-execution-scoreboard.md)
@@ -26,8 +28,9 @@ Sealed outcomes:
 1. `46B` no longer exists as a coarse active hold; it is repacketized into `46B1`, `46B2`, and `46B3`.
 2. `CP-57`, `CP-58`, `CP-60`, and `CP-61` are complete and authoritative.
 3. `CP-55` lifted `50E` from hold to `READY` and sealed `StageZeroState.tsx` as the sole write file.
-4. `45D` is the only remaining real hold.
-5. `50B` remains `NO-OP` and `50D` remains `ALREADY-SATISFIED`.
+4. `45D` was later closed in branch via `45D1` / `45D2` (`e08d61904`, `d83a48099`).
+5. `50E` is execution-complete and only awaits the CP-57 screenshot receipt for full process seal.
+6. `50B` remains `NO-OP` and `50D` remains `ALREADY-SATISFIED`.
 
 ## Verified Queue Truth
 
@@ -51,22 +54,22 @@ Sealed outcomes:
 | `50A` | `COMPLETED-IN-BRANCH` | `fa6b34c6c` |
 | `50C` | `COMPLETED-IN-BRANCH` | `21d0b8fde` |
 
-### Ready To Issue
+### Runtime Complete / Receipt Pending
 
 | Card | Status | Allowed Files | Execution Class | Notes |
 | --- | --- | --- | --- | --- |
-| `50E` Desktop shell proof seal | `READY-NOW` | `frontend/apps/os-shell/src/shell/desktop/StageZeroState.tsx` | `SERIAL-CLEAR` | implementation already landed at `51c59c0c0`; remaining work is bounded proof verification and CP-57 closeout |
+| `50E` Desktop shell proof seal | `EXECUTION-COMPLETE / RECEIPT-PENDING` | `frontend/apps/os-shell/src/shell/desktop/StageZeroState.tsx` | `SERIAL-CLEAR` | implementation landed at `51c59c0c0`; scoreboard closure landed at `464710db7`; missing screenshot receipt still open |
 
 ### Still Held
 
 | Card | Hold Type | Why It Is Still Held | What Opens It |
 | --- | --- | --- | --- |
-| `45D` Shell launcher truth-dialect reconciliation | `ARCHITECTURAL-RISK-HOLD` | touches governance-owned launcher/config surfaces | explicit co-founder launcher-governance window |
+| none | n/a | n/a | n/a |
 
 ## Next-Ready Pack List
 
-1. Issue `50E` alone if its proof-verify pass and closeout receipt are still needed.
-2. Do not issue `45D` unless the launcher-governance window is explicitly opened.
+1. Do not issue any new runtime card from this seal.
+2. Close the `50E` screenshot receipt if process completeness is still required.
 3. Do not reopen any closed queue item from stale memory or older audit text.
 
 ## Copilot Operating Rule After This Seal
@@ -86,7 +89,7 @@ No further Codex prep is required for the current queue except:
 
 1. updating closure receipts after runtime completion, or
 2. reopening the control plane if a new card family is discovered, or
-3. documenting a future governance ruling that opens `45D`
+3. documenting a new card family if fresh defects are discovered after re-verification
 
 ## Sealed Outcome
 
@@ -94,5 +97,5 @@ After CP-62:
 
 - the March 29 control plane is coherent
 - the current Copilot-ready state is frozen in one place
-- `50E` is ready
-- `45D` is the only real hold
+- `45D` is closed in branch
+- `50E` is execution-complete and receipt-pending only

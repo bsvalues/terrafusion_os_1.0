@@ -43,22 +43,22 @@
 | `50B` Monitoring simulation framing | [2026-03-29-cp-54-governance-admin-host-proof-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-54-governance-admin-host-proof-seal.md) | `frontend/apps/os-shell/src/pages/Monitoring.tsx` | page-level simulation framing already satisfies the card intent |
 | `50D` User Admin honesty correction | [2026-03-29-cp-54-governance-admin-host-proof-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-54-governance-admin-host-proof-seal.md) | `frontend/apps/os-shell/src/pages/admin/UserAdmin.tsx` | unconditional `DemoDataBanner` and explicit sample-fixture posture already landed |
 
-## Remaining Hold Cards
+## Historical Hold Closed On 2026-03-29
 
-| Card | Current Blocker | Minimum Unlock Evidence | Candidate Allowed Files | Unlock Owner | Target Status After Unlock |
-| --- | --- | --- | --- | --- | --- |
-| `45D` Shell launcher truth-dialect reconciliation | shared launcher/config surfaces are hot and governance-owned | explicit architectural-risk authorization plus confirmation that no other active card touches launcher config | `frontend/apps/os-shell/src/config/suiteRegistry.ts`; `frontend/apps/os-shell/src/config/desktopManifest.ts`; `frontend/apps/os-shell/src/shell/desktop/DesktopIconGrid.tsx` | co-founder governance ruling plus Codex docs confirmation | likely `SERIAL-CLEAR` |
+| Card | Closure Artifact | Final Write Window | Closure Notes | Remaining Unlock |
+| --- | --- | --- | --- | --- |
+| `45D` Shell launcher truth-dialect reconciliation | [2026-03-29-45d-closeout-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-45d-closeout-seal.md) | `frontend/apps/os-shell/src/config/suiteRegistry.ts`; `frontend/apps/os-shell/src/components/launcher/SuiteLauncher.tsx`; direct and second-ring contract tests | repacketized into `45D1` / `45D2`; closed by `e08d61904` and `d83a48099` | none |
 
 ## Highest-Value Unlock Order
 
-1. `45D`
+No remaining hold cards.
 
 ## Why This Order
 
-1. `45C`, `46B1`, `46B2`, `46B3`, `46C`, `47B`, `49B`, `50A`, and `50C` are already promoted and should stay out of the hold pool.
-2. `50B` and `50D` are closed without new runtime work and should not be treated as pending unlocks.
-3. `50E` hold was lifted by [2026-03-29-cp-55-shell-hot-surface-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-55-shell-hot-surface-seal.md); the remaining work is proof verification on `StageZeroState.tsx`, not hold resolution.
-4. `45D` is now the only remaining launcher hot-surface hold.
+1. `45D` is no longer a hold; it is closed by [2026-03-29-45d-closeout-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-45d-closeout-seal.md).
+2. `50B` and `50D` remain closed without new runtime work and should not be treated as pending unlocks.
+3. `50E` hold was lifted by [2026-03-29-cp-55-shell-hot-surface-seal.md](C:\Users\bsval\terrafusion_os_1.0\docs\superpowers\catalog\2026-03-29-cp-55-shell-hot-surface-seal.md); the remaining open item is only its CP-57 screenshot receipt.
+4. New hold cards require a fresh control-plane ruling rather than reuse of this ledger.
 
 ## Promotion Rule
 

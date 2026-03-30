@@ -24,7 +24,7 @@
 | `CP-52` Forge renderer inventory seal | Unlock | `COMPLETED` | none | exact `46B` / `46C` file proof | promoted `46C`; enabled `46B1` / `46B2` / `46B3` repacketization |
 | `CP-53` Atlas/Dossier proof seal | Unlock | `COMPLETED` | none | exact `47B` / `49B` file proof | promoted `47B` and `49B` to execution-ready |
 | `CP-54` Governance/Admin host proof seal | Unlock | `COMPLETED` | `CP-51` to `CP-53` stable preferred | exact `50A` to `50D` file proof | promoted `50A` and `50C`; closed `50B` and `50D` |
-| `CP-55` Shell hot-surface seal | Unlock | `COMPLETED` | explicit hot-file window plus stable collision matrix | exact `45D` / `50E` shell proof | `50E` HOLD lifted → READY; `45D` remains ARCH-RISK-HOLD |
+| `CP-55` Shell hot-surface seal | Unlock | `COMPLETED` | explicit hot-file window plus stable collision matrix | exact `45D` / `50E` shell proof | `50E` HOLD lifted → READY; `45D` later closed via `45D1` / `45D2` |
 | `CP-56` parent/sub-agent split packs | Ops | `COMPLETED` | current collision matrix | split map for clear cards | safer multi-agent Copilot execution |
 | `CP-57` evidence and handoff packetization | Ops | `COMPLETED` | `CP-56` preferred | proof/evidence templates | faster Copilot handoffs |
 | `CP-58` execution rhythm board | Ops | `COMPLETED` | `CP-57` preferred | stale-card closure and promotion rules | less queue drift during execution |
