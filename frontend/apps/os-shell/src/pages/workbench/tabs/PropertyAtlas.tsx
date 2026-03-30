@@ -12,7 +12,7 @@
  *   4. Existing query_parcel_layers tool invocation preserved for interactive queries.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
@@ -32,7 +32,7 @@ import {
   useParcelLayers,
   type AtlasGisSource,
 } from '../../../hooks/useAtlasGis';
-import { MapContainer, TileLayer, CircleMarker } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 /** Available map layers */
@@ -275,6 +275,36 @@ export const PropertyAtlas: React.FC = () => {
   const [queryState, setQueryState] = useState<QueryState>({ status: 'idle' });
   const [queryHistory, setQueryHistory] = useState<InvocationRecord[]>([]);
 
+  // ── Phase 0B: plain Leaflet (no react-leaflet — avoids React 19 peer req) ──
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const leafletMapRef = useRef<L.Map | null>(null);
+  const centroidLat = boundary.data?.centroid?.lat;
+  const centroidLng = boundary.data?.centroid?.lng;
+
+  useEffect(() => {
+    const el = mapContainerRef.current;
+    if (!el || boundary.source !== 'live' || centroidLat === undefined || centroidLng === undefined) return;
+
+    leafletMapRef.current?.remove();
+    leafletMapRef.current = null;
+
+    try {
+      const map = L.map(el, { center: [centroidLat, centroidLng], zoom: 17, scrollWheelZoom: false });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+      L.circleMarker([centroidLat, centroidLng], { radius: 8, color: 'var(--terra-cyan)' }).addTo(map);
+      leafletMapRef.current = map;
+    } catch {
+      // JSDOM / test environment — map cannot init; outer div still present for assertions
+    }
+
+    return () => {
+      leafletMapRef.current?.remove();
+      leafletMapRef.current = null;
+    };
+  }, [boundary.source, centroidLat, centroidLng]);
+
   const toggleLayer = useCallback((layerId: LayerId) => {
     setSelectedLayers((prev) => {
       const next = new Set(prev);
@@ -509,27 +539,11 @@ export const PropertyAtlas: React.FC = () => {
       {/* ── Phase 0B: Live Map Canvas ─────────────────────── */}
       {boundary.source === 'live' && boundary.data?.centroid && (
         <div
+          ref={mapContainerRef}
           data-testid="atlas-map-canvas"
           className="rounded-lg overflow-hidden"
           style={{ height: 300 }}
-        >
-          <MapContainer
-            center={[boundary.data.centroid.lat, boundary.data.centroid.lng]}
-            zoom={17}
-            style={{ height: '100%', width: '100%' }}
-            scrollWheelZoom={false}
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            <CircleMarker
-              center={[boundary.data.centroid.lat, boundary.data.centroid.lng]}
-              radius={8}
-              color="hsl(190 100% 60%)"
-            />
-          </MapContainer>
-        </div>
+        />
       )}
 
       {/* ── Boundary unavailable state ────────────────────── */}
