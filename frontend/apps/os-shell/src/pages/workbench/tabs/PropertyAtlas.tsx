@@ -32,6 +32,8 @@ import {
   useParcelLayers,
   type AtlasGisSource,
 } from '../../../hooks/useAtlasGis';
+import { MapContainer, TileLayer, CircleMarker } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 /** Available map layers */
 const MAP_LAYERS = [
@@ -501,6 +503,32 @@ export const PropertyAtlas: React.FC = () => {
               </BentoCard>
             )}
           </BentoGrid>
+        </div>
+      )}
+
+      {/* ── Phase 0B: Live Map Canvas ─────────────────────── */}
+      {boundary.source === 'live' && boundary.data?.centroid && (
+        <div
+          data-testid="atlas-map-canvas"
+          className="rounded-lg overflow-hidden"
+          style={{ height: 300 }}
+        >
+          <MapContainer
+            center={[boundary.data.centroid.lat, boundary.data.centroid.lng]}
+            zoom={17}
+            style={{ height: '100%', width: '100%' }}
+            scrollWheelZoom={false}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            <CircleMarker
+              center={[boundary.data.centroid.lat, boundary.data.centroid.lng]}
+              radius={8}
+              color="hsl(190 100% 60%)"
+            />
+          </MapContainer>
         </div>
       )}
 

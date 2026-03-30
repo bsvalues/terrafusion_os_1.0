@@ -25,6 +25,7 @@ export default defineConfig({
       '@types': path.resolve(__dirname, 'apps/os-shell/src/types'),
       '@terrafusion/shared': path.resolve(__dirname, '../terrafusion-shared/dist/index.js'),
       '@terrafusion/ui': path.resolve(__dirname, '__mocks__/@terrafusion/ui.ts'),
+      'react-leaflet': path.resolve(__dirname, '__mocks__/react-leaflet.tsx'),
     },
   },
   test: {
