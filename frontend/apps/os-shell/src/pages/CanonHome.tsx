@@ -1933,7 +1933,7 @@ function CanonContent(): React.ReactElement {
               </LiquidPanel>
 
               {/* ── Editor ─ Center main area ──────────────────────────────── */}
-              <LiquidPanel variant='infrastructure' radius='none' className='canon-ide__editor'>
+              <div className='canon-ide__editor'>
                 {findReplaceVisible && (
                   <CanonFindReplacePanel
                     activeFilePath={activeFilePath}
@@ -2017,7 +2017,7 @@ function CanonContent(): React.ReactElement {
                     </>
                   )}
                 </div>
-              </LiquidPanel>
+              </div>
 
               {/* ── Minimap ─ Right auxiliary ──────────────────────────── */}
               {activeFilePath && (

@@ -34,7 +34,6 @@ import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import { ContextRibbon } from '../../components/workbench/ContextRibbon';
 import { SuiteCompass } from '../../components/workbench/SuiteCompass';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
-import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
@@ -554,13 +553,13 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
 
           {/* Tab Content via React Router Outlet */}
           <main className="flex-1 overflow-auto p-2">
-            <LiquidPanel variant="interactive" radius="md" className="min-h-full">
+            <div className="min-h-full">
               <ErrorBoundary>
                 <Suspense fallback={<TabLoader />}>
                   <Outlet context={{ parcelId, propertyData, workMode }} />
                 </Suspense>
               </ErrorBoundary>
-            </LiquidPanel>
+            </div>
           </main>
         </div>
       </div>

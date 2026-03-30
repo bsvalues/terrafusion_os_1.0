@@ -39,7 +39,6 @@ import { useParcelSearch } from '../../shell/command-palette/useParcelSearch';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useSession } from '../../auth/useSession';
 import { useAuthContext } from '../../auth/useAuthContext';
-import { LiquidPanel } from '../../ui/materials';
 import { cn } from '@/lib/utils';
 
 // ============================================================================
@@ -142,11 +141,11 @@ const TabLoader: React.FC = () => (
 // Workbench Start Scene — Parcel Intake Surface
 // ============================================================================
 
-/** Glass card wrapper (same pattern as StageZeroState) */
+/** Plain panel wrapper (data surface — no glass per Liquid Glass spec) */
 const StartGlassCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <LiquidPanel variant="shell" radius="lg" className={cn('p-4 flex flex-col', className)}>
+  <div className={cn('p-4 flex flex-col rounded-lg', className)} style={{ border: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-surface) / 0.5)' }}>
     {children}
-  </LiquidPanel>
+  </div>
 );
 
 /** Section header */

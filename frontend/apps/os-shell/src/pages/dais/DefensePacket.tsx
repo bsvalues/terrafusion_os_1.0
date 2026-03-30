@@ -8,6 +8,7 @@
 
 import React, { useState } from 'react';
 import { assemblePacket, getDocuments } from '../../services/suites/dossierService';
+import { ModelReceipt } from '../../components/dais/ModelReceipt';
 
 // ============================================================================
 // Types
@@ -270,6 +271,13 @@ export default function DefensePacket() {
       {narrative && (
         <>
           <NarrativePreview narrative={narrative} />
+
+          {/* Model Receipt — provenance audit trail (Proof Layer spec) */}
+          <ModelReceipt
+            modelId="defense-narrative-v1"
+            modelName="Defense Narrative Service"
+            trainedAt={narrative.generatedAt}
+          />
 
           {/* Assemble Packet */}
           <div className="flex items-center gap-4">
