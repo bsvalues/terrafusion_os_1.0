@@ -55,7 +55,7 @@
   background: linear-gradient(135deg, var(--terra-midnight) 0%, var(--tf-surface-darker) 50%, hsl(var(--tf-surface-dark-hs) var(--tf-l-10)) 100%);
   color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
   font-family:
-    'Inter',
+    var(--font-primary),
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
@@ -72,7 +72,7 @@
 /* Modern OS Container */
 .terrafusion-os-container {
   font-family:
-    'Inter',
+    var(--font-primary),
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
@@ -361,18 +361,6 @@
   }
 }
 
-@keyframes quantum-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 20px var(--terra-glow);
-  }
-  50% {
-    box-shadow:
-      0 0 40px var(--terra-glow),
-      0 0 60px var(--terra-glow);
-  }
-}
-
 @keyframes quantum-flow {
   0% {
     transform: translateX(-100%);
@@ -421,10 +409,6 @@
 }
 .quantum-delay-2 {
   animation-delay: 1s;
-}
-
-.quantum-glow {
-  animation: quantum-glow 3s ease-in-out infinite;
 }
 
 .quantum-flow {
@@ -515,7 +499,7 @@
 /* System font for OS feel */
 .font-system-ui {
   font-family:
-    'Inter',
+    var(--font-primary),
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
@@ -666,7 +650,6 @@
   .terra-pulse,
   .terra-shimmer,
   .quantum-pulse,
-  .quantum-glow,
   .quantum-orbital,
   .quantum-flow,
   .quantum-shimmer {

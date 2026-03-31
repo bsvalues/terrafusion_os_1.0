@@ -316,7 +316,7 @@
   --glass-backdrop: saturate(180%) blur(20px);
 
   /* Card System */
-  --card-bg: hsl(var(--tf-surface-2) / 0.6);
+  --card-bg: hsl(var(--tf-surface-2));
   --card-border: 1px solid hsl(var(--tf-accent) / 0.2);
   --card-radius: 1rem;
   --card-hover-shadow: 0 0 30px hsl(var(--tf-accent) / 0.1);
@@ -447,8 +447,10 @@
 }
 
 @keyframes squishIn {
-  from { transform: scale(1); }
-  to   { transform: scale(0.96); }
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.04); }
+  65%  { transform: scale(0.96); }
+  100% { transform: scale(1); }
 }
 
 .quantum-pulse {

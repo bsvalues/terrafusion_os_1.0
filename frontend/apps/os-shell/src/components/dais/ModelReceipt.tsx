@@ -70,8 +70,8 @@ export function ModelReceipt({
     <div
       className="rounded-md p-3 text-xs"
       style={{
-        border: '1px solid hsl(var(--tf-border) / 0.20)',
-        background: 'hsl(var(--tf-surface) / 0.5)',
+        border: '1px solid hsl(var(--tf-border) / 0.3)',
+        background: 'hsl(var(--tf-surface-2))',
         color: 'hsl(var(--tf-text) / 0.8)',
       }}
       data-testid="model-receipt"

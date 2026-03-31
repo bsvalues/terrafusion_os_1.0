@@ -11,7 +11,7 @@
  *
  * Constitutional Values:
  * - SPRING_STIFFNESS: 400 (responsive but not jarring)
- * - SPRING_DAMPING: 30 (smooth settle)
+ * - SPRING_DAMPING: 10 (crisp settle)
  * - SCALE_HOVER: 1.02 (subtle lift)
  * - SCALE_TAP: 0.97 (satisfying press)
  *
