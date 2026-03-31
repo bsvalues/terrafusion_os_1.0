@@ -110,11 +110,9 @@
 }
 
 .terra-ambient-high {
-  background: radial-gradient(circle at 50% 50%, var(--tf-glow-high) 0%, transparent 70%);
 }
 
 .terra-ambient-medium {
-  background: radial-gradient(circle at 50% 50%, var(--tf-glow-medium) 0%, transparent 70%);
 }
 
 .terra-ambient-warning {
@@ -388,7 +386,7 @@
   right: var(--tf-space-sm);
   width: 0.5rem;
   height: 0.5rem;
-  background: var(--tf-cyan);
+  background: hsl(var(--tf-accent));
   border-radius: 50%;
   animation: terra-pulse 1s infinite;
 }

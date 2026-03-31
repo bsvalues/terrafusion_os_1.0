@@ -444,7 +444,7 @@
 }
 
 .terra-glass:hover {
-  border-color: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4);
+  border-color: hsl(var(--tf-border) / 0.5);
   box-shadow: var(--shadow-soft);
 }
 
@@ -554,13 +554,13 @@
 
 .quantum-grid-item:hover {
   transform: translateY(-4px);
-  border-color: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4);
+  border-color: hsl(var(--tf-border) / 0.5);
   box-shadow: var(--shadow-soft);
 }
 
 /* Background Grid Pattern */
 .quantum-grid-pattern {
-  background-image: radial-gradient(circle at 1px 1px, var(--terra-cyan) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, hsl(var(--tf-border)) 1px, transparent 0);
   background-size: 40px 40px;
   opacity: 0.05;
 }

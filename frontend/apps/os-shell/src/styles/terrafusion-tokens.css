@@ -86,7 +86,7 @@
    → EditorialNew-Italic.woff2 and update font-family below.
    ═══════════════════════════════════════════════════════════════ */
 @font-face {
-  font-family: 'Playfair Display'; /* TODO: replace with 'Editorial New' once procured */
+  font-family: 'Playfair Display'; /* UNRESOLVED SPEC GAP: spec target is 'Editorial New' (Pangram Pangram, commercial) */
   font-style: italic;
   font-weight: 400;
   font-display: swap;
