@@ -334,7 +334,7 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
         <div className='w-[240px] shrink-0 flex flex-col gap-3'>
           <GlassCard className='flex-1'>
             {isSampleData && <DemoDataBanner module="Today's Work" />}
-            <TodaysWorkPanel tasks={todaysTasks} onActivate={(route) => activateModule(route)} />
+            <TodaysWorkPanel tasks={todaysTasks} onActivate={(route) => activateModule(route, { source: 'desktop' })} />
           </GlassCard>
           <GlassCard className='shrink-0'>
             <SectionHeader icon={<Zap className='h-3.5 w-3.5' />} title='Quick Actions' />
