@@ -232,7 +232,6 @@
 }
 
 .quantum-alert-glow {
-  box-shadow: 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
 }
 
 /* Alert Types */
@@ -409,7 +408,6 @@
 }
 
 .quantum-badge-glow {
-  box-shadow: 0 0 15px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4);
 }
 
 .quantum-badge-label {

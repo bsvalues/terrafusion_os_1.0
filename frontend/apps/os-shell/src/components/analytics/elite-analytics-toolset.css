@@ -357,7 +357,6 @@
   background: var(--tf-quantum-cyan);
   transform-origin: bottom center;
   transform: translate(-50%, -100%);
-  box-shadow: 0 0 10px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.6);
 }
 
 /* Quantum Coherence Analysis */
@@ -469,7 +468,6 @@
   height: 3px;
   background: var(--tf-quantum-cyan);
   border-radius: 50%;
-  box-shadow: 0 0 6px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.8);
   transform: translate(-50%, 50%);
 }
 
@@ -663,9 +661,8 @@
 }
 
 .elite-glow {
-  box-shadow: 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
 }
 
 .elite-glow:hover {
-  box-shadow: 0 0 30px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.5);
+  box-shadow: var(--shadow-soft);
 }

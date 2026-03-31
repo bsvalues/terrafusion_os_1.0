@@ -185,11 +185,9 @@
 
 @keyframes tokenGlow {
   from {
-    box-shadow: 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60) / 0.3);
     filter: brightness(1);
   }
   to {
-    box-shadow: 0 0 40px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60) / 0.6);
     filter: brightness(1.1);
   }
 }
