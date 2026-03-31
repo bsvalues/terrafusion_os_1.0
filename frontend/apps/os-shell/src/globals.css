@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════════════════════════ */
 @import 'tailwindcss';
 /* Inter served locally via @font-face in terrafusion-tokens.css — CDN import removed for county offline compliance */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+/* JetBrains Mono served locally via @font-face in terrafusion-tokens.css — CDN import removed for county offline compliance */
 @import './styles/terrafusion-tokens.css';
 @import './styles/workbench-tokens.css';
 @import './ui/theme/focus.css';
