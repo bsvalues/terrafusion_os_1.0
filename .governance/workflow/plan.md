@@ -13,6 +13,37 @@
 
 ---
 
+# SLICE: CP-PSR-MAT1 — PropertySearch Material-Law Remediation
+
+> **Purpose:** Eliminate all material-law violations from `PropertySearch.tsx` (V1–V6). Replace glass/neon patterns on data surfaces with solid OS-token backgrounds and correct bento grid structure.
+> **PDF Audit**: `expressive-chasing-hare.md` — R-MAT-1, R-MAT-2, R-MAT-3, R-CERT-1, R-TOKEN
+> **Branch:** feat/r0-surface-honesty
+> **Date:** 2026-03-31
+> **Scope:** Lane B — `frontend/apps/os-shell/src/pages/PropertySearch.tsx` only. No new components, no new CSS files.
+
+## Definition of Done
+
+- [x] Root `<div>` has no `tf-tab-panel` or any glass utility class
+- [x] Single-column centered layout replaced with 2-panel bento grid (260px context | 1fr search)
+- [x] Stage FIND label `FIND · Property Search` present above h1
+- [x] Input background is solid `hsl(var(--tf-surface-2))`
+- [x] Recently viewed buttons are left-panel column rows — no `tf-stat-card`
+- [x] Result card backgrounds are solid `hsl(var(--tf-surface-2))`
+- [x] Result hover border uses `--tf-border` not neon accent
+- [x] Result hover background uses `--tf-surface` (elevated, opaque)
+- [x] `pnpm run type-check` exits 0
+- [x] `node --test os-platform/core/tests/phase83-tools.test.mjs` passes 56/56
+
+## Phases
+
+### Phase 0 — Document + Implement (COMPLETE ✅)
+- [x] Write progress.md entry before any code changes
+- [x] Write plan.md entry (this document)
+- [x] Replace entire return block with solid-token, bento-grid layout
+- [x] Run required gates
+
+---
+
 # SLICE 3: OS Shell URL Provenance Hardening
 
 > **Purpose:** Close the strongest real follow-up from the frontend shell Snyk triage by constraining iframe and popup URLs to trusted origins.
