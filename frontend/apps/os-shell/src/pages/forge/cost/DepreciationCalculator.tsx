@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { invokeTool } from '../../../api/pilotApi';
 
 interface DepreciationResult {
   physicalDepreciation: number;
@@ -34,19 +35,22 @@ export function DepreciationCalculator() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/valuation/depreciation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const response = await invokeTool({
+        toolId: 'calculate_depreciation',
+        params: {
+          county: 'benton',
           actualAge: Number(age),
           effectiveAge: Number(effectiveAge),
           condition,
           quality,
           replacementCostNew: Number(replacementCost),
-        }),
+        },
+        parcelId: '',
       });
-      if (!res.ok) throw new Error('Depreciation calculation failed');
-      const data: DepreciationResult = await res.json();
+      const data: DepreciationResult =
+        typeof response.result.output === 'string'
+          ? JSON.parse(response.result.output)
+          : response.result.output;
       setResult(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
