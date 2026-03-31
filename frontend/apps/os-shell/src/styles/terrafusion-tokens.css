@@ -76,17 +76,21 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   EDITORIAL NEW FONT — ACCENT TYPEFACE
-   Offline-safe. Place WOFF2 files at /fonts/editorial-new/
-   Download: https://www.fontshare.com/fonts/editorial-new
-   Falls back to serif if file is absent.
+   ACCENT SERIF — TEMPORARY STAND-IN
+   SPEC TARGET: Editorial New Italic (Pangram Pangram, commercial)
+   CURRENT FILE: Playfair Display 400i (SIL OFL 1.1, @fontsource)
+   STATUS: UNRESOLVED — Editorial New is not on disk. Playfair is
+   placed here as a visually-similar high-contrast italic serif to
+   keep the layout from breaking. It is NOT the specified font.
+   When Editorial New is procured, swap PlayfairDisplay-Italic.woff2
+   → EditorialNew-Italic.woff2 and update font-family below.
    ═══════════════════════════════════════════════════════════════ */
 @font-face {
-  font-family: 'Editorial New';
+  font-family: 'Playfair Display'; /* TODO: replace with 'Editorial New' once procured */
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/editorial-new/EditorialNew-Italic.woff2') format('woff2');
+  src: url('/fonts/editorial-new/PlayfairDisplay-Italic.woff2') format('woff2');
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -203,7 +207,7 @@
   /* ═══ FONT FAMILIES ═══ */
   --font-primary: 'Switzer', 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-secondary: 'Switzer', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-accent: 'Editorial New', serif;
+  --font-accent: 'Playfair Display', serif; /* UNRESOLVED: spec is 'Editorial New' (Pangram Pangram, commercial) — Playfair Display is a temporary stand-in */
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   /* ═══ SPACING SYSTEM (Base 8) ═══ */
