@@ -12,7 +12,7 @@
   --terra-accent: var(--tf-accent-success);
 
   /* Apple OS Glass Effects */
-  --glass-bg: hsl(var(--tf-surface) / 0.3);
+  /* --glass-bg: hsl(var(--tf-surface) / 0.3); — removed: canonical value lives in terrafusion-tokens.css */
   --glass-border: hsl(var(--tf-accent) / 0.2);
   --glass-shadow: 0 8px 32px hsl(var(--tf-bg) / 0.37);
   --blur-amount: blur(16px);

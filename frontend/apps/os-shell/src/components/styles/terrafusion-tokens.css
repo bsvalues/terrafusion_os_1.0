@@ -68,7 +68,7 @@
   --shadow-quantum: 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
 
   /* Glass Morphism */
-  --glass-bg: hsl(var(--tf-bg-surface-hs) var(--tf-l-20) / 0.3);
+  --glass-bg: hsl(210 20% 98% / 0.10);
   --glass-border: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2);
   --glass-shadow: 0 8px 32px hsl(var(--tf-tokens-black-hs) 0% / 0.37);
   --blur-amount: blur(16px);
