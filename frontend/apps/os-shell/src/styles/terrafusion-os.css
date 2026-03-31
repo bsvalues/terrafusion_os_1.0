@@ -33,11 +33,6 @@
   --space-8: 2rem; /* 32px */
   --space-golden: 1.618rem; /* Golden ratio spacing */
 
-  /* Elite Glass Effects */
-  --glass-bg: hsl(var(--tf-surface) / 0.3);
-  --glass-border: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2);
-  --glass-blur: blur(20px);
-
   /* Advanced Shadow System */
   --shadow-glow: 0 0 40px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4);
   --shadow-quantum: 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
