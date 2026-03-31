@@ -2,7 +2,7 @@
    TERRAFUSION OS - IMPORTS (Must be first per CSS spec)
    ═══════════════════════════════════════════════════════════════ */
 @import 'tailwindcss';
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+/* Inter served locally via @font-face in terrafusion-tokens.css — CDN import removed for county offline compliance */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import './styles/terrafusion-tokens.css';
 @import './styles/workbench-tokens.css';
@@ -44,42 +44,42 @@
 
 @layer base {
   :root {
-    /* TerraFusion Core Variables Override - HSL Format for Tailwind */
-    --background: 220 40% 5%; /* Terra-Midnight */
+    /* TerraFusion Core Variables Override - HSL references → canonical TF tokens */
+    --background: var(--tf-bg); /* 222 25% 7% — canonical void-black */
     --foreground: 180 100% 50%; /* Terra-Cyan */
-    --card: 218 23% 23%; /* Terra-Slate */
+    --card: var(--tf-surface-2); /* 222 29% 11% — deepest solid surface */
     --card-foreground: 180 100% 50%; /* Terra-Cyan */
-    --popover: 218 23% 23%; /* Terra-Slate */
+    --popover: var(--tf-surface-2); /* 222 29% 11% */
     --popover-foreground: 180 100% 50%; /* Terra-Cyan */
     --primary: 180 100% 50%; /* Terra-Cyan */
-    --primary-foreground: 220 40% 5%; /* Terra-Midnight */
-    --secondary: 218 23% 23%; /* Terra-Slate */
+    --primary-foreground: var(--tf-bg); /* void-black */
+    --secondary: var(--tf-surface-2);
     --secondary-foreground: 180 100% 50%; /* Terra-Cyan */
-    --muted: 218 23% 23%; /* Terra-Slate */
+    --muted: var(--tf-surface-2);
     --muted-foreground: 214 32% 57%; /* Light gray */
     --accent: 208 100% 50%; /* Terra-Blue */
     --accent-foreground: 180 100% 50%; /* Terra-Cyan */
     --destructive: 0 84% 60%; /* Error red */
     --destructive-foreground: 180 100% 50%; /* Terra-Cyan */
     --border: 180 100% 50% / 0.2; /* Terra-Cyan with opacity */
-    --input: 218 23% 23%; /* Terra-Slate */
+    --input: var(--tf-surface-2);
     --ring: 180 100% 50%; /* Terra-Cyan */
     --radius: 0.5rem;
   }
 
   .dark {
-    /* TerraFusion Dark Mode (Default) - HSL Format */
-    --background: 220 40% 5%; /* Terra-Midnight */
+    /* TerraFusion Dark Mode (Default) - canonical TF token references */
+    --background: var(--tf-bg);
     --foreground: 180 100% 50%; /* Terra-Cyan */
-    --card: 218 23% 23%; /* Terra-Slate */
+    --card: var(--tf-surface-2);
     --card-foreground: 180 100% 50%; /* Terra-Cyan */
-    --popover: 218 23% 23%; /* Terra-Slate */
+    --popover: var(--tf-surface-2);
     --popover-foreground: 180 100% 50%; /* Terra-Cyan */
     --primary: 180 100% 50%; /* Terra-Cyan */
-    --primary-foreground: 220 40% 5%; /* Terra-Midnight */
-    --secondary: 218 23% 23%; /* Terra-Slate */
+    --primary-foreground: var(--tf-bg);
+    --secondary: var(--tf-surface-2);
     --secondary-foreground: 180 100% 50%; /* Terra-Cyan */
-    --muted: 218 23% 23%; /* Terra-Slate */
+    --muted: var(--tf-surface-2);
     --muted-foreground: 214 32% 57%; /* Light gray */
     --accent: 208 100% 50%; /* Terra-Blue */
     --accent-foreground: 180 100% 50%; /* Terra-Cyan */
@@ -115,7 +115,7 @@
   body {
     /* TerraFusion Brand Kit Typography */
     font-family:
-      'Inter',
+      var(--font-primary),
       -apple-system,
       BlinkMacSystemFont,
       'Segoe UI',
@@ -139,14 +139,14 @@
     scroll-behavior: smooth;
   }
 
-  /* Headings use cyan accent */
+  /* Headings use cyan accent + Switzer primary */
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    font-family: var(--font-primary), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: hsl(var(--tf-accent));
     font-weight: 300;
     letter-spacing: -0.01em;
