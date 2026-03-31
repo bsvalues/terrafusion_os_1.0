@@ -2,11 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using TerraFusion.API.Contracts.Health;
 using TerraFusion.API.Services;
+using TerraFusion.Core.Enums;
 
 namespace TerraFusion.API.Controllers;
 
@@ -15,13 +14,16 @@ namespace TerraFusion.API.Controllers;
 public class SystemHealthController : ControllerBase
 {
     private readonly IUnifiedOrchestrationService _orchestrationService;
+    private readonly IModuleLoaderService _moduleLoader;
     private readonly ILogger<SystemHealthController> _logger;
 
     public SystemHealthController(
         IUnifiedOrchestrationService orchestrationService,
+        IModuleLoaderService moduleLoader,
         ILogger<SystemHealthController> logger)
     {
         _orchestrationService = orchestrationService;
+        _moduleLoader = moduleLoader;
         _logger = logger;
     }
 
@@ -32,13 +34,15 @@ public class SystemHealthController : ControllerBase
         try
         {
             var health = await _orchestrationService.GetSystemHealthAsync();
+            var modules = await _moduleLoader.LoadDiscoveredModulesAsync();
+            var moduleList = modules.ToList();
             var unhealthyComponents = health.SystemComponents
                 .Where(kv => kv.Value == false)
                 .Select(kv => kv.Key)
                 .ToList();
             var intentFilter = Environment.GetEnvironmentVariable("TF_MODULE_INTENT_FILTER");
-            var (totalDiscovered, activeLoaded) = GetManifestCounts(intentFilter);
-            var filteredOut = Math.Max(0, totalDiscovered - activeLoaded);
+            var totalDiscovered = moduleList.Count;
+            var activeLoaded = moduleList.Count(module => module.Status == ModuleStatus.Active);
 
             var response = new SystemHealthResponse
             {
@@ -46,7 +50,7 @@ public class SystemHealthController : ControllerBase
                 IntentFilter = intentFilter,
                 ModuleCountTotal = totalDiscovered,
                 ModuleCountActive = activeLoaded,
-                ModuleCountFilteredOut = filteredOut,
+                ModuleCountFilteredOut = 0,
                 ModuleCount = health.ModuleCount,
                 HealthyModules = health.HealthyModules,
                 SystemComponents = health.SystemComponents,
@@ -79,99 +83,5 @@ public class SystemHealthController : ControllerBase
                 Warnings = new List<string> { "Health probe exception", ex.Message }
             });
         }
-    }
-
-    private static (int totalDiscovered, int activeLoaded) GetManifestCounts(string? intentFilter)
-    {
-        try
-        {
-            var root = Environment.GetEnvironmentVariable("TF_MODULES_PATH")
-                       ?? Environment.GetEnvironmentVariable("MODULES_PATH");
-
-            if (string.IsNullOrWhiteSpace(root))
-            {
-                if (Directory.Exists("/app/applications"))
-                {
-                    root = "/app/applications";
-                }
-                else if (Directory.Exists("/app/modules"))
-                {
-                    root = "/app/modules";
-                }
-                else
-                {
-                    root = Directory.GetCurrentDirectory();
-                }
-            }
-
-            root = Path.GetFullPath(root);
-            var manifestFileName = Directory.Exists(Path.Combine(root))
-                ? (Directory.Exists(root) && root.EndsWith("applications", StringComparison.OrdinalIgnoreCase)
-                    ? "terrafusion.app.json"
-                    : "module.manifest.json")
-                : "module.manifest.json";
-
-            var total = 0;
-            var active = 0;
-
-            foreach (var dir in Directory.GetDirectories(root))
-            {
-                var manifestPath = Path.Combine(dir, manifestFileName);
-                if (!System.IO.File.Exists(manifestPath))
-                {
-                    continue;
-                }
-
-                total++;
-
-                if (string.IsNullOrWhiteSpace(intentFilter))
-                {
-                    active++;
-                    continue;
-                }
-
-                var intent = ReadIntent(manifestPath);
-                if (MatchesIntentFilter(intentFilter, intent))
-                {
-                    active++;
-                }
-            }
-
-            return (total, active);
-        }
-        catch
-        {
-            return (0, 0);
-        }
-    }
-
-    private static string? ReadIntent(string manifestPath)
-    {
-        try
-        {
-            using var doc = JsonDocument.Parse(System.IO.File.ReadAllText(manifestPath));
-            if (doc.RootElement.TryGetProperty("intent", out var intentProp) &&
-                intentProp.ValueKind == JsonValueKind.String)
-            {
-                return intentProp.GetString();
-            }
-        }
-        catch
-        {
-            // ignore
-        }
-
-        return null;
-    }
-
-    private static bool MatchesIntentFilter(string filter, string? manifestIntent)
-    {
-        var allowed = filter.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        if (allowed.Length == 0)
-        {
-            return true;
-        }
-
-        return allowed.Any(a => string.Equals(a, manifestIntent, StringComparison.OrdinalIgnoreCase));
     }
 }

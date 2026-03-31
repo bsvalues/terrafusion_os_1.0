@@ -108,6 +108,11 @@ public class ModulesController : ControllerBase
             var module = await _moduleService.CreateModuleAsync(createDto);
             return CreatedAtAction(nameof(GetModule), new { id = module.Id }, module);
         }
+        catch (NotSupportedException ex)
+        {
+            _logger.LogWarning(ex, "Module creation is not supported by the runtime-backed module catalog");
+            return Conflict(ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating module");
@@ -125,6 +130,11 @@ public class ModulesController : ControllerBase
                 return NotFound();
 
             return Ok(module);
+        }
+        catch (NotSupportedException ex)
+        {
+            _logger.LogWarning(ex, "Module updates are not supported by the runtime-backed module catalog");
+            return Conflict(ex.Message);
         }
         catch (Exception ex)
         {
@@ -144,6 +154,11 @@ public class ModulesController : ControllerBase
 
             return NoContent();
         }
+        catch (NotSupportedException ex)
+        {
+            _logger.LogWarning(ex, "Module deletion is not supported by the runtime-backed module catalog");
+            return Conflict(ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting module {ModuleId}", id);
@@ -162,6 +177,11 @@ public class ModulesController : ControllerBase
 
             return Ok(new { message = "Module launched successfully" });
         }
+        catch (NotSupportedException ex)
+        {
+            _logger.LogWarning(ex, "Module launch mutation is not supported by the runtime-backed module catalog");
+            return Conflict(ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error launching module {ModuleId}", id);
@@ -179,6 +199,11 @@ public class ModulesController : ControllerBase
                 return BadRequest("Failed to stop module");
 
             return Ok(new { message = "Module stopped successfully" });
+        }
+        catch (NotSupportedException ex)
+        {
+            _logger.LogWarning(ex, "Module stop mutation is not supported by the runtime-backed module catalog");
+            return Conflict(ex.Message);
         }
         catch (Exception ex)
         {

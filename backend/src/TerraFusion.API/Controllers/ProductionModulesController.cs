@@ -22,15 +22,15 @@ public class ProductionModulesController : ControllerBase
     }
 
     /// <summary>
-    /// Get all 15 production-ready modules from ACTIVE_MODULES.md
+    /// Get the unified runtime module catalog, including invalid module folders.
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Module>>> GetActiveModules()
     {
         try
         {
-            _logger.LogInformation("Loading active production modules");
-            var modules = await _moduleLoader.LoadActiveModulesAsync();
+            _logger.LogInformation("Loading production modules from runtime catalog");
+            var modules = await _moduleLoader.LoadDiscoveredModulesAsync();
             return Ok(modules);
         }
         catch (Exception ex)
@@ -111,7 +111,7 @@ public class ProductionModulesController : ControllerBase
         try
         {
             _logger.LogInformation("Getting module statistics");
-            var modules = await _moduleLoader.LoadActiveModulesAsync();
+            var modules = await _moduleLoader.LoadDiscoveredModulesAsync();
             var modulesList = modules.ToList();
 
             var stats = new ModuleStats

@@ -378,7 +378,7 @@ builder.Services.AddSingleton<IAgentTelemetryService>(_ => new AgentTelemetrySer
 builder.Services.AddSingleton<ITraceIngestionService, TraceIngestionService>();
 
 // Register module services
-builder.Services.AddScoped<TerraFusion.Core.Services.IModuleService, TerraFusion.Core.Services.ModuleService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.IModuleService, RuntimeModuleService>();
 
 // Register enhancement services for PhD-level enhancement phases
 builder.Services.AddScoped<IEnhancementOrchestrationService, EnhancementOrchestrationService>();
