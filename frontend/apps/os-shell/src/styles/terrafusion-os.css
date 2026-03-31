@@ -445,11 +445,10 @@
 
 .terra-glass:hover {
   border-color: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4);
-  box-shadow: var(--shadow-quantum);
+  box-shadow: var(--shadow-soft);
 }
 
 .terra-glow {
-  box-shadow: var(--shadow-glow);
 }
 
 /* ========================================
@@ -556,7 +555,7 @@
 .quantum-grid-item:hover {
   transform: translateY(-4px);
   border-color: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4);
-  box-shadow: var(--shadow-quantum);
+  box-shadow: var(--shadow-soft);
 }
 
 /* Background Grid Pattern */

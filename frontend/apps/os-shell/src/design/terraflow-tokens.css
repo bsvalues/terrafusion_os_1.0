@@ -77,29 +77,23 @@
 @keyframes terra-ripple {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 20px var(--tf-cyan);
   }
   50% {
     transform: scale(1.02);
-    box-shadow: 0 0 40px var(--tf-cyan);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 20px var(--tf-cyan);
   }
 }
 
 /* Dynamic Glow Classes */
 .terra-glow-high {
-  box-shadow: 0 0 20px var(--tf-glow-high);
 }
 
 .terra-glow-medium {
-  box-shadow: 0 0 20px var(--tf-glow-medium);
 }
 
 .terra-glow-warning {
-  box-shadow: 0 0 20px var(--tf-glow-warning);
 }
 
 /* Ambient Glow Overlay */
@@ -368,15 +362,12 @@
 }
 
 .terra-chat-message.ai.high-confidence {
-  box-shadow: 0 0 10px var(--tf-glow-high);
 }
 
 .terra-chat-message.ai.medium-confidence {
-  box-shadow: 0 0 10px var(--tf-glow-medium);
 }
 
 .terra-chat-message.ai.low-confidence {
-  box-shadow: 0 0 10px var(--tf-glow-warning);
 }
 
 .terra-chat-text {

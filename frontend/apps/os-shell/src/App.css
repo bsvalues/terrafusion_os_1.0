@@ -438,7 +438,6 @@ body,
   height: 8px;
   border-radius: 50%;
   background: var(--terra-cyan);
-  box-shadow: 0 0 12px var(--terra-cyan);
   animation: quantumPulse 2s ease-in-out infinite;
 }
 
