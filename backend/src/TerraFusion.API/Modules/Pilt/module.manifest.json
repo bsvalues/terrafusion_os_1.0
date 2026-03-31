@@ -1,0 +1,12 @@
+{
+  "name": "Pilt",
+  "displayName": "TerraPILT",
+  "description": "Standalone PILT calculation module scaffold. Runtime packaging is valid, but the module remains inactive until dedicated service wiring and activation are completed.",
+  "version": "0.1.0",
+  "status": "inactive",
+  "tier": "essential operations",
+  "category": "TerraDais",
+  "author": "TerraFusion",
+  "dependencies": [],
+  "capabilities": ["standalone-pilt-module"]
+}
