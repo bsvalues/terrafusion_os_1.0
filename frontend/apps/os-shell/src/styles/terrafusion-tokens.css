@@ -88,6 +88,8 @@
   font-display: swap;
   src: url('/fonts/editorial-new/EditorialNew-Italic.woff2') format('woff2');
 }
+
+:root {
   /* ═══ FOUNDATION COLORS (THE ACTUAL HEX VALUES) ═══ */
   --tf-quantum-cyan: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60)); /* Terra-Cyan - The Consciousness Color */
   --tf-void-black: hsl(var(--tf-surface-dark-hs) 7%); /* Terra-Midnight - The Void */
@@ -280,6 +282,14 @@
   --tf-r-lg: var(--radius-lg); /* 1rem                           */
   --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
   --tf-shadow: 0 10px 30px hsl(var(--tf-accent) / 0.2); /* shadow-lg    */
+
+  /* ═══ COMPAT ALIASES (Shadcn/Radix name bridge) ═══
+     These map Shadcn-style names → TF Lumin Bridge channel values.
+     Usage pattern: hsl(var(--tf-foreground)) = hsl(0 0% 100%)
+     Never wrap these in hsl() when defining — they ARE raw H S L.   */
+  --tf-foreground: var(--tf-text);          /* primary text (0 0% 100%) */
+  --tf-muted-foreground: var(--tf-muted);   /* muted text   (215 20% 65%) */
+  --tf-accent-primary: var(--tf-accent);    /* terra-cyan   (190 100% 60%) */
 
   /* ═══ WINDOW CHROME (macOS traffic lights) ═══ */
   --tf-wc-close: 2 100% 67%;

@@ -164,7 +164,7 @@ const TabNavigation: React.FC<{
     className="border-b px-2 flex gap-0 overflow-x-auto"
     style={{
       borderColor: 'hsl(var(--tf-border) / 0.2)',
-      background: 'hsl(var(--tf-bg-surface) / 0.6)',
+      background: 'hsl(var(--tf-surface) / 0.6)',
     }}
   >
     {tabs.map((tab) => {
@@ -574,7 +574,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
           className="flex items-center gap-2 w-full px-3 py-1 text-xs font-medium transition-colors"
           style={{
             color: 'hsl(var(--tf-text) / 0.5)',
-            background: 'hsl(var(--tf-bg-surface) / 0.3)',
+            background: 'hsl(var(--tf-surface) / 0.3)',
           }}
           aria-expanded={activityOpen}
           aria-controls="workbench-activity-feed"
