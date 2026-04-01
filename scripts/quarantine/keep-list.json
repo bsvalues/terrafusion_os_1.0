@@ -27,6 +27,7 @@
     "tools"
   ],
   "files": [
+    "AGENT_OPERATING_MODEL.md",
     "AGENTS.md",
     "CLAUDE.md",
     "CODEOWNERS",
@@ -82,6 +83,7 @@
     "ui-token-ratchet.contract.json",
     "vitest.config.ts",
     "vitest.known-fail.config.ts",
-    "sovereign.yaml"
+    "sovereign.yaml",
+    "SPRINT.md"
   ]
 }

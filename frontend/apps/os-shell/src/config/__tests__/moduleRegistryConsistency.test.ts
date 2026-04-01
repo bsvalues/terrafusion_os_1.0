@@ -96,6 +96,9 @@ describe('MODULE_REGISTRY -> ModuleRenderer coverage', () => {
     'gpt-builder',
     'gpt-analytics',
     'gpt-rag',
+    // Queued certification / notice modules (QueuedModuleSurface — no MODULE_ENTRY yet)
+    'terra-cert',
+    'terra-notice',
   ]);
 
   it('every MODULE_REGISTRY entry has a MODULE_ENTRY or is a known placeholder', () => {
@@ -221,6 +224,9 @@ describe('moduleActivation displayNames/icons coverage', () => {
       // Atlas standalone modules (Phase 36)
       'geo-equity-dashboard': 'Geo Equity Dashboard',
       'mass-appraisal-gis': 'Appraisal GIS',
+      // Queued modules — registered but pending implementation
+      'terra-cert': 'TerraCert',
+      'terra-notice': 'TerraNotice',
     };
 
     const missing: string[] = [];
