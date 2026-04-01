@@ -211,6 +211,7 @@ export default function BentonCountyMap({ onParcelSelect, className }: BentonCou
   if (error) {
     return (
       <div
+        data-testid='benton-county-map-error'
         className='w-full h-full flex items-center justify-center'
         style={{ background: 'hsl(var(--tf-bg))' }}
       >
@@ -222,7 +223,7 @@ export default function BentonCountyMap({ onParcelSelect, className }: BentonCou
   }
 
   return (
-    <div className={`relative w-full h-full ${className ?? ''}`}>
+    <div data-testid='benton-county-map' className={`relative w-full h-full ${className ?? ''}`}>
       {loading && (
         <div
           className='absolute inset-0 flex items-center justify-center z-10'
