@@ -143,7 +143,7 @@ const TabLoader: React.FC = () => (
 
 /** Plain panel wrapper (data surface — no glass per Liquid Glass spec) */
 const StartGlassCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <div className={cn('p-4 flex flex-col rounded-lg', className)} style={{ border: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-surface) / 0.5)' }}>
+  <div className={cn('p-4 flex flex-col rounded-lg', className)} style={{ border: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-surface))' }}>
     {children}
   </div>
 );
@@ -450,7 +450,7 @@ const TabBar: React.FC<TabBarProps> = ({
       className="flex-1 min-w-0 border-b px-4 flex gap-1 overflow-x-auto"
       style={{
         borderColor: 'hsl(var(--tf-border) / 0.15)',
-        background: 'hsl(var(--tf-bg-surface) / 0.5)',
+        background: 'hsl(var(--tf-bg-surface))',
       }}
     >
       {tabs.map((tab) => {
@@ -783,7 +783,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
           className="flex items-center gap-2 w-full px-4 py-1.5 text-xs font-medium transition-colors"
           style={{
             color: 'hsl(var(--tf-text) / 0.5)',
-            background: 'hsl(var(--tf-bg-surface) / 0.3)',
+            background: 'hsl(var(--tf-bg-surface))',
           }}
           aria-expanded={activityOpen}
           aria-controls="workbench-activity-feed"
