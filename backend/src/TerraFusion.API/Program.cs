@@ -1137,6 +1137,7 @@ app.MapHealthChecks("/healthz/ready", new Microsoft.AspNetCore.Diagnostics.Healt
 app.MapHub<OSCoreHub>("/hubs/oscore");
 app.MapHub<EnhancementHub>("/hubs/enhancement");
 app.MapHub<QuantumMetricsHub>("/hubs/quantum-metrics");
+app.MapHub<GPTHub>("/hubs/gpt");
 
 // 📊 Phase 2 Real-Time Collaboration Hubs (Week 5 Day 1-2)
 app.MapHub<TerraFusion.AI.Hubs.NotebookHub>("/hubs/notebook");
