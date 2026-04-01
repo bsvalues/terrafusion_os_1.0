@@ -99,6 +99,8 @@ describe('MODULE_REGISTRY -> ModuleRenderer coverage', () => {
     // Queued certification / notice modules (QueuedModuleSurface — no MODULE_ENTRY yet)
     'terra-cert',
     'terra-notice',
+    // AppFrame native-app modules — rendered via <AppFrame> iframe (no MODULE_ENTRY)
+    'costforge',
   ]);
 
   it('every MODULE_REGISTRY entry has a MODULE_ENTRY or is a known placeholder', () => {
