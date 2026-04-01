@@ -34,10 +34,7 @@
   --space-golden: 1.618rem; /* Golden ratio spacing */
 
   /* Advanced Shadow System */
-  --shadow-glow: 0 0 40px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4);
-  --shadow-quantum: 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
   --shadow-soft: 0 4px 20px hsl(var(--tf-tokens-black-hs) var(--tf-l-0) / 0.3);
-  --shadow-elite: 0 8px 40px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2);
 }
 
 /* ========================================
