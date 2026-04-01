@@ -82,7 +82,7 @@ export default defineConfig(({ mode }) => {
 
     root: appRoot,
 
-    publicDir: path.resolve(__dirname, 'public'),
+    publicDir: path.resolve(appRoot, 'public'),
 
     resolve: {
       alias: {
