@@ -671,6 +671,56 @@
       "officeScope": "assessor"
     },
     {
+      "toolId": "calculate_depreciation",
+      "displayName": "Calculate Depreciation",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "model"],
+      "description": "Compute physical, functional, and external depreciation using Benton County bracket table with condition-based adjustment",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "actualAge": {
+            "type": "number",
+            "description": "Actual age of structure in years",
+            "default": 0
+          },
+          "effectiveAge": {
+            "type": "number",
+            "description": "Effective age of structure in years",
+            "default": null
+          },
+          "condition": {
+            "type": "string",
+            "enum": ["poor", "fair", "average", "good", "excellent"],
+            "default": "average",
+            "description": "Physical condition rating"
+          },
+          "quality": {
+            "type": "string",
+            "enum": ["low", "average", "above-average", "high"],
+            "default": "average",
+            "description": "Construction quality classification"
+          },
+          "replacementCostNew": {
+            "type": "number",
+            "description": "Replacement cost new (RCN) in dollars",
+            "default": 0
+          }
+        },
+        "required": ["county"]
+      },
+      "officeScope": "assessor"
+    },
+    {
       "toolId": "check_exemption_eligibility",
       "displayName": "Check Exemption Eligibility",
       "suite": "dais",
