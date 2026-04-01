@@ -29,9 +29,9 @@ interface AssessmentIntelligenceProps {
 }
 
 const riskColors: Record<string, string> = {
-  high: '#ef4444',
-  medium: '#eab308',
-  low: '#22c55e',
+  high: 'hsl(var(--tf-destructive))',
+  medium: 'hsl(var(--tf-warning))',
+  low: 'hsl(var(--tf-success))',
 };
 
 const directionArrows: Record<string, string> = {
@@ -48,7 +48,7 @@ export default function AssessmentIntelligence({
 }: AssessmentIntelligenceProps) {
   if (loading) {
     return (
-      <div style={{ padding: 32, textAlign: 'center', color: '#94a3b8' }}>
+      <div style={{ padding: 32, textAlign: 'center', color: 'hsl(var(--tf-fg) / 0.6)' }}>
         Loading assessment intelligence...
       </div>
     );
@@ -66,8 +66,8 @@ export default function AssessmentIntelligence({
           style={{
             padding: 16,
             borderRadius: 8,
-            border: '1px solid #1e293b',
-            backgroundColor: '#0f172a',
+            border: '1px solid hsl(var(--tf-fg) / 0.1)',
+            backgroundColor: 'hsl(var(--tf-bg))',
           }}
         >
           <h3 style={{ margin: '0 0 12px 0', fontSize: 14, fontWeight: 600 }}>
@@ -78,7 +78,7 @@ export default function AssessmentIntelligence({
               <div style={{ fontSize: 32, fontWeight: 700, marginBottom: 4 }}>
                 {outliers.totalOutliers.toLocaleString()}
               </div>
-              <div style={{ fontSize: 12, color: '#94a3b8', marginBottom: 12 }}>
+              <div style={{ fontSize: 12, color: 'hsl(var(--tf-fg) / 0.6)', marginBottom: 12 }}>
                 of {outliers.totalParcels.toLocaleString()} parcels (
                 {((outliers.totalOutliers / outliers.totalParcels) * 100).toFixed(1)}%)
               </div>
@@ -88,14 +88,14 @@ export default function AssessmentIntelligence({
                     key={t.type}
                     style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}
                   >
-                    <span style={{ color: '#94a3b8' }}>{t.type}</span>
+                    <span style={{ color: 'hsl(var(--tf-fg) / 0.6)' }}>{t.type}</span>
                     <span>{t.count}</span>
                   </div>
                 ))}
               </div>
             </>
           ) : (
-            <div style={{ color: '#94a3b8', fontSize: 13 }}>No outlier data available</div>
+            <div style={{ color: 'hsl(var(--tf-fg) / 0.6)', fontSize: 13 }}>No outlier data available</div>
           )}
         </div>
 
@@ -104,8 +104,8 @@ export default function AssessmentIntelligence({
           style={{
             padding: 16,
             borderRadius: 8,
-            border: '1px solid #1e293b',
-            backgroundColor: '#0f172a',
+            border: '1px solid hsl(var(--tf-fg) / 0.1)',
+            backgroundColor: 'hsl(var(--tf-bg))',
           }}
         >
           <h3 style={{ margin: '0 0 12px 0', fontSize: 14, fontWeight: 600 }}>
@@ -140,7 +140,7 @@ export default function AssessmentIntelligence({
                     style={{
                       height: 6,
                       borderRadius: 3,
-                      backgroundColor: '#1e293b',
+                      backgroundColor: 'hsl(var(--tf-fg) / 0.1)',
                       overflow: 'hidden',
                     }}
                   >
@@ -157,7 +157,7 @@ export default function AssessmentIntelligence({
               ))}
             </div>
           ) : (
-            <div style={{ color: '#94a3b8', fontSize: 13 }}>No appeal risk data</div>
+            <div style={{ color: 'hsl(var(--tf-fg) / 0.6)', fontSize: 13 }}>No appeal risk data</div>
           )}
         </div>
 
@@ -166,8 +166,8 @@ export default function AssessmentIntelligence({
           style={{
             padding: 16,
             borderRadius: 8,
-            border: '1px solid #1e293b',
-            backgroundColor: '#0f172a',
+            border: '1px solid hsl(var(--tf-fg) / 0.1)',
+            backgroundColor: 'hsl(var(--tf-bg))',
           }}
         >
           <h3 style={{ margin: '0 0 12px 0', fontSize: 14, fontWeight: 600 }}>
@@ -184,7 +184,7 @@ export default function AssessmentIntelligence({
                     alignItems: 'center',
                   }}
                 >
-                  <span style={{ fontSize: 13, color: '#94a3b8' }}>{trend.indicator}</span>
+                  <span style={{ fontSize: 13, color: 'hsl(var(--tf-fg) / 0.6)' }}>{trend.indicator}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ fontSize: 14, fontWeight: 600 }}>{trend.value}</span>
                     <span
@@ -192,10 +192,10 @@ export default function AssessmentIntelligence({
                         fontSize: 12,
                         color:
                           trend.direction === 'up'
-                            ? '#22c55e'
+                            ? 'hsl(var(--tf-success))'
                             : trend.direction === 'down'
-                              ? '#ef4444'
-                              : '#94a3b8',
+                              ? 'hsl(var(--tf-destructive))'
+                              : 'hsl(var(--tf-fg) / 0.6)',
                       }}
                     >
                       {directionArrows[trend.direction]} {trend.change}
@@ -205,7 +205,7 @@ export default function AssessmentIntelligence({
               ))}
             </div>
           ) : (
-            <div style={{ color: '#94a3b8', fontSize: 13 }}>No market trends</div>
+            <div style={{ color: 'hsl(var(--tf-fg) / 0.6)', fontSize: 13 }}>No market trends</div>
           )}
         </div>
       </div>
