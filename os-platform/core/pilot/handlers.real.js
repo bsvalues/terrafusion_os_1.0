@@ -47,8 +47,8 @@
  *  26. run_income_valuation      → POST /api/costforge/income-approach/calculate-valuation
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reconcileCrossOfficeRealHandler = exports.submitAuditFindingRealHandler = exports.checkLevyComplianceRealHandler = exports.auditRollSummaryRealHandler = exports.initiateTaxSaleRealHandler = exports.summarizeCollectionStatsRealHandler = exports.createInstallmentPlanRealHandler = exports.checkDelinquencyStatusRealHandler = exports.recordPaymentRealHandler = exports.explainTaxBreakdownRealHandler = exports.getTaxStatementRealHandler = exports.summarizeParcelRecordingsRealHandler = exports.releaseLienRealHandler = exports.recordDocumentRealHandler = exports.explainRecordingFeesRealHandler = exports.getTitleChainRealHandler = exports.searchRecordedDocumentsRealHandler = exports.escalateTaskRealHandler = exports.getQueueStatisticsRealHandler = exports.queueNoticeForMailingRealHandler = exports.signOffCertificationStepRealHandler = exports.getCertificationProgressRealHandler = exports.scheduleBoeHearingRealHandler = exports.fileAppealRealHandler = exports.processExemptionRenewalRealHandler = exports.checkExemptionEligibilityRealHandler = exports.runIncomeValuationRealHandler = exports.calculatePiltPaymentRealHandler = exports.assembleBoePacketRealHandler = exports.generateCommissionerMemoRealHandler = exports.synthesizeEvidenceRealHandler = exports.draftNoticeRealHandler = exports.draftBoeAppealResponseRealHandler = exports.draftAppealResponseRealHandler = exports.draftValueChangeNoticeRealHandler = exports.explainSeniorExemptionRealHandler = exports.summarizeDossierRealHandler = exports.checkCertStatusRealHandler = exports.assignTaskRealHandler = exports.summarizeSalesCompsRealHandler = exports.explainModelResultsRealHandler = exports.queryParcelLayersRealHandler = exports.addDossierNoteRealHandler = exports.summarizeParcelCasefileRealHandler = exports.compareAssessedValueHistoryRealHandler = exports.explainModelInputsRealHandler = exports.summarizeLevyRateRealHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = void 0;
-exports.generateComplianceReportRealHandler = void 0;
+exports.submitAuditFindingRealHandler = exports.checkLevyComplianceRealHandler = exports.auditRollSummaryRealHandler = exports.initiateTaxSaleRealHandler = exports.summarizeCollectionStatsRealHandler = exports.createInstallmentPlanRealHandler = exports.checkDelinquencyStatusRealHandler = exports.recordPaymentRealHandler = exports.explainTaxBreakdownRealHandler = exports.getTaxStatementRealHandler = exports.summarizeParcelRecordingsRealHandler = exports.releaseLienRealHandler = exports.recordDocumentRealHandler = exports.explainRecordingFeesRealHandler = exports.getTitleChainRealHandler = exports.searchRecordedDocumentsRealHandler = exports.escalateTaskRealHandler = exports.getQueueStatisticsRealHandler = exports.queueNoticeForMailingRealHandler = exports.signOffCertificationStepRealHandler = exports.getCertificationProgressRealHandler = exports.scheduleBoeHearingRealHandler = exports.fileAppealRealHandler = exports.processExemptionRenewalRealHandler = exports.checkExemptionEligibilityRealHandler = exports.calculateDepreciationRealHandler = exports.runIncomeValuationRealHandler = exports.calculatePiltPaymentRealHandler = exports.assembleBoePacketRealHandler = exports.generateCommissionerMemoRealHandler = exports.synthesizeEvidenceRealHandler = exports.draftNoticeRealHandler = exports.draftBoeAppealResponseRealHandler = exports.draftAppealResponseRealHandler = exports.draftValueChangeNoticeRealHandler = exports.explainSeniorExemptionRealHandler = exports.summarizeDossierRealHandler = exports.checkCertStatusRealHandler = exports.assignTaskRealHandler = exports.summarizeSalesCompsRealHandler = exports.explainModelResultsRealHandler = exports.queryParcelLayersRealHandler = exports.addDossierNoteRealHandler = exports.summarizeParcelCasefileRealHandler = exports.compareAssessedValueHistoryRealHandler = exports.explainModelInputsRealHandler = exports.summarizeLevyRateRealHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = void 0;
+exports.generateComplianceReportRealHandler = exports.reconcileCrossOfficeRealHandler = void 0;
 exports.createSearchTraceHandler = createSearchTraceHandler;
 exports.createRequestTraceRedactionHandler = createRequestTraceRedactionHandler;
 exports.registerR1Handlers = registerR1Handlers;
@@ -901,6 +901,32 @@ const runIncomeValuationRealHandler = async (params, context, _tool) => {
 };
 exports.runIncomeValuationRealHandler = runIncomeValuationRealHandler;
 // ============================================================================
+// Wave 3 (supplement) — calculate_depreciation → POST /api/costforge/depreciation-calculate
+//
+// Computes physical depreciation (Benton County bracket table), functional
+// obsolescence (condition-based), and external obsolescence for a structure.
+// BIV-086 — wired from DepreciationCalculator.tsx (third fabric-corrected route).
+// ============================================================================
+const calculateDepreciationRealHandler = async (params, _context, _tool) => {
+    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
+    const raw = await (0, backendClient_js_1.backendPost)('/api/costforge/depreciation-calculate', {
+        actualAge: params.actualAge ?? 0,
+        effectiveAge: params.effectiveAge ?? params.actualAge ?? 0,
+        condition: params.condition ?? 'average',
+        quality: params.quality ?? 'average',
+        replacementCostNew: params.replacementCostNew ?? 0,
+    }, { token });
+    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'Depreciation calculation failed');
+    return {
+        physicalDepreciation: data.physicalDepreciation ?? 0,
+        functionalObsolescence: data.functionalObsolescence ?? 0,
+        externalObsolescence: data.externalObsolescence ?? 0,
+        totalDepreciation: data.totalDepreciation ?? 0,
+        depreciatedValue: data.depreciatedValue ?? 0,
+    };
+};
+exports.calculateDepreciationRealHandler = calculateDepreciationRealHandler;
+// ============================================================================
 // R2.9 — Handler 27: check_exemption_eligibility
 // Read-only. Checks senior/disabled exemption eligibility per RCW 84.36.381.
 // Endpoint: GET /api/dais/exemptions/eligibility
@@ -1568,9 +1594,10 @@ function registerR1Handlers(runner, traceService) {
     runner.registerHandler('generate_commissioner_memo', exports.generateCommissionerMemoRealHandler);
     runner.registerHandler('assemble_boe_packet', exports.assembleBoePacketRealHandler);
     runner.registerHandler('request_trace_redaction', createRequestTraceRedactionHandler(traceService));
-    // Wave 3 Enrichment handlers (2)
+    // Wave 3 Enrichment handlers (3)
     runner.registerHandler('calculate_pilt_payment', exports.calculatePiltPaymentRealHandler);
     runner.registerHandler('run_income_valuation', exports.runIncomeValuationRealHandler);
+    runner.registerHandler('calculate_depreciation', exports.calculateDepreciationRealHandler);
     // R2.9 TerraDais Hardening handlers (9)
     runner.registerHandler('check_exemption_eligibility', exports.checkExemptionEligibilityRealHandler);
     runner.registerHandler('process_exemption_renewal', exports.processExemptionRenewalRealHandler);
