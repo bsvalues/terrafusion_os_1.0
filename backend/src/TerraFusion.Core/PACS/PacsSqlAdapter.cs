@@ -570,6 +570,91 @@ namespace TerraFusion.Core.PACS
             }
         }
 
+        /// <summary>
+        /// Text search across GeoId, situs_addr, and situs_city via SQL Server LIKE.
+        /// Pushes the WHERE clause into the PACS view query.
+        /// </summary>
+        public async Task<PacsPagedResult<PacsPropertyCore>> SearchPropertiesAsync(
+            string searchText,
+            int page = 1,
+            int pageSize = 20,
+            CancellationToken cancellationToken = default)
+        {
+            await EnsureContractValidAsync(cancellationToken);
+
+            if (page < 1) page = 1;
+            if (pageSize < 1) pageSize = 20;
+            if (pageSize > 200) pageSize = 200;
+
+            var like = $"%{searchText.Trim()}%";
+
+            try
+            {
+                await using var connection = CreatePrimaryConnection();
+                await connection.OpenAsync(cancellationToken);
+
+                var offset = (page - 1) * pageSize;
+
+                var countSql = $@"
+                    SELECT COUNT(*) FROM {ViewPropertyCore}
+                    WHERE geo_id LIKE @Like
+                       OR situs_addr LIKE @Like
+                       OR situs_city LIKE @Like";
+
+                var totalCount = await connection.ExecuteScalarAsync<int>(
+                    countSql, new { Like = like }, commandTimeout: _commandTimeout);
+
+                if (totalCount == 0)
+                {
+                    return new PacsPagedResult<PacsPropertyCore>
+                    {
+                        Items = Array.Empty<PacsPropertyCore>(),
+                        Page = page,
+                        PageSize = pageSize,
+                        TotalCount = 0,
+                    };
+                }
+
+                var sql = $@"
+                    SELECT
+                        prop_id AS PropId,
+                        geo_id AS GeoId,
+                        prop_type_cd AS PropTypeCd,
+                        situs_addr AS SitusAddr,
+                        situs_city AS SitusCity,
+                        situs_zip AS SitusZip,
+                        legal_desc AS LegalDesc,
+                        assessed_val AS AssessedVal,
+                        market_val AS MarketVal,
+                        land_val AS LandVal,
+                        imprv_val AS ImprvVal,
+                        appr_year AS ApprYear,
+                        last_modified AS LastModified
+                    FROM {ViewPropertyCore}
+                    WHERE geo_id LIKE @Like
+                       OR situs_addr LIKE @Like
+                       OR situs_city LIKE @Like
+                    ORDER BY prop_id
+                    OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+                var items = await connection.QueryAsync<PacsPropertyCore>(
+                    sql, new { Like = like, Offset = offset, PageSize = pageSize },
+                    commandTimeout: _commandTimeout);
+
+                return new PacsPagedResult<PacsPropertyCore>
+                {
+                    Items = items.ToList(),
+                    Page = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount,
+                };
+            }
+            catch (SqlException ex)
+            {
+                throw WrapSqlException(ex);
+            }
+        }
+
         // ═══════════════════════════════════════════════════════════════
         // OWNERSHIP QUERIES
         // ═══════════════════════════════════════════════════════════════

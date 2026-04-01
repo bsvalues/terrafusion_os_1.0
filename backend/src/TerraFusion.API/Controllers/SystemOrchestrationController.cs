@@ -199,7 +199,7 @@ public class SystemOrchestrationController : ControllerBase
                 {
                     Type = "Harris PACS v12.4.7",
                     County = "Benton County, WA",
-                    Parcels = 89247, // Benton County property count
+                    Parcels = 89_247, // CARD-10: Benton County parcel count stub
                     SyncStatus = "Active"
                 },
                 Features = new[]
@@ -295,7 +295,7 @@ public class SystemOrchestrationController : ControllerBase
         {
             Status = "Operational",
             HarrisPACS = "Connected",
-            Parcels = 89247, // Benton County property count
+            Parcels = 89_247, // CARD-10: Benton County parcel count stub
             LastSync = DateTime.UtcNow.AddMinutes(-5)
         });
     }

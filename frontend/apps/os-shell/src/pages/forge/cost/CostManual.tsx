@@ -1,3 +1,18 @@
+/**
+ * CostManual.tsx
+ *
+ * Forge Cost Schedule Manual Reference.
+ * Displays cost schedule rows (building class, quality grade, base rate) with
+ * search and quality filter. Uses `getCostSchedule` API with `SAMPLE_COST_SCHEDULES`
+ * fixture fallback.
+ *
+ * DATA POSTURE:
+ * - `isSampleData` starts `true` (conservative default).
+ * - Cleared to `false` when `/api/forge/cost/schedule` returns live rows.
+ * - DemoDataBanner shown while `isSampleData` is true.
+ * - Source label reads 'Sample fallback' vs 'Live cost schedule API' accordingly.
+ */
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

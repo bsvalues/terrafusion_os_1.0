@@ -23,6 +23,34 @@
 | **Status** | 🟢 GO — all gates green, all artifacts published, no open blockers |
 | **Latest Commit** | `99988b8a6` (docs(superpowers): publish Copilot deep-dive mirror for full ecosystem go-live) |
 
+## CP-PSR-MAT1 — PropertySearch Material-Law Remediation — CLOSED ✅
+
+**Date**: 2026-03-31
+**Branch**: feat/r0-surface-honesty
+**PDF Audit Citations**: R-MAT-1, R-MAT-2, R-MAT-3, R-CERT-1, R-TOKEN
+
+### Verdict: PASS — GREEN (material-law Phase 0)
+
+**What closed:**
+- V1: Removed `className="tf-tab-panel"` from root `<div>` — glass utility class on data root eliminated
+- V1b: Replaced `style={{ minHeight: '100vh' }}` single-column with OS-correct 2-panel bento grid (`260px 1fr`)
+- V2: Removed centered hero with `padding: '3rem 2rem 2rem', textAlign: 'center'` — flattened to stage header
+- V2b: Added FIND-loop stage label `FIND · Property Search` above h1
+- V3: Input background `hsl(var(--tf-surface-dark-hs) 10% / 0.3)` → `hsl(var(--tf-surface-2))` (solid)
+- V4: Removed `className="tf-stat-card"` from recently viewed buttons; now borderless-transparent left-panel rows
+- V5: Result card backgrounds `hsl(var(--tf-surface-dark-hs) …)` → `hsl(var(--tf-surface-2))` (solid)
+- V5b: Hover border replaced neon accent `hsl(var(--tf-accent-primary)/0.5)` → slate `hsl(var(--tf-border)/0.6)`
+- V5c: Hover background replaced semitransparent dark → `hsl(var(--tf-surface))`
+- V6: Parcel count stat moved from inline subtitle to left context panel as first-class data element
+
+**Proof wall:**
+- `pnpm run type-check` ✅
+- `node --test os-platform/core/tests/phase83-tools.test.mjs` ✅ `56/56`
+
+**File changes:** `frontend/apps/os-shell/src/pages/PropertySearch.tsx` (return block replaced)
+
+---
+
 ## CP-W9-I — OS Shell URL Provenance Hardening — CLOSED ✅
 
 **Date**: 2026-03-22  

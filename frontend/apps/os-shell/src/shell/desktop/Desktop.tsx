@@ -33,6 +33,7 @@ import { ToastContainer } from '../notifications/ToastContainer';
 import { AltTabSwitcher } from './AltTabSwitcher';
 import { Clock } from './Clock';
 import { ControlCenter } from './ControlCenter';
+import { DataModeIndicator } from './DataModeIndicator';
 import SceneSelector from './SceneSelector';
 import { DesktopContextMenu } from './DesktopContextMenu';
 import { NotificationBell } from './NotificationBell';
@@ -113,10 +114,7 @@ const DesktopTopSystemBar: React.FC<{
           }}
         />
         <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text-primary-hs) 45%)', fontWeight: 500 }}>
-          Assessment
-        </span>
-        <span style={{ fontSize: '0.6875rem', color: 'hsl(var(--tf-text-primary-hs) 35%)' }}>
-          Tax Year 2026
+          Assessor&apos;s Office
         </span>
       </div>
 
@@ -148,6 +146,9 @@ const DesktopTopSystemBar: React.FC<{
 
         {/* Sentinel (system health) */}
         <SentinelChip variant='tray' />
+
+        {/* Data mode — live vs mock backend (belongs in TopBar, not dock) */}
+        <DataModeIndicator />
 
         {/* Notifications */}
         <TopBarNotifications />

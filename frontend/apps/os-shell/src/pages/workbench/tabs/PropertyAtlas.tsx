@@ -12,7 +12,7 @@
  *   4. Existing query_parcel_layers tool invocation preserved for interactive queries.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
@@ -32,6 +32,8 @@ import {
   useParcelLayers,
   type AtlasGisSource,
 } from '../../../hooks/useAtlasGis';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 /** Available map layers */
 const MAP_LAYERS = [
@@ -250,11 +252,11 @@ function gisSourceToDisclosure(
   // If the interactive query succeeded, that path was already 'live'
   if (querySuccess) {
     // Overlay with GIS endpoint info
-    if (boundarySource === 'pacs' || layersSource === 'pacs') return 'live';
+    if (boundarySource === 'live' || layersSource === 'live') return 'live';
     return 'live';
   }
-  if (boundarySource === 'pacs' && layersSource === 'pacs') return 'live';
-  if (boundarySource === 'pacs' || layersSource === 'pacs') return 'partial';
+  if (boundarySource === 'live' && layersSource === 'live') return 'live';
+  if (boundarySource === 'live' || layersSource === 'live') return 'partial';
   if (boundarySource === 'fallback' || layersSource === 'fallback') return 'fallback';
   return 'unavailable';
 }
@@ -272,6 +274,36 @@ export const PropertyAtlas: React.FC = () => {
   const [selectedLayers, setSelectedLayers] = useState<Set<LayerId>>(new Set());
   const [queryState, setQueryState] = useState<QueryState>({ status: 'idle' });
   const [queryHistory, setQueryHistory] = useState<InvocationRecord[]>([]);
+
+  // ── Phase 0B: plain Leaflet (no react-leaflet — avoids React 19 peer req) ──
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const leafletMapRef = useRef<L.Map | null>(null);
+  const centroidLat = boundary.data?.centroid?.lat;
+  const centroidLng = boundary.data?.centroid?.lng;
+
+  useEffect(() => {
+    const el = mapContainerRef.current;
+    if (!el || boundary.source !== 'live' || centroidLat === undefined || centroidLng === undefined) return;
+
+    leafletMapRef.current?.remove();
+    leafletMapRef.current = null;
+
+    try {
+      const map = L.map(el, { center: [centroidLat, centroidLng], zoom: 17, scrollWheelZoom: false });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+      L.circleMarker([centroidLat, centroidLng], { radius: 8, color: 'var(--terra-cyan)' }).addTo(map);
+      leafletMapRef.current = map;
+    } catch {
+      // JSDOM / test environment — map cannot init; outer div still present for assertions
+    }
+
+    return () => {
+      leafletMapRef.current?.remove();
+      leafletMapRef.current = null;
+    };
+  }, [boundary.source, centroidLat, centroidLng]);
 
   const toggleLayer = useCallback((layerId: LayerId) => {
     setSelectedLayers((prev) => {
@@ -461,10 +493,10 @@ export const PropertyAtlas: React.FC = () => {
       )}
 
       {/* ── Live GIS Boundary Data ──────────────────────────── */}
-      {boundary.source === 'pacs' && boundary.data && (
+      {boundary.source === 'live' && boundary.data && (
         <div data-testid="atlas-gis-boundary">
           <p className="text-xs mb-1" style={{ color: 'hsl(142 76% 36%)' }}>
-            Boundary data from PACS (source: {boundary.data.source})
+            Boundary data from county records (source: {boundary.data.source})
           </p>
           <BentoGrid columns="auto" gap={0.75} padding={0}>
             <BentoCard variant="stat" title="Situs">
@@ -504,11 +536,28 @@ export const PropertyAtlas: React.FC = () => {
         </div>
       )}
 
+      {/* ── Phase 0B: Live Map Canvas ─────────────────────── */}
+      {boundary.source === 'live' && boundary.data?.centroid && (
+        <div
+          ref={mapContainerRef}
+          data-testid="atlas-map-canvas"
+          className="rounded-lg overflow-hidden"
+          style={{ height: 300 }}
+        />
+      )}
+
+      {/* ── Boundary unavailable state ────────────────────── */}
+      {!boundary.loading && !boundary.error && boundary.source === 'unavailable' && (
+        <div className="text-xs tf-text-muted p-2 tf-panel" data-testid="atlas-boundary-unavailable">
+          Boundary data not available in PACS mirror for this parcel.
+        </div>
+      )}
+
       {/* ── Live GIS Layer Data ─────────────────────────────── */}
-      {layers.source === 'pacs' && layers.data && (
+      {layers.source === 'live' && layers.data && (
         <div data-testid="atlas-gis-layers">
           <p className="text-xs mb-1" style={{ color: 'hsl(142 76% 36%)' }}>
-            Layer overlays from PACS (source: {layers.data.source})
+            Layer overlays from county records (source: {layers.data.source})
           </p>
           <BentoGrid columns="auto" gap={0.75} padding={0}>
             {layers.data.zoning && (
@@ -529,7 +578,10 @@ export const PropertyAtlas: React.FC = () => {
                   {layers.data.flood.zone}
                 </p>
                 <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-                  Risk: {layers.data.flood.risk} (source: {layers.data.flood.source})
+                  Risk: {layers.data.flood.risk}
+                  {layers.data.flood.source === 'stub'
+                    ? ' — Stub (no FEMA data in PACS)'
+                    : ` (source: ${layers.data.flood.source})`}
                 </p>
               </BentoCard>
             )}
@@ -559,6 +611,13 @@ export const PropertyAtlas: React.FC = () => {
               </BentoCard>
             )}
           </BentoGrid>
+        </div>
+      )}
+
+      {/* ── Layers unavailable state ─────────────────────── */}
+      {!layers.loading && !layers.error && layers.source === 'unavailable' && (
+        <div className="text-xs tf-text-muted p-2 tf-panel" data-testid="atlas-layers-unavailable">
+          Layer data not available in PACS mirror for this parcel.
         </div>
       )}
 
@@ -611,8 +670,8 @@ export const PropertyAtlas: React.FC = () => {
             data-testid="atlas-geometry-disclosure"
             style={{ fontSize: 11, color: 'hsl(215 16% 47%)', marginBottom: 6 }}
           >
-            {boundary.source === 'pacs'
-              ? 'Boundary info from PACS — SVG preview, not full GIS geometry'
+            {boundary.source === 'live'
+              ? 'Boundary info from county records — SVG preview, not full GIS geometry'
               : 'Layer preview — full GIS geometry not yet available on this route'}
           </p>
           <div
@@ -634,6 +693,23 @@ export const PropertyAtlas: React.FC = () => {
               <div className='absolute inset-0 flex flex-col items-center justify-center text-center p-4'>
                 <div className='text-4xl mb-2'>🌍</div>
                 <p className='tf-text-tertiary'>Select layers and query to view map data</p>
+              </div>
+            )}
+
+            {/* GIS data loading overlay — appears while boundary/layers fetch on mount */}
+            {(boundary.loading || layers.loading) && (
+              <div
+                role="status"
+                aria-label="Loading map data"
+                className="absolute inset-0 flex items-center justify-center"
+                style={{ background: 'hsl(var(--tf-bg) / 0.6)', backdropFilter: 'blur(4px)', zIndex: 10 }}
+              >
+                <div className="flex flex-col items-center gap-3">
+                  <div className="tf-spinner h-8 w-8" />
+                  <span style={{ color: 'hsl(var(--tf-text) / 0.5)' }} className="text-xs">
+                    Loading parcel geometry…
+                  </span>
+                </div>
               </div>
             )}
           </div>

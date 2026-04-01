@@ -31,7 +31,7 @@ import { useDesktopStore } from '../../stores/desktopStore';
 import { Z } from './zIndex';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 
-import { useDataMode } from '../../hooks/useDataMode';
+// useDataMode removed — DataModeIndicator moved to TopBar (Desktop.tsx)
 import { TerraSphere } from '../../ui/brand/TerraSphere';
 import { LiquidPanel } from '../../ui/materials';
 
@@ -338,46 +338,9 @@ const DockDivider: React.FC = () => (
   />
 );
 
-// ============================================================================
-// Data Mode Indicator — mock data fallback or backend health available
-// ============================================================================
-
-const DataModeIndicator: React.FC = () => {
-  const { mode, connected } = useDataMode();
-  const hasBackendHealth = mode === 'live' && connected;
-
-  return (
-    <div
-      title={hasBackendHealth ? 'Backend health responding' : 'Backend health unavailable; mock data active'}
-      className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg cursor-default select-none'
-      style={{
-        background: hasBackendHealth
-          ? 'hsl(142 71% 45% / 0.15)'
-          : 'hsl(38 92% 50% / 0.15)',
-      }}
-    >
-      <div
-        style={{
-          width: 6,
-          height: 6,
-          borderRadius: '50%',
-          background: hasBackendHealth ? 'hsl(142 71% 45%)' : 'hsl(38 92% 50%)',
-          boxShadow: hasBackendHealth
-            ? '0 0 6px hsl(142 71% 45% / 0.6)'
-            : '0 0 6px hsl(38 92% 50% / 0.6)',
-        }}
-      />
-      <span
-        className='text-[10px] font-semibold tracking-wider'
-        style={{
-          color: hasBackendHealth ? 'hsl(142 71% 45%)' : 'hsl(38 92% 50%)',
-        }}
-      >
-        {hasBackendHealth ? 'HEALTH' : 'MOCK'}
-      </span>
-    </div>
-  );
-};
+// DataModeIndicator has been extracted to DataModeIndicator.tsx
+// and moved to the TopBar (Desktop.tsx Zone C) where system-level
+// status indicators belong. The dock is a launcher and window switcher only.
 
 // ============================================================================
 // Main Dock Component
@@ -420,11 +383,6 @@ export const Taskbar: React.FC<TaskbarProps> = ({
 
         {/* Running apps that aren't constitutional suites */}
         <RunningApps />
-
-        <DockDivider />
-
-        {/* Data mode indicator */}
-        <DataModeIndicator />
       </LiquidPanel>
     </>
   );

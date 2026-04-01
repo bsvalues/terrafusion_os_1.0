@@ -214,7 +214,7 @@ export interface IAAOComplianceResponse {
 // API CLIENT CONFIGURATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const API_BASE_URL = getViteEnv().VITE_API_BASE_URL || '';
+const API_BASE_URL = getViteEnv().VITE_API_URL || '';
 const API_TIMEOUT = 30000; // 30 seconds
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 2000, 4000]; // Exponential backoff: 1s, 2s, 4s

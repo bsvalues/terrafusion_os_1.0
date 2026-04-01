@@ -158,3 +158,107 @@ public record ApproachSummary
     public double Confidence { get; init; }
     public string Note { get; init; } = string.Empty;
 }
+
+// ── Available Years (Year-Layer Inventory) ─────────────────────────────
+
+/// <summary>
+/// All pacs_valuations year layers for a parcel, ordered most-recent first.
+/// The UI calls this endpoint on parcel load to populate the year selector
+/// and default to the most recent base-roll layer.
+///
+/// PACS year-layer model: each (PropValYear, SupNum) pair is a discrete,
+/// sovereign snapshot. Layers are never silently substituted — year selection
+/// is explicit and driven by the caller.
+/// </summary>
+public record ParcelYearLayersResult
+{
+    public string ParcelId { get; init; } = string.Empty;
+
+    /// <summary>All layers ordered by year desc, then SupNum asc.</summary>
+    public List<ParcelYearLayer> Layers { get; init; } = [];
+
+    /// <summary>
+    /// Recommended default year for UI: the most recent base-roll (SupNum=0) layer.
+    /// Null if no valuation rows exist for this parcel.
+    /// </summary>
+    public int? DefaultYear { get; init; }
+}
+
+/// <summary>
+/// Metadata for a single pacs_valuations row (one year-layer).
+/// </summary>
+public record ParcelYearLayer
+{
+    public int Year { get; init; }
+    public int SupNum { get; init; }
+
+    /// <summary>"base" when SupNum=0 (roll record), "supplemental" when SupNum>0 (mid-year adjustment).</summary>
+    public string LayerType { get; init; } = "base";
+
+    /// <summary>Raw PropState from PACS (e.g. "A"=active). Null if not set.</summary>
+    public string? PropState { get; init; }
+
+    /// <summary>True when HasLockedValues=true — layer is certified / closed roll.</summary>
+    public bool IsLocked { get; init; }
+
+    /// <summary>
+    /// True if this is the oldest known layer for this parcel (data-driven minimum year).
+    /// For Benton County parcels this will be 2015 — the asend/proval → PACS migration year.
+    /// That layer is NOT stale data; it is the active certified value for parcels not
+    /// reappraised since migration (e.g. agricultural parcels on the 6-year cycle).
+    /// </summary>
+    public bool IsEarliestKnownLayer { get; init; }
+
+    /// <summary>Revaluation cycle number from pacs_valuations.Cycle.</summary>
+    public int? RevaluationCycle { get; init; }
+
+    /// <summary>Date parcel was last appraised (LastAppraisalDate ?? LastActualAppraisalDate).</summary>
+    public DateTime? LastAppraisalDate { get; init; }
+
+    public decimal? AssessedValue { get; init; }
+    public decimal? MarketValue { get; init; }
+
+    /// <summary>
+    /// Special program enrollments active in this layer.
+    /// These programs create deferred tax liabilities and affect how the parcel is valued.
+    /// </summary>
+    public ProgramEnrollment Programs { get; init; } = new();
+}
+
+/// <summary>
+/// Special valuation programs active in a given year layer.
+/// Derived from pacs_valuations value fields and pacs_exemptions codes.
+///
+/// Programs with deferred losses (AgLossDeferred, TimberLossDeferred) are the
+/// BASIS for removal penalty calculations under RCW 84.34 and RCW 84.33.
+/// Penalty calculation is a separate service method — not part of valuation reconciliation.
+/// </summary>
+public record ProgramEnrollment
+{
+    // ── RCW 84.34: Current Use Agricultural ──────────────────────────────
+    /// <summary>True when AgUseVal > 0. Parcel is assessed at use value, not market.</summary>
+    public bool CurrentUseAg { get; init; }
+
+    /// <summary>
+    /// Deferred ag tax difference (market minus use value) for this year.
+    /// Summed over up to 7 prior years + 12% interest = removal penalty (RCW 84.34.080).
+    /// </summary>
+    public decimal AgLossDeferred { get; init; }
+
+    /// <summary>Late-charge component of ag deferral (AgLateLoss).</summary>
+    public decimal AgLateLossDeferred { get; init; }
+
+    // ── RCW 84.33: Open Space Timber ─────────────────────────────────────
+    /// <summary>True when TimberUse > 0.</summary>
+    public bool CurrentUseTimber { get; init; }
+
+    /// <summary>Deferred timber tax difference for this year (penalty basis on removal).</summary>
+    public decimal TimberLossDeferred { get; init; }
+
+    // ── RCW 84.36: Exemptions ─────────────────────────────────────────────
+    /// <summary>
+    /// Exemption type codes active for this parcel in this year layer.
+    /// From pacs_exemptions.ExemptTypeCode (e.g. HS, OV65, DP, AG, EX).
+    /// </summary>
+    public List<string> ExemptionCodes { get; init; } = [];
+}

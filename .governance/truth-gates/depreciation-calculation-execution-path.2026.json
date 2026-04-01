@@ -1,0 +1,45 @@
+{
+  "gate_id": "depreciation-calculation-execution-path",
+  "created": "2026",
+  "classification": "surface_honesty_audit",
+  "surface": "DepreciationCalculator",
+  "file": "frontend/apps/os-shell/src/pages/forge/cost/DepreciationCalculator.tsx",
+  "badge": "BIV-086",
+  "bypass_removed": {
+    "location": "handleCalculate (lines 38-56 pre-fix)",
+    "method": "fetch('/api/valuation/depreciation', { method: 'POST' })",
+    "endpoint_existed": false,
+    "notes": "POST /api/valuation/depreciation had no matching backend controller. Endpoint did not exist."
+  },
+  "corrected_path": {
+    "ui_call": "invokeTool({ toolId: 'calculate_depreciation', params: { county, actualAge, effectiveAge, condition, quality, replacementCostNew }, parcelId: '' })",
+    "fabric_route": "POST /pilot/invoke → ToolRunner.js (Gates 4/5/6) → calculateDepreciationRealHandler → POST /api/costforge/depreciation-calculate",
+    "handler_file": "os-platform/core/pilot/handlers.real.ts",
+    "handler_loc": "Wave 3 supplement, registered in registerR1Handlers",
+    "backend_endpoint": "POST /api/costforge/depreciation-calculate",
+    "backend_controller": "CostForgeController.CalculateDepreciation",
+    "backend_logic": "GetDepreciationFactor(effectiveAge, isResidential=true) from BentonCostData bracket tables; condition-based functional obsolescence; no external obsolescence (market-based, unavailable)"
+  },
+  "handler_params": {
+    "county": "string (optional, context-checked)",
+    "actualAge": "number",
+    "effectiveAge": "number",
+    "condition": "string (excellent|good|average|fair|poor)",
+    "quality": "string (ignored by backend currently, reserved)",
+    "replacementCostNew": "number"
+  },
+  "handler_output": {
+    "physicalDepreciation": "decimal percent (e.g. 30.0 = 30%)",
+    "functionalObsolescence": "decimal percent (0.0 | 3.0 | 5.0 based on condition)",
+    "externalObsolescence": "decimal percent (always 0.0)",
+    "totalDepreciation": "physicalDepreciation + functionalObsolescence + externalObsolescence",
+    "depreciatedValue": "replacementCostNew * (1 - totalDepreciation/100)"
+  },
+  "data_source": "Benton County Assessor – Cost Matrix 2025 (ResidentialDepreciation bracket table)",
+  "gates_passed": {
+    "type_check": "pnpm run type-check → exit 0",
+    "phase83": "node --test phase83-tools.test.mjs → 56/56 pass, 0 fail"
+  },
+  "series_position": "third fabric-corrected route (after DefensePacket.tsx, IncomeApproachPanel.tsx)",
+  "verdict_rationale": "DepreciationCalculator.tsx had 1 direct fetch() bypass: POST /api/valuation/depreciation (endpoint did not exist in backend). A new backend endpoint POST /api/costforge/depreciation-calculate was created in CostForgeController using existing GetDepreciationFactor bracket tables and BentonCostData. A new handler calculate_depreciation was added to handlers.real.ts (Wave 3 supplement) and registered. After wiring, handleCalculate routes through POST /pilot/invoke → ToolRunner gates → backend. Third fabric-corrected route."
+}

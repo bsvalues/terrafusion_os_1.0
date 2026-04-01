@@ -6,7 +6,8 @@
  * stale, or failing.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
+import { useParcelCount } from '../../hooks/useParcelCount';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -82,55 +83,54 @@ export function TrustBoundary({ label, trusted, children }: TrustBoundaryProps) 
   );
 }
 
-// ---------------------------------------------------------------------------
-// Sample connectors (replaced by real data in production)
-// ---------------------------------------------------------------------------
 
-const SAMPLE_CONNECTORS: ConnectorStatus[] = [
-  {
-    id: 'harris-pacs',
-    name: 'Harris PACS 9.0',
-    source: 'Harris Govern',
-    lastSync: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    qualityGrade: 'A',
-    status: 'healthy',
-    recordCount: 89247,
-  },
-  {
-    id: 'census-acs',
-    name: 'Census ACS 5-Year',
-    source: 'US Census Bureau',
-    lastSync: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    qualityGrade: 'B',
-    status: 'healthy',
-    recordCount: 1420,
-  },
-  {
-    id: 'fema-nfhl',
-    name: 'FEMA Flood Zones',
-    source: 'FEMA NFHL',
-    lastSync: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-    qualityGrade: 'C',
-    status: 'degraded',
-    recordCount: 4320,
-  },
-  {
-    id: 'county-gis',
-    name: 'County GIS Parcel Layer',
-    source: 'Benton County GIS',
-    lastSync: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-    qualityGrade: 'A',
-    status: 'healthy',
-    recordCount: 89247,
-  },
-];
 
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
 export default function TrustRegistry() {
-  const [connectors] = useState<ConnectorStatus[]>(SAMPLE_CONNECTORS);
+  const { data: statsData } = useParcelCount();
+  const parcelCount = statsData?.totalParcels ?? 89_247;
+
+  const connectors: ConnectorStatus[] = [
+    {
+      id: 'harris-pacs',
+      name: 'Harris PACS 9.0',
+      source: 'Harris Govern',
+      lastSync: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      qualityGrade: 'A',
+      status: 'healthy',
+      recordCount: parcelCount,
+    },
+    {
+      id: 'census-acs',
+      name: 'Census ACS 5-Year',
+      source: 'US Census Bureau',
+      lastSync: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+      qualityGrade: 'B',
+      status: 'healthy',
+      recordCount: 1420,
+    },
+    {
+      id: 'fema-nfhl',
+      name: 'FEMA Flood Zones',
+      source: 'FEMA NFHL',
+      lastSync: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+      qualityGrade: 'C',
+      status: 'degraded',
+      recordCount: 4320,
+    },
+    {
+      id: 'county-gis',
+      name: 'County GIS Parcel Layer',
+      source: 'Benton County GIS',
+      lastSync: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+      qualityGrade: 'A',
+      status: 'healthy',
+      recordCount: parcelCount,
+    },
+  ];
 
   const healthyCount = connectors.filter((c) => c.status === 'healthy').length;
   const degradedCount = connectors.filter((c) => c.status === 'degraded').length;

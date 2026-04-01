@@ -22,28 +22,29 @@ import type {
 } from './types/BudgetTypes';
 import type { PaymentAnalytics } from './types/PaymentTypes';
 import { DemoDataBanner } from '../../components/governance/DemoDataBanner';
+import { useBudgetData } from './hooks/useBudgetData';
 
 // ============================================================================
 // Design Tokens — all colors via CSS custom properties (ratchet-safe)
 // ============================================================================
 
 const T = {
-  cyan: 'var(--terra-cyan, rgb(0, 255, 255))',
-  blue: 'var(--terra-blue, rgb(0, 128, 255))',
-  midnight: 'var(--terra-midnight, rgb(15, 23, 42))',
-  slate: 'var(--terra-slate, rgb(30, 41, 59))',
-  textPrimary: 'var(--levy-text-primary, rgb(226, 232, 240))',
-  textMuted: 'var(--levy-text-muted, rgb(148, 163, 184))',
-  textDim: 'var(--levy-text-dim, rgb(100, 116, 139))',
-  success: 'var(--levy-success, rgb(34, 197, 94))',
-  warning: 'var(--levy-warning, rgb(234, 179, 8))',
-  danger: 'var(--levy-danger, rgb(239, 68, 68))',
-  orange: 'var(--levy-orange, rgb(249, 115, 22))',
-  purple: 'var(--levy-purple, rgb(139, 92, 246))',
-  cardBg: 'rgba(255,255,255,0.03)',
-  cardBorder: '1px solid rgba(255,255,255,0.08)',
-  cyanBorderAlpha: '1px solid rgba(0, 255, 255, 0.15)',
-  cyanBgAlpha: 'rgba(0, 255, 255, 0.1)',
+  cyan: 'var(--terra-cyan, hsl(var(--tf-accent)))',
+  blue: 'var(--terra-blue, hsl(var(--tf-accent)))',
+  midnight: 'var(--terra-midnight, hsl(var(--tf-bg)))',
+  slate: 'var(--terra-slate, hsl(var(--tf-surface)))',
+  textPrimary: 'var(--levy-text-primary, hsl(var(--tf-fg)))',
+  textMuted: 'var(--levy-text-muted, hsl(var(--tf-fg) / 0.6))',
+  textDim: 'var(--levy-text-dim, hsl(var(--tf-fg) / 0.4))',
+  success: 'var(--levy-success, hsl(var(--tf-success)))',
+  warning: 'var(--levy-warning, hsl(var(--tf-warning)))',
+  danger: 'var(--levy-danger, hsl(var(--tf-destructive)))',
+  orange: 'var(--levy-orange, hsl(var(--tf-warning)))',
+  purple: 'var(--levy-purple, hsl(var(--tf-accent)))',
+  cardBg: 'hsl(var(--tf-fg) / 0.03)',
+  cardBorder: '1px solid hsl(var(--tf-fg) / 0.08)',
+  cyanBorderAlpha: '1px solid hsl(var(--tf-accent) / 0.15)',
+  cyanBgAlpha: 'hsl(var(--tf-accent) / 0.1)',
 } as const;
 
 // ============================================================================
@@ -142,6 +143,7 @@ type Tab = 'overview' | 'levies' | 'budget' | 'ai';
 
 export default function TerraLevyDashboard() {
   const [tab, setTab] = useState<Tab>('overview');
+  const { isSampleData } = useBudgetData();
 
   const metrics = useMemo(() => {
     const total = SAMPLE_LEVIES.reduce((s, l) => s + l.amount, 0);
@@ -176,10 +178,10 @@ export default function TerraLevyDashboard() {
       background: `linear-gradient(135deg, ${T.midnight} 0%, ${T.slate} 100%)`,
       color: T.textPrimary, fontFamily: 'system-ui, -apple-system, sans-serif',
     }}>
-      <DemoDataBanner module="TerraLevy" />
+      {isSampleData && <DemoDataBanner module="TerraLevy" />}
       {/* Header */}
       <div style={{
-        padding: '16px 24px', borderBottom: '1px solid rgba(0, 255, 255, 0.15)',
+        padding: '16px 24px', borderBottom: '1px solid hsl(var(--tf-accent) / 0.15)',
         display: 'flex', alignItems: 'center', gap: 16,
       }}>
         <span style={{ fontSize: 28 }}>🧮</span>
@@ -192,18 +194,25 @@ export default function TerraLevyDashboard() {
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
           <span style={{
             fontSize: 11, padding: '3px 10px', borderRadius: 12,
-            background: 'rgba(0, 255, 255, 0.1)', border: '1px solid rgba(0, 255, 255, 0.3)', color: T.cyan,
+            background: 'hsl(var(--tf-accent) / 0.1)', border: '1px solid hsl(var(--tf-accent) / 0.3)', color: T.cyan,
           }}>FISMA-HIGH</span>
-          <span style={{
-            fontSize: 11, padding: '3px 10px', borderRadius: 12,
-            background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: T.success,
-          }}>Live</span>
+          {isSampleData ? (
+            <span style={{
+              fontSize: 11, padding: '3px 10px', borderRadius: 12,
+              background: 'hsl(var(--tf-warning) / 0.1)', border: '1px solid hsl(var(--tf-warning) / 0.3)', color: 'hsl(var(--tf-warning))',
+            }}>Sample Data</span>
+          ) : (
+            <span style={{
+              fontSize: 11, padding: '3px 10px', borderRadius: 12,
+              background: 'hsl(var(--tf-success) / 0.1)', border: '1px solid hsl(var(--tf-success) / 0.3)', color: T.success,
+            }}>Live</span>
+          )}
         </div>
       </div>
 
       {/* Tabs */}
       <div style={{
-        display: 'flex', gap: 0, borderBottom: '1px solid rgba(255,255,255,0.08)',
+        display: 'flex', gap: 0, borderBottom: '1px solid hsl(var(--tf-fg) / 0.08)',
         padding: '0 24px',
       }}>
         {(['overview', 'levies', 'budget', 'ai'] as Tab[]).map(t => (
@@ -212,7 +221,7 @@ export default function TerraLevyDashboard() {
             onClick={() => setTab(t)}
             style={{
               padding: '10px 20px', cursor: 'pointer', border: 'none',
-              background: tab === t ? 'rgba(0, 255, 255, 0.08)' : 'transparent',
+              background: tab === t ? 'hsl(var(--tf-accent) / 0.08)' : 'transparent',
               color: tab === t ? T.cyan : T.textMuted,
               borderBottom: tab === t ? `2px solid ${T.cyan}` : '2px solid transparent',
               fontSize: 13, fontWeight: 600, textTransform: 'capitalize',
@@ -260,7 +269,7 @@ function OverviewTab({ metrics, budgetMetrics, levies }: {
         {cards.map(c => (
           <div key={c.label} style={{
             padding: 20, borderRadius: 12,
-            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+            background: 'hsl(var(--tf-fg) / 0.03)', border: '1px solid hsl(var(--tf-fg) / 0.08)',
           }}>
             <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 8 }}>{c.label}</div>
             <div style={{ fontSize: 24, fontWeight: 700, color: c.color }}>{c.value}</div>
@@ -271,13 +280,13 @@ function OverviewTab({ metrics, budgetMetrics, levies }: {
       {/* Budget utilization bar */}
       <div style={{
         padding: 20, borderRadius: 12,
-        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+        background: 'hsl(var(--tf-fg) / 0.03)', border: '1px solid hsl(var(--tf-fg) / 0.08)',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
           <span style={{ fontSize: 14, fontWeight: 600 }}>Budget Utilization — FY 2026</span>
           <span style={{ fontSize: 14, color: T.cyan }}>{budgetMetrics.utilization.toFixed(1)}%</span>
         </div>
-        <div style={{ height: 12, borderRadius: 6, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+        <div style={{ height: 12, borderRadius: 6, background: 'hsl(var(--tf-fg) / 0.06)', overflow: 'hidden' }}>
           <div style={{
             height: '100%', borderRadius: 6, width: `${budgetMetrics.utilization}%`,
             background: `linear-gradient(90deg, ${T.cyan}, ${T.blue})`,
@@ -293,7 +302,7 @@ function OverviewTab({ metrics, budgetMetrics, levies }: {
       {/* Status distribution */}
       <div style={{
         padding: 20, borderRadius: 12,
-        background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+        background: 'hsl(var(--tf-fg) / 0.03)', border: '1px solid hsl(var(--tf-fg) / 0.08)',
       }}>
         <h3 style={{ margin: '0 0 16px', fontSize: 14, fontWeight: 600 }}>Levy Status Distribution</h3>
         <div style={{ display: 'flex', gap: 12, height: 24, borderRadius: 6, overflow: 'hidden' }}>
@@ -335,8 +344,8 @@ function LeviesTab({ levies }: { levies: LevyDataPoint[] }) {
             onClick={() => setFilter(s)}
             style={{
               padding: '6px 14px', borderRadius: 8, cursor: 'pointer',
-              border: filter === s ? `1px solid ${T.cyan}` : '1px solid rgba(255,255,255,0.1)',
-              background: filter === s ? 'rgba(0, 255, 255, 0.1)' : 'transparent',
+              border: filter === s ? `1px solid ${T.cyan}` : '1px solid hsl(var(--tf-fg) / 0.1)',
+              background: filter === s ? 'hsl(var(--tf-accent) / 0.1)' : 'transparent',
               color: filter === s ? T.cyan : T.textMuted,
               fontSize: 12, fontWeight: 500, textTransform: 'capitalize',
             }}
@@ -349,22 +358,22 @@ function LeviesTab({ levies }: { levies: LevyDataPoint[] }) {
       {/* Levy table */}
       <div style={{
         borderRadius: 12, overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.08)',
+        border: '1px solid hsl(var(--tf-fg) / 0.08)',
       }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead>
-            <tr style={{ background: 'rgba(255,255,255,0.04)' }}>
+            <tr style={{ background: 'hsl(var(--tf-fg) / 0.04)' }}>
               {['Levy ID', 'Parcel', 'Amount', 'Status', 'Type', 'Due Date', 'AI'].map(h => (
                 <th key={h} style={{
                   padding: '12px 16px', textAlign: 'left', fontWeight: 600,
-                  color: T.textMuted, borderBottom: '1px solid rgba(255,255,255,0.06)',
+                  color: T.textMuted, borderBottom: '1px solid hsl(var(--tf-fg) / 0.06)',
                 }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {filtered.map(l => (
-              <tr key={l.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+              <tr key={l.id} style={{ borderBottom: '1px solid hsl(var(--tf-fg) / 0.04)' }}>
                 <td style={{ padding: '10px 16px', fontFamily: 'monospace', fontSize: 12 }}>{l.id}</td>
                 <td style={{ padding: '10px 16px', fontFamily: 'monospace', fontSize: 11 }}>{l.parcelId}</td>
                 <td style={{ padding: '10px 16px', fontWeight: 600 }}>{formatCurrency(l.amount)}</td>
@@ -412,7 +421,7 @@ function BudgetTab({ budget, metrics }: {
         return (
           <div key={b.id} style={{
             padding: 20, borderRadius: 12,
-            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+            background: 'hsl(var(--tf-fg) / 0.03)', border: '1px solid hsl(var(--tf-fg) / 0.08)',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <div>
@@ -424,9 +433,9 @@ function BudgetTab({ budget, metrics }: {
                 <span style={{
                   fontSize: 11, padding: '3px 10px', borderRadius: 10,
                   background: b.complianceStatus.level === 'FISMA-HIGH'
-                    ? 'rgba(0, 255, 255, 0.1)' : 'rgba(234, 179, 8, 0.1)',
+                    ? 'hsl(var(--tf-accent) / 0.1)' : 'hsl(var(--tf-warning) / 0.1)',
                   color: b.complianceStatus.level === 'FISMA-HIGH' ? T.cyan : T.warning,
-                  border: `1px solid ${b.complianceStatus.level === 'FISMA-HIGH' ? 'rgba(0,255,255,0.3)' : 'rgba(234,179,8,0.3)'}`,
+                  border: `1px solid ${b.complianceStatus.level === 'FISMA-HIGH' ? 'hsl(var(--tf-accent) / 0.3)' : 'hsl(var(--tf-warning) / 0.3)'}`,
                 }}>{b.complianceStatus.level}</span>
               </div>
             </div>
@@ -444,7 +453,7 @@ function BudgetTab({ budget, metrics }: {
                 <div style={{ fontSize: 16, fontWeight: 600 }}>{formatCurrency(b.projected)}</div>
               </div>
             </div>
-            <div style={{ height: 8, borderRadius: 4, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+            <div style={{ height: 8, borderRadius: 4, background: 'hsl(var(--tf-fg) / 0.06)', overflow: 'hidden' }}>
               <div style={{
                 height: '100%', borderRadius: 4, width: `${Math.min(util, 100)}%`,
                 background: util > 95 ? T.danger : util > 80 ? T.warning : T.success,
@@ -483,7 +492,7 @@ function AITab({ insights }: {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{
         padding: 16, borderRadius: 12,
-        background: 'rgba(0, 255, 255, 0.05)', border: '1px solid rgba(0, 255, 255, 0.15)',
+        background: 'hsl(var(--tf-accent) / 0.05)', border: '1px solid hsl(var(--tf-accent) / 0.15)',
         fontSize: 13, color: T.textMuted,
       }}>
         🤖 AI analysis of {insights.length} levy records with actionable recommendations.
@@ -493,7 +502,7 @@ function AITab({ insights }: {
       {insights.map(i => (
         <div key={i.levyId} style={{
           padding: 20, borderRadius: 12,
-          background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+          background: 'hsl(var(--tf-fg) / 0.03)', border: '1px solid hsl(var(--tf-fg) / 0.08)',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
             <div>
@@ -509,14 +518,14 @@ function AITab({ insights }: {
               }}>{i.status}</span>
               <span style={{
                 padding: '3px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
-                background: i.confidence > 0.85 ? 'rgba(34,197,94,0.1)' : 'rgba(234,179,8,0.1)',
+                background: i.confidence > 0.85 ? 'hsl(var(--tf-success) / 0.1)' : 'hsl(var(--tf-warning) / 0.1)',
                 color: i.confidence > 0.85 ? T.success : T.warning,
               }}>{(i.confidence * 100).toFixed(0)}% confidence</span>
             </div>
           </div>
           <div style={{
             padding: 12, borderRadius: 8, marginBottom: 8,
-            background: 'rgba(0, 255, 255, 0.04)', border: '1px solid rgba(0, 255, 255, 0.1)',
+            background: 'hsl(var(--tf-accent) / 0.04)', border: '1px solid hsl(var(--tf-accent) / 0.1)',
           }}>
             <div style={{ fontSize: 12, color: T.cyan, fontWeight: 600, marginBottom: 4 }}>Recommended Action</div>
             <div style={{ fontSize: 14, fontWeight: 500 }}>{i.action}</div>

@@ -11,6 +11,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { buildApiUrl } from '../lib/apiBase';
+import { getToken } from '../auth/authStorage';
 
 // ── Response types matching backend DTOs ────────────────────────────
 
@@ -81,7 +82,7 @@ export interface ParcelLayersData {
 
 // ── Hook result type ────────────────────────────────────────────────
 
-export type AtlasGisSource = 'pacs' | 'fallback' | 'unavailable';
+export type AtlasGisSource = 'live' | 'fallback' | 'unavailable';
 
 export interface AtlasGisResult<T> {
   data: T | null;
@@ -95,20 +96,29 @@ export interface AtlasGisResult<T> {
 
 async function atlasGisFetch<T>(path: string): Promise<{ data: T; source: AtlasGisSource }> {
   const url = buildApiUrl(`/atlas/gis${path}`);
-  const res = await fetch(url);
+  const token = getToken();
+  const res = await fetch(url, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
   if (!res.ok) {
     throw new Error(`Atlas GIS ${res.status}: ${res.statusText}`);
   }
   const data: T = await res.json();
-  // The backend sets a "source" field on every response.
-  // If the source field contains "pacs" it is live PACS data; otherwise fallback.
+  // Map backend "source" field to AtlasGisSource.
+  // GisDataService returns:
+  //   "canonical" — real PACS mirror data (treat as live)
+  //   "stub"      — parcel not found or layer not available (treat as unavailable)
+  //   contains "pacs" — future PACS-direct sources (treat as live)
+  //   anything else non-empty — partial/enriched fallback
   const raw = data as Record<string, unknown>;
-  const src = typeof raw.source === 'string' && raw.source.toLowerCase().includes('pacs')
-    ? 'pacs'
-    : typeof raw.source === 'string' && raw.source !== ''
-      ? 'fallback'
-      : 'unavailable';
-  return { data, source: src as AtlasGisSource };
+  const rawSrc = typeof raw.source === 'string' ? raw.source.toLowerCase() : '';
+  const src: AtlasGisSource =
+    rawSrc.includes('pacs') || rawSrc === 'canonical'
+      ? 'live'
+      : rawSrc === 'stub' || rawSrc === ''
+        ? 'unavailable'
+        : 'fallback';
+  return { data, source: src };
 }
 
 // ── Hooks ───────────────────────────────────────────────────────────

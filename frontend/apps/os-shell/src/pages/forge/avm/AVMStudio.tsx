@@ -6,6 +6,7 @@
  */
 
 import React, { useState } from 'react';
+import { useParcelCount } from '../../../hooks/useParcelCount';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -52,8 +53,8 @@ const MODELS: AVMModel[] = [
 ];
 
 const PIPELINE: PipelineStage[] = [
-  { name: 'Data Extraction', status: 'complete', duration: '2m 14s', recordsProcessed: 89247 },
-  { name: 'Feature Engineering', status: 'complete', duration: '4m 32s', recordsProcessed: 89247 },
+  { name: 'Data Extraction', status: 'complete', duration: '2m 14s', recordsProcessed: 89_247 },
+  { name: 'Feature Engineering', status: 'complete', duration: '4m 32s', recordsProcessed: 89_247 },
   { name: 'Model Training', status: 'running', duration: '12m 45s', recordsProcessed: 71398 },
   { name: 'Validation', status: 'idle' },
   { name: 'Deployment', status: 'idle' },
@@ -82,6 +83,14 @@ const pipelineColor = (status: string) => {
 export function AVMStudio() {
   const [loading] = useState(false);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const { data: statsData } = useParcelCount();
+  const parcelCount = statsData?.totalParcels ?? 89_247;
+
+  const pipeline: PipelineStage[] = PIPELINE.map((stage, i) =>
+    i < 2 && stage.recordsProcessed !== undefined
+      ? { ...stage, recordsProcessed: parcelCount }
+      : stage
+  );
 
   return (
     <div data-testid="avm-studio" className="space-y-4 p-4">
@@ -100,7 +109,7 @@ export function AVMStudio() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                {PIPELINE.map((stage, i) => (
+                {pipeline.map((stage, i) => (
                   <React.Fragment key={stage.name}>
                     <div className="flex-1 text-center">
                       <div className={`w-4 h-4 rounded-full mx-auto mb-1 ${pipelineColor(stage.status)}`} />
@@ -108,7 +117,7 @@ export function AVMStudio() {
                       {stage.duration && <div className="text-xs text-muted-foreground">{stage.duration}</div>}
                       {stage.recordsProcessed && <div className="text-xs text-muted-foreground">{stage.recordsProcessed.toLocaleString()} records</div>}
                     </div>
-                    {i < PIPELINE.length - 1 && (
+                    {i < pipeline.length - 1 && (
                       <div className={`h-0.5 flex-1 ${stage.status === 'complete' ? 'bg-primary/50' : 'bg-muted'}`} />
                     )}
                   </React.Fragment>

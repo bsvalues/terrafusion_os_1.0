@@ -39,7 +39,6 @@ import { useParcelSearch } from '../../shell/command-palette/useParcelSearch';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useSession } from '../../auth/useSession';
 import { useAuthContext } from '../../auth/useAuthContext';
-import { LiquidPanel } from '../../ui/materials';
 import { cn } from '@/lib/utils';
 
 // ============================================================================
@@ -142,11 +141,11 @@ const TabLoader: React.FC = () => (
 // Workbench Start Scene — Parcel Intake Surface
 // ============================================================================
 
-/** Glass card wrapper (same pattern as StageZeroState) */
+/** Plain panel wrapper (data surface — no glass per Liquid Glass spec) */
 const StartGlassCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <LiquidPanel variant="shell" radius="lg" className={cn('p-4 flex flex-col', className)}>
+  <div className={cn('p-4 flex flex-col rounded-lg', className)} style={{ border: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-surface))' }}>
     {children}
-  </LiquidPanel>
+  </div>
 );
 
 /** Section header */
@@ -451,7 +450,7 @@ const TabBar: React.FC<TabBarProps> = ({
       className="flex-1 min-w-0 border-b px-4 flex gap-1 overflow-x-auto"
       style={{
         borderColor: 'hsl(var(--tf-border) / 0.15)',
-        background: 'hsl(var(--tf-bg-surface) / 0.5)',
+        background: 'hsl(var(--tf-bg-surface))',
       }}
     >
       {tabs.map((tab) => {
@@ -733,18 +732,42 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
               showAll={showAll}
               onToggleShowAll={toggleShowAll}
             />
+            {/*
+              Stable tabpanel containers — one per SuiteCompass entry.
+              All sections remain in the DOM so every aria-controls reference
+              on compass tab buttons always resolves to a real element.
+              Inactive panels use the HTML `hidden` attribute (display:none),
+              meaning AT skips them and they cost nothing in layout.
+              Content is only mounted when the tab is active (lazy).
+            */}
             <main className="flex-1 overflow-auto">
-              {hostViolation ? (
-                <WorkbenchHostViolationNotice violation={hostViolation} />
-              ) : loading ? (
-                <TabLoader />
-              ) : (
-                <ErrorBoundary>
-                  <Suspense fallback={<TabLoader />}>
-                    <ActiveTabComponent />
-                  </Suspense>
-                </ErrorBoundary>
-              )}
+              {compassItems.map((compassItem) => {
+                const isActive = activeTab === compassItem.slug;
+                const TabComponent = TAB_COMPONENTS[compassItem.slug];
+                return (
+                  <section
+                    key={compassItem.slug}
+                    id={`panel-${compassItem.slug}`}
+                    role="tabpanel"
+                    aria-label={compassItem.label}
+                    hidden={!isActive}
+                  >
+                    {isActive && (
+                      hostViolation ? (
+                        <WorkbenchHostViolationNotice violation={hostViolation} />
+                      ) : loading ? (
+                        <TabLoader />
+                      ) : (
+                        <ErrorBoundary>
+                          <Suspense fallback={<TabLoader />}>
+                            <TabComponent />
+                          </Suspense>
+                        </ErrorBoundary>
+                      )
+                    )}
+                  </section>
+                );
+              })}
             </main>
           </div>
         </div>
@@ -760,7 +783,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
           className="flex items-center gap-2 w-full px-4 py-1.5 text-xs font-medium transition-colors"
           style={{
             color: 'hsl(var(--tf-text) / 0.5)',
-            background: 'hsl(var(--tf-bg-surface) / 0.3)',
+            background: 'hsl(var(--tf-bg-surface))',
           }}
           aria-expanded={activityOpen}
           aria-controls="workbench-activity-feed"

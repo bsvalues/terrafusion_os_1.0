@@ -71,7 +71,7 @@ namespace TerraFusion.AI.Services
                     LastSync = DateTime.UtcNow.AddMinutes(-5),
                     NextSync = DateTime.UtcNow.AddMinutes(55),
                     SyncInterval = 3600, // 1 hour
-                    TotalRecords = 89247, // Benton County property count
+                    TotalRecords = 89_247, // CARD-10: Benton County parcel count stub
                     SuccessfulSyncs = 1245,
                     FailedSyncs = 3,
                     AverageResponseTime = 234.5,
@@ -128,7 +128,7 @@ namespace TerraFusion.AI.Services
                     LastSync = DateTime.UtcNow.AddMinutes(-3),
                     NextSync = DateTime.UtcNow.AddMinutes(27),
                     SyncInterval = 1800, // 30 minutes
-                    TotalRecords = 89247, // Benton County property count
+                    TotalRecords = 89_247, // CARD-10: Benton County parcel count stub
                     SuccessfulSyncs = 4567,
                     FailedSyncs = 8,
                     AverageResponseTime = 456.2,

@@ -292,4 +292,61 @@ describe('PropertyAtlas', () => {
       expect(copyButtons.length).toBeGreaterThanOrEqual(1);
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // Phase 0A — GIS Source Behavior
+  // ---------------------------------------------------------------------------
+  describe('GIS Source Behavior', () => {
+    /**
+     * WhenLiveSourceAvailable_RendersMapCanvas
+     *
+     * When the GIS hook returns source:'live' with a centroid, the map area
+     * MUST render a canvas element identified by data-testid="atlas-map-canvas".
+     *
+     * FAILS until Phase 0B wires Leaflet (atlas-map-canvas not yet added).
+     * This test exists so Phase 0B has a failing target to drive toward.
+     */
+    it('WhenLiveSourceAvailable_RendersMapCanvas: renders map canvas for live source', () => {
+      mockUseParcelBoundary.mockReturnValue({
+        data: {
+          parcelId: '12345-001',
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [-119.498, 46.233] },
+          centroid: { lat: 46.233, lng: -119.498, derivedFrom: 'geometry' },
+        },
+        loading: false,
+        error: null,
+        source: 'live',
+        refetch: vi.fn(),
+      });
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      // atlas-map-canvas: added in Phase 0B when Leaflet is wired
+      expect(screen.getByTestId('atlas-map-canvas')).toBeInTheDocument();
+    });
+
+    /**
+     * WhenLiveSourceUnavailable_ShowsUnavailableState
+     *
+     * When GIS source is 'unavailable', the map MUST show the unavailable
+     * state indicator and MUST NOT show the map canvas.
+     *
+     * PASSES now — regression guard: Phase 0B must not break this.
+     */
+    it('WhenLiveSourceUnavailable_ShowsUnavailableState: shows unavailable indicator, no map canvas', () => {
+      mockUseParcelBoundary.mockReturnValue({
+        data: null,
+        loading: false,
+        error: null,
+        source: 'unavailable',
+        refetch: vi.fn(),
+      });
+
+      render(<TestWrapper parcelId='12345-001' />);
+
+      expect(screen.getByTestId('atlas-boundary-unavailable')).toBeInTheDocument();
+      expect(screen.queryByTestId('atlas-map-canvas')).not.toBeInTheDocument();
+    });
+  });
 });

@@ -17,7 +17,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, type KeyboardEvent } from 'react';
 import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
 
@@ -118,8 +118,39 @@ export const SuiteCompass: React.FC<SuiteCompassProps> = ({
     [onTabChange]
   );
 
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      const navigable = items.filter((i) => !i.disabled);
+      const currentIdx = navigable.findIndex((i) => i.slug === activeTab);
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        onTabChange(navigable[(currentIdx + 1) % navigable.length].slug);
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        onTabChange(navigable[(currentIdx - 1 + navigable.length) % navigable.length].slug);
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        onTabChange(navigable[0].slug);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        onTabChange(navigable[navigable.length - 1].slug);
+      }
+    },
+    [items, activeTab, onTabChange]
+  );
+
   return (
     <>
+      {/*
+        Both desktop and tablet tablists are always in the DOM.
+        Only one is ever visible at a time:
+          desktop → "hidden lg:flex"  (display:none below lg breakpoint)
+          tablet  → "flex lg:hidden"  (display:none at lg and above)
+        display:none removes elements from the AT accessibility tree entirely
+        (NVDA, JAWS, VoiceOver all comply). No aria-hidden override needed.
+        Tablet button IDs use a "tablet-" prefix so DOM ids remain unique.
+      */}
+
       {/* Desktop: Vertical left rail */}
       <LiquidPanel
         variant="shell"
@@ -135,87 +166,111 @@ export const SuiteCompass: React.FC<SuiteCompassProps> = ({
           Suite Compass
         </div>
 
-        {items.map((item) => {
-          const isActive = activeTab === item.slug;
-          const isHovered = hoveredSlug === item.slug;
+        <div
+          role="tablist"
+          aria-label="Workbench sections"
+          className="flex flex-col gap-1"
+          onKeyDown={handleKeyDown}
+        >
+          {items.map((item) => {
+            const isActive = activeTab === item.slug;
+            const isHovered = hoveredSlug === item.slug;
 
-          return (
-            <button
-              key={item.slug}
-              onClick={() => handleClick(item.slug, item.disabled)}
-              onMouseEnter={() => setHoveredSlug(item.slug)}
-              onMouseLeave={() => setHoveredSlug(null)}
-              disabled={item.disabled}
-              className="flex items-center gap-2 px-3 py-2 rounded-md text-left transition-all text-sm"
-              style={{
-                background: isActive
-                  ? `hsl(${item.color} / 0.15)`
-                  : isHovered
-                    ? 'hsl(var(--tf-text) / 0.05)'
-                    : 'transparent',
-                color: item.disabled
-                  ? 'hsl(var(--tf-text) / 0.3)'
-                  : isActive
-                    ? `hsl(${item.color})`
-                    : 'hsl(var(--tf-text) / 0.7)',
-                borderLeft: isActive
-                  ? `3px solid hsl(${item.color})`
-                  : '3px solid transparent',
-                cursor: item.disabled ? 'not-allowed' : 'pointer',
-                opacity: item.disabled ? 0.5 : 1,
-              }}
-              title={item.disabled ? item.disabledReason : item.affordance}
-            >
-              <span className="text-base shrink-0">{item.icon}</span>
-              <div className="min-w-0 flex-1">
-                <div className="font-medium truncate">{item.label}</div>
-                {(isActive || isHovered) && !item.disabled && (
-                  <div
-                    className="text-xs truncate mt-0.5"
-                    style={{ color: 'hsl(var(--tf-text) / 0.5)' }}
-                  >
-                    {item.affordance}
-                  </div>
-                )}
-              </div>
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={item.slug}
+                id={`compass-tab-${item.slug}`}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`panel-${item.slug}`}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => handleClick(item.slug, item.disabled)}
+                onMouseEnter={() => setHoveredSlug(item.slug)}
+                onMouseLeave={() => setHoveredSlug(null)}
+                disabled={item.disabled}
+                className="flex items-center gap-2 px-3 py-2 rounded-md text-left transition-all text-sm"
+                style={{
+                  background: isActive
+                    ? `hsl(${item.color} / 0.15)`
+                    : isHovered
+                      ? 'hsl(var(--tf-text) / 0.05)'
+                      : 'transparent',
+                  color: item.disabled
+                    ? 'hsl(var(--tf-text) / 0.3)'
+                    : isActive
+                      ? `hsl(${item.color})`
+                      : 'hsl(var(--tf-text) / 0.7)',
+                  borderLeft: isActive
+                    ? `3px solid hsl(${item.color})`
+                    : '3px solid transparent',
+                  cursor: item.disabled ? 'not-allowed' : 'pointer',
+                  opacity: item.disabled ? 0.5 : 1,
+                }}
+                title={item.disabled ? item.disabledReason : item.affordance}
+              >
+                <span className="text-base shrink-0">{item.icon}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium truncate">{item.label}</div>
+                  {(isActive || isHovered) && !item.disabled && (
+                    <div
+                      className="text-xs truncate mt-0.5"
+                      style={{ color: 'hsl(var(--tf-text) / 0.5)' }}
+                    >
+                      {item.affordance}
+                    </div>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </LiquidPanel>
 
       {/* Tablet: Horizontal compact bar */}
       <LiquidPanel
         variant="shell"
         radius="md"
-        className="flex lg:hidden items-center gap-1 px-2 py-1 overflow-x-auto"
+        className="flex lg:hidden items-center px-2 py-1 overflow-x-auto"
         data-testid="suite-compass-tablet"
       >
-        {items.map((item) => {
-          const isActive = activeTab === item.slug;
-          return (
-            <button
-              key={item.slug}
-              onClick={() => handleClick(item.slug, item.disabled)}
-              disabled={item.disabled}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-all whitespace-nowrap"
-              style={{
-                background: isActive
-                  ? `hsl(${item.color} / 0.15)`
-                  : 'transparent',
-                color: item.disabled
-                  ? 'hsl(var(--tf-text) / 0.3)'
-                  : isActive
-                    ? `hsl(${item.color})`
-                    : 'hsl(var(--tf-text) / 0.6)',
-                cursor: item.disabled ? 'not-allowed' : 'pointer',
-              }}
-              title={item.disabled ? item.disabledReason : item.affordance}
-            >
-              <span>{item.icon}</span>
-              <span>{item.shortLabel}</span>
-            </button>
-          );
-        })}
+        <div
+          role="tablist"
+          aria-label="Workbench sections"
+          className="flex items-center gap-1"
+          onKeyDown={handleKeyDown}
+        >
+          {items.map((item) => {
+            const isActive = activeTab === item.slug;
+            return (
+              <button
+                key={item.slug}
+                id={`compass-tab-tablet-${item.slug}`}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`panel-${item.slug}`}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => handleClick(item.slug, item.disabled)}
+                disabled={item.disabled}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-all whitespace-nowrap"
+                style={{
+                  background: isActive
+                    ? `hsl(${item.color} / 0.15)`
+                    : 'transparent',
+                  color: item.disabled
+                    ? 'hsl(var(--tf-text) / 0.3)'
+                    : isActive
+                      ? `hsl(${item.color})`
+                      : 'hsl(var(--tf-text) / 0.6)',
+                  cursor: item.disabled ? 'not-allowed' : 'pointer',
+                }}
+                title={item.disabled ? item.disabledReason : item.affordance}
+              >
+                <span>{item.icon}</span>
+                <span>{item.shortLabel}</span>
+              </button>
+            );
+          })}
+        </div>
       </LiquidPanel>
     </>
   );

@@ -217,18 +217,20 @@ public class EliteEndpointValidationService : BackgroundService
         var validationResults = new List<EndpointTestResult>();
         var stopwatch = Stopwatch.StartNew();
 
-        // Test all critical endpoints
+        // Test all critical endpoints.
+        // AuthRequired=true: anonymous probes that return 401/403 are classified as
+        // ExpectedAuth, not RealFailure — protecting the honest degradation signal.
         var endpoints = new[]
         {
-            new EndpointTest("/health", "System Health Check", HttpMethod.Get, true),
-            new EndpointTest("/api/test", "API Test Endpoint", HttpMethod.Get, true),
-            new EndpointTest("/api/modules", "Module Listing", HttpMethod.Get, false),
-            new EndpointTest("/api/database/status", "Database Status", HttpMethod.Get, false),
-            new EndpointTest("/api/swarm/status", "AI Swarm Status", HttpMethod.Get, false),
-            new EndpointTest("/api/swarm/modules", "AI Modules", HttpMethod.Get, false),
-            new EndpointTest("/api/aimodules/status", "AI Modules Status", HttpMethod.Get, false),
-            new EndpointTest("/api/elitesystemreport/mission-completion", "Elite Mission Report", HttpMethod.Get, false),
-            new EndpointTest("/levy/health", "Levy System Health", HttpMethod.Get, false)
+            new EndpointTest("/health", "System Health Check", HttpMethod.Get, Critical: true),
+            new EndpointTest("/api/test", "API Test Endpoint", HttpMethod.Get, Critical: true),
+            new EndpointTest("/api/modules", "Module Listing", HttpMethod.Get, Critical: false, AuthRequired: true),
+            new EndpointTest("/api/database/status", "Database Status", HttpMethod.Get, Critical: false),
+            new EndpointTest("/api/swarm/status", "AI Swarm Status", HttpMethod.Get, Critical: false),
+            new EndpointTest("/api/swarm/modules", "AI Modules", HttpMethod.Get, Critical: false),
+            new EndpointTest("/api/aimodules/status", "AI Modules Status", HttpMethod.Get, Critical: false, AuthRequired: true),
+            new EndpointTest("/api/elitesystemreport/mission-completion", "Elite Mission Report", HttpMethod.Get, Critical: false),
+            new EndpointTest("/levy/health", "Levy System Health", HttpMethod.Get, Critical: false)
         };
 
         foreach (var endpoint in endpoints)
@@ -236,15 +238,20 @@ public class EliteEndpointValidationService : BackgroundService
             var result = await TestEndpointAsync(baseUrl, endpoint);
             validationResults.Add(result);
 
-            // Log result immediately
-            var statusIcon = result.Success ? "✅" : "❌";
+            // Log result with outcome-aware icon
+            var statusIcon = result.OutcomeKind switch
+            {
+                EndpointOutcomeKind.Passed => "✅",
+                EndpointOutcomeKind.ExpectedAuth => "🔒",
+                _ => "❌"
+            };
             var responseTimeInfo = result.ResponseTimeMs > 0 ? $" ({result.ResponseTimeMs}ms)" : "";
             _logger.LogInformation("{Status} {Name}: {StatusCode}{ResponseTime}",
                 statusIcon, endpoint.Name, result.StatusCode, responseTimeInfo);
 
-            if (!result.Success && endpoint.Critical)
+            if (result.OutcomeKind == EndpointOutcomeKind.RealFailure && endpoint.Critical)
             {
-                _logger.LogWarning("⚠️ Critical endpoint {Endpoint} failed: {Error}",
+                _logger.LogWarning("⚠️ Critical endpoint {Endpoint} has a real failure: {Error}",
                     endpoint.Path, result.ErrorMessage);
             }
         }
@@ -254,9 +261,10 @@ public class EliteEndpointValidationService : BackgroundService
         // Generate comprehensive report
         await GenerateValidationReportAsync(validationResults, stopwatch.ElapsedMilliseconds);
 
-        // Reset consecutive failures if validation was mostly successful
-        var successRate = validationResults.Count(r => r.Success) / (double)validationResults.Count;
-        if (successRate >= 0.7) // 70% success rate threshold
+        // Reset consecutive failures based on real failures only.
+        // Expected-auth outcomes on protected endpoints are not degradation signals.
+        var realFailureCount = validationResults.Count(r => r.OutcomeKind == EndpointOutcomeKind.RealFailure);
+        if (realFailureCount == 0)
         {
             _consecutiveFailures = 0;
         }
@@ -276,7 +284,8 @@ public class EliteEndpointValidationService : BackgroundService
         {
             Endpoint = endpoint.Path,
             Name = endpoint.Name,
-            TestTime = DateTime.UtcNow
+            TestTime = DateTime.UtcNow,
+            IsCritical = endpoint.Critical
         };
 
         try
@@ -286,9 +295,18 @@ public class EliteEndpointValidationService : BackgroundService
 
             stopwatch.Stop();
 
-            result.Success = response.IsSuccessStatusCode;
             result.StatusCode = response.StatusCode;
             result.ResponseTimeMs = stopwatch.ElapsedMilliseconds;
+
+            // Classify outcome: protected endpoints returning 401/403 when probed
+            // anonymously are ExpectedAuth, not RealFailure.
+            var isAuthFailure = (response.StatusCode == HttpStatusCode.Unauthorized ||
+                                 response.StatusCode == HttpStatusCode.Forbidden)
+                                && endpoint.AuthRequired;
+            result.Success = response.IsSuccessStatusCode;
+            result.OutcomeKind = response.IsSuccessStatusCode ? EndpointOutcomeKind.Passed
+                : isAuthFailure ? EndpointOutcomeKind.ExpectedAuth
+                : EndpointOutcomeKind.RealFailure;
 
             if (response.IsSuccessStatusCode)
             {
@@ -314,6 +332,10 @@ public class EliteEndpointValidationService : BackgroundService
                 {
                     result.ResponsePreview = content.Length > 100 ? content[..100] + "..." : content;
                 }
+            }
+            else if (isAuthFailure)
+            {
+                result.ErrorMessage = $"HTTP {(int)response.StatusCode} {response.ReasonPhrase} (expected — endpoint requires authentication)";
             }
             else
             {
@@ -343,18 +365,19 @@ public class EliteEndpointValidationService : BackgroundService
     private async Task GenerateValidationReportAsync(List<EndpointTestResult> results, long totalTimeMs)
     {
         await Task.CompletedTask;
-        await Task.CompletedTask;
-        var successCount = results.Count(r => r.Success);
+        var passedCount = results.Count(r => r.OutcomeKind == EndpointOutcomeKind.Passed);
+        var expectedAuthCount = results.Count(r => r.OutcomeKind == EndpointOutcomeKind.ExpectedAuth);
+        var realFailureCount = results.Count(r => r.OutcomeKind == EndpointOutcomeKind.RealFailure);
         var totalCount = results.Count;
-        var successRate = totalCount > 0 ? (successCount / (double)totalCount) * 100 : 0;
 
         var report = new
         {
             Timestamp = DateTime.UtcNow,
             ApiUrl = _detectedApiUrl,
             TotalEndpoints = totalCount,
-            SuccessfulEndpoints = successCount,
-            SuccessRate = Math.Round(successRate, 2),
+            Passed = passedCount,
+            ExpectedAuth = expectedAuthCount,
+            RealFailures = realFailureCount,
             TotalValidationTime = totalTimeMs,
             AverageResponseTime = results.Where(r => r.ResponseTimeMs > 0).DefaultIfEmpty()
                 .Average(r => r?.ResponseTimeMs ?? 0),
@@ -362,7 +385,7 @@ public class EliteEndpointValidationService : BackgroundService
             {
                 r.Endpoint,
                 r.Name,
-                r.Success,
+                Outcome = r.OutcomeKind.ToString(),
                 StatusCode = r.StatusCode.ToString(),
                 r.ResponseTimeMs,
                 r.ResponseSize,
@@ -377,15 +400,16 @@ public class EliteEndpointValidationService : BackgroundService
             WriteIndented = true
         });
 
-        _logger.LogInformation("📊 Elite Endpoint Validation Report:\n{Report}", reportJson);
+        _logger.LogInformation("📊 Endpoint Validation Report:\n{Report}", reportJson);
 
         // Store in test history (keep last 10 results)
         _testHistory.Add(new EndpointTestResult
         {
             TestTime = DateTime.UtcNow,
-            Success = successRate >= 70,
+            Success = realFailureCount == 0,
+            OutcomeKind = realFailureCount == 0 ? EndpointOutcomeKind.Passed : EndpointOutcomeKind.RealFailure,
             ResponseTimeMs = totalTimeMs,
-            ResponsePreview = $"{successCount}/{totalCount} endpoints successful ({successRate:F1}%)"
+            ResponsePreview = $"{passedCount} passed, {expectedAuthCount} expected-auth, {realFailureCount} real-failures / {totalCount} total"
         });
 
         if (_testHistory.Count > 10)
@@ -393,18 +417,25 @@ public class EliteEndpointValidationService : BackgroundService
             _testHistory.RemoveAt(0);
         }
 
-        // Log elite system status
-        if (successRate >= 90)
+        // Verdict is based on real failures only.
+        // Expected-auth outcomes (anonymous probes of protected endpoints) are not degradation.
+        var criticalRealFailures = results.Count(r => r.IsCritical && r.OutcomeKind == EndpointOutcomeKind.RealFailure);
+        if (criticalRealFailures > 0)
         {
-            _logger.LogInformation("🏆 ELITE SYSTEM STATUS: TRANSCENDENT - {SuccessRate}% success rate", successRate);
+            _logger.LogWarning("⚠️ SYSTEM STATUS: DEGRADED — {Count} critical endpoint(s) have real failures", criticalRealFailures);
         }
-        else if (successRate >= 70)
+        else if (realFailureCount > 0)
         {
-            _logger.LogInformation("⚡ ELITE SYSTEM STATUS: OPERATIONAL - {SuccessRate}% success rate", successRate);
+            _logger.LogWarning("⚠️ SYSTEM STATUS: DEGRADED — {Count} non-critical real failure(s), critical path intact", realFailureCount);
+        }
+        else if (passedCount == totalCount)
+        {
+            _logger.LogInformation("🏆 SYSTEM STATUS: TRANSCENDENT — {Passed}/{Total} passed, 0 real failures", passedCount, totalCount);
         }
         else
         {
-            _logger.LogWarning("⚠️ ELITE SYSTEM STATUS: DEGRADED - {SuccessRate}% success rate", successRate);
+            _logger.LogInformation("⚡ SYSTEM STATUS: OPERATIONAL — {Passed} passed, {Auth} expected-auth (protected endpoints probed anonymously), 0 real failures",
+                passedCount, expectedAuthCount);
         }
     }
 
@@ -457,12 +488,27 @@ public class EliteEndpointValidationService : BackgroundService
 }
 
 /// <summary>
-/// Represents an endpoint test configuration
+/// Represents an endpoint test configuration.
+/// AuthRequired=true means a 401/403 returned on an anonymous probe is classified
+/// as ExpectedAuth rather than a real failure.
 /// </summary>
-public record EndpointTest(string Path, string Name, HttpMethod Method, bool Critical);
+public record EndpointTest(string Path, string Name, HttpMethod Method, bool Critical, bool AuthRequired = false);
 
 /// <summary>
-/// Represents the result of an endpoint test
+/// Classifies the outcome of an endpoint probe.
+/// </summary>
+public enum EndpointOutcomeKind
+{
+    /// <summary>Endpoint returned a 2xx response.</summary>
+    Passed,
+    /// <summary>Auth-required endpoint returned 401/403 on an anonymous probe — expected, not a fault.</summary>
+    ExpectedAuth,
+    /// <summary>Unexpected failure: non-auth error, unexpected status code, or connection problem.</summary>
+    RealFailure
+}
+
+/// <summary>
+/// Represents the result of an endpoint test.
 /// </summary>
 public class EndpointTestResult
 {
@@ -470,6 +516,8 @@ public class EndpointTestResult
     public string Name { get; set; } = string.Empty;
     public DateTime TestTime { get; set; }
     public bool Success { get; set; }
+    public EndpointOutcomeKind OutcomeKind { get; set; } = EndpointOutcomeKind.RealFailure;
+    public bool IsCritical { get; set; }
     public HttpStatusCode StatusCode { get; set; }
     public long ResponseTimeMs { get; set; }
     public int ResponseSize { get; set; }

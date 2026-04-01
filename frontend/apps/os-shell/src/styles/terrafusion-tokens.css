@@ -3,9 +3,138 @@
    Quantum Governance Platform Design Tokens
    ═══════════════════════════════════════════════════════════════ */
 
+/* ═══════════════════════════════════════════════════════════════
+   INTER FONT — LOCAL BUNDLED DELIVERY
+   Offline-safe for Electron + county networks.
+   Files: /fonts/inter/inter-latin-{weight}-normal.woff2
+   ═══════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/inter/inter-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2020, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/inter/inter-latin-500-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2020, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/inter/inter-latin-600-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2020, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/inter/inter-latin-700-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2020, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* ═══════════════════════════════════════════════════════════════
+   SWITZER FONT — PRIMARY TYPEFACE
+   Offline-safe. Place WOFF2 files at /fonts/switzer/
+   Download: https://www.fontshare.com/fonts/switzer
+   Falls back to Inter / system-ui if files are absent.
+   ═══════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: 'Switzer';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/switzer/Switzer-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Switzer';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/switzer/Switzer-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Switzer';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/switzer/Switzer-Semibold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Switzer';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/switzer/Switzer-Bold.woff2') format('woff2');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCENT SERIF — TEMPORARY STAND-IN
+   SPEC TARGET: Editorial New Italic (Pangram Pangram, commercial)
+   CURRENT FILE: Playfair Display 400i (SIL OFL 1.1, @fontsource)
+   STATUS: UNRESOLVED — Editorial New is not on disk. Playfair is
+   placed here as a visually-similar high-contrast italic serif to
+   keep the layout from breaking. It is NOT the specified font.
+   When Editorial New is procured, swap PlayfairDisplay-Italic.woff2
+   → EditorialNew-Italic.woff2 and update font-family below.
+   ═══════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: 'Playfair Display'; /* UNRESOLVED SPEC GAP: spec target is 'Editorial New' (Pangram Pangram, commercial) */
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/editorial-new/PlayfairDisplay-Italic.woff2') format('woff2');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   JETBRAINS MONO FONT — MONOSPACE TYPEFACE
+   Offline-safe for Electron + county networks.
+   Files: /fonts/jetbrains-mono/jetbrains-mono-latin-{weight}-normal.woff2
+   Source: @fontsource/jetbrains-mono v5.2.8 (SIL OFL 1.1)
+   ═══════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2020, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono/jetbrains-mono-latin-500-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2020, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono/jetbrains-mono-latin-600-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2020, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono/jetbrains-mono-latin-700-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2020, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
   /* ═══ FOUNDATION COLORS (THE ACTUAL HEX VALUES) ═══ */
-  --tf-quantum-cyan: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50)); /* Terra-Cyan - The Consciousness Color */
+  --tf-quantum-cyan: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60)); /* Terra-Cyan - The Consciousness Color */
   --tf-void-black: hsl(var(--tf-surface-dark-hs) 7%); /* Terra-Midnight - The Void */
   --tf-network-blue: hsl(var(--tf-network-blue-hs) var(--tf-l-50)); /* Terra-Blue - The Network (brand exact) */
   --tf-transcend-highlight: hsl(var(--tf-transcend-cyan-hs) 47%); /* Transcendence Accent */
@@ -76,8 +205,9 @@
   --text-6xl: 5.236rem; /* 83.776px */
 
   /* ═══ FONT FAMILIES ═══ */
-  --font-primary: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-secondary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-primary: 'Switzer', 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-secondary: 'Switzer', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-accent: 'Playfair Display', serif; /* UNRESOLVED: spec is 'Editorial New' (Pangram Pangram, commercial) — Playfair Display is a temporary stand-in */
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   /* ═══ SPACING SYSTEM (Base 8) ═══ */
@@ -114,15 +244,15 @@
        hsl(var(--tf-<name>-hs) <L%> / <alpha>)
      Derived from the foundation hex tokens above.                     */
   --tf-bg-surface-hs: 217 33%;       /* bg-surface                     */
-  --tf-surface-dark-hs: 222 47%;     /* surface-dark                   */
+  --tf-surface-dark-hs: 222 25%;     /* surface-dark                   */
   --tf-text-primary-hs: 0 0%;        /* text-primary                   */
   --tf-text-secondary-hs: 213 27%;   /* text-secondary                 */
-  --tf-success-hs: 152 100%;         /* accent-success                 */
+  --tf-success-hs: 135 90%;          /* accent-success                 */
   --tf-error-hs: 0 100%;             /* error-red                      */
   --tf-warning-hs: 40 100%;          /* warning-amber                  */
   --tf-info-hs: 264 100%;            /* info-purple                    */
   --tf-network-blue-hs: 210 100%;    /* network-blue                   */
-  --tf-transcend-cyan-hs: 180 100%;  /* quantum-cyan                   */
+  --tf-transcend-cyan-hs: 190 100%;  /* quantum-cyan                   */
   --tf-neutral-hs: 220 13%;          /* gray scale base                */
 
   /* ═══ LIGHTNESS STEPS ═══
@@ -180,21 +310,29 @@
   /* ═══ LUMIN BRIDGE (consumed by @terrafusion/ui primitives) ═══
      HSL channel values — used as hsl(var(--tf-bg) / <alpha>).
      Derived from the foundation hex tokens above.                   */
-  --tf-bg: 225 44% 7%; /* hsl(var(--tf-surface-dark-hs) 7%)  (void-black)          */
+  --tf-bg: 222 25% 7%; /* hsl(var(--tf-surface-dark-hs) 7%)  (void-black)          */
   --tf-surface: 217 33% 17%; /* hsl(var(--tf-bg-surface-hs) var(--tf-l-20))  (terra-slate)         */
-  --tf-surface-2: 225 29% 11%; /* hsl(var(--tf-surface-dark-hs) 11%)  (surface-darker)      */
+  --tf-surface-2: 222 29% 11%; /* hsl(var(--tf-surface-dark-hs) 11%)  (surface-darker)      */
   --tf-border: 220 18% 24%; /* muted slate (not accent!)      */
   --tf-text: 0 0% 100%; /* hsl(var(--tf-text-primary-hs) var(--tf-l-100))  (text-primary)        */
   --tf-muted: 215 20% 65%; /* hsl(var(--tf-neutral-hs) 65%)  (gray-400)            */
-  --tf-accent: 180 100% 50%; /* hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50))  (quantum-cyan)        */
+  --tf-accent: 190 100% 60%; /* hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60))  (quantum-cyan)        */
   --tf-accent-2: 210 100% 50%; /* hsl(var(--tf-network-blue-hs) var(--tf-l-50))  (network-blue)        */
-  --tf-success: 152 100% 50%; /* hsl(var(--tf-success-hs) var(--tf-l-50))  (accent-success)      */
+  --tf-success: 135 90% 55%; /* hsl(var(--tf-success-hs) var(--tf-l-55))  (accent-success)      */
   --tf-error: 0 100% 63%; /* hsl(var(--tf-error-hs) var(--tf-l-60))  (error-red)            */
-  --tf-warning: 40 100% 50%; /* hsl(var(--tf-warning-hs) var(--tf-l-50))  (warning-amber)       */
+  --tf-warning: 40 100% 60%; /* hsl(var(--tf-warning-hs) var(--tf-l-60))  (warning-amber)       */
   --tf-info: 264 100% 63%; /* hsl(var(--tf-info-hs) var(--tf-l-60))  (info-purple)          */
   --tf-r-lg: var(--radius-lg); /* 1rem                           */
   --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
   --tf-shadow: 0 10px 30px hsl(var(--tf-accent) / 0.2); /* shadow-lg    */
+
+  /* ═══ COMPAT ALIASES (Shadcn/Radix name bridge) ═══
+     These map Shadcn-style names → TF Lumin Bridge channel values.
+     Usage pattern: hsl(var(--tf-foreground)) = hsl(0 0% 100%)
+     Never wrap these in hsl() when defining — they ARE raw H S L.   */
+  --tf-foreground: var(--tf-text);          /* primary text (0 0% 100%) */
+  --tf-muted-foreground: var(--tf-muted);   /* muted text   (215 20% 65%) */
+  --tf-accent-primary: var(--tf-accent);    /* terra-cyan   (190 100% 60%) */
 
   /* ═══ WINDOW CHROME (macOS traffic lights) ═══ */
   --tf-wc-close: 2 100% 67%;
@@ -212,15 +350,16 @@
   --tf-suite-gpt: 217 92% 60%;        /* GPT blue      */
 
   /* ═══ GLASSMORPHISM (Brand Kit Exact) ═══ */
-  --glass-bg: hsl(var(--tf-surface-2) / 0.6);
-  --glass-bg-light: hsl(var(--tf-surface) / 0.5);
+  --glass-bg: hsl(210 20% 98% / 0.10);
+  --glass-bg-light: hsl(210 20% 98% / 0.06);
+  --glass-bg-heavy: hsl(210 20% 98% / 0.14);
   --glass-border: hsl(var(--tf-accent) / 0.2);
   --glass-border-hover: hsl(var(--tf-accent) / 0.4);
   --glass-blur: blur(20px);
   --glass-backdrop: saturate(180%) blur(20px);
 
   /* Card System */
-  --card-bg: hsl(var(--tf-surface-2) / 0.6);
+  --card-bg: hsl(var(--tf-surface-2));
   --card-border: 1px solid hsl(var(--tf-accent) / 0.2);
   --card-radius: 1rem;
   --card-hover-shadow: 0 0 30px hsl(var(--tf-accent) / 0.1);
@@ -268,7 +407,7 @@
     /* Enhanced contrast for dark mode */
     --terra-cyan: var(--tf-quantum-cyan);
     --terra-midnight: hsl(var(--tf-text-primary-hs) var(--tf-l-0));
-    --glass-bg: hsl(var(--tf-bg) / 0.5);
+    --glass-bg: hsl(210 20% 98% / 0.10);
     --glass-border: hsl(var(--tf-accent) / 0.3);
   }
 }
@@ -348,6 +487,13 @@
   100% {
     transform: rotateY(360deg) rotateX(10deg);
   }
+}
+
+@keyframes squishIn {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.04); }
+  65%  { transform: scale(0.96); }
+  100% { transform: scale(1); }
 }
 
 .quantum-pulse {

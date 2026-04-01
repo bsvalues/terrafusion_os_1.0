@@ -39,7 +39,7 @@ export type RagHealthDto = {
   error?: string;
 };
 
-const API_BASE_URL = getViteEnv().VITE_API_BASE_URL || '';
+const API_BASE_URL = getViteEnv().VITE_API_URL || '';
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {

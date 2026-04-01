@@ -16,6 +16,7 @@ import { useQueueStore } from '@/stores/queueStore';
 import { APPRAISERS } from '@/data/queueFixtures';
 import type { QueueWorkItem } from '@/data/queueFixtures';
 import { emitTraceEvent } from '@/services/terraTrace';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 
 type Tab = 'unassigned' | 'in-progress' | 'review' | 'metrics';
 type SortKey = 'priority' | 'value' | 'created' | 'area';
@@ -99,7 +100,7 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
   const [reassignDropdown, setReassignDropdown] = useState<string | null>(null);
 
   const {
-    items, metrics, productivity, loading,
+    items, metrics, productivity, loading, isFixture,
     selectedItemIds, fetchQueue,
     toggleSelection, selectAll, clearSelection,
     assignItems, reviewItem,
@@ -156,6 +157,7 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
       className="space-y-4 p-4"
       style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}
     >
+      {isFixture && <DemoDataBanner module="TerraQueue" />}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">TerraQueue</h1>
         <div className="flex gap-2">

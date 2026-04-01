@@ -60,6 +60,16 @@ vi.mock('../../components/ui/button', () => ({
   Button: (props: any) => <button data-slot="button" {...props} />,
 }));
 
+// Stub live data hook so structural tests don't need QueryClientProvider
+vi.mock('../../hooks/useParcelCount', () => ({
+  useParcelCount: () => ({
+    data: { totalParcels: 89_247, dataSource: 'STUB', stubbed: true },
+    isLoading: false,
+    error: null,
+    isSuccess: true,
+  }),
+}));
+
 vi.mock('../../components/ui/input', () => ({
   Input: (props: any) => <input data-slot="input" {...props} />,
 }));

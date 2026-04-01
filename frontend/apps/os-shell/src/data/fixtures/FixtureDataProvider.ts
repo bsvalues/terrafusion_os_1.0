@@ -419,7 +419,7 @@ export class FixtureDataProvider implements DataProvider {
       entries.push({
         auditId: `AUD-${parcelId}-STALE`,
         parcelId,
-        action: 'PACS Sync Warning: Last sync >90 days',
+        action: 'Data Sync Warning: Last sync >90 days',
         userId: 'terrafusionsync',
         userName: 'TerraFusion Sync Service',
         timestamp: '2024-09-01T08:00:00Z',
@@ -455,7 +455,7 @@ export class FixtureDataProvider implements DataProvider {
         { name: 'TerraFusion API (Kernel)', status: 'healthy', latencyMs: 12, lastChecked: new Date().toISOString() },
         { name: 'TerraFusion Gateway (Shell)', status: 'healthy', latencyMs: 8, lastChecked: new Date().toISOString() },
         { name: 'TerraFusion Consciousness', status: 'degraded', latencyMs: 850, lastChecked: new Date().toISOString(), details: 'High latency on agent coordination' },
-        { name: 'PACS Adapter', status: 'down', latencyMs: undefined, lastChecked: new Date().toISOString(), details: 'Connection timeout — fixture:health-degraded edge case' },
+        { name: 'County Data Connector', status: 'down', latencyMs: undefined, lastChecked: new Date().toISOString(), details: 'Connection timeout — fixture:health-degraded edge case' },
       ],
       lastChecked: new Date().toISOString(),
     };

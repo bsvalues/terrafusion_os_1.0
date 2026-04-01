@@ -129,14 +129,14 @@ export const AxiomFSWindow = ({ windowId, metadata }: Props) => {
                 </p>
               </div>
 
-              {/* Cell: PACS Identity */}
+              {/* Cell: Source Identity */}
               <div className='bg-[var(--tf-surface-dark)] p-6 hover:bg-[var(--tf-surface-highlight)] transition-colors duration-300'>
                 <label className='block text-[10px] font-bold tracking-widest text-[var(--tf-foreground-dim)] mb-2'>
-                  PACS IDENTITY
+                  SOURCE ID
                 </label>
                 <div className='flex items-center gap-3'>
                   <span className='font-mono text-xl text-[var(--tf-transcend-cyan)]'>
-                    {activeObject.metadata?.pacsId || 'UNKNOWN'}
+                    {activeObject.metadata?.pacsId || activeObject.metadata?.sourceId || 'UNKNOWN'}
                   </span>
                   <div className='h-px flex-1 bg-[var(--tf-glass-border)]' />
                   <span className='text-[10px] text-[var(--tf-foreground-dim)]'>SQL_PK</span>

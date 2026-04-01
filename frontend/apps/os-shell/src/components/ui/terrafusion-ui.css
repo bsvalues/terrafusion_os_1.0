@@ -150,12 +150,10 @@
   100% {
     opacity: 1;
     transform: scale(1);
-    box-shadow: 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.5);
   }
   50% {
     opacity: 0.9;
     transform: scale(1.02);
-    box-shadow: 0 0 30px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.7);
   }
 }
 

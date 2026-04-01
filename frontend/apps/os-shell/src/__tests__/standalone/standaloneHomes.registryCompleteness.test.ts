@@ -69,7 +69,7 @@ describe('Standalone Registry Completeness', () => {
       }
     });
 
-    it('excludes wip and planned suites', () => {
+    it('excludes queued and unavailable suites', () => {
       const suites = getStandaloneSuites();
       const ids = suites.map((s) => s.id);
 
@@ -129,18 +129,18 @@ describe('Standalone Registry Completeness', () => {
     });
 
     it('returns false for non-live features', () => {
-      const wipFeature: OsFeatureDefinition = {
+      const queuedFeature: OsFeatureDefinition = {
         id: 'test',
         displayName: 'Test',
         shortName: 'Test',
         description: 'Test',
         iconName: 'Test',
         route: '/test',
-        status: 'wip',
+        status: 'queued',
         homeMeta: { title: 'Test' },
       };
 
-      expect(isStandaloneSuite(wipFeature)).toBe(false);
+      expect(isStandaloneSuite(queuedFeature)).toBe(false);
     });
   });
 

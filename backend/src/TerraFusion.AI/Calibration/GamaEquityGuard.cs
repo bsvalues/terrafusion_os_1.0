@@ -61,7 +61,7 @@ public class GamaEquityGuard : IGamaEquityGuard
 
         var overallStats = ComputeRatioStatistics(input.Ratios);
         var neighborhoods = input.Ratios
-            .GroupBy(r => r.NeighborhoodCode)
+            .GroupBy(r => r.NeighborhoodCode ?? "Unknown")
             .Select(g => CheckNeighborhood(g.Key, g.ToArray()))
             .ToArray();
 

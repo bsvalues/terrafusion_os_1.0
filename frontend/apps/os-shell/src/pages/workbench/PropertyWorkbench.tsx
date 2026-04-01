@@ -34,7 +34,6 @@ import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import { ContextRibbon } from '../../components/workbench/ContextRibbon';
 import { SuiteCompass } from '../../components/workbench/SuiteCompass';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
-import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
 import { useParcelActivity } from '../../services/activityFeed';
@@ -165,7 +164,7 @@ const TabNavigation: React.FC<{
     className="border-b px-2 flex gap-0 overflow-x-auto"
     style={{
       borderColor: 'hsl(var(--tf-border) / 0.2)',
-      background: 'hsl(var(--tf-bg-surface) / 0.6)',
+      background: 'hsl(var(--tf-surface))',
     }}
   >
     {tabs.map((tab) => {
@@ -554,13 +553,13 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
 
           {/* Tab Content via React Router Outlet */}
           <main className="flex-1 overflow-auto p-2">
-            <LiquidPanel variant="interactive" radius="md" className="min-h-full">
+            <div className="min-h-full">
               <ErrorBoundary>
                 <Suspense fallback={<TabLoader />}>
                   <Outlet context={{ parcelId, propertyData, workMode }} />
                 </Suspense>
               </ErrorBoundary>
-            </LiquidPanel>
+            </div>
           </main>
         </div>
       </div>
@@ -575,7 +574,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
           className="flex items-center gap-2 w-full px-3 py-1 text-xs font-medium transition-colors"
           style={{
             color: 'hsl(var(--tf-text) / 0.5)',
-            background: 'hsl(var(--tf-bg-surface) / 0.3)',
+            background: 'hsl(var(--tf-surface))',
           }}
           aria-expanded={activityOpen}
           aria-controls="workbench-activity-feed"

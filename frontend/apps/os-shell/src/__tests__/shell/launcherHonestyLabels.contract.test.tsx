@@ -28,7 +28,7 @@ vi.mock('../../config/suiteRegistry', () => ({
       iconName: 'FileStack',
       route: '/dossier',
       color: 'hsl(var(--tf-suite-dossier))',
-      status: 'wip',
+      status: 'queued',
     },
     {
       id: 'gpt',
@@ -38,7 +38,7 @@ vi.mock('../../config/suiteRegistry', () => ({
       iconName: 'Bot',
       route: '/gpt',
       color: 'hsl(var(--tf-suite-gpt))',
-      status: 'planned',
+      status: 'unavailable',
     },
   ],
   OS_FEATURES: [
@@ -58,7 +58,7 @@ vi.mock('../../config/suiteRegistry', () => ({
       description: 'Trace console',
       iconName: 'Activity',
       route: '/trace',
-      status: 'wip',
+      status: 'queued',
     },
     {
       id: 'canon',
@@ -66,7 +66,7 @@ vi.mock('../../config/suiteRegistry', () => ({
       shortName: 'Canon',
       description: 'Canon surface',
       iconName: 'Building',
-      status: 'planned',
+      status: 'unavailable',
     },
   ],
 }));
@@ -83,8 +83,8 @@ describe('Launcher honesty labels', () => {
     render(<SuiteLauncher />);
 
     expect(screen.queryByTestId('suite-status-badge-forge')).not.toBeInTheDocument();
-    expect(screen.getByTestId('suite-status-badge-dossier')).toHaveTextContent('In progress');
-    expect(screen.getByTestId('suite-status-badge-gpt')).toHaveTextContent('Planned');
+    expect(screen.getByTestId('suite-status-badge-dossier')).toHaveTextContent('Queued');
+    expect(screen.getByTestId('suite-status-badge-gpt')).toHaveTextContent('Unavailable');
     expect(screen.queryByText('WIP')).not.toBeInTheDocument();
   });
 
@@ -92,8 +92,8 @@ describe('Launcher honesty labels', () => {
     render(<SuiteLauncher />);
 
     expect(screen.queryByTestId('feature-status-badge-pilot')).not.toBeInTheDocument();
-    expect(screen.getByTestId('feature-status-badge-trace')).toHaveTextContent('In progress');
-    expect(screen.getByTestId('feature-status-badge-canon')).toHaveTextContent('Planned');
+    expect(screen.getByTestId('feature-status-badge-trace')).toHaveTextContent('Queued');
+    expect(screen.getByTestId('feature-status-badge-canon')).toHaveTextContent('Unavailable');
     expect(screen.queryByText('WIP')).not.toBeInTheDocument();
   });
 });

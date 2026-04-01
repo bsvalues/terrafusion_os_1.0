@@ -13,9 +13,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
-// Mock stores
-vi.mock('../../stores/commandPaletteStore', () => ({
-  useCommandPaletteStore: vi.fn(),
+// Mock stores — Launcher uses startMenuStore (not commandPaletteStore)
+vi.mock('../../stores/startMenuStore', () => ({
+  useStartMenuStore: vi.fn(),
 }));
 
 // Isolate Zustand personalization stores — prevent state leaking between tests
@@ -126,7 +126,7 @@ vi.mock('react-router-dom', async () => ({
 // Components to test
 import { Launcher } from '../../components/launcher';
 import { getLauncherItems } from '../../components/launcher/launcherModel';
-import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
+import { useStartMenuStore } from '../../stores/startMenuStore';
 
 // ============================================================================
 // Test Helpers
@@ -141,7 +141,7 @@ const mockStore = {
 };
 
 function renderLauncher() {
-  (useCommandPaletteStore as unknown as vi.Mock).mockImplementation((selector) =>
+  (useStartMenuStore as unknown as vi.Mock).mockImplementation((selector) =>
     selector ? selector(mockStore) : mockStore
   );
 

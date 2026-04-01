@@ -136,7 +136,7 @@ export const TerraLiveTelemetry: React.FC = () => {
       id: '2',
       category: 'security',
       title: 'Access Pattern Analysis',
-      description: 'Unusual access patterns detected in Harris PACS module',
+      description: 'Unusual access patterns detected in data bridge module',
       confidence: 0.73,
       impact: 'low',
       recommendation: 'Review authentication logs and consider MFA enforcement',
@@ -180,7 +180,7 @@ export const TerraLiveTelemetry: React.FC = () => {
   // Add new system event periodically
   const addSystemEvent = useCallback(() => {
     const eventTypes = ['info', 'warning', 'success'] as const;
-    const sources = ['CAMA Core', 'GIS Engine', 'Tax Levy', 'Harris PACS', 'AI Engine'];
+    const sources = ['CAMA Core', 'GIS Engine', 'Tax Levy', 'County Records', 'AI Engine'];
     const messages = [
       'Batch processing completed',
       'Data synchronization in progress',

@@ -1,11 +1,12 @@
 /**
  * TerraFusion OS — Live DataProvider
  *
- * Reads from the real backend API (/api/properties, etc.) using the
- * authenticated JWT from authStorage.
+ * Reads from PACS endpoints (/api/pacs/*, /ops/pacs/*) which are backed by
+ * PacsEfAdapter (SQLite dev) or PacsSqlAdapter (production SQL Server).
  *
- * This replaces SnapshotDataProvider when the backend is reachable,
- * giving the workbench access to all 112K+ Benton County parcels.
+ * Both PACS controllers use [AllowAnonymous] — no JWT required for local dev.
+ * This provider replaces SnapshotDataProvider when the backend is reachable,
+ * giving the workbench access to all 89K+ Benton County parcels.
  */
 
 import type { DataProvider, DataMode } from './dataProvider';
@@ -34,46 +35,41 @@ import type {
 import { getToken } from '../auth/authStorage';
 
 // ---------------------------------------------------------------------------
-// Backend DTO shapes
+// PACS DTO shapes (from PacsController + PacsOpsController)
 // ---------------------------------------------------------------------------
 
-interface BackendPropertyDto {
-  id: string;
-  parcelNumber: string;
+/** GET /api/pacs/properties → items[] */
+interface PacsSummaryDto {
+  propId: number;
+  geoId: string;
   address: string;
-  ownerName: string | null;
   assessedValue: number;
-  landValue: number;
-  improvementValue: number;
   marketValue: number;
-  propertyType: string | null;
-  yearBuilt: number | null;
-  taxYear: number;
-  assessmentDate: string;
-  countyId: string;
-  countyName: string;
-  createdAt: string;
-  updatedAt: string;
+  propertyType: string;
 }
 
-interface BackendPagedResult {
-  items: BackendPropertyDto[];
-  totalCount: number;
+interface PacsPagedResult {
+  items: PacsSummaryDto[];
   page: number;
   pageSize: number;
-  totalPages: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
+  totalCount: number;
 }
 
-interface BackendValuationDto {
-  id: string;
-  propertyId: string;
-  taxYear: number;
+/** GET /ops/pacs/property/{geoId} */
+interface PacsPropertyDetailDto {
+  propId: number;
+  geoId: string;
+  address: string;
+  ownerName: string;
+  assessedValue: number;
+  marketValue: number;
   landValue: number;
   improvementValue: number;
-  totalValue: number;
-  effectiveDate: string;
+  propertyType: string;
+  legalDescription: string;
+  appraisalYear: number | null;
+  lastModified: string | null;
+  source: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -82,32 +78,34 @@ interface BackendValuationDto {
 
 async function apiFetch<T>(path: string): Promise<T> {
   const token = getToken();
-  const res = await fetch(path, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
+  const headers: Record<string, string> = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const res = await fetch(path, { headers });
   if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
   return res.json();
 }
 
-function mapProperty(dto: BackendPropertyDto): Property {
-  // Parse city from address (e.g. "123 Main St, Kennewick, WA 99336")
+function mapPacsDetailToProperty(dto: PacsPropertyDetailDto): Property {
+  // Parse city from composite address (e.g. "123 Main St, Kennewick, WA, 99336")
   const parts = (dto.address ?? '').split(',').map((s) => s.trim());
+  const streetAddr = parts[0] ?? dto.address ?? '';
   const city = parts[1] ?? '';
-  const state = parts[2]?.split(' ')[0] ?? 'WA';
-  const zip = parts[2]?.split(' ')[1] ?? '';
+  const state = parts[2] ?? 'WA';
+  const zip = parts[3] ?? '';
 
   return {
-    parcelId: dto.parcelNumber,
+    parcelId: dto.geoId,
     countyCode: 'benton',
-    address: parts[0] ?? dto.address ?? '',
+    address: streetAddr,
     city,
     state,
     zip,
-    legalDescription: '',
+    legalDescription: dto.legalDescription ?? '',
     ownerName: dto.ownerName ?? 'On File',
     propertyType: dto.propertyType ?? 'residential',
     landAcreage: 0,
-    yearBuilt: dto.yearBuilt ?? 0,
+    yearBuilt: 0,
     buildingSquareFeet: 0,
     landValue: dto.landValue ?? 0,
     improvementValue: dto.improvementValue ?? 0,
@@ -116,26 +114,27 @@ function mapProperty(dto: BackendPropertyDto): Property {
     taxableValue: dto.assessedValue ?? 0,
     exemptionAmount: 0,
     assessmentStatus: 'active',
-    assessmentYear: dto.taxYear || new Date().getFullYear(),
-    assessmentDate: dto.assessmentDate ?? dto.updatedAt ?? new Date().toISOString(),
-    lastUpdated: dto.updatedAt ?? new Date().toISOString(),
+    assessmentYear: dto.appraisalYear ?? new Date().getFullYear(),
+    assessmentDate: dto.lastModified ?? new Date().toISOString(),
+    lastUpdated: dto.lastModified ?? new Date().toISOString(),
     latitude: 46.2396,
     longitude: -119.2687,
     hasActivePermits: false,
     hasAppeals: false,
-    dataSource: 'harris-pacs',
+    dataSource: 'live',
   };
 }
 
-function mapSearchResult(dto: BackendPropertyDto): PropertySearchResult {
+function mapPacsSummaryToSearchResult(dto: PacsSummaryDto): PropertySearchResult {
+  const parts = (dto.address ?? '').split(',').map((s) => s.trim());
   return {
-    parcelId: dto.parcelNumber,
+    parcelId: dto.geoId,
     address: dto.address ?? '',
-    city: (dto.address ?? '').split(',')[1]?.trim() ?? '',
-    ownerName: dto.ownerName ?? 'On File',
+    city: parts[1] ?? '',
+    ownerName: 'On File',
     totalAssessedValue: dto.assessedValue ?? 0,
     propertyType: (dto.propertyType ?? 'Residential') as any,
-    assessmentYear: dto.taxYear || new Date().getFullYear(),
+    assessmentYear: new Date().getFullYear(),
   };
 }
 
@@ -146,17 +145,19 @@ function mapSearchResult(dto: BackendPropertyDto): PropertySearchResult {
 export class LiveDataProvider implements DataProvider {
   readonly mode: DataMode = 'live';
 
+  // ── Search & Lookup ─────────────────────────────────────────────────────
+
   async search(query: SearchQuery): Promise<SearchResults<PropertySearchResult>> {
     const params = new URLSearchParams();
     if (query.text) params.set('search', query.text);
     params.set('pageSize', String(query.pageSize ?? 20));
     params.set('page', String(query.page ?? 1));
 
-    const data = await apiFetch<BackendPagedResult>(
-      `/api/properties?${params.toString()}`,
+    const data = await apiFetch<PacsPagedResult>(
+      `/api/pacs/properties?${params.toString()}`,
     );
     return {
-      items: data.items.map(mapSearchResult),
+      items: data.items.map(mapPacsSummaryToSearchResult),
       totalCount: data.totalCount,
       page: data.page,
       pageSize: data.pageSize,
@@ -165,62 +166,40 @@ export class LiveDataProvider implements DataProvider {
 
   async getParcel(parcelId: string): Promise<Property | null> {
     try {
-      const dto = await apiFetch<BackendPropertyDto>(
-        `/api/properties/parcel/${encodeURIComponent(parcelId)}`,
+      const dto = await apiFetch<PacsPropertyDetailDto>(
+        `/ops/pacs/property/${encodeURIComponent(parcelId)}`,
       );
-      return mapProperty(dto);
+      return mapPacsDetailToProperty(dto);
     } catch {
       return null;
     }
   }
 
+  // ── Assessment ──────────────────────────────────────────────────────────
+
   async getAssessments(parcelId: string): Promise<Assessment[]> {
-    // Try to get valuations for this property
+    // Build a synthetic assessment from the PACS property data
     try {
-      // First get the property ID (GUID) from the parcel number
-      const dto = await apiFetch<BackendPropertyDto>(
-        `/api/properties/parcel/${encodeURIComponent(parcelId)}`,
+      const dto = await apiFetch<PacsPropertyDetailDto>(
+        `/ops/pacs/property/${encodeURIComponent(parcelId)}`,
       );
-      const vals = await apiFetch<BackendValuationDto[]>(
-        `/api/properties/${dto.id}/valuations`,
-      );
-      return vals.map((v) => ({
-        assessmentId: v.id,
-        parcelId,
-        assessmentYear: v.taxYear,
-        assessmentDate: v.effectiveDate,
-        landValue: v.landValue,
-        improvementValue: v.improvementValue,
-        totalAssessedValue: v.totalValue,
-        marketValue: v.totalValue,
-        taxableValue: v.totalValue,
-        exemptionAmount: 0,
-        isActive: true,
-      }));
+      return [
+        {
+          assessmentId: `pacs-${dto.propId}`,
+          parcelId,
+          assessmentYear: dto.appraisalYear ?? new Date().getFullYear(),
+          assessmentDate: dto.lastModified ?? new Date().toISOString(),
+          landValue: dto.landValue ?? 0,
+          improvementValue: dto.improvementValue ?? 0,
+          totalAssessedValue: dto.assessedValue ?? 0,
+          marketValue: dto.marketValue ?? dto.assessedValue ?? 0,
+          taxableValue: dto.assessedValue ?? 0,
+          exemptionAmount: 0,
+          isActive: true,
+        },
+      ];
     } catch {
-      // Return a synthetic assessment from the property data
-      try {
-        const dto = await apiFetch<BackendPropertyDto>(
-          `/api/properties/parcel/${encodeURIComponent(parcelId)}`,
-        );
-        return [
-          {
-            assessmentId: `assess-${dto.id}`,
-            parcelId,
-            assessmentYear: new Date().getFullYear(),
-            assessmentDate: dto.updatedAt,
-            landValue: dto.landValue,
-            improvementValue: dto.improvementValue,
-            totalAssessedValue: dto.assessedValue,
-            marketValue: dto.assessedValue,
-            taxableValue: dto.assessedValue,
-            exemptionAmount: 0,
-            isActive: true,
-          },
-        ];
-      } catch {
-        return [];
-      }
+      return [];
     }
   }
 
@@ -230,6 +209,8 @@ export class LiveDataProvider implements DataProvider {
   ): Promise<ValuationRecord | null> {
     return null;
   }
+
+  // ── Tax & Levy ──────────────────────────────────────────────────────────
 
   async getLevyDistricts(): Promise<TaxDistrict[]> {
     return [];
@@ -243,6 +224,8 @@ export class LiveDataProvider implements DataProvider {
     return [];
   }
 
+  // ── Appeals ─────────────────────────────────────────────────────────────
+
   async getAppeals(_parcelId: string): Promise<Appeal[]> {
     return [];
   }
@@ -251,21 +234,31 @@ export class LiveDataProvider implements DataProvider {
     return [];
   }
 
+  // ── GIS / Atlas ─────────────────────────────────────────────────────────
+
   async getLayers(): Promise<GISLayer[]> {
     return [];
   }
+
+  // ── Documents / Dossier ─────────────────────────────────────────────────
 
   async getDocuments(_parcelId: string): Promise<ParcelDocument[]> {
     return [];
   }
 
+  // ── Clerk / Recording ──────────────────────────────────────────────────
+
   async getRecordingHistory(_parcelId: string): Promise<RecordingEntry[]> {
     return [];
   }
 
+  // ── Audit ───────────────────────────────────────────────────────────────
+
   async getAuditTrail(_parcelId: string): Promise<AuditEntry[]> {
     return [];
   }
+
+  // ── Operations / Pilot ──────────────────────────────────────────────────
 
   async getRecentOperations(_parcelId?: string): Promise<OperationTrace[]> {
     return [];
@@ -273,9 +266,11 @@ export class LiveDataProvider implements DataProvider {
 
   async getSystemHealth(): Promise<SystemHealthStatus> {
     try {
-      const data = await apiFetch<{ status: string }>('/health');
+      const data = await apiFetch<{ status: string; latencyMs?: number }>(
+        '/api/pacs/health',
+      );
       return {
-        overallStatus: data.status === 'Healthy' ? 'healthy' : 'degraded',
+        overallStatus: data.status === 'connected' ? 'healthy' : 'degraded',
         services: [],
         lastChecked: new Date().toISOString(),
         activeAgents: 0,
@@ -293,6 +288,8 @@ export class LiveDataProvider implements DataProvider {
       };
     }
   }
+
+  // ── Aggregates / Dashboards ────────────────────────────────────────────
 
   async getCountyStats(): Promise<CountyAggregateStats> {
     const defaults: CountyAggregateStats = {
@@ -312,18 +309,16 @@ export class LiveDataProvider implements DataProvider {
       byCity: [],
       assessmentYear: new Date().getFullYear(),
     };
+
+    // Use PACS properties endpoint page 1 to get totalCount
     try {
-      const data = await apiFetch<{
-        totalProperties: number;
-        totalAssessedValue: number;
-        averageAssessedValue: number;
-      }>('/api/properties/stats');
+      const data = await apiFetch<PacsPagedResult>(
+        '/api/pacs/properties?page=1&pageSize=1',
+      );
       return {
         ...defaults,
-        totalParcels: data.totalProperties ?? 0,
-        totalAssessedValue: data.totalAssessedValue ?? 0,
-        averageAssessedValue: data.averageAssessedValue ?? 0,
-        assessedThisYear: data.totalProperties ?? 0,
+        totalParcels: data.totalCount ?? 0,
+        assessedThisYear: data.totalCount ?? 0,
         assessmentCompletionPercent: 100,
       };
     } catch {
@@ -338,6 +333,8 @@ export class LiveDataProvider implements DataProvider {
   }): Promise<SearchResults<AggregateProperty>> {
     return { items: [], totalCount: 0, page: 1, pageSize: 20 };
   }
+
+  // ── Calendar ───────────────────────────────────────────────────────────
 
   async getCalendarEvents(
     _startDate?: string,

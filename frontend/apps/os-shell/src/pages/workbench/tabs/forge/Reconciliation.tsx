@@ -83,21 +83,21 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
           indicatedValue: Number(reconAPI.data.costApproach.indicatedValue) || 0,
           weight: reconAPI.data.costApproach.weight || 40,
           confidence: reconAPI.data.costApproach.confidence,
-          note: reconAPI.data.costApproach.note || 'From PACS cost approach',
+          note: reconAPI.data.costApproach.note || 'From cost approach model',
         },
         {
           approach: 'sales',
           indicatedValue: Number(reconAPI.data.salesApproach.indicatedValue) || 0,
           weight: reconAPI.data.salesApproach.weight || 45,
           confidence: reconAPI.data.salesApproach.confidence,
-          note: reconAPI.data.salesApproach.note || 'From PACS sales comparison',
+          note: reconAPI.data.salesApproach.note || 'From sales comparison analysis',
         },
         {
           approach: 'income',
           indicatedValue: Number(reconAPI.data.incomeApproach.indicatedValue) || 0,
           weight: reconAPI.data.incomeApproach.weight || 15,
           confidence: reconAPI.data.incomeApproach.confidence,
-          note: reconAPI.data.incomeApproach.note || 'From PACS income approach',
+          note: reconAPI.data.incomeApproach.note || 'From income approach analysis',
         },
       ];
       setIndications(liveIndications);

@@ -183,8 +183,8 @@ describe('Gate 4 — suite registry constitutional types', () => {
     expect(registry).toContain('export interface SuiteDefinition');
   });
 
-  it('SuiteDefinition has status: live | wip | planned', () => {
-    expect(registry).toContain("'live' | 'wip' | 'planned'");
+  it('SuiteDefinition has status: live | queued | unavailable', () => {
+    expect(registry).toContain("'live' | 'queued' | 'unavailable'");
   });
 });
 

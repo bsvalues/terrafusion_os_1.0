@@ -57,6 +57,7 @@ namespace TerraFusion.Core.Models
         public int SystemsIngested { get; set; }
         public List<string> DataSources { get; set; } = new List<string>();
         public bool Success { get; set; }
+        public string? ErrorCode { get; set; }
         public TimeSpan Duration { get; set; }
     }
 
@@ -231,6 +232,7 @@ namespace TerraFusion.Core.Models
         Success,
         PartialSuccess,
         Failed,
-        Pending
+        Pending,
+        PropertyNotSynced
     }
 }

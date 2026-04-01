@@ -56,7 +56,7 @@ public class AIServiceDeStubTests
         var config = new MapperConfiguration(cfg =>
         {
             cfg.AddProfile<TerraFusionMappingProfile>();
-        });
+        }, NullLoggerFactory.Instance);
         return config.CreateMapper();
     }
 

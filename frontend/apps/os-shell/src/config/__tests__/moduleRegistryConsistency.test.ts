@@ -96,6 +96,11 @@ describe('MODULE_REGISTRY -> ModuleRenderer coverage', () => {
     'gpt-builder',
     'gpt-analytics',
     'gpt-rag',
+    // Queued certification / notice modules (QueuedModuleSurface — no MODULE_ENTRY yet)
+    'terra-cert',
+    'terra-notice',
+    // AppFrame native-app modules — rendered via <AppFrame> iframe (no MODULE_ENTRY)
+    'costforge',
   ]);
 
   it('every MODULE_REGISTRY entry has a MODULE_ENTRY or is a known placeholder', () => {
@@ -213,6 +218,17 @@ describe('moduleActivation displayNames/icons coverage', () => {
       'os-canon': 'TerraCanon',
       // Levy (legacy canonical kept for backward compat)
       'terra-levy': 'Levy Calculator',
+      // Forge standalone modules (Phase 35 + Phase 36)
+      'batch-cost-run': 'Batch Cost Runs',
+      'coefficient-preview': 'Coefficient Preview',
+      'cost-manual': 'Cost Manual',
+      'value-audit-module': 'Value Audit Module',
+      // Atlas standalone modules (Phase 36)
+      'geo-equity-dashboard': 'Geo Equity Dashboard',
+      'mass-appraisal-gis': 'Appraisal GIS',
+      // Queued modules — registered but pending implementation
+      'terra-cert': 'TerraCert',
+      'terra-notice': 'TerraNotice',
     };
 
     const missing: string[] = [];

@@ -275,3 +275,8 @@
     box-shadow: none;
   }
 }
+
+/* squishIn — fires on CSS path (reduced-motion). Spring path handled by framer-motion. */
+[data-material="tactile"][data-reduced-motion="true"]:active:not(:disabled) {
+  animation: squishIn 120ms ease-out forwards;
+}

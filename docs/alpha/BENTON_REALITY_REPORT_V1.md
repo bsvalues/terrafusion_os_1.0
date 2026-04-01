@@ -1,0 +1,468 @@
+# Benton Reality Report — v1
+
+**Document type:** CARD-04 truth pass / findings only  
+**Branch:** `fix/workbench-loading-aria`  
+**Base SHA:** `89eacd9b5` (CARD-01 sealed)  
+**Report date:** 2026-03-25  
+**Author:** Copilot truth lane  
+
+---
+
+## 1. Minimum Success Criteria for This Document
+
+- Accurately describe the data reality a tester will encounter when running the dev stack
+- Call out every claim in `alpha.html` that does not match observed source behavior
+- Record hardcoded production-scale numbers in backend services that are not live counts
+- Note runtime dependencies that will silently degrade the alpha experience
+- **Do not recommend fixes or open implementation work**
+- Evidence method: source-code read + file search. This is **not** a browser-render proof pass.
+
+---
+
+## 2. Evidence Sources
+
+| Artifact | Method | Outcome |
+|---|---|---|
+| `frontend/apps/os-shell/public/alpha.html` | `read_file` | Full document read; claims inventoried |
+| All 9 Workbench tab components (`PropertySummary.tsx` … `PropertyPilot.tsx`) | `read_file` (lines 1-120 each) | Data contracts, API dependencies, render fallbacks |
+| `frontend/apps/os-shell/src/api/pilotApi.ts` | `read_file` (lines 1-150) | All tool invocation routing, port architecture |
+| `frontend/apps/os-shell/src/stores/propertyStore.ts` | `read_file` | Store shape, `selectParcel()`, `getDataProvider()` path |
+| `frontend/apps/os-shell/src/services/dataProvider.ts` | `read_file` | `VITE_DATA_MODE` resolution, `LiveDataProvider` vs `SnapshotDataProvider` |
+| `frontend/apps/os-shell/src/data/dev-snapshots/SnapshotDataProvider.ts` | `read_file` | Snapshot data source description |
+| `frontend/apps/os-shell/src/data/dev-snapshots/benton-snapshot-mini.json` | `ConvertFrom-Json` count | **200 parcels** |
+| `frontend/apps/os-shell/src/data/dev-snapshots/benton-golden-parcels.json` | `ConvertFrom-Json` count | **20 parcels** |
+| `frontend/apps/os-shell/src/data/dev-snapshots/benton-comparable-sales.json` | `ConvertFrom-Json` count | **158 comp sales** |
+| `backend/src/TerraFusion.API/Controllers/AtlasGisController.cs` | `grep_search` + `read_file` | Route `GET api/atlas/gis/parcels/{parcelId}/boundary` exists; depends on `IGisDataService` |
+| `backend/src/TerraFusion.API/Controllers/DossierController.cs` | `grep_search` + `read_file` | Route `GET api/dossier/parcels/{parcelId}/details` exists; queries `Properties` table |
+| `os-platform/core/pilot/dev-pilot-runtime.mjs` | `read_file` (lines 865-910) | `GET /pilot/tools` reads from `sharedRegistry.listTools()` |
+| `backend/src/TerraFusion.API/Controllers/GovernmentController.cs` | `read_file` (lines 50-100) | Hardcoded `parcels = 89247` in fallback static payload |
+| `backend/src/TerraFusion.AI/Services/AnalyticsReportingService.cs` | `grep_search` | Hardcoded `TotalProperties = 89247`, `PropertiesAssessed = 89247` |
+| `backend/src/TerraFusion.Core/Services/LegacyDatabaseService.cs` (line 287) | `read_file` | Phantom loop `for (int i = 1; i <= 89247; i++)` generates synthetic `BN-XXXXXX-2024` parcel IDs |
+| `backend/src/TerraFusion.API/Controllers/DaisController.cs` (line 791) | `grep_search` | Hardcoded conditional `89247 : 50000` for Benton |
+| `89247` in all backend services | `grep_search` | **20 matches** across 8 distinct service/controller files in main source tree |
+| `frontend/apps/os-shell/.env.example` | `read_file` | `VITE_DATA_MODE` **not set** in example; default path resolves to `LiveDataProvider` |
+| `frontend/apps/os-shell/src/pages/workbench/PropertyWorkbench.tsx` | `read_file` | Route: `useParams()` → `parcelId`, store: `usePropertyStore()`, `selectParcel()` called on mount |
+
+---
+
+## 3. Findings by Severity
+
+### P0 — Will Break or Mislead Alpha Testers
+
+#### P0-1: alpha.html claims "Real PACS data. 89,247 parcels. This is not a demo."
+
+**Source:** `alpha.html` line ~200 (`<p class="sub" …>Real PACS data. 89,247 parcels. This is not a demo.`)
+
+**Reality observed in source:**
+
+- The frontend `dataProvider.ts` defaults to `LiveDataProvider` when `VITE_DATA_MODE` is not set. `LiveDataProvider` talks to `localhost:5000`.
+- When the `.NET` backend is running but PACS SQL Server is not configured, all `/api/pacs/*` routes return HTTP 503, and the `LiveDataProvider` gracefully falls back to snapshot data.
+- The snapshot data is `benton-snapshot-mini.json` (200 real PACS-sourced parcels) + `benton-golden-parcels.json` (20 parcels) — **not 89,247**.
+- `89,247` appears 20 times across 8 backend service/controller files in the main source tree. In every occurrence it is a **hardcoded literal** — not a live database count.
+- The closest analog to a live count is `SELECT COUNT(*) FROM Properties` — that query is not in any controller or service called by the alpha flow.
+
+**Verdict:** The claim "89,247 parcels" in `alpha.html` is sourced from a hardcoded integer in backend fallback responses, not from a live PACS query. In dev, a tester will see at most 200 parcels in snapshot mode or the parcels that exist in the local SQLite `Properties` table (seeded count not verified in this pass, but is likely < 200).
+
+---
+
+#### P0-2: alpha.html Tab Truth Matrix marks Atlas as "✅ Real (GIS)"
+
+**Source:** `alpha.html` Tab Truth Matrix row for Atlas: `<span class="pass">✅ Real (GIS)</span>` — "Boundary and layer data from GIS endpoint"
+
+**Reality observed in source:**
+
+- `AtlasGisController.cs` route `GET api/atlas/gis/parcels/{parcelId}/boundary` exists and calls `_gisData.GetParcelBoundaryAsync(parcelId, ct)`.
+- `IGisDataService` is injected. Whether a concrete implementation of `IGisDataService` is registered and functional in dev was **not confirmed** in this pass. The `AtlasGisController` also injects `IGisConnector`, `IGeospatialEnricher`, `IGisParseService`, `IGisSyncService` — four additional interface dependencies.
+- `PropertyAtlas.tsx` has a deterministic SVG fallback when the GIS API is unavailable. The fallback is labeled (honest).
+- The atlas.html Truth Matrix claim "Real (GIS)" implies the GIS endpoint works for any parcel. That claim is unverified.
+
+**Verdict:** The GIS endpoint exists in source but its runtime availability in dev is unknown. The `alpha.html` matrix should state "SVG fallback when GIS unavailable" rather than "Real (GIS)" as a blanket pass. Tester will see SVG fallback, not a real boundary, unless GIS services are running.
+
+---
+
+#### P0-3: Pilot Runtime is a separate process — not mentioned anywhere in alpha.html
+
+**Source:** `pilotApi.ts` lines 1-50: `API_BASE_URL = ''`, all tool invocations route to `POST /pilot/invoke` via Vite proxy `/pilot` → port `4317`.
+
+**Reality observed in source:**
+
+- Six of nine tabs (Dais, Clerk, Treasury, Audit, Dossier, Pilot) route every tool invocation through `pilotApi.invokePilotTool()`.
+- The Pilot Runtime is a **separate Node.js process** (`os-platform/core/pilot/dev-pilot-runtime.mjs`) that must be running at port 4317.
+- `alpha.html` Setup section says: "Backend must be running at `localhost:5000`." There is **no mention** of needing the Pilot Runtime at port 4317.
+- If the Pilot Runtime is not started, all 6 MWUX tabs will render their tool cards (the shell is real), but every invocation attempt will return a network error / fetch failure. The UI will show an error state on the tool card.
+- The Pilot tab additionally calls `GET /pilot/tools` on mount to load the tool manifest. If the runtime is down, the Pilot tab renders an error or empty tool list from the first paint.
+
+**Verdict:** Missing alpha.html setup step. A tester who starts only the `.NET` backend will have a broken MWUX experience across 6 of 9 tabs without understanding why.
+
+---
+
+### P1 — Functional Gap With No Local Workaround
+
+#### P1-1: Summary tab data fidelity depends on which DataProvider is active
+
+**Source:** `propertyStore.ts` `selectParcel()` → `getDataProvider().getParcel(parcelId)`.
+
+`dataProvider.ts` resolution:
+1. If `VITE_DATA_MODE=snapshot` → `SnapshotDataProvider` (200 parcels, real PACS values)
+2. If `VITE_DATA_MODE` unset → `LiveDataProvider` → `GET /api/pacs/properties/{parcelId}`
+3. `LiveDataProvider` falls back to snapshot when backend is unreachable or returns non-2xx
+
+**Reality:** The `.env.example` does not set `VITE_DATA_MODE`. No `.env.development` file was found in this pass. Without that env var, the app defaults to `LiveDataProvider`, which sends live API requests. When PACS SQL Server is not configured (dev environment), `/api/pacs/properties/{parcelId}` returns HTTP 503/fallback. The `LiveDataProvider` fallback behavior determines what the tester sees. This means Summary data quality is dependent on whether the tester has a `.env` file with `VITE_DATA_MODE=snapshot` set.
+
+If they do not: Summary will attempt live, fail, and fall back. The `source` badge in the Summary tab will show `'fallback'`, which is honest — but the tester may not understand what this means without documentation.
+
+---
+
+#### P1-2: Forge Workbench shows fallback year data for all dev parcels
+
+**Source:** `PropertyForge.tsx` `useParcelYears(parcelId)` → `GET /api/forge/{parcelId}/years`.
+
+From CARD-03 (prior session): dev SQLite has only one 2015 base layer per seeded parcel. `CURRENT_YEAR` in Forge is 2026. The year selector will show only `2015` for dev parcels. Cost/Sales/Income approach panels return `Source="fallback", Confidence=0.0`.
+
+**Mismatch with alpha.html:** Tab Truth Matrix says "Year selector pulls PACS layers; lock state badge (🔒/🔓); AV/MV per year." For dev, the year selector will show one year (2015) and approaches return fallback confidence values. A tester who expects 10 years of PACS history will see one year.
+
+---
+
+#### P1-3: Dossier details endpoint depends on `Properties` EF table — seeder created (2026-03-26)
+
+**Source:** `DossierController.cs` line 730+: `_db.Properties.AsNoTracking().FirstOrDefaultAsync(p => p.ParcelId == parcelId && p.CountyId == countyId.Value)`.
+
+The `GET /api/dossier/parcels/{parcelId}/details` endpoint **queries `Properties`**, not `PacsParcel`. If the EF `Properties` table has no row for a given parcel, the endpoint returns HTTP 404 ("Parcel not found").
+
+**Status (2026-03-26, Phase 33D):** `DevPropertySeeder.cs` created (CARD-06). On startup in Development, if `Properties` is empty, it projects `PacsParcel` → `Properties` using `PacsSituses`, `PacsValuations`, and `PacsPropertyProfiles` joins. This seeder is idempotent. **Pre-condition:** `--seed-pacs` must have been run at least once so `PacsParcel` rows exist. If `PacsParcel` is empty the seeder logs a warning and skips. Dossier will 404 until that pre-condition is met.
+
+---
+
+#### P1-4: `LegacyDatabaseService.cs` phantom loop generates synthetic parcel IDs
+
+**Source:** `backend/src/TerraFusion.Core/Services/LegacyDatabaseService.cs` line 287: `for (int i = 1; i <= 89247; i++) { ... Id = $"BN-{i:D6}-2024", Address = $"Sample Address {i}" }`.
+
+This method (`ImportPropertiesAsync`) generates 89,247 synthetic records with parcel IDs like `BN-000001-2024`, addresses like "Sample Address 1", all in Kennewick WA. If any workflow invokes this service during alpha, it will populate the database with dummy data that does not match real Benton parcel IDs (`1017XXXXXXXX` format).
+
+**Impact depends on call path.** If this method is never called during normal alpha flow, risk is latent. If it is called (e.g., via an admin trigger or initialization pathway), real parcels are poisoned with fake records.
+
+---
+
+### P2 — Documentation/Claim Mismatch (Not Immediately Blocking)
+
+#### ~~P2-1: Backend analytics endpoints return hardcoded `TotalProperties = 89247` and `PropertiesAssessed = 89247`~~ — Named stub (2026-03-26)
+
+**Source:** `AnalyticsReportingService.cs` lines 91-92.
+
+**Status (2026-03-26, Phase 33D, CARD-10):** Replaced with `private const int BentonParcelCountStub = 89_247` with provenance comment. Endpoints still return 89,247 but the value is now a clearly-labeled stub, not a bare magic number. Live query upgrade follows once CARD-06 seeding is verified in production.
+
+---
+
+#### ~~P2-2: `GovernmentController.cs` static fallback returns `parcels = 89247` and `aiSwarm = "1008_AGENTS_ACTIVE"`~~ — Named stub (2026-03-26)
+
+**Source:** `GovernmentController.cs` lines 67-68 and service array.
+
+**Status (2026-03-26, Phase 33D, CARD-10):** `parcels = 89247` replaced with `parcels = BentonParcelCountStub` (`private const int BentonParcelCountStub = 89_247`). The status-page claim is still the same numeric value but is now provenance-labeled. `aiSwarm`, `quantumOptimization`, and `compliance` fields are static strings, outside CARD-10 scope.
+
+---
+
+#### ~~P2-3: `DaisController.cs` hardcodes `89247` for Benton county total parcel count~~ — Already live (confirmed 2026-03-26)
+
+**Status (2026-03-26, Phase 33D):** Confirmed `DaisController` at the relevant line already uses `_db.Properties.CountAsync(p => p.CountyId == effectiveCountyId)` — a live EF query. The earlier report reading was stale. `DaisController` was NOT a CARD-10 target.
+
+---
+
+#### P2-4: `alpha.html` describes write_high tools without risk gating disclosure
+
+**Source:** `PropertyTreasury.tsx` tool list: `record_payment` (write_high), `initiate_tax_sale` (write_high). `PropertyClerk.tsx` tool list: `record_document` (write_high), `release_lien` (write_low).
+
+`alpha.html` Tab Truth Matrix for Treasury: "Tax statement, delinquency status, payments, installment plans." The `initiate_tax_sale` tool and `record_payment` tool are present in the MWUX surface. Whether the Pilot Runtime's manifest filters these tools in alpha mode (e.g., requires `supervisorApproval=true`) was not verified in this pass.
+
+**Risk:** If write_high tools are uninhibited in the Pilot Runtime during alpha, a tester could inadvertently invoke `initiate_tax_sale` against whatever data system the Pilot Runtime is connected to.
+
+---
+
+#### P2-5: `alpha.html` Scenario 1 instructs testers to use parcel `101843030001006`
+
+**Source:** `alpha.html` line ~320: `Type the parcel ID (e.g. 101843030001006)`.
+
+This parcel appears in CARD-03 curl evidence as a dev SQLite seeded test parcel with only a 2015 base layer. When a tester types this ID, they will see one year in the Forge year selector (2015) and fallback confidence values. The scenario description does not warn about this.
+
+---
+
+### P3 — Low-Severity Notes / Observations
+
+#### P3-1: `alpha.html` is in `public/` which is .gitignore-managed
+
+**Source:** `.env.example` line 1 `# TERRAFUSION OS - DEPLOYMENT CONFIGURATION`. The file was found at `frontend/apps/os-shell/public/alpha.html`. Public dir contents may not be tracked by default git commit paths. Verified per prior CARD-02 session that `public/` was committed via a hook or explicit add. This is a note only — not a defect.
+
+---
+
+#### P3-2: Snapshot data `taxYear` fields default to `2025` in `SnapshotDataProvider.ts`
+
+**Source:** `SnapshotDataProvider.ts` line 209: `assessmentYear: raw.taxYear || 2025`. Snapshot parcels in `benton-snapshot-mini.json` do not have a `taxYear` field in the JSON schema (not present in first two parcels inspected). This means all 200 snapshot parcels will show `assessmentYear: 2025` in the Summary tab even though the underlying PACS data may be from different years.
+
+---
+
+#### P3-3: `benton-levies.json` contains only one taxing district: `DIST-BENTON-SMOKE`
+
+**Source:** `benton-levies.json` lines 1-7 inspected. All six visible records have `TaxingDistrict = "DIST-BENTON-SMOKE"`. A tester looking at levy data will see one synthetic district, not the real Benton levy district structure.
+
+---
+
+## 4. Summary of Unsupported or Misleading Claims in alpha.html
+
+| Claim | Location in alpha.html | Reality |
+|---|---|---|
+| "Real PACS data. 89,247 parcels. This is not a demo." | Header subtitle | 89,247 is a hardcoded integer in 8 backend files. Dev frontend has 200 snapshot parcels or live SQLite (seeded count unverified). |
+| "Property search returns real Benton parcels" | Tester Charter | True if PACS SQL Server is connected. In dev without PACS, search hits snapshot (200 parcels) or SQLite. |
+| "No 'Demo data' badges on parcels loaded from PACS" | Tester Charter | Source badge shows `'fallback'` when PACS unavailable. Depends on dev environment configuration. |
+| "Values match what you see in Harris PACS for the same parcel" | Success Criteria | Only possible when PACS SQL Server is connected. In dev, values come from SQLite/snapshot. |
+| "Atlas ✅ Real (GIS)" | Tab Truth Matrix | GIS endpoint exists; runtime availability in dev is unverified. SVG fallback is honest but not real GIS data. |
+| "Backend must be running at localhost:5000" | Setup instructions | Incomplete. Pilot Runtime at port 4317 is also required for Dais, Clerk, Treasury, Audit, Dossier, Pilot tabs to function. |
+| "Forge: Year selector pulls PACS layers" | Tab Truth Matrix | In dev SQLite, only 2015 base layer exists per parcel. Tester will see one year. |
+
+---
+
+## 5. Benton-Specific Reality Mismatches
+
+| Expected (per alpha.html / docs) | Actual in dev |
+|---|---|
+| 89,247 parcels accessible | 200 snapshot parcels (or SQLite seeded — unverified count) |
+| Live Harris PACS 9.0 data | SQLite dev database with PACS schema, no SQL Server connection |
+| Multiple PACS tax years per parcel | 1 year (2015) in dev SQLite |
+| Real GIS boundary data per parcel | Deterministic SVG fallback (GIS runtime status unknown) |
+| Pilot tool manifest with Benton-scoped tools | Manifest from `dev-pilot-runtime.mjs` `sharedRegistry` — contents not inspected in this pass |
+| Levy data: multiple real taxing districts | Snapshot has single district `DIST-BENTON-SMOKE` only |
+| 10 active counties (per AnalyticsReportingService) | Dev has Benton county test data only; `TotalCounties = 10` is hardcoded |
+
+---
+
+## 6. Open Investigative Items (Not Resolved in This Pass)
+
+The following items were not verified and represent known unknowns:
+
+1. **Pilot manifest tool count in dev**: `sharedRegistry.listTools()` in `dev-pilot-runtime.mjs` was not traced to its data source. Unknown how many tools are registered and whether any Benton-scoped tools are included.
+
+2. **`Properties` EF table seeded parcel count**: Only `PacsParcel` table seeding was confirmed (prior sessions). Whether `Properties` rows exist for the 200 snapshot parcel IDs was not verified. Affects `DossierController.GetParcelDetails()` response.
+
+3. **`IGisDataService` concrete registration**: The `AtlasGisController` injects `IGisDataService` via constructor. Whether this interface has a working implementation registered in `Program.cs` for dev was not read.
+
+4. **`VITE_DATA_MODE` in actual dev `.env`**: Only `.env.example` was found. No `.env.development` or `.env` file was found in this pass. The active mode at runtime is unknown.
+
+---
+
+## 6a. Investigative Items Resolved (2026-03-26, CARD-01 truth gate)
+
+**Item 4 resolved — LiveDataProvider fallback path confirmed:**
+`LiveDataProvider.getParcel()` calls `GET /ops/pacs/property/{geoId}`. This route exists in `PacsOpsController` and is backed by `PacsEfAdapter` (dev SQLite) when no PACS SQL Server connection string is configured. The EF chain: `PacsOpsController.GetProperty()` → `IPacsAdapter.GetPropertyByGeoIdAsync()` → `PacsEfAdapter` → `_db.PacsParcel.FirstOrDefaultAsync(p => p.GeoId == geoId)`. When the parcel is found in SQLite, it returns `source=pacs_oltp`. When not found, it returns HTTP 404, `LiveDataProvider.getParcel()` catches and returns `null`, `propertyStore.selectParcel()` sets `activeParcel = null` and exits. There is no automatic fallback to snapshot from `getParcel()` in live mode — the caller sees null data. Setting `VITE_DATA_MODE=snapshot` avoids this entirely.
+
+**P1-4 (LegacyDatabaseService phantom loop) confirmed latent-only:**
+`LegacyDatabaseService` is decorated `[Obsolete]` and is NOT registered in the DI container in `Program.cs` for `TerraFusion.API`. No active endpoint reaches `HarrisPacsAdapter.ImportPropertiesAsync()`. The phantom loop is dead code at runtime. Risk is latent (only reachable if DI registration is added), not active.
+
+---
+
+## 6b. Investigative Items Resolved (2026-03-26, Phase 33B planning)
+
+## 6c. Write_high Tool Surface Audit (2026-03-26, Phase 33C)
+
+**CARD-09 read phase complete.** Findings for `PropertyTreasury.tsx` and `PropertyClerk.tsx`:
+
+| Tool | Risk | Frontend gate | `supervisorApproval` in pilotApi call |
+|---|---|---|---|
+| `record_payment` | `write_high` | ✅ Checkbox (`paymentConfirmed`) — button disabled until checked | ❌ Not populated |
+| `initiate_tax_sale` | `write_high` | ✅ Checkbox (`taxSaleConfirmed`) + non-empty `taxSaleReason` required | ❌ Not populated |
+| `record_document` | `write_high` | ✅ Checkbox (`recordConfirmed`) + non-empty grantor/grantee required | ❌ Not populated |
+| `release_lien` | `write_low` | ❌ No confirmation gate (button fires directly) | N/A (write_low) |
+
+**Summary:** All write_high tools are protected by a checkbox confirmation gate — accidental invocation is prevented at the UI level. None populate `confirmation.supervisorApproval` in the `invokeTool()` call (the field exists in `pilotApi.ts` but is unused). Whether the Pilot Runtime backend enforces supervisor approval independently is not verified.
+
+**Co-founder decision required before implementation:** Add `confirmation.supervisorApproval` gating to all write_high `invokeTool` calls, OR document that supervisor approval is backend-enforced and checkbox gate is sufficient for alpha. This is a governance decision, not an engineering one.
+
+**alpha.html disclosure gap (P2-4):** The write_high tool descriptions do not disclose the confirmation gate or the absence of `supervisorApproval`. A tester reading alpha.html would not know the checkbox gate exists or what it means for alpha risk.
+
+---
+
+**Item 3 resolved — `IGisDataService` DI registration + implementation audited:**
+`Program.cs` (dev, `TerraFusion.API`) registers at line 376:
+```
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.IGisDataService, TerraFusion.API.Services.GisDataService>()
+```
+`GisDataService` reads real PACS mirror tables (`PacsParcel`, `PacsSituses`, `PacsLandDetails`, `PacsTaxAreas`) from the EF DbContext. For parcels found in the PACS mirror it returns `Source: "canonical"` with real land dimensions, acreage, and situs address. Coordinates are approximated — a deterministic offset from Benton County courthouse (lat 46.2304, lng −119.2752) derived from `PropId` since no external geocoder is available in dev. For parcels not found it returns `Source: "stub"`.
+
+**CARD-07 fully resolved.** DI is wired; implementation is real (not a stub). The Atlas backend path is functional for parcels in the PACS mirror.
+
+**Correction (2026-03-26, Phase 33B-4):** The earlier note that `PropertyAtlas.tsx` does not call the Atlas API was wrong. `PropertyAtlas.tsx` IS wired to call `GET /api/atlas/gis/parcels/{parcelId}/boundary` and `GET /api/atlas/gis/parcels/{parcelId}/layers` via `useParcelBoundary` / `useParcelLayers` hooks. The actual bug was in `atlasGisFetch` (frontend): the source classification only recognized sources containing `"pacs"` as `'live'`, so `"canonical"` (what `GisDataService` actually returns for real data) was misclassified as `'fallback'` — causing live boundary and layer panels to never render. Fixed in Phase 33B-4: `"canonical"` → `'live'`, `"stub"` → `'unavailable'`.
+
+## 6d. Phase 33D Resolutions (2026-03-26, Copilot)
+
+**CARD-10 closed — 9 live backend files updated (commit `2638e5f82`):**
+
+Full grep across all backend `.cs` source revealed **9 live files** (not the original 3-file scope). All `89247` bare literals replaced with `89_247` digit-separated stubs. Named `private const int BentonParcelCountStub = 89_247` with provenance comment added in `AnalyticsReportingService` and `GovernmentController`; inline `89_247` with CARD-10 comment in the remaining 7 files. `DaisController.cs` confirmed NOT a target — already uses live `_db.Properties.CountAsync()`. 0 compiler errors post-change.
+
+Files changed: `AnalyticsReportingService.cs`, `GovernmentController.cs`, `HybridConsciousnessManager.cs`, `DataMigrationEngine.cs`, `CostForgeAIService.cs`, `IntegrationOrchestrationService.cs`, `SystemOrchestrationController.cs`, `CostForgeTestController.cs`, `LegacyDatabaseService.cs`.
+
+**CARD-06 closed — `DevPropertySeeder.cs` created (commit `2638e5f82`):**
+
+Root cause of P1-3 confirmed: `Properties` canonical table = 0 rows in dev. `PacsDataSeeder` only populates PACS mirror tables; it never writes to `Properties`. New `DevPropertySeeder` projects `PacsParcel` → `Properties` on startup when the table is empty:
+- Queries `PacsSituses` (primary-flag priority), `PacsValuations` (latest year), `PacsPropertyProfiles` (latest year)
+- Maps `PropTypeCd` to readable `PropertyType` string
+- Batch-inserts in 500-row chunks to avoid SQLite parameter limits
+- Dev-only: guarded by `app.Environment.IsDevelopment()` in `Program.cs`
+- Idempotent: returns immediately if table already has rows
+- Pre-condition: `--seed-pacs` must have been executed so `PacsParcel` rows exist; seeder logs warning and skips if `PacsParcel` is empty
+
+**Item 2 (from Section 6) status updated:** `Properties` table seeding path is now provided for dev. The pre-condition dependency on `--seed-pacs` is the remaining blocker for Dossier Details to return 200 for snapshot parcel IDs.
+
+---
+
+
+
+These are candidate cards surfaced by this truth pass. This report does not authorize implementation. Each entry requires its own scoped card before any work begins.
+
+| ID | Title | Priority | Scope |
+|---|---|---|---|
+| CARD-05A | Add Pilot Runtime to alpha.html setup instructions | P0 | `docs` |
+| CARD-05B | Correct alpha.html "89,247 parcels" claim to reflect dev reality | P0 | `docs` |
+| CARD-05C | Correct alpha.html "Atlas ✅ Real (GIS)" to "SVG fallback when GIS unavailable" | P0 | `docs` |
+| ~~CARD-06~~ | ~~Verify `Properties` EF table seeding for snapshot parcel IDs~~ | ✅ Closed (2026-03-26) | `DevPropertySeeder.cs` projects `PacsParcel` → `Properties`; dev-only, idempotent; commit `2638e5f82` |
+| ~~CARD-07~~ | ~~Verify `IGisDataService` DI registration; document Atlas GIS dev status~~ | ✅ Resolved | `GisDataService` confirmed real; `PropertyAtlas.tsx` IS wired to Atlas API; source classification bug (`canonical` ≠ `pacs`) fixed in Phase 33B-4 |
+| CARD-08 | Verify Pilot manifest tool count in dev; document which tools are available | ✅ Closed (2026-03-26) | 93 tools in `terrapilot.tools.json`; real handlers activate only if `TF_API_BASE_URL`/`TF_API_PORT` set |
+| ~~CARD-09~~ | ~~Audit write_high tool surface in alpha; confirm `supervisorApproval` gating~~ | ✅ Audited (2026-03-26) | See Section 6c — checkbox gates confirmed; supervisorApproval not populated; co-founder decision required for pilotApi-level enforcement |
+| ~~CARD-10~~ | ~~Replace hardcoded `89247` in `GovernmentController`, `AnalyticsReportingService`, `DaisController` with live DB query or clearly-labeled stub constant~~ | ✅ Closed (2026-03-26) | 9 live backend files updated; named `BentonParcelCountStub` const in 2 key files; `DaisController` confirmed already live; commit `2638e5f82` |
+| ~~CARD-11~~ | ~~Investigate `LegacyDatabaseService.ImportPropertiesAsync` call paths~~ | ✅ Resolved (CARD-01 truth gate) | `[Obsolete]`, not in DI, dead code — confirmed Section 6a |
+| ~~CARD-12~~ | ~~Document dev `.env` configuration requirements~~ | ✅ Resolved | alpha.html Pilot Runtime setup notice added at `80471948d` |
+
+---
+
+## 8. Evidence Checklist
+
+| Item | Status |
+|---|---|
+| All 9 tab components read | ✅ |
+| `pilotApi.ts` architecture understood | ✅ |
+| `propertyStore.ts` data flow traced | ✅ |
+| `dataProvider.ts` mode resolution confirmed | ✅ |
+| `SnapshotDataProvider.ts` understood | ✅ |
+| Benton snapshot parcel count confirmed (200) | ✅ |
+| Golden parcel count confirmed (20) | ✅ |
+| Comp sales count confirmed (158) | ✅ |
+| `AtlasGisController` route confirmed exists | ✅ |
+| `DossierController` route confirmed exists | ✅ |
+| Pilot Runtime `/pilot/tools` endpoint confirmed | ✅ |
+| Backend hardcoded 89,247 locations mapped | ✅ (20 hits, 8 files) |
+| `alpha.html` full claims read | ✅ |
+| GIS runtime availability in dev | ✅ `GisDataService` reads PACS mirror tables; deterministic centroid coords |
+| Pilot manifest tool count | ✅ Verified | 93 tools in `terrapilot.tools.json`; real handlers activate only if `TF_API_BASE_URL`/`TF_API_PORT` set |
+| `Properties` table seeded parcel count | ✅ Seeder provided | `DevPropertySeeder.cs` (CARD-06); runs from `PacsParcel` on startup when empty; pre-condition: `--seed-pacs` executed |
+| `LiveDataProvider.ts` fallback path | ✅ Confirmed Section 6a — returns null on 404, no snapshot fallback in live mode |
+| Active dev `.env` file contents | ⬜ Not found |
+| write_high tool gating state | ✅ Audited Section 6c — checkbox gates present; supervisorApproval not populated |
+
+---
+
+## 9. Proposed Commit
+
+```
+docs(alpha): add Benton Reality Report v1
+
+CARD-04 truth pass. Source honesty check; no browser-render proof.
+
+- Inventories all hardcoded 89,247 occurrences (20 hits, 8 backend files)
+- Documents Pilot Runtime port 4317 as undocumented alpha dependency
+- Calls out Atlas "Real (GIS)" overclaim vs. SVG fallback reality
+- Identifies write_high tool surface (record_payment, initiate_tax_sale)
+- Documents dev snapshot parcel count: 200 (not 89,247)
+- 5 open investigative items for CARD-06 through CARD-12
+
+No code changed. Report only.
+```
+
+---
+
+## 10. Frontend Truth Section
+
+*Copilot lane — 2026-03-26. Source-code analysis only; no browser-render proof. Base SHA: f932464ee.*
+*Reader: Benton County Assessor. This section answers the CARD-04 acceptance criteria directly.*
+
+---
+
+### FT-1: Per-Tab Status Matrix
+
+Every workbench tab is classified as one of four states:
+
+| State | Meaning |
+|---|---|
+| **Real** | Tab displays data from the live API (database or PACS). |
+| **Fallback** | Tab displays data, but from a JSON snapshot file — not the live API. |
+| **MWUX** | Tab renders a tool shell (tool cards, invocation buttons). No data is pre-loaded. Tools execute against real endpoints when invoked. |
+| **Broken** | Tab renders an error or blank in the current dev configuration. |
+
+| Tab | State | Source | What the tester sees |
+|---|---|---|---|
+| Summary | **Fallback** (expected Real) | `LiveDataProvider` → snapshot fallback when PACS SQL Server absent | Parcel data loads. `source='fallback'` badge is visible. Values come from `benton-snapshot-mini.json` (200 parcels), not Harris PACS. |
+| Forge | **Fallback** | `GET /api/forge/{parcelId}/years` → SQLite dev has only one 2015 layer per parcel | Year selector shows 1 year (2015). All approach panels (Cost/Sales/Income) return `Confidence: 0.0`. Surface renders; data is not representative of real appraisal values. |
+| Atlas | **Fallback** | SVG deterministic approximation | GIS endpoint exists in backend code; runtime availability in dev is unverified. Tester sees an SVG-approximated boundary, not real GIS parcel geometry. |
+| Dais | **MWUX** | Pilot Runtime at `localhost:4317` | Tool cards render. Invocations route to Pilot Runtime. If Pilot Runtime is not started, all tool invocations return network error. No data is pre-loaded. |
+| Clerk | **MWUX** | Pilot Runtime at `localhost:4317` | Same as Dais. |
+| Treasury | **MWUX** | Pilot Runtime at `localhost:4317` | Same as Dais. `initiate_tax_sale` (write_high risk) and `record_payment` (write_high) are present in the tool manifest. Inhibition state in alpha is unverified (see P2-4). |
+| Audit | **MWUX** | Pilot Runtime at `localhost:4317` | Same as Dais. |
+| Dossier | **MWUX / Blocked** | `GET /api/dossier/parcels/{parcelId}/details` queries `Properties` EF table | Tool shell renders. `DevPropertySeeder` now seeds `Properties` from `PacsParcel` on dev startup — but requires `--seed-pacs` to have run first (CARD-06, 2026-03-26). Detail panel returns HTTP 404 only if pre-condition not met. |
+| Pilot | **MWUX** | `GET /pilot/tools` → Pilot Runtime manifest on mount | Tool list loads from runtime manifest at first paint. If Pilot Runtime is not running, tool list is empty or error state. |
+
+---
+
+### FT-2: CARD-04 Acceptance Criteria Answers
+
+| Acceptance test | Verdict | Detail |
+|---|---|---|
+| **Parcel search: pass/fail** | Conditional pass | With `VITE_DATA_MODE=snapshot`: 200 Benton parcels are searchable. Without the env var, `LiveDataProvider` attempts PACS SQL Server and falls back to snapshot if unavailable. Either path surfaces parcels. |
+| **Parcel detail load: pass/fail** | Conditional pass | Summary tab loads parcel data (fallback source). Dossier detail panel returns 404 if the `Properties` EF table has no row for that parcel — an open unknown (see Section 6, item 2). |
+| **Forge overview/cost/sales: pass/fail** | Conditional pass | Forge renders. Year selector shows 2015 only (dev SQLite has one layer per parcel). Cost/Sales/Income panels load with `Confidence: 0.0`. Tabs are present; values are not real appraisal data. |
+| **Every Workbench tab status** | ✅ See FT-1 above | — |
+| **Exact remaining blockers** | ✅ See FT-3 below | — |
+| **Any still-fake surfaces** | ✅ See FT-4 below | — |
+| **Exact seeded parcel count, verified in dev** | Snapshot JSON: **200 parcels** (verified — `benton-snapshot-mini.json` line count). SQLite `Properties` table row count: **not verified in this pass** (see Section 6, item 2). |
+
+---
+
+### FT-3: Remaining Blockers for a Benton Tester
+
+These are the issues a county staff member will hit if they start only the .NET backend at `localhost:5000`:
+
+| # | Blocker | Impact | Finding |
+|---|---|---|---|
+| 1 | Pilot Runtime (`localhost:4317`) not listed in alpha.html setup steps | Dais, Clerk, Treasury, Audit, Dossier, and Pilot tabs — all 6 MWUX tabs — fail silently on any tool invocation | P0-3 |
+| 2 | `VITE_DATA_MODE` not set in `.env.example` | Tester does not know why the Summary tab shows `source='fallback'`; no guidance exists | P1-1 |
+| 3 | Forge year selector shows only 2015 | Tester trained on Harris PACS expects a multi-year view; single-year result is confusing without context | P1-2 |
+| 4 | Dossier detail panel returns 404 if `Properties` table is not seeded | Dossier reads from a different table than the PACS parcel snapshot; seeding alignment unverified | P1-3 |
+| 5 | `LegacyDatabaseService.ImportPropertiesAsync` phantom loop unguarded | If triggered, populates 89,247 synthetic parcels with IDs like `BN-000001-2024` — not real Benton parcel IDs | P1-4 |
+
+---
+
+### FT-4: Still-Fake Surfaces
+
+These surfaces display numbers or labels that look real but are sourced from hardcoded values, not live Benton County data:
+
+| Surface | Displayed claim | Actual source |
+|---|---|---|
+| `alpha.html` header subtitle | "89,247 parcels" | Hardcoded integer in `alpha.html` markup |
+| Analytics dashboard (if visible) | `TotalProperties = 89247`, `PropertiesAssessed = 89247` | Hardcoded in `AnalyticsReportingService.GenerateSummaryAsync`; const `BentonParcelCountStub = 89_247` named stub (CARD-10, 2026-03-26) |
+| Government status panel | `"1008_AGENTS_ACTIVE"`, `quantumOptimization: ENABLED`, `FISMA-HIGH` | Static fallback in `GovernmentController`; parcel count now uses named `BentonParcelCountStub = 89_247` const (CARD-10, 2026-03-26) |
+| Forge approach panels in dev | Cost/Sales/Income `Confidence: 0.0`, `source: fallback` | SQLite has only one 2015 CAMA layer per seeded parcel |
+| Levy district display | Single district `DIST-BENTON-SMOKE` | Snapshot data; real Benton has multiple TIDs |
+| Summary `assessmentYear` | 2025 for all parcels | Snapshot JSON lacks `taxYear` field; `SnapshotDataProvider` defaults to 2025 |
+
+---
+
+### FT-5: Frontend Code Verified in This Pass
+
+| File | Status | What was confirmed |
+|---|---|---|
+| `frontend/apps/os-shell/public/alpha.html` | ✅ Committed (`80471948d`) | Atlas corrected from "Real GIS" to "SVG fallback"; setup instructions still missing Pilot Runtime |
+| `PropertySummary.tsx` | ✅ Real | 7 data blocks; `live`/`fallback` source badge; nulls render `'—'` |
+| `PropertyForge.tsx` | ✅ Real (limited by dev data) | Year selector from `useParcelYears`; lock state badge; approach panels per year |
+| `PropertyAtlas.tsx` | ⚠️ SVG fallback | Renders SVG approximation; GIS endpoint confirmed in backend, runtime status unverified |
+| `PropertyDais.tsx` | ✅ MWUX shell | Tool cards from manifest; invocations via `pilotApi.invokePilotTool()` |
+| `PropertyClerk.tsx` | ✅ MWUX shell | Same pattern as Dais |
+| `PropertyTreasury.tsx` | ✅ MWUX shell | Same pattern; `write_high` tools present |
+| `PropertyAudit.tsx` | ✅ MWUX shell | Same pattern |
+| `PropertyDossier.tsx` | ✅ MWUX shell | Detail panel endpoint confirmed; seeding alignment not verified |
+| `PropertyPilot.tsx` | ✅ MWUX shell | Tool manifest from `GET /pilot/tools` on mount |
+| `pilotApi.ts` | ✅ Reviewed | All MWUX invocations route to `POST /pilot/invoke` via Vite proxy → port 4317 |
+| `dataProvider.ts` | ✅ Reviewed | Mode resolution: `VITE_DATA_MODE=snapshot` → snapshot; unset → `LiveDataProvider` → fallback |

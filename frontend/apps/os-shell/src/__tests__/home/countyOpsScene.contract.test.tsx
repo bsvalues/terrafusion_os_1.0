@@ -96,6 +96,12 @@ vi.mock('../../hooks/useTodaysWork', () => ({
   useTodaysWork: () => ({ tasks: [], loading: false, isSampleData: false }),
 }));
 
+// Mock useParcelCount — returns fallback so '89,247 parcels' assertion holds
+vi.mock('../../hooks/useParcelCount', () => ({
+  __esModule: true,
+  useParcelCount: () => ({ data: undefined, isLoading: false, error: null }),
+}));
+
 // Import the REAL components/stores after mocks
 import { StageZeroState } from '../../shell/desktop/StageZeroState';
 import { useSceneStore, SCENE_LIBRARY } from '../../stores/sceneStore';

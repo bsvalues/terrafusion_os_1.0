@@ -1,3 +1,4 @@
+import fs from 'fs';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
@@ -8,9 +9,34 @@ export default defineConfig(({ mode }) => {
   const appRoot = path.resolve(__dirname, 'apps/os-shell');
   const backendUrl = process.env.VITE_API_URL || `http://localhost:${process.env.TF_API_PORT || 5000}`;
 
+  // Dev-mode middleware: serves service-registry.json directly from disk.
+  // The .NET ServiceRegistryController serves this in production. In dev, this
+  // intercepts before the proxy so AppFrame resolves app URLs without needing
+  // the .NET API to have the controller hot-loaded.
+  const serviceRegistryPlugin = {
+    name: 'tf-service-registry',
+    configureServer(server: any) {
+      const registryPath = path.resolve(__dirname, '../backend/service-registry.json');
+      server.middlewares.use((req: any, res: any, next: any) => {
+        if (req.url === '/api/service-registry') {
+          try {
+            const json = fs.readFileSync(registryPath, 'utf-8');
+            res.setHeader('Content-Type', 'application/json');
+            res.end(json);
+          } catch {
+            next(); // fall through to proxy
+          }
+          return;
+        }
+        next();
+      });
+    },
+  };
+
   const plugins = [
     react(),
     securityPlugin(), // Security headers and CSP
+    serviceRegistryPlugin,
     // VitePWA({
     //   registerType: 'autoUpdate',
     //   includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
@@ -56,7 +82,7 @@ export default defineConfig(({ mode }) => {
 
     root: appRoot,
 
-    publicDir: path.resolve(__dirname, 'public'),
+    publicDir: path.resolve(appRoot, 'public'),
 
     resolve: {
       alias: {
@@ -105,6 +131,9 @@ export default defineConfig(({ mode }) => {
       port: parseInt(process.env.VITE_PORT || '5173'),
       host: '0.0.0.0',
       strictPort: false,
+      // Suppress the blocking error overlay for pnpm store issues (e.g. stale
+      // @tailwindcss/node chunks). Fix by running: pnpm install --force in frontend/
+      hmr: { overlay: false },
 
       // Proxy API calls to .NET backend
       proxy: {
@@ -119,6 +148,11 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
           ws: true, // WebSocket support for SignalR
+        },
+        '/health': {
+          target: backendUrl,
+          changeOrigin: true,
+          secure: false,
         },
         '/ops': {
           target: backendUrl,

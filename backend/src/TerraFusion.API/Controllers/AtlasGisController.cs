@@ -17,36 +17,26 @@ namespace TerraFusion.API.Controllers;
 [Authorize]
 public class AtlasGisController : ControllerBase
 {
-    private readonly IGisConnector _connector;
-    private readonly IGeospatialEnricher _enricher;
-    private readonly IGisParseService _parser;
-    private readonly IGisSyncService _sync;
     private readonly IGisDataService _gisData;
     private readonly ILogger<AtlasGisController> _logger;
 
     public AtlasGisController(
-        IGisConnector connector,
-        IGeospatialEnricher enricher,
-        IGisParseService parser,
-        IGisSyncService sync,
         IGisDataService gisData,
         ILogger<AtlasGisController> logger)
     {
-        _connector = connector;
-        _enricher = enricher;
-        _parser = parser;
-        _sync = sync;
         _gisData = gisData;
         _logger = logger;
     }
 
     /// <summary>Geocode an address via the Atlas GIS pipeline.</summary>
     /// <param name="address">Street address to geocode.</param>
+    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("geocode")]
     [ProducesResponseType(typeof(GeocodeResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Geocode(
         [FromQuery] string address,
+        [FromServices] IGeospatialEnricher enricher,
         CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(address))
@@ -56,7 +46,7 @@ public class AtlasGisController : ControllerBase
 
         try
         {
-            var result = await _enricher.EnrichWithGeocodeAsync(address, ct);
+            var result = await enricher.EnrichWithGeocodeAsync(address, ct);
             return Ok(new GeocodeResponse(
                 result.Latitude,
                 result.Longitude,
@@ -77,6 +67,7 @@ public class AtlasGisController : ControllerBase
     /// <param name="bbox">Bounding box as "minLng,minLat,maxLng,maxLat".</param>
     /// <param name="filter">Optional attribute filter.</param>
     /// <param name="limit">Maximum features to return (default 500).</param>
+    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("spatial-query")]
     [ProducesResponseType(typeof(SpatialQueryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -84,6 +75,7 @@ public class AtlasGisController : ControllerBase
         [FromQuery] string? layer,
         [FromQuery] string bbox,
         [FromQuery] string? filter,
+        [FromServices] IGisConnector connector,
         [FromQuery] int limit = 500,
         CancellationToken ct = default)
     {
@@ -105,7 +97,7 @@ public class AtlasGisController : ControllerBase
             layerName, minLng, minLat, maxLng, maxLat);
 
         var bboxObj = new BoundingBox(minLng, minLat, maxLng, maxLat);
-        var result = await _connector.QueryFeaturesAsync(layerName, bboxObj, filter, ct);
+        var result = await connector.QueryFeaturesAsync(layerName, bboxObj, filter, ct);
 
         // Apply client-side limit
         var limited = result.Features.Count > limit
@@ -124,6 +116,7 @@ public class AtlasGisController : ControllerBase
     /// <param name="layerName">Layer name (e.g., Parcels, Zoning, FloodZones).</param>
     /// <param name="bbox">Optional bounding box filter.</param>
     /// <param name="filter">Optional attribute filter.</param>
+    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("layers/{layerName}/features")]
     [ProducesResponseType(typeof(FeatureCollection), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -131,6 +124,7 @@ public class AtlasGisController : ControllerBase
         string layerName,
         [FromQuery] string? bbox,
         [FromQuery] string? filter,
+        [FromServices] IGisConnector connector,
         CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(layerName))
@@ -163,7 +157,7 @@ public class AtlasGisController : ControllerBase
 
         try
         {
-            var result = await _connector.QueryFeaturesAsync(layerName, bboxObj, filter, ct);
+            var result = await connector.QueryFeaturesAsync(layerName, bboxObj, filter, ct);
             return Ok(result);
         }
         catch (Exception ex)
@@ -180,12 +174,15 @@ public class AtlasGisController : ControllerBase
     /// </summary>
     /// <param name="file">Spatial data file.</param>
     /// <param name="import">If true, import parsed polygons into the store (default false).</param>
+    /// <param name="ct">Request cancellation token.</param>
     [HttpPost("upload-shapefile")]
     [ProducesResponseType(typeof(UploadResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [RequestSizeLimit(100_000_000)] // 100 MB
     public async Task<IActionResult> UploadShapefile(
         IFormFile file,
+        [FromServices] IGisParseService parser,
+        [FromServices] IGisSyncService sync,
         [FromQuery] bool import = false,
         CancellationToken ct = default)
     {
@@ -203,9 +200,9 @@ public class AtlasGisController : ControllerBase
         {
             features = extension switch
             {
-                ".zip" or ".shp" => await _parser.ParseShapefileAsync(stream, ct),
-                ".json" or ".geojson" => await _parser.ParseGeoJsonAsync(stream, ct),
-                ".kml" or ".kmz" => await _parser.ParseKmlAsync(stream, ct),
+                ".zip" or ".shp" => await parser.ParseShapefileAsync(stream, ct),
+                ".json" or ".geojson" => await parser.ParseGeoJsonAsync(stream, ct),
+                ".kml" or ".kmz" => await parser.ParseKmlAsync(stream, ct),
                 _ => throw new InvalidOperationException(
                     $"Unsupported file type: {extension}. Supported: .zip, .geojson, .json, .kml, .kmz")
             };
@@ -218,10 +215,10 @@ public class AtlasGisController : ControllerBase
         ImportResult? importResult = null;
         if (import && features.Features.Count > 0)
         {
-            importResult = await _sync.ImportPolygonsAsync(features, ct);
+            importResult = await sync.ImportPolygonsAsync(features, ct);
         }
 
-        var boundaries = _parser.ExtractBoundaries(features, Path.GetFileNameWithoutExtension(file.FileName));
+        var boundaries = parser.ExtractBoundaries(features, Path.GetFileNameWithoutExtension(file.FileName));
 
         return Ok(new UploadResponse(
             FileName: file.FileName,
@@ -242,6 +239,7 @@ public class AtlasGisController : ControllerBase
     /// Includes centroid, lot dimensions, and area.
     /// </summary>
     /// <param name="parcelId">GeoId or SimpleGeoId of the parcel.</param>
+    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("parcels/{parcelId}/boundary")]
     [ProducesResponseType(typeof(ParcelBoundaryResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -261,6 +259,7 @@ public class AtlasGisController : ControllerBase
     /// for a parcel from PACS tables.
     /// </summary>
     /// <param name="parcelId">GeoId or SimpleGeoId of the parcel.</param>
+    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("parcels/{parcelId}/layers")]
     [ProducesResponseType(typeof(ParcelLayersResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

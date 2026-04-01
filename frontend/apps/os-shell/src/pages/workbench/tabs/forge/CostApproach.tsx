@@ -143,13 +143,13 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
           </div>
         )}
         {!costAPI.loading && !costAPI.data && costAPI.error && (
-          <div className="py-4 text-center">
-            <p className="tf-text-tertiary text-sm">Cost approach data unavailable from API</p>
+          <div className="py-4 text-center" data-testid="cost-approach-empty">
+            <p className="tf-text-tertiary text-sm">No cost approach data for tax year {taxYear}</p>
             <p className="tf-text-dim text-xs mt-1">{costAPI.error.message}</p>
           </div>
         )}
         {!costAPI.loading && !costAPI.data && !costAPI.error && (
-          <div className="py-4 text-center">
+          <div className="py-4 text-center" data-testid="cost-approach-empty">
             <p className="tf-text-tertiary text-sm">No parcel selected</p>
           </div>
         )}

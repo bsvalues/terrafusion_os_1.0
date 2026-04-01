@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -57,6 +58,10 @@ public sealed class DaisEndpointContractTests
     private static DaisController CreateDaisController(
         DataDbContext db,
         IAppealService? appealSvc = null,
+        IExemptionService? exemptionSvc = null,
+        ICertificationService? certificationSvc = null,
+        INoticeService? noticeSvc = null,
+        IQueueService? queueSvc = null,
         ClaimsPrincipal? principal = null)
     {
         var noticeMock = new Mock<INoticeService>();
@@ -88,11 +93,11 @@ public sealed class DaisEndpointContractTests
         var controller = new DaisController(
             db,
             NullLogger<DaisController>.Instance,
-            new Mock<IExemptionService>().Object,
+            exemptionSvc ?? new Mock<IExemptionService>().Object,
             appealSvc ?? new Mock<IAppealService>().Object,
-            certMock.Object,
-            noticeMock.Object,
-            queueMock.Object,
+            certificationSvc ?? certMock.Object,
+            noticeSvc ?? noticeMock.Object,
+            queueSvc ?? queueMock.Object,
             userContextMock.Object,
             auditMock.Object);
 
@@ -115,9 +120,9 @@ public sealed class DaisEndpointContractTests
     // ── 201 Contract ───────────────────────────────────────────────────
 
     [Fact]
-    public async Task CreateAppeal_ValidRequest_Returns201Created()
+    public async Task DaisController_PostAppeal_Returns201Created()
     {
-        await using var db = CreateDbContext(nameof(CreateAppeal_ValidRequest_Returns201Created));
+        await using var db = CreateDbContext(nameof(DaisController_PostAppeal_Returns201Created));
         await SeedCounty(db, BentonCountyId);
 
         // Use the real AppealService so the full end-to-end path is exercised.
@@ -138,6 +143,115 @@ public sealed class DaisEndpointContractTests
         var created = (CreatedAtActionResult)result;
         created.StatusCode.Should().Be(201);
         created.ActionName.Should().Be("GetAppealById");
+    }
+
+    [Fact]
+    public async Task DaisController_GetAppeal_ByUnauthorizedCounty_DoesNotLeakRecord()
+    {
+        await using var db = CreateDbContext(nameof(DaisController_GetAppeal_ByUnauthorizedCounty_DoesNotLeakRecord));
+        await SeedCounty(db, BentonCountyId, "Benton", "003");
+        await SeedCounty(db, OtherCountyId, "Franklin", "021");
+
+        var svc = new AppealService(db, NullLogger<AppealService>.Instance);
+        var created = await svc.CreateAsync(BentonCountyId,
+            new CreateAppealCommand("12345-000-000", "MARKET_VALUE", "Jane Smith", 450_000m, 400_000m, 2026),
+            "stage2-test-user");
+
+        var otherCountyPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
+        [
+            new Claim("countyId", OtherCountyId.ToString()),
+            new Claim("countyCode", "FRANKLIN"),
+            new Claim("sub", "stage2-other-county-user"),
+        ], "TestAuth"));
+
+        var controller = CreateDaisController(db, svc, principal: otherCountyPrincipal);
+
+        var result = await controller.GetAppealById(created.Id);
+
+        result.Should().BeOfType<NotFoundObjectResult>();
+    }
+
+    [Fact]
+    public async Task DaisController_PostAppeal_EmitsGovernedAuditTrace()
+    {
+        await using var db = CreateDbContext(nameof(DaisController_PostAppeal_EmitsGovernedAuditTrace));
+        await SeedCounty(db, BentonCountyId);
+
+        var appealMock = new Mock<IAppealService>();
+        appealMock.Setup(s => s.CreateAsync(
+                BentonCountyId,
+                It.IsAny<CreateAppealCommand>(),
+                It.IsAny<string?>(),
+                It.IsAny<DateTime?>()))
+            .ReturnsAsync((Guid countyId, CreateAppealCommand cmd, string? createdBy, DateTime? utcNow) => new Appeal
+            {
+                Id = Guid.NewGuid(),
+                ParcelId = cmd.ParcelId,
+                AppealGround = cmd.AppealGround ?? "MARKET_VALUE",
+                PetitionerName = cmd.PetitionerName,
+                CurrentValue = cmd.CurrentValue,
+                RequestedValue = cmd.RequestedValue,
+                TaxYear = cmd.TaxYear,
+                CountyId = countyId,
+                CreatedBy = createdBy,
+                UpdatedBy = createdBy,
+                FiledDate = utcNow ?? DateTime.UtcNow,
+            });
+
+        var auditMock = new Mock<IGovernedToolAuditService>();
+        auditMock.Setup(a => a.LogInvocationAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        var userContextMock = new Mock<IRequestUserContextAccessor>();
+        userContextMock.Setup(a => a.Current)
+            .Returns(new RequestUserContext(true, "stage2-test-user", BentonCountyId.ToString(), Array.Empty<string>()));
+
+        var controller = new DaisController(
+            db,
+            NullLogger<DaisController>.Instance,
+            new Mock<IExemptionService>().Object,
+            appealMock.Object,
+            new Mock<ICertificationService>().Object,
+            new Mock<INoticeService>().Object,
+            new Mock<IQueueService>().Object,
+            userContextMock.Object,
+            auditMock.Object);
+
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity(
+                [
+                    new Claim("countyId", BentonCountyId.ToString()),
+                    new Claim("countyCode", "BENTON"),
+                    new Claim("sub", "stage2-test-user"),
+                ], "TestAuth"))
+            }
+        };
+
+        var result = await controller.CreateAppeal(new DaisController.CreateAppealRequest(
+            ParcelId: "TRACE-123",
+            AppealGround: "MARKET_VALUE",
+            PetitionerName: "Jane Smith",
+            CurrentValue: 450_000m,
+            RequestedValue: 400_000m,
+            TaxYear: 2026));
+
+        result.Should().BeOfType<CreatedAtActionResult>();
+        appealMock.Verify(s => s.CreateAsync(
+            BentonCountyId,
+            It.Is<CreateAppealCommand>(cmd => cmd.ParcelId == "TRACE-123"),
+            It.IsAny<string?>(),
+            It.IsAny<DateTime?>()), Times.Once);
+        auditMock.Verify(a => a.LogInvocationAsync(
+            "file_appeal",
+            "TRACE-123",
+            It.IsAny<string>(),
+            "filed",
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     // ── Validation ─────────────────────────────────────────────────────
@@ -287,5 +401,85 @@ public sealed class DaisEndpointContractTests
     {
         using var db = CreateDbContext("schema-queueitem");
         db.Model.FindEntityType(typeof(QueueItem)).Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task CreateExemption_ValidRequest_Returns201Created()
+    {
+        await using var db = CreateDbContext(nameof(CreateExemption_ValidRequest_Returns201Created));
+        await SeedCounty(db, BentonCountyId);
+
+        var realExemptionSvc = new ExemptionService(db, NullLogger<ExemptionService>.Instance);
+        var controller = CreateDaisController(db, exemptionSvc: realExemptionSvc);
+
+        var request = new DaisController.CreateExemptionRequest(
+            ParcelId: "12345-000-999",
+            ProgramCode: null,
+            ApplicantName: "Jane Smith",
+            ExemptionAmount: 50_000m,
+            RcwReference: "84.36.381",
+            Notes: "Initial review");
+
+        var result = await controller.CreateExemption(request);
+
+        result.Should().BeOfType<CreatedAtActionResult>();
+        db.Exemptions.Should().ContainSingle(e => e.ParcelId == "12345-000-999" && e.CountyId == BentonCountyId);
+    }
+
+    [Fact]
+    public async Task GenerateNotice_ValidRequest_PersistsSerializedFields()
+    {
+        await using var db = CreateDbContext(nameof(GenerateNotice_ValidRequest_PersistsSerializedFields));
+        await SeedCounty(db, BentonCountyId);
+
+        var realNoticeSvc = new NoticeService(db, NullLogger<NoticeService>.Instance);
+        var controller = CreateDaisController(db, noticeSvc: realNoticeSvc);
+
+        var result = await controller.GenerateNotice(new DaisController.GenerateNoticeRequest(
+            TemplateId: "VALUE_CHANGE",
+            ParcelId: "12345-000-555",
+            DeliveryMethod: null,
+            Fields: new Dictionary<string, string> { ["ownerName"] = "Jane Smith" }));
+
+        result.Should().BeOfType<OkObjectResult>();
+        var created = db.Notices.Should().ContainSingle().Subject;
+        created.CountyId.Should().Be(BentonCountyId);
+        created.DeliveryMethod.Should().Be("mail");
+        JsonDocument.Parse(created.Fields!).RootElement.GetProperty("ownerName").GetString().Should().Be("Jane Smith");
+    }
+
+    [Fact]
+    public async Task AssignToQueue_ValidRequest_PersistsCountyScopedQueueItem()
+    {
+        await using var db = CreateDbContext(nameof(AssignToQueue_ValidRequest_PersistsCountyScopedQueueItem));
+        await SeedCounty(db, BentonCountyId);
+
+        var realQueueSvc = new QueueService(db, NullLogger<QueueService>.Instance);
+        var controller = CreateDaisController(db, queueSvc: realQueueSvc);
+
+        var result = await controller.AssignToQueue(new DaisController.QueueAssignRequest(
+            TaskType: "FIELD_INSPECTION",
+            ParcelId: "12345-000-777",
+            AssignedTo: "alice@appraisers.local",
+            Priority: "high"));
+
+        result.Should().BeOfType<OkObjectResult>();
+        db.QueueItems.Should().ContainSingle(q => q.ParcelId == "12345-000-777" && q.CountyId == BentonCountyId);
+    }
+
+    [Fact]
+    public async Task GetCertificationStatus_WhenNoRowsExist_PersistsCanonicalSteps()
+    {
+        await using var db = CreateDbContext(nameof(GetCertificationStatus_WhenNoRowsExist_PersistsCanonicalSteps));
+        await SeedCounty(db, BentonCountyId);
+
+        var realCertSvc = new CertificationService(db, NullLogger<CertificationService>.Instance);
+        var controller = CreateDaisController(db, certificationSvc: realCertSvc);
+
+        var result = await controller.GetCertificationStatus("Benton", 2029);
+
+        result.Should().BeOfType<OkObjectResult>();
+        db.CertificationSteps.Should().HaveCount(6);
+        db.CertificationSteps.Should().OnlyContain(s => s.CountyId == BentonCountyId && s.TaxYear == 2029);
     }
 }

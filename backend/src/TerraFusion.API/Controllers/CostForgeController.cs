@@ -806,6 +806,50 @@ public class CostForgeController : ControllerBase
     });
   }
 
+  /// <summary>
+  /// Calculate physical depreciation, functional obsolescence, and external obsolescence
+  /// using Benton County bracket tables and condition-based adjustments.
+  /// Route: POST /api/costforge/depreciation-calculate
+  /// BIV-086 — Used by calculate_depreciation fabric handler.
+  /// </summary>
+  [HttpPost("depreciation-calculate")]
+  [RequiresPermission("calculate:property-cost")]
+  public async System.Threading.Tasks.Task<ActionResult<DepreciationCalculationResult>> CalculateDepreciation([FromBody] DepreciationCalculationRequest request)
+  {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Forbid();
+
+    var effectiveAge = Math.Max(0, request.EffectiveAge);
+    var physicalFactor = GetDepreciationFactor(effectiveAge, isResidential: true);
+    var physicalDepreciation = BankersRound((1m - physicalFactor) * 100m);
+
+    var functionalObsolescence = request.Condition?.ToLowerInvariant() switch
+    {
+      "poor" => 5.0m,
+      "fair" => 3.0m,
+      _ => 0.0m,
+    };
+
+    const decimal externalObsolescence = 0.0m;
+    var totalDepreciation = physicalDepreciation + functionalObsolescence + externalObsolescence;
+    var depreciatedValue = BankersRound(request.ReplacementCostNew * (1m - totalDepreciation / 100m));
+
+    await _auditLogger.LogUserActionAsync("CostForge:DepreciationCalculate",
+      User.FindFirst("sub")?.Value ?? "anonymous",
+      $"EffectiveAge={effectiveAge}, Condition={request.Condition}, RCN={request.ReplacementCostNew}");
+
+    Response.Headers["X-CostForge-Source"] = "benton-real-calculator-fy2025";
+    return Ok(new DepreciationCalculationResult
+    {
+      PhysicalDepreciation = physicalDepreciation,
+      FunctionalObsolescence = functionalObsolescence,
+      ExternalObsolescence = externalObsolescence,
+      TotalDepreciation = totalDepreciation,
+      DepreciatedValue = depreciatedValue,
+    });
+  }
+
   // ──── Income Approach endpoints (source: bs-income-valuation-production quarantine) ────
 
   /// <summary>
@@ -5655,6 +5699,26 @@ public class CostEstimateRequest
   public string? QualityGrade { get; set; }
   public string? ConditionGrade { get; set; }
   public string? ComplexityGrade { get; set; }
+}
+
+/// <summary>BIV-086 — Request for POST /api/costforge/depreciation-calculate.</summary>
+public class DepreciationCalculationRequest
+{
+  [Range(0, 200)] public int ActualAge { get; set; }
+  [Range(0, 200)] public int EffectiveAge { get; set; }
+  public string? Condition { get; set; }
+  public string? Quality { get; set; }
+  [Range(1, 100_000_000)] public decimal ReplacementCostNew { get; set; }
+}
+
+/// <summary>BIV-086 — Response for POST /api/costforge/depreciation-calculate.</summary>
+public class DepreciationCalculationResult
+{
+  public decimal PhysicalDepreciation { get; init; }
+  public decimal FunctionalObsolescence { get; init; }
+  public decimal ExternalObsolescence { get; init; }
+  public decimal TotalDepreciation { get; init; }
+  public decimal DepreciatedValue { get; init; }
 }
 
 /// <summary>

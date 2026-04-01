@@ -28,6 +28,10 @@ export type OsFeatureId =
 
 export type OsSurfaceId = 'workbench'; // Property Workbench - Primary parcel-context UX
 
+export type SuiteRegistryStatus = 'live' | 'queued' | 'unavailable';
+
+const ACTIVE_SUITE_REGISTRY_STATUS: SuiteRegistryStatus = 'live';
+
 /**
  * Canonical Workbench Tab IDs (Slice 8: Single Source of Truth)
  *
@@ -63,7 +67,7 @@ export interface SuiteDefinition {
   iconName: string;
   route: string;
   color: string; // Brand accent color
-  status: 'live' | 'wip' | 'planned';
+  status: SuiteRegistryStatus;
   workbenchTab?: boolean; // Appears as tab in Property Workbench
   /**
    * Navigation intent for tile UX:
@@ -129,7 +133,7 @@ export interface OsFeatureDefinition {
   description: string;
   iconName: string;
   route?: string;
-  status: 'live' | 'wip' | 'planned';
+  status: SuiteRegistryStatus;
   /** Standalone home metadata (for StandaloneHomeShell) */
   homeMeta?: OsFeatureHomeMeta;
   /** Label displayed in the launcher (defaults to shortName or displayName) */
@@ -148,7 +152,7 @@ export interface OsSurfaceDefinition {
   description: string;
   iconName: string;
   route: string;
-  status: 'live' | 'wip' | 'planned';
+  status: SuiteRegistryStatus;
   /** Object Placement Codex: canonical object type classification */
   objectType?: 'tier0-workbench';
   /** Object Placement Codex: owning layer */
@@ -225,8 +229,10 @@ export const CONSTITUTIONAL_SUITES: readonly SuiteDefinition[] = [
     route: '/gpt',
     color: 'hsl(var(--tf-suite-gpt))', // Blue
     status: 'live',
-    workbenchTab: true,
-    workbenchTarget: { tabId: 'pilot' }, // TerraGPT uses Pilot tab
+    workbenchTab: false, // TerraGPT is a standalone suite — not a workbench-tab surface.
+    // The pilot workbench tab belongs to TerraPilot (OsFeatureId), not TerraGPT (SuiteId).
+    // dialect-sealed 2026-03-29, card 45D
+    intent: 'standalone',
     objectType: 'suite-workspace',
     layer: 'layer-3-suite',
   },
@@ -489,21 +495,24 @@ export interface QualifiedStandaloneSuiteDefinition extends OsFeatureDefinition 
  * Get all OS features that are standalone-ready:
  * - Has route defined
  * - Has homeMeta defined
- * - Status is 'live'
+ * - Status is active (`live`)
  *
  * Used by tests and UI to iterate over standalone suites without drift.
  */
 export function getStandaloneSuites(): StandaloneSuiteDefinition[] {
   return OS_FEATURES.filter(
     (f): f is StandaloneSuiteDefinition =>
-      f.status === 'live' && !!f.route && !!f.homeMeta && !!f.homeMeta.title
+      f.status === ACTIVE_SUITE_REGISTRY_STATUS &&
+      !!f.route &&
+      !!f.homeMeta &&
+      !!f.homeMeta.title
   );
 }
 
 /**
  * Get all OS features that pass the quality gate:
  * - Has route, homeMeta, title, description, and >= 1 primaryAction
- * - Status is 'live'
+ * - Status is active (`live`)
  *
  * Slice 12: Quality gate enforcement. Suites not meeting this bar
  * will fail CI tests.
@@ -511,7 +520,7 @@ export function getStandaloneSuites(): StandaloneSuiteDefinition[] {
 export function getQualifiedStandaloneSuites(): QualifiedStandaloneSuiteDefinition[] {
   return OS_FEATURES.filter(
     (f): f is QualifiedStandaloneSuiteDefinition =>
-      f.status === 'live' &&
+      f.status === ACTIVE_SUITE_REGISTRY_STATUS &&
       !!f.route &&
       !!f.homeMeta &&
       !!f.homeMeta.title &&
@@ -528,7 +537,10 @@ export function isStandaloneSuite(
   feature: OsFeatureDefinition
 ): feature is StandaloneSuiteDefinition {
   return (
-    feature.status === 'live' && !!feature.route && !!feature.homeMeta && !!feature.homeMeta.title
+    feature.status === ACTIVE_SUITE_REGISTRY_STATUS &&
+    !!feature.route &&
+    !!feature.homeMeta &&
+    !!feature.homeMeta.title
   );
 }
 
@@ -540,7 +552,7 @@ export function isQualifiedStandaloneSuite(
   feature: OsFeatureDefinition
 ): feature is QualifiedStandaloneSuiteDefinition {
   return (
-    feature.status === 'live' &&
+    feature.status === ACTIVE_SUITE_REGISTRY_STATUS &&
     !!feature.route &&
     !!feature.homeMeta &&
     !!feature.homeMeta.title &&

@@ -80,7 +80,7 @@ describe('Workbench Registry Completeness', () => {
         iconName: 'Hammer',
         route: '/forge',
         color: '#ff6b35',
-        status: 'wip',
+        status: 'queued',
         workbenchTab: true,
         workbenchTarget: { tabId: 'forge' },
       };
@@ -97,7 +97,7 @@ describe('Workbench Registry Completeness', () => {
         iconName: 'Test',
         route: '/test',
         color: '#000',
-        status: 'wip',
+        status: 'queued',
         workbenchTarget: { tabId: 'forge' },
       };
 
@@ -113,7 +113,7 @@ describe('Workbench Registry Completeness', () => {
         iconName: 'Test',
         route: '/test',
         color: '#000',
-        status: 'wip',
+        status: 'queued',
         workbenchTab: true,
       };
 
@@ -196,7 +196,7 @@ describe('Workbench Registry Completeness', () => {
         iconName: 'Test',
         route: '/test',
         color: '#000',
-        status: 'wip',
+        status: 'queued',
         workbenchTab: true,
         workbenchTarget: { tabId: 'forge', path: 'custom-path' },
       };
@@ -256,7 +256,7 @@ describe('Workbench Registry Completeness', () => {
   // ==========================================================================
 
   describe('Regression Lock', () => {
-    it('forge, atlas, dais, dossier, gpt are workbench suites', () => {
+    it('forge, atlas, dais, and dossier are workbench suites', () => {
       const suites = getWorkbenchSuites();
       const ids = suites.map((s) => s.id);
 
@@ -264,17 +264,15 @@ describe('Workbench Registry Completeness', () => {
       expect(ids).toContain('atlas');
       expect(ids).toContain('dais');
       expect(ids).toContain('dossier');
-      expect(ids).toContain('gpt');
     });
 
-    it('gpt maps to pilot tab (special case)', () => {
+    it('gpt is not a workbench suite', () => {
       const gptSuite = getWorkbenchSuites().find((s) => s.id === 'gpt');
-      expect(gptSuite).toBeDefined();
-      expect(gptSuite?.workbenchTarget.tabId).toBe('pilot');
+      expect(gptSuite).toBeUndefined();
     });
 
-    it('all other suites map to their own tab', () => {
-      const suites = getWorkbenchSuites().filter((s) => s.id !== 'gpt');
+    it('all workbench suites map to their own tab', () => {
+      const suites = getWorkbenchSuites();
 
       for (const suite of suites) {
         expect(suite.workbenchTarget.tabId).toBe(suite.id);

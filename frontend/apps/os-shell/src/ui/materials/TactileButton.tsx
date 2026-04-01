@@ -11,7 +11,7 @@
  *
  * Constitutional Values:
  * - SPRING_STIFFNESS: 400 (responsive but not jarring)
- * - SPRING_DAMPING: 30 (smooth settle)
+ * - SPRING_DAMPING: 10 (crisp settle)
  * - SCALE_HOVER: 1.02 (subtle lift)
  * - SCALE_TAP: 0.97 (satisfying press)
  *
@@ -54,11 +54,12 @@ export interface TactileButtonProps extends ButtonHTMLAttributes<HTMLButtonEleme
 const SPRING_CONFIG = {
   type: 'spring' as const,
   stiffness: 400,
-  damping: 30,
+  damping: 10,
+  mass: 0.6,
 };
 
 const HOVER_SCALE = 1.02;
-const TAP_SCALE = 0.97;
+const TAP_SCALE = 0.96;
 
 // ============================================================================
 // Component

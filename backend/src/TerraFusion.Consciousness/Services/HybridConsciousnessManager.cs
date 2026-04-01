@@ -286,10 +286,10 @@ namespace TerraFusion.Consciousness.Services
                     Message = "Benton County Hybrid consciousness management initialized at championship level",
                     InitializedAt = DateTime.UtcNow,
                     LegacyAgentsActive = 1008,
-                    QuantumAgentsActive = 89247, // Benton County parcel count for elite optimization
+                    QuantumAgentsActive = 89_247, // CARD-10: Benton County parcel count stub
                     SystemReady = true,
                     CountySpecific = "Benton County, Washington",
-                    ParcelCount = 89247, // Benton County total parcels
+                    ParcelCount = 89_247, // CARD-10: Benton County parcel count stub
                     HarrisPACSVersion = "9.0",
                     OptimizationLevel = "Elite Championship"
                 };

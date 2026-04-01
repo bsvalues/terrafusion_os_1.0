@@ -1,13 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
 
 namespace TerraFusion.Core.Services;
 
+public sealed record GenerateNoticeCommand(
+    string TemplateId,
+    string? ParcelId,
+    string? DeliveryMethod,
+    IReadOnlyDictionary<string, string>? Fields);
+
 public interface INoticeService
 {
     Task<Notice> CreateAsync(Notice entity);
+    Task<Notice> CreateAsync(Guid countyId, GenerateNoticeCommand request, string? createdBy = null, DateTime? utcNow = null);
     Task<Notice?> GetByIdAsync(Guid id, Guid countyId);
     Task<List<Notice>> GetByParcelAsync(string parcelId, Guid countyId);
     Task<Notice> UpdateStatusAsync(Guid id, string status, Guid countyId);
@@ -26,9 +34,8 @@ public class NoticeService : INoticeService
 
     public async Task<Notice> CreateAsync(Notice entity)
     {
-        entity.Id = Guid.NewGuid();
-        entity.CreatedAt = DateTime.UtcNow;
-        entity.UpdatedAt = DateTime.UtcNow;
+        var now = DateTime.UtcNow;
+        PrepareForCreate(entity, now);
 
         _context.Notices.Add(entity);
         await _context.SaveChangesAsync();
@@ -38,6 +45,23 @@ public class NoticeService : INoticeService
             entity.Id, entity.ParcelId, entity.CountyId, entity.TemplateId, entity.DeliveryMethod);
 
         return entity;
+    }
+
+    public Task<Notice> CreateAsync(Guid countyId, GenerateNoticeCommand request, string? createdBy = null, DateTime? utcNow = null)
+    {
+        var entity = new Notice
+        {
+            ParcelId = request.ParcelId ?? string.Empty,
+            TemplateId = request.TemplateId,
+            DeliveryMethod = request.DeliveryMethod ?? "mail",
+            Status = "generated",
+            Fields = request.Fields is not null ? JsonSerializer.Serialize(request.Fields) : null,
+            CountyId = countyId,
+            CreatedBy = createdBy,
+            UpdatedBy = createdBy,
+        };
+
+        return CreateAsync(entity);
     }
 
     public async Task<Notice?> GetByIdAsync(Guid id, Guid countyId)
@@ -77,5 +101,16 @@ public class NoticeService : INoticeService
             id, status, countyId);
 
         return entity;
+    }
+
+    private static void PrepareForCreate(Notice entity, DateTime now)
+    {
+        if (entity.Id == Guid.Empty)
+            entity.Id = Guid.NewGuid();
+
+        entity.DeliveryMethod = string.IsNullOrWhiteSpace(entity.DeliveryMethod) ? "mail" : entity.DeliveryMethod;
+        entity.Status = string.IsNullOrWhiteSpace(entity.Status) ? "generated" : entity.Status;
+        entity.CreatedAt = entity.CreatedAt == default ? now : entity.CreatedAt;
+        entity.UpdatedAt = now;
     }
 }

@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Hosting;
+using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Enums;
@@ -9,6 +11,7 @@ namespace TerraFusion.API.Services;
 
 public interface IModuleLoaderService
 {
+    System.Threading.Tasks.Task<IReadOnlyList<Module>> LoadDiscoveredModulesAsync();
     System.Threading.Tasks.Task<IEnumerable<Module>> LoadActiveModulesAsync();
     System.Threading.Tasks.Task<Module?> LoadModuleAsync(string moduleName);
     System.Threading.Tasks.Task<bool> IsModuleAvailableAsync(string moduleName);
@@ -21,6 +24,7 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
     private readonly IServiceProvider _serviceProvider;
     private readonly IAgentTelemetryService _telemetry;
     private readonly Dictionary<string, ModuleManifest> _moduleCache = new();
+    private readonly Dictionary<string, Module> _runtimeModules = new(StringComparer.OrdinalIgnoreCase);
     private readonly string _modulesPath;
     private readonly string _manifestFileName;
     private readonly string? _intentFilter;
@@ -126,28 +130,48 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
         _logger.LogInformation("🛑 Module Loader Service: Background monitoring stopped");
     }
 
+    public async System.Threading.Tasks.Task<IReadOnlyList<Module>> LoadDiscoveredModulesAsync()
+    {
+        try
+        {
+            if (_runtimeModules.Count == 0)
+            {
+                await RefreshModulesAsync();
+            }
+
+            var modules = _runtimeModules.Values
+                .OrderBy(m => m.Priority)
+                .ThenBy(m => m.Name, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            _logger.LogInformation(
+                "Loaded {Count} runtime modules from filesystem snapshot ({ActiveCount} active, {InvalidCount} invalid)",
+                modules.Count,
+                modules.Count(m => m.Status == ModuleStatus.Active),
+                modules.Count(m => m.Status == ModuleStatus.ValidationFailed));
+
+            return modules;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading runtime modules");
+            return Array.Empty<Module>();
+        }
+    }
+
     public async System.Threading.Tasks.Task<IEnumerable<Module>> LoadActiveModulesAsync()
     {
         try
         {
-            var modules = new List<Module>();
-            
-            // Load ALL modules from the cache instead of hardcoded list
-            // This will properly use all 32 discovered modules
-            _logger.LogInformation("Loading all active modules from cache...");
-            
-            foreach (var kvp in _moduleCache)
-            {
-                var moduleName = kvp.Key;
-                var module = await LoadModuleAsync(moduleName);
-                if (module != null)
-                {
-                    modules.Add(module);
-                }
-            }
-            
-            _logger.LogInformation("Loaded {Count} active modules", modules.Count);
-            return modules.OrderBy(m => m.Priority);
+            var modules = await LoadDiscoveredModulesAsync();
+            var activeModules = modules
+                .Where(module => module.Status == ModuleStatus.Active)
+                .OrderBy(module => module.Priority)
+                .ThenBy(module => module.Name, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            _logger.LogInformation("Loaded {Count} active modules from runtime snapshot", activeModules.Count);
+            return activeModules;
         }
         catch (Exception ex)
         {
@@ -160,90 +184,23 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
     {
         try
         {
-            var moduleDir = Path.Combine(_modulesPath, moduleName);
-            var manifestPath = Path.Combine(moduleDir, _manifestFileName);
-
-            if (!File.Exists(manifestPath))
+            if (_runtimeModules.Count == 0)
             {
-                _logger.LogWarning("Module manifest not found for {ModuleName}: {Path}", moduleName, manifestPath);
-                return null;
+                await RefreshModulesAsync();
             }
 
-            var manifestContent = await File.ReadAllTextAsync(manifestPath);
-
-            if (_manifestFileName == "module.manifest.json")
+            if (_runtimeModules.TryGetValue(moduleName, out var module))
             {
-                var manifest = JsonSerializer.Deserialize<ModuleManifest>(manifestContent, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-                if (manifest == null)
-                {
-                    _logger.LogWarning("Failed to deserialize manifest for {ModuleName}", moduleName);
-                    return null;
-                }
-
-                _moduleCache[moduleName] = manifest;
-
-                return new Module
-                {
-                    Name = moduleName,
-                    DisplayName = manifest.DisplayName ?? manifest.Name ?? moduleName,
-                    Description = manifest.Description,
-                    Version = manifest.Version ?? "1.0.0",
-                    Status = ParseModuleStatus(manifest.Status),
-                    Tier = ParseModuleTier(manifest.Tier),
-                    LaunchPath = $"modules/{moduleName}/index.html",
-                    Priority = GetModulePriority(moduleName),
-                    IsCore = IsCoreTier(moduleName),
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
+                return module;
             }
 
-            var appManifest = JsonSerializer.Deserialize<AppManifest>(manifestContent, new JsonSerializerOptions
+            var runtimeModule = await BuildRuntimeModuleAsync(moduleName);
+            if (runtimeModule != null)
             {
-                PropertyNameCaseInsensitive = true
-            });
-
-            if (appManifest == null)
-            {
-                _logger.LogWarning("Failed to deserialize app manifest for {ModuleName}", moduleName);
-                return null;
+                _runtimeModules[moduleName] = runtimeModule;
             }
 
-            if (!MatchesIntentFilter(_intentFilter, appManifest.Intent))
-            {
-                _logger.LogDebug("Skipping module {ModuleName} due to intent filter {Filter}", moduleName, _intentFilter);
-                return null;
-            }
-
-            _moduleCache[moduleName] = new ModuleManifest
-            {
-                Name = appManifest.Name ?? appManifest.Id ?? moduleName,
-                DisplayName = appManifest.DisplayName ?? appManifest.Name ?? appManifest.Id ?? moduleName,
-                Description = appManifest.Description,
-                Version = appManifest.Version,
-                Status = appManifest.Status,
-                Tier = appManifest.Tier?.ToString()
-            };
-
-            var tier = ParseModuleTier(appManifest.Tier);
-            return new Module
-            {
-                Name = appManifest.Id ?? moduleName,
-                DisplayName = appManifest.DisplayName ?? appManifest.Name ?? moduleName,
-                Description = appManifest.Description,
-                Version = appManifest.Version ?? "1.0.0",
-                Status = ParseModuleStatus(appManifest.Status),
-                Tier = tier,
-                LaunchPath = appManifest.Entry?.Url ?? $"applications/{moduleName}",
-                Priority = GetModulePriority(moduleName),
-                IsCore = IsCoreTier(moduleName),
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+            return runtimeModule;
         }
         catch (Exception ex)
         {
@@ -272,6 +229,7 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
         try
         {
             _moduleCache.Clear();
+            _runtimeModules.Clear();
             
             if (!Directory.Exists(_modulesPath))
             {
@@ -282,7 +240,8 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
             _telemetry.Emit("Info", "ModuleLoader", "Modules", "Scan started.");
 
             var moduleDirectories = Directory.GetDirectories(_modulesPath);
-            var loadedCount = 0;
+            var activeCount = 0;
+            var invalidCount = 0;
             var filteredCount = 0;
 
             foreach (var moduleDir in moduleDirectories)
@@ -296,15 +255,28 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
                     continue;
                 }
 
-                var module = await LoadModuleAsync(moduleName);
+                var module = await BuildRuntimeModuleAsync(moduleName);
                 if (module != null)
                 {
-                    loadedCount++;
+                    _runtimeModules[moduleName] = module;
+
+                    if (module.Status == ModuleStatus.Active)
+                    {
+                        activeCount++;
+                    }
+
+                    if (module.Status == ModuleStatus.ValidationFailed)
+                    {
+                        invalidCount++;
+                    }
                 }
             }
 
-            _logger.LogInformation("Refreshed modules cache. Loaded {Count} modules from {Total} directories", 
-                loadedCount, moduleDirectories.Length);
+            _logger.LogInformation(
+                "Refreshed module runtime snapshot. Loaded {ActiveCount} active modules and {InvalidCount} invalid module folders from {Total} directories",
+                activeCount,
+                invalidCount,
+                moduleDirectories.Length);
 
             _telemetry.Emit(
                 "Info",
@@ -315,7 +287,8 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
                 {
                     intentFilter = _intentFilter,
                     moduleCountTotal = moduleDirectories.Length,
-                    moduleCountActive = loadedCount,
+                    moduleCountActive = activeCount,
+                    moduleCountInvalid = invalidCount,
                     moduleCountFilteredOut = filteredCount
                 });
 
@@ -324,7 +297,7 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
                 "ModuleLoader",
                 "Health",
                 "ModuleLoader healthy.",
-                new { moduleCountActive = loadedCount });
+                new { moduleCountActive = activeCount, moduleCountInvalid = invalidCount });
         }
         catch (Exception ex)
         {
@@ -466,6 +439,137 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
         };
 
         return priorities.TryGetValue(moduleName, out var priority) ? priority : 999;
+    }
+
+    private async Task<Module?> BuildRuntimeModuleAsync(string moduleName)
+    {
+        var moduleDir = Path.Combine(_modulesPath, moduleName);
+        if (!Directory.Exists(moduleDir))
+        {
+            return null;
+        }
+
+        var manifestPath = Path.Combine(moduleDir, _manifestFileName);
+        var now = DateTime.UtcNow;
+
+        if (!File.Exists(manifestPath))
+        {
+            _logger.LogWarning("Module manifest not found for {ModuleName}: {Path}", moduleName, manifestPath);
+            return CreateInvalidModule(
+                moduleName,
+                $"Invalid module packaging: missing {_manifestFileName}.",
+                now);
+        }
+
+        var manifestContent = await File.ReadAllTextAsync(manifestPath);
+
+        if (_manifestFileName == "module.manifest.json")
+        {
+            var manifest = JsonSerializer.Deserialize<ModuleManifest>(manifestContent, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (manifest == null)
+            {
+                _logger.LogWarning("Failed to deserialize manifest for {ModuleName}", moduleName);
+                return CreateInvalidModule(
+                    moduleName,
+                    $"Invalid module packaging: {_manifestFileName} could not be deserialized.",
+                    now);
+            }
+
+            _moduleCache[moduleName] = manifest;
+
+            return new Module
+            {
+                Id = ComputeStableModuleId(moduleName),
+                Name = moduleName,
+                DisplayName = manifest.DisplayName ?? manifest.Name ?? moduleName,
+                Description = manifest.Description,
+                Version = manifest.Version ?? "1.0.0",
+                Status = ParseModuleStatus(manifest.Status),
+                Tier = ParseModuleTier(manifest.Tier),
+                LaunchPath = $"modules/{moduleName}/index.html",
+                Priority = GetModulePriority(moduleName),
+                IsCore = IsCoreTier(moduleName),
+                CreatedAt = now,
+                UpdatedAt = now
+            };
+        }
+
+        var appManifest = JsonSerializer.Deserialize<AppManifest>(manifestContent, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (appManifest == null)
+        {
+            _logger.LogWarning("Failed to deserialize app manifest for {ModuleName}", moduleName);
+            return CreateInvalidModule(
+                moduleName,
+                $"Invalid module packaging: {_manifestFileName} could not be deserialized.",
+                now);
+        }
+
+        if (!MatchesIntentFilter(_intentFilter, appManifest.Intent))
+        {
+            _logger.LogDebug("Skipping module {ModuleName} due to intent filter {Filter}", moduleName, _intentFilter);
+            return null;
+        }
+
+        _moduleCache[moduleName] = new ModuleManifest
+        {
+            Name = appManifest.Name ?? appManifest.Id ?? moduleName,
+            DisplayName = appManifest.DisplayName ?? appManifest.Name ?? appManifest.Id ?? moduleName,
+            Description = appManifest.Description,
+            Version = appManifest.Version,
+            Status = appManifest.Status,
+            Tier = appManifest.Tier?.ToString()
+        };
+
+        var tier = ParseModuleTier(appManifest.Tier);
+        return new Module
+        {
+            Id = ComputeStableModuleId(moduleName),
+            Name = appManifest.Id ?? moduleName,
+            DisplayName = appManifest.DisplayName ?? appManifest.Name ?? moduleName,
+            Description = appManifest.Description,
+            Version = appManifest.Version ?? "1.0.0",
+            Status = ParseModuleStatus(appManifest.Status),
+            Tier = tier,
+            LaunchPath = appManifest.Entry?.Url ?? $"applications/{moduleName}",
+            Priority = GetModulePriority(moduleName),
+            IsCore = IsCoreTier(moduleName),
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+    }
+
+    private Module CreateInvalidModule(string moduleName, string reason, DateTime timestamp)
+    {
+        return new Module
+        {
+            Id = ComputeStableModuleId(moduleName),
+            Name = moduleName,
+            DisplayName = moduleName,
+            Description = reason,
+            Version = "0.0.0-invalid",
+            Status = ModuleStatus.ValidationFailed,
+            Tier = ModuleTier.Tier3,
+            LaunchPath = null,
+            Priority = GetModulePriority(moduleName),
+            IsCore = IsCoreTier(moduleName),
+            CreatedAt = timestamp,
+            UpdatedAt = timestamp
+        };
+    }
+
+    private static int ComputeStableModuleId(string moduleName)
+    {
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(moduleName.ToLowerInvariant()));
+        var id = BitConverter.ToInt32(hash, 0) & int.MaxValue;
+        return id == 0 ? 1 : id;
     }
 }
 

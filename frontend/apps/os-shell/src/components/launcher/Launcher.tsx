@@ -16,7 +16,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Pin, PinOff } from 'lucide-react';
 import { getLucideIcon } from '../../config/iconMap';
-import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
+import { useStartMenuStore } from '../../stores/startMenuStore';
 import { TerraSphereIcon, type TerraSphereIconVariant } from '../../ui/brand/TerraSphereIcon';
 import { LiquidPanel, TactileButton } from '../../ui/materials';
 import { MaterialQuality, useMaterialQuality } from '../../ui/materials/materialQualityGate';
@@ -307,11 +307,11 @@ export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => 
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Store state (using commandPaletteStore for Ctrl+K trigger)
-  const isOpen = useCommandPaletteStore((state) => state.isOpen);
-  const close = useCommandPaletteStore((state) => state.close);
-  const searchQuery = useCommandPaletteStore((state) => state.searchQuery);
-  const setSearchQuery = useCommandPaletteStore((state) => state.setSearchQuery);
+  // Store state — Launcher is the Start Menu (Ctrl+`), NOT the Command Palette (Ctrl+K)
+  const isOpen = useStartMenuStore((state) => state.isOpen);
+  const close = useStartMenuStore((state) => state.close);
+  const searchQuery = useStartMenuStore((state) => state.searchQuery);
+  const setSearchQuery = useStartMenuStore((state) => state.setSearchQuery);
 
   // Personalization stores (Slice 5)
   const isPinned = usePinsStore((state) => state.isPinned);

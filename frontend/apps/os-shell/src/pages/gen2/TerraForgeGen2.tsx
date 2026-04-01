@@ -1,51 +1,19 @@
 /**
- * TerraForge Gen2 - AI-Powered Cost Calculation & Valuation Modeling Suite
+ * TerraForge Gen2 — iframes the real CostForge native app (packages/terrabuild)
  *
- * This is the Gen2 version of TerraForge, rendered as an internal route
- * within the OS shell rather than as an external iframe.
+ * Previously this rendered CostForgeQuantumDashboard (an imposter built in the shell).
+ * Now it hosts the real terrabuild app via AppFrame.
  *
  * @module pages/gen2/TerraForgeGen2
  */
 
-import React, { Suspense, lazy } from 'react';
-
-// Lazy load the CostForge component (which is the Gen2 implementation)
-const CostForgeQuantumDashboard = lazy(
-  () => import('../../components/costforge/CostForgeQuantumDashboard')
-);
-
-const LoadingFallback: React.FC = () => (
-  <div
-    className='w-full h-full flex flex-col items-center justify-center min-h-screen'
-    style={{
-      background:
-        'linear-gradient(135deg, hsl(var(--tf-text-primary-hs) 5% / 0.98) 0%, hsl(var(--tf-text-primary-hs) 12% / 0.95) 100%)',
-    }}
-  >
-    {/* Quantum spinner */}
-    <div
-      className='w-16 h-16 rounded-full animate-spin'
-      style={{
-        border: '4px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.15)',
-        borderTopColor: 'hsl(var(--tf-transcend-cyan-hs) 50%)',
-        boxShadow: '0 0 40px hsl(var(--tf-transcend-cyan-hs) 50% / 0.3)',
-      }}
-    />
-    <p className='mt-6 text-lg' style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.8)' }}>
-      Initializing TerraForge Gen2...
-    </p>
-    <p className='mt-2 text-sm' style={{ color: 'hsl(var(--tf-text-primary-hs) 100% / 0.5)' }}>
-      AI-Powered Cost Calculation & Valuation Modeling Suite
-    </p>
-  </div>
-);
+import React from 'react';
+import { AppFrame } from '../../components/app-frame/AppFrame';
 
 const TerraForgeGen2: React.FC = () => {
   return (
     <div className='w-full h-full min-h-screen'>
-      <Suspense fallback={<LoadingFallback />}>
-        <CostForgeQuantumDashboard />
-      </Suspense>
+      <AppFrame moduleId="costforge" />
     </div>
   );
 };

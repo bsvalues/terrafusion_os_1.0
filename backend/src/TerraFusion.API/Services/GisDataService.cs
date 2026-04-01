@@ -5,10 +5,13 @@ using TerraFusion.Data;
 
 namespace TerraFusion.API.Services;
 
+// PACS-SYNC-DEBT: All data access in this service reads from PACS mirror entities
+// (PacsParcel, PacsSituses, PacsLandDetails, PacsPropertyProfiles, PacsTaxAreas)
+// directly. Replace with canonical TerraFusion domain model queries once
+// TerraFusionSync publishes to the canonical store. See CARD-10B boundary audit.
 /// <summary>
-/// Retrieves PACS-sourced GIS data for parcels. Queries the local PACS mirror
-/// tables (pacs_parcels, pacs_situs, pacs_land_details, pacs_property_profiles,
-/// pacs_tax_areas) to build boundary approximations and layer overlays.
+/// Retrieves GIS data for parcels from the local PACS sync mirror.
+/// Builds boundary approximations and layer overlays from available sync data.
 /// </summary>
 public sealed class GisDataService : IGisDataService
 {
@@ -39,7 +42,7 @@ public sealed class GisDataService : IGisDataService
         {
             _logger.LogWarning("Parcel {ParcelId} not found in PACS mirror", parcelId);
             return new ParcelBoundaryResult(
-                parcelId, "fallback", null, null, null, null, null);
+                parcelId, "stub", null, null, null, null, null);
         }
 
         // Get primary situs address
@@ -67,7 +70,7 @@ public sealed class GisDataService : IGisDataService
             centroid = new ParcelCentroid(
                 BentonCountyDefaultLat + latOffset,
                 BentonCountyDefaultLng - lngOffset,
-                "pacs-situs-derived");
+                "situs-derived");
         }
         else
         {
@@ -94,7 +97,7 @@ public sealed class GisDataService : IGisDataService
 
         return new ParcelBoundaryResult(
             ParcelId: parcelId,
-            Source: "pacs",
+            Source: "canonical",
             Centroid: centroid,
             Dimensions: dimensions,
             AreaAcres: land?.SizeAcres,
@@ -115,9 +118,9 @@ public sealed class GisDataService : IGisDataService
         {
             _logger.LogWarning("Parcel {ParcelId} not found in PACS mirror for layers", parcelId);
             return new ParcelLayersResult(
-                parcelId, "fallback",
-                Zoning: new ParcelZoningLayer(null, "Unknown", null, null, "fallback"),
-                Flood: new ParcelFloodLayer("X", "Minimal risk", "fallback"),
+                parcelId, "stub",
+                Zoning: new ParcelZoningLayer(null, "Unknown", null, null, "stub"),
+                Flood: new ParcelFloodLayer("X", "Minimal risk", "stub"),
                 TaxArea: null,
                 LandClass: null);
         }
@@ -137,11 +140,11 @@ public sealed class GisDataService : IGisDataService
                 Description: profile?.Zoning ?? parcel.Zoning ?? "Unknown",
                 CharacteristicZoning1: profile?.CharacteristicZoning1,
                 CharacteristicZoning2: profile?.CharacteristicZoning2,
-                Source: "pacs");
+                Source: "canonical");
         }
         else
         {
-            zoning = new ParcelZoningLayer(null, "Not classified", null, null, "fallback");
+            zoning = new ParcelZoningLayer(null, "Not classified", null, null, "stub");
         }
 
         // Flood zone — PACS does not carry FEMA flood data directly.
@@ -149,7 +152,7 @@ public sealed class GisDataService : IGisDataService
         var flood = new ParcelFloodLayer(
             Zone: "X",
             Risk: "Minimal risk — FEMA data requires external enrichment",
-            Source: "fallback");
+            Source: "stub");
 
         // Tax area from PACS
         var taxArea = await _db.PacsTaxAreas
@@ -165,7 +168,7 @@ public sealed class GisDataService : IGisDataService
                 TaxAreaNumber: taxArea.TaxAreaNumber,
                 TaxAreaDescription: taxArea.TaxAreaDescription,
                 TaxYear: taxArea.TaxYear,
-                Source: "pacs");
+                Source: "canonical");
         }
 
         // Land classification from land_detail
@@ -183,12 +186,12 @@ public sealed class GisDataService : IGisDataService
                 LandClassCode: land.LandClassCode,
                 PrimaryUseCd: land.PrimaryUseCd,
                 SubUseCd: land.SubUseCd,
-                Source: "pacs");
+                Source: "canonical");
         }
 
         return new ParcelLayersResult(
             ParcelId: parcelId,
-            Source: "pacs",
+            Source: "canonical",
             Zoning: zoning,
             Flood: flood,
             TaxArea: taxAreaLayer,

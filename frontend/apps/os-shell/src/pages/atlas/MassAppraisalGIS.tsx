@@ -3,8 +3,14 @@
  * GIS visualization for mass appraisal spatial display.
  * Parcel map with color-coded overlays (neighborhood, zoning, property type).
  * Atlas renders spatial data -- it does NOT compute values or run sync.
+ *
+ * DATA POSTURE:
+ * - `DEMO_PARCELS` (5 sample parcels) are displayed when the API is unavailable.
+ * - DemoDataBanner shown while `isFixtureParcels === true` (starts `true`, cleared
+ *   on successful `/api/atlas/parcels/search` response with ≥1 result).
+ * - Live-mapped parcels have partial attributes only (sqft/yearBuilt/bedroom = 0).
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
@@ -303,6 +309,42 @@ export default function MassAppraisalGIS() {
     { id: 'flood', label: 'Flood Zones', visible: false, color: '#EF4444' },
     { id: 'contours', label: 'Contour Lines', visible: false, color: '#A3E635' },
   ]);
+  const [parcels, setParcels] = useState<ParcelFeature[]>(DEMO_PARCELS);
+  const [isFixtureParcels, setIsFixtureParcels] = useState(true);
+
+  // Load live parcels on mount; fall back to DEMO_PARCELS if unavailable
+  useEffect(() => {
+    fetch('/api/atlas/parcels/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ Limit: 50 }),
+    })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((data: { results?: Array<{ parcelId?: string; address?: string; propertyType?: string }> }) => {
+        if (Array.isArray(data.results) && data.results.length > 0) {
+          const mapped: ParcelFeature[] = data.results.map((p, i) => ({
+            id: p.parcelId ?? `live-${i}`,
+            parcelNumber: p.parcelId ?? `live-${i}`,
+            address: p.address ?? 'Unknown Address',
+            neighborhood: 'County',
+            zoning: 'R-1',
+            propertyType: p.propertyType ?? 'Residential',
+            sqft: 0,
+            lotSize: 0,
+            yearBuilt: 0,
+            stories: 1,
+            bedrooms: 0,
+            bathrooms: 0,
+            coordinates: [46.23 + (i % 10) * 0.003, -119.2 - Math.floor(i / 10) * 0.003],
+          }));
+          setParcels(mapped);
+          setIsFixtureParcels(false);
+        }
+      })
+      .catch(() => {
+        // Keep DEMO_PARCELS; banner remains visible
+      });
+  }, []);
 
   const handleToggleLayer = useCallback((id: string) => {
     setLayers((prev) => prev.map((l) => (l.id === id ? { ...l, visible: !l.visible } : l)));
@@ -323,8 +365,7 @@ export default function MassAppraisalGIS() {
 
   return (
     <div data-testid="mass-appraisal-gis" className="flex h-full bg-terra-midnight text-white">
-      {/* Provenance disclosure: DEMO_PARCELS are always rendered — no live GIS data path yet */}
-      <DemoDataBanner module="Mass Appraisal GIS" />
+      {isFixtureParcels && <DemoDataBanner module="Mass Appraisal GIS" />}
       {/* Layer panel */}
       <aside className="flex-shrink-0 p-4 space-y-4 overflow-y-auto border-r border-white/10">
         <LayerTogglePanel
@@ -373,7 +414,7 @@ export default function MassAppraisalGIS() {
 
           {/* Parcel markers */}
           <div className="absolute inset-0 flex flex-wrap items-center justify-center gap-6 p-8">
-            {DEMO_PARCELS.map((parcel) => {
+            {parcels.map((parcel) => {
               const color = getOverlayColor(overlayMode, parcel);
               const isSelected = selectedParcel?.id === parcel.id;
               return (

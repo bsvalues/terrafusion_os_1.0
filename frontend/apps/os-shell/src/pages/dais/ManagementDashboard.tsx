@@ -209,7 +209,10 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}
     >
       <MorningBriefingStrip swarm={swarm} pacs={pacs} appeals={appeals} workload={workload} />
-      {isFixture && <DemoDataBanner module="Management Dashboard" />}
+      {/* Show fixture banner while any section is still on fallback data */}
+      {(overviewSource !== 'live' || certSource !== 'live' || appealsSource !== 'live' || workloadSource !== 'live') && (
+        <DemoDataBanner module="Management Dashboard" />
+      )}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Management Dashboard</h1>
         <div className="flex gap-2">

@@ -23,12 +23,35 @@ public class LevyDashboardController : ControllerBase
 
     /// <summary>
     /// Retrieve the levy dashboard summary for the current county.
+    /// Dev stub: returns one placeholder BudgetCategory so the TerraLevy
+    /// frontend can clear isSampleData on mount without a real CAMA integration.
     /// </summary>
+    [AllowAnonymous]
     [HttpGet("summary")]
     public IActionResult Summary([FromQuery] int? year)
     {
         _logger.LogInformation("LEV-021: Dashboard summary requested");
-        return Ok(new { status = "stub", message = "Dashboard summary not yet implemented." });
+        return Ok(new object[]
+        {
+            new
+            {
+                id = "dev-levy-stub",
+                name = "General Fund",
+                allocated = 0,
+                spent = 0,
+                projected = 0,
+                department = "Benton County",
+                priority = "low",
+                fiscalYear = DateTime.UtcNow.Year.ToString(),
+                lastUpdated = DateTime.UtcNow,
+                subCategories = Array.Empty<object>(),
+                complianceStatus = (object?)null,
+                aiRecommendations = Array.Empty<object>(),
+                historicalData = Array.Empty<object>(),
+                responsibleOfficer = "dev-stub",
+                approvalStatus = "approved",
+            }
+        });
     }
 
     /// <summary>

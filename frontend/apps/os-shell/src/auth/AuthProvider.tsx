@@ -50,13 +50,26 @@ async function fetchDevToken(): Promise<string | null> {
   }
 }
 
+/** Return true if token is missing or its exp claim is within 60s of expiry. */
+function isTokenExpiredOrMissing(token: string | null): boolean {
+  if (!token || token === 'dev-preview-token') return true;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const exp = typeof payload.exp === 'number' ? payload.exp : 0;
+    return Date.now() / 1000 >= exp - 60;
+  } catch {
+    return true;
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setTokenState] = useState<string | null>(() => getToken());
 
   // In dev preview mode, automatically obtain a real JWT from the backend.
+  // Re-run whenever the stored token changes so an expired token is replaced.
   useEffect(() => {
     if (!isDevPreviewMode()) return;
-    if (token && token !== 'dev-preview-token') return; // already have a real token
+    if (!isTokenExpiredOrMissing(token)) return; // token is present and not expired
 
     let cancelled = false;
     fetchDevToken().then((jwt) => {

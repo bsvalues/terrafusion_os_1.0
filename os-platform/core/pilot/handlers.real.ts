@@ -1651,6 +1651,43 @@ export const runIncomeValuationRealHandler: ToolHandler<
 };
 
 // ============================================================================
+// Wave 3 (supplement) — calculate_depreciation → POST /api/costforge/depreciation-calculate
+//
+// Computes physical depreciation (Benton County bracket table), functional
+// obsolescence (condition-based), and external obsolescence for a structure.
+// BIV-086 — wired from DepreciationCalculator.tsx (third fabric-corrected route).
+// ============================================================================
+
+export const calculateDepreciationRealHandler: ToolHandler<
+  { county?: string; actualAge?: number; effectiveAge?: number; condition?: string; quality?: string; replacementCostNew?: number },
+  { physicalDepreciation: number; functionalObsolescence: number; externalObsolescence: number; totalDepreciation: number; depreciatedValue: number }
+> = async (params, _context, _tool) => {
+  const { token } = await acquirePilotToken();
+  const raw = await backendPost<{
+    physicalDepreciation?: number;
+    functionalObsolescence?: number;
+    externalObsolescence?: number;
+    totalDepreciation?: number;
+    depreciatedValue?: number;
+  }>('/api/costforge/depreciation-calculate', {
+    actualAge: params.actualAge ?? 0,
+    effectiveAge: params.effectiveAge ?? params.actualAge ?? 0,
+    condition: params.condition ?? 'average',
+    quality: params.quality ?? 'average',
+    replacementCostNew: params.replacementCostNew ?? 0,
+  }, { token });
+  const data = unwrapBackend(raw, 'Depreciation calculation failed');
+
+  return {
+    physicalDepreciation: data.physicalDepreciation ?? 0,
+    functionalObsolescence: data.functionalObsolescence ?? 0,
+    externalObsolescence: data.externalObsolescence ?? 0,
+    totalDepreciation: data.totalDepreciation ?? 0,
+    depreciatedValue: data.depreciatedValue ?? 0,
+  };
+};
+
+// ============================================================================
 // R2.9 — Handler 27: check_exemption_eligibility
 // Read-only. Checks senior/disabled exemption eligibility per RCW 84.36.381.
 // Endpoint: GET /api/dais/exemptions/eligibility
@@ -2545,9 +2582,10 @@ export function registerR1Handlers(
   runner.registerHandler('assemble_boe_packet', assembleBoePacketRealHandler);
   runner.registerHandler('request_trace_redaction', createRequestTraceRedactionHandler(traceService));
 
-  // Wave 3 Enrichment handlers (2)
+  // Wave 3 Enrichment handlers (3)
   runner.registerHandler('calculate_pilt_payment', calculatePiltPaymentRealHandler);
   runner.registerHandler('run_income_valuation', runIncomeValuationRealHandler);
+  runner.registerHandler('calculate_depreciation', calculateDepreciationRealHandler);
 
   // R2.9 TerraDais Hardening handlers (9)
   runner.registerHandler('check_exemption_eligibility', checkExemptionEligibilityRealHandler);

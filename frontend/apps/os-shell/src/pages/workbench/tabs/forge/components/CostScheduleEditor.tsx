@@ -90,10 +90,11 @@ export function CostScheduleEditor({ countyId = 'benton', taxYear = 2026 }: Cost
             <span>Schedule Entries</span>
             <Button
               onClick={handleSave}
-              disabled={!hasDirtyEntries || saving}
+              disabled
               size="sm"
+              title="Save not yet wired to backend"
             >
-              {saving ? 'Saving...' : `Save Changes (${entries.filter(e => e.isDirty).length})`}
+              Save Changes
             </Button>
           </CardTitle>
         </CardHeader>

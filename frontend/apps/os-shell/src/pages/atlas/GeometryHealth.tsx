@@ -5,6 +5,7 @@
  * Map showing gaps in polygon coverage.
  */
 import { useMemo, useState } from 'react';
+import { useParcelCount } from '../../hooks/useParcelCount';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -36,7 +37,7 @@ export interface AreaGeometryStats {
 // ---------------------------------------------------------------------------
 
 const HEALTH_DATA: GeometryHealthData = {
-  totalParcels: 89247,
+  totalParcels: 89_247,
   parcelsWithPolygons: 85612,
   parcelsMissingGeometry: 3208,
   orphanedPolygons: 427,
@@ -72,10 +73,12 @@ function healthColor(score: number): string {
 
 export default function GeometryHealth() {
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
+  const { data: statsData } = useParcelCount();
+  const parcelCount = statsData?.totalParcels ?? 89_247;
 
   const overallScore = useMemo(
-    () => healthScore(HEALTH_DATA.parcelsWithPolygons, HEALTH_DATA.totalParcels),
-    [],
+    () => healthScore(HEALTH_DATA.parcelsWithPolygons, parcelCount),
+    [parcelCount],
   );
 
   const selectedArea = useMemo(
@@ -190,7 +193,7 @@ export default function GeometryHealth() {
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="bg-white/5 rounded p-2">
                 <p className="text-white/40">Total Parcels</p>
-                <p className="text-white font-medium">{HEALTH_DATA.totalParcels.toLocaleString()}</p>
+                <p className="text-white font-medium">{parcelCount.toLocaleString()}</p>
               </div>
               <div className="bg-white/5 rounded p-2">
                 <p className="text-white/40">Linked</p>

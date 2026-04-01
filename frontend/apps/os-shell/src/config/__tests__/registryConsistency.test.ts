@@ -46,7 +46,7 @@ describe('suiteRegistry quality invariants', () => {
         expect(suite.route).toBeTruthy();
         if (!suite.color) throw new Error(`Suite "${suite.id}" missing color`);
         expect(suite.color).toBeTruthy();
-        expect(['live', 'wip', 'planned']).toContain(suite.status);
+        expect(['live', 'queued', 'unavailable']).toContain(suite.status);
       }
     });
 
@@ -79,7 +79,7 @@ describe('suiteRegistry quality invariants', () => {
         expect(feature.description).toBeTruthy();
         if (!feature.iconName) throw new Error(`Feature "${feature.id}" missing iconName`);
         expect(feature.iconName).toBeTruthy();
-        expect(['live', 'wip', 'planned']).toContain(feature.status);
+        expect(['live', 'queued', 'unavailable']).toContain(feature.status);
       }
     });
 

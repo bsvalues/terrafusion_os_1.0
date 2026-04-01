@@ -207,4 +207,24 @@ public sealed class QueueServiceTests
 
         assigned.AssignedTo.Should().Be("alice.appraiser@benton.wa.gov");
     }
+
+    [Fact]
+    public async Task Queue_CreateAsync_Command_EnforcesCountyAndSlaDefaults()
+    {
+        await using var db = CreateDbContext(nameof(Queue_CreateAsync_Command_EnforcesCountyAndSlaDefaults));
+        await SeedCounty(db, BentonCountyId);
+        var svc = new QueueService(db, NullLogger<QueueService>.Instance);
+
+        var created = await svc.CreateAsync(
+            BentonCountyId,
+            new CreateQueueItemCommand("FIELD_INSPECTION", "PARCEL-404", "alice@appraisers.local", "high"),
+            "queue@test");
+
+        created.CountyId.Should().Be(BentonCountyId);
+        created.Status.Should().Be("queued");
+        created.SlaHours.Should().Be(72);
+        created.AssignedTo.Should().Be("alice@appraisers.local");
+        created.CreatedBy.Should().Be("queue@test");
+        created.SlaDeadline.Should().NotBeNull();
+    }
 }

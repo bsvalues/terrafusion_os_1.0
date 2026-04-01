@@ -160,18 +160,29 @@ public class PacsDataSeeder
         {
             _logger.LogWarning("[PacsSeeder] Bulk truncate failed ({Msg}); falling back to per-table DELETE.", ex.Message);
             // Fallback: individual DELETEs with FK-safe order
-            var tables = new[]
+            var deleteStatements = new[]
             {
-                "pacs_tax_area_assocs", "pacs_tax_areas", "pacs_appeals", "pacs_exemptions", "pacs_sales",
-                "pacs_owner_vals", "pacs_owners", "pacs_land_details",
-                "pacs_improvement_attributes", "pacs_improvement_details", "pacs_improvements",
-                "pacs_valuations", "pacs_situs", "pacs_property_profiles", "PacsParcel"
+                ("pacs_tax_area_assocs", "DELETE FROM \"pacs_tax_area_assocs\""),
+                ("pacs_tax_areas", "DELETE FROM \"pacs_tax_areas\""),
+                ("pacs_appeals", "DELETE FROM \"pacs_appeals\""),
+                ("pacs_exemptions", "DELETE FROM \"pacs_exemptions\""),
+                ("pacs_sales", "DELETE FROM \"pacs_sales\""),
+                ("pacs_owner_vals", "DELETE FROM \"pacs_owner_vals\""),
+                ("pacs_owners", "DELETE FROM \"pacs_owners\""),
+                ("pacs_land_details", "DELETE FROM \"pacs_land_details\""),
+                ("pacs_improvement_attributes", "DELETE FROM \"pacs_improvement_attributes\""),
+                ("pacs_improvement_details", "DELETE FROM \"pacs_improvement_details\""),
+                ("pacs_improvements", "DELETE FROM \"pacs_improvements\""),
+                ("pacs_valuations", "DELETE FROM \"pacs_valuations\""),
+                ("pacs_situs", "DELETE FROM \"pacs_situs\""),
+                ("pacs_property_profiles", "DELETE FROM \"pacs_property_profiles\""),
+                ("PacsParcel", "DELETE FROM \"PacsParcel\"")
             };
-            foreach (var tbl in tables)
+            foreach (var (tbl, deleteSql) in deleteStatements)
             {
                 try
                 {
-                    await _db.Database.ExecuteSqlRawAsync($"DELETE FROM \"{tbl}\"", ct);
+                    await _db.Database.ExecuteSqlRawAsync(deleteSql, ct);
                 }
                 catch (Exception inner)
                 {

@@ -12,13 +12,13 @@
   --terra-accent: var(--tf-accent-success);
 
   /* Apple OS Glass Effects */
-  --glass-bg: hsl(var(--tf-surface) / 0.3);
+  /* --glass-bg: hsl(var(--tf-surface) / 0.3); — removed: canonical value lives in terrafusion-tokens.css */
   --glass-border: hsl(var(--tf-accent) / 0.2);
   --glass-shadow: 0 8px 32px hsl(var(--tf-bg) / 0.37);
   --blur-amount: blur(16px);
 
   /* Typography (SF Pro inspired) */
-  --font-system: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  --font-system: 'Switzer', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
 }
 
@@ -437,8 +437,7 @@ body,
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--terra-cyan);
-  box-shadow: 0 0 12px var(--terra-cyan);
+  background: hsl(var(--tf-accent));
   animation: quantumPulse 2s ease-in-out infinite;
 }
 

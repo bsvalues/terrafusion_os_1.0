@@ -86,7 +86,7 @@ class RealDataService {
   private readonly baseUrl: string;
 
   constructor() {
-    this.baseUrl = getViteEnv().VITE_API_BASE_URL || '';
+    this.baseUrl = getViteEnv().VITE_API_URL || '';
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {

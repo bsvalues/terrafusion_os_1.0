@@ -119,7 +119,7 @@ const SystemMonitor: React.FC = () => {
             className={`${styles.dbStatusItem} ${connectionStatus?.realPacsConnected ? styles.connected : styles.disconnected}`}
           >
             <span className={styles.dbIcon}>🗄️</span>
-            <span className={styles.dbName}>Harris PACS</span>
+            <span className={styles.dbName}>County Records</span>
             <span className={styles.dbStatus}>
               {connectionStatus?.realPacsConnected ? '✅ Connected' : '❌ Disconnected'}
             </span>
@@ -147,7 +147,7 @@ const SystemMonitor: React.FC = () => {
 
       <div className={styles.footer}>
         <div className={styles.footerText} data-testid='system-monitor-footer-text'>
-          Benton County • Harris PACS 9.0 • Workspace monitor • Reported DB Health:{' '}
+          Benton County • County Records • Workspace monitor • Reported DB Health:{' '}
           {databaseHealthLabel}
         </div>
         <div className={styles.timestamp}>Last Update: {new Date().toLocaleTimeString()}</div>

@@ -1,8 +1,16 @@
 // TFR-099: Admin Dashboard
 // Tabbed administration interface: County Config, Data Quality, Security Audit,
 // Users, Study Periods, Scrape Jobs.
+//
+// DATA POSTURE: ALL tab panels (County Config, Data Quality, Security Audit, Users,
+// Study Periods, Scrape Jobs) use hardcoded sample fixtures scoped to Benton County.
+// No backend connection exists. County selector, security events, user list,
+// study periods, scrape jobs, and data quality metrics are all static sample data.
+// Mutations are in-memory only and do not persist.
 
 import React, { useState, useCallback, useMemo } from 'react';
+import { useParcelCount } from '../../hooks/useParcelCount';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -155,13 +163,16 @@ function CountyConfigPanel({ county }: { county: County }) {
 }
 
 function DataQualityPanel() {
+  const { data: statsData } = useParcelCount();
+  const parcelCount = statsData?.totalParcels ?? 89_247;
+
   const metrics: DataQualityMetric[] = [
-    { label: 'Parcel Completeness', value: 87432, total: 89247, status: 'good' },
-    { label: 'Address Validation', value: 84100, total: 89247, status: 'warning' },
-    { label: 'Value Assessment Coverage', value: 88500, total: 89247, status: 'good' },
-    { label: 'GIS Spatial Match', value: 82300, total: 89247, status: 'warning' },
-    { label: 'Owner Record Linkage', value: 88900, total: 89247, status: 'good' },
-    { label: 'Tax Code Validity', value: 89100, total: 89247, status: 'good' },
+    { label: 'Parcel Completeness', value: 87432, total: parcelCount, status: 'good' },
+    { label: 'Address Validation', value: 84100, total: parcelCount, status: 'warning' },
+    { label: 'Value Assessment Coverage', value: 88500, total: parcelCount, status: 'good' },
+    { label: 'GIS Spatial Match', value: 82300, total: parcelCount, status: 'warning' },
+    { label: 'Owner Record Linkage', value: 88900, total: parcelCount, status: 'good' },
+    { label: 'Tax Code Validity', value: 89100, total: parcelCount, status: 'good' },
   ];
 
   return (
@@ -277,7 +288,7 @@ function UsersPanel() {
 
 function StudyPeriodsPanel() {
   const periods: StudyPeriod[] = [
-    { id: '1', name: '2026 Annual Revaluation', startDate: '2026-01-01', endDate: '2026-12-31', status: 'active', propertyCount: 89247 },
+    { id: '1', name: '2026 Annual Revaluation', startDate: '2026-01-01', endDate: '2026-12-31', status: 'active', propertyCount: 89_247 },
     { id: '2', name: '2025 Annual Revaluation', startDate: '2025-01-01', endDate: '2025-12-31', status: 'closed', propertyCount: 87500 },
     { id: '3', name: '2027 Preliminary', startDate: '2027-01-01', endDate: '2027-12-31', status: 'draft', propertyCount: 0 },
   ];
@@ -305,7 +316,7 @@ function StudyPeriodsPanel() {
 
 function ScrapeJobsPanel() {
   const jobs: ScrapeJob[] = [
-    { id: '1', source: 'Harris PACS 9.0', status: 'completed', startedAt: '2026-03-15T02:00:00Z', completedAt: '2026-03-15T04:32:00Z', recordsProcessed: 89247, errors: 3 },
+    { id: '1', source: 'County CAMA', status: 'completed', startedAt: '2026-03-15T02:00:00Z', completedAt: '2026-03-15T04:32:00Z', recordsProcessed: 89_247, errors: 3 },
     { id: '2', source: 'GIS Parcel Layer', status: 'running', startedAt: '2026-03-15T06:00:00Z', completedAt: null, recordsProcessed: 45200, errors: 0 },
     { id: '3', source: 'Tyler Vision Sync', status: 'queued', startedAt: '2026-03-15T08:00:00Z', completedAt: null, recordsProcessed: 0, errors: 0 },
     { id: '4', source: 'Aumentum Import', status: 'failed', startedAt: '2026-03-14T22:00:00Z', completedAt: '2026-03-14T22:15:00Z', recordsProcessed: 1200, errors: 48 },
@@ -392,6 +403,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <DemoDataBanner module="Administration" />
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">

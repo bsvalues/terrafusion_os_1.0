@@ -157,7 +157,7 @@
 .quantum-action-btn.active {
   background: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
   border-color: var(--tf-quantum-cyan);
-  box-shadow: 0 0 15px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4);
+  box-shadow: var(--shadow-soft);
 }
 
 .quantum-action-btn.success {

@@ -227,8 +227,8 @@ export function DepreciationCurveEditor({
       </div>
 
       <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={!dirty || saving}>
-          {saving ? 'Saving...' : 'Save Curve'}
+        <Button onClick={handleSave} disabled title="Save not yet wired to backend">
+          Save Curve
         </Button>
       </div>
     </div>

@@ -156,12 +156,13 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
     public async Task<SystemHealthStatus> GetSystemHealthAsync()
     {
+        var runtimeModules = await _moduleLoader.LoadDiscoveredModulesAsync();
         var status = new SystemHealthStatus
         {
             IsHealthy = _isSystemRunning,
             Timestamp = DateTime.UtcNow,
-            ModuleCount = _moduleStatuses.Count,
-            HealthyModules = _moduleStatuses.Values.Count(m => m.IsHealthy),
+            ModuleCount = runtimeModules.Count,
+            HealthyModules = runtimeModules.Count(module => module.Status == TerraFusion.Core.Enums.ModuleStatus.Active),
             SystemComponents = new Dictionary<string, bool>()
         };
 
@@ -170,8 +171,9 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
             if (_moduleStatuses.Count == 0)
             {
                 await InitializeModuleSystemAsync();
-                status.ModuleCount = _moduleStatuses.Count;
-                status.HealthyModules = _moduleStatuses.Values.Count(m => m.IsHealthy);
+                runtimeModules = await _moduleLoader.LoadDiscoveredModulesAsync();
+                status.ModuleCount = runtimeModules.Count;
+                status.HealthyModules = runtimeModules.Count(module => module.Status == TerraFusion.Core.Enums.ModuleStatus.Active);
             }
 
             // Check core system components
@@ -281,15 +283,19 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
 
         try
         {
-            var modules = await _moduleLoader.LoadActiveModulesAsync();
+            _moduleStatuses.Clear();
+
+            var modules = await _moduleLoader.LoadDiscoveredModulesAsync();
             foreach (var module in modules)
             {
+                var isHealthy = module.Status == TerraFusion.Core.Enums.ModuleStatus.Active;
                 _moduleStatuses[module.Name] = new ModuleHealthStatus
                 {
                     ModuleName = module.Name,
                     Version = module.Version,
-                    Status = "Initialized",
-                    IsHealthy = true,
+                    Status = module.Status.ToString(),
+                    IsHealthy = isHealthy,
+                    StatusMessage = module.Description ?? string.Empty,
                     LastHealthCheck = DateTime.UtcNow
                 };
             }
@@ -381,8 +387,8 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
     {
         try
         {
-            var modules = await _moduleLoader.LoadActiveModulesAsync();
-            return modules.Any();
+            var modules = await _moduleLoader.LoadDiscoveredModulesAsync();
+            return modules.Count > 0;
         }
         catch
         {

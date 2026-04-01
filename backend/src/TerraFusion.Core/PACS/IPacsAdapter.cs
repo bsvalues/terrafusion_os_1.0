@@ -66,6 +66,16 @@ namespace TerraFusion.Core.PACS
             int pageSize = 100,
             CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Full-text search across GeoId and situs address fields.
+        /// Results are paginated. Default fallback: delegates to GetPropertiesAsync.
+        /// </summary>
+        Task<PacsPagedResult<PacsPropertyCore>> SearchPropertiesAsync(
+            string searchText,
+            int page = 1,
+            int pageSize = 20,
+            CancellationToken cancellationToken = default);
+
         // ═══════════════════════════════════════════════════════════════
         // OWNERSHIP QUERIES (via vw_TerraFusion_Property_Ownership)
         // ═══════════════════════════════════════════════════════════════

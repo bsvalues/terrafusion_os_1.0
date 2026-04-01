@@ -126,6 +126,11 @@ public class SpatialAnalyticsController : ControllerBase
 
     /// <summary>Extract spatial features for a specific parcel.</summary>
     /// <param name="parcelId">Parcel ID to analyze.</param>
+    /// <param name="lat">Latitude override for the parcel centroid.</param>
+    /// <param name="lng">Longitude override for the parcel centroid.</param>
+    /// <param name="areaAcres">Optional parcel area in acres.</param>
+    /// <param name="perimeterFeet">Optional parcel perimeter in feet.</param>
+    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("features/{parcelId}")]
     [ProducesResponseType(typeof(SpatialFeatureVector), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -154,6 +159,7 @@ public class SpatialAnalyticsController : ControllerBase
 
     /// <summary>Detect spatial hotspots for a specified variable across all parcels.</summary>
     /// <param name="variable">Variable name to analyze (e.g., "lot_size", "year_built").</param>
+    /// <param name="topN">Optional cap on the number of hotspots returned.</param>
     [HttpGet("hotspots")]
     [ProducesResponseType(typeof(HotspotResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

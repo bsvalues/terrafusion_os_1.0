@@ -105,7 +105,6 @@ import { CommandPalette, type CommandPaletteItem } from '../components/CommandPa
 import { StandaloneHomeShell } from '../components/standalone';
 import '../styles/canon-ide.css';
 import '../styles/canon.css';
-import { LiquidPanel } from '../ui/materials';
 import { explainContext } from '../api/explainApi';
 import {
   generateCorrelationId,
@@ -1729,7 +1728,7 @@ function CanonContent(): React.ReactElement {
               ? `Pilot health unavailable: ${connection.error ?? 'unknown'}`
               : 'Checking Pilot health…'}
         />
-        <LiquidPanel variant='shell' radius='none' className='flex-1'>
+        <div className='flex-1'>
           <CanonCommandPalette
             commands={paletteCommands}
             tools={connection.tools}
@@ -1737,9 +1736,25 @@ function CanonContent(): React.ReactElement {
               void invokeWithPreflight({ toolId, mode: 'pilot', params: {} });
             }}
           />
-        </LiquidPanel>
+        </div>
         <kbd className='canon-header__shortcut'>Ctrl+K</kbd>
       </header>
+
+      {/* ── Posture Disclosure ─ core IDE live / collab+Codex queued ── */}
+      <div
+        className='flex items-center gap-3 px-4 py-1 text-xs'
+        style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.4)' }}
+      >
+        <span style={{ color: 'hsl(var(--tf-fg))' }}>Core IDE Shell</span>
+        <span style={{ color: 'hsl(var(--tf-success))', background: 'hsl(var(--tf-success) / 0.12)', padding: '1px 8px', borderRadius: '9999px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.16em' }}>
+          Live
+        </span>
+        <span style={{ color: 'hsl(var(--tf-border) / 0.6)', margin: '0 4px' }}>·</span>
+        <span style={{ color: 'hsl(var(--tf-muted))' }}>Collaboration / Codex</span>
+        <span style={{ color: 'hsl(var(--tf-warning))', background: 'hsl(var(--tf-warning) / 0.12)', padding: '1px 8px', borderRadius: '9999px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.16em' }}>
+          Queued
+        </span>
+      </div>
 
       {/* ── Dev Cockpit ─ primary surface ─────────────────────────── */}
       <section className='canon-devCockpit' data-testid='canon-devCockpit'>
@@ -1749,7 +1764,7 @@ function CanonContent(): React.ReactElement {
             {/* ── Structural landmark for test compat (display:contents) ── */}
             <div style={{ display: 'contents' }} data-testid='terracanon-workspace'>
               {/* ── Explorer / Search ─ Left sidebar ─────────────────────── */}
-              <LiquidPanel variant='shell' radius='none' className='canon-ide__explorer'>
+              <div className='canon-ide__explorer' style={{ background: 'hsl(var(--tf-surface))' }}>
                 <div className='canon-ide__sidebar-tabs'>
                   <button
                     className={`canon-ide__sidebar-tab ${sidebarTab === 'explorer' ? 'canon-ide__sidebar-tab--active' : ''}`}
@@ -1914,10 +1929,10 @@ function CanonContent(): React.ReactElement {
                     }}
                   />
                 )}
-              </LiquidPanel>
+              </div>
 
               {/* ── Editor ─ Center main area ──────────────────────────────── */}
-              <LiquidPanel variant='infrastructure' radius='none' className='canon-ide__editor'>
+              <div className='canon-ide__editor'>
                 {findReplaceVisible && (
                   <CanonFindReplacePanel
                     activeFilePath={activeFilePath}
@@ -2001,7 +2016,7 @@ function CanonContent(): React.ReactElement {
                     </>
                   )}
                 </div>
-              </LiquidPanel>
+              </div>
 
               {/* ── Minimap ─ Right auxiliary ──────────────────────────── */}
               {activeFilePath && (
@@ -2016,19 +2031,19 @@ function CanonContent(): React.ReactElement {
             {/* end terracanon-workspace landmark */}
 
             {/* ── Agents ─ Right sidebar (TerraPilot) ──────────────────── */}
-            <LiquidPanel variant='shell' radius='none'>
+            <div style={{ background: 'hsl(var(--tf-surface))' }}>
               <CanonAgentsPanel
                 workspaceId={active?.id ?? null}
                 tools={connection.tools}
                 connectionStatus={connection.status}
               />
               <GoldenCorpusPanel />
-            </LiquidPanel>
+            </div>
           </div>
           {/* end canon-suiteLauncher */}
 
           {/* ── Tasks & Logs ─ Bottom panel ──────────────────────────── */}
-          <LiquidPanel variant='infrastructure' radius='none' className='canon-ide__tasks'>
+          <div className='canon-ide__tasks' style={{ background: 'hsl(var(--tf-surface))' }}>
             <div className='canon-ide__bottom-tabs'>
               <button
                 className={`canon-ide__bottom-tab ${bottomTab === 'gates' ? 'canon-ide__bottom-tab--active' : ''}`}
@@ -2085,7 +2100,7 @@ function CanonContent(): React.ReactElement {
                 }}
               />
             )}
-          </LiquidPanel>
+          </div>
 
           {/* ── Status Bar ─ Bottom info bar ──────────────────────────── */}
           <CanonStatusBar

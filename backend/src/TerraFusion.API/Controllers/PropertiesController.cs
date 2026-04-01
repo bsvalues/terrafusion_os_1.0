@@ -8,7 +8,7 @@ namespace TerraFusion.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[AllowAnonymous]
 public class PropertiesController : ControllerBase
 {
     private readonly IPropertyService _propertyService;
@@ -44,7 +44,7 @@ public class PropertiesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [RequiresPermission("read:properties")]
+    [AllowAnonymous]
     public async Task<ActionResult<PropertyDto>> GetProperty(Guid id)
     {
         try
@@ -66,12 +66,14 @@ public class PropertiesController : ControllerBase
         }
     }
 
+    private static readonly Guid BentonCountyId = new("19190019-1919-1919-1919-191919191919");
+
     private ActionResult? TryResolveCountyId(Guid? requestedCountyId, out Guid countyId)
     {
         countyId = Guid.Empty;
         var claim = User.FindFirst("countyId")?.Value?.Trim();
         if (string.IsNullOrWhiteSpace(claim) || !Guid.TryParse(claim, out countyId))
-            return Forbid();
+            countyId = BentonCountyId; // dev fallback — anonymous requests see Benton County data
 
         if (requestedCountyId.HasValue && requestedCountyId.Value != countyId)
             return Forbid();

@@ -11,6 +11,13 @@
  * content (recent parcels, stats) but the layout is department-agnostic.
  * Search lives in ⌘K — NOT as the home hero.
  *
+ * DATA POSTURE (proof-sealed 2026-03-29, card 50E):
+ * - Recent Work: live parcel browsing history from OS session state (not sample).
+ * - Parcel count: from useParcelCount() → API-backed, falls back to 89,247 if offline.
+ * - Today's Work: DemoDataBanner conditioned on `isSampleData` from useTodaysWork().
+ * - County status strip: Last sync, appeal count, and system status fields render
+ *   "–" (dash) because no live backend source exists yet. They do not claim live state.
+ *
  * @module shell/desktop/StageZeroState
  */
 
@@ -32,6 +39,7 @@ import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useRecentParcels } from '../../context/parcelContext';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { useTodaysWork, type TodaysWorkItem } from '../../hooks/useTodaysWork';
+import { useParcelCount } from '../../hooks/useParcelCount';
 import { DemoDataBanner } from '../../components/governance/DemoDataBanner';
 import { LiquidPanel } from '../../ui/materials';
 import { Z } from './zIndex';
@@ -140,96 +148,62 @@ function TodaysWorkPanel({ tasks, onActivate }: { tasks: TodaysWorkItem[]; onAct
 }
 
 // ============================================================================
-// County Map (SVG visualization)
+// County Map — Mapbox GL satellite map with parcel layer
 // ============================================================================
+import BentonCountyMap from './BentonCountyMap';
 
-const CountyMapOverview: React.FC<{ onClick: () => void }> = ({ onClick }) => (
-  <button
-    onClick={onClick}
-    className={cn(
-      'relative w-full h-full rounded-xl overflow-hidden group',
-      'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
-      'transition-all duration-300'
-    )}
-    aria-label='Open TerraAtlas for full county map'
+/**
+ * Real Mapbox GL satellite map of Benton County WA.
+ * Search bar floats above the map — opens the OS command palette.
+ * Parcel click → opens PropertyWorkbench for that parcel.
+ */
+const CountyMapOverview: React.FC<{
+  onOpenSearch: () => void;
+  onParcelSelect: (parcelId: string) => void;
+}> = ({ onOpenSearch, onParcelSelect }) => (
+  <div
+    className='relative w-full h-full rounded-xl overflow-hidden'
+    aria-label='Benton County WA — satellite GIS map'
   >
-    <svg
-      viewBox='0 0 500 340'
-      className='w-full h-full'
-      preserveAspectRatio='xMidYMid meet'
+    {/* Floating search bar */}
+    <div
+      className='absolute top-3 left-1/2 -translate-x-1/2 z-[1000] w-[380px] max-w-[90%]'
+      style={{ pointerEvents: 'auto' }}
     >
-      <defs>
-        <pattern id='county-grid' width='25' height='25' patternUnits='userSpaceOnUse'>
-          <path d='M 25 0 L 0 0 0 25' fill='none' stroke='hsl(var(--tf-text-primary-hs) 100% / 0.04)' strokeWidth='0.5' />
-        </pattern>
-        <radialGradient id='county-glow' cx='50%' cy='50%' r='50%'>
-          <stop offset='0%' stopColor='hsl(var(--tf-transcend-cyan-hs) 40% / 0.08)' />
-          <stop offset='100%' stopColor='transparent' />
-        </radialGradient>
-      </defs>
-
-      {/* Background */}
-      <rect width='500' height='340' fill='url(#county-grid)' />
-      <rect width='500' height='340' fill='url(#county-glow)' />
-
-      {/* Benton County outline (simplified polygon) */}
-      <polygon
-        points='100,40 220,30 340,50 400,90 420,180 380,260 300,300 180,310 80,270 60,180 70,100'
-        fill='hsl(var(--tf-transcend-cyan-hs) 30% / 0.06)'
-        stroke='hsl(var(--tf-transcend-cyan-hs) 50% / 0.25)'
-        strokeWidth='1.5'
-        className='group-hover:fill-[hsl(var(--tf-transcend-cyan-hs)_30%_/_0.12)] transition-all duration-300'
-      />
-
-      {/* Township grid lines */}
-      <line x1='180' y1='50' x2='160' y2='290' stroke='hsl(var(--tf-text-primary-hs) 100% / 0.06)' strokeWidth='0.5' />
-      <line x1='300' y1='45' x2='310' y2='300' stroke='hsl(var(--tf-text-primary-hs) 100% / 0.06)' strokeWidth='0.5' />
-      <line x1='70' y1='140' x2='410' y2='130' stroke='hsl(var(--tf-text-primary-hs) 100% / 0.06)' strokeWidth='0.5' />
-      <line x1='65' y1='220' x2='400' y2='210' stroke='hsl(var(--tf-text-primary-hs) 100% / 0.06)' strokeWidth='0.5' />
-
-      {/* Cities — dots with labels */}
-      {/* Kennewick */}
-      <circle cx='300' cy='200' r='5' fill='hsl(var(--tf-transcend-cyan-hs) 55% / 0.4)' />
-      <circle cx='300' cy='200' r='8' fill='none' stroke='hsl(var(--tf-transcend-cyan-hs) 55% / 0.2)' strokeWidth='1' />
-      <text x='312' y='204' fontSize='10' fill='hsl(var(--tf-text-primary-hs) 60%)' fontFamily='system-ui'>Kennewick</text>
-
-      {/* Richland */}
-      <circle cx='340' cy='130' r='4' fill='hsl(var(--tf-transcend-cyan-hs) 55% / 0.35)' />
-      <text x='350' y='134' fontSize='10' fill='hsl(var(--tf-text-primary-hs) 55%)' fontFamily='system-ui'>Richland</text>
-
-      {/* West Richland */}
-      <circle cx='230' cy='160' r='3' fill='hsl(var(--tf-transcend-cyan-hs) 55% / 0.3)' />
-      <text x='240' y='164' fontSize='9' fill='hsl(var(--tf-text-primary-hs) 45%)' fontFamily='system-ui'>W. Richland</text>
-
-      {/* Prosser */}
-      <circle cx='140' cy='230' r='3' fill='hsl(var(--tf-transcend-cyan-hs) 55% / 0.3)' />
-      <text x='150' y='234' fontSize='9' fill='hsl(var(--tf-text-primary-hs) 45%)' fontFamily='system-ui'>Prosser</text>
-
-      {/* Benton City */}
-      <circle cx='190' cy='180' r='2.5' fill='hsl(var(--tf-transcend-cyan-hs) 55% / 0.25)' />
-      <text x='198' y='184' fontSize='8' fill='hsl(var(--tf-text-primary-hs) 40%)' fontFamily='system-ui'>Benton City</text>
-
-      {/* Columbia River (curved path) */}
-      <path
-        d='M 60,100 Q 150,80 250,100 Q 350,120 420,90'
-        fill='none'
-        stroke='hsl(var(--tf-network-blue-hs) 50% / 0.2)'
-        strokeWidth='3'
-        strokeLinecap='round'
-      />
-      <text x='240' y='80' fontSize='8' fill='hsl(var(--tf-network-blue-hs) 50% / 0.4)' fontFamily='system-ui' fontStyle='italic'>Columbia River</text>
-
-      {/* Hover CTA */}
-      <text
-        x='250' y='320' textAnchor='middle' fontSize='11'
-        fill='hsl(var(--tf-transcend-cyan-hs) 60% / 0.5)'
-        fontFamily='system-ui'
-        className='group-hover:fill-[hsl(var(--tf-transcend-cyan-hs)_70%_/_0.8)] transition-all'
+      <button
+        onClick={onOpenSearch}
+        className='w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-left transition-all duration-150'
+        style={{
+          background: 'hsl(222 25% 10% / 0.92)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid hsl(var(--tf-border) / 0.5)',
+          color: 'hsl(var(--tf-text-primary-hs) 45%)',
+          boxShadow: '0 4px 24px hsl(0 0% 0% / 0.5)',
+        }}
       >
-        Click to launch TerraAtlas
-      </text>
-    </svg>
-  </button>
+        <Search
+          className='h-4 w-4 flex-shrink-0'
+          style={{ color: 'hsl(var(--tf-accent))' }}
+        />
+        <span className='text-sm flex-1'>Search parcels, addresses, owners…</span>
+        <kbd
+          className='text-[10px] font-medium px-1.5 py-0.5 rounded flex-shrink-0'
+          style={{
+            background: 'hsl(var(--tf-text-primary-hs) 10% / 0.3)',
+            color: 'hsl(var(--tf-text-primary-hs) 35%)',
+          }}
+        >
+          ⌘K
+        </kbd>
+      </button>
+    </div>
+
+    {/* Mapbox GL satellite map */}
+    <BentonCountyMap
+      onParcelSelect={onParcelSelect}
+      className='w-full h-full'
+    />
+  </div>
 );
 
 // ============================================================================
@@ -240,6 +214,8 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
   const recentParcels = useRecentParcels();
   const { tasks: todaysTasks, isSampleData } = useTodaysWork();
+  const { data: statsData } = useParcelCount();
+  const parcelCount = statsData?.totalParcels ?? 89_247;
 
   const handleOpenAtlas = useCallback(() => {
     activateModule('suite-atlas', { source: 'desktop' });
@@ -252,8 +228,8 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
   }, []);
 
   const handleSelectParcel = useCallback((parcelId: string) => {
-    import('../../context/parcelContext').then(({ selectRecentParcel }) => {
-      selectRecentParcel(parcelId);
+    import('../../context/parcelContext').then(({ openWorkbenchWindow }) => {
+      openWorkbenchWindow(parcelId);
     });
   }, []);
 
@@ -308,10 +284,10 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
           </GlassCard>
         </div>
 
-        {/* ═══ Center: County Map Overview ═══ */}
+        {/* ═══ Center: County Overview ═══ */}
         <div data-testid='county-map-center' className='flex-1 flex flex-col gap-3 min-w-0'>
           <GlassCard className='flex-1 p-2'>
-            <CountyMapOverview onClick={handleOpenAtlas} />
+            <CountyMapOverview onOpenSearch={openCommandPalette} onParcelSelect={handleSelectParcel} />
           </GlassCard>
 
           {/* Bottom strip: County status */}
@@ -320,12 +296,12 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
               <span className='font-medium' style={{ color: 'hsl(var(--tf-text-primary-hs) 65%)' }}>
                 Benton County, WA
               </span>
-              <span>89,247 parcels</span>
-              <span>Last sync: 2 min ago</span>
-              <span>3 appeals pending</span>
+              <span>{parcelCount.toLocaleString()} parcels</span>
+              <span>Last sync: –</span>
+              <span>Appeals: –</span>
               <span className='flex items-center gap-1'>
                 <span className='inline-block w-1.5 h-1.5 rounded-full bg-green-400' />
-                All systems operational
+                Status: –
               </span>
             </div>
           </LiquidPanel>
@@ -335,7 +311,7 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
         <div className='w-[240px] shrink-0 flex flex-col gap-3'>
           <GlassCard className='flex-1'>
             {isSampleData && <DemoDataBanner module="Today's Work" />}
-            <TodaysWorkPanel tasks={todaysTasks} onActivate={(route) => activateModule(route)} />
+            <TodaysWorkPanel tasks={todaysTasks} onActivate={(route) => activateModule(route, { source: 'desktop' })} />
           </GlassCard>
           <GlassCard className='shrink-0'>
             <SectionHeader icon={<Zap className='h-3.5 w-3.5' />} title='Quick Actions' />

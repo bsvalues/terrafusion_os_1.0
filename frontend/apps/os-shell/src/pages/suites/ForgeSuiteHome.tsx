@@ -4,7 +4,13 @@
  * Constitutional Suite: forge (Article I)
  * Layer 3: Domain router + cross-parcel operational workspace
  *
- * Shows: county stats, module launcher grid, recent parcel queue.
+ * Layout:
+ *   KPI Hero Band    — 5 large monospaced county-wide metrics
+ *   Header           — Suite identity (no back arrow — suite IS the home)
+ *   Primary tools    — 3 large hero cards (CostForge, Stats Studio, Batch Runs)
+ *   Secondary tools  — compact grid of specialist modules
+ *   Operational Queue — recent parcel activity
+ *
  * Does NOT host parcel execution — that lives in the Property Workbench.
  */
 
@@ -14,7 +20,6 @@ import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/Su
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
-  ArrowLeft,
   Hammer,
   Calculator,
   BarChart3,
@@ -31,21 +36,138 @@ import {
 } from 'lucide-react';
 
 const FORGE_MODULES: SuiteModuleDef[] = [
-  // Workbench-mode (parcel-scoped, opens Property Workbench)
-  { id: 'costforge', label: 'CostForge', icon: Calculator, description: 'Benton County Cost Approach — replacement cost calculator', launchMode: 'workbench', workbenchTab: 'forge' },
-  { id: 'comps', label: 'CompsForge', icon: BarChart3, description: 'Sales comparison approach with paired adjustments', launchMode: 'workbench', workbenchTab: 'forge' },
-  { id: 'income-val', label: 'Income Valuation', icon: DollarSign, description: 'Income approach — direct capitalization & GRM for commercial properties', launchMode: 'workbench', workbenchTab: 'forge' },
-  { id: 'comparable-sales', label: 'Comparable Sales', icon: Search, description: 'Parcel-scoped comp selection with paired sale adjustments', launchMode: 'workbench', workbenchTab: 'forge' },
-  { id: 'appeal', label: 'Appeals via TerraDais', icon: Gavel, description: 'BOE appeal preparation routes through the TerraDais workbench flow for scheduling, packet handoff, and case operations', launchMode: 'workbench', workbenchTab: 'dais' },
-  { id: 'reconcile', label: 'Reconciliation', icon: Scale, description: 'Three-approach reconciliation and final opinion of value', launchMode: 'workbench', workbenchTab: 'forge' },
-  { id: 'audit', label: 'Value Audit', icon: FileSearch, description: 'FISMA-compliant audit trail for valuation changes', launchMode: 'workbench', workbenchTab: 'audit' },
-  { id: 'governed', label: 'Governed Run', icon: ShieldCheck, description: 'Execute run_valuation_model through the governed path', launchMode: 'workbench', workbenchTab: 'forge' },
-  // Standalone-mode (county-wide, opens standalone window)
-  { id: 'regression-studio', label: 'Regression Studio', icon: LineChart, description: 'County-wide MRA regression models & IAAO compliance', launchMode: 'standalone', moduleId: 'regression-studio' },
-  { id: 'statistics-studio', label: 'Statistics Studio', icon: PieChart, description: 'Ratio studies, COD/PRD/PRB & statistical diagnostics', launchMode: 'standalone', moduleId: 'statistics-studio' },
-  { id: 'terra-gama', label: 'TerraGAMA', icon: MapPin, description: 'Geographic Area Market Analysis — neighborhood delineation', launchMode: 'standalone', moduleId: 'terra-gama' },
-  { id: 'batch-cost-run', label: 'Batch Cost Runs', icon: TrendingUp, description: 'Batch cost model runs with strata/neighborhood/class filters and dry-run preview', launchMode: 'standalone', moduleId: 'batch-cost-run' },
-  { id: 'coefficient-preview', label: 'Coefficient Preview', icon: Scale, description: 'Current vs proposed coefficient comparison with parcel impact analysis', launchMode: 'standalone', moduleId: 'coefficient-preview' },
+  // ── PRIMARY: Tools used every assessment cycle ──
+  {
+    id: 'costforge',
+    label: 'CostForge',
+    icon: Calculator,
+    description: 'Benton County Cost Approach — replacement cost, depreciation, and RCNLD (sample analytics — not county-runtime truth)',
+    launchMode: 'standalone',
+    moduleId: 'costforge',
+    priority: 'primary',
+    telemetryLabel: 'Parcel valuation',
+  },
+  {
+    id: 'statistics-studio',
+    label: 'Statistics Studio',
+    icon: PieChart,
+    description: 'Ratio studies, COD/PRD/PRB & IAAO statistical diagnostics',
+    launchMode: 'standalone',
+    moduleId: 'statistics-studio',
+    priority: 'primary',
+    telemetryLabel: 'COD · PRD · PRB',
+  },
+  {
+    id: 'batch-cost-run',
+    label: 'Batch Cost Runs',
+    icon: TrendingUp,
+    description: 'County-wide cost model runs with strata, neighborhood, and class filters',
+    launchMode: 'standalone',
+    moduleId: 'batch-cost-run',
+    priority: 'primary',
+    telemetryLabel: 'County-wide',
+  },
+
+  // ── SECONDARY: Specialist and supporting tools ──
+  {
+    id: 'comps',
+    label: 'CompsForge',
+    icon: BarChart3,
+    description: 'Sales comparison with paired adjustments',
+    launchMode: 'workbench',
+    workbenchTab: 'forge',
+  },
+  {
+    id: 'income-val',
+    label: 'Income Valuation',
+    icon: DollarSign,
+    description: 'Direct capitalization & GRM for commercial',
+    launchMode: 'workbench',
+    workbenchTab: 'forge',
+  },
+  {
+    id: 'comparable-sales',
+    label: 'Comparable Sales',
+    icon: Search,
+    description: 'Comp selection with paired sale adjustments',
+    launchMode: 'workbench',
+    workbenchTab: 'forge',
+  },
+  {
+    id: 'reconcile',
+    label: 'Reconciliation',
+    icon: Scale,
+    description: 'Three-approach reconciliation and final value',
+    launchMode: 'workbench',
+    workbenchTab: 'forge',
+  },
+  {
+    id: 'regression-studio',
+    label: 'Regression Studio',
+    icon: LineChart,
+    description: 'MRA regression models & IAAO compliance',
+    launchMode: 'standalone',
+    moduleId: 'regression-studio',
+    truthState: 'queued',
+  },
+  {
+    id: 'terra-gama',
+    label: 'TerraGAMA',
+    icon: MapPin,
+    description: 'Geographic Area Market Analysis',
+    launchMode: 'standalone',
+    moduleId: 'terra-gama',
+    truthState: 'queued',
+  },
+  {
+    id: 'coefficient-preview',
+    label: 'Coefficient Preview',
+    icon: Scale,
+    description: 'Current vs proposed coefficient comparison',
+    launchMode: 'standalone',
+    moduleId: 'coefficient-preview',
+    truthState: 'queued',
+  },
+  {
+    id: 'appeal',
+    label: 'Appeals',
+    icon: Gavel,
+    description: 'BOE appeal prep → routes through TerraDais',
+    launchMode: 'workbench',
+    workbenchTab: 'dais',
+  },
+  {
+    id: 'audit',
+    label: 'Value Audit',
+    icon: FileSearch,
+    description: 'FISMA-compliant audit trail for changes',
+    launchMode: 'workbench',
+    workbenchTab: 'audit',
+  },
+  {
+    id: 'governed',
+    label: 'Governed Run',
+    icon: ShieldCheck,
+    description: 'Governed run_valuation_model path',
+    launchMode: 'workbench',
+    workbenchTab: 'forge',
+  },
+  {
+    id: 'cost-manual',
+    label: 'Cost Manual',
+    icon: Hammer,
+    description: 'Manual cost schedule — replacement cost tables, depreciation, and RCNLD inputs',
+    launchMode: 'standalone',
+    moduleId: 'cost-manual',
+  },
+  {
+    id: 'value-audit-module',
+    label: 'Value Audit Log',
+    icon: FileSearch,
+    description: 'Per-parcel value change audit log — FISMA-compliant history of all assessment changes',
+    launchMode: 'standalone',
+    moduleId: 'value-audit-module',
+  },
 ];
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
@@ -53,13 +175,11 @@ const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocal
 
 function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): string | null {
   if (source === 'snapshot') {
-    return 'Snapshot-backed county aggregates active: TerraForge overview stats are currently using bundled county snapshot data, not live backend metrics.';
+    return 'Snapshot-backed county aggregates: TerraForge stats are using bundled county snapshot data, not live backend metrics.';
   }
-
   if (source === 'fixtures') {
-    return 'Fixture-backed county aggregates active: TerraForge overview stats are currently using test fixture data, not live backend metrics.';
+    return 'Fixture-backed county aggregates: TerraForge stats are using test fixture data, not live backend metrics.';
   }
-
   return null;
 }
 
@@ -68,64 +188,109 @@ export default function ForgeSuiteHome() {
   const { stats, loading, error, source } = useCountyStats();
   const sourceDisclosure = getSourceDisclosure(source);
 
+  const KPI_METRICS = stats
+    ? [
+        { label: 'TOTAL PARCELS', value: fmtNum(stats.totalParcels), accent: false },
+        { label: 'AVG ASSESSED', value: fmtCurrency(stats.averageAssessedValue), accent: false },
+        { label: 'ASSESSED THIS YEAR', value: fmtNum(stats.assessedThisYear), accent: false },
+        { label: 'PENDING', value: fmtNum(stats.pendingAssessments), accent: true },
+        { label: 'COMPLETION', value: `${(stats.assessmentCompletionPercent ?? 0).toFixed(1)}%`, accent: false },
+      ]
+    : [];
+
   return (
     <div data-testid="suite-forge-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       {/* Parcel Context Banner — shows when parcel is active */}
       <ParcelContextBanner suiteTabId="forge" />
 
-      {loading && !stats && (
-        <div data-testid="forge-loading" role="status" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Loading stats...</div>
-      )}
-      {error && (
-        <div data-testid="forge-error" role="alert" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-suite-forge))' }}>{error}</div>
-      )}
-
+      {/* Source disclosure — only when not live */}
       {stats && sourceDisclosure && (
         <div
           data-testid="forge-source-disclosure"
           role="status"
-          className="px-6 py-3 text-sm"
+          className="px-6 py-2 text-xs"
           style={{
             color: 'hsl(var(--tf-warning))',
-            background: 'hsl(var(--tf-warning) / 0.12)',
-            borderBottom: '1px solid hsl(var(--tf-warning) / 0.24)',
+            background: 'hsl(var(--tf-warning) / 0.10)',
+            borderBottom: '1px solid hsl(var(--tf-warning) / 0.2)',
           }}
         >
           {sourceDisclosure}
         </div>
       )}
 
-      {/* Stats Strip */}
+      {/* ── KPI Hero Band ── */}
+      {loading && !stats && (
+        <div data-testid="forge-loading" role="status" className="px-6 py-4 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>
+          Loading county metrics…
+        </div>
+      )}
+      {error && (
+        <div data-testid="forge-error" role="alert" className="px-6 py-2 text-xs" style={{ color: 'hsl(var(--tf-suite-forge))' }}>
+          {error}
+        </div>
+      )}
       {stats && (
-        <div data-testid="forge-stats" className="shrink-0 px-6 py-3 flex gap-6 overflow-x-auto" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.15)', background: 'hsl(var(--tf-card-bg) / 0.3)' }}>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Total Parcels</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.totalParcels)}</span></div>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Avg Assessed</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtCurrency(stats.averageAssessedValue)}</span></div>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Assessed This Year</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(stats.assessedThisYear)}</span></div>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Pending</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-suite-forge))' }}>{fmtNum(stats.pendingAssessments)}</span></div>
-          <div><span className="text-xs block" style={{ color: 'hsl(var(--tf-muted))' }}>Completion</span><span className="text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{(stats.assessmentCompletionPercent ?? 0).toFixed(1)}%</span></div>
+        <div
+          data-testid="forge-stats"
+          className="shrink-0 grid px-6 py-5"
+          style={{
+            gridTemplateColumns: `repeat(${KPI_METRICS.length}, 1fr)`,
+            gap: '1.5rem',
+            borderBottom: '1px solid hsl(var(--tf-border) / 0.15)',
+            background: 'hsl(var(--tf-card-bg) / 0.35)',
+          }}
+        >
+          {KPI_METRICS.map(({ label, value, accent }) => (
+            <div key={label} className="flex flex-col gap-0.5">
+              <span
+                className="text-[9px] font-semibold tracking-widest uppercase"
+                style={{ color: 'hsl(var(--tf-muted))' }}
+              >
+                {label}
+              </span>
+              <span
+                className="text-[1.625rem] font-mono font-bold tabular-nums leading-none"
+                style={{
+                  color: accent
+                    ? 'hsl(var(--tf-suite-forge))'
+                    : 'hsl(var(--tf-fg))',
+                }}
+              >
+                {value}
+              </span>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Header */}
+      {/* ── Suite Header ── */}
       <header
-        style={{ borderBottom: '1px solid hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.5)' }}
-        className="backdrop-blur-xl shrink-0"
+        className="shrink-0 backdrop-blur-xl"
+        style={{
+          borderBottom: '1px solid hsl(var(--tf-border) / 0.12)',
+          background: 'hsl(var(--tf-card-bg) / 0.4)',
+        }}
       >
-        <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4">
-          <button onClick={() => navigate('/')} className="p-2 rounded-lg hover:bg-white/5 transition-colors">
-            <ArrowLeft size={20} style={{ color: 'hsl(var(--tf-muted))' }} />
-          </button>
-          <div className="p-2 rounded-lg" style={{ background: 'hsl(var(--tf-suite-forge) / 0.15)' }}>
-            <Hammer size={24} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
+        <div className="max-w-[1600px] mx-auto px-6 py-3 flex items-center gap-3">
+          <div
+            className="p-2 rounded-lg"
+            style={{ background: 'hsl(var(--tf-suite-forge) / 0.15)' }}
+          >
+            <Hammer size={22} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
           </div>
           <div>
-            <h1 className="text-xl font-medium" style={{ color: 'hsl(var(--tf-fg))' }}>TerraForge</h1>
-            <p className="text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Property Valuation & Cost Analysis Engine</p>
+            <h1 className="text-lg font-semibold leading-tight" style={{ color: 'hsl(var(--tf-fg))' }}>
+              TerraForge
+            </h1>
+            <p className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
+              Property Valuation & Cost Analysis Engine
+            </p>
           </div>
         </div>
       </header>
 
-      {/* Module Grid + Operational Queue */}
+      {/* ── Module Grid + Operational Queue ── */}
       <main className="flex-1 min-h-0 overflow-y-auto">
         <div data-testid="forge-modules">
           <SuiteModuleGrid modules={FORGE_MODULES} accentVar="--tf-suite-forge" />

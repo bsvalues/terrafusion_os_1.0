@@ -33,11 +33,11 @@ function computeOverallGrade(dimensions: QualityDimension[]): Grade {
 }
 
 const gradeColors: Record<Grade, string> = {
-  A: '#22c55e',
-  B: '#84cc16',
-  C: '#eab308',
-  D: '#f97316',
-  F: '#ef4444',
+  A: 'hsl(var(--tf-success))',
+  B: 'hsl(var(--tf-success))',
+  C: 'hsl(var(--tf-warning))',
+  D: 'hsl(var(--tf-warning))',
+  F: 'hsl(var(--tf-destructive))',
 };
 
 const severityIcons: Record<string, string> = {
@@ -47,27 +47,27 @@ const severityIcons: Record<string, string> = {
 };
 
 const severityColors: Record<string, string> = {
-  critical: '#ef4444',
-  warning: '#eab308',
-  info: '#3b82f6',
+  critical: 'hsl(var(--tf-destructive))',
+  warning: 'hsl(var(--tf-warning))',
+  info: 'hsl(var(--tf-accent))',
 };
 
 function DimensionBar({ dimension }: { dimension: QualityDimension }) {
   const label = dimension.name.charAt(0).toUpperCase() + dimension.name.slice(1);
   const barColor =
-    dimension.score >= 80 ? '#22c55e' : dimension.score >= 60 ? '#eab308' : '#ef4444';
+    dimension.score >= 80 ? 'hsl(var(--tf-success))' : dimension.score >= 60 ? 'hsl(var(--tf-warning))' : 'hsl(var(--tf-destructive))';
 
   return (
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
         <span style={{ fontSize: 13, fontWeight: 500 }}>{label}</span>
-        <span style={{ fontSize: 13, color: '#94a3b8' }}>{dimension.score}%</span>
+        <span style={{ fontSize: 13, color: 'hsl(var(--tf-fg) / 0.6)' }}>{dimension.score}%</span>
       </div>
       <div
         style={{
           height: 8,
           borderRadius: 4,
-          backgroundColor: '#1e293b',
+          backgroundColor: 'hsl(var(--tf-fg) / 0.1)',
           overflow: 'hidden',
         }}
       >
@@ -88,7 +88,7 @@ function DimensionBar({ dimension }: { dimension: QualityDimension }) {
 export default function QualityControlPanel({ dimensions, loading }: QualityControlPanelProps) {
   if (loading) {
     return (
-      <div style={{ padding: 32, textAlign: 'center', color: '#94a3b8' }}>
+      <div style={{ padding: 32, textAlign: 'center', color: 'hsl(var(--tf-fg) / 0.6)' }}>
         Analyzing model quality...
       </div>
     );
@@ -124,7 +124,7 @@ export default function QualityControlPanel({ dimensions, loading }: QualityCont
           }}
         >
           <div style={{ fontSize: 48, fontWeight: 800, color: gradeColors[grade] }}>{grade}</div>
-          <div style={{ fontSize: 11, color: '#94a3b8' }}>Overall Grade</div>
+          <div style={{ fontSize: 11, color: 'hsl(var(--tf-fg) / 0.6)' }}>Overall Grade</div>
         </div>
 
         {/* Dimension bars */}
@@ -151,14 +151,14 @@ export default function QualityControlPanel({ dimensions, loading }: QualityCont
                   gap: 8,
                   padding: '8px 12px',
                   borderRadius: 6,
-                  backgroundColor: '#0f172a',
+                  backgroundColor: 'hsl(var(--tf-bg))',
                   border: `1px solid ${severityColors[issue.severity]}22`,
                 }}
               >
                 <span style={{ fontSize: 14 }}>{severityIcons[issue.severity]}</span>
                 <span style={{ flex: 1, fontSize: 13 }}>{issue.message}</span>
                 {issue.affectedRecords != null && (
-                  <span style={{ fontSize: 12, color: '#94a3b8' }}>
+                  <span style={{ fontSize: 12, color: 'hsl(var(--tf-fg) / 0.6)' }}>
                     {issue.affectedRecords.toLocaleString()} records
                   </span>
                 )}

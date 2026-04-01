@@ -31,13 +31,15 @@ import {
   WorkbenchSourceBadge,
   type InvocationRecord,
 } from '../../../components/workbench';
-import { useCostApproach } from '../../../hooks/forge/useForgeValuation';
+import { useCostApproach, useParcelYears } from '../../../hooks/forge/useForgeValuation';
 import { ForgeOverview } from './forge/ForgeOverview';
 import { CostApproach } from './forge/CostApproach';
 import { SalesComparison } from './forge/SalesComparison';
 import { IncomeApproach } from './forge/IncomeApproach';
 import { Reconciliation } from './forge/Reconciliation';
-import { CURRENT_YEAR, TAX_YEARS } from './forge/types';
+import { ForgeYearSelector } from './forge/ForgeYearSelector';
+import { ForgeYearContextPanel } from './forge/ForgeYearContextPanel';
+import { CURRENT_YEAR } from './forge/types';
 
 /* ── Sub-tab definitions ────────────────────────────────── */
 
@@ -84,12 +86,18 @@ export const PropertyForge: React.FC = () => {
   /* Probe the cost endpoint to determine if the Forge API is reachable */
   const forgeProbe = useCostApproach(parcelId, CURRENT_YEAR);
 
+  /* PACS year layers for this parcel */
+  const parcelYears = useParcelYears(parcelId);
+
   /* Shared state */
   const [activeSubTab, setActiveSubTab] = useState<ForgeSubTab>(() =>
     readInitialSubTab(location.search, location.state)
   );
   const [taxYear, setTaxYear] = useState<number>(CURRENT_YEAR);
   const [history, setHistory] = useState<InvocationRecord[]>([]);
+
+  /* Find the layer object matching the currently selected year */
+  const selectedLayer = parcelYears.data?.layers.find((l) => l.year === taxYear);
 
   /** Append a tool invocation record (called by all sub-tabs) */
   const addHistoryRecord = useCallback((record: InvocationRecord) => {
@@ -111,22 +119,15 @@ export const PropertyForge: React.FC = () => {
         subtitle={`Governed valuation tools requested via Forge for ${parcelId}`}
       />
 
-      {/* Shared Tax Year Selector */}
-      <div className="flex items-center gap-4">
-        <label htmlFor="forge-tax-year" className="tf-text-secondary text-sm whitespace-nowrap">
-          Tax Year
-        </label>
-        <select
-          id="forge-tax-year"
-          value={taxYear}
-          onChange={(e) => setTaxYear(Number(e.target.value))}
-          className="tf-input px-3 py-1.5 text-sm"
-        >
-          {TAX_YEARS.map((year) => (
-            <option key={year} value={year}>{year}</option>
-          ))}
-        </select>
-      </div>
+      {/* PACS Year Selector */}
+      <ForgeYearSelector
+        parcelId={parcelId}
+        taxYear={taxYear}
+        onTaxYearChange={setTaxYear}
+      />
+
+      {/* Year context panel — shows lock state, programs, AV/MV for selected year */}
+      <ForgeYearContextPanel layer={selectedLayer} taxYear={taxYear} />
 
       <div className="tf-status-info rounded-xl p-4" data-testid="forge-baseline-disclosure">
         <div className="flex items-start justify-between gap-3">
@@ -187,11 +188,24 @@ export const PropertyForge: React.FC = () => {
         aria-labelledby="forge-tab-cost"
         style={{ display: activeSubTab === 'cost' ? 'block' : 'none' }}
       >
-        <CostApproach
-          taxYear={taxYear}
-          onHistoryRecord={addHistoryRecord}
-          onValueIndicated={handleValueIndicated}
-        />
+        {forgeProbe.loading ? (
+          <div
+            role="status"
+            aria-label="Loading cost data"
+            className="flex items-center gap-3 py-8 px-4"
+          >
+            <div className="tf-spinner h-6 w-6 flex-shrink-0" />
+            <span style={{ color: 'hsl(var(--tf-text) / 0.5)' }} className="text-sm">
+              Loading cost approach data…
+            </span>
+          </div>
+        ) : (
+          <CostApproach
+            taxYear={taxYear}
+            onHistoryRecord={addHistoryRecord}
+            onValueIndicated={handleValueIndicated}
+          />
+        )}
       </div>
 
       <div
@@ -200,11 +214,24 @@ export const PropertyForge: React.FC = () => {
         aria-labelledby="forge-tab-sales"
         style={{ display: activeSubTab === 'sales' ? 'block' : 'none' }}
       >
-        <SalesComparison
-          taxYear={taxYear}
-          onHistoryRecord={addHistoryRecord}
-          onValueIndicated={handleValueIndicated}
-        />
+        {forgeProbe.loading ? (
+          <div
+            role="status"
+            aria-label="Loading sales data"
+            className="flex items-center gap-3 py-8 px-4"
+          >
+            <div className="tf-spinner h-6 w-6 flex-shrink-0" />
+            <span style={{ color: 'hsl(var(--tf-text) / 0.5)' }} className="text-sm">
+              Loading sales comparison data…
+            </span>
+          </div>
+        ) : (
+          <SalesComparison
+            taxYear={taxYear}
+            onHistoryRecord={addHistoryRecord}
+            onValueIndicated={handleValueIndicated}
+          />
+        )}
       </div>
 
       <div

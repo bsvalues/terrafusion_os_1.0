@@ -21,6 +21,7 @@ interface QueueState {
   productivity: AppraiserProductivity[];
   loading: boolean;
   error: string | null;
+  isFixture: boolean;
   selectedItemIds: Set<string>;
 
   // Actions
@@ -38,19 +39,25 @@ export const useQueueStore = create<QueueState>((set, get) => ({
   productivity: [],
   loading: false,
   error: null,
+  isFixture: true,
   selectedItemIds: new Set(),
 
   fetchQueue: async () => {
     set({ loading: true, error: null });
     try {
       const [items, metrics, productivity] = await Promise.all([
+        getQueueItems({ throwOnError: true }),
+        getQueueMetrics({ throwOnError: true }),
+        getAppraiserProductivity({ throwOnError: true }),
+      ]);
+      set({ items, metrics, productivity, isFixture: false, loading: false });
+    } catch {
+      const [items, metrics, productivity] = await Promise.all([
         getQueueItems(),
         getQueueMetrics(),
         getAppraiserProductivity(),
       ]);
-      set({ items, metrics, productivity, loading: false });
-    } catch (e) {
-      set({ error: e instanceof Error ? e.message : 'Failed to load queue', loading: false });
+      set({ items, metrics, productivity, isFixture: true, loading: false });
     }
   },
 

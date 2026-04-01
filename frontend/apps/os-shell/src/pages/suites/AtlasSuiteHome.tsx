@@ -8,13 +8,11 @@
  * Does NOT host parcel execution — that lives in the Property Workbench.
  */
 
-import { useNavigate } from 'react-router-dom';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
-  ArrowLeft,
   Map,
   Search,
   Layers,
@@ -22,6 +20,8 @@ import {
   Printer,
   Download,
   Database,
+  BarChart2,
+  Globe,
 } from 'lucide-react';
 
 const ATLAS_MODULES: SuiteModuleDef[] = [
@@ -34,18 +34,46 @@ const ATLAS_MODULES: SuiteModuleDef[] = [
   { id: 'terra-export', label: 'TerraExport', icon: Download, description: 'GIS data export (Shapefile, GeoJSON, KML)', launchMode: 'workbench', workbenchTab: 'atlas' },
   { id: 'terra-query', label: 'TerraQuery', icon: Database, description: 'SQL-like spatial queries across county data', launchMode: 'workbench', workbenchTab: 'atlas' },
   // Standalone-mode (county-wide, opens standalone window)
-  { id: 'terra-gis-pro', label: 'TerraGIS Pro', icon: Map, description: 'Full county-wide GIS platform — advanced cartography & spatial analysis', launchMode: 'standalone', moduleId: 'terra-gis' },
+  { id: 'terra-gis-pro', label: 'TerraGIS Pro', icon: Map, description: 'Full county-wide GIS platform — advanced cartography & spatial analysis', launchMode: 'standalone', moduleId: 'terra-gis', truthState: 'queued' },
+  { id: 'geo-equity-dashboard', label: 'Geo Equity', icon: BarChart2, description: 'Geographic equity analysis — market-value equity by area, district, and property class', launchMode: 'standalone', moduleId: 'geo-equity-dashboard', truthState: 'queued' },
+  { id: 'mass-appraisal-gis', label: 'Appraisal GIS', icon: Globe, description: 'Mass appraisal spatial visualization — value heat maps, sale ratio overlays, and cluster analysis', launchMode: 'standalone', moduleId: 'mass-appraisal-gis', truthState: 'queued' },
 ];
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 
+function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): string | null {
+  if (source === 'snapshot') {
+    return 'Snapshot-backed county aggregates: TerraAtlas stats are using bundled county snapshot data, not live backend metrics.';
+  }
+  if (source === 'fixtures') {
+    return 'Fixture-backed county aggregates: TerraAtlas stats are using test fixture data, not live backend metrics.';
+  }
+  return null;
+}
+
 export default function AtlasSuiteHome() {
-  const navigate = useNavigate();
-  const { stats, loading, error } = useCountyStats();
+  const { stats, loading, error, source } = useCountyStats();
+  const sourceDisclosure = getSourceDisclosure(source);
 
   return (
     <div data-testid="suite-atlas-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="atlas" />
+
+      {/* Source disclosure — only when not live */}
+      {stats && sourceDisclosure && (
+        <div
+          data-testid="atlas-source-disclosure"
+          role="status"
+          className="px-6 py-2 text-xs"
+          style={{
+            color: 'hsl(var(--tf-warning))',
+            background: 'hsl(var(--tf-warning) / 0.10)',
+            borderBottom: '1px solid hsl(var(--tf-warning) / 0.2)',
+          }}
+        >
+          {sourceDisclosure}
+        </div>
+      )}
 
       {loading && !stats && (
         <div data-testid="atlas-loading" role="status" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Loading stats...</div>
@@ -71,9 +99,6 @@ export default function AtlasSuiteHome() {
         className="backdrop-blur-xl shrink-0"
       >
         <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center gap-4">
-          <button onClick={() => navigate('/')} className="p-2 rounded-lg hover:bg-white/5 transition-colors">
-            <ArrowLeft size={20} style={{ color: 'hsl(var(--tf-muted))' }} />
-          </button>
           <div className="p-2 rounded-lg" style={{ background: 'hsl(var(--tf-suite-atlas) / 0.15)' }}>
             <Map size={24} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
           </div>
@@ -83,6 +108,20 @@ export default function AtlasSuiteHome() {
           </div>
         </div>
       </header>
+
+      {/* Breadth posture disclosure — always visible; breadth modules are queued pending implementation */}
+      <div
+        data-testid="atlas-breadth-posture-note"
+        role="note"
+        className="px-6 py-2 text-xs shrink-0"
+        style={{
+          color: 'hsl(var(--tf-muted))',
+          background: 'hsl(var(--tf-card-bg) / 0.25)',
+          borderBottom: '1px solid hsl(var(--tf-border) / 0.10)',
+        }}
+      >
+        TerraGIS Pro, Geo Equity, and Appraisal GIS are queued — these modules open placeholder surfaces and do not reflect live county data.
+      </div>
 
       {/* Module Grid + Operational Queue */}
       <main className="flex-1 min-h-0 overflow-y-auto">

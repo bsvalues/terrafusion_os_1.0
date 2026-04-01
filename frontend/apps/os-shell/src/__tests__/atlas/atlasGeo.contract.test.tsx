@@ -48,6 +48,16 @@ vi.mock('../../lib/utils', () => ({
   cn: (...args: any[]) => args.filter(Boolean).join(' '),
 }));
 
+// Stub live data hook so structural tests don't need QueryClientProvider
+vi.mock('../../hooks/useParcelCount', () => ({
+  useParcelCount: () => ({
+    data: { totalParcels: 89_247, dataSource: 'STUB', stubbed: true },
+    isLoading: false,
+    error: null,
+    isSuccess: true,
+  }),
+}));
+
 // ---------------------------------------------------------------------------
 // Page components under test
 // ---------------------------------------------------------------------------

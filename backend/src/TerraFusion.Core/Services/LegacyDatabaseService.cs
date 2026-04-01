@@ -283,8 +283,8 @@ public class HarrisPacsAdapter : ILegacyDatabaseAdapter
         // Harris PACS specific property import logic
         var properties = new List<PropertyRecord>();
 
-        // Sample implementation - would be actual Harris PACS query
-        for (int i = 1; i <= 89247; i++)
+        // CARD-10: phantom synthetic loop — Obsolete service, upper bound is Benton County parcel count stub.
+        for (int i = 1; i <= 89_247; i++)
         {
             properties.Add(new PropertyRecord
             {

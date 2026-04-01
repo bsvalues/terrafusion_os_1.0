@@ -33,16 +33,8 @@
   --space-8: 2rem; /* 32px */
   --space-golden: 1.618rem; /* Golden ratio spacing */
 
-  /* Elite Glass Effects */
-  --glass-bg: hsl(var(--tf-surface) / 0.3);
-  --glass-border: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2);
-  --glass-blur: blur(20px);
-
   /* Advanced Shadow System */
-  --shadow-glow: 0 0 40px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4);
-  --shadow-quantum: 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
   --shadow-soft: 0 4px 20px hsl(var(--tf-tokens-black-hs) var(--tf-l-0) / 0.3);
-  --shadow-elite: 0 8px 40px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2);
 }
 
 /* ========================================
@@ -55,7 +47,7 @@
   background: linear-gradient(135deg, var(--terra-midnight) 0%, var(--tf-surface-darker) 50%, hsl(var(--tf-surface-dark-hs) var(--tf-l-10)) 100%);
   color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
   font-family:
-    'Inter',
+    var(--font-primary),
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
@@ -72,7 +64,7 @@
 /* Modern OS Container */
 .terrafusion-os-container {
   font-family:
-    'Inter',
+    var(--font-primary),
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
@@ -107,10 +99,6 @@
   position: relative;
   z-index: 100;
   transition: all 0.3s ease;
-}
-
-.terrafusion-os-header:hover {
-  box-shadow: var(--shadow-quantum);
 }
 
 /* Navigation Sidebar */
@@ -219,7 +207,6 @@
   background: linear-gradient(135deg, var(--terra-cyan), var(--terra-blue));
   color: var(--terra-midnight);
   font-weight: bold;
-  box-shadow: var(--shadow-quantum);
 }
 
 /* View Toggle Button Enhancement */
@@ -233,7 +220,6 @@
 
 .terrafusion-view-toggle:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
 }
 
 .terrafusion-view-toggle::before {
@@ -343,6 +329,12 @@
   border-color: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
 }
 
+/* ─── Global spin keyframe (consumed by .tf-spinner in workbench-tokens.css) ─── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 /* ========================================
    QUANTUM ANIMATIONS & EFFECTS
    ======================================== */
@@ -352,24 +344,10 @@
   100% {
     opacity: 1;
     transform: scale(1);
-    box-shadow: 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
   }
   50% {
     opacity: 0.8;
     transform: scale(1.02);
-    box-shadow: 0 0 40px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.6);
-  }
-}
-
-@keyframes quantum-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 20px var(--terra-glow);
-  }
-  50% {
-    box-shadow:
-      0 0 40px var(--terra-glow),
-      0 0 60px var(--terra-glow);
   }
 }
 
@@ -403,10 +381,10 @@
 @keyframes terra-pulse {
   0%,
   100% {
-    box-shadow: 0 0 20px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
+    opacity: 1;
   }
   50% {
-    box-shadow: 0 0 40px hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.6);
+    opacity: 0.8;
   }
 }
 
@@ -421,10 +399,6 @@
 }
 .quantum-delay-2 {
   animation-delay: 1s;
-}
-
-.quantum-glow {
-  animation: quantum-glow 3s ease-in-out infinite;
 }
 
 .quantum-flow {
@@ -448,7 +422,7 @@
 
 .quantum-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px var(--terra-glow);
+  box-shadow: var(--shadow-soft);
 }
 
 /* ========================================
@@ -467,12 +441,11 @@
 }
 
 .terra-glass:hover {
-  border-color: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4);
-  box-shadow: var(--shadow-quantum);
+  border-color: hsl(var(--tf-border) / 0.5);
+  box-shadow: var(--shadow-soft);
 }
 
 .terra-glow {
-  box-shadow: var(--shadow-glow);
 }
 
 /* ========================================
@@ -515,7 +488,7 @@
 /* System font for OS feel */
 .font-system-ui {
   font-family:
-    'Inter',
+    var(--font-primary),
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
@@ -578,13 +551,13 @@
 
 .quantum-grid-item:hover {
   transform: translateY(-4px);
-  border-color: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.4);
-  box-shadow: var(--shadow-quantum);
+  border-color: hsl(var(--tf-border) / 0.5);
+  box-shadow: var(--shadow-soft);
 }
 
 /* Background Grid Pattern */
 .quantum-grid-pattern {
-  background-image: radial-gradient(circle at 1px 1px, var(--terra-cyan) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, hsl(var(--tf-border)) 1px, transparent 0);
   background-size: 40px 40px;
   opacity: 0.05;
 }
@@ -666,7 +639,6 @@
   .terra-pulse,
   .terra-shimmer,
   .quantum-pulse,
-  .quantum-glow,
   .quantum-orbital,
   .quantum-flow,
   .quantum-shimmer {

@@ -2,289 +2,9 @@
   "contract": "ui-token-compliance.contract.json",
   "version": "v1",
   "ok": false,
-  "scannedFileCount": 1137,
-  "violationCount": 860,
+  "scannedFileCount": 1156,
+  "violationCount": 713,
   "violations": [
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 42,
-      "column": 31,
-      "excerpt": "rgb(139, 92, 246))',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 43,
-      "column": 12,
-      "excerpt": "rgba(255,255,255,0.03)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 44,
-      "column": 26,
-      "excerpt": "rgba(255,255,255,0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 45,
-      "column": 31,
-      "excerpt": "rgba(0, 255, 255, 0.15)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 46,
-      "column": 17,
-      "excerpt": "rgba(0, 255, 255, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 182,
-      "column": 56,
-      "excerpt": "rgba(0, 255, 255, 0.15)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 195,
-      "column": 26,
-      "excerpt": "rgba(0, 255, 255, 0.1)', border: '1px solid rgba(0, 255, 255, 0.3)', color: T.cyan,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 195,
-      "column": 70,
-      "excerpt": "rgba(0, 255, 255, 0.3)', color: T.cyan,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 199,
-      "column": 26,
-      "excerpt": "rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: T.success,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 199,
-      "column": 70,
-      "excerpt": "rgba(34, 197, 94, 0.3)', color: T.success,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 206,
-      "column": 59,
-      "excerpt": "rgba(255,255,255,0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 215,
-      "column": 40,
-      "excerpt": "rgba(0, 255, 255, 0.08)' : 'transparent',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 263,
-      "column": 26,
-      "excerpt": "rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 263,
-      "column": 70,
-      "excerpt": "rgba(255,255,255,0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 274,
-      "column": 22,
-      "excerpt": "rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 274,
-      "column": 66,
-      "excerpt": "rgba(255,255,255,0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 280,
-      "column": 65,
-      "excerpt": "rgba(255,255,255,0.06)', overflow: 'hidden' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 296,
-      "column": 22,
-      "excerpt": "rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 296,
-      "column": 66,
-      "excerpt": "rgba(255,255,255,0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 338,
-      "column": 73,
-      "excerpt": "rgba(255,255,255,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 339,
-      "column": 43,
-      "excerpt": "rgba(0, 255, 255, 0.1)' : 'transparent',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 352,
-      "column": 28,
-      "excerpt": "rgba(255,255,255,0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 356,
-      "column": 39,
-      "excerpt": "rgba(255,255,255,0.04)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 360,
-      "column": 64,
-      "excerpt": "rgba(255,255,255,0.06)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 367,
-      "column": 64,
-      "excerpt": "rgba(255,255,255,0.04)' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 415,
-      "column": 26,
-      "excerpt": "rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 415,
-      "column": 70,
-      "excerpt": "rgba(255,255,255,0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 427,
-      "column": 24,
-      "excerpt": "rgba(0, 255, 255, 0.1)' : 'rgba(234, 179, 8, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 427,
-      "column": 51,
-      "excerpt": "rgba(234, 179, 8, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 429,
-      "column": 85,
-      "excerpt": "rgba(0,255,255,0.3)' : 'rgba(234,179,8,0.3)'}`,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 429,
-      "column": 109,
-      "excerpt": "rgba(234,179,8,0.3)'}`,"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 447,
-      "column": 68,
-      "excerpt": "rgba(255,255,255,0.06)', overflow: 'hidden' }}>"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 486,
-      "column": 22,
-      "excerpt": "rgba(0, 255, 255, 0.05)', border: '1px solid rgba(0, 255, 255, 0.15)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 486,
-      "column": 67,
-      "excerpt": "rgba(0, 255, 255, 0.15)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 496,
-      "column": 24,
-      "excerpt": "rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 496,
-      "column": 68,
-      "excerpt": "rgba(255,255,255,0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 512,
-      "column": 52,
-      "excerpt": "rgba(34,197,94,0.1)' : 'rgba(234,179,8,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 512,
-      "column": 76,
-      "excerpt": "rgba(234,179,8,0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 519,
-      "column": 26,
-      "excerpt": "rgba(0, 255, 255, 0.04)', border: '1px solid rgba(0, 255, 255, 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\applications\\terra-levy\\TerraLevyDashboard.tsx",
-      "line": 519,
-      "column": 71,
-      "excerpt": "rgba(0, 255, 255, 0.1)',"
-    },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\canon\\CanonEditor.tsx",
@@ -608,634 +328,60 @@
       "excerpt": "#000000',"
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\AddressMapWidget.tsx",
-      "line": 80,
-      "column": 100,
-      "excerpt": "#00FFFF\" />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GamaMap.tsx",
-      "line": 36,
-      "column": 11,
-      "excerpt": "#22C55E', 'R-2': '#16A34A', 'R-3': '#15803D',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GamaMap.tsx",
-      "line": 36,
-      "column": 29,
-      "excerpt": "#16A34A', 'R-3': '#15803D',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GamaMap.tsx",
-      "line": 36,
-      "column": 47,
-      "excerpt": "#15803D',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GamaMap.tsx",
-      "line": 37,
-      "column": 11,
-      "excerpt": "#3B82F6', 'C-2': '#2563EB', 'C-3': '#1D4ED8',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GamaMap.tsx",
-      "line": 37,
-      "column": 29,
-      "excerpt": "#2563EB', 'C-3': '#1D4ED8',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GamaMap.tsx",
-      "line": 37,
-      "column": 47,
-      "excerpt": "#1D4ED8',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GamaMap.tsx",
-      "line": 38,
-      "column": 11,
-      "excerpt": "#F59E0B', 'I-2': '#D97706',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GamaMap.tsx",
-      "line": 38,
-      "column": 29,
-      "excerpt": "#D97706',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GamaMap.tsx",
-      "line": 39,
-      "column": 8,
-      "excerpt": "#A3E635', PUD: '#A855F7',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GamaMap.tsx",
-      "line": 39,
-      "column": 24,
-      "excerpt": "#A855F7',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GamaMap.tsx",
-      "line": 94,
-      "column": 58,
-      "excerpt": "#6B7280';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GamaMap.tsx",
-      "line": 119,
-      "column": 46,
-      "excerpt": "#FFF' : `${color}${isHovered ? 'BB' : '66'}`,"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GamaMap.tsx",
-      "line": 121,
-      "column": 53,
-      "excerpt": "#FFF' : `${color}CC`,"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GisVisualization.tsx",
-      "line": 129,
-      "column": 44,
-      "excerpt": "#FFFFFF' : `${feature.color}${isHovered ? 'BB' : '66'}`,"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\GisVisualization.tsx",
-      "line": 131,
-      "column": 51,
-      "excerpt": "#FFFFFF' : `${feature.color}CC`,"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\MarketHeatMapWidget.tsx",
-      "line": 31,
-      "column": 29,
-      "excerpt": "#EF4444';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\MarketHeatMapWidget.tsx",
-      "line": 32,
-      "column": 29,
-      "excerpt": "#F59E0B';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\MarketHeatMapWidget.tsx",
-      "line": 33,
-      "column": 11,
-      "excerpt": "#3B82F6';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\MarketHeatMapWidget.tsx",
-      "line": 123,
-      "column": 99,
-      "excerpt": "#EF4444]\" />High</span>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\MarketHeatMapWidget.tsx",
-      "line": 124,
-      "column": 99,
-      "excerpt": "#F59E0B]\" />Med</span>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\MarketHeatMapWidget.tsx",
-      "line": 125,
-      "column": 99,
-      "excerpt": "#3B82F6]\" />Low</span>"
-    },
-    {
-      "kind": "TAILWIND_ARBITRARY_COLOR",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\MarketHeatMapWidget.tsx",
-      "line": 123,
-      "column": 95,
-      "excerpt": "bg-[#EF4444]\" />High</span>"
-    },
-    {
-      "kind": "TAILWIND_ARBITRARY_COLOR",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\MarketHeatMapWidget.tsx",
-      "line": 124,
-      "column": 95,
-      "excerpt": "bg-[#F59E0B]\" />Med</span>"
-    },
-    {
-      "kind": "TAILWIND_ARBITRARY_COLOR",
-      "file": "frontend\\apps\\os-shell\\src\\components\\atlas\\MarketHeatMapWidget.tsx",
-      "line": 125,
-      "column": 95,
-      "excerpt": "bg-[#3B82F6]\" />Low</span>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
-      "line": 10,
-      "column": 40,
-      "excerpt": "#4fc1ff)',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
-      "line": 11,
-      "column": 34,
-      "excerpt": "#e5935a)',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
-      "line": 12,
-      "column": 42,
-      "excerpt": "#3dc9b0)',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
-      "line": 13,
-      "column": 32,
-      "excerpt": "#c586c0)',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
-      "line": 14,
-      "column": 36,
-      "excerpt": "#808080)',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
-      "line": 15,
-      "column": 36,
-      "excerpt": "#9cdcfe)',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
       "line": 16,
-      "column": 38,
-      "excerpt": "#6a9955)',"
+      "column": 26,
+      "excerpt": "hsl(142 76% 36%)', borderColor: 'hsl(142 76% 36% / 0.4)' },"
     },
     {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
+      "line": 16,
+      "column": 59,
+      "excerpt": "hsl(142 76% 36% / 0.4)' },"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
       "line": 17,
-      "column": 34,
-      "excerpt": "#555)',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
-      "line": 125,
-      "column": 63,
-      "excerpt": "#888' }}"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
-      "line": 137,
-      "column": 66,
-      "excerpt": "#555',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
-      "line": 159,
-      "column": 66,
-      "excerpt": "#555',"
+      "column": 26,
+      "excerpt": "hsl(38 92% 50%)',  borderColor: 'hsl(38 92% 50% / 0.4)' },"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\canon\\CanonMinimapPanel.tsx",
-      "line": 99,
-      "column": 47,
-      "excerpt": "hsl(190, 90%, 60%)' : undefined,"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\forge\\CompImpactVisualizer.tsx",
-      "line": 43,
-      "column": 44,
-      "excerpt": "#666\" />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\forge\\CompImpactVisualizer.tsx",
-      "line": 46,
-      "column": 62,
-      "excerpt": "#22c55e' : '#ef4444'} />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\forge\\CompImpactVisualizer.tsx",
-      "line": 46,
-      "column": 74,
-      "excerpt": "#ef4444'} />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\forge\\MarketMetricsChartComponent.tsx",
-      "line": 45,
-      "column": 60,
-      "excerpt": "#333\" />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\forge\\MarketMetricsChartComponent.tsx",
-      "line": 65,
-      "column": 60,
-      "excerpt": "#3b82f6\" opacity={0.4} name=\"Volume\" />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\forge\\MarketMetricsChartComponent.tsx",
-      "line": 70,
-      "column": 25,
-      "excerpt": "#22c55e\""
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\forge\\NeighborhoodTrendCard.tsx",
-      "line": 55,
-      "column": 39,
-      "excerpt": "#22c55e' : '#ef4444'}"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\forge\\NeighborhoodTrendCard.tsx",
-      "line": 55,
-      "column": 51,
-      "excerpt": "#ef4444'}"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\forge\\PriceHistoryChartComponent.tsx",
-      "line": 41,
-      "column": 60,
-      "excerpt": "#333\" />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\forge\\PriceHistoryChartComponent.tsx",
-      "line": 58,
-      "column": 25,
-      "excerpt": "#3b82f6\""
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\forge\\PriceHistoryChartComponent.tsx",
-      "line": 66,
-      "column": 25,
-      "excerpt": "#22c55e\""
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\forge\\PriceHistoryChartComponent.tsx",
-      "line": 74,
-      "column": 25,
-      "excerpt": "#f59e0b\""
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\forge\\RetrainStatusWidget.tsx",
-      "line": 80,
-      "column": 27,
-      "excerpt": "#22c55e\""
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
+      "line": 17,
+      "column": 59,
+      "excerpt": "hsl(38 92% 50% / 0.4)' },"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\governance\\DemoDataBanner.tsx",
-      "line": 21,
-      "column": 20,
-      "excerpt": "rgba(234, 179, 8, 0.15)',"
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
+      "line": 18,
+      "column": 26,
+      "excerpt": "hsl(38 92% 50%)',  borderColor: 'hsl(38 92% 50% / 0.4)' },"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\governance\\DemoDataBanner.tsx",
-      "line": 22,
-      "column": 32,
-      "excerpt": "rgba(234, 179, 8, 0.3)',"
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
+      "line": 18,
+      "column": 59,
+      "excerpt": "hsl(38 92% 50% / 0.4)' },"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\governance\\DemoDataBanner.tsx",
-      "line": 23,
-      "column": 15,
-      "excerpt": "rgb(234, 179, 8)',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\levy\\Map\\DistrictMap.tsx",
-      "line": 74,
-      "column": 47,
-      "excerpt": "#0f172a\" />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\levy\\Map\\DistrictMap.tsx",
-      "line": 84,
-      "column": 51,
-      "excerpt": "#3b82f6' : '#1e293b')}"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\levy\\Map\\DistrictMap.tsx",
-      "line": 84,
-      "column": 63,
-      "excerpt": "#1e293b')}"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\levy\\Map\\DistrictMap.tsx",
-      "line": 85,
-      "column": 37,
-      "excerpt": "#60a5fa' : '#334155'}"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\levy\\Map\\DistrictMap.tsx",
-      "line": 85,
-      "column": 49,
-      "excerpt": "#334155'}"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\levy\\visualizations\\LevyCharts.tsx",
-      "line": 66,
-      "column": 60,
-      "excerpt": "#3b82f6\" />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\levy\\visualizations\\LevyCharts.tsx",
-      "line": 67,
-      "column": 56,
-      "excerpt": "#94a3b8\" />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\levy\\visualizations\\LevyCharts.tsx",
-      "line": 68,
-      "column": 66,
-      "excerpt": "#ef4444\" />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\levy\\visualizations\\LevyCharts.tsx",
-      "line": 98,
-      "column": 71,
-      "excerpt": "#3b82f6\" name=\"Levy Rate\" />"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\components\\levy\\visualizations\\LevyCharts.tsx",
-      "line": 103,
-      "column": 17,
-      "excerpt": "#10b981\""
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
+      "line": 19,
+      "column": 26,
+      "excerpt": "hsl(215 16% 47%)', borderColor: 'hsl(215 16% 47% / 0.4)' },"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\levy\\visualizations\\LevyCharts.tsx",
-      "line": 123,
-      "column": 11,
-      "excerpt": "rgb(${r},${g},${b})`;"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
-      "line": 121,
-      "column": 18,
-      "excerpt": "hsl(142 71% 45% / 0.15)'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
-      "line": 123,
-      "column": 20,
-      "excerpt": "hsl(43 96% 56% / 0.15)'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
-      "line": 124,
-      "column": 20,
-      "excerpt": "hsl(0 84% 60% / 0.15)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
-      "line": 127,
-      "column": 18,
-      "excerpt": "hsl(142 71% 45%)'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
-      "line": 129,
-      "column": 20,
-      "excerpt": "hsl(43 96% 56%)'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
-      "line": 130,
-      "column": 20,
-      "excerpt": "hsl(0 84% 60%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
-      "line": 487,
-      "column": 30,
-      "excerpt": "hsl(43 96% 56% / 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
-      "line": 488,
-      "column": 25,
-      "excerpt": "hsl(43 96% 56%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\ComparableSalesPanel.tsx",
-      "line": 489,
-      "column": 36,
-      "excerpt": "hsl(43 96% 56% / 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 92,
-      "column": 36,
-      "excerpt": "hsl(142 71% 45%)' : 'hsl(0 84% 60%)' }}"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 92,
-      "column": 57,
-      "excerpt": "hsl(0 84% 60%)' }}"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 104,
-      "column": 10,
-      "excerpt": "hsl(142 71% 45%)'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 106,
-      "column": 12,
-      "excerpt": "hsl(43 96% 56%)'"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 107,
-      "column": 12,
-      "excerpt": "hsl(0 84% 60%)';"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 549,
-      "column": 30,
-      "excerpt": "hsl(43 96% 56% / 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 550,
-      "column": 25,
-      "excerpt": "hsl(43 96% 56%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 551,
-      "column": 36,
-      "excerpt": "hsl(43 96% 56% / 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 562,
-      "column": 30,
-      "excerpt": "hsl(142 71% 45% / 0.1)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 563,
-      "column": 25,
-      "excerpt": "hsl(142 71% 45%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 564,
-      "column": 36,
-      "excerpt": "hsl(142 71% 45% / 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 575,
-      "column": 30,
-      "excerpt": "hsl(0 84% 60% / 0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 576,
-      "column": 25,
-      "excerpt": "hsl(0 84% 60%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 577,
-      "column": 36,
-      "excerpt": "hsl(0 84% 60% / 0.2)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 591,
-      "column": 34,
-      "excerpt": "hsl(43 96% 56% / 0.08)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 592,
-      "column": 29,
-      "excerpt": "hsl(43 96% 56%)',"
-    },
-    {
-      "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\IncomeValuationPanel.tsx",
-      "line": 593,
-      "column": 41,
-      "excerpt": "hsl(43 96% 56% / 0.3)',"
+      "file": "frontend\\apps\\os-shell\\src\\components\\workbench\\WorkbenchSourceBadge.tsx",
+      "line": 19,
+      "column": 59,
+      "excerpt": "hsl(215 16% 47% / 0.4)' },"
     },
     {
       "kind": "RAW_HEX",
@@ -1597,168 +743,168 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 25,
+      "line": 32,
       "column": 34,
       "excerpt": "#22C55E'; // green: 0.97-1.03"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 26,
+      "line": 33,
       "column": 34,
       "excerpt": "#F59E0B'; // yellow: 0.93-1.07"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 27,
+      "line": 34,
       "column": 11,
       "excerpt": "#EF4444'; // red: outside 0.93-1.07"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 136,
+      "line": 145,
       "column": 57,
       "excerpt": "#22C55E]\" /> 97-103%"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 139,
+      "line": 148,
       "column": 57,
       "excerpt": "#F59E0B]\" /> 93-107%"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 142,
+      "line": 151,
       "column": 57,
       "excerpt": "#EF4444]\" /> Outside"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 136,
+      "line": 145,
       "column": 53,
       "excerpt": "bg-[#22C55E]\" /> 97-103%"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 139,
+      "line": 148,
       "column": 53,
       "excerpt": "bg-[#F59E0B]\" /> 93-107%"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 142,
+      "line": 151,
       "column": 53,
       "excerpt": "bg-[#EF4444]\" /> Outside"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 64,
+      "line": 65,
       "column": 28,
       "excerpt": "#22C55E';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 65,
+      "line": 66,
       "column": 28,
       "excerpt": "#F59E0B';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 66,
+      "line": 67,
       "column": 11,
       "excerpt": "#EF4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 197,
+      "line": 200,
       "column": 37,
       "excerpt": "#22C55E] font-medium\">{HEALTH_DATA.parcelsWithPolygons.toLocaleString()}</p>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 201,
+      "line": 204,
       "column": 37,
       "excerpt": "#EF4444] font-medium\">{HEALTH_DATA.parcelsMissingGeometry.toLocaleString()}</p>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 205,
+      "line": 208,
       "column": 37,
       "excerpt": "#F59E0B] font-medium\">{HEALTH_DATA.orphanedPolygons.toLocaleString()}</p>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 253,
+      "line": 256,
       "column": 40,
       "excerpt": "#22C55E]\">{selectedArea.linkedParcels.toLocaleString()}</dd>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 257,
+      "line": 260,
       "column": 40,
       "excerpt": "#EF4444]\">{selectedArea.missingGeometry.toLocaleString()}</dd>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 261,
+      "line": 264,
       "column": 40,
       "excerpt": "#F59E0B]\">{selectedArea.orphanedPolygons.toLocaleString()}</dd>"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 197,
+      "line": 200,
       "column": 31,
       "excerpt": "text-[#22C55E] font-medium\">{HEALTH_DATA.parcelsWithPolygons.toLocaleString()}</p>"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 201,
+      "line": 204,
       "column": 31,
       "excerpt": "text-[#EF4444] font-medium\">{HEALTH_DATA.parcelsMissingGeometry.toLocaleString()}</p>"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 205,
+      "line": 208,
       "column": 31,
       "excerpt": "text-[#F59E0B] font-medium\">{HEALTH_DATA.orphanedPolygons.toLocaleString()}</p>"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 253,
+      "line": 256,
       "column": 34,
       "excerpt": "text-[#22C55E]\">{selectedArea.linkedParcels.toLocaleString()}</dd>"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 257,
+      "line": 260,
       "column": 34,
       "excerpt": "text-[#EF4444]\">{selectedArea.missingGeometry.toLocaleString()}</dd>"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 261,
+      "line": 264,
       "column": 34,
       "excerpt": "text-[#F59E0B]\">{selectedArea.orphanedPolygons.toLocaleString()}</dd>"
     },
@@ -1849,231 +995,231 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 46,
+      "line": 53,
       "column": 14,
       "excerpt": "#3B82F6',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 47,
+      "line": 54,
       "column": 15,
       "excerpt": "#10B981',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 48,
+      "line": 55,
       "column": 18,
       "excerpt": "#F59E0B',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 49,
+      "line": 56,
       "column": 14,
       "excerpt": "#EF4444',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 50,
+      "line": 57,
       "column": 16,
       "excerpt": "#8B5CF6',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 51,
+      "line": 58,
       "column": 15,
       "excerpt": "#EC4899',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 52,
+      "line": 59,
       "column": 13,
       "excerpt": "#6B7280',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 56,
-      "column": 11,
-      "excerpt": "#22C55E',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 57,
-      "column": 11,
-      "excerpt": "#16A34A',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 58,
-      "column": 11,
-      "excerpt": "#15803D',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 59,
-      "column": 11,
-      "excerpt": "#3B82F6',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 60,
-      "column": 11,
-      "excerpt": "#2563EB',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 61,
-      "column": 11,
-      "excerpt": "#1D4ED8',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 62,
-      "column": 11,
-      "excerpt": "#F59E0B',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
       "line": 63,
       "column": 11,
-      "excerpt": "#D97706',"
+      "excerpt": "#22C55E',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
       "line": 64,
+      "column": 11,
+      "excerpt": "#16A34A',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
+      "line": 65,
+      "column": 11,
+      "excerpt": "#15803D',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
+      "line": 66,
+      "column": 11,
+      "excerpt": "#3B82F6',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
+      "line": 67,
+      "column": 11,
+      "excerpt": "#2563EB',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
+      "line": 68,
+      "column": 11,
+      "excerpt": "#1D4ED8',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
+      "line": 69,
+      "column": 11,
+      "excerpt": "#F59E0B',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
+      "line": 70,
+      "column": 11,
+      "excerpt": "#D97706',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
+      "line": 71,
       "column": 8,
       "excerpt": "#A3E635',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 65,
+      "line": 72,
       "column": 9,
       "excerpt": "#A855F7',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 66,
+      "line": 73,
       "column": 13,
       "excerpt": "#9CA3AF',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 70,
+      "line": 77,
       "column": 17,
       "excerpt": "#22C55E',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 71,
+      "line": 78,
       "column": 16,
       "excerpt": "#3B82F6',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 72,
+      "line": 79,
       "column": 16,
       "excerpt": "#F59E0B',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 73,
+      "line": 80,
       "column": 18,
       "excerpt": "#A3E635',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 74,
+      "line": 81,
       "column": 12,
       "excerpt": "#9CA3AF',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 75,
+      "line": 82,
       "column": 20,
       "excerpt": "#8B5CF6',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 76,
+      "line": 83,
       "column": 13,
       "excerpt": "#6B7280',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 80,
+      "line": 87,
       "column": 32,
       "excerpt": "#00FFFF';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 92,
+      "line": 99,
       "column": 60,
       "excerpt": "#6B7280';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 299,
+      "line": 306,
       "column": 63,
       "excerpt": "#00FFFF' },"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 300,
+      "line": 307,
       "column": 59,
       "excerpt": "#94A3B8' },"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 301,
+      "line": 308,
       "column": 67,
       "excerpt": "#3B82F6' },"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 302,
+      "line": 309,
       "column": 66,
       "excerpt": "#EF4444' },"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 303,
+      "line": 310,
       "column": 71,
       "excerpt": "#A3E635' },"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 391,
+      "line": 435,
       "column": 50,
       "excerpt": "#FFFFFF' : `${color}88`,"
     },
@@ -2402,133 +1548,133 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\avm\\AVMStudio.tsx",
-      "line": 19,
+      "line": 20,
       "column": 15,
       "excerpt": "#3b82f6',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\avm\\AVMStudio.tsx",
-      "line": 20,
+      "line": 21,
       "column": 13,
       "excerpt": "#ef4444',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\BatchCostRun.tsx",
-      "line": 379,
+      "line": 402,
       "column": 24,
       "excerpt": "hsl(40 80% 40% / 0.2)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\BatchCostRun.tsx",
-      "line": 380,
+      "line": 403,
       "column": 19,
       "excerpt": "hsl(40 80% 70%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\BatchCostRun.tsx",
-      "line": 506,
+      "line": 529,
       "column": 26,
       "excerpt": "hsl(200 60% 30% / 0.2)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\BatchCostRun.tsx",
-      "line": 508,
+      "line": 531,
       "column": 28,
       "excerpt": "hsl(40 80% 40% / 0.2)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\BatchCostRun.tsx",
-      "line": 509,
+      "line": 532,
       "column": 28,
       "excerpt": "hsl(120 50% 35% / 0.2)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\BatchCostRun.tsx",
-      "line": 511,
+      "line": 534,
       "column": 26,
       "excerpt": "hsl(200 60% 70%)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\BatchCostRun.tsx",
-      "line": 513,
+      "line": 536,
       "column": 28,
       "excerpt": "hsl(40 80% 70%)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\BatchCostRun.tsx",
-      "line": 514,
+      "line": 537,
       "column": 28,
       "excerpt": "hsl(120 60% 60%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\BatchCostRun.tsx",
-      "line": 549,
+      "line": 572,
       "column": 71,
       "excerpt": "hsl(120 60% 60%)' }}>{fmtNum(dryRunResult.increasedCount)}</div>"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\CoefficientPreview.tsx",
-      "line": 249,
+      "line": 313,
       "column": 22,
       "excerpt": "hsl(200 60% 30% / 0.2)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\CoefficientPreview.tsx",
-      "line": 251,
+      "line": 315,
       "column": 24,
       "excerpt": "hsl(40 80% 40% / 0.2)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\CoefficientPreview.tsx",
-      "line": 252,
+      "line": 316,
       "column": 24,
       "excerpt": "hsl(120 50% 35% / 0.2)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\CoefficientPreview.tsx",
-      "line": 254,
+      "line": 318,
       "column": 22,
       "excerpt": "hsl(200 60% 70%)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\CoefficientPreview.tsx",
-      "line": 256,
+      "line": 320,
       "column": 24,
       "excerpt": "hsl(40 80% 70%)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\CoefficientPreview.tsx",
-      "line": 257,
+      "line": 321,
       "column": 24,
       "excerpt": "hsl(120 60% 60%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\CoefficientPreview.tsx",
-      "line": 362,
+      "line": 426,
       "column": 55,
       "excerpt": "hsl(0 50% 50% / 0.5)' : 'hsl(120 50% 40% / 0.5)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\batch\\CoefficientPreview.tsx",
-      "line": 362,
+      "line": 426,
       "column": 80,
       "excerpt": "hsl(120 50% 40% / 0.5)',"
     },
@@ -3056,146 +2202,6 @@
       "line": 266,
       "column": 72,
       "excerpt": "#0f172a' }}>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 32,
-      "column": 10,
-      "excerpt": "#ef4444',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 33,
-      "column": 12,
-      "excerpt": "#eab308',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 34,
-      "column": 9,
-      "excerpt": "#22c55e',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 51,
-      "column": 63,
-      "excerpt": "#94a3b8' }}>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 69,
-      "column": 32,
-      "excerpt": "#1e293b',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 70,
-      "column": 31,
-      "excerpt": "#0f172a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 81,
-      "column": 51,
-      "excerpt": "#94a3b8', marginBottom: 12 }}>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 91,
-      "column": 44,
-      "excerpt": "#94a3b8' }}>{t.type}</span>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 98,
-      "column": 35,
-      "excerpt": "#94a3b8', fontSize: 13 }}>No outlier data available</div>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 107,
-      "column": 32,
-      "excerpt": "#1e293b',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 108,
-      "column": 31,
-      "excerpt": "#0f172a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 143,
-      "column": 41,
-      "excerpt": "#1e293b',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 160,
-      "column": 35,
-      "excerpt": "#94a3b8', fontSize: 13 }}>No appeal risk data</div>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 169,
-      "column": 32,
-      "excerpt": "#1e293b',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 170,
-      "column": 31,
-      "excerpt": "#0f172a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 187,
-      "column": 56,
-      "excerpt": "#94a3b8' }}>{trend.indicator}</span>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 195,
-      "column": 32,
-      "excerpt": "#22c55e'"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 197,
-      "column": 34,
-      "excerpt": "#ef4444'"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 198,
-      "column": 34,
-      "excerpt": "#94a3b8',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\AssessmentIntelligence.tsx",
-      "line": 208,
-      "column": 35,
-      "excerpt": "#94a3b8', fontSize: 13 }}>No market trends</div>"
     },
     {
       "kind": "RAW_HEX",
@@ -4557,125 +3563,6 @@
     },
     {
       "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 36,
-      "column": 7,
-      "excerpt": "#22c55e',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 37,
-      "column": 7,
-      "excerpt": "#84cc16',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 38,
-      "column": 7,
-      "excerpt": "#eab308',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 39,
-      "column": 7,
-      "excerpt": "#f97316',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 40,
-      "column": 7,
-      "excerpt": "#ef4444',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 50,
-      "column": 14,
-      "excerpt": "#ef4444',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 51,
-      "column": 13,
-      "excerpt": "#eab308',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 52,
-      "column": 10,
-      "excerpt": "#3b82f6',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 58,
-      "column": 30,
-      "excerpt": "#22c55e' : dimension.score >= 60 ? '#eab308' : '#ef4444';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 58,
-      "column": 66,
-      "excerpt": "#eab308' : '#ef4444';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 58,
-      "column": 78,
-      "excerpt": "#ef4444';"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 64,
-      "column": 46,
-      "excerpt": "#94a3b8' }}>{dimension.score}%</span>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 70,
-      "column": 29,
-      "excerpt": "#1e293b',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 91,
-      "column": 63,
-      "excerpt": "#94a3b8' }}>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 127,
-      "column": 47,
-      "excerpt": "#94a3b8' }}>Overall Grade</div>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 154,
-      "column": 37,
-      "excerpt": "#0f172a',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\QualityControlPanel.tsx",
-      "line": 161,
-      "column": 56,
-      "excerpt": "#94a3b8' }}>"
-    },
-    {
-      "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\statistics\\RatioStudyPanel.tsx",
       "line": 47,
       "column": 15,
@@ -4803,56 +3690,56 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 258,
+      "line": 257,
       "column": 64,
       "excerpt": "#128339;</span>} title=\"Recent Parcels\" />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 262,
+      "line": 261,
       "column": 45,
       "excerpt": "#127970;</span>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 273,
+      "line": 272,
       "column": 52,
       "excerpt": "#127970;</span>}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 287,
+      "line": 286,
       "column": 52,
       "excerpt": "#127970;</span>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 371,
+      "line": 370,
       "column": 64,
       "excerpt": "#9889;</span>} title=\"Quick Actions\" />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 374,
+      "line": 373,
       "column": 48,
       "excerpt": "#128269;</span>}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 381,
+      "line": 380,
       "column": 50,
       "excerpt": "#9654;</span>}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 335,
+      "line": 334,
       "column": 44,
       "excerpt": "hsl(0 0% 0% / 0.3)',"
     },
@@ -4894,204 +3781,288 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\CostApproach.tsx",
-      "line": 86,
+      "line": 94,
+      "column": 17,
+      "excerpt": "#127959;&#65039; Cost Approach Summary\""
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\CostApproach.tsx",
+      "line": 94,
+      "column": 26,
+      "excerpt": "#65039; Cost Approach Summary\""
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\CostApproach.tsx",
+      "line": 159,
       "column": 26,
       "excerpt": "#128269; Model Inputs\" variant=\"default\">"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\CostApproach.tsx",
-      "line": 156,
+      "line": 229,
       "column": 45,
       "excerpt": "#128200;</div>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 207,
+      "line": 196,
+      "column": 17,
+      "excerpt": "#128293; Forge Valuation Summary\""
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 274,
       "column": 80,
       "excerpt": "#9881;&#65039;</span>}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 207,
+      "line": 274,
       "column": 87,
       "excerpt": "#65039;</span>}>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 267,
+      "line": 342,
       "column": 26,
       "excerpt": "#10004;&#65039;</span> Valuation Explanation"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 267,
+      "line": 342,
       "column": 34,
       "excerpt": "#65039;</span> Valuation Explanation"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 273,
+      "line": 348,
       "column": 167,
       "excerpt": "#128203;</button>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 291,
+      "line": 366,
       "column": 86,
       "excerpt": "#128221; Explanation</h5>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 298,
+      "line": 373,
       "column": 86,
       "excerpt": "#128202; Value Drivers</h5>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 332,
+      "line": 407,
       "column": 47,
       "excerpt": "#128293;</div>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 346,
-      "column": 26,
-      "excerpt": "#128200; Value Change Analysis\" variant=\"default\">"
+      "line": 422,
+      "column": 17,
+      "excerpt": "#128200; Value Change Analysis\""
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 383,
+      "line": 468,
       "column": 84,
       "excerpt": "#128221; Change Explanation</h5>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 390,
+      "line": 475,
       "column": 84,
       "excerpt": "#128202; Contributing Factors</h5>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 406,
+      "line": 491,
       "column": 167,
       "excerpt": "#128203;</button>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 418,
+      "line": 504,
+      "column": 17,
+      "excerpt": "#128202; Value History Trend\""
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 542,
+      "column": 17,
+      "excerpt": "#127959;&#65039; Run Valuation Model\""
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
+      "line": 542,
       "column": 26,
-      "excerpt": "#128202; Value History Trend\" variant=\"default\">"
+      "excerpt": "#65039; Run Valuation Model\""
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 447,
-      "column": 26,
-      "excerpt": "#127959;&#65039; Run Valuation Model\" actions={<span className=\"text-xs tf-badge-error px-2 py-0.5 rounded\">write_high</span>}>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 447,
-      "column": 35,
-      "excerpt": "#65039; Run Valuation Model\" actions={<span className=\"text-xs tf-badge-error px-2 py-0.5 rounded\">write_high</span>}>"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 472,
+      "line": 577,
       "column": 118,
       "excerpt": "#9888;&#65039; Confirm Above to Enable'}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\ForgeOverview.tsx",
-      "line": 472,
+      "line": 577,
       "column": 125,
       "excerpt": "#65039; Confirm Above to Enable'}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\IncomeApproach.tsx",
-      "line": 97,
+      "line": 102,
+      "column": 17,
+      "excerpt": "#128176; Income Approach Summary\""
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\IncomeApproach.tsx",
+      "line": 161,
       "column": 26,
       "excerpt": "#128176; Quick Income Valuation\" variant=\"default\">"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
-      "line": 99,
+      "line": 98,
+      "column": 17,
+      "excerpt": "#127968;&#65039; Sales Comparison Summary\""
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
+      "line": 98,
+      "column": 26,
+      "excerpt": "#65039; Sales Comparison Summary\""
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\SalesComparison.tsx",
+      "line": 178,
       "column": 26,
       "excerpt": "#127960; Sales Comps Rationale\" variant=\"default\">"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
-      "line": 355,
-      "column": 14,
-      "excerpt": "hsl(142 71% 45% / 0.15)'"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 461,
+      "column": 30,
+      "excerpt": "hsl(215 16% 47%)' }}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
-      "line": 356,
-      "column": 14,
-      "excerpt": "hsl(38 92% 50% / 0.15)',"
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 498,
+      "column": 56,
+      "excerpt": "hsl(142 76% 36%)' }}>"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
-      "line": 364,
-      "column": 33,
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 559,
+      "column": 56,
+      "excerpt": "hsl(142 76% 36%)' }}>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 671,
+      "column": 44,
+      "excerpt": "hsl(215 16% 47%)', marginBottom: 6 }}"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyAtlas.tsx",
+      "line": 728,
+      "column": 34,
+      "excerpt": "hsl(215 16% 47%)' }}"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\PropertyDais.tsx",
+      "line": 1522,
+      "column": 115,
+      "excerpt": "#22c55e)] h-2 rounded-full transition-all' style={{ width: `${certProgressState.result.percentComplete}%` }} /></div>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DataModeIndicator.tsx",
+      "line": 25,
+      "column": 14,
+      "excerpt": "hsl(142 71% 45% / 0.12)'"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DataModeIndicator.tsx",
+      "line": 26,
+      "column": 14,
+      "excerpt": "hsl(38 92% 50% / 0.12)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DataModeIndicator.tsx",
+      "line": 34,
+      "column": 43,
       "excerpt": "hsl(142 71% 45%)' : 'hsl(38 92% 50%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
-      "line": 364,
-      "column": 54,
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DataModeIndicator.tsx",
+      "line": 34,
+      "column": 64,
       "excerpt": "hsl(38 92% 50%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
-      "line": 366,
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DataModeIndicator.tsx",
+      "line": 36,
       "column": 24,
       "excerpt": "hsl(142 71% 45% / 0.6)'"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
-      "line": 367,
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DataModeIndicator.tsx",
+      "line": 37,
       "column": 24,
       "excerpt": "hsl(38 92% 50% / 0.6)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
-      "line": 373,
-      "column": 28,
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DataModeIndicator.tsx",
+      "line": 44,
+      "column": 38,
       "excerpt": "hsl(142 71% 45%)' : 'hsl(38 92% 50%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
-      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\Taskbar.tsx",
-      "line": 373,
-      "column": 49,
+      "file": "frontend\\apps\\os-shell\\src\\shell\\desktop\\DataModeIndicator.tsx",
+      "line": 44,
+      "column": 59,
       "excerpt": "hsl(38 92% 50%)',"
     },
     {
@@ -6026,5 +4997,5 @@
       "excerpt": "hsl(150 50% 50%); /* tf-allow-raw-color */"
     }
   ],
-  "generatedAtIso": "2026-03-20T18:47:55.985Z"
+  "generatedAtIso": "2026-04-01T15:45:18.141Z"
 }

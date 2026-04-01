@@ -28,7 +28,7 @@ export function useDataMode(): DataModeState {
   const checkHealth = useCallback(async () => {
     setState((s) => ({ ...s, checking: true }));
     try {
-      const res = await fetch('/api/health', {
+      const res = await fetch('/health/live', {
         method: 'GET',
         signal: AbortSignal.timeout(5000),
       });

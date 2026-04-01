@@ -16,6 +16,7 @@ using INoticeService = TerraFusion.Core.Services.INoticeService;
 using IQueueService = TerraFusion.Core.Services.IQueueService;
 using TerraFusion.Core.Auth;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Services;
 using Xunit;
 using AuditLogger = TerraFusion.Abstractions.Interfaces.IAuditLogger;
 using CostForgeAIService = TerraFusion.Core.Services.ICostForgeAIService;
@@ -94,21 +95,77 @@ public sealed class R2FullPlanHandlerAlignmentTests
 
   private static DaisController CreateDaisController(DataDbContext db, ClaimsPrincipal? principal = null)
   {
+    var exemptionMock = new Mock<IExemptionService>();
+    exemptionMock.Setup(s => s.CreateAsync(It.IsAny<Guid>(), It.IsAny<CreateExemptionCommand>(), It.IsAny<string?>(), It.IsAny<DateTime?>()))
+      .ReturnsAsync((Guid countyId, CreateExemptionCommand request, string? createdBy, DateTime? now) => new Exemption
+      {
+        Id = Guid.NewGuid(),
+        ParcelId = request.ParcelId,
+        ProgramCode = request.ProgramCode ?? "SENIOR_DISABLED",
+        ApplicantName = request.ApplicantName,
+        ExemptionAmount = request.ExemptionAmount,
+        RcwReference = request.RcwReference,
+        Notes = request.Notes,
+        Status = "pending",
+        CountyId = countyId,
+        CreatedAt = now ?? DateTime.UtcNow,
+      });
+
     var noticeMock = new Mock<INoticeService>();
     noticeMock.Setup(s => s.CreateAsync(It.IsAny<Notice>()))
       .ReturnsAsync((Notice n) => { n.Id = Guid.NewGuid(); n.CreatedAt = DateTime.UtcNow; return n; });
+    noticeMock.Setup(s => s.CreateAsync(It.IsAny<Guid>(), It.IsAny<GenerateNoticeCommand>(), It.IsAny<string?>(), It.IsAny<DateTime?>()))
+      .ReturnsAsync((Guid countyId, GenerateNoticeCommand request, string? createdBy, DateTime? now) => new Notice
+      {
+        Id = Guid.NewGuid(),
+        ParcelId = request.ParcelId ?? string.Empty,
+        TemplateId = request.TemplateId,
+        DeliveryMethod = request.DeliveryMethod ?? "mail",
+        Status = "generated",
+        CountyId = countyId,
+        CreatedAt = now ?? DateTime.UtcNow,
+      });
 
     var queueMock = new Mock<IQueueService>();
     queueMock.Setup(s => s.CreateAsync(It.IsAny<QueueItem>()))
       .ReturnsAsync((QueueItem q) => { q.Id = Guid.NewGuid(); q.CreatedAt = DateTime.UtcNow; return q; });
+    queueMock.Setup(s => s.CreateAsync(It.IsAny<Guid>(), It.IsAny<CreateQueueItemCommand>(), It.IsAny<string?>(), It.IsAny<DateTime?>()))
+      .ReturnsAsync((Guid countyId, CreateQueueItemCommand request, string? createdBy, DateTime? now) => new QueueItem
+      {
+        Id = Guid.NewGuid(),
+        ParcelId = request.ParcelId ?? string.Empty,
+        TaskType = request.TaskType,
+        Priority = request.Priority ?? "normal",
+        Status = "queued",
+        AssignedTo = request.AssignedTo,
+        CountyId = countyId,
+        CreatedAt = now ?? DateTime.UtcNow,
+      });
 
     var certMock = new Mock<ICertificationService>();
     certMock.Setup(s => s.GetByTaxYearAsync(It.IsAny<int>(), It.IsAny<Guid>()))
       .ReturnsAsync(new List<CertificationStep>());
 
+    var appealMock = new Mock<IAppealService>();
+    appealMock.Setup(s => s.CreateAsync(It.IsAny<Guid>(), It.IsAny<CreateAppealCommand>(), It.IsAny<string?>(), It.IsAny<DateTime?>()))
+      .ReturnsAsync((Guid countyId, CreateAppealCommand request, string? createdBy, DateTime? now) => new Appeal
+      {
+        Id = Guid.NewGuid(),
+        ParcelId = request.ParcelId,
+        AppealGround = request.AppealGround ?? "MARKET_VALUE",
+        PetitionerName = request.PetitionerName,
+        CurrentValue = request.CurrentValue,
+        RequestedValue = request.RequestedValue,
+        TaxYear = request.TaxYear > 0 ? request.TaxYear : (now ?? DateTime.UtcNow).Year,
+        FiledDate = now ?? DateTime.UtcNow,
+        Status = "filed",
+        CountyId = countyId,
+        CreatedAt = now ?? DateTime.UtcNow,
+      });
+
     var controller = new DaisController(db, NullLogger<DaisController>.Instance,
-        new Mock<IExemptionService>().Object,
-        new Mock<IAppealService>().Object,
+        exemptionMock.Object,
+        appealMock.Object,
         certMock.Object,
         noticeMock.Object,
         queueMock.Object,

@@ -50,7 +50,10 @@ public class PacsController : ControllerBase
     /// Bound as raw string — leading zeroes and non-numeric values are preserved.
     /// Routes to GetPropertyByGeoIdAsync (WHERE geo_id = @GeoId), not a table scan.
     /// </param>
+    /// <param name="page">1-based page number for paged results.</param>
+    /// <param name="pageSize">Maximum number of rows to return.</param>
     /// <param name="search">Free-text in-page filter on address/city (best-effort, not SQL-pushed).</param>
+    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("properties")]
     [AllowAnonymous]
     public async Task<ActionResult<PacsPropertiesResponse>> GetProperties(
@@ -96,11 +99,11 @@ public class PacsController : ControllerBase
                           new()
                           {
                               PropId        = prop.PropId,
-                              GeoId         = prop.GeoId,
+                              GeoId         = (prop.GeoId ?? string.Empty).Trim(),
                               Address       = BuildAddress(prop),
                               AssessedValue = (double)(prop.AssessedVal ?? 0m),
                               MarketValue   = (double)(prop.MarketVal ?? 0m),
-                              PropertyType  = prop.PropTypeCd ?? string.Empty,
+                              PropertyType  = (prop.PropTypeCd ?? string.Empty).Trim(),
                           }
                       };
                 return Ok(new PacsPropertiesResponse
@@ -112,26 +115,26 @@ public class PacsController : ControllerBase
                 });
             }
 
-            // ── paginated list with optional in-page address filter ───────────
-            var result = await adapter.GetPropertiesAsync(page, pageSize, pacsCts.Token);
-
-            var items = result.Items.AsEnumerable();
+            // ── paginated list with optional SQL-level text search ───────────
+            PacsPagedResult<PacsPropertyCore> result;
             if (!string.IsNullOrWhiteSpace(search))
             {
-                var q = search.Trim();
-                items = items.Where(p =>
-                    (p.SitusAddr != null && p.SitusAddr.Contains(q, StringComparison.OrdinalIgnoreCase)) ||
-                    (p.SitusCity != null && p.SitusCity.Contains(q, StringComparison.OrdinalIgnoreCase)));
+                // Delegate to adapter for server-side GeoId / address search
+                result = await adapter.SearchPropertiesAsync(search.Trim(), page, pageSize, pacsCts.Token);
+            }
+            else
+            {
+                result = await adapter.GetPropertiesAsync(page, pageSize, pacsCts.Token);
             }
 
-            var mappedPage = items.Select(p => new PacsPropertySummaryDto
+            var mappedPage = result.Items.Select(p => new PacsPropertySummaryDto
             {
                 PropId        = p.PropId,
-                GeoId         = p.GeoId,
+                GeoId         = (p.GeoId ?? string.Empty).Trim(),
                 Address       = BuildAddress(p),
                 AssessedValue = (double)(p.AssessedVal ?? 0m),
                 MarketValue   = (double)(p.MarketVal ?? 0m),
-                PropertyType  = p.PropTypeCd ?? string.Empty,
+                PropertyType  = (p.PropTypeCd ?? string.Empty).Trim(),
             }).ToList();
 
             return Ok(new PacsPropertiesResponse
@@ -221,7 +224,8 @@ public class PacsController : ControllerBase
     private static string BuildAddress(PacsPropertyCore p)
     {
         var parts = new[] { p.SitusAddr, p.SitusCity, p.SitusZip }
-            .Where(s => !string.IsNullOrWhiteSpace(s));
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Select(s => s!.Trim());
         return string.Join(", ", parts);
     }
 

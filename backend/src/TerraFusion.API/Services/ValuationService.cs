@@ -5,11 +5,13 @@ using TerraFusion.Data;
 
 namespace TerraFusion.API.Services;
 
+// PACS-SYNC-DEBT: All data access in this service reads from PACS mirror entities
+// (PacsValuations, PacsLandDetails, PacsImprovementDetails, PacsSales, PacsExemptions,
+// PacsParcel) directly. Replace with canonical TerraFusion domain model queries once
+// TerraFusionSync publishes to the canonical store. See CARD-10B boundary audit.
 /// <summary>
 /// Phase 10 — PropertyForge valuation service.
-/// Queries PACS tables (pacs_valuations, pacs_land_details, pacs_improvement_details,
-/// pacs_sales, pacs_owner_vals) for real Benton County data.
-/// Returns structured fallback values where PACS data is incomplete.
+/// Returns structured stub values where canonical data is unavailable.
 /// </summary>
 public class ValuationService : IValuationService
 {
@@ -97,7 +99,7 @@ public class ValuationService : IValuationService
             LandValue = landValue,
             IndicatedValue = costValue,
             ImprovementValue = imprvValue > 0 ? imprvValue : depreciatedCost,
-            Source = hasPacsData ? "pacs" : "fallback",
+            Source = hasPacsData ? "canonical" : "stub",
             Confidence = hasPacsData ? 0.85 : 0.40,
             Inputs = BuildCostInputs(valuation != null, landDetails.Count, improvements.Count),
         };
@@ -144,8 +146,8 @@ public class ValuationService : IValuationService
             compQuery = compQuery.Where(s => neighborhoodParcelIds.Contains(s.ParcelId));
         }
 
-        var cutoffStart = new DateTime(taxYear - 2, 1, 1);
-        var cutoffEnd = new DateTime(taxYear, 12, 31);
+        var cutoffStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var cutoffEnd = new DateTime(taxYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
         compQuery = compQuery.Where(s => s.SaleDate >= cutoffStart && s.SaleDate <= cutoffEnd);
 
         var comps = await compQuery
@@ -195,9 +197,9 @@ public class ValuationService : IValuationService
                 Notes = BuildSaleNotes(c),
             }).ToList(),
             Rationale = comps.Count > 0
-                ? $"{comps.Count} comparable sales found in neighborhood {hood ?? "N/A"} within {taxYear - 2}–{taxYear}. Median adjusted price: ${median:N0}."
-                : "No comparable sales found for this parcel and tax year. Market approach indicated value from PACS valuation record used where available.",
-            Source = hasData ? "pacs" : "fallback",
+                ? $"{comps.Count} comparable sales found in neighborhood {hood ?? "N/A"} within {taxYear - 2}\u2013{taxYear}. Median adjusted price: ${median:N0}."
+                : "No comparable sales found for this parcel and tax year. Market approach indicated value from valuation record used where available.",
+            Source = hasData ? "canonical" : "stub",
             Confidence = hasData ? (comps.Count >= 3 ? 0.90 : 0.70) : 0.35,
         };
     }
@@ -275,7 +277,7 @@ public class ValuationService : IValuationService
             GrossIncomeMultiplier = gim,
             RiskClassification = ClassifyRisk(capRate),
             IncomeIndicatedValue = incomeValue > 0 ? incomeValue : incomeMarket,
-            Source = hasData ? "pacs" : "fallback",
+            Source = hasData ? "canonical" : "stub",
             Confidence = hasData ? 0.75 : 0.30,
         };
     }
@@ -285,16 +287,10 @@ public class ValuationService : IValuationService
     public async Task<ReconciliationResult> ReconcileAsync(
         string parcelId, int taxYear, CancellationToken ct)
     {
-        // Run all three approaches
-        var costTask = CalculateCostApproachAsync(parcelId, taxYear, ct);
-        var salesTask = CalculateSalesComparisonAsync(parcelId, taxYear, ct);
-        var incomeTask = CalculateIncomeApproachAsync(parcelId, taxYear, ct);
-
-        await Task.WhenAll(costTask, salesTask, incomeTask);
-
-        var cost = costTask.Result;
-        var sales = salesTask.Result;
-        var income = incomeTask.Result;
+        // Run sequentially — DbContext is not thread-safe for concurrent operations
+        var cost = await CalculateCostApproachAsync(parcelId, taxYear, ct);
+        var sales = await CalculateSalesComparisonAsync(parcelId, taxYear, ct);
+        var income = await CalculateIncomeApproachAsync(parcelId, taxYear, ct);
 
         // Standard residential weights: Sales 45%, Cost 40%, Income 15%
         const int costWeight = 40;
@@ -327,7 +323,7 @@ public class ValuationService : IValuationService
             marketVal = valuation?.Market;
         }
 
-        var anyReal = cost.Source == "pacs" || sales.Source == "pacs" || income.Source == "pacs";
+        var anyReal = cost.Source == "canonical" || sales.Source == "canonical" || income.Source == "canonical";
 
         return new ReconciliationResult
         {
@@ -361,8 +357,88 @@ public class ValuationService : IValuationService
             Method = "weighted_average",
             AssessedValue = assessedVal,
             MarketValue = marketVal,
-            Source = anyReal ? "pacs" : "fallback",
+            Source = anyReal ? "canonical" : "stub",
             Confidence = anyReal ? 0.82 : 0.35,
+        };
+    }
+
+    // ── Available Years ────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns all pacs_valuations year layers for a parcel with program enrollment metadata.
+    ///
+    /// PACS year-layer model: each (PropValYear, SupNum) pair is a discrete, sovereign
+    /// data snapshot. Approach methods query exactly the year requested — year selection
+    /// is the caller's responsibility. Use DefaultYear as the UI starting point.
+    ///
+    /// IsEarliestKnownLayer=true on the oldest layer identifies the migration baseline
+    /// (for Benton County: 2015, the asend/proval → PACS migration year). This is NOT
+    /// stale data — for agricultural parcels on the 6-year revaluation cycle it is the
+    /// active certified value. AgLossDeferred on such layers is the penalty basis for
+    /// removal from current use programs (RCW 84.34.080).
+    /// </summary>
+    public async Task<ParcelYearLayersResult> GetAvailableYearsAsync(
+        string parcelId, CancellationToken ct)
+    {
+        var parcel = await _db.PacsParcel
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.GeoId == parcelId || p.SimpleGeoId == parcelId, ct);
+
+        if (parcel == null)
+            return new ParcelYearLayersResult { ParcelId = parcelId };
+
+        // All valuation layers — ordered most-recent first, supplementals after base for same year
+        var allLayers = await _db.PacsValuations
+            .AsNoTracking()
+            .Where(v => v.ParcelId == parcel.Id)
+            .OrderByDescending(v => v.PropValYear)
+            .ThenBy(v => v.SupNum)
+            .ToListAsync(ct);
+
+        if (allLayers.Count == 0)
+            return new ParcelYearLayersResult { ParcelId = parcelId };
+
+        var minYear = allLayers.Min(v => v.PropValYear);
+
+        // Exemption codes by year — projected to avoid pulling full rows
+        var exemptionsByYear = (await _db.PacsExemptions
+            .AsNoTracking()
+            .Where(e => e.ParcelId == parcel.Id && e.ExemptTypeCode != null)
+            .Select(e => new { e.ExemptTaxYear, e.ExemptTypeCode })
+            .ToListAsync(ct))
+            .GroupBy(e => (int)e.ExemptTaxYear)
+            .ToDictionary(g => g.Key, g => g.Select(e => e.ExemptTypeCode!).Distinct().OrderBy(c => c).ToList());
+
+        var layers = allLayers.Select(v => new ParcelYearLayer
+        {
+            Year = v.PropValYear,
+            SupNum = v.SupNum,
+            LayerType = v.SupNum == 0 ? "base" : "supplemental",
+            PropState = v.PropState,
+            IsLocked = v.HasLockedValues ?? false,
+            IsEarliestKnownLayer = v.PropValYear == minYear && v.SupNum == 0,
+            RevaluationCycle = v.Cycle,
+            LastAppraisalDate = v.LastAppraisalDate ?? v.LastActualAppraisalDate,
+            AssessedValue = v.AssessedVal,
+            MarketValue = v.Market,
+            Programs = new ProgramEnrollment
+            {
+                CurrentUseAg = (v.AgUseVal ?? 0) > 0,
+                AgLossDeferred = v.AgLoss ?? 0,
+                AgLateLossDeferred = v.AgLateLoss ?? 0,
+                CurrentUseTimber = (v.TimberUse ?? 0) > 0,
+                TimberLossDeferred = v.TimberLoss ?? 0,
+                ExemptionCodes = exemptionsByYear.GetValueOrDefault(v.PropValYear, []),
+            },
+        }).ToList();
+
+        var defaultYear = layers.FirstOrDefault(l => l.SupNum == 0)?.Year;
+
+        return new ParcelYearLayersResult
+        {
+            ParcelId = parcelId,
+            Layers = layers,
+            DefaultYear = defaultYear,
         };
     }
 
@@ -380,7 +456,7 @@ public class ValuationService : IValuationService
         LandValue = 0,
         IndicatedValue = 0,
         ImprovementValue = 0,
-        Source = "fallback",
+        Source = "stub",
         Confidence = 0.0,
         Inputs = BuildCostInputs(false, 0, 0),
     };
@@ -394,8 +470,8 @@ public class ValuationService : IValuationService
         MedianAdjustedPrice = 0,
         AdjustmentRange = 0,
         Comparables = [],
-        Rationale = "No PACS data available for this parcel. Load parcel data to enable sales comparison analysis.",
-        Source = "fallback",
+        Rationale = "No data available for this parcel. Load parcel data to enable sales comparison analysis.",
+        Source = "stub",
         Confidence = 0.0,
     };
 
@@ -409,7 +485,7 @@ public class ValuationService : IValuationService
         GrossIncomeMultiplier = 0,
         RiskClassification = "unknown",
         IncomeIndicatedValue = 0,
-        Source = "fallback",
+        Source = "stub",
         Confidence = 0.0,
     };
 
@@ -419,15 +495,15 @@ public class ValuationService : IValuationService
     {
         return
         [
-            new() { Name = "Replacement Cost New (RCN)", SourceLabel = imprvCount > 0 ? "pacs_improvement_details" : "not_available", Pii = false },
-            new() { Name = "Physical Depreciation %", SourceLabel = imprvCount > 0 ? "pacs_improvement_details" : "not_available", Pii = false },
-            new() { Name = "Functional Obsolescence %", SourceLabel = imprvCount > 0 ? "pacs_improvement_details" : "not_available", Pii = false },
-            new() { Name = "Economic Obsolescence %", SourceLabel = imprvCount > 0 ? "pacs_improvement_details" : "not_available", Pii = false },
-            new() { Name = "Land Market Value", SourceLabel = landCount > 0 ? "pacs_land_details" : "not_available", Pii = false },
-            new() { Name = "Land Acreage", SourceLabel = landCount > 0 ? "pacs_land_details" : "not_available", Pii = false },
-            new() { Name = "Cost Approach Value", SourceLabel = hasValuation ? "pacs_valuations" : "not_available", Pii = false },
-            new() { Name = "Owner Name", SourceLabel = "pacs_owners", Pii = true },
-            new() { Name = "Situs Address", SourceLabel = "pacs_situses", Pii = true },
+            new() { Name = "Replacement Cost New (RCN)", SourceLabel = imprvCount > 0 ? "improvement-cost-data" : "not_available", Pii = false },
+            new() { Name = "Physical Depreciation %", SourceLabel = imprvCount > 0 ? "improvement-cost-data" : "not_available", Pii = false },
+            new() { Name = "Functional Obsolescence %", SourceLabel = imprvCount > 0 ? "improvement-cost-data" : "not_available", Pii = false },
+            new() { Name = "Economic Obsolescence %", SourceLabel = imprvCount > 0 ? "improvement-cost-data" : "not_available", Pii = false },
+            new() { Name = "Land Market Value", SourceLabel = landCount > 0 ? "land-data" : "not_available", Pii = false },
+            new() { Name = "Land Acreage", SourceLabel = landCount > 0 ? "land-data" : "not_available", Pii = false },
+            new() { Name = "Cost Approach Value", SourceLabel = hasValuation ? "valuation-data" : "not_available", Pii = false },
+            new() { Name = "Owner Name", SourceLabel = "ownership-data", Pii = true },
+            new() { Name = "Situs Address", SourceLabel = "situs-data", Pii = true },
         ];
     }
 

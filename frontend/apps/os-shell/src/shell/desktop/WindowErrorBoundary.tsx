@@ -246,7 +246,7 @@ export class WindowErrorBoundary extends Component<
     }
 
     return (
-      <div className={className}>
+      <div className={cn('w-full h-full', className)}>
         {children}
       </div>
     );

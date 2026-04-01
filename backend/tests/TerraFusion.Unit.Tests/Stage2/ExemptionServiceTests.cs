@@ -168,4 +168,23 @@ public sealed class ExemptionServiceTests
 
         updated.Status.Should().Be("approved");
     }
+
+    [Fact]
+    public async Task Exemption_CreateAsync_Command_EnforcesCountyAndDefaults()
+    {
+        await using var db = CreateDbContext(nameof(Exemption_CreateAsync_Command_EnforcesCountyAndDefaults));
+        await SeedCounty(db, BentonCountyId);
+        var svc = new ExemptionService(db, NullLogger<ExemptionService>.Instance);
+
+        var created = await svc.CreateAsync(
+            BentonCountyId,
+            new CreateExemptionCommand("PARCEL-202", null, "Jane Smith", 52_000m, "84.36.381", "Review notes"),
+            "exemptions@test");
+
+        created.CountyId.Should().Be(BentonCountyId);
+        created.ProgramCode.Should().Be("SENIOR_DISABLED");
+        created.Status.Should().Be("pending");
+        created.ApplicantName.Should().Be("Jane Smith");
+        created.CreatedBy.Should().Be("exemptions@test");
+    }
 }

@@ -134,6 +134,43 @@ public sealed class CertificationServiceTests
     }
 
     [Fact]
+    public async Task Certification_GetByTaxYearAsync_InitializesCanonicalRows_WhenMissing()
+    {
+        await using var db = CreateDbContext(nameof(Certification_GetByTaxYearAsync_InitializesCanonicalRows_WhenMissing));
+        await SeedCounty(db, BentonCountyId);
+        var svc = new CertificationService(db, NullLogger<CertificationService>.Instance);
+
+        var results = await svc.GetByTaxYearAsync(2027, BentonCountyId);
+
+        results.Should().HaveCount(6);
+        results.Select(r => r.StepCode).Should().ContainInOrder(
+            "DATA_VALIDATION",
+            "RATIO_STUDY",
+            "SUPERVISORY_REVIEW",
+            "ASSESSOR_SIGNOFF",
+            "DOR_SUBMISSION",
+            "DOR_ACCEPTANCE");
+        db.CertificationSteps.Should().HaveCount(6);
+        db.CertificationSteps.Should().OnlyContain(s => s.CountyId == BentonCountyId && s.TaxYear == 2027);
+    }
+
+    [Fact]
+    public async Task Certification_GetByTaxYearAsync_IsIdempotent_WhenCanonicalRowsExist()
+    {
+        await using var db = CreateDbContext(nameof(Certification_GetByTaxYearAsync_IsIdempotent_WhenCanonicalRowsExist));
+        await SeedCounty(db, BentonCountyId);
+        var svc = new CertificationService(db, NullLogger<CertificationService>.Instance);
+
+        var first = await svc.GetByTaxYearAsync(2028, BentonCountyId);
+        var second = await svc.GetByTaxYearAsync(2028, BentonCountyId);
+
+        first.Should().HaveCount(6);
+        second.Should().HaveCount(6);
+        db.CertificationSteps.Should().HaveCount(6);
+        second.Select(s => s.Id).Should().BeEquivalentTo(first.Select(s => s.Id));
+    }
+
+    [Fact]
     public async Task Certification_CompleteStepAsync_SetsCompletedBy()
     {
         await using var db = CreateDbContext(nameof(Certification_CompleteStepAsync_SetsCompletedBy));

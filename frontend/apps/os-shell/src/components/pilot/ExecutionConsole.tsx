@@ -16,7 +16,6 @@ import React, { useCallback, useState } from 'react';
 import type { ApprovalToken, PilotTool, Risk } from '../../api/pilotApi';
 import { exportTraces, requestApprovalToken } from '../../api/pilotApi';
 import { getSession } from '../../auth/session';
-import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import { TactileButton } from '../../ui/materials/TactileButton';
 import type { InvocationPhase, UseToolInvocationResult } from '../../hooks/useToolInvocation';
 import { useTraceByCorrelationId } from '../../hooks/useTraceByCorrelationId';
@@ -262,7 +261,7 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
   }
 
   return (
-    <LiquidPanel variant='infrastructure' radius='xl' className='p-4 space-y-3'>
+    <div style={{ background: 'hsl(var(--tf-surface))' }} className='p-4 space-y-3'>
       {/* Header: Phase + Tool Info */}
       <div className='flex items-center justify-between'>
         <PhaseIndicator phase={phase} />
@@ -384,7 +383,7 @@ export const ExecutionConsole: React.FC<ExecutionConsoleProps> = ({
           </TactileButton>
         </div>
       )}
-    </LiquidPanel>
+    </div>
   );
 };
 

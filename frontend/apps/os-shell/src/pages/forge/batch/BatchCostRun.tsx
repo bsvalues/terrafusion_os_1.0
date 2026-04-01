@@ -10,9 +10,17 @@
  *
  * 1E additions: ForgeApplyMode lifecycle, backend-capability gate,
  * blocker display, and audit event emission on every interaction.
+ *
+ * DATA POSTURE:
+ * - Run history starts with `FIXTURE_HISTORY` (sample runs) until the backend
+ *   confirms live history at `/api/forge/cost/batch/runs`.
+ * - DemoDataBanner shown while `isSampleData` OR `historyIsFixtureBacked` is true.
+ * - `BACKEND_APPLY_CAPABLE = true`: the `/api/forge/cost/batch/apply` endpoint is
+ *   implemented. Unlike `CoefficientPreview` (which sets this to `false` because
+ *   its apply path is not yet wired), BatchCostRun CAN call apply when live.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -40,9 +48,9 @@ interface AuditEvent {
   timestamp: string;
 }
 
-/** Feature gate remains explicit; runtime backend availability is checked per request. */
+/** Apply is backend-wired: /api/forge/cost/batch/apply is implemented.
+ * Set to false in CoefficientPreview (apply not yet wired there). */
 const BACKEND_APPLY_CAPABLE = true;
-const HISTORY_IS_FIXTURE_BACKED = true;
 
 let _auditSeq = 0;
 function emitAuditEvent(
@@ -213,10 +221,17 @@ export function BatchCostRun() {
   // 1E: Apply mode lifecycle
   const [applyMode, setApplyMode] = useState<ForgeApplyMode>('preview_only');
   const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
+  const [historyIsFixtureBacked, setHistoryIsFixtureBacked] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/forge/cost/batch/history')
+      .then((res) => { if (res.ok) setHistoryIsFixtureBacked(false); })
+      .catch(() => { /* endpoint unreachable — fixture banner stays */ });
+  }, []);
 
   const sourceSummary = isSampleData
     ? 'Fixture-backed run history and sample preview fallback'
-    : HISTORY_IS_FIXTURE_BACKED
+    : historyIsFixtureBacked
       ? 'Fixture-backed run history; preview and apply use workspace batch valuation APIs when available'
       : 'Workspace batch valuation API';
 
@@ -329,6 +344,7 @@ export function BatchCostRun() {
       setHistory((prev) => [newRecord, ...prev]);
       setApplyMode('apply_executed');
       setIsSampleData(false);
+      setHistoryIsFixtureBacked(false);
       const evt = emitAuditEvent('apply_executed', 'apply_executed');
       setAuditLog((prev) => [...prev, evt]);
       emitToolSucceeded({
@@ -366,7 +382,7 @@ export function BatchCostRun() {
 
   return (
     <div data-testid="batch-cost-run" className="space-y-4 p-4">
-      <DemoDataBanner module="Batch Cost Run" />
+      {(isSampleData || historyIsFixtureBacked) && <DemoDataBanner module="Batch Cost Run" />}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-fg))' }}>Batch Cost Model Runs</h1>
         <div className="flex gap-2">

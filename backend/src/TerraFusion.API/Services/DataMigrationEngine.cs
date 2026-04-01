@@ -331,7 +331,7 @@ namespace TerraFusion.API.Services
                 TotalRecordCount = 250000, // Example data
                 TableAnalyses = new List<TableAnalysis>
                 {
-                    new TableAnalysis { TableName = "Parcels", RecordCount = 89247, ComplexityScore = 0.8m },
+                    new TableAnalysis { TableName = "Parcels", RecordCount = 89_247, ComplexityScore = 0.8m }, // CARD-10: Benton County parcel count stub
                     new TableAnalysis { TableName = "Improvements", RecordCount = 125000, ComplexityScore = 0.6m },
                     new TableAnalysis { TableName = "Sales", RecordCount = 35753, ComplexityScore = 0.5m }
                 },

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System.Security.Claims;
 using TerraFusion.API.Controllers;
@@ -175,7 +176,7 @@ public class DX03PropertyServiceDIRepairTests
         var config = new MapperConfiguration(cfg =>
         {
             cfg.AddProfile<TerraFusionMappingProfile>();
-        });
+        }, NullLoggerFactory.Instance);
         return config.CreateMapper();
     }
 

@@ -12,9 +12,9 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-// Mock stores
-vi.mock('../../stores/commandPaletteStore', () => ({
-  useCommandPaletteStore: vi.fn(),
+// Mock stores — Launcher uses startMenuStore (not commandPaletteStore)
+vi.mock('../../stores/startMenuStore', () => ({
+  useStartMenuStore: vi.fn(),
 }));
 
 // Mock launcherModel
@@ -61,7 +61,7 @@ vi.mock('react-router-dom', async () => ({
 
 // Components and imports (AFTER mocks)
 import { Launcher } from '../../components/launcher';
-import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
+import { useStartMenuStore } from '../../stores/startMenuStore';
 import * as materialQualityGate from '../../ui/materials/materialQualityGate';
 
 // ============================================================================
@@ -91,7 +91,7 @@ function renderLauncher(qualityOverride?: Partial<materialQualityGate.MaterialQu
 
   vi.spyOn(materialQualityGate, 'useMaterialQuality').mockReturnValue(mockQuality);
 
-  (useCommandPaletteStore as unknown as vi.Mock).mockImplementation((selector) =>
+  (useStartMenuStore as unknown as vi.Mock).mockImplementation((selector) =>
     selector ? selector(mockStore) : mockStore
   );
 

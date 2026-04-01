@@ -9,6 +9,6 @@
     "prettier --write"
   ],
   "*.{json,md,yml,yaml}": ["prettier --write"],
-  "*.cs": ["dotnet format backend/TerraFusion.sln --include"],
+  "*.cs": ["dotnet format backend/TerraFusion.sln --no-restore --include"],
   "*.{css,scss,less}": ["prettier --write"]
 }

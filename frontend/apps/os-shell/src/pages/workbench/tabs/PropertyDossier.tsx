@@ -9,6 +9,15 @@
  * 2. Document Management — read-only registry view for documents and evidence.
  *
  * Architecture: UI → useDossierDetails hook → real API → correlationId UX
+ *
+ * DATA POSTURE:
+ * - All primary data (parcel details, documents, evidence, chain-of-custody) is
+ *   fetched from the live backend. No fixture fallback exists in this component.
+ * - Evidence synthesis narrative (`synthesisNarrative`) and casefile summary
+ *   are AI-generated text returned by governed tools. They summarize available
+ *   evidence and are NOT a substitute for authoritative source records.
+ * - Documents from `usePropertyStore` reflect session-loaded items; they are
+ *   shown when backend documents have been loaded into the property store.
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
@@ -648,19 +657,27 @@ export const PropertyDossier: React.FC = () => {
 
         {/* Error state */}
         {dossierDetails.error && (
-          <div className='tf-status-error rounded-xl p-4 mb-4'>
-            <div className='flex items-center justify-between'>
+          dossierDetails.error.code === 'NOT_FOUND' ? (
+            <div className='tf-status-error rounded-xl p-4 mb-4'>
               <p className='tf-text text-sm'>
-                Failed to load details: {dossierDetails.error.message}
+                Parcel details not available — Properties table has no row for this parcel in the current environment (dev data gap, not an application error).
               </p>
-              <button
-                onClick={dossierDetails.refetch}
-                className='px-3 py-1 text-xs tf-hover-surface rounded'
-              >
-                Retry
-              </button>
             </div>
-          </div>
+          ) : (
+            <div className='tf-status-error rounded-xl p-4 mb-4'>
+              <div className='flex items-center justify-between'>
+                <p className='tf-text text-sm'>
+                  Failed to load details: {dossierDetails.error.message}
+                </p>
+                <button
+                  onClick={dossierDetails.refetch}
+                  className='px-3 py-1 text-xs tf-hover-surface rounded'
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          )
         )}
 
         {/* Details sections — 4 BentoGrid cards */}
@@ -1024,7 +1041,10 @@ export const PropertyDossier: React.FC = () => {
             <p className='tf-text-dim text-xs'>Shows the totals and categories returned by this synthesis request.</p>
 
             {synthesizeState.result.synthesisNarrative && (
-              <p className='tf-text-secondary text-sm'>{synthesizeState.result.synthesisNarrative}</p>
+              <>
+                <p className='tf-text-secondary text-sm'>{synthesizeState.result.synthesisNarrative}</p>
+                <p className='tf-text-dim text-xs italic'>AI-synthesized narrative — not a substitute for authoritative source records.</p>
+              </>
             )}
 
             {synthesizeState.result.categories?.length ? (
@@ -1067,7 +1087,7 @@ export const PropertyDossier: React.FC = () => {
         {casefileState.status === 'success' && casefileState.result && (
           <div className='space-y-3'>
             <p className='tf-text-dim text-xs'>Shows the summary and highlights returned for the requested casefile sections.</p>
-            <div className='tf-panel p-4'><p className='tf-text-secondary'>{casefileState.result.summary}</p></div>
+            <div className='tf-panel p-4'><p className='tf-text-secondary'>{casefileState.result.summary}</p><p className='tf-text-dim text-xs italic mt-2'>AI-synthesized from available casefile data — verify against source records.</p></div>
             {casefileState.result.highlights.length > 0 && (
               <div className='space-y-1'>
                 {casefileState.result.highlights.map((h, idx) => (

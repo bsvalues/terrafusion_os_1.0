@@ -14,6 +14,7 @@ import { GenericModuleHost } from '../shell/desktop/GenericModuleHost';
 import { MODULES, type ModuleDefinition } from './modules';
 import { validateSuiteRendering } from '../contracts/objectPlacement';
 import { createLogger } from '@/hooks/useLogger';
+import QueuedModuleSurface from '../components/suites/QueuedModuleSurface';
 
 const logger = createLogger('ModuleRenderer');
 
@@ -148,6 +149,8 @@ export const MODULE_REGISTRY = new Set<string>([
   // absorbed into Workbench → Forge → Income/Sales sub-tabs
   'regression-studio',
   'statistics-studio',
+  'batch-cost-run',
+  'coefficient-preview',
   'vei',
   'property-tax-ai',
   'pacs-bridge',
@@ -157,6 +160,8 @@ export const MODULE_REGISTRY = new Set<string>([
   'terra-levy',
   'terra-pilt',
   'terra-permit',
+  'terra-cert',
+  'terra-notice',
   'terra-flow',
   'management-dashboard',
   'terra-queue',
@@ -181,6 +186,11 @@ export const MODULE_REGISTRY = new Set<string>([
   'os-pilot',
   'os-trace',
   'os-canon',
+  // Atlas & Forge standalone modules (Phase 36)
+  'geo-equity-dashboard',
+  'mass-appraisal-gis',
+  'cost-manual',
+  'value-audit-module',
 ]);
 
 /**
@@ -216,10 +226,9 @@ const FederationDashboard = lazy(
   () => import('../applications/federation-dashboard/FederationDashboard')
 );
 
-// CostForge - Primary Property Assessment System (has full implementation)
-const CostForgeQuantumDashboard = lazy(
-  () => import('../components/costforge/CostForgeQuantumDashboard')
-);
+// CostForge — native app hosted via AppFrame (packages/terrabuild, port 5002)
+// The shell NEVER imports CostForge code directly — it loads the running service URL.
+import { AppFrame } from '../components/app-frame/AppFrame';
 
 // TerraGaia - Natural Language AI Assistant
 const TerraGaiaDashboard = lazy(() => import('../components/dashboards/TerraGaiaDashboard'));
@@ -287,6 +296,19 @@ const BatchCostRun = lazy(
 const CoefficientPreview = lazy(
   () => import('../pages/forge/batch/CoefficientPreview')
 );
+// Phase 36: Atlas & Forge standalone modules
+const GeoEquityDashboard = lazy(
+  () => import('../pages/atlas/GeoEquityDashboard')
+);
+const MassAppraisalGIS = lazy(
+  () => import('../pages/atlas/MassAppraisalGIS')
+);
+const CostManual = lazy(
+  () => import('../pages/forge/cost/CostManual').then(m => ({ default: m.CostManual }))
+);
+const ValueAuditModule = lazy(
+  () => import('../pages/suites/modules/ValueAuditModule')
+);
 const ManagementDashboard = lazy(
   () => import('../pages/dais/ManagementDashboard')
 );
@@ -318,6 +340,8 @@ const AtlasSuiteHome = lazy(() => import('../pages/suites/AtlasSuiteHome'));
 const DaisSuiteHome = lazy(() => import('../pages/suites/DaisSuiteHome'));
 const DossierSuiteHome = lazy(() => import('../pages/suites/DossierSuiteHome'));
 const GptSuiteHome = lazy(() => import('../pages/suites/GptSuiteHome'));
+const GPTManagementDashboard = lazy(() => import('../components/gpt/GPTManagementDashboard'));
+const RAGDatasetManager = lazy(() => import('../components/gpt/RAGDatasetManager'));
 
 // ============================================================================
 // Module Entries (lazy components for bespoke modules)
@@ -329,7 +353,7 @@ export type ModuleEntry = {
 
 const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'federation-dashboard': { Component: FederationDashboard },
-  costforge: { Component: CostForgeQuantumDashboard },
+  // costforge renders via AppFrame (native app, not a React component)
   'terra-gaia': { Component: TerraGaiaDashboard },
   reporting: { Component: AnalyticsDashboard },
   'atlas-ai': { Component: ATLAS },
@@ -360,6 +384,11 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'os-pilot': { Component: PilotHome },
   'os-trace': { Component: TraceHome },
   'os-canon': { Component: CanonHome },
+  // Atlas & Forge standalone modules (Phase 36)
+  'geo-equity-dashboard': { Component: GeoEquityDashboard },
+  'mass-appraisal-gis': { Component: MassAppraisalGIS },
+  'cost-manual': { Component: CostManual },
+  'value-audit-module': { Component: ValueAuditModule },
 };
 
 export function getModuleEntry(moduleId: string): ModuleEntry | undefined {
@@ -596,12 +625,21 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         </Suspense>
       );
 
-    // CostForge - Property Assessment & Valuation (formerly TerraBuild)
+    // CostForge — iframes the real terrabuild app (packages/terrabuild, port 5002)
     case 'costforge':
       return (
-        <Suspense fallback={<ModuleLoadingFallback />}>
-          <CostForgeQuantumDashboard />
-        </Suspense>
+        <AppFrame
+          moduleId="costforge"
+          parcelContext={
+            metadata?.parcelId
+              ? {
+                  parcelId: String(metadata.parcelId),
+                  countyId: String(metadata.countyId ?? ''),
+                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
+                }
+              : undefined
+          }
+        />
       );
 
     // TerraGaia - Natural Language AI Assistant
@@ -628,15 +666,10 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
     case 'terra-gis':
     case 'gis-pro':
       return (
-        <PlaceholderModule
-          name='TerraGIS Pro'
-          icon='🗺️'
-          description='Full GIS with parcel boundaries, zoning overlays, aerial imagery, and measurement tools.'
-          status='placeholder'
-          legacySource='BCBSGISPRO, bcbspacsmapping'
-          domain='mapping'
-          scope='county-wide'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="TerraGIS Pro"
+          description="Full GIS with parcel boundaries, zoning overlays, aerial imagery, and measurement tools."
+          moduleId="terra-gis"
         />
       );
 
@@ -687,14 +720,10 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'vei':
       return (
-        <PlaceholderModule
-          name='Vertical Equality Index'
-          icon='🔍'
-          description='Vertical Equality Index — measures assessment progressivity/regressivity across value ranges, PRB analysis, IAAO equity compliance.'
-          status='placeholder'
-          domain='assessment'
-          scope='county-wide'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="Vertical Equality Index"
+          description="Vertical Equality Index — measures assessment progressivity/regressivity across value ranges, PRB analysis, IAAO equity compliance."
+          moduleId="vei"
         />
       );
 
@@ -714,92 +743,82 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'terra-gama':
       return (
-        <PlaceholderModule
-          name='TerraGAMA'
-          icon='📍'
-          description='Geographic Area Market Analysis — neighborhood delineation, market trend analysis, and area-based valuation.'
-          status='placeholder'
-          legacySource='TerraGama, TerraFusionGama'
-          domain='assessment'
-          scope='county-wide'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="TerraGAMA"
+          description="Geographic Area Market Analysis — neighborhood delineation, market trend analysis, and area-based valuation."
+          moduleId="terra-gama"
         />
       );
 
     case 'terra-pilt':
       return (
-        <PlaceholderModule
-          name='TerraPILT'
-          icon='🏛️'
-          description='Payment in Lieu of Taxes — federal property calculations, PILT reporting, and compliance tracking.'
-          status='placeholder'
-          legacySource='TerraPILT'
-          domain='tax'
-          scope='county-wide'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="TerraPILT"
+          description="Payment in Lieu of Taxes — federal property calculations, PILT reporting, and compliance tracking."
+          moduleId="terra-pilt"
         />
       );
 
     case 'property-tax-ai':
       return (
-        <PlaceholderModule
-          name='PropertyTax AI'
-          icon='🤖'
-          description='AI-powered assessment assistant — LangChain agents for valuation analysis and appeal preparation.'
-          status='placeholder'
-          legacySource='PropertyTaxAI'
-          domain='ai'
-          scope='county-wide'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="PropertyTax AI"
+          description="AI-powered assessment assistant — LangChain agents for valuation analysis and appeal preparation."
+          moduleId="property-tax-ai"
         />
       );
 
     case 'pacs-bridge':
       return (
-        <PlaceholderModule
-          name='PACS DataBridge'
-          icon='🔗'
-          description='Import/export bridge for Harris PACS TrueAutomation — data sync, field mapping, and batch operations.'
-          status='placeholder'
-          legacySource='PACS-DataBridge'
-          domain='system'
-          scope='system'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="County Data Bridge"
+          description="Import/export bridge for county assessment systems — data sync, field mapping, and batch operations."
+          moduleId="pacs-bridge"
         />
       );
 
     case 'terra-sync':
       return (
-        <PlaceholderModule
-          name='TerraSync'
-          icon='🔄'
-          description='County data synchronization & ETL — multi-source ingestion, conflict resolution, and audit trails.'
-          status='placeholder'
-          legacySource='TerraFusionSync, CountyDataSync'
-          domain='system'
-          scope='system'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="TerraSync"
+          description="County data synchronization & ETL — multi-source ingestion, conflict resolution, and audit trails."
+          moduleId="terra-sync"
         />
       );
 
     case 'terra-flow':
       return (
-        <Suspense fallback={<ModuleLoadingFallback />}>
-          <TerraFlowCommandCenter />
-        </Suspense>
+        <QueuedModuleSurface
+          name="TerraFlow"
+          description="Quantum workflow orchestration — multi-agent task routing, event-driven workflows, and county process automation."
+          moduleId="terra-flow"
+        />
       );
 
     case 'terra-permit':
       return (
-        <PlaceholderModule
-          name='TerraPermit'
-          icon='🏗️'
-          description='Building permit tracking — permit intake, inspection scheduling, and valuation impact updates.'
-          status='placeholder'
-          legacySource='TerraFUsionPermit'
-          domain='assessment'
-          scope='county-wide'
-          launchSurface='Standalone window'
+        <QueuedModuleSurface
+          name="TerraPermit"
+          description="Building permit tracking — permit intake, inspection scheduling, and valuation impact updates."
+          moduleId="terra-permit"
+        />
+      );
+
+    case 'terra-cert':
+      return (
+        <QueuedModuleSurface
+          name="TerraCert"
+          description="Roll certification checklists and sign-offs — certification workflows, deadline tracking, and statutory compliance."
+          moduleId="terra-cert"
+        />
+      );
+
+    case 'terra-notice':
+      return (
+        <QueuedModuleSurface
+          name="TerraNotice"
+          description="Notice templates, batch generation, and mail queue — assessment notice production and delivery tracking."
+          moduleId="terra-notice"
         />
       );
 
@@ -1026,15 +1045,9 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'gpt-management':
       return (
-        <PlaceholderModule
-          name='GPT Management'
-          icon='⚙️'
-          description='GPT administration — API key management, usage quotas, model configuration, and access control.'
-          status='placeholder'
-          domain='ai'
-          scope='system'
-          launchSurface='GPT suite → Standalone window'
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <GPTManagementDashboard />
+        </Suspense>
       );
 
     case 'gpt-builder':
@@ -1065,15 +1078,45 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'gpt-rag':
       return (
-        <PlaceholderModule
-          name='GPT RAG'
-          icon='📚'
-          description='Retrieval-Augmented Generation — document indexing, vector search, and context-aware AI responses over county data.'
-          status='placeholder'
-          domain='ai'
-          scope='county-wide'
-          launchSurface='GPT suite → Standalone window'
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <RAGDatasetManager />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // ATLAS STANDALONE MODULES (Phase 36)
+    // ========================================================================
+
+    case 'geo-equity-dashboard':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <GeoEquityDashboard />
+        </Suspense>
+      );
+
+    case 'mass-appraisal-gis':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <MassAppraisalGIS />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // FORGE STANDALONE MODULES (Phase 36)
+    // ========================================================================
+
+    case 'cost-manual':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <CostManual />
+        </Suspense>
+      );
+
+    case 'value-audit-module':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <ValueAuditModule />
+        </Suspense>
       );
 
     // ========================================================================

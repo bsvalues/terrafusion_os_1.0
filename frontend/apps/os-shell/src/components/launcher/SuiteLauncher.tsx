@@ -52,10 +52,10 @@ function getLauncherStatusLabel(status: LauncherStatus): string | null {
   switch (status) {
     case 'live':
       return null;
-    case 'wip':
-      return 'In progress';
-    case 'planned':
-      return 'Planned';
+    case 'queued':
+      return 'Queued';
+    case 'unavailable':
+      return 'Unavailable';
     default:
       return null;
   }
@@ -63,9 +63,9 @@ function getLauncherStatusLabel(status: LauncherStatus): string | null {
 
 function getLauncherStatusClassName(status: Exclude<LauncherStatus, 'live'>): string {
   switch (status) {
-    case 'planned':
+    case 'unavailable':
       return 'bg-slate-500/20 text-slate-300 border border-slate-400/30';
-    case 'wip':
+    case 'queued':
     default:
       return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
   }
@@ -153,7 +153,7 @@ function FeatureChip({ feature, onClick }: FeatureChipProps) {
       {statusLabel && (
         <span
           data-testid={`feature-status-badge-${feature.id}`}
-          className={`text-xs ${feature.status === 'planned' ? 'text-slate-400' : 'text-slate-500'}`}
+          className={`text-xs ${feature.status === 'unavailable' ? 'text-slate-400' : 'text-slate-500'}`}
         >
           {statusLabel}
         </span>

@@ -7,6 +7,14 @@
  * reconciliations, appeal filings/decisions, manual overrides.
  *
  * Source: Harris PACS change_of_value_report + TerraTrace audit spine
+ *
+ * DATA POSTURE:
+ * - `DEMO_ENTRIES` are defined as reference fixtures but are NOT pre-seeded
+ *   into the `entries` state. `loadAuditEntries()` populates entries from
+ *   persistent storage; if the service seeds demo entries, they will have
+ *   `id` values starting with 'demo-'.
+ * - DemoDataBanner shows when entries is empty OR when loaded entries contain
+ *   demo-prefixed IDs, indicating storage was seeded with sample data.
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -125,12 +133,9 @@ export default function ValueAuditModule() {
   // Load entries on mount
   useEffect(() => {
     const stored = loadAuditEntries();
-    // Merge demo + stored, dedupe by id
-    const all = [...DEMO_ENTRIES, ...stored];
-    const seen = new Set<string>();
-    const deduped = all.filter(e => { if (seen.has(e.id)) return false; seen.add(e.id); return true; });
-    deduped.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-    setEntries(deduped);
+    // Show only real user/system entries; do not pre-seed with demo data
+    const sorted = [...stored].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    setEntries(sorted);
   }, []);
 
   const filteredEntries = useMemo(() => {
@@ -157,7 +162,7 @@ export default function ValueAuditModule() {
 
   const handleClearUserEntries = useCallback(() => {
     clearAuditEntries();
-    setEntries(DEMO_ENTRIES.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
+    setEntries([]);
     setSelectedEntry(null);
   }, []);
 
@@ -192,8 +197,8 @@ export default function ValueAuditModule() {
 
   return (
     <div className='p-6 space-y-6'>
-      {/* Provenance disclosure: DEMO_ENTRIES are always merged into the audit trail */}
-      <DemoDataBanner module="Value Audit" />
+      {/* Show banner when audit trail is empty OR contains seeded demo entries */}
+      {(entries.length === 0 || entries.some(e => e.id.startsWith('demo-'))) && <DemoDataBanner module="Value Audit" />}
       {/* Title */}
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-3'>
