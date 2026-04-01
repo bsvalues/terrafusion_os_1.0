@@ -226,10 +226,9 @@ const FederationDashboard = lazy(
   () => import('../applications/federation-dashboard/FederationDashboard')
 );
 
-// CostForge - Primary Property Assessment System (has full implementation)
-const CostForgeQuantumDashboard = lazy(
-  () => import('../components/costforge/CostForgeQuantumDashboard')
-);
+// CostForge — native app hosted via AppFrame (packages/terrabuild, port 5002)
+// The shell NEVER imports CostForge code directly — it loads the running service URL.
+import { AppFrame } from '../components/app-frame/AppFrame';
 
 // TerraGaia - Natural Language AI Assistant
 const TerraGaiaDashboard = lazy(() => import('../components/dashboards/TerraGaiaDashboard'));
@@ -354,7 +353,7 @@ export type ModuleEntry = {
 
 const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'federation-dashboard': { Component: FederationDashboard },
-  costforge: { Component: CostForgeQuantumDashboard },
+  // costforge renders via AppFrame (native app, not a React component)
   'terra-gaia': { Component: TerraGaiaDashboard },
   reporting: { Component: AnalyticsDashboard },
   'atlas-ai': { Component: ATLAS },
@@ -626,12 +625,21 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         </Suspense>
       );
 
-    // CostForge - Property Assessment & Valuation (formerly TerraBuild)
+    // CostForge — iframes the real terrabuild app (packages/terrabuild, port 5002)
     case 'costforge':
       return (
-        <Suspense fallback={<ModuleLoadingFallback />}>
-          <CostForgeQuantumDashboard />
-        </Suspense>
+        <AppFrame
+          moduleId="costforge"
+          parcelContext={
+            metadata?.parcelId
+              ? {
+                  parcelId: String(metadata.parcelId),
+                  countyId: String(metadata.countyId ?? ''),
+                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
+                }
+              : undefined
+          }
+        />
       );
 
     // TerraGaia - Natural Language AI Assistant
