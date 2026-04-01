@@ -11,7 +11,7 @@ Local workspace to emulate the legacy Benton County PACS SQL environment.
    ```
 2. Publish databases (requires dotnet SDK + SqlPackage):
    ```powershell
-   pwsh ../../scripts/publish.ps1 -SqlServer "localhost,1433" -SaPassword "P@ssw0rd123!"
+   pwsh ../../scripts/publish.ps1 -SqlServer "localhost,1433" -SaPassword "TF_Pacs2026!"
    ```
 
 Databases created: `pacs_oltp`, `PACS_Training`, `TA_AppSvr`, `CIAPS`, `Web_Internet_Benton`, `SSISDB`.
