@@ -19,7 +19,6 @@ import React, { useState } from 'react';
 import type { PilotTraceEvent } from '../../api/pilotApi';
 import type { TracePhase } from '../../hooks/useTraceByCorrelationId';
 import type { TraceListPhase } from '../../hooks/usePilotTraceList';
-import { LiquidPanel } from '../../ui/materials/LiquidPanel';
 import { TactileButton } from '../../ui/materials/TactileButton';
 
 // ============================================================================
@@ -270,36 +269,36 @@ export const EvidenceRail: React.FC<EvidenceRailProps> = ({
   // Loading / polling states
   if (phase === 'loading' || phase === 'polling') {
     return (
-      <LiquidPanel variant="infrastructure" radius="xl" className="p-4" data-testid="evidence-loading">
+      <div style={{ background: 'hsl(var(--tf-surface))' }} className="p-4" data-testid="evidence-loading">
         <p className="text-xs text-white/60 animate-pulse">
           {phase === 'loading' ? 'Loading trace…' : 'Waiting for trace events…'}
         </p>
-      </LiquidPanel>
+      </div>
     );
   }
 
   // Error state
   if (phase === 'error') {
     return (
-      <LiquidPanel variant="infrastructure" radius="xl" className="p-4 space-y-2" data-testid="evidence-error">
+      <div style={{ background: 'hsl(var(--tf-surface))' }} className="p-4 space-y-2" data-testid="evidence-error">
         <p className="text-xs text-red-300">Feed unavailable: {error}</p>
         <TactileButton size="sm" onClick={onRetry}>
           Retry
         </TactileButton>
-      </LiquidPanel>
+      </div>
     );
   }
 
   // Empty state — context-aware messaging
   if (phase === 'empty' || (phase === 'ready' && events.length === 0)) {
     return (
-      <LiquidPanel variant="infrastructure" radius="xl" className="p-4" data-testid="evidence-empty">
+      <div style={{ background: 'hsl(var(--tf-surface))' }} className="p-4" data-testid="evidence-empty">
         <p className="text-xs text-white/50">
           {isFiltered
             ? 'No matches for current filters.'
             : 'No trace events returned for this parcel.'}
         </p>
-      </LiquidPanel>
+      </div>
     );
   }
 
@@ -308,7 +307,7 @@ export const EvidenceRail: React.FC<EvidenceRailProps> = ({
 
   // Ready with events — render timeline
   return (
-    <LiquidPanel variant="infrastructure" radius="xl" className="p-4 space-y-3" data-testid="evidence-timeline">
+    <div style={{ background: 'hsl(var(--tf-surface))' }} className="p-4 space-y-3" data-testid="evidence-timeline">
       <CorrelationHeader events={events} />
 
       <div className="max-h-[28rem] overflow-y-auto pr-1">
@@ -322,7 +321,7 @@ export const EvidenceRail: React.FC<EvidenceRailProps> = ({
 
       {/* Lane I: Admin diagnostics drawer */}
       {showDiagnostics && diagnostics && <DiagnosticsDrawer diagnostics={diagnostics} />}
-    </LiquidPanel>
+    </div>
   );
 };
 
