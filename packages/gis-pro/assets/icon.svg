@@ -1,0 +1,73 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e40af;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#059669;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#10b981;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#grad1)" stroke="#1e293b" stroke-width="8"/>
+  
+  <!-- Hexagonal Grid Pattern -->
+  <g stroke="#ffffff" stroke-width="2" fill="none" opacity="0.3">
+    <polygon points="256,80 310,115 310,185 256,220 202,185 202,115"/>
+    <polygon points="148,147 202,182 202,252 148,287 94,252 94,182"/>
+    <polygon points="364,147 418,182 418,252 364,287 310,252 310,182"/>
+    <polygon points="256,214 310,249 310,319 256,354 202,319 202,249"/>
+    <polygon points="148,281 202,316 202,386 148,421 94,386 94,316"/>
+    <polygon points="364,281 418,316 418,386 364,421 310,386 310,316"/>
+  </g>
+  
+  <!-- Central Earth/Globe -->
+  <circle cx="256" cy="256" r="80" fill="url(#grad2)" stroke="#065f46" stroke-width="3"/>
+  
+  <!-- Continental Shapes -->
+  <g fill="#047857" opacity="0.8">
+    <path d="M220 220 Q240 210 260 225 Q270 240 265 255 Q250 265 235 250 Q220 235 220 220Z"/>
+    <path d="M270 270 Q285 265 290 280 Q285 295 270 290 Q260 285 270 270Z"/>
+    <path d="M230 280 Q245 275 250 290 Q240 300 225 295 Q220 285 230 280Z"/>
+  </g>
+  
+  <!-- GPS/Navigation Lines -->
+  <g stroke="#ffffff" stroke-width="3" fill="none" opacity="0.9">
+    <circle cx="256" cy="256" r="110" stroke-dasharray="8,4"/>
+    <circle cx="256" cy="256" r="140" stroke-dasharray="12,6"/>
+    <line x1="256" y1="110" x2="256" y2="140" stroke-width="4"/>
+    <line x1="256" y1="372" x2="256" y2="402" stroke-width="4"/>
+    <line x1="110" y1="256" x2="140" y2="256" stroke-width="4"/>
+    <line x1="372" y1="256" x2="402" y2="256" stroke-width="4"/>
+  </g>
+  
+  <!-- Data Flow Arrows -->
+  <g fill="#fbbf24" opacity="0.9">
+    <polygon points="180,150 190,145 190,155" transform="rotate(45 185 150)"/>
+    <polygon points="332,150 342,145 342,155" transform="rotate(-45 337 150)"/>
+    <polygon points="180,362 190,357 190,367" transform="rotate(-45 185 362)"/>
+    <polygon points="332,362 342,357 342,367" transform="rotate(45 337 362)"/>
+  </g>
+  
+  <!-- Technology Nodes -->
+  <g fill="#fbbf24" stroke="#f59e0b" stroke-width="2">
+    <circle cx="180" cy="180" r="12"/>
+    <circle cx="332" cy="180" r="12"/>
+    <circle cx="180" cy="332" r="12"/>
+    <circle cx="332" cy="332" r="12"/>
+  </g>
+  
+  <!-- Central TF Logo -->
+  <g fill="#ffffff" font-family="Arial, sans-serif" font-weight="bold" font-size="48" text-anchor="middle">
+    <text x="256" y="270">TF</text>
+  </g>
+  
+  <!-- Outer Ring Text -->
+  <path id="textCircle" d="M 256,256 m -200,0 a 200,200 0 1,1 400,0 a 200,200 0 1,1 -400,0" fill="none"/>
+  <text fill="#ffffff" font-family="Arial, sans-serif" font-size="18" font-weight="bold">
+    <textPath href="#textCircle" startOffset="25%">TERRAFUSION CIVIL INFRASTRUCTURE</textPath>
+  </text>
+</svg>

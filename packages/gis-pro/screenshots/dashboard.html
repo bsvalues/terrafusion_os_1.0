@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusionSync Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .logo span {
+            color: #3498db;
+        }
+        .user-info {
+            font-size: 14px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .upload-form {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            flex: 1;
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .button.approve {
+            background-color: #2ecc71;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .export-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Terra<span>Fusion</span>Sync</div>
+        <div class="user-info">User: CO\jdoe | Role: Assessor</div>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2>Upload Property Data File</h2>
+            <div class="upload-form">
+                <input type="file">
+                <button class="button">Submit</button>
+            </div>
+            <a href="#" class="button export-btn">Download Sync Log</a>
+        </div>
+        
+        <div class="card">
+            <h2>Pending Property Updates</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property ID</th>
+                        <th>Filename</th>
+                        <th>Timestamp</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>PROP_12345</td>
+                        <td>property_update_05072025.xml</td>
+                        <td>2025-05-07 14:30:22</td>
+                        <td>PENDING</td>
+                        <td class="action-buttons">
+                            <a href="#" class="button">View Diff</a>
+                            <a href="#" class="button approve">Approve</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>PROP_54321</td>
+                        <td>tax_assessment_update.xml</td>
+                        <td>2025-05-07 10:15:45</td>
+                        <td>PENDING</td>
+                        <td class="action-buttons">
+                            <a href="#" class="button">View Diff</a>
+                            <a href="#" class="button approve">Approve</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>PROP_78901</td>
+                        <td>commercial_property.xml</td>
+                        <td>2025-05-06 16:45:12</td>
+                        <td>APPROVED</td>
+                        <td class="action-buttons">
+                            <a href="#" class="button">View Diff</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card">
+            <h2>Rollback Approved Change</h2>
+            <div class="upload-form">
+                <input type="text" placeholder="Enter upload ID to rollback">
+                <button class="button" style="background-color: #e74c3c;">Rollback</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

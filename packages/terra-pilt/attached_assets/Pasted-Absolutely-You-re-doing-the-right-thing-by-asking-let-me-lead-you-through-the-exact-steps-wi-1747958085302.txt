@@ -1,0 +1,166 @@
+Absolutely. You're doing the right thing by asking — let me lead you through the **exact steps**, with **zero guesswork**.
+
+We're going to set up **internal code signing** using a **self-signed certificate**, build and sign your Rust binary, and prepare it for **internal SharePoint distribution**.
+
+---
+
+## ✅ Step-by-Step Deployment Guide (Internal Use, Windows)
+
+### 🔧 Prerequisites:
+
+* Windows machine with **PowerShell** and **Rust toolchain** (`cargo`)
+* `SignTool.exe` (comes with Windows SDK — install [here](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/))
+
+---
+
+## 🧱 Step 1: Create a Self-Signed Code Signing Certificate
+
+Run this **PowerShell script** to:
+
+1. Create the certificate
+2. Export it to a `.pfx` (for signing)
+3. Export the `.cer` (for GPO distribution to trust it)
+
+```powershell
+# PowerShell script to create and export a self-signed code signing certificate
+$certSubject = "CN=ICSF Internal Code Signing"
+$pfxPath = "C:\ICSF\signing_cert.pfx"
+$cerPath = "C:\ICSF\signing_cert.cer"
+$pfxPassword = ConvertTo-SecureString -String "StrongPassword123!" -Force -AsPlainText
+
+# Create directory
+New-Item -ItemType Directory -Force -Path "C:\ICSF"
+
+# Generate certificate
+$cert = New-SelfSignedCertificate `
+  -Type CodeSigningCert `
+  -Subject $certSubject `
+  -CertStoreLocation "Cert:\CurrentUser\My"
+
+# Export .pfx (for SignTool)
+Export-PfxCertificate -Cert $cert `
+  -FilePath $pfxPath `
+  -Password $pfxPassword
+
+# Export .cer (to install as trusted cert in GPO or locally)
+Export-Certificate -Cert $cert `
+  -FilePath $cerPath
+
+Write-Output "✅ Self-signed cert created:"
+Write-Output "  - PFX: $pfxPath"
+Write-Output "  - CER: $cerPath"
+```
+
+---
+
+## ⚙️ Step 2: Build Optimized Release Binary (Rust)
+
+In your Rust project directory:
+
+```bash
+# Optional: Add these to Cargo.toml under [profile.release]
+# [profile.release]
+# lto = true
+# codegen-units = 1
+# panic = 'abort'
+# strip = true
+
+RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release
+```
+
+Your binary will be at:
+
+```
+target\release\benton_district_lookup.exe
+```
+
+---
+
+## 🔏 Step 3: Sign the Executable with Your Certificate
+
+Use the `.pfx` you exported to sign the binary:
+
+```powershell
+SignTool sign /f C:\ICSF\signing_cert.pfx `
+  /p "StrongPassword123!" `
+  /tr http://timestamp.digicert.com `
+  /td sha256 /fd sha256 `
+  "target\release\benton_district_lookup.exe"
+```
+
+You’ll see confirmation like:
+
+```
+Successfully signed and timestamped benton_district_lookup.exe
+```
+
+> 🔐 Want to avoid trust prompts? Push the `.cer` to user machines via **Group Policy > Trusted Root Certification Authorities**.
+
+---
+
+## 📦 Step 4: Package for SharePoint
+
+Create your distribution folder:
+
+```
+benton_district_lookup_v1.0.0/
+├── benton_district_lookup.exe
+├── config_template.toml
+├── INSTALL.md
+├── INSTALL.pdf
+├── CHANGELOG.md
+├── checksums.txt
+```
+
+### Generate checksums:
+
+```bash
+cd benton_district_lookup_v1.0.0
+sha256sum benton_district_lookup.exe > checksums.txt
+```
+
+### Convert install guide to PDF (if you have Pandoc):
+
+```bash
+pandoc INSTALL.md -o INSTALL.pdf
+```
+
+---
+
+## 🗂️ Step 5: SharePoint Upload Metadata (Manual Entry)
+
+Use this metadata when uploading:
+
+| Field              | Value                     |
+| ------------------ | ------------------------- |
+| **Content Type**   | Application               |
+| **Department**     | IT Infrastructure         |
+| **Classification** | Internal Use Only         |
+| **Version**        | v1.0.0                    |
+| **Approvals**      | \[Your team lead/manager] |
+
+---
+
+## 🚨 Last Step: (Optional) Push Trust Cert to Clients via GPO
+
+If you're in a domain and want clients to trust your cert:
+
+* Open **Group Policy Management**
+* Navigate to:
+
+  ```
+  User Configuration > Windows Settings > Security Settings > Public Key Policies > Trusted Root Certification Authorities
+  ```
+* **Import `signing_cert.cer`**
+
+Now your signed app won’t show security prompts.
+
+---
+
+Would you like:
+
+* A ZIP-able build script to automate all of this?
+* A Markdown template for `INSTALL.md` and `CHANGELOG.md`?
+* A GitHub Actions pipeline that builds and signs automatically?
+
+Just say the word. You're *this* close to a clean, internal-ready deployment.

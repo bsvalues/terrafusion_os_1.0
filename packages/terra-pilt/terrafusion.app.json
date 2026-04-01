@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "terra-pilt",
+  "displayName": "TerraPILT",
+  "description": "Gen2 Payment in Lieu of Taxes Calculator",
+  "iconName": "Landmark",
+  "category": "tax",
+  "tier": 1,
+  "status": "active",
+  "pinned": true,
+  "version": "2.0.0",
+  "intent": "gen2",
+  "runnable": true,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5179/"
+  },
+  "tags": ["tax", "pilt", "federal", "gen2"],
+  "permissions": ["county:read", "tax:read"]
+}

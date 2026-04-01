@@ -1,0 +1,116 @@
+{
+  "LastUpdated": "2026-04-01T00:00:00.000Z",
+  "Services": {
+    "backend": {
+      "Name": "backend",
+      "Port": 5000,
+      "Url": "http://localhost:5000",
+      "Status": "running",
+      "Package": null
+    },
+    "costforge": {
+      "Name": "costforge",
+      "Port": 5002,
+      "Url": "http://localhost:5002",
+      "Status": "stopped",
+      "Package": "terrabuild",
+      "StartCmd": "cd packages/terrabuild && PORT=5002 npm run dev"
+    },
+    "statistics-studio": {
+      "Name": "statistics-studio",
+      "Port": 5003,
+      "Url": "http://localhost:5003",
+      "Status": "stopped",
+      "Package": null,
+      "StartCmd": "TBD — awaiting app audit"
+    },
+    "terra-pilt": {
+      "Name": "terra-pilt",
+      "Port": 5179,
+      "Url": "http://localhost:5179",
+      "Status": "stopped",
+      "Package": "terra-pilt",
+      "StartCmd": "cd packages/terra-pilt && PORT=5179 npm run dev"
+    },
+    "terra-permit": {
+      "Name": "terra-permit",
+      "Port": 5181,
+      "Url": "http://localhost:5181",
+      "Status": "stopped",
+      "Package": "terra-permit",
+      "StartCmd": "cd packages/terra-permit && PORT=5181 npm run dev"
+    },
+    "gis-pro": {
+      "Name": "gis-pro",
+      "Port": 5178,
+      "Url": "http://localhost:5178",
+      "Status": "stopped",
+      "Package": "gis-pro",
+      "StartCmd": "cd packages/gis-pro && PORT=5178 npm run dev"
+    },
+    "terra-gama": {
+      "Name": "terra-gama",
+      "Port": 5182,
+      "Url": "http://localhost:5182",
+      "Status": "stopped",
+      "Package": "terra-gama",
+      "StartCmd": "cd packages/terra-gama && PORT=5182 npm run dev"
+    },
+    "property-tax-ai": {
+      "Name": "property-tax-ai",
+      "Port": 5014,
+      "Url": "http://localhost:5014",
+      "Status": "stopped",
+      "Package": "property-tax-ai",
+      "StartCmd": "cd packages/property-tax-ai && PORT=5014 npm run dev"
+    },
+    "terra-flow": {
+      "Name": "terra-flow",
+      "Port": 5183,
+      "Url": "http://localhost:5183",
+      "Status": "stopped",
+      "Package": "terra-flow",
+      "StartCmd": "cd packages/terra-flow && PORT=5183 npm run dev"
+    },
+    "terra-levy": {
+      "Name": "terra-levy",
+      "Port": 5177,
+      "Url": "http://localhost:5177",
+      "Status": "stopped",
+      "Package": "terra-levy",
+      "StartCmd": "cd packages/terra-levy && PORT=5177 npm run dev"
+    },
+    "terra-sync": {
+      "Name": "terra-sync",
+      "Port": 5017,
+      "Url": "http://localhost:5017",
+      "Status": "stopped",
+      "Package": "terra-sync",
+      "StartCmd": "cd packages/terra-sync && PORT=5017 npm run dev"
+    },
+    "terra-miner": {
+      "Name": "terra-miner",
+      "Port": 5018,
+      "Url": "http://localhost:5018",
+      "Status": "stopped",
+      "Package": "terra-miner",
+      "StartCmd": "cd packages/terra-miner && PORT=5018 npm run dev"
+    },
+    "legislative-pulse": {
+      "Name": "legislative-pulse",
+      "Port": 5019,
+      "Url": "http://localhost:5019",
+      "Status": "stopped",
+      "Package": "legislative-pulse",
+      "StartCmd": "cd packages/legislative-pulse && PORT=5019 npm run dev"
+    },
+    "terra-insight": {
+      "Name": "terra-insight",
+      "Port": 5020,
+      "Url": "http://localhost:5020",
+      "Status": "stopped",
+      "Package": "terra-insight",
+      "StartCmd": "cd packages/terra-insight && PORT=5020 npm run dev"
+    }
+  }
+}

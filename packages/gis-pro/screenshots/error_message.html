@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Message</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgba(0,0,0,0.5);
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .modal {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            width: 400px;
+            max-width: 90%;
+            padding: 25px;
+            text-align: center;
+        }
+        h2 {
+            color: #e74c3c;
+            margin-top: 0;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .error-icon {
+            font-size: 48px;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal">
+        <div class="error-icon">⚠️</div>
+        <h2>Permission Denied</h2>
+        <p>Your role 'Staff' does not have permission to perform this action. Only users with 'Assessor' or 'ITAdmin' roles can approve changes.</p>
+        <button class="button">OK</button>
+    </div>
+</body>
+</html>

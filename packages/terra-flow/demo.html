@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terra Flow - Visual Workflow Orchestration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+            border-bottom: 1px solid #2a2a2a;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .workflow-status {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 8px 16px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 24px;
+            padding: 24px;
+            height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        .workflow-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .workflow-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #8b5cf6;
+            transform: translateX(4px);
+        }
+
+        .workflow-item.active {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: #8b5cf6;
+        }
+
+        .workflow-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .workflow-status-text {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .canvas-area {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .workflow-nodes {
+            position: relative;
+            height: 100%;
+            padding: 20px;
+        }
+
+        .workflow-node {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid #444;
+            border-radius: 12px;
+            padding: 16px;
+            min-width: 150px;
+            cursor: move;
+            transition: all 0.3s;
+        }
+
+        .workflow-node:hover {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .workflow-node.active {
+            border-color: #06b6d4;
+            background: rgba(6, 182, 212, 0.1);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+        }
+
+        .node-title {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .node-description {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 12px;
+        }
+
+        .node-status {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .status-running {
+            background: rgba(6, 182, 212, 0.2);
+            color: #06b6d4;
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+            transform-origin: left center;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .properties-panel {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        .property-group {
+            margin-bottom: 20px;
+        }
+
+        .property-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .property-value {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .execution-log {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .log-time {
+            color: #888;
+            min-width: 60px;
+        }
+
+        .log-message {
+            color: #ccc;
+        }
+
+        .log-success {
+            color: #10b981;
+        }
+
+        .log-error {
+            color: #ef4444;
+        }
+
+        .log-warning {
+            color: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">🔄</div>
+            <div class="title">Terra Flow</div>
+        </div>
+        <div class="workflow-status">
+            <div class="status-indicator"></div>
+            <span>Workflow Engine Active</span>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="sidebar">
+            <div class="sidebar-title">Active Workflows</div>
+            <div class="workflow-item active">
+                <div class="workflow-name">Property Assessment</div>
+                <div class="workflow-status-text">Running • 4/6 steps</div>
+            </div>
+            <div class="workflow-item">
+                <div class="workflow-name">Data Validation</div>
+                <div class="workflow-status-text">Completed • 8/8 steps</div>
+            </div>
+            <div class="workflow-item">
+                <div class="workflow-name">Report Generation</div>
+                <div class="workflow-status-text">Pending • 0/5 steps</div>
+            </div>
+            <div class="workflow-item">
+                <div class="workflow-name">AI Analysis</div>
+                <div class="workflow-status-text">Running • 2/7 steps</div>
+            </div>
+            <div class="workflow-item">
+                <div class="workflow-name">Backup Process</div>
+                <div class="workflow-status-text">Scheduled • 0/3 steps</div>
+            </div>
+        </div>
+
+        <div class="canvas-area">
+            <div class="canvas-grid"></div>
+            <div class="workflow-nodes">
+                <!-- Connection lines -->
+                <div class="connection-line" style="top: 80px; left: 200px; width: 120px; transform: rotate(0deg);"></div>
+                <div class="connection-line" style="top: 80px; left: 440px; width: 120px; transform: rotate(0deg);"></div>
+                <div class="connection-line" style="top: 200px; left: 320px; width: 100px; transform: rotate(90deg);"></div>
+                <div class="connection-line" style="top: 320px; left: 440px; width: 120px; transform: rotate(0deg);"></div>
+
+                <!-- Workflow nodes -->
+                <div class="workflow-node active" style="top: 50px; left: 50px;">
+                    <div class="node-title">
+                        <span>📥</span>
+                        <span>Data Input</span>
+                    </div>
+                    <div class="node-description">Collect property data from multiple sources</div>
+                    <div class="node-status status-completed">Completed</div>
+                </div>
+
+                <div class="workflow-node active" style="top: 50px; left: 250px;">
+                    <div class="node-title">
+                        <span>🔍</span>
+                        <span>Validation</span>
+                    </div>
+                    <div class="node-description">Validate data integrity and completeness</div>
+                    <div class="node-status status-completed">Completed</div>
+                </div>
+
+                <div class="workflow-node active" style="top: 50px; left: 450px;">
+                    <div class="node-title">
+                        <span>🤖</span>
+                        <span>AI Processing</span>
+                    </div>
+                    <div class="node-description">Apply machine learning algorithms</div>
+                    <div class="node-status status-running">Running</div>
+                </div>
+
+                <div class="workflow-node" style="top: 200px; left: 250px;">
+                    <div class="node-title">
+                        <span>📊</span>
+                        <span>Analysis</span>
+                    </div>
+                    <div class="node-description">Generate insights and recommendations</div>
+                    <div class="node-status status-pending">Pending</div>
+                </div>
+
+                <div class="workflow-node" style="top: 350px; left: 450px;">
+                    <div class="node-title">
+                        <span>📋</span>
+                        <span>Report</span>
+                    </div>
+                    <div class="node-description">Create final assessment report</div>
+                    <div class="node-status status-pending">Pending</div>
+                </div>
+
+                <div class="workflow-node" style="top: 350px; left: 50px;">
+                    <div class="node-title">
+                        <span>✅</span>
+                        <span>Approval</span>
+                    </div>
+                    <div class="node-description">Final review and approval process</div>
+                    <div class="node-status status-pending">Pending</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="properties-panel">
+            <div class="panel-title">Node Properties</div>
+            
+            <div class="property-group">
+                <div class="property-label">Node Type</div>
+                <div class="property-value">AI Processing</div>
+            </div>
+
+            <div class="property-group">
+                <div class="property-label">Status</div>
+                <div class="property-value">Running</div>
+            </div>
+
+            <div class="property-group">
+                <div class="property-label">Progress</div>
+                <div class="property-value">67% Complete</div>
+            </div>
+
+            <div class="property-group">
+                <div class="property-label">Execution Time</div>
+                <div class="property-value">2m 34s</div>
+            </div>
+
+            <div class="panel-title">Execution Log</div>
+            <div class="execution-log">
+                <div class="log-entry">
+                    <span class="log-time">10:15</span>
+                    <span class="log-message log-success">Data validation completed</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">10:16</span>
+                    <span class="log-message">Starting AI processing...</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">10:17</span>
+                    <span class="log-message">Processing 1,247 properties</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">10:18</span>
+                    <span class="log-message log-warning">High memory usage detected</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">10:19</span>
+                    <span class="log-message">67% complete, estimated 1m remaining</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Make nodes draggable
+        let isDragging = false;
+        let currentNode = null;
+        let offset = { x: 0, y: 0 };
+
+        document.querySelectorAll('.workflow-node').forEach(node => {
+            node.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                currentNode = node;
+                const rect = node.getBoundingClientRect();
+                offset.x = e.clientX - rect.left;
+                offset.y = e.clientY - rect.top;
+                node.style.zIndex = '1000';
+            });
+
+            node.addEventListener('click', () => {
+                document.querySelectorAll('.workflow-node').forEach(n => n.classList.remove('active'));
+                node.classList.add('active');
+            });
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging && currentNode) {
+                const canvas = document.querySelector('.workflow-nodes');
+                const canvasRect = canvas.getBoundingClientRect();
+                
+                const x = e.clientX - canvasRect.left - offset.x;
+                const y = e.clientY - canvasRect.top - offset.y;
+                
+                currentNode.style.left = Math.max(0, Math.min(x, canvas.clientWidth - currentNode.offsetWidth)) + 'px';
+                currentNode.style.top = Math.max(0, Math.min(y, canvas.clientHeight - currentNode.offsetHeight)) + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (currentNode) {
+                currentNode.style.zIndex = '';
+                currentNode = null;
+            }
+            isDragging = false;
+        });
+
+        // Simulate workflow progress
+        setInterval(() => {
+            const runningNodes = document.querySelectorAll('.status-running');
+            if (runningNodes.length > 0) {
+                const logContainer = document.querySelector('.execution-log');
+                const time = new Date().toLocaleTimeString('en-US', { 
+                    hour12: false, 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                const messages = [
+                    'Processing batch 247/400...',
+                    'Memory usage: 4.2GB',
+                    'AI model accuracy: 97.3%',
+                    'Estimated completion: 45 seconds'
+                ];
+                
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                const newEntry = document.createElement('div');
+                newEntry.className = 'log-entry';
+                newEntry.innerHTML = `
+                    <span class="log-time">${time}</span>
+                    <span class="log-message">${randomMessage}</span>
+                `;
+                
+                logContainer.appendChild(newEntry);
+                logContainer.scrollTop = logContainer.scrollHeight;
+                
+                // Keep only last 10 entries
+                while (logContainer.children.length > 10) {
+                    logContainer.removeChild(logContainer.firstChild);
+                }
+            }
+        }, 3000);
+
+        // Add workflow item click handlers
+        document.querySelectorAll('.workflow-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.workflow-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

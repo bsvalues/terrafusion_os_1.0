@@ -1,0 +1,909 @@
+# TaxI_AI - Enhanced Development Platform for Assessment Agencies
+
+You've identified a powerful opportunity – let's evolve TaxI_AI beyond just an AI agent platform into a full-fledged development environment specifically designed for assessment agencies. This approach will enable us to use TaxI_AI itself to build out the rest of our application suite.
+
+## Core Development Environment Features
+
+### 1. Integrated Development Experience
+
+```python
+# src/environment/development_workspace.py
+
+import streamlit as st
+import os
+import subprocess
+import tempfile
+import shutil
+import time
+import uuid
+from pathlib import Path
+import json
+import yaml
+import threading
+from typing import Dict, List, Any, Optional, Union
+
+from src.code_generation.ai_assistant import CodeAssistant
+from src.environment.file_manager import FileManager
+from src.environment.preview_engine import PreviewEngine
+from src.environment.versioning import VersionControl
+from src.environment.project_structure import ProjectTemplates
+
+class DevelopmentWorkspace:
+    """
+    Integrated development environment for assessment applications.
+    
+    Features:
+    - Real-time code editor with syntax highlighting
+    - AI-powered code completion and generation
+    - Live preview of applications
+    - Integrated versioning
+    - One-click deployment
+    """
+    
+    def __init__(self):
+        self.file_manager = FileManager()
+        self.preview_engine = PreviewEngine()
+        self.version_control = VersionControl()
+        self.code_assistant = CodeAssistant()
+        self.project_templates = ProjectTemplates()
+        
+        # Initialize session state
+        if "current_project" not in st.session_state:
+            st.session_state.current_project = None
+        if "current_file" not in st.session_state:
+            st.session_state.current_file = None
+        if "preview_status" not in st.session_state:
+            st.session_state.preview_status = "stopped"
+        if "last_code_change" not in st.session_state:
+            st.session_state.last_code_change = 0
+        if "auto_preview" not in st.session_state:
+            st.session_state.auto_preview = True
+        
+    def render(self):
+        """Render the development workspace UI."""
+        st.title("TaxI_AI Development Workspace")
+        
+        # Sidebar for project navigation
+        with st.sidebar:
+            self._render_project_navigation()
+        
+        # Main workspace area
+        if not st.session_state.current_project:
+            self._render_project_selection()
+        else:
+            # Layout with columns
+            col1, col2 = st.columns([2, 3])
+            
+            # File browser and editor
+            with col1:
+                self._render_file_browser()
+                self._render_code_editor()
+            
+            # Preview and output
+            with col2:
+                self._render_preview_controls()
+                self._render_preview_area()
+                self._render_output_logs()
+    
+    def _render_project_navigation(self):
+        """Render project navigation sidebar."""
+        st.sidebar.header("Projects")
+        
+        # Project actions
+        projects = self.file_manager.list_projects()
+        
+        if projects:
+            selected_project = st.sidebar.selectbox(
+                "Select Project",
+                options=projects,
+                index=projects.index(st.session_state.current_project) if st.session_state.current_project in projects else 0,
+                format_func=lambda x: os.path.basename(x) if x else "Select a project"
+            )
+            
+            if st.sidebar.button("Open Project"):
+                st.session_state.current_project = selected_project
+                st.session_state.current_file = None
+                st.session_state.preview_status = "stopped"
+                st.rerun()
+        
+        # Create new project
+        st.sidebar.header("Create New Project")
+        project_type = st.sidebar.selectbox(
+            "Project Type",
+            options=["Web Application", "API Service", "Data Pipeline", "AI Agent"]
+        )
+        
+        project_name = st.sidebar.text_input("Project Name")
+        
+        if st.sidebar.button("Create Project"):
+            if not project_name:
+                st.sidebar.error("Please enter a project name")
+            else:
+                new_project_path = self.project_templates.create_project(project_name, project_type)
+                st.session_state.current_project = new_project_path
+                st.session_state.current_file = None
+                st.sidebar.success(f"Created project: {project_name}")
+                st.rerun()
+                
+        # Version control
+        if st.session_state.current_project:
+            st.sidebar.header("Version Control")
+            commit_message = st.sidebar.text_input("Commit Message")
+            
+            col1, col2 = st.sidebar.columns(2)
+            
+            with col1:
+                if st.button("Commit Changes"):
+                    if not commit_message:
+                        st.sidebar.error("Please enter a commit message")
+                    else:
+                        self.version_control.commit(st.session_state.current_project, commit_message)
+                        st.sidebar.success("Changes committed")
+            
+            with col2:
+                if st.button("Push Changes"):
+                    result = self.version_control.push(st.session_state.current_project)
+                    if result:
+                        st.sidebar.success("Changes pushed")
+                    else:
+                        st.sidebar.error("Failed to push changes")
+            
+            # Deployment options
+            st.sidebar.header("Deployment")
+            deployment_env = st.sidebar.selectbox(
+                "Environment",
+                options=["Development", "Testing", "Production"]
+            )
+            
+            if st.sidebar.button("Deploy"):
+                # Add deployment logic here
+                st.sidebar.info(f"Deploying to {deployment_env}...")
+                # Mock deployment process
+                progress = st.sidebar.progress(0)
+                for i in range(100):
+                    time.sleep(0.02)
+                    progress.progress(i + 1)
+                st.sidebar.success(f"Deployed to {deployment_env}")
+    
+    def _render_project_selection(self):
+        """Render project selection screen."""
+        st.header("Welcome to TaxI_AI Development Workspace")
+        st.write("Please select an existing project or create a new one using the sidebar.")
+        
+        # Display project templates
+        st.subheader("Quick Start Templates")
+        
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.card(
+                title="Property Valuation App",
+                text="Complete property valuation application with comparable sales analysis and valuation models."
+            )
+            if st.button("Use Template", key="template1"):
+                new_project_path = self.project_templates.create_project(
+                    "Property Valuation App", 
+                    "Web Application",
+                    template="property_valuation"
+                )
+                st.session_state.current_project = new_project_path
+                st.rerun()
+                
+        with col2:
+            st.card(
+                title="Field Inspection App",
+                text="Mobile-first application for property inspections with offline support and photo capture."
+            )
+            if st.button("Use Template", key="template2"):
+                new_project_path = self.project_templates.create_project(
+                    "Field Inspection App", 
+                    "Web Application",
+                    template="field_inspection"
+                )
+                st.session_state.current_project = new_project_path
+                st.rerun()
+                
+        with col3:
+            st.card(
+                title="Assessment API",
+                text="RESTful API for accessing property data, valuations, and assessment information."
+            )
+            if st.button("Use Template", key="template3"):
+                new_project_path = self.project_templates.create_project(
+                    "Assessment API", 
+                    "API Service",
+                    template="assessment_api"
+                )
+                st.session_state.current_project = new_project_path
+                st.rerun()
+                
+        with col4:
+            st.card(
+                title="AI Agent Template",
+                text="Starting point for building custom AI agents for assessment tasks."
+            )
+            if st.button("Use Template", key="template4"):
+                new_project_path = self.project_templates.create_project(
+                    "Custom AI Agent", 
+                    "AI Agent",
+                    template="custom_agent"
+                )
+                st.session_state.current_project = new_project_path
+                st.rerun()
+    
+    def _render_file_browser(self):
+        """Render file browser for current project."""
+        st.subheader("Project Files")
+        
+        # Get files in current project
+        files = self.file_manager.list_files(st.session_state.current_project)
+        
+        # Organize files by directory
+        file_tree = {}
+        for file_path in files:
+            rel_path = os.path.relpath(file_path, st.session_state.current_project)
+            parts = rel_path.split(os.path.sep)
+            
+            current = file_tree
+            for i, part in enumerate(parts[:-1]):
+                if part not in current:
+                    current[part] = {}
+                current = current[part]
+            
+            # Add the file
+            if len(parts) > 1:
+                if "__files__" not in current:
+                    current["__files__"] = []
+                current["__files__"].append((parts[-1], file_path))
+            else:
+                if "__files__" not in file_tree:
+                    file_tree["__files__"] = []
+                file_tree["__files__"].append((parts[-1], file_path))
+        
+        # Render file tree
+        def render_directory(directory, path=""):
+            # Render files in current directory
+            if "__files__" in directory:
+                for filename, filepath in sorted(directory["__files__"]):
+                    if st.button(f"📄 {filename}", key=f"file_{filepath}"):
+                        st.session_state.current_file = filepath
+                        st.rerun()
+            
+            # Render subdirectories
+            for dirname, contents in sorted(directory.items()):
+                if dirname != "__files__":
+                    with st.expander(f"📁 {dirname}"):
+                        render_directory(contents, os.path.join(path, dirname))
+        
+        render_directory(file_tree)
+        
+        # New file/folder buttons
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            new_file_name = st.text_input("New File")
+            if st.button("Create File"):
+                if new_file_name:
+                    new_file_path = os.path.join(st.session_state.current_project, new_file_name)
+                    self.file_manager.create_file(new_file_path, "")
+                    st.session_state.current_file = new_file_path
+                    st.rerun()
+        
+        with col2:
+            new_dir_name = st.text_input("New Folder")
+            if st.button("Create Folder"):
+                if new_dir_name:
+                    new_dir_path = os.path.join(st.session_state.current_project, new_dir_name)
+                    os.makedirs(new_dir_path, exist_ok=True)
+                    st.rerun()
+    
+    def _render_code_editor(self):
+        """Render code editor for current file."""
+        if not st.session_state.current_file:
+            st.info("Select a file to edit")
+            return
+        
+        st.subheader(f"Editing: {os.path.basename(st.session_state.current_file)}")
+        
+        # Read current file content
+        file_content = self.file_manager.read_file(st.session_state.current_file)
+        
+        # Determine file type for syntax highlighting
+        file_ext = os.path.splitext(st.session_state.current_file)[1].lower()
+        if file_ext in ['.py', '.pyw']:
+            language = 'python'
+        elif file_ext in ['.js', '.jsx']:
+            language = 'javascript'
+        elif file_ext in ['.html', '.htm']:
+            language = 'html'
+        elif file_ext in ['.css']:
+            language = 'css'
+        elif file_ext in ['.json']:
+            language = 'json'
+        elif file_ext in ['.md']:
+            language = 'markdown'
+        else:
+            language = None
+        
+        # Code editor
+        new_content = st.text_area(
+            "Code Editor",
+            value=file_content,
+            height=400,
+            key="code_editor"
+        )
+        
+        # Save button
+        if st.button("Save Changes"):
+            self.file_manager.write_file(st.session_state.current_file, new_content)
+            st.session_state.last_code_change = time.time()
+            st.success("File saved")
+            
+            # Trigger preview refresh if auto-preview is enabled
+            if st.session_state.auto_preview and st.session_state.preview_status == "running":
+                self.preview_engine.refresh_preview(st.session_state.current_project)
+        
+        # AI assistance
+        st.subheader("AI Code Assistant")
+        
+        ai_prompt = st.text_area("What would you like help with?", placeholder="E.g., 'Create a function to calculate property values based on comparable sales'")
+        
+        if st.button("Generate Code"):
+            if ai_prompt:
+                with st.spinner("Generating code..."):
+                    generated_code = self.code_assistant.generate_code(
+                        prompt=ai_prompt,
+                        file_path=st.session_state.current_file,
+                        file_content=new_content,
+                        project_path=st.session_state.current_project
+                    )
+                    
+                    st.code(generated_code, language=language)
+                    
+                    if st.button("Insert Code"):
+                        # Determine where to insert the code
+                        # For simplicity, appending to the end here
+                        updated_content = new_content + "\n\n" + generated_code
+                        self.file_manager.write_file(st.session_state.current_file, updated_content)
+                        st.session_state.last_code_change = time.time()
+                        st.success("Code inserted")
+                        st.rerun()
+    
+    def _render_preview_controls(self):
+        """Render preview control panel."""
+        st.subheader("Preview Controls")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            if st.session_state.preview_status == "stopped":
+                if st.button("Start Preview"):
+                    self.preview_engine.start_preview(st.session_state.current_project)
+                    st.session_state.preview_status = "running"
+                    st.rerun()
+            else:
+                if st.button("Stop Preview"):
+                    self.preview_engine.stop_preview()
+                    st.session_state.preview_status = "stopped"
+                    st.rerun()
+        
+        with col2:
+            if st.session_state.preview_status == "running":
+                if st.button("Refresh Preview"):
+                    self.preview_engine.refresh_preview(st.session_state.current_project)
+                    st.success("Preview refreshed")
+        
+        with col3:
+            st.toggle("Auto-Refresh Preview", value=st.session_state.auto_preview, key="toggle_auto_preview")
+            if st.session_state.toggle_auto_preview != st.session_state.auto_preview:
+                st.session_state.auto_preview = st.session_state.toggle_auto_preview
+                st.rerun()
+    
+    def _render_preview_area(self):
+        """Render application preview area."""
+        st.subheader("Application Preview")
+        
+        if st.session_state.preview_status == "running":
+            preview_url = self.preview_engine.get_preview_url()
+            if preview_url:
+                # Embed iframe with preview
+                st.components.v1.iframe(preview_url, height=500, scrolling=True)
+            else:
+                st.info("Preview starting... please wait")
+        else:
+            st.info("Start the preview to see your application")
+    
+    def _render_output_logs(self):
+        """Render application output logs."""
+        st.subheader("Application Logs")
+        
+        if st.session_state.preview_status == "running":
+            logs = self.preview_engine.get_logs()
+            if logs:
+                st.text_area("Logs", value=logs, height=200, disabled=True)
+            else:
+                st.info("No logs available")
+        else:
+            st.info("Start the preview to see application logs")
+```
+
+### 2. Real-Time Preview Engine
+
+```python
+# src/environment/preview_engine.py
+
+import os
+import subprocess
+import socket
+import time
+import threading
+import tempfile
+import shutil
+import signal
+import psutil
+import requests
+from pathlib import Path
+from typing import Dict, List, Any, Optional, Union
+
+class PreviewEngine:
+    """
+    Engine for running live previews of applications during development.
+    
+    Features:
+    - Automatic port management
+    - Live reloading on file changes
+    - Support for different application types
+    - Integrated logging
+    """
+    
+    def __init__(self):
+        self.preview_process = None
+        self.log_file = None
+        self.preview_url = None
+        self.preview_port = None
+        self.project_type = None
+        self.logs = []
+        self.log_thread = None
+        self.stop_log_thread = False
+        
+    def start_preview(self, project_path: str) -> bool:
+        """
+        Start a preview server for the project.
+        
+        Args:
+            project_path: Path to the project directory
+            
+        Returns:
+            bool: True if preview started successfully
+        """
+        # Stop any existing preview
+        self.stop_preview()
+        
+        # Create log file
+        self.log_file = tempfile.NamedTemporaryFile(delete=False, mode='w+')
+        
+        # Determine project type
+        self.project_type = self._detect_project_type(project_path)
+        
+        # Find an available port
+        self.preview_port = self._find_available_port()
+        
+        # Start preview process based on project type
+        if self.project_type == "flask":
+            success = self._start_flask_preview(project_path)
+        elif self.project_type == "streamlit":
+            success = self._start_streamlit_preview(project_path)
+        elif self.project_type == "fastapi":
+            success = self._start_fastapi_preview(project_path)
+        elif self.project_type == "static":
+            success = self._start_static_preview(project_path)
+        else:
+            success = False
+            
+        if success:
+            # Start log monitoring thread
+            self.stop_log_thread = False
+            self.log_thread = threading.Thread(target=self._monitor_logs)
+            self.log_thread.daemon = True
+            self.log_thread.start()
+            
+            # Wait for server to start
+            time.sleep(2)
+            
+            return True
+        else:
+            return False
+            
+    def stop_preview(self) -> None:
+        """Stop the preview server."""
+        if self.preview_process:
+            try:
+                # Stop log thread
+                if self.log_thread:
+                    self.stop_log_thread = True
+                    self.log_thread.join(timeout=1)
+                
+                # Terminate process and any children
+                parent = psutil.Process(self.preview_process.pid)
+                for child in parent.children(recursive=True):
+                    child.terminate()
+                parent.terminate()
+                
+                # Close log file
+                if self.log_file:
+                    self.log_file.close()
+                    try:
+                        os.unlink(self.log_file.name)
+                    except:
+                        pass
+                    self.log_file = None
+            except:
+                pass
+                
+            self.preview_process = None
+            self.preview_url = None
+            self.preview_port = None
+            
+    def refresh_preview(self, project_path: str) -> bool:
+        """
+        Refresh the preview by restarting the server.
+        
+        Args:
+            project_path: Path to the project directory
+            
+        Returns:
+            bool: True if refresh was successful
+        """
+        return self.start_preview(project_path)
+            
+    def get_preview_url(self) -> Optional[str]:
+        """Get the URL for accessing the preview."""
+        return self.preview_url
+        
+    def get_logs(self) -> str:
+        """Get the application logs."""
+        return "\n".join(self.logs[-100:])  # Return last 100 log lines
+        
+    def _detect_project_type(self, project_path: str) -> str:
+        """
+        Detect the type of project based on its files.
+        
+        Args:
+            project_path: Path to the project directory
+            
+        Returns:
+            str: Project type ("flask", "streamlit", "fastapi", "static")
+        """
+        # Check for Flask app
+        if os.path.exists(os.path.join(project_path, "app.py")):
+            with open(os.path.join(project_path, "app.py"), "r") as f:
+                content = f.read()
+                if "Flask" in content and "app = Flask" in content:
+                    return "flask"
+                    
+        # Check for Streamlit app
+        for file in os.listdir(project_path):
+            if file.endswith(".py"):
+                with open(os.path.join(project_path, file), "r") as f:
+                    content = f.read()
+                    if "import streamlit as st" in content:
+                        return "streamlit"
+                        
+        # Check for FastAPI app
+        for file in os.listdir(project_path):
+            if file.endswith(".py"):
+                with open(os.path.join(project_path, file), "r") as f:
+                    content = f.read()
+                    if "FastAPI" in content and "app = FastAPI" in content:
+                        return "fastapi"
+                        
+        # Default to static if HTML files exist
+        for file in os.listdir(project_path):
+            if file.endswith(".html"):
+                return "static"
+                
+        # Default to Flask if we can't determine
+        return "flask"
+        
+    def _find_available_port(self) -> int:
+        """Find an available port for the preview server."""
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind(('localhost', 0))
+        port = sock.getsockname()[1]
+        sock.close()
+        return port
+        
+    def _start_flask_preview(self, project_path: str) -> bool:
+        """Start a Flask application preview."""
+        try:
+            # Find the Flask app file
+            app_file = "app.py"
+            for file in os.listdir(project_path):
+                if file.endswith(".py"):
+                    with open(os.path.join(project_path, file), "r") as f:
+                        content = f.read()
+                        if "Flask" in content and "app = Flask" in content:
+                            app_file = file
+                            break
+            
+            # Start Flask with hot reloading
+            cmd = [
+                "python", "-m", "flask",
+                "--app", app_file,
+                "run",
+                "--host", "localhost",
+                "--port", str(self.preview_port),
+                "--debug"
+            ]
+            
+            self.preview_process = subprocess.Popen(
+                cmd,
+                cwd=project_path,
+                stdout=self.log_file,
+                stderr=subprocess.STDOUT,
+                text=True
+            )
+            
+            self.preview_url = f"http://localhost:{self.preview_port}"
+            return True
+            
+        except Exception as e:
+            self.logs.append(f"Error starting Flask preview: {str(e)}")
+            return False
+            
+    def _start_streamlit_preview(self, project_path: str) -> bool:
+        """Start a Streamlit application preview."""
+        try:
+            # Find the Streamlit app file
+            app_file = None
+            for file in os.listdir(project_path):
+                if file.endswith(".py"):
+                    with open(os.path.join(project_path, file), "r") as f:
+                        content = f.read()
+                        if "import streamlit as st" in content:
+                            app_file = file
+                            break
+            
+            if not app_file:
+                self.logs.append("Error: Could not find Streamlit application file")
+                return False
+                
+            # Start Streamlit
+            cmd = [
+                "streamlit", "run",
+                app_file,
+                "--server.port", str(self.preview_port),
+                "--server.headless", "true",
+                "--server.enableCORS", "false"
+            ]
+            
+            self.preview_process = subprocess.Popen(
+                cmd,
+                cwd=project_path,
+                stdout=self.log_file,
+                stderr=subprocess.STDOUT,
+                text=True
+            )
+            
+            self.preview_url = f"http://localhost:{self.preview_port}"
+            return True
+            
+        except Exception as e:
+            self.logs.append(f"Error starting Streamlit preview: {str(e)}")
+            return False
+            
+    def _start_fastapi_preview(self, project_path: str) -> bool:
+        """Start a FastAPI application preview."""
+        try:
+            # Find the FastAPI app file
+            app_file = None
+            app_import = None
+            
+            for file in os.listdir(project_path):
+                if file.endswith(".py"):
+                    with open(os.path.join(project_path, file), "r") as f:
+                        content = f.read()
+                        if "FastAPI" in content and "app = FastAPI" in content:
+                            app_file = file
+                            # Extract the app variable name
+                            for line in content.split("\n"):
+                                if "=" in line and "FastAPI" in line:
+                                    app_import = line.split("=")[0].strip()
+                                    break
+                            break
+            
+            if not app_file or not app_import:
+                self.logs.append("Error: Could not find FastAPI application file")
+                return False
+                
+            # Start FastAPI with uvicorn
+            module_name = os.path.splitext(app_file)[0]
+            cmd = [
+                "uvicorn",
+                f"{module_name}:{app_import}",
+                "--host", "localhost",
+                "--port", str(self.preview_port),
+                "--reload"
+            ]
+            
+            self.preview_process = subprocess.Popen(
+                cmd,
+                cwd=project_path,
+                stdout=self.log_file,
+                stderr=subprocess.STDOUT,
+                text=True
+            )
+            
+            self.preview_url = f"http://localhost:{self.preview_port}"
+            return True
+            
+        except Exception as e:
+            self.logs.append(f"Error starting FastAPI preview: {str(e)}")
+            return False
+            
+    def _start_static_preview(self, project_path: str) -> bool:
+        """Start a static site preview server."""
+        try:
+            # Use Python's http.server
+            cmd = [
+                "python", "-m", "http.server",
+                str(self.preview_port)
+            ]
+            
+            self.preview_process = subprocess.Popen(
+                cmd,
+                cwd=project_path,
+                stdout=self.log_file,
+                stderr=subprocess.STDOUT,
+                text=True
+            )
+            
+            self.preview_url = f"http://localhost:{self.preview_port}"
+            return True
+            
+        except Exception as e:
+            self.logs.append(f"Error starting static preview: {str(e)}")
+            return False
+            
+    def _monitor_logs(self) -> None:
+        """Monitor the log file for new content."""
+        if not self.log_file:
+            return
+            
+        with open(self.log_file.name, "r") as f:
+            while not self.stop_log_thread:
+                line = f.readline()
+                if line:
+                    self.logs.append(line.strip())
+                else:
+                    time.sleep(0.1)
+```
+
+### 3. Advanced AI Code Assistant
+
+```python
+# src/code_generation/ai_assistant.py
+
+import os
+import json
+import requests
+from typing import Dict, List, Any, Optional, Union
+import re
+import ast
+import logging
+
+logger = logging.getLogger(__name__)
+
+class CodeAssistant:
+    """
+    AI-powered code assistant for development.
+    
+    Features:
+    - Code generation based on natural language prompts
+    - Code completion and suggestions
+    - Automatic documentation generation
+    - Refactoring assistance
+    - Bug detection and fixing
+    """
+    
+    def __init__(self, api_key: str = None):
+        self.api_key = api_key or os.environ.get("AI_API_KEY")
+        
+    def generate_code(
+        self, 
+        prompt: str,
+        file_path: Optional[str] = None,
+        file_content: Optional[str] = None,
+        project_path: Optional[str] = None
+    ) -> str:
+        """
+        Generate code based on a natural language prompt.
+        
+        Args:
+            prompt: Natural language description of the code to generate
+            file_path: Path to the current file (for context)
+            file_content: Content of the current file (for context)
+            project_path: Path to the project (for additional context)
+            
+        Returns:
+            str: Generated code
+        """
+        try:
+            # Build context from project and file
+            context = self._build_context(file_path, file_content, project_path)
+            
+            # Prepare prompt for AI model
+            enhanced_prompt = self._enhance_prompt(prompt, context)
+            
+            # Call AI model API
+            response = self._call_ai_api(enhanced_prompt)
+            
+            # Extract and format code from response
+            code = self._extract_code(response)
+            
+            return code
+            
+        except Exception as e:
+            logger.error(f"Error in code generation: {str(e)}")
+            return f"# Error generating code: {str(e)}\n# Please try again with a more specific prompt."
+    
+    def complete_code(self, code_fragment: str, cursor_position: int) -> str:
+        """
+        Complete code based on the current fragment and cursor position.
+        
+        Args:
+            code_fragment: Partial code
+            cursor_position: Position of cursor in the code
+            
+        Returns:
+            str: Completed code suggestion
+        """
+        try:
+            # Prepare prompt for AI model
+            prompt = f"""
+            Complete the following Python code fragment. The cursor is at position {cursor_position}
+            (marked with |):
+            
+            {code_fragment[:cursor_position]}|{code_fragment[cursor_position:]}
+            
+            Provide only the completion, not the entire code.
+            """
+            
+            # Call AI model API
+            response = self._call_ai_api(prompt)
+            
+            # Extract completion
+            completion = response.strip()
+            
+            return completion
+            
+        except Exception as e:
+            logger.error(f"Error in code completion: {str(e)}")
+            return ""
+    
+    def generate_documentation(self, code: str) -> str:
+        """
+        Generate documentation for the given code.
+        
+        Args:
+            code: Code to document
+            
+        Returns:
+            str: Documented code
+        """
+        try:
+            # Prepare prompt for AI model
+            prompt = f"""
+            Add comprehensive documentation to the following Python code:
+            
+            ```python
+            {code}
+            ```
+            
+            Include:
+            1. Module docstring explaining the purpose
+            2. Function/class docstrings in Google docstring format
+            3. Inline comments for complex sections
+            
+            Return the fully documented code.
+            """​​​​​​​​​​​​​​​​

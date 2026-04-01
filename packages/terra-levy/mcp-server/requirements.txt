@@ -1,0 +1,53 @@
+# TerraLevy Enhanced MCP Server - Python Dependencies
+# MIT PhD Level Tax Calculation System with Consciousness Processing
+# Version: 2.1.0
+
+# Core MCP Server Framework
+mcp>=1.0.0
+
+# Scientific Computing and Analytics
+numpy>=1.21.0
+pandas>=1.3.0
+scipy>=1.7.0
+
+# Machine Learning for Consciousness Processing
+scikit-learn>=1.0.0
+
+# Data Analysis and Statistics
+statsmodels>=0.13.0
+
+# Enhanced Computing (Optional - for advanced features)
+numba>=0.56.0
+
+# Development and Testing
+pytest>=6.0.0
+pytest-asyncio>=0.18.0
+
+# Code Quality
+flake8>=4.0.0
+black>=22.0.0
+
+# Logging and Monitoring
+structlog>=21.0.0
+
+# Government Data Processing
+xlrd>=2.0.0
+openpyxl>=3.0.0
+
+# Enhanced I/O
+aiofiles>=0.8.0
+
+# Mathematical Optimization (for quantum algorithms)
+cvxpy>=1.2.0
+
+# Time Series Analysis (for spatiotemporal analytics)
+plotly>=5.0.0
+
+# Configuration Management
+pydantic>=1.8.0
+
+# Async Framework Support
+asyncio-mqtt>=0.11.0
+
+# Security and Validation
+cryptography>=3.4.0

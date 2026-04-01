@@ -145,6 +145,7 @@ function getModuleDisplayName(moduleId: string): string {
     // Phase B audit additions
     'terra-miner': 'TerraMiner',
     'legislative-pulse': 'Legislative Pulse',
+    'terra-insight': 'TerraInsight',
     // GPT Suite namespaced modules
     'gpt-studio': 'GPT Studio',
     'gpt-marketplace': 'GPT Marketplace',
@@ -218,6 +219,7 @@ function getModuleIcon(moduleId: string): string {
     'terra-queue': '📋',
     'terra-miner': '⛏️',
     'legislative-pulse': '📢',
+    'terra-insight': '📊',
     // GPT Suite namespaced modules
     'gpt-studio': '🧪',
     'gpt-marketplace': '🏪',

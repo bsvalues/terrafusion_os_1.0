@@ -1,0 +1,26 @@
+{
+  "name": "terralevy",
+  "version": "2.0.0",
+  "description": "TerraLevy Enhanced MCP Server - MIT PhD Tax Calculation Toolchain",
+  "keywords": ["terralevy", "tax", "assessment", "mcp", "consciousness", "quantum", "spatiotemporal", "government"],
+  "author": "MIT PhD Systems Design Engineer",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.24.0",
+    "typescript": "^5.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "nodemon": "^3.0.0",
+    "jest": "^29.0.0"
+  }
+}

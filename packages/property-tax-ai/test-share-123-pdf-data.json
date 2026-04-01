@@ -1,0 +1,46 @@
+{
+  "title": "Property Insight Report",
+  "author": "Benton County Assessor's Office",
+  "createdAt": "2025-04-03T11:39:16.122Z",
+  "shareUrl": "http://localhost:5000/property-insights/share/test-share-123",
+  "property": {
+    "id": "BC001",
+    "title": "Test Property Insight"
+  },
+  "content": [
+    {
+      "type": "metadata",
+      "data": {
+        "propertyId": "BC001",
+        "insightType": "story",
+        "createdAt": "2025-04-03T11:39:16.122Z",
+        "format": "detailed"
+      }
+    },
+    {
+      "type": "text",
+      "data": "This is a test property insight for BC001."
+    },
+    {
+      "type": "section",
+      "data": {
+        "title": "Overview",
+        "content": "This property is located in Benton County."
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "title": "Valuation",
+        "content": "The assessed value is $250,000."
+      }
+    },
+    {
+      "type": "section",
+      "data": {
+        "title": "Features",
+        "content": "The property includes 3 bedrooms, 2 bathrooms, and a 2-car garage."
+      }
+    }
+  ]
+}

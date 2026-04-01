@@ -1,0 +1,173 @@
+{
+  "productName": "Terrafusion Civil Infrastructure",
+  "appId": "com.terrafusion.civil-infrastructure",
+  "copyright": "Copyright © 2025 Terrafusion Technologies",
+  "directories": {
+    "output": "dist-electron",
+    "buildResources": "build"
+  },
+  "files": [
+    "dist/**/*",
+    "server/**/*",
+    "deployment/electron-main.js",
+    "deployment/preload.js",
+    "node_modules/**/*",
+    "!node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+    "!node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+    "!node_modules/*.d.ts",
+    "!node_modules/.bin",
+    "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+    "!.editorconfig",
+    "!**/._*",
+    "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+    "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+    "!**/{appveyor.yml,.travis.yml,circle.yml}",
+    "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+  ],
+  "extraFiles": [
+    {
+      "from": "assets",
+      "to": "assets",
+      "filter": ["**/*"]
+    }
+  ],
+  "mac": {
+    "category": "public.app-category.business",
+    "icon": "assets/icon.icns",
+    "target": [
+      {
+        "target": "dmg",
+        "arch": ["x64", "arm64"]
+      },
+      {
+        "target": "zip",
+        "arch": ["x64", "arm64"]
+      }
+    ],
+    "darkModeSupport": true,
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "entitlements": "build/entitlements.mac.plist",
+    "entitlementsInherit": "build/entitlements.mac.plist"
+  },
+  "dmg": {
+    "title": "Terrafusion Civil Infrastructure",
+    "icon": "assets/icon.icns",
+    "background": "assets/dmg-background.png",
+    "window": {
+      "width": 600,
+      "height": 400
+    },
+    "contents": [
+      {
+        "x": 150,
+        "y": 200,
+        "type": "file"
+      },
+      {
+        "x": 450,
+        "y": 200,
+        "type": "link",
+        "path": "/Applications"
+      }
+    ]
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64", "ia32"]
+      },
+      {
+        "target": "portable",
+        "arch": ["x64"]
+      },
+      {
+        "target": "msi",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "assets/icon.ico",
+    "publisherName": "Terrafusion Technologies",
+    "verifyUpdateCodeSignature": false
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "allowElevation": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Terrafusion Civil Infrastructure",
+    "include": "build/installer.nsh",
+    "deleteAppDataOnUninstall": false,
+    "runAfterFinish": true,
+    "installerIcon": "assets/icon.ico",
+    "uninstallerIcon": "assets/icon.ico",
+    "installerHeaderIcon": "assets/icon.ico",
+    "displayLanguageSelector": true,
+    "multiLanguageInstaller": true,
+    "packElevateHelper": true
+  },
+  "msi": {
+    "oneClick": false,
+    "upgradeCode": "12345678-1234-1234-1234-123456789012",
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Terrafusion Civil Infrastructure"
+  },
+  "linux": {
+    "target": [
+      {
+        "target": "AppImage",
+        "arch": ["x64"]
+      },
+      {
+        "target": "deb",
+        "arch": ["x64"]
+      },
+      {
+        "target": "rpm",
+        "arch": ["x64"]
+      },
+      {
+        "target": "snap",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "assets/icon.png",
+    "category": "Office",
+    "description": "Enterprise GIS Platform for Civil Infrastructure Management",
+    "desktop": {
+      "Name": "Terrafusion Civil Infrastructure",
+      "Comment": "Enterprise GIS Platform for County Operations",
+      "Keywords": "GIS;Infrastructure;County;Assessment;Mapping;",
+      "StartupWMClass": "terrafusion"
+    }
+  },
+  "deb": {
+    "priority": "optional",
+    "depends": ["postgresql", "nodejs"],
+    "afterInstall": "deployment/post-install.sh",
+    "afterRemove": "deployment/post-remove.sh"
+  },
+  "rpm": {
+    "depends": ["postgresql-server", "nodejs"],
+    "afterInstall": "deployment/post-install.sh",
+    "afterRemove": "deployment/post-remove.sh"
+  },
+  "snap": {
+    "confinement": "strict",
+    "grade": "stable",
+    "summary": "Enterprise GIS Platform for Civil Infrastructure",
+    "description": "Terrafusion provides advanced geospatial data processing with intelligent document management for county assessor offices.",
+    "plugs": ["default", "network", "network-bind", "home", "removable-media"]
+  },
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "terrafusion",
+      "repo": "civil-infrastructure"
+    }
+  ],
+  "buildVersion": "1.0.0"
+}

@@ -1,0 +1,150 @@
+/* Help Center specific styles */
+
+/* Card with left border accent */
+.border-left-accent {
+  border-left: 4px solid;
+  border-left-color: var(--primary);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.border-left-accent:hover {
+  transform: translateY(-2px);
+}
+
+/* Card with category-specific accent colors */
+[data-category="Basics"] {
+  border-left-color: #3498db; /* Blue */
+}
+
+[data-category="AI Features"] {
+  border-left-color: #9b59b6; /* Purple */
+}
+
+[data-category="Workflow"] {
+  border-left-color: #2ecc71; /* Green */
+}
+
+[data-category="Templates"] {
+  border-left-color: #f39c12; /* Orange */
+}
+
+[data-category="Support"] {
+  border-left-color: #e74c3c; /* Red */
+}
+
+[data-category="Export"] {
+  border-left-color: #1abc9c; /* Teal */
+}
+
+[data-category="Users"] {
+  border-left-color: #34495e; /* Dark Blue */
+}
+
+[data-category="Data Quality"] {
+  border-left-color: #d35400; /* Dark Orange */
+}
+
+/* Feature Spotlight styles */
+.feature-spotlight {
+  position: relative;
+  display: inline-block;
+}
+
+.feature-spotlight-target.highlighted {
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+  border-radius: 0.25rem;
+}
+
+/* Pulsing effect for new features */
+@keyframes pulse-blue {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.pulse-blue {
+  animation: pulse-blue 2s infinite;
+}
+
+/* Contextual help tooltip styles */
+.contextual-help-tooltip {
+  max-width: 280px;
+  padding: 0.75rem;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.help-arrow {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+}
+
+/* Specific styling for the help landing page */
+.help-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.help-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Tour styles */
+.tour-spotlight {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+.tour-tooltip {
+  max-width: 320px;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: white;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.tour-progress {
+  margin-top: 0.75rem;
+  height: 4px;
+  background-color: #f1f5f9;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.tour-progress-bar {
+  height: 100%;
+  background-color: #3b82f6;
+  transition: width 0.3s ease;
+}
+
+/* Help center responsive adjustments */
+@media (max-width: 640px) {
+  .help-center-dialog {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+  
+  .help-card-grid {
+    grid-template-columns: 1fr;
+  }
+}

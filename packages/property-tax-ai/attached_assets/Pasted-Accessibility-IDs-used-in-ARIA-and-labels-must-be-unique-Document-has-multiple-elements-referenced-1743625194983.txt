@@ -1,0 +1,40 @@
+Accessibility
+IDs used in ARIA and labels must be unique: Document has multiple elements referenced with ARIA with the same id attribute: search-field
+<input data-replit-metadata="client/src/components/ui/top-navigation.tsx:31:14" data-component-name="input" id="search-field" class="block w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-transparent sm:text-sm" placeholder="Search properties, parcels, owners..." type="search" name="search">
+Open in Elements
+Request
+https://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/natural-language
+Further Reading
+Learn more about this axe rule at Deque University
+Learn why this is important and how to fix it on webhint.io
+Documents must have <title> element to aid in navigation
+IDs of active elements must be unique: Document has active elements with the same id attribute: user-menu-button
+<button data-replit-metadata="client/src/components/ui/top-navigation.tsx:73:14" data-component-name="button" type="button" class="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" id="user-menu-button">
+Open in Elements
+Request
+https://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/natural-language
+Further Reading
+Learn more about this axe rule at Deque University
+Learn why this is important and how to fix it on webhint.io
+Compatibility
+'-webkit-text-size-adjust' is not supported by Chrome, Chrome Android, Edge 79+, Firefox, Safari. Add 'text-size-adjust' to support Chrome 54+, Chrome Android 54+, Edge 79+.
+html,
+:host {
+    -webkit-text-size-adjust: 100%;
+}
+Request
+https://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/natural-language
+Further Reading
+Learn more about this CSS feature on MDN
+Learn why this is important and how to fix it on webhint.io
+The 'viewport' meta element 'content' attribute value should not contain 'maximum-scale'.
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+Open in Elements
+Request
+https://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/natural-language
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Performance
+'height' changes to this property will trigger: 'Layout', which can impact performance when used inside @keyframes.
+Other
+Deprecated feature used

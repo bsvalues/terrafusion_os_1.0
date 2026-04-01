@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "gis-pro",
+  "displayName": "TerraGIS",
+  "description": "Gen2 Geographic Information System & Parcel Mapping",
+  "iconName": "Map",
+  "category": "mapping",
+  "tier": 1,
+  "status": "active",
+  "pinned": true,
+  "version": "4.0.0",
+  "intent": "gen2",
+  "runnable": true,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5178/"
+  },
+  "tags": ["gis", "mapping", "parcels", "geospatial", "gen2"],
+  "permissions": ["county:read", "gis:read", "gis:write"]
+}
