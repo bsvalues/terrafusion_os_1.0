@@ -15,7 +15,9 @@
         "**/ARCHIVE/**",
         "**/QUARANTINE/**",
         "**/tokens/**",
-        "**/ui-tokens/**"
+        "**/ui-tokens/**",
+        "**/*.generated.ts",
+        "**/*.generated.tsx"
       ]
     }
   }
