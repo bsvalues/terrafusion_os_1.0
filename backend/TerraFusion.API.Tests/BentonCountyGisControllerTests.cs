@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +9,7 @@ using TerraFusion.API.Controllers;
 using TerraFusion.Core.Entities;
 using TerraFusion.Data;
 using Xunit;
+using SystemTask = System.Threading.Tasks.Task;
 
 namespace TerraFusion.API.Tests;
 
@@ -51,7 +51,7 @@ public class BentonCountyGisControllerTests
     };
 
     [Fact]
-    public async Task GetParcels_Returns200_WithDefaultLimit()
+    public async SystemTask GetParcels_Returns200_WithDefaultLimit()
     {
         var db = BuildInMemoryDb(Enumerable.Range(1, 20).Select(MakeProperty));
         var controller = new BentonCountyGisController(db, NullLogger<BentonCountyGisController>.Instance);
@@ -64,7 +64,7 @@ public class BentonCountyGisControllerTests
     }
 
     [Fact]
-    public async Task GetParcels_LimitCappedAt500()
+    public async SystemTask GetParcels_LimitCappedAt500()
     {
         var db = BuildInMemoryDb(Enumerable.Range(1, 600).Select(MakeProperty));
         var controller = new BentonCountyGisController(db, NullLogger<BentonCountyGisController>.Instance);
@@ -77,7 +77,7 @@ public class BentonCountyGisControllerTests
     }
 
     [Fact]
-    public async Task GetParcels_FiltersTobentonCountyOnly()
+    public async SystemTask GetParcels_FiltersTobentonCountyOnly()
     {
         var bentonParcels = Enumerable.Range(1, 5).Select(MakeProperty).ToList();
         var otherCounty = new Property
