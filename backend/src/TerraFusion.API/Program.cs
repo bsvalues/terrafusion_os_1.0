@@ -41,6 +41,94 @@ using System.Threading.RateLimiting;
 // ── Standalone PACS seed mode ──────────────────────────────────────────────
 // Run as: dotnet run --project TerraFusion.API -- --seed-pacs
 // Runs the seeder directly without HTTP server or background services.
+// Run as: dotnet run --project TerraFusion.API -- --canonicalize-only
+// Runs only Phase 7 (PacsCanonicalizer) without re-running the full ETL.
+
+if (args.Contains("--canonicalize-only"))
+{
+    var canonEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                  ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                  ?? "Production";
+
+    var canonHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(canonEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{canonEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{canonEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+        })
+        .Build();
+
+    using var canonScope = canonHost.Services.CreateScope();
+    var canonDb = canonScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var canonLogger = canonScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsCanonicalizer>>();
+    try
+    {
+        canonLogger.LogInformation("[Canonicalize] Standalone Phase 7 run...");
+        var canonicalizer = new TerraFusion.API.Seeds.PacsCanonicalizer(canonDb, canonLogger);
+        var result = await canonicalizer.CanonicalizeAsync();
+        canonLogger.LogInformation("[Canonicalize] DONE: {Result}", result);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        canonLogger.LogError(ex, "[Canonicalize] FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// ── Fast CAMA-only refresh (Step 4 only) ──────────────────────────────────
+// Run as: dotnet run --project TerraFusion.API -- --canonicalize-cama-only
+// Re-runs only CamaCharacteristics from PacsImprovements. Use after cost-field schema updates.
+if (args.Contains("--canonicalize-cama-only"))
+{
+    var camaEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                  ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                  ?? "Production";
+
+    var camaHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(camaEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{camaEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{camaEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+        })
+        .Build();
+
+    using var camaScope = camaHost.Services.CreateScope();
+    var camaDb = camaScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var camaLogger = camaScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsCanonicalizer>>();
+    try
+    {
+        camaLogger.LogInformation("[Canonicalize] Standalone CAMA-only Step 4 run...");
+        var canonicalizer = new TerraFusion.API.Seeds.PacsCanonicalizer(camaDb, camaLogger);
+        var count = await canonicalizer.CanonicalizeCamaOnlyAsync();
+        camaLogger.LogInformation("[Canonicalize] CAMA-ONLY DONE: {Count} CamaCharacteristics", count);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        camaLogger.LogError(ex, "[Canonicalize] CAMA-ONLY FAILED");
+        Environment.Exit(1);
+    }
+}
+
 if (args.Contains("--seed-pacs"))
 {
     // Determine environment from ASPNETCORE_ENVIRONMENT or DOTNET_ENVIRONMENT
@@ -1205,6 +1293,49 @@ app.MapGet("/api/test", () => new
     app.MapGet("/api/admin/pacs/seed/status", () =>
         Results.Ok(new { running = _pacsSeedRunning, lastResult = _pacsLastResult })
     ).WithTags("Admin").WithName("SeedPacsStatus");
+
+    // POST /api/admin/pacs/canonicalize — Phase 7 only: promote Pacs* mirror rows → canonical TF entities.
+    // Use when pacs_* tables are already populated but canonical tables need refresh.
+    {
+        var _canonRunning = false;
+        var _canonLastResult = "";
+
+        app.MapPost("/api/admin/pacs/canonicalize", (
+            IServiceScopeFactory scopeFactory,
+            ILogger<TerraFusion.API.Seeds.PacsCanonicalizer> logger) =>
+        {
+            if (_canonRunning)
+                return Results.Conflict("Canonicalization already running.");
+
+            _canonRunning = true;
+            _canonLastResult = "running";
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await using var scope = scopeFactory.CreateAsyncScope();
+                    var db = scope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+                    var canonicalizer = new TerraFusion.API.Seeds.PacsCanonicalizer(db, logger);
+                    var result = await canonicalizer.CanonicalizeAsync();
+                    _canonLastResult = result.ToString();
+                    logger.LogInformation("[PacsCanonicalizer] Complete: {Result}", _canonLastResult);
+                }
+                catch (Exception ex)
+                {
+                    _canonLastResult = $"ERROR: {ex.Message}";
+                    logger.LogError(ex, "[PacsCanonicalizer] Failed");
+                }
+                finally { _canonRunning = false; }
+            });
+
+            return Results.Accepted("/api/admin/pacs/canonicalize/status",
+                new { message = "Canonicalization started. Poll /api/admin/pacs/canonicalize/status." });
+        }).WithTags("Admin").WithName("CanonicalizeFromPacs");
+
+        app.MapGet("/api/admin/pacs/canonicalize/status", () =>
+            Results.Ok(new { running = _canonRunning, lastResult = _canonLastResult })
+        ).WithTags("Admin").WithName("CanonicalizeStatus");
+    }
 }
 
 // Minimal transcendence health probe (previously returned 404 in some checks)

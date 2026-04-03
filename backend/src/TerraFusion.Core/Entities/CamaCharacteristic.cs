@@ -79,6 +79,11 @@ public class CamaCharacteristic
   public int? Fireplaces { get; set; }
   public bool? HasPool { get; set; }
 
+  // ── County Cost Model (from pacs_improvements — Benton County's own cost approach) ──
+  public decimal? ImprvVal { get; set; }              // County's pre-computed improvement value
+  public decimal? PhysicalDepreciationPct { get; set; } // Physical depreciation % from PACS
+  public decimal? DepreciationPct { get; set; }       // Total (combined) depreciation % from PACS
+
   // ── Obsolescence ──
   public decimal? FunctionalObsolescence { get; set; }
   public decimal? ExternalObsolescence { get; set; }

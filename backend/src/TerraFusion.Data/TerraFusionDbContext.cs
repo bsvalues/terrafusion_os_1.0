@@ -98,8 +98,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   // Forge Valuation (R2 Wave 25)
   public DbSet<ValuationRecord> ValuationRecords { get; set; }
   public DbSet<ComparableSale> ComparableSales { get; set; }
-  public DbSet<CamaCharacteristic> CamaCharacteristics { get; set; }
-  public DbSet<CostMatrix> CostMatrices { get; set; }
+  public DbSet<CamaCharacteristic> CamaCharacteristics { get; set; }   public DbSet<CamaImprovementDetail> CamaImprovementDetails { get; set; }  public DbSet<CostMatrix> CostMatrices { get; set; }
 
   // Forge Analytics (R2 Wave 26)
   public DbSet<RegressionAnalysis> RegressionAnalyses { get; set; }

@@ -60,6 +60,15 @@ public sealed class PacsCanonicalizer
         return result;
     }
 
+    /// <summary>Re-run only Step 4 (CamaCharacteristics). Fast path for cost-field schema updates.</summary>
+    public async Task<int> CanonicalizeCamaOnlyAsync(CancellationToken ct = default)
+    {
+        _logger.LogInformation("[PacsCanonicalizer] CAMA-ONLY pass (Step 4 only — cost fields refresh).");
+        var cama = await CanonicalizeCamaCharacteristicsAsync(ct);
+        _logger.LogInformation("[PacsCanonicalizer] CAMA-ONLY complete. CamaCharacteristics={Count}", cama);
+        return cama;
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // Step 1: PacsParcel + PacsSitus (primary) + PacsOwner (latest year)
     //         + PacsValuation (latest, SupNum=0) → canonical Property
@@ -72,118 +81,117 @@ public sealed class PacsCanonicalizer
         _logger.LogInformation("[PacsCanonicalizer] Step 1: Properties...");
 
         // Load all Pacs parcel stubs — these are small, ~9MB for 89K rows
-        var pacsStubs = await _db.PacsParcel
+        var rawStubs = await _db.PacsParcel
             .Select(p => new
             {
                 p.Id,
                 GeoId = p.GeoId ?? p.SimpleGeoId,
+                PropId = p.PropId,
                 PropIdStr = p.PropId.ToString(),
                 p.CountyId,
                 p.PropTypeCd
             })
             .ToListAsync(ct);
 
+        // Deduplicate by GeoId — PacsParcel may contain re-seeded rows with different
+        // Guids but the same GeoId (county parcel number). Keep the row with the highest
+        // PropId (most authoritative PACS integer key). Without this, same-batch
+        // duplicates cause unique constraint violations on Properties.ParcelId.
+        var pacsStubs = rawStubs
+            .Where(p => !string.IsNullOrEmpty(p.GeoId))
+            .GroupBy(p => p.GeoId)
+            .Select(g => g.OrderByDescending(p => p.PropId).First())
+            .ToList();
+
         var total = 0;
+
+        // ── Bulk-load ALL supporting data at once — avoids 256+ per-batch round-trips ──
+
+        // Primary situs display address (all parcels)
+        var allSitusMap = await _db.PacsSituses
+            .Where(s => s.PrimaryFlag == "Y")
+            .GroupBy(s => s.ParcelId)
+            .Select(g => new { ParcelId = g.Key, Display = g.First().SitusDisplay })
+            .ToDictionaryAsync(x => x.ParcelId, x => x.Display, ct);
+
+        // Latest owner per parcel — SQLite: OwnerTaxYear is decimal, evaluate first
+        var allOwnerRaw = await _db.PacsOwners
+            .Select(o => new { o.ParcelId, o.OwnerTaxYear, o.FileAsName })
+            .ToListAsync(ct);
+        var allOwnerMap = allOwnerRaw
+            .GroupBy(o => o.ParcelId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(o => o.OwnerTaxYear).First().FileAsName);
+
+        // Latest base-roll valuation — SQLite: decimal, evaluate first
+        var allValRaw = await _db.PacsValuations
+            .Where(v => v.SupNum == 0)
+            .Select(v => new { v.ParcelId, v.PropValYear, v.MktapprMarket })
+            .ToListAsync(ct);
+        var allValMap = allValRaw
+            .GroupBy(v => v.ParcelId)
+            .ToDictionary(
+                g => g.Key,
+                g =>
+                {
+                    var best = g.OrderByDescending(v => v.PropValYear).First();
+                    return new { ParcelId = g.Key, Year = best.PropValYear, Market = best.MktapprMarket };
+                });
+
+        // Land value sum (latest year) — SQLite: decimal, evaluate first
+        var allLandValRaw = await _db.PacsLandDetails
+            .Where(l => l.SupNum == 0)
+            .Select(l => new { l.ParcelId, l.PropValYear, l.LandSegMktVal })
+            .ToListAsync(ct);
+        var allLandValMap = allLandValRaw
+            .GroupBy(l => l.ParcelId)
+            .ToDictionary(
+                g => g.Key,
+                g =>
+                {
+                    var maxYear = g.Max(x => x.PropValYear);
+                    return g.Where(x => x.PropValYear == maxYear).Sum(x => x.LandSegMktVal ?? 0m);
+                });
+
+        // Improvement value sum (latest year) — SQLite: decimal, evaluate first
+        var allImprvValRaw = await _db.PacsImprovements
+            .Where(i => i.SupNum == 0)
+            .Select(i => new { i.ParcelId, i.PropValYear, i.MktapprVal })
+            .ToListAsync(ct);
+        var allImprvValMap = allImprvValRaw
+            .GroupBy(i => i.ParcelId)
+            .ToDictionary(
+                g => g.Key,
+                g =>
+                {
+                    var maxYear = g.Max(x => x.PropValYear);
+                    return g.Where(x => x.PropValYear == maxYear).Sum(x => x.MktapprVal ?? 0m);
+                });
+
+        // All existing Properties (upsert target) — AsNoTracking to avoid tracking 128k entities
+        var allExistingProps = await _db.Properties
+            .AsNoTracking()
+            .ToDictionaryAsync(p => p.ParcelId, p => p, ct);
 
         foreach (var batch in pacsStubs.Chunk(BatchSize))
         {
-            var batchIds = batch.Select(p => p.Id).ToHashSet();
-            var batchGeoIds = batch
-                .Select(p => p.GeoId)
-                .Where(g => !string.IsNullOrEmpty(g))
-                .ToList()!;
-
-            // ── Load supporting data for this batch ──────────────────────
-
-            // Primary situs display address
-            var situsMap = await _db.PacsSituses
-                .Where(s => batchIds.Contains(s.ParcelId) && s.PrimaryFlag == "Y")
-                .GroupBy(s => s.ParcelId)
-                .Select(g => new { ParcelId = g.Key, Display = g.First().SitusDisplay })
-                .ToDictionaryAsync(x => x.ParcelId, x => x.Display, ct);
-
-            // Latest owner name per parcel
-            var ownerMap = await _db.PacsOwners
-                .Where(o => batchIds.Contains(o.ParcelId))
-                .GroupBy(o => o.ParcelId)
-                .Select(g => new
-                {
-                    ParcelId = g.Key,
-                    Name = g.OrderByDescending(o => o.OwnerTaxYear).First().FileAsName
-                })
-                .ToDictionaryAsync(x => x.ParcelId, x => x.Name, ct);
-
-            // Latest base-roll valuation for aggregate values
-            var valMap = await _db.PacsValuations
-                .Where(v => batchIds.Contains(v.ParcelId) && v.SupNum == 0)
-                .GroupBy(v => v.ParcelId)
-                .Select(g => new
-                {
-                    ParcelId = g.Key,
-                    Year = g.Max(v => v.PropValYear),
-                    Market = g.OrderByDescending(v => v.PropValYear)
-                        .Select(v => v.MktapprMarket)
-                        .FirstOrDefault()
-                })
-                .ToDictionaryAsync(x => x.ParcelId, x => x, ct);
-
-            // Land value sum (latest year)
-            var landValMap = await _db.PacsLandDetails
-                .Where(l => batchIds.Contains(l.ParcelId) && l.SupNum == 0)
-                .GroupBy(l => new { l.ParcelId, l.PropValYear })
-                .Select(g => new
-                {
-                    g.Key.ParcelId,
-                    g.Key.PropValYear,
-                    Total = g.Sum(l => (decimal?)(l.LandSegMktVal ?? 0)) ?? 0m
-                })
-                .GroupBy(x => x.ParcelId)
-                .Select(g => new
-                {
-                    ParcelId = g.Key,
-                    Total = g.OrderByDescending(x => x.PropValYear).First().Total
-                })
-                .ToDictionaryAsync(x => x.ParcelId, x => x.Total, ct);
-
-            // Improvement value sum (latest year)
-            var imprvValMap = await _db.PacsImprovements
-                .Where(i => batchIds.Contains(i.ParcelId) && i.SupNum == 0)
-                .GroupBy(i => new { i.ParcelId, i.PropValYear })
-                .Select(g => new
-                {
-                    g.Key.ParcelId,
-                    g.Key.PropValYear,
-                    Total = g.Sum(i => (decimal?)(i.MktapprVal ?? 0)) ?? 0m
-                })
-                .GroupBy(x => x.ParcelId)
-                .Select(g => new
-                {
-                    ParcelId = g.Key,
-                    Total = g.OrderByDescending(x => x.PropValYear).First().Total
-                })
-                .ToDictionaryAsync(x => x.ParcelId, x => x.Total, ct);
-
-            // Load existing Properties for this batch (upsert target)
-            var existingProps = await _db.Properties
-                .Where(p => batchGeoIds.Contains(p.ParcelId))
-                .ToDictionaryAsync(p => p.ParcelId, p => p, ct);
-
             // ── Upsert each parcel in the batch ──────────────────────────
             foreach (var stub in batch)
             {
                 if (string.IsNullOrEmpty(stub.GeoId)) continue;
 
-                valMap.TryGetValue(stub.Id, out var val);
-                situsMap.TryGetValue(stub.Id, out var address);
-                ownerMap.TryGetValue(stub.Id, out var ownerName);
-                landValMap.TryGetValue(stub.Id, out var landVal);
-                imprvValMap.TryGetValue(stub.Id, out var imprvVal);
+                allValMap.TryGetValue(stub.Id, out var val);
+                allSitusMap.TryGetValue(stub.Id, out var address);
+                allOwnerMap.TryGetValue(stub.Id, out var ownerName);
+                allLandValMap.TryGetValue(stub.Id, out var landVal);
+                allImprvValMap.TryGetValue(stub.Id, out var imprvVal);
 
                 var marketValue = val?.Market ?? 0m;
                 var taxYear = val?.Year ?? DateTime.UtcNow.Year;
                 var addressStr = address ?? "Address not available";
 
-                if (existingProps.TryGetValue(stub.GeoId, out var existing))
+                if (allExistingProps.TryGetValue(stub.GeoId, out var existing))
                 {
                     // Update — PACS is authoritative for these fields during transition
                     existing.PropertyId       = stub.PropIdStr;
@@ -194,12 +202,12 @@ public sealed class PacsCanonicalizer
                     existing.MarketValue      = marketValue;
                     existing.LandValue        = landVal;
                     existing.ImprovementValue = imprvVal;
-                    // WA State: assessed value = 100% of market value for most property types
                     existing.AssessedValue    = marketValue;
                     existing.TaxYear          = taxYear;
                     existing.CountyId         = stub.CountyId;
                     existing.LastUpdated      = DateTime.UtcNow;
                     existing.UpdatedAt        = DateTime.UtcNow;
+                    _db.Properties.Update(existing); // explicit attach as Modified (AsNoTracking)
                 }
                 else
                 {
@@ -224,6 +232,7 @@ public sealed class PacsCanonicalizer
                         UpdatedAt       = DateTime.UtcNow
                     };
                     _db.Properties.Add(property);
+                    allExistingProps[stub.GeoId] = property; // prevent duplicate-key on subsequent batches
                 }
 
                 total++;
@@ -255,24 +264,30 @@ public sealed class PacsCanonicalizer
 
         _logger.LogDebug("[PacsCanonicalizer] Cleared {N} draft ValuationRecords.", deleted);
 
-        // Build parcel lookup: Guid → (GeoId, CountyId, PropTypeCd)
-        var parcelMap = await _db.PacsParcel
+        // Build parcel lookup: PropId (int) → (GeoId, CountyId, PropTypeCd)
+        // Using PropId avoids GUID mismatch when PacsParcel is re-seeded with new Guids
+        // but pacs_valuations still references old Guids via ParcelId FK.
+        // Deduplicate by PropId — PacsParcel may contain re-seeded duplicates.
+        var parcelRaw2 = await _db.PacsParcel
             .Where(p => p.GeoId != null || p.SimpleGeoId != null)
             .Select(p => new
             {
-                p.Id,
+                p.PropId,
                 GeoId = p.GeoId ?? p.SimpleGeoId,
                 p.CountyId,
                 p.PropTypeCd
             })
-            .ToDictionaryAsync(p => p.Id, p => p!, ct);
+            .ToListAsync(ct);
+        var parcelMap = parcelRaw2
+            .GroupBy(p => p.PropId)
+            .ToDictionary(g => g.Key, g => g.First());
 
-        // Load base-roll valuations
+        // Load base-roll valuations — join via PacsPropId (stable int FK) not ParcelId (Guid)
         var valuations = await _db.PacsValuations
             .Where(v => v.SupNum == 0)
             .Select(v => new
             {
-                v.ParcelId,
+                v.PacsPropId,
                 v.PropValYear,
                 v.CostValue,
                 v.CostMarket,
@@ -289,7 +304,7 @@ public sealed class PacsCanonicalizer
         {
             foreach (var pv in batch)
             {
-                if (!parcelMap.TryGetValue(pv.ParcelId, out var parcelInfo)) continue;
+                if (!parcelMap.TryGetValue(pv.PacsPropId, out var parcelInfo)) continue;
 
                 var costVal  = pv.CostMarket  ?? pv.CostValue  ?? 0m;
                 var incomeVal = pv.IncomeMarket ?? pv.IncomeValue ?? 0m;
@@ -421,6 +436,7 @@ public sealed class PacsCanonicalizer
         _logger.LogInformation("[PacsCanonicalizer] Step 4: CamaCharacteristics...");
 
         await _db.CamaCharacteristics.ExecuteDeleteAsync(ct);
+        await _db.CamaImprovementDetails.ExecuteDeleteAsync(ct);
 
         // Build parcel lookup
         var parcelMap = await _db.PacsParcel
@@ -433,9 +449,9 @@ public sealed class PacsCanonicalizer
             })
             .ToDictionaryAsync(p => p.Id, p => p!, ct);
 
-        // Load base-roll primary improvements
+        // Load base-roll improvements (SupNum=0; PrimaryImprv not reliably populated in all PACS exports)
         var improvements = await _db.PacsImprovements
-            .Where(i => i.SupNum == 0 && i.PrimaryImprv == "Y")
+            .Where(i => i.SupNum == 0)
             .Select(i => new
             {
                 i.Id,
@@ -444,58 +460,154 @@ public sealed class PacsCanonicalizer
                 i.ImprvTypeCode,
                 i.ActualYearBuilt,
                 i.EffectiveYearBuilt,
+                i.ImprvVal,
+                i.PhysicalPct,
+                i.DepPct,
                 i.FunctionalPct,
                 i.EconomicPct
             })
             .ToListAsync(ct);
 
+        // Load ALL detail and land data at once — avoid 280+ per-batch DB round-trips
+        _logger.LogDebug("[PacsCanonicalizer] Loading all improvement details...");
+        var allImprvIds = improvements.Select(i => i.Id).ToHashSet();
+        var allParcelIds = improvements.Select(i => i.ParcelId).Distinct().ToHashSet();
+
+        var allDetailRaw = await _db.PacsImprovementDetails
+            .Where(d => d.SupNum == 0)
+            .Select(d => new
+            {
+                d.ImprovementId,
+                d.ImprvDetArea,
+                d.ConditionCode,
+                d.ImprvDetSubClassCd,
+                d.ImprvDetClassCd,
+                d.ImprvDetMethCd,
+                d.ImprvDetTypeCd,
+                d.ImprvDetDesc,
+                d.UnitPrice,
+                d.ImprvDetCalcVal,
+                d.DepreciatedReplacementCostNew,
+                d.YearBuilt,
+                d.PhysicalPct,
+                d.DepPct
+            })
+            .ToListAsync(ct);
+
+        var allDetailMap = allDetailRaw
+            .GroupBy(d => d.ImprovementId)
+            .ToDictionary(
+                g => g.Key,
+                g =>
+                {
+                    var ordered = g.OrderByDescending(d => d.ImprvDetArea).ToList();
+                    return new
+                    {
+                        TotalArea     = g.Sum(d => d.ImprvDetArea ?? 0m),
+                        ConditionCode = ordered.Select(d => d.ConditionCode).FirstOrDefault(),
+                        ClassCode     = ordered.Select(d => d.ImprvDetClassCd).FirstOrDefault(),
+                        SubClassCd    = ordered.Select(d => d.ImprvDetSubClassCd).FirstOrDefault(),
+                        YearBuilt     = ordered.Select(d => d.YearBuilt).FirstOrDefault(),
+                        PhysicalPct   = ordered.Select(d => d.PhysicalPct).FirstOrDefault()
+                    };
+                });
+
+        _logger.LogDebug("[PacsCanonicalizer] Loading all land sizes...");
+        var allLandRaw = await _db.PacsLandDetails
+            .Where(l => l.SupNum == 0)
+            .Select(l => new { l.ParcelId, l.PropValYear, l.SizeSquareFeet })
+            .ToListAsync(ct);
+
+        var allLandMap = allLandRaw
+            .GroupBy(l => l.ParcelId)
+            .ToDictionary(
+                g => g.Key,
+                g =>
+                {
+                    var maxYear = g.Max(x => x.PropValYear);
+                    return g.Where(x => x.PropValYear == maxYear).Sum(x => x.SizeSquareFeet ?? 0m);
+                });
+
+        // Segments grouped by ImprovementId — raw list used for CamaImprovementDetail inserts
+        var allSegmentsByImprv = allDetailRaw
+            .GroupBy(d => d.ImprovementId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        // Load all improvement attributes — maps AttributeCode / AttrUnit to physical fields
+        _logger.LogDebug("[PacsCanonicalizer] Loading all improvement attributes...");
+        var allAttributesRaw = await _db.PacsImprovementAttributes
+            .Where(a => allImprvIds.Contains(a.ImprovementId))
+            .Select(a => new { a.ImprovementId, a.AttributeCode, a.AttributeValue, a.AttrUnit })
+            .ToListAsync(ct);
+
+        var allAttrMap = allAttributesRaw
+            .GroupBy(a => a.ImprovementId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
         var total = 0;
 
-        foreach (var batch in improvements.Chunk(BatchSize))
+        // Deduplicate by (GeoId, PropValYear) — the unique index requires one row per parcel/year.
+        // Must use GeoId (canonical string), NOT ParcelId (Guid), because multiple PacsParcel rows
+        // may share the same GeoId but have different Guids (from multiple seeder runs).
+        // Take the improvement with the largest total detail area as the "primary" building.
+        var primaryImprovements = improvements
+            .Select(i =>
+            {
+                parcelMap.TryGetValue(i.ParcelId, out var p);
+                return new { Imprv = i, GeoId = p?.GeoId };
+            })
+            .Where(x => !string.IsNullOrEmpty(x.GeoId))
+            .GroupBy(x => new { x.GeoId, x.Imprv.PropValYear })
+            .Select(g => g.OrderByDescending(x =>
+            {
+                allDetailMap.TryGetValue(x.Imprv.Id, out var d);
+                return d?.TotalArea ?? 0m;
+            }).First().Imprv)
+            .ToList();
+
+        _logger.LogDebug("[PacsCanonicalizer] {Count} primary improvements after dedup (from {Raw} total).", primaryImprovements.Count, improvements.Count);
+
+        foreach (var batch in primaryImprovements.Chunk(BatchSize))
         {
-            var batchImprvIds = batch.Select(i => i.Id).ToHashSet();
-            var batchParcelIds = batch.Select(i => i.ParcelId).ToHashSet();
-
-            // Aggregate improvement detail areas for this batch
-            var detailMap = await _db.PacsImprovementDetails
-                .Where(d => batchImprvIds.Contains(d.ImprovementId) && d.SupNum == 0)
-                .GroupBy(d => d.ImprovementId)
-                .Select(g => new
-                {
-                    ImprovementId  = g.Key,
-                    TotalArea      = g.Sum(d => d.ImprvDetArea ?? 0m),
-                    // Use the largest detail segment for quality/condition (main area)
-                    ConditionCode  = g.OrderByDescending(d => d.ImprvDetArea).Select(d => d.ConditionCode).FirstOrDefault(),
-                    QualityGrade   = g.OrderByDescending(d => d.ImprvDetArea).Select(d => d.ImprvDetSubClassCd).FirstOrDefault(),
-                    YearBuilt      = g.OrderByDescending(d => d.ImprvDetArea).Select(d => d.YearBuilt).FirstOrDefault(),
-                    PhysicalPct    = g.OrderByDescending(d => d.ImprvDetArea).Select(d => d.PhysicalPct).FirstOrDefault()
-                })
-                .ToDictionaryAsync(x => x.ImprovementId, x => x, ct);
-
-            // Land area sums for this batch (latest year)
-            var landMap = await _db.PacsLandDetails
-                .Where(l => batchParcelIds.Contains(l.ParcelId) && l.SupNum == 0)
-                .GroupBy(l => new { l.ParcelId, l.PropValYear })
-                .Select(g => new
-                {
-                    g.Key.ParcelId,
-                    g.Key.PropValYear,
-                    TotalSqft = g.Sum(l => l.SizeSquareFeet ?? 0m)
-                })
-                .GroupBy(x => x.ParcelId)
-                .Select(g => new
-                {
-                    ParcelId  = g.Key,
-                    TotalSqft = g.OrderByDescending(x => x.PropValYear).First().TotalSqft
-                })
-                .ToDictionaryAsync(x => x.ParcelId, x => x.TotalSqft, ct);
-
             foreach (var imprv in batch)
             {
                 if (!parcelMap.TryGetValue(imprv.ParcelId, out var parcelInfo)) continue;
+                if (string.IsNullOrEmpty(parcelInfo.GeoId)) continue;
 
-                detailMap.TryGetValue(imprv.Id, out var detail);
-                landMap.TryGetValue(imprv.ParcelId, out var landSqft);
+                allDetailMap.TryGetValue(imprv.Id, out var detail);
+                allLandMap.TryGetValue(imprv.ParcelId, out var landSqft);
+                allAttrMap.TryGetValue(imprv.Id, out var attrList);
+                attrList ??= new();
+
+                // ── Attribute-to-physical-field mapping ───────────────────────────────
+                string? foundation = attrList.FirstOrDefault(a =>
+                    a.AttributeCode is "Crawl/Concrete Perimeter Piers" or "Slab"
+                        or "Post & Pier" or "None/Dirt")?.AttributeCode;
+
+                string? exteriorWall = attrList.FirstOrDefault(a =>
+                    a.AttributeCode is "Alum siding" or "Vinyl" or "Brick" or "Brick Veneer"
+                        or "Wood" or "Stucco" or "Stucco economy" or "Hardboard" or "Hardi-board"
+                        or "Log" or "Log veneer or rustic" or "Concrete Block" or "Masonry Wall"
+                        or "Metal" or "Metal - Low" or "Dryvit/EIFS" or "T 111 plywood"
+                        or "Asbestos")?.AttributeCode;
+
+                string? roofType = attrList.FirstOrDefault(a =>
+                    a.AttributeCode is "Comp Shingle" or "Comp Shingle - Arch" or "Slate/Tile"
+                        or "Metal" or "Built-Up" or "Tar & Gravel")?.AttributeCode;
+
+                string? hvacType = attrList.FirstOrDefault(a =>
+                    a.AttributeCode is "Heat pump" or "Heat Pump" or "Heat Pump, Ground Loop"
+                        or "Forced Air Furnace" or "Central Warm Air" or "Central heat/cooling"
+                        or "Baseboard" or "Electric baseboard" or "Electric, Cable or Baseboard"
+                        or "Electric radiant" or "Electric, Radiant Panels" or "Evaporative Cooling"
+                        or "Hot Water, Radiant" or "No HVAC" or "Package Unit" or "Space Heaters"
+                        or "Space heater-elec" or "Warmed & Cooled Air"
+                        or "Warmed & Cooled Air/Heat Pump")?.AttributeCode;
+
+                int? fireplaces = (int?)(attrList.FirstOrDefault(a => a.AttributeCode == "FIREPLACE")?.AttrUnit);
+                // Bedrooms: AttrCode="Count", AttrUnit=3; Bathrooms: AttrCode="Count", AttrUnit=2
+                int? bedrooms  = (int?)(attrList.FirstOrDefault(a => a.AttributeCode == "Count" && a.AttrUnit == 3m)?.AttrUnit);
+                int? bathrooms = (int?)(attrList.FirstOrDefault(a => a.AttributeCode == "Count" && a.AttrUnit == 2m)?.AttrUnit);
 
                 var sqft     = detail?.TotalArea ?? 0m;
                 var yearBuilt = detail?.YearBuilt.HasValue == true
@@ -522,18 +634,68 @@ public sealed class PacsCanonicalizer
                     EffectiveAge          = effectiveAge,
                     LandAreaSqft          = landSqft > 0 ? landSqft : null,
                     ConditionGrade        = detail?.ConditionCode,
-                    QualityGrade          = detail?.QualityGrade,
-                    FunctionalObsolescence = imprv.FunctionalPct ?? (decimal?)detail?.PhysicalPct,
-                    ExternalObsolescence  = (decimal?)imprv.EconomicPct,
+                    // Normalize PACS ClassCd (Avg, Good, EXC…) to Benton 1-6 canonical values
+                    QualityGrade          = NormalizeQualityGrade(detail?.ClassCode),
+                    // Sub-class "+" maps to ComplexityGrade=PLUS; "*" (standard) is omitted
+                    ComplexityGrade       = detail?.SubClassCd == "+" ? "PLUS" : null,
+                    // Physical characteristics from PACS improvement attributes
+                    Foundation            = foundation,
+                    ExteriorWall          = exteriorWall,
+                    RoofType              = roofType,
+                    HvacType              = hvacType,
+                    Bedrooms              = bedrooms,
+                    Bathrooms             = bathrooms,
+                    Fireplaces            = fireplaces,
+                    ImprvVal              = imprv.ImprvVal,
+                    PhysicalDepreciationPct = imprv.PhysicalPct ?? detail?.PhysicalPct,
+                    DepreciationPct       = imprv.DepPct,
+                    // FunctionalPct and EconomicPct are PACS "percent good" values (0-100).
+                    // Convert to dollar obsolescence amounts: $ = ImprvVal × (1 - pctGood/100).
+                    // If percent-good = 100 → $0 obsolescence (no loss). If null → null (unknown).
+                    FunctionalObsolescence = imprv.ImprvVal.HasValue && imprv.FunctionalPct.HasValue
+                        ? Math.Round(imprv.ImprvVal.Value * (1m - imprv.FunctionalPct.Value / 100m), 2)
+                        : null,
+                    ExternalObsolescence  = imprv.ImprvVal.HasValue && imprv.EconomicPct.HasValue
+                        ? Math.Round(imprv.ImprvVal.Value * (1m - imprv.EconomicPct.Value / 100m), 2)
+                        : null,
                     CountyId              = parcelInfo.CountyId,
                     UpdatedAt             = DateTime.UtcNow
                 });
+
+                // Insert per-segment detail rows for CostForge matrix cost lookups
+                if (allSegmentsByImprv.TryGetValue(imprv.Id, out var segments))
+                {
+                    foreach (var seg in segments)
+                    {
+                        _db.CamaImprovementDetails.Add(new CamaImprovementDetail
+                        {
+                            Id            = Guid.NewGuid(),
+                            ParcelId      = parcelInfo.GeoId!,
+                            TaxYear       = imprv.PropValYear,
+                            SegmentType   = seg.ImprvDetTypeCd,
+                            SegmentDesc   = seg.ImprvDetDesc,
+                            MethodCode    = seg.ImprvDetMethCd,
+                            ClassCode     = seg.ImprvDetClassCd,
+                            SubClassCode  = seg.ImprvDetSubClassCd,
+                            Area          = seg.ImprvDetArea,
+                            UnitPrice     = seg.UnitPrice,
+                            CalcValue     = seg.ImprvDetCalcVal,
+                            DepreciatedRCN = seg.DepreciatedReplacementCostNew,
+                            ConditionCode = seg.ConditionCode,
+                            PhysicalPct   = seg.PhysicalPct,
+                            DepPct        = seg.DepPct,
+                            YearBuilt     = seg.YearBuilt.HasValue ? (int?)seg.YearBuilt.Value : null,
+                            CountyId      = parcelInfo.CountyId,
+                            UpdatedAt     = DateTime.UtcNow
+                        });
+                    }
+                }
 
                 total++;
             }
 
             await _db.SaveChangesAsync(ct);
-            _logger.LogDebug("[PacsCanonicalizer] CamaCharacteristics: {Done}/{Total}", total, improvements.Count);
+            _logger.LogDebug("[PacsCanonicalizer] CamaCharacteristics: {Done}/{Total}", total, primaryImprovements.Count);
         }
 
         _logger.LogInformation("[PacsCanonicalizer] CamaCharacteristics: {Count} inserted.", total);
@@ -555,6 +717,30 @@ public sealed class PacsCanonicalizer
             _                                         => "non-arms-length"
         };
     }
+
+    /// <summary>
+    /// Normalize a PACS ImprvDetClassCd to the Benton 1-6 canonical quality tier names.
+    /// Source: Benton County 2026 Calibration Technical Report + __new_quality.sql.
+    ///   chp / low → ECONOMY  (tier 1)
+    ///   fair      → FAIR     (tier 2)
+    ///   avg       → AVERAGE  (tier 3)
+    ///   good      → GOOD     (tier 4)
+    ///   vgd       → VERY_GOOD (tier 5)
+    ///   exc       → EXCELLENT (tier 6)
+    /// Unrecognized codes are passed through unchanged so no data is silently lost.
+    /// </summary>
+    private static string? NormalizeQualityGrade(string? rawClassCd) =>
+        rawClassCd?.Trim().ToLowerInvariant() switch
+        {
+            "chp" or "low"  => "ECONOMY",
+            "fair"          => "FAIR",
+            "avg"           => "AVERAGE",
+            "good"          => "GOOD",
+            "vgd"           => "VERY_GOOD",
+            "exc"           => "EXCELLENT",
+            null            => null,
+            _               => rawClassCd   // pass through unrecognized codes
+        };
 }
 
 // ── Result DTO ────────────────────────────────────────────────────────────────

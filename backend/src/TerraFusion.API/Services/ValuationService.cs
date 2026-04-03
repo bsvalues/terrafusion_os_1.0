@@ -51,15 +51,17 @@ public class ValuationService : IValuationService
             .FirstOrDefaultAsync(ct);
 
         // Use canonicalized aggregate values from ValuationRecord.
-        // Per-improvement RCN breakdown and detailed depreciation are CP-4 parity work.
+        // ImprvVal is Benton County's own pre-computed improvement value from pacs_improvements —
+        // this IS the county cost approach result. Fall through to it when ValuationRecord.Rcn is absent.
         var costValue     = valRec?.CostApproachValue ?? 0m;
         var landValue     = valRec?.LandValue ?? property.LandValue;
-        var rcn           = valRec?.Rcn ?? 0m;
-        var depPct        = valRec?.DepreciationPercent ?? 0m;
+        var rcn           = valRec?.Rcn ?? cama?.ImprvVal ?? 0m;
+        var depPct        = valRec?.DepreciationPercent
+                           ?? (cama?.DepreciationPct.HasValue == true ? (decimal)cama.DepreciationPct.Value : 0m);
         var rcnld         = valRec?.Rcnld ?? (rcn > 0 ? rcn * (1 - depPct / 100m) : 0m);
         var functionalDep = cama?.FunctionalObsolescence ?? 0m;
         var externalDep   = cama?.ExternalObsolescence ?? 0m;
-        var physicalDep   = (rcn > 0 && rcnld > 0) ? rcn - rcnld : 0m;
+        var physicalDep   = (rcn > 0 && rcnld > 0) ? rcn - rcnld - functionalDep - externalDep : 0m;
         if (physicalDep < 0) physicalDep = 0m;
 
         var imprvValue = property.ImprovementValue;
