@@ -1,17 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.DTOs;
+using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Data;
 
 namespace TerraFusion.API.Services;
 
-// PACS-SYNC-DEBT: All data access in this service reads from PACS mirror entities
-// (PacsValuations, PacsLandDetails, PacsImprovementDetails, PacsSales, PacsExemptions,
-// PacsParcel) directly. Replace with canonical TerraFusion domain model queries once
-// TerraFusionSync publishes to the canonical store. See CARD-10B boundary audit.
+// BOUNDARY REPAIR COMPLETE (CP-3b): All Pacs* reads removed per PACS Sync mandate.
+// Service reads canonical TF entities only: Properties, ValuationRecords,
+// ComparableSales, CamaCharacteristics.
+// Assessor workflow PARITY gaps are tracked as CP-4/5/6 work — not this service.
 /// <summary>
 /// Phase 10 — PropertyForge valuation service.
-/// Returns structured stub values where canonical data is unavailable.
+/// Reads canonical TerraFusion entities only. No direct Pacs* mirror reads.
 /// </summary>
 public class ValuationService : IValuationService
 {
@@ -29,79 +30,57 @@ public class ValuationService : IValuationService
     public async Task<CostApproachResult> CalculateCostApproachAsync(
         string parcelId, int taxYear, CancellationToken ct)
     {
-        // Find the parcel by GeoId (the parcel identifier the frontend uses)
-        var parcel = await _db.PacsParcel
+        var property = await _db.Properties
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.GeoId == parcelId || p.SimpleGeoId == parcelId, ct);
+            .FirstOrDefaultAsync(p => p.ParcelId == parcelId || p.ParcelNumber == parcelId, ct);
 
-        if (parcel == null)
+        if (property == null)
         {
-            _logger.LogWarning("Parcel {ParcelId} not found in PACS — returning fallback cost approach", parcelId);
+            _logger.LogWarning("Parcel {ParcelId} not found in canonical Properties — returning fallback cost approach", parcelId);
             return BuildFallbackCostApproach(parcelId, taxYear);
         }
 
-        // Get valuation record for the given year
-        var valuation = await _db.PacsValuations
+        var valRec = await _db.ValuationRecords
             .AsNoTracking()
-            .Where(v => v.ParcelId == parcel.Id && v.PropValYear == taxYear && v.SupNum == 0)
+            .Where(vr => vr.ParcelId == parcelId && vr.TaxYear == taxYear)
             .FirstOrDefaultAsync(ct);
 
-        // Get land details
-        var landDetails = await _db.PacsLandDetails
+        var cama = await _db.CamaCharacteristics
             .AsNoTracking()
-            .Where(l => l.ParcelId == parcel.Id && l.PropValYear == taxYear)
-            .ToListAsync(ct);
+            .Where(c => c.ParcelId == parcelId && c.TaxYear == taxYear)
+            .FirstOrDefaultAsync(ct);
 
-        // Get improvement details for RCN/depreciation
-        var improvements = await _db.PacsImprovementDetails
-            .AsNoTracking()
-            .Where(i => i.PacsPropId == parcel.PropId && i.PropValYear == taxYear)
-            .ToListAsync(ct);
+        // Use canonicalized aggregate values from ValuationRecord.
+        // Per-improvement RCN breakdown and detailed depreciation are CP-4 parity work.
+        var costValue     = valRec?.CostApproachValue ?? 0m;
+        var landValue     = valRec?.LandValue ?? property.LandValue;
+        var rcn           = valRec?.Rcn ?? 0m;
+        var depPct        = valRec?.DepreciationPercent ?? 0m;
+        var rcnld         = valRec?.Rcnld ?? (rcn > 0 ? rcn * (1 - depPct / 100m) : 0m);
+        var functionalDep = cama?.FunctionalObsolescence ?? 0m;
+        var externalDep   = cama?.ExternalObsolescence ?? 0m;
+        var physicalDep   = (rcn > 0 && rcnld > 0) ? rcn - rcnld : 0m;
+        if (physicalDep < 0) physicalDep = 0m;
 
-        var landValue = landDetails.Sum(l => l.LandSegMktVal ?? 0m);
-        var rcn = improvements.Sum(i => i.ImprvDetOrigVal ?? i.ImprvDetCalcVal ?? 0m);
-        var physicalDep = improvements.Sum(i =>
-        {
-            var pct = i.PhysicalPct ?? 0m;
-            var baseVal = i.ImprvDetOrigVal ?? i.ImprvDetCalcVal ?? 0m;
-            return baseVal * pct;
-        });
-        var functionalDep = improvements.Sum(i =>
-        {
-            var pct = i.FunctionalPct ?? 0m;
-            var baseVal = i.ImprvDetOrigVal ?? i.ImprvDetCalcVal ?? 0m;
-            return baseVal * pct;
-        });
-        var economicDep = improvements.Sum(i =>
-        {
-            var pct = i.EconomicPct ?? 0m;
-            var baseVal = i.ImprvDetOrigVal ?? i.ImprvDetCalcVal ?? 0m;
-            return baseVal * pct;
-        });
-
-        var depreciatedCost = rcn - physicalDep - functionalDep - economicDep;
-        if (depreciatedCost < 0) depreciatedCost = 0;
-
-        var costValue = valuation?.CostValue ?? (depreciatedCost + landValue);
-        var imprvValue = (valuation?.CostImprvHstdVal ?? 0m) + (valuation?.CostImprvNonHstdVal ?? 0m);
-
-        var hasPacsData = valuation != null || landDetails.Count > 0 || improvements.Count > 0;
+        var imprvValue = property.ImprovementValue;
+        var indicated  = costValue > 0 ? costValue : (rcnld + landValue);
+        var hasData    = valRec != null || cama != null;
 
         return new CostApproachResult
         {
-            ParcelId = parcelId,
-            TaxYear = taxYear,
-            ReplacementCostNew = rcn,
-            PhysicalDepreciation = physicalDep,
+            ParcelId               = parcelId,
+            TaxYear                = taxYear,
+            ReplacementCostNew     = rcn,
+            PhysicalDepreciation   = physicalDep,
             FunctionalObsolescence = functionalDep,
-            ExternalObsolescence = economicDep,
-            DepreciatedCost = depreciatedCost,
-            LandValue = landValue,
-            IndicatedValue = costValue,
-            ImprovementValue = imprvValue > 0 ? imprvValue : depreciatedCost,
-            Source = hasPacsData ? "canonical" : "stub",
-            Confidence = hasPacsData ? 0.85 : 0.40,
-            Inputs = BuildCostInputs(valuation != null, landDetails.Count, improvements.Count),
+            ExternalObsolescence   = externalDep,
+            DepreciatedCost        = rcnld,
+            LandValue              = landValue,
+            IndicatedValue         = indicated,
+            ImprovementValue       = imprvValue > 0 ? imprvValue : rcnld,
+            Source                 = hasData ? "canonical" : "stub",
+            Confidence             = hasData ? (rcn > 0 ? 0.85 : 0.60) : 0.40,
+            Inputs                 = BuildCostInputs(valRec != null, cama?.LandAreaSqft > 0, cama != null),
         };
     }
 
@@ -110,96 +89,66 @@ public class ValuationService : IValuationService
     public async Task<SalesComparisonResult> CalculateSalesComparisonAsync(
         string parcelId, int taxYear, CancellationToken ct)
     {
-        var parcel = await _db.PacsParcel
+        var property = await _db.Properties
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.GeoId == parcelId || p.SimpleGeoId == parcelId, ct);
+            .FirstOrDefaultAsync(p => p.ParcelId == parcelId || p.ParcelNumber == parcelId, ct);
 
-        if (parcel == null)
+        if (property == null)
         {
             _logger.LogWarning("Parcel {ParcelId} not found — returning fallback sales comparison", parcelId);
             return BuildFallbackSalesComparison(parcelId, taxYear);
         }
 
-        // Get valuation for market approach indicated value
-        var valuation = await _db.PacsValuations
+        var valRec = await _db.ValuationRecords
             .AsNoTracking()
-            .Where(v => v.ParcelId == parcel.Id && v.PropValYear == taxYear && v.SupNum == 0)
+            .Where(vr => vr.ParcelId == parcelId && vr.TaxYear == taxYear)
             .FirstOrDefaultAsync(ct);
 
-        // Get the neighborhood code for finding comps
-        var hood = valuation?.NeighborhoodCode;
-
-        // Find comparable sales: same neighborhood, within 2 years of taxYear
-        var compQuery = _db.PacsSales.AsNoTracking()
-            .Where(s => s.SalePrice > 0 && s.SaleDate != null);
-
-        if (!string.IsNullOrEmpty(hood))
-        {
-            // Find parcel IDs in same neighborhood
-            var neighborhoodParcelIds = await _db.PacsValuations
-                .AsNoTracking()
-                .Where(v => v.NeighborhoodCode == hood && v.PropValYear == taxYear)
-                .Select(v => v.ParcelId)
-                .Distinct()
-                .ToListAsync(ct);
-
-            compQuery = compQuery.Where(s => neighborhoodParcelIds.Contains(s.ParcelId));
-        }
-
+        // Find comps by property type and date range.
+        // NOTE: Neighborhood filtering deferred — ComparableSale.Neighborhood not yet
+        // populated in the canonical model. This is a CP-5 parity gap.
         var cutoffStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var cutoffEnd = new DateTime(taxYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
-        compQuery = compQuery.Where(s => s.SaleDate >= cutoffStart && s.SaleDate <= cutoffEnd);
+        var cutoffEnd   = new DateTime(taxYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
 
-        var comps = await compQuery
-            .OrderByDescending(s => s.SaleDate)
+        var comps = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(cs =>
+                cs.SaleDate >= cutoffStart &&
+                cs.SaleDate <= cutoffEnd &&
+                cs.SalePrice > 0 &&
+                cs.ParcelId != parcelId)
+            .OrderByDescending(cs => cs.SaleDate)
             .Take(10)
             .ToListAsync(ct);
 
-        // Get GeoIds for comp parcels
-        var compParcelIds = comps.Select(c => c.ParcelId).Distinct().ToList();
-        var parcelGeoMap = await _db.PacsParcel
-            .AsNoTracking()
-            .Where(p => compParcelIds.Contains(p.Id))
-            .ToDictionaryAsync(p => p.Id, p => p.GeoId ?? p.PropId.ToString(), ct);
+        var prices = comps.Select(c => c.SalePrice).OrderBy(p => p).ToList();
+        var median = prices.Count > 0 ? prices[prices.Count / 2] : 0m;
+        var range  = prices.Count > 1 ? prices[^1] - prices[0] : 0m;
 
-        var adjustedPrices = comps
-            .Where(c => c.AdjustedSalePrice > 0 || c.SalePrice > 0)
-            .Select(c => c.AdjustedSalePrice ?? c.SalePrice ?? 0m)
-            .OrderBy(p => p)
-            .ToList();
-
-        var median = adjustedPrices.Count > 0
-            ? adjustedPrices[adjustedPrices.Count / 2]
-            : 0m;
-
-        var range = adjustedPrices.Count > 1
-            ? adjustedPrices[^1] - adjustedPrices[0]
-            : 0m;
-
-        var indicated = valuation?.MktapprMarket ?? median;
-        var hasData = comps.Count > 0 || valuation?.MktapprMarket > 0;
+        var indicated = valRec?.SalesComparisonValue ?? median;
+        var hasData   = comps.Count > 0 || valRec?.SalesComparisonValue > 0;
 
         return new SalesComparisonResult
         {
-            ParcelId = parcelId,
-            TaxYear = taxYear,
-            IndicatedValue = indicated,
-            ComparableCount = comps.Count,
+            ParcelId            = parcelId,
+            TaxYear             = taxYear,
+            IndicatedValue      = indicated,
+            ComparableCount     = comps.Count,
             MedianAdjustedPrice = median,
-            AdjustmentRange = range,
-            Comparables = comps.Select(c => new ComparableSaleEntry
+            AdjustmentRange     = range,
+            Comparables         = comps.Select(c => new ComparableSaleEntry
             {
-                ParcelId = parcelGeoMap.GetValueOrDefault(c.ParcelId, c.PacsPropId.ToString()),
-                SaleDate = c.SaleDate,
-                SalePrice = c.SalePrice ?? 0m,
-                AdjustedPrice = c.AdjustedSalePrice ?? c.SalePrice ?? 0m,
-                Similarity = 0.80, // default — real similarity scoring is a future AI layer
-                Notes = BuildSaleNotes(c),
+                ParcelId      = c.ParcelId,
+                SaleDate      = c.SaleDate,
+                SalePrice     = c.SalePrice,
+                AdjustedPrice = c.SalePrice, // adjustment scoring is CP-5 parity work
+                Similarity    = 0.80,         // uniform default — real scoring is a future AI layer
+                Notes         = BuildSaleNotes(c),
             }).ToList(),
             Rationale = comps.Count > 0
-                ? $"{comps.Count} comparable sales found in neighborhood {hood ?? "N/A"} within {taxYear - 2}\u2013{taxYear}. Median adjusted price: ${median:N0}."
-                : "No comparable sales found for this parcel and tax year. Market approach indicated value from valuation record used where available.",
-            Source = hasData ? "canonical" : "stub",
+                ? $"{comps.Count} comparable sales within {taxYear - 2}\u2013{taxYear}. Median: ${median:N0}. (Neighborhood filter: CP-5 parity gap.)"
+                : "No comparable sales found. Market value from canonical valuation record used where available.",
+            Source     = hasData ? "canonical" : "stub",
             Confidence = hasData ? (comps.Count >= 3 ? 0.90 : 0.70) : 0.35,
         };
     }
@@ -209,76 +158,58 @@ public class ValuationService : IValuationService
     public async Task<IncomeApproachResult> CalculateIncomeApproachAsync(
         string parcelId, int taxYear, CancellationToken ct)
     {
-        var parcel = await _db.PacsParcel
+        var property = await _db.Properties
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.GeoId == parcelId || p.SimpleGeoId == parcelId, ct);
+            .FirstOrDefaultAsync(p => p.ParcelId == parcelId || p.ParcelNumber == parcelId, ct);
 
-        if (parcel == null)
+        if (property == null)
         {
             _logger.LogWarning("Parcel {ParcelId} not found — returning fallback income approach", parcelId);
             return BuildFallbackIncomeApproach(parcelId, taxYear);
         }
 
-        var valuation = await _db.PacsValuations
+        var valRec = await _db.ValuationRecords
             .AsNoTracking()
-            .Where(v => v.ParcelId == parcel.Id && v.PropValYear == taxYear && v.SupNum == 0)
+            .Where(vr => vr.ParcelId == parcelId && vr.TaxYear == taxYear)
             .FirstOrDefaultAsync(ct);
 
-        // Check for income data from sales records (monthly/annual income fields)
-        var latestSaleWithIncome = await _db.PacsSales
-            .AsNoTracking()
-            .Where(s => s.ParcelId == parcel.Id && (s.AnnualIncome > 0 || s.MonthlyIncome > 0))
-            .OrderByDescending(s => s.SaleDate)
-            .FirstOrDefaultAsync(ct);
+        var incomeValue = valRec?.IncomeApproachValue ?? 0m;
+        var grossIncome = valRec?.GrossIncome ?? 0m;
+        var noi         = valRec?.NetOperatingIncome ?? 0m;
+        var capRate     = valRec?.CapRate ?? 0m;
 
-        var incomeValue = valuation?.IncomeValue ?? 0m;
-        var incomeMarket = valuation?.IncomeMarket ?? 0m;
+        // If canonical NOI is missing but gross income is present, derive using
+        // standard 40% expense ratio — disclosed as an assumption, not a market fact.
+        if (grossIncome > 0 && noi == 0)
+            noi = grossIncome * (1 - 0.40m);
 
-        // Derive NOI and cap rate from available data
-        decimal annualIncome = 0m;
-        if (latestSaleWithIncome != null)
-        {
-            annualIncome = latestSaleWithIncome.AnnualIncome
-                ?? (latestSaleWithIncome.MonthlyIncome ?? 0m) * 12;
-        }
-
-        // Standard expense ratio assumption (40% for residential, 35% for commercial)
-        var expenseRatio = 0.40m;
-        var noi = annualIncome > 0 ? annualIncome * (1 - expenseRatio) : 0m;
-
-        // Cap rate: derive from PACS or use market default
-        decimal capRate;
-        if (incomeValue > 0 && noi > 0)
-        {
+        if (capRate == 0 && noi > 0 && incomeValue > 0)
             capRate = Math.Round(noi / incomeValue * 100, 2);
-        }
-        else
-        {
-            capRate = 7.0m; // Benton County market default
-        }
+        else if (capRate == 0)
+            capRate = 7.0m; // Benton County market default — disclosed assumption
 
-        var valuation_ = noi > 0 && capRate > 0
+        var derived = noi > 0 && capRate > 0
             ? Math.Round(noi / (capRate / 100), 0)
-            : incomeValue > 0 ? incomeValue : incomeMarket;
+            : incomeValue;
 
-        var gim = annualIncome > 0 && valuation_ > 0
-            ? Math.Round(valuation_ / annualIncome, 2)
-            : 8.5m; // market default GIM
+        var gim = grossIncome > 0 && derived > 0
+            ? Math.Round(derived / grossIncome, 2)
+            : 8.5m;
 
-        var hasData = incomeValue > 0 || incomeMarket > 0 || annualIncome > 0;
+        var hasData = incomeValue > 0 || noi > 0 || grossIncome > 0;
 
         return new IncomeApproachResult
         {
-            ParcelId = parcelId,
-            TaxYear = taxYear,
-            NetOperatingIncome = noi,
-            CapRate = capRate,
-            Valuation = valuation_,
+            ParcelId              = parcelId,
+            TaxYear               = taxYear,
+            NetOperatingIncome    = noi,
+            CapRate               = capRate,
+            Valuation             = derived,
             GrossIncomeMultiplier = gim,
-            RiskClassification = ClassifyRisk(capRate),
-            IncomeIndicatedValue = incomeValue > 0 ? incomeValue : incomeMarket,
-            Source = hasData ? "canonical" : "stub",
-            Confidence = hasData ? 0.75 : 0.30,
+            RiskClassification    = ClassifyRisk(capRate),
+            IncomeIndicatedValue  = incomeValue,
+            Source                = hasData ? "canonical" : "stub",
+            Confidence            = hasData ? 0.75 : 0.30,
         };
     }
 
@@ -288,157 +219,123 @@ public class ValuationService : IValuationService
         string parcelId, int taxYear, CancellationToken ct)
     {
         // Run sequentially — DbContext is not thread-safe for concurrent operations
-        var cost = await CalculateCostApproachAsync(parcelId, taxYear, ct);
-        var sales = await CalculateSalesComparisonAsync(parcelId, taxYear, ct);
+        var cost   = await CalculateCostApproachAsync(parcelId, taxYear, ct);
+        var sales  = await CalculateSalesComparisonAsync(parcelId, taxYear, ct);
         var income = await CalculateIncomeApproachAsync(parcelId, taxYear, ct);
 
-        // Standard residential weights: Sales 45%, Cost 40%, Income 15%
-        const int costWeight = 40;
-        const int salesWeight = 45;
+        const int costWeight   = 40;
+        const int salesWeight  = 45;
         const int incomeWeight = 15;
 
         var weightedSum =
-            cost.IndicatedValue * costWeight +
-            sales.IndicatedValue * salesWeight +
-            income.Valuation * incomeWeight;
+            cost.IndicatedValue   * costWeight   +
+            sales.IndicatedValue  * salesWeight  +
+            income.Valuation      * incomeWeight;
 
         var reconciled = Math.Round(weightedSum / 100, 0);
 
-        // Get assessed/market from PACS
-        var parcel = await _db.PacsParcel
+        // Assessed / market values from canonical Property entity
+        var property = await _db.Properties
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.GeoId == parcelId || p.SimpleGeoId == parcelId, ct);
-
-        decimal? assessedVal = null;
-        decimal? marketVal = null;
-
-        if (parcel != null)
-        {
-            var valuation = await _db.PacsValuations
-                .AsNoTracking()
-                .Where(v => v.ParcelId == parcel.Id && v.PropValYear == taxYear && v.SupNum == 0)
-                .FirstOrDefaultAsync(ct);
-
-            assessedVal = valuation?.AssessedVal;
-            marketVal = valuation?.Market;
-        }
+            .FirstOrDefaultAsync(p => p.ParcelId == parcelId || p.ParcelNumber == parcelId, ct);
 
         var anyReal = cost.Source == "canonical" || sales.Source == "canonical" || income.Source == "canonical";
 
         return new ReconciliationResult
         {
-            ParcelId = parcelId,
-            TaxYear = taxYear,
+            ParcelId  = parcelId,
+            TaxYear   = taxYear,
             CostApproach = new ApproachSummary
             {
-                Approach = "cost",
+                Approach       = "cost",
                 IndicatedValue = cost.IndicatedValue,
-                Weight = costWeight,
-                Confidence = cost.Confidence,
-                Note = $"RCN ${cost.ReplacementCostNew:N0} less depreciation + land ${cost.LandValue:N0}",
+                Weight         = costWeight,
+                Confidence     = cost.Confidence,
+                Note           = $"RCN ${cost.ReplacementCostNew:N0} less depreciation + land ${cost.LandValue:N0}",
             },
             SalesApproach = new ApproachSummary
             {
-                Approach = "sales",
+                Approach       = "sales",
                 IndicatedValue = sales.IndicatedValue,
-                Weight = salesWeight,
-                Confidence = sales.Confidence,
-                Note = $"{sales.ComparableCount} comps, median ${sales.MedianAdjustedPrice:N0}",
+                Weight         = salesWeight,
+                Confidence     = sales.Confidence,
+                Note           = $"{sales.ComparableCount} comps, median ${sales.MedianAdjustedPrice:N0}",
             },
             IncomeApproach = new ApproachSummary
             {
-                Approach = "income",
+                Approach       = "income",
                 IndicatedValue = income.Valuation,
-                Weight = incomeWeight,
-                Confidence = income.Confidence,
-                Note = $"NOI ${income.NetOperatingIncome:N0} / {income.CapRate}% cap rate",
+                Weight         = incomeWeight,
+                Confidence     = income.Confidence,
+                Note           = $"NOI ${income.NetOperatingIncome:N0} / {income.CapRate}% cap rate",
             },
             ReconciledValue = reconciled,
-            Method = "weighted_average",
-            AssessedValue = assessedVal,
-            MarketValue = marketVal,
-            Source = anyReal ? "canonical" : "stub",
-            Confidence = anyReal ? 0.82 : 0.35,
+            Method          = "weighted_average",
+            AssessedValue   = property?.AssessedValue,
+            MarketValue     = property?.MarketValue,
+            Source          = anyReal ? "canonical" : "stub",
+            Confidence      = anyReal ? 0.82 : 0.35,
         };
     }
 
     // ── Available Years ────────────────────────────────────────────────
 
     /// <summary>
-    /// Returns all pacs_valuations year layers for a parcel with program enrollment metadata.
+    /// Returns valuation year layers for a parcel from canonical ValuationRecords.
     ///
-    /// PACS year-layer model: each (PropValYear, SupNum) pair is a discrete, sovereign
-    /// data snapshot. Approach methods query exactly the year requested — year selection
-    /// is the caller's responsibility. Use DefaultYear as the UI starting point.
-    ///
-    /// IsEarliestKnownLayer=true on the oldest layer identifies the migration baseline
-    /// (for Benton County: 2015, the asend/proval → PACS migration year). This is NOT
-    /// stale data — for agricultural parcels on the 6-year revaluation cycle it is the
-    /// active certified value. AgLossDeferred on such layers is the penalty basis for
-    /// removal from current use programs (RCW 84.34.080).
+    /// PARITY GAP (CP-4): The canonical ValuationRecord does not capture the full
+    /// PACS year-layer model (SupNum, PropState, program enrollment, exemptions, etc.).
+    /// Those fields return null/empty/false until the canonical model is extended.
     /// </summary>
     public async Task<ParcelYearLayersResult> GetAvailableYearsAsync(
         string parcelId, CancellationToken ct)
     {
-        var parcel = await _db.PacsParcel
+        var property = await _db.Properties
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.GeoId == parcelId || p.SimpleGeoId == parcelId, ct);
+            .FirstOrDefaultAsync(p => p.ParcelId == parcelId || p.ParcelNumber == parcelId, ct);
 
-        if (parcel == null)
+        if (property == null)
             return new ParcelYearLayersResult { ParcelId = parcelId };
 
-        // All valuation layers — ordered most-recent first, supplementals after base for same year
-        var allLayers = await _db.PacsValuations
+        var valRecs = await _db.ValuationRecords
             .AsNoTracking()
-            .Where(v => v.ParcelId == parcel.Id)
-            .OrderByDescending(v => v.PropValYear)
-            .ThenBy(v => v.SupNum)
+            .Where(vr => vr.ParcelId == parcelId)
+            .OrderByDescending(vr => vr.TaxYear)
             .ToListAsync(ct);
 
-        if (allLayers.Count == 0)
+        if (valRecs.Count == 0)
             return new ParcelYearLayersResult { ParcelId = parcelId };
 
-        var minYear = allLayers.Min(v => v.PropValYear);
+        var minYear = valRecs.Min(v => v.TaxYear);
 
-        // Exemption codes by year — projected to avoid pulling full rows
-        var exemptionsByYear = (await _db.PacsExemptions
-            .AsNoTracking()
-            .Where(e => e.ParcelId == parcel.Id && e.ExemptTypeCode != null)
-            .Select(e => new { e.ExemptTaxYear, e.ExemptTypeCode })
-            .ToListAsync(ct))
-            .GroupBy(e => (int)e.ExemptTaxYear)
-            .ToDictionary(g => g.Key, g => g.Select(e => e.ExemptTypeCode!).Distinct().OrderBy(c => c).ToList());
-
-        var layers = allLayers.Select(v => new ParcelYearLayer
+        var layers = valRecs.Select(vr => new ParcelYearLayer
         {
-            Year = v.PropValYear,
-            SupNum = v.SupNum,
-            LayerType = v.SupNum == 0 ? "base" : "supplemental",
-            PropState = v.PropState,
-            IsLocked = v.HasLockedValues ?? false,
-            IsEarliestKnownLayer = v.PropValYear == minYear && v.SupNum == 0,
-            RevaluationCycle = v.Cycle,
-            LastAppraisalDate = v.LastAppraisalDate ?? v.LastActualAppraisalDate,
-            AssessedValue = v.AssessedVal,
-            MarketValue = v.Market,
-            Programs = new ProgramEnrollment
+            Year                 = vr.TaxYear,
+            SupNum               = 0,
+            LayerType            = "base",
+            PropState            = null,
+            IsLocked             = false,
+            IsEarliestKnownLayer = vr.TaxYear == minYear,
+            RevaluationCycle     = null,
+            LastAppraisalDate    = null,
+            AssessedValue        = vr.SalesComparisonValue ?? vr.FinalReconciledValue,
+            MarketValue          = vr.SalesComparisonValue,
+            Programs             = new ProgramEnrollment
             {
-                CurrentUseAg = (v.AgUseVal ?? 0) > 0,
-                AgLossDeferred = v.AgLoss ?? 0,
-                AgLateLossDeferred = v.AgLateLoss ?? 0,
-                CurrentUseTimber = (v.TimberUse ?? 0) > 0,
-                TimberLossDeferred = v.TimberLoss ?? 0,
-                ExemptionCodes = exemptionsByYear.GetValueOrDefault(v.PropValYear, []),
+                CurrentUseAg       = false,
+                AgLossDeferred     = 0,
+                AgLateLossDeferred = 0,
+                CurrentUseTimber   = false,
+                TimberLossDeferred = 0,
+                ExemptionCodes     = [],
             },
         }).ToList();
 
-        var defaultYear = layers.FirstOrDefault(l => l.SupNum == 0)?.Year;
-
         return new ParcelYearLayersResult
         {
-            ParcelId = parcelId,
-            Layers = layers,
-            DefaultYear = defaultYear,
+            ParcelId    = parcelId,
+            Layers      = layers,
+            DefaultYear = layers.FirstOrDefault()?.Year,
         };
     }
 
@@ -446,89 +343,88 @@ public class ValuationService : IValuationService
 
     private static CostApproachResult BuildFallbackCostApproach(string parcelId, int taxYear) => new()
     {
-        ParcelId = parcelId,
-        TaxYear = taxYear,
-        ReplacementCostNew = 0,
-        PhysicalDepreciation = 0,
+        ParcelId               = parcelId,
+        TaxYear                = taxYear,
+        ReplacementCostNew     = 0,
+        PhysicalDepreciation   = 0,
         FunctionalObsolescence = 0,
-        ExternalObsolescence = 0,
-        DepreciatedCost = 0,
-        LandValue = 0,
-        IndicatedValue = 0,
-        ImprovementValue = 0,
-        Source = "stub",
-        Confidence = 0.0,
-        Inputs = BuildCostInputs(false, 0, 0),
+        ExternalObsolescence   = 0,
+        DepreciatedCost        = 0,
+        LandValue              = 0,
+        IndicatedValue         = 0,
+        ImprovementValue       = 0,
+        Source                 = "stub",
+        Confidence             = 0.0,
+        Inputs                 = BuildCostInputs(false, false, false),
     };
 
     private static SalesComparisonResult BuildFallbackSalesComparison(string parcelId, int taxYear) => new()
     {
-        ParcelId = parcelId,
-        TaxYear = taxYear,
-        IndicatedValue = 0,
-        ComparableCount = 0,
+        ParcelId            = parcelId,
+        TaxYear             = taxYear,
+        IndicatedValue      = 0,
+        ComparableCount     = 0,
         MedianAdjustedPrice = 0,
-        AdjustmentRange = 0,
-        Comparables = [],
-        Rationale = "No data available for this parcel. Load parcel data to enable sales comparison analysis.",
-        Source = "stub",
-        Confidence = 0.0,
+        AdjustmentRange     = 0,
+        Comparables         = [],
+        Rationale           = "No data available for this parcel. Load parcel data to enable sales comparison analysis.",
+        Source              = "stub",
+        Confidence          = 0.0,
     };
 
     private static IncomeApproachResult BuildFallbackIncomeApproach(string parcelId, int taxYear) => new()
     {
-        ParcelId = parcelId,
-        TaxYear = taxYear,
-        NetOperatingIncome = 0,
-        CapRate = 7.0m,
-        Valuation = 0,
+        ParcelId              = parcelId,
+        TaxYear               = taxYear,
+        NetOperatingIncome    = 0,
+        CapRate               = 7.0m,
+        Valuation             = 0,
         GrossIncomeMultiplier = 0,
-        RiskClassification = "unknown",
-        IncomeIndicatedValue = 0,
-        Source = "stub",
-        Confidence = 0.0,
+        RiskClassification    = "unknown",
+        IncomeIndicatedValue  = 0,
+        Source                = "stub",
+        Confidence            = 0.0,
     };
 
     // ── Helpers ─────────────────────────────────────────────────────────
 
-    private static List<ModelInputEntry> BuildCostInputs(bool hasValuation, int landCount, int imprvCount)
+    private static List<ModelInputEntry> BuildCostInputs(bool hasValuation, bool hasLand, bool hasCama)
     {
         return
         [
-            new() { Name = "Replacement Cost New (RCN)", SourceLabel = imprvCount > 0 ? "improvement-cost-data" : "not_available", Pii = false },
-            new() { Name = "Physical Depreciation %", SourceLabel = imprvCount > 0 ? "improvement-cost-data" : "not_available", Pii = false },
-            new() { Name = "Functional Obsolescence %", SourceLabel = imprvCount > 0 ? "improvement-cost-data" : "not_available", Pii = false },
-            new() { Name = "Economic Obsolescence %", SourceLabel = imprvCount > 0 ? "improvement-cost-data" : "not_available", Pii = false },
-            new() { Name = "Land Market Value", SourceLabel = landCount > 0 ? "land-data" : "not_available", Pii = false },
-            new() { Name = "Land Acreage", SourceLabel = landCount > 0 ? "land-data" : "not_available", Pii = false },
-            new() { Name = "Cost Approach Value", SourceLabel = hasValuation ? "valuation-data" : "not_available", Pii = false },
-            new() { Name = "Owner Name", SourceLabel = "ownership-data", Pii = true },
-            new() { Name = "Situs Address", SourceLabel = "situs-data", Pii = true },
+            new() { Name = "Replacement Cost New (RCN)",   SourceLabel = hasCama ? "cama-data" : "not_available", Pii = false },
+            new() { Name = "Physical Depreciation %",      SourceLabel = hasCama ? "cama-data" : "not_available", Pii = false },
+            new() { Name = "Functional Obsolescence %",    SourceLabel = hasCama ? "cama-data" : "not_available", Pii = false },
+            new() { Name = "Economic Obsolescence %",      SourceLabel = hasCama ? "cama-data" : "not_available", Pii = false },
+            new() { Name = "Land Market Value",            SourceLabel = hasLand ? "cama-land-data" : "not_available", Pii = false },
+            new() { Name = "Cost Approach Value",          SourceLabel = hasValuation ? "valuation-record" : "not_available", Pii = false },
+            new() { Name = "Owner Name",                   SourceLabel = "property-data", Pii = true },
+            new() { Name = "Situs Address",                SourceLabel = "property-data", Pii = true },
         ];
     }
 
-    private static List<string> BuildSaleNotes(TerraFusion.Core.Entities.Pacs.PacsSale sale)
+    private static List<string> BuildSaleNotes(TerraFusion.Core.Entities.ComparableSale sale)
     {
         var notes = new List<string>();
-        if (sale.SaleDate.HasValue)
-            notes.Add($"Sale date: {sale.SaleDate.Value:yyyy-MM-dd}");
-        if (!string.IsNullOrEmpty(sale.SaleTypeCd))
-            notes.Add($"Type: {sale.SaleTypeCd}");
-        if (sale.SlLivingArea > 0)
-            notes.Add($"Living area: {sale.SlLivingArea:N0} sqft");
-        if (sale.SlYearBuilt > 0)
-            notes.Add($"Year built: {sale.SlYearBuilt:F0}");
-        if (sale.NumDaysOnMarket > 0)
-            notes.Add($"Days on market: {sale.NumDaysOnMarket:F0}");
+        if (sale.SaleDate != default)
+            notes.Add($"Sale date: {sale.SaleDate:yyyy-MM-dd}");
+        if (!string.IsNullOrEmpty(sale.SaleQualification) && sale.SaleQualification != "qualified")
+            notes.Add($"Qualification: {sale.SaleQualification}");
+        if (sale.GrossLivingArea > 0)
+            notes.Add($"Living area: {sale.GrossLivingArea:N0} sqft");
+        if (sale.YearBuilt > 0)
+            notes.Add($"Year built: {sale.YearBuilt}");
+        if (!string.IsNullOrEmpty(sale.Neighborhood))
+            notes.Add($"Neighborhood: {sale.Neighborhood}");
         return notes;
     }
 
     private static string ClassifyRisk(decimal capRate) => capRate switch
     {
-        <= 0 => "unknown",
-        < 5.0m => "low",
-        < 8.0m => "moderate",
+        <= 0    => "unknown",
+        < 5.0m  => "low",
+        < 8.0m  => "moderate",
         < 11.0m => "elevated",
-        _ => "high",
+        _       => "high",
     };
 }

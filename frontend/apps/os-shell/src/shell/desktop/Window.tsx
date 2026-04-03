@@ -512,9 +512,9 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
         bounds='parent'
         dragHandleClassName='window-drag-handle'
         cancel='[data-testid="window-controls"], [data-testid="window-controls"] *'
-        disableDragging={isMaximized}
+        disableDragging={isMaximized || isTier0}
         enableResizing={
-          isMaximized
+          isMaximized || isTier0
             ? false
             : {
                 top: true,

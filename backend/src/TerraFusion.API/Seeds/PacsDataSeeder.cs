@@ -133,6 +133,16 @@ public class PacsDataSeeder
             if (golive != null) await golive.DisposeAsync();
         }
 
+        // Phase 7: Promote PACS mirror rows → canonical TerraFusion domain entities.
+        // BOUNDARY: this is the ONLY place canonical entities are written from PACS source.
+        // All downstream services (ValuationService, etc.) must read canonical entities only.
+        var canonicalizer = new PacsCanonicalizer(_db, _logger);
+        var canonical = await canonicalizer.CanonicalizeAsync(ct);
+        result.CanonicalProperties      = canonical.Properties;
+        result.CanonicalValuationRecords = canonical.ValuationRecords;
+        result.CanonicalComparableSales  = canonical.ComparableSales;
+        result.CanonicalCamaCharacteristics = canonical.CamaCharacteristics;
+
         _logger.LogInformation("[PacsSeeder] Complete. {Summary}", result);
         return result;
     }
@@ -2211,10 +2221,18 @@ public sealed record PacsSeederResult
     public int TaxAreaAssocs          { get; set; }
     public int PropertyProfiles        { get; set; }
 
+    // Phase 7: canonical entity counts (populated by PacsCanonicalizer)
+    public int CanonicalProperties         { get; set; }
+    public int CanonicalValuationRecords   { get; set; }
+    public int CanonicalComparableSales    { get; set; }
+    public int CanonicalCamaCharacteristics { get; set; }
+
     public override string ToString() =>
         $"Parcels={Parcels} Situs={Situs} Vals={Valuations} " +
         $"Imprv={Improvements} Det={ImprovementDetails} Attr={ImprovementAttributes} " +
         $"Land={LandDetails} Owners={Owners} OwnerVals={OwnerVals} Sales={Sales} " +
         $"Exemptions={Exemptions} Appeals={Appeals} TaxAreas={TaxAreas} " +
-        $"TaxAreaAssocs={TaxAreaAssocs} Profiles={PropertyProfiles}";
+        $"TaxAreaAssocs={TaxAreaAssocs} Profiles={PropertyProfiles} " +
+        $"[Canonical] Props={CanonicalProperties} Vals={CanonicalValuationRecords} " +
+        $"Sales={CanonicalComparableSales} Cama={CanonicalCamaCharacteristics}";
 }
