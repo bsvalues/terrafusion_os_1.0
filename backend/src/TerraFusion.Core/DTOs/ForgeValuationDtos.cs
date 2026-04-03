@@ -44,6 +44,31 @@ public record CostApproachResult
 
     /// <summary>Cost model input factors for the explain_model_inputs tool.</summary>
     public List<ModelInputEntry> Inputs { get; init; } = [];
+
+    // ── CP-4: Depreciation percentages (IAAO standard — show both $ and %) ──
+    /// <summary>Physical depreciation as a percent of RCN (0–100).</summary>
+    public double PhysicalDepreciationPct { get; init; }
+
+    /// <summary>Functional obsolescence as a percent of RCN (0–100).</summary>
+    public double FunctionalObsolescencePct { get; init; }
+
+    /// <summary>External obsolescence as a percent of RCN (0–100).</summary>
+    public double ExternalObsolescencePct { get; init; }
+
+    // ── CP-4: Building characteristics from CamaCharacteristic ──
+    public int? YearBuilt { get; init; }
+    public int? EffectiveAge { get; init; }
+    public string? QualityGrade { get; init; }
+    public string? ConditionGrade { get; init; }
+    public decimal? BuildingSqFt { get; init; }
+
+    // ── CP-4: Land summary from CamaCharacteristic ──
+    public decimal? LandAreaSqFt { get; init; }
+    public decimal? LandAreaAcres { get; init; }
+
+    // ── CP-4: WA RCW 84.34 agricultural / timber classification ──
+    public bool IsAgriculturalOrTimber { get; init; }
+    public string? WaClassificationNote { get; init; }
 }
 
 public record ModelInputEntry

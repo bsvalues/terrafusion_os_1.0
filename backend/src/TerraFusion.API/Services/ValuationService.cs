@@ -66,21 +66,52 @@ public class ValuationService : IValuationService
         var indicated  = costValue > 0 ? costValue : (rcnld + landValue);
         var hasData    = valRec != null || cama != null;
 
+        // CP-4: Depreciation percentages (IAAO standard — assessors work in %)
+        var physicalDepPct   = rcn > 0 ? Math.Round((double)(physicalDep   / rcn * 100m), 1) : 0.0;
+        var functionalDepPct = rcn > 0 ? Math.Round((double)(functionalDep / rcn * 100m), 1) : 0.0;
+        var externalDepPct   = rcn > 0 ? Math.Round((double)(externalDep   / rcn * 100m), 1) : 0.0;
+
+        // CP-4: WA RCW 84.34 — agricultural (A1/A2) or timber (T) classification
+        var buildingType  = cama?.BuildingType ?? string.Empty;
+        var isAgOrTimber  = buildingType.StartsWith("A", StringComparison.OrdinalIgnoreCase)
+                         || buildingType.StartsWith("T", StringComparison.OrdinalIgnoreCase);
+        var waNote        = isAgOrTimber
+            ? $"WA RCW 84.34 qualifying use class ({buildingType}). Current-use assessment basis applies."
+            : null;
+
+        // CP-4: Land area in acres (1 acre = 43,560 sq ft)
+        decimal? landAcres = cama?.LandAreaSqft > 0
+            ? Math.Round(cama!.LandAreaSqft!.Value / 43560m, 3)
+            : null;
+
         return new CostApproachResult
         {
-            ParcelId               = parcelId,
-            TaxYear                = taxYear,
-            ReplacementCostNew     = rcn,
-            PhysicalDepreciation   = physicalDep,
-            FunctionalObsolescence = functionalDep,
-            ExternalObsolescence   = externalDep,
-            DepreciatedCost        = rcnld,
-            LandValue              = landValue,
-            IndicatedValue         = indicated,
-            ImprovementValue       = imprvValue > 0 ? imprvValue : rcnld,
-            Source                 = hasData ? "canonical" : "stub",
-            Confidence             = hasData ? (rcn > 0 ? 0.85 : 0.60) : 0.40,
-            Inputs                 = BuildCostInputs(valRec != null, cama?.LandAreaSqft > 0, cama != null),
+            ParcelId                  = parcelId,
+            TaxYear                   = taxYear,
+            ReplacementCostNew        = rcn,
+            PhysicalDepreciation      = physicalDep,
+            FunctionalObsolescence    = functionalDep,
+            ExternalObsolescence      = externalDep,
+            DepreciatedCost           = rcnld,
+            LandValue                 = landValue,
+            IndicatedValue            = indicated,
+            ImprovementValue          = imprvValue > 0 ? imprvValue : rcnld,
+            Source                    = hasData ? "canonical" : "stub",
+            Confidence                = hasData ? (rcn > 0 ? 0.85 : 0.60) : 0.40,
+            Inputs                    = BuildCostInputs(valRec != null, cama?.LandAreaSqft > 0, cama != null),
+            // CP-4 additions
+            PhysicalDepreciationPct   = physicalDepPct,
+            FunctionalObsolescencePct = functionalDepPct,
+            ExternalObsolescencePct   = externalDepPct,
+            YearBuilt                 = cama?.YearBuilt,
+            EffectiveAge              = cama?.EffectiveAge,
+            QualityGrade              = cama?.QualityGrade,
+            ConditionGrade            = cama?.ConditionGrade,
+            BuildingSqFt              = cama?.SquareFeet > 0 ? cama.SquareFeet : null,
+            LandAreaSqFt              = cama?.LandAreaSqft,
+            LandAreaAcres             = landAcres,
+            IsAgriculturalOrTimber    = isAgOrTimber,
+            WaClassificationNote      = waNote,
         };
     }
 

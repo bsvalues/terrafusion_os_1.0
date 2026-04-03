@@ -103,6 +103,16 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
         )}
         {costAPI.data && (
           <div className="space-y-3" data-testid="cost-approach-live">
+            {/* WA agricultural/timber classification banner */}
+            {costAPI.data.isAgriculturalOrTimber && costAPI.data.waClassificationNote && (
+              <div
+                className="px-3 py-2 rounded text-xs font-medium"
+                style={{ background: 'hsl(var(--tf-warning) / 0.12)', color: 'hsl(var(--tf-warning))' }}
+              >
+                WA Qualifying Use: {costAPI.data.waClassificationNote}
+              </div>
+            )}
+            {/* Primary value grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="tf-panel p-3 text-center">
                 <div className="tf-text-tertiary text-xs">RCN</div>
@@ -121,20 +131,93 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
                 <div className="text-lg font-bold tf-suite-accent-text">{fmtCurrency(costAPI.data.indicatedValue)}</div>
               </div>
             </div>
+            {/* Depreciation schedule — dollar + percentage per IAAO standard */}
             <div className="grid grid-cols-3 gap-3">
               <div className="tf-panel p-3 text-center">
                 <div className="tf-text-tertiary text-xs">Physical Depr.</div>
                 <div className="text-sm font-semibold tf-text">{fmtCurrency(costAPI.data.physicalDepreciation)}</div>
+                {costAPI.data.physicalDepreciationPct > 0 && (
+                  <div className="text-xs tf-text-dim mt-0.5">{costAPI.data.physicalDepreciationPct.toFixed(1)}% of RCN</div>
+                )}
               </div>
               <div className="tf-panel p-3 text-center">
                 <div className="tf-text-tertiary text-xs">Functional Obs.</div>
                 <div className="text-sm font-semibold tf-text">{fmtCurrency(costAPI.data.functionalObsolescence)}</div>
+                {costAPI.data.functionalObsolescencePct > 0 && (
+                  <div className="text-xs tf-text-dim mt-0.5">{costAPI.data.functionalObsolescencePct.toFixed(1)}% of RCN</div>
+                )}
               </div>
               <div className="tf-panel p-3 text-center">
                 <div className="tf-text-tertiary text-xs">External Obs.</div>
                 <div className="text-sm font-semibold tf-text">{fmtCurrency(costAPI.data.externalObsolescence)}</div>
+                {costAPI.data.externalObsolescencePct > 0 && (
+                  <div className="text-xs tf-text-dim mt-0.5">{costAPI.data.externalObsolescencePct.toFixed(1)}% of RCN</div>
+                )}
               </div>
             </div>
+            {/* Building + land characteristics */}
+            {(costAPI.data.yearBuilt || costAPI.data.buildingSqFt || costAPI.data.qualityGrade || costAPI.data.landAreaSqFt) && (
+              <div className="grid grid-cols-2 gap-3">
+                {/* Building details */}
+                {(costAPI.data.yearBuilt || costAPI.data.buildingSqFt || costAPI.data.qualityGrade) && (
+                  <div className="tf-panel p-3 space-y-1">
+                    <div className="tf-text-tertiary text-xs font-semibold uppercase tracking-wide mb-2">Building</div>
+                    {costAPI.data.yearBuilt && (
+                      <div className="flex justify-between text-xs">
+                        <span className="tf-text-dim">Year Built</span>
+                        <span className="tf-text-secondary font-medium">{costAPI.data.yearBuilt}</span>
+                      </div>
+                    )}
+                    {costAPI.data.effectiveAge != null && (
+                      <div className="flex justify-between text-xs">
+                        <span className="tf-text-dim">Effective Age</span>
+                        <span className="tf-text-secondary font-medium">{costAPI.data.effectiveAge} yrs</span>
+                      </div>
+                    )}
+                    {costAPI.data.buildingSqFt && (
+                      <div className="flex justify-between text-xs">
+                        <span className="tf-text-dim">Sq Ft</span>
+                        <span className="tf-text-secondary font-medium">{costAPI.data.buildingSqFt.toLocaleString()}</span>
+                      </div>
+                    )}
+                    {costAPI.data.qualityGrade && (
+                      <div className="flex justify-between text-xs">
+                        <span className="tf-text-dim">Quality</span>
+                        <span className="tf-text-secondary font-medium capitalize">{costAPI.data.qualityGrade.toLowerCase()}</span>
+                      </div>
+                    )}
+                    {costAPI.data.conditionGrade && (
+                      <div className="flex justify-between text-xs">
+                        <span className="tf-text-dim">Condition</span>
+                        <span className="tf-text-secondary font-medium capitalize">{costAPI.data.conditionGrade.toLowerCase()}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {/* Land details */}
+                {(costAPI.data.landAreaSqFt || costAPI.data.landAreaAcres) && (
+                  <div className="tf-panel p-3 space-y-1">
+                    <div className="tf-text-tertiary text-xs font-semibold uppercase tracking-wide mb-2">Land</div>
+                    {costAPI.data.landAreaSqFt && (
+                      <div className="flex justify-between text-xs">
+                        <span className="tf-text-dim">Sq Ft</span>
+                        <span className="tf-text-secondary font-medium">{costAPI.data.landAreaSqFt.toLocaleString()}</span>
+                      </div>
+                    )}
+                    {costAPI.data.landAreaAcres && (
+                      <div className="flex justify-between text-xs">
+                        <span className="tf-text-dim">Acres</span>
+                        <span className="tf-text-secondary font-medium">{costAPI.data.landAreaAcres.toFixed(3)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-xs mt-2">
+                      <span className="tf-text-dim">Land Value</span>
+                      <span className="tf-text-secondary font-medium">{fmtCurrency(costAPI.data.landValue)}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
             <div className="flex items-center gap-3 text-sm">
               <span className="tf-text-tertiary">Confidence:</span>
               <span className="tf-suite-accent-text font-semibold">{formatConfidence(costAPI.data.confidence)}</span>

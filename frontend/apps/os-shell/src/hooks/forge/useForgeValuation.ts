@@ -27,6 +27,19 @@ export interface CostApproachData {
   source: string;
   confidence: number;
   inputs: Array<{ name: string; sourceLabel: string; pii: boolean }>;
+  // CP-4: depreciation percentages + building/land details
+  physicalDepreciationPct: number;
+  functionalObsolescencePct: number;
+  externalObsolescencePct: number;
+  yearBuilt: number | null;
+  effectiveAge: number | null;
+  qualityGrade: string | null;
+  conditionGrade: string | null;
+  buildingSqFt: number | null;
+  landAreaSqFt: number | null;
+  landAreaAcres: number | null;
+  isAgriculturalOrTimber: boolean;
+  waClassificationNote: string | null;
 }
 
 export interface ComparableSaleEntry {
