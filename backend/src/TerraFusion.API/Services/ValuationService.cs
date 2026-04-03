@@ -86,6 +86,29 @@ public class ValuationService : IValuationService
             ? Math.Round(cama!.LandAreaSqft!.Value / 43560m, 3)
             : null;
 
+        // Phase B: Load per-segment breakdown from CamaImprovementDetails
+        // Note: avoid OrderByDescending(decimal?) in EF/SQLite — load all rows then sort client-side
+        var segmentRows = await _db.CamaImprovementDetails
+            .AsNoTracking()
+            .Where(s => s.ParcelId == parcelId && s.TaxYear == taxYear)
+            .ToListAsync(ct);
+
+        var segments = segmentRows
+            .OrderByDescending(s => s.Area ?? 0m)
+            .Select(s => new SegmentEntry
+            {
+                SegmentType  = s.SegmentType,
+                SegmentDesc  = s.SegmentDesc,
+                MethodCode   = s.MethodCode,
+                ClassCode    = s.ClassCode,
+                SubClassCode = s.SubClassCode,
+                Area         = s.Area,
+                UnitPrice    = s.UnitPrice,
+                CalcValue    = s.CalcValue,
+                ConditionCode = s.ConditionCode,
+                YearBuilt    = s.YearBuilt,
+            }).ToList();
+
         return new CostApproachResult
         {
             ParcelId                  = parcelId,
@@ -114,6 +137,15 @@ public class ValuationService : IValuationService
             LandAreaAcres             = landAcres,
             IsAgriculturalOrTimber    = isAgOrTimber,
             WaClassificationNote      = waNote,
+            // Phase B: physical building attributes
+            Foundation   = cama?.Foundation,
+            ExteriorWall = cama?.ExteriorWall,
+            RoofType     = cama?.RoofType,
+            HvacType     = cama?.HvacType,
+            Bedrooms     = cama?.Bedrooms,
+            Bathrooms    = cama?.Bathrooms,
+            Fireplaces   = cama?.Fireplaces,
+            Segments     = segments,
         };
     }
 

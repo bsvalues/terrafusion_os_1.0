@@ -218,6 +218,95 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
                 )}
               </div>
             )}
+            {/* Physical attributes from PACS improvement attributes */}
+            {(costAPI.data.foundation || costAPI.data.exteriorWall || costAPI.data.roofType ||
+              costAPI.data.hvacType || costAPI.data.bedrooms != null || costAPI.data.fireplaces != null) && (
+              <div className="tf-panel p-3">
+                <div className="tf-text-tertiary text-xs font-semibold uppercase tracking-wide mb-2">Attributes</div>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+                  {costAPI.data.foundation && (
+                    <div className="flex justify-between text-xs">
+                      <span className="tf-text-dim">Foundation</span>
+                      <span className="tf-text-secondary font-medium text-right">{costAPI.data.foundation}</span>
+                    </div>
+                  )}
+                  {costAPI.data.exteriorWall && (
+                    <div className="flex justify-between text-xs">
+                      <span className="tf-text-dim">Exterior</span>
+                      <span className="tf-text-secondary font-medium text-right">{costAPI.data.exteriorWall}</span>
+                    </div>
+                  )}
+                  {costAPI.data.roofType && (
+                    <div className="flex justify-between text-xs">
+                      <span className="tf-text-dim">Roof</span>
+                      <span className="tf-text-secondary font-medium text-right">{costAPI.data.roofType}</span>
+                    </div>
+                  )}
+                  {costAPI.data.hvacType && (
+                    <div className="flex justify-between text-xs">
+                      <span className="tf-text-dim">HVAC</span>
+                      <span className="tf-text-secondary font-medium text-right">{costAPI.data.hvacType}</span>
+                    </div>
+                  )}
+                  {costAPI.data.bedrooms != null && (
+                    <div className="flex justify-between text-xs">
+                      <span className="tf-text-dim">Bedrooms</span>
+                      <span className="tf-text-secondary font-medium">{costAPI.data.bedrooms}</span>
+                    </div>
+                  )}
+                  {costAPI.data.bathrooms != null && (
+                    <div className="flex justify-between text-xs">
+                      <span className="tf-text-dim">Bathrooms</span>
+                      <span className="tf-text-secondary font-medium">{costAPI.data.bathrooms}</span>
+                    </div>
+                  )}
+                  {costAPI.data.fireplaces != null && costAPI.data.fireplaces > 0 && (
+                    <div className="flex justify-between text-xs">
+                      <span className="tf-text-dim">Fireplaces</span>
+                      <span className="tf-text-secondary font-medium">{costAPI.data.fireplaces}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            {/* Per-segment cost breakdown */}
+            {costAPI.data.segments && costAPI.data.segments.length > 0 && (
+              <div className="tf-panel p-3">
+                <div className="tf-text-tertiary text-xs font-semibold uppercase tracking-wide mb-2">
+                  Segments ({costAPI.data.segments.length})
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="tf-text-dim">
+                        <th className="text-left py-1 pr-3">Type</th>
+                        <th className="text-right py-1 pr-3">Area (sf)</th>
+                        <th className="text-right py-1 pr-3">Unit $</th>
+                        <th className="text-right py-1">Class</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {costAPI.data.segments.map((seg, i) => (
+                        <tr key={i} className="border-t border-white/5">
+                          <td className="py-1 pr-3 tf-text-secondary">
+                            {seg.segmentDesc || seg.segmentType || '—'}
+                          </td>
+                          <td className="text-right py-1 pr-3 tf-text-secondary">
+                            {seg.area != null ? seg.area.toLocaleString() : '—'}
+                          </td>
+                          <td className="text-right py-1 pr-3 tf-text-secondary">
+                            {seg.unitPrice != null ? `$${seg.unitPrice.toFixed(2)}` : '—'}
+                          </td>
+                          <td className="text-right py-1 tf-text-dim">
+                            {seg.classCode || '—'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
             <div className="flex items-center gap-3 text-sm">
               <span className="tf-text-tertiary">Confidence:</span>
               <span className="tf-suite-accent-text font-semibold">{formatConfidence(costAPI.data.confidence)}</span>

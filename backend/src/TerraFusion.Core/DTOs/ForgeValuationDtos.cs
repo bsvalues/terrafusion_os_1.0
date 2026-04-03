@@ -69,6 +69,53 @@ public record CostApproachResult
     // ── CP-4: WA RCW 84.34 agricultural / timber classification ──
     public bool IsAgriculturalOrTimber { get; init; }
     public string? WaClassificationNote { get; init; }
+
+    // ── Phase B: Physical building attributes from PACS improvement attributes ──
+    /// <summary>Foundation type (e.g., Crawl/Concrete Perimeter Piers, Slab, Post & Pier).</summary>
+    public string? Foundation { get; init; }
+    /// <summary>Exterior wall material (e.g., Alum siding, Vinyl, Brick Veneer).</summary>
+    public string? ExteriorWall { get; init; }
+    /// <summary>Roof covering type (e.g., Comp Shingle, Comp Shingle - Arch, Metal).</summary>
+    public string? RoofType { get; init; }
+    /// <summary>HVAC system type.</summary>
+    public string? HvacType { get; init; }
+    public int? Bedrooms { get; init; }
+    public int? Bathrooms { get; init; }
+    public int? Fireplaces { get; init; }
+
+    // ── Phase B: Per-segment cost breakdown ──
+    /// <summary>
+    /// Individual building segments with matrix join keys and area/unit-price data.
+    /// Empty when CamaImprovementDetail rows are not present for the parcel.
+    /// </summary>
+    public List<SegmentEntry> Segments { get; init; } = [];
+}
+
+/// <summary>
+/// One building segment row from cama_improvement_details.
+/// Preserves PACS cost matrix join keys for CostForge recalculation.
+/// </summary>
+public record SegmentEntry
+{
+    /// <summary>Segment type code (ImprvDetTypeCd): MA, CovPatio, Patio, Shop, DETGAR, etc.</summary>
+    public string? SegmentType { get; init; }
+    /// <summary>Human-readable PACS description.</summary>
+    public string? SegmentDesc { get; init; }
+    /// <summary>Method code — matrix join key (e.g., R, EXT-B).</summary>
+    public string? MethodCode { get; init; }
+    /// <summary>Class/quality code — matrix join key (e.g., 25, 30, Avg).</summary>
+    public string? ClassCode { get; init; }
+    /// <summary>Sub-class code (* standard, + plus tier).</summary>
+    public string? SubClassCode { get; init; }
+    /// <summary>Floor area in square feet.</summary>
+    public decimal? Area { get; init; }
+    /// <summary>PACS unit cost per square foot.</summary>
+    public decimal? UnitPrice { get; init; }
+    /// <summary>PACS-computed segment value (Area × UnitPrice × adjustments). Null if not loaded.</summary>
+    public decimal? CalcValue { get; init; }
+    /// <summary>Condition code for this segment.</summary>
+    public string? ConditionCode { get; init; }
+    public int? YearBuilt { get; init; }
 }
 
 public record ModelInputEntry

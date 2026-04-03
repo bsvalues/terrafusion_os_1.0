@@ -40,6 +40,27 @@ export interface CostApproachData {
   landAreaAcres: number | null;
   isAgriculturalOrTimber: boolean;
   waClassificationNote: string | null;
+  // Phase B: physical building attributes from PACS improvement attributes
+  foundation: string | null;
+  exteriorWall: string | null;
+  roofType: string | null;
+  hvacType: string | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  fireplaces: number | null;
+  // Phase B: per-segment breakdown
+  segments: Array<{
+    segmentType: string | null;
+    segmentDesc: string | null;
+    methodCode: string | null;
+    classCode: string | null;
+    subClassCode: string | null;
+    area: number | null;
+    unitPrice: number | null;
+    calcValue: number | null;
+    conditionCode: string | null;
+    yearBuilt: number | null;
+  }>;
 }
 
 export interface ComparableSaleEntry {
