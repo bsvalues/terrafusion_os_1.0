@@ -156,6 +156,25 @@ public record IncomeApproachResult
 
     public string Source { get; init; } = "fallback";
     public double Confidence { get; init; }
+
+    // ── CP-6: Methodology disclosure for assessor review ──
+    /// <summary>Gross income from the canonical valuation record.</summary>
+    public decimal GrossIncome { get; init; }
+
+    /// <summary>Expense ratio used in NOI derivation (e.g. 0.40). Null if NOI was direct from record.</summary>
+    public double? ExpenseRatio { get; init; }
+
+    /// <summary>True when NOI was derived from gross income using assumed expense ratio, not from actual record.</summary>
+    public bool NoiDerived { get; init; }
+
+    /// <summary>True when the cap rate is the Benton County market default (7.0%), not from actual data.</summary>
+    public bool CapRateDefaulted { get; init; }
+
+    /// <summary>Brief methodology note for display: discloses assumptions used.</summary>
+    public string? MethodologyNote { get; init; }
+
+    /// <summary>Whether income approach is applicable to this property type.</summary>
+    public bool IncomeApproachApplicable { get; init; }
 }
 
 // ── Reconciliation ─────────────────────────────────────────────────────

@@ -226,15 +226,27 @@ public class ValuationService : IValuationService
         var noi         = valRec?.NetOperatingIncome ?? 0m;
         var capRate     = valRec?.CapRate ?? 0m;
 
+        // CP-6: Track methodology assumptions for UI disclosure
+        var noiDerived        = false;
+        var capRateDefaulted  = false;
+        double? expenseRatio  = null;
+
         // If canonical NOI is missing but gross income is present, derive using
         // standard 40% expense ratio — disclosed as an assumption, not a market fact.
         if (grossIncome > 0 && noi == 0)
-            noi = grossIncome * (1 - 0.40m);
+        {
+            noi           = grossIncome * (1 - 0.40m);
+            noiDerived    = true;
+            expenseRatio  = 0.40;
+        }
 
         if (capRate == 0 && noi > 0 && incomeValue > 0)
             capRate = Math.Round(noi / incomeValue * 100, 2);
         else if (capRate == 0)
-            capRate = 7.0m; // Benton County market default — disclosed assumption
+        {
+            capRate          = 7.0m; // Benton County market default — disclosed assumption
+            capRateDefaulted = true;
+        }
 
         var derived = noi > 0 && capRate > 0
             ? Math.Round(noi / (capRate / 100), 0)
@@ -244,20 +256,44 @@ public class ValuationService : IValuationService
             ? Math.Round(derived / grossIncome, 2)
             : 8.5m;
 
+        // CP-6: Build honest methodology note
+        var methodNotes = new List<string>();
+        if (noiDerived)    methodNotes.Add("NOI derived at 40% expense ratio (assumed).");
+        if (capRateDefaulted) methodNotes.Add("Cap rate: 7.0% Benton County market default (assumed, no market data).");
+        if (!noiDerived && noi == 0) methodNotes.Add("No income data in canonical record — income approach not applicable for this parcel.");
+        var methodologyNote = methodNotes.Count > 0 ? string.Join(" ", methodNotes) : null;
+
+        // Income approach applicable = commercial/income-producing properties.
+        // Heuristic from BuildingType or gross income presence.
+        var hasCama   = await _db.CamaCharacteristics.AsNoTracking().AnyAsync(c => c.ParcelId == parcelId && c.TaxYear == taxYear, ct);
+        var bldgType  = hasCama
+            ? (await _db.CamaCharacteristics.AsNoTracking().Where(c => c.ParcelId == parcelId && c.TaxYear == taxYear).Select(c => c.BuildingType).FirstOrDefaultAsync(ct) ?? "")
+            : "";
+        var applicable = grossIncome > 0
+                      || bldgType.StartsWith("C", StringComparison.OrdinalIgnoreCase)
+                      || bldgType.StartsWith("I", StringComparison.OrdinalIgnoreCase);
+
         var hasData = incomeValue > 0 || noi > 0 || grossIncome > 0;
 
         return new IncomeApproachResult
         {
-            ParcelId              = parcelId,
-            TaxYear               = taxYear,
-            NetOperatingIncome    = noi,
-            CapRate               = capRate,
-            Valuation             = derived,
-            GrossIncomeMultiplier = gim,
-            RiskClassification    = ClassifyRisk(capRate),
-            IncomeIndicatedValue  = incomeValue,
-            Source                = hasData ? "canonical" : "stub",
-            Confidence            = hasData ? 0.75 : 0.30,
+            ParcelId                   = parcelId,
+            TaxYear                    = taxYear,
+            NetOperatingIncome         = noi,
+            CapRate                    = capRate,
+            Valuation                  = derived,
+            GrossIncomeMultiplier      = gim,
+            RiskClassification         = ClassifyRisk(capRate),
+            IncomeIndicatedValue       = incomeValue,
+            Source                     = hasData ? "canonical" : "stub",
+            Confidence                 = hasData ? 0.75 : 0.30,
+            // CP-6 additions
+            GrossIncome                = grossIncome,
+            ExpenseRatio               = expenseRatio,
+            NoiDerived                 = noiDerived,
+            CapRateDefaulted           = capRateDefaulted,
+            MethodologyNote            = methodologyNote,
+            IncomeApproachApplicable   = applicable,
         };
     }
 

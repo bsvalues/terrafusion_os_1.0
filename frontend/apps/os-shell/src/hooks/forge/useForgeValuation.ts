@@ -80,6 +80,13 @@ export interface IncomeApproachData {
   incomeIndicatedValue: number;
   source: string;
   confidence: number;
+  // CP-6: methodology disclosure
+  grossIncome: number;
+  expenseRatio: number | null;
+  noiDerived: boolean;
+  capRateDefaulted: boolean;
+  methodologyNote: string | null;
+  incomeApproachApplicable: boolean;
 }
 
 export interface ApproachSummary {
