@@ -50,19 +50,56 @@ public class ValuationService : IValuationService
             .Where(c => c.ParcelId == parcelId && c.TaxYear == taxYear)
             .FirstOrDefaultAsync(ct);
 
+        // Phase B: Load per-segment breakdown first — needed for Benton depreciation path.
+        // Note: no OrderBy in EF query — SQLite decimal ORDER BY not supported.
+        var segmentRows = await _db.CamaImprovementDetails
+            .AsNoTracking()
+            .Where(s => s.ParcelId == parcelId && s.TaxYear == taxYear)
+            .ToListAsync(ct);
+
+        var segments = segmentRows
+            .OrderByDescending(s => s.Area ?? 0m)
+            .Select(s => new SegmentEntry
+            {
+                SegmentType   = s.SegmentType,
+                SegmentDesc   = s.SegmentDesc,
+                MethodCode    = s.MethodCode,
+                ClassCode     = s.ClassCode,
+                SubClassCode  = s.SubClassCode,
+                Area          = s.Area,
+                UnitPrice     = s.UnitPrice,
+                CalcValue     = s.CalcValue,
+                ConditionCode = s.ConditionCode,
+                YearBuilt     = s.YearBuilt,
+            }).ToList();
+
+        // Benton residential depreciation path:
+        // pacs_improvement_details.DepPct = percent-GOOD from the county age×condition matrix
+        //   (e.g., 86 = 86% good = 14% total depreciation)
+        // The improvement-level DepPct=100 in PACS is a "formula-driven" flag, not the applied rate.
+        // ImprvVal in PACS IS the RCNLD (depreciation already applied). Back-calculate RCN:
+        //   RCN = RCNLD / (percentGood / 100)
+        var primaryPctGood = segmentRows
+            .OrderByDescending(s => s.Area ?? 0m)
+            .Where(s => s.DepPct.HasValue && s.DepPct > 0m && s.DepPct <= 100m)
+            .Select(s => s.DepPct)
+            .FirstOrDefault();
+
         // Use canonicalized aggregate values from ValuationRecord.
-        // ImprvVal is Benton County's own pre-computed improvement value from pacs_improvements —
-        // this IS the county cost approach result. Fall through to it when ValuationRecord.Rcn is absent.
+        // ImprvVal is Benton County's RCNLD — the depreciation-applied improvement value.
         var costValue     = valRec?.CostApproachValue ?? 0m;
         var landValue     = valRec?.LandValue ?? property.LandValue;
-        var rcn           = valRec?.Rcn ?? cama?.ImprvVal ?? 0m;
+        var rcnld         = cama?.ImprvVal ?? valRec?.Rcnld ?? 0m;
+        // Back-calculate RCN using county percent-good, else fall back to valRec.Rcn or RCNLD
+        var rcn           = valRec?.Rcn
+                           ?? (primaryPctGood.HasValue && primaryPctGood > 0m && rcnld > 0m
+                               ? Math.Round(rcnld / (primaryPctGood.Value / 100m), 0)
+                               : rcnld);
         var depPct        = valRec?.DepreciationPercent
-                           ?? (cama?.DepreciationPct.HasValue == true ? (decimal)cama.DepreciationPct.Value : 0m);
-        var rcnld         = valRec?.Rcnld ?? (rcn > 0 ? rcn * (1 - depPct / 100m) : 0m);
+                           ?? (primaryPctGood.HasValue ? 100m - primaryPctGood.Value : 0m);
         var functionalDep = cama?.FunctionalObsolescence ?? 0m;
         var externalDep   = cama?.ExternalObsolescence ?? 0m;
-        var physicalDep   = (rcn > 0 && rcnld > 0) ? rcn - rcnld - functionalDep - externalDep : 0m;
-        if (physicalDep < 0) physicalDep = 0m;
+        var physicalDep   = Math.Max(0m, rcn - rcnld - functionalDep - externalDep);
 
         var imprvValue = property.ImprovementValue;
         var indicated  = costValue > 0 ? costValue : (rcnld + landValue);
@@ -85,29 +122,6 @@ public class ValuationService : IValuationService
         decimal? landAcres = cama?.LandAreaSqft > 0
             ? Math.Round(cama!.LandAreaSqft!.Value / 43560m, 3)
             : null;
-
-        // Phase B: Load per-segment breakdown from CamaImprovementDetails
-        // Note: avoid OrderByDescending(decimal?) in EF/SQLite — load all rows then sort client-side
-        var segmentRows = await _db.CamaImprovementDetails
-            .AsNoTracking()
-            .Where(s => s.ParcelId == parcelId && s.TaxYear == taxYear)
-            .ToListAsync(ct);
-
-        var segments = segmentRows
-            .OrderByDescending(s => s.Area ?? 0m)
-            .Select(s => new SegmentEntry
-            {
-                SegmentType  = s.SegmentType,
-                SegmentDesc  = s.SegmentDesc,
-                MethodCode   = s.MethodCode,
-                ClassCode    = s.ClassCode,
-                SubClassCode = s.SubClassCode,
-                Area         = s.Area,
-                UnitPrice    = s.UnitPrice,
-                CalcValue    = s.CalcValue,
-                ConditionCode = s.ConditionCode,
-                YearBuilt    = s.YearBuilt,
-            }).ToList();
 
         return new CostApproachResult
         {
@@ -144,8 +158,9 @@ public class ValuationService : IValuationService
             HvacType     = cama?.HvacType,
             Bedrooms     = cama?.Bedrooms,
             Bathrooms    = cama?.Bathrooms,
-            Fireplaces   = cama?.Fireplaces,
-            Segments     = segments,
+            Fireplaces        = cama?.Fireplaces,
+            CountyPercentGood = primaryPctGood.HasValue ? (double?)primaryPctGood.Value : null,
+            Segments          = segments,
         };
     }
 

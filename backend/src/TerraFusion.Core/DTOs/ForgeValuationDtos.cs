@@ -85,6 +85,13 @@ public record CostApproachResult
 
     // ── Phase B: Per-segment cost breakdown ──
     /// <summary>
+    /// Benton county percent-good from the primary segment's age×condition matrix lookup.
+    /// percent-good = 86 means 86% of new value remains; effective depreciation = 14%.
+    /// Null when no segment data is available.
+    /// </summary>
+    public double? CountyPercentGood { get; init; }
+
+    /// <summary>
     /// Individual building segments with matrix join keys and area/unit-price data.
     /// Empty when CamaImprovementDetail rows are not present for the parcel.
     /// </summary>

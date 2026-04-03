@@ -174,6 +174,12 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
                         <span className="tf-text-secondary font-medium">{costAPI.data.effectiveAge} yrs</span>
                       </div>
                     )}
+                    {costAPI.data.countyPercentGood != null && (
+                      <div className="flex justify-between text-xs">
+                        <span className="tf-text-dim">County % Good</span>
+                        <span className="tf-text-secondary font-medium">{costAPI.data.countyPercentGood}%</span>
+                      </div>
+                    )}
                     {costAPI.data.buildingSqFt && (
                       <div className="flex justify-between text-xs">
                         <span className="tf-text-dim">Sq Ft</span>

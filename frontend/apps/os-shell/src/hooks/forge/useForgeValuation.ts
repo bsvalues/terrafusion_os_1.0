@@ -48,6 +48,8 @@ export interface CostApproachData {
   bedrooms: number | null;
   bathrooms: number | null;
   fireplaces: number | null;
+  // Phase B: Benton county percent-good from age×condition matrix (86 = 86% good, 14% depreciation)
+  countyPercentGood: number | null;
   // Phase B: per-segment breakdown
   segments: Array<{
     segmentType: string | null;
