@@ -28,12 +28,14 @@ public sealed class PacsCanonicalizer
 {
     private readonly TerraFusionDbContext _db;
     private readonly ILogger _logger;
+    private readonly TerraFusion.API.Services.ISaleQualificationService _qualifier;
     private const int BatchSize = 500;
 
-    public PacsCanonicalizer(TerraFusionDbContext db, ILogger logger)
+    public PacsCanonicalizer(TerraFusionDbContext db, ILogger logger, TerraFusion.API.Services.ISaleQualificationService? qualifier = null)
     {
         _db = db;
         _logger = logger;
+        _qualifier = qualifier ?? new TerraFusion.API.Services.SaleQualificationService();
     }
 
     public async Task<CanonicalizeResult> CanonicalizeAsync(CancellationToken ct = default)
@@ -378,6 +380,9 @@ public sealed class PacsCanonicalizer
                 s.SalePrice,
                 s.AdjustedSalePrice,
                 s.SaleQualifier,
+                s.SaleCountyRatioCd,
+                s.WacCd,
+                s.SalesExcludeCalcCd,
                 s.SlLivingArea,
                 s.SlLandSqft,
                 s.SlYearBuilt
@@ -397,20 +402,26 @@ public sealed class PacsCanonicalizer
 
                 var price = ps.AdjustedSalePrice > 0 ? ps.AdjustedSalePrice!.Value : (ps.SalePrice ?? 0m);
 
+                // Raw PACS codes stored verbatim — never interpreted at this layer.
+                // TerraFusion's SaleQualificationService owns the verdict.
                 _db.ComparableSales.Add(new ComparableSale
                 {
-                    Id                = Guid.NewGuid(),
-                    ParcelId          = parcelInfo.GeoId!,
-                    SaleDate          = ps.SaleDate.Value,
-                    SalePrice         = price,
-                    PropertyType      = parcelInfo.PropTypeCd ?? "residential",
-                    Address           = address,
-                    GrossLivingArea   = ps.SlLivingArea.HasValue ? (decimal?)ps.SlLivingArea.Value : null,
-                    LotSizeSqft       = ps.SlLandSqft.HasValue ? (decimal?)ps.SlLandSqft.Value : null,
-                    YearBuilt         = ps.SlYearBuilt.HasValue ? (int?)ps.SlYearBuilt.Value : null,
-                    SaleQualification = NormalizeSaleQualification(ps.SaleQualifier),
-                    IsVerified        = false,
-                    CountyId          = parcelInfo.CountyId
+                    Id                  = Guid.NewGuid(),
+                    ParcelId            = parcelInfo.GeoId!,
+                    SaleDate            = ps.SaleDate.Value,
+                    SalePrice           = price,
+                    PropertyType        = parcelInfo.PropTypeCd ?? "residential",
+                    Address             = address,
+                    GrossLivingArea     = ps.SlLivingArea.HasValue ? (decimal?)ps.SlLivingArea.Value : null,
+                    LotSizeSqft         = ps.SlLandSqft.HasValue ? (decimal?)ps.SlLandSqft.Value : null,
+                    YearBuilt           = ps.SlYearBuilt.HasValue ? (int?)ps.SlYearBuilt.Value : null,
+                    RawSaleQualifier    = ps.SaleQualifier,
+                    RawCountyRatioCd    = ps.SaleCountyRatioCd,
+                    RawExcludeCalcCd    = ps.SalesExcludeCalcCd,
+                    RawWacCd            = ps.WacCd,
+                    SaleQualification   = _qualifier.Qualify(ps.SaleQualifier, ps.SaleCountyRatioCd, ps.SalesExcludeCalcCd, ps.WacCd),
+                    IsVerified          = false,
+                    CountyId            = parcelInfo.CountyId
                 });
 
                 total++;
@@ -705,18 +716,6 @@ public sealed class PacsCanonicalizer
     // ─────────────────────────────────────────────────────────────────────────
     // Helpers
     // ─────────────────────────────────────────────────────────────────────────
-
-    private static string NormalizeSaleQualification(string? pacsCode)
-    {
-        return pacsCode?.ToUpperInvariant() switch
-        {
-            "Q"  or "1" or "VALID"                   => "qualified",
-            "E"  or "FC" or "FORECLOSURE"             => "foreclosure",
-            "A"  or "ESTATE" or "EST"                 => "estate",
-            _ when pacsCode != null                   => "non-arms-length",
-            _                                         => "non-arms-length"
-        };
-    }
 
     /// <summary>
     /// Normalize a PACS ImprvDetClassCd to the Benton 1-6 canonical quality tier names.

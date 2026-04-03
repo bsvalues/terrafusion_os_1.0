@@ -379,6 +379,9 @@ builder.Services.AddScoped<TerraFusion.Abstractions.Interfaces.IAuditLogger, Ter
 builder.Services.AddSingleton<PrototypeTestingEngine>();
 builder.Services.AddSingleton<ScenarioRunRegistry>();
 
+// 🏛️ Sale Qualification — TerraFusion owns the IAAO ratio-study qualification decision
+builder.Services.AddScoped<TerraFusion.API.Services.ISaleQualificationService, TerraFusion.API.Services.SaleQualificationService>();
+
 // 🏛️ TIER 3 Government Compliance Service - Championship Excellence
 builder.Services.AddScoped<TerraFusion.API.Services.IGovernmentComplianceService, GovernmentComplianceService>();
 // ✅ RE-ENABLED with IServiceScopeFactory pattern - DI lifetime issue RESOLVED

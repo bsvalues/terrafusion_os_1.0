@@ -45,8 +45,25 @@ public class ComparableSale
   public string? QualityGrade { get; set; }
 
   // ── Sale Qualification ──
+  // SaleQualification is TerraFusion's own verdict — set by SaleQualificationService,
+  // never copied verbatim from PACS. Re-runnable without re-importing from PACS.
   [StringLength(30)]
-  public string SaleQualification { get; set; } = "qualified"; // qualified | non-arms-length | foreclosure | estate
+  public string SaleQualification { get; set; } = "qualified"; // qualified | non-arms-length | foreclosure | estate | excluded: {code} | exempt: {code}
+
+  // ── Raw PACS Import Codes (preserved for audit + re-qualification) ──
+  // Copied verbatim from PACS at import time. Never interpreted at this layer.
+  // These fields allow SaleQualificationService to re-qualify sales without re-import.
+  [StringLength(10)]
+  public string? RawSaleQualifier { get; set; }   // PACS SaleQualifier
+
+  [StringLength(10)]
+  public string? RawCountyRatioCd { get; set; }   // PACS SaleCountyRatioCd (Benton's per-sale judgment)
+
+  [StringLength(10)]
+  public string? RawExcludeCalcCd { get; set; }   // PACS SalesExcludeCalcCd (ratio study exclusion flag)
+
+  [StringLength(32)]
+  public string? RawWacCd { get; set; }            // PACS WacCd (WAC 458-61A state excise code)
 
   public bool IsVerified { get; set; }
 
