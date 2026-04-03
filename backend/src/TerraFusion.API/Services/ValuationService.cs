@@ -156,18 +156,30 @@ public class ValuationService : IValuationService
         var median = prices.Count > 0 ? prices[prices.Count / 2] : 0m;
         var range  = prices.Count > 1 ? prices[^1] - prices[0] : 0m;
 
+        // CP-5: Sales ratio statistics (IAAO standard)
+        // AdjustedPrice = SalePrice currently (no neighborhood-score adjustment yet — CP-5 gap).
+        // Ratios are all 1.0 until adjustment scoring is built. COD = 0.
+        var ratios = comps
+            .Where(c => c.SalePrice > 0)
+            .Select(c => (double)(c.SalePrice / c.SalePrice))  // = 1.0 until adjustments applied
+            .ToList();
+        var ratioMedian = ratios.Count > 0 ? ratios.OrderBy(r => r).ElementAt(ratios.Count / 2) : 0.0;
+        var cod = ratioMedian > 0 && ratios.Count > 1
+            ? Math.Round(ratios.Average(r => Math.Abs(r - ratioMedian)) / ratioMedian * 100.0, 2)
+            : 0.0;
+
         var indicated = valRec?.SalesComparisonValue ?? median;
         var hasData   = comps.Count > 0 || valRec?.SalesComparisonValue > 0;
 
         return new SalesComparisonResult
         {
-            ParcelId            = parcelId,
-            TaxYear             = taxYear,
-            IndicatedValue      = indicated,
-            ComparableCount     = comps.Count,
-            MedianAdjustedPrice = median,
-            AdjustmentRange     = range,
-            Comparables         = comps.Select(c => new ComparableSaleEntry
+            ParcelId                = parcelId,
+            TaxYear                 = taxYear,
+            IndicatedValue          = indicated,
+            ComparableCount         = comps.Count,
+            MedianAdjustedPrice     = median,
+            AdjustmentRange         = range,
+            Comparables             = comps.Select(c => new ComparableSaleEntry
             {
                 ParcelId      = c.ParcelId,
                 SaleDate      = c.SaleDate,
@@ -175,12 +187,17 @@ public class ValuationService : IValuationService
                 AdjustedPrice = c.SalePrice, // adjustment scoring is CP-5 parity work
                 Similarity    = 0.80,         // uniform default — real scoring is a future AI layer
                 Notes         = BuildSaleNotes(c),
+                SalesRatio    = c.SalePrice > 0 ? 1.0 : 0.0,  // 1.0 until adjustments applied
             }).ToList(),
             Rationale = comps.Count > 0
-                ? $"{comps.Count} comparable sales within {taxYear - 2}\u2013{taxYear}. Median: ${median:N0}. (Neighborhood filter: CP-5 parity gap.)"
+                ? $"{comps.Count} comparable sales within {taxYear - 2}\u2013{taxYear}. Median: ${median:N0}. Neighborhood filter not yet active \u2014 comps span entire county."
                 : "No comparable sales found. Market value from canonical valuation record used where available.",
-            Source     = hasData ? "canonical" : "stub",
-            Confidence = hasData ? (comps.Count >= 3 ? 0.90 : 0.70) : 0.35,
+            Source                   = hasData ? "canonical" : "stub",
+            Confidence               = hasData ? (comps.Count >= 3 ? 0.90 : 0.70) : 0.35,
+            // CP-5 additions
+            SalesRatioMedian         = ratioMedian,
+            CoefficientOfDispersion  = cod,
+            NeighborhoodFilterActive = false, // CP-5 gap: Neighborhood not yet populated in canonical ComparableSale
         };
     }
 

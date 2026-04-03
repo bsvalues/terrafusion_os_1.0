@@ -107,6 +107,16 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
         )}
         {salesAPI.data && (
           <div className="space-y-3" data-testid="sales-comparison-live">
+            {/* Neighborhood filter disclosure banner when inactive */}
+            {!salesAPI.data.neighborhoodFilterActive && salesAPI.data.comparableCount > 0 && (
+              <div
+                className="px-3 py-2 rounded text-xs"
+                style={{ background: 'hsl(var(--tf-warning) / 0.10)', color: 'hsl(var(--tf-warning))' }}
+              >
+                Notice: Neighborhood filter not active. Comps are drawn from the full county — proximity scoring is a future AI layer.
+              </div>
+            )}
+            {/* Summary stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="tf-panel p-3 text-center">
                 <div className="tf-text-tertiary text-xs">Indicated Value</div>
@@ -125,6 +135,21 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
                 <div className="text-lg font-bold tf-text">{fmtCurrency(salesAPI.data.adjustmentRange)}</div>
               </div>
             </div>
+            {/* IAAO ratio statistics */}
+            {salesAPI.data.comparableCount > 0 && (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="tf-panel p-3 text-center">
+                  <div className="tf-text-tertiary text-xs">Sales Ratio Median</div>
+                  <div className="text-sm font-semibold tf-text">{salesAPI.data.salesRatioMedian.toFixed(3)}</div>
+                  <div className="text-xs tf-text-dim mt-0.5">IAAO target: 0.950\u20131.050</div>
+                </div>
+                <div className="tf-panel p-3 text-center">
+                  <div className="tf-text-tertiary text-xs">COD (IAAO)</div>
+                  <div className="text-sm font-semibold tf-text">{salesAPI.data.coefficientOfDispersion.toFixed(1)}%</div>
+                  <div className="text-xs tf-text-dim mt-0.5">Target: &lt;15% residential</div>
+                </div>
+              </div>
+            )}
             {salesAPI.data.rationale && (
               <div className="tf-panel p-3">
                 <p className="tf-text-secondary text-sm">{salesAPI.data.rationale}</p>
@@ -141,11 +166,25 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
                         {Math.round(c.similarity * 100)}% match
                       </span>
                     </div>
-                    <div className="flex gap-4 text-xs tf-text-dim">
+                    <div className="flex gap-4 text-xs tf-text-dim flex-wrap">
                       <span>Sale: {fmtCurrency(c.salePrice)}</span>
                       <span>Adjusted: {fmtCurrency(c.adjustedPrice)}</span>
-                      {c.saleDate && <span>{new Date(c.saleDate).toLocaleDateString()}</span>}
+                      <span>Ratio: {c.salesRatio.toFixed(3)}</span>
+                      {c.saleDate && (
+                        <span>
+                          {new Date(c.saleDate).toLocaleDateString()}
+                          {' \u2014 '}
+                          {Math.round((Date.now() - new Date(c.saleDate).getTime()) / 86400000)} days ago
+                        </span>
+                      )}
                     </div>
+                    {c.notes && c.notes.length > 0 && (
+                      <div className="mt-1 space-y-0.5">
+                        {c.notes.map((note, i) => (
+                          <div key={i} className="text-xs tf-text-dim pl-2 border-l border-current opacity-50">{note}</div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

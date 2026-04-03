@@ -49,6 +49,7 @@ export interface ComparableSaleEntry {
   adjustedPrice: number;
   similarity: number;
   notes: string[];
+  salesRatio: number;  // CP-5: adjustedPrice / salePrice
 }
 
 export interface SalesComparisonData {
@@ -62,6 +63,10 @@ export interface SalesComparisonData {
   rationale: string;
   source: string;
   confidence: number;
+  // CP-5: IAAO sales ratio statistics
+  salesRatioMedian: number;
+  coefficientOfDispersion: number;
+  neighborhoodFilterActive: boolean;
 }
 
 export interface IncomeApproachData {

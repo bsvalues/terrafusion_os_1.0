@@ -109,6 +109,16 @@ public record SalesComparisonResult
 
     public string Source { get; init; } = "fallback";
     public double Confidence { get; init; }
+
+    // ── CP-5: IAAO sales ratio statistics ──
+    /// <summary>Median sales ratio (adjusted/sale). 1.0 when no adjustment applied.</summary>
+    public double SalesRatioMedian { get; init; }
+
+    /// <summary>Coefficient of Dispersion per IAAO standards. 0 when no adjustments applied.</summary>
+    public double CoefficientOfDispersion { get; init; }
+
+    /// <summary>True when comps were filtered by neighborhood code. CP-5 gap: currently always false.</summary>
+    public bool NeighborhoodFilterActive { get; init; }
 }
 
 public record ComparableSaleEntry
@@ -119,6 +129,9 @@ public record ComparableSaleEntry
     public decimal AdjustedPrice { get; init; }
     public double Similarity { get; init; }
     public List<string> Notes { get; init; } = [];
+
+    // CP-5: per-comp sales ratio (adjustedPrice / salePrice)
+    public double SalesRatio { get; init; }
 }
 
 // ── Income Approach ────────────────────────────────────────────────────
