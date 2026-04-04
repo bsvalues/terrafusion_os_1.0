@@ -18,6 +18,7 @@ import { ComparableSalesPanel } from '../../../../components/workbench/Comparabl
 import {
   useSalesComparison as useSalesComparisonAPI,
   usePatchSaleQualification,
+  useRecomputeRecommendations,
   type QualificationDecisionValue,
 } from '../../../../hooks/forge/useForgeValuation';
 import {
@@ -38,6 +39,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
   /* ── Live API data ──────────────────────────────────────── */
   const salesAPI = useSalesComparisonAPI(parcelId, taxYear);
   const patchQualification = usePatchSaleQualification(parcelId, taxYear);
+  const recompute = useRecomputeRecommendations(parcelId, taxYear);
 
   // Track which comp row has its override panel open
   const [openOverride, setOpenOverride] = useState<string | null>(null);
@@ -125,7 +127,35 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
       <BentoCard
         title="&#127968;&#65039; Sales Comparison Summary"
         variant="default"
-        actions={<WorkbenchSourceBadge source={salesAPI.source} />}
+        actions={
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={recompute.isPending}
+              onClick={() => recompute.mutate()}
+              className="text-xs px-2 py-1 rounded transition-all disabled:opacity-50"
+              style={{
+                background: 'hsl(var(--tf-surface-2) / 0.70)',
+                color: 'hsl(var(--tf-text-secondary))',
+                border: '1px solid hsl(var(--tf-border))',
+              }}
+              title="Re-run TF rule engine recommendations for all sales in your county"
+            >
+              {recompute.isPending ? 'Recomputing…' : '↻ Recompute'}
+            </button>
+            {recompute.isError && (
+              <span className="text-xs" style={{ color: 'hsl(var(--tf-error))' }}>
+                {recompute.error?.message ?? 'Recompute failed'}
+              </span>
+            )}
+            {recompute.isSuccess && (
+              <span className="text-xs" style={{ color: 'hsl(var(--tf-success))' }}>
+                ✓ {(recompute.data as { updated: number }).updated} updated
+              </span>
+            )}
+            <WorkbenchSourceBadge source={salesAPI.source} />
+          </div>
+        }
       >
         {salesAPI.loading && (
           <div role="status" className="flex items-center justify-center py-6 gap-3">

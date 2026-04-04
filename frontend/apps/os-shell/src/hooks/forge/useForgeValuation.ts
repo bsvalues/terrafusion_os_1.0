@@ -335,6 +335,34 @@ export function usePatchSaleQualification(parcelId: string | undefined, taxYear:
   });
 }
 
+export interface RecomputeRecommendationsResult {
+  updated: number;
+}
+
+/**
+ * POST /api/forge/sales/recompute-recommendations
+ * Triggers Layer 2 (TF rule-engine) recommendation regen for all sales in the
+ * assessor's county. Invalidates all sales queries so the comp list refreshes.
+ */
+export function useRecomputeRecommendations(parcelId: string | undefined, taxYear: number) {
+  const queryClient = useQueryClient();
+  return useMutation<RecomputeRecommendationsResult, Error, void>({
+    mutationFn: async () => {
+      const res = await fetch('/api/forge/sales/recompute-recommendations', {
+        method: 'POST',
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.error ?? `Recompute failed: ${res.status}`);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['forge', 'sales', parcelId, taxYear] });
+    },
+  });
+}
+
 export function useParcelYears(parcelId: string | undefined): ParcelYearsHookResult {
   const query = useQuery<ParcelYearLayersResult>({
     queryKey: ['forge', 'years', parcelId],
