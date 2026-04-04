@@ -209,6 +209,22 @@ public record ComparableSaleEntry
 
     /// <summary>Sale price per square foot of gross living area. Null if GLA not available.</summary>
     public decimal? PricePerSqFt { get; init; }
+
+    // ── 3-Layer Qualification (read-only for UI display + override surface) ──
+    /// <summary>Stable ID of the ComparableSale record — required for the PATCH override endpoint.</summary>
+    public Guid SaleId { get; init; }
+
+    /// <summary>Layer 2: TF rule engine recommendation (recomputable, not authoritative).</summary>
+    public string? QualificationRecommendation { get; init; }
+
+    /// <summary>Layer 3: Assessor's explicit decision. Null = no override, falls back to recommendation.</summary>
+    public string? QualificationDecision { get; init; }
+
+    /// <summary>"AssessorOverride" | "AcceptedRecommendation" | null</summary>
+    public string? DecisionSource { get; init; }
+
+    /// <summary>Effective qualification used by ValuationService: Decision ?? Recommendation.</summary>
+    public string? EffectiveQualification { get; init; }
 }
 
 // ── Income Approach ────────────────────────────────────────────────────

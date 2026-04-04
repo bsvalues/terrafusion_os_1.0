@@ -317,6 +317,12 @@ public class ValuationService : IValuationService
                 Similarity    = 0.80,         // uniform default — real scoring is a future AI layer
                 Notes         = BuildSaleNotes(c),
                 SalesRatio    = c.SalePrice > 0 ? 1.0 : 0.0,  // 1.0 until adjustments applied
+                // 3-layer qualification — expose for UI display and override surface
+                SaleId                    = c.Id,
+                QualificationRecommendation = c.QualificationRecommendation,
+                QualificationDecision     = c.QualificationDecision,
+                DecisionSource            = c.DecisionSource,
+                EffectiveQualification    = c.QualificationDecision ?? c.QualificationRecommendation,
             }).ToList(),
             Rationale = comps.Count > 0
                 ? neighborhoodFilterActive

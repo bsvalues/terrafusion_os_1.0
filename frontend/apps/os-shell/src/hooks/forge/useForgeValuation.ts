@@ -9,7 +9,7 @@
  *   source = "fallback" when the API call fails (component should use its own fallback data)
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 /* ── Response shapes (mirror backend ForgeValuationDtos.cs) ── */
 
@@ -74,6 +74,12 @@ export interface ComparableSaleEntry {
   notes: string[];
   salesRatio: number;  // CP-5: adjustedPrice / salePrice
   pricePerSqFt: number | null;
+  // 3-Layer Qualification
+  saleId: string;                          // UUID — required for PATCH override
+  qualificationRecommendation: string | null;  // Layer 2: TF rule engine
+  qualificationDecision: string | null;        // Layer 3: assessor override
+  decisionSource: string | null;               // "AssessorOverride" | "AcceptedRecommendation"
+  effectiveQualification: string | null;       // Decision ?? Recommendation
 }
 
 export interface SalesComparisonData {
@@ -276,6 +282,58 @@ export interface ParcelYearsHookResult {
 }
 
 /* ── useParcelYears ─────────────────────────────────────── */
+
+/* ── Sale Qualification Override ──────────────────────────── */
+
+export type QualificationDecisionValue =
+  | 'qualified'
+  | 'non-arms-length'
+  | 'foreclosure'
+  | 'estate'
+  | 'excluded'
+  | 'exempt'
+  | null; // null = clear override
+
+export interface PatchSaleQualificationVars {
+  saleId: string;
+  decision: QualificationDecisionValue;
+  reason?: string;
+}
+
+export interface PatchSaleQualificationResult {
+  saleId: string;
+  qualificationDecision: string | null;
+  decisionBy: string;
+  decisionAt: string;
+  decisionSource: string | null;
+}
+
+/**
+ * PATCH /api/forge/sales/{saleId}/qualification
+ * Assessor Layer 3 override. Invalidates the sales query for the parcel
+ * so the comp list refreshes automatically.
+ */
+export function usePatchSaleQualification(parcelId: string | undefined, taxYear: number) {
+  const queryClient = useQueryClient();
+  return useMutation<PatchSaleQualificationResult, Error, PatchSaleQualificationVars>({
+    mutationFn: async ({ saleId, decision, reason }) => {
+      const res = await fetch(`/api/forge/sales/${encodeURIComponent(saleId)}/qualification`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ decision, reason: reason ?? null }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.error ?? `Override failed: ${res.status}`);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      // Refetch the sales comparison so the updated effective qualification shows
+      queryClient.invalidateQueries({ queryKey: ['forge', 'sales', parcelId, taxYear] });
+    },
+  });
+}
 
 export function useParcelYears(parcelId: string | undefined): ParcelYearsHookResult {
   const query = useQuery<ParcelYearLayersResult>({
