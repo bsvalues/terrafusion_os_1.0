@@ -97,6 +97,9 @@ export interface SalesComparisonData {
   salesRatioMedian: number;
   coefficientOfDispersion: number;
   neighborhoodFilterActive: boolean;
+  // R2Wave39: PRD + qualified sale count (0.0 / 0 when < 2 qualified sales with PACS ratios)
+  priceRelatedDifferential: number;
+  qualifiedSaleCount: number;
   // OLS regression model (market-extracted adjustment derivation)
   regressionIndicatedValue: number | null;
   regressionRSquared: number | null;

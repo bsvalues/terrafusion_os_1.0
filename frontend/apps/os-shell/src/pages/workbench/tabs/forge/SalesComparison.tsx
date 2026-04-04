@@ -206,6 +206,20 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
                   <div className="text-sm font-semibold tf-text">{salesAPI.data.coefficientOfDispersion.toFixed(1)}%</div>
                   <div className="text-xs tf-text-dim mt-0.5">Target: &lt;15% residential</div>
                 </div>
+                <div className="tf-panel p-3 text-center">
+                  <div className="tf-text-tertiary text-xs">PRD (IAAO)</div>
+                  <div className="text-sm font-semibold tf-text">
+                    {salesAPI.data.priceRelatedDifferential > 0
+                      ? salesAPI.data.priceRelatedDifferential.toFixed(3)
+                      : '–'}
+                  </div>
+                  <div className="text-xs tf-text-dim mt-0.5">Target: 0.98\u20131.03</div>
+                </div>
+                <div className="tf-panel p-3 text-center">
+                  <div className="tf-text-tertiary text-xs">Qualified Sales</div>
+                  <div className="text-sm font-semibold tf-text">{salesAPI.data.qualifiedSaleCount}</div>
+                  <div className="text-xs tf-text-dim mt-0.5">of {salesAPI.data.comparableCount} total</div>
+                </div>
               </div>
             )}
             {salesAPI.data.rationale && (
