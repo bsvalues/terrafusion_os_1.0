@@ -310,19 +310,40 @@ public class ValuationService : IValuationService
                 ParcelId      = c.ParcelId,
                 SaleDate      = c.SaleDate,
                 SalePrice     = c.SalePrice,
-                AdjustedPrice = c.SalePrice, // adjustment scoring is CP-5 parity work
-                PricePerSqFt  = (c.GrossLivingArea.HasValue && c.GrossLivingArea > 0)
-                    ? Math.Round(c.SalePrice / c.GrossLivingArea.Value, 2)
+                // Use PACS adjusted_sl_price when available — this is the price used for ratio study calculations.
+                // Fall back to raw SalePrice only when the adjusted price hasn't been synced from PACS yet.
+                AdjustedPrice = c.AdjustedSalePrice ?? c.SalePrice,
+                // Use living area frozen at time of sale (sl_living_area) for ratio study accuracy.
+                // Fall back to current GLA when freeze data hasn't been synced.
+                PricePerSqFt  = ((c.SlLivingArea ?? c.GrossLivingArea) is decimal gla && gla > 0)
+                    ? Math.Round((c.AdjustedSalePrice ?? c.SalePrice) / gla, 2)
                     : null,
                 Similarity    = 0.80,         // uniform default — real scoring is a future AI layer
                 Notes         = BuildSaleNotes(c),
-                SalesRatio    = c.SalePrice > 0 ? 1.0 : 0.0,  // 1.0 until adjustments applied
+                // Use PACS pre-computed ratio when available; otherwise derive from adjusted price.
+                SalesRatio    = c.PacsComputedRatio.HasValue
+                    ? (double)c.PacsComputedRatio.Value
+                    : (c.AdjustedSalePrice ?? c.SalePrice) > 0 ? 1.0 : 0.0,
                 // 3-layer qualification — expose for UI display and override surface
                 SaleId                    = c.Id,
                 QualificationRecommendation = c.QualificationRecommendation,
                 QualificationDecision     = c.QualificationDecision,
                 DecisionSource            = c.DecisionSource,
                 EffectiveQualification    = c.QualificationDecision ?? c.QualificationRecommendation,
+                // PACS Layer 1 raw fields for ratio study display
+                AdjustedSalePriceFromPacs = c.AdjustedSalePrice,
+                RawRatioTypeCd            = c.RawRatioTypeCd,
+                RawCountyRatioCd          = c.RawCountyRatioCd,
+                RawRatioCdReason          = c.RawRatioCdReason,
+                RawSaleTypeCode           = c.RawSaleTypeCode,
+                PacsComputedRatio         = c.PacsComputedRatio,
+                LandOnlySale              = c.LandOnlySale,
+                ContinueCurrentUse        = c.ContinueCurrentUse,
+                SalesYear                 = c.SalesYear,
+                SuppressOnRatioRptCd      = c.SuppressOnRatioRptCd,
+                IncludeNoCalc             = c.IncludeNoCalc,
+                SaleExemptionAmount       = c.SaleExemptionAmount,
+                RawComment                = c.RawComment,
             }).ToList(),
             Rationale = comps.Count > 0
                 ? neighborhoodFilterActive

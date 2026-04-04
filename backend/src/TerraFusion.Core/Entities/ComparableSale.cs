@@ -45,19 +45,90 @@ public class ComparableSale
   public string? QualityGrade { get; set; }
 
   // ── Layer 1: Raw PACS Import Codes (verbatim source facts) ──
-  // Copied exactly from PACS at sync time. Never interpreted, transformed, or judged.
-  // These are facts about what PACS recorded — not TerraFusion's opinion.
+  // All fields below are copied verbatim from the PACS Sale table (and chg_of_owner) at sync time.
+  // Never interpreted, transformed, or defaulted by TerraFusion.
+  // Field names map 1:1 to PACS column names documented in PACS 9.0 Database Table Guide.
+
+  // ── PACS reference keys ──
+  public int? PacsChgOfOwnerId { get; set; }            // chg_of_owner.chg_of_owner_id — PACS sale record ID (for traceability)
+  public int? ExciseNumber { get; set; }                 // chg_of_owner.excise_number — WA recorder's office REET excise number
+
+  // ── Qualification / ratio study codes ──
   [StringLength(10)]
-  public string? RawSaleQualifier { get; set; }   // PACS SaleQualifier
+  public string? RawSaleQualifier { get; set; }          // sale.sl_qualifier — generic sale qualifier code
 
   [StringLength(10)]
-  public string? RawCountyRatioCd { get; set; }   // PACS SaleCountyRatioCd
+  public string? RawCountyRatioCd { get; set; }          // sale.sl_county_ratio_cd — county's qualified/unqualified call
 
   [StringLength(10)]
-  public string? RawExcludeCalcCd { get; set; }   // PACS SalesExcludeCalcCd
+  public string? RawRatioTypeCd { get; set; }            // sale.sl_ratio_type_cd — WA State DOR ratio study type code (e.g. "100")
+
+  [StringLength(10)]
+  public string? RawRatioCd { get; set; }                // sale.sl_ratio_cd — PACS sale ratio code (maps to sale_ratio_type.sl_ratio_type_cd)
+
+  [StringLength(100)]
+  public string? RawRatioCdReason { get; set; }          // sale.sl_ratio_cd_reason — reason text for DOR report (e.g. "Gift- Grantee pays debt")
+
+  [StringLength(10)]
+  public string? RawExcludeCalcCd { get; set; }          // sale.sales_exclude_calc_cd — exclude from calculations code (used with include_no_calc)
 
   [StringLength(32)]
-  public string? RawWacCd { get; set; }            // PACS WacCd (WAC 458-61A)
+  public string? RawWacCd { get; set; }                  // sale.wac_cd — WAC 458-61A REET exemption code (e.g. "458-61A-205(2)")
+
+  // ── Price / adjustments ──
+  // IMPORTANT: adjusted_sl_price is the price used for ratio study calcs, NOT sl_price.
+  public decimal? AdjustedSalePrice { get; set; }        // sale.adjusted_sl_price — adjusted sale price used in ratio study (sl_price ± adjustments)
+
+  public decimal? SaleAdjustmentAmount { get; set; }     // sale.sl_adj_sl_amt — dollar amount of price adjustment (negative = downward adj)
+
+  [StringLength(50)]
+  public string? RawAdjReason { get; set; }              // sale.sl_adj_rsn — sale price adjustment reason text (verbatim)
+
+  [StringLength(5)]
+  public string? RawAdjCode { get; set; }                // sale.sl_adj_cd — sale price adjustment reason code
+
+  public decimal? SaleExemptionAmount { get; set; }      // sale.exemption_amount — REET exemption amount (partial exemption applied to this sale)
+
+  // ── PACS pre-computed ratio ──
+  public decimal? PacsComputedRatio { get; set; }        // sale.sl_ratio — PACS-computed ratio (assessed_val / sl_price * 100); not used for TF calcs but preserved for audit
+
+  // ── Sale type / deed metadata ──
+  [StringLength(5)]
+  public string? RawSaleTypeCode { get; set; }           // sale.sl_type_cd — sale type code (e.g. "SWD" = Statutory Warranty Deed, "WD" = Warranty Deed)
+
+  [StringLength(5)]
+  public string? RawFinancingCode { get; set; }          // sale.sl_financing_cd — financing type code
+
+  // ── Ratio report suppression ──
+  [StringLength(5)]
+  public string? SuppressOnRatioRptCd { get; set; }      // sale.suppress_on_ratio_rpt_cd — "T" / "F": suppress from DOR ratio report
+
+  [StringLength(30)]
+  public string? SuppressOnRatioReason { get; set; }     // sale.suppress_on_ratio_rsn — reason this sale is suppressed from the report
+
+  public bool? IncludeNoCalc { get; set; }               // sale.include_no_calc — in ratio report but excluded from IAAO calculations
+
+  // ── Washington-specific flags ──
+  public bool? LandOnlySale { get; set; }                // sale.land_only_sale — true = land-only sale; ratio calculated on land value only
+
+  public bool? ContinueCurrentUse { get; set; }          // sale.continue_current_use — WA: current use (open space/farm/timber) designation must continue
+
+  public int? SalesYear { get; set; }                    // sale.sales_year — PACS DOR ratio study year assignment (may differ from SaleDate.Year)
+
+  // ── Physical characteristics frozen at time of sale ──
+  // PACS imports these from the property record at the time of sale (sl_living_area vs current imprv data).
+  // Use these for ratio study comps — NOT the live GrossLivingArea / LotSizeSqft fields.
+  public decimal? SlLivingArea { get; set; }             // sale.sl_living_area — living area at time of sale
+
+  public int? SlYearBuilt { get; set; }                  // sale.sl_yr_blt — year built at time of sale
+
+  public decimal? SlLandAcres { get; set; }              // sale.sl_land_acres — land acres at time of sale
+
+  public decimal? SlLandSqft { get; set; }               // sale.sl_land_sqft — land square footage at time of sale
+
+  // ── Comments ──
+  [StringLength(500)]
+  public string? RawComment { get; set; }                // sale.sl_comment — general sale comment (staff notes, clerk notes)
 
   // ── Layer 2: TerraFusion Qualification Recommendation (rule engine, post-sync) ──
   // Computed by SaleQualificationService.ComputeRecommendations() — always run AFTER ingest.
