@@ -3,6 +3,7 @@ using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Data;
+using CanonicalComparableSale = TerraFusion.Core.Entities.ComparableSale;
 
 namespace TerraFusion.API.Services;
 
@@ -187,22 +188,63 @@ public class ValuationService : IValuationService
             .FirstOrDefaultAsync(ct);
 
         // Find comps by property type and date range.
-        // NOTE: Neighborhood filtering deferred — ComparableSale.Neighborhood not yet
-        // populated in the canonical model. This is a CP-5 parity gap.
+        // CP-5: Neighborhood filter uses hood_cd from PacsValuation.
+        // Strategy: prefer comps from same neighborhood; fall back to county-wide if < 5 in hood.
         var cutoffStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var cutoffEnd   = new DateTime(taxYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
 
-        var comps = await _db.ComparableSales
+        // Resolve subject neighborhood from PacsValuation (most recent base-roll year)
+        var subjectHood = await _db.PacsValuations
+            .AsNoTracking()
+            .Where(v => v.SupNum == 0 && v.NeighborhoodCode != null &&
+                (v.Parcel.GeoId == parcelId || v.Parcel.SimpleGeoId == parcelId))
+            .OrderByDescending(v => v.PropValYear)
+            .Select(v => v.NeighborhoodCode)
+            .FirstOrDefaultAsync(ct);
+
+        // Qualified comps base query
+        var baseCompsQuery = _db.ComparableSales
             .AsNoTracking()
             .Where(cs =>
                 cs.SaleDate >= cutoffStart &&
                 cs.SaleDate <= cutoffEnd &&
                 cs.SalePrice > 0 &&
                 cs.SaleQualification == "qualified" &&
-                cs.ParcelId != parcelId)
-            .OrderByDescending(cs => cs.SaleDate)
-            .Take(10)
-            .ToListAsync(ct);
+                cs.ParcelId != parcelId);
+
+        List<CanonicalComparableSale> comps;
+        bool neighborhoodFilterActive = false;
+
+        if (subjectHood != null)
+        {
+            // Try neighborhood-scoped comps first
+            var hoodComps = await baseCompsQuery
+                .Where(cs => cs.Neighborhood == subjectHood)
+                .OrderByDescending(cs => cs.SaleDate)
+                .Take(10)
+                .ToListAsync(ct);
+
+            if (hoodComps.Count >= 5)
+            {
+                comps = hoodComps;
+                neighborhoodFilterActive = true;
+            }
+            else
+            {
+                // Insufficient sales in neighborhood — fall back to county-wide
+                comps = await baseCompsQuery
+                    .OrderByDescending(cs => cs.SaleDate)
+                    .Take(10)
+                    .ToListAsync(ct);
+            }
+        }
+        else
+        {
+            comps = await baseCompsQuery
+                .OrderByDescending(cs => cs.SaleDate)
+                .Take(10)
+                .ToListAsync(ct);
+        }
 
         var prices = comps.Select(c => c.SalePrice).OrderBy(p => p).ToList();
         var median = prices.Count > 0 ? prices[prices.Count / 2] : 0m;
@@ -277,14 +319,16 @@ public class ValuationService : IValuationService
                 SalesRatio    = c.SalePrice > 0 ? 1.0 : 0.0,  // 1.0 until adjustments applied
             }).ToList(),
             Rationale = comps.Count > 0
-                ? $"{comps.Count} comparable sales within {taxYear - 2}\u2013{taxYear}. Median: ${median:N0}. Neighborhood filter not yet active \u2014 comps span entire county."
+                ? neighborhoodFilterActive
+                    ? $"{comps.Count} comparable sales within {taxYear - 2}–{taxYear}. Median: ${median:N0}. Neighborhood filter active — comps restricted to hood {subjectHood}."
+                    : $"{comps.Count} comparable sales within {taxYear - 2}–{taxYear}. Median: ${median:N0}. Neighborhood filter inactive — fewer than 5 sales in hood {subjectHood ?? "unknown"}; comps span entire county."
                 : "No comparable sales found. Market value from canonical valuation record used where available.",
             Source                   = hasData ? "canonical" : "stub",
             Confidence               = hasData ? (comps.Count >= 3 ? 0.90 : 0.70) : 0.35,
             // CP-5 additions
             SalesRatioMedian         = ratioMedian,
             CoefficientOfDispersion  = cod,
-            NeighborhoodFilterActive = false, // CP-5 gap: Neighborhood not yet populated in canonical ComparableSale
+            NeighborhoodFilterActive = neighborhoodFilterActive, // true when ≥5 comps found in subject's hood_cd
             // OLS regression
             RegressionIndicatedValue = regressionIndicated,
             RegressionRSquared       = olsResult?.RSquared,

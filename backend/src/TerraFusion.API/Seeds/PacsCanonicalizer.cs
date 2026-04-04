@@ -370,6 +370,18 @@ public sealed class PacsCanonicalizer
             .Select(g => new { ParcelId = g.Key, Display = g.First().SitusDisplay })
             .ToDictionaryAsync(x => x.ParcelId, x => x.Display, ct);
 
+        // Neighborhood lookup — most recent base-roll year per parcel (SupNum=0, max PropValYear).
+        // PacsValuation.NeighborhoodCode maps to hood_cd via [Column("hood_cd")] attribute.
+        var hoodMap = await _db.PacsValuations
+            .Where(v => v.SupNum == 0 && v.NeighborhoodCode != null)
+            .GroupBy(v => v.ParcelId)
+            .Select(g => new
+            {
+                ParcelId = g.Key,
+                Hood = g.OrderByDescending(v => v.PropValYear).First().NeighborhoodCode,
+            })
+            .ToDictionaryAsync(x => x.ParcelId, x => x.Hood, ct);
+
         // Load valid sales
         var sales = await _db.PacsSales
             .Where(s => s.SaleDate != null && (s.SalePrice > 0 || s.AdjustedSalePrice > 0))
@@ -399,6 +411,7 @@ public sealed class PacsCanonicalizer
                 if (!ps.SaleDate.HasValue) continue;
 
                 addressMap.TryGetValue(ps.ParcelId, out var address);
+                hoodMap.TryGetValue(ps.ParcelId, out var hood);
 
                 var price = ps.AdjustedSalePrice > 0 ? ps.AdjustedSalePrice!.Value : (ps.SalePrice ?? 0m);
 
@@ -412,6 +425,7 @@ public sealed class PacsCanonicalizer
                     SalePrice           = price,
                     PropertyType        = parcelInfo.PropTypeCd ?? "residential",
                     Address             = address,
+                    Neighborhood        = hood,
                     GrossLivingArea     = ps.SlLivingArea.HasValue ? (decimal?)ps.SlLivingArea.Value : null,
                     LotSizeSqft         = ps.SlLandSqft.HasValue ? (decimal?)ps.SlLandSqft.Value : null,
                     YearBuilt           = ps.SlYearBuilt.HasValue ? (int?)ps.SlYearBuilt.Value : null,
