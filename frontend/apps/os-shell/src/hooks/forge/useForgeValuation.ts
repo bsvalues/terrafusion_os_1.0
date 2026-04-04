@@ -73,6 +73,7 @@ export interface ComparableSaleEntry {
   similarity: number;
   notes: string[];
   salesRatio: number;  // CP-5: adjustedPrice / salePrice
+  pricePerSqFt: number | null;
 }
 
 export interface SalesComparisonData {
@@ -90,6 +91,12 @@ export interface SalesComparisonData {
   salesRatioMedian: number;
   coefficientOfDispersion: number;
   neighborhoodFilterActive: boolean;
+  // OLS regression model (market-extracted adjustment derivation)
+  regressionIndicatedValue: number | null;
+  regressionRSquared: number | null;
+  regressionRSquaredAdj: number | null;
+  regressionCompsUsed: number | null;
+  regressionBeta: number[] | null;
 }
 
 export interface IncomeApproachData {

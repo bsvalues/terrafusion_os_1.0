@@ -189,6 +189,35 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
                 ))}
               </div>
             )}
+            {/* OLS Regression model */}
+            {salesAPI.data.regressionIndicatedValue != null && (
+              <div className="tf-panel p-3 space-y-2" data-testid="ols-regression-panel">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold tf-text-secondary">OLS Regression Model</span>
+                  <span className="text-xs tf-text-dim">
+                    n={salesAPI.data.regressionCompsUsed ?? '—'}
+                    &nbsp;·&nbsp;
+                    R²={salesAPI.data.regressionRSquared != null ? salesAPI.data.regressionRSquared.toFixed(3) : '—'}
+                    &nbsp;·&nbsp;
+                    R²adj={salesAPI.data.regressionRSquaredAdj != null ? salesAPI.data.regressionRSquaredAdj.toFixed(3) : '—'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="tf-text-tertiary text-xs">Regression-Indicated Value</span>
+                  <span className="text-sm font-bold tf-suite-accent-text">
+                    {fmtCurrency(salesAPI.data.regressionIndicatedValue)}
+                  </span>
+                </div>
+                {salesAPI.data.regressionBeta && salesAPI.data.regressionBeta.length === 4 && (
+                  <div className="grid grid-cols-4 gap-2 text-xs tf-text-dim">
+                    <div><span className="opacity-60">β₀</span> {salesAPI.data.regressionBeta[0].toFixed(0)}</div>
+                    <div><span className="opacity-60">β_GLA</span> {salesAPI.data.regressionBeta[1].toFixed(2)}</div>
+                    <div><span className="opacity-60">β_Lot</span> {salesAPI.data.regressionBeta[2].toFixed(2)}</div>
+                    <div><span className="opacity-60">β_Year</span> {salesAPI.data.regressionBeta[3].toFixed(0)}</div>
+                  </div>
+                )}
+              </div>
+            )}
             <div className="flex items-center gap-3 text-sm">
               <span className="tf-text-tertiary">Confidence:</span>
               <span className="tf-suite-accent-text font-semibold">{formatConfidence(salesAPI.data.confidence)}</span>
