@@ -49,7 +49,8 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
     setOpenOverride(saleId);
     setPendingDecision((currentDecision as QualificationDecisionValue) ?? null);
     setPendingReason('');
-  }, []);
+    patchQualification.reset();
+  }, [patchQualification]);
 
   const handleSubmitOverride = useCallback(
     (saleId: string) => {
@@ -197,7 +198,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
                   const isOpen = openOverride === c.saleId;
 
                   return (
-                    <div key={c.parcelId} className="tf-panel p-3 rounded">
+                    <div key={c.saleId} className="tf-panel p-3 rounded">
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-mono tf-text text-sm">{c.parcelId}</span>
                         <div className="flex items-center gap-2">
