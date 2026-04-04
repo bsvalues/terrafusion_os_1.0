@@ -282,17 +282,46 @@ public class ValuationService : IValuationService
                 regressionIndicated = Math.Round((decimal)predicted.Value, 0);
         }
 
-        // CP-5: Sales ratio statistics (IAAO standard)
-        // AdjustedPrice = SalePrice currently (no neighborhood-score adjustment yet — CP-5 gap).
-        // Ratios are all 1.0 until adjustment scoring is built. COD = 0.
-        var ratios = comps
-            .Where(c => c.SalePrice > 0)
-            .Select(c => (double)(c.SalePrice / c.SalePrice))  // = 1.0 until adjustments applied
+        // ── CP-5 / R2Wave39: IAAO sales ratio statistics ──────────────────────────────
+        // Only qualified sales enter the ratio study (IAAO standard — disqualified/excluded
+        // sales must not influence the appraisal level/uniformity statistics).
+        var qualifiedComps = comps
+            .Where(c => (c.QualificationDecision ?? c.QualificationRecommendation) == "qualified")
             .ToList();
-        var ratioMedian = ratios.Count > 0 ? ratios.OrderBy(r => r).ElementAt(ratios.Count / 2) : 0.0;
+
+        // Prefer PACS pre-computed ratio (sl_ratio = appraised_value / adjusted_sl_price).
+        // Fall back to AdjustedSalePrice ratio when PacsComputedRatio not yet synced.
+        var ratioPoints = qualifiedComps
+            .Select(c => (
+                Ratio: c.PacsComputedRatio.HasValue && c.PacsComputedRatio.Value > 0
+                    ? (double)c.PacsComputedRatio.Value
+                    : 0.0,                               // exclude 0/null from stats
+                Price: (double)(c.AdjustedSalePrice ?? c.SalePrice)
+            ))
+            .Where(p => p.Ratio > 0 && p.Price > 0)
+            .ToList();
+
+        var ratios     = ratioPoints.Select(p => p.Ratio).ToList();
+        var sorted     = ratios.OrderBy(r => r).ToList();
+        var ratioMedian = sorted.Count > 0 ? sorted[sorted.Count / 2] : 0.0;
+
+        // COD = Mean(|ratio - medianRatio| / medianRatio) × 100  (IAAO standard)
         var cod = ratioMedian > 0 && ratios.Count > 1
-            ? Math.Round(ratios.Average(r => Math.Abs(r - ratioMedian)) / ratioMedian * 100.0, 2)
+            ? Math.Round(ratios.Average(r => Math.Abs(r - ratioMedian) / ratioMedian) * 100.0, 2)
             : 0.0;
+
+        // PRD = Arithmetic mean / Weighted mean  (IAAO price-related differential)
+        // Weighted mean = Sum(assessedValues) / Sum(salePrices)
+        // Since ratio = assessed / price → assessedValue = ratio * price
+        var prd = 0.0;
+        if (ratioPoints.Count > 1)
+        {
+            var arithmeticMean = ratios.Average();
+            var sumAssessed    = ratioPoints.Sum(p => p.Ratio * p.Price);
+            var sumPrices      = ratioPoints.Sum(p => p.Price);
+            var weightedMean   = sumPrices > 0 ? sumAssessed / sumPrices : 0.0;
+            prd = weightedMean > 0 ? Math.Round(arithmeticMean / weightedMean, 4) : 0.0;
+        }
 
         var indicated = valRec?.SalesComparisonValue ?? median;
         var hasData   = comps.Count > 0 || valRec?.SalesComparisonValue > 0;
@@ -352,9 +381,11 @@ public class ValuationService : IValuationService
                 : "No comparable sales found. Market value from canonical valuation record used where available.",
             Source                   = hasData ? "canonical" : "stub",
             Confidence               = hasData ? (comps.Count >= 3 ? 0.90 : 0.70) : 0.35,
-            // CP-5 additions
+            // CP-5 / R2Wave39 additions
             SalesRatioMedian         = ratioMedian,
             CoefficientOfDispersion  = cod,
+            PriceRelatedDifferential = prd,
+            QualifiedSaleCount       = qualifiedComps.Count,
             NeighborhoodFilterActive = neighborhoodFilterActive, // true when ≥5 comps found in subject's hood_cd
             // OLS regression
             RegressionIndicatedValue = regressionIndicated,

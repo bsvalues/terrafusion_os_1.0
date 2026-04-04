@@ -168,10 +168,20 @@ public record SalesComparisonResult
     /// <summary>Median sales ratio (adjusted/sale). 1.0 when no adjustment applied.</summary>
     public double SalesRatioMedian { get; init; }
 
-    /// <summary>Coefficient of Dispersion per IAAO standards. 0 when no adjustments applied.</summary>
+    /// <summary>Coefficient of Dispersion per IAAO standards (%). IAAO target: ≤15% residential.</summary>
     public double CoefficientOfDispersion { get; init; }
 
-    /// <summary>True when comps were filtered by neighborhood code. CP-5 gap: currently always false.</summary>
+    /// <summary>
+    /// Price-Related Differential (IAAO standard). Arithmetic mean / weighted mean.
+    /// IAAO target: 0.98–1.03. >1.03 = assessment regressivity; &lt;0.98 = progressivity.
+    /// 0.0 when fewer than 2 qualified sales with PACS ratios available.
+    /// </summary>
+    public double PriceRelatedDifferential { get; init; }
+
+    /// <summary>Number of sales with EffectiveQualification = "qualified" used in ratio statistics.</summary>
+    public int QualifiedSaleCount { get; init; }
+
+    /// <summary>True when comps were filtered by neighborhood code.</summary>
     public bool NeighborhoodFilterActive { get; init; }
 
     // ── OLS Regression (market-extracted adjustments) ──
