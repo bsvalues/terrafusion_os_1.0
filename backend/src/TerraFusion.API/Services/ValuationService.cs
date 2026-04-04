@@ -265,14 +265,15 @@ public class ValuationService : IValuationService
         var olsResult = _ols.Fit(olsObs);
 
         // Apply model to subject property if we have its GLA from CAMA
+        // ── R2Wave41: Hoist subject CAMA — used for both OLS regression and similarity scoring ──
+        var subjectCama = await _db.CamaCharacteristics
+            .AsNoTracking()
+            .Where(c => c.ParcelId == parcelId)
+            .FirstOrDefaultAsync(ct);
+
         decimal? regressionIndicated = null;
         if (olsResult != null)
         {
-            var subjectCama = await _db.CamaCharacteristics
-                .AsNoTracking()
-                .Where(c => c.ParcelId == parcelId)
-                .FirstOrDefaultAsync(ct);
-
             var subGla  = (double?)subjectCama?.SquareFeet ?? 0;
             var subLot  = (double?)subjectCama?.LandAreaSqft ?? 0;
             var subYear = (double?)subjectCama?.YearBuilt ?? 1980;
@@ -347,7 +348,14 @@ public class ValuationService : IValuationService
                 PricePerSqFt  = ((c.SlLivingArea ?? c.GrossLivingArea) is decimal gla && gla > 0)
                     ? Math.Round((c.AdjustedSalePrice ?? c.SalePrice) / gla, 2)
                     : null,
-                Similarity    = 0.80,         // uniform default — real scoring is a future AI layer
+                Similarity    = SimilarityScorer.Score(
+                    c,
+                    subjectGla:             subjectCama?.SquareFeet,
+                    subjectYearBuilt:       subjectCama?.YearBuilt,
+                    subjectNeighborhood:    subjectHood,
+                    subjectLandSqft:        subjectCama?.LandAreaSqft,
+                    subjectQualityGrade:    subjectCama?.QualityGrade,    // imprv_det_class_cd → ECONOMY…EXCELLENT
+                    subjectImprvTypeCode:   subjectCama?.BuildingType),   // imprv_type_cd → R1, R2, A1, etc.
                 Notes         = BuildSaleNotes(c),
                 // Use PACS pre-computed ratio when available; otherwise derive from adjusted price.
                 SalesRatio    = c.PacsComputedRatio.HasValue
@@ -707,4 +715,143 @@ public class ValuationService : IValuationService
         < 11.0m => "elevated",
         _       => "high",
     };
+
+    /// <summary>
+    /// R2Wave41 — IAAO-aligned comparable similarity scorer.
+    ///
+    /// Weighted dimensions:
+    ///   GLA (30%)            — largest driver of value, WA assessment rule
+    ///   Quality class (20%)  — PACS imprv_det_class_cd (ECONOMY…EXCELLENT); ordinal distance
+    ///   Year Built (20%)     — effective age is core to cost/income approaches
+    ///   Same Neighborhood (15%) — location adjustment proxy when lat/lng unavailable
+    ///   Improvement Type (10%)  — PACS imprv_type_cd: R1=SFR, R2=Mobile/MFH, A1=Apt, etc.
+    ///   Land Size (5%)       — supplementary, noisy for residential
+    ///
+    /// Quality scoring: ordinal tier distance — ECONOMY=1 through EXCELLENT=6.
+    ///   Same tier → 1.0; adjacent tier → 0.833; 5 tiers apart → 0.0.
+    /// Type scoring: binary match (same imprv_type_cd → 1.0, different → 0.0).
+    /// Continuous dimensions: similarity = 1 - (|a - b| / max(a, b)).
+    /// Missing data on either side → dimension contributes its neutral score (0.5)
+    /// rather than zero (avoids unfair penalization of unsurveyed data).
+    ///
+    /// Total score is clamped to [0.0, 1.0] and rounded to 3 decimal places.
+    /// </summary>
+    internal static class SimilarityScorer
+    {
+        // Dimension weights (must sum to 1.0)
+        private const double GlaWeight      = 0.30;
+        private const double QualityWeight  = 0.20;
+        private const double AgeWeight      = 0.20;
+        private const double HoodWeight     = 0.15;
+        private const double TypeWeight     = 0.10;
+        private const double LandWeight     = 0.05;
+
+        // Neutral score when either side has no data for a dimension
+        private const double NeutralDimScore = 0.5;
+
+        // PACS quality tier ordinal map — imprv_det_class_cd normalized values.
+        // Source: Benton County 2026 Calibration Technical Report + NormalizeQualityGrade().
+        private static readonly IReadOnlyDictionary<string, int> QualityOrdinal =
+            new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["ECONOMY"]   = 1,
+                ["FAIR"]      = 2,
+                ["AVERAGE"]   = 3,
+                ["GOOD"]      = 4,
+                ["VERY_GOOD"] = 5,
+                ["EXCELLENT"] = 6
+            };
+
+        /// <summary>
+        /// Compute similarity score [0.0–1.0] between a comp and the subject property.
+        /// </summary>
+        /// <param name="comp">The comparable sale.</param>
+        /// <param name="subjectGla">Subject GLA in sqft, or null if unknown.</param>
+        /// <param name="subjectYearBuilt">Subject year built, or null if unknown.</param>
+        /// <param name="subjectNeighborhood">Subject neighborhood code, or null if unknown.</param>
+        /// <param name="subjectLandSqft">Subject land area in sqft, or null if unknown.</param>
+        /// <param name="subjectQualityGrade">Subject normalized quality (ECONOMY…EXCELLENT), or null.</param>
+        /// <param name="subjectImprvTypeCode">Subject improvement type code (R1/R2/A1/…), or null.</param>
+        public static double Score(
+            CanonicalComparableSale comp,
+            decimal? subjectGla,
+            int? subjectYearBuilt,
+            string? subjectNeighborhood,
+            decimal? subjectLandSqft,
+            string? subjectQualityGrade,
+            string? subjectImprvTypeCode)
+        {
+            // GLA: use sale-time area when available (more accurate for ratio study)
+            var compGla = comp.SlLivingArea ?? comp.GrossLivingArea;
+            var glaScore = DimensionScore((double?)compGla, (double?)subjectGla);
+
+            // Quality: ordinal tier distance on 6-point scale (imprv_det_class_cd via NormalizeQualityGrade)
+            var qualityScore = QualityScore(comp.QualityGrade, subjectQualityGrade);
+
+            // Year Built: use sale-time year when available
+            var compYear = comp.SlYearBuilt ?? comp.YearBuilt;
+            var ageScore = DimensionScore((double?)compYear, (double?)subjectYearBuilt);
+
+            // Neighborhood: binary match (1.0 = same, 0.0 = different, neutral when either null)
+            double hoodScore;
+            if (comp.Neighborhood == null || subjectNeighborhood == null)
+                hoodScore = NeutralDimScore;
+            else
+                hoodScore = string.Equals(comp.Neighborhood, subjectNeighborhood, StringComparison.OrdinalIgnoreCase)
+                    ? 1.0
+                    : 0.0;
+
+            // Improvement type: binary match on PACS imprv_type_cd (R1=SFR, R2=Mobile/MFH, etc.)
+            double typeScore;
+            if (comp.ImprvTypeCode == null || subjectImprvTypeCode == null)
+                typeScore = NeutralDimScore;
+            else
+                typeScore = string.Equals(comp.ImprvTypeCode, subjectImprvTypeCode, StringComparison.OrdinalIgnoreCase)
+                    ? 1.0
+                    : 0.0;
+
+            // Land size: use sale-time land when available
+            var compLand = comp.SlLandSqft ?? comp.LotSizeSqft;
+            var landScore = DimensionScore((double?)compLand, (double?)subjectLandSqft);
+
+            var total = (glaScore     * GlaWeight)
+                      + (qualityScore * QualityWeight)
+                      + (ageScore     * AgeWeight)
+                      + (hoodScore    * HoodWeight)
+                      + (typeScore    * TypeWeight)
+                      + (landScore    * LandWeight);
+
+            return Math.Round(Math.Clamp(total, 0.0, 1.0), 3);
+        }
+
+        /// <summary>
+        /// Ordinal quality tier distance score [0.0–1.0].
+        /// Max distance = 5 tiers (ECONOMY vs EXCELLENT). Returns NeutralDimScore when either value
+        /// is null or unrecognized (unknown quality is not the same as bad quality).
+        /// </summary>
+        private static double QualityScore(string? compQuality, string? subjectQuality)
+        {
+            if (compQuality == null || subjectQuality == null) return NeutralDimScore;
+            if (!QualityOrdinal.TryGetValue(compQuality, out var compOrd)) return NeutralDimScore;
+            if (!QualityOrdinal.TryGetValue(subjectQuality, out var subjOrd)) return NeutralDimScore;
+
+            const int maxDistance = 5; // ECONOMY(1)…EXCELLENT(6) → max gap = 5
+            return 1.0 - ((double)Math.Abs(compOrd - subjOrd) / maxDistance);
+        }
+
+        /// <summary>
+        /// Normalized difference score: 1 - (|a - b| / max(a, b)).
+        /// Returns NeutralDimScore when either value is null or both are zero.
+        /// </summary>
+        private static double DimensionScore(double? a, double? b)
+        {
+            if (a is null || b is null || a.Value <= 0 || b.Value <= 0)
+                return NeutralDimScore;
+
+            var maxVal = Math.Max(a.Value, b.Value);
+            if (maxVal == 0) return NeutralDimScore;
+
+            return 1.0 - (Math.Abs(a.Value - b.Value) / maxVal);
+        }
+    }
 }

@@ -380,6 +380,35 @@ public sealed class PacsCanonicalizer
             })
             .ToDictionaryAsync(x => x.ParcelId, x => x.Hood, ct);
 
+        // Quality lookup — imprv_det.imprv_det_class_cd (base roll, SupNum=0).
+        // The largest-area detail segment is chosen (same rule as Step 4 / CamaCharacteristic).
+        // ClassCd is then normalized to ECONOMY|FAIR|AVERAGE|GOOD|VERY_GOOD|EXCELLENT.
+        var qualityLookup = await _db.PacsImprovementDetails
+            .Where(d => d.SupNum == 0 && d.ImprvDetClassCd != null)
+            .Join(_db.PacsImprovements.Where(i => i.SupNum == 0),
+                d => d.ImprovementId,
+                i => i.Id,
+                (d, i) => new { i.ParcelId, d.ImprvDetClassCd, d.ImprvDetArea })
+            .GroupBy(x => x.ParcelId)
+            .Select(g => new
+            {
+                ParcelId = g.Key,
+                ClassCd  = g.OrderByDescending(x => x.ImprvDetArea).First().ImprvDetClassCd
+            })
+            .ToDictionaryAsync(x => x.ParcelId, x => x.ClassCd, ct);
+
+        // ImprovementType lookup — imprv.imprv_type_cd (base roll, SupNum=0).
+        // Most recent year per parcel; R1=SFR, R2=Mobile/MFH, A1=SmallApt, C1-C4=Commercial, etc.
+        var imprvTypeLookup = await _db.PacsImprovements
+            .Where(i => i.SupNum == 0 && i.ImprvTypeCode != null)
+            .GroupBy(i => i.ParcelId)
+            .Select(g => new
+            {
+                ParcelId     = g.Key,
+                ImprvTypeCode = g.OrderByDescending(i => i.PropValYear).First().ImprvTypeCode
+            })
+            .ToDictionaryAsync(x => x.ParcelId, x => x.ImprvTypeCode, ct);
+
         // Load valid sales
         var sales = await _db.PacsSales
             .Where(s => s.SaleDate != null && (s.SalePrice > 0 || s.AdjustedSalePrice > 0))
@@ -416,6 +445,9 @@ public sealed class PacsCanonicalizer
                 // Sync is dumb and verbatim: copy raw PACS codes, set nothing else.
                 // QualificationRecommendation is computed post-sync by SaleQualificationService.
                 // QualificationDecision is set only by the assessor.
+                qualityLookup.TryGetValue(ps.ParcelId, out var rawClassCd);
+                imprvTypeLookup.TryGetValue(ps.ParcelId, out var imprvTypeCode);
+
                 _db.ComparableSales.Add(new ComparableSale
                 {
                     Id                  = Guid.NewGuid(),
@@ -428,6 +460,8 @@ public sealed class PacsCanonicalizer
                     GrossLivingArea     = ps.SlLivingArea.HasValue ? (decimal?)ps.SlLivingArea.Value : null,
                     LotSizeSqft         = ps.SlLandSqft.HasValue ? (decimal?)ps.SlLandSqft.Value : null,
                     YearBuilt           = ps.SlYearBuilt.HasValue ? (int?)ps.SlYearBuilt.Value : null,
+                    QualityGrade        = NormalizeQualityGrade(rawClassCd),    // imprv_det.imprv_det_class_cd → ECONOMY…EXCELLENT
+                    ImprvTypeCode       = imprvTypeCode,                         // imprv.imprv_type_cd → R1, R2, A1, C1…
                     RawSaleQualifier    = ps.SaleQualifier,
                     RawCountyRatioCd    = ps.SaleCountyRatioCd,
                     RawExcludeCalcCd    = ps.SalesExcludeCalcCd,

@@ -42,7 +42,10 @@ public class ComparableSale
   public string? Condition { get; set; } // poor | fair | average | good | excellent
 
   [StringLength(20)]
-  public string? QualityGrade { get; set; }
+  public string? QualityGrade { get; set; }    // NormalizeQualityGrade(imprv_det.imprv_det_class_cd): ECONOMY|FAIR|AVERAGE|GOOD|VERY_GOOD|EXCELLENT
+
+  [StringLength(10)]
+  public string? ImprvTypeCode { get; set; }   // imprv.imprv_type_cd at time of sale: R1=SFR, R2=Mobile/MFH, A1=Small Apt, C1-C4=Commercial, etc.
 
   // ── Layer 1: Raw PACS Import Codes (verbatim source facts) ──
   // All fields below are copied verbatim from the PACS Sale table (and chg_of_owner) at sync time.
