@@ -33,4 +33,11 @@ public interface ISaleQualificationService
     /// Caller is responsible for persisting changes (SaveChangesAsync).
     /// </summary>
     void ComputeRecommendations(IEnumerable<TerraFusion.Core.Entities.ComparableSale> sales);
+
+    /// <summary>
+    /// Fetch all ComparableSale records for the given county, recompute Layer 2 recommendations,
+    /// persist, and return the count of records updated.
+    /// Safe to call any time — does not touch Layer 3 assessor decisions.
+    /// </summary>
+    Task<int> ComputeRecommendationsAsync(Guid countyId, CancellationToken ct = default);
 }

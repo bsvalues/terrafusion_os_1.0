@@ -1,5 +1,8 @@
 namespace TerraFusion.API.Services;
 
+using Microsoft.EntityFrameworkCore;
+using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
+
 /// <summary>
 /// TerraFusion's authoritative sale qualification engine for IAAO ratio studies.
 ///
@@ -27,6 +30,13 @@ namespace TerraFusion.API.Services;
 /// </summary>
 public sealed class SaleQualificationService : ISaleQualificationService
 {
+    private readonly DataDbContext _db;
+
+    public SaleQualificationService(DataDbContext db)
+    {
+        _db = db;
+    }
+
     /// <inheritdoc/>
     public string Qualify(
         string? rawSaleQualifier,
@@ -107,5 +117,17 @@ public sealed class SaleQualificationService : ISaleQualificationService
         if (!string.IsNullOrWhiteSpace(rawWacCd))
             return $"Layer 4: WacCd={rawWacCd.Trim()}";
         return "Layer 5: Default — no disqualifying codes present";
+    }
+
+    /// <inheritdoc/>
+    public async Task<int> ComputeRecommendationsAsync(Guid countyId, CancellationToken ct = default)
+    {
+        var sales = await _db.ComparableSales
+            .Where(s => s.CountyId == countyId)
+            .ToListAsync(ct);
+
+        ComputeRecommendations(sales);
+        await _db.SaveChangesAsync(ct);
+        return sales.Count;
     }
 }
