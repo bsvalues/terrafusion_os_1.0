@@ -1,0 +1,3259 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TerraFusion.Operations</name>
+    </assembly>
+    <members>
+        <member name="T:TerraFusion.Operations.Configuration.DependencyInjection">
+            <summary>
+            Elite Operational Excellence Dependency Injection Configuration
+            Registers championship-level operational services
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Configuration.DependencyInjection.AddEliteOperationalExcellence(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Add Elite Operational Excellence services to dependency injection container
+            </summary>
+            <param name="services">Service collection</param>
+            <param name="configuration">Application configuration</param>
+            <returns>Service collection for method chaining</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Configuration.DependencyInjection.AddEliteOperationalSecurity(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Add Elite Operational Authentication and Authorization
+            </summary>
+            <param name="services">Service collection</param>
+            <param name="configuration">Application configuration</param>
+            <returns>Service collection for method chaining</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Configuration.DependencyInjection.AddEliteOperationalHealthChecks(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Add Elite Operational Health Checks
+            </summary>
+            <param name="services">Service collection</param>
+            <param name="configuration">Application configuration</param>
+            <returns>Service collection for method chaining</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Configuration.DependencyInjection.AddEliteOperationalCaching(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Add Elite Operational Caching
+            </summary>
+            <param name="services">Service collection</param>
+            <param name="configuration">Application configuration</param>
+            <returns>Service collection for method chaining</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Configuration.DependencyInjection.AddEliteOperationalLogging(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Add Elite Operational Logging and Monitoring
+            </summary>
+            <param name="services">Service collection</param>
+            <param name="configuration">Application configuration</param>
+            <returns>Service collection for method chaining</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Configuration.EliteOperationalOptions">
+            <summary>
+            Elite Operational Configuration Options
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Configuration.HealthMonitoringOptions">
+            <summary>
+            Health Monitoring Configuration Options
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Configuration.PerformanceOptimizationOptions">
+            <summary>
+            Performance Optimization Configuration Options
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Configuration.SecurityMonitoringOptions">
+            <summary>
+            Security Monitoring Configuration Options
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Configuration.ComplianceOptions">
+            <summary>
+            Compliance Configuration Options
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Configuration.AIAgentCoordinationOptions">
+            <summary>
+            AI Agent Coordination Configuration Options
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Configuration.EmergencyResponseOptions">
+            <summary>
+            Emergency Response Configuration Options
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Controllers.EliteOperationalController">
+            <summary>
+            Elite Operational Excellence Controller - Championship-level operational management
+            Provides REST API endpoints for transcendent government operational excellence
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Controllers.EliteOperationalController.InitializeEliteOperationalExcellence">
+            <summary>
+            Initialize Elite Operational Excellence Framework
+            Establishes championship-level operational capabilities
+            </summary>
+            <returns>Elite operational initialization result</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Controllers.EliteOperationalController.ExecuteOperationalExcellenceCycle">
+            <summary>
+            Execute Elite Operational Excellence Cycle
+            Performs comprehensive system optimization and health validation
+            </summary>
+            <returns>Elite operational cycle execution result</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Controllers.EliteOperationalController.GetEliteOperationalDashboard">
+            <summary>
+            Get Elite Operational Excellence Dashboard
+            Returns comprehensive championship-level operational metrics
+            </summary>
+            <returns>Elite operational dashboard data</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Controllers.EliteOperationalController.GetEliteSystemStatus">
+            <summary>
+            Get Elite System Status
+            Returns real-time championship-level system status
+            </summary>
+            <returns>Elite system status information</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Controllers.EliteOperationalController.TriggerEliteEmergencyResponse(TerraFusion.Operations.Models.EliteEmergencyRequest)">
+            <summary>
+            Trigger Elite Emergency Response
+            Activates championship-level emergency response protocols
+            </summary>
+            <param name="request">Elite emergency request details</param>
+            <returns>Elite emergency response result</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Controllers.EliteOperationalController.GetElitePerformanceMetrics">
+            <summary>
+            Get Elite Performance Metrics
+            Returns championship-level performance analytics
+            </summary>
+            <returns>Elite performance metrics</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Controllers.EliteOperationalController.GetEliteHealthMetrics">
+            <summary>
+            Get Elite Health Metrics
+            Returns championship-level health analytics
+            </summary>
+            <returns>Elite health metrics</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Controllers.EliteOperationalController.GetEliteSecurityMetrics">
+            <summary>
+            Get Elite Security Metrics
+            Returns championship-level security analytics
+            </summary>
+            <returns>Elite security metrics</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Controllers.EliteOperationalController.GetEliteComplianceMetrics">
+            <summary>
+            Get Elite Compliance Metrics
+            Returns championship-level compliance analytics
+            </summary>
+            <returns>Elite compliance metrics</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Controllers.EliteOperationalController.GetAIAgentCoordinationStatus">
+            <summary>
+            Get AI Agent Coordination Status
+            Returns championship-level AI agent coordination metrics
+            </summary>
+            <returns>AI agent coordination status</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Controllers.EliteOperationalController.GetCountyServiceMetrics">
+            <summary>
+            Get County Service Metrics
+            Returns championship-level county service delivery metrics
+            </summary>
+            <returns>County service metrics</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Controllers.EliteOperationalController.GetCitizenServiceExcellenceMetrics">
+            <summary>
+            Get Citizen Service Excellence Metrics
+            Returns championship-level citizen service quality metrics
+            </summary>
+            <returns>Citizen service excellence metrics</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Controllers.EliteOperationalController.GetEliteOperationalExcellenceScore">
+            <summary>
+            Get Elite Operational Excellence Score
+            Returns current championship-level operational excellence rating
+            </summary>
+            <returns>Operational excellence score</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.HealthChecks.EliteOperationalHealthCheck">
+            <summary>
+            Elite Operational Excellence Health Check
+            Validates championship-level operational system health
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.HealthChecks.AIAgentCoordinationHealthCheck">
+            <summary>
+            AI Agent Coordination Health Check
+            Validates AI agent swarm coordination health
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.HealthChecks.CountyServicesHealthCheck">
+            <summary>
+            County Services Health Check
+            Validates county government service delivery health
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.HealthChecks.PerformanceMetricsHealthCheck">
+            <summary>
+            Performance Metrics Health Check
+            Validates system performance metrics health
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.HealthChecks.SecurityComplianceHealthCheck">
+            <summary>
+            Security Compliance Health Check
+            Validates security and compliance status health
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.HealthChecks.EmergencyResponseHealthCheck">
+            <summary>
+            Emergency Response Health Check
+            Validates emergency response system readiness
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.HealthChecks.CitizenServicesHealthCheck">
+            <summary>
+            Citizen Services Health Check
+            Validates citizen service delivery quality
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IIncidentExplanationService">
+             <summary>
+             Interface for the LLM-powered incident explanation service.
+             Enriches deterministic incident summaries with AI-generated explanations.
+             </summary>
+             <remarks>
+             DESIGN PRINCIPLE: Deterministic classification + LLM-as-explainer
+            
+             The LLM layer sits AFTER the deterministic triage engine and:
+             - MAY refine: title, description, recommendations
+             - MUST NOT change: incidentId, severity, impactedCountyIds, alerts, metrics
+            
+             Implementations:
+             - NullIncidentExplanationService: No-op, returns incident unchanged
+             - SystemGptIncidentExplanationService: Uses SystemGPT for explanation
+            
+             Safety guarantees:
+             - Graceful fallback if LLM fails (returns original incident)
+             - Timeout protection
+             - Immutability constraints enforced
+             </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IIncidentExplanationService.EnrichWithExplanationAsync(TerraFusion.Operations.Incidents.IncidentSummary,TerraFusion.Operations.Incidents.IncidentExplanationOptions,System.Threading.CancellationToken)">
+             <summary>
+             Enriches an incident summary with LLM-generated explanations.
+             </summary>
+             <param name="incident">The deterministic incident summary to enrich.</param>
+             <param name="options">Optional configuration for the explanation request.</param>
+             <param name="cancellationToken">Cancellation token.</param>
+             <returns>
+             An enriched incident summary with refined title, description, and recommendations.
+             If LLM fails, returns the original incident unchanged.
+             </returns>
+             <remarks>
+             IMMUTABILITY CONTRACT:
+             The returned IncidentSummary MUST have the same values for:
+             - IncidentId
+             - OverallSeverity
+             - ImpactedCountyIds
+             - Alerts
+             - Metrics
+            
+             Only the following fields MAY be modified:
+             - Title (refined for clarity)
+             - Description (expanded with explanation)
+             - Recommendations (enhanced with details/priorities)
+             - LlmEnriched (set to true)
+             - AuditInfo.LlmModelUsed
+             - AuditInfo.LlmExplanationDurationMs
+             </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IIncidentExplanationService.GenerateExplanationAsync(TerraFusion.Operations.Incidents.IncidentSummary,TerraFusion.Operations.Incidents.IncidentExplanationOptions,System.Threading.CancellationToken)">
+            <summary>
+            Generates an LLM explanation for an incident without modifying it.
+            </summary>
+            <param name="incident">The incident to explain.</param>
+            <param name="options">Optional configuration for the explanation request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Generated explanation or null if LLM is unavailable.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IIncidentExplanationService.IsAvailableAsync(System.Threading.CancellationToken)">
+            <summary>
+            Checks if the explanation service is available and configured.
+            </summary>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>True if LLM explanation is available.</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.NullIncidentExplanationService">
+            <summary>
+            No-op implementation of IIncidentExplanationService.
+            Returns incidents unchanged. Used when LLM explanation is disabled.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.NullIncidentExplanationService.EnrichWithExplanationAsync(TerraFusion.Operations.Incidents.IncidentSummary,TerraFusion.Operations.Incidents.IncidentExplanationOptions,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.NullIncidentExplanationService.IsAvailableAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.NullIncidentExplanationService.GenerateExplanationAsync(TerraFusion.Operations.Incidents.IncidentSummary,TerraFusion.Operations.Incidents.IncidentExplanationOptions,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentExplanation">
+            <summary>
+            LLM-generated explanation for an incident.
+            Optional enrichment layer added after deterministic triage.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanation.Summary">
+            <summary>
+            High-level summary of what happened.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanation.RootCauseHypothesis">
+            <summary>
+            Hypothesis about the root cause of the incident.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanation.ImpactAssessment">
+            <summary>
+            Assessment of the impact on county operations.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanation.RemediationSteps">
+            <summary>
+            Ordered list of remediation steps to resolve the incident.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanation.Confidence">
+            <summary>
+            Confidence level of the LLM in its explanation.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanation.GeneratedAt">
+            <summary>
+            When this explanation was generated.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IIncidentTriageEngine">
+             <summary>
+             Core interface for the incident triage engine.
+             Performs deterministic classification and grouping of alerts into incidents.
+             </summary>
+             <remarks>
+             Design principles:
+             - Pure service with no hidden dependencies
+             - Deterministic classification (same input = same output)
+             - County isolation enforced (alerts grouped by county)
+             - Auditable (all classification decisions logged)
+            
+             The triage engine is the "brain" that:
+             1. Groups related alerts (by time window, county, component)
+             2. Determines overall severity
+             3. Generates actionable recommendations
+             4. Produces a structured IncidentSummary
+            
+             LLM enrichment is handled separately by IIncidentExplanationService.
+             </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IIncidentTriageEngine.TriageAsync(TerraFusion.Operations.Incidents.IncidentTriageRequest,System.Threading.CancellationToken)">
+            <summary>
+            Performs AI-aware triage on incoming alerts and context.
+            </summary>
+            <param name="request">The triage request containing alerts and optional context.</param>
+            <param name="cancellationToken">Cancellation token for the operation.</param>
+            <returns>A structured incident summary with classification and recommendations.</returns>
+            <exception cref="T:System.ArgumentNullException">If request is null.</exception>
+            <exception cref="T:System.ArgumentException">If request contains no alerts.</exception>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IIncidentTriageEngine.GetRecommendationsForAlertsAsync(System.Collections.Generic.IEnumerable{System.String},TerraFusion.Operations.Incidents.IncidentSeverity,System.Threading.CancellationToken)">
+            <summary>
+            Gets triage recommendations for a specific incident type.
+            Useful for generating recommendations outside of full triage flow.
+            </summary>
+            <param name="alertNames">List of alert names to generate recommendations for.</param>
+            <param name="severity">The severity level for context.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>List of recommendations for the given alert types.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IIncidentTriageEngine.CanTriageAlerts(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Validates if the triage engine can handle the given alert types.
+            </summary>
+            <param name="alertNames">Alert names to validate.</param>
+            <returns>True if all alerts are recognized, false otherwise.</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentTriageOptions">
+            <summary>
+            Configuration options for the incident triage engine.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.IncidentTriageOptions.SectionName">
+            <summary>
+            Configuration section name in appsettings.json.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentTriageOptions.GroupingTimeWindowMinutes">
+            <summary>
+            Time window (in minutes) for grouping related alerts into a single incident.
+            Default: 5 minutes.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentTriageOptions.GroupAcrossComponents">
+            <summary>
+            Whether to group alerts across different components.
+            If false, Atlas and Swarm alerts are always separate incidents.
+            Default: false (component isolation).
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentTriageOptions.MaxAlertsPerIncident">
+            <summary>
+            Maximum number of alerts per incident.
+            If exceeded, additional alerts create new incidents.
+            Default: 50.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentTriageOptions.MinRecommendations">
+            <summary>
+            Minimum recommendations to generate per incident.
+            Default: 2.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentTriageOptions.MaxRecommendations">
+            <summary>
+            Maximum recommendations to generate per incident.
+            Default: 7.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentTriageOptions.EnableLlmExplanation">
+            <summary>
+            Whether to enable LLM explanation after deterministic triage.
+            Default: false (opt-in).
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentTriageOptions.EngineVersion">
+            <summary>
+            Triage engine version string for audit purposes.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentAlertRef">
+            <summary>
+            Represents a reference to an alert in the incident.
+            Captures the essential alert metadata for correlation and audit.
+            </summary>
+            <remarks>
+            This DTO is designed to be compatible with Alertmanager webhook payloads.
+            Labels are preserved as-is for traceability back to the source alert.
+            </remarks>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentAlertRef.AlertName">
+            <summary>
+            The name of the alert (e.g., "AtlasForecastErrorRateHigh", "SwarmSafeModeTriggered").
+            Maps to the 'alertname' label in Prometheus alerts.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentAlertRef.Labels">
+            <summary>
+            Alert labels including countyId, severity, component, and any custom labels.
+            Preserved exactly as received from Alertmanager for audit purposes.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentAlertRef.StartsAt">
+            <summary>
+            When the alert started firing.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentAlertRef.EndsAt">
+            <summary>
+            When the alert was resolved. Null if still active.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentAlertRef.Fingerprint">
+            <summary>
+            Unique fingerprint for the alert (typically a hash of alertname + labels).
+            Used for deduplication and correlation.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IncidentAlertRef.GetCountyId">
+            <summary>
+            Extracts the county ID from labels if present.
+            Returns null if countyId label is missing or invalid.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IncidentAlertRef.GetComponent">
+            <summary>
+            Extracts the component name from labels if present.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IncidentAlertRef.GetSeverity">
+            <summary>
+            Extracts the alert severity from labels if present.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentSeverity">
+            <summary>
+            Severity level for an incident.
+            Maps to Prometheus alert severities and determines escalation priority.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.IncidentSeverity.Info">
+            <summary>
+            Informational incident - no immediate action required.
+            Typically from info-level alerts or minor anomalies.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.IncidentSeverity.Warning">
+            <summary>
+            Warning-level incident - attention required but not critical.
+            Service degradation detected but not yet impacting citizens.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.IncidentSeverity.Critical">
+            <summary>
+            Critical incident - immediate action required.
+            Service outage or severe degradation affecting citizen services.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentStatus">
+            <summary>
+            Lifecycle status of an incident.
+            Follows standard incident management workflows.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.IncidentStatus.New">
+            <summary>
+            Incident newly created by triage engine.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.IncidentStatus.Acknowledged">
+            <summary>
+            Incident acknowledged by on-call engineer.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.IncidentStatus.InProgress">
+            <summary>
+            Incident actively being worked on.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.IncidentStatus.Resolved">
+            <summary>
+            Incident resolved - service restored.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.IncidentStatus.Closed">
+            <summary>
+            Incident closed after postmortem review.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.RecommendationCategory">
+            <summary>
+            Category of recommendation for incident response.
+            Maps to known TerraFusion components and action types.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.RecommendationCategory.Capacity">
+            <summary>
+            Capacity-related recommendation (scale up/down, resource allocation).
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.RecommendationCategory.Configuration">
+            <summary>
+            Configuration-related recommendation (settings, feature flags).
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.RecommendationCategory.Swarm">
+            <summary>
+            Swarm subsystem recommendation (predictive policy, cooldown).
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.RecommendationCategory.Guardrails">
+            <summary>
+            Guardrails recommendation (safety limits, circuit breakers).
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.RecommendationCategory.Atlas">
+            <summary>
+            Atlas subsystem recommendation (forecasting, orchestration).
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.RecommendationCategory.ExternalDependency">
+            <summary>
+            External dependency recommendation (database, cache, third-party).
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.RecommendationCategory.Recovery">
+            <summary>
+            Recovery action recommendation (restart, failover).
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.RecommendationCategory.Monitoring">
+            <summary>
+            Monitoring recommendation (check dashboards, logs).
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.RecommendationCategory.Unknown">
+            <summary>
+            Unknown or unclassified recommendation.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.ConfidenceLevel">
+            <summary>
+            Confidence level for a recommendation.
+            Based on correlation strength and historical accuracy.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.ConfidenceLevel.Low">
+            <summary>
+            Low confidence - recommendation is speculative.
+            Based on limited data or weak correlation.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.ConfidenceLevel.Medium">
+            <summary>
+            Medium confidence - recommendation is reasonable.
+            Based on moderate correlation and typical patterns.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.ConfidenceLevel.High">
+            <summary>
+            High confidence - recommendation is strongly supported.
+            Based on strong correlation and known failure modes.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentExplanationOptions">
+            <summary>
+            Options for the LLM explanation service.
+            Controls how incident summaries are enriched with AI-generated explanations.
+            </summary>
+            <remarks>
+            Design principle: Deterministic classification + LLM-as-explainer
+            The LLM layer is optional and cannot change classification decisions.
+            </remarks>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationOptions.Enabled">
+            <summary>
+            Whether LLM explanation is enabled for this request.
+            Default: true (use configuration-level toggle to disable globally).
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationOptions.MaxTokens">
+            <summary>
+            Maximum tokens for LLM response.
+            Default: 1024 (sufficient for title + description + recommendations).
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationOptions.Timeout">
+            <summary>
+            Timeout for LLM explanation request.
+            Default: 10 seconds. Falls back to deterministic summary on timeout.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationOptions.ModelKey">
+            <summary>
+            Optional model key for LLM selection.
+            If not specified, uses default SystemGPT configuration.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationOptions.AudienceHint">
+            <summary>
+            Audience hint for LLM explanation style.
+            Options: "ops" (on-call engineers), "cio" (executives), "county-it" (county staff).
+            Default: "county-it"
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationOptions.Temperature">
+            <summary>
+            Temperature for LLM generation.
+            Lower = more deterministic, higher = more creative.
+            Default: 0.3 (conservative for incident triage).
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationOptions.IncludeAlertDetails">
+            <summary>
+            Whether to include raw alert details in the LLM prompt.
+            May increase explanation quality but also token usage.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationOptions.IncludeMetricValues">
+            <summary>
+            Whether to include metric values in the LLM prompt.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentExplanationConfiguration">
+            <summary>
+            Global configuration for the incident explanation service.
+            Loaded from appsettings.json or environment variables.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Incidents.IncidentExplanationConfiguration.SectionName">
+            <summary>
+            Configuration section name in appsettings.json.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationConfiguration.EnableGlobally">
+            <summary>
+            Whether LLM explanation is enabled globally.
+            Can be overridden per-request via IncidentExplanationOptions.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationConfiguration.DefaultModelKey">
+            <summary>
+            Default model key for LLM explanation.
+            Should reference a model configured in SystemGPT.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationConfiguration.DefaultTimeoutSeconds">
+            <summary>
+            Default timeout in seconds.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationConfiguration.DefaultMaxTokens">
+            <summary>
+            Default max tokens.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationConfiguration.DefaultTemperature">
+            <summary>
+            Default temperature.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentExplanationConfiguration.EnableDebugLogging">
+            <summary>
+            Whether to log LLM prompts/responses for debugging.
+            WARNING: May contain sensitive incident details.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentMetricSnapshot">
+            <summary>
+            Represents a metric snapshot for correlation with the incident.
+            Captures point-in-time metric values from Phase 35 Prometheus metrics.
+            </summary>
+            <remarks>
+            Metric names should match Phase 35 definitions:
+            - atlas_forecast_*
+            - swarm_predictive_*
+            - atlas_anomaly_*
+            - atlas_telemetry_*
+            </remarks>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentMetricSnapshot.CountyId">
+            <summary>
+            The county ID associated with this metric value.
+            Required for county isolation compliance.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentMetricSnapshot.MetricName">
+            <summary>
+            The name of the metric (e.g., "atlas_forecast_engine_errors_total").
+            Should match a Phase 35 Prometheus metric name.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentMetricSnapshot.Value">
+            <summary>
+            The metric value at snapshot time.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentMetricSnapshot.Unit">
+            <summary>
+            Optional unit for the metric value (e.g., "seconds", "requests", "percent").
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentMetricSnapshot.Timestamp">
+            <summary>
+            When this metric snapshot was captured.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentMetricSnapshot.AdditionalLabels">
+            <summary>
+            Optional additional labels for the metric (beyond countyId).
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentRecommendation">
+            <summary>
+            Represents a triage recommendation for incident response.
+            Generated by the deterministic triage engine, optionally refined by LLM.
+            </summary>
+            <remarks>
+            Recommendations should be:
+            - Actionable (specific steps, not generic advice)
+            - Component-targeted (mapped to known TerraFusion components)
+            - Auditable (traceable to the classification logic that produced them)
+            </remarks>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentRecommendation.Id">
+            <summary>
+            Unique identifier for this recommendation.
+            Format: "REC-{incidentId}-{sequence}" or similar.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentRecommendation.Category">
+            <summary>
+            Category of the recommendation.
+            Maps to known TerraFusion components and action types.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentRecommendation.Text">
+            <summary>
+            Human-readable recommendation text.
+            Should be concise (1-3 sentences) and actionable.
+            </summary>
+            <example>
+            "Restart the Atlas Forecast Orchestrator service. Check for recent deployments that may have introduced configuration drift."
+            </example>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentRecommendation.Confidence">
+            <summary>
+            Confidence level for this recommendation.
+            Based on correlation strength and historical accuracy.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentRecommendation.RunbookUrl">
+            <summary>
+            Optional URL to a runbook or documentation for this action.
+            Should link to Phase 37 dashboards or ops documentation.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentRecommendation.Priority">
+            <summary>
+            Optional priority within the incident (1 = highest priority).
+            Used to order recommendations when presented to operators.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentRecommendation.EstimatedDuration">
+            <summary>
+            Optional estimated time to implement this recommendation.
+            Format: ISO 8601 duration (e.g., "PT15M" for 15 minutes).
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentRecommendation.LlmRefined">
+            <summary>
+            Indicates if this recommendation was refined by the LLM explanation service.
+            True = LLM contributed to the wording/details.
+            False = Pure deterministic recommendation.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentServiceExtensions">
+            <summary>
+            Extension methods for registering incident triage services.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IncidentServiceExtensions.AddIncidentTriageServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds incident triage services to the dependency injection container.
+            </summary>
+            <param name="services">The service collection.</param>
+            <param name="configuration">Application configuration.</param>
+            <returns>The service collection for chaining.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IncidentServiceExtensions.AddIncidentTriageServices``2(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds incident triage services with custom implementations.
+            Used for testing and custom configurations.
+            </summary>
+            <typeparam name="TTriageEngine">The triage engine implementation type.</typeparam>
+            <typeparam name="TExplanationService">The explanation service implementation type.</typeparam>
+            <param name="services">The service collection.</param>
+            <returns>The service collection for chaining.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IncidentServiceExtensions.AddIncidentTriageHealthChecks(Microsoft.Extensions.DependencyInjection.IHealthChecksBuilder)">
+            <summary>
+            Adds incident triage health checks.
+            </summary>
+            <param name="builder">The health checks builder.</param>
+            <returns>The health checks builder for chaining.</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentSummary">
+             <summary>
+             The main incident summary produced by triage.
+             Contains classified incident with correlated alerts, metrics, and recommendations.
+             </summary>
+             <remarks>
+             This DTO is designed for:
+             - County IT staff (clear title, description, actionable recommendations)
+             - On-call engineers (correlated alerts, metrics, trace IDs)
+             - CIO/CTO incident reviews (severity, impact scope, audit trail)
+            
+             IMMUTABILITY RULE (for LLM integration):
+             - incidentId, severity, impactedCountyIds, alerts, metrics MUST NOT be changed by LLM
+             - title, description, recommendations MAY be refined by LLM
+             </remarks>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.IncidentId">
+            <summary>
+            Unique identifier for this incident.
+            Generated by the triage engine, immutable after creation.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.OverallSeverity">
+            <summary>
+            Overall severity of the incident.
+            Determined by the highest severity alert and escalation rules.
+            IMMUTABLE - LLM must not change this value.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.Status">
+            <summary>
+            Current lifecycle status of the incident.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.PrimaryCountyId">
+            <summary>
+            Primary county affected by this incident.
+            Null if incident affects infrastructure (not county-specific).
+            IMMUTABLE - LLM must not change this value.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.ImpactedCountyIds">
+            <summary>
+            All counties affected by this incident.
+            May include multiple counties for infrastructure issues.
+            IMMUTABLE - LLM must not change this value.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.Title">
+            <summary>
+            Short, human-readable title for the incident.
+            Should be understandable at a glance.
+            MAY be refined by LLM for clarity.
+            </summary>
+            <example>
+            "Atlas Forecast Orchestrator Stall - Benton County"
+            </example>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.Description">
+            <summary>
+            Detailed description of what happened and the impact.
+            Should explain the incident in terms county IT staff can understand.
+            MAY be expanded by LLM with additional explanation.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.Alerts">
+            <summary>
+            List of alerts that contributed to this incident.
+            Grouped by the triage engine's correlation logic.
+            IMMUTABLE - LLM must not change this value.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.Metrics">
+            <summary>
+            Metric snapshots correlated with this incident.
+            Provides context for root cause analysis.
+            IMMUTABLE - LLM must not change this value.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.Recommendations">
+            <summary>
+            Recommendations for incident response.
+            Generated by deterministic rules, optionally refined by LLM.
+            MAY be enhanced by LLM with additional details/priorities.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.TriagedAt">
+            <summary>
+            When this incident was triaged.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.CorrelatedTraceId">
+            <summary>
+            Optional trace ID for correlation with Phase 36 distributed traces.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.Government">
+            <summary>
+            Government compliance flag. Always true for TerraFusion incidents.
+            Required for FISMA-High compliance.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.LlmEnriched">
+            <summary>
+            Indicates if LLM explanation service was used to enrich this summary.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.Explanation">
+            <summary>
+            Optional LLM-generated explanation for this incident.
+            Only populated if explanation service was invoked.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.DashboardLinks">
+            <summary>
+            Optional links to relevant Phase 37 Grafana dashboards.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentSummary.AuditInfo">
+            <summary>
+            Audit metadata for the triage process.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentAuditInfo">
+            <summary>
+            Audit information for incident triage.
+            Required for government compliance and postmortem reviews.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentAuditInfo.TriageEngineVersion">
+            <summary>
+            Version of the triage engine that classified this incident.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentAuditInfo.AppliedRules">
+            <summary>
+            Classification rules that contributed to the severity determination.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentAuditInfo.TriageDurationMs">
+            <summary>
+            Duration of the triage process in milliseconds.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentAuditInfo.LlmModelUsed">
+            <summary>
+            If LLM was used, the model identifier.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentAuditInfo.LlmExplanationDurationMs">
+            <summary>
+            Duration of LLM explanation in milliseconds (if used).
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentTriageController">
+             <summary>
+             API controller for incident triage operations.
+             Provides REST endpoints for triaging alerts into structured incidents.
+             </summary>
+             <remarks>
+             Endpoint: POST /api/ops/incidents/triage
+            
+             Security:
+             - Requires authentication (government operations)
+             - Rate limited to prevent abuse
+             - Audit logged for compliance
+             </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IncidentTriageController.#ctor(TerraFusion.Operations.Incidents.IIncidentTriageEngine,TerraFusion.Operations.Incidents.IIncidentExplanationService,Microsoft.Extensions.Options.IOptions{TerraFusion.Operations.Incidents.IncidentTriageOptions},Microsoft.Extensions.Logging.ILogger{TerraFusion.Operations.Incidents.IncidentTriageController})">
+            <summary>
+            Initializes a new instance of the IncidentTriageController.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IncidentTriageController.TriageAsync(TerraFusion.Operations.Incidents.IncidentTriageRequest,System.Threading.CancellationToken)">
+            <summary>
+            Triages incoming alerts into a structured incident summary.
+            </summary>
+            <param name="request">The triage request containing alerts and optional context.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>A structured incident summary with classification and recommendations.</returns>
+            <response code="200">Triage completed successfully.</response>
+            <response code="400">Invalid request (missing alerts, malformed payload).</response>
+            <response code="500">Triage engine failure.</response>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IncidentTriageController.HealthAsync(System.Threading.CancellationToken)">
+            <summary>
+            Health check for the triage engine.
+            </summary>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Health status of the triage engine.</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.TriageHealthResponse">
+            <summary>
+            Health response for the triage engine.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.TriageHealthResponse.Status">
+            <summary>
+            Overall health status.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.TriageHealthResponse.EngineVersion">
+            <summary>
+            Triage engine version.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.TriageHealthResponse.LlmExplanationEnabled">
+            <summary>
+            Whether LLM explanation is enabled in configuration.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.TriageHealthResponse.LlmExplanationAvailable">
+            <summary>
+            Whether LLM explanation service is currently available.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentTriageEngine">
+            <summary>
+            Core incident triage engine implementation.
+            Performs deterministic classification, grouping, and recommendation generation.
+            </summary>
+            <remarks>
+            DESIGN PRINCIPLES:
+            1. Deterministic: Same input always produces same output
+            2. Fast: No external calls, pure in-memory processing
+            3. Auditable: All decisions logged with reasoning
+            4. Government-compliant: FISMA-High requirements met
+            </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IncidentTriageEngine.TriageAsync(TerraFusion.Operations.Incidents.IncidentTriageRequest,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IncidentTriageEngine.GetRecommendationsForAlertsAsync(System.Collections.Generic.IEnumerable{System.String},TerraFusion.Operations.Incidents.IncidentSeverity,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IncidentTriageEngine.CanTriageAlerts(System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc />
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.IncidentTriageRequest">
+            <summary>
+            Request payload for incident triage.
+            Contains alerts and optional context (metrics, traces) for correlation.
+            </summary>
+            <remarks>
+            This DTO is designed to accept:
+            - Alertmanager webhook payloads (converted to IncidentAlertRef list)
+            - Manual triage requests with context
+            - Automated polling results from metrics/traces
+            </remarks>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentTriageRequest.Alerts">
+            <summary>
+            List of alerts to triage. At least one alert is required.
+            Alerts are grouped and classified into incidents.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentTriageRequest.MetricSnapshots">
+            <summary>
+            Optional metric snapshots for correlation.
+            Provides context for classification and recommendations.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentTriageRequest.TraceIds">
+            <summary>
+            Optional trace IDs for correlation.
+            Links to Phase 36 distributed traces for debugging.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentTriageRequest.RequestedByCountyId">
+            <summary>
+            Optional county ID filter. If specified, triage focuses on this county.
+            Used for county-scoped triage requests.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.IncidentTriageRequest.Metadata">
+            <summary>
+            Optional request metadata for audit purposes.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.IncidentTriageRequest.IsValid(System.String@)">
+            <summary>
+            Validates the request. Returns true if valid.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.TriageRequestMetadata">
+            <summary>
+            Optional metadata for triage requests.
+            Used for audit trail and debugging.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.TriageRequestMetadata.Source">
+            <summary>
+            Source of the triage request (e.g., "alertmanager", "manual", "scheduled").
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.TriageRequestMetadata.CorrelationId">
+            <summary>
+            Correlation ID for distributed tracing.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.TriageRequestMetadata.RequestedBy">
+            <summary>
+            User or service that initiated the request.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Incidents.TriageRequestMetadata.RequestedAt">
+            <summary>
+            Timestamp when the request was created.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Incidents.RecommendationTemplates">
+            <summary>
+            Static class providing recommendation templates for known alert types.
+            Maps Phase 38 alerts to actionable recommendations.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Incidents.RecommendationTemplates.GetRecommendationsForAlert(System.String)">
+            <summary>
+            Gets recommendations for a specific alert name.
+            Returns generic recommendations for unknown alerts.
+            </summary>
+            <param name="alertName">The Prometheus alert name.</param>
+            <returns>List of recommendations with unique IDs.</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IEliteOperationalService">
+            <summary>
+            Elite Operational Excellence Service Interface
+            Defines championship-level operational service contracts
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Interfaces.IEliteOperationalService.InitializeAsync">
+            <summary>
+            Initialize Elite Operational Excellence Framework
+            </summary>
+            <returns>Elite operational initialization result</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Interfaces.IEliteOperationalService.ExecuteOperationalExcellenceCycleAsync">
+            <summary>
+            Execute Elite Operational Excellence Cycle
+            </summary>
+            <returns>Elite operational cycle result</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Interfaces.IEliteOperationalService.GetEliteOperationalDashboardAsync">
+            <summary>
+            Get Elite Operational Dashboard
+            </summary>
+            <returns>Elite operational dashboard</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Interfaces.IEliteOperationalService.TriggerEliteEmergencyResponseAsync(TerraFusion.Operations.Models.EliteEmergencyRequest)">
+            <summary>
+            Trigger Elite Emergency Response
+            </summary>
+            <param name="request">Emergency request</param>
+            <returns>Emergency response result</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IHealthMonitoringService">
+            <summary>
+            Health Monitoring Service Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IIncidentResponseService">
+            <summary>
+            Incident Response Service Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.ISelfHealingService">
+            <summary>
+            Self Healing Service Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IPerformanceOptimizationService">
+            <summary>
+            Performance Optimization Service Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IAutonomousRecoveryService">
+            <summary>
+            Autonomous Recovery Service Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.ISystemMetricsCollector">
+            <summary>
+            System Metrics Collector Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IPerformanceAnalyzer">
+            <summary>
+            Performance Analyzer Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.ISecurityMonitor">
+            <summary>
+            Security Monitor Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IComplianceValidator">
+            <summary>
+            Compliance Validator Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IAIAgentCoordinator">
+            <summary>
+            AI Agent Coordinator Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IAgentHealthMonitor">
+            <summary>
+            Agent Health Monitor Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.ISwarmOptimizer">
+            <summary>
+            Swarm Optimizer Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.ICountyServiceMonitor">
+            <summary>
+            County Service Monitor Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.ICitizenServiceAnalyzer">
+            <summary>
+            Citizen Service Analyzer Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IGovernmentComplianceService">
+            <summary>
+            Government Compliance Service Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IEmergencyResponseCoordinator">
+            <summary>
+            Emergency Response Coordinator Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IDisasterRecoveryService">
+            <summary>
+            Disaster Recovery Service Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.ICrisisManagementService">
+            <summary>
+            Crisis Management Service Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IPredictiveAnalyticsService">
+            <summary>
+            Predictive Analytics Service Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IOperationalIntelligenceService">
+            <summary>
+            Operational Intelligence Service Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IThreatDetectionService">
+            <summary>
+            Threat Detection Service Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IOperationalMetricsCache">
+            <summary>
+            Operational Metrics Cache Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IPerformanceDataCache">
+            <summary>
+            Performance Data Cache Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IHealthStatusCache">
+            <summary>
+            Health Status Cache Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IOperationalLogger">
+            <summary>
+            Operational Logger Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IPerformanceLogger">
+            <summary>
+            Performance Logger Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.ISecurityEventLogger">
+            <summary>
+            Security Event Logger Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IComplianceLogger">
+            <summary>
+            Compliance Logger Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IMetricsCollector">
+            <summary>
+            Metrics Collector Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Interfaces.IOperationalTelemetry">
+            <summary>
+            Operational Telemetry Interface
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EmergencySeverity">
+            <summary>
+            Emergency Severity Levels
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EliteOperationalResult">
+            <summary>
+            Elite Operational Result
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EliteOperationalDashboard">
+            <summary>
+            Elite Operational Dashboard
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EliteSystemStatus">
+            <summary>
+            Elite System Status
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.ElitePerformanceMetrics">
+            <summary>
+            Elite Performance Metrics
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EliteHealthMetrics">
+            <summary>
+            Elite Health Metrics
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.HealthAlert">
+            <summary>
+            Health Alert
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EliteSecurityMetrics">
+            <summary>
+            Elite Security Metrics
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.SecurityThreat">
+            <summary>
+            Security Threat
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EliteComplianceMetrics">
+            <summary>
+            Elite Compliance Metrics
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.ComplianceViolation">
+            <summary>
+            Compliance Violation
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.ComplianceGap">
+            <summary>
+            Compliance Gap
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.AIAgentCoordinationStatus">
+            <summary>
+            AI Agent Coordination Status
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.UnhealthyAgent">
+            <summary>
+            Unhealthy Agent
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.CountyServiceMetrics">
+            <summary>
+            County Service Metrics
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.CountyServiceStatus">
+            <summary>
+            County Service Status
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.CitizenServiceExcellence">
+            <summary>
+            Citizen Service Excellence
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EliteEmergencyRequest">
+            <summary>
+            Elite Emergency Request
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EliteEmergencyResponse">
+            <summary>
+            Elite Emergency Response
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EmergencyAction">
+            <summary>
+            Emergency Action
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.PredictiveAnalytics">
+            <summary>
+            Predictive Analytics
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.Prediction">
+            <summary>
+            Prediction
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.OperationalIntelligence">
+            <summary>
+            Operational Intelligence
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.IntelligenceInsight">
+            <summary>
+            Intelligence Insight
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.HealthMetrics">
+            <summary>
+            Health Metrics
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.IncidentRequest">
+            <summary>
+            Incident Request
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.IncidentResponse">
+            <summary>
+            Incident Response
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.SelfHealingResult">
+            <summary>
+            Self Healing Result
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.PerformanceOptimizationResult">
+            <summary>
+            Performance Optimization Result
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.PerformanceMetrics">
+            <summary>
+            Performance Metrics
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.RecoveryResult">
+            <summary>
+            Recovery Result
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.RecoveryStatus">
+            <summary>
+            Recovery Status
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.SystemMetrics">
+            <summary>
+            System Metrics
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.MetricDataPoint">
+            <summary>
+            Metric Data Point
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.SecurityStatus">
+            <summary>
+            Security Status
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.ComplianceStatus">
+            <summary>
+            Compliance Status
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.PerformanceAnalysisResult">
+            <summary>
+            Performance Analysis Result
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.PerformanceInsight">
+            <summary>
+            Performance Insight
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.SwarmOptimizationResult">
+            <summary>
+            Swarm Optimization Result
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.CoordinationResult">
+            <summary>
+            Coordination Result
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.DisasterRecoveryStatus">
+            <summary>
+            Disaster Recovery Status
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.AgentHealthStatus">
+            <summary>
+            Agent Health Status
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.ThreatDetectionResult">
+            <summary>
+            Threat Detection Result
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.HealthStatus">
+            <summary>
+            Health Status
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.PerformanceData">
+            <summary>
+            Performance Data
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.SecurityEvent">
+            <summary>
+            Security Event
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EmergencyReadinessStatus">
+            <summary>
+            Emergency Readiness Status
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.IntelligenceReport">
+            <summary>
+            Intelligence Report
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.TelemetryData">
+            <summary>
+            Telemetry Data
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.GovernmentComplianceStatus">
+            <summary>
+            Government Compliance Status
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.ComplianceEvent">
+            <summary>
+            Compliance Event
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.CrisisManagementStatus">
+            <summary>
+            Crisis Management Status
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.MetricsCollection">
+            <summary>
+            Metrics Collection
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.CitizenSatisfactionReport">
+            <summary>
+            Citizen Satisfaction Report
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.SwarmMetrics">
+            <summary>
+            Swarm Metrics
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.ComplianceValidationResult">
+            <summary>
+            Compliance Validation Result
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.DisasterRecoveryResult">
+            <summary>
+            Disaster Recovery Result
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.TelemetryReport">
+            <summary>
+            Telemetry Report
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.PerformanceAnomaly">
+            <summary>
+            Performance Anomaly
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.CrisisRequest">
+            <summary>
+            Crisis Request
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.CrisisResponse">
+            <summary>
+            Crisis Response
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EmergencyRequest">
+            <summary>
+            Emergency Request
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EmergencyResponse">
+            <summary>
+            Emergency Response
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.ComplianceAuditResult">
+            <summary>
+            Compliance Audit Result
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.HealthReport">
+            <summary>
+            Health Report
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.ComponentHealth">
+            <summary>
+            Component Health
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.PerformanceOptimization">
+            <summary>
+            Performance Optimization
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.EmergencyRecoveryResult">
+            <summary>
+            Emergency Recovery Result
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.PredictiveIssue">
+            <summary>
+            Predictive Issue
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.PerformanceOptimizations">
+            <summary>
+            Performance Optimizations
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.CapacityAnalysis">
+            <summary>
+            Capacity Analysis
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.SecurityAssessment">
+            <summary>
+            Security Assessment
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.ComplianceValidation">
+            <summary>
+            Compliance Validation
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Models.AutonomousRecoveryResult">
+            <summary>
+            Autonomous Recovery Result
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.AzureOpenAiRunbookExplanationService">
+            <summary>
+            Azure OpenAI implementation of IRunbookExplanationService.
+            EXPLAINER SPEC LOCK v1.0.0 - LLM is narrator only.
+            </summary>
+            <remarks>
+            CRITICAL CONSTRAINTS (enforced by validation):
+            - MUST NOT modify immutable fields (PlanId, StepId, SafetyLevel, Kind, etc.)
+            - MAY ONLY modify text fields (Title, Description)
+            - On any error, returns original plan unchanged
+            </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.AzureOpenAiRunbookExplanationService.EnrichWithExplanationAsync(TerraFusion.Operations.Runbooks.RunbookPlan,TerraFusion.Operations.Incidents.IncidentSummary,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.AzureOpenAiRunbookExplanationService.IsAvailableAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.AzureOpenAiRunbookExplanationService.BuildEnrichmentPrompt(TerraFusion.Operations.Runbooks.RunbookPlan,TerraFusion.Operations.Incidents.IncidentSummary)">
+            <summary>
+            Builds the system + user prompt for enrichment.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.AzureOpenAiRunbookExplanationService.CallAzureOpenAiAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Calls Azure OpenAI API and parses the response.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.AzureOpenAiRunbookExplanationService.ExtractJsonFromResponse(System.String)">
+            <summary>
+            Extracts JSON from LLM response (handles markdown code blocks).
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.AzureOpenAiRunbookExplanationService.MergeEnrichedData(TerraFusion.Operations.Runbooks.RunbookPlan,System.Collections.Generic.List{TerraFusion.Operations.Runbooks.AzureOpenAiRunbookExplanationService.EnrichedStepData})">
+            <summary>
+            Merges enriched text data while STRICTLY preserving immutable fields.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.AzureOpenAiRunbookExplanationService.EnrichedStepData">
+            <summary>
+            Internal DTO for parsing LLM response.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.AzureOpenAiRunbookExplanationService.AzureOpenAiChatResponse">
+            <summary>
+            Azure OpenAI API response structure.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.AutoRemediationMetrics">
+             <summary>
+             Phase 45 metrics for auto-remediation observability.
+             METRIC SPEC LOCK v1.0.0
+            
+             Exposed metrics:
+             - tf_runbook_autoexec_attempt_total{county_id, step_kind, safety_level, dry_run}
+             - tf_runbook_autoexec_real_total{county_id, step_kind, safety_level}
+             - tf_runbook_autoexec_simulated_total{county_id, step_kind, safety_level}
+             - tf_runbook_autoexec_block_total{county_id, reason}
+             - tf_runbook_killswitch_enabled{county_id}
+             - tf_runbook_autoexec_invariant_violation_total{county_id, invariant}
+            
+             BANNED LABELS (high cardinality):
+             - step_id, execution_id, plan_id, user_id, incident_id
+             </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.AutoRemediationMetrics.RecordAttempt(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Records an auto-execution attempt.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.AutoRemediationMetrics.RecordReal(System.String,System.String,System.String)">
+            <summary>
+            Records a real (non-DryRun) auto-execution.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.AutoRemediationMetrics.RecordSimulated(System.String,System.String,System.String)">
+            <summary>
+            Records a simulated (DryRun) auto-execution.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.AutoRemediationMetrics.RecordBlock(System.String,TerraFusion.Operations.Runbooks.Execution.AutoExecBlockReason)">
+            <summary>
+            Records an auto-execution block with reason.
+            </summary>
+            <param name="countyId">County ID</param>
+            <param name="reason">Block reason: killswitch, flags, policy, county, safety, kind, dryrun</param>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.AutoRemediationMetrics.RecordInvariantViolation(System.String,TerraFusion.Operations.Runbooks.Execution.AutoExecInvariant)">
+            <summary>
+            Records an invariant violation.
+            </summary>
+            <param name="countyId">County ID where violation occurred</param>
+            <param name="invariant">Invariant code: benton_only, safe_only, diagnostics_only, dryrun_no_exec</param>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.AutoRemediationMetrics.SetKillSwitchState(System.String,System.Boolean)">
+            <summary>
+            Updates the kill switch state for a county.
+            </summary>
+            <param name="countyId">County ID</param>
+            <param name="enabled">True if kill switch is ON (blocking), false if OFF (allowing)</param>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.AutoRemediationMetrics.SanitizeLabel(System.String)">
+            <summary>
+            Sanitizes a label value to prevent high-cardinality issues.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.AutoExecBlockReason">
+            <summary>
+            Reasons for blocking auto-execution.
+            METRIC SPEC LOCK v1.0.0
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.AutoExecBlockReason.KillSwitch">
+            <summary>Hard kill switch is ON.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.AutoExecBlockReason.Flags">
+            <summary>Feature flags disabled (EnableAutoRemediation, AllowSafeDiagnosticsAutoExecute).</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.AutoExecBlockReason.Policy">
+            <summary>Policy returned RequireHumanApproval or DenyAutoExecute.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.AutoExecBlockReason.County">
+            <summary>County not in OptedInCounties.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.AutoExecBlockReason.Safety">
+            <summary>Step safety level not eligible (MediumRisk, HighRisk).</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.AutoExecBlockReason.Kind">
+            <summary>Step kind not eligible (non-Diagnostic).</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.AutoExecBlockReason.DryRun">
+            <summary>DryRun mode prevented real execution.</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.AutoExecInvariant">
+            <summary>
+            Phase 44/45 invariant codes for violation tracking.
+            METRIC SPEC LOCK v1.0.0
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.AutoExecInvariant.BentonOnly">
+            <summary>Non-Benton county auto-exec attempted.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.AutoExecInvariant.SafeOnly">
+            <summary>MediumRisk or HighRisk step auto-exec attempted.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.AutoExecInvariant.DiagnosticsOnly">
+            <summary>Non-Diagnostic step auto-exec attempted.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.AutoExecInvariant.DryRunNoExec">
+            <summary>DryRun flag was ignored (step actually executed).</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.AutoRemediationOptions">
+             <summary>
+             Configuration options for controlled auto-remediation.
+             WIRING SPEC LOCK v1.0.0
+            
+             Design principles:
+             - Conservative defaults: All auto-remediation disabled by default
+             - Per-county opt-in: Counties must explicitly opt in
+             - Audit by default: All policy decisions logged
+             - Immutable: Use records with read-only collections
+             </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.AutoRemediationOptions.EnableAutoRemediation">
+             <summary>
+             Global kill switch for auto-remediation.
+             DEFAULT: false (all auto-remediation disabled).
+            
+             When false:
+             - AllowAutoExecute decisions still require human approval
+             - Policy decisions are still evaluated and logged
+             - RequireHumanApproval and DenyAutoExecute still apply
+            
+             When true:
+             - AllowAutoExecute decisions may auto-execute (if county opted in)
+             - RequireHumanApproval and DenyAutoExecute still apply (hard stops)
+             </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.AutoRemediationOptions.OptedInCounties">
+             <summary>
+             Set of county IDs that have opted into auto-remediation.
+             DEFAULT: empty set (no counties opted in).
+            
+             Even if EnableAutoRemediation=true, only counties in this set
+             can have steps auto-executed when policy returns AllowAutoExecute.
+            
+             County ID matching is case-sensitive by default.
+             Use StringComparer.OrdinalIgnoreCase when constructing the set
+             if case-insensitive matching is desired.
+             </summary>
+             <example>
+             // Case-sensitive (default):
+             OptedInCounties = new HashSet&lt;string&gt; { "benton", "yakima" }
+            
+             // Case-insensitive:
+             OptedInCounties = new HashSet&lt;string&gt;(StringComparer.OrdinalIgnoreCase) { "benton" }
+             </example>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.AutoRemediationOptions.AlwaysLogPolicyDecisions">
+             <summary>
+             Whether to log policy decisions for ALL step executions.
+             DEFAULT: true (audit everything).
+            
+             When true:
+             - Every policy decision is logged at Information level
+             - Denied decisions are logged at Warning level
+             - All decisions are persisted on RunbookStepExecution
+            
+             This flag is primarily for development/debugging.
+             In production, this should always be true for audit compliance.
+             </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.AutoRemediationOptions.AllowSafeDiagnosticsAutoExecute">
+             <summary>
+             Whether to allow auto-execution of Safe Diagnostic steps.
+             DEFAULT: false (all diagnostics require human approval).
+            
+             When true AND EnableAutoRemediation=true:
+             - Steps with Kind=Diagnostic AND SafetyLevel=InfoOnly/LowRisk
+               may auto-execute (if county is opted in and policy allows)
+            
+             When false:
+             - All steps require human approval, regardless of kind/safety
+            
+             Phase 44 scope: Only Diagnostic steps at InfoOnly/LowRisk can auto-execute.
+             </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.AutoRemediationOptions.AutoRemediationKillSwitchEnabled">
+             <summary>
+             Hard kill switch that short-circuits ALL auto-execution.
+             DEFAULT: true (KILL SWITCH ON = all automation disabled).
+            
+             When true:
+             - NO auto-execution ever occurs, regardless of any other flags
+             - Short-circuits BEFORE policy eligibility is considered
+             - Policy decisions still evaluated for audit/observability
+             - Every step requires human approval
+            
+             When false:
+             - Phase 44 eligibility checks proceed normally
+             - EnableAutoRemediation, AllowSafeDiagnosticsAutoExecute, etc. apply
+             - Auto-execution may occur for eligible steps
+            
+             This is the "single instant OFF lever" for county IT staff.
+             Even if all other flags are misconfigured, this ensures
+             no runbook step auto-executes without human approval.
+             </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.InMemoryRunbookExecutionStore">
+            <summary>
+            In-memory implementation of <see cref="T:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutionStore"/>.
+            EXECUTION SPEC LOCK v1.0.0
+            </summary>
+            <remarks>
+            Thread-safe using ConcurrentDictionary.
+            For Phase 41 only - future phases should use persistent storage.
+            </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.InMemoryRunbookExecutionStore.SaveAsync(TerraFusion.Operations.Runbooks.Execution.RunbookExecution,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.InMemoryRunbookExecutionStore.GetByIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.InMemoryRunbookExecutionStore.GetByPlanIdAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.InMemoryRunbookExecutionStore.DeleteAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.InMemoryRunbookExecutionStore.ClearAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.InMemoryRunbookExecutionStore.Count">
+            <summary>
+            Gets the count of stored executions (for testing/monitoring).
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.IRunbookActionProvider">
+            <summary>
+            Abstraction for executing runbook step actions.
+            EXECUTION SPEC LOCK v1.0.0
+            </summary>
+            <remarks>
+            Design principles:
+            - Testable: Fake implementations for unit tests
+            - Extensible: Different providers for different action types
+            - Safe: Provider respects DryRun mode
+            - Isolated: No side effects on RunbookPlan or IncidentSummary
+            </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.IRunbookActionProvider.ExecuteAsync(TerraFusion.Operations.Runbooks.RunbookPlan,TerraFusion.Operations.Runbooks.RunbookStep,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Executes the action for a runbook step.
+            </summary>
+            <param name="plan">The runbook plan (read-only context).</param>
+            <param name="step">The step to execute.</param>
+            <param name="isDryRun">If true, simulate the action without real effects.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>The result of the action execution.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.IRunbookActionProvider.CanHandle(TerraFusion.Operations.Runbooks.RunbookStep)">
+            <summary>
+            Checks if this provider can handle the given step.
+            </summary>
+            <param name="step">The step to check.</param>
+            <returns>True if this provider can execute the step.</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.NoOpRunbookActionProvider">
+            <summary>
+            A no-op action provider for testing and DryRun mode.
+            EXECUTION SPEC LOCK v1.0.0
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.NoOpRunbookActionProvider.ExecuteAsync(TerraFusion.Operations.Runbooks.RunbookPlan,TerraFusion.Operations.Runbooks.RunbookStep,System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.NoOpRunbookActionProvider.CanHandle(TerraFusion.Operations.Runbooks.RunbookStep)">
+            <inheritdoc/>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutionStore">
+            <summary>
+            Interface for storing and retrieving runbook executions.
+            EXECUTION SPEC LOCK v1.0.0
+            </summary>
+            <remarks>
+            Phase 41 uses in-memory storage. Future phases may implement:
+            - Persistent storage (database)
+            - Distributed storage (Redis)
+            - Event sourcing patterns
+            </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutionStore.SaveAsync(TerraFusion.Operations.Runbooks.Execution.RunbookExecution,System.Threading.CancellationToken)">
+            <summary>
+            Saves or updates an execution.
+            </summary>
+            <param name="execution">The execution to save.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Task representing the async operation.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutionStore.GetByIdAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets an execution by ID.
+            </summary>
+            <param name="executionId">The execution ID.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>The execution, or null if not found.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutionStore.GetByPlanIdAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets all executions for a plan.
+            </summary>
+            <param name="planId">The plan ID.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>List of executions for the plan.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutionStore.DeleteAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Deletes an execution (for cleanup/testing).
+            </summary>
+            <param name="executionId">The execution ID.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>True if deleted, false if not found.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutionStore.ClearAsync(System.Threading.CancellationToken)">
+            <summary>
+            Clears all executions (for testing).
+            </summary>
+            <param name="cancellationToken">Cancellation token.</param>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutor">
+            <summary>
+            Core interface for runbook execution.
+            EXECUTION SPEC LOCK v1.0.0
+            </summary>
+            <remarks>
+            Design principles:
+            - Approval-first: All RequiresHumanApproval steps MUST be approved before execution
+            - Safe-by-default: DryRun=true prevents real actions in Phase 41
+            - Auditable: All execution decisions and state changes are logged
+            - Immutable plans: Execution NEVER modifies the underlying RunbookPlan
+            - Government-compliant: FISMA-High requirements met
+            </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutor.StartExecutionAsync(TerraFusion.Operations.Runbooks.RunbookPlan,TerraFusion.Operations.Runbooks.Execution.RunbookExecutionOptions,System.Threading.CancellationToken)">
+            <summary>
+            Starts execution of a runbook plan.
+            </summary>
+            <param name="plan">The runbook plan to execute.</param>
+            <param name="options">Optional execution configuration.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>The created execution with initial state.</returns>
+            <exception cref="T:System.ArgumentNullException">If plan is null.</exception>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutor.ExecuteStepAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Executes a specific step in an execution.
+            </summary>
+            <param name="executionId">The execution ID.</param>
+            <param name="stepId">The step ID to execute.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Updated execution state after step execution.</returns>
+            <exception cref="T:System.InvalidOperationException">If step requires approval and is not approved.</exception>
+            <exception cref="T:System.InvalidOperationException">If execution is not in a valid state for step execution.</exception>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutor.ApproveStepAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Approves a step for execution.
+            </summary>
+            <param name="executionId">The execution ID.</param>
+            <param name="stepId">The step ID to approve.</param>
+            <param name="approvedBy">Identity of the approver (required).</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Updated execution state with approval recorded.</returns>
+            <exception cref="T:System.ArgumentException">If approvedBy is null or empty.</exception>
+            <exception cref="T:System.InvalidOperationException">If step does not require approval or is not pending.</exception>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutor.CancelExecutionAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Cancels an execution.
+            </summary>
+            <param name="executionId">The execution ID.</param>
+            <param name="cancelledBy">Identity of who cancelled.</param>
+            <param name="reason">Optional reason for cancellation.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Updated execution state with Cancelled status.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutor.GetExecutionAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets the current state of an execution.
+            </summary>
+            <param name="executionId">The execution ID.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>The execution state, or null if not found.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutor.GetExecutionsByPlanAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Lists all executions for a plan.
+            </summary>
+            <param name="planId">The plan ID.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>List of executions for the plan.</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionStatus">
+            <summary>
+            Status of a runbook execution.
+            EXECUTION SPEC LOCK v1.0.0
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionStatus.Pending">
+            <summary>Execution created but not yet started.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionStatus.Running">
+            <summary>Execution is currently running.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionStatus.Completed">
+            <summary>All steps completed successfully.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionStatus.Failed">
+            <summary>Execution failed (at least one step failed).</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionStatus.Cancelled">
+            <summary>Execution was cancelled by user or system.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionStatus.PartiallyCompleted">
+            <summary>Some steps completed, some remain (e.g., manual pause).</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecutionStatus">
+            <summary>
+            Status of a single step execution.
+            EXECUTION SPEC LOCK v1.0.0
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecutionStatus.Pending">
+            <summary>Step has not started.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecutionStatus.AwaitingApproval">
+            <summary>Step requires human approval before execution.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecutionStatus.InProgress">
+            <summary>Step is currently being executed.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecutionStatus.Completed">
+            <summary>Step completed successfully.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecutionStatus.Failed">
+            <summary>Step execution failed.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecutionStatus.Skipped">
+            <summary>Step was skipped (e.g., not applicable, cancelled).</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.RunbookExecution">
+            <summary>
+            Tracks execution of a complete runbook plan.
+            EXECUTION SPEC LOCK v1.0.0
+            </summary>
+            <remarks>
+            Immutability constraints:
+            - The underlying RunbookPlan MUST NOT be modified.
+            - Once created, only status and timestamp fields should change.
+            </remarks>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecution.ExecutionId">
+            <summary>Unique identifier for this execution. Format: EXEC-{guid}</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecution.PlanId">
+            <summary>Reference to the plan being executed.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecution.IncidentId">
+            <summary>Reference to the incident this execution addresses.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecution.Severity">
+            <summary>Severity inherited from the incident.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecution.Status">
+            <summary>Current status of the execution.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecution.CreatedAt">
+            <summary>When this execution was created.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecution.StartedAt">
+            <summary>When execution started (null if not yet started).</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecution.CompletedAt">
+            <summary>When execution completed/failed/cancelled.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecution.Steps">
+            <summary>Individual step execution states.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecution.StartedBy">
+            <summary>Who initiated this execution (user/system id).</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecution.Notes">
+            <summary>Notes or reason for execution.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecution.IsDryRun">
+            <summary>Whether this is a dry run (no real actions).</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecution.ExecutionVersion">
+            <summary>Spec version for compatibility tracking.</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecution">
+            <summary>
+            Tracks execution of a single runbook step.
+            EXECUTION SPEC LOCK v1.0.0 + WIRING SPEC LOCK v1.0.0 (Phase 43)
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecution.StepId">
+            <summary>Matches RunbookStep.StepId from the plan.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecution.Order">
+            <summary>Step order from the plan.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecution.Status">
+            <summary>Current execution status of this step.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecution.StartedAt">
+            <summary>When this step started execution.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecution.CompletedAt">
+            <summary>When this step completed/failed.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecution.ErrorMessage">
+            <summary>Error message if step failed.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecution.ApprovedBy">
+            <summary>Who approved this step (required for RequiresHumanApproval steps).</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecution.ApprovedAt">
+            <summary>When approval was granted.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecution.ActionOutput">
+            <summary>Result output from the action provider (if any).</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecution.PolicyDecision">
+            <summary>
+            The policy decision made for this step.
+            Null if no policy engine was configured.
+            Phase 43 WIRING SPEC LOCK v1.0.0.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepExecution.PolicyRuleId">
+            <summary>
+            The rule ID that produced the policy decision.
+            Null if default decision was used or no policy engine.
+            Phase 43 WIRING SPEC LOCK v1.0.0.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionOptions">
+            <summary>
+            Configuration options for runbook execution.
+            EXECUTION SPEC LOCK v1.0.0
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionOptions.DryRun">
+            <summary>If true, no real actions are executed (simulation mode). DEFAULT: true for Phase 41.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionOptions.AllowSafeAutoExecution">
+            <summary>If true, Safe steps may auto-execute without approval. DEFAULT: false for Phase 41.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionOptions.StepTimeout">
+            <summary>Maximum time allowed per step. DEFAULT: 5 minutes.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionOptions.MaxConcurrentSteps">
+            <summary>Maximum concurrent steps (for future parallelism). DEFAULT: 1 (sequential).</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionOptions.ExecutionNotes">
+            <summary>Notes or reason for this execution.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookExecutionOptions.InitiatedBy">
+            <summary>User or system initiating the execution.</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.RunbookStepResult">
+            <summary>
+            Result of executing a single runbook step action.
+            EXECUTION SPEC LOCK v1.0.0
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepResult.Success">
+            <summary>Whether the action succeeded.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepResult.ErrorMessage">
+            <summary>Error message if the action failed.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepResult.Output">
+            <summary>Output from the action (logs, results, etc.).</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Execution.RunbookStepResult.Duration">
+            <summary>Duration of the action execution.</summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.RunbookStepResult.Succeeded(System.String,System.Nullable{System.TimeSpan})">
+            <summary>Creates a successful result.</summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.RunbookStepResult.Failed(System.String,System.String,System.Nullable{System.TimeSpan})">
+            <summary>Creates a failed result.</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Execution.RunbookExecutor">
+            <summary>
+            Core implementation of <see cref="T:TerraFusion.Operations.Runbooks.Execution.IRunbookExecutor"/>.
+            EXECUTION SPEC LOCK v1.0.0 + WIRING SPEC LOCK v1.0.0 (Phase 43)
+            </summary>
+            <remarks>
+            Design principles:
+            - Approval-first: All RequiresHumanApproval steps MUST be approved before execution
+            - Safe-by-default: DryRun=true prevents real actions in Phase 41
+            - Policy-governed: Phase 43 adds policy evaluation before execution (WIRING SPEC LOCK)
+            - Auditable: All execution decisions and state changes are logged
+            - Immutable plans: Execution NEVER modifies the underlying RunbookPlan
+            </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.RunbookExecutor.#ctor(TerraFusion.Operations.Runbooks.Execution.IRunbookExecutionStore,TerraFusion.Operations.Runbooks.Execution.IRunbookActionProvider,Microsoft.Extensions.Logging.ILogger{TerraFusion.Operations.Runbooks.Execution.RunbookExecutor},TerraFusion.Operations.Runbooks.Remediation.IRemediationPolicyEngine,Microsoft.Extensions.Options.IOptions{TerraFusion.Operations.Runbooks.Execution.AutoRemediationOptions})">
+            <summary>
+            Initializes a new instance of <see cref="T:TerraFusion.Operations.Runbooks.Execution.RunbookExecutor"/>.
+            Phase 41 EXECUTION SPEC LOCK + Phase 43 WIRING SPEC LOCK.
+            </summary>
+            <param name="store">The execution store for persistence.</param>
+            <param name="actionProvider">The action provider for step execution.</param>
+            <param name="logger">The logger instance.</param>
+            <param name="policyEngine">Optional: Phase 43 policy engine for auto-remediation decisions.</param>
+            <param name="autoRemediationOptions">Optional: Phase 43 auto-remediation configuration.</param>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.RunbookExecutor.StartExecutionAsync(TerraFusion.Operations.Runbooks.RunbookPlan,TerraFusion.Operations.Runbooks.Execution.RunbookExecutionOptions,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.RunbookExecutor.ExecuteStepAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.RunbookExecutor.ApproveStepAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.RunbookExecutor.CancelExecutionAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.RunbookExecutor.GetExecutionAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.RunbookExecutor.GetExecutionsByPlanAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.RunbookExecutor.EvaluatePolicy(TerraFusion.Operations.Runbooks.RunbookPlan,TerraFusion.Operations.Runbooks.RunbookStep,TerraFusion.Operations.Runbooks.Execution.RunbookExecution)">
+            <summary>
+            Evaluates the remediation policy for a step execution.
+            Returns the policy decision and whether the step should skip or require approval.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.RunbookExecutor.CanAutoExecute(TerraFusion.Operations.Runbooks.RunbookPlan,TerraFusion.Operations.Runbooks.RunbookStep)">
+            <summary>
+            Checks whether auto-execution is allowed based on feature flags, county opt-in,
+            and Phase 44 step-level eligibility (kind + safety level).
+            PHASE 44 SPEC LOCK: Benton-only, Safe Diagnostics only.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.RunbookExecutor.LogPolicyDecision(System.String,System.String,TerraFusion.Operations.Runbooks.Remediation.RemediationDecision)">
+            <summary>
+            Logs a policy decision for audit trail.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Execution.RunbookExecutor.HandleDeniedStepAsync(TerraFusion.Operations.Runbooks.Execution.RunbookExecution,TerraFusion.Operations.Runbooks.Execution.RunbookStepExecution,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Handles a step that was denied by policy - skips it with audit record.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.IRunbookEngine">
+             <summary>
+             Core interface for runbook generation.
+             SPEC LOCK v1.0.0
+             </summary>
+             <remarks>
+             Design principles:
+             - Deterministic: Same incident always produces same runbook
+             - Safety-first: All steps require human approval in Phase 40A
+             - Auditable: All generation decisions logged
+             - Government-compliant: FISMA-High requirements met
+            
+             The runbook engine transforms an IncidentSummary (from Phase 39 triage)
+             into an ordered, safety-aware RunbookPlan that county IT staff can follow.
+             </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.IRunbookEngine.GenerateRunbookAsync(TerraFusion.Operations.Incidents.IncidentSummary,TerraFusion.Operations.Runbooks.RunbookOptions,System.Threading.CancellationToken)">
+            <summary>
+            Generates a runbook plan for the given incident.
+            </summary>
+            <param name="incident">The triaged incident summary from Phase 39.</param>
+            <param name="options">Optional configuration for generation.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>A deterministic runbook plan with ordered steps.</returns>
+            <exception cref="T:System.ArgumentNullException">If incident is null.</exception>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.IRunbookEngine.SupportedAlertNames">
+            <summary>
+            Gets the list of alert names this engine can handle.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.IRunbookEngine.CanHandleIncident(TerraFusion.Operations.Incidents.IncidentSummary)">
+            <summary>
+            Validates if the engine can generate a runbook for the given incident.
+            </summary>
+            <param name="incident">The incident to validate.</param>
+            <returns>True if the engine can handle all alerts in the incident.</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.IRunbookExplanationService">
+             <summary>
+             Optional LLM-based enrichment for runbook plans.
+             SPEC LOCK v1.0.0 - LLM is narrator only, cannot modify safety properties.
+             </summary>
+             <remarks>
+             CRITICAL CONSTRAINTS (enforced by implementation):
+             - MUST NOT modify Step.SafetyLevel
+             - MUST NOT modify Step.RequiresHumanApproval
+             - MUST NOT add steps with CanBeSuggestedForAutomation = true
+             - MUST NOT remove steps
+             - MAY modify Title, Description, Step.Description text only
+            
+             If LLM fails, original plan is returned unchanged.
+             </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.IRunbookExplanationService.EnrichWithExplanationAsync(TerraFusion.Operations.Runbooks.RunbookPlan,TerraFusion.Operations.Incidents.IncidentSummary,System.Threading.CancellationToken)">
+            <summary>
+            Enriches a runbook plan with LLM-generated explanations.
+            </summary>
+            <param name="plan">The deterministic plan to enrich.</param>
+            <param name="incident">The original incident for context.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>The plan with enriched descriptions, or original if LLM unavailable.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.IRunbookExplanationService.IsAvailableAsync(System.Threading.CancellationToken)">
+            <summary>
+            Checks if the LLM service is available.
+            </summary>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>True if LLM service is available and can be used.</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.NullRunbookExplanationService">
+            <summary>
+            No-op implementation of IRunbookExplanationService.
+            Returns the plan unchanged - used when LLM is disabled or unavailable.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.NullRunbookExplanationService.EnrichWithExplanationAsync(TerraFusion.Operations.Runbooks.RunbookPlan,TerraFusion.Operations.Incidents.IncidentSummary,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.NullRunbookExplanationService.IsAvailableAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Remediation.IRemediationPolicyEngine">
+             <summary>
+             Evaluates remediation policy rules to determine whether a runbook step
+             may be auto-executed, requires human approval, or must never be auto-executed.
+            
+             POLICY SPEC LOCK v1.0.0
+            
+             Phase 42 is ADVISORY ONLY:
+             - This engine returns decisions but does NOT change RunbookExecutor behavior.
+             - Decisions are logged and exposed via API for visibility.
+             - Phase 43+ may wire decisions into RunbookExecutor for controlled auto-remediation.
+             </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.IRemediationPolicyEngine.Evaluate(TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyContext)">
+            <summary>
+            Evaluates the policy rules for the given context and returns a decision.
+            </summary>
+            <param name="context">The evaluation context containing step, plan, and incident info.</param>
+            <returns>The remediation decision.</returns>
+            <remarks>
+            INVARIANTS:
+            - This method MUST NOT mutate the context or any of its nested objects.
+            - This method MUST be deterministic (same input → same output).
+            - If no rule matches, returns RequireHumanApproval (conservative default).
+            </remarks>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.IRemediationPolicyEngine.EvaluatePlan(System.String,TerraFusion.Operations.Incidents.IncidentSeverity,TerraFusion.Operations.Runbooks.RunbookPlan,System.DateTimeOffset,System.Collections.Generic.IReadOnlyList{System.String})">
+            <summary>
+            Evaluates policy rules for all steps in a plan.
+            </summary>
+            <param name="countyId">The county identifier.</param>
+            <param name="severity">The incident severity.</param>
+            <param name="plan">The runbook plan to evaluate.</param>
+            <param name="timestamp">The current timestamp.</param>
+            <param name="alertNames">Optional: related alert names.</param>
+            <returns>A dictionary mapping step IDs to their decisions.</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyContext">
+            <summary>
+            Encapsulates all context needed for a remediation policy decision.
+            POLICY SPEC LOCK v1.0.0
+            </summary>
+            <param name="CountyId">The county identifier for scope resolution.</param>
+            <param name="Severity">The incident severity level.</param>
+            <param name="Plan">The runbook plan containing the step.</param>
+            <param name="Step">The specific step being evaluated.</param>
+            <param name="Timestamp">The current timestamp for time-window evaluation.</param>
+            <param name="AlertNames">Optional: related alert names for pattern matching.</param>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyContext.#ctor(System.String,TerraFusion.Operations.Incidents.IncidentSeverity,TerraFusion.Operations.Runbooks.RunbookPlan,TerraFusion.Operations.Runbooks.RunbookStep,System.DateTimeOffset,System.Collections.Generic.IReadOnlyList{System.String})">
+            <summary>
+            Encapsulates all context needed for a remediation policy decision.
+            POLICY SPEC LOCK v1.0.0
+            </summary>
+            <param name="CountyId">The county identifier for scope resolution.</param>
+            <param name="Severity">The incident severity level.</param>
+            <param name="Plan">The runbook plan containing the step.</param>
+            <param name="Step">The specific step being evaluated.</param>
+            <param name="Timestamp">The current timestamp for time-window evaluation.</param>
+            <param name="AlertNames">Optional: related alert names for pattern matching.</param>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyContext.CountyId">
+            <summary>The county identifier for scope resolution.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyContext.Severity">
+            <summary>The incident severity level.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyContext.Plan">
+            <summary>The runbook plan containing the step.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyContext.Step">
+            <summary>The specific step being evaluated.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyContext.Timestamp">
+            <summary>The current timestamp for time-window evaluation.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyContext.AlertNames">
+            <summary>Optional: related alert names for pattern matching.</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyEngine">
+             <summary>
+             Core implementation of <see cref="T:TerraFusion.Operations.Runbooks.Remediation.IRemediationPolicyEngine"/>.
+             POLICY SPEC LOCK v1.0.0
+            
+             Rule Matching Precedence (highest to lowest):
+             1. Explicit DenyAutoExecute always wins if matched
+             2. Higher Priority value wins
+             3. More specific rules (more non-null filters) win over general rules
+             4. County-specific rules win over global rules
+             5. First matching rule in list order breaks ties
+            
+             Default Behavior:
+             - If no rule matches: RequireHumanApproval (conservative)
+             </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyEngine.#ctor(Microsoft.Extensions.Options.IOptions{TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyOptions},Microsoft.Extensions.Logging.ILogger{TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyEngine})">
+            <summary>
+            Initializes a new instance of <see cref="T:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyEngine"/>.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyEngine.Evaluate(TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyEngine.EvaluatePlan(System.String,TerraFusion.Operations.Incidents.IncidentSeverity,TerraFusion.Operations.Runbooks.RunbookPlan,System.DateTimeOffset,System.Collections.Generic.IReadOnlyList{System.String})">
+            <inheritdoc />
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyEngine.ResolvePolicy(System.String)">
+            <summary>
+            Resolves the applicable policy for the given county.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyEngine.RuleMatches(TerraFusion.Operations.Runbooks.Remediation.RemediationRule,TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyContext)">
+            <summary>
+            Checks if a rule matches the given context.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyEngine.SelectWinningRule(System.Collections.Generic.List{TerraFusion.Operations.Runbooks.Remediation.RemediationRule},TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyContext)">
+            <summary>
+            Selects the winning rule based on precedence.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyEngine.CalculateSpecificity(TerraFusion.Operations.Runbooks.Remediation.RemediationRule)">
+            <summary>
+            Calculates a specificity score for a rule (more non-null filters = higher score).
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyEngine.LogEvaluation(TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyContext,TerraFusion.Operations.Runbooks.Remediation.RemediationDecision)">
+            <summary>
+            Logs the evaluation result.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Remediation.RemediationDecisionKind">
+            <summary>
+            The kind of decision returned by the remediation policy engine.
+            POLICY SPEC LOCK v1.0.0
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Remediation.RemediationDecisionKind.AllowAutoExecute">
+            <summary>
+            Step MAY be safely auto-executed under the matched policy rule.
+            Future phases may act on this to skip human approval for safe steps.
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Remediation.RemediationDecisionKind.RequireHumanApproval">
+            <summary>
+            Step MUST require human approval before execution.
+            This is the default when no rule matches (conservative behavior).
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Remediation.RemediationDecisionKind.DenyAutoExecute">
+            <summary>
+            Step MUST NEVER be auto-executed, even in future phases.
+            Reserved for high-risk operations that always need human oversight.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicy">
+            <summary>
+            Represents a policy set for a given scope (e.g., county or global).
+            POLICY SPEC LOCK v1.0.0
+            </summary>
+            <param name="ScopeId">The scope identifier (e.g., "benton", "yakima", or "global").</param>
+            <param name="Rules">The ordered list of rules to evaluate.</param>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicy.#ctor(System.String,System.Collections.Generic.IReadOnlyList{TerraFusion.Operations.Runbooks.Remediation.RemediationRule})">
+            <summary>
+            Represents a policy set for a given scope (e.g., county or global).
+            POLICY SPEC LOCK v1.0.0
+            </summary>
+            <param name="ScopeId">The scope identifier (e.g., "benton", "yakima", or "global").</param>
+            <param name="Rules">The ordered list of rules to evaluate.</param>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicy.ScopeId">
+            <summary>The scope identifier (e.g., "benton", "yakima", or "global").</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicy.Rules">
+            <summary>The ordered list of rules to evaluate.</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Remediation.RemediationRule">
+            <summary>
+            Represents a single matching rule within a policy.
+            POLICY SPEC LOCK v1.0.0
+            </summary>
+            <param name="RuleId">Unique identifier for the rule (e.g., "BENTON-ATLAS-DIAG-SAFE-AUTO").</param>
+            <param name="Decision">The decision to return if this rule matches.</param>
+            <param name="CountyId">County filter; null = any county.</param>
+            <param name="Component">Component filter (e.g., "Atlas", "Swarm"); null = any.</param>
+            <param name="StepKind">Step kind filter; null = any kind.</param>
+            <param name="SafetyLevel">Safety level filter; null = any.</param>
+            <param name="AlertNames">Alert name patterns; null/empty = any.</param>
+            <param name="MinSeverity">Minimum incident severity; null = any.</param>
+            <param name="MaxSeverity">Maximum incident severity; null = any.</param>
+            <param name="ActiveFromUtcOffset">Optional: start of active time window (UTC offset from midnight).</param>
+            <param name="ActiveToUtcOffset">Optional: end of active time window (UTC offset from midnight).</param>
+            <param name="Priority">Rule priority (higher = more precedence). Default = 0.</param>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationRule.#ctor(System.String,TerraFusion.Operations.Runbooks.Remediation.RemediationDecisionKind,System.String,System.String,System.Nullable{TerraFusion.Operations.Runbooks.RunbookStepKind},System.Nullable{TerraFusion.Operations.Runbooks.RunbookSafetyLevel},System.Collections.Generic.IReadOnlyList{System.String},System.Nullable{TerraFusion.Operations.Incidents.IncidentSeverity},System.Nullable{TerraFusion.Operations.Incidents.IncidentSeverity},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32)">
+            <summary>
+            Represents a single matching rule within a policy.
+            POLICY SPEC LOCK v1.0.0
+            </summary>
+            <param name="RuleId">Unique identifier for the rule (e.g., "BENTON-ATLAS-DIAG-SAFE-AUTO").</param>
+            <param name="Decision">The decision to return if this rule matches.</param>
+            <param name="CountyId">County filter; null = any county.</param>
+            <param name="Component">Component filter (e.g., "Atlas", "Swarm"); null = any.</param>
+            <param name="StepKind">Step kind filter; null = any kind.</param>
+            <param name="SafetyLevel">Safety level filter; null = any.</param>
+            <param name="AlertNames">Alert name patterns; null/empty = any.</param>
+            <param name="MinSeverity">Minimum incident severity; null = any.</param>
+            <param name="MaxSeverity">Maximum incident severity; null = any.</param>
+            <param name="ActiveFromUtcOffset">Optional: start of active time window (UTC offset from midnight).</param>
+            <param name="ActiveToUtcOffset">Optional: end of active time window (UTC offset from midnight).</param>
+            <param name="Priority">Rule priority (higher = more precedence). Default = 0.</param>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationRule.RuleId">
+            <summary>Unique identifier for the rule (e.g., "BENTON-ATLAS-DIAG-SAFE-AUTO").</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationRule.Decision">
+            <summary>The decision to return if this rule matches.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationRule.CountyId">
+            <summary>County filter; null = any county.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationRule.Component">
+            <summary>Component filter (e.g., "Atlas", "Swarm"); null = any.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationRule.StepKind">
+            <summary>Step kind filter; null = any kind.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationRule.SafetyLevel">
+            <summary>Safety level filter; null = any.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationRule.AlertNames">
+            <summary>Alert name patterns; null/empty = any.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationRule.MinSeverity">
+            <summary>Minimum incident severity; null = any.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationRule.MaxSeverity">
+            <summary>Maximum incident severity; null = any.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationRule.ActiveFromUtcOffset">
+            <summary>Optional: start of active time window (UTC offset from midnight).</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationRule.ActiveToUtcOffset">
+            <summary>Optional: end of active time window (UTC offset from midnight).</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationRule.Priority">
+            <summary>Rule priority (higher = more precedence). Default = 0.</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Remediation.RemediationDecision">
+            <summary>
+            Represents the evaluation result for a specific step in context.
+            POLICY SPEC LOCK v1.0.0
+            </summary>
+            <param name="Kind">The decision kind.</param>
+            <param name="AppliedRuleId">The ID of the rule that was applied; null if default.</param>
+            <param name="ScopeId">The policy scope that was used.</param>
+            <param name="Reason">Human-readable reason for the decision.</param>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationDecision.#ctor(TerraFusion.Operations.Runbooks.Remediation.RemediationDecisionKind,System.String,System.String,System.String)">
+            <summary>
+            Represents the evaluation result for a specific step in context.
+            POLICY SPEC LOCK v1.0.0
+            </summary>
+            <param name="Kind">The decision kind.</param>
+            <param name="AppliedRuleId">The ID of the rule that was applied; null if default.</param>
+            <param name="ScopeId">The policy scope that was used.</param>
+            <param name="Reason">Human-readable reason for the decision.</param>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationDecision.Kind">
+            <summary>The decision kind.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationDecision.AppliedRuleId">
+            <summary>The ID of the rule that was applied; null if default.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationDecision.ScopeId">
+            <summary>The policy scope that was used.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationDecision.Reason">
+            <summary>Human-readable reason for the decision.</summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationDecision.Default(System.String)">
+            <summary>
+            Creates the default decision (RequireHumanApproval) when no rule matches.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyOptions">
+            <summary>
+            Configuration options for the remediation policy engine.
+            POLICY SPEC LOCK v1.0.0
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyOptions.SectionName">
+            <summary>
+            Configuration section name for binding.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyOptions.Enabled">
+            <summary>
+            Whether the policy engine is enabled.
+            Default: true (advisory mode - evaluation only, no behavior change).
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyOptions.LogEvaluations">
+            <summary>
+            Whether to log all policy evaluations.
+            Default: true for audit trail.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyOptions.GlobalPolicy">
+            <summary>
+            The global policy to use when no county-specific policy exists.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyOptions.CountyPolicies">
+            <summary>
+            County-specific policies keyed by county ID.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyOptions.GlobalScopeId">
+            <summary>
+            The scope ID to use for global fallback.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyServiceExtensions">
+            <summary>
+            Extension methods for registering the remediation policy engine in DI.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyServiceExtensions.AddRemediationPolicyEngine(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyOptions})">
+            <summary>
+            Adds the remediation policy engine to the service collection.
+            Phase 42 is ADVISORY ONLY - evaluation without behavior change.
+            </summary>
+            <param name="services">The service collection.</param>
+            <param name="configureOptions">Optional configuration action.</param>
+            <returns>The service collection for chaining.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyServiceExtensions.AddRemediationPolicyEngine(Microsoft.Extensions.DependencyInjection.IServiceCollection,TerraFusion.Operations.Runbooks.Remediation.RemediationPolicyOptions)">
+            <summary>
+            Adds the remediation policy engine with a pre-built configuration.
+            </summary>
+            <param name="services">The service collection.</param>
+            <param name="options">The options to use.</param>
+            <returns>The service collection for chaining.</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.RunbookEngine">
+            <summary>
+            Core runbook engine implementation.
+            Generates deterministic, safety-aware runbook plans from incident summaries.
+            </summary>
+            <remarks>
+            DESIGN PRINCIPLES:
+            1. Deterministic: Same incident always produces same runbook
+            2. Safety-first: All steps require human approval in Phase 40A
+            3. Ordered: Steps follow logical sequence (diagnostics → config → restart → recovery)
+            4. Auditable: All generation decisions logged
+            5. Government-compliant: FISMA-High requirements met
+            </remarks>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookEngine.SupportedAlertNames">
+            <inheritdoc />
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.RunbookEngine.CanHandleIncident(TerraFusion.Operations.Incidents.IncidentSummary)">
+            <inheritdoc />
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.RunbookEngine.GenerateRunbookAsync(TerraFusion.Operations.Incidents.IncidentSummary,TerraFusion.Operations.Runbooks.RunbookOptions,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.RunbookEngine.MergeAndOrderSteps(System.Collections.Generic.List{TerraFusion.Operations.Runbooks.RunbookStep})">
+            <summary>
+            Merges steps from multiple alerts, deduplicates, and orders them logically.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.RunbookEngine.NormalizeStepKey(System.String,TerraFusion.Operations.Runbooks.RunbookStepKind)">
+            <summary>
+            Creates a normalized key for deduplication.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.RunbookEngine.GetKindOrder(TerraFusion.Operations.Runbooks.RunbookStepKind)">
+            <summary>
+            Gets the sort order for a step kind.
+            Lower numbers come first.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.RunbookEngine.GenerateTitleAndDescription(TerraFusion.Operations.Incidents.IncidentSummary,System.Collections.Generic.List{TerraFusion.Operations.Runbooks.RunbookStep})">
+            <summary>
+            Generates the plan title and description based on the incident and steps.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.RunbookStepKind">
+            <summary>
+            Classification of runbook step types.
+            SPEC LOCK v1.0.0
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookStepKind.Diagnostic">
+            <summary>Gather information (logs, metrics, status).</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookStepKind.ConfigCheck">
+            <summary>Review or validate configuration.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookStepKind.RestartService">
+            <summary>Restart a service or component.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookStepKind.ScaleOut">
+            <summary>Scale out resources (add capacity).</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookStepKind.Failover">
+            <summary>Failover to backup/secondary.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookStepKind.Notification">
+            <summary>Send notification or escalation.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookStepKind.ManualInvestigation">
+            <summary>Manual investigation required.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookStepKind.DataValidation">
+            <summary>Validate data integrity.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookStepKind.Rollback">
+            <summary>Rollback a recent change.</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookStepKind.Other">
+            <summary>Other/uncategorized step.</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.RunbookSafetyLevel">
+            <summary>
+            Risk level for runbook steps.
+            SPEC LOCK v1.0.0
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookSafetyLevel.InfoOnly">
+            <summary>Read-only, no risk (viewing dashboards, logs).</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookSafetyLevel.LowRisk">
+            <summary>Low risk (minor config review, non-destructive).</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookSafetyLevel.MediumRisk">
+            <summary>Medium risk (service restart, cache clear).</summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookSafetyLevel.HighRisk">
+            <summary>High risk (failover, data modification, production change).</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.RunbookExplanationOptions">
+            <summary>
+            Configuration options for the Runbook Explanation Service.
+            EXPLAINER SPEC LOCK v1.0.0
+            </summary>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookExplanationOptions.SectionName">
+            <summary>
+            Configuration section name for binding.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookExplanationOptions.Enabled">
+            <summary>
+            Whether LLM-based explanation enrichment is enabled.
+            Default: false (use NullRunbookExplanationService).
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookExplanationOptions.AzureOpenAiEndpoint">
+            <summary>
+            Azure OpenAI endpoint URL.
+            Example: "https://your-resource.openai.azure.com/"
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookExplanationOptions.AzureOpenAiDeploymentName">
+            <summary>
+            Azure OpenAI deployment name (model deployment).
+            Example: "gpt-4o", "gpt-4-turbo"
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookExplanationOptions.AzureOpenAiApiKey">
+            <summary>
+            Azure OpenAI API key.
+            Can also use DefaultAzureCredential if not provided.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookExplanationOptions.MaxTokens">
+            <summary>
+            Maximum tokens for LLM response.
+            Default: 2000
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookExplanationOptions.Temperature">
+            <summary>
+            Temperature for LLM response (0.0 = deterministic, 1.0 = creative).
+            Default: 0.3 (mostly deterministic with slight variation)
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookExplanationOptions.Timeout">
+            <summary>
+            Timeout for LLM API calls.
+            Default: 30 seconds
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookExplanationOptions.UseDefaultAzureCredential">
+            <summary>
+            Whether to use Azure Default Credential instead of API key.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookExplanationOptions.IsConfiguredForAzureOpenAi">
+            <summary>
+            Validates that required configuration is present for Azure OpenAI.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.RunbookStep">
+            <summary>
+            A single step in a runbook plan.
+            SPEC LOCK v1.0.0 - Do not modify without justification.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookStep.StepId">
+            <summary>Unique identifier for this step. Format: STEP-{6-digit}</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookStep.Order">
+            <summary>Execution order within the runbook (1-based).</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookStep.Title">
+            <summary>Short title for the step.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookStep.Description">
+            <summary>Detailed description of what to do. MAY be enhanced by LLM.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookStep.Kind">
+            <summary>Classification of the step type.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookStep.SafetyLevel">
+            <summary>Risk level of executing this step.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookStep.RequiresHumanApproval">
+            <summary>Whether human approval is required. ALWAYS true in Phase 40A.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookStep.CanBeSuggestedForAutomation">
+            <summary>Whether this step could be automated in future phases. ALWAYS false in Phase 40A.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookStep.SuggestedOwnerRole">
+            <summary>Suggested role/team to execute this step.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookStep.RelatedAlertNames">
+            <summary>Alert names that triggered this step.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookStep.RelatedMetricNames">
+            <summary>Metric names relevant to this step.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookStep.EstimatedDurationMinutes">
+            <summary>Estimated duration in minutes (optional).</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.RunbookPlan">
+            <summary>
+            A complete runbook plan for an incident.
+            SPEC LOCK v1.0.0 - Do not modify without justification.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookPlan.PlanId">
+            <summary>Unique identifier for this plan. Format: PLAN-{guid}</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookPlan.IncidentId">
+            <summary>The incident this runbook addresses.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookPlan.Title">
+            <summary>Short title for the runbook. MAY be refined by LLM.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookPlan.Description">
+            <summary>Description of the overall recovery approach. MAY be refined by LLM.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookPlan.OverallSeverity">
+            <summary>Severity inherited from the incident.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookPlan.ImpactedCountyIds">
+            <summary>Counties impacted (inherited from incident).</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookPlan.Steps">
+            <summary>Ordered list of steps to execute.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookPlan.CreatedAt">
+            <summary>When this plan was generated.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookPlan.PlanVersion">
+            <summary>Spec version for compatibility tracking.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookPlan.AuditInfo">
+            <summary>Audit information for compliance.</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.RunbookAuditInfo">
+            <summary>
+            Audit trail for runbook generation.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookAuditInfo.EngineVersion">
+            <summary>Version of the runbook engine.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookAuditInfo.GenerationDurationMs">
+            <summary>Time taken to generate the plan in milliseconds.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookAuditInfo.AppliedTemplates">
+            <summary>List of template names applied during generation.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookAuditInfo.LlmEnrichmentUsed">
+            <summary>Whether LLM enrichment was used.</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.RunbookOptions">
+            <summary>
+            Configuration options for runbook generation.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookOptions.IncludeLowSeveritySteps">
+            <summary>Include steps for low-severity items (default: true).</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookOptions.EnableLlmExplanation">
+            <summary>Enable LLM explanation enrichment (default: false).</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookOptions.MaxGenerationTime">
+            <summary>Maximum time allowed for generation.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookOptions.AudienceHint">
+            <summary>Target audience for descriptions.</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.RunbookEngineOptions">
+            <summary>
+            Configuration for the runbook engine.
+            </summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookEngineOptions.EngineVersion">
+            <summary>Engine version string.</summary>
+        </member>
+        <member name="P:TerraFusion.Operations.Runbooks.RunbookEngineOptions.DefaultOptions">
+            <summary>Default options for runbook generation.</summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.RunbookServiceExtensions">
+            <summary>
+            Extension methods for registering runbook services.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.RunbookServiceExtensions.AddRunbookEngine(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{TerraFusion.Operations.Runbooks.RunbookEngineOptions})">
+            <summary>
+            Adds the runbook engine and related services to the service collection.
+            </summary>
+            <param name="services">The service collection.</param>
+            <param name="configure">Optional configuration action.</param>
+            <returns>The service collection for chaining.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.RunbookServiceExtensions.AddAzureOpenAiRunbookExplanation(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Adds the Azure OpenAI runbook explanation service.
+            Phase 40B: LLM-as-Explainer layer.
+            </summary>
+            <param name="services">The service collection.</param>
+            <param name="configuration">The configuration for binding options.</param>
+            <returns>The service collection for chaining.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.RunbookServiceExtensions.AddRunbookExplanationService``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds a custom runbook explanation service implementation.
+            </summary>
+            <typeparam name="TService">The explanation service implementation type.</typeparam>
+            <param name="services">The service collection.</param>
+            <returns>The service collection for chaining.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.RunbookServiceExtensions.AddRunbookExecutor(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds the runbook execution engine and related services.
+            Phase 41: EXECUTION SPEC LOCK v1.0.0
+            </summary>
+            <param name="services">The service collection.</param>
+            <returns>The service collection for chaining.</returns>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.RunbookServiceExtensions.AddRunbookExecutor``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds the runbook execution engine with a custom action provider.
+            Phase 41: EXECUTION SPEC LOCK v1.0.0
+            </summary>
+            <typeparam name="TActionProvider">The action provider implementation type.</typeparam>
+            <param name="services">The service collection.</param>
+            <returns>The service collection for chaining.</returns>
+        </member>
+        <member name="T:TerraFusion.Operations.Runbooks.RunbookTemplates">
+            <summary>
+            Static class providing runbook step templates for known alert types.
+            Maps Phase 38 alerts to ordered, safety-aware steps.
+            </summary>
+            <remarks>
+            PHASE 40A CONSTRAINTS:
+            - All steps have RequiresHumanApproval = true
+            - All steps have CanBeSuggestedForAutomation = false
+            - Steps are ordered: Diagnostic → ConfigCheck → RestartService → ScaleOut/Failover
+            </remarks>
+        </member>
+        <member name="F:TerraFusion.Operations.Runbooks.RunbookTemplates.SupportedAlerts">
+            <summary>
+            All supported alert names.
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Runbooks.RunbookTemplates.GetStepsForAlert(System.String)">
+            <summary>
+            Gets runbook steps for a specific alert name.
+            Returns generic steps for unknown alerts.
+            </summary>
+        </member>
+        <member name="T:TerraFusion.Operations.Services.EliteOperationalService">
+            <summary>
+            Elite Operational Excellence Service - Championship-level operational framework
+            Implements autonomous self-healing, predictive maintenance, and transcendent government service delivery
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Services.EliteOperationalService.InitializeAsync">
+            <summary>
+            Initialize Elite Operational Excellence Framework
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Services.EliteOperationalService.ExecuteOperationalExcellenceCycleAsync">
+            <summary>
+            Execute Elite Operational Excellence Cycle
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Services.EliteOperationalService.GetEliteOperationalDashboardAsync">
+            <summary>
+            Get Elite Operational Dashboard
+            </summary>
+        </member>
+        <member name="M:TerraFusion.Operations.Services.EliteOperationalService.TriggerEliteEmergencyResponseAsync(TerraFusion.Operations.Models.EliteEmergencyRequest)">
+            <summary>
+            Trigger Elite Emergency Response
+            </summary>
+        </member>
+    </members>
+</doc>

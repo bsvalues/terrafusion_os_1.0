@@ -1,24 +1,22 @@
 namespace TerraFusion.API.Services;
 
 /// <summary>
-/// TerraFusion owns sale qualification decisions — independent of PACS/Harris encoding.
-/// Implements IAAO ratio-study arms-length standards for Benton County.
-///
-/// Qualification may be re-run at any time against stored raw PACS codes without
-/// re-importing raw data from the source system.
+/// TerraFusion's sale qualification rule engine — Layer 2 of the 3-layer qualification model.
 ///
 /// ARCHITECTURAL CONTRACT:
-///   - Raw PACS codes (SaleQualifier, SaleCountyRatioCd, SalesExcludeCalcCd, WacCd)
-///     are preserved on ComparableSale.Raw* fields.
-///   - ComparableSale.SaleQualification is always TerraFusion's derived verdict from
-///     this service — never a verbatim copy of a PACS code.
-///   - PacsCanonicalizer calls this service during import to set the initial verdict.
-///   - Future admin API may call RequalifyAll() to update verdicts without re-import.
+///   Layer 1 — Raw PACS codes: copied verbatim at sync time. Never judged here.
+///   Layer 2 — TF Recommendation: this service computes from Layer 1 raw codes.
+///             Run AFTER ingest, never during sync. Recomputable at any time.
+///   Layer 3 — Assessor Decision: stored separately; always wins over recommendation.
+///             ValuationService uses: QualificationDecision ?? QualificationRecommendation.
+///
+/// Raw PACS codes are facts. TerraFusion recommendation is a suggestion.
+/// Assessor decision is law.
 /// </summary>
 public interface ISaleQualificationService
 {
     /// <summary>
-    /// Qualify a single sale from its raw PACS codes.
+    /// Compute the recommendation string for a single sale from its raw PACS codes.
     /// Returns one of: "qualified" | "non-arms-length" | "foreclosure" | "estate"
     ///                 | "excluded: {code}" | "exempt: {code}"
     /// </summary>
@@ -29,9 +27,10 @@ public interface ISaleQualificationService
         string? rawWacCd);
 
     /// <summary>
-    /// Re-qualify a collection of ComparableSale records using the current rules.
-    /// Updates ComparableSale.SaleQualification in-place on each record.
+    /// Compute and write Layer 2 recommendation fields for a collection of ComparableSale records.
+    /// Sets QualificationRecommendation, RecommendationReason, RecommendationSource, RecommendationVersion.
+    /// Call this AFTER sync/ingest — never during canonicalization.
     /// Caller is responsible for persisting changes (SaveChangesAsync).
     /// </summary>
-    void RequalifyAll(IEnumerable<TerraFusion.Core.Entities.ComparableSale> sales);
+    void ComputeRecommendations(IEnumerable<TerraFusion.Core.Entities.ComparableSale> sales);
 }

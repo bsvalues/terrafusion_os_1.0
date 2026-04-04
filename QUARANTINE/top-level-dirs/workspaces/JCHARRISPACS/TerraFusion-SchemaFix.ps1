@@ -4,7 +4,7 @@
 
 param(
     [string]$SqlServer = "localhost,1433",
-    [string]$SaPassword = "P@ssw0rd123!"
+    [string]$SaPassword = $(if ($env:SA_PASSWORD) { $env:SA_PASSWORD } else { 'TF_Pacs2026!' })
 )
 
 $ErrorActionPreference = "Continue"

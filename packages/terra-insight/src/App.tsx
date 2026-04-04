@@ -1,6 +1,5 @@
 import "./terrafusion-brand.css";
 import React, { useState, useEffect } from 'react';
-import { invoke } from '@tauri-apps/api/tauri';
 import { 
   BarChart, 
   TrendingUp, 
@@ -16,6 +15,12 @@ import {
   Settings
 } from '@mui/icons-material';
 import './App.css';
+
+// invoke stub: this app runs as a web app inside AppFrame; the Tauri native bridge
+// is not available in that context. All invoke calls are wrapped in try/catch below.
+const invoke = async <T = unknown>(_cmd: string, _args?: Record<string, unknown>): Promise<T> => {
+  throw new Error('[AppFrame] Tauri bridge not available in web context');
+};
 
 interface AnalyticsData {
   revenue: { current: number; previous: number; change: number; };

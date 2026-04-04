@@ -162,7 +162,7 @@ global:
 
 # SQL Server connection
 target:
-  data_source_name: 'sqlserver://sa:P@ssw0rd123!@localhost:1433?database=pacs_oltp&connection+timeout=30&encrypt=disable'
+  data_source_name: 'sqlserver://sa:${SA_PASSWORD}@localhost:1433?database=pacs_oltp&connection+timeout=30&encrypt=disable'
 
 # Collector definitions for TerraFusion metrics
 collectors:

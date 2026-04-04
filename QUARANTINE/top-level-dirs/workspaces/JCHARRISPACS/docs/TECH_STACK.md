@@ -1075,7 +1075,72 @@ public class PropertyServiceTests
 
 ---
 
+## 8a. TerraFusion Integration API Stack (PacsApi — Added Post-Handoff)
+
+This section documents the ASP.NET Core 8 minimal API built to expose PACS data to TerraFusion OS.
+
+### PacsApi — Core Stack
+
+| Component | Technology | Version | Purpose |
+|-----------|-----------|---------|---------|
+| Framework | ASP.NET Core Minimal API | .NET 8 | HTTP host, routing, middleware |
+| ORM | Dapper | 2.1.28 | Thin SQL-to-object mapping |
+| SQL Client | Microsoft.Data.SqlClient | 5.2.2 | SQL Server connectivity (TDS) |
+| Auth | JWT Bearer (JwtBearer) | 8.0.0 | Stateless API authentication |
+| Logging | Serilog | 8.0.0 | Structured logging, console sink |
+| API docs | Swashbuckle (Swagger) | 6.6.2 | OpenAPI spec + Swagger UI |
+
+### PacsApi — Observability
+
+| Component | Package | Version | Purpose |
+|-----------|---------|---------|---------|
+| OTel core | OpenTelemetry.Extensions.Hosting | 1.8.1 | Trace/metric pipeline host |
+| HTTP instrumentation | OpenTelemetry.Instrumentation.AspNetCore | 1.8.1 | Auto-instrument all HTTP requests |
+| SQL instrumentation | OpenTelemetry.Instrumentation.SqlClient | 1.8.0-beta.1 | Auto-instrument all SQL queries |
+| OTLP export | OpenTelemetry.Exporter.OpenTelemetryProtocol | 1.8.1 | Send traces to any OTLP collector |
+| Console export | OpenTelemetry.Exporter.Console | 1.8.1 | Fallback when no OTLP endpoint set |
+
+Set `OTEL_EXPORTER_OTLP_ENDPOINT` env var to activate OTLP export. Service name: `pacs-api`.
+
+### PacsApi — Security Patterns
+
+| Pattern | Implementation | Notes |
+|---------|---------------|-------|
+| Service account | `pacs_api_svc` SQL login | Least-privilege: datareader + recalc_flag UPDATE only |
+| Secret injection | `PACS_API_SVC_PASSWORD` env var | Never hardcoded; replaces PLACEHOLDER in connection string |
+| JWT validation | HMAC-SHA256, ≥32-char secret | Throws `InvalidOperationException` on startup if key too short |
+| Transport security | `TrustServerCertificate=true` (no `Encrypt=false`) | Encrypts SQL traffic; trusts self-signed cert on dev SQL |
+| CORS | `TerraFusion` named policy | Origins from `PACS_CORS_ORIGINS` env var |
+| Rate limiting | Sliding window 10 req/60s | Applied to `/v1/operations/*` only |
+
+### PacsApi — Endpoints Summary
+
+9 endpoints across 6 groups. See `docs/PACS_API_REFERENCE.md` for full documentation.
+
+| Group | Endpoints | Auth | Rate-limited |
+|-------|-----------|------|-------------|
+| Health | GET /health, GET /health/ready | None | No |
+| Properties | GET /v1/properties/{id}, /values, /search, /owners, /permits | Bearer JWT | No |
+| Owners | GET /v1/owners/{id} | Bearer JWT | No |
+| Situs | GET /v1/situs/{id} | Bearer JWT | No |
+| Operations | POST /v1/operations/recalc/property/{id} | Bearer JWT | Yes (10/60s) |
+
+---
+
 ## 9. Monitoring & Operations
+
+### 9.0 TerraFusion Monitoring Stack (compose.full.yml)
+
+The following monitoring services are configured but require pre-pulled images (Docker Hub blocked on this network):
+
+| Service | Image | Port | Purpose |
+|---------|-------|------|---------|
+| sql_exporter | `burningalchemist/sql_exporter` | 9399 | Expose SQL Server metrics to Prometheus |
+| Prometheus | `prom/prometheus:v2.51.2` | 9090 | Metrics collection and alerting |
+| Grafana | `grafana/grafana:10.4.2` | 3000 | Dashboards (default: admin/admin) |
+
+Start with: `.\Make.ps1 docker-up`  
+Config files: `pacs-server-benton/infra/docker/`, `pacs-server-benton/infra/prometheus/`, `pacs-server-benton/infra/grafana/`
 
 ### 9.1 Application Monitoring
 

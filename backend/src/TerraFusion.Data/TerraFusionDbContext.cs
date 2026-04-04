@@ -357,10 +357,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.HasKey(e => e.Id);
       entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
       entity.Property(e => e.PropertyType).IsRequired().HasMaxLength(30);
-      entity.Property(e => e.SaleQualification).HasMaxLength(30);
+      entity.Property(e => e.QualificationRecommendation).HasMaxLength(30);
+      entity.Property(e => e.QualificationDecision).HasMaxLength(30);
       entity.HasIndex(e => new { e.CountyId, e.PropertyType, e.SaleDate });
       entity.HasIndex(e => new { e.CountyId, e.Neighborhood });
       entity.HasIndex(e => new { e.CountyId, e.ParcelId });
+      entity.HasIndex(e => new { e.CountyId, e.QualificationDecision, e.QualificationRecommendation });
     });
 
     // Configure CamaCharacteristic entity (R2 Wave 25)

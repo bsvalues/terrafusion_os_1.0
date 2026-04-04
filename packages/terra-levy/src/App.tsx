@@ -1,6 +1,5 @@
 import "./terrafusion-brand.css";
 import { useState, useEffect } from 'react';
-import { invoke } from '@tauri-apps/api/tauri';
 import { 
   Calculate as Calculator, 
   Description as FileText, 
@@ -12,6 +11,12 @@ import {
   Business as Building,
   Security as Shield
 } from '@mui/icons-material';
+
+// invoke stub: this app runs as a web app inside AppFrame; the Tauri native bridge
+// is not available in that context. All invoke calls are wrapped in try/catch below.
+const invoke = async <T = unknown>(_cmd: string, _args?: Record<string, unknown>): Promise<T> => {
+  throw new Error('[AppFrame] Tauri bridge not available in web context');
+};
 
 interface TaxCalculation {
   id: string;

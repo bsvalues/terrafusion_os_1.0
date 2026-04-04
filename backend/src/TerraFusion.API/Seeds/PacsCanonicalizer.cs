@@ -28,14 +28,12 @@ public sealed class PacsCanonicalizer
 {
     private readonly TerraFusionDbContext _db;
     private readonly ILogger _logger;
-    private readonly TerraFusion.API.Services.ISaleQualificationService _qualifier;
     private const int BatchSize = 500;
 
-    public PacsCanonicalizer(TerraFusionDbContext db, ILogger logger, TerraFusion.API.Services.ISaleQualificationService? qualifier = null)
+    public PacsCanonicalizer(TerraFusionDbContext db, ILogger logger)
     {
         _db = db;
         _logger = logger;
-        _qualifier = qualifier ?? new TerraFusion.API.Services.SaleQualificationService();
     }
 
     public async Task<CanonicalizeResult> CanonicalizeAsync(CancellationToken ct = default)
@@ -415,8 +413,9 @@ public sealed class PacsCanonicalizer
 
                 var price = ps.AdjustedSalePrice > 0 ? ps.AdjustedSalePrice!.Value : (ps.SalePrice ?? 0m);
 
-                // Raw PACS codes stored verbatim — never interpreted at this layer.
-                // TerraFusion's SaleQualificationService owns the verdict.
+                // Sync is dumb and verbatim: copy raw PACS codes, set nothing else.
+                // QualificationRecommendation is computed post-sync by SaleQualificationService.
+                // QualificationDecision is set only by the assessor.
                 _db.ComparableSales.Add(new ComparableSale
                 {
                     Id                  = Guid.NewGuid(),
@@ -433,7 +432,6 @@ public sealed class PacsCanonicalizer
                     RawCountyRatioCd    = ps.SaleCountyRatioCd,
                     RawExcludeCalcCd    = ps.SalesExcludeCalcCd,
                     RawWacCd            = ps.WacCd,
-                    SaleQualification   = _qualifier.Qualify(ps.SaleQualifier, ps.SaleCountyRatioCd, ps.SalesExcludeCalcCd, ps.WacCd),
                     IsVerified          = false,
                     CountyId            = parcelInfo.CountyId
                 });

@@ -64,6 +64,7 @@ connectionStrings.config
 # Environment-specific
 .env
 .env.local
+!.env.example
 
 # IDE
 .vscode/

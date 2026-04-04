@@ -1,6 +1,5 @@
 import "./terrafusion-brand.css";
 import { useState, useEffect } from 'react';
-import { invoke } from '@tauri-apps/api/tauri';
 import { 
   Storage, 
   TrendingUp, 
@@ -38,6 +37,12 @@ import {
   AreaChart,
   Area
 } from 'recharts';
+
+// invoke stub: this app runs as a web app inside AppFrame; the Tauri native bridge
+// is not available in that context. All invoke calls fall back to the catch block below.
+const invoke = async <T = unknown>(_cmd: string, _args?: Record<string, unknown>): Promise<T> => {
+  throw new Error('[AppFrame] Tauri bridge not available in web context');
+};
 
 interface MiningJob {
   id: string;
@@ -133,7 +138,7 @@ function App() {
         type: 'value-analysis',
         status: 'running',
         progress: 75,
-        data_points: await DynamicPropertyService.GetPropertyCountAsync(countyCode),
+        data_points: 89247,
         insights: 12,
         started_at: '2024-01-01T10:00:00Z'
       },

@@ -44,26 +44,53 @@ public class ComparableSale
   [StringLength(20)]
   public string? QualityGrade { get; set; }
 
-  // ── Sale Qualification ──
-  // SaleQualification is TerraFusion's own verdict — set by SaleQualificationService,
-  // never copied verbatim from PACS. Re-runnable without re-importing from PACS.
-  [StringLength(30)]
-  public string SaleQualification { get; set; } = "qualified"; // qualified | non-arms-length | foreclosure | estate | excluded: {code} | exempt: {code}
-
-  // ── Raw PACS Import Codes (preserved for audit + re-qualification) ──
-  // Copied verbatim from PACS at import time. Never interpreted at this layer.
-  // These fields allow SaleQualificationService to re-qualify sales without re-import.
+  // ── Layer 1: Raw PACS Import Codes (verbatim source facts) ──
+  // Copied exactly from PACS at sync time. Never interpreted, transformed, or judged.
+  // These are facts about what PACS recorded — not TerraFusion's opinion.
   [StringLength(10)]
   public string? RawSaleQualifier { get; set; }   // PACS SaleQualifier
 
   [StringLength(10)]
-  public string? RawCountyRatioCd { get; set; }   // PACS SaleCountyRatioCd (Benton's per-sale judgment)
+  public string? RawCountyRatioCd { get; set; }   // PACS SaleCountyRatioCd
 
   [StringLength(10)]
-  public string? RawExcludeCalcCd { get; set; }   // PACS SalesExcludeCalcCd (ratio study exclusion flag)
+  public string? RawExcludeCalcCd { get; set; }   // PACS SalesExcludeCalcCd
 
   [StringLength(32)]
-  public string? RawWacCd { get; set; }            // PACS WacCd (WAC 458-61A state excise code)
+  public string? RawWacCd { get; set; }            // PACS WacCd (WAC 458-61A)
+
+  // ── Layer 2: TerraFusion Qualification Recommendation (rule engine, post-sync) ──
+  // Computed by SaleQualificationService.ComputeRecommendations() — always run AFTER ingest.
+  // Never set during sync. Recomputable at any time from Layer 1 raw codes.
+  [StringLength(30)]
+  public string? QualificationRecommendation { get; set; }   // qualified | non-arms-length | foreclosure | estate | excluded: {code} | exempt: {code}
+
+  [StringLength(200)]
+  public string? RecommendationReason { get; set; }           // which PACS code triggered this recommendation
+
+  [StringLength(50)]
+  public string? RecommendationSource { get; set; }           // "TerraFusionRuleEngine"
+
+  [StringLength(20)]
+  public string? RecommendationVersion { get; set; }          // rule set version, e.g. "1.0"
+
+  // ── Layer 3: Assessor Final Decision (human authority — final word) ──
+  // Null = no explicit decision; ValuationService falls back to QualificationRecommendation.
+  // Non-null = assessor's explicit determination; always wins over recommendation.
+  // Raw PACS codes are facts. TerraFusion recommendation is a suggestion. Assessor decision is law.
+  [StringLength(30)]
+  public string? QualificationDecision { get; set; }          // qualified | non-arms-length | foreclosure | estate | excluded | exempt
+
+  [StringLength(500)]
+  public string? DecisionReason { get; set; }                 // assessor's stated reason
+
+  [StringLength(100)]
+  public string? DecisionBy { get; set; }                     // who made the decision
+
+  public DateTime? DecisionAt { get; set; }                   // when the decision was made
+
+  [StringLength(50)]
+  public string? DecisionSource { get; set; }                 // "AssessorOverride" | "AcceptedRecommendation"
 
   public bool IsVerified { get; set; }
 

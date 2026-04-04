@@ -209,7 +209,7 @@ public class ValuationService : IValuationService
                 cs.SaleDate >= cutoffStart &&
                 cs.SaleDate <= cutoffEnd &&
                 cs.SalePrice > 0 &&
-                cs.SaleQualification == "qualified" &&
+                (cs.QualificationDecision ?? cs.QualificationRecommendation) == "qualified" &&
                 cs.ParcelId != parcelId);
 
         List<CanonicalComparableSale> comps;
@@ -629,8 +629,9 @@ public class ValuationService : IValuationService
         var notes = new List<string>();
         if (sale.SaleDate != default)
             notes.Add($"Sale date: {sale.SaleDate:yyyy-MM-dd}");
-        if (!string.IsNullOrEmpty(sale.SaleQualification) && sale.SaleQualification != "qualified")
-            notes.Add($"Qualification: {sale.SaleQualification}");
+        var effectiveQual = sale.QualificationDecision ?? sale.QualificationRecommendation;
+        if (!string.IsNullOrEmpty(effectiveQual) && effectiveQual != "qualified")
+            notes.Add($"Qualification: {effectiveQual}");
         if (sale.GrossLivingArea > 0)
             notes.Add($"Living area: {sale.GrossLivingArea:N0} sqft");
         if (sale.YearBuilt > 0)

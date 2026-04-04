@@ -1491,3 +1491,106 @@ Troubleshooting
 - sqlcmd timeouts: ensure the SQL service/instance is listening on `localhost,1433` and firewall allows connections.
 - DACPAC build failures: cross-database references can produce SQL715 warnings/errors. Re-run publish; the runtime server resolves references. If needed, publish in this order: pacs_oltp → PACS_Training → TA_AppSvr → CIAPS → Web_Internet_Benton → SSISDB.
 - Container health stuck at `starting`/`unhealthy`: allocate more Docker RAM/CPUs and retry; if persists, use Path B.
+
+
+---
+
+## Runbook 11: Local Development Quick-Start
+
+### Purpose
+Get the full PACS development environment running from scratch on a Windows developer machine.
+
+### Prerequisites
+- Docker Desktop running (or Docker Engine on Windows)
+- .NET 8 SDK installed
+- Node.js (for Mermaid CLI diagram rendering — optional)
+- SqlPackage CLI: dotnet tool install -g microsoft.sqlpackage
+- PowerShell 7+
+
+### Step 1: Start SQL Server
+
+`powershell
+# From workspace root
+cd pacs-server-benton/infra/docker
+docker compose -f compose.mssql.yml up -d
+
+# Verify healthy (wait ~30s for SQL Server to start)
+docker ps
+# Should show: tf-mssql   Up X seconds (healthy)
+`
+
+### Step 2: Publish All Databases + Provision Service Account
+
+`powershell
+cd c:\Users\bsval\terrafusion_os_1.0\QUARANTINE\top-level-dirs\workspaces\JCHARRISPACS
+
+# This builds DACPACs and deploys them in correct dependency order,
+# then runs create_api_service_account.sql to provision pacs_api_svc.
+$env:SA_PASSWORD = "TF_Pacs2026!"
+.\Make.ps1 publish-sql
+`
+
+If SqlPackage can't find the DACPACs, run dotnet build first on each DatabaseProject*/*.sqlproj.
+
+### Step 3: Run SQL Tests
+
+`powershell
+.\Make.ps1 sql-tests
+# Expect: 20/20 assertions passing
+`
+
+### Step 4: Start PacsApi
+
+`powershell
+# Set required env vars
+$env:PACS_API_SVC_PASSWORD = "PacsApi_Svc2026!"
+$env:PACS_JWT_SECRET       = "dev-only-secret-change-before-production-32ch"
+$env:PACS_CORS_ORIGINS     = "http://localhost:3000,http://localhost:5173"
+
+# Optional: enable OTLP trace export
+# $env:OTEL_EXPORTER_OTLP_ENDPOINT = "http://localhost:4317"
+
+.\Make.ps1 api-run
+# PacsApi starts on http://localhost:5200
+# Swagger UI: http://localhost:5200/swagger
+`
+
+### Step 5: Verify Everything
+
+`powershell
+# Health checks
+curl http://localhost:5200/health
+curl http://localhost:5200/health/ready   # Should show propertyCount: 128949
+
+# One-line status report
+.\Make.ps1 pacs-health-report
+`
+
+### Step 6 (Optional): Start Full Monitoring Stack
+
+**Note**: Requires Docker Hub access for the monitoring images. On this network, Docker Hub is TLS-blocked — pre-pull images from another network first (see KNOWN_CONSTRAINTS.md §3).
+
+`powershell
+cd pacs-server-benton/infra/docker
+.\Make.ps1 docker-up
+# Grafana:    http://localhost:3000  (admin/admin)
+# Prometheus: http://localhost:9090
+`
+
+### Teardown
+
+`powershell
+.\Make.ps1 docker-down   # Stop and remove containers
+.\Make.ps1 clean         # Remove generated artifacts
+`
+
+### Common Errors
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| 	f-mssql not healthy after 60s | Low memory / Docker too slow | Run docker logs tf-mssql, increase Docker memory limit |
+| publish-sql fails with DACPAC not found | dotnet build not run | Run dotnet build DatabaseProjectpacs_oltp/ first |
+| PacsApi starts but /health/ready returns 503 | SQL Server not running or wrong port | Check docker ps, verify localhost,1433 |
+| PacsApi throws on startup: JWT key too short | PACS_JWT_SECRET < 32 chars | Use a longer secret |
+| pacs_api_svc login failed | Service account not provisioned | Run .\Make.ps1 publish-sql or manual sqlcmd with create_api_service_account.sql |
+

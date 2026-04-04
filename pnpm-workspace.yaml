@@ -13,6 +13,19 @@ packages:
   # Future-proof: any *MARKED-FOR-REVIEW* folder is automatically quarantined
   - '!packages/**/*MARKED-FOR-REVIEW*'
   - '!packages/**/*MARKED-FOR-REVIEW*/**'
+  # legislative-pulse: bogus @radix-ui/react-badge dep (non-existent package) blocks workspace install
+  - '!packages/legislative-pulse'
+  - '!packages/legislative-pulse/**'
+  # gis-pro: @turf/turf dep needs sweepline-intersections which is not in pnpm offline store
+  # Re-enable once network connectivity is stable for a full pnpm install
+  - '!packages/gis-pro'
+  - '!packages/gis-pro/**'
+  # terra-permit: ibm-cloud-sdk-core dep not in pnpm offline store
+  - '!packages/terra-permit'
+  - '!packages/terra-permit/**'
+  # property-tax-ai: js-tiktoken (via @langchain/core) not in pnpm offline store
+  - '!packages/property-tax-ai'
+  - '!packages/property-tax-ai/**'
 
   # Core frontend (OS Shell)
   - 'frontend'

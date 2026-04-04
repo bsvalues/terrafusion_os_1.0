@@ -1,7 +1,21 @@
 # Benton County PACS: Complete Documentation Index
-**Knowledge Base for TerraFusion OS Team Takeover**
+**Knowledge Base for TerraFusion OS Team**
 
-## 📚 Documentation Suite Overview
+---
+
+## START HERE — TerraFusion Integration
+
+| Document | Purpose |
+|----------|---------|
+| [HANDOFF_STATUS.md](HANDOFF_STATUS.md) | Current system state, all phases, Make targets, credentials |
+| [KNOWN_CONSTRAINTS.md](KNOWN_CONSTRAINTS.md) | **Non-negotiable facts** — CLR, service account, Docker Hub, recalc queue approach |
+| [TERRAFUSION_INTEGRATION_GUIDE.md](TERRAFUSION_INTEGRATION_GUIDE.md) | Integration steps, env vars, CORS, health probes |
+| [PACS_API_REFERENCE.md](PACS_API_REFERENCE.md) | All 9 endpoints, auth, rate limiting, cURL examples |
+| [OPERATIONAL_RUNBOOKS.md](OPERATIONAL_RUNBOOKS.md) | Runbooks + **Runbook 11: Local Dev Quick-Start** |
+
+---
+
+## 📚 Full Documentation Suite Overview
 
 This workspace now contains **5 comprehensive documents** totaling **~20,000 lines** of analysis, specifications, and operational guidance for the Benton County PACS system.
 

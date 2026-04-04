@@ -2108,6 +2108,21 @@ namespace TerraFusion.Data.Migrations
                     b.Property<Guid>("CountyId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DecisionAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DecisionBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("DecisionReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("DecisionSource")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<decimal?>("GrossLivingArea")
                         .HasColumnType("numeric");
 
@@ -2139,6 +2154,14 @@ namespace TerraFusion.Data.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
 
+                    b.Property<string>("QualificationDecision")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("QualificationRecommendation")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
                     b.Property<string>("QualityGrade")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
@@ -2159,16 +2182,23 @@ namespace TerraFusion.Data.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)");
 
+                    b.Property<string>("RecommendationReason")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("RecommendationSource")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("RecommendationVersion")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.Property<DateTime>("SaleDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("SalePrice")
                         .HasColumnType("numeric");
-
-                    b.Property<string>("SaleQualification")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("VerificationSource")
                         .HasMaxLength(200)
@@ -2184,6 +2214,8 @@ namespace TerraFusion.Data.Migrations
                     b.HasIndex("CountyId", "ParcelId");
 
                     b.HasIndex("CountyId", "PropertyType", "SaleDate");
+
+                    b.HasIndex("CountyId", "QualificationDecision", "QualificationRecommendation");
 
                     b.ToTable("ComparableSales");
                 });

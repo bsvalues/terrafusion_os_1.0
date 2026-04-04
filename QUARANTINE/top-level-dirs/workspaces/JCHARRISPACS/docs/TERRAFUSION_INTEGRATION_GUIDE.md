@@ -1,18 +1,103 @@
 # TerraFusion Integration Guide
-**Prepare Legacy Benton County PACS Server for TerraFusion OS Integration**
+**Benton County PACS → TerraFusion OS Integration**
 
-## Overview
+---
 
-This guide outlines the comprehensive steps to prepare the successfully deployed Benton County PACS system (4,660 tables across 5 databases) for integration with TerraFusion OS modernization platform.
+## Current State (Post-Hardening) — START HERE
 
-**Current Status**: ✅ All core PACS databases deployed locally
-- **pacs_oltp**: 2,086 tables (production)
-- **PACS_Training**: 2,086 tables (development/training)
-- **TA_AppSvr**: 18 tables (tax assessor server)
-- **CIAPS**: 2 tables (construction inspection & permits)
-- **Web_Internet_Benton**: 468 tables (public web interface)
+The PACS infrastructure is fully deployed and hardened. If you are integrating TerraFusion with a running PACS system, **start with this section**.
+
+### What's Available Right Now
+
+| Endpoint | URL | Auth |
+|----------|-----|------|
+| API liveness | `GET http://localhost:5200/health` | None |
+| API readiness + DB probe | `GET http://localhost:5200/health/ready` | None |
+| Property data | `GET http://localhost:5200/v1/properties/{id}` | Bearer JWT |
+| Property values | `GET http://localhost:5200/v1/properties/{id}/values?year=` | Bearer JWT |
+| Property search | `GET http://localhost:5200/v1/properties/search?geoId=\|address=` | Bearer JWT |
+| Owners | `GET http://localhost:5200/v1/owners/{id}` | Bearer JWT |
+| Property owners | `GET http://localhost:5200/v1/properties/{id}/owners` | Bearer JWT |
+| Situs/addresses | `GET http://localhost:5200/v1/situs/{propertyId}` | Bearer JWT |
+| Building permits | `GET http://localhost:5200/v1/properties/{id}/permits` | Bearer JWT |
+| Queue recalc | `POST http://localhost:5200/v1/operations/recalc/property/{id}` | Bearer JWT + rate-limited |
+| Swagger UI | `http://localhost:5200/swagger` | None |
+
+See `docs/PACS_API_REFERENCE.md` for full parameter/response documentation.
+
+### Required Environment Variables for TerraFusion → PacsApi
+
+```bash
+# PacsApi runtime (set these wherever PacsApi is launched)
+PACS_API_SVC_PASSWORD=PacsApi_Svc2026!       # SQL login for the API (not sa)
+PACS_JWT_SECRET=<32+ char random secret>     # HMAC-SHA256 signing key
+PACS_CORS_ORIGINS=http://your-terrafusion-frontend:port  # Comma-separated list
+
+# Optional: forward traces to a collector
+OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+```
+
+Copy `.env.example` as a starting template. See full variable table in `docs/PACS_API_REFERENCE.md` §Environment Variables.
+
+### Service Account — NOT sa
+
+PacsApi uses a purpose-built SQL login `pacs_api_svc` with minimal permissions. It can:
+- Read all tables in pacs_oltp, CIAPS, PACS_Training
+- Update `recalc_flag` on `pacs_oltp.dbo.property_val` only
+
+It **cannot** drop tables, run stored procedures, or write anywhere else. The SA account is for infrastructure operations only.
+
+To verify or re-provision the service account:
+```powershell
+.\Make.ps1 publish-sql   # Runs create_api_service_account.sql automatically at the end
+```
+
+### CORS Configuration
+
+The `TerraFusion` CORS policy defaults to allowing `http://localhost:3000` and `http://localhost:5173`. For production or any non-default origin:
+
+```bash
+PACS_CORS_ORIGINS=https://your-terrafusion-app.example.com,http://localhost:3000
+```
+
+Multiple origins are comma-separated (no spaces).
+
+### Health Probes — Which to Use
+
+| Probe | Endpoint | Use For |
+|-------|----------|---------|
+| **Liveness** | `GET /health` | Container restart policy — is the _process_ alive? |
+| **Readiness** | `GET /health/ready` | Load balancer / k8s readinessProbe — is SQL Server reachable? |
+
+Always use `/health/ready` to gate traffic. It returns `503` when pacs_oltp is unreachable.
+
+### Rate Limiting
+
+`POST /v1/operations/*` (currently just the recalc endpoint) is rate-limited at **10 requests per 60 seconds per IP** using a sliding window. HTTP 429 is returned when exceeded. All read endpoints and health probes are not rate-limited.
+
+### Critical Constraints
+
+See `docs/KNOWN_CONSTRAINTS.md` for the complete list. Key points:
+
+- **`clr_enabled=1` MUST remain ON** — PACS desktop client breaks without it
+- **Never call `xp_RecalcProperty90` directly from the API** — use the queue approach (recalc_flag='Y')
+- **Docker Hub is blocked on this network** — monitoring images must be pre-pulled from elsewhere
+- **`sqlcmd` is not installed on the host** — all SQL runs via `docker exec tf-mssql /opt/mssql-tools18/bin/sqlcmd`
+
+---
+
+## Overview (Background / Historical)
+
+This guide documents the comprehensive preparation of the Benton County PACS system (4,660 tables across 5 databases) for integration with TerraFusion OS modernization platform.
 
 **Target**: Legacy system prepared for TerraFusion strangler-fig modernization approach with 20 API endpoints/year rollout.
+
+**Databases deployed**:
+- **pacs_oltp**: 2,228 tables (production — updated count from live inventory)
+- **PACS_Training**: schema-only clone of pacs_oltp
+- **TA_AppSvr**: 18 tables (tax assessor server)
+- **CIAPS**: 2 tables + 4 synonyms → pacs_oltp (construction inspection & permits)
+- **Web_Internet_Benton**: 468 tables (public web interface)
 
 ---
 

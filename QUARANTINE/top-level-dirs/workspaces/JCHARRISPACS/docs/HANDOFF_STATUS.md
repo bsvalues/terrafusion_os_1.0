@@ -1,12 +1,187 @@
-# 🎉 **MISSION ACCOMPLISHED: Living Documentation System Operational**
+# PACS → TerraFusion Handoff Status
 
-**TrueAutomation/PACS Elite Government OS Engineering Agent → TerraFusion Elite Government OS Engineering Agent**
+**Benton County PACS System — Complete Infrastructure Handoff**  
+**From**: TrueAutomation/PACS Elite Engineering Agent  
+**To**: TerraFusion OS Engineering Team  
+**Status**: All phases R0–R9 complete. System hardened and ready for TerraFusion integration.
+
+---
+
+## What Is Running Right Now
+
+| Component | Status | Details |
+|-----------|--------|---------|
+| SQL Server | ✅ Running | `tf-mssql` container; `localhost,1433`; `mcr.microsoft.com/mssql/server:2022-latest` |
+| pacs_oltp | ✅ Deployed | 2,228 tables, 128,949 properties |
+| PACS_Training | ✅ Deployed | Schema-only clone of pacs_oltp |
+| CIAPS | ✅ Deployed | 2 tables + 4 synonyms → pacs_oltp |
+| TA_AppSvr | ✅ Deployed | 18 tables |
+| Web_Internet_Benton | ✅ Deployed | 468 tables |
+| PacsApi | ✅ Builds (0 errors, 0 warnings) | ASP.NET Core 8; port 5200; 9 endpoints |
+| SQL Tests | ✅ 20/20 passing | `.\Make.ps1 sql-tests` |
+| Monitoring stack | ⚠️ Config ready, images blocked | Docker Hub TLS blocked on this network; see KNOWN_CONSTRAINTS.md §3 |
+| pacs_api_svc | ✅ Provisioned | Least-privilege SQL login for PacsApi (not sa) |
+
+---
+
+## Phase Completion Summary
+
+| Phase | What Was Built | Status |
+|-------|----------------|--------|
+| R0 | 9 databases restored, 6 DACPACs built/published, publish.ps1 | ✅ |
+| R1 | Prometheus/Grafana/sql_exporter config files | ✅ |
+| R2 | verify_surface.sql, pacs_inventory.json baseline, 5 Mermaid diagrams | ✅ |
+| R3 | CIAPS (4 synonyms), PacsApi scaffold (8 endpoints) | ✅ |
+| R4 | 20 pure-SQL tests, all 20/20 passing | ✅ |
+| R5 | Password hardening, JWT minimum-length guard | ✅ |
+| R6 | compose.full.yml (unified 4-service stack), 4 new Make.ps1 targets | ✅ (unverified, Docker Hub blocked) |
+| R7 | CI/CD dropped (decision: legacy read-mostly system doesn't need it) | N/A |
+| R8 | Recalc endpoint wired (queue approach), rate limiting, OpenTelemetry | ✅ |
+| R9 | Enriched inventory (indexes/FKs/row counts), api_flow.mmd, pacs-health-report | ✅ |
+| Hardening | pacs_api_svc service account, /health/ready probe, CORS, remove Encrypt=false | ✅ |
 
 ---
 
 ## 🚀 What Was Just Built
 
 A **self-updating, verifiable knowledge transfer system** for the Benton County PACS legacy system. This infrastructure transforms static documentation into **living, provable artifacts**.
+
+---
+
+## Make.ps1 Targets (19 Total)
+
+Run any target with `.\Make.ps1 <target>`. No arguments needed unless noted.
+
+| Target | What It Does |
+|--------|-------------|
+| `help` | List all targets |
+| `viz` | Render Mermaid diagrams to SVG in `_artifacts/` |
+| `viz-png` | Render to PNG (2400×1800) |
+| `validate-mermaid` | Syntax-check all `.mmd` files (exit 0 = all pass) |
+| `pacs-inventory` | Query live DB → `_artifacts/pacs_inventory.json` (tables/procs/views/triggers/indexes/FKs/row-counts) |
+| `twin-verify-surface` | Assert critical tables/procs/synonyms exist (exit 0 = pass) |
+| `twin-trigger-profile` | Capture full trigger inventory → `_artifacts/trigger_profile.txt` |
+| `data-dictionary` | Generate data dictionary markdown for key tables |
+| `sql-tests` | Run 20 SQL test assertions; exit 0 = all pass |
+| `api-build` | `dotnet build` PacsApi (0 errors, 0 warnings) |
+| `api-run` | `dotnet run` PacsApi on http://localhost:5200 |
+| `test-api` | HTTP smoke test of `/health` and `/health/ready` |
+| `publish-sql` | Build + publish all DACPACs in order, then provision `pacs_api_svc` |
+| `docker-up` | Start compose.full.yml (mssql + monitoring) — requires images pre-pulled |
+| `docker-down` | Stop and remove compose.full.yml containers |
+| `docker-logs` | Tail logs from all compose services |
+| `pacs-health-report` | One-liner: SQL status + auth check + object counts |
+| `all-checks` | Run pacs-inventory + twin-verify-surface + sql-tests |
+| `clean` | Remove generated `_artifacts/` files |
+
+---
+
+## Key Files — Where Everything Lives
+
+```
+JCHARRISPACS/
+├── Make.ps1                                          19-target automation hub
+├── .env.example                                      Copy-paste env var template
+├── pacs-server-benton/
+│   ├── scripts/publish.ps1                           DACPAC build+deploy script
+│   ├── infra/docker/
+│   │   ├── compose.mssql.yml                         SQL Server only (daily use)
+│   │   └── compose.full.yml                          SQL + monitoring (4 services)
+│   └── api/PacsApi/
+│       ├── appsettings.json                          pacs_api_svc connection string
+│       ├── appsettings.Development.json              Dev override
+│       ├── Program.cs                                CORS / rate limit / OTel wiring
+│       ├── Data/PacsDb.cs                            All SQL queries (Dapper)
+│       └── Endpoints/                                9 endpoint handlers
+├── scripts/sql/
+│   ├── create_api_service_account.sql                Provisions pacs_api_svc (idempotent)
+│   ├── pacs_inventory.ps1                            Live DB object counter
+│   └── verify_surface.sql                            Critical object assertions
+├── docs/
+│   ├── KNOWN_CONSTRAINTS.md                          Non-negotiable facts (READ THIS)
+│   ├── PACS_API_REFERENCE.md                         All 9 endpoints, auth, examples
+│   ├── TERRAFUSION_INTEGRATION_GUIDE.md              Integration steps + env vars
+│   ├── OPERATIONAL_RUNBOOKS.md                       Runbooks + local dev quick-start
+│   └── diagrams/
+│       ├── erd.mmd, crossdb.mmd, wcf.mmd             Architecture diagrams
+│       ├── recalc_flow.mmd, trigger_cascade.mmd      Workflow diagrams
+│       └── api_flow.mmd                              PacsApi sequence diagram (NEW)
+└── DatabaseProject*/                                 6 SQL Database Projects (DACPACs)
+```
+
+---
+
+## Credentials (Dev Environment)
+
+| What | Value | Used By |
+|------|-------|---------|
+| SA Password | `TF_Pacs2026!` | publish.ps1, docker compose, DBA work |
+| pacs_api_svc password | `PacsApi_Svc2026!` | PacsApi runtime (`PACS_API_SVC_PASSWORD`) |
+| JWT secret | set `PACS_JWT_SECRET` | PacsApi auth (must be ≥ 32 chars) |
+
+**Before any production deployment**: Rotate both SQL passwords and set a real JWT secret.
+
+---
+
+## pacs_api_svc — Service Account Details
+
+Created by `scripts/sql/create_api_service_account.sql` (runs automatically at end of `.\Make.ps1 publish-sql`).
+
+**Permissions granted**:
+- `db_datareader` on `pacs_oltp`, `CIAPS`, `PACS_Training`
+- Column-level `UPDATE(recalc_flag)` on `pacs_oltp.dbo.property_val` only
+- No other write access anywhere
+
+To re-provision manually:
+```powershell
+docker exec tf-mssql /opt/mssql-tools18/bin/sqlcmd `
+  -S localhost -U sa -P "TF_Pacs2026!" -C `
+  -i /path/to/scripts/sql/create_api_service_account.sql
+```
+
+---
+
+## Current Gap — Monitoring Stack Not Running
+
+The monitoring stack (Prometheus + Grafana + sql_exporter) is configured in `compose.full.yml` but the images cannot be pulled on this network (Docker Hub is TLS-blocked). 
+
+When network allows:
+```powershell
+.\Make.ps1 docker-up   # pulls and starts all 4 services
+```
+
+Grafana: http://localhost:3000 (admin/admin)  
+Prometheus: http://localhost:9090  
+sql_exporter: http://localhost:9399/metrics  
+
+---
+
+## Diagram Inventory
+
+| File | Content | Status |
+|------|---------|--------|
+| `docs/diagrams/erd.mmd` | Core DB ERD — 20 key tables | ✅ Validates |
+| `docs/diagrams/crossdb.mmd` | 6-database cross-reference map | ✅ Validates |
+| `docs/diagrams/wcf.mmd` | WCF service architecture | ✅ Validates |
+| `docs/diagrams/recalc_flow.mmd` | Property recalc flow (18 steps) | ✅ Validates |
+| `docs/diagrams/trigger_cascade.mmd` | Trigger cascade on property_val | ✅ Validates |
+| `docs/diagrams/api_flow.mmd` | PacsApi sequence diagram | ✅ Validates |
+
+Render all to SVG: `.\Make.ps1 viz`
+
+---
+
+## TerraFusion Integration — Quick Checklist
+
+- [ ] SQL Server running: `docker ps` shows `tf-mssql` healthy
+- [ ] PacsApi responds: `curl http://localhost:5200/health` → `{"status":"ready",...}`
+- [ ] DB connectivity: `curl http://localhost:5200/health/ready` → 200 (not 503)
+- [ ] CORS configured: `PACS_CORS_ORIGINS` set to TerraFusion frontend origin(s)
+- [ ] JWT secret set: `PACS_JWT_SECRET` ≥ 32 chars
+- [ ] Service account verified: `pacs_api_svc` exists, NOT using `sa` in the API
+- [ ] Rate limits understood: POST `/v1/operations/*` = 10 req/60s per IP
+- [ ] Recalc behavior understood: API QUEUES only — PACS client executes the actual calc
+- [ ] CLR enabled: `clr_enabled=1` stays ON (see KNOWN_CONSTRAINTS.md)
 
 ---
 

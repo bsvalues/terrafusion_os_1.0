@@ -73,15 +73,39 @@ public sealed class SaleQualificationService : ISaleQualificationService
     }
 
     /// <inheritdoc/>
-    public void RequalifyAll(IEnumerable<TerraFusion.Core.Entities.ComparableSale> sales)
+    public void ComputeRecommendations(IEnumerable<TerraFusion.Core.Entities.ComparableSale> sales)
     {
         foreach (var sale in sales)
         {
-            sale.SaleQualification = Qualify(
+            sale.QualificationRecommendation = Qualify(
                 sale.RawSaleQualifier,
                 sale.RawCountyRatioCd,
                 sale.RawExcludeCalcCd,
                 sale.RawWacCd);
+            sale.RecommendationReason = BuildRecommendationReason(
+                sale.RawSaleQualifier,
+                sale.RawCountyRatioCd,
+                sale.RawExcludeCalcCd,
+                sale.RawWacCd);
+            sale.RecommendationSource = "TerraFusionRuleEngine";
+            sale.RecommendationVersion = "1.0";
         }
+    }
+
+    private static string BuildRecommendationReason(
+        string? rawSaleQualifier,
+        string? rawCountyRatioCd,
+        string? rawExcludeCalcCd,
+        string? rawWacCd)
+    {
+        if (!string.IsNullOrWhiteSpace(rawSaleQualifier))
+            return $"Layer 1: PACS SaleQualifier={rawSaleQualifier.Trim().ToUpperInvariant()}";
+        if (!string.IsNullOrWhiteSpace(rawCountyRatioCd))
+            return $"Layer 2: CountyRatioCd={rawCountyRatioCd.Trim().ToUpperInvariant()}";
+        if (!string.IsNullOrWhiteSpace(rawExcludeCalcCd))
+            return $"Layer 3: ExcludeCalcCd={rawExcludeCalcCd.Trim()}";
+        if (!string.IsNullOrWhiteSpace(rawWacCd))
+            return $"Layer 4: WacCd={rawWacCd.Trim()}";
+        return "Layer 5: Default — no disqualifying codes present";
     }
 }
