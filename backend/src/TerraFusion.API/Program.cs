@@ -382,6 +382,9 @@ builder.Services.AddSingleton<ScenarioRunRegistry>();
 // 🏛️ Sale Qualification — TerraFusion owns the IAAO ratio-study qualification decision
 builder.Services.AddScoped<TerraFusion.API.Services.ISaleQualificationService, TerraFusion.API.Services.SaleQualificationService>();
 
+// 🏛️ OLS Regression — IAAO market-extracted adjustment derivation (stateless, pure math → singleton)
+builder.Services.AddSingleton<TerraFusion.API.Services.IOlsRegressionService, TerraFusion.API.Services.OlsRegressionService>();
+
 // 🏛️ TIER 3 Government Compliance Service - Championship Excellence
 builder.Services.AddScoped<TerraFusion.API.Services.IGovernmentComplianceService, GovernmentComplianceService>();
 // ✅ RE-ENABLED with IServiceScopeFactory pattern - DI lifetime issue RESOLVED

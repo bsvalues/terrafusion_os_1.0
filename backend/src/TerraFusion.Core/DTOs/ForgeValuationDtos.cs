@@ -173,6 +173,26 @@ public record SalesComparisonResult
 
     /// <summary>True when comps were filtered by neighborhood code. CP-5 gap: currently always false.</summary>
     public bool NeighborhoodFilterActive { get; init; }
+
+    // ── OLS Regression (market-extracted adjustments) ──
+    /// <summary>
+    /// Regression-indicated value from OLS model fitted on comparable sales.
+    /// Uses GLA, LotSizeSqft, YearBuilt as predictors.
+    /// Null when fewer than 5 qualified comps are available.
+    /// </summary>
+    public decimal? RegressionIndicatedValue { get; init; }
+
+    /// <summary>Coefficient of determination (R²) for the regression model. Null when model not run.</summary>
+    public double? RegressionRSquared { get; init; }
+
+    /// <summary>Adjusted R² penalising for number of predictors. Null when model not run.</summary>
+    public double? RegressionRSquaredAdj { get; init; }
+
+    /// <summary>Number of comparable sales used in the regression fit.</summary>
+    public int? RegressionCompsUsed { get; init; }
+
+    /// <summary>Regression model coefficients: [intercept, GLA, lot, yearBuilt]. Null when model not run.</summary>
+    public double[]? RegressionBeta { get; init; }
 }
 
 public record ComparableSaleEntry
@@ -186,6 +206,9 @@ public record ComparableSaleEntry
 
     // CP-5: per-comp sales ratio (adjustedPrice / salePrice)
     public double SalesRatio { get; init; }
+
+    /// <summary>Sale price per square foot of gross living area. Null if GLA not available.</summary>
+    public decimal? PricePerSqFt { get; init; }
 }
 
 // ── Income Approach ────────────────────────────────────────────────────

@@ -18,11 +18,13 @@ public class ValuationService : IValuationService
 {
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<ValuationService> _logger;
+    private readonly IOlsRegressionService _ols;
 
-    public ValuationService(TerraFusionDbContext db, ILogger<ValuationService> logger)
+    public ValuationService(TerraFusionDbContext db, ILogger<ValuationService> logger, IOlsRegressionService ols)
     {
         _db = db;
         _logger = logger;
+        _ols = ols;
     }
 
     // ── Cost Approach ──────────────────────────────────────────────────
@@ -196,6 +198,7 @@ public class ValuationService : IValuationService
                 cs.SaleDate >= cutoffStart &&
                 cs.SaleDate <= cutoffEnd &&
                 cs.SalePrice > 0 &&
+                cs.SaleQualification == "qualified" &&
                 cs.ParcelId != parcelId)
             .OrderByDescending(cs => cs.SaleDate)
             .Take(10)
@@ -204,6 +207,38 @@ public class ValuationService : IValuationService
         var prices = comps.Select(c => c.SalePrice).OrderBy(p => p).ToList();
         var median = prices.Count > 0 ? prices[prices.Count / 2] : 0m;
         var range  = prices.Count > 1 ? prices[^1] - prices[0] : 0m;
+
+        // ── OLS regression model — market-extracted indicated value ──────────
+        // Predictors: GLA, LotSizeSqft, YearBuilt.
+        // Requires ≥ 5 qualified comps with GLA populated.
+        var olsObs = comps
+            .Where(c => c.GrossLivingArea > 0)
+            .Select(c => new OlsObservation(
+                SalePrice:    (double)c.SalePrice,
+                Gla:          (double)(c.GrossLivingArea ?? 0),
+                LotSizeSqft:  (double)(c.LotSizeSqft ?? 0),
+                YearBuilt:    (double)(c.YearBuilt ?? 1980)))
+            .ToList();
+
+        var olsResult = _ols.Fit(olsObs);
+
+        // Apply model to subject property if we have its GLA from CAMA
+        decimal? regressionIndicated = null;
+        if (olsResult != null)
+        {
+            var subjectCama = await _db.CamaCharacteristics
+                .AsNoTracking()
+                .Where(c => c.ParcelId == parcelId)
+                .FirstOrDefaultAsync(ct);
+
+            var subGla  = (double?)subjectCama?.SquareFeet ?? 0;
+            var subLot  = (double?)subjectCama?.LandAreaSqft ?? 0;
+            var subYear = (double?)subjectCama?.YearBuilt ?? 1980;
+
+            var predicted = olsResult.Predict(subGla, subLot, subYear);
+            if (predicted.HasValue && predicted.Value > 0)
+                regressionIndicated = Math.Round((decimal)predicted.Value, 0);
+        }
 
         // CP-5: Sales ratio statistics (IAAO standard)
         // AdjustedPrice = SalePrice currently (no neighborhood-score adjustment yet — CP-5 gap).
@@ -234,6 +269,9 @@ public class ValuationService : IValuationService
                 SaleDate      = c.SaleDate,
                 SalePrice     = c.SalePrice,
                 AdjustedPrice = c.SalePrice, // adjustment scoring is CP-5 parity work
+                PricePerSqFt  = (c.GrossLivingArea.HasValue && c.GrossLivingArea > 0)
+                    ? Math.Round(c.SalePrice / c.GrossLivingArea.Value, 2)
+                    : null,
                 Similarity    = 0.80,         // uniform default — real scoring is a future AI layer
                 Notes         = BuildSaleNotes(c),
                 SalesRatio    = c.SalePrice > 0 ? 1.0 : 0.0,  // 1.0 until adjustments applied
@@ -247,6 +285,12 @@ public class ValuationService : IValuationService
             SalesRatioMedian         = ratioMedian,
             CoefficientOfDispersion  = cod,
             NeighborhoodFilterActive = false, // CP-5 gap: Neighborhood not yet populated in canonical ComparableSale
+            // OLS regression
+            RegressionIndicatedValue = regressionIndicated,
+            RegressionRSquared       = olsResult?.RSquared,
+            RegressionRSquaredAdj    = olsResult?.RSquaredAdj,
+            RegressionCompsUsed      = olsResult?.N,
+            RegressionBeta           = olsResult?.Beta,
         };
     }
 
