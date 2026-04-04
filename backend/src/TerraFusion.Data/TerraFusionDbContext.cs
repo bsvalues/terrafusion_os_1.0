@@ -100,6 +100,13 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<ComparableSale> ComparableSales { get; set; }
   public DbSet<CamaCharacteristic> CamaCharacteristics { get; set; }   public DbSet<CamaImprovementDetail> CamaImprovementDetails { get; set; }  public DbSet<CostMatrix> CostMatrices { get; set; }
 
+  // PACS Lookup Tables (R2 Wave 38 — FK-aware qualification)
+  // Mirrors dbo.sale_ratio_type, dbo.county_ratio_code, dbo.sl_financing, dbo.deed_type
+  public DbSet<SaleRatioType> SaleRatioTypes { get; set; }
+  public DbSet<CountyRatioCode> CountyRatioCodes { get; set; }
+  public DbSet<SlFinancing> SlFinancings { get; set; }
+  public DbSet<DeedType> DeedTypes { get; set; }
+
   // Forge Analytics (R2 Wave 26)
   public DbSet<RegressionAnalysis> RegressionAnalyses { get; set; }
 
@@ -381,6 +388,47 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.Property(e => e.Region).IsRequired().HasMaxLength(100);
       entity.Property(e => e.BuildingType).IsRequired().HasMaxLength(10);
       entity.HasIndex(e => new { e.CountyId, e.BuildingType, e.Region, e.MatrixYear });
+    });
+
+    // PACS Lookup Tables (R2 Wave 38 — FK-aware qualification)
+    // Mirrors PACS dbo.sale_ratio_type: WA DOR-defined sale qualification codes.
+    // invalid_sale=true means the code disqualifies the sale from ratio study.
+    modelBuilder.Entity<SaleRatioType>(entity =>
+    {
+      entity.HasKey(e => e.SlRatioTypeCd);
+      entity.Property(e => e.SlRatioTypeCd).IsRequired().HasMaxLength(10);
+      entity.Property(e => e.SlRatioDesc).HasMaxLength(150);
+      entity.ToTable("SaleRatioTypes");
+    });
+
+    // Mirrors PACS dbo.county_ratio_code: Benton County's own sale qualifier codes.
+    modelBuilder.Entity<CountyRatioCode>(entity =>
+    {
+      entity.HasKey(e => e.RatioCd);
+      entity.Property(e => e.RatioCd).IsRequired().HasMaxLength(10);
+      entity.Property(e => e.RatioDesc).HasMaxLength(150);
+      entity.ToTable("CountyRatioCodes");
+    });
+
+    // Mirrors PACS dbo.sl_financing: financing type codes.
+    modelBuilder.Entity<SlFinancing>(entity =>
+    {
+      entity.HasKey(e => e.SlFinancingCd);
+      entity.Property(e => e.SlFinancingCd).IsRequired().HasMaxLength(10);
+      entity.Property(e => e.SlFinancingDesc).HasMaxLength(150);
+      entity.ToTable("SlFinancings");
+    });
+
+    // Mirrors PACS dbo.deed_type: deed type codes with their DOR ratio type mapping.
+    // SalesRatioTypeCd → SaleRatioType.SlRatioTypeCd (the critical cross-reference).
+    modelBuilder.Entity<DeedType>(entity =>
+    {
+      entity.HasKey(e => new { e.CountyCd, e.DeedTypeCd });
+      entity.Property(e => e.CountyCd).HasMaxLength(10);
+      entity.Property(e => e.DeedTypeCd).IsRequired().HasMaxLength(10);
+      entity.Property(e => e.DeedTypeDesc).HasMaxLength(150);
+      entity.Property(e => e.SalesRatioTypeCd).HasMaxLength(10);
+      entity.ToTable("DeedTypes");
     });
 
     // Configure GovernmentUser entity
