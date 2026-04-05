@@ -545,34 +545,37 @@ public class TerraForgeController : ControllerBase
         // and must not inflate the KPI parcel count.
         var rows = await _db.PacsValuations
             .Where(v => v.PropValYear == taxYear && v.SupNum == 0)
-            .Select(v => new { v.Market, v.NewVal })
+            .Select(v => new { v.AssessedVal, v.Market, v.NewVal })
             .ToListAsync(ct);
 
         var totalParcels = rows.Count;
 
-        var rowsWithMarket = rows.Where(r => r.Market is > 0).ToList();
-        var avgMarket      = rowsWithMarket.Count > 0
-            ? rowsWithMarket.Average(r => (double)r.Market!.Value)
+        // AssessedVal is the value that goes to the tax roll (may differ from Market for
+        // ag/timber current-use, partial exemptions, etc.).  Fall back to Market only when
+        // AssessedVal is absent so older/incomplete records don't drop to zero.
+        var rowsWithAssessed = rows.Where(r => (r.AssessedVal ?? r.Market) is > 0).ToList();
+        var avgAssessed      = rowsWithAssessed.Count > 0
+            ? rowsWithAssessed.Average(r => (double)(r.AssessedVal ?? r.Market)!.Value)
             : 0.0;
 
         var pendingAssessments = rows.Count(r => r.NewVal is > 0);
 
-        // assessmentCompletionPercent: percentage of parcels that have a market value assigned.
+        // assessmentCompletionPercent: percentage of parcels that have an assessed value assigned.
         var completionPct = totalParcels > 0
-            ? Math.Round((double)rowsWithMarket.Count / totalParcels * 100.0, 1)
+            ? Math.Round((double)rowsWithAssessed.Count / totalParcels * 100.0, 1)
             : 0.0;
 
         _logger.LogInformation(
-            "[TerraForge] CountyStats: year={Year} total={Total} avgMarket={Avg:F0} " +
+            "[TerraForge] CountyStats: year={Year} total={Total} avgAssessed={Avg:F0} " +
             "pending={Pending} completion={Pct}%",
-            taxYear, totalParcels, avgMarket, pendingAssessments, completionPct);
+            taxYear, totalParcels, avgAssessed, pendingAssessments, completionPct);
 
         return Ok(new
         {
             taxYear,
             totalParcels,
-            averageAssessedValue     = Math.Round((decimal)avgMarket, 2),
-            assessedThisYear         = totalParcels,   // proxy: all working-layer rows = assessed this year
+            averageAssessedValue        = Math.Round((decimal)avgAssessed, 2),
+            assessedThisYear            = totalParcels,   // proxy: all working-layer rows = assessed this year
             pendingAssessments,
             assessmentCompletionPercent = completionPct,
         });
