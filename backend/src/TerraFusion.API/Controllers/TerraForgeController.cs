@@ -517,6 +517,67 @@ public class TerraForgeController : ControllerBase
         });
     }
 
+    // ── County KPI Stats ──────────────────────────────────────────────────
+
+    /// <summary>
+    /// County-wide KPI summary for the TerraForge suite home dashboard.
+    /// Source: pacs_valuations WHERE PropValYear = taxYear AND SupNum = 0
+    /// (working layer only — SupNum > 0 are supplemental corrections, excluded from KPIs).
+    ///
+    /// Fields returned:
+    ///   totalParcels              — row count in working layer
+    ///   averageAssessedValue      — AVG(Market) over rows with a non-null market value
+    ///   assessedThisYear          — proxy: same as totalParcels (all rows in working year)
+    ///   pendingAssessments        — COUNT WHERE NewVal > 0 (new-construction additions not yet certified)
+    ///   assessmentCompletionPercent — pct of rows with Market > 0
+    ///
+    /// Note: county isolation is implicit — pacs_valuations contains only Benton data
+    /// seeded from pacs_oltp. Multi-county filtering via ParcelId → PacsParcel.CountyId
+    /// join is deferred until a second county is onboarded.
+    /// </summary>
+    [HttpGet("county-stats")]
+    public async Task<IActionResult> GetCountyStats(
+        [FromQuery] int taxYear = 2026,
+        CancellationToken ct = default)
+    {
+        // SupNum=0 — the working (base supplement) layer only.
+        // Supplemental layers (SupNum > 0) represent corrections-in-progress
+        // and must not inflate the KPI parcel count.
+        var rows = await _db.PacsValuations
+            .Where(v => v.PropValYear == taxYear && v.SupNum == 0)
+            .Select(v => new { v.Market, v.NewVal })
+            .ToListAsync(ct);
+
+        var totalParcels = rows.Count;
+
+        var rowsWithMarket = rows.Where(r => r.Market is > 0).ToList();
+        var avgMarket      = rowsWithMarket.Count > 0
+            ? rowsWithMarket.Average(r => (double)r.Market!.Value)
+            : 0.0;
+
+        var pendingAssessments = rows.Count(r => r.NewVal is > 0);
+
+        // assessmentCompletionPercent: percentage of parcels that have a market value assigned.
+        var completionPct = totalParcels > 0
+            ? Math.Round((double)rowsWithMarket.Count / totalParcels * 100.0, 1)
+            : 0.0;
+
+        _logger.LogInformation(
+            "[TerraForge] CountyStats: year={Year} total={Total} avgMarket={Avg:F0} " +
+            "pending={Pending} completion={Pct}%",
+            taxYear, totalParcels, avgMarket, pendingAssessments, completionPct);
+
+        return Ok(new
+        {
+            taxYear,
+            totalParcels,
+            averageAssessedValue     = Math.Round((decimal)avgMarket, 2),
+            assessedThisYear         = totalParcels,   // proxy: all working-layer rows = assessed this year
+            pendingAssessments,
+            assessmentCompletionPercent = completionPct,
+        });
+    }
+
     /// <summary>
     /// Record appraiser/staff qualification decision for a single sale.
     /// Body: { qualificationDecision, researchNotes, decidedBy, decisionSource }
@@ -555,8 +616,15 @@ public class TerraForgeController : ControllerBase
     }
 }
 
-public sealed record SaleQualificationPatchDto(
-    string QualificationDecision,
-    string? ResearchNotes,
-    string? DecidedBy,
-    string? DecisionSource);
+/// <summary>
+/// PATCH body for sale qualification decisions.
+/// Uses property-based (non-positional) form so System.Text.Json can handle
+/// partial JSON where optional fields are omitted.
+/// </summary>
+public sealed class SaleQualificationPatchDto
+{
+    public string  QualificationDecision { get; init; } = string.Empty;
+    public string? ResearchNotes         { get; init; }
+    public string? DecidedBy             { get; init; }
+    public string? DecisionSource        { get; init; }
+}
