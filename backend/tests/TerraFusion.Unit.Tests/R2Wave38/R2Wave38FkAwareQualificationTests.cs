@@ -352,6 +352,45 @@ public sealed class R2Wave38FkAwareQualificationTests
     // Batch correctness — multiple sales, each gets the right classification
     // ═══════════════════════════════════════════════════════════════════════════
 
+    // ═══════════════════════════════════════════════════════════════════════════
+    // WF38-13 — Sync-time fast path: live-confirmed Benton pacs_oltp codes
+    //
+    // Regression for the bug where the sync-time Qualify() fallback returned
+    // "non-arms-length" for ANY non-empty county ratio code when the lookup table
+    // was not loaded.
+    //
+    // Live pacs_oltp query 2026-04-04 (GROUP BY sl_county_ratio_cd on 425,251 rows):
+    //   '100' → 21,715 occurrences — county_ratio_code.ratio_desc = "Valid Sale"
+    //   '0'   →    219 occurrences — county_ratio_code.ratio_desc = "VALID SALE"
+    //   '200' → 10,445 occurrences — "Invalid Sale"
+    //   '01'+'02' DO NOT EXIST in live data (prior doc reference was wrong)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    [Theory]
+    [InlineData("100", "qualified")]           // Benton: Valid Sale (primary — 21,715 sales)
+    [InlineData("0",   "qualified")]           // Benton: VALID SALE (legacy — 219 sales)
+    [InlineData("200", "non-arms-length")]     // Invalid Sale
+    [InlineData("300", "non-arms-length")]     // Land Only Sale
+    [InlineData("99",  "non-arms-length")]     // Unknown code → conservative fallback
+    public void WF38_13_SyncTimeFastPath_BentonCountyCodes_QualifyCorrectly(
+        string countyRatioCd, string expectedResult)
+    {
+        // NOTE: Uses the sync Qualify() overload (no DB) to test the fallback path.
+        // This is the path hit during initial canonicalization before the async
+        // ComputeRecommendationsAsync pass runs.
+        using var db = CreateDbContext($"{nameof(WF38_13_SyncTimeFastPath_BentonCountyCodes_QualifyCorrectly)}_{countyRatioCd}");
+        var svc = new SaleQualificationService(db);
+
+        var result = svc.Qualify(
+            rawSaleQualifier: null,
+            rawCountyRatioCd: countyRatioCd,
+            rawExcludeCalcCd: null,
+            rawWacCd: null);
+
+        result.Should().Be(expectedResult,
+            because: $"sl_county_ratio_cd='{countyRatioCd}' sync-time fast path should use known Benton codes");
+    }
+
     [Fact]
     public async Task WF38_Batch_MultipleRatioTypes_EachClassifiedCorrectly()
     {

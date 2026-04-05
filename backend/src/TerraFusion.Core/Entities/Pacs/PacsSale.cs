@@ -52,7 +52,7 @@ public class PacsSale
 
     // ── Ratio Data ───────────────────────────────────────────────────────
     [Column(TypeName = "decimal(8,4)")] public decimal? SaleRatio { get; set; }
-    [Column(TypeName = "decimal(5,4)")] public decimal? SaleAdjSlPct { get; set; }
+    [Column(TypeName = "decimal(8,4)")] public decimal? SaleAdjSlPct { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? SaleAdjSlAmt { get; set; }
     [MaxLength(50)] public string? SaleAdjReason { get; set; }
     [MaxLength(100)] public string? SaleRatioCdReason { get; set; }

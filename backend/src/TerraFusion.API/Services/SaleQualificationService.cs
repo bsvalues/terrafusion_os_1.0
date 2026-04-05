@@ -1,6 +1,7 @@
 namespace TerraFusion.API.Services;
 
 using Microsoft.EntityFrameworkCore;
+using TerraFusion.Core.Entities.Pacs;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 
 /// <summary>
@@ -75,7 +76,8 @@ public sealed class SaleQualificationService : ISaleQualificationService
         string? rawWacCd,
         string? ratioTypeCd,
         HashSet<string>? invalidRatioTypeCodes,
-        Dictionary<string, string>? countyRatioDescriptions)
+        Dictionary<string, string>? countyRatioDescriptions,
+        Dictionary<string, PacsReetWacCode>? reetWacCodes = null)
     {
         // ── Layer 1: PACS SaleQualifier (sl_qualifier) ────────────────────────
         var upper = rawSaleQualifier?.Trim().ToUpperInvariant();
@@ -109,8 +111,25 @@ public sealed class SaleQualificationService : ISaleQualificationService
                 // Unknown description → conservative
                 return "non-arms-length";
             }
-            // Fallback when lookup table not loaded (e.g., sync-time fast path)
-            return "non-arms-length";
+            // Fallback when lookup table not loaded (e.g., sync-time fast path).
+            // Codes confirmed from live pacs_oltp query 2026-04-04 (GROUP BY sl_county_ratio_cd):
+            //   '100' → 21,715 occurrences  — dbo.county_ratio_code describes as "Valid Sale"
+            //   '0'   →    219 occurrences  — dbo.county_ratio_code describes as "VALID SALE"
+            //   '200' → 10,445 occurrences  — "Invalid Sale"
+            //   '300' →  3,363 occurrences  — "Land Only Sale"
+            //   '400' →    557 occurrences  — "Omitted Current Year; Review"
+            //   '500' →     33 occurrences  — "Dark Sales (Commercial)"
+            // NOTE: '01' and '02' do NOT exist in live data — prior doc reference was wrong.
+            return countyCode switch
+            {
+                "100"  => "qualified",          // Benton: Valid Sale (primary — 21,715 sales)
+                "0"    => "qualified",          // Benton: VALID SALE (legacy code — 219 sales)
+                "200"  => "non-arms-length",    // Invalid Sale
+                "300"  => "non-arms-length",    // Land Only Sale
+                "400"  => "non-arms-length",    // Omitted Current Year; Review
+                "500"  => "non-arms-length",    // Dark Sales (Commercial)
+                _      => "non-arms-length"     // Unknown code → conservative
+            };
         }
 
         // ── Layer 2b: WA DOR ratio type (sl_ratio_type_cd) ────────────────────
@@ -130,9 +149,24 @@ public sealed class SaleQualificationService : ISaleQualificationService
 
         // ── Layer 4: WAC 458-61A state excise code (wac_cd) ───────────────────
         // Empty WacCd = standard REET-taxable transaction = arms-length qualified.
-        // TODO(WacCd): Replace with Benton-specific code list once confirmed with Bill Spencer.
+        // Non-empty WacCd = buyer claimed a REET exemption on the affidavit.
+        // Consult reet_wac_code.inactive: inactive codes are retired exemptions — no active
+        // exemption in force, so treat as arms-length. Active codes = genuine exemption claimed.
         if (!string.IsNullOrWhiteSpace(rawWacCd))
-            return $"exempt: {rawWacCd.Trim()}";
+        {
+            var normalizedWac = rawWacCd.Trim().ToUpperInvariant();
+            if (reetWacCodes != null && reetWacCodes.TryGetValue(normalizedWac, out var wacEntry))
+            {
+                if (wacEntry.Inactive)
+                    return "qualified"; // retired code — no active exemption applies
+                // Return compact category only — varchar(30) limit.
+                // Full WAC code + description goes in RecommendationReason (varchar(200)).
+                return $"exempt: {normalizedWac}";
+            }
+            // Code present but not in lookup — compact form stays within varchar(30).
+            var wacTrimmed = rawWacCd.Trim();
+            return wacTrimmed.Length > 22 ? "exempt" : $"exempt: {wacTrimmed}";
+        }
 
         // ── Layer 5: Default ───────────────────────────────────────────────────
         return "qualified";
@@ -204,6 +238,15 @@ public sealed class SaleQualificationService : ISaleQualificationService
                 r => r.RatioDesc ?? string.Empty,
                 ct);
 
+        // ── FK lookup: reet_wac_code (dbo.reet_wac_code) ──────────────────────
+        // Load WAC 458-61A exemption codes so Layer 4 can distinguish retired codes
+        // (inactive=true → treat as qualified) from active exemptions.
+        var reetWacCodes = await _db.ReetWacCodes
+            .ToDictionaryAsync(
+                w => w.WacCd.Trim().ToUpperInvariant(),
+                w => w,
+                ct);
+
         foreach (var sale in sales)
         {
             sale.QualificationRecommendation = QualifyWithLookups(
@@ -213,7 +256,8 @@ public sealed class SaleQualificationService : ISaleQualificationService
                 sale.RawWacCd,
                 sale.RawRatioTypeCd,
                 invalidRatioTypeCodes,
-                countyRatioDescriptions);
+                countyRatioDescriptions,
+                reetWacCodes);
             sale.RecommendationReason = BuildRecommendationReason(
                 sale.RawSaleQualifier,
                 sale.RawCountyRatioCd,

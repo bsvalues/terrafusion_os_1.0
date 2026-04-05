@@ -1344,6 +1344,52 @@ app.MapGet("/api/test", () => new
     }
 }
 
+// POST /api/admin/pacs/seed-sales — targeted seed: sales only, then canonicalize + qualify.
+// Use this when PacsParcel / pacs_improvements / pacs_valuations are already seeded and
+// you just need to refresh ComparableSales + QualificationRecommendation without running the
+// full 8-hour ETL. Runs as background Task — returns 202 immediately.
+{
+    var _salesSeedRunning = false;
+    var _salesSeedLastResult = "";
+
+    app.MapPost("/api/admin/pacs/seed-sales", (
+        IServiceScopeFactory scopeFactory,
+        ILogger<TerraFusion.API.Seeds.PacsDataSeeder> logger) =>
+    {
+        if (_salesSeedRunning)
+            return Results.Conflict("Sales seed already running. Check /api/admin/pacs/seed-sales/status.");
+
+        _salesSeedRunning = true;
+        _salesSeedLastResult = "running";
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await using var scope = scopeFactory.CreateAsyncScope();
+                var seeder = scope.ServiceProvider.GetRequiredService<TerraFusion.API.Seeds.PacsDataSeeder>();
+                var result = await seeder.SeedSalesOnlyAsync();
+                _salesSeedLastResult = result.ToString();
+                logger.LogInformation("[PacsSeeder][SalesOnly] Complete: {Result}", _salesSeedLastResult);
+            }
+            catch (Exception ex)
+            {
+                var inner = ex;
+                while (inner.InnerException != null) inner = inner.InnerException;
+                _salesSeedLastResult = $"ERROR: {ex.Message} | INNER: {inner.Message}";
+                logger.LogError(ex, "[PacsSeeder][SalesOnly] Failed");
+            }
+            finally { _salesSeedRunning = false; }
+        });
+
+        return Results.Accepted("/api/admin/pacs/seed-sales/status",
+            new { message = "Sales-only seed started. Poll /api/admin/pacs/seed-sales/status." });
+    }).WithTags("Admin").WithName("SeedSalesOnly");
+
+    app.MapGet("/api/admin/pacs/seed-sales/status", () =>
+        Results.Ok(new { running = _salesSeedRunning, lastResult = _salesSeedLastResult })
+    ).WithTags("Admin").WithName("SeedSalesOnlyStatus");
+}
+
 // Minimal transcendence health probe (previously returned 404 in some checks)
 // Returns a simple OK payload without invoking heavy services
 app.MapGet("/api/transcendence/health", () =>

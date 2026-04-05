@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pgvector;
@@ -13,9 +14,11 @@ using TerraFusion.Data;
 namespace TerraFusion.Data.Migrations
 {
     [DbContext(typeof(TerraFusionDbContext))]
-    partial class TerraFusionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260405005422_FixImprvDetailDecimalOverflow")]
+    partial class FixImprvDetailDecimalOverflow
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -6074,7 +6077,7 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("SaleAdjSlPct")
-                        .HasColumnType("decimal(8,4)");
+                        .HasColumnType("decimal(5,4)");
 
                     b.Property<string>("SaleClassCd")
                         .HasMaxLength(10)

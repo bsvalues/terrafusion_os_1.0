@@ -2,6 +2,7 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using TerraFusion.API.Services;
 using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Data;
 
@@ -32,6 +33,7 @@ public class PacsDataSeeder
     private readonly TerraFusionDbContext _db;
     private readonly IConfiguration _config;
     private readonly ILogger<PacsDataSeeder> _logger;
+    private readonly ISaleQualificationService _qualificationService;
 
     private const int BatchSize = 1_000;
     private static readonly Guid BentonCountyId = Guid.Parse("19190019-1919-1919-1919-191919191919");
@@ -39,14 +41,66 @@ public class PacsDataSeeder
     public PacsDataSeeder(
         TerraFusionDbContext db,
         IConfiguration config,
-        ILogger<PacsDataSeeder> logger)
+        ILogger<PacsDataSeeder> logger,
+        ISaleQualificationService qualificationService)
     {
         _db = db;
         _config = config;
         _logger = logger;
+        _qualificationService = qualificationService;
     }
 
     // ── Public API ────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Fast targeted seed: seeds only pacs_sales from pacs_oltp, then runs
+    /// ComparableSale canonicalization and qualification. Does NOT re-seed
+    /// parcels, improvements, or land details — relies on existing rows seeded
+    /// by a prior SeedAllAsync run. Use this to get the sale-qualification proof
+    /// gate working without waiting for the multi-hour full ETL.
+    /// </summary>
+    public async Task<PacsSeederResult> SeedSalesOnlyAsync(CancellationToken ct = default)
+    {
+        var cs = _config.GetConnectionString("PacsConnection")
+            ?? throw new InvalidOperationException(
+                "PacsConnection not configured. Add it to appsettings.BentonCounty.local.json.");
+
+        var result = new PacsSeederResult();
+
+        // Build propMap from already-seeded PacsParcel rows — no re-query to PACS needed.
+        _logger.LogInformation("[PacsSeeder][SalesOnly] Building propMap from {N} existing parcels...",
+            await _db.PacsParcel.CountAsync(ct));
+        var propMap = await _db.PacsParcel
+            .ToDictionaryAsync(p => p.PropId, p => p.Id, ct);
+        result.Parcels = propMap.Count;
+
+        if (propMap.Count == 0)
+            throw new InvalidOperationException(
+                "[PacsSeeder][SalesOnly] PacsParcel has 0 rows. Run SeedAllAsync first to populate parcels.");
+
+        // Clear only pacs_sales so re-insert is clean.
+        await _db.Database.ExecuteSqlRawAsync("TRUNCATE TABLE pacs_sales CASCADE", ct);
+        _logger.LogInformation("[PacsSeeder][SalesOnly] pacs_sales cleared.");
+
+        await using var pacs = new SqlConnection(cs);
+        await pacs.OpenAsync(ct);
+        _logger.LogInformation("[PacsSeeder][SalesOnly] Connected to pacs_oltp.");
+
+        result.Sales = await SeedSalesAsync(pacs, propMap, ct);
+
+        // Canonicalize ComparableSales from the freshly seeded pacs_sales rows.
+        var canonicalizer = new PacsCanonicalizer(_db, _logger);
+        var canonical = await canonicalizer.CanonicalizeAsync(ct);
+        result.CanonicalComparableSales = canonical.ComparableSales;
+
+        // Run FK-aware qualification so QualificationRecommendation is populated.
+        var requalified = await _qualificationService.ComputeRecommendationsAsync(BentonCountyId, ct);
+        _logger.LogInformation("[PacsSeeder][SalesOnly] Qualification complete: {Count} sales processed.", requalified);
+
+        _logger.LogInformation("[PacsSeeder][SalesOnly] Done. Sales={S} ComparableSales={C} Qualified={Q}",
+            result.Sales, result.CanonicalComparableSales, requalified);
+        return result;
+    }
 
     public async Task<PacsSeederResult> SeedAllAsync(CancellationToken ct = default)
     {
@@ -96,6 +150,11 @@ public class PacsDataSeeder
 
         try
         {
+        // Phase 0: Lookup tables — seed before any FK-referencing tables
+        await SeedReetWacCodesAsync(pacs, ct);
+        await SeedCountyRatioCodesAsync(pacs, ct);
+        await SeedSaleRatioTypesAsync(pacs, ct);
+
         // Phase 1: Root parcels — must run first
         var propMap = await SeedParcelsAsync(pacs, ct);
         result.Parcels = propMap.Count;
@@ -143,8 +202,90 @@ public class PacsDataSeeder
         result.CanonicalComparableSales  = canonical.ComparableSales;
         result.CanonicalCamaCharacteristics = canonical.CamaCharacteristics;
 
+        // Phase 8: Run FK-aware sales qualification using seeded lookup tables.
+        // Must run after CanonicalizeAsync so ComparableSales rows exist.
+        var requalified = await _qualificationService.ComputeRecommendationsAsync(BentonCountyId, ct);
+        _logger.LogInformation("[PacsSeeder] Qualification complete: {Count} sales processed.", requalified);
+
         _logger.LogInformation("[PacsSeeder] Complete. {Summary}", result);
         return result;
+    }
+
+    // ── Lookup table seeds (Phase 0) ─────────────────────────────────────
+    // Full-refresh: remove all rows then re-insert from pacs_oltp each seed run.
+    // These tables are small (< 200 rows each) so RemoveRange is safe.
+
+    private async Task SeedReetWacCodesAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding ReetWacCodes from reet_wac_code...");
+        var rows = new List<PacsReetWacCode>();
+        await using var cmd = new SqlCommand(
+            "SELECT wac_cd, wac_desc, ISNULL(inactive, 0) AS inactive, ISNULL(sys_flag, 0) AS sys_flag FROM reet_wac_code", pacs)
+        { CommandTimeout = 60 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rows.Add(new PacsReetWacCode
+            {
+                WacCd    = rdr.GetString(0).Trim(),
+                WacDesc  = rdr.IsDBNull(1) ? null : rdr.GetString(1),
+                Inactive = SqlBit(rdr, 2),
+                SysFlag  = SqlBit(rdr, 3)
+            });
+        }
+        _db.ReetWacCodes.RemoveRange(_db.ReetWacCodes);
+        await _db.SaveChangesAsync(ct);
+        await _db.ReetWacCodes.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] ReetWacCodes seeded: {Count} rows.", rows.Count);
+    }
+
+    private async Task SeedCountyRatioCodesAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding CountyRatioCodes from county_ratio_code...");
+        var rows = new List<TerraFusion.Core.Entities.CountyRatioCode>();
+        await using var cmd = new SqlCommand(
+            "SELECT ratio_cd, ratio_desc FROM county_ratio_code", pacs)
+        { CommandTimeout = 60 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rows.Add(new TerraFusion.Core.Entities.CountyRatioCode
+            {
+                RatioCd   = rdr.GetString(0).Trim(),
+                RatioDesc = rdr.IsDBNull(1) ? null : rdr.GetString(1)
+            });
+        }
+        _db.CountyRatioCodes.RemoveRange(_db.CountyRatioCodes);
+        await _db.SaveChangesAsync(ct);
+        await _db.CountyRatioCodes.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] CountyRatioCodes seeded: {Count} rows.", rows.Count);
+    }
+
+    private async Task SeedSaleRatioTypesAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding SaleRatioTypes from sale_ratio_type...");
+        var rows = new List<TerraFusion.Core.Entities.SaleRatioType>();
+        await using var cmd = new SqlCommand(
+            "SELECT sl_ratio_type_cd, sl_ratio_desc, ISNULL(invalid_sale, 0), ISNULL(requires_reason, 0) FROM sale_ratio_type", pacs)
+        { CommandTimeout = 60 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rows.Add(new TerraFusion.Core.Entities.SaleRatioType
+            {
+                SlRatioTypeCd   = rdr.GetString(0).Trim(),
+                SlRatioDesc     = rdr.IsDBNull(1) ? null : rdr.GetString(1),
+                InvalidSale     = SqlBit(rdr, 2),
+                RequiresReason  = SqlBit(rdr, 3)
+            });
+        }
+        _db.SaleRatioTypes.RemoveRange(_db.SaleRatioTypes);
+        await _db.SaveChangesAsync(ct);
+        await _db.SaleRatioTypes.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] SaleRatioTypes seeded: {Count} rows.", rows.Count);
     }
 
     // ── Clear PACS tables (full-refresh) ─────────────────────────────────
@@ -2198,6 +2339,21 @@ public class PacsDataSeeder
             };
         }
         catch { return null; }
+    }
+
+    /// <summary>Reads a SQL Server bit/char/int column as a C# bool, handling T/F/Y/N/0/1 strings.</summary>
+    private static bool SqlBit(SqlDataReader r, int ord)
+    {
+        if (r.IsDBNull(ord)) return false;
+        var val = r.GetValue(ord);
+        return val switch
+        {
+            bool b   => b,
+            byte by  => by != 0,
+            int  i   => i != 0,
+            string s => s.Trim().ToUpperInvariant() is "T" or "Y" or "1" or "TRUE" or "YES",
+            _        => Convert.ToBoolean(val)
+        };
     }
 }
 
