@@ -422,6 +422,10 @@ public sealed class PacsCanonicalizer
                 s.SaleCountyRatioCd,
                 s.WacCd,
                 s.SalesExcludeCalcCd,
+                s.SaleRatioTypeCd,        // sl_ratio_type_cd — Layer 2b
+                s.SaleRatio,              // sl_ratio — PACS pre-computed ratio (assessed/sale*100)
+                s.SuppressOnRatioRptCd,  // suppress_on_ratio_rpt_cd
+                s.SuppressOnRatioReason, // suppress_on_ratio_rsn
                 s.SlLivingArea,
                 s.SlLandSqft,
                 s.SlYearBuilt
@@ -462,12 +466,16 @@ public sealed class PacsCanonicalizer
                     YearBuilt           = ps.SlYearBuilt.HasValue ? (int?)ps.SlYearBuilt.Value : null,
                     QualityGrade        = NormalizeQualityGrade(rawClassCd),    // imprv_det.imprv_det_class_cd → ECONOMY…EXCELLENT
                     ImprvTypeCode       = imprvTypeCode,                         // imprv.imprv_type_cd → R1, R2, A1, C1…
-                    RawSaleQualifier    = ps.SaleQualifier,
-                    RawCountyRatioCd    = ps.SaleCountyRatioCd,
-                    RawExcludeCalcCd    = ps.SalesExcludeCalcCd,
-                    RawWacCd            = ps.WacCd,
-                    IsVerified          = false,
-                    CountyId            = parcelInfo.CountyId
+                    RawSaleQualifier      = ps.SaleQualifier,
+                    RawCountyRatioCd      = ps.SaleCountyRatioCd,
+                    RawExcludeCalcCd      = ps.SalesExcludeCalcCd,
+                    RawWacCd              = ps.WacCd,
+                    RawRatioTypeCd        = ps.SaleRatioTypeCd,          // sl_ratio_type_cd — Layer 2b qualification
+                    PacsComputedRatio     = ps.SaleRatio,                // sl_ratio — assessed_val/sale_price*100; required for ratio study IAAO stats
+                    SuppressOnRatioRptCd  = ps.SuppressOnRatioRptCd,    // suppress_on_ratio_rpt_cd — "T" = exclude from DOR report
+                    SuppressOnRatioReason = ps.SuppressOnRatioReason,   // suppress_on_ratio_rsn — human-readable suppress reason
+                    IsVerified            = false,
+                    CountyId              = parcelInfo.CountyId
                 });
 
                 total++;

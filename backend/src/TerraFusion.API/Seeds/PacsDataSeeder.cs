@@ -683,7 +683,9 @@ public class PacsDataSeeder
             e.LegalAcreage = Dec(rdr, "legal_acres");
 
             // Geographic codes
-            e.NeighborhoodCode = Str(rdr, "nbhd_cd");
+            // property_val uses hood_cd for the neighborhood/market-area code.
+            // nbhd_cd was a typo; Str() silently returned null on the wrong column.
+            e.NeighborhoodCode = Str(rdr, "hood_cd");
             e.AbsSubdvCd       = Str(rdr, "abs_subdv_cd");
             e.RegionCode       = Str(rdr, "rgn_cd");
             e.TownshipCode     = Str(rdr, "twnshp_cd");

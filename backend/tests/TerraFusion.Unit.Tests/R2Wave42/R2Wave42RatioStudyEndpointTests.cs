@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Controllers;
+using TerraFusion.API.Services;
 using TerraFusion.Core.Entities;
+using ComparableSale = TerraFusion.Core.Entities.ComparableSale;
 using Xunit;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using Task = System.Threading.Tasks.Task;
@@ -47,7 +49,7 @@ public sealed class R2Wave42RatioStudyEndpointTests
     }
 
     private static TerraForgeController CreateController(DataDbContext db)
-        => new(db, NullLogger<TerraForgeController>.Instance);
+        => new(db, NullLogger<TerraForgeController>.Instance, new OlsRegressionService());
 
     private static async Task SeedCountyAsync(DataDbContext db)
     {

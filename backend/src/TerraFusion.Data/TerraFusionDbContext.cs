@@ -107,6 +107,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<SlFinancing> SlFinancings { get; set; }
   public DbSet<DeedType> DeedTypes { get; set; }
 
+  // PACS Lookup Tables (R2 Slice 1.1 — WAC code lookup)
+  // Mirrors dbo.reet_wac_code: WAC 458-61A REET exemption codes.
+  public DbSet<PacsReetWacCode> ReetWacCodes { get; set; } = null!;
+
   // Forge Analytics (R2 Wave 26)
   public DbSet<RegressionAnalysis> RegressionAnalyses { get; set; }
 
@@ -429,6 +433,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.Property(e => e.DeedTypeDesc).HasMaxLength(150);
       entity.Property(e => e.SalesRatioTypeCd).HasMaxLength(10);
       entity.ToTable("DeedTypes");
+    });
+
+    // Mirrors PACS dbo.reet_wac_code: WAC 458-61A REET exemption codes (Slice 1.1).
+    // inactive=true means the code is retired; treat sale as qualified (no active exemption).
+    modelBuilder.Entity<PacsReetWacCode>(entity =>
+    {
+      entity.HasKey(e => e.WacCd);
+      entity.Property(e => e.WacCd).IsRequired().HasMaxLength(100);
+      entity.Property(e => e.WacDesc).HasMaxLength(500);
+      entity.ToTable("ReetWacCodes");
     });
 
     // Configure GovernmentUser entity
