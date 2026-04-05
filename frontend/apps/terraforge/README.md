@@ -1,73 +1,62 @@
-# React + TypeScript + Vite
+# TerraForge — Suite-Forge (County-Wide Valuation Suite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Layer tag:** Suite-Forge
+**Port:** served via Vite dev proxy → TerraFusion.API port 5000
+**Status:** Current shell is a placeholder — see ARCHITECTURE CORRECTION below
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## What TerraForge Is
 
-## React Compiler
+TerraForge is the **county-wide valuation suite** for Benton County WA. It is a first-class suite workspace for appraisers working across all parcels — ratio studies, comps pools, sale qualification, OLS regression, cost schedules, and levy lookup.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+It is **not** a parcel-scoped surface. It is **not** a tabbed detail view. It operates on the full county dataset.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## What TerraForge Is Not
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+| This is NOT TerraForge | This IS the correct owner |
+|---|---|
+| A tabbed parcel detail view | Property Workbench (Phase 3, locked) |
+| A single-property cost card | Workbench Cost tab (Phase 3, locked) |
+| A per-parcel reconciliation surface | Workbench Reconciliation tab (Phase 3, locked) |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+**The Workbench is a consumer** of TerraForge endpoints. It calls suite APIs for one parcel and displays the result. TerraForge itself operates county-wide.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## ARCHITECTURE CORRECTION — 2026-04-05
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The current `src/App.tsx` and page structure is a **tabbed-page placeholder skeleton**. It was built as a scaffold but it misrepresents the intended suite architecture. It looks like a Workbench surface, not a suite workspace.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**This skeleton must be replaced — not polished, not extended, replaced.**
+
+The TerraForge Assembly review will define the correct suite shell structure before further suite expansion continues.
+
+---
+
+## Sealed slices (do not reopen)
+
+| Slice | What it does | Status |
+|---|---|---|
+| Phase 2.1 TerraLevy | Levy rate lookup + bill calculator | ✅ Sealed `3f8536895` |
+
+---
+
+## Frozen (do not open without owner approval)
+
+Phase 2.2, 2.3, 2.4 are frozen pending TerraForge Assembly review and owner task card approval.
+
+---
+
+## Backend endpoints
+
+All TerraForge endpoints live in `TerraFusion.API`:
+- `GET /api/levy/rates` — levy rates by year
+- `GET /api/levy/tax-areas` — tax area lookup
+- `GET /api/levy/calculate` — itemized levy bill (WA decimal arithmetic)
+- `GET /api/terraforge/ratio-study` — IAAO ratio study (county-wide)
+- `GET /api/terraforge/comps` — comps pool browser (county-wide)
+- `POST /api/terraforge/regression/run` — OLS regression (county-wide)
+- `GET /api/forge/{parcelId}/...` — parcel-scoped (consumed by Workbench, Phase 3)
