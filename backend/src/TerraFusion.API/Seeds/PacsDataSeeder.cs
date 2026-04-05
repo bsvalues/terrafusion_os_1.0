@@ -155,6 +155,12 @@ public class PacsDataSeeder
         await SeedCountyRatioCodesAsync(pacs, ct);
         await SeedSaleRatioTypesAsync(pacs, ct);
 
+        // Phase 0b: Levy rate tables (R2 Phase 2.1 — TerraLevy)
+        // Levy data is county-neutral PACS mirror — no parcel FK dependency.
+        // Must run before parcel ETL so tables are present; safe to run any time.
+        await SeedLevyRatesAsync(pacs, ct);
+        await SeedLevyTaxAreaAssocsAsync(pacs, ct);
+
         // Phase 1: Root parcels — must run first
         var propMap = await SeedParcelsAsync(pacs, ct);
         result.Parcels = propMap.Count;
@@ -286,6 +292,98 @@ public class PacsDataSeeder
         await _db.SaleRatioTypes.AddRangeAsync(rows, ct);
         await _db.SaveChangesAsync(ct);
         _logger.LogInformation("[PacsSeeder] SaleRatioTypes seeded: {Count} rows.", rows.Count);
+    }
+
+    // ── R2 Phase 2.1 — TerraLevy levy rate seeding ────────────────────────
+
+    /// <summary>
+    /// Seeds pacs_levy_rates from PACS dbo.levy.
+    /// Captures all levy years >= 2024 (covers 2024 certified + 2025 + 2026 current).
+    /// Rate column is per $1,000 of assessed value.
+    /// Upsert key: (Year, TaxDistrictId, LevyCd) — unique constraint in migration.
+    /// Full-refresh: removes all existing rows then inserts fresh from PACS.
+    /// </summary>
+    private async Task SeedLevyRatesAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding PacsLevyRates from levy...");
+
+        const string sql =
+            "SELECT year, tax_district_id, levy_cd, " +
+            "       ISNULL(levy_rate, 0) AS levy_rate, " +
+            "       levy_type_cd, levy_description, " +
+            "       ISNULL(include_in_levy_certification, 0) AS include_in_cert " +
+            "FROM levy " +
+            "WHERE year >= 2024 " +
+            "ORDER BY year, tax_district_id, levy_cd";
+
+        var rows = new List<PacsLevyRate>();
+        await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 120 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rows.Add(new PacsLevyRate
+            {
+                Id                    = Guid.NewGuid(),
+                Year                  = rdr.GetInt16(0),        // year is smallint in PACS
+                TaxDistrictId         = rdr.GetInt32(1),
+                LevyCd                = rdr.GetString(2).Trim(),
+                LevyRate              = (decimal)rdr.GetDouble(3),
+                LevyTypeCd            = rdr.IsDBNull(4) ? null : rdr.GetString(4).Trim(),
+                LevyDescription       = rdr.IsDBNull(5) ? null : rdr.GetString(5).Trim(),
+                IncludeInCertification = rdr.GetBoolean(6),
+                CreatedAt             = DateTime.UtcNow,
+                UpdatedAt             = DateTime.UtcNow
+            });
+        }
+
+        _db.PacsLevyRates.RemoveRange(_db.PacsLevyRates);
+        await _db.SaveChangesAsync(ct);
+        await _db.PacsLevyRates.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] PacsLevyRates seeded: {Count} rows.", rows.Count);
+    }
+
+    /// <summary>
+    /// Seeds pacs_levy_tax_area_assocs from PACS dbo.tax_area_fund_assoc JOIN dbo.tax_area.
+    /// Links each tax area number to the levy codes (and their taxing districts) that apply within it.
+    /// Upsert key: (Year, TaxDistrictId, LevyCd, TaxAreaId) — unique constraint in migration.
+    /// Full-refresh: removes all existing rows then inserts fresh.
+    /// </summary>
+    private async Task SeedLevyTaxAreaAssocsAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding PacsLevyTaxAreaAssocs from tax_area_fund_assoc...");
+
+        const string sql =
+            "SELECT tafa.year, tafa.tax_district_id, tafa.levy_cd, " +
+            "       tafa.tax_area_id, ta.tax_area_number " +
+            "FROM tax_area_fund_assoc tafa " +
+            "JOIN tax_area ta ON ta.tax_area_id = tafa.tax_area_id " +
+            "WHERE tafa.year >= 2024 " +
+            "ORDER BY tafa.year, tafa.tax_area_id, tafa.levy_cd";
+
+        var rows = new List<PacsLevyTaxAreaAssoc>();
+        await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 120 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rows.Add(new PacsLevyTaxAreaAssoc
+            {
+                Id            = Guid.NewGuid(),
+                Year          = rdr.GetInt16(0),
+                TaxDistrictId = rdr.GetInt32(1),
+                LevyCd        = rdr.GetString(2).Trim(),
+                TaxAreaId     = rdr.GetInt32(3),
+                TaxAreaNumber = rdr.IsDBNull(4) ? null : rdr.GetString(4).Trim(),
+                CreatedAt     = DateTime.UtcNow,
+                UpdatedAt     = DateTime.UtcNow
+            });
+        }
+
+        _db.PacsLevyTaxAreaAssocs.RemoveRange(_db.PacsLevyTaxAreaAssocs);
+        await _db.SaveChangesAsync(ct);
+        await _db.PacsLevyTaxAreaAssocs.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] PacsLevyTaxAreaAssocs seeded: {Count} rows.", rows.Count);
     }
 
     // ── Clear PACS tables (full-refresh) ─────────────────────────────────

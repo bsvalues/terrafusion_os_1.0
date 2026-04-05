@@ -111,6 +111,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   // Mirrors dbo.reet_wac_code: WAC 458-61A REET exemption codes.
   public DbSet<PacsReetWacCode> ReetWacCodes { get; set; } = null!;
 
+  // PACS Levy Tables (R2 Phase 2.1 — TerraLevy levy rate lookup)
+  // Mirrors dbo.levy (levy rates per $1,000 AV) and
+  // dbo.tax_area_fund_assoc JOIN dbo.tax_area (which levies apply per tax area).
+  public DbSet<PacsLevyRate> PacsLevyRates { get; set; } = null!;
+  public DbSet<PacsLevyTaxAreaAssoc> PacsLevyTaxAreaAssocs { get; set; } = null!;
+
   // Forge Analytics (R2 Wave 26)
   public DbSet<RegressionAnalysis> RegressionAnalyses { get; set; }
 

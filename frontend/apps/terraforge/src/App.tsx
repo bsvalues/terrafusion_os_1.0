@@ -1,6 +1,7 @@
 import { BrowserRouter, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import CompsPage from './pages/CompsPage';
 import CostSchedulesPage from './pages/CostSchedulesPage';
+import LevyPage from './pages/LevyPage';
 import RatioStudyPage from './pages/RatioStudyPage';
 import RegressionPage from './pages/RegressionPage';
 import SaleQualificationPage from './pages/SaleQualificationPage';
@@ -12,6 +13,7 @@ const NAV_ITEMS = [
   { path: '/sale-qualification', label: 'Sale Qualification' },
   { path: '/regression',         label: 'Regression' },
   { path: '/cost-schedules',     label: 'Cost Schedules' },
+  { path: '/levy',               label: 'Levy' },
 ] as const;
 
 function NavBar() {
@@ -48,6 +50,7 @@ export default function App() {
             <Route path="/sale-qualification" element={<SaleQualificationPage />} />
             <Route path="/regression"         element={<RegressionPage />} />
             <Route path="/cost-schedules"     element={<CostSchedulesPage />} />
+            <Route path="/levy"               element={<LevyPage />} />
           </Routes>
         </main>
         <footer className="tf-footer">

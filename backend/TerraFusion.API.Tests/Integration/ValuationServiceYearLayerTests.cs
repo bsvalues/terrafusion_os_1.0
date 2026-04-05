@@ -12,6 +12,7 @@
 //   8. No effectiveTaxYear substitution — year with no data returns empty Layers,
 //      not a silently substituted alternative-year result
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using TerraFusion.API.Services;
 using TerraFusion.API.Tests.TestHelpers;
 using TerraFusion.Core.Entities.Pacs;
@@ -37,7 +38,7 @@ public sealed class ValuationServiceYearLayerTests : IDisposable
     public ValuationServiceYearLayerTests()
     {
         _db = TestDbContextFactory.CreateInMemoryContext();
-        _sut = new ValuationService(_db, NullLogger<ValuationService>.Instance);
+        _sut = new ValuationService(_db, NullLogger<ValuationService>.Instance, Mock.Of<IOlsRegressionService>());
     }
 
     public void Dispose() => _db.Dispose();

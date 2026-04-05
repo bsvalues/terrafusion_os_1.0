@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.API.Controllers;
 using TerraFusion.Core.PACS;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 
 namespace TerraFusion.API.Tests.Phase10;
@@ -62,8 +63,27 @@ public sealed class PacsOpsResilienceTests
         return services.BuildServiceProvider();
     }
 
-    private static PacsOpsController BuildController(IServiceProvider sp) =>
-        new(sp, NullLogger<PacsOpsController>.Instance);
+    /// <summary>
+    /// Resolves IPacsAdapter from the SP (if registered); otherwise falls back to a
+    /// throwing mock that simulates a missing-adapter environment.  This matches the
+    /// current constructor signature of PacsOpsController which requires a non-null adapter.
+    /// </summary>
+    private static PacsOpsController BuildController(IServiceProvider sp)
+    {
+        var adapter = sp.GetService<IPacsAdapter>()
+                      ?? CreateThrowingAdapter("PACS adapter not registered in this environment.");
+        return new PacsOpsController(adapter, NullLogger<PacsOpsController>.Instance);
+    }
+
+    private static IPacsAdapter CreateThrowingAdapter(string message)
+    {
+        var mock = new Mock<IPacsAdapter>();
+        mock.Setup(a => a.ValidateContractAsync(It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new PacsContractViolationException(PacsErrorCodes.ConnectionFailed, message));
+        mock.Setup(a => a.GetConnectionStatusAsync(It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new PacsContractViolationException(PacsErrorCodes.ConnectionFailed, message));
+        return mock.Object;
+    }
 
     // ── GetProof ───────────────────────────────────────────────────────
 
