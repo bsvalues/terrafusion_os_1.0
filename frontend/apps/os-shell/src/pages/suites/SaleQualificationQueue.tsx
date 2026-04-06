@@ -141,6 +141,17 @@ export function SaleQualificationQueue({ taxYear = TAX_YEAR }: Props) {
       const res = await apiFetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = (await res.json()) as QueuePage;
+
+      // Page-clamp guard: if this page is now empty but earlier pages exist
+      // (happens when a PATCH decision moves the last item off the current page),
+      // step back to the last valid page rather than showing a misleading
+      // "no results" message or an impossible page indicator like "3 / 2".
+      const newTotalPages = Math.ceil(json.total / PAGE_SIZE);
+      if (json.items.length === 0 && state.page > 1) {
+        dispatch({ type: 'SET_PAGE', page: Math.max(1, newTotalPages) });
+        return;
+      }
+
       dispatch({ type: 'FETCH_OK', data: json });
     } catch (e) {
       dispatch({ type: 'FETCH_ERR', error: e instanceof Error ? e.message : 'Failed to load' });
