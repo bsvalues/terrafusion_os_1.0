@@ -738,3 +738,275 @@
     display: none;
   }
 }
+
+/* ── Comps Pool Browser (cp-*) ─ Slice 1.6 ────────────────────────────── */
+
+.cp-state {
+  padding: 14px 16px;
+  color: var(--forge-muted);
+  font-size: 0.875rem;
+}
+
+.cp-state--error {
+  color: var(--forge-warn);
+}
+
+/* Filter bar */
+.cp-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--forge-border);
+  margin-bottom: 2px;
+}
+
+.cp-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.cp-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 160px;
+}
+
+.cp-filter-group--narrow {
+  flex: 0 1 110px;
+}
+
+.cp-filter-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--forge-muted);
+}
+
+.cp-filter-input {
+  background: var(--forge-panel);
+  border: 1px solid var(--forge-border);
+  border-radius: 6px;
+  color: var(--forge-text);
+  font-size: 0.8125rem;
+  padding: 6px 10px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.cp-filter-input:focus {
+  outline: none;
+  border-color: var(--forge-info);
+}
+
+.cp-filter-input::placeholder {
+  color: var(--forge-subtle);
+}
+
+/* Remove number input spinners */
+.cp-filter-input[type="number"]::-webkit-inner-spin-button,
+.cp-filter-input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.cp-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cp-btn {
+  border: 1px solid var(--forge-border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  padding: 6px 14px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.cp-btn--apply {
+  background: color-mix(in srgb, var(--forge-info) 15%, transparent);
+  border-color: color-mix(in srgb, var(--forge-info) 40%, transparent);
+  color: var(--forge-info);
+}
+
+.cp-btn--apply:hover {
+  background: color-mix(in srgb, var(--forge-info) 25%, transparent);
+}
+
+.cp-btn--clear {
+  background: none;
+  color: var(--forge-muted);
+}
+
+.cp-btn--clear:hover {
+  color: var(--forge-text);
+  border-color: var(--forge-border-strong);
+}
+
+.cp-filter-active-note {
+  font-size: 0.75rem;
+  color: var(--forge-warn);
+  font-weight: 500;
+}
+
+/* Table — 9 columns */
+/* parcel/addr 2fr · date 1fr · price 1fr · gla 0.7fr · yrBlt 0.6fr · bed/bath 0.7fr · cond 0.9fr · ratio 0.8fr · src 0.9fr */
+.cp-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.cp-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 0.7fr 0.6fr 0.7fr 0.9fr 0.8fr 0.9fr;
+  gap: 6px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--forge-border);
+  align-items: center;
+  font-size: 0.8125rem;
+}
+
+.cp-row:last-child {
+  border-bottom: none;
+}
+
+.cp-row--head {
+  background: var(--forge-panel);
+  border-radius: 6px 6px 0 0;
+  color: var(--forge-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--forge-border-strong);
+}
+
+.cp-cell--identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cp-parcel {
+  font-variant-numeric: tabular-nums;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--forge-info);
+}
+
+.cp-address {
+  font-size: 0.75rem;
+  color: var(--forge-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cp-hood {
+  font-size: 0.6875rem;
+  color: var(--forge-subtle);
+}
+
+.cp-cell--num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.cp-cell--muted {
+  color: var(--forge-muted);
+}
+
+.cp-adj {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--forge-warn);
+  vertical-align: super;
+}
+
+/* Ratio badge — note: pacsComputedRatio is on 0–100 scale from PACS */
+.cp-ratio-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+}
+
+.cp-ratio-badge--ok {
+  background: color-mix(in srgb, var(--forge-success) 15%, transparent);
+  color: var(--forge-success);
+}
+
+.cp-ratio-badge--out {
+  background: color-mix(in srgb, var(--forge-warn) 15%, transparent);
+  color: var(--forge-warn);
+}
+
+.cp-ratio-badge--missing {
+  color: var(--forge-subtle);
+}
+
+/* Pagination */
+.cp-pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--forge-border);
+}
+
+.cp-page-btn {
+  background: none;
+  border: 1px solid var(--forge-border);
+  border-radius: 6px;
+  color: var(--forge-muted);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  padding: 4px 12px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.cp-page-btn:hover:not(:disabled) {
+  color: var(--forge-text);
+  border-color: var(--forge-border-strong);
+}
+
+.cp-page-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.cp-page-info {
+  color: var(--forge-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.cp-page-total {
+  color: var(--forge-subtle);
+}
+
+@media (max-width: 900px) {
+  .cp-filter-group {
+    flex: 1 1 140px;
+  }
+
+  .cp-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .cp-row--head {
+    display: none;
+  }
+}
