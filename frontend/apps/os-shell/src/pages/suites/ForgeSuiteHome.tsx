@@ -4,6 +4,7 @@ import type { WorkbenchTabSlug } from '../../contracts/workbench';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { usePropertyStore } from '../../stores/propertyStore';
+import { RatioStudyPanel } from './RatioStudyPanel';
 import { SaleQualificationQueue } from './SaleQualificationQueue';
 import './ForgeSuiteHome.css';
 
@@ -341,6 +342,9 @@ export default function ForgeSuiteHome() {
 
           {/* Slice 1.4 — county-wide sale qualification queue */}
           <SaleQualificationQueue />
+
+          {/* Slice 1.5 — county-wide IAAO ratio study */}
+          <RatioStudyPanel />
 
           <section className="forge-panel" data-testid="forge-queue">
             <div className="forge-panel__header">

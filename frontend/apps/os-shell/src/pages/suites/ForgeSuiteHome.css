@@ -556,3 +556,185 @@
     display: none;
   }
 }
+
+/* ── Ratio Study Panel (rs-*) ─ Slice 1.5 ─────────────────────────────── */
+
+.rs-state {
+  padding: 14px 16px;
+  color: var(--forge-muted);
+  font-size: 0.875rem;
+}
+
+.rs-state--error {
+  color: var(--forge-warn);
+}
+
+/* IAAO stat bar — five cards in a row */
+.rs-stats-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  padding: 0 0 12px;
+}
+
+.rs-stat {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--forge-border);
+  background: var(--forge-panel);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rs-stat--success { border-color: color-mix(in srgb, var(--forge-success) 35%, transparent); }
+.rs-stat--warn    { border-color: color-mix(in srgb, var(--forge-warn) 35%, transparent); }
+.rs-stat--neutral { border-color: var(--forge-border); }
+
+.rs-stat__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--forge-muted);
+}
+
+.rs-stat__value {
+  font-size: 1.375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--forge-text);
+}
+
+.rs-stat--success .rs-stat__value { color: var(--forge-success); }
+.rs-stat--warn    .rs-stat__value { color: var(--forge-warn); }
+
+.rs-stat__sub {
+  font-size: 0.6875rem;
+  color: var(--forge-subtle);
+}
+
+/* Detail table */
+.rs-table {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 6 columns: parcel 1.8fr · date 1fr · price 1fr · ratio 0.8fr · hood 1.2fr · source 1fr */
+.rs-row {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr 0.8fr 1.2fr 1fr;
+  gap: 8px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--forge-border);
+  align-items: center;
+  font-size: 0.8125rem;
+}
+
+.rs-row:last-child {
+  border-bottom: none;
+}
+
+.rs-row--head {
+  background: var(--forge-panel);
+  border-radius: 6px 6px 0 0;
+  color: var(--forge-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--forge-border-strong);
+}
+
+.rs-cell--parcel {
+  font-variant-numeric: tabular-nums;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--forge-info);
+}
+
+.rs-cell--muted {
+  color: var(--forge-muted);
+}
+
+.rs-cell--ratio {
+  text-align: right;
+}
+
+/* Ratio badge */
+.rs-ratio-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+}
+
+.rs-ratio-badge--ok {
+  background: color-mix(in srgb, var(--forge-success) 15%, transparent);
+  color: var(--forge-success);
+}
+
+.rs-ratio-badge--out {
+  background: color-mix(in srgb, var(--forge-warn) 15%, transparent);
+  color: var(--forge-warn);
+}
+
+.rs-ratio-badge--missing {
+  color: var(--forge-subtle);
+}
+
+/* Pagination */
+.rs-pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--forge-border);
+}
+
+.rs-page-btn {
+  background: none;
+  border: 1px solid var(--forge-border);
+  border-radius: 6px;
+  color: var(--forge-muted);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  padding: 4px 12px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.rs-page-btn:hover:not(:disabled) {
+  color: var(--forge-text);
+  border-color: var(--forge-border-strong);
+}
+
+.rs-page-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.rs-page-info {
+  color: var(--forge-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rs-page-total {
+  color: var(--forge-subtle);
+}
+
+@media (max-width: 900px) {
+  .rs-stats-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .rs-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .rs-row--head {
+    display: none;
+  }
+}
