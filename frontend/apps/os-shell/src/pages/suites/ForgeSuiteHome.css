@@ -353,3 +353,206 @@
     align-items: flex-start;
   }
 }
+
+/* ── Sale Qualification Queue (Slice 1.4) ───────────────────────────────── */
+
+.sq-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--forge-border);
+  padding-bottom: 1px;
+}
+
+.sq-tab {
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--forge-muted);
+  cursor: pointer;
+  transition: color 120ms, border-color 120ms;
+  margin-bottom: -1px;
+}
+
+.sq-tab:hover {
+  color: var(--forge-text);
+}
+
+.sq-tab--active {
+  color: var(--forge-info);
+  border-bottom-color: var(--forge-info);
+}
+
+.sq-state {
+  padding: 20px 0;
+  font-size: 13px;
+  color: var(--forge-muted);
+  text-align: center;
+}
+
+.sq-state--error {
+  color: var(--forge-warn);
+}
+
+.sq-table {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sq-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 2fr 1.2fr;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--forge-border);
+  background: var(--forge-stage);
+  font-size: 12px;
+}
+
+.sq-row--head {
+  border-color: transparent;
+  background: transparent;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--forge-subtle);
+  padding-top: 0;
+}
+
+.sq-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  color: var(--forge-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.sq-cell--parcel {
+  font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sq-cell--actions {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sq-reason {
+  font-size: 10px;
+  color: var(--forge-muted);
+  line-height: 1.4;
+}
+
+.sq-action {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 120ms;
+}
+
+.sq-action:hover {
+  opacity: 0.85;
+}
+
+.sq-action--qualify {
+  border-color: var(--forge-success);
+  background: transparent;
+  color: var(--forge-success);
+}
+
+.sq-action--reject {
+  border-color: var(--forge-warn);
+  background: transparent;
+  color: var(--forge-warn);
+}
+
+.sq-patch-state {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--forge-muted);
+}
+
+.sq-patch-state--error {
+  color: var(--forge-warn);
+}
+
+.sq-patch-state--done {
+  color: var(--forge-success);
+}
+
+.sq-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--forge-border);
+  font-size: 12px;
+}
+
+.sq-page-btn {
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--forge-border-strong);
+  background: var(--forge-stage);
+  color: var(--forge-text);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 120ms;
+}
+
+.sq-page-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.sq-page-btn:not(:disabled):hover {
+  border-color: var(--forge-info);
+  color: var(--forge-info);
+}
+
+.sq-page-info {
+  color: var(--forge-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.sq-page-total {
+  color: var(--forge-subtle);
+}
+
+@media (max-width: 900px) {
+  .sq-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .sq-row--head {
+    display: none;
+  }
+}
