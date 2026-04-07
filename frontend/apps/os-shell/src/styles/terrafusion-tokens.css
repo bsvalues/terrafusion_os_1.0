@@ -409,23 +409,22 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   DARK MODE OVERRIDES — Government Night
-   Only activates when user's OS has dark mode on.
-   Default is institutional blue light theme.
+   DARK MODE — Government Night
+   Disabled: app controls its own theme via data-theme attribute.
+   OS preference does NOT override the design spec.
+   To enable Government Night: <html data-theme="night">
    ═══════════════════════════════════════════════════════════════ */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --tf-bg: 222 24% 7%;
-    --tf-surface: 220 20% 12%;
-    --tf-surface-2: 220 18% 16%;
-    --tf-border: 220 16% 26%;
-    --tf-text: 214 22% 91%;
-    --tf-muted: 214 16% 58%;
-    --glass-bg: hsl(220 18% 16% / 0.72);
-    --glass-bg-light: hsl(220 18% 16% / 0.45);
-    --glass-bg-heavy: hsl(220 18% 16% / 0.88);
-    --glass-border: hsl(220 24% 35% / 0.45);
-  }
+[data-theme="night"] {
+  --tf-bg: 222 24% 7%;
+  --tf-surface: 220 20% 12%;
+  --tf-surface-2: 220 18% 16%;
+  --tf-border: 220 16% 26%;
+  --tf-text: 214 22% 91%;
+  --tf-muted: 214 16% 58%;
+  --glass-bg: hsl(220 18% 16% / 0.72);
+  --glass-bg-light: hsl(220 18% 16% / 0.45);
+  --glass-bg-heavy: hsl(220 18% 16% / 0.88);
+  --glass-border: hsl(220 24% 35% / 0.45);
 }
 
 /* ═══════════════════════════════════════════════════════════════
