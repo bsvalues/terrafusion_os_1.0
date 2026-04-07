@@ -550,8 +550,12 @@ export const useDesktopStore = create<DesktopState>()(
         const id = generateWindowId();
 
         // Use module-aware sizing (suites → near-full-stage, workbench → maximized)
-        const { size: moduleSize, maximized } = getModuleWindowSize(moduleId);
-        const initialBounds = maximized
+        const { size: moduleSize, maximized: moduleMaximized } = getModuleWindowSize(moduleId);
+
+        // Respect defaultMaximized metadata hint — caller can force maximized regardless of module default
+        const shouldMaximize = metadata?.defaultMaximized === true || moduleMaximized;
+
+        const initialBounds = shouldMaximize
           ? null
           : normalizeWindowBounds(calculateNewWindowPosition(windows.length), moduleSize);
 
@@ -561,9 +565,9 @@ export const useDesktopStore = create<DesktopState>()(
           title,
           icon,
           desktopId: currentDesktopId,
-          position: maximized ? { x: 0, y: 0 } : initialBounds!.position,
-          size: maximized ? moduleSize : initialBounds!.size,
-          state: maximized ? 'maximized' : 'normal',
+          position: shouldMaximize ? { x: 0, y: 0 } : initialBounds!.position,
+          size: shouldMaximize ? moduleSize : initialBounds!.size,
+          state: shouldMaximize ? 'maximized' : 'normal',
           zIndex: nextZIndex,
           metadata,
         };
