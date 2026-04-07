@@ -154,7 +154,7 @@ const DockSuiteButton: React.FC<{
         style={{ color: isActive ? accent : 'hsl(var(--tf-text-primary-hs) 70%)' }}
       />
       <span
-        className='text-[9px] font-medium leading-none'
+        className='text-[11px] font-medium leading-none'
         style={{ color: isActive ? accent : 'hsl(var(--tf-text-primary-hs) 55%)' }}
       >
         {suite.shortName}
