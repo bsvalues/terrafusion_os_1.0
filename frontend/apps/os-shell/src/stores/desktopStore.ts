@@ -335,12 +335,16 @@ const calculateNewWindowPosition = (windowCount: number): Position => {
 };
 
 /**
- * Clamp position to non-negative values
+ * Current usable desktop bounds inside the window manager region.
  */
-const clampPosition = (position: Position): Position => ({
-  x: Math.max(0, position.x),
-  y: Math.max(0, position.y),
-});
+const getUsableDesktopBounds = (): Size => {
+  const width = typeof window !== 'undefined' ? window.innerWidth : 1280;
+  const height = typeof window !== 'undefined' ? window.innerHeight - TOP_BAR_HEIGHT - TASKBAR_HEIGHT : 708;
+  return {
+    width: Math.max(MIN_WINDOW_SIZE.width, width),
+    height: Math.max(MIN_WINDOW_SIZE.height, height),
+  };
+};
 
 /**
  * Enforce minimum window size
@@ -349,6 +353,41 @@ const enforceMinSize = (size: Size): Size => ({
   width: Math.max(MIN_WINDOW_SIZE.width, size.width),
   height: Math.max(MIN_WINDOW_SIZE.height, size.height),
 });
+
+/**
+ * Clamp size so a normal window always fits inside the usable desktop area.
+ */
+const clampSizeToDesktop = (size: Size): Size => {
+  const bounds = getUsableDesktopBounds();
+  const enforced = enforceMinSize(size);
+  return {
+    width: Math.min(enforced.width, bounds.width),
+    height: Math.min(enforced.height, bounds.height),
+  };
+};
+
+/**
+ * Clamp position so the full window stays inside the usable desktop area.
+ */
+const clampPositionToDesktop = (position: Position, size: Size): Position => {
+  const bounds = getUsableDesktopBounds();
+  return {
+    x: Math.min(Math.max(0, position.x), Math.max(0, bounds.width - size.width)),
+    y: Math.min(Math.max(0, position.y), Math.max(0, bounds.height - size.height)),
+  };
+};
+
+/**
+ * Normalize a normal window's size and position together.
+ */
+const normalizeWindowBounds = (position: Position, size: Size): { position: Position; size: Size } => {
+  const normalizedSize = clampSizeToDesktop(size);
+  const normalizedPosition = clampPositionToDesktop(position, normalizedSize);
+  return {
+    position: normalizedPosition,
+    size: normalizedSize,
+  };
+};
 
 /**
  * Find the window with the highest z-index among non-minimized windows
@@ -495,11 +534,26 @@ export const useDesktopStore = create<DesktopState>()(
         }
 
         // ── Phase 9: Window Spawn — lawful open ────────────────────────
-        const id = generateWindowId();
         const { windows, nextZIndex, currentDesktopId } = get();
+
+        // Deduplicate: if a singleton window with the same moduleId exists, focus it
+        // Workbench windows are multi-instance (one per parcel) — skip module dedup
+        const isMultiInstance = moduleId === 'property-workbench';
+        if (!isMultiInstance) {
+          const existingByModule = windows.find((w) => w.moduleId === moduleId);
+          if (existingByModule) {
+            get().focusWindow(existingByModule.id);
+            return existingByModule.id;
+          }
+        }
+
+        const id = generateWindowId();
 
         // Use module-aware sizing (suites → near-full-stage, workbench → maximized)
         const { size: moduleSize, maximized } = getModuleWindowSize(moduleId);
+        const initialBounds = maximized
+          ? null
+          : normalizeWindowBounds(calculateNewWindowPosition(windows.length), moduleSize);
 
         const newWindow: DesktopWindow = {
           id,
@@ -507,8 +561,8 @@ export const useDesktopStore = create<DesktopState>()(
           title,
           icon,
           desktopId: currentDesktopId,
-          position: maximized ? { x: 0, y: 0 } : calculateNewWindowPosition(windows.length),
-          size: moduleSize,
+          position: maximized ? { x: 0, y: 0 } : initialBounds!.position,
+          size: maximized ? moduleSize : initialBounds!.size,
           state: maximized ? 'maximized' : 'normal',
           zIndex: nextZIndex,
           metadata,
@@ -634,11 +688,15 @@ export const useDesktopStore = create<DesktopState>()(
 
         const newWindows = windows.map((w) => {
           if (w.id === windowId) {
+            const restoredBounds = normalizeWindowBounds(
+              w.previousPosition ?? w.position,
+              w.previousSize ?? w.size
+            );
             return {
               ...w,
               state: 'normal' as WindowState,
-              position: w.previousPosition ?? w.position,
-              size: w.previousSize ?? w.size,
+              position: restoredBounds.position,
+              size: restoredBounds.size,
               zIndex: needsNewZIndex ? nextZIndex : w.zIndex,
               previousPosition: undefined,
               previousSize: undefined,
@@ -703,11 +761,15 @@ export const useDesktopStore = create<DesktopState>()(
       updateWindowPosition: (windowId: string, position: Position) => {
         const { windows } = get();
 
-        const clampedPosition = clampPosition(position);
-
-        const newWindows = windows.map((w) =>
-          w.id === windowId ? { ...w, position: clampedPosition } : w
-        );
+        const newWindows = windows.map((w) => {
+          if (w.id !== windowId) {
+            return w;
+          }
+          return {
+            ...w,
+            position: clampPositionToDesktop(position, w.size),
+          };
+        });
 
         set({ windows: newWindows });
       },
@@ -715,11 +777,17 @@ export const useDesktopStore = create<DesktopState>()(
       updateWindowSize: (windowId: string, size: Size) => {
         const { windows } = get();
 
-        const enforcedSize = enforceMinSize(size);
-
-        const newWindows = windows.map((w) =>
-          w.id === windowId ? { ...w, size: enforcedSize } : w
-        );
+        const newWindows = windows.map((w) => {
+          if (w.id !== windowId) {
+            return w;
+          }
+          const normalized = normalizeWindowBounds(w.position, size);
+          return {
+            ...w,
+            position: normalized.position,
+            size: normalized.size,
+          };
+        });
 
         set({ windows: newWindows });
       },
