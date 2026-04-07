@@ -225,11 +225,11 @@
    ============================================================================ */
 
 .liquid-panel[data-theme='light'] {
-  --liquid-bg: hsl(var(--tf-text-primary-hs) 100% / 0.8);
-  --liquid-border: hsl(var(--tf-tokens-black-hs) 0% / 0.08);
-  --liquid-shadow: inset 0 1px 0 hsl(var(--tf-text-primary-hs) 100% / 0.9);
-  --liquid-glow: hsl(var(--tf-transcend-cyan-hs) 50% / 0.15);
-  color: hsl(var(--tf-tokens-black-hs) 0% / 0.9);
+  --liquid-bg: hsl(var(--tf-surface) / 0.88);
+  --liquid-border: hsl(var(--tf-border) / 0.45);
+  --liquid-shadow: inset 0 1px 0 hsl(var(--tf-surface) / 0.95);
+  --liquid-glow: hsl(var(--tf-accent) / 0.10);
+  color: hsl(var(--tf-text));
 }
 
 /* ============================================================================
@@ -240,9 +240,9 @@
   .liquid-panel {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    background: hsl(var(--tf-text-primary-hs) 100%);
-    color: hsl(var(--tf-tokens-black-hs) 0%);
-    border: 1px solid hsl(var(--tf-neutral-hs) 80%);
+    background: hsl(var(--tf-surface));
+    color: hsl(var(--tf-text));
+    border: 1px solid hsl(var(--tf-border) / 0.6);
     box-shadow: none;
   }
 }
