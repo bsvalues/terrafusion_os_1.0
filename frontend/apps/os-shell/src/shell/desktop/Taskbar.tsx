@@ -14,7 +14,6 @@
 
 import { cn } from '@/lib/utils';
 import React, { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Hammer,
@@ -30,6 +29,7 @@ import { useWindowPeek } from '../../hooks/useWindowPeek';
 import { useDesktopStore } from '../../stores/desktopStore';
 import { Z } from './zIndex';
 import { useStartMenuStore } from '../../stores/startMenuStore';
+import { useNavigate } from 'react-router-dom';
 
 // useDataMode removed — DataModeIndicator moved to TopBar (Desktop.tsx)
 import { TerraSphere } from '../../ui/brand/TerraSphere';
@@ -55,6 +55,20 @@ function getSuiteIcon(iconName: string): React.ComponentType<{ className?: strin
   return SUITE_ICON_MAP[iconName] ?? Hammer;
 }
 
+// Suite brand accent colors — wrapped in hsl() since tokens store raw HSL tuples.
+// These drive icon color (active), hover background, and running indicator dot.
+const SUITE_ACCENT_MAP: Record<string, string> = {
+  forge:    'hsl(var(--tf-suite-forge))',    // copper  hsl(28 82% 58%)
+  atlas:    'hsl(var(--tf-suite-atlas))',    // blue    hsl(207 72% 58%)
+  dais:     'hsl(var(--tf-suite-dais))',     // claret  hsl(347 48% 56%)
+  dossier:  'hsl(var(--tf-suite-dossier))', // green   hsl(148 38% 46%)
+  pilot:    'hsl(var(--tf-suite-pilot))',   // indigo  hsl(226 58% 61%)
+};
+
+function getSuiteAccent(suiteId: string): string {
+  return SUITE_ACCENT_MAP[suiteId] ?? 'hsl(var(--tf-accent))';
+}
+
 // ============================================================================
 // Zone A: Home Button (TerraSphere)
 // ============================================================================
@@ -62,11 +76,14 @@ function getSuiteIcon(iconName: string): React.ComponentType<{ className?: strin
 const DockHomeButton: React.FC = () => {
   const { t } = useTranslation();
   const { isOpen, toggle } = useStartMenuStore();
+  const navigate = useNavigate();
 
   return (
     <button
       id='tf-start-button'
-      onClick={toggle}
+      onClick={() => navigate('/')}
+      onContextMenu={(e) => { e.preventDefault(); toggle(); }}
+      title="Right-click to open launcher"
       aria-label={t('taskbar.startMenu')}
       aria-expanded={isOpen}
       aria-haspopup='menu'
@@ -95,11 +112,20 @@ const DockSuiteButton: React.FC<{
   onContextMenu?: (e: React.MouseEvent, suiteId: string) => void;
 }> = ({ suite, isRunning, isActive, onContextMenu }) => {
   const Icon = getSuiteIcon(suite.iconName);
-  const navigate = useNavigate();
+  const accent = getSuiteAccent(suite.id);
+  const { openWindow, focusWindow, windows, activeWindowId, currentDesktopId } = useDesktopStore();
 
   const handleClick = () => {
-    // Navigate to suite route — no window creation, no stuck taskbar entries
-    navigate(suite.route);
+    const suiteModuleId = `suite-${suite.id}`;
+    const visibleWindows = windows.filter((w) => w.desktopId === currentDesktopId);
+    const existing = visibleWindows.find((w) => w.moduleId === suiteModuleId);
+
+    if (existing) {
+      // Toggle: focusWindow handles minimize-if-active and restore-if-minimized
+      focusWindow(existing.id);
+    } else {
+      openWindow(suiteModuleId, suite.displayName, suite.iconName);
+    }
   };
 
   return (
@@ -113,18 +139,27 @@ const DockSuiteButton: React.FC<{
         'w-14 h-14 rounded-2xl',
         'transition-all duration-150',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
-        'hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.10)]',
         isActive && 'bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.12)]'
       )}
+      style={isActive ? undefined : undefined}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.background = `color-mix(in srgb, ${accent} 12%, transparent)`;
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.background = '';
+      }}
     >
-      <Icon className='h-5 w-5' style={{ color: 'hsl(var(--tf-text-primary-hs) 90%)' }} />
+      <Icon
+        className='h-5 w-5'
+        style={{ color: isActive ? accent : 'hsl(var(--tf-text-primary-hs) 70%)' }}
+      />
       <span
         className='text-[9px] font-medium leading-none'
-        style={{ color: 'hsl(var(--tf-text-primary-hs) 60%)' }}
+        style={{ color: isActive ? accent : 'hsl(var(--tf-text-primary-hs) 55%)' }}
       >
         {suite.shortName}
       </span>
-      {/* Running indicator */}
+      {/* Running indicator — suite brand color */}
       {isRunning && (
         <div
           className='absolute bottom-0.5 left-1/2 -translate-x-1/2'
@@ -132,10 +167,9 @@ const DockSuiteButton: React.FC<{
             width: isActive ? 6 : 4,
             height: isActive ? 6 : 4,
             borderRadius: '50%',
-            background: isActive
-              ? 'hsl(var(--tf-transcend-cyan-hs) 50%)'
-              : 'hsl(var(--tf-neutral-hs) 60%)',
-            boxShadow: isActive ? '0 0 6px hsl(var(--tf-transcend-cyan-hs) 50% / 0.6)' : 'none',
+            background: accent,
+            boxShadow: isActive ? `0 0 6px color-mix(in srgb, ${accent} 60%, transparent)` : 'none',
+            opacity: isActive ? 1 : 0.6,
           }}
         />
       )}
@@ -159,7 +193,7 @@ const CoreSuiteZone: React.FC = () => {
   const [contextMenuWindow, setContextMenuWindow] = useState<(typeof windows)[0] | null>(null);
 
   const handleSuiteContextMenu = (e: React.MouseEvent, suiteId: string) => {
-    const suiteWindow = visibleWindows.find((w) => w.moduleId === suiteId);
+    const suiteWindow = visibleWindows.find((w) => w.moduleId === `suite-${suiteId}`);
     if (suiteWindow) {
       handleContextMenu(e);
       setContextMenuWindow(suiteWindow);
@@ -170,8 +204,9 @@ const CoreSuiteZone: React.FC = () => {
     <>
       <div className='flex items-center gap-1' role='group' aria-label='Core suites'>
         {CONSTITUTIONAL_SUITES.map((suite) => {
-          const isRunning = visibleWindows.some((w) => w.moduleId === suite.id);
-          const isActive = visibleWindows.some((w) => w.moduleId === suite.id && w.id === activeWindowId);
+          const suiteModuleId = `suite-${suite.id}`;
+          const isRunning = visibleWindows.some((w) => w.moduleId === suiteModuleId);
+          const isActive = visibleWindows.some((w) => w.moduleId === suiteModuleId && w.id === activeWindowId);
           return (
             <DockSuiteButton
               key={suite.id}
