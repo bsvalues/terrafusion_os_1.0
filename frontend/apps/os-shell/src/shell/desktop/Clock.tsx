@@ -81,10 +81,10 @@ export const Clock: React.FC<ClockProps> = ({ className }) => {
       )}
     >
       <time dateTime={isoDateTime} role='time'>
-        <span data-testid='clock-time' className='text-sm text-white/90 font-medium'>
+        <span data-testid='clock-time' className='text-sm font-medium' style={{ color: 'hsl(var(--tf-text))' }}>
           {formattedTime}
         </span>
-        <span data-testid='clock-date' className='block text-xs text-white/60'>
+        <span data-testid='clock-date' className='block text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
           {formattedShortDate}
         </span>
       </time>

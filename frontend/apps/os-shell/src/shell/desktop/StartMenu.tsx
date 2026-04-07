@@ -51,7 +51,7 @@ const RunningIndicator: React.FC = () => (
   <span
     data-testid='running-indicator'
     aria-label='running'
-    className='absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full'
+    className='absolute top-1 right-1 w-2 h-2 rounded-full' style={{ background: 'hsl(var(--tf-success))' }}
   />
 );
 
@@ -68,11 +68,11 @@ const WiringBadge: React.FC<{ entryType?: 'url' | 'route' | 'mf' }> = ({ entryTy
   const config = {
     url: {
       label: 'EXT',
-      color: 'bg-amber-500/30 text-amber-700',
+      color: 'bg-[hsl(var(--tf-warning)_/_0.2)] text-[hsl(var(--tf-warning))]',
       title: 'Opens in external window',
     },
-    route: { label: 'OS', color: 'bg-green-500/30 text-green-700', title: 'Native OS route' },
-    mf: { label: 'MF', color: 'bg-blue-500/30 text-blue-700', title: 'Module federation' },
+    route: { label: 'OS', color: 'bg-[hsl(var(--tf-success)_/_0.2)] text-[hsl(var(--tf-success))]', title: 'Native OS route' },
+    mf: { label: 'MF', color: 'bg-[hsl(var(--tf-info)_/_0.2)] text-[hsl(var(--tf-info))]', title: 'Module federation' },
   }[entryType];
 
   return (
