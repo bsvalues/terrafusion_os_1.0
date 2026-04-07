@@ -83,17 +83,17 @@ const RESIZE_HANDLE_CLASSES = {
 const RESIZE_HANDLE_STYLES: Record<string, React.CSSProperties> = {
   bottom: {
     position: 'absolute',
-    height: '10px',
+    height: '14px',
     bottom: '0',
-    left: '10px',
-    right: '10px',
+    left: '16px',
+    right: '16px',
     cursor: 's-resize',
     zIndex: 9999,
   },
   bottomLeft: {
     position: 'absolute',
-    width: '20px',
-    height: '20px',
+    width: '24px',
+    height: '24px',
     bottom: '0',
     left: '0',
     cursor: 'sw-resize',
@@ -101,8 +101,8 @@ const RESIZE_HANDLE_STYLES: Record<string, React.CSSProperties> = {
   },
   bottomRight: {
     position: 'absolute',
-    width: '20px',
-    height: '20px',
+    width: '24px',
+    height: '24px',
     bottom: '0',
     right: '0',
     cursor: 'se-resize',
@@ -110,35 +110,35 @@ const RESIZE_HANDLE_STYLES: Record<string, React.CSSProperties> = {
   },
   left: {
     position: 'absolute',
-    width: '10px',
+    width: '14px',
     left: '0',
     top: '40px',
-    bottom: '10px',
+    bottom: '16px',
     cursor: 'w-resize',
     zIndex: 9999,
   },
   right: {
     position: 'absolute',
-    width: '10px',
+    width: '14px',
     right: '0',
     top: '40px',
-    bottom: '10px',
+    bottom: '16px',
     cursor: 'e-resize',
     zIndex: 9999,
   },
   top: {
     position: 'absolute',
-    height: '6px',
+    height: '8px',
     top: '0',
-    left: '10px',
-    right: '80px',
+    left: '16px',
+    right: '90px',
     cursor: 'n-resize',
     zIndex: 9999,
   },
   topLeft: {
     position: 'absolute',
-    width: '20px',
-    height: '20px',
+    width: '24px',
+    height: '24px',
     top: '0',
     left: '0',
     cursor: 'nw-resize',
@@ -146,14 +146,74 @@ const RESIZE_HANDLE_STYLES: Record<string, React.CSSProperties> = {
   },
   topRight: {
     position: 'absolute',
-    width: '20px',
-    height: '20px',
+    width: '24px',
+    height: '24px',
     top: '0',
     right: '0',
     cursor: 'ne-resize',
     zIndex: 9999,
   },
 };
+
+// ============================================================================
+// Scroll Helpers
+// ============================================================================
+
+function isScrollableOverflow(value: string): boolean {
+  return value === 'auto' || value === 'scroll' || value === 'overlay';
+}
+
+function canScrollVertically(element: HTMLElement): boolean {
+  const style = window.getComputedStyle(element);
+  const overflowY = style.overflowY === 'visible' ? style.overflow : style.overflowY;
+  return isScrollableOverflow(overflowY) && element.scrollHeight > element.clientHeight;
+}
+
+function canScrollInDirection(element: HTMLElement, deltaY: number): boolean {
+  if (deltaY < 0) {
+    return element.scrollTop > 0;
+  }
+
+  if (deltaY > 0) {
+    return element.scrollTop + element.clientHeight < element.scrollHeight;
+  }
+
+  return false;
+}
+
+function getWheelStartElement(target: EventTarget | null, boundary: HTMLElement): HTMLElement | null {
+  if (target instanceof HTMLElement) {
+    return target;
+  }
+
+  if (target instanceof Node) {
+    return target.parentElement;
+  }
+
+  return boundary;
+}
+
+function findWheelScrollTarget(
+  target: EventTarget | null,
+  boundary: HTMLElement,
+  deltaY: number,
+): HTMLElement | null {
+  let current = getWheelStartElement(target, boundary);
+
+  while (current) {
+    if (canScrollVertically(current) && canScrollInDirection(current, deltaY)) {
+      return current;
+    }
+
+    if (current === boundary) {
+      break;
+    }
+
+    current = current.parentElement;
+  }
+
+  return null;
+}
 
 // ============================================================================
 // Subcomponents
@@ -198,26 +258,33 @@ const WindowControlButton: React.FC<WindowControlButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'group/btn w-3 h-3 rounded-full',
+        'group/btn w-8 h-8 rounded-full',
         'flex items-center justify-center',
         'transition-all duration-100',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50',
-        disabled && 'opacity-30 cursor-not-allowed !bg-gray-500/50'
+        disabled && 'opacity-30 cursor-not-allowed'
       )}
-      style={
-        disabled
-          ? undefined
-          : { backgroundColor: tokenColors[variant] }
-      }
-      onMouseEnter={(e) => {
-        if (!disabled) e.currentTarget.style.backgroundColor = tokenHoverColors[variant];
-      }}
-      onMouseLeave={(e) => {
-        if (!disabled) e.currentTarget.style.backgroundColor = tokenColors[variant];
-      }}
     >
-      <span className='text-[8px] leading-none font-bold text-black/0 group-hover/btn:text-black/80 transition-colors select-none'>
-        {icons[variant]}
+      <span
+        className={cn(
+          'w-3 h-3 rounded-full flex items-center justify-center transition-all duration-100',
+          disabled && '!bg-gray-500/50'
+        )}
+        style={
+          disabled
+            ? undefined
+            : { backgroundColor: tokenColors[variant] }
+        }
+        onMouseEnter={(e) => {
+          if (!disabled) (e.currentTarget as HTMLSpanElement).style.backgroundColor = tokenHoverColors[variant];
+        }}
+        onMouseLeave={(e) => {
+          if (!disabled) (e.currentTarget as HTMLSpanElement).style.backgroundColor = tokenColors[variant];
+        }}
+      >
+        <span className='text-[10px] leading-none font-bold text-black/0 group-hover/btn:text-black/80 transition-colors select-none'>
+          {icons[variant]}
+        </span>
       </span>
     </button>
   );
@@ -323,7 +390,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
         <span
           className={cn(
             'text-sm font-medium truncate max-w-[300px]',
-            isActive ? 'text-white' : 'text-white/60'
+            isActive ? 'text-[hsl(var(--tf-text))]' : 'text-[hsl(var(--tf-text)/0.5)]'
           )}
         >
           {title}
@@ -353,6 +420,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
   } = useDesktopStore();
 
   const rndRef = useRef<Rnd>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<{ x: number; y: number } | undefined>(undefined);
   const isActive = windowData.id === activeWindowId;
   const isMaximized = windowData.state === 'maximized';
@@ -472,8 +540,10 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
 
   const handleResizeStart = useCallback(() => {
     setIsResizing(true);
-    focusWindow(windowData.id);
-  }, [focusWindow, windowData.id]);
+    if (windowData.id !== activeWindowId) {
+      focusWindow(windowData.id);
+    }
+  }, [activeWindowId, focusWindow, windowData.id]);
 
   const handleResizeStop: RndResizeCallback = useCallback(
     (_e, _direction, ref, _delta, position) => {
@@ -486,6 +556,37 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
     },
     [updateWindowPosition, updateWindowSize, windowData.id]
   );
+
+  const handleWheelCapture = useCallback((e: WheelEvent) => {
+    if (isInteracting || e.defaultPrevented || e.ctrlKey || e.deltaY === 0) {
+      return;
+    }
+
+    const boundary = contentRef.current;
+    if (!boundary) {
+      return;
+    }
+
+    const scrollTarget = findWheelScrollTarget(e.target, boundary, e.deltaY);
+    if (!scrollTarget) {
+      return;
+    }
+
+    scrollTarget.scrollTop += e.deltaY;
+    e.preventDefault();
+  }, [isInteracting]);
+
+  useEffect(() => {
+    const content = contentRef.current;
+    if (!content) {
+      return;
+    }
+
+    content.addEventListener('wheel', handleWheelCapture, { capture: true, passive: false });
+    return () => {
+      content.removeEventListener('wheel', handleWheelCapture, true);
+    };
+  }, [handleWheelCapture]);
 
   // Don't render minimized windows
   if (isMinimized) {
@@ -509,7 +610,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
         size={size}
         minWidth={MIN_WIDTH}
         minHeight={MIN_HEIGHT}
-        bounds='parent'
+        bounds='window'
         dragHandleClassName='window-drag-handle'
         cancel='[data-testid="window-controls"], [data-testid="window-controls"] *'
         disableDragging={isMaximized || isTier0}
@@ -554,6 +655,19 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
           data-testid='tf-window-animation'
           className='w-full h-full'
         >
+        {/* ── Tier-0 surface (property-workbench) — no chrome, no titlebar ── */}
+        {isTier0 ? (
+          <div
+            data-testid='tf-window-chrome'
+            data-tier0='true'
+            className='w-full h-full overflow-hidden'
+            style={{ background: 'hsl(var(--tf-bg))' }}
+          >
+            <WindowInteractionContext.Provider value={{ isInteracting }}>
+              {children}
+            </WindowInteractionContext.Provider>
+          </div>
+        ) : (
         <LiquidPanel
           variant='shell'
           radius='lg'
@@ -565,16 +679,17 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
           )}
           style={{
             border: isActive
-              ? '0.5px solid hsl(var(--tf-text) / 0.12)'
-              : '0.5px solid hsl(var(--tf-border) / 0.3)',
+              ? '0.5px solid hsl(var(--tf-border) / 0.5)'
+              : '0.5px solid hsl(var(--tf-border) / 0.25)',
             boxShadow: isActive
               ? `
-                0 24px 80px hsl(var(--tf-bg) / 0.55),
-                0 8px 24px hsl(var(--tf-bg) / 0.3),
+                0 0 0 0.5px hsl(var(--tf-accent) / 0.08),
+                0 20px 50px hsl(222 24% 4% / 0.65),
+                0 4px 12px hsl(222 24% 4% / 0.4),
                 inset 0 0.5px 0 hsl(var(--tf-text) / 0.08)
               `
               : `
-                0 12px 40px hsl(var(--tf-bg) / 0.4),
+                0 10px 30px hsl(222 24% 4% / 0.5),
                 inset 0 0.5px 0 hsl(var(--tf-text) / 0.04)
               `,
           }}
@@ -592,13 +707,44 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
             onContextMenu={handleContextMenu}
           />
 
-          {/* Content Area */}
+          {/* Content Area
+              overflow-hidden here: the window chrome never scrolls.
+              Each module component owns its own scroll container.
+              pointer-events blocked during drag/resize so the scroll
+              container cannot intercept events meant for resize handles.
+              onMouseDownCapture: intercepts events in the resize zone (within
+              RESIZE_GUARD_PX of content edges) BEFORE inner module elements
+              see them, preventing module scroll from competing with the handle. */}
           <div
+            ref={contentRef}
             data-testid='window-content'
-            className={cn('flex-1 overflow-auto', 'rounded-b-lg')}
+            className={cn('flex-1 overflow-hidden', 'rounded-b-lg')}
             style={{
               background: 'linear-gradient(180deg, transparent 0%, hsl(var(--tf-bg) / 0.15) 100%)',
+              pointerEvents: isInteracting ? 'none' : 'auto',
+              userSelect: isInteracting ? 'none' : 'auto',
             }}
+            onMouseDownCapture={
+              isMaximized || isTier0
+                ? undefined
+                : (e) => {
+                    // Guard zone slightly wider than the handle itself so near-miss
+                    // clicks near the edge don't start a module scroll.
+                    const RESIZE_GUARD_PX = 20;
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const nearEdge =
+                      rect.right - e.clientX < RESIZE_GUARD_PX ||
+                      rect.bottom - e.clientY < RESIZE_GUARD_PX ||
+                      e.clientX - rect.left < RESIZE_GUARD_PX;
+                    if (nearEdge) {
+                      e.stopPropagation();
+                      // Still bring the window to front even though we swallowed the event
+                      if (windowData.id !== activeWindowId) {
+                        focusWindow(windowData.id);
+                      }
+                    }
+                  }
+            }
           >
             <WindowInteractionContext.Provider value={{ isInteracting }}>
               {children ?? (
@@ -615,7 +761,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
                       style={{ filter: 'drop-shadow(0 0 15px hsl(var(--tf-accent) / 0.4))' }}
                     >
                       {React.createElement(getLucideIcon(windowData.icon), {
-                        className: 'h-10 w-10 text-white',
+                        className: 'h-10 w-10 text-[hsl(var(--tf-text))]',
                       })}
                     </span>
                     <p style={{ color: 'hsl(var(--tf-accent) / 0.8)' }} className='text-sm'>
@@ -630,6 +776,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
             </WindowInteractionContext.Provider>
           </div>
         </LiquidPanel>
+        )}
         </motion.div>
       </Rnd>
 
