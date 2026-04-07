@@ -81,7 +81,7 @@ const RunningIndicator: React.FC = () => (
   <span
     data-testid='running-indicator'
     aria-label='running'
-    className='absolute top-0.5 right-0.5 w-2 h-2 bg-green-400 rounded-full text-green-400'
+    className='absolute top-0.5 right-0.5 w-2 h-2 rounded-full' style={{ background: 'hsl(var(--tf-success))' }}
   />
 );
 
@@ -106,7 +106,7 @@ const RecentAppTile: React.FC<RecentAppTileProps> = ({ module, onLaunch }) => {
         'min-w-[64px]',
         'rounded-lg',
         'transition-all duration-150',
-        'hover:bg-white/10',
+        'hover:bg-[hsl(var(--tf-text)_/_0.07)]',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-transparent',
         'active:scale-95'
       )}
@@ -118,9 +118,9 @@ const RecentAppTile: React.FC<RecentAppTileProps> = ({ module, onLaunch }) => {
     >
       {isRunning && <RunningIndicator />}
       <span className='text-2xl' role='img' aria-hidden='true'>
-        <Icon className='h-5 w-5 text-white drop-shadow-md' />
+        <Icon className='h-5 w-5' style={{ color: 'hsl(var(--tf-text) / 0.8)' }} />
       </span>
-      <span className='text-xs text-white/80 text-center truncate max-w-[60px]'>{module.name}</span>
+      <span className='text-xs text-center truncate max-w-[60px]' style={{ color: 'hsl(var(--tf-text) / 0.8)' }}>{module.name}</span>
     </button>
   );
 };
@@ -149,7 +149,7 @@ export const RecentAppsSection: React.FC<RecentAppsSectionProps> = ({ onLaunch }
   return (
     <div data-testid='recent-apps' className='mb-3'>
       {/* Section Header */}
-      <h2 className='flex items-center gap-1.5 text-xs font-semibold text-white/60 uppercase tracking-wider mb-2 px-1'>
+      <h2 className='flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mb-2 px-1' style={{ color: 'hsl(var(--tf-muted))' }}>
         <ClockIcon />
         Recent
       </h2>
@@ -157,7 +157,7 @@ export const RecentAppsSection: React.FC<RecentAppsSectionProps> = ({ onLaunch }
       {/* Horizontal Scroll Container */}
       <div
         data-testid='recent-apps-container'
-        className='overflow-x-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent'
+        className='overflow-x-auto scrollbar-thin scrollbar-thumb-[hsl(var(--tf-text)_/_0.15)] scrollbar-track-transparent'
       >
         <div className='flex gap-1 pb-1'>
           {/* Apps in most-recent-first order (SC-6.3) */}
