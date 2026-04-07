@@ -22,7 +22,7 @@ import { useSentinelStore } from '../../sentinel/sentinelStore';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useAltTabStore } from '../../stores/altTabStore';
 import { useControlCenterStore } from '../../stores/controlCenterStore';
-import { useDesktopStore } from '../../stores/desktopStore';
+import { useDesktopStore, openCompanionWindow } from '../../stores/desktopStore';
 import { useShellMode, useShellModeActions, useShellSurfaces } from '../../stores/desktopStore';
 import { useNotificationStore, useNotifications } from '../../stores/notificationStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
@@ -295,6 +295,13 @@ export function Desktop({ className = '', children }: DesktopProps) {
     }
     prevStartMenuOpen.current = isStartMenuOpen;
   }, [isStartMenuOpen]);
+
+  // ============================================================================
+  // TerraPilot Companion — auto-spawn on desktop mount
+  // ============================================================================
+  useEffect(() => {
+    openCompanionWindow();
+  }, []);
 
   // ============================================================================
   // Desktop Context Menu (Priority 6)
