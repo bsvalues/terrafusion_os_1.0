@@ -193,10 +193,10 @@ export function getModuleWindowSize(moduleId: string): { size: Size; maximized: 
     }
   }
 
-  // Companion window — compact floating panel, not full-stage
+  // Companion window — portrait, narrow, visually subordinate to Workbench
   if (moduleId === 'os-pilot') {
     return {
-      size: { width: 440, height: 600 },
+      size: { width: 360, height: 680 },
       maximized: false,
     };
   }
@@ -1118,11 +1118,13 @@ export function openCompanionWindow(): void {
     return;
   }
 
-  // Spawn at bottom-right corner, above the dock (84px) with a right margin
-  const w = 440;
-  const h = 600;
-  const x = Math.max(20, (typeof window !== 'undefined' ? window.innerWidth : 1920) - w - 24);
-  const y = Math.max(60, (typeof window !== 'undefined' ? window.innerHeight : 1080) - h - 100);
+  // Spawn at right edge, vertically centered in usable area — companion position
+  const w = 360;
+  const h = 680;
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 1920;
+  const vh = typeof window !== 'undefined' ? window.innerHeight : 1080;
+  const x = vw - w - 20;                // 20px from right edge
+  const y = Math.round((vh - h) / 2);  // vertically centered
 
   openWindow('os-pilot', 'TerraPilot · Muse', 'Bot', {
     persistent: true,
