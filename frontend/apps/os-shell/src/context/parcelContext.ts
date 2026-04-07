@@ -418,6 +418,11 @@ export function openWorkbenchWindow(parcelId?: string, tabId?: string): void {
   setContext({ parcelId, source: 'selection' });
   recordRecent(parcelId);
 
+  // Broadcast to companion context bus — Pilot auto-updates to this parcel
+  import('../stores/companionStore').then(({ useCompanionStore }) => {
+    useCompanionStore.getState().setActiveParcel(parcelId!);
+  });
+
   // Pre-load parcel data via property store (DataProvider-backed)
   import('../stores/propertyStore').then(({ usePropertyStore }) => {
     usePropertyStore.getState().selectParcel(parcelId!);

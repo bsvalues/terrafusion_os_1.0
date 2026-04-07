@@ -8,6 +8,7 @@
  * - Ctrl+`: Toggle Start Menu
  * - Ctrl+K: Toggle Command Palette
  * - Ctrl+,: Open Settings
+ * - Ctrl+\: Toggle TerraPilot companion panel
  * - Escape: Close Start Menu (if open)
  *
  * @module hooks/useKeyboardShortcuts
@@ -18,6 +19,7 @@
 import { useCallback, useEffect } from 'react';
 import { activateModule } from '../orchestration/moduleActivation';
 import { useCommandPaletteStore } from '../stores/commandPaletteStore';
+import { useCompanionStore } from '../stores/companionStore';
 import { useStartMenuStore } from '../stores/startMenuStore';
 
 /**
@@ -81,6 +83,9 @@ export function useKeyboardShortcuts(): void {
   const closeCommandPalette = useCommandPaletteStore((state) => state.close);
   const isCommandPaletteOpen = useCommandPaletteStore((state) => state.isOpen);
 
+  // Get companion panel actions
+  const toggleCompanion = useCompanionStore((state) => state.toggle);
+
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       const { key, ctrlKey, altKey, shiftKey, metaKey } = event;
@@ -132,6 +137,15 @@ export function useKeyboardShortcuts(): void {
       }
 
       // ========================================
+      // Ctrl+\ : Toggle TerraPilot companion panel (global)
+      // ========================================
+      if (key === '\\' && ctrlKey && !altKey && !shiftKey && !metaKey) {
+        event.preventDefault();
+        toggleCompanion();
+        return;
+      }
+
+      // ========================================
       // Ctrl+/ : Show Keyboard Shortcuts (global)
       // ========================================
       if (key === '/' && ctrlKey && !altKey && !shiftKey && !metaKey) {
@@ -172,6 +186,7 @@ export function useKeyboardShortcuts(): void {
       isCommandPaletteOpen,
       toggleCommandPalette,
       closeCommandPalette,
+      toggleCompanion,
     ]
   );
 

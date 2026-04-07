@@ -1089,21 +1089,14 @@ export const useShellSurfaces = () => {
 };
 
 /**
- * Opens or focuses the TerraPilot companion window.
- * Singleton — only one companion window can exist.
+ * @deprecated TerraPilot is now a shell-level CompanionPanel, not a window.
+ * Use useCompanionStore().toggle() or the Ctrl+\ hotkey instead.
+ * This shim is kept to avoid breaking any call sites until they are migrated.
  */
 export function openCompanionWindow(): void {
-  const { windows, openWindow, focusWindow } = useDesktopStore.getState();
-
-  const existing = windows.find((w) => w.moduleId === 'os-pilot');
-  if (existing) {
-    focusWindow(existing.id);
-    return;
-  }
-
-  openWindow('os-pilot', 'TerraPilot', 'Bot', {
-    companion: true,
-    persistent: true,
+  // Lazy import to avoid circular dependency
+  import('./companionStore').then(({ useCompanionStore }) => {
+    useCompanionStore.getState().open();
   });
 }
 

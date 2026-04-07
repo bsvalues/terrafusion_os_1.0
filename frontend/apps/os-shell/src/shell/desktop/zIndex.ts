@@ -37,6 +37,9 @@ export const Z = Object.freeze({
   /** Window snap preview overlay */
   snapPreview: 1040,
 
+  /** Companion panel (TerraPilot/TerraMuse) — above dock, below peek */
+  companionPanel: 1050,
+
   /** Window peek (hover preview) */
   peek: 1100,
 

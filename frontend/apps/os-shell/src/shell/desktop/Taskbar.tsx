@@ -27,6 +27,7 @@ import { CONSTITUTIONAL_SUITES, type SuiteDefinition } from '../../config/suiteR
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { useWindowPeek } from '../../hooks/useWindowPeek';
 import { useDesktopStore } from '../../stores/desktopStore';
+import { useCompanionStore } from '../../stores/companionStore';
 import { Z } from './zIndex';
 import { useStartMenuStore } from '../../stores/startMenuStore';
 import { useNavigate } from 'react-router-dom';
@@ -312,9 +313,13 @@ const RunningApps: React.FC = () => {
   const [contextMenuWindow, setContextMenuWindow] = useState<(typeof windows)[0] | null>(null);
 
   // Only show windows that DON'T match a constitutional suite (those are in CoreSuiteZone)
+  // and exclude os-pilot (TerraPilot is now a CompanionPanel, not a window)
   const pinnedIds = new Set(CONSTITUTIONAL_SUITES.map((s) => s.id));
   const visibleWindows = windows.filter(
-    (w) => w.desktopId === currentDesktopId && !pinnedIds.has(w.moduleId ?? '')
+    (w) =>
+      w.desktopId === currentDesktopId &&
+      !pinnedIds.has(w.moduleId ?? '') &&
+      w.moduleId !== 'os-pilot'
   );
 
   if (visibleWindows.length === 0) return null;
@@ -354,6 +359,47 @@ const RunningApps: React.FC = () => {
         />
       )}
     </>
+  );
+};
+
+// ============================================================================
+// Zone C: TerraPilot companion toggle
+// ============================================================================
+
+const PilotToggleButton: React.FC = () => {
+  const { isOpen, toggle } = useCompanionStore();
+  const accent = getSuiteAccent('pilot');
+
+  return (
+    <button
+      onClick={toggle}
+      aria-label={isOpen ? 'Close TerraPilot' : 'Open TerraPilot (Ctrl+\\)'}
+      aria-pressed={isOpen}
+      title="TerraPilot · Muse (Ctrl+\)"
+      className={cn(
+        'relative flex flex-col items-center justify-center gap-1',
+        'w-[52px] h-[52px] rounded-xl transition-colors',
+        'hover:bg-[hsl(var(--tf-text)_/_0.07)]',
+        isOpen && 'bg-[hsl(var(--tf-text)_/_0.12)]'
+      )}
+    >
+      <Bot
+        className='h-5 w-5'
+        style={{ color: isOpen ? accent : 'hsl(var(--tf-text) / 0.75)' }}
+      />
+      {/* Active indicator dot */}
+      <div
+        className='absolute -bottom-0.5 left-1/2 -translate-x-1/2'
+        style={{
+          width: 5,
+          height: 5,
+          borderRadius: '50%',
+          background: isOpen ? accent : 'transparent',
+          boxShadow: isOpen ? `0 0 6px ${accent}99` : 'none',
+          transition: 'background 0.2s, box-shadow 0.2s',
+        }}
+      />
+    </button>
   );
 };
 
@@ -417,6 +463,11 @@ export const Taskbar: React.FC<TaskbarProps> = ({
 
         {/* Running apps that aren't constitutional suites */}
         <RunningApps />
+
+        <DockDivider />
+
+        {/* Zone C: TerraPilot companion toggle */}
+        <PilotToggleButton />
       </LiquidPanel>
     </>
   );
