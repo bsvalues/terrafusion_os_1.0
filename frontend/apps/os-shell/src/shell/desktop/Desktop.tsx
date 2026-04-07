@@ -553,24 +553,7 @@ export function Desktop({ className = '', children }: DesktopProps) {
       {/* Layer 1000: Taskbar (with live notifications) */}
       <TaskbarWithNotifications />
 
-      {/* Layer 1001: Start Menu scrim + panel */}
-      {isStartMenuOpen && (
-        <>
-          <div
-            aria-hidden='true'
-            style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 1009,
-              background: 'hsl(var(--tf-text) / 0.25)',
-              backdropFilter: 'blur(2px)',
-            }}
-          />
-          <StartMenu />
-        </>
-      )}
-
-      {/* Layer 1002: Launcher (unified navigation surface) */}
+      {/* Layer 1002: Launcher (unified navigation surface — replaces StartMenu) */}
       <Launcher />
 
       {/* Layer 50: Toast Notifications (bottom-right, above taskbar) */}
