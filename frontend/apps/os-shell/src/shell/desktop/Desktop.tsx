@@ -94,7 +94,7 @@ const DesktopTopSystemBar: React.FC<{
             fontSize: '0.8125rem',
             fontWeight: 600,
             letterSpacing: '-0.01em',
-            color: 'hsl(var(--tf-text-primary-hs) 95%)',
+            color: 'hsl(var(--tf-text))',
           }}
         >
           TerraFusion OS
@@ -103,17 +103,17 @@ const DesktopTopSystemBar: React.FC<{
 
       {/* Zone B: County + Department Context (center) */}
       <div className='absolute left-1/2 -translate-x-1/2 flex items-center gap-2'>
-        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text-primary-hs) 60%)', fontWeight: 500 }}>
+        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-muted))', fontWeight: 500 }}>
           Benton County
         </span>
         <div
           style={{
             width: 1,
             height: 12,
-            background: 'hsl(var(--tf-border) / 0.2)',
+            background: 'hsl(var(--tf-border) / 0.5)',
           }}
         />
-        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text-primary-hs) 45%)', fontWeight: 500 }}>
+        <span style={{ fontSize: '0.75rem', color: 'hsl(var(--tf-text) / 0.7)', fontWeight: 500 }}>
           Assessor&apos;s Office
         </span>
       </div>
@@ -123,7 +123,7 @@ const DesktopTopSystemBar: React.FC<{
         {/* ⌘K Search */}
         <button
           onClick={onOpenCommandPalette}
-          className='flex items-center gap-1 px-2 py-0.5 rounded-md opacity-50 hover:opacity-90 hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.06)] transition-all text-xs'
+          className='flex items-center gap-1 px-2 py-0.5 rounded-md opacity-60 hover:opacity-100 hover:bg-[hsl(var(--tf-text)_/_0.07)] transition-all text-xs'
           aria-label='Search (Ctrl+K)'
           title='Search (Ctrl+K)'
         >

@@ -229,7 +229,7 @@ export default function BentonCountyMap({ onParcelSelect, className }: BentonCou
           className='absolute inset-0 flex items-center justify-center z-10'
           style={{ background: 'hsl(var(--tf-bg))' }}
         >
-          <span className='text-xs' style={{ color: 'hsl(var(--tf-text-primary-hs) 35%)' }}>
+          <span className='text-xs' style={{ color: 'hsl(var(--tf-text))' }}>
             Loading map…
           </span>
         </div>

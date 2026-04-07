@@ -77,7 +77,7 @@ const SectionHeader: React.FC<{ icon: React.ReactNode; title: string }> = ({ ico
     <span className='opacity-50'>{icon}</span>
     <span
       className='text-xs font-semibold uppercase tracking-wider'
-      style={{ color: 'hsl(var(--tf-text-primary-hs) 50%)' }}
+      style={{ color: 'hsl(var(--tf-muted))' }}
     >
       {title}
     </span>
@@ -97,21 +97,21 @@ const ActionRow: React.FC<{
     className={cn(
       'flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-left',
       'transition-all duration-150',
-      'hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)]',
+      'hover:bg-[hsl(var(--tf-text)_/_0.07)]',
       'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
       subtle ? 'opacity-60 hover:opacity-90' : 'opacity-80 hover:opacity-100'
     )}
   >
     <span className='flex-shrink-0 opacity-60'>{icon}</span>
-    <span className='text-sm font-medium truncate' style={{ color: 'hsl(var(--tf-text-primary-hs) 90%)' }}>
+    <span className='text-sm font-medium truncate' style={{ color: 'hsl(var(--tf-text))' }}>
       {label}
     </span>
     {shortcut && (
       <span
         className='ml-auto flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded'
         style={{
-          color: 'hsl(var(--tf-text-primary-hs) 35%)',
-          background: 'hsl(var(--tf-text-primary-hs) 10% / 0.3)',
+          color: 'hsl(var(--tf-text))',
+          background: 'hsl(var(--tf-surface-2))',
         }}
       >
         {shortcut}
@@ -189,8 +189,8 @@ const CountyMapOverview: React.FC<{
         <kbd
           className='text-[10px] font-medium px-1.5 py-0.5 rounded flex-shrink-0'
           style={{
-            background: 'hsl(var(--tf-text-primary-hs) 10% / 0.3)',
-            color: 'hsl(var(--tf-text-primary-hs) 35%)',
+            background: 'hsl(var(--tf-surface-2))',
+            color: 'hsl(var(--tf-text))',
           }}
         >
           ⌘K
@@ -292,8 +292,8 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
 
           {/* Bottom strip: County status */}
           <LiquidPanel variant='shell' radius='lg' className='px-4 py-2 shrink-0'>
-            <div data-testid='county-status-strip' className='flex items-center justify-between text-xs' style={{ color: 'hsl(var(--tf-text-primary-hs) 45%)' }}>
-              <span className='font-medium' style={{ color: 'hsl(var(--tf-text-primary-hs) 65%)' }}>
+            <div data-testid='county-status-strip' className='flex items-center justify-between text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+              <span className='font-medium' style={{ color: 'hsl(var(--tf-text))' }}>
                 Benton County, WA
               </span>
               <span>{parcelCount.toLocaleString()} parcels</span>

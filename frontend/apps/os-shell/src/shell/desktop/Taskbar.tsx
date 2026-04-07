@@ -92,8 +92,8 @@ const DockHomeButton: React.FC = () => {
         'w-16 h-16 rounded-2xl',
         'transition-all duration-150',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
-        'hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)]',
-        isOpen && 'bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.12)]'
+        'hover:bg-[hsl(var(--tf-text)_/_0.07)]',
+        isOpen && 'bg-[hsl(var(--tf-text)_/_0.10)]'
       )}
     >
       <TerraSphere size={56} state={isOpen ? 'processing' : 'idle'} />
@@ -139,7 +139,7 @@ const DockSuiteButton: React.FC<{
         'w-14 h-14 rounded-2xl',
         'transition-all duration-150',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
-        isActive && 'bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.12)]'
+        isActive && 'bg-[hsl(var(--tf-text)_/_0.10)]'
       )}
       style={isActive ? undefined : undefined}
       onMouseEnter={(e) => {
@@ -151,11 +151,11 @@ const DockSuiteButton: React.FC<{
     >
       <Icon
         className='h-5 w-5'
-        style={{ color: isActive ? accent : 'hsl(var(--tf-text-primary-hs) 70%)' }}
+        style={{ color: isActive ? accent : 'hsl(var(--tf-text) / 0.7)' }}
       />
       <span
         className='text-[11px] font-medium leading-none'
-        style={{ color: isActive ? accent : 'hsl(var(--tf-text-primary-hs) 55%)' }}
+        style={{ color: isActive ? accent : 'hsl(var(--tf-muted))' }}
       >
         {suite.shortName}
       </span>
@@ -278,12 +278,12 @@ const DockAppButton: React.FC<DockAppButtonProps> = ({
         'w-12 h-12 rounded-xl',
         'transition-all duration-150',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
-        'hover:bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.08)]',
-        isActive && 'bg-[hsl(var(--tf-text-primary-hs)_100%_/_0.10)]',
+        'hover:bg-[hsl(var(--tf-text)_/_0.07)]',
+        isActive && 'bg-[hsl(var(--tf-text)_/_0.10)]',
         isMinimized && !isActive && 'opacity-50'
       )}
     >
-      <Icon className='h-5 w-5' style={{ color: 'hsl(var(--tf-text-primary-hs) 85%)' }} />
+      <Icon className='h-5 w-5' style={{ color: 'hsl(var(--tf-text) / 0.75)' }} />
       {isActive && (
         <div
           className='absolute -bottom-0.5 left-1/2 -translate-x-1/2'
