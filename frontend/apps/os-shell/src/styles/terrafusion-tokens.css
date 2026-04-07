@@ -312,12 +312,12 @@
      HSL channel values — used as hsl(var(--tf-bg) / <alpha>).
      Canonical TerraFusion material foundation: warm cream + terracotta + sage.
      Design manifesto: "The Era of the Static Flat Screen is Over."             */
-  --tf-bg: 222 24% 7%;          /* Government Night — deep navy-black                    */
-  --tf-surface: 220 20% 12%;    /* dark panel surface — frosted navy layer               */
-  --tf-surface-2: 220 18% 16%;  /* elevated dark surface — inset cards                  */
-  --tf-border: 220 16% 26%;     /* dark structural border — quiet separation             */
-  --tf-text: 214 22% 91%;       /* near-white — authoritative light text                 */
-  --tf-muted: 214 16% 58%;      /* muted light text — readable on dark ground            */
+  --tf-bg: 214 22% 93%;         /* institutional blue — confidence and trust              */
+  --tf-surface: 214 18% 96%;    /* cool white-blue — panel surfaces                      */
+  --tf-surface-2: 214 16% 90%;  /* deeper blue inset — card surfaces                    */
+  --tf-border: 214 14% 82%;     /* cool blue-gray border — structural, not stark         */
+  --tf-text: 214 28% 14%;       /* deep blue-black — authoritative text                  */
+  --tf-muted: 214 12% 50%;      /* cool blue-gray — secondary text                       */
   --tf-accent: 16 28% 50%;     /* MUTED CLAY / ADOBE — earthy, not orange                */
   --tf-accent-2: 140 14% 50%;  /* MUTED SAGE — earthy green secondary                   */
   --tf-success: 140 30% 42%;   /* sage-derived success                                   */
@@ -331,7 +331,7 @@
   /* ═══ CANONICAL MATERIAL TOKENS ═══ */
   --tf-terracotta: 16 28% 50%; /* Muted clay / adobe — warm accent on cool ground */
   --tf-sage: 140 14% 50%;      /* Muted sage green — secondary material          */
-  --tf-slate-blue: 222 24% 7%;  /* Government Night — base background             */
+  --tf-slate-blue: 214 22% 93%; /* Institutional blue — base background           */
 
   /* ═══ COMPAT ALIASES (Shadcn/Radix name bridge) ═══
      These map Shadcn-style names → TF Lumin Bridge channel values.
@@ -360,10 +360,10 @@
   /* ═══ LIQUID GLASS (Manifesto Layer 1: Shell Material) ═══
      Light cream glass — transparent over the warm wallpaper gradient.
      Backdrop blur creates the refractive Liquid Glass effect.              */
-  --glass-bg: hsl(220 18% 16% / 0.72);
-  --glass-bg-light: hsl(220 18% 16% / 0.45);
-  --glass-bg-heavy: hsl(220 18% 16% / 0.88);
-  --glass-border: hsl(220 24% 35% / 0.45);
+  --glass-bg: hsl(214 30% 98% / 0.72);
+  --glass-bg-light: hsl(214 30% 98% / 0.55);
+  --glass-bg-heavy: hsl(214 30% 98% / 0.88);
+  --glass-border: hsl(214 18% 78% / 0.6);
   --glass-border-hover: hsl(var(--tf-accent) / 0.4);
   --glass-blur: blur(18px);
   --glass-backdrop: saturate(140%) blur(20px);
@@ -409,11 +409,24 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   DARK MODE OVERRIDES — REMOVED
-   Government Night is the canonical theme. No light-mode pinning.
-   The :root tokens in the Lumin Bridge section above are the
-   single source of truth regardless of OS prefers-color-scheme.
+   DARK MODE OVERRIDES — Government Night
+   Only activates when user's OS has dark mode on.
+   Default is institutional blue light theme.
    ═══════════════════════════════════════════════════════════════ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tf-bg: 222 24% 7%;
+    --tf-surface: 220 20% 12%;
+    --tf-surface-2: 220 18% 16%;
+    --tf-border: 220 16% 26%;
+    --tf-text: 214 22% 91%;
+    --tf-muted: 214 16% 58%;
+    --glass-bg: hsl(220 18% 16% / 0.72);
+    --glass-bg-light: hsl(220 18% 16% / 0.45);
+    --glass-bg-heavy: hsl(220 18% 16% / 0.88);
+    --glass-border: hsl(220 24% 35% / 0.45);
+  }
+}
 
 /* ═══════════════════════════════════════════════════════════════
    UTILITY CLASSES
