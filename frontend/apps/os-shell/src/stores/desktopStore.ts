@@ -1088,4 +1088,23 @@ export const useShellSurfaces = () => {
   return SHELL_SURFACE_POLICY[shellMode];
 };
 
+/**
+ * Opens or focuses the TerraPilot companion window.
+ * Singleton — only one companion window can exist.
+ */
+export function openCompanionWindow(): void {
+  const { windows, openWindow, focusWindow } = useDesktopStore.getState();
+
+  const existing = windows.find((w) => w.moduleId === 'os-pilot');
+  if (existing) {
+    focusWindow(existing.id);
+    return;
+  }
+
+  openWindow('os-pilot', 'TerraPilot', 'Bot', {
+    companion: true,
+    persistent: true,
+  });
+}
+
 export default useDesktopStore;
