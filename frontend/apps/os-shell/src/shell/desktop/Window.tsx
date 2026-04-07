@@ -299,6 +299,7 @@ interface TitleBarProps {
   isActive: boolean;
   isMaximized: boolean;
   isTier0?: boolean;
+  isPersistent?: boolean;
   onMinimize: () => void;
   onMaximize: () => void;
   onClose: () => void;
@@ -311,6 +312,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
   isActive,
   isMaximized,
   isTier0 = false,
+  isPersistent = false,
   onMinimize,
   onMaximize,
   onClose,
@@ -372,7 +374,11 @@ const TitleBar: React.FC<TitleBarProps> = ({
         style={{ zIndex: WINDOW_CHROME_Z.titleControls }}
         data-testid='window-controls'
       >
-        <WindowControlButton label='Close' onClick={handleClose} variant='close' />
+        <WindowControlButton
+          label={isPersistent ? 'Collapse' : 'Close'}
+          onClick={handleClose}
+          variant={isPersistent ? 'minimize' : 'close'}
+        />
         <WindowControlButton label='Minimize' onClick={handleMinimize} variant='minimize' />
         <WindowControlButton
           label={isMaximized ? 'Restore' : 'Maximize'}
@@ -472,8 +478,13 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
   } = useContextMenu();
 
   const handleClose = useCallback(() => {
+    // Persistent windows (e.g., TerraPilot) minimize instead of closing
+    if (windowData.metadata?.persistent) {
+      minimizeWindow(windowData.id);
+      return;
+    }
     closeWindow(windowData.id);
-  }, [closeWindow, windowData.id]);
+  }, [closeWindow, minimizeWindow, windowData.id, windowData.metadata?.persistent]);
 
   const handleMinimize = useCallback(() => {
     minimizeWindow(windowData.id);
@@ -701,6 +712,7 @@ export const Window: React.FC<WindowProps> = ({ window: windowData, children }) 
             isActive={isActive}
             isMaximized={isMaximized}
             isTier0={isTier0}
+            isPersistent={!!windowData.metadata?.persistent}
             onMinimize={handleMinimize}
             onMaximize={handleMaximize}
             onClose={handleClose}
