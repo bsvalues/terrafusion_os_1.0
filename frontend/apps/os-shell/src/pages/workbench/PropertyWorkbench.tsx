@@ -8,18 +8,15 @@
  *
  * Route: /property/:parcelId/*
  *
- * Layout: ContextRibbon (top) → SuiteCompass (left) + Tabs (center) → ActivityFeed (bottom)
+ * Layout: ContextRibbon (top) → Tabs (center) → ActivityFeed (bottom)
  *
  * Tab Order (Locked per Constitution v1.0 + R3 Extensions):
  * 1. Summary — Property overview
  * 2. Forge — AI valuation & appeals
  * 3. Atlas — GIS & mapping
  * 4. Dais — Workflow status
- * 5. Clerk — Recording & title (R3.2)
- * 6. Treasury — Tax collection (R3.3)
- * 7. Audit — Financial compliance (R3.4)
- * 8. Dossier — Documents
- * 9. Pilot — Tool execution log
+ * 5. Dossier — Documents
+ * 6. Pilot — Tool execution log
  *
  * @see 01_PROPERTY_WORKBENCH_SPEC_v3.1.md — Tier-0 OS Surface
  * @see PropertyWorkbenchWindow.tsx — Desktop window adapter (same layout)
@@ -30,9 +27,9 @@
 
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Home, ChevronRight } from 'lucide-react';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import { ContextRibbon } from '../../components/workbench/ContextRibbon';
-import { SuiteCompass } from '../../components/workbench/SuiteCompass';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
 import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
@@ -43,7 +40,7 @@ import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, Workbenc
 import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
 import { useSession } from '../../auth/useSession';
 import { useAuthContext, toOsActor } from '../../auth/useAuthContext';
-import type { SuiteCompassItem } from '../../components/workbench/SuiteCompass';
+import { buildContextRibbonFacts } from '../../components/workbench/parcelContextFacts';
 
 // ============================================================================
 // Types
@@ -52,7 +49,6 @@ import type { SuiteCompassItem } from '../../components/workbench/SuiteCompass';
 interface WorkbenchTab {
   id: WorkbenchTabSlug;
   label: string;
-  icon: string;
   path: string;
   enabled: boolean;
 }
@@ -85,9 +81,9 @@ function getCurrentTabFromPath(pathname: string, parcelId: string): WorkbenchTab
     forge: 'forge',
     atlas: 'atlas',
     dais: 'dais',
-    clerk: 'clerk',
-    treasury: 'treasury',
-    audit: 'audit',
+    clerk: 'dossier',
+    treasury: 'dais',
+    audit: 'dossier',
     dossier: 'dossier',
     pilot: 'pilot',
   };
@@ -99,15 +95,12 @@ function getCurrentTabFromPath(pathname: string, parcelId: string): WorkbenchTab
 // ============================================================================
 
 const WORKBENCH_TABS: WorkbenchTab[] = [
-  { id: 'summary', label: 'Summary', icon: '📊', path: '', enabled: true },
-  { id: 'forge', label: 'Forge', icon: '🔥', path: 'forge', enabled: true },
-  { id: 'atlas', label: 'Atlas', icon: '🗺️', path: 'atlas', enabled: true },
-  { id: 'dais', label: 'Dais', icon: '📋', path: 'dais', enabled: true },
-  { id: 'clerk', label: 'Clerk', icon: '📜', path: 'clerk', enabled: true },
-  { id: 'treasury', label: 'Treasury', icon: '💰', path: 'treasury', enabled: true },
-  { id: 'audit', label: 'Audit', icon: '🔍', path: 'audit', enabled: true },
-  { id: 'dossier', label: 'Dossier', icon: '📁', path: 'dossier', enabled: true },
-  { id: 'pilot', label: 'Pilot', icon: '🎮', path: 'pilot', enabled: true },
+  { id: 'summary', label: 'Summary', path: '', enabled: true },
+  { id: 'forge', label: 'Forge', path: 'forge', enabled: true },
+  { id: 'atlas', label: 'Atlas', path: 'atlas', enabled: true },
+  { id: 'dais', label: 'Dais', path: 'dais', enabled: true },
+  { id: 'dossier', label: 'Dossier', path: 'dossier', enabled: true },
+  { id: 'pilot', label: 'Pilot', path: 'pilot', enabled: true },
 ];
 
 /**
@@ -161,10 +154,10 @@ const TabNavigation: React.FC<{
   onTabClick: (tab: WorkbenchTab, isActive: boolean) => void;
 }> = ({ parcelId, tabs, currentTabId, emphasizedTabId, onTabClick }) => (
   <nav
-    className="border-b px-2 flex gap-0 overflow-x-auto"
+    className="border-b px-3 flex gap-1 overflow-x-auto"
     style={{
-      borderColor: 'hsl(var(--tf-border) / 0.2)',
-      background: 'hsl(var(--tf-surface))',
+      borderColor: 'hsl(var(--tf-border) / 0.4)',
+      background: 'hsl(var(--tf-surface) / 0.9)',
     }}
   >
     {tabs.map((tab) => {
@@ -174,24 +167,24 @@ const TabNavigation: React.FC<{
           key={tab.id}
           to={tab.path ? `/property/${parcelId}/${tab.path}` : `/property/${parcelId}`}
           end={tab.path === ''}
-          className="flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold transition-colors whitespace-nowrap uppercase tracking-wide"
+          className="flex items-center px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
           style={({ isActive }) => {
             const isEmphasized = emphasizedTabId === tab.id && !isActive;
             return {
               color: isActive
                 ? 'hsl(var(--tf-accent))'
                 : isEmphasized
-                  ? 'hsl(var(--tf-accent) / 0.8)'
-                  : 'hsl(var(--tf-text) / 0.6)',
+                  ? 'hsl(var(--tf-text) / 0.82)'
+                  : 'hsl(var(--tf-text) / 0.62)',
               borderBottom: isActive
                 ? '2px solid hsl(var(--tf-accent))'
                 : isEmphasized
-                  ? '2px solid hsl(var(--tf-accent) / 0.4)'
+                  ? '2px solid hsl(var(--tf-border) / 0.8)'
                   : '2px solid transparent',
               background: isActive
-                ? 'hsl(var(--tf-accent) / 0.05)'
+                ? 'hsl(var(--tf-accent) / 0.08)'
                 : isEmphasized
-                  ? 'hsl(var(--tf-accent) / 0.02)'
+                  ? 'hsl(var(--tf-surface-2) / 0.65)'
                   : 'transparent',
               opacity: tab.enabled ? 1 : 0.5,
               cursor: tab.enabled ? 'pointer' : 'not-allowed',
@@ -205,7 +198,6 @@ const TabNavigation: React.FC<{
             onTabClick(tab, isCurrentTab);
           }}
         >
-          <span>{tab.icon}</span>
           <span>{tab.label}</span>
         </NavLink>
       );
@@ -226,7 +218,7 @@ export interface PropertyWorkbenchProps {
  *
  * Route: /property/:parcelId/*
  *
- * Layout: ContextRibbon (top) → SuiteCompass (left) + TabBar + Outlet (center) → ActivityFeed (bottom)
+ * Layout: ContextRibbon (top) → TabBar + Outlet (center) → ActivityFeed (bottom)
  * This is the primary user path — 100% of users reach the workbench via this route.
  */
 export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className = '' }) => {
@@ -273,6 +265,11 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     [activeParcel, parcelId]
   );
 
+  const parcelFacts = useMemo(
+    () => buildContextRibbonFacts(activeParcel).slice(0, 6),
+    [activeParcel]
+  );
+
   // ── Work Mode state ──
   const [workMode, setWorkMode] = useState<WorkMode>('overview');
 
@@ -290,22 +287,6 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     () => WORKBENCH_TABS.filter((tab) => visibleTabs.includes(tab.id)),
     [visibleTabs]
   );
-
-  /** SuiteCompass items filtered by role visibility */
-  const compassItems = useMemo<SuiteCompassItem[]>(() => {
-    const compassMap: Record<WorkbenchTabSlug, SuiteCompassItem> = {
-      summary:  { slug: 'summary',  label: 'Summary',       shortLabel: 'Sum',     icon: '📊', affordance: 'Parcel at a glance',  color: 'var(--tf-accent)' },
-      forge:    { slug: 'forge',    label: 'TerraForge',    shortLabel: 'Forge',   icon: '🔨', affordance: 'Build value',         color: 'var(--tf-suite-forge)' },
-      atlas:    { slug: 'atlas',    label: 'TerraAtlas',    shortLabel: 'Atlas',   icon: '🗺️', affordance: 'See the county',      color: 'var(--tf-suite-atlas)' },
-      dais:     { slug: 'dais',     label: 'TerraDais',     shortLabel: 'Dais',    icon: '⚖️', affordance: 'Operate value',       color: 'var(--tf-suite-dais)' },
-      clerk:    { slug: 'clerk',    label: 'TerraClerk',    shortLabel: 'Clerk',   icon: '📜', affordance: 'Record & title',      color: 'var(--tf-accent)' },
-      treasury: { slug: 'treasury', label: 'TerraTreasury', shortLabel: 'Treas',   icon: '💰', affordance: 'Tax collection',      color: 'var(--tf-accent)' },
-      audit:    { slug: 'audit',    label: 'TerraAudit',    shortLabel: 'Audit',   icon: '🔍', affordance: 'Financial compliance', color: 'var(--tf-accent)' },
-      dossier:  { slug: 'dossier',  label: 'TerraDossier',  shortLabel: 'Dossier', icon: '📋', affordance: 'Prove the decision',  color: 'var(--tf-suite-dossier)' },
-      pilot:    { slug: 'pilot',    label: 'TerraPilot',    shortLabel: 'Pilot',   icon: '🤖', affordance: 'Act or draft',        color: 'var(--tf-accent)' },
-    };
-    return visibleTabs.map((slug) => compassMap[slug]);
-  }, [visibleTabs]);
 
   // ── Badge state — collected from all suite providers ──
   const [badges, setBadges] = useState<Badge[]>([]);
@@ -424,8 +405,13 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
         style={{ color: 'hsl(var(--tf-text) / 0.6)', background: 'hsl(var(--tf-bg))' }}
         data-testid="workbench-no-parcel"
       >
-        <span className="text-5xl">🏠</span>
-        <h2 className="text-lg font-medium" style={{ color: 'hsl(var(--tf-text))' }}>
+        <div
+          className="text-[11px] uppercase tracking-[0.22em]"
+          style={{ color: 'hsl(var(--tf-muted) / 0.88)' }}
+        >
+          Property Workbench
+        </div>
+        <h2 className="text-xl font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
           No Parcel Selected
         </h2>
         <p className="text-sm text-center max-w-md">
@@ -436,10 +422,10 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
           className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           style={{
             background: 'hsl(var(--tf-accent))',
-            color: 'hsl(var(--tf-bg))',
+            color: 'hsl(var(--tf-text))',
           }}
         >
-          ← Back to Home
+          Back to Home
         </button>
       </div>
     );
@@ -471,6 +457,58 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   // ── Spec-compliant layout ──
   return (
     <div className={`flex flex-col h-full ${className}`} style={{ background: 'hsl(var(--tf-bg))' }}>
+      <nav
+        aria-label="Breadcrumb"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.25rem',
+          padding: '0.375rem 1rem',
+          background: 'hsl(var(--tf-surface) / 0.9)',
+          borderBottom: '1px solid hsl(var(--tf-border) / 0.4)',
+          fontSize: '0.75rem',
+          color: 'hsl(var(--tf-muted))',
+          flexShrink: 0,
+          zIndex: 10,
+        }}
+      >
+        <button
+          onClick={() => navigate('/')}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = 'hsl(var(--tf-text))')}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = 'hsl(var(--tf-muted))')}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '0.25rem',
+            color: 'hsl(var(--tf-muted))', background: 'none', border: 'none',
+            cursor: 'pointer', padding: '0.125rem 0.375rem', borderRadius: '0.25rem',
+          }}
+          aria-label="Go to Home"
+        >
+          <Home size={12} />
+          <span>Home</span>
+        </button>
+        <ChevronRight size={10} style={{ opacity: 0.4, flexShrink: 0 }} />
+        <button
+          onClick={() => navigate('/property')}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = 'hsl(var(--tf-text))')}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = 'hsl(var(--tf-muted))')}
+          style={{
+            display: 'flex', alignItems: 'center',
+            color: 'hsl(var(--tf-muted))', background: 'none', border: 'none',
+            cursor: 'pointer', padding: '0.125rem 0.375rem', borderRadius: '0.25rem',
+          }}
+          aria-label="Go to Property Search"
+        >
+          Property Search
+        </button>
+        {parcelId && (
+          <>
+            <ChevronRight size={10} style={{ opacity: 0.4, flexShrink: 0 }} />
+            <span style={{ color: 'hsl(var(--tf-text) / 0.85)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {parcelId}
+            </span>
+          </>
+        )}
+      </nav>
       {/* Context Ribbon — parcel identity, badges, work mode, pop-out */}
       <ContextRibbon
         parcelId={propertyData.parcelId}
@@ -478,6 +516,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
         owner={propertyData.owner}
         countyName="Benton County"
         badges={badges}
+        parcelFacts={parcelFacts}
         quickActions={quickActions}
         workMode={workMode}
         onWorkModeChange={setWorkMode}
@@ -503,65 +542,44 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
         onPopOut={handlePopOut}
       />
 
-      {/* Workbench content: SuiteCompass (left on desktop) + Tab bar + Outlet */}
-      <div className="flex flex-1 min-h-0">
-        {/* Suite Compass — left rail (desktop only, SuiteCompass handles responsive internally) */}
-        <div className="shrink-0 hidden lg:block">
-          <SuiteCompass
-            activeTab={currentTabId}
-            onTabChange={(slug) => {
-              const tab = WORKBENCH_TABS.find((t) => t.id === slug);
-              if (tab) {
-                const href = tab.path
-                  ? `/property/${parcelId}/${tab.path}`
-                  : `/property/${parcelId}`;
-                navigate(href);
-              }
-            }}
-            items={compassItems}
-          />
-        </div>
-
-        {/* Main content area */}
-        <div className="flex flex-col flex-1 min-w-0">
-
-          {/* Tab Navigation — filtered by role visibility */}
-          <div className="flex items-center">
-            <div className="flex-1 min-w-0">
-              <TabNavigation
-                parcelId={parcelId}
-                tabs={filteredTabs}
-                currentTabId={currentTabId}
-                emphasizedTabId={MODE_TAB_EMPHASIS[workMode]}
-                onTabClick={handleTabClick}
-              />
-            </div>
-            {hiddenCount > 0 && (
-              <button
-                onClick={toggleShowAll}
-                className="shrink-0 px-3 py-1 mr-2 text-xs rounded transition-colors"
-                style={{
-                  color: showAll ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.4)',
-                  background: showAll ? 'hsl(var(--tf-accent) / 0.1)' : 'transparent',
-                }}
-                title={showAll ? 'Show role-default tabs' : `Show all tabs (+${hiddenCount} hidden)`}
-              >
-                {showAll ? 'Role view' : `+${hiddenCount} more`}
-              </button>
-            )}
+      {/* Workbench content: single tab bar + Outlet */}
+      <div className="flex flex-col flex-1 min-h-0">
+        {/* Tab Navigation — filtered by role visibility */}
+        <div className="flex items-center">
+          <div className="flex-1 min-w-0">
+            <TabNavigation
+              parcelId={parcelId}
+              tabs={filteredTabs}
+              currentTabId={currentTabId}
+              emphasizedTabId={MODE_TAB_EMPHASIS[workMode]}
+              onTabClick={handleTabClick}
+            />
           </div>
-
-          {/* Tab Content via React Router Outlet */}
-          <main className="flex-1 overflow-auto p-2">
-            <div className="min-h-full">
-              <ErrorBoundary>
-                <Suspense fallback={<TabLoader />}>
-                  <Outlet context={{ parcelId, propertyData, workMode }} />
-                </Suspense>
-              </ErrorBoundary>
-            </div>
-          </main>
+          {hiddenCount > 0 && (
+            <button
+              onClick={toggleShowAll}
+              className="shrink-0 px-3 py-1 mr-2 text-xs rounded transition-colors"
+              style={{
+                color: showAll ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.4)',
+                background: showAll ? 'hsl(var(--tf-accent) / 0.1)' : 'transparent',
+              }}
+              title={showAll ? 'Show role-default tabs' : `Show all tabs (+${hiddenCount} hidden)`}
+            >
+              {showAll ? 'Role view' : `+${hiddenCount} more`}
+            </button>
+          )}
         </div>
+
+        {/* Tab Content via React Router Outlet */}
+        <main className="flex-1 overflow-auto p-2">
+          <div className="min-h-full">
+            <ErrorBoundary>
+              <Suspense fallback={<TabLoader />}>
+                <Outlet context={{ parcelId, propertyData, workMode }} />
+              </Suspense>
+            </ErrorBoundary>
+          </div>
+        </main>
       </div>
 
       {/* Collapsible Activity Feed — bottom drawer */}
