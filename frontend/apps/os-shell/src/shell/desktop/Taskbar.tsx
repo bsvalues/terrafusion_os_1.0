@@ -81,9 +81,8 @@ const DockHomeButton: React.FC = () => {
   return (
     <button
       id='tf-start-button'
-      onClick={() => navigate('/')}
+      onClick={toggle}
       onContextMenu={(e) => { e.preventDefault(); toggle(); }}
-      title="Right-click to open launcher"
       aria-label={t('taskbar.startMenu')}
       aria-expanded={isOpen}
       aria-haspopup='menu'
