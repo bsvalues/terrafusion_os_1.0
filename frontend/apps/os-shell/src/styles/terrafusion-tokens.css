@@ -312,25 +312,25 @@
      HSL channel values — used as hsl(var(--tf-bg) / <alpha>).
      Canonical TerraFusion material foundation: warm cream + terracotta + sage.
      Design manifesto: "The Era of the Static Flat Screen is Over."             */
-  --tf-bg: 40 20% 93%;          /* warm cream — the spec ground                          */
-  --tf-surface: 38 18% 97%;     /* warm near-white — panel surfaces                      */
-  --tf-surface-2: 36 16% 89%;   /* warm inset — card surfaces                            */
-  --tf-border: 35 14% 80%;      /* warm parchment border — structural, not stark         */
-  --tf-text: 30 15% 10%;        /* warm near-black — authoritative text                  */
-  --tf-muted: 33 10% 48%;       /* warm taupe — secondary text                           */
-  --tf-accent: 16 62% 46%;     /* TERRACOTTA — earthy warm accent on cream ground        */
-  --tf-accent-2: 140 28% 42%;  /* SAGE GREEN — earthy green secondary                   */
-  --tf-success: 140 34% 38%;   /* sage-derived success                                   */
-  --tf-error: 4 58% 46%;       /* muted error red                                        */
-  --tf-warning: 32 62% 46%;    /* muted amber                                            */
-  --tf-info: 207 38% 46%;      /* muted slate blue — informational                      */
+  --tf-bg: 45 20% 94%;          /* warm linen — spec-exact ground                        */
+  --tf-surface: 44 16% 97%;     /* warm paper panel — elevated above bg                 */
+  --tf-surface-2: 42 18% 90%;   /* warm cream inset — card surfaces                     */
+  --tf-border: 38 18% 78%;      /* warm parchment border — structural, not stark         */
+  --tf-text: 30 20% 8%;         /* warm near-black — authoritative text                  */
+  --tf-muted: 33 14% 44%;       /* warm taupe — secondary text                           */
+  --tf-accent: 16 55% 56%;     /* TERRACOTTA — spec-exact earthy warm accent             */
+  --tf-accent-2: 140 18% 52%;  /* SAGE GREEN — spec-exact earthy green secondary         */
+  --tf-success: 140 22% 44%;   /* sage-derived success                                   */
+  --tf-error: 4 55% 50%;       /* warm error red                                         */
+  --tf-warning: 32 58% 50%;    /* warm amber                                             */
+  --tf-info: 207 34% 50%;      /* warm slate blue — informational                       */
   --tf-r-lg: var(--radius-lg); /* 1rem                                                   */
   --tf-r-xl: var(--radius-xl); /* 1.5rem                                                 */
-  --tf-shadow: 0 10px 30px hsl(16 30% 30% / 0.12); /* terracotta shadow                */
+  --tf-shadow: 0 10px 30px hsl(16 28% 28% / 0.10); /* terracotta shadow                */
 
   /* ═══ CANONICAL MATERIAL TOKENS ═══ */
-  --tf-terracotta: 16 62% 46%; /* Terracotta — warm accent on cream ground        */
-  --tf-sage: 140 28% 42%;      /* Sage green — secondary material                */
+  --tf-terracotta: 16 55% 56%; /* Terracotta — spec-exact warm accent on linen    */
+  --tf-sage: 140 18% 52%;      /* Sage green — spec-exact secondary material      */
   --tf-slate-blue: 214 22% 93%; /* Institutional blue — kept for reference        */
 
   /* ═══ COMPAT ALIASES (Shadcn/Radix name bridge) ═══
@@ -360,10 +360,10 @@
   /* ═══ LIQUID GLASS (Manifesto Layer 1: Shell Material) ═══
      Light cream glass — transparent over the warm wallpaper gradient.
      Backdrop blur creates the refractive Liquid Glass effect.              */
-  --glass-bg: hsl(40 30% 98% / 0.72);
-  --glass-bg-light: hsl(40 30% 98% / 0.55);
-  --glass-bg-heavy: hsl(40 30% 98% / 0.88);
-  --glass-border: hsl(35 18% 74% / 0.55);
+  --glass-bg: hsl(45 18% 96% / 0.78);
+  --glass-bg-light: hsl(45 16% 97% / 0.60);
+  --glass-bg-heavy: hsl(44 18% 94% / 0.92);
+  --glass-border: hsl(38 18% 72% / 0.50);
   --glass-border-hover: hsl(var(--tf-accent) / 0.4);
   --glass-blur: blur(18px);
   --glass-backdrop: saturate(140%) blur(20px);
