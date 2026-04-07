@@ -193,6 +193,14 @@ export function getModuleWindowSize(moduleId: string): { size: Size; maximized: 
     }
   }
 
+  // Companion window — compact floating panel, not full-stage
+  if (moduleId === 'os-pilot') {
+    return {
+      size: { width: 440, height: 600 },
+      maximized: false,
+    };
+  }
+
   // Prefix-matching fallback for unclassified modules
   if (moduleId.startsWith('suite-') || moduleId.startsWith('os-')) {
     return {
@@ -555,9 +563,15 @@ export const useDesktopStore = create<DesktopState>()(
         // Respect defaultMaximized metadata hint — caller can force maximized regardless of module default
         const shouldMaximize = metadata?.defaultMaximized === true || moduleMaximized;
 
+        // Allow caller to pin the spawn position (e.g. companion window → bottom-right)
+        const defaultPosition = metadata?.defaultPosition as { x: number; y: number } | undefined;
+
         const initialBounds = shouldMaximize
           ? null
-          : normalizeWindowBounds(calculateNewWindowPosition(windows.length), moduleSize);
+          : normalizeWindowBounds(
+              defaultPosition ?? calculateNewWindowPosition(windows.length),
+              moduleSize
+            );
 
         const newWindow: DesktopWindow = {
           id,
@@ -1089,14 +1103,31 @@ export const useShellSurfaces = () => {
 };
 
 /**
- * @deprecated TerraPilot is now a shell-level CompanionPanel, not a window.
- * Use useCompanionStore().toggle() or the Ctrl+\ hotkey instead.
- * This shim is kept to avoid breaking any call sites until they are migrated.
+ * Opens or focuses the TerraPilot companion window.
+ *
+ * Singleton floating window — always on top of regular windows, spawns at
+ * bottom-right corner of the screen. The close button minimizes instead of
+ * destroying (controlled via metadata.persistent in Window.tsx).
  */
 export function openCompanionWindow(): void {
-  // Lazy import to avoid circular dependency
-  import('./companionStore').then(({ useCompanionStore }) => {
-    useCompanionStore.getState().open();
+  const { windows, openWindow, focusWindow } = useDesktopStore.getState();
+
+  const existing = windows.find((w) => w.moduleId === 'os-pilot');
+  if (existing) {
+    focusWindow(existing.id);
+    return;
+  }
+
+  // Spawn at bottom-right corner, above the dock (84px) with a right margin
+  const w = 440;
+  const h = 600;
+  const x = Math.max(20, (typeof window !== 'undefined' ? window.innerWidth : 1920) - w - 24);
+  const y = Math.max(60, (typeof window !== 'undefined' ? window.innerHeight : 1080) - h - 100);
+
+  openWindow('os-pilot', 'TerraPilot · Muse', 'Bot', {
+    persistent: true,
+    companionWindow: true,
+    defaultPosition: { x, y },
   });
 }
 

@@ -22,8 +22,7 @@ import { useSentinelStore } from '../../sentinel/sentinelStore';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useAltTabStore } from '../../stores/altTabStore';
 import { useControlCenterStore } from '../../stores/controlCenterStore';
-import { useDesktopStore } from '../../stores/desktopStore';
-import { CompanionPanel } from '../../components/companion/CompanionPanel';
+import { useDesktopStore, openCompanionWindow } from '../../stores/desktopStore';
 import { useShellMode, useShellModeActions, useShellSurfaces } from '../../stores/desktopStore';
 import { useNotificationStore, useNotifications } from '../../stores/notificationStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
@@ -298,6 +297,13 @@ export function Desktop({ className = '', children }: DesktopProps) {
   }, [isStartMenuOpen]);
 
   // ============================================================================
+  // TerraPilot Companion — auto-spawn on desktop mount as floating window
+  // ============================================================================
+  useEffect(() => {
+    openCompanionWindow();
+  }, []);
+
+  // ============================================================================
   // Desktop Context Menu (Priority 6)
   // ============================================================================
   const {
@@ -550,9 +556,6 @@ export function Desktop({ className = '', children }: DesktopProps) {
 
       {/* Layer 1-999: Windows */}
       <WindowManager />
-
-      {/* Layer 1050: Companion Panel (TerraPilot/TerraMuse) — system service, not a window */}
-      <CompanionPanel />
 
       {/* Layer 1000: Taskbar (with live notifications) */}
       <TaskbarWithNotifications />
