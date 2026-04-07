@@ -409,23 +409,11 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   DARK MODE OVERRIDES
+   DARK MODE OVERRIDES — REMOVED
+   Government Night is the canonical theme. No light-mode pinning.
+   The :root tokens in the Lumin Bridge section above are the
+   single source of truth regardless of OS prefers-color-scheme.
    ═══════════════════════════════════════════════════════════════ */
-
-/* Dark mode: TerraFusion uses light institutional blue regardless of OS preference.
-   The design language is confidence and trust — we do not invert to dark. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Pin the light blue tokens — no dark inversion */
-    --tf-bg: 214 22% 93%;
-    --tf-surface: 214 18% 96%;
-    --tf-surface-2: 214 16% 90%;
-    --tf-border: 214 14% 82%;
-    --tf-text: 214 28% 14%;
-    --glass-bg: hsl(214 30% 98% / 0.72);
-    --glass-border: hsl(214 18% 78% / 0.6);
-  }
-}
 
 /* ═══════════════════════════════════════════════════════════════
    UTILITY CLASSES
