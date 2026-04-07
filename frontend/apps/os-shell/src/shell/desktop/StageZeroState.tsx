@@ -125,7 +125,7 @@ const ActionRow: React.FC<{
 function TodaysWorkPanel({ tasks, onActivate }: { tasks: TodaysWorkItem[]; onActivate: (route: string) => void }) {
   if (tasks.length === 0) {
     return (
-      <div data-testid="todays-work-panel" className="flex flex-col items-center justify-center py-6 text-white/40">
+      <div data-testid="todays-work-panel" className="flex flex-col items-center justify-center py-6" style={{ color: 'hsl(var(--tf-muted))' }}>
         <CalendarDays className="w-8 h-8 mb-2" />
         <span className="text-sm">No tasks for today</span>
       </div>
@@ -174,11 +174,11 @@ const CountyMapOverview: React.FC<{
         onClick={onOpenSearch}
         className='w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-left transition-all duration-150'
         style={{
-          background: 'hsl(222 25% 10% / 0.92)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid hsl(var(--tf-border) / 0.5)',
-          color: 'hsl(var(--tf-text-primary-hs) 45%)',
-          boxShadow: '0 4px 24px hsl(0 0% 0% / 0.5)',
+          background: 'hsl(var(--glass-bg))',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid hsl(var(--tf-border) / 0.6)',
+          color: 'hsl(var(--tf-muted))',
+          boxShadow: '0 4px 16px hsl(var(--tf-tokens-black-hs) 0% / 0.12)',
         }}
       >
         <Search

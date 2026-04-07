@@ -247,13 +247,13 @@
   --tf-surface-dark-hs: 222 25%;     /* surface-dark                   */
   --tf-text-primary-hs: 0 0%;        /* text-primary                   */
   --tf-text-secondary-hs: 213 27%;   /* text-secondary                 */
-  --tf-success-hs: 135 90%;          /* accent-success                 */
-  --tf-error-hs: 0 100%;             /* error-red                      */
-  --tf-warning-hs: 40 100%;          /* warning-amber                  */
-  --tf-info-hs: 264 100%;            /* info-purple                    */
-  --tf-network-blue-hs: 210 100%;    /* network-blue                   */
-  --tf-transcend-cyan-hs: 190 100%;  /* quantum-cyan                   */
-  --tf-neutral-hs: 220 13%;          /* gray scale base                */
+  --tf-success-hs: 148 42%;          /* civic success green            */
+  --tf-error-hs: 4 73%;              /* civic error red                */
+  --tf-warning-hs: 32 86%;           /* forge amber                    */
+  --tf-info-hs: 214 55%;             /* informational blue             */
+  --tf-network-blue-hs: 207 72%;     /* civic blue                     */
+  --tf-transcend-cyan-hs: 192 58%;   /* restrained teal accent         */
+  --tf-neutral-hs: 220 12%;          /* gray scale base                */
 
   /* ═══ LIGHTNESS STEPS ═══
      Reusable L values for consistent tonal hierarchy.
@@ -277,11 +277,12 @@
   /* ═══ ELEVATION & SHADOWS ═══ */
   --shadow-sm: 0 1px 2px hsl(var(--tf-tokens-black-hs) 0% / 0.05);
   --shadow-md: 0 4px 6px hsl(var(--tf-tokens-black-hs) 0% / 0.1);
-  --shadow-lg: 0 10px 30px hsl(var(--tf-accent) / 0.2);
-  --shadow-glow: 0 0 40px hsl(var(--tf-accent) / 0.4);
+  --shadow-lg: 0 18px 40px hsl(var(--tf-tokens-black-hs) 0% / 0.22);
+  --shadow-glow: 0 0 28px hsl(var(--tf-accent) / 0.16);
   --shadow-quantum:
-    0 0 20px hsl(var(--tf-accent) / 0.3), 0 0 40px hsl(var(--tf-accent-2) / 0.2),
-    0 0 60px hsl(var(--tf-info) / 0.1);
+    0 18px 40px hsl(var(--tf-tokens-black-hs) 0% / 0.22),
+    0 0 24px hsl(var(--tf-accent) / 0.14),
+    0 0 40px hsl(var(--tf-accent-2) / 0.08);
 
   /* ═══ BORDER RADIUS ═══ */
   --radius-sm: 0.25rem; /* 4px */
@@ -309,22 +310,28 @@
 
   /* ═══ LUMIN BRIDGE (consumed by @terrafusion/ui primitives) ═══
      HSL channel values — used as hsl(var(--tf-bg) / <alpha>).
-     Derived from the foundation hex tokens above.                   */
-  --tf-bg: 222 25% 7%; /* hsl(var(--tf-surface-dark-hs) 7%)  (void-black)          */
-  --tf-surface: 217 33% 17%; /* hsl(var(--tf-bg-surface-hs) var(--tf-l-20))  (terra-slate)         */
-  --tf-surface-2: 222 29% 11%; /* hsl(var(--tf-surface-dark-hs) 11%)  (surface-darker)      */
-  --tf-border: 220 18% 24%; /* muted slate (not accent!)      */
-  --tf-text: 0 0% 100%; /* hsl(var(--tf-text-primary-hs) var(--tf-l-100))  (text-primary)        */
-  --tf-muted: 215 20% 65%; /* hsl(var(--tf-neutral-hs) 65%)  (gray-400)            */
-  --tf-accent: 190 100% 60%; /* hsl(var(--tf-transcend-cyan-hs) var(--tf-l-60))  (quantum-cyan)        */
-  --tf-accent-2: 210 100% 50%; /* hsl(var(--tf-network-blue-hs) var(--tf-l-50))  (network-blue)        */
-  --tf-success: 135 90% 55%; /* hsl(var(--tf-success-hs) var(--tf-l-55))  (accent-success)      */
-  --tf-error: 0 100% 63%; /* hsl(var(--tf-error-hs) var(--tf-l-60))  (error-red)            */
-  --tf-warning: 40 100% 60%; /* hsl(var(--tf-warning-hs) var(--tf-l-60))  (warning-amber)       */
-  --tf-info: 264 100% 63%; /* hsl(var(--tf-info-hs) var(--tf-l-60))  (info-purple)          */
-  --tf-r-lg: var(--radius-lg); /* 1rem                           */
-  --tf-r-xl: var(--radius-xl); /* 1.5rem                         */
-  --tf-shadow: 0 10px 30px hsl(var(--tf-accent) / 0.2); /* shadow-lg    */
+     Canonical TerraFusion material foundation: warm cream + terracotta + sage.
+     Design manifesto: "The Era of the Static Flat Screen is Over."             */
+  --tf-bg: 222 24% 7%;          /* Government Night — deep navy-black                    */
+  --tf-surface: 220 20% 12%;    /* dark panel surface — frosted navy layer               */
+  --tf-surface-2: 220 18% 16%;  /* elevated dark surface — inset cards                  */
+  --tf-border: 220 16% 26%;     /* dark structural border — quiet separation             */
+  --tf-text: 214 22% 91%;       /* near-white — authoritative light text                 */
+  --tf-muted: 214 16% 58%;      /* muted light text — readable on dark ground            */
+  --tf-accent: 16 28% 50%;     /* MUTED CLAY / ADOBE — earthy, not orange                */
+  --tf-accent-2: 140 14% 50%;  /* MUTED SAGE — earthy green secondary                   */
+  --tf-success: 140 30% 42%;   /* sage-derived success                                   */
+  --tf-error: 4 55% 50%;       /* muted error red                                        */
+  --tf-warning: 32 60% 50%;    /* muted amber                                            */
+  --tf-info: 207 40% 50%;      /* muted slate blue — informational                      */
+  --tf-r-lg: var(--radius-lg); /* 1rem                                                   */
+  --tf-r-xl: var(--radius-xl); /* 1.5rem                                                 */
+  --tf-shadow: 0 10px 30px hsl(16 20% 40% / 0.1); /* clay shadow                       */
+
+  /* ═══ CANONICAL MATERIAL TOKENS ═══ */
+  --tf-terracotta: 16 28% 50%; /* Muted clay / adobe — warm accent on cool ground */
+  --tf-sage: 140 14% 50%;      /* Muted sage green — secondary material          */
+  --tf-slate-blue: 222 24% 7%;  /* Government Night — base background             */
 
   /* ═══ COMPAT ALIASES (Shadcn/Radix name bridge) ═══
      These map Shadcn-style names → TF Lumin Bridge channel values.
@@ -343,29 +350,32 @@
   --tf-wc-maximize-hover: 131 74% 39%;
 
   /* ═══ SUITE BRAND COLORS ═══ */
-  --tf-suite-forge: 18 100% 60%;      /* Forge orange  */
-  --tf-suite-atlas: 189 100% 50%;     /* Atlas cyan    */
-  --tf-suite-dais: 271 91% 65%;       /* Dais purple   */
-  --tf-suite-dossier: 142 71% 45%;    /* Dossier green */
-  --tf-suite-gpt: 217 92% 60%;        /* GPT blue      */
+  --tf-suite-forge: 28 82% 58%;       /* Forge copper  */
+  --tf-suite-atlas: 207 72% 58%;      /* Atlas blue    */
+  --tf-suite-dais: 347 48% 56%;       /* Dais claret   */
+  --tf-suite-dossier: 148 38% 46%;    /* Dossier green */
+  --tf-suite-pilot: 226 58% 61%;      /* Pilot indigo  */
+  --tf-suite-gpt: var(--tf-suite-pilot); /* alias */
 
-  /* ═══ GLASSMORPHISM (Brand Kit Exact) ═══ */
-  --glass-bg: hsl(210 20% 98% / 0.10);
-  --glass-bg-light: hsl(210 20% 98% / 0.06);
-  --glass-bg-heavy: hsl(210 20% 98% / 0.14);
-  --glass-border: hsl(var(--tf-accent) / 0.2);
+  /* ═══ LIQUID GLASS (Manifesto Layer 1: Shell Material) ═══
+     Light cream glass — transparent over the warm wallpaper gradient.
+     Backdrop blur creates the refractive Liquid Glass effect.              */
+  --glass-bg: hsl(220 18% 16% / 0.72);
+  --glass-bg-light: hsl(220 18% 16% / 0.45);
+  --glass-bg-heavy: hsl(220 18% 16% / 0.88);
+  --glass-border: hsl(220 24% 35% / 0.45);
   --glass-border-hover: hsl(var(--tf-accent) / 0.4);
-  --glass-blur: blur(20px);
-  --glass-backdrop: saturate(180%) blur(20px);
+  --glass-blur: blur(18px);
+  --glass-backdrop: saturate(140%) blur(20px);
 
   /* Card System */
   --card-bg: hsl(var(--tf-surface-2));
-  --card-border: 1px solid hsl(var(--tf-accent) / 0.2);
+  --card-border: 1px solid hsl(var(--tf-border) / 0.7);
   --card-radius: 1rem;
-  --card-hover-shadow: 0 0 30px hsl(var(--tf-accent) / 0.1);
+  --card-hover-shadow: 0 18px 36px hsl(var(--tf-tokens-black-hs) 0% / 0.18);
 
   /* ═══ QUANTUM EFFECTS ═══ */
-  --pulse-glow: 0 0 20px hsl(var(--tf-accent) / 0.5);
+  --pulse-glow: 0 0 20px hsl(var(--tf-accent) / 0.22);
   --quantum-shimmer: linear-gradient(
     90deg,
     transparent 0%,
@@ -402,13 +412,18 @@
    DARK MODE OVERRIDES
    ═══════════════════════════════════════════════════════════════ */
 
+/* Dark mode: TerraFusion uses light institutional blue regardless of OS preference.
+   The design language is confidence and trust — we do not invert to dark. */
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Enhanced contrast for dark mode */
-    --terra-cyan: var(--tf-quantum-cyan);
-    --terra-midnight: hsl(var(--tf-text-primary-hs) var(--tf-l-0));
-    --glass-bg: hsl(210 20% 98% / 0.10);
-    --glass-border: hsl(var(--tf-accent) / 0.3);
+    /* Pin the light blue tokens — no dark inversion */
+    --tf-bg: 214 22% 93%;
+    --tf-surface: 214 18% 96%;
+    --tf-surface-2: 214 16% 90%;
+    --tf-border: 214 14% 82%;
+    --tf-text: 214 28% 14%;
+    --glass-bg: hsl(214 30% 98% / 0.72);
+    --glass-border: hsl(214 18% 78% / 0.6);
   }
 }
 
