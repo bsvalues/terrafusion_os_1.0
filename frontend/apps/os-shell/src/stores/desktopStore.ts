@@ -171,6 +171,14 @@ export function getModuleWindowSize(moduleId: string): { size: Size; maximized: 
   const vw = typeof window !== 'undefined' ? window.innerWidth : 1280;
   const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
 
+  // Companion window — portrait, narrow, always checked first before classification
+  if (moduleId === 'os-pilot') {
+    return {
+      size: { width: 360, height: 680 },
+      maximized: false,
+    };
+  }
+
   // Use MODULE_OBJECT_TYPES classification when available
   const classification = MODULE_OBJECT_TYPES[moduleId];
   if (classification) {
@@ -191,14 +199,6 @@ export function getModuleWindowSize(moduleId: string): { size: Size; maximized: 
         maximized: false,
       };
     }
-  }
-
-  // Companion window — portrait, narrow, visually subordinate to Workbench
-  if (moduleId === 'os-pilot') {
-    return {
-      size: { width: 360, height: 680 },
-      maximized: false,
-    };
   }
 
   // Prefix-matching fallback for unclassified modules

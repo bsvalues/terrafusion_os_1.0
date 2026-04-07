@@ -23,6 +23,7 @@ import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useAltTabStore } from '../../stores/altTabStore';
 import { useControlCenterStore } from '../../stores/controlCenterStore';
 import { useDesktopStore, openCompanionWindow } from '../../stores/desktopStore';
+import { useCompanionStore } from '../../stores/companionStore';
 import { useShellMode, useShellModeActions, useShellSurfaces } from '../../stores/desktopStore';
 import { useNotificationStore, useNotifications } from '../../stores/notificationStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
@@ -302,6 +303,26 @@ export function Desktop({ className = '', children }: DesktopProps) {
   useEffect(() => {
     openCompanionWindow();
   }, []);
+
+  // ============================================================================
+  // Companion context bus — write active suite to companionStore when the
+  // focused window changes. Muse reads this to know what the operator is in.
+  // ============================================================================
+  const setActiveSuite = useCompanionStore((state) => state.setActiveSuite);
+  useEffect(() => {
+    const activeWindow = windows.find((w) => w.id === activeWindowId);
+    if (!activeWindow) return;
+
+    const moduleId = activeWindow.moduleId ?? '';
+    // suite-forge → 'forge', suite-atlas → 'atlas', etc.
+    if (moduleId.startsWith('suite-')) {
+      setActiveSuite(moduleId.replace('suite-', ''));
+    } else if (moduleId === 'os-pilot') {
+      // Focusing the companion itself doesn't change the suite context
+    } else {
+      setActiveSuite(null);
+    }
+  }, [activeWindowId, windows, setActiveSuite]);
 
   // ============================================================================
   // Desktop Context Menu (Priority 6)
