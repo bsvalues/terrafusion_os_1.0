@@ -47,9 +47,17 @@ public sealed class GitContextService : IGitContextService
             return new GitContext(branch, null, [], false);
         }
 
-        // Run both commands concurrently — they are independent reads.
-        var diffTask = filePath is not null
-            ? RunGitAsync($"diff {BaseBranch}..{branch} -- \"{filePath}\"", ct)
+        // Resolve a bare filename ("MuseChat.tsx") to its full repo-relative path
+        // ("frontend/apps/os-shell/src/pages/MuseChat.tsx") before diffing.
+        // Without this, git diff -- "MuseChat.tsx" matches nothing because the
+        // working tree path is always repo-root-relative.
+        var resolvedPath = filePath is not null
+            ? await ResolveFilePathAsync(filePath, ct)
+            : null;
+
+        // Run the file diff and the branch-wide changed list concurrently.
+        var diffTask = resolvedPath is not null
+            ? RunGitAsync($"diff {BaseBranch}..{branch} -- \"{resolvedPath}\"", ct)
             : Task.FromResult<string?>(null);
 
         var changedTask = RunGitAsync($"diff --name-only {BaseBranch}..{branch}", ct);
@@ -71,7 +79,8 @@ public sealed class GitContextService : IGitContextService
             Branch: branch,
             FileDiff: fileDiff,
             ChangedFiles: changedFiles,
-            HasChanges: fileDiff is not null || changedFiles.Length > 0);
+            HasChanges: fileDiff is not null || changedFiles.Length > 0,
+            ResolvedFilePath: resolvedPath);
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
@@ -134,6 +143,40 @@ public sealed class GitContextService : IGitContextService
         var totalLines = diff.Count(c => c == '\n');
         var keptLines = truncated.Count(c => c == '\n');
         return truncated + $"\n... [diff truncated — {totalLines - keptLines} more lines]";
+    }
+
+    /// <summary>
+    /// Resolves a filename (bare or relative) to its repo-relative path using
+    /// <c>git ls-files --full-name</c>.
+    ///
+    /// Examples:
+    ///   "MuseChat.tsx"  →  "frontend/apps/os-shell/src/pages/MuseChat.tsx"
+    ///   "frontend/apps/os-shell/src/pages/MuseChat.tsx"  →  same (already resolved)
+    ///   "DoesNotExist.tsx"  →  null (git ls-files returns empty)
+    ///
+    /// When the glob matches multiple files the first result is used. This is
+    /// intentional — the context bus always sends the active editor file and
+    /// filenames within a single repo are typically unique enough for this purpose.
+    /// </summary>
+    private async Task<string?> ResolveFilePathAsync(string filePath, CancellationToken ct)
+    {
+        // Already a repo-relative path (contains a slash) — use as-is.
+        if (filePath.Contains('/') || filePath.Contains('\\'))
+            return filePath;
+
+        // Bare filename — ask git for the full path.
+        var output = await RunGitAsync($"ls-files --full-name \"**/{filePath}\"", ct);
+        if (output is null) return null;
+
+        var first = output.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                          .FirstOrDefault();
+
+        if (first is null)
+            _logger.LogDebug("GitContextService: ls-files found no match for {File}", filePath);
+        else
+            _logger.LogDebug("GitContextService: resolved {File} → {Path}", filePath, first);
+
+        return first;
     }
 
     /// <summary>

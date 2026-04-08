@@ -19,7 +19,15 @@ public record GitContext(
     string[] ChangedFiles,
 
     /// <summary>True when FileDiff or ChangedFiles are non-empty.</summary>
-    bool HasChanges
+    bool HasChanges,
+
+    /// <summary>
+    /// Repo-relative path resolved from the bare filename via git ls-files.
+    /// Null when the input was already a full path, git was unavailable, or
+    /// ls-files found no match.
+    /// Example: "MuseChat.tsx" → "frontend/apps/os-shell/src/pages/MuseChat.tsx"
+    /// </summary>
+    string? ResolvedFilePath = null
 );
 
 /// <summary>

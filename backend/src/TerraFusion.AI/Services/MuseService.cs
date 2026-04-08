@@ -141,7 +141,7 @@ public sealed class MuseService : IMuseService
         if (gitCtx?.HasChanges == true)
         {
             var diffRef = gitCtx.FileDiff is not null
-                ? $"file-diff:{System.IO.Path.GetFileName(ctx?.ActiveFile ?? "unknown")} ({gitCtx.Branch})"
+                ? $"file-diff:{gitCtx.ResolvedFilePath ?? ctx?.ActiveFile ?? "unknown"} ({gitCtx.Branch})"
                 : $"branch:{gitCtx.Branch} — {gitCtx.ChangedFiles.Length} file(s) changed (activeFile path unresolved)";
             sources.Add(new ExplainSource("git_diff", diffRef));
         }
