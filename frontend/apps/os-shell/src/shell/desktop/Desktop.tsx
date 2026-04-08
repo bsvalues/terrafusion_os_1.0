@@ -24,6 +24,7 @@ import { useAltTabStore } from '../../stores/altTabStore';
 import { useControlCenterStore } from '../../stores/controlCenterStore';
 import { useDesktopStore, openCompanionWindow } from '../../stores/desktopStore';
 import { useCompanionStore } from '../../stores/companionStore';
+import { useDevContext } from '../../hooks/useDevContext';
 import { useShellMode, useShellModeActions, useShellSurfaces } from '../../stores/desktopStore';
 import { useNotificationStore, useNotifications } from '../../stores/notificationStore';
 import { useStartMenuStore } from '../../stores/startMenuStore';
@@ -303,6 +304,11 @@ export function Desktop({ className = '', children }: DesktopProps) {
   useEffect(() => {
     openCompanionWindow();
   }, []);
+
+  // ============================================================================
+  // Dev context bus — wire engineering signals (buildStatus, branch, file)
+  // ============================================================================
+  useDevContext();
 
   // ============================================================================
   // Companion context bus — write active suite to companionStore when the

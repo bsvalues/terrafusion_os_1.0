@@ -65,6 +65,15 @@ interface ChatMessage {
   timestamp: Date;
 }
 
+interface ExplainContext {
+  activeParcelId: string | null;
+  activeSuite: string | null;
+  activeTab: string | null;
+  activeBranch: string | null;
+  activeFile: string | null;
+  buildStatus: string;
+}
+
 // ============================================================================
 // Helpers
 // ============================================================================
@@ -86,19 +95,36 @@ function buildWelcome(): ChatMessage {
   };
 }
 
+/**
+ * Build a stable signature from the current context so we can detect
+ * meaningful changes without firing on every re-render.
+ */
+function buildContextSignature(ctx: ExplainContext): string {
+  return [
+    ctx.activeParcelId ?? '',
+    ctx.activeSuite ?? '',
+    ctx.activeTab ?? '',
+    ctx.activeBranch ?? '',
+    ctx.activeFile ?? '',
+    ctx.buildStatus,
+  ].join('|');
+}
+
 async function callExplain(
   query: string,
-  parcelId: string | null,
   countyId: string,
-  actorId: string
+  actorId: string,
+  context: ExplainContext
 ): Promise<ExplainApiResponse> {
   const body: Record<string, unknown> = {
     query,
     countyId,
     actorId,
     source: 'terra-pilot',
+    context,
   };
-  if (parcelId) body.parcelId = parcelId;
+  // Keep legacy parcelId at top level for backward compat with existing backend handler
+  if (context.activeParcelId) body.parcelId = context.activeParcelId;
 
   const res = await fetch('/api/pilot/explain', {
     method: 'POST',
@@ -244,7 +270,15 @@ const ThinkingDots: React.FC = () => (
 // ============================================================================
 
 export function MuseChat(): React.ReactElement {
-  const { activeParcelId, activeSuite } = useCompanionStore();
+  const {
+    activeParcelId,
+    activeSuite,
+    activeTab,
+    activeBranch,
+    activeFile,
+    buildStatus,
+  } = useCompanionStore();
+
   const session = getSession();
   const countyId = session?.countyId ?? 'benton';
   const actorId = session?.userId ?? 'operator';
@@ -256,7 +290,10 @@ export function MuseChat(): React.ReactElement {
 
   const threadRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const hasAutoGreetedRef = useRef(false);
+
+  // Signature guard: tracks the last context we auto-explained so we never
+  // fire a proactive message for the same state twice.
+  const lastExplainSignatureRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (threadRef.current) {
@@ -264,6 +301,7 @@ export function MuseChat(): React.ReactElement {
     }
   }, [messages, thinking]);
 
+  // System notification when parcel context changes
   const prevParcelRef = useRef<string | null>(null);
   useEffect(() => {
     if (activeParcelId && activeParcelId !== prevParcelRef.current) {
@@ -280,20 +318,43 @@ export function MuseChat(): React.ReactElement {
     }
   }, [activeParcelId]);
 
-  // Proactive greeting — fires once on mount if a parcel is already active.
-  // Guard ensures it never duplicates on remount or React strict-mode replay.
+  // ── Proactive awareness ───────────────────────────────────────────────────
+  // Fires when meaningful context exists and the signature has changed.
+  // Allowed triggers: first mount with real context, parcel/suite/branch/build change.
+  // Not allowed: unchanged context re-renders, duplicate messages for same state.
   useEffect(() => {
-    if (!activeParcelId || hasAutoGreetedRef.current) return;
-    hasAutoGreetedRef.current = true;
+    const ctx: ExplainContext = {
+      activeParcelId,
+      activeSuite,
+      activeTab,
+      activeBranch,
+      activeFile,
+      buildStatus,
+    };
+
+    // Need at least one meaningful signal to proactively greet
+    const hasMeaningfulContext = !!(activeParcelId || activeSuite || activeBranch);
+    if (!hasMeaningfulContext) return;
+
+    const sig = buildContextSignature(ctx);
+    if (sig === lastExplainSignatureRef.current) return;
+
+    // Build change only triggers when Pilot is already open — don't spam on every hot reload.
+    // For parcel/suite changes, always fire.
+    if (thinking) return;
+
+    lastExplainSignatureRef.current = sig;
 
     let cancelled = false;
     setThinking(true);
-    callExplain(
-      'What should I know about this parcel right now?',
-      activeParcelId,
-      countyId,
-      actorId
-    )
+
+    const question = activeParcelId
+      ? 'What should I know about this parcel right now?'
+      : activeBranch
+        ? `I just switched to branch "${activeBranch}". What's the current development context?`
+        : `I'm now in the ${activeSuite} suite. What's relevant here?`;
+
+    callExplain(question, countyId, actorId, ctx)
       .then((data) => {
         if (cancelled) return;
         setMessages((prev) => [
@@ -312,9 +373,12 @@ export function MuseChat(): React.ReactElement {
       .finally(() => { if (!cancelled) setThinking(false); });
 
     return () => { cancelled = true; };
+  // Deliberately broad dep array — we want to re-evaluate whenever any context field changes.
+  // The signature ref is the actual dedup guard.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [activeParcelId, activeSuite, activeTab, activeBranch, activeFile, buildStatus]);
 
+  // ── Manual send ───────────────────────────────────────────────────────────
   const send = async () => {
     const query = input.trim();
     if (!query || thinking) return;
@@ -326,8 +390,17 @@ export function MuseChat(): React.ReactElement {
     setMessages((prev) => [...prev, userMsg]);
     setThinking(true);
 
+    const ctx: ExplainContext = {
+      activeParcelId,
+      activeSuite,
+      activeTab,
+      activeBranch,
+      activeFile,
+      buildStatus,
+    };
+
     try {
-      const data = await callExplain(query, activeParcelId, countyId, actorId);
+      const data = await callExplain(query, countyId, actorId, ctx);
       const museMsg: ChatMessage = {
         id: makeId(),
         role: 'muse',
@@ -360,11 +433,13 @@ export function MuseChat(): React.ReactElement {
     }
   };
 
-  const contextLabel = activeParcelId
-    ? `Parcel ${activeParcelId}`
-    : activeSuite
-      ? `Suite: ${activeSuite}`
-      : 'No context';
+  // ── Context label (header subtitle) ──────────────────────────────────────
+  const contextLabel = (() => {
+    if (activeParcelId) return `Parcel ${activeParcelId}`;
+    if (activeSuite) return `Suite: ${activeSuite}`;
+    if (activeBranch) return `Branch: ${activeBranch}`;
+    return 'No context';
+  })();
 
   return (
     <>
@@ -431,6 +506,20 @@ export function MuseChat(): React.ReactElement {
               {contextLabel}
             </div>
           </div>
+          {buildStatus === 'error' && (
+            <div
+              title="Build error detected"
+              style={{
+                fontSize: 9,
+                letterSpacing: '0.06em',
+                color: C.amber,
+                fontWeight: 600,
+                flexShrink: 0,
+              }}
+            >
+              BUILD ERR
+            </div>
+          )}
         </div>
 
         {/* Thread */}
