@@ -459,6 +459,60 @@ builder.Services.AddSingleton<ISurfaceContractService, TerraFusion.AI.Services.S
     builder.Services.AddSingleton(kernel.GetRequiredService<IChatCompletionService>());
     builder.Services.AddSingleton<IMuseLlmClient, TerraFusion.AI.Services.SemanticKernelMuseLlmClient>();
 }
+// Phase Routing Matrix: optional multi-lane MuseRouter sits above the single IMuseLlmClient.
+// When Muse:Router:Routes is populated, dot-net DI will prefer the 5-arg MuseService ctor
+// (greedy resolution), dispatching each task type to its ideal model.
+// When Routes is empty / section absent, only the single IMuseLlmClient is used (backward compat).
+{
+    var routerOpts = builder.Configuration
+        .GetSection(TerraFusion.Core.Configuration.MuseRouterOptions.SubSectionName)
+        .Get<TerraFusion.Core.Configuration.MuseRouterOptions>();
+
+    if (routerOpts?.Routes is { Count: > 0 } routes)
+    {
+        builder.Services.Configure<TerraFusion.Core.Configuration.MuseRouterOptions>(
+            builder.Configuration.GetSection(TerraFusion.Core.Configuration.MuseRouterOptions.SubSectionName));
+
+        // Build one IMuseLlmClient per route entry and put them in a dictionary
+        // keyed by task name (e.g. "DevAssist", "Reasoning", "*").
+        var lanes = new Dictionary<string, IMuseLlmClient>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var (key, entry) in routes)
+        {
+            var laneKernel = Kernel.CreateBuilder();
+
+            if (entry.Provider == "AzureOpenAI"
+                && !string.IsNullOrWhiteSpace(entry.ApiKey)
+                && !string.IsNullOrWhiteSpace(entry.Endpoint))
+            {
+                laneKernel.AddAzureOpenAIChatCompletion(
+                    deploymentName: entry.ModelId,
+                    endpoint: entry.Endpoint,
+                    apiKey: entry.ApiKey);
+            }
+            else
+            {
+                var ep = entry.Endpoint ?? "http://localhost:11434/v1";
+                var modelId = string.IsNullOrWhiteSpace(entry.ModelId) ? "llama3" : entry.ModelId;
+                var http = new HttpClient { BaseAddress = new Uri(ep) };
+                laneKernel.AddOpenAIChatCompletion(modelId, "sk-local", httpClient: http);
+            }
+
+            var laneBuilt = laneKernel.Build();
+            var laneChatSvc = laneBuilt.GetRequiredService<IChatCompletionService>();
+            // Each lane gets its own SemanticKernelMuseLlmClient wrapping its own chat service.
+            var laneClient = new TerraFusion.AI.Services.SemanticKernelMuseLlmClient(
+                laneChatSvc,
+                Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SemanticKernelMuseLlmClient>.Instance);
+            lanes[key] = laneClient;
+        }
+
+        builder.Services.AddSingleton<IMuseRouter>(sp =>
+            new TerraFusion.AI.Services.MuseRouter(
+                sp.GetRequiredService<ILogger<TerraFusion.AI.Services.MuseRouter>>(),
+                lanes));
+    }
+}
 // ✅ STUB: Consciousness Engine stub for DI resolution
 builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services

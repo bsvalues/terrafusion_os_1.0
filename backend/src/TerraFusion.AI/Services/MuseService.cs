@@ -10,7 +10,13 @@ public sealed class MuseService : IMuseService
     private readonly IGitContextService _git;
     private readonly ISurfaceContractService _contracts;
     private readonly IMuseLlmClient _llm;
+    private readonly IMuseRouter? _router;
 
+    /// <summary>
+    /// Single-provider constructor — preserves backward compatibility with
+    /// existing tests and single-model deployments. When only IMuseLlmClient
+    /// is registered, all tasks are routed through it.
+    /// </summary>
     public MuseService(
         ILogger<MuseService> logger,
         IGitContextService git,
@@ -21,6 +27,27 @@ public sealed class MuseService : IMuseService
         _git = git;
         _contracts = contracts;
         _llm = llm;
+        _router = null;
+    }
+
+    /// <summary>
+    /// Multi-lane constructor — used when the routing matrix is configured.
+    /// IMuseRouter dispatches to the appropriate model lane per task type.
+    /// IMuseLlmClient is kept as the ultimate fallback should the router
+    /// return empty string.
+    /// </summary>
+    public MuseService(
+        ILogger<MuseService> logger,
+        IGitContextService git,
+        ISurfaceContractService contracts,
+        IMuseLlmClient llm,
+        IMuseRouter router)
+    {
+        _logger = logger;
+        _git = git;
+        _contracts = contracts;
+        _llm = llm;
+        _router = router;
     }
 
     public async Task<ExplainResponse> ExplainAsync(ExplainRequest request, CancellationToken ct = default)
@@ -173,10 +200,25 @@ public sealed class MuseService : IMuseService
         // startup from MuseLlmOptions. MuseService never knows the vendor name.
         // Empty string means backend unavailable → fall through to static template.
         var systemPrompt = BuildSystemPrompt(enrichedPreamble, isDevMode, hasSuiteContext, ctx, errorMarkers);
-        var llmText = await _llm.CompleteAsync(systemPrompt, request.Query.Trim(), ct);
-        _logger.LogDebug(
-            "Muse LLM completion for trace {TraceId}: {Result}",
-            traceId, llmText.Length > 0 ? $"{llmText.Length} chars" : "empty (static fallback)");
+        var task = ClassifyTask(request, isDevMode, hasSuiteContext);
+
+        // Route through the multi-lane router when available; fall back to the
+        // single-provider client for backward-compatible single-model deployments.
+        string llmText;
+        if (_router is not null)
+        {
+            llmText = await _router.CompleteAsync(task, systemPrompt, request.Query.Trim(), ct);
+            _logger.LogDebug(
+                "Muse router [{Task}] for trace {TraceId}: {Result}",
+                task, traceId, llmText.Length > 0 ? $"{llmText.Length} chars" : "empty (static fallback)");
+        }
+        else
+        {
+            llmText = await _llm.CompleteAsync(systemPrompt, request.Query.Trim(), ct);
+            _logger.LogDebug(
+                "Muse LLM completion for trace {TraceId}: {Result}",
+                traceId, llmText.Length > 0 ? $"{llmText.Length} chars" : "empty (static fallback)");
+        }
 
         if (llmText.Length > 0)
         {
@@ -278,5 +320,48 @@ public sealed class MuseService : IMuseService
 
         var more = errorMarkers.Length > 1 ? $" (+{errorMarkers.Length - 1} more)" : string.Empty;
         return $" WARNING: build broken — {errorMarkers.Length} error(s). First: \"{firstMsg}\"{more}";
+    }
+
+    /// <summary>
+    /// Classifies the current request as a <see cref="MuseTaskType"/> so the
+    /// router can dispatch to the most appropriate model lane.
+    ///
+    /// Classification rules (in priority order):
+    ///   AgentTools  — request explicitly targets a tool/workflow execution
+    ///   Document    — county mode asking for narrative/letter generation
+    ///   Reasoning   — county mode or complex multi-step questions (heuristic)
+    ///   DevAssist   — developer context present (default dev lane)
+    ///   Reasoning   — county/parcel requests without a dev overlay (default)
+    /// </summary>
+    private static MuseTaskType ClassifyTask(
+        ExplainRequest request,
+        bool isDevMode,
+        bool hasSuiteContext)
+    {
+        var q = request.Query.Trim().ToLowerInvariant();
+
+        // Explicit agentic intent keywords
+        if (q.Contains("run ") || q.Contains("execute ") || q.Contains("trigger ") ||
+            q.Contains("schedule ") || q.Contains("workflow") || q.Contains("automate"))
+            return MuseTaskType.AgentTools;
+
+        // Document generation keywords
+        if (q.Contains("write ") || q.Contains("draft ") || q.Contains("generate ") ||
+            q.Contains("letter") || q.Contains("narrative") || q.Contains("report"))
+            return MuseTaskType.Document;
+
+        // Reasoning keywords (IAAO, ratio, stat, calculate, explain why)
+        if (q.Contains("ratio") || q.Contains("iaao") || q.Contains("prd") || q.Contains("cod") ||
+            q.Contains("rcw") || q.Contains("calculate") || q.Contains("why ") ||
+            q.Contains("explain why") || q.Contains("analyse") || q.Contains("analyze"))
+            return MuseTaskType.Reasoning;
+
+        // Dev mode: default to DevAssist (latency-optimised small model)
+        if (isDevMode)
+            return MuseTaskType.DevAssist;
+
+        // County mode without specific keyword: reasoning is the safer default
+        // (statutory interpretation is common even for simple questions)
+        return MuseTaskType.Reasoning;
     }
 }
