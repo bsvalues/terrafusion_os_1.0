@@ -29,53 +29,45 @@ interface TerraSphereIconProps {
 
 const VARIANT_COLORS: Record<TerraSphereIconVariant, { ring: string; core: string; glow: string }> =
   {
-    // forge → copper
     assessment: {
-      ring: 'hsl(var(--tf-suite-forge) / 0.5)',
-      core: 'hsl(var(--tf-suite-forge))',
-      glow: 'hsl(var(--tf-suite-forge) / 0.6)',
+      ring: 'hsl(var(--tf-info-hs) 72% / 0.5)',
+      core: 'hsl(var(--tf-info-hs) 72%)',
+      glow: 'hsl(var(--tf-info-hs) 72% / 0.6)',
     },
-    // dossier → green
     records: {
-      ring: 'hsl(var(--tf-suite-dossier) / 0.5)',
-      core: 'hsl(var(--tf-suite-dossier))',
-      glow: 'hsl(var(--tf-suite-dossier) / 0.6)',
+      ring: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.5)',
+      core: 'hsl(var(--tf-transcend-cyan-hs) 50%)',
+      glow: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.6)',
     },
-    // levy/tax → dossier green (closest suite)
     tax: {
-      ring: 'hsl(var(--tf-suite-dossier) / 0.5)',
-      core: 'hsl(var(--tf-suite-dossier))',
-      glow: 'hsl(var(--tf-suite-dossier) / 0.6)',
+      ring: 'hsl(var(--tf-success-hs) 52% / 0.5)',
+      core: 'hsl(var(--tf-success-hs) 52%)',
+      glow: 'hsl(var(--tf-success-hs) 52% / 0.6)',
     },
-    // atlas → blue
     mapping: {
-      ring: 'hsl(var(--tf-suite-atlas) / 0.5)',
-      core: 'hsl(var(--tf-suite-atlas))',
-      glow: 'hsl(var(--tf-suite-atlas) / 0.6)',
+      ring: 'hsl(var(--tf-network-blue-hs) 60% / 0.5)',
+      core: 'hsl(var(--tf-network-blue-hs) 60%)',
+      glow: 'hsl(var(--tf-network-blue-hs) 60% / 0.6)',
     },
-    // analytics → forge copper (valuation data)
     analytics: {
-      ring: 'hsl(var(--tf-suite-forge) / 0.45)',
-      core: 'hsl(var(--tf-suite-forge))',
-      glow: 'hsl(var(--tf-suite-forge) / 0.55)',
+      ring: 'hsl(var(--tf-warning-hs) 57% / 0.5)',
+      core: 'hsl(var(--tf-warning-hs) 57%)',
+      glow: 'hsl(var(--tf-warning-hs) 57% / 0.6)',
     },
-    // gpt/ai → pilot indigo
     ai: {
-      ring: 'hsl(var(--tf-suite-pilot) / 0.5)',
-      core: 'hsl(var(--tf-suite-pilot))',
-      glow: 'hsl(var(--tf-suite-pilot) / 0.6)',
+      ring: 'hsl(var(--tf-info-hs) 68% / 0.5)',
+      core: 'hsl(var(--tf-info-hs) 68%)',
+      glow: 'hsl(var(--tf-info-hs) 68% / 0.6)',
     },
-    // OS utilities — dais claret
     system: {
-      ring: 'hsl(var(--tf-suite-dais) / 0.45)',
-      core: 'hsl(var(--tf-suite-dais))',
-      glow: 'hsl(var(--tf-suite-dais) / 0.55)',
+      ring: 'hsl(var(--tf-neutral-hs) 92% / 0.25)',
+      core: 'hsl(var(--tf-neutral-hs) 92%)',
+      glow: 'hsl(var(--tf-neutral-hs) 92% / 0.5)',
     },
-    // default → accent (civic blue)
     default: {
-      ring: 'hsl(var(--tf-accent) / 0.5)',
-      core: 'hsl(var(--tf-accent))',
-      glow: 'hsl(var(--tf-accent) / 0.6)',
+      ring: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.5)',
+      core: 'hsl(var(--tf-transcend-cyan-hs) 50%)',
+      glow: 'hsl(var(--tf-transcend-cyan-hs) 50% / 0.6)',
     },
   };
 
