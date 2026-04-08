@@ -1,3 +1,6 @@
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
+using TerraFusion.Core.Configuration;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
@@ -419,9 +422,43 @@ builder.Services.AddScoped<IDraftService, TerraFusion.AI.Services.DraftService>(
 // CLI Phase 1 — read-only repo context adapters (git diff + surface contract)
 builder.Services.AddScoped<IGitContextService, TerraFusion.AI.Services.GitContextService>();
 builder.Services.AddSingleton<ISurfaceContractService, TerraFusion.AI.Services.SurfaceContractService>();
-// Phase 2 — LLM completion client (Anthropic). Returns null when Muse:ApiKey is not set;
-// MuseService falls back to the static placeholder explanation automatically.
-builder.Services.AddHttpClient<IMuseLlmClient, TerraFusion.AI.Services.AnthropicMuseLlmClient>();
+// Phase 2 — Sovereign LLM client: provider selected at runtime from Muse config.
+// MuseService stays provider-agnostic; only this registration knows the vendor.
+// Default: Local (Ollama / any OpenAI-compat endpoint — data never leaves the building).
+// Set Muse:Provider = "AzureOpenAI" for cloud-supervised paths.
+{
+    var museOpts = builder.Configuration.GetSection(MuseLlmOptions.SectionName).Get<MuseLlmOptions>()
+                   ?? new MuseLlmOptions();
+    builder.Services.Configure<MuseLlmOptions>(builder.Configuration.GetSection(MuseLlmOptions.SectionName));
+
+    var kernelBuilder = Kernel.CreateBuilder();
+
+    if (museOpts.Provider == "AzureOpenAI"
+        && !string.IsNullOrWhiteSpace(museOpts.ApiKey)
+        && !string.IsNullOrWhiteSpace(museOpts.Endpoint))
+    {
+        kernelBuilder.AddAzureOpenAIChatCompletion(
+            deploymentName: museOpts.ModelId,
+            endpoint: museOpts.Endpoint,
+            apiKey: museOpts.ApiKey);
+    }
+    else
+    {
+        // Local / sovereign default — OpenAI-compatible endpoint (Ollama, LM Studio, etc.)
+        // Local models typically ignore the API key; any non-empty string satisfies the SDK.
+        var localEndpoint = museOpts.Endpoint ?? "http://localhost:11434/v1";
+        var modelId = string.IsNullOrWhiteSpace(museOpts.ModelId) ? "llama3" : museOpts.ModelId;
+
+        // Local models (Ollama, LM Studio) expose an OpenAI-compatible API.
+        // Route via a pre-configured HttpClient so BaseAddress points at the local endpoint.
+        var localHttpClient = new HttpClient { BaseAddress = new Uri(localEndpoint) };
+        kernelBuilder.AddOpenAIChatCompletion(modelId, "sk-local", httpClient: localHttpClient);
+    }
+
+    var kernel = kernelBuilder.Build();
+    builder.Services.AddSingleton(kernel.GetRequiredService<IChatCompletionService>());
+    builder.Services.AddSingleton<IMuseLlmClient, TerraFusion.AI.Services.SemanticKernelMuseLlmClient>();
+}
 // ✅ STUB: Consciousness Engine stub for DI resolution
 builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services

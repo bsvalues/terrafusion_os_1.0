@@ -168,18 +168,17 @@ public sealed class MuseService : IMuseService
         bool isDevMode = contextLines.Count > 0 && request.ParcelId is null;
         bool hasSuiteContext = ctx?.ActiveSuite is not null;
 
-        // Attempt LLM completion when a provider is configured.
-        string? llmText = null;
-        if (_llm.IsConfigured)
-        {
-            var systemPrompt = BuildSystemPrompt(enrichedPreamble, isDevMode, hasSuiteContext, ctx, errorMarkers);
-            llmText = await _llm.CompleteAsync(systemPrompt, request.Query.Trim(), ct);
-            _logger.LogDebug(
-                "Muse LLM completion for trace {TraceId}: {Result}",
-                traceId, llmText is not null ? $"{llmText.Length} chars" : "null (fallback)");
-        }
+        // Attempt LLM completion. IMuseLlmClient is provider-agnostic — the
+        // registered backend (local, Azure, or any SK connector) is chosen at
+        // startup from MuseLlmOptions. MuseService never knows the vendor name.
+        // Empty string means backend unavailable → fall through to static template.
+        var systemPrompt = BuildSystemPrompt(enrichedPreamble, isDevMode, hasSuiteContext, ctx, errorMarkers);
+        var llmText = await _llm.CompleteAsync(systemPrompt, request.Query.Trim(), ct);
+        _logger.LogDebug(
+            "Muse LLM completion for trace {TraceId}: {Result}",
+            traceId, llmText.Length > 0 ? $"{llmText.Length} chars" : "empty (static fallback)");
 
-        if (llmText is not null)
+        if (llmText.Length > 0)
         {
             // Live LLM response — use it directly.
             explanation = llmText;
@@ -193,7 +192,7 @@ public sealed class MuseService : IMuseService
 
             explanation = $"[{enrichedPreamble.TrimEnd()}]{buildNote} — {request.Query.Trim()} " +
                           $"[Muse: branch + file + suite ({ctx!.ActiveSuite}) signals received. " +
-                          $"LLM not configured — static fallback. Set Muse:ApiKey to enable live answers.]";
+                          $"LLM backend offline or unconfigured — static fallback active.]";
         }
         else if (isDevMode)
         {
@@ -204,7 +203,7 @@ public sealed class MuseService : IMuseService
 
             explanation = $"[{enrichedPreamble.TrimEnd()}]{buildNote} — {request.Query.Trim()} " +
                           $"[Muse: branch + file signals received. " +
-                          $"LLM not configured — static fallback. Set Muse:ApiKey to enable live answers.]";
+                          $"LLM backend offline or unconfigured — static fallback active.]";
         }
         else
         {

@@ -1,31 +1,28 @@
 namespace TerraFusion.Core.Interfaces;
 
 /// <summary>
-/// Thin LLM completion client for the Muse explain pipeline.
+/// Provider-agnostic LLM completion client for the Muse explain pipeline.
 ///
-/// Implementations are provider-agnostic from the caller's perspective.
-/// The contract is intentionally minimal: system prompt + user query → text.
+/// MuseService knows nothing about vendors, endpoints, or model names.
+/// It builds context and calls this interface. The registered implementation
+/// decides which backend answers — local, Azure, or any future provider —
+/// based purely on runtime configuration, never on business logic.
 ///
-/// Returns null (never throws) when the LLM is unavailable or unconfigured,
-/// allowing MuseService to degrade gracefully to the static placeholder explanation.
+/// Contract:
+///   - Always returns a string (never null, never throws)
+///   - Returns string.Empty when the backend is unavailable or unconfigured;
+///     MuseService treats empty as "fall back to static explanation"
 /// </summary>
 public interface IMuseLlmClient
 {
     /// <summary>
-    /// True when the client has a configured API key and is ready to accept requests.
-    /// MuseService skips the LLM call entirely when this is false.
-    /// </summary>
-    bool IsConfigured { get; }
-
-    /// <summary>
-    /// Sends the enriched context preamble as the system prompt and the user's
-    /// natural-language query as the user message.
+    /// Complete a chat turn using the enriched context preamble as the system
+    /// prompt and the user's natural-language query as the user message.
     ///
-    /// Returns the completion text on success, or null when the LLM is
-    /// unavailable, unconfigured, rate-limited, or returns an empty response.
-    /// Callers must treat null as "fall back to static explanation" — never as an error.
+    /// Returns the completion text on success.
+    /// Returns string.Empty when the backend is unavailable — never throws.
     /// </summary>
-    Task<string?> CompleteAsync(
+    Task<string> CompleteAsync(
         string systemPrompt,
         string userQuery,
         CancellationToken ct = default);
