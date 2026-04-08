@@ -51,15 +51,15 @@ public sealed class MuseService : IMuseService
             ? string.Join("; ", contextLines) + ". "
             : string.Empty;
 
-        // --- Statute sources ---
-        var sources = new List<ExplainSource>
-        {
-            new("statute", "RCW 84.40.030 — Valuation of property for taxation"),
-            new("statute", "RCW 84.40.038 — Appeal rights and notice requirements"),
-        };
+        // --- Sources (county statutes are gated on parcel presence) ---
+        var sources = new List<ExplainSource>();
 
         if (request.ParcelId is not null)
+        {
+            sources.Add(new ExplainSource("statute", "RCW 84.40.030 — Valuation of property for taxation"));
+            sources.Add(new ExplainSource("statute", "RCW 84.40.038 — Appeal rights and notice requirements"));
             sources.Add(new ExplainSource("parcel_data", request.ParcelId));
+        }
 
         if (ctx?.ActiveBranch is not null)
             sources.Add(new ExplainSource("dev_context", $"branch:{ctx.ActiveBranch}"));
@@ -67,18 +67,35 @@ public sealed class MuseService : IMuseService
         if (ctx?.ActiveFile is not null)
             sources.Add(new ExplainSource("dev_context", $"file:{ctx.ActiveFile}"));
 
+        if (ctx?.ActiveSuite is not null)
+            sources.Add(new ExplainSource("dev_context", $"suite:{ctx.ActiveSuite}"));
+
         if (request.Statutes is { Length: > 0 })
             sources.AddRange(request.Statutes.Select(s => new ExplainSource("statute", s)));
 
         // --- Compose explanation ---
-        // When dev context is present Muse answers as a dev co-pilot (branch/file/build aware).
-        // When only parcel context is present it answers as a county co-pilot.
-        // Future: replace this with a RAG-backed LLM call that receives contextPreamble as system context.
+        // Mode A: dev + suite — branch/file/build/suite/tab signals, no parcel
+        // Mode B: dev-only  — branch/file/build signals, no parcel, no suite
+        // Mode C: county    — parcel present (+ optional dev overlay)
+        // Future: each mode sends contextPreamble as LLM system context.
         string explanation;
+        bool isDevMode = contextLines.Count > 0 && request.ParcelId is null;
+        bool hasSuiteContext = ctx?.ActiveSuite is not null;
 
-        if (contextLines.Count > 0 && request.ParcelId is null)
+        if (isDevMode && hasSuiteContext)
         {
-            // Dev-context-only mode: answer as a code/build reviewer
+            // Mode A: dev + suite context — answer as a suite-aware dev co-pilot
+            var buildNote = ctx?.BuildStatus is "error"
+                ? " WARNING: the build is currently broken — check editorMarkers for compile errors before proceeding."
+                : string.Empty;
+
+            explanation = $"[{contextPreamble.TrimEnd()}]{buildNote} — {request.Query.Trim()} " +
+                          $"[Dev Truth Gate: branch + file + suite ({ctx!.ActiveSuite}) signals received. " +
+                          $"RAG pipeline connection pending for diff + contract lookup scoped to {ctx.ActiveSuite}/{ctx.ActiveTab ?? "*"} surface.]";
+        }
+        else if (isDevMode)
+        {
+            // Mode B: dev-only — branch/file/build reviewer
             var buildNote = ctx?.BuildStatus is "error"
                 ? " WARNING: the build is currently broken — check editorMarkers for compile errors before proceeding."
                 : string.Empty;
@@ -89,7 +106,7 @@ public sealed class MuseService : IMuseService
         }
         else
         {
-            // County co-pilot mode (parcel + optional dev context overlay)
+            // Mode C: county co-pilot (parcel + optional dev context overlay)
             var devOverlay = contextPreamble.Length > 0 ? $" [{contextPreamble.TrimEnd('.', ' ')}]" : string.Empty;
             explanation = $"For parcel {request.ParcelId ?? "unknown"} in county {request.CountyId}{devOverlay}: " +
                           $"{request.Query.Trim()} — Under RCW 84.40.030, property is valued at 100% of " +
