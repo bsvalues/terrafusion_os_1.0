@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getSession } from '../auth/session';
 import { useCompanionStore } from '../stores/companionStore';
+import type { EditorMarker } from '../stores/companionStore';
 
 // ============================================================================
 // Design tokens — matches TerraFusion light warm theme
@@ -72,6 +73,7 @@ interface ExplainContext {
   activeBranch: string | null;
   activeFile: string | null;
   buildStatus: string;
+  editorMarkers: EditorMarker[];
 }
 
 // ============================================================================
@@ -100,6 +102,8 @@ function buildWelcome(): ChatMessage {
  * meaningful changes without firing on every re-render.
  */
 function buildContextSignature(ctx: ExplainContext): string {
+  // Include error count (not full messages) so Muse re-greets when errors appear or clear.
+  const errorCount = ctx.editorMarkers.filter((m) => m.severity === 'error').length;
   return [
     ctx.activeParcelId ?? '',
     ctx.activeSuite ?? '',
@@ -107,6 +111,7 @@ function buildContextSignature(ctx: ExplainContext): string {
     ctx.activeBranch ?? '',
     ctx.activeFile ?? '',
     ctx.buildStatus,
+    String(errorCount),
   ].join('|');
 }
 
@@ -277,6 +282,7 @@ export function MuseChat(): React.ReactElement {
     activeBranch,
     activeFile,
     buildStatus,
+    editorMarkers,
   } = useCompanionStore();
 
   const session = getSession();
@@ -330,6 +336,7 @@ export function MuseChat(): React.ReactElement {
       activeBranch,
       activeFile,
       buildStatus,
+      editorMarkers,
     };
 
     // Need at least one meaningful signal to proactively greet
@@ -397,6 +404,7 @@ export function MuseChat(): React.ReactElement {
       activeBranch,
       activeFile,
       buildStatus,
+      editorMarkers,
     };
 
     try {

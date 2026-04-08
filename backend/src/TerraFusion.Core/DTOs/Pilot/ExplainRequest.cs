@@ -1,6 +1,13 @@
 namespace TerraFusion.Core.DTOs.Pilot;
 
 /// <summary>
+/// Stripped-down editor diagnostic for LLM consumption.
+/// Only severity and message are sent — file/line are noise for natural-language answers.
+/// Frontend filters to severity != 'hint' before sending.
+/// </summary>
+public record EditorMarker(string Severity, string Message);
+
+/// <summary>
 /// Dev/operator surface context published by the OS shell and sent with every explain call.
 /// All fields are optional — backend degrades gracefully when Canon or Vite are not running.
 /// </summary>
@@ -9,7 +16,8 @@ public record WorkContext(
     string? ActiveFile,
     string? BuildStatus,
     string? ActiveSuite,
-    string? ActiveTab
+    string? ActiveTab,
+    EditorMarker[]? EditorMarkers = null
 );
 
 public record ExplainRequest(

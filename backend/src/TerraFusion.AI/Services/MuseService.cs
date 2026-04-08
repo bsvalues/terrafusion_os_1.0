@@ -47,6 +47,18 @@ public sealed class MuseService : IMuseService
         if (ctx?.ActiveTab is { } tab)
             contextLines.Add($"Active tab: {tab}");
 
+        // EditorMarkers: include error/warning counts in the preamble so the LLM
+        // can reference them. Messages are available for the RAG layer to inline.
+        var errorMarkers = ctx?.EditorMarkers?.Where(m => m.Severity == "error").ToArray() ?? [];
+        var warnMarkers = ctx?.EditorMarkers?.Where(m => m.Severity == "warning").ToArray() ?? [];
+        if (errorMarkers.Length > 0 || warnMarkers.Length > 0)
+        {
+            var parts = new List<string>();
+            if (errorMarkers.Length > 0) parts.Add($"{errorMarkers.Length} error(s)");
+            if (warnMarkers.Length > 0) parts.Add($"{warnMarkers.Length} warning(s)");
+            contextLines.Add($"Editor diagnostics: {string.Join(", ", parts)}");
+        }
+
         var contextPreamble = contextLines.Count > 0
             ? string.Join("; ", contextLines) + ". "
             : string.Empty;
@@ -70,6 +82,10 @@ public sealed class MuseService : IMuseService
         if (ctx?.ActiveSuite is not null)
             sources.Add(new ExplainSource("dev_context", $"suite:{ctx.ActiveSuite}"));
 
+        // Add first N error messages as sources so the RAG renderer can surface them
+        foreach (var m in errorMarkers.Take(5))
+            sources.Add(new ExplainSource("editor_error", m.Message));
+
         if (request.Statutes is { Length: > 0 })
             sources.AddRange(request.Statutes.Select(s => new ExplainSource("statute", s)));
 
@@ -86,7 +102,7 @@ public sealed class MuseService : IMuseService
         {
             // Mode A: dev + suite context — answer as a suite-aware dev co-pilot
             var buildNote = ctx?.BuildStatus is "error"
-                ? " WARNING: the build is currently broken — check editorMarkers for compile errors before proceeding."
+                ? BuildErrorNote(errorMarkers)
                 : string.Empty;
 
             explanation = $"[{contextPreamble.TrimEnd()}]{buildNote} — {request.Query.Trim()} " +
@@ -97,7 +113,7 @@ public sealed class MuseService : IMuseService
         {
             // Mode B: dev-only — branch/file/build reviewer
             var buildNote = ctx?.BuildStatus is "error"
-                ? " WARNING: the build is currently broken — check editorMarkers for compile errors before proceeding."
+                ? BuildErrorNote(errorMarkers)
                 : string.Empty;
 
             explanation = $"[{contextPreamble.TrimEnd()}]{buildNote} — {request.Query.Trim()} " +
@@ -123,5 +139,23 @@ public sealed class MuseService : IMuseService
         );
 
         return Task.FromResult(response);
+    }
+
+    /// <summary>
+    /// Builds the build-error warning note for Mode A/B explanations.
+    /// Includes the first error message when markers are present so the operator
+    /// sees something actionable rather than a generic "build is broken" notice.
+    /// </summary>
+    private static string BuildErrorNote(EditorMarker[] errorMarkers)
+    {
+        if (errorMarkers.Length == 0)
+            return " WARNING: the build is currently broken — check editorMarkers for compile errors before proceeding.";
+
+        var firstMsg = errorMarkers[0].Message.Length > 120
+            ? errorMarkers[0].Message[..120] + "…"
+            : errorMarkers[0].Message;
+
+        var more = errorMarkers.Length > 1 ? $" (+{errorMarkers.Length - 1} more)" : string.Empty;
+        return $" WARNING: build broken — {errorMarkers.Length} error(s). First: \"{firstMsg}\"{more}";
     }
 }

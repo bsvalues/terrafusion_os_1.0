@@ -113,6 +113,8 @@ import {
   emitToolFailed,
   getTraceContext,
 } from '../services/terraTrace';
+import { useCompanionStore } from '../stores/companionStore';
+import type { BuildStatus, EditorMarker } from '../stores/companionStore';
 
 // ============================================================================
 // Workspace File types
@@ -1117,6 +1119,37 @@ function CanonContent(): React.ReactElement {
   useEffect(() => {
     refreshGitStatus();
   }, [refreshGitStatus]);
+
+  // ── Companion context bus publishers ─────────────────────────────────────
+  // Publish dev-state signals to the companion store so Muse knows the
+  // current branch, active file, and build health without being told.
+
+  useEffect(() => {
+    useCompanionStore.getState().setActiveBranch(gitBranch || null);
+  }, [gitBranch]);
+
+  useEffect(() => {
+    useCompanionStore.getState().setActiveFile(activeFilePath);
+  }, [activeFilePath]);
+
+  useEffect(() => {
+    const hasErrors = editorMarkers.some((m) => m.severity === 'error');
+    const status: BuildStatus = gitBranch
+      ? hasErrors
+        ? 'error'
+        : 'clean'
+      : 'unknown';
+    useCompanionStore.getState().setBuildStatus(status);
+  }, [editorMarkers, gitBranch]);
+
+  useEffect(() => {
+    // Publish filtered markers — strip hints (too noisy) and strip file/line (LLM noise).
+    const filtered: EditorMarker[] = editorMarkers
+      .filter((m) => m.severity !== 'hint')
+      .map((m) => ({ severity: m.severity, message: m.message }));
+    useCompanionStore.getState().setEditorMarkers(filtered);
+    return () => { useCompanionStore.getState().setEditorMarkers([]); };
+  }, [editorMarkers]);
 
   // Phase 40 + 47: Cross-tab sync — reload state when another tab writes to localStorage
   const handleStorageEvent = useCallback((e: StorageEvent) => {

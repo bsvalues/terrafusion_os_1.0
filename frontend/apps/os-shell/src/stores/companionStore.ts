@@ -24,6 +24,16 @@ import { create } from 'zustand';
 
 export type BuildStatus = 'clean' | 'error' | 'unknown';
 
+/**
+ * Stripped-down editor diagnostic for LLM consumption.
+ * Mirrors backend EditorMarker record.
+ * Frontend filters to severity !== 'hint' before publishing.
+ */
+export interface EditorMarker {
+  severity: string;
+  message: string;
+}
+
 export interface CompanionContext {
   /** Parcel currently open in the Workbench, or null if no workbench is open. */
   activeParcelId: string | null;
@@ -37,6 +47,8 @@ export interface CompanionContext {
   activeFile: string | null;
   /** Current build state — driven by Vite HMR events in dev, 'unknown' in prod. */
   buildStatus: BuildStatus;
+  /** Editor diagnostics filtered to severity !== 'hint'. Empty when no markers. */
+  editorMarkers: EditorMarker[];
 }
 
 interface CompanionState extends CompanionContext {
@@ -55,6 +67,7 @@ interface CompanionState extends CompanionContext {
   setActiveBranch: (branch: string | null) => void;
   setActiveFile: (file: string | null) => void;
   setBuildStatus: (status: BuildStatus) => void;
+  setEditorMarkers: (markers: EditorMarker[]) => void;
 }
 
 // ============================================================================
@@ -72,6 +85,7 @@ export const useCompanionStore = create<CompanionState>((set) => ({
   activeBranch: null,
   activeFile: null,
   buildStatus: 'unknown',
+  editorMarkers: [],
 
   // Panel controls
   open: () => set({ isOpen: true }),
@@ -85,6 +99,7 @@ export const useCompanionStore = create<CompanionState>((set) => ({
   setActiveBranch: (branch) => set({ activeBranch: branch }),
   setActiveFile: (file) => set({ activeFile: file }),
   setBuildStatus: (status) => set({ buildStatus: status }),
+  setEditorMarkers: (markers) => set({ editorMarkers: markers }),
 }));
 
 export default useCompanionStore;
