@@ -416,6 +416,9 @@ builder.Services.AddScoped<TerraFusion.AI.Services.IAIAssistantService, TerraFus
 builder.Services.AddScoped<IMuseService, TerraFusion.AI.Services.MuseService>();
 // Phase 10: HITL Drafter Mode — draft/approve/reject pipeline
 builder.Services.AddScoped<IDraftService, TerraFusion.AI.Services.DraftService>();
+// CLI Phase 1 — read-only repo context adapters (git diff + surface contract)
+builder.Services.AddScoped<IGitContextService, TerraFusion.AI.Services.GitContextService>();
+builder.Services.AddSingleton<ISurfaceContractService, TerraFusion.AI.Services.SurfaceContractService>();
 // ✅ STUB: Consciousness Engine stub for DI resolution
 builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services

@@ -7,13 +7,20 @@ namespace TerraFusion.AI.Services;
 public sealed class MuseService : IMuseService
 {
     private readonly ILogger<MuseService> _logger;
+    private readonly IGitContextService _git;
+    private readonly ISurfaceContractService _contracts;
 
-    public MuseService(ILogger<MuseService> logger)
+    public MuseService(
+        ILogger<MuseService> logger,
+        IGitContextService git,
+        ISurfaceContractService contracts)
     {
         _logger = logger;
+        _git = git;
+        _contracts = contracts;
     }
 
-    public Task<ExplainResponse> ExplainAsync(ExplainRequest request, CancellationToken ct = default)
+    public async Task<ExplainResponse> ExplainAsync(ExplainRequest request, CancellationToken ct = default)
     {
         _logger.LogInformation(
             "Muse explain for parcel {ParcelId} county {CountyId} actor {ActorId} branch {Branch} file {File} build {Build}",
@@ -63,6 +70,38 @@ public sealed class MuseService : IMuseService
             ? string.Join("; ", contextLines) + ". "
             : string.Empty;
 
+        // --- CLI Phase 1: live repo context (read-only, bounded) ---
+        GitContext? gitCtx = null;
+        SurfaceContract? contract = null;
+
+        if (ctx?.ActiveBranch is { } liveBranch)
+        {
+            gitCtx = await _git.GetContextAsync(liveBranch, ctx.ActiveFile, ct);
+        }
+
+        contract = _contracts.Resolve(ctx?.ActiveFile, ctx?.ActiveSuite, ctx?.ActiveTab);
+
+        // Build enriched preamble lines from CLI results
+        var enrichedLines = new List<string>();
+
+        if (gitCtx?.ChangedFiles is { Length: > 0 } changed)
+        {
+            var preview = changed.Length <= 3
+                ? string.Join(", ", changed)
+                : string.Join(", ", changed.Take(3)) + $" (+{changed.Length - 3} more)";
+            enrichedLines.Add($"Changed files ({changed.Length}): {preview}");
+        }
+
+        if (gitCtx?.FileDiff is { Length: > 0 } diff)
+            enrichedLines.Add($"Diff for {ctx!.ActiveFile}:\n{diff}");
+
+        if (contract is not null)
+            enrichedLines.Add($"Contract [{contract.Surface}]: {contract.Summary}");
+
+        var enrichedPreamble = enrichedLines.Count > 0
+            ? contextPreamble + string.Join("\n", enrichedLines) + "\n"
+            : contextPreamble;
+
         // --- Sources (county statutes are gated on parcel presence) ---
         var sources = new List<ExplainSource>();
 
@@ -86,6 +125,13 @@ public sealed class MuseService : IMuseService
         foreach (var m in errorMarkers.Take(5))
             sources.Add(new ExplainSource("editor_error", m.Message));
 
+        // CLI Phase 1 — live repo context sources
+        if (gitCtx?.HasChanges == true)
+            sources.Add(new ExplainSource("git_diff", $"{gitCtx.ChangedFiles.Length} file(s) changed on {gitCtx.Branch}"));
+
+        if (contract is not null)
+            sources.Add(new ExplainSource("surface_contract", contract.Surface));
+
         if (request.Statutes is { Length: > 0 })
             sources.AddRange(request.Statutes.Select(s => new ExplainSource("statute", s)));
 
@@ -105,7 +151,7 @@ public sealed class MuseService : IMuseService
                 ? BuildErrorNote(errorMarkers)
                 : string.Empty;
 
-            explanation = $"[{contextPreamble.TrimEnd()}]{buildNote} — {request.Query.Trim()} " +
+            explanation = $"[{enrichedPreamble.TrimEnd()}]{buildNote} — {request.Query.Trim()} " +
                           $"[Dev Truth Gate: branch + file + suite ({ctx!.ActiveSuite}) signals received. " +
                           $"RAG pipeline connection pending for diff + contract lookup scoped to {ctx.ActiveSuite}/{ctx.ActiveTab ?? "*"} surface.]";
         }
@@ -116,14 +162,14 @@ public sealed class MuseService : IMuseService
                 ? BuildErrorNote(errorMarkers)
                 : string.Empty;
 
-            explanation = $"[{contextPreamble.TrimEnd()}]{buildNote} — {request.Query.Trim()} " +
+            explanation = $"[{enrichedPreamble.TrimEnd()}]{buildNote} — {request.Query.Trim()} " +
                           $"[Dev Truth Gate: branch context and file signals received. " +
                           $"RAG pipeline connection pending for full diff + contract analysis.]";
         }
         else
         {
             // Mode C: county co-pilot (parcel + optional dev context overlay)
-            var devOverlay = contextPreamble.Length > 0 ? $" [{contextPreamble.TrimEnd('.', ' ')}]" : string.Empty;
+            var devOverlay = enrichedPreamble.Length > 0 ? $" [{enrichedPreamble.TrimEnd('.', ' ', '\n')}]" : string.Empty;
             explanation = $"For parcel {request.ParcelId ?? "unknown"} in county {request.CountyId}{devOverlay}: " +
                           $"{request.Query.Trim()} — Under RCW 84.40.030, property is valued at 100% of " +
                           $"true and fair market value as of January 1 of the assessment year. " +
@@ -138,7 +184,7 @@ public sealed class MuseService : IMuseService
             TraceId: traceId
         );
 
-        return Task.FromResult(response);
+        return response;
     }
 
     /// <summary>
