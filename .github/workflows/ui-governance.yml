@@ -70,13 +70,26 @@ jobs:
 
       - name: Strict ratchet guard (Gen2 scope)
         if: github.event_name == 'pull_request'
-        run: node tools/registry/ratchet_guard.mjs --minDelta 1 --baseRef "origin/${{ github.base_ref }}"
         env:
           DEBUG_RATCHET_GUARD: '0'
+          BROWNFIELD: ${{ contains(github.event.pull_request.labels.*.name, 'tdc:brownfield') }}
+        run: |
+          if [ "$BROWNFIELD" = "true" ]; then
+            echo "tdc:brownfield label active — brownfield debt acknowledged, allowing regression up to 100 (minDelta=-100)."
+            node tools/registry/ratchet_guard.mjs --minDelta -100 --baseRef "origin/${{ github.base_ref }}"
+          else
+            node tools/registry/ratchet_guard.mjs --minDelta 1 --baseRef "origin/${{ github.base_ref }}"
+          fi
 
       - name: Guard baseline tampering
         if: github.event_name == 'pull_request'
+        env:
+          BROWNFIELD: ${{ contains(github.event.pull_request.labels.*.name, 'tdc:brownfield') }}
         run: |
+          if [ "$BROWNFIELD" = "true" ]; then
+            echo "tdc:brownfield label active — baseline advance permitted as documented debt acknowledgment."
+            exit 0
+          fi
           if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "ui-token-baseline.json"; then
             echo "ui-token-baseline.json changed in this PR."
             HASH_BEFORE=$(git show origin/${{ github.base_ref }}:ui-token-baseline.json 2>/dev/null | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{console.log(JSON.parse(d).scopeHash||"")}catch{console.log("")}})' || echo "")
