@@ -39,6 +39,7 @@
   "ci": {
     "prGates": [
       "seal-gate-fast.yml",
+      "seal-import-boundary.yml",
       "core-governance-gates.yml",
       "tier1-ui-harness.yml",
       "terrafusion-ci.yml",
