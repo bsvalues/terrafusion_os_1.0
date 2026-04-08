@@ -84,12 +84,22 @@ public sealed class MuseService : IMuseService
         // Build enriched preamble lines from CLI results
         var enrichedLines = new List<string>();
 
+        // Changed files: surface only when the list is small enough to be actionable.
+        // Large branch-wide counts (e.g. thousands of files) are noise without a
+        // file-scoped diff — suppress them so the LLM context stays clean.
+        // Phase 2 will resolve activeFile to a repo-relative path so the file-scoped
+        // diff populates reliably; until then, only show the list when ≤ 20 files.
+        const int MaxUsefulChangedCount = 20;
         if (gitCtx?.ChangedFiles is { Length: > 0 } changed)
         {
-            var preview = changed.Length <= 3
-                ? string.Join(", ", changed)
-                : string.Join(", ", changed.Take(3)) + $" (+{changed.Length - 3} more)";
-            enrichedLines.Add($"Changed files ({changed.Length}): {preview}");
+            if (changed.Length <= MaxUsefulChangedCount)
+            {
+                var preview = changed.Length <= 3
+                    ? string.Join(", ", changed)
+                    : string.Join(", ", changed.Take(3)) + $" (+{changed.Length - 3} more)";
+                enrichedLines.Add($"Changed files ({changed.Length}): {preview}");
+            }
+            // else: branch diverged too far without a file-scoped diff — suppress list.
         }
 
         if (gitCtx?.FileDiff is { Length: > 0 } diff)
@@ -125,9 +135,16 @@ public sealed class MuseService : IMuseService
         foreach (var m in errorMarkers.Take(5))
             sources.Add(new ExplainSource("editor_error", m.Message));
 
-        // CLI Phase 1 — live repo context sources
+        // CLI Phase 1 — live repo context sources.
+        // Source label distinguishes file-scoped diff (actionable) from branch-wide count
+        // (informational) so the citation renderer and future LLM both know the scope.
         if (gitCtx?.HasChanges == true)
-            sources.Add(new ExplainSource("git_diff", $"{gitCtx.ChangedFiles.Length} file(s) changed on {gitCtx.Branch}"));
+        {
+            var diffRef = gitCtx.FileDiff is not null
+                ? $"file-diff:{System.IO.Path.GetFileName(ctx?.ActiveFile ?? "unknown")} ({gitCtx.Branch})"
+                : $"branch:{gitCtx.Branch} — {gitCtx.ChangedFiles.Length} file(s) changed (activeFile path unresolved)";
+            sources.Add(new ExplainSource("git_diff", diffRef));
+        }
 
         if (contract is not null)
             sources.Add(new ExplainSource("surface_contract", contract.Surface));
