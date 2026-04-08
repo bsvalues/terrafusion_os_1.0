@@ -1,13 +1,12 @@
 %% Benton County PACS - Core Database ERD
 %% 20 essential tables with relationships
-%% Validated: 2025-11-05 snapshot
-%% NOTE: Year 0 pattern - prop_val_yr=0 resolves to pacs_system.future_yr (current working year)
+%% Validated: 2026-04-02 (table names corrected against live pacs_oltp)
 
 erDiagram
     property ||--o{ property_val : "has valuations"
     property ||--o{ situs : "has addresses"
-    property ||--o{ owner_prop_assoc : "has owners"
-    property ||--o{ improvement : "has improvements"
+    property ||--o{ chg_of_owner_prop_assoc : "has ownership changes"
+    property ||--o{ imprv : "has improvements"
     property ||--o{ prop_building_permit_assoc : "has permits"
     property }o--|| property_type : "is type"
     property }o--|| state_code : "in state"
@@ -22,13 +21,13 @@ erDiagram
     situs }o--|| zip : "has zip code"
     situs }o--|| tax_code_area : "in TCA"
     
-    owner_prop_assoc }o--|| property : "owns property"
-    owner_prop_assoc }o--|| owner : "is owner"
-    owner_prop_assoc }o--|| owner_type : "has type"
+    chg_of_owner_prop_assoc }o--|| property : "owns property"
+    chg_of_owner_prop_assoc }o--|| owner : "is owner"
+    chg_of_owner_prop_assoc }o--|| owner_type : "has type"
     
-    improvement }o--|| property : "improves property"
-    improvement }o--|| improvement_type : "is type"
-    improvement }o--|| imprv_condition : "has condition"
+    imprv }o--|| property : "improves property"
+    imprv }o--|| improvement_type : "is type"
+    imprv }o--|| imprv_condition : "has condition"
     
     account }o--|| property : "bills property"
     account ||--o{ bill : "has bills"
@@ -42,7 +41,7 @@ erDiagram
     
     property {
         int prop_id PK
-        varchar parcel_num UK "Official parcel number"
+        varchar geo_id UK "GIS/parcel identifier (taxlot)"
         int prop_type_cd FK "Residential, Commercial, etc."
         char state_cd FK "WA, OR"
         decimal latitude "GIS coordinate"
@@ -94,8 +93,8 @@ erDiagram
         datetime create_dt "Record creation"
     }
     
-    owner_prop_assoc {
-        int owner_prop_assoc_id PK
+    chg_of_owner_prop_assoc {
+        int chg_of_owner_id PK
         int prop_id FK
         int owner_id FK
         int owner_yr "Ownership year"
@@ -104,7 +103,7 @@ erDiagram
         datetime effective_dt "Ownership start"
     }
     
-    improvement {
+    imprv {
         int imprv_id PK
         int prop_id FK
         int imprv_type_cd FK "Residential, Commercial, Ag"

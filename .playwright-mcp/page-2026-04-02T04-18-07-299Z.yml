@@ -1,0 +1,13 @@
+- generic [ref=e3]:
+  - generic [ref=e4]: "[plugin:vite:import-analysis] Failed to resolve import \"@tauri-apps/api/tauri\" from \"src\\App.tsx\". Does the file exist?"
+  - generic [ref=e5]: C:/Users/bsval/terrafusion_os_1.0/packages/terra-insight/src/App.tsx:3:23
+  - generic [ref=e6]: "18 | import \"./terrafusion-brand.css\"; 19 | import { useState, useEffect } from \"react\"; 20 | import { invoke } from \"@tauri-apps/api/tauri\"; | ^ 21 | import { 22 | BarChart,"
+  - generic [ref=e7]: at formatError (file:///C:/Users/bsval/terrafusion_os_1.0/node_modules/.pnpm/vite@4.5.14_@types+node@20.19.11_lightningcss@1.30.1_terser@5.44.1/node_modules/vite/dist/node/chunks/dep-827b23df.js:44066:46) at TransformContext.error (file:///C:/Users/bsval/terrafusion_os_1.0/node_modules/.pnpm/vite@4.5.14_@types+node@20.19.11_lightningcss@1.30.1_terser@5.44.1/node_modules/vite/dist/node/chunks/dep-827b23df.js:44062:19) at normalizeUrl (file:///C:/Users/bsval/terrafusion_os_1.0/node_modules/.pnpm/vite@4.5.14_@types+node@20.19.11_lightningcss@1.30.1_terser@5.44.1/node_modules/vite/dist/node/chunks/dep-827b23df.js:41845:33) at process.processTicksAndRejections (node:internal/process/task_queues:105:5) at async file:///C:/Users/bsval/terrafusion_os_1.0/node_modules/.pnpm/vite@4.5.14_@types+node@20.19.11_lightningcss@1.30.1_terser@5.44.1/node_modules/vite/dist/node/chunks/dep-827b23df.js:41999:47 at async Promise.all (index 5) at async TransformContext.transform (file:///C:/Users/bsval/terrafusion_os_1.0/node_modules/.pnpm/vite@4.5.14_@types+node@20.19.11_lightningcss@1.30.1_terser@5.44.1/node_modules/vite/dist/node/chunks/dep-827b23df.js:41915:13) at async Object.transform (file:///C:/Users/bsval/terrafusion_os_1.0/node_modules/.pnpm/vite@4.5.14_@types+node@20.19.11_lightningcss@1.30.1_terser@5.44.1/node_modules/vite/dist/node/chunks/dep-827b23df.js:44356:30) at async loadAndTransform (file:///C:/Users/bsval/terrafusion_os_1.0/node_modules/.pnpm/vite@4.5.14_@types+node@20.19.11_lightningcss@1.30.1_terser@5.44.1/node_modules/vite/dist/node/chunks/dep-827b23df.js:55088:29) at async viteTransformMiddleware (file:///C:/Users/bsval/terrafusion_os_1.0/node_modules/.pnpm/vite@4.5.14_@types+node@20.19.11_lightningcss@1.30.1_terser@5.44.1/node_modules/vite/dist/node/chunks/dep-827b23df.js:64699:32
+  - generic [ref=e8]:
+    - text: Click outside, press Esc key, or fix the code to dismiss.
+    - text: You can also disable this overlay by setting
+    - code [ref=e9]: server.hmr.overlay
+    - text: to
+    - code [ref=e10]: "false"
+    - text: in
+    - code [ref=e11]: vite.config.js.

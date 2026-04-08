@@ -1,0 +1,1012 @@
+.forge-workspace {
+  --forge-bg: hsl(222 24% 7%);
+  --forge-stage: hsl(222 22% 9%);
+  --forge-panel: hsl(220 18% 11%);
+  --forge-panel-hover: hsl(220 18% 13%);
+  --forge-border: hsla(210, 20%, 98%, 0.08);
+  --forge-border-strong: hsla(210, 20%, 98%, 0.14);
+  --forge-text: hsla(220, 40%, 96%, 0.95);
+  --forge-muted: hsla(220, 24%, 82%, 0.62);
+  --forge-subtle: hsla(220, 20%, 78%, 0.42);
+  --forge-info: hsl(190 100% 60%);
+  --forge-success: hsl(135 90% 55%);
+  --forge-warn: hsl(40 100% 60%);
+  --forge-shadow: 0 18px 40px hsla(222, 45%, 2%, 0.28);
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top right, hsla(200, 100%, 60%, 0.05), transparent 30%),
+    linear-gradient(180deg, hsl(222 22% 8%), var(--forge-bg));
+  color: var(--forge-text);
+  overflow: hidden;
+}
+
+.forge-workspace__viewport {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.forge-workspace__stage {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.forge-workspace__header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.forge-workspace__eyebrow,
+.forge-panel__eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--forge-subtle);
+}
+
+.forge-workspace__title {
+  margin-top: 6px;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.forge-workspace__subtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--forge-muted);
+}
+
+.forge-workspace__status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.forge-workspace__notice {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--forge-border-strong);
+  background: hsla(210, 20%, 98%, 0.03);
+  font-size: 12px;
+  color: var(--forge-muted);
+}
+
+.forge-workspace__notice--warn {
+  border-color: hsla(40, 100%, 60%, 0.24);
+  background: hsla(40, 100%, 60%, 0.08);
+  color: var(--forge-warn);
+}
+
+.forge-workspace__notice--error {
+  border-color: hsla(0, 72%, 60%, 0.22);
+  background: hsla(0, 72%, 60%, 0.08);
+  color: hsl(0 72% 68%);
+}
+
+.forge-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(156px, 1fr));
+  gap: 16px;
+}
+
+.forge-kpi-cell,
+.forge-panel {
+  background: var(--forge-panel);
+  border: 1px solid var(--forge-border);
+  border-radius: 8px;
+  box-shadow: var(--forge-shadow);
+}
+
+.forge-kpi-cell {
+  padding: 16px;
+}
+
+.forge-kpi-cell__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--forge-subtle);
+}
+
+.forge-kpi-cell__value {
+  margin-top: 8px;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--forge-text);
+}
+
+.forge-kpi-cell__value--neutral {
+  color: var(--forge-text);
+}
+
+/* Pending count — neon-amber status signal */
+.forge-kpi-cell__value--warn {
+  color: var(--forge-warn);
+}
+
+/* Completion % — neon-lime success signal */
+.forge-kpi-cell__value--success {
+  color: var(--forge-success);
+}
+
+.forge-panel {
+  padding: 18px;
+}
+
+.forge-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.forge-panel__title {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.forge-primary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(248px, 1fr));
+  gap: 16px;
+}
+
+.forge-secondary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(188px, 1fr));
+  gap: 10px;
+}
+
+.forge-card {
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--forge-border);
+  border-radius: 8px;
+  background: var(--forge-stage);
+  color: inherit;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.forge-card:not(:disabled):hover {
+  transform: translateY(-1px);
+  background: var(--forge-panel-hover);
+  border-color: var(--forge-border-strong);
+}
+
+.forge-card:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.forge-card--primary {
+  min-height: 184px;
+  padding: 18px;
+}
+
+.forge-card--secondary {
+  min-height: 144px;
+  padding: 14px;
+}
+
+.forge-card__rail {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.forge-card__title {
+  margin-top: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.forge-card__description {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--forge-muted);
+}
+
+.forge-card__foot {
+  margin-top: 16px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--forge-subtle);
+}
+
+.forge-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Functional category signal — neon-cyan per Layer 4 spec */
+.forge-chip--neutral {
+  border: 1px solid hsla(190, 100%, 60%, 0.20);
+  background: hsla(190, 100%, 60%, 0.09);
+  color: hsl(190, 100%, 60%);
+}
+
+.forge-chip--warn {
+  border: 1px solid hsla(40, 100%, 60%, 0.24);
+  background: hsla(40, 100%, 60%, 0.1);
+  color: var(--forge-warn);
+}
+
+.forge-chip--success {
+  border: 1px solid hsla(135, 90%, 55%, 0.2);
+  background: hsla(135, 90%, 55%, 0.08);
+  color: var(--forge-success);
+}
+
+.forge-queue {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forge-queue--empty {
+  min-height: 104px;
+  justify-content: center;
+  color: var(--forge-subtle);
+  font-size: 13px;
+}
+
+.forge-queue__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--forge-border);
+  border-radius: 8px;
+  background: var(--forge-stage);
+  text-align: left;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.forge-queue__row:hover {
+  transform: translateY(-1px);
+  background: var(--forge-panel-hover);
+  border-color: var(--forge-border-strong);
+}
+
+.forge-queue__identity {
+  min-width: 0;
+}
+
+.forge-queue__address {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--forge-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.forge-queue__meta {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--forge-muted);
+}
+
+/* Assessed value — data, not a signal. Muted text only. */
+.forge-queue__value {
+  font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--forge-subtle);
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .forge-workspace__status {
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .forge-workspace__stage {
+    padding: 16px;
+  }
+
+  .forge-primary-grid,
+  .forge-secondary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .forge-queue__row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ── Sale Qualification Queue (Slice 1.4) ───────────────────────────────── */
+
+.sq-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--forge-border);
+  padding-bottom: 1px;
+}
+
+.sq-tab {
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--forge-muted);
+  cursor: pointer;
+  transition: color 120ms, border-color 120ms;
+  margin-bottom: -1px;
+}
+
+.sq-tab:hover {
+  color: var(--forge-text);
+}
+
+.sq-tab--active {
+  color: var(--forge-info);
+  border-bottom-color: var(--forge-info);
+}
+
+.sq-state {
+  padding: 20px 0;
+  font-size: 13px;
+  color: var(--forge-muted);
+  text-align: center;
+}
+
+.sq-state--error {
+  color: var(--forge-warn);
+}
+
+.sq-table {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sq-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 2fr 1.2fr;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--forge-border);
+  background: var(--forge-stage);
+  font-size: 12px;
+}
+
+.sq-row--head {
+  border-color: transparent;
+  background: transparent;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--forge-subtle);
+  padding-top: 0;
+}
+
+.sq-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  color: var(--forge-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.sq-cell--parcel {
+  font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sq-cell--actions {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sq-reason {
+  font-size: 10px;
+  color: var(--forge-muted);
+  line-height: 1.4;
+}
+
+.sq-action {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 120ms;
+}
+
+.sq-action:hover {
+  opacity: 0.85;
+}
+
+.sq-action--qualify {
+  border-color: var(--forge-success);
+  background: transparent;
+  color: var(--forge-success);
+}
+
+.sq-action--reject {
+  border-color: var(--forge-warn);
+  background: transparent;
+  color: var(--forge-warn);
+}
+
+.sq-patch-state {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--forge-muted);
+}
+
+.sq-patch-state--error {
+  color: var(--forge-warn);
+}
+
+.sq-patch-state--done {
+  color: var(--forge-success);
+}
+
+.sq-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--forge-border);
+  font-size: 12px;
+}
+
+.sq-page-btn {
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--forge-border-strong);
+  background: var(--forge-stage);
+  color: var(--forge-text);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 120ms;
+}
+
+.sq-page-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.sq-page-btn:not(:disabled):hover {
+  border-color: var(--forge-info);
+  color: var(--forge-info);
+}
+
+.sq-page-info {
+  color: var(--forge-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.sq-page-total {
+  color: var(--forge-subtle);
+}
+
+@media (max-width: 900px) {
+  .sq-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .sq-row--head {
+    display: none;
+  }
+}
+
+/* ── Ratio Study Panel (rs-*) ─ Slice 1.5 ─────────────────────────────── */
+
+.rs-state {
+  padding: 14px 16px;
+  color: var(--forge-muted);
+  font-size: 0.875rem;
+}
+
+.rs-state--error {
+  color: var(--forge-warn);
+}
+
+/* IAAO stat bar — five cards in a row */
+.rs-stats-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  padding: 0 0 12px;
+}
+
+.rs-stat {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--forge-border);
+  background: var(--forge-panel);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rs-stat--success { border-color: color-mix(in srgb, var(--forge-success) 35%, transparent); }
+.rs-stat--warn    { border-color: color-mix(in srgb, var(--forge-warn) 35%, transparent); }
+.rs-stat--neutral { border-color: var(--forge-border); }
+
+.rs-stat__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--forge-muted);
+}
+
+.rs-stat__value {
+  font-size: 1.375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--forge-text);
+}
+
+.rs-stat--success .rs-stat__value { color: var(--forge-success); }
+.rs-stat--warn    .rs-stat__value { color: var(--forge-warn); }
+
+.rs-stat__sub {
+  font-size: 0.6875rem;
+  color: var(--forge-subtle);
+}
+
+/* Detail table */
+.rs-table {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 6 columns: parcel 1.8fr · date 1fr · price 1fr · ratio 0.8fr · hood 1.2fr · source 1fr */
+.rs-row {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr 0.8fr 1.2fr 1fr;
+  gap: 8px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--forge-border);
+  align-items: center;
+  font-size: 0.8125rem;
+}
+
+.rs-row:last-child {
+  border-bottom: none;
+}
+
+.rs-row--head {
+  background: var(--forge-panel);
+  border-radius: 6px 6px 0 0;
+  color: var(--forge-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--forge-border-strong);
+}
+
+.rs-cell--parcel {
+  font-variant-numeric: tabular-nums;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--forge-info);
+}
+
+.rs-cell--muted {
+  color: var(--forge-muted);
+}
+
+.rs-cell--ratio {
+  text-align: right;
+}
+
+/* Ratio badge */
+.rs-ratio-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+}
+
+.rs-ratio-badge--ok {
+  background: color-mix(in srgb, var(--forge-success) 15%, transparent);
+  color: var(--forge-success);
+}
+
+.rs-ratio-badge--out {
+  background: color-mix(in srgb, var(--forge-warn) 15%, transparent);
+  color: var(--forge-warn);
+}
+
+.rs-ratio-badge--missing {
+  color: var(--forge-subtle);
+}
+
+/* Pagination */
+.rs-pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--forge-border);
+}
+
+.rs-page-btn {
+  background: none;
+  border: 1px solid var(--forge-border);
+  border-radius: 6px;
+  color: var(--forge-muted);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  padding: 4px 12px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.rs-page-btn:hover:not(:disabled) {
+  color: var(--forge-text);
+  border-color: var(--forge-border-strong);
+}
+
+.rs-page-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.rs-page-info {
+  color: var(--forge-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rs-page-total {
+  color: var(--forge-subtle);
+}
+
+@media (max-width: 900px) {
+  .rs-stats-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .rs-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .rs-row--head {
+    display: none;
+  }
+}
+
+/* ── Comps Pool Browser (cp-*) ─ Slice 1.6 ────────────────────────────── */
+
+.cp-state {
+  padding: 14px 16px;
+  color: var(--forge-muted);
+  font-size: 0.875rem;
+}
+
+.cp-state--error {
+  color: var(--forge-warn);
+}
+
+/* Filter bar */
+.cp-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--forge-border);
+  margin-bottom: 2px;
+}
+
+.cp-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.cp-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 160px;
+}
+
+.cp-filter-group--narrow {
+  flex: 0 1 110px;
+}
+
+.cp-filter-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--forge-muted);
+}
+
+.cp-filter-input {
+  background: var(--forge-panel);
+  border: 1px solid var(--forge-border);
+  border-radius: 6px;
+  color: var(--forge-text);
+  font-size: 0.8125rem;
+  padding: 6px 10px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.cp-filter-input:focus {
+  outline: none;
+  border-color: var(--forge-info);
+}
+
+.cp-filter-input::placeholder {
+  color: var(--forge-subtle);
+}
+
+/* Remove number input spinners */
+.cp-filter-input[type="number"]::-webkit-inner-spin-button,
+.cp-filter-input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.cp-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cp-btn {
+  border: 1px solid var(--forge-border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  padding: 6px 14px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.cp-btn--apply {
+  background: color-mix(in srgb, var(--forge-info) 15%, transparent);
+  border-color: color-mix(in srgb, var(--forge-info) 40%, transparent);
+  color: var(--forge-info);
+}
+
+.cp-btn--apply:hover {
+  background: color-mix(in srgb, var(--forge-info) 25%, transparent);
+}
+
+.cp-btn--clear {
+  background: none;
+  color: var(--forge-muted);
+}
+
+.cp-btn--clear:hover {
+  color: var(--forge-text);
+  border-color: var(--forge-border-strong);
+}
+
+.cp-filter-active-note {
+  font-size: 0.75rem;
+  color: var(--forge-warn);
+  font-weight: 500;
+}
+
+/* Table — 9 columns */
+/* parcel/addr 2fr · date 1fr · price 1fr · gla 0.7fr · yrBlt 0.6fr · bed/bath 0.7fr · cond 0.9fr · ratio 0.8fr · src 0.9fr */
+.cp-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.cp-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 0.7fr 0.6fr 0.7fr 0.9fr 0.8fr 0.9fr;
+  gap: 6px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--forge-border);
+  align-items: center;
+  font-size: 0.8125rem;
+}
+
+.cp-row:last-child {
+  border-bottom: none;
+}
+
+.cp-row--head {
+  background: var(--forge-panel);
+  border-radius: 6px 6px 0 0;
+  color: var(--forge-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--forge-border-strong);
+}
+
+.cp-cell--identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cp-parcel {
+  font-variant-numeric: tabular-nums;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--forge-info);
+}
+
+.cp-address {
+  font-size: 0.75rem;
+  color: var(--forge-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cp-hood {
+  font-size: 0.6875rem;
+  color: var(--forge-subtle);
+}
+
+.cp-cell--num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.cp-cell--muted {
+  color: var(--forge-muted);
+}
+
+.cp-adj {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--forge-warn);
+  vertical-align: super;
+}
+
+/* Ratio badge — note: pacsComputedRatio is on 0–100 scale from PACS */
+.cp-ratio-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+}
+
+.cp-ratio-badge--ok {
+  background: color-mix(in srgb, var(--forge-success) 15%, transparent);
+  color: var(--forge-success);
+}
+
+.cp-ratio-badge--out {
+  background: color-mix(in srgb, var(--forge-warn) 15%, transparent);
+  color: var(--forge-warn);
+}
+
+.cp-ratio-badge--missing {
+  color: var(--forge-subtle);
+}
+
+/* Pagination */
+.cp-pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--forge-border);
+}
+
+.cp-page-btn {
+  background: none;
+  border: 1px solid var(--forge-border);
+  border-radius: 6px;
+  color: var(--forge-muted);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  padding: 4px 12px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.cp-page-btn:hover:not(:disabled) {
+  color: var(--forge-text);
+  border-color: var(--forge-border-strong);
+}
+
+.cp-page-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.cp-page-info {
+  color: var(--forge-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.cp-page-total {
+  color: var(--forge-subtle);
+}
+
+@media (max-width: 900px) {
+  .cp-filter-group {
+    flex: 1 1 140px;
+  }
+
+  .cp-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .cp-row--head {
+    display: none;
+  }
+}

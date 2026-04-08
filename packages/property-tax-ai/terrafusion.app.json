@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "property-tax-ai",
+  "displayName": "PropertyTax AI",
+  "description": "AI-powered assessment assistant — LangChain agents for valuation analysis, appeal preparation, and automated property review.",
+  "iconName": "Bot",
+  "category": "ai",
+  "tier": 1,
+  "status": "active",
+  "pinned": true,
+  "version": "1.0.0",
+  "intent": "gen2",
+  "runnable": true,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5014/"
+  },
+  "tags": ["ai", "assessment", "langchain", "gen2", "county-wide"],
+  "permissions": ["county:read", "property:read"]
+}

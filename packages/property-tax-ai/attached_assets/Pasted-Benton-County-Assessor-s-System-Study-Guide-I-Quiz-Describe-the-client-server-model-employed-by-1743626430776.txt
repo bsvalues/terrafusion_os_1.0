@@ -1,0 +1,64 @@
+Benton County Assessor's System Study Guide
+I. Quiz
+
+Describe the client-server model employed by the MCP system. What are the primary responsibilities of the MCP Server and the MCP Client?
+What is the purpose of the config.json file in the MCP server implementation? Why is it important to handle sensitive information within this file securely?
+Explain the functionality of the "schema_discovery" tool within the MCP server. What information does it retrieve and why is this information crucial for the LLM integration?
+Describe the process by which a natural language query submitted by a user is translated into a SQL query and executed using the MCP system. Highlight the roles of the MCP Client and Server.
+What are the key security considerations mentioned for the MCP system? Explain the importance of at least two of these considerations in protecting sensitive assessor data.
+Explain how the MCP system facilitates automated tasks, providing a specific example like scheduled reporting or real-time alerts. What are the benefits of such automation for the Assessor's Office?
+Describe the role of the MessageServiceUrl found in CoreSettings.xml. How does this setting contribute to the overall functionality and integration of the MCP system's modules?
+Based on the analysis of EsriMapModuleSettings.xml, how does the system integrate mapping capabilities? Provide an example of a base layer and a viewable layer and their potential uses.
+Explain the purpose of EsriSharedStateSettings.xml and how it enhances the user experience within the mapping module. Give an example of a setting stored in this file and its benefit.
+How do the DataConnectionsSettings.xml file and the integration with the PACS database relate to the overall goal of the MCP system to allow natural language querying of property data?
+II. Quiz Answer Key
+
+The MCP system follows a client-server model where the MCP Server connects to the assessor's SQL Server database and exposes tools for database operations. The MCP Client integrates with an LLM to translate natural language queries into SQL and communicates with the MCP server to retrieve data for users.
+The config.json file stores configuration details for the SQL Server connection (server, database, user) and descriptions of the available MCP tools. Secure handling of sensitive information like passwords (using environment variables or secure vaults) is crucial to prevent unauthorized access to the database.
+The "schema_discovery" tool retrieves information about the tables and columns within the property records database, including their names and data types. This schema information is vital for the LLM to understand the database structure and generate accurate SQL queries in response to natural language input.
+A user submits a natural language query through the MCP Client. The client first retrieves schema information from the MCP Server. This schema, along with the natural language query, is sent to the LLM (e.g., GPT-4) to generate a corresponding SQL query. The client then sends this SQL query to the MCP Server's "execute_query" endpoint for execution against the database, and the results are returned to the user.
+Key security considerations include TLS encryption for data in transit, the use of environment variables and secret managers for credential management, and firewall/network segmentation. Secure credential management prevents hardcoding sensitive information and reduces the risk of data breaches. Input sanitization, such as parameterized queries, helps protect against SQL injection attacks.
+The MCP system allows for scheduled reporting by setting up a scheduler (like Cron) to periodically trigger specific MCP tool calls (e.g., running a query for valuation changes). The results can then be formatted into reports. This automation saves time and ensures timely delivery of important data insights without manual intervention.
+The MessageServiceUrl in CoreSettings.xml defines the endpoint for real-time messaging within the MCP system, likely using SignalR. This enables different modules to communicate and synchronize, facilitating features like live updates on the map when property data changes in the PACS database.
+The system integrates mapping capabilities primarily through the EsriMapModuleSettings.xml, which configures the Esri map module. A base layer example is "Imagery" which provides satellite imagery as a background. A viewable layer example is "Parcels" which overlays interactive property boundaries onto the map, allowing users to visualize and select property data.
+EsriSharedStateSettings.xml manages user-specific preferences for the Esri map module, enhancing user experience by persisting settings across sessions. An example is the SavedLocations section, which allows users to save and quickly navigate to frequently viewed geographic areas, improving efficiency.
+The DataConnectionsSettings.xml file defines the connection to the PACS database and specifies various pre-defined SQL queries that can be executed. This integration is fundamental because it provides the underlying property data that the MCP system and the LLM can access and query, ultimately allowing users to retrieve information from the PACS database using natural language.
+III. Essay Format Questions
+
+Discuss the architectural design of the MCP system, analyzing the interaction between the MCP Client and Server. How does this architecture facilitate the integration of an LLM for natural language querying of a SQL database?
+Evaluate the security measures implemented in the MCP system as described in the source material. What are the strengths of this approach, and what additional security considerations might be important for a system handling sensitive assessor data?
+Analyze the role of the configuration files (CoreSettings.xml, EsriMapModuleSettings.xml, DataConnectionsSettings.xml, etc.) in defining the functionality and integration of the MCP system. Provide specific examples of how settings within these files impact the system's behavior.
+Explore the potential of the MCP system for automating tasks and enabling advanced use cases in the Benton County Assessor's Office, such as predictive analytics or workflow integration with other county systems. Discuss the benefits and challenges of implementing these functionalities.
+Based on the analysis of the provided configurations and the discussion on fine-tuning LLMs, outline a strategy for continuously improving the accuracy, reliability, and user experience of the MCP-enabled AI agent system. Consider the roles of data, feedback, and ongoing development.
+IV. Glossary of Key Terms
+
+Client-Server Model: A distributed application structure that partitions tasks or workloads between service providers (servers) and service requesters (clients).
+MCP Server: The backend component of the system that connects to the assessor's SQL Server database and exposes tools (endpoints) for data operations.
+MCP Client: The frontend component that integrates with an LLM to translate natural language queries into SQL and communicates with the MCP Server.
+LLM (Large Language Model): A deep learning model trained on a massive dataset of text to understand and generate human-like language. Examples include GPT-4 and Claude.
+Endpoint (API Endpoint): A specific URL that an application exposes to allow other applications to interact with its functionalities. In this context, MCP Server tools are exposed as endpoints.
+SDK (Software Development Kit): A collection of tools, libraries, documentation, code samples, and processes that allow developers to create software applications for a specific platform or system.
+Virtual Environment: An isolated Python environment that allows you to install packages and dependencies for a specific project without affecting other Python projects on your system.
+Database Driver: Software that allows an application to interact with a specific type of database. Examples here are pyodbc (or pymssql) for SQL Server.
+TLS Encryption: A cryptographic protocol designed to provide communication security over a computer network, ensuring privacy and data integrity.
+Environment Variables: Dynamic named values that can affect the way running processes will behave on a computer. They are often used to store configuration settings and sensitive information.
+Secret Manager (or Secure Vault): A service or tool used to securely store and manage sensitive information such as passwords, API keys, and other credentials.
+Schema Discovery: The process of identifying and retrieving the structure (tables, columns, data types) of a database.
+Parameterized Query: A way to execute database queries where values are passed as parameters rather than being directly embedded in the SQL string. This helps prevent SQL injection attacks.
+MCP Tool: A specific function or capability exposed by the MCP Server, such as schema discovery, query execution, or retrieving specific property data.
+REST API (Representational State Transfer Application Programming Interface): An architectural style for designing networked applications, often used for communication between web-based systems.
+Cron: A time-based job scheduler in Unix-like computer operating systems.
+Containerization (e.g., Docker): Packaging an application and its dependencies into a self-contained unit (a container) that can run consistently across different environments.
+Container Orchestration (e.g., Kubernetes): A system for automating the deployment, scaling, and management of containerized applications.
+Load Balancer: A network device or software that distributes incoming network traffic across multiple servers to prevent any single server from being overwhelmed.
+Microservices: An architectural approach where an application is structured as a collection of small, independent services that communicate over a network.
+GIS (Geographic Information System): A system designed to capture, store, manipulate, analyze, manage, and present spatial or geographic data.
+CAMA (Computer Assisted Mass Appraisal): The process of using computer software and statistical techniques to value a large group of properties for ad valorem tax purposes.
+WKID (Well-Known ID): A unique identifier for a coordinate reference system.
+FeatureServer: An ArcGIS Server service that allows access to vector geographic features for querying and editing.
+ESRIDynamicLayer: A type of map layer in Esri's ArcGIS that renders images on the server and transmits them to the client.
+ESRITiledLayer: A type of map layer in Esri's ArcGIS that serves pre-rendered map images (tiles) to the client, optimizing performance for base maps.
+Geometry Server: An ArcGIS Server service that provides tools for performing geometric operations such as buffering, simplifying, and projecting geometries.
+PACS Database: Likely an acronym for a specific system used by Benton County (based on context, related to property assessment records).
+SignalR: An open-source library that simplifies adding real-time web functionality to applications.
+NotebookLM can be inaccurate; please double check its responses.

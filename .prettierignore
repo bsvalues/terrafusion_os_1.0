@@ -47,3 +47,16 @@ LICENSE
 *.md
 
 _archive/
+
+# Third-party app packages (copied from QUARANTINE/E:\ — not our source)
+packages/gis-pro/
+packages/terra-gama/
+packages/terra-pilt/
+packages/terra-permit/
+packages/property-tax-ai/
+packages/terra-flow/
+packages/terra-levy/
+packages/terra-sync/
+packages/terra-miner/
+packages/legislative-pulse/
+packages/terra-insight/

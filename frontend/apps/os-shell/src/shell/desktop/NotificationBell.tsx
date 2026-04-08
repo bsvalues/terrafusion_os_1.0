@@ -110,7 +110,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
       data-testid={notification.read ? 'notification-item-read' : 'notification-item-unread'}
       className={cn(
         'relative px-3 py-2 rounded-lg transition-colors',
-        'hover:bg-white/5 cursor-pointer group',
+        'hover:bg-[hsl(var(--tf-text)_/_0.05)] cursor-pointer group',
         !notification.read && 'bg-[var(--tf-transcend-highlight)]/5'
       )}
     >
@@ -133,13 +133,13 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
         {/* Content */}
         <div className='flex-1 min-w-0'>
           <div className='flex items-center gap-2'>
-            <span className='text-sm font-medium text-white truncate'>{notification.title}</span>
+            <span className='text-sm font-medium truncate' style={{ color: 'hsl(var(--tf-text))' }}>{notification.title}</span>
             {!notification.read && (
               <span className='w-1.5 h-1.5 bg-[var(--tf-transcend-highlight)] rounded-full flex-shrink-0' />
             )}
           </div>
-          <p className='text-xs text-white/60 line-clamp-2 mt-0.5'>{notification.message}</p>
-          <span className='text-xs text-white/40 mt-1 block'>
+          <p className='text-xs line-clamp-2 mt-0.5' style={{ color: 'hsl(var(--tf-muted))' }}>{notification.message}</p>
+          <span className='text-xs mt-1 block' style={{ color: 'hsl(var(--tf-muted) / 0.7)' }}>
             {formatRelativeTime(notification.timestamp, t)}
           </span>
         </div>
@@ -156,7 +156,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
         className={cn(
           'absolute top-2 right-2',
           'w-5 h-5 rounded flex items-center justify-center',
-          'text-white/40 hover:text-white hover:bg-white/10',
+          'hover:bg-[hsl(var(--tf-text)_/_0.07)]',
           'opacity-0 group-hover:opacity-100 transition-opacity'
         )}
       >
@@ -222,18 +222,22 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
       className={cn(
         'absolute bottom-full right-0 mb-2',
         'w-80 max-h-[400px] rounded-lg overflow-hidden',
-        'bg-[var(--tf-void-black)]/95 backdrop-blur-xl',
-        'border border-[var(--tf-transcend-highlight)]/20',
+        'backdrop-blur-xl',
+        'border',
         'flex flex-col',
         className
       )}
-      style={{ boxShadow: '0 -8px 30px hsl(var(--tf-bg) / 0.5), 0 0 40px hsl(var(--tf-accent) / 0.1)' }}
+      style={{
+        background: 'hsl(var(--tf-surface) / 0.96)',
+        borderColor: 'hsl(var(--tf-border) / 0.5)',
+        boxShadow: '0 -8px 30px hsl(var(--tf-text) / 0.08), 0 0 40px hsl(var(--tf-accent) / 0.08)',
+      }}
     >
       {/* Header */}
-      <div className='flex items-center justify-between p-3 border-b border-white/10'>
+      <div className='flex items-center justify-between p-3 border-b' style={{ borderColor: 'hsl(var(--tf-border) / 0.4)' }}>
         <div className='flex items-center gap-2'>
           <span className='text-lg'>🔔</span>
-          <h3 className='text-sm font-semibold text-white'>
+          <h3 className='text-sm font-semibold' style={{ color: 'hsl(var(--tf-text))' }}>
             {t('notifications.title')}
             {unreadCount > 0 && (
               <span className='ml-1.5 text-xs text-[var(--tf-transcend-highlight)]'>
@@ -245,7 +249,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
         <button
           onClick={onClose}
           aria-label={t('notifications.closePanel')}
-          className='w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors'
+          className='w-6 h-6 flex items-center justify-center rounded transition-colors hover:bg-[hsl(var(--tf-text)_/_0.07)]' style={{ color: 'hsl(var(--tf-muted))' }}
         >
           ✕
         </button>
@@ -268,7 +272,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
           ))}
         </ul>
       ) : (
-        <div className='flex flex-col items-center justify-center py-8 text-white/50'>
+        <div className='flex flex-col items-center justify-center py-8' style={{ color: 'hsl(var(--tf-muted))' }}>
           <span className='text-3xl mb-2'>🔕</span>
           <span className='text-sm'>{t('notifications.noNotifications')}</span>
         </div>
@@ -276,14 +280,13 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
 
       {/* Footer */}
       {notifications.length > 0 && (
-        <div className='p-2 border-t border-white/10'>
+        <div className='p-2 border-t' style={{ borderColor: 'hsl(var(--tf-border) / 0.4)' }}>
           <button
             onClick={onClearAll}
             aria-label={t('notifications.clearAll')}
             className={cn(
               'w-full py-1.5 rounded-md',
-              'text-xs text-white/60 hover:text-white',
-              'hover:bg-white/5 transition-colors'
+              'text-xs transition-colors hover:bg-[hsl(var(--tf-text)_/_0.05)]',
             )}
           >
             {t('notifications.clearAll')}
@@ -329,10 +332,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
         className={cn(
           'flex items-center justify-center',
           'w-8 h-8 rounded-md',
-          'hover:bg-white/10 cursor-pointer',
+          'hover:bg-[hsl(var(--tf-text)_/_0.07)] cursor-pointer',
           'transition-colors duration-150',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--tf-transcend-highlight)]',
-          isOpen && 'bg-white/10'
+          isOpen && 'bg-[hsl(var(--tf-text)_/_0.07)]'
         )}
       >
         <span className='text-lg'>🔔</span>

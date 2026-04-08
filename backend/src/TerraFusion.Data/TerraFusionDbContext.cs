@@ -98,8 +98,24 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   // Forge Valuation (R2 Wave 25)
   public DbSet<ValuationRecord> ValuationRecords { get; set; }
   public DbSet<ComparableSale> ComparableSales { get; set; }
-  public DbSet<CamaCharacteristic> CamaCharacteristics { get; set; }
-  public DbSet<CostMatrix> CostMatrices { get; set; }
+  public DbSet<CamaCharacteristic> CamaCharacteristics { get; set; }   public DbSet<CamaImprovementDetail> CamaImprovementDetails { get; set; }  public DbSet<CostMatrix> CostMatrices { get; set; }
+
+  // PACS Lookup Tables (R2 Wave 38 — FK-aware qualification)
+  // Mirrors dbo.sale_ratio_type, dbo.county_ratio_code, dbo.sl_financing, dbo.deed_type
+  public DbSet<SaleRatioType> SaleRatioTypes { get; set; }
+  public DbSet<CountyRatioCode> CountyRatioCodes { get; set; }
+  public DbSet<SlFinancing> SlFinancings { get; set; }
+  public DbSet<DeedType> DeedTypes { get; set; }
+
+  // PACS Lookup Tables (R2 Slice 1.1 — WAC code lookup)
+  // Mirrors dbo.reet_wac_code: WAC 458-61A REET exemption codes.
+  public DbSet<PacsReetWacCode> ReetWacCodes { get; set; } = null!;
+
+  // PACS Levy Tables (R2 Phase 2.1 — TerraLevy levy rate lookup)
+  // Mirrors dbo.levy (levy rates per $1,000 AV) and
+  // dbo.tax_area_fund_assoc JOIN dbo.tax_area (which levies apply per tax area).
+  public DbSet<PacsLevyRate> PacsLevyRates { get; set; } = null!;
+  public DbSet<PacsLevyTaxAreaAssoc> PacsLevyTaxAreaAssocs { get; set; } = null!;
 
   // Forge Analytics (R2 Wave 26)
   public DbSet<RegressionAnalysis> RegressionAnalyses { get; set; }
@@ -358,10 +374,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.HasKey(e => e.Id);
       entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
       entity.Property(e => e.PropertyType).IsRequired().HasMaxLength(30);
-      entity.Property(e => e.SaleQualification).HasMaxLength(30);
+      entity.Property(e => e.QualificationRecommendation).HasMaxLength(30);
+      entity.Property(e => e.QualificationDecision).HasMaxLength(30);
       entity.HasIndex(e => new { e.CountyId, e.PropertyType, e.SaleDate });
       entity.HasIndex(e => new { e.CountyId, e.Neighborhood });
       entity.HasIndex(e => new { e.CountyId, e.ParcelId });
+      entity.HasIndex(e => new { e.CountyId, e.QualificationDecision, e.QualificationRecommendation });
     });
 
     // Configure CamaCharacteristic entity (R2 Wave 25)
@@ -380,6 +398,57 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.Property(e => e.Region).IsRequired().HasMaxLength(100);
       entity.Property(e => e.BuildingType).IsRequired().HasMaxLength(10);
       entity.HasIndex(e => new { e.CountyId, e.BuildingType, e.Region, e.MatrixYear });
+    });
+
+    // PACS Lookup Tables (R2 Wave 38 — FK-aware qualification)
+    // Mirrors PACS dbo.sale_ratio_type: WA DOR-defined sale qualification codes.
+    // invalid_sale=true means the code disqualifies the sale from ratio study.
+    modelBuilder.Entity<SaleRatioType>(entity =>
+    {
+      entity.HasKey(e => e.SlRatioTypeCd);
+      entity.Property(e => e.SlRatioTypeCd).IsRequired().HasMaxLength(10);
+      entity.Property(e => e.SlRatioDesc).HasMaxLength(150);
+      entity.ToTable("SaleRatioTypes");
+    });
+
+    // Mirrors PACS dbo.county_ratio_code: Benton County's own sale qualifier codes.
+    modelBuilder.Entity<CountyRatioCode>(entity =>
+    {
+      entity.HasKey(e => e.RatioCd);
+      entity.Property(e => e.RatioCd).IsRequired().HasMaxLength(10);
+      entity.Property(e => e.RatioDesc).HasMaxLength(150);
+      entity.ToTable("CountyRatioCodes");
+    });
+
+    // Mirrors PACS dbo.sl_financing: financing type codes.
+    modelBuilder.Entity<SlFinancing>(entity =>
+    {
+      entity.HasKey(e => e.SlFinancingCd);
+      entity.Property(e => e.SlFinancingCd).IsRequired().HasMaxLength(10);
+      entity.Property(e => e.SlFinancingDesc).HasMaxLength(150);
+      entity.ToTable("SlFinancings");
+    });
+
+    // Mirrors PACS dbo.deed_type: deed type codes with their DOR ratio type mapping.
+    // SalesRatioTypeCd → SaleRatioType.SlRatioTypeCd (the critical cross-reference).
+    modelBuilder.Entity<DeedType>(entity =>
+    {
+      entity.HasKey(e => new { e.CountyCd, e.DeedTypeCd });
+      entity.Property(e => e.CountyCd).HasMaxLength(10);
+      entity.Property(e => e.DeedTypeCd).IsRequired().HasMaxLength(10);
+      entity.Property(e => e.DeedTypeDesc).HasMaxLength(150);
+      entity.Property(e => e.SalesRatioTypeCd).HasMaxLength(10);
+      entity.ToTable("DeedTypes");
+    });
+
+    // Mirrors PACS dbo.reet_wac_code: WAC 458-61A REET exemption codes (Slice 1.1).
+    // inactive=true means the code is retired; treat sale as qualified (no active exemption).
+    modelBuilder.Entity<PacsReetWacCode>(entity =>
+    {
+      entity.HasKey(e => e.WacCd);
+      entity.Property(e => e.WacCd).IsRequired().HasMaxLength(100);
+      entity.Property(e => e.WacDesc).HasMaxLength(500);
+      entity.ToTable("ReetWacCodes");
     });
 
     // Configure GovernmentUser entity

@@ -8,6 +8,7 @@
  * - Ctrl+`: Toggle Start Menu
  * - Ctrl+K: Toggle Command Palette
  * - Ctrl+,: Open Settings
+ * - Ctrl+\: Toggle TerraPilot companion panel
  * - Escape: Close Start Menu (if open)
  *
  * @module hooks/useKeyboardShortcuts
@@ -18,6 +19,7 @@
 import { useCallback, useEffect } from 'react';
 import { activateModule } from '../orchestration/moduleActivation';
 import { useCommandPaletteStore } from '../stores/commandPaletteStore';
+import { openCompanionWindow } from '../stores/desktopStore';
 import { useStartMenuStore } from '../stores/startMenuStore';
 
 /**
@@ -128,6 +130,15 @@ export function useKeyboardShortcuts(): void {
           source: 'keyboard_shortcut',
           focusIfOpen: true,
         });
+        return;
+      }
+
+      // ========================================
+      // Ctrl+\ : Focus or spawn TerraPilot companion window (global)
+      // ========================================
+      if (key === '\\' && ctrlKey && !altKey && !shiftKey && !metaKey) {
+        event.preventDefault();
+        openCompanionWindow();
         return;
       }
 

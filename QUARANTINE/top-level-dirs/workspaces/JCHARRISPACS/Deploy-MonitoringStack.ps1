@@ -127,7 +127,7 @@ Write-Host "📄 Created Prometheus configuration" -ForegroundColor Green
 
 # Create SQL Exporter configuration
 $sqlExporterConfig = @"
-target: "sqlserver://sa:P@ssw0rd123!@localhost:1433?database=pacs_oltp&connection+timeout=30"
+target: "sqlserver://sa:${env:SA_PASSWORD}@localhost:1433?database=pacs_oltp&connection+timeout=30"
 
 collectors:
   - name: "TerraFusion_metrics"

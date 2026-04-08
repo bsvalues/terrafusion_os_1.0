@@ -1,0 +1,39 @@
+{
+  "name": "terra-legislative-pulse",
+  "displayName": "Terrafusion Legislative Pulse",
+  "version": "1.0.0",
+  "tier": "Tier 2 (Essential Operations)",
+  "itemCount": 45,
+  "description": "Government legislative intelligence and tracking system for monitoring policy changes, regulatory updates, and compliance requirements",
+  "capabilities": [
+    "Legislative bill tracking and monitoring",
+    "Regulatory change alerts and notifications",
+    "Policy impact analysis for government operations",
+    "Compliance requirement tracking",
+    "Government relations dashboard",
+    "Stakeholder communication tools",
+    "Legislative calendar integration",
+    "Document management for legal texts",
+    "Real-time legislative session monitoring",
+    "AI-powered policy analysis",
+    "Automated regulatory compliance checks",
+    "Public comment period tracking"
+  ],
+  "technologies": [
+    "React 18",
+    "TypeScript",
+    "Node.js",
+    "Express.js",
+    "PostgreSQL",
+    "Drizzle ORM",
+    "Tailwind CSS",
+    "Shadcn UI",
+    "WebSocket",
+    "RSS Feeds",
+    "API Integration",
+    "Tauri"
+  ],
+  "integrations": ["Government APIs", "Legislative Databases", "RSS Feeds", "Email Systems"],
+  "createdAt": "2025-08-29T12:00:00.000Z",
+  "status": "active"
+}

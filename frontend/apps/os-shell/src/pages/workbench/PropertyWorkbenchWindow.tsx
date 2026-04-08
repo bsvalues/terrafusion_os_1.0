@@ -21,7 +21,6 @@
 import React, { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import { usePropertyStore } from '../../stores/propertyStore';
-import { SuiteCompass } from '../../components/workbench/SuiteCompass';
 import { ContextRibbon } from '../../components/workbench/ContextRibbon';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
 import { BADGE_PROVIDERS } from '../../services/badges';
@@ -31,15 +30,16 @@ import { WorkbenchTabCtx } from '../../context/workbenchTabContext';
 import { emitTraceEvent } from '../../services/terraTrace';
 import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, WorkbenchContext } from '../../contracts/workbench';
 import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
-import type { SuiteCompassItem } from '../../components/workbench/SuiteCompass';
 import { validateWorkbenchHost } from '../../contracts/objectPlacement';
 import type { WorkbenchHostViolation } from '../../contracts/objectPlacement';
 import { useRecentParcels, openWorkbenchWindow } from '../../context/parcelContext';
+import { useCompanionStore } from '../../stores/companionStore';
 import { useParcelSearch } from '../../shell/command-palette/useParcelSearch';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useSession } from '../../auth/useSession';
 import { useAuthContext } from '../../auth/useAuthContext';
 import { cn } from '@/lib/utils';
+import { buildContextRibbonFacts } from '../../components/workbench/parcelContextFacts';
 
 // ============================================================================
 // Lazy-loaded Tab Components (same as Router.tsx)
@@ -57,15 +57,6 @@ const PropertyAtlas = lazy(() =>
 const PropertyDais = lazy(() =>
   import('./tabs/PropertyDais').then((m) => ({ default: m.PropertyDais }))
 );
-const PropertyClerk = lazy(() =>
-  import('./tabs/PropertyClerk').then((m) => ({ default: m.PropertyClerk }))
-);
-const PropertyTreasury = lazy(() =>
-  import('./tabs/PropertyTreasury').then((m) => ({ default: m.PropertyTreasury }))
-);
-const PropertyAudit = lazy(() =>
-  import('./tabs/PropertyAudit').then((m) => ({ default: m.PropertyAudit }))
-);
 const PropertyDossier = lazy(() =>
   import('./tabs/PropertyDossier').then((m) => ({ default: m.PropertyDossier }))
 );
@@ -82,9 +73,9 @@ const TAB_COMPONENTS: Record<WorkbenchTabSlug, React.LazyExoticComponent<React.F
   forge: PropertyForge,
   atlas: PropertyAtlas,
   dais: PropertyDais,
-  clerk: PropertyClerk,
-  treasury: PropertyTreasury,
-  audit: PropertyAudit,
+  clerk: PropertyDossier,
+  treasury: PropertyDais,
+  audit: PropertyDossier,
   dossier: PropertyDossier,
   pilot: PropertyPilot,
 };
@@ -100,7 +91,6 @@ export interface PropertyWorkbenchWindowProps {
 interface TabDef {
   id: WorkbenchTabSlug;
   label: string;
-  icon: string;
 }
 
 // ============================================================================
@@ -109,15 +99,12 @@ interface TabDef {
 
 /** Canonical tab order — locked per spec. */
 const TABS: readonly TabDef[] = [
-  { id: 'summary', label: 'Summary', icon: '📊' },
-  { id: 'forge', label: 'Forge', icon: '🔨' },
-  { id: 'atlas', label: 'Atlas', icon: '🗺️' },
-  { id: 'dais', label: 'Dais', icon: '⚖️' },
-  { id: 'clerk', label: 'Clerk', icon: '📜' },
-  { id: 'treasury', label: 'Treasury', icon: '💰' },
-  { id: 'audit', label: 'Audit', icon: '🔍' },
-  { id: 'dossier', label: 'Dossier', icon: '📋' },
-  { id: 'pilot', label: 'Pilot', icon: '🤖' },
+  { id: 'summary', label: 'Summary' },
+  { id: 'forge', label: 'Forge' },
+  { id: 'atlas', label: 'Atlas' },
+  { id: 'dais', label: 'Dais' },
+  { id: 'dossier', label: 'Dossier' },
+  { id: 'pilot', label: 'Pilot' },
 ] as const;
 
 // ============================================================================
@@ -449,8 +436,8 @@ const TabBar: React.FC<TabBarProps> = ({
     <nav
       className="flex-1 min-w-0 border-b px-4 flex gap-1 overflow-x-auto"
       style={{
-        borderColor: 'hsl(var(--tf-border) / 0.15)',
-        background: 'hsl(var(--tf-bg-surface))',
+        borderColor: 'hsl(var(--tf-border) / 0.4)',
+        background: 'hsl(var(--tf-surface) / 0.92)',
       }}
     >
       {tabs.map((tab) => {
@@ -459,16 +446,15 @@ const TabBar: React.FC<TabBarProps> = ({
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            className="flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
+            className="flex items-center px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
             style={{
               color: isActive ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.6)',
               borderBottom: isActive ? '2px solid hsl(var(--tf-accent))' : '2px solid transparent',
-              background: isActive ? 'hsl(var(--tf-accent) / 0.05)' : 'transparent',
+              background: isActive ? 'hsl(var(--tf-accent) / 0.08)' : 'transparent',
             }}
             aria-selected={isActive}
             role="tab"
           >
-            <span>{tab.icon}</span>
             <span>{tab.label}</span>
           </button>
         );
@@ -532,12 +518,22 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   // Resolve initial tab from metadata slug
   const resolvedInitialTab = useMemo<WorkbenchTabSlug>(() => {
     if (!initialTab || initialTab === '/' as string) return 'summary';
+    if (initialTab === 'clerk' || initialTab === 'audit') return 'dossier';
+    if (initialTab === 'treasury') return 'dais';
     const valid = TABS.find((t) => t.id === initialTab);
     return valid?.id ?? 'summary';
   }, [initialTab]);
 
   // Active tab state
   const [activeTab, setActiveTab] = useState<WorkbenchTabSlug>(resolvedInitialTab);
+
+  // Sync initial tab to companion context bus on mount
+  const setCompanionTabOnMount = useCompanionStore((state) => state.setActiveTab);
+  useEffect(() => {
+    setCompanionTabOnMount(resolvedInitialTab);
+    return () => { setCompanionTabOnMount(null); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Property data from store (backed by DataProvider → snapshot/live/fixtures)
   const activeParcel = usePropertyStore((s) => s.activeParcel);
@@ -567,6 +563,11 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     [activeParcel, parcelId]
   );
 
+  const parcelFacts = useMemo(
+    () => buildContextRibbonFacts(activeParcel).slice(0, 6),
+    [activeParcel]
+  );
+
   // Work Mode state
   const [workMode, setWorkMode] = useState<WorkMode>('overview');
 
@@ -584,22 +585,6 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     () => TABS.filter((tab) => visibleTabs.includes(tab.id)),
     [visibleTabs]
   );
-
-  /** SuiteCompass items filtered by role visibility */
-  const compassItems = useMemo<SuiteCompassItem[]>(() => {
-    const compassMap: Record<WorkbenchTabSlug, SuiteCompassItem> = {
-      summary:  { slug: 'summary',  label: 'Summary',       shortLabel: 'Sum',     icon: '\uD83D\uDCCA', affordance: 'Parcel at a glance',  color: 'var(--tf-accent)' },
-      forge:    { slug: 'forge',    label: 'TerraForge',    shortLabel: 'Forge',   icon: '\uD83D\uDD28', affordance: 'Build value',         color: 'var(--tf-suite-forge)' },
-      atlas:    { slug: 'atlas',    label: 'TerraAtlas',    shortLabel: 'Atlas',   icon: '\uD83D\uDDFA\uFE0F', affordance: 'See the county',      color: 'var(--tf-suite-atlas)' },
-      dais:     { slug: 'dais',     label: 'TerraDais',     shortLabel: 'Dais',    icon: '\u2696\uFE0F', affordance: 'Operate value',       color: 'var(--tf-suite-dais)' },
-      clerk:    { slug: 'clerk',    label: 'TerraClerk',    shortLabel: 'Clerk',   icon: '\uD83D\uDCDC', affordance: 'Record & title',      color: 'var(--tf-accent)' },
-      treasury: { slug: 'treasury', label: 'TerraTreasury', shortLabel: 'Treas',   icon: '\uD83D\uDCB0', affordance: 'Tax collection',      color: 'var(--tf-accent)' },
-      audit:    { slug: 'audit',    label: 'TerraAudit',    shortLabel: 'Audit',   icon: '\uD83D\uDD0D', affordance: 'Financial compliance', color: 'var(--tf-accent)' },
-      dossier:  { slug: 'dossier',  label: 'TerraDossier',  shortLabel: 'Dossier', icon: '\uD83D\uDCCB', affordance: 'Prove the decision',  color: 'var(--tf-suite-dossier)' },
-      pilot:    { slug: 'pilot',    label: 'TerraPilot',    shortLabel: 'Pilot',   icon: '\uD83E\uDD16', affordance: 'Act or draft',        color: 'var(--tf-accent)' },
-    };
-    return visibleTabs.map((slug) => compassMap[slug]);
-  }, [visibleTabs]);
 
   // Context value for tab components (via WorkbenchTabCtx)
   const tabContextValue = useMemo(
@@ -674,11 +659,13 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
   }, [parcelId]);
 
   // Tab change handler
+  const setCompanionTab = useCompanionStore((state) => state.setActiveTab);
   const handleTabChange = useCallback((slug: WorkbenchTabSlug) => {
     const previousTab = activeTab;
     setActiveTab(slug);
+    setCompanionTab(slug);
     emitTraceEvent('tab_switched', 'workbench', parcelId ?? 'unknown', { tab: previousTab }, { tab: slug });
-  }, [activeTab, parcelId]);
+  }, [activeTab, parcelId, setCompanionTab]);
 
   // Activity Feed state — collapsible bottom panel
   const [activityOpen, setActivityOpen] = useState(false);
@@ -708,6 +695,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
         owner={propertyData.owner}
         countyName="Benton County"
         badges={badges}
+        parcelFacts={parcelFacts}
         quickActions={quickActions}
         workMode={workMode}
         onWorkModeChange={setWorkMode}
@@ -717,11 +705,6 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
       {/* Workbench content — state-based tabs, no Router needed */}
       <WorkbenchTabCtx.Provider value={tabContextValue}>
         <div className="flex flex-1 min-h-0">
-          {/* Suite Compass — left rail (desktop) / top bar (tablet) */}
-          <div className="shrink-0">
-            <SuiteCompass activeTab={activeTab} onTabChange={handleTabChange} items={compassItems} />
-          </div>
-
           {/* Main content area */}
           <div className="flex flex-col flex-1 min-w-0">
             <TabBar
@@ -733,23 +716,21 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
               onToggleShowAll={toggleShowAll}
             />
             {/*
-              Stable tabpanel containers — one per SuiteCompass entry.
-              All sections remain in the DOM so every aria-controls reference
-              on compass tab buttons always resolves to a real element.
+              Stable tabpanel containers — one per top tab entry.
               Inactive panels use the HTML `hidden` attribute (display:none),
               meaning AT skips them and they cost nothing in layout.
               Content is only mounted when the tab is active (lazy).
             */}
             <main className="flex-1 overflow-auto">
-              {compassItems.map((compassItem) => {
-                const isActive = activeTab === compassItem.slug;
-                const TabComponent = TAB_COMPONENTS[compassItem.slug];
+              {filteredTabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                const TabComponent = TAB_COMPONENTS[tab.id];
                 return (
                   <section
-                    key={compassItem.slug}
-                    id={`panel-${compassItem.slug}`}
+                    key={tab.id}
+                    id={`panel-${tab.id}`}
                     role="tabpanel"
-                    aria-label={compassItem.label}
+                    aria-label={tab.label}
                     hidden={!isActive}
                   >
                     {isActive && (

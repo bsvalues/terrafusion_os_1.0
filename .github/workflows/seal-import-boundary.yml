@@ -1,0 +1,63 @@
+name: SEAL — App Import Boundary
+
+# Enforces the OS shell ↔ native app boundary.
+#
+# LAW: os-shell code may NEVER import directly from native app packages
+#      (packages/terrabuild, packages/terra-levy, etc.).
+#      The ONLY allowed cross-boundary import is from @terrafusion/tf-sdk.
+#
+# If this check fails, a PR has violated the contract that keeps the OS shell
+# from becoming entangled with native app implementations.
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/apps/os-shell/**'
+      - 'packages/**'
+
+jobs:
+  boundary-check:
+    name: Shell → App Import Boundary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for direct imports from native app packages
+        run: |
+          echo "Scanning os-shell for direct imports from native app packages..."
+
+          VIOLATIONS=$(grep -rn \
+            --include="*.ts" --include="*.tsx" \
+            "from.*packages/terrabuild\|from.*packages/terra-levy\|from.*packages/terra-sync\|from.*packages/terra-flow\|from.*packages/costforge-ai" \
+            frontend/apps/os-shell/src/ 2>/dev/null || true)
+
+          if [ -n "$VIOLATIONS" ]; then
+            echo ""
+            echo "❌ SEAL BOUNDARY VIOLATION"
+            echo "os-shell must NEVER import directly from native app packages."
+            echo "Use AppFrame + service registry URL instead."
+            echo ""
+            echo "Violations found:"
+            echo "$VIOLATIONS"
+            exit 1
+          fi
+
+          echo "✅ No boundary violations found."
+
+      - name: Verify AppFrame is the only wiring point for native apps
+        run: |
+          echo "Checking that costforge, terra-levy, terra-sync, terra-flow only route through AppFrame..."
+
+          # moduleComponents.tsx must NOT have lazy imports pointing to app package dirs
+          DIRECT_LAZY=$(grep -n \
+            "lazy.*import.*packages/" \
+            frontend/apps/os-shell/src/config/moduleComponents.tsx 2>/dev/null || true)
+
+          if [ -n "$DIRECT_LAZY" ]; then
+            echo "❌ moduleComponents.tsx has a lazy import pointing into packages/:"
+            echo "$DIRECT_LAZY"
+            echo "Route through AppFrame instead."
+            exit 1
+          fi
+
+          echo "✅ moduleComponents.tsx clean."

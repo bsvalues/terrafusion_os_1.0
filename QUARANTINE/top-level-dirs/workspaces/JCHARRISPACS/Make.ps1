@@ -15,7 +15,7 @@ $ErrorActionPreference = "Stop"
 $env:PACS_SERVER = if ($env:PACS_SERVER) { $env:PACS_SERVER } else { "localhost,1433" }
 $env:PACS_DB = if ($env:PACS_DB) { $env:PACS_DB } else { "pacs_oltp" }
 $env:PACS_USER = if ($env:PACS_USER) { $env:PACS_USER } else { "sa" }
-$env:PACS_PW = if ($env:PACS_PW) { $env:PACS_PW } else { "P@ssw0rd123!" }
+$env:PACS_PW = if ($env:PACS_PW) { $env:PACS_PW } else { "TF_Pacs2026!" }
 
 $OUT = "./_artifacts"
 $DOCS = "./docs/diagrams"
@@ -30,10 +30,18 @@ function Show-Help {
     Write-Host "  pacs-inventory         Generate live object counts from SQL Server" -ForegroundColor White
     Write-Host "  twin-verify-surface    Verify key database objects exist" -ForegroundColor White
     Write-Host "  twin-trigger-profile   Capture trigger inventory from pacs_oltp" -ForegroundColor White
-    Write-Host "  sql-tests              Run tSQLt tests if framework is installed" -ForegroundColor White
+    Write-Host "  docker-up              Start full stack (SQL + Prometheus + Grafana + sql_exporter)" -ForegroundColor White
+    Write-Host "  docker-down            Stop and remove all stack containers" -ForegroundColor White
+    Write-Host "  docker-logs            Tail logs from all stack containers" -ForegroundColor White
+    Write-Host "  publish-sql            Build DACPACs and deploy to running SQL container" -ForegroundColor White
+    Write-Host "  sql-tests              Run pure-SQL test suite (20 tests, no CLR required)" -ForegroundColor White
     Write-Host "  data-dictionary        Export data dictionary (extended properties)" -ForegroundColor White
     Write-Host "  all-checks             Run all verification checks" -ForegroundColor White
     Write-Host "  validate-mermaid       Validate Mermaid syntax (dry-run)" -ForegroundColor White
+    Write-Host "  api-run                Start PacsApi dev server (http://localhost:5200)" -ForegroundColor White
+    Write-Host "  api-build              dotnet build PacsApi (CI check)" -ForegroundColor White
+    Write-Host "  test-api               Smoke-test PacsApi /health endpoint (API must be running)" -ForegroundColor White
+    Write-Host "  pacs-health-report     Print stack health summary (SQL + monitoring + API + inventory)" -ForegroundColor White
     Write-Host "  clean                  Remove generated artifacts" -ForegroundColor White
     Write-Host ""
     Write-Host "Environment Variables:" -ForegroundColor Yellow
@@ -59,6 +67,7 @@ function Invoke-Viz {
     npx -y @mermaid-js/mermaid-cli@10 -i "$DOCS/wcf.mmd" -o "$OUT/wcf.svg"
     npx -y @mermaid-js/mermaid-cli@10 -i "$DOCS/recalc_flow.mmd" -o "$OUT/recalc_flow.svg"
     npx -y @mermaid-js/mermaid-cli@10 -i "$DOCS/trigger_cascade.mmd" -o "$OUT/trigger_cascade.svg"
+    npx -y @mermaid-js/mermaid-cli@10 -i "$DOCS/api_flow.mmd" -o "$OUT/api_flow.svg"
     
     Write-Host "✅ Diagrams updated in $OUT/" -ForegroundColor Green
     Write-Host "   - erd.svg (Core Database ERD)" -ForegroundColor Gray
@@ -66,6 +75,7 @@ function Invoke-Viz {
     Write-Host "   - wcf.svg (WCF Service Architecture)" -ForegroundColor Gray
     Write-Host "   - recalc_flow.svg (Property Recalculation Flow)" -ForegroundColor Gray
     Write-Host "   - trigger_cascade.svg (Trigger Cascade Analysis)" -ForegroundColor Gray
+    Write-Host "   - api_flow.svg (PacsApi Request Flow)" -ForegroundColor Gray
 }
 
 function Invoke-VizPng {
@@ -80,6 +90,7 @@ function Invoke-VizPng {
     npx -y @mermaid-js/mermaid-cli@10 -i "$DOCS/wcf.mmd" -o "$OUT/wcf.png" -w 2400 -H 1800
     npx -y @mermaid-js/mermaid-cli@10 -i "$DOCS/recalc_flow.mmd" -o "$OUT/recalc_flow.png" -w 2400 -H 1800
     npx -y @mermaid-js/mermaid-cli@10 -i "$DOCS/trigger_cascade.mmd" -o "$OUT/trigger_cascade.png" -w 2400 -H 1800
+    npx -y @mermaid-js/mermaid-cli@10 -i "$DOCS/api_flow.mmd" -o "$OUT/api_flow.png" -w 2400 -H 1800
     
     Write-Host "✅ PNG diagrams created in $OUT/" -ForegroundColor Green
 }
@@ -87,12 +98,12 @@ function Invoke-VizPng {
 function Invoke-PacsInventory {
     Write-Host "📊 Querying pacs_oltp database inventory..." -ForegroundColor Cyan
     
-    if (-not (Get-Command sqlcmd -ErrorAction SilentlyContinue)) {
-        Write-Host "❌ Error: sqlcmd not found. Install SQL Server Command Line Tools." -ForegroundColor Red
-        exit 1
-    }
-    
-    & ./scripts/sql/pacs_inventory.ps1 -Server $env:PACS_SERVER -Database $env:PACS_DB -Username $env:PACS_USER -Password $env:PACS_PW -OutputPath "$OUT/pacs_inventory.json"
+    & (Join-Path $PSScriptRoot 'scripts\sql\pacs_inventory.ps1') `
+        -Server $env:PACS_SERVER `
+        -Database $env:PACS_DB `
+        -Username $env:PACS_USER `
+        -Password $env:PACS_PW `
+        -OutputPath "$OUT/pacs_inventory.json"
 }
 
 function Invoke-VerifySurface {
@@ -126,23 +137,139 @@ function Invoke-TriggerProfile {
 }
 
 function Invoke-SqlTests {
-    Write-Host "🧪 Running tSQLt tests (if available)..." -ForegroundColor Cyan
+    # Pure-SQL test suite — no tSQLt, no CLR, no external download needed.
+    # Runs scripts/sql/tests/pacs_tests.sql against PACS_Training via docker exec.
+    Write-Host "🧪 Running PACS pure-SQL test suite against PACS_Training..." -ForegroundColor Cyan
 
-    if (-not (Get-Command sqlcmd -ErrorAction SilentlyContinue)) {
-        Write-Host "❌ Error: sqlcmd not found. Install SQL Server Command Line Tools." -ForegroundColor Red
+    $testFile = Join-Path $PSScriptRoot 'scripts\sql\tests\pacs_tests.sql'
+    if (-not (Test-Path $testFile)) {
+        Write-Host "❌ Test file not found: $testFile" -ForegroundColor Red
         exit 1
     }
 
-    $check = "IF EXISTS (SELECT 1 FROM sys.objects WHERE name = 'RunAll' AND SCHEMA_NAME(schema_id) = 'tSQLt') SELECT 1 ELSE SELECT 0;"
-    $hasTsqlt = sqlcmd -S $env:PACS_SERVER -U $env:PACS_USER -P $env:PACS_PW -d $env:PACS_DB -W -h-1 -Q $check | Select-Object -First 1
-
-    if ($hasTsqlt -ne '1') {
-        Write-Host "ℹ️  tSQLt not installed in '$($env:PACS_DB)'. Skipping tests." -ForegroundColor Yellow
-        return
+    # Check container is running
+    $running = docker inspect -f '{{.State.Running}}' tf-mssql 2>$null
+    if ($running -ne 'true') {
+        Write-Host "❌ Container tf-mssql is not running. Start with: docker compose -f pacs-server-benton/infra/docker/compose.mssql.yml up -d" -ForegroundColor Red
+        exit 1
     }
 
-    Write-Host "👟 Executing tSQLt.RunAll..." -ForegroundColor Gray
-    sqlcmd -S $env:PACS_SERVER -U $env:PACS_USER -P $env:PACS_PW -d $env:PACS_DB -Q "EXEC tSQLt.RunAll;" 
+    Write-Host "  Target DB : PACS_Training (mirrors pacs_oltp schema)" -ForegroundColor Gray
+    Write-Host "  Test file : $testFile" -ForegroundColor Gray
+    Write-Host ""
+
+    $sqlPw = if ($env:PACS_PW) { $env:PACS_PW } else { "TF_Pacs2026!" }
+
+    # Stream test SQL into the container — '-b' makes sqlcmd exit non-zero on RAISERROR
+    Get-Content $testFile | docker exec -i tf-mssql `
+        /opt/mssql-tools18/bin/sqlcmd `
+        -S localhost -U sa -P $sqlPw -C -d PACS_Training -b
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host ""
+        Write-Host "❌ One or more tests FAILED (exit $LASTEXITCODE)" -ForegroundColor Red
+        exit $LASTEXITCODE
+    }
+    Write-Host ""
+    Write-Host "✅ All PACS tests passed." -ForegroundColor Green
+}
+
+function Invoke-ApiRun {
+    Write-Host "🚀 Starting PacsApi dev server on http://localhost:5200..." -ForegroundColor Cyan
+    $apiProj = Join-Path $PSScriptRoot 'pacs-server-benton\api\PacsApi\PacsApi.csproj'
+    $env:ASPNETCORE_ENVIRONMENT = 'Development'
+    dotnet run --project $apiProj --launch-profile http
+}
+
+function Invoke-ApiBuild {
+    Write-Host "🔨 Building PacsApi..." -ForegroundColor Cyan
+    $apiProj = Join-Path $PSScriptRoot 'pacs-server-benton\api\PacsApi\PacsApi.csproj'
+    dotnet build $apiProj --nologo
+    if ($LASTEXITCODE -ne 0) { Write-Host "❌ PacsApi build FAILED" -ForegroundColor Red; exit 1 }
+    Write-Host "✅ PacsApi build succeeded" -ForegroundColor Green
+}
+
+function Invoke-ApiTest {
+    Write-Host "🧪 Smoke-testing PacsApi health endpoint..." -ForegroundColor Cyan
+    $url = "http://localhost:5200/health"
+    try {
+        $resp = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
+        if ($resp.StatusCode -eq 200) {
+            Write-Host "✅ GET $url → $($resp.StatusCode)" -ForegroundColor Green
+        } else {
+            Write-Host "❌ GET $url returned $($resp.StatusCode)" -ForegroundColor Red; exit 1
+        }
+    } catch {
+        Write-Host "❌ Could not reach $url — is PacsApi running? (.\Make.ps1 api-run)" -ForegroundColor Red
+        exit 1
+    }
+}
+
+function Invoke-PacsHealthReport {
+    Write-Host "===========================================================" -ForegroundColor Cyan
+    Write-Host "  Benton County PACS — Stack Health Report" -ForegroundColor Cyan
+    Write-Host "  $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -ForegroundColor Gray
+    Write-Host "===========================================================" -ForegroundColor Cyan
+    Write-Host ""
+
+    # 1. SQL Server container
+    Write-Host "[ SQL Server ]" -ForegroundColor Yellow
+    $sqlRunning = docker inspect -f '{{.State.Running}}' tf-mssql 2>$null
+    if ($sqlRunning -eq 'true') {
+        Write-Host "  tf-mssql : RUNNING" -ForegroundColor Green
+        # Quick connectivity check
+        $ping = "SELECT @@VERSION;" | docker exec -i tf-mssql `
+            /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$env:PACS_PW" -C -W -h-1 -Q "SELECT 'OK'" 2>$null
+        if ($ping -match 'OK') {
+            Write-Host "  SQL auth  : OK" -ForegroundColor Green
+        } else {
+            Write-Host "  SQL auth  : FAIL (check SA_PASSWORD)" -ForegroundColor Red
+        }
+    } else {
+        Write-Host "  tf-mssql : NOT RUNNING  (run: .\Make.ps1 docker-up)" -ForegroundColor Red
+    }
+    Write-Host ""
+
+    # 2. Monitoring stack
+    Write-Host "[ Monitoring Stack ]" -ForegroundColor Yellow
+    foreach ($svc in @("pacs-prometheus", "pacs-grafana", "pacs-sql-exporter")) {
+        $state = docker inspect -f '{{.State.Running}}' $svc 2>$null
+        if ($state -eq 'true') {
+            Write-Host "  $svc : RUNNING" -ForegroundColor Green
+        } else {
+            Write-Host "  $svc : not running" -ForegroundColor DarkGray
+        }
+    }
+    Write-Host ""
+
+    # 3. PacsApi
+    Write-Host "[ PacsApi ]" -ForegroundColor Yellow
+    try {
+        $resp = Invoke-WebRequest -Uri "http://localhost:5200/health" -UseBasicParsing -TimeoutSec 3 -ErrorAction Stop
+        Write-Host "  http://localhost:5200/health : $($resp.StatusCode)" -ForegroundColor Green
+    } catch {
+        Write-Host "  http://localhost:5200/health : not reachable  (run: .\Make.ps1 api-run)" -ForegroundColor DarkGray
+    }
+    Write-Host ""
+
+    # 4. Inventory snapshot (if cached)
+    Write-Host "[ Inventory Snapshot ]" -ForegroundColor Yellow
+    $inv = Join-Path $PSScriptRoot '_artifacts/pacs_inventory.json'
+    if (Test-Path $inv) {
+        $data = Get-Content $inv -Raw | ConvertFrom-Json
+        Write-Host "  Timestamp : $($data.timestamp)" -ForegroundColor Gray
+        $s = $data.summary
+        Write-Host "  Tables    : $($s.tables)   Procs: $($s.procedures)   Views: $($s.views)" -ForegroundColor White
+        Write-Host "  Indexes   : $($s.indexes)   FK:    $($s.foreign_keys)   Triggers: $($s.triggers)" -ForegroundColor White
+        if ($data.row_counts) {
+            $rc = $data.row_counts
+            Write-Host "  property  : $($rc.property)   owner: $($rc.owner)   property_val: $($rc.property_val)" -ForegroundColor White
+        }
+    } else {
+        Write-Host "  No cached inventory — run: .\Make.ps1 pacs-inventory" -ForegroundColor DarkGray
+    }
+    Write-Host ""
+    Write-Host "===========================================================" -ForegroundColor Cyan
 }
 
 function Invoke-DataDictionary {
@@ -155,6 +282,17 @@ function Invoke-AllChecks {
     Invoke-VerifySurface
     Invoke-TriggerProfile
     Invoke-SqlTests
+
+    # R1 Observability smoke test (non-blocking — monitoring stack may not be running in CI)
+    $r1Script = Join-Path $PSScriptRoot 'pacs-server-benton/scripts/Test-R1-Monitoring.ps1'
+    if (Test-Path $r1Script) {
+        Write-Host "🔭 Running R1 monitoring smoke test..." -ForegroundColor Cyan
+        pwsh -NonInteractive -File $r1Script -SqlServer $env:PACS_SERVER -SaPassword $env:PACS_PW
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "⚠️  R1 monitoring smoke test had failures (non-blocking in all-checks)" -ForegroundColor Yellow
+        }
+    }
+
     Write-Host ""
     Write-Host "✅ All checks complete. Artifacts in $OUT/" -ForegroundColor Green
 }
@@ -162,7 +300,7 @@ function Invoke-AllChecks {
 function Invoke-ValidateMermaid {
     Write-Host "🔍 Validating Mermaid diagram syntax..." -ForegroundColor Cyan
     
-    $files = @("erd.mmd", "crossdb.mmd", "wcf.mmd", "recalc_flow.mmd", "trigger_cascade.mmd")
+    $files = @("erd.mmd", "crossdb.mmd", "wcf.mmd", "recalc_flow.mmd", "trigger_cascade.mmd", "api_flow.mmd")
     
     foreach ($file in $files) {
         try {
@@ -178,6 +316,51 @@ function Invoke-ValidateMermaid {
             Write-Host "❌ $file FAILED" -ForegroundColor Red
         }
     }
+}
+
+function Invoke-DockerUp {
+    Write-Host "Starting PACS full stack (SQL + Prometheus + Grafana + sql_exporter)..." -ForegroundColor Cyan
+    $compose = Join-Path $PSScriptRoot 'pacs-server-benton\infra\docker\compose.full.yml'
+    docker compose -f $compose up -d
+    if ($LASTEXITCODE -ne 0) { Write-Host "docker compose up failed" -ForegroundColor Red; exit 1 }
+    Write-Host ""
+    Write-Host "  SQL Server  : localhost,1433" -ForegroundColor Gray
+    Write-Host "  Prometheus  : http://localhost:9090" -ForegroundColor Gray
+    Write-Host "  Grafana     : http://localhost:3000  (admin / admin)" -ForegroundColor Gray
+    Write-Host "  sql_exporter: http://localhost:9399/metrics" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "Stack is starting. Run '.\ Make.ps1 docker-logs' to watch progress." -ForegroundColor Green
+}
+
+function Invoke-DockerDown {
+    Write-Host "Stopping PACS full stack..." -ForegroundColor Cyan
+    $compose = Join-Path $PSScriptRoot 'pacs-server-benton\infra\docker\compose.full.yml'
+    docker compose -f $compose down
+    if ($LASTEXITCODE -ne 0) { Write-Host "docker compose down failed" -ForegroundColor Red; exit 1 }
+    Write-Host "Stack stopped." -ForegroundColor Green
+}
+
+function Invoke-DockerLogs {
+    Write-Host "Tailing logs (Ctrl+C to stop)..." -ForegroundColor Cyan
+    $compose = Join-Path $PSScriptRoot 'pacs-server-benton\infra\docker\compose.full.yml'
+    docker compose -f $compose logs --follow --tail 50
+}
+
+function Invoke-PublishSql {
+    Write-Host "Building DACPACs and deploying to SQL Server..." -ForegroundColor Cyan
+    $publish = Join-Path $PSScriptRoot 'pacs-server-benton\scripts\publish.ps1'
+    $sqlPw   = if ($env:SA_PASSWORD) { $env:SA_PASSWORD } elseif ($env:PACS_PW) { $env:PACS_PW } else { 'TF_Pacs2026!' }
+    pwsh -NonInteractive -File $publish -SqlServer "$env:PACS_SERVER" -SaPassword $sqlPw
+    if ($LASTEXITCODE -ne 0) { Write-Host "publish.ps1 FAILED" -ForegroundColor Red; exit 1 }
+
+    # Provision the pacs_api_svc least-privilege login after schema is deployed
+    Write-Host "Provisioning pacs_api_svc service account..." -ForegroundColor Cyan
+    $svcPw  = if ($env:PACS_API_SVC_PASSWORD) { $env:PACS_API_SVC_PASSWORD } else { 'PacsApi_Svc2026!' }
+    $svcSql = (Get-Content (Join-Path $PSScriptRoot 'scripts\sql\create_api_service_account.sql') -Raw) `
+        -replace '\$\(PACS_API_SVC_PASSWORD\)', $svcPw
+    $svcSql | docker exec -i tf-mssql /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $sqlPw -C 2>&1 |
+        Where-Object { $_ -match 'pacs_api_svc|ERROR|error' } | ForEach-Object { Write-Host "  $_" -ForegroundColor Gray }
+    Write-Host "DACPACs deployed." -ForegroundColor Green
 }
 
 function Invoke-Clean {
@@ -198,10 +381,18 @@ switch ($Target.ToLower()) {
     "pacs-inventory" { Invoke-PacsInventory }
     "twin-verify-surface" { Invoke-VerifySurface }
     "twin-trigger-profile" { Invoke-TriggerProfile }
+    "docker-up"    { Invoke-DockerUp }
+    "docker-down"  { Invoke-DockerDown }
+    "docker-logs"  { Invoke-DockerLogs }
+    "publish-sql"  { Invoke-PublishSql }
     "sql-tests" { Invoke-SqlTests }
     "data-dictionary" { Invoke-DataDictionary }
     "all-checks" { Invoke-AllChecks }
     "validate-mermaid" { Invoke-ValidateMermaid }
+    "api-run" { Invoke-ApiRun }
+    "test-api" { Invoke-ApiTest }
+    "api-build" { Invoke-ApiBuild }
+    "pacs-health-report" { Invoke-PacsHealthReport }
     "clean" { Invoke-Clean }
     default {
         Write-Host "❌ Unknown target: $Target" -ForegroundColor Red

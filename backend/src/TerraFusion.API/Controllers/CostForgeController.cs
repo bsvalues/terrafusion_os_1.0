@@ -2067,7 +2067,10 @@ public class CostForgeController : ControllerBase
       Bathrooms = request.Bathrooms,
       Condition = request.Condition,
       QualityGrade = request.QualityGrade,
-      SaleQualification = request.SaleQualification ?? "qualified",
+      QualificationDecision = request.SaleQualification,
+      DecisionBy = request.SaleQualification != null ? User.Identity?.Name ?? "system" : null,
+      DecisionAt = request.SaleQualification != null ? DateTime.UtcNow : null,
+      DecisionSource = request.SaleQualification != null ? "AssessorOverride" : null,
       IsVerified = false,
       CountyId = ctx.CountyId,
       IngestedBy = User.Identity?.Name ?? "system",
@@ -2134,7 +2137,9 @@ public class CostForgeController : ControllerBase
         item.Sale.GrossLivingArea,
         item.Sale.LotSizeSqft,
         item.Sale.YearBuilt,
-        item.Sale.SaleQualification,
+        qualificationDecision = item.Sale.QualificationDecision,
+        qualificationRecommendation = item.Sale.QualificationRecommendation,
+        effectiveQualification = item.Sale.QualificationDecision ?? item.Sale.QualificationRecommendation,
         similarity = item.SimilarityScore,
         scoreReasons = item.ScoreReasons
       })
@@ -2477,7 +2482,7 @@ public class CostForgeController : ControllerBase
     }
     else
     {
-      query = query.Where(c => c.SaleQualification == "qualified");
+      query = query.Where(c => (c.QualificationDecision ?? c.QualificationRecommendation) == "qualified");
       selectionMethodParts.Add("qualified only");
     }
 
@@ -2583,7 +2588,7 @@ public class CostForgeController : ControllerBase
     var score = 0m;
     var reasons = new List<string>();
 
-    if (sale.SaleQualification == "qualified")
+    if ((sale.QualificationDecision ?? sale.QualificationRecommendation) == "qualified")
     {
       score += 25m;
       reasons.Add("qualified-sale");

@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "terra-insight",
+  "displayName": "TerraInsight",
+  "description": "Analytics & business intelligence dashboard — real-time county metrics, trend analysis, and decision support.",
+  "iconName": "BarChart3",
+  "category": "analytics",
+  "tier": 2,
+  "status": "alpha",
+  "pinned": true,
+  "version": "1.0.0",
+  "intent": "gen2",
+  "runnable": true,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5020/"
+  },
+  "tags": ["analytics", "bi", "insights", "gen2", "county-wide"],
+  "permissions": ["county:read", "analytics:read"]
+}

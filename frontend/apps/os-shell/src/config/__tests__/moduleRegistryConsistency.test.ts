@@ -90,6 +90,7 @@ describe('MODULE_REGISTRY -> ModuleRenderer coverage', () => {
     'management-dashboard',
     'terra-miner',
     'legislative-pulse',
+    'terra-insight',
     'gpt-studio',
     'gpt-marketplace',
     'gpt-management',
@@ -205,6 +206,7 @@ describe('moduleActivation displayNames/icons coverage', () => {
       'terra-queue': 'TerraQueue',
       'terra-miner': 'TerraMiner',
       'legislative-pulse': 'Legislative Pulse',
+      'terra-insight': 'TerraInsight',
       // GPT Suite namespaced modules
       'gpt-studio': 'GPT Studio',
       'gpt-marketplace': 'GPT Marketplace',

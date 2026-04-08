@@ -1,3 +1,6 @@
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
+using TerraFusion.Core.Configuration;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
@@ -41,6 +44,94 @@ using System.Threading.RateLimiting;
 // ── Standalone PACS seed mode ──────────────────────────────────────────────
 // Run as: dotnet run --project TerraFusion.API -- --seed-pacs
 // Runs the seeder directly without HTTP server or background services.
+// Run as: dotnet run --project TerraFusion.API -- --canonicalize-only
+// Runs only Phase 7 (PacsCanonicalizer) without re-running the full ETL.
+
+if (args.Contains("--canonicalize-only"))
+{
+    var canonEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                  ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                  ?? "Production";
+
+    var canonHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(canonEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{canonEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{canonEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+        })
+        .Build();
+
+    using var canonScope = canonHost.Services.CreateScope();
+    var canonDb = canonScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var canonLogger = canonScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsCanonicalizer>>();
+    try
+    {
+        canonLogger.LogInformation("[Canonicalize] Standalone Phase 7 run...");
+        var canonicalizer = new TerraFusion.API.Seeds.PacsCanonicalizer(canonDb, canonLogger);
+        var result = await canonicalizer.CanonicalizeAsync();
+        canonLogger.LogInformation("[Canonicalize] DONE: {Result}", result);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        canonLogger.LogError(ex, "[Canonicalize] FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// ── Fast CAMA-only refresh (Step 4 only) ──────────────────────────────────
+// Run as: dotnet run --project TerraFusion.API -- --canonicalize-cama-only
+// Re-runs only CamaCharacteristics from PacsImprovements. Use after cost-field schema updates.
+if (args.Contains("--canonicalize-cama-only"))
+{
+    var camaEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                  ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                  ?? "Production";
+
+    var camaHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(camaEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{camaEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{camaEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+        })
+        .Build();
+
+    using var camaScope = camaHost.Services.CreateScope();
+    var camaDb = camaScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var camaLogger = camaScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsCanonicalizer>>();
+    try
+    {
+        camaLogger.LogInformation("[Canonicalize] Standalone CAMA-only Step 4 run...");
+        var canonicalizer = new TerraFusion.API.Seeds.PacsCanonicalizer(camaDb, camaLogger);
+        var count = await canonicalizer.CanonicalizeCamaOnlyAsync();
+        camaLogger.LogInformation("[Canonicalize] CAMA-ONLY DONE: {Count} CamaCharacteristics", count);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        camaLogger.LogError(ex, "[Canonicalize] CAMA-ONLY FAILED");
+        Environment.Exit(1);
+    }
+}
+
 if (args.Contains("--seed-pacs"))
 {
     // Determine environment from ASPNETCORE_ENVIRONMENT or DOTNET_ENVIRONMENT
@@ -291,6 +382,12 @@ builder.Services.AddScoped<TerraFusion.Abstractions.Interfaces.IAuditLogger, Ter
 builder.Services.AddSingleton<PrototypeTestingEngine>();
 builder.Services.AddSingleton<ScenarioRunRegistry>();
 
+// 🏛️ Sale Qualification — TerraFusion owns the IAAO ratio-study qualification decision
+builder.Services.AddScoped<TerraFusion.API.Services.ISaleQualificationService, TerraFusion.API.Services.SaleQualificationService>();
+
+// 🏛️ OLS Regression — IAAO market-extracted adjustment derivation (stateless, pure math → singleton)
+builder.Services.AddSingleton<TerraFusion.API.Services.IOlsRegressionService, TerraFusion.API.Services.OlsRegressionService>();
+
 // 🏛️ TIER 3 Government Compliance Service - Championship Excellence
 builder.Services.AddScoped<TerraFusion.API.Services.IGovernmentComplianceService, GovernmentComplianceService>();
 // ✅ RE-ENABLED with IServiceScopeFactory pattern - DI lifetime issue RESOLVED
@@ -322,6 +419,100 @@ builder.Services.AddScoped<TerraFusion.AI.Services.IAIAssistantService, TerraFus
 builder.Services.AddScoped<IMuseService, TerraFusion.AI.Services.MuseService>();
 // Phase 10: HITL Drafter Mode — draft/approve/reject pipeline
 builder.Services.AddScoped<IDraftService, TerraFusion.AI.Services.DraftService>();
+// CLI Phase 1 — read-only repo context adapters (git diff + surface contract)
+builder.Services.AddScoped<IGitContextService, TerraFusion.AI.Services.GitContextService>();
+builder.Services.AddSingleton<ISurfaceContractService, TerraFusion.AI.Services.SurfaceContractService>();
+// Phase 2 — Sovereign LLM client: provider selected at runtime from Muse config.
+// MuseService stays provider-agnostic; only this registration knows the vendor.
+// Default: Local (Ollama / any OpenAI-compat endpoint — data never leaves the building).
+// Set Muse:Provider = "AzureOpenAI" for cloud-supervised paths.
+{
+    var museOpts = builder.Configuration.GetSection(MuseLlmOptions.SectionName).Get<MuseLlmOptions>()
+                   ?? new MuseLlmOptions();
+    builder.Services.Configure<MuseLlmOptions>(builder.Configuration.GetSection(MuseLlmOptions.SectionName));
+
+    var kernelBuilder = Kernel.CreateBuilder();
+
+    if (museOpts.Provider == "AzureOpenAI"
+        && !string.IsNullOrWhiteSpace(museOpts.ApiKey)
+        && !string.IsNullOrWhiteSpace(museOpts.Endpoint))
+    {
+        kernelBuilder.AddAzureOpenAIChatCompletion(
+            deploymentName: museOpts.ModelId,
+            endpoint: museOpts.Endpoint,
+            apiKey: museOpts.ApiKey);
+    }
+    else
+    {
+        // Local / sovereign default — OpenAI-compatible endpoint (Ollama, LM Studio, etc.)
+        // Local models typically ignore the API key; any non-empty string satisfies the SDK.
+        var localEndpoint = museOpts.Endpoint ?? "http://localhost:11434/v1";
+        var modelId = string.IsNullOrWhiteSpace(museOpts.ModelId) ? "llama3" : museOpts.ModelId;
+
+        // Local models (Ollama, LM Studio) expose an OpenAI-compatible API.
+        // Route via a pre-configured HttpClient so BaseAddress points at the local endpoint.
+        var localHttpClient = new HttpClient { BaseAddress = new Uri(localEndpoint) };
+        kernelBuilder.AddOpenAIChatCompletion(modelId, "sk-local", httpClient: localHttpClient);
+    }
+
+    var kernel = kernelBuilder.Build();
+    builder.Services.AddSingleton(kernel.GetRequiredService<IChatCompletionService>());
+    builder.Services.AddSingleton<IMuseLlmClient, TerraFusion.AI.Services.SemanticKernelMuseLlmClient>();
+}
+// Phase Routing Matrix: optional multi-lane MuseRouter sits above the single IMuseLlmClient.
+// When Muse:Router:Routes is populated, dot-net DI will prefer the 5-arg MuseService ctor
+// (greedy resolution), dispatching each task type to its ideal model.
+// When Routes is empty / section absent, only the single IMuseLlmClient is used (backward compat).
+{
+    var routerOpts = builder.Configuration
+        .GetSection(TerraFusion.Core.Configuration.MuseRouterOptions.SubSectionName)
+        .Get<TerraFusion.Core.Configuration.MuseRouterOptions>();
+
+    if (routerOpts?.Routes is { Count: > 0 } routes)
+    {
+        builder.Services.Configure<TerraFusion.Core.Configuration.MuseRouterOptions>(
+            builder.Configuration.GetSection(TerraFusion.Core.Configuration.MuseRouterOptions.SubSectionName));
+
+        // Build one IMuseLlmClient per route entry and put them in a dictionary
+        // keyed by task name (e.g. "DevAssist", "Reasoning", "*").
+        var lanes = new Dictionary<string, IMuseLlmClient>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var (key, entry) in routes)
+        {
+            var laneKernel = Kernel.CreateBuilder();
+
+            if (entry.Provider == "AzureOpenAI"
+                && !string.IsNullOrWhiteSpace(entry.ApiKey)
+                && !string.IsNullOrWhiteSpace(entry.Endpoint))
+            {
+                laneKernel.AddAzureOpenAIChatCompletion(
+                    deploymentName: entry.ModelId,
+                    endpoint: entry.Endpoint,
+                    apiKey: entry.ApiKey);
+            }
+            else
+            {
+                var ep = entry.Endpoint ?? "http://localhost:11434/v1";
+                var modelId = string.IsNullOrWhiteSpace(entry.ModelId) ? "llama3" : entry.ModelId;
+                var http = new HttpClient { BaseAddress = new Uri(ep) };
+                laneKernel.AddOpenAIChatCompletion(modelId, "sk-local", httpClient: http);
+            }
+
+            var laneBuilt = laneKernel.Build();
+            var laneChatSvc = laneBuilt.GetRequiredService<IChatCompletionService>();
+            // Each lane gets its own SemanticKernelMuseLlmClient wrapping its own chat service.
+            var laneClient = new TerraFusion.AI.Services.SemanticKernelMuseLlmClient(
+                laneChatSvc,
+                Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.AI.Services.SemanticKernelMuseLlmClient>.Instance);
+            lanes[key] = laneClient;
+        }
+
+        builder.Services.AddSingleton<IMuseRouter>(sp =>
+            new TerraFusion.AI.Services.MuseRouter(
+                sp.GetRequiredService<ILogger<TerraFusion.AI.Services.MuseRouter>>(),
+                lanes));
+    }
+}
 // ✅ STUB: Consciousness Engine stub for DI resolution
 builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services
@@ -1205,6 +1396,95 @@ app.MapGet("/api/test", () => new
     app.MapGet("/api/admin/pacs/seed/status", () =>
         Results.Ok(new { running = _pacsSeedRunning, lastResult = _pacsLastResult })
     ).WithTags("Admin").WithName("SeedPacsStatus");
+
+    // POST /api/admin/pacs/canonicalize — Phase 7 only: promote Pacs* mirror rows → canonical TF entities.
+    // Use when pacs_* tables are already populated but canonical tables need refresh.
+    {
+        var _canonRunning = false;
+        var _canonLastResult = "";
+
+        app.MapPost("/api/admin/pacs/canonicalize", (
+            IServiceScopeFactory scopeFactory,
+            ILogger<TerraFusion.API.Seeds.PacsCanonicalizer> logger) =>
+        {
+            if (_canonRunning)
+                return Results.Conflict("Canonicalization already running.");
+
+            _canonRunning = true;
+            _canonLastResult = "running";
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await using var scope = scopeFactory.CreateAsyncScope();
+                    var db = scope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+                    var canonicalizer = new TerraFusion.API.Seeds.PacsCanonicalizer(db, logger);
+                    var result = await canonicalizer.CanonicalizeAsync();
+                    _canonLastResult = result.ToString();
+                    logger.LogInformation("[PacsCanonicalizer] Complete: {Result}", _canonLastResult);
+                }
+                catch (Exception ex)
+                {
+                    _canonLastResult = $"ERROR: {ex.Message}";
+                    logger.LogError(ex, "[PacsCanonicalizer] Failed");
+                }
+                finally { _canonRunning = false; }
+            });
+
+            return Results.Accepted("/api/admin/pacs/canonicalize/status",
+                new { message = "Canonicalization started. Poll /api/admin/pacs/canonicalize/status." });
+        }).WithTags("Admin").WithName("CanonicalizeFromPacs");
+
+        app.MapGet("/api/admin/pacs/canonicalize/status", () =>
+            Results.Ok(new { running = _canonRunning, lastResult = _canonLastResult })
+        ).WithTags("Admin").WithName("CanonicalizeStatus");
+    }
+}
+
+// POST /api/admin/pacs/seed-sales — targeted seed: sales only, then canonicalize + qualify.
+// Use this when PacsParcel / pacs_improvements / pacs_valuations are already seeded and
+// you just need to refresh ComparableSales + QualificationRecommendation without running the
+// full 8-hour ETL. Runs as background Task — returns 202 immediately.
+{
+    var _salesSeedRunning = false;
+    var _salesSeedLastResult = "";
+
+    app.MapPost("/api/admin/pacs/seed-sales", (
+        IServiceScopeFactory scopeFactory,
+        ILogger<TerraFusion.API.Seeds.PacsDataSeeder> logger) =>
+    {
+        if (_salesSeedRunning)
+            return Results.Conflict("Sales seed already running. Check /api/admin/pacs/seed-sales/status.");
+
+        _salesSeedRunning = true;
+        _salesSeedLastResult = "running";
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await using var scope = scopeFactory.CreateAsyncScope();
+                var seeder = scope.ServiceProvider.GetRequiredService<TerraFusion.API.Seeds.PacsDataSeeder>();
+                var result = await seeder.SeedSalesOnlyAsync();
+                _salesSeedLastResult = result.ToString();
+                logger.LogInformation("[PacsSeeder][SalesOnly] Complete: {Result}", _salesSeedLastResult);
+            }
+            catch (Exception ex)
+            {
+                var inner = ex;
+                while (inner.InnerException != null) inner = inner.InnerException;
+                _salesSeedLastResult = $"ERROR: {ex.Message} | INNER: {inner.Message}";
+                logger.LogError(ex, "[PacsSeeder][SalesOnly] Failed");
+            }
+            finally { _salesSeedRunning = false; }
+        });
+
+        return Results.Accepted("/api/admin/pacs/seed-sales/status",
+            new { message = "Sales-only seed started. Poll /api/admin/pacs/seed-sales/status." });
+    }).WithTags("Admin").WithName("SeedSalesOnly");
+
+    app.MapGet("/api/admin/pacs/seed-sales/status", () =>
+        Results.Ok(new { running = _salesSeedRunning, lastResult = _salesSeedLastResult })
+    ).WithTags("Admin").WithName("SeedSalesOnlyStatus");
 }
 
 // Minimal transcendence health probe (previously returned 404 in some checks)

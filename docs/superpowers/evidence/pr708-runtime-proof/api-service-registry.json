@@ -1,0 +1,117 @@
+{
+  "LastUpdated": "2026-04-02T01:33:58.4911084Z",
+  "Services": {
+    "backend": {
+      "Name": "backend",
+      "Port": 5000,
+      "Url": "http://localhost:5000",
+      "Status": "running",
+      "Pid": 34840,
+      "StartedAt": "2026-04-02T01:33:58.4910939Z"
+    },
+    "costforge": {
+      "Name": "costforge",
+      "Port": 5002,
+      "Url": "http://localhost:5002",
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    },
+    "statistics-studio": {
+      "Name": "statistics-studio",
+      "Port": 5003,
+      "Url": "http://localhost:5003",
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    },
+    "terra-pilt": {
+      "Name": "terra-pilt",
+      "Port": 5179,
+      "Url": "http://localhost:5179",
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    },
+    "terra-permit": {
+      "Name": "terra-permit",
+      "Port": 5181,
+      "Url": "http://localhost:5181",
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    },
+    "gis-pro": {
+      "Name": "gis-pro",
+      "Port": 5178,
+      "Url": "http://localhost:5178",
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    },
+    "terra-gama": {
+      "Name": "terra-gama",
+      "Port": 5182,
+      "Url": "http://localhost:5182",
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    },
+    "property-tax-ai": {
+      "Name": "property-tax-ai",
+      "Port": 5014,
+      "Url": "http://localhost:5014",
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    },
+    "terra-flow": {
+      "Name": "terra-flow",
+      "Port": 5183,
+      "Url": "http://localhost:5183",
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    },
+    "terra-levy": {
+      "Name": "terra-levy",
+      "Port": 5177,
+      "Url": "http://localhost:5177",
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    },
+    "terra-sync": {
+      "Name": "terra-sync",
+      "Port": 5017,
+      "Url": "http://localhost:5017",
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    },
+    "terra-miner": {
+      "Name": "terra-miner",
+      "Port": 5018,
+      "Url": "http://localhost:5018",
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    },
+    "legislative-pulse": {
+      "Name": "legislative-pulse",
+      "Port": 5019,
+      "Url": "http://localhost:5019",
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    },
+    "terra-insight": {
+      "Name": "terra-insight",
+      "Port": 5020,
+      "Url": "http://localhost:5020",
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    }
+  }
+}

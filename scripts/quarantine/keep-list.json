@@ -1,8 +1,8 @@
 {
-  "description": "Root spine allowlist. Non-hidden tracked root entries not in this list are quarantine candidates. Source of truth: REPO_MAP.md § Root Spine.",
+  "description": "Root spine allowlist. Non-hidden tracked root entries not in this list are quarantine candidates. Source of truth: REPO_MAP.md \u00c2\u00a7 Root Spine.",
   "policy": {
-    "violations": "exit 1 — root entries not in this list",
-    "missingFiles": "exit 1 — required root files absent (indicates damage)",
+    "violations": "exit 1 \u00e2\u20ac\u201d root entries not in this list",
+    "missingFiles": "exit 1 \u00e2\u20ac\u201d required root files absent (indicates damage)",
     "missingDirs": "warn (exit 0) during quarantine phase; flip to exit 1 post-quarantine via --strict"
   },
   "dirs": [
@@ -12,23 +12,24 @@
     "configs",
     "data",
     "database",
+    "dev-audit",
     "docker",
     "docs",
     "frontend",
     "golden",
+    "grafana",
     "infrastructure",
     "native-shell",
     "ops",
     "os-platform",
     "packages",
-    "grafana",
     "scripts",
     "tests",
     "tools"
   ],
   "files": [
-    "AGENT_OPERATING_MODEL.md",
     "AGENTS.md",
+    "AGENT_OPERATING_MODEL.md",
     "CLAUDE.md",
     "CODEOWNERS",
     "CONTRIBUTING.md",
@@ -37,9 +38,11 @@
     "README.md",
     "REPO_MAP.md",
     "SEALED.md",
+    "SPRINT.md",
     "STANDARD.md",
     "SUSTAINMENT.md",
     "TerraFusion.sln",
+    "_validator_proof.log.err",
     "global.json",
     "package.json",
     "phase4b.manifest.json",
@@ -74,6 +77,7 @@
     "pnpm-workspace.yaml",
     "renovate.json",
     "shell-defect-ledger.json",
+    "sovereign.yaml",
     "tdc.config.json",
     "tsconfig.core.json",
     "tsconfig.eslint.json",
@@ -82,8 +86,6 @@
     "ui-token-compliance.contract.json",
     "ui-token-ratchet.contract.json",
     "vitest.config.ts",
-    "vitest.known-fail.config.ts",
-    "sovereign.yaml",
-    "SPRINT.md"
+    "vitest.known-fail.config.ts"
   ]
 }

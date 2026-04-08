@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "legislative-pulse",
+  "displayName": "Legislative Pulse",
+  "description": "Legislative research & tracking — monitors WA state bills, fiscal notes, and policy impacts on county assessment/taxation.",
+  "iconName": "Megaphone",
+  "category": "policy",
+  "tier": 2,
+  "status": "active",
+  "pinned": true,
+  "version": "1.0.0",
+  "intent": "gen2",
+  "runnable": true,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5019/"
+  },
+  "tags": ["policy", "legislative", "research", "gen2", "county-wide"],
+  "permissions": ["county:read"]
+}

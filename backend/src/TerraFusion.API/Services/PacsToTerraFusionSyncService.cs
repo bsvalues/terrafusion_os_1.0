@@ -1182,7 +1182,10 @@ public sealed class PacsToTerraFusionSyncService
         ApplyString(target.PropertyType, NormalizePropertyType(sourceSale.PropTypeCd), value => target.PropertyType = value ?? target.PropertyType, ref changed);
         ApplyString(target.Address, normalizedAddress, value => target.Address = value, ref changed);
         ApplyString(target.Neighborhood, NormalizeNeighborhood(sourceSale.Neighborhood), value => target.Neighborhood = value, ref changed);
-        ApplyString(target.SaleQualification, ClassifySaleQualification(sourceSale), value => target.SaleQualification = value ?? target.SaleQualification, ref changed);
+        // Raw PACS qualifier codes (SaleQualifier, CountyRatioCd, etc.) are not available
+        // from the adapter-layer PacsComparableSale type. They are populated by PacsCanonicalizer
+        // from the PACS mirror tables. Sales synced via this path will have null Raw* codes;
+        // QualificationRecommendation remains null until ComputeRecommendations() is run.
         ApplyValue(target.IsVerified, true, value => target.IsVerified = value, ref changed);
         ApplyString(target.VerificationSource, BuildVerificationSource(sourceSale), value => target.VerificationSource = value, ref changed);
         changed |= ApplyComparableSaleEnrichment(target, cama);
@@ -1329,38 +1332,6 @@ public sealed class PacsToTerraFusionSyncService
             var value when value.Contains("AGR") => "agricultural",
             _ => "residential"
         };
-    }
-
-    private static string ClassifySaleQualification(PacsComparableSale sale)
-    {
-        var deedType = Normalize(sale.DeedTypeCd)?.ToLowerInvariant();
-        var ratioType = Normalize(sale.SaleRatioTypeCd);
-
-        if (deedType is
-            "qcd" or
-            "odeed" or
-            "hdeed" or
-            "spwd" or
-            "trd" or
-            "oth" or
-            "mt" or
-            "taxd" or
-            "lieu" or
-            "ease" or
-            "detr" or
-            "shd" or
-            "shcs" or
-            "uspat")
-        {
-            return "non-arms-length";
-        }
-
-        if (!string.IsNullOrWhiteSpace(ratioType) && !string.Equals(ratioType, "00", StringComparison.OrdinalIgnoreCase))
-        {
-            return "non-arms-length";
-        }
-
-        return "qualified";
     }
 
     private static string BuildVerificationSource(PacsComparableSale sale)

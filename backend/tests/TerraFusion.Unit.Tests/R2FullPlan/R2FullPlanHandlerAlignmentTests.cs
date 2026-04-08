@@ -542,7 +542,7 @@ public sealed class R2FullPlanHandlerAlignmentTests
       GrossLivingArea = 2000m,
       LotSizeSqft = 8000m,
       Neighborhood = "KENNEWICK",
-      SaleQualification = "qualified",
+      QualificationRecommendation = "qualified",
     });
     await db.SaveChangesAsync();
     var controller = CreateCostForgeController(db);

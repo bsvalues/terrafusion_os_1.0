@@ -320,7 +320,7 @@ public sealed class R2Wave25ForgeValuationTests
     var sales = await db.ComparableSales.ToListAsync();
     sales.Should().HaveCount(1);
     sales[0].IsVerified.Should().BeFalse();
-    sales[0].SaleQualification.Should().Be("qualified");
+    sales[0].QualificationDecision.Should().BeNull();
   }
 
   [Fact]
@@ -348,9 +348,9 @@ public sealed class R2Wave25ForgeValuationTests
     });
 
     db.ComparableSales.AddRange(
-      new ComparableSale { ParcelId = "S-010", SaleDate = DateTime.UtcNow.AddMonths(-3), SalePrice = 300_000, PropertyType = "residential", Neighborhood = "Kennewick", GrossLivingArea = 1800, SaleQualification = "qualified", CountyId = BentonCountyId, IngestedBy = "test" },
-      new ComparableSale { ParcelId = "S-011", SaleDate = DateTime.UtcNow.AddMonths(-6), SalePrice = 340_000, PropertyType = "residential", Neighborhood = "Richland", GrossLivingArea = 2200, SaleQualification = "qualified", CountyId = BentonCountyId, IngestedBy = "test" },
-      new ComparableSale { ParcelId = "S-012", SaleDate = DateTime.UtcNow.AddMonths(-30), SalePrice = 280_000, PropertyType = "commercial", Neighborhood = "Kennewick", GrossLivingArea = 3000, SaleQualification = "qualified", CountyId = BentonCountyId, IngestedBy = "test" }
+      new ComparableSale { ParcelId = "S-010", SaleDate = DateTime.UtcNow.AddMonths(-3), SalePrice = 300_000, PropertyType = "residential", Neighborhood = "Kennewick", GrossLivingArea = 1800, QualificationRecommendation = "qualified", CountyId = BentonCountyId, IngestedBy = "test" },
+      new ComparableSale { ParcelId = "S-011", SaleDate = DateTime.UtcNow.AddMonths(-6), SalePrice = 340_000, PropertyType = "residential", Neighborhood = "Richland", GrossLivingArea = 2200, QualificationRecommendation = "qualified", CountyId = BentonCountyId, IngestedBy = "test" },
+      new ComparableSale { ParcelId = "S-012", SaleDate = DateTime.UtcNow.AddMonths(-30), SalePrice = 280_000, PropertyType = "commercial", Neighborhood = "Kennewick", GrossLivingArea = 3000, QualificationRecommendation = "qualified", CountyId = BentonCountyId, IngestedBy = "test" }
     );
     await db.SaveChangesAsync();
 
@@ -411,8 +411,8 @@ public sealed class R2Wave25ForgeValuationTests
     });
 
     db.ComparableSales.AddRange(
-      new ComparableSale { ParcelId = "SUBJ", SaleDate = DateTime.UtcNow.AddMonths(-1), SalePrice = 200_000, PropertyType = "residential", Neighborhood = "KENNEWICK", SaleQualification = "qualified", CountyId = BentonCountyId, IngestedBy = "test" },
-      new ComparableSale { ParcelId = "COMP-1", SaleDate = DateTime.UtcNow.AddMonths(-2), SalePrice = 210_000, PropertyType = "residential", Neighborhood = "KENNEWICK", SaleQualification = "qualified", CountyId = BentonCountyId, IngestedBy = "test" }
+      new ComparableSale { ParcelId = "SUBJ", SaleDate = DateTime.UtcNow.AddMonths(-1), SalePrice = 200_000, PropertyType = "residential", Neighborhood = "KENNEWICK", QualificationRecommendation = "qualified", CountyId = BentonCountyId, IngestedBy = "test" },
+      new ComparableSale { ParcelId = "COMP-1", SaleDate = DateTime.UtcNow.AddMonths(-2), SalePrice = 210_000, PropertyType = "residential", Neighborhood = "KENNEWICK", QualificationRecommendation = "qualified", CountyId = BentonCountyId, IngestedBy = "test" }
     );
     await db.SaveChangesAsync();
 
@@ -471,7 +471,7 @@ public sealed class R2Wave25ForgeValuationTests
         GrossLivingArea = 1980m,
         LotSizeSqft = 7900m,
         YearBuilt = 2004,
-        SaleQualification = "qualified",
+        QualificationRecommendation = "qualified",
         CountyId = BentonCountyId,
         IngestedBy = "test"
       },
@@ -486,7 +486,7 @@ public sealed class R2Wave25ForgeValuationTests
         GrossLivingArea = 4200m,
         LotSizeSqft = 25000m,
         YearBuilt = 1980,
-        SaleQualification = "qualified",
+        QualificationRecommendation = "qualified",
         CountyId = BentonCountyId,
         IngestedBy = "test"
       });
@@ -536,7 +536,7 @@ public sealed class R2Wave25ForgeValuationTests
         SalePrice = 255000m,
         PropertyType = "residential",
         Neighborhood = "KENNEWICK",
-        SaleQualification = "qualified",
+        QualificationRecommendation = "qualified",
         CountyId = BentonCountyId,
         IngestedBy = "test"
       },
@@ -548,7 +548,7 @@ public sealed class R2Wave25ForgeValuationTests
         SalePrice = 260000m,
         PropertyType = "residential",
         Neighborhood = "KENNEWICK",
-        SaleQualification = "non-arms-length",
+        QualificationRecommendation = "non-arms-length",
         CountyId = BentonCountyId,
         IngestedBy = "test"
       });
@@ -597,7 +597,7 @@ public sealed class R2Wave25ForgeValuationTests
       SalePrice = 280000m,
       PropertyType = "residential",
       Neighborhood = "KENNEWICK",
-      SaleQualification = "qualified",
+      QualificationRecommendation = "qualified",
       CountyId = BentonCountyId,
       IngestedBy = "test"
     });

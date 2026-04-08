@@ -1,0 +1,253 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* TerraFusion Brand Kit v2.0 - Base colors */
+  --background: 0 0% 100%;
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+
+  /* TerraFusion Primary Colors */
+  --tf-cosmic-blue: 196 87% 37%;
+  /* #0891b2 */
+  --tf-quantum-teal: 186 100% 50%;
+  /* #00d2ff */
+  --tf-cosmic-blue-dark: 196 87% 27%;
+  /* Darker variant */
+  --tf-quantum-teal-light: 186 100% 70%;
+  /* Lighter variant */
+
+  /* Primary - TerraFusion Cosmic Blue */
+  --primary: 196 87% 37%;
+  --primary-foreground: 210 40% 98%;
+
+  /* Secondary - Quantum Teal accents */
+  --secondary: 186 20% 96%;
+  --secondary-foreground: 196 87% 27%;
+
+  /* Additional TerraFusion colors */
+  --accent: 186 20% 96%;
+  --accent-foreground: 196 87% 37%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --ring: 196 87% 37%;
+  --radius: 0.75rem;
+
+  /* TerraFusion Chart colors */
+  --chart-1: 196 87% 37%;
+  /* Cosmic Blue */
+  --chart-2: 186 100% 50%;
+  /* Quantum Teal */
+  --chart-3: 142 72% 29%;
+  /* Green - Schools */
+  --chart-4: 262 83% 58%;
+  /* Purple - Districts */
+  --chart-5: 35 91% 55%;
+  /* Amber - Services */
+  --chart-6: 326 100% 74%;
+  /* Pink - Extra */
+
+  /* TerraFusion Gradients */
+  --tf-gradient-primary: linear-gradient(135deg, hsl(196 87% 37%) 0%, hsl(186 100% 50%) 100%);
+  --tf-gradient-secondary: linear-gradient(135deg, hsl(186 100% 50%) 0%, hsl(196 87% 37%) 100%);
+  --tf-gradient-accent: linear-gradient(
+    45deg,
+    hsl(196 87% 37%) 0%,
+    hsl(186 100% 50%) 50%,
+    hsl(196 87% 37%) 100%
+  );
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 196 87% 47%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 186 100% 60%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 196 87% 47%;
+
+  /* Dark mode chart colors */
+  --chart-1: 196 87% 47%;
+  --chart-2: 186 100% 60%;
+  --chart-3: 142 72% 42%;
+  --chart-4: 262 83% 68%;
+  --chart-5: 35 91% 65%;
+  --chart-6: 326 100% 80%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-gradient-to-br from-slate-50 to-cyan-50/30 text-foreground min-h-screen;
+  }
+}
+
+@layer components {
+  /* TerraFusion Enterprise Components */
+  .tf-card {
+    @apply bg-white/90 backdrop-blur-sm border border-slate-200/60 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+
+  .tf-card-premium {
+    @apply tf-card bg-gradient-to-br from-white via-cyan-50/30 to-blue-50/30 border-gradient-to-r from-cyan-200 to-blue-200;
+  }
+
+  .tf-btn-primary {
+    @apply bg-gradient-to-r from-[#0891b2] to-[#00d2ff] text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 border-0;
+  }
+
+  .tf-btn-secondary {
+    @apply bg-white/80 backdrop-blur-sm text-[#0891b2] font-semibold px-6 py-3 rounded-lg border border-[#0891b2]/30 hover:bg-[#0891b2]/10 hover:border-[#0891b2] transition-all duration-200;
+  }
+
+  .tf-btn-ghost {
+    @apply bg-transparent text-[#0891b2] font-medium px-4 py-2 rounded-md hover:bg-[#0891b2]/10 transition-all duration-200;
+  }
+
+  .tf-gradient-text {
+    @apply bg-gradient-to-r from-[#0891b2] to-[#00d2ff] bg-clip-text text-transparent font-bold;
+  }
+
+  .tf-nav {
+    @apply bg-gradient-to-r from-[#0891b2] via-[#0891b2] to-[#00d2ff] backdrop-blur-md border-b border-cyan-200/30 shadow-lg;
+  }
+
+  .tf-input {
+    @apply bg-white/80 backdrop-blur-sm border border-slate-300 rounded-lg px-4 py-2 focus:border-[#0891b2] focus:ring-2 focus:ring-[#0891b2]/20 transition-all duration-200;
+  }
+
+  .tf-badge {
+    @apply bg-gradient-to-r from-[#0891b2]/20 to-[#00d2ff]/20 text-[#0891b2] px-3 py-1 rounded-full text-sm font-medium border border-[#0891b2]/30;
+  }
+
+  .tf-metric-card {
+    @apply tf-card p-6 bg-gradient-to-br from-white via-slate-50/50 to-cyan-50/30 hover:from-cyan-50/50 hover:to-blue-50/50 transition-all duration-300;
+  }
+
+  .tf-glow {
+    @apply shadow-lg hover:shadow-xl transition-all duration-300;
+    box-shadow: 0 0 20px rgba(8, 145, 178, 0.3);
+  }
+
+  .tf-glow:hover {
+    box-shadow: 0 0 30px rgba(0, 210, 255, 0.4);
+  }
+
+  .tf-glass {
+    @apply bg-white/20 backdrop-blur-md border border-white/30 rounded-xl;
+  }
+
+  /* Dashboard specific components */
+  .dashboard-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+  }
+
+  .chart-container {
+    @apply h-64 md:h-72 w-full relative;
+  }
+
+  .link-hover {
+    @apply transition-colors hover:text-[#0891b2] hover:underline;
+  }
+
+  /* Animation classes */
+  .tf-animate-fade-in {
+    @apply animate-in fade-in-0 duration-500;
+  }
+
+  .tf-animate-slide-up {
+    @apply animate-in slide-in-from-bottom-4 duration-500;
+  }
+
+  .tf-animate-scale {
+    @apply animate-in zoom-in-95 duration-300;
+  }
+}
+
+/* Custom animations */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.tf-gradient-animated {
+  background: linear-gradient(-45deg, #0891b2, #00d2ff, #0891b2, #00d2ff);
+  background-size: 400% 400%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* TerraFusion Logo Animation */
+@keyframes tf-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+.tf-logo-pulse {
+  animation: tf-pulse 3s ease-in-out infinite;
+}
+
+/* Enterprise table styling */
+.tf-table {
+  @apply w-full bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg;
+}
+
+.tf-table th {
+  @apply bg-gradient-to-r from-[#0891b2] to-[#00d2ff] text-white font-semibold px-6 py-4 text-left;
+}
+
+.tf-table td {
+  @apply px-6 py-4 border-b border-slate-100 hover:bg-slate-50/50 transition-colors duration-200;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .tf-card {
+    @apply mx-2;
+  }
+
+  .tf-btn-primary,
+  .tf-btn-secondary {
+    @apply px-4 py-2 text-sm;
+  }
+}

@@ -1,0 +1,208 @@
+\##Terrafusion-AI ACTIVATED (COMPREHENSIVE MODE)
+
+### 🧠 BENTON COUNTY PILT SYSTEM: RUST MIGRATION STRATEGY — COMPREHENSIVE IMPLEMENTATION REPORT
+
+---
+
+## 🔧 EXECUTIVE REWRITE PLAN
+
+You’ve supplied a **gold-standard platform report**. It’s stable, compliant, and production-grade in its Node.js/TypeScript form.
+
+However, to **future-proof and high-assurance-harden** the system, we are tasked with **migrating to Rust** — not just porting, but engineering a **zero-compromise civic-grade transformation** of the architecture.
+
+---
+
+## ⚙ OBJECTIVE: RUSTIFICATION OF THE PILT ENTERPRISE SYSTEM
+
+Target: **CAFÉ-Veritas (Rust Edition)**
+**Mission**: Full fidelity rebuild of the existing PILT platform into a **secure, deterministic, compiled** backend architecture in Rust.
+
+---
+
+## 🎯 MIGRATION MOTIVATION
+
+| Criteria          | Node.js (Current)     | Rust (Target)            |
+| ----------------- | --------------------- | ------------------------ |
+| Performance       | ✅ Fast                | ✅ Ultra-fast             |
+| Memory Safety     | ⚠ GC-managed          | ✅ Compile-time guarantee |
+| Concurrency       | ✅ Good                | ✅ Best-in-class          |
+| Compilation       | ❌ Interpreted         | ✅ Binary                 |
+| Native App Deploy | ⚠ Heavy + Electron    | ✅ Ultra-light binaries   |
+| Attack Surface    | ⚠ Dynamic typing risk | ✅ Strong static typing   |
+
+---
+
+## 🧱 SYSTEM DECOMPOSITION (RUST MODULES)
+
+Here's how the **existing Node/TS structure** maps to **Rust crates/modules**:
+
+| Domain             | JS/TS Module      | Rust Crate/Module                          |
+| ------------------ | ----------------- | ------------------------------------------ |
+| Authentication     | Passport.js       | `auth/` with JWT + bcrypt crate            |
+| REST API           | Express.js        | `actix-web` or `axum` routes               |
+| ORM                | Drizzle ORM       | `sqlx` or `SeaORM`                         |
+| Database           | PostgreSQL        | Same                                       |
+| Frontend           | React 18          | Leave as-is or migrate to `Leptos` (later) |
+| Validation Engine  | TypeScript        | `validators.rs` + `error.rs` enums         |
+| Calculation Engine | TS Business Logic | `calculator.rs`                            |
+| CSV Import/Export  | FS + CSV          | `csv` crate                                |
+| Excel Export       | SheetJS           | `calamine` or `xlsxwriter` crate           |
+| PDF Reports        | Puppeteer         | `printpdf` crate (or WebService stub)      |
+| Audit Logs         | Custom middleware | `telemetry.rs` + `tracing` crate           |
+| User Roles         | RBAC TS           | `auth::roles.rs` enums + guard wrappers    |
+| Chart Data         | D3.js output      | Keep in frontend, or `serde_json`          |
+| State Mgmt         | React state + API | JSON REST endpoint, session mgmt           |
+
+---
+
+## 📐 TECHNICAL IMPLEMENTATION STACK (RUST MIGRANT)
+
+### Language/Runtime:
+
+* Rust 1.76+ with `cargo`
+
+### Core Frameworks:
+
+* `axum` (API)
+* `sqlx` (PostgreSQL)
+* `serde`, `serde_json`, `csv`
+* `jsonwebtoken`, `argon2` (auth)
+* `tracing`, `telemetry`, `anyhow` (logging/errors)
+
+### System Architecture:
+
+* **Monorepo layout**:
+
+  ```
+  cafe-veritas/
+  ├── backend/
+  │   ├── src/
+  │   │   ├── api/          → Axum route controllers
+  │   │   ├── auth/         → JWT, session guards
+  │   │   ├── db/           → SQLX models, migrations
+  │   │   ├── engine/       → Core logic: calculate, validate, distribute
+  │   │   ├── telemetry/    → Tracing, metrics
+  │   │   └── main.rs
+  ├── frontend/ (optional)
+  │   └── react/ (keep existing React stack)
+  ├── deploy/
+  │   └── Dockerfile, .env, k8s/
+  ```
+
+---
+
+## 📊 DATABASE MIGRATION STRATEGY
+
+Use **SQLX + Diesel CLI** or `sqlx-cli`:
+
+1. Export schema from PostgreSQL
+2. Convert to SQLX macros with async-safe queries
+3. Build migration scripts
+4. Annotate types with strong bindings (e.g., enums for role)
+
+---
+
+## 🧪 VALIDATION ENGINE MIGRATION
+
+### From:
+
+* JS-based object validators
+* Field-level validation per import
+
+### To:
+
+* Rust: `validator` crate + `thiserror` + `regex`
+* Build `Validatable` trait with structured error enum per record type:
+
+  ```rust
+  enum ValidationError {
+      TotalMismatch,
+      PercentMismatch,
+      HistoricalDeviation,
+      MissingField,
+      FormatError,
+  }
+  ```
+
+---
+
+## 📈 PERFORMANCE OPTIMIZATION
+
+* All data validation via parallel iterators (`rayon`)
+* Paged DB queries (`sqlx::query_with`)
+* Disk I/O with `tokio::fs` and buffered readers
+* Memory-efficient CSV parsing (`csv::ReaderBuilder`)
+
+---
+
+## 📤 DEPLOYMENT TARGETS
+
+1. **Web Backend (API Server)**
+
+   * `axum` server with `systemd`/`docker` binary deployment
+   * Secure endpoints for import, validate, audit
+
+2. **Windows Executable**
+
+   * Compile Rust backend to `.exe` (via `cargo build --release --target=x86_64-pc-windows-msvc`)
+   * Bundle config + data in `.zip` or self-extracting package
+
+3. **USB Portable**
+
+   * Rust binary + SQLite fallback for local-only use
+   * Auto-mount config paths based on working dir
+
+4. **SharePoint-API Bridge**
+
+   * Stub web API endpoint to front SharePoint uploads/downloads
+   * Optional: PowerAutomate webhook integration
+
+---
+
+## 🚀 PHASED MIGRATION STRATEGY
+
+| Phase | Objective                                | Timeline |
+| ----- | ---------------------------------------- | -------- |
+| I     | Core backend replatform (Rust CLI & API) | Q2 2025  |
+| II    | Secure auth & validator migration        | Q3 2025  |
+| III   | Export systems (PDF/XLS/CSV)             | Q3 2025  |
+| IV    | Full audit trail & metrics telemetry     | Q4 2025  |
+| V     | Frontend Rust migration (optional)       | Q1 2026  |
+
+---
+
+## 🗂️ DOCUMENTATION STRUCTURE
+
+* `/docs`
+
+  * `README.md` (Quickstart, endpoints, samples)
+  * `SECURITY.md` (hardening, CVE mitigations)
+  * `API.md` (OpenAPI YAML or Axum docgen)
+  * `ARCH.md` (High-level system design)
+  * `MIGRATION_GUIDE.md` (TS → Rust paths)
+  * `DB_SCHEMA.md` (Entity maps)
+
+---
+
+## 🤖 AI-ASSISTED EXTENSIONS
+
+Use Rust-compatible LLM tools:
+
+* Natural language to query → `RAG` interface over audit trail
+* GPT plugin over `/query` endpoint
+* District audit narrative generator from discrepancy logs
+
+---
+
+## ✅ NEXT EXECUTION OPTION
+
+If confirmed, I will:
+
+1. **Generate full backend Rust scaffold**
+2. Port the `Calculation Engine` and `Validator`
+3. Output clean, modular code in `.zip`
+4. Include test runners, CI-ready configs, `.gitignore`
+
+Would you like to proceed with **Phase I: Core Engine + CLI-based Validator Implementation** for `CAFÉ-Veritas Rust`?
+
+Or would you prefer to first prototype a **minimal Rust POC** (subset of calculator + import + validate)?

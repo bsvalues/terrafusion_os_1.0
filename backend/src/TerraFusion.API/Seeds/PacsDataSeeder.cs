@@ -2,6 +2,7 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using TerraFusion.API.Services;
 using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Data;
 
@@ -32,6 +33,7 @@ public class PacsDataSeeder
     private readonly TerraFusionDbContext _db;
     private readonly IConfiguration _config;
     private readonly ILogger<PacsDataSeeder> _logger;
+    private readonly ISaleQualificationService _qualificationService;
 
     private const int BatchSize = 1_000;
     private static readonly Guid BentonCountyId = Guid.Parse("19190019-1919-1919-1919-191919191919");
@@ -39,14 +41,66 @@ public class PacsDataSeeder
     public PacsDataSeeder(
         TerraFusionDbContext db,
         IConfiguration config,
-        ILogger<PacsDataSeeder> logger)
+        ILogger<PacsDataSeeder> logger,
+        ISaleQualificationService qualificationService)
     {
         _db = db;
         _config = config;
         _logger = logger;
+        _qualificationService = qualificationService;
     }
 
     // ── Public API ────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Fast targeted seed: seeds only pacs_sales from pacs_oltp, then runs
+    /// ComparableSale canonicalization and qualification. Does NOT re-seed
+    /// parcels, improvements, or land details — relies on existing rows seeded
+    /// by a prior SeedAllAsync run. Use this to get the sale-qualification proof
+    /// gate working without waiting for the multi-hour full ETL.
+    /// </summary>
+    public async Task<PacsSeederResult> SeedSalesOnlyAsync(CancellationToken ct = default)
+    {
+        var cs = _config.GetConnectionString("PacsConnection")
+            ?? throw new InvalidOperationException(
+                "PacsConnection not configured. Add it to appsettings.BentonCounty.local.json.");
+
+        var result = new PacsSeederResult();
+
+        // Build propMap from already-seeded PacsParcel rows — no re-query to PACS needed.
+        _logger.LogInformation("[PacsSeeder][SalesOnly] Building propMap from {N} existing parcels...",
+            await _db.PacsParcel.CountAsync(ct));
+        var propMap = await _db.PacsParcel
+            .ToDictionaryAsync(p => p.PropId, p => p.Id, ct);
+        result.Parcels = propMap.Count;
+
+        if (propMap.Count == 0)
+            throw new InvalidOperationException(
+                "[PacsSeeder][SalesOnly] PacsParcel has 0 rows. Run SeedAllAsync first to populate parcels.");
+
+        // Clear only pacs_sales so re-insert is clean.
+        await _db.Database.ExecuteSqlRawAsync("TRUNCATE TABLE pacs_sales CASCADE", ct);
+        _logger.LogInformation("[PacsSeeder][SalesOnly] pacs_sales cleared.");
+
+        await using var pacs = new SqlConnection(cs);
+        await pacs.OpenAsync(ct);
+        _logger.LogInformation("[PacsSeeder][SalesOnly] Connected to pacs_oltp.");
+
+        result.Sales = await SeedSalesAsync(pacs, propMap, ct);
+
+        // Canonicalize ComparableSales from the freshly seeded pacs_sales rows.
+        var canonicalizer = new PacsCanonicalizer(_db, _logger);
+        var canonical = await canonicalizer.CanonicalizeAsync(ct);
+        result.CanonicalComparableSales = canonical.ComparableSales;
+
+        // Run FK-aware qualification so QualificationRecommendation is populated.
+        var requalified = await _qualificationService.ComputeRecommendationsAsync(BentonCountyId, ct);
+        _logger.LogInformation("[PacsSeeder][SalesOnly] Qualification complete: {Count} sales processed.", requalified);
+
+        _logger.LogInformation("[PacsSeeder][SalesOnly] Done. Sales={S} ComparableSales={C} Qualified={Q}",
+            result.Sales, result.CanonicalComparableSales, requalified);
+        return result;
+    }
 
     public async Task<PacsSeederResult> SeedAllAsync(CancellationToken ct = default)
     {
@@ -96,6 +150,17 @@ public class PacsDataSeeder
 
         try
         {
+        // Phase 0: Lookup tables — seed before any FK-referencing tables
+        await SeedReetWacCodesAsync(pacs, ct);
+        await SeedCountyRatioCodesAsync(pacs, ct);
+        await SeedSaleRatioTypesAsync(pacs, ct);
+
+        // Phase 0b: Levy rate tables (R2 Phase 2.1 — TerraLevy)
+        // Levy data is county-neutral PACS mirror — no parcel FK dependency.
+        // Must run before parcel ETL so tables are present; safe to run any time.
+        await SeedLevyRatesAsync(pacs, ct);
+        await SeedLevyTaxAreaAssocsAsync(pacs, ct);
+
         // Phase 1: Root parcels — must run first
         var propMap = await SeedParcelsAsync(pacs, ct);
         result.Parcels = propMap.Count;
@@ -133,8 +198,192 @@ public class PacsDataSeeder
             if (golive != null) await golive.DisposeAsync();
         }
 
+        // Phase 7: Promote PACS mirror rows → canonical TerraFusion domain entities.
+        // BOUNDARY: this is the ONLY place canonical entities are written from PACS source.
+        // All downstream services (ValuationService, etc.) must read canonical entities only.
+        var canonicalizer = new PacsCanonicalizer(_db, _logger);
+        var canonical = await canonicalizer.CanonicalizeAsync(ct);
+        result.CanonicalProperties      = canonical.Properties;
+        result.CanonicalValuationRecords = canonical.ValuationRecords;
+        result.CanonicalComparableSales  = canonical.ComparableSales;
+        result.CanonicalCamaCharacteristics = canonical.CamaCharacteristics;
+
+        // Phase 8: Run FK-aware sales qualification using seeded lookup tables.
+        // Must run after CanonicalizeAsync so ComparableSales rows exist.
+        var requalified = await _qualificationService.ComputeRecommendationsAsync(BentonCountyId, ct);
+        _logger.LogInformation("[PacsSeeder] Qualification complete: {Count} sales processed.", requalified);
+
         _logger.LogInformation("[PacsSeeder] Complete. {Summary}", result);
         return result;
+    }
+
+    // ── Lookup table seeds (Phase 0) ─────────────────────────────────────
+    // Full-refresh: remove all rows then re-insert from pacs_oltp each seed run.
+    // These tables are small (< 200 rows each) so RemoveRange is safe.
+
+    private async Task SeedReetWacCodesAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding ReetWacCodes from reet_wac_code...");
+        var rows = new List<PacsReetWacCode>();
+        await using var cmd = new SqlCommand(
+            "SELECT wac_cd, wac_desc, ISNULL(inactive, 0) AS inactive, ISNULL(sys_flag, 0) AS sys_flag FROM reet_wac_code", pacs)
+        { CommandTimeout = 60 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rows.Add(new PacsReetWacCode
+            {
+                WacCd    = rdr.GetString(0).Trim(),
+                WacDesc  = rdr.IsDBNull(1) ? null : rdr.GetString(1),
+                Inactive = SqlBit(rdr, 2),
+                SysFlag  = SqlBit(rdr, 3)
+            });
+        }
+        _db.ReetWacCodes.RemoveRange(_db.ReetWacCodes);
+        await _db.SaveChangesAsync(ct);
+        await _db.ReetWacCodes.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] ReetWacCodes seeded: {Count} rows.", rows.Count);
+    }
+
+    private async Task SeedCountyRatioCodesAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding CountyRatioCodes from county_ratio_code...");
+        var rows = new List<TerraFusion.Core.Entities.CountyRatioCode>();
+        await using var cmd = new SqlCommand(
+            "SELECT ratio_cd, ratio_desc FROM county_ratio_code", pacs)
+        { CommandTimeout = 60 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rows.Add(new TerraFusion.Core.Entities.CountyRatioCode
+            {
+                RatioCd   = rdr.GetString(0).Trim(),
+                RatioDesc = rdr.IsDBNull(1) ? null : rdr.GetString(1)
+            });
+        }
+        _db.CountyRatioCodes.RemoveRange(_db.CountyRatioCodes);
+        await _db.SaveChangesAsync(ct);
+        await _db.CountyRatioCodes.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] CountyRatioCodes seeded: {Count} rows.", rows.Count);
+    }
+
+    private async Task SeedSaleRatioTypesAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding SaleRatioTypes from sale_ratio_type...");
+        var rows = new List<TerraFusion.Core.Entities.SaleRatioType>();
+        await using var cmd = new SqlCommand(
+            "SELECT sl_ratio_type_cd, sl_ratio_desc, ISNULL(invalid_sale, 0), ISNULL(requires_reason, 0) FROM sale_ratio_type", pacs)
+        { CommandTimeout = 60 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rows.Add(new TerraFusion.Core.Entities.SaleRatioType
+            {
+                SlRatioTypeCd   = rdr.GetString(0).Trim(),
+                SlRatioDesc     = rdr.IsDBNull(1) ? null : rdr.GetString(1),
+                InvalidSale     = SqlBit(rdr, 2),
+                RequiresReason  = SqlBit(rdr, 3)
+            });
+        }
+        _db.SaleRatioTypes.RemoveRange(_db.SaleRatioTypes);
+        await _db.SaveChangesAsync(ct);
+        await _db.SaleRatioTypes.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] SaleRatioTypes seeded: {Count} rows.", rows.Count);
+    }
+
+    // ── R2 Phase 2.1 — TerraLevy levy rate seeding ────────────────────────
+
+    /// <summary>
+    /// Seeds pacs_levy_rates from PACS dbo.levy.
+    /// Captures all levy years >= 2024 (covers 2024 certified + 2025 + 2026 current).
+    /// Rate column is per $1,000 of assessed value.
+    /// Upsert key: (Year, TaxDistrictId, LevyCd) — unique constraint in migration.
+    /// Full-refresh: removes all existing rows then inserts fresh from PACS.
+    /// </summary>
+    private async Task SeedLevyRatesAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding PacsLevyRates from levy...");
+
+        const string sql =
+            "SELECT year, tax_district_id, levy_cd, " +
+            "       ISNULL(levy_rate, 0) AS levy_rate, " +
+            "       levy_type_cd, levy_description, " +
+            "       ISNULL(include_in_levy_certification, 0) AS include_in_cert " +
+            "FROM levy " +
+            "WHERE year >= 2024 " +
+            "ORDER BY year, tax_district_id, levy_cd";
+
+        var rows = new List<PacsLevyRate>();
+        await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 120 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rows.Add(new PacsLevyRate
+            {
+                Id                    = Guid.NewGuid(),
+                Year                  = rdr.GetInt16(0),        // year is smallint in PACS
+                TaxDistrictId         = rdr.GetInt32(1),
+                LevyCd                = rdr.GetString(2).Trim(),
+                LevyRate              = (decimal)rdr.GetDouble(3),
+                LevyTypeCd            = rdr.IsDBNull(4) ? null : rdr.GetString(4).Trim(),
+                LevyDescription       = rdr.IsDBNull(5) ? null : rdr.GetString(5).Trim(),
+                IncludeInCertification = rdr.GetBoolean(6),
+                CreatedAt             = DateTime.UtcNow,
+                UpdatedAt             = DateTime.UtcNow
+            });
+        }
+
+        _db.PacsLevyRates.RemoveRange(_db.PacsLevyRates);
+        await _db.SaveChangesAsync(ct);
+        await _db.PacsLevyRates.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] PacsLevyRates seeded: {Count} rows.", rows.Count);
+    }
+
+    /// <summary>
+    /// Seeds pacs_levy_tax_area_assocs from PACS dbo.tax_area_fund_assoc JOIN dbo.tax_area.
+    /// Links each tax area number to the levy codes (and their taxing districts) that apply within it.
+    /// Upsert key: (Year, TaxDistrictId, LevyCd, TaxAreaId) — unique constraint in migration.
+    /// Full-refresh: removes all existing rows then inserts fresh.
+    /// </summary>
+    private async Task SeedLevyTaxAreaAssocsAsync(SqlConnection pacs, CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsSeeder] Seeding PacsLevyTaxAreaAssocs from tax_area_fund_assoc...");
+
+        const string sql =
+            "SELECT tafa.year, tafa.tax_district_id, tafa.levy_cd, " +
+            "       tafa.tax_area_id, ta.tax_area_number " +
+            "FROM tax_area_fund_assoc tafa " +
+            "JOIN tax_area ta ON ta.tax_area_id = tafa.tax_area_id " +
+            "WHERE tafa.year >= 2024 " +
+            "ORDER BY tafa.year, tafa.tax_area_id, tafa.levy_cd";
+
+        var rows = new List<PacsLevyTaxAreaAssoc>();
+        await using var cmd = new SqlCommand(sql, pacs) { CommandTimeout = 120 };
+        await using var rdr = await cmd.ExecuteReaderAsync(ct);
+        while (await rdr.ReadAsync(ct))
+        {
+            rows.Add(new PacsLevyTaxAreaAssoc
+            {
+                Id            = Guid.NewGuid(),
+                Year          = rdr.GetInt16(0),
+                TaxDistrictId = rdr.GetInt32(1),
+                LevyCd        = rdr.GetString(2).Trim(),
+                TaxAreaId     = rdr.GetInt32(3),
+                TaxAreaNumber = rdr.IsDBNull(4) ? null : rdr.GetString(4).Trim(),
+                CreatedAt     = DateTime.UtcNow,
+                UpdatedAt     = DateTime.UtcNow
+            });
+        }
+
+        _db.PacsLevyTaxAreaAssocs.RemoveRange(_db.PacsLevyTaxAreaAssocs);
+        await _db.SaveChangesAsync(ct);
+        await _db.PacsLevyTaxAreaAssocs.AddRangeAsync(rows, ct);
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[PacsSeeder] PacsLevyTaxAreaAssocs seeded: {Count} rows.", rows.Count);
     }
 
     // ── Clear PACS tables (full-refresh) ─────────────────────────────────
@@ -532,7 +781,9 @@ public class PacsDataSeeder
             e.LegalAcreage = Dec(rdr, "legal_acres");
 
             // Geographic codes
-            e.NeighborhoodCode = Str(rdr, "nbhd_cd");
+            // property_val uses hood_cd for the neighborhood/market-area code.
+            // nbhd_cd was a typo; Str() silently returned null on the wrong column.
+            e.NeighborhoodCode = Str(rdr, "hood_cd");
             e.AbsSubdvCd       = Str(rdr, "abs_subdv_cd");
             e.RegionCode       = Str(rdr, "rgn_cd");
             e.TownshipCode     = Str(rdr, "twnshp_cd");
@@ -2189,6 +2440,21 @@ public class PacsDataSeeder
         }
         catch { return null; }
     }
+
+    /// <summary>Reads a SQL Server bit/char/int column as a C# bool, handling T/F/Y/N/0/1 strings.</summary>
+    private static bool SqlBit(SqlDataReader r, int ord)
+    {
+        if (r.IsDBNull(ord)) return false;
+        var val = r.GetValue(ord);
+        return val switch
+        {
+            bool b   => b,
+            byte by  => by != 0,
+            int  i   => i != 0,
+            string s => s.Trim().ToUpperInvariant() is "T" or "Y" or "1" or "TRUE" or "YES",
+            _        => Convert.ToBoolean(val)
+        };
+    }
 }
 
 // ── Result DTO ────────────────────────────────────────────────────────────────
@@ -2211,10 +2477,18 @@ public sealed record PacsSeederResult
     public int TaxAreaAssocs          { get; set; }
     public int PropertyProfiles        { get; set; }
 
+    // Phase 7: canonical entity counts (populated by PacsCanonicalizer)
+    public int CanonicalProperties         { get; set; }
+    public int CanonicalValuationRecords   { get; set; }
+    public int CanonicalComparableSales    { get; set; }
+    public int CanonicalCamaCharacteristics { get; set; }
+
     public override string ToString() =>
         $"Parcels={Parcels} Situs={Situs} Vals={Valuations} " +
         $"Imprv={Improvements} Det={ImprovementDetails} Attr={ImprovementAttributes} " +
         $"Land={LandDetails} Owners={Owners} OwnerVals={OwnerVals} Sales={Sales} " +
         $"Exemptions={Exemptions} Appeals={Appeals} TaxAreas={TaxAreas} " +
-        $"TaxAreaAssocs={TaxAreaAssocs} Profiles={PropertyProfiles}";
+        $"TaxAreaAssocs={TaxAreaAssocs} Profiles={PropertyProfiles} " +
+        $"[Canonical] Props={CanonicalProperties} Vals={CanonicalValuationRecords} " +
+        $"Sales={CanonicalComparableSales} Cama={CanonicalCamaCharacteristics}";
 }

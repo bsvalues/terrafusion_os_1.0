@@ -23,7 +23,9 @@ $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 # Projects and targets
 $projects = @(
     @{ Name = "DatabaseProjectpacs_oltp"; Path = "$repoRoot\DatabaseProjectpacs_oltp\DatabaseProjectpacs_oltp.sqlproj"; Db = "pacs_oltp" },
-    @{ Name = "DatabaseProjectpacs_training"; Path = "$repoRoot\DatabaseProjectpacs_training\DatabaseProjectpacs_training.sqlproj"; Db = "PACS_Training" },
+    # PACS_Training mirrors pacs_oltp schema — deploy from same DACPAC to avoid
+    # build errors in pacs_training project (domain users in inline GRANT statements).
+    # After build, the pacs_oltp DACPAC is also copied to PACS_Training.dacpac.
     @{ Name = "DatabaseProjectTAAppSvr"; Path = "$repoRoot\DatabaseProjectTAAppSvr\DatabaseProjectTAAppSvr.sqlproj"; Db = "TA_AppSvr" },
     @{ Name = "DatabaseProjectCIAPS"; Path = "$repoRoot\DatabaseProjectCIAPS\DatabaseProjectCIAPS.sqlproj"; Db = "CIAPS" },
     @{ Name = "DatabaseProjectweb_internet_benton"; Path = "$repoRoot\DatabaseProjectweb_internet_benton\DatabaseProjectweb_internet_benton.sqlproj"; Db = "Web_Internet_Benton" },
@@ -51,6 +53,11 @@ foreach ($p in $projects) {
     $dacpac = Get-ChildItem -Path (Split-Path $p.Path) -Recurse -Filter "*.dacpac" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
     if (-not $dacpac) { throw "No DACPAC produced for $($p.Name)." }
     Copy-Item $dacpac.FullName -Destination (Join-Path $artifacts ("$($p.Db).dacpac")) -Force
+    # PACS_Training uses the same schema as pacs_oltp — mirror the dacpac
+    if ($p.Db -eq "pacs_oltp") {
+        Copy-Item $dacpac.FullName -Destination (Join-Path $artifacts "PACS_Training.dacpac") -Force
+        Write-Host "  [pacs_oltp dacpac also copied as PACS_Training.dacpac]" -ForegroundColor DarkGray
+    }
 }
 
 # SqlPackage
@@ -61,7 +68,7 @@ if (-not $sqlpackage) { throw "SqlPackage not found on PATH. Install SQL Server 
 function Publish-Dacpac([string] $db) {
     $dac = Join-Path $artifacts ("$db.dacpac")
     if (-not (Test-Path $dac)) { throw "DACPAC missing: $dac" }
-    & $sqlpackage /Action:Publish /SourceFile:$dac /TargetServerName:$SqlServer /TargetDatabaseName:$db /TargetUser:sa /TargetPassword:$SaPassword /p:BlockOnPossibleDataLoss=false /p:CreateNewDatabase=false
+    & $sqlpackage /Action:Publish /SourceFile:$dac /TargetServerName:$SqlServer /TargetDatabaseName:$db /TargetUser:sa /TargetPassword:$SaPassword /p:BlockOnPossibleDataLoss=false /p:CreateNewDatabase=false /TargetTrustServerCertificate:true
 }
 
 # Publish in dependency order
@@ -69,6 +76,18 @@ Publish-Dacpac "pacs_oltp"
 Publish-Dacpac "PACS_Training"
 Publish-Dacpac "TA_AppSvr"
 Publish-Dacpac "CIAPS"
+
+# CIAPS post-deploy: synonyms reference pacs_oltp and cannot be in the DACPAC model.
+# Run after CIAPS DACPAC so cross-DB synonyms exist for downstream databases.
+$postCiaps = Join-Path $PSScriptRoot "..\..\scripts\sql\post_ciaps_deploy.sql"
+if (Test-Path $postCiaps) {
+    Write-Host "Running CIAPS post-deploy (synonyms)..." -ForegroundColor Cyan
+    $sqlcmdPath = "sqlcmd"
+    Get-Content $postCiaps | & $sqlcmdPath -S $SqlServer -U sa -P $SaPassword -C -d CIAPS
+} else {
+    Write-Warning "CIAPS post-deploy script not found: $postCiaps"
+}
+
 Publish-Dacpac "Web_Internet_Benton"
 Publish-Dacpac "SSISDB"
 

@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using TerraFusion.API.Security;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Interfaces;
+using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 
 namespace TerraFusion.API.Controllers;
 
@@ -16,11 +20,13 @@ namespace TerraFusion.API.Controllers;
 public class ForgeController : ControllerBase
 {
     private readonly IValuationService _valuationService;
+    private readonly DataDbContext _db;
     private readonly ILogger<ForgeController> _logger;
 
-    public ForgeController(IValuationService valuationService, ILogger<ForgeController> logger)
+    public ForgeController(IValuationService valuationService, DataDbContext db, ILogger<ForgeController> logger)
     {
         _valuationService = valuationService;
+        _db = db;
         _logger = logger;
     }
 
@@ -147,4 +153,129 @@ public class ForgeController : ControllerBase
     {
         return Ok(Array.Empty<object>());
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Assessor Sale Qualification Override
+    // Layer 3: The assessor is the final authority. Their explicit decision
+    // always overrides the TerraFusion recommendation (Layer 2).
+    // Raw PACS codes are facts. TF recommendation is a suggestion. Assessor decision is law.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// PATCH /api/forge/sales/{saleId}/qualification
+    ///
+    /// Assessor override endpoint — sets the Layer 3 QualificationDecision on a
+    /// comparable sale. Scoped to the assessor's county (multi-tenant safe).
+    ///
+    /// Send null decision to clear an existing override (reverts to TF recommendation).
+    /// </summary>
+    [Authorize]
+    [RequiresPermission("access:forge")]
+    [HttpPatch("sales/{saleId}/qualification")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> PatchSaleQualification(
+        Guid saleId,
+        [FromBody] SaleQualificationOverrideRequest request,
+        CancellationToken ct)
+    {
+        // Resolve county from JWT claim — multi-tenant guard.
+        var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
+        if (string.IsNullOrWhiteSpace(countyIdClaim) || !Guid.TryParse(countyIdClaim, out var countyId))
+        {
+            _logger.LogWarning("PatchSaleQualification: missing or invalid countyId claim on token");
+            return Unauthorized();
+        }
+
+        // Validate decision value — only known qualification codes accepted.
+        var allowed = new[] { "qualified", "non-arms-length", "foreclosure", "estate", "excluded", "exempt" };
+        if (request.Decision is not null && !allowed.Contains(request.Decision))
+        {
+            return BadRequest(new { error = $"Invalid decision value '{request.Decision}'. Allowed: {string.Join(", ", allowed)}" });
+        }
+
+        var sale = await _db.ComparableSales
+            .Where(s => s.Id == saleId && s.CountyId == countyId)
+            .FirstOrDefaultAsync(ct);
+
+        if (sale is null)
+            return NotFound(new { error = $"Sale {saleId} not found in your county." });
+
+        var decisionBy = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value
+                      ?? User.FindFirst("sub")?.Value
+                      ?? "unknown";
+
+        if (request.Decision is null)
+        {
+            // Clear the override — revert to TF recommendation.
+            sale.QualificationDecision = null;
+            sale.DecisionReason = null;
+            sale.DecisionBy = null;
+            sale.DecisionAt = null;
+            sale.DecisionSource = null;
+            _logger.LogInformation("Sale {SaleId}: assessor override cleared by {User}", saleId, decisionBy);
+        }
+        else
+        {
+            sale.QualificationDecision = request.Decision;
+            sale.DecisionReason = request.Reason;
+            sale.DecisionBy = decisionBy;
+            sale.DecisionAt = DateTime.UtcNow;
+            sale.DecisionSource = "AssessorOverride";
+            _logger.LogInformation("Sale {SaleId}: qualification set to '{Decision}' by {User}", saleId, request.Decision, decisionBy);
+        }
+
+        await _db.SaveChangesAsync(ct);
+
+        return Ok(new
+        {
+            saleId,
+            qualificationDecision = sale.QualificationDecision,
+            decisionBy = sale.DecisionBy,
+            decisionAt = sale.DecisionAt,
+            decisionSource = sale.DecisionSource,
+        });
+    }
+
+    /// <summary>
+    /// POST /api/forge/sales/recompute-recommendations
+    ///
+    /// Re-runs the TF qualification rule engine (Layer 2) for all sales in the
+    /// assessor's county. Safe to call any time — does not touch Layer 3 assessor decisions.
+    /// Typically called after a PACS ingest to populate QualificationRecommendation.
+    /// </summary>
+    [Authorize]
+    [RequiresPermission("access:forge")]
+    [HttpPost("sales/recompute-recommendations")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> RecomputeRecommendations(
+        [FromServices] TerraFusion.API.Services.ISaleQualificationService qualificationService,
+        CancellationToken ct)
+    {
+        var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
+        if (string.IsNullOrWhiteSpace(countyIdClaim) || !Guid.TryParse(countyIdClaim, out var countyId))
+        {
+            return Unauthorized();
+        }
+
+        var updated = await qualificationService.ComputeRecommendationsAsync(countyId, ct);
+        _logger.LogInformation("Recomputed qualification recommendations for {Count} sales in county {CountyId}", updated, countyId);
+
+        return Ok(new { updated, countyId });
+    }
+}
+
+/// <summary>Request body for PATCH /api/forge/sales/{saleId}/qualification.</summary>
+public sealed record SaleQualificationOverrideRequest
+{
+    /// <summary>
+    /// The assessor's determination. One of: qualified, non-arms-length, foreclosure,
+    /// estate, excluded, exempt. Send null to clear an existing override.
+    /// </summary>
+    public string? Decision { get; init; }
+
+    /// <summary>Assessor's stated reason for the override (optional but recommended).</summary>
+    [MaxLength(500)]
+    public string? Reason { get; init; }
 }

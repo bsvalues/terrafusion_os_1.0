@@ -28,18 +28,20 @@
   /* will-change is set via JS on hover/focus */
 
   /* Default glass tokens (dark theme) */
-  --liquid-blur: 12px;
-  --liquid-bg: hsl(var(--tf-surface-dark-hs) 7% / 0.75);
-  --liquid-border: hsl(var(--tf-text-primary-hs) 100% / 0.08);
-  --liquid-shadow: inset 0 1px 0 hsl(var(--tf-text-primary-hs) 100% / 0.05);
-  --liquid-glow: hsl(var(--tf-transcend-cyan-hs) 50% / 0.1);
+  --liquid-blur: 18px;
+  --liquid-bg: hsl(var(--tf-surface) / 0.82);
+  --liquid-border: hsl(var(--tf-border) / 0.7);
+  --liquid-shadow:
+    inset 0 1px 0 hsl(var(--tf-text) / 0.04),
+    0 18px 40px hsl(var(--tf-tokens-black-hs) 0% / 0.18);
+  --liquid-glow: hsl(var(--tf-accent) / 0.08);
 
   background: var(--liquid-bg);
   border: 1px solid var(--liquid-border);
   box-shadow: var(--liquid-shadow);
 
-  /* Ensure text contrast */
-  color: hsl(var(--tf-text-primary-hs) 100% / 0.95);
+  /* Ensure text contrast — cascades from token system */
+  color: hsl(var(--tf-text));
 }
 
 /* ============================================================================
@@ -48,7 +50,7 @@
 
 /* LOW: Static fallback - no backdrop-filter */
 .liquid-panel--static {
-  --liquid-bg: hsl(var(--tf-surface-dark-hs) 7% / 0.95);
+  --liquid-bg: hsl(var(--tf-surface) / 0.96);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -61,11 +63,11 @@
 
 /* HIGH: Full glass with glow */
 .liquid-panel--glass {
-  backdrop-filter: blur(var(--liquid-blur)) saturate(1.2);
-  -webkit-backdrop-filter: blur(var(--liquid-blur)) saturate(1.2);
+  backdrop-filter: blur(var(--liquid-blur)) saturate(1.08);
+  -webkit-backdrop-filter: blur(var(--liquid-blur)) saturate(1.08);
   box-shadow:
     var(--liquid-shadow),
-    0 0 40px -10px var(--liquid-glow);
+    0 0 28px -14px var(--liquid-glow);
 }
 
 /* HIGH+: With distortion (WebGL effects) */
@@ -96,23 +98,23 @@
 
 /* Shell: Infrastructure layer (navigation, sidebars) */
 .liquid-panel--shell {
-  --liquid-bg: hsl(var(--tf-surface-dark-hs) 5% / 0.85);
-  --liquid-border: hsl(var(--tf-text-primary-hs) 100% / 0.06);
-  --liquid-glow: hsl(var(--tf-transcend-cyan-hs) 50% / 0.15);
+  --liquid-bg: hsl(var(--tf-surface-2) / 0.88);
+  --liquid-border: hsl(var(--tf-border) / 0.72);
+  --liquid-glow: hsl(var(--tf-accent) / 0.1);
 }
 
 /* Infrastructure: Secondary containers */
 .liquid-panel--infrastructure {
-  --liquid-bg: hsl(var(--tf-surface-dark-hs) 10% / 0.7);
-  --liquid-border: hsl(var(--tf-text-primary-hs) 100% / 0.08);
-  --liquid-glow: hsl(var(--tf-transcend-cyan-hs) 50% / 0.08);
+  --liquid-bg: hsl(var(--tf-surface) / 0.84);
+  --liquid-border: hsl(var(--tf-border) / 0.68);
+  --liquid-glow: hsl(var(--tf-accent) / 0.06);
 }
 
 /* Interactive: Clickable surfaces (cards, buttons) */
 .liquid-panel--interactive {
-  --liquid-bg: hsl(var(--tf-surface-dark-hs) 12% / 0.6);
-  --liquid-border: hsl(var(--tf-text-primary-hs) 100% / 0.1);
-  --liquid-glow: hsl(var(--tf-transcend-cyan-hs) 50% / 0.1);
+  --liquid-bg: hsl(var(--tf-surface) / 0.78);
+  --liquid-border: hsl(var(--tf-border) / 0.72);
+  --liquid-glow: hsl(var(--tf-accent) / 0.08);
 
   /* Interaction states - NO idle animation */
   transition:
@@ -121,23 +123,23 @@
 }
 
 .liquid-panel--interactive:hover {
-  --liquid-border: hsl(var(--tf-transcend-cyan-hs) 50% / 0.3);
+  --liquid-border: hsl(var(--tf-accent) / 0.36);
   box-shadow:
     var(--liquid-shadow),
-    0 0 20px -5px var(--liquid-glow);
+    0 16px 32px hsl(var(--tf-tokens-black-hs) 0% / 0.2);
 }
 
 .liquid-panel--interactive:focus-within {
-  --liquid-border: hsl(var(--tf-transcend-cyan-hs) 50% / 0.5);
-  outline: 2px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.3);
+  --liquid-border: hsl(var(--tf-accent) / 0.42);
+  outline: 2px solid hsl(var(--tf-accent) / 0.22);
   outline-offset: 2px;
 }
 
 /* Signal: Feedback/notification surfaces */
 .liquid-panel--signal {
-  --liquid-bg: hsl(var(--tf-transcend-cyan-hs) 50% / 0.15);
-  --liquid-border: hsl(var(--tf-transcend-cyan-hs) 50% / 0.3);
-  --liquid-glow: hsl(var(--tf-transcend-cyan-hs) 50% / 0.2);
+  --liquid-bg: hsl(var(--tf-accent) / 0.12);
+  --liquid-border: hsl(var(--tf-accent) / 0.28);
+  --liquid-glow: hsl(var(--tf-accent) / 0.12);
 }
 
 /* ============================================================================
@@ -182,7 +184,7 @@
   background: linear-gradient(
     110deg,
     transparent 30%,
-    hsl(var(--tf-text-primary-hs) 100% / 0.03) 50%,
+    hsl(var(--tf-text) / 0.04) 50%,
     transparent 70%
   );
   transform: translateX(-100%);
@@ -223,11 +225,11 @@
    ============================================================================ */
 
 .liquid-panel[data-theme='light'] {
-  --liquid-bg: hsl(var(--tf-text-primary-hs) 100% / 0.8);
-  --liquid-border: hsl(var(--tf-tokens-black-hs) 0% / 0.08);
-  --liquid-shadow: inset 0 1px 0 hsl(var(--tf-text-primary-hs) 100% / 0.9);
-  --liquid-glow: hsl(var(--tf-transcend-cyan-hs) 50% / 0.15);
-  color: hsl(var(--tf-tokens-black-hs) 0% / 0.9);
+  --liquid-bg: hsl(var(--tf-surface) / 0.88);
+  --liquid-border: hsl(var(--tf-border) / 0.45);
+  --liquid-shadow: inset 0 1px 0 hsl(var(--tf-surface) / 0.95);
+  --liquid-glow: hsl(var(--tf-accent) / 0.10);
+  color: hsl(var(--tf-text));
 }
 
 /* ============================================================================
@@ -238,12 +240,11 @@
   .liquid-panel {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    background: hsl(var(--tf-text-primary-hs) 100%);
-    color: hsl(var(--tf-tokens-black-hs) 0%);
-    border: 1px solid hsl(var(--tf-neutral-hs) 80%);
+    background: hsl(var(--tf-surface));
+    color: hsl(var(--tf-text));
+    border: 1px solid hsl(var(--tf-border) / 0.6);
     box-shadow: none;
   }
 }
-
 
 

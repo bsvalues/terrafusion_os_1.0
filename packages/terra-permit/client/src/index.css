@@ -1,0 +1,188 @@
+/* Import custom styles */
+@import './styles/grid-pattern.css';
+@import './styles/help-center.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-gray-50 text-foreground;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-gray-900;
+  }
+  
+  p {
+    @apply text-gray-700;
+  }
+  
+  :root {
+    --color-trust-blue: 215 100% 50%;
+    --color-trust-blue-light: 215 85% 96%;
+    --color-trust-navy: 220 70% 45%;
+    --color-trust-gray: 220 25% 97%;
+    --color-trust-text: 220 30% 25%;
+    
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    
+    --primary: 215 100% 50%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    
+    --radius: 0.5rem;
+  }
+}
+
+@layer components {
+  /* Card Components */
+  .card {
+    @apply bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md;
+  }
+  
+  .card-header {
+    @apply bg-gradient-to-r from-blue-50 to-blue-100/50 border-b border-gray-200 p-4 font-medium;
+  }
+  
+  .card-footer {
+    @apply bg-gradient-to-r from-blue-50 to-blue-100/50 border-t border-gray-200 p-4;
+  }
+  
+  /* Chart Components */
+  .chart-container {
+    @apply bg-white p-4 rounded-lg border border-blue-100 shadow-sm;
+  }
+  
+  .chart-bg {
+    @apply bg-blue-50/50 p-3 rounded-lg border border-blue-100;
+  }
+  
+  /* Typography */
+  .high-contrast-text {
+    @apply text-gray-900 font-medium;
+  }
+  
+  .secondary-text {
+    @apply text-gray-600;
+  }
+  
+  .accent-text {
+    @apply text-blue-700 font-medium;
+  }
+  
+  .page-title {
+    @apply text-3xl font-bold text-gray-900 mb-2;
+  }
+  
+  .page-subtitle {
+    @apply text-lg text-gray-600 mb-6;
+  }
+  
+  .section-title {
+    @apply text-xl font-bold text-gray-900 mb-3;
+  }
+  
+  /* Statistics */
+  .stat-value {
+    @apply text-2xl font-bold text-blue-700;
+  }
+  
+  .stat-card {
+    @apply bg-gradient-to-br from-white to-blue-50 shadow-sm rounded-lg overflow-hidden border border-gray-200;
+  }
+  
+  /* Navigation */
+  .nav-item {
+    @apply transition-all duration-200 hover:bg-blue-50 rounded-md p-2;
+  }
+  
+  .nav-item-active {
+    @apply bg-blue-600 text-white font-medium shadow-sm;
+  }
+  
+  /* Backgrounds */
+  .trustworthy-bg {
+    @apply bg-gradient-to-br from-gray-50 to-blue-50;
+  }
+  
+  .authority-bg {
+    @apply bg-gradient-to-br from-blue-700 to-blue-900 text-white;
+  }
+  
+  .soft-bg {
+    @apply bg-blue-50/70 border border-blue-100;
+  }
+  
+  /* Accents */
+  .authority-accent {
+    @apply border-l-4 border-blue-600 pl-4;
+  }
+  
+  .subtle-accent {
+    @apply border-l-2 border-blue-300 pl-3;
+  }
+  
+  /* Buttons */
+  .btn-trustworthy {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm;
+  }
+  
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-blue-700 border border-blue-200 shadow-sm;
+  }
+  
+  /* Tour and Help Components */
+  .feature-highlight {
+    @apply relative z-50 outline outline-2 outline-blue-500 outline-offset-2 rounded-sm !important;
+    animation: pulse-border 2s infinite;
+  }
+  
+  @keyframes pulse-border {
+    0% {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+    }
+    70% {
+      box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+  }
+  
+  .contextual-help-target {
+    @apply relative;
+  }
+  
+  .contextual-help-target:hover::after {
+    content: '?';
+    @apply absolute -top-1 -right-1 bg-blue-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs font-bold;
+  }
+}

@@ -51,42 +51,43 @@ export interface DesktopIconProps {
   onLaunch?: (id: string) => void;
 }
 
-// Category → tile color mapping (solid translucent tiles, not wireframe spheres)
+// Category → tile color mapping — uses canonical suite tokens from terrafusion-tokens.css
+// forge=assessment, atlas=mapping, dossier=records, pilot/gpt=ai, dais=system
 const CATEGORY_TILE: Record<Category, { bg: string; glow: string; iconColor: string }> = {
   assessment: {
-    bg: 'hsl(var(--tf-info-hs) 50% / 0.18)',
-    glow: 'hsl(var(--tf-info-hs) 50% / 0.35)',
-    iconColor: 'hsl(var(--tf-info-hs) 85%)',
+    bg: 'hsl(var(--tf-suite-forge) / 0.15)',
+    glow: 'hsl(var(--tf-suite-forge) / 0.30)',
+    iconColor: 'hsl(var(--tf-suite-forge))',
   },
   records: {
-    bg: 'hsl(var(--tf-transcend-cyan-hs) 40% / 0.18)',
-    glow: 'hsl(var(--tf-transcend-cyan-hs) 40% / 0.35)',
-    iconColor: 'hsl(var(--tf-transcend-cyan-hs) 80%)',
+    bg: 'hsl(var(--tf-suite-dossier) / 0.15)',
+    glow: 'hsl(var(--tf-suite-dossier) / 0.30)',
+    iconColor: 'hsl(var(--tf-suite-dossier))',
   },
   tax: {
-    bg: 'hsl(var(--tf-success-hs) 42% / 0.18)',
-    glow: 'hsl(var(--tf-success-hs) 42% / 0.35)',
-    iconColor: 'hsl(var(--tf-success-hs) 80%)',
+    bg: 'hsl(var(--tf-suite-dossier) / 0.15)',
+    glow: 'hsl(var(--tf-suite-dossier) / 0.30)',
+    iconColor: 'hsl(var(--tf-suite-dossier))',
   },
   mapping: {
-    bg: 'hsl(var(--tf-network-blue-hs) 50% / 0.18)',
-    glow: 'hsl(var(--tf-network-blue-hs) 50% / 0.35)',
-    iconColor: 'hsl(var(--tf-network-blue-hs) 85%)',
+    bg: 'hsl(var(--tf-suite-atlas) / 0.15)',
+    glow: 'hsl(var(--tf-suite-atlas) / 0.30)',
+    iconColor: 'hsl(var(--tf-suite-atlas))',
   },
   analytics: {
-    bg: 'hsl(var(--tf-warning-hs) 45% / 0.18)',
-    glow: 'hsl(var(--tf-warning-hs) 45% / 0.35)',
-    iconColor: 'hsl(var(--tf-warning-hs) 80%)',
+    bg: 'hsl(var(--tf-suite-forge) / 0.12)',
+    glow: 'hsl(var(--tf-suite-forge) / 0.25)',
+    iconColor: 'hsl(var(--tf-suite-forge))',
   },
   ai: {
-    bg: 'hsl(var(--tf-info-hs) 55% / 0.18)',
-    glow: 'hsl(var(--tf-info-hs) 55% / 0.35)',
-    iconColor: 'hsl(var(--tf-info-hs) 85%)',
+    bg: 'hsl(var(--tf-suite-pilot) / 0.15)',
+    glow: 'hsl(var(--tf-suite-pilot) / 0.30)',
+    iconColor: 'hsl(var(--tf-suite-pilot))',
   },
   system: {
-    bg: 'hsl(var(--tf-neutral-hs) 50% / 0.14)',
-    glow: 'hsl(var(--tf-neutral-hs) 50% / 0.25)',
-    iconColor: 'hsl(var(--tf-neutral-hs) 92%)',
+    bg: 'hsl(var(--tf-suite-dais) / 0.12)',
+    glow: 'hsl(var(--tf-suite-dais) / 0.25)',
+    iconColor: 'hsl(var(--tf-suite-dais))',
   },
 };
 

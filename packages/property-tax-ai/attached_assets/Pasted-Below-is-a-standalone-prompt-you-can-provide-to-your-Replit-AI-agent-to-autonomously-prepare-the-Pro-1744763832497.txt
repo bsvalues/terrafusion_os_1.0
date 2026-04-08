@@ -1,0 +1,80 @@
+Below is a standalone prompt you can provide to your Replit AI agent to autonomously prepare the PropertyTaxAI demo within 24 hours. This prompt is structured to prioritize a polished, live demonstration that leverages the existing property tax data (stored in the files/attached_assets) for the Benton County Assessor’s Office. The focus is on enhancing the core AI tax calculation workflows, visual presentation, and demo readiness.
+
+---
+
+**Autonomous Replit AI Agent Instructions: 24-Hour PropertyTaxAI Demo Preparation**
+
+*Project Context and Goal:*  
+Prepare PropertyTaxAI—a smart property tax assessment tool developed for the Benton County Assessor’s Office—for an impressive live demo within 24 hours. Optimize and polish the application’s AI-driven tax calculation engine, user interface, and presentation materials so that the demo clearly highlights its accuracy, speed, and overall value in automating property tax assessments.
+
+**IMPORTANT:** Use ONLY the property tax data already available in our files/attached_assets. Do not fetch external data unless something specific is missing. Work exclusively with authentic Benton County, Washington tax assessment data and established calculation standards.
+
+---
+
+**Structured Plan:**
+
+1. **DEMO ENVIRONMENT SETUP (3 hours)**
+   - **Data Preparation:**  
+     - Utilize the existing property tax and related financial data from the files/attached_assets.
+     - Select 10 representative properties covering different tax classifications:
+       - 3 residential properties
+       - 3 commercial properties
+       - 2 industrial properties (or other specialized property types)
+       - 2 mixed-use/special-purpose properties
+   - **User Setup:**  
+     - Create 3 demo user accounts (e.g., Admin, Tax Assessor, and Viewer).
+   - **Project Configuration:**  
+     - Configure 2 sample collaborative projects or dashboards that group these properties and display key tax assessment metrics.
+
+2. **CORE DEMO PATHWAY OPTIMIZATION (5 hours)**
+   - Refine the AI-driven tax calculation workflow:
+     - Ensure that the calculation engine correctly applies local tax rates, exemptions, and other adjustment factors specific to Benton County.
+     - Optimize the logic for fast, real-time tax estimates.
+     - Integrate interactive elements (such as dynamic tooltips or information pop-ups) that display detailed tax calculation breakdowns.
+     - Verify that all assessment outputs strictly adhere to the current standards and methodologies.
+
+3. **VISUAL ENHANCEMENT (6 hours)**
+   - Build a polished, user-friendly dashboard that:
+     - Combines summary panels with detailed tax calculations.
+     - Presents graphs and charts illustrating tax trends and comparisons across property types.
+     - Uses the existing design system (e.g., shadcn UI and TailwindCSS) to ensure a consistent, modern look.
+     - Is optimized for demo presentation with responsive design and smooth animations.
+
+4. **PERFORMANCE OPTIMIZATION (4 hours)**
+   - Optimize database queries and API endpoints used in the tax calculation and data display flows.
+   - Implement caching for frequently accessed tax data.
+   - Ensure robust error handling, particularly within the critical demo workflows.
+   - Test for seamless transitions and responsiveness between different screens, especially when displaying complex tax breakdowns.
+
+5. **DEMO MATERIALS (3 hours)**
+   - Prepare a detailed, step-by-step demo script that walks through:
+     - The property selection process.
+     - A live demonstration of the AI-powered tax calculation, showing each component of the tax assessment.
+     - How adjustments (exemptions, surcharges, rates) are applied.
+   - Develop clear talking points that emphasize the business benefits—such as improved accuracy, efficiency, and streamlined operations.
+   - Document all demo credentials, starting states, and any backup options (e.g., screenshots or short video clips) to ensure smooth delivery.
+
+6. **TESTING AND DEPLOYMENT (3 hours)**
+   - Conduct comprehensive tests of all demo-specific workflows, especially the core tax calculation engine and dashboard functionality.
+   - Deploy the refined demo to a stable Replit environment.
+   - Prepare contingency measures for potential technical issues during the live demo (e.g., backup states or static display assets).
+
+---
+
+**Data Instructions:**
+
+- **Data Source:**  
+  Use only the property tax data provided in the existing files/attached_assets.
+- **Compliance:**  
+  Ensure all tax assessments, adjustment factors, and calculation rules strictly match the standards established by Benton County, Washington.
+- **Methodology:**  
+  Rely on the current AI-driven calculation processes and property classifications already implemented—preserving regional tax factors, exemptions, and rate models.
+
+---
+
+**Progress Updates:**  
+After completing each major section, provide a brief progress update along with key screenshots or visual evidence (e.g., dashboard views, detailed tax calculation screen) that demonstrate the implemented enhancements. This will help confirm that the demo preparation is on track and meeting quality expectations.
+
+---
+
+By submitting these instructions, the Replit AI agent should autonomously focus on optimizing PropertyTaxAI for an outstanding live demo within 24 hours—demonstrating its robust, AI-powered property tax assessment capabilities using authentic Benton County, Washington data.

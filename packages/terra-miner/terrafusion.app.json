@@ -1,0 +1,20 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "terra-miner",
+  "displayName": "TerraMiner",
+  "description": "Property research & outside data mining — aggregates external data sources (MLS, permits, assessor feeds) for parcel enrichment.",
+  "iconName": "Search",
+  "category": "assessment",
+  "tier": 1,
+  "status": "active",
+  "pinned": true,
+  "version": "1.0.0",
+  "intent": "gen2",
+  "runnable": true,
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:5018/"
+  },
+  "tags": ["assessment", "research", "data-mining", "gen2", "county-wide"],
+  "permissions": ["county:read", "property:read"]
+}
