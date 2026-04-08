@@ -419,6 +419,9 @@ builder.Services.AddScoped<IDraftService, TerraFusion.AI.Services.DraftService>(
 // CLI Phase 1 — read-only repo context adapters (git diff + surface contract)
 builder.Services.AddScoped<IGitContextService, TerraFusion.AI.Services.GitContextService>();
 builder.Services.AddSingleton<ISurfaceContractService, TerraFusion.AI.Services.SurfaceContractService>();
+// Phase 2 — LLM completion client (Anthropic). Returns null when Muse:ApiKey is not set;
+// MuseService falls back to the static placeholder explanation automatically.
+builder.Services.AddHttpClient<IMuseLlmClient, TerraFusion.AI.Services.AnthropicMuseLlmClient>();
 // ✅ STUB: Consciousness Engine stub for DI resolution
 builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services

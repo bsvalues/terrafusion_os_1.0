@@ -9,15 +9,18 @@ public sealed class MuseService : IMuseService
     private readonly ILogger<MuseService> _logger;
     private readonly IGitContextService _git;
     private readonly ISurfaceContractService _contracts;
+    private readonly IMuseLlmClient _llm;
 
     public MuseService(
         ILogger<MuseService> logger,
         IGitContextService git,
-        ISurfaceContractService contracts)
+        ISurfaceContractService contracts,
+        IMuseLlmClient llm)
     {
         _logger = logger;
         _git = git;
         _contracts = contracts;
+        _llm = llm;
     }
 
     public async Task<ExplainResponse> ExplainAsync(ExplainRequest request, CancellationToken ct = default)
@@ -156,36 +159,56 @@ public sealed class MuseService : IMuseService
         // Mode A: dev + suite — branch/file/build/suite/tab signals, no parcel
         // Mode B: dev-only  — branch/file/build signals, no parcel, no suite
         // Mode C: county    — parcel present (+ optional dev overlay)
-        // Future: each mode sends contextPreamble as LLM system context.
+        //
+        // LLM is tried first when configured. enrichedPreamble (git diff, contract,
+        // build state) becomes the LLM system prompt so the model has live repo
+        // context for every answer. Falls back to the static mode-specific template
+        // when the LLM is unconfigured or returns null.
         string explanation;
         bool isDevMode = contextLines.Count > 0 && request.ParcelId is null;
         bool hasSuiteContext = ctx?.ActiveSuite is not null;
 
-        if (isDevMode && hasSuiteContext)
+        // Attempt LLM completion when a provider is configured.
+        string? llmText = null;
+        if (_llm.IsConfigured)
         {
-            // Mode A: dev + suite context — answer as a suite-aware dev co-pilot
+            var systemPrompt = BuildSystemPrompt(enrichedPreamble, isDevMode, hasSuiteContext, ctx, errorMarkers);
+            llmText = await _llm.CompleteAsync(systemPrompt, request.Query.Trim(), ct);
+            _logger.LogDebug(
+                "Muse LLM completion for trace {TraceId}: {Result}",
+                traceId, llmText is not null ? $"{llmText.Length} chars" : "null (fallback)");
+        }
+
+        if (llmText is not null)
+        {
+            // Live LLM response — use it directly.
+            explanation = llmText;
+        }
+        else if (isDevMode && hasSuiteContext)
+        {
+            // Mode A static fallback: dev + suite context
             var buildNote = ctx?.BuildStatus is "error"
                 ? BuildErrorNote(errorMarkers)
                 : string.Empty;
 
             explanation = $"[{enrichedPreamble.TrimEnd()}]{buildNote} — {request.Query.Trim()} " +
-                          $"[Dev Truth Gate: branch + file + suite ({ctx!.ActiveSuite}) signals received. " +
-                          $"RAG pipeline connection pending for diff + contract lookup scoped to {ctx.ActiveSuite}/{ctx.ActiveTab ?? "*"} surface.]";
+                          $"[Muse: branch + file + suite ({ctx!.ActiveSuite}) signals received. " +
+                          $"LLM not configured — static fallback. Set Muse:ApiKey to enable live answers.]";
         }
         else if (isDevMode)
         {
-            // Mode B: dev-only — branch/file/build reviewer
+            // Mode B static fallback: dev-only
             var buildNote = ctx?.BuildStatus is "error"
                 ? BuildErrorNote(errorMarkers)
                 : string.Empty;
 
             explanation = $"[{enrichedPreamble.TrimEnd()}]{buildNote} — {request.Query.Trim()} " +
-                          $"[Dev Truth Gate: branch context and file signals received. " +
-                          $"RAG pipeline connection pending for full diff + contract analysis.]";
+                          $"[Muse: branch + file signals received. " +
+                          $"LLM not configured — static fallback. Set Muse:ApiKey to enable live answers.]";
         }
         else
         {
-            // Mode C: county co-pilot (parcel + optional dev context overlay)
+            // Mode C static fallback: county co-pilot (parcel + optional dev context overlay)
             var devOverlay = enrichedPreamble.Length > 0 ? $" [{enrichedPreamble.TrimEnd('.', ' ', '\n')}]" : string.Empty;
             explanation = $"For parcel {request.ParcelId ?? "unknown"} in county {request.CountyId}{devOverlay}: " +
                           $"{request.Query.Trim()} — Under RCW 84.40.030, property is valued at 100% of " +
@@ -202,6 +225,42 @@ public sealed class MuseService : IMuseService
         );
 
         return response;
+    }
+
+    /// <summary>
+    /// Builds the LLM system prompt from the enriched context preamble.
+    ///
+    /// The preamble already contains branch, file, build status, git diff, and
+    /// surface contract — this method wraps it with a role statement so the model
+    /// understands its persona and expected output style.
+    ///
+    /// Mode A/B (dev) → developer co-pilot persona, focus on code and contracts.
+    /// Mode C (county) → county assessor co-pilot persona, focus on RCW/assessment.
+    /// </summary>
+    private static string BuildSystemPrompt(
+        string enrichedPreamble,
+        bool isDevMode,
+        bool hasSuiteContext,
+        WorkContext? ctx,
+        EditorMarker[] errorMarkers)
+    {
+        var roleHeader = isDevMode
+            ? "You are Muse, the developer co-pilot for TerraFusion OS — a sovereign government property " +
+              "assessment platform for Washington State counties.\n" +
+              "Answer as a precise, experienced software engineer. Be concise and direct. " +
+              "No preambles. Reference the active file, branch diff, and surface contract when relevant. " +
+              (hasSuiteContext ? $"Focus on the {ctx!.ActiveSuite} suite and {ctx.ActiveTab ?? "active"} tab context.\n" : string.Empty) +
+              (errorMarkers.Length > 0
+                  ? $"The build has {errorMarkers.Length} error(s). Address them if the question relates to the build.\n"
+                  : string.Empty)
+            : "You are Muse, the county assessor co-pilot for TerraFusion OS — a sovereign government " +
+              "property assessment platform for Washington State counties.\n" +
+              "Answer as a knowledgeable property assessment expert. Be precise and professional. " +
+              "Reference RCW statutes and IAAO methodology when applicable. No generic disclaimers.\n";
+
+        return string.IsNullOrWhiteSpace(enrichedPreamble)
+            ? roleHeader
+            : roleHeader + "\n--- Context ---\n" + enrichedPreamble.TrimEnd();
     }
 
     /// <summary>
