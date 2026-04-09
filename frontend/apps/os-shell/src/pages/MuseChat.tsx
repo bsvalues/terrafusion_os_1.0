@@ -426,7 +426,7 @@ export function MuseChat(): React.ReactElement {
   // Deliberately broad dep array — we want to re-evaluate whenever any context field changes.
   // The signature ref is the actual dedup guard.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeParcelId, activeSuite, activeTab, activeBranch, activeFile, buildStatus]);
+  }, [activeParcel, activeParcelId, activeSuite, activeTab, activeBranch, activeFile, buildStatus]);
 
   // ── Manual send ───────────────────────────────────────────────────────────
   const send = async () => {
