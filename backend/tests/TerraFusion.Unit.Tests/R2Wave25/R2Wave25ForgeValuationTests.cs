@@ -718,8 +718,8 @@ public sealed class R2Wave25ForgeValuationTests
 
     var otherCountyId = Guid.NewGuid();
     db.ComparableSales.AddRange(
-      new ComparableSale { ParcelId = "ISO-1", SaleDate = DateTime.UtcNow.AddMonths(-1), SalePrice = 200_000, PropertyType = "residential", CountyId = BentonCountyId, IngestedBy = "test" },
-      new ComparableSale { ParcelId = "ISO-2", SaleDate = DateTime.UtcNow.AddMonths(-1), SalePrice = 500_000, PropertyType = "residential", CountyId = otherCountyId, IngestedBy = "test" }
+      new ComparableSale { ParcelId = "ISO-1", SaleDate = DateTime.UtcNow.AddMonths(-1), SalePrice = 200_000, PropertyType = "residential", QualificationRecommendation = "qualified", CountyId = BentonCountyId, IngestedBy = "test" },
+      new ComparableSale { ParcelId = "ISO-2", SaleDate = DateTime.UtcNow.AddMonths(-1), SalePrice = 500_000, PropertyType = "residential", QualificationRecommendation = "qualified", CountyId = otherCountyId, IngestedBy = "test" }
     );
     await db.SaveChangesAsync();
 
