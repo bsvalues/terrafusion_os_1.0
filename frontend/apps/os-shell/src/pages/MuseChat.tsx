@@ -103,7 +103,7 @@ export function buildParcelSummary(
   parcel: Property | null,
   activeParcelId: string | null
 ): Record<string, unknown> | undefined {
-  if (!parcel || parcel.parcelId !== activeParcelId) return undefined;
+  if (!parcel || !activeParcelId || parcel.parcelId !== activeParcelId) return undefined;
   return {
     // Identity
     address: parcel.address,
