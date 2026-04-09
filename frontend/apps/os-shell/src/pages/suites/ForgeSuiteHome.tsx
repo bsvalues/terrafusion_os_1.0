@@ -3,6 +3,7 @@ import { ParcelContextBanner } from '../../components/workbench/ParcelContextBan
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import { activateModule } from '../../orchestration/moduleActivation';
+import { getDataProviderDiagnostics } from '../../services/dataProvider';
 import { usePropertyStore } from '../../stores/propertyStore';
 import { SaleQualificationQueue } from './SaleQualificationQueue';
 import './ForgeSuiteHome.css';
@@ -110,15 +111,10 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
 
-function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): string | null {
-  if (source === 'snapshot') {
-    return 'Snapshot-backed county aggregates: TerraForge stats are using bundled county snapshot data, not live backend metrics.';
-  }
-  if (source === 'fixtures') {
-    return 'Fixture-backed county aggregates: TerraForge stats are using test fixture data, not live backend metrics.';
-  }
-  return null;
-}
+const showModeDiagnostics =
+  typeof import.meta !== 'undefined' &&
+  (import.meta as unknown as { env: Record<string, string> }).env
+    ?.VITE_SHOW_MODE_DIAGNOSTICS === '1';
 
 function getLaunchLabel(mod: ForgeModuleDef): string {
   if (mod.truthState === 'queued') {
@@ -132,10 +128,9 @@ function getLaunchLabel(mod: ForgeModuleDef): string {
 
 export default function ForgeSuiteHome() {
   const navigate = useNavigate();
-  const { stats, loading, error, source } = useCountyStats();
+  const { stats, loading, error, source, sourceDisclosure } = useCountyStats();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const recentParcels = usePropertyStore((s) => s.recentParcels);
-  const sourceDisclosure = getSourceDisclosure(source);
 
   const kpiMetrics = [
     { label: 'TOTAL PARCELS', value: fmtNum(stats?.totalParcels), tone: 'neutral' },
@@ -196,6 +191,18 @@ export default function ForgeSuiteHome() {
               <span className={`forge-chip ${source === 'live' ? 'forge-chip--success' : 'forge-chip--warn'}`}>
                 {source === 'live' ? 'Live metrics' : 'Snapshot-backed'}
               </span>
+              {showModeDiagnostics && (() => {
+                const diag = getDataProviderDiagnostics();
+                return (
+                  <span
+                    data-testid="forge-mode-diagnostics"
+                    className="forge-chip forge-chip--neutral"
+                    title={`Provider mode: ${diag.mode} (${diag.reason})`}
+                  >
+                    {`mode:${diag.mode}`}
+                  </span>
+                );
+              })()}
             </div>
           </header>
 

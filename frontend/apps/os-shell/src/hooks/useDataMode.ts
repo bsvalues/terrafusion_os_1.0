@@ -1,59 +1,47 @@
 /**
  * TerraFusion OS — useDataMode Hook
  *
- * Returns the current data mode (live/mock), connection status,
- * and last health check timestamp. Used by taskbar indicator and
- * any component needing mode awareness.
+ * Returns the current data mode, reason, and connection status derived
+ * directly from the DataProvider singleton — the single source of truth
+ * for which data backend is active.
+ *
+ * IMPORTANT: Previously this hook polled /health/live independently, which
+ * caused it to report 'live' even when VITE_DATA_MODE=snapshot was active.
+ * The provider is now the authoritative source to prevent this divergence.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { getDataProvider, getDataProviderDiagnostics } from '../services/dataProvider';
+import type { DataMode, DataModeReason } from '../services/dataProvider';
 
 export interface DataModeState {
-  mode: 'live' | 'mock';
+  /** Actual data mode the provider is using. */
+  mode: DataMode;
+  /** Why this mode was selected. */
+  reason: DataModeReason | null;
+  /** True only when mode is 'live'. */
   connected: boolean;
+  /** When the provider singleton was initialized. Null if not yet accessed. */
   lastHealthCheck: Date | null;
-  checking: boolean;
+  /** Always false — mode is derived synchronously from the provider singleton. */
+  checking: false;
 }
 
-const HEALTH_CHECK_INTERVAL = 30_000; // 30 seconds
-
+/**
+ * Returns the current data mode state derived from the DataProvider singleton.
+ *
+ * Calling this hook ensures the provider is initialized (if not already).
+ * The returned values are stable for the lifetime of the singleton.
+ */
 export function useDataMode(): DataModeState {
-  const [state, setState] = useState<DataModeState>({
-    mode: 'mock',
-    connected: false,
-    lastHealthCheck: null,
+  // Ensure the singleton is initialized so diagnostics are populated
+  getDataProvider();
+  const diagnostics = getDataProviderDiagnostics();
+
+  return {
+    mode: diagnostics.mode,
+    reason: diagnostics.reason,
+    connected: diagnostics.mode === 'live',
+    lastHealthCheck: diagnostics.initializedAt,
     checking: false,
-  });
-
-  const checkHealth = useCallback(async () => {
-    setState((s) => ({ ...s, checking: true }));
-    try {
-      const res = await fetch('/health/live', {
-        method: 'GET',
-        signal: AbortSignal.timeout(5000),
-      });
-      const isLive = res.ok;
-      setState({
-        mode: isLive ? 'live' : 'mock',
-        connected: isLive,
-        lastHealthCheck: new Date(),
-        checking: false,
-      });
-    } catch {
-      setState({
-        mode: 'mock',
-        connected: false,
-        lastHealthCheck: new Date(),
-        checking: false,
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    checkHealth();
-    const interval = setInterval(checkHealth, HEALTH_CHECK_INTERVAL);
-    return () => clearInterval(interval);
-  }, [checkHealth]);
-
-  return state;
+  };
 }

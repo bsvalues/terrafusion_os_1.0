@@ -13,6 +13,18 @@ export interface CountyStatsResult {
   loading: boolean;
   error: string | null;
   source: DataMode | null;
+  /** Human-readable disclosure string when data is NOT from the live backend. Null for live. */
+  sourceDisclosure: string | null;
+}
+
+function computeSourceDisclosure(source: DataMode | null): string | null {
+  if (source === 'snapshot') {
+    return 'Snapshot-backed county aggregates: TerraForge stats are using bundled county snapshot data, not live backend metrics.';
+  }
+  if (source === 'fixtures') {
+    return 'Fixture-backed county aggregates: TerraForge stats are using test fixture data, not live backend metrics.';
+  }
+  return null;
 }
 
 export function useCountyStats(): CountyStatsResult {
@@ -46,5 +58,5 @@ export function useCountyStats(): CountyStatsResult {
     return () => { cancelled = true; };
   }, []);
 
-  return { stats, loading, error, source };
+  return { stats, loading, error, source, sourceDisclosure: computeSourceDisclosure(source) };
 }
