@@ -71,9 +71,9 @@ export interface VirtualDesktop {
 }
 
 // --- Window type contract ---
-export function deriveWindowType(
-  moduleId: string
-): 'normal' | 'companion' | 'workbench' | 'suite' {
+export type WindowType = 'normal' | 'companion' | 'workbench' | 'suite';
+
+export function deriveWindowType(moduleId: string): WindowType {
   if (moduleId === 'os-pilot') return 'companion';
   if (moduleId === 'property-workbench') return 'workbench';
   if (moduleId.startsWith('suite-')) return 'suite';
@@ -93,7 +93,7 @@ export interface DesktopWindow {
   previousPosition?: Position;
   previousSize?: Size;
   snapZone?: SnapZone;
-  windowType?: 'normal' | 'companion' | 'workbench' | 'suite';
+  windowType?: WindowType;
   metadata?: Record<string, any>; // Deep Context Payload
 }
 
