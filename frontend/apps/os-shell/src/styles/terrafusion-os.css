@@ -3,7 +3,7 @@
 
 /* Core TerraFusion Color System */
 :root {
-  --terra-cyan: var(--tf-quantum-cyan);
+  --terra-cyan: var(--tf-transcend-highlight);
   --terra-midnight: var(--tf-void-black);
   --terra-blue: var(--tf-network-blue);
   --terra-slate: var(--terra-slate);
@@ -45,7 +45,7 @@
 .terrafusion-quantum-os {
   min-height: 100vh;
   background: linear-gradient(135deg, var(--terra-midnight) 0%, var(--tf-surface-darker) 50%, hsl(var(--tf-surface-dark-hs) var(--tf-l-10)) 100%);
-  color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
+  color: hsl(var(--tf-text));
   font-family:
     var(--font-primary),
     -apple-system,
@@ -69,7 +69,7 @@
     BlinkMacSystemFont,
     'Segoe UI',
     sans-serif;
-  color: hsl(var(--tf-text-primary-hs) var(--tf-l-100));
+  color: hsl(var(--tf-text));
   background: linear-gradient(135deg, var(--terra-midnight) 0%, var(--tf-surface-darker) 50%, hsl(var(--tf-surface-dark-hs) var(--tf-l-10)) 100%);
   position: fixed;
   top: 0;
@@ -88,10 +88,10 @@
 /* Elite OS Header */
 .terrafusion-os-header {
   height: 80px;
-  background: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.08);
+  background: hsl(var(--tf-surface) / 0.92);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border-bottom: 2px solid hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
+  border-bottom: 1px solid hsl(var(--tf-border) / 0.4);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -104,8 +104,8 @@
 /* Navigation Sidebar */
 .terrafusion-os-navigation {
   width: 280px;
-  background: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.05);
-  border-right: 2px solid hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2);
+  background: hsl(var(--tf-surface) / 0.5);
+  border-right: 1px solid hsl(var(--tf-border) / 0.4);
   padding: var(--space-8) var(--space-4);
   display: flex;
   flex-direction: column;
@@ -114,7 +114,7 @@
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   scrollbar-width: thin;
-  scrollbar-color: var(--terra-cyan) transparent;
+  scrollbar-color: hsl(var(--tf-border) / 0.6) transparent;
 }
 
 .terrafusion-os-navigation::-webkit-scrollbar {
@@ -126,9 +126,8 @@
 }
 
 .terrafusion-os-navigation::-webkit-scrollbar-thumb {
-  background: var(--terra-cyan);
+  background: hsl(var(--tf-border) / 0.6);
   border-radius: 3px;
-  opacity: 0.6;
 }
 
 .terrafusion-os-navigation::-webkit-scrollbar-thumb:hover {
@@ -162,10 +161,10 @@
 /* Elite OS Taskbar */
 .terrafusion-os-taskbar {
   height: 60px;
-  background: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.08);
+  background: hsl(var(--tf-surface) / 0.92);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border-top: 2px solid hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
+  border-top: 1px solid hsl(var(--tf-border) / 0.4);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -182,9 +181,9 @@
 /* Elite Navigation Button */
 .terrafusion-nav-button {
   padding: var(--space-4);
-  background: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.1);
-  color: var(--terra-cyan);
-  border: 1px solid hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.3);
+  background: transparent;
+  color: hsl(var(--tf-text) / 0.8);
+  border: 1px solid hsl(var(--tf-border) / 0.3);
   border-radius: 8px;
   cursor: pointer;
   font-weight: normal;
@@ -199,14 +198,14 @@
 }
 
 .terrafusion-nav-button:hover {
-  background: hsl(var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2);
+  background: hsl(var(--tf-text) / 0.06);
   transform: translateY(-1px);
 }
 
 .terrafusion-nav-button.active {
-  background: linear-gradient(135deg, var(--terra-cyan), var(--terra-blue));
-  color: var(--terra-midnight);
-  font-weight: bold;
+  background: hsl(var(--tf-accent) / 0.9);
+  color: hsl(var(--tf-text));
+  font-weight: 600;
 }
 
 /* View Toggle Button Enhancement */
@@ -676,7 +675,7 @@
    ======================================== */
 
 .high-contrast {
-  --terra-cyan: var(--tf-quantum-cyan);
+  --terra-cyan: var(--tf-transcend-highlight);
   --terra-midnight: hsl(var(--tf-tokens-black-hs) var(--tf-l-0));
   --terra-blue: var(--tf-blueprint-blue);
   --terra-slate: hsl(var(--tf-text-primary-hs) var(--tf-l-100));

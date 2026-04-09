@@ -70,7 +70,7 @@ public class PacsImprovementDetail
     [Column(TypeName = "decimal(10,4)")] public decimal? UnitPrice { get; set; }
     [Column(TypeName = "decimal(10,4)")] public decimal? ImprvDetOrigUp { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? ImprvDetOrigVal { get; set; }
-    [Column(TypeName = "decimal(5,4)")] public decimal? ImprvDetAdjFactor { get; set; }
+    [Column(TypeName = "decimal(8,4)")] public decimal? ImprvDetAdjFactor { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? ImprvDetAdjAmt { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? ImprvDetCalcVal { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? ImprvDetAdjVal { get; set; }
@@ -79,16 +79,18 @@ public class PacsImprovementDetail
     [Column(TypeName = "decimal(18,2)")] public decimal? ImprvDetCostUnitPrice { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? ImprvDetMsVal { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? ImprvDetMsUnitPrice { get; set; }
-    [Column(TypeName = "decimal(5,4)")] public decimal? AddFactor { get; set; }
-    [Column(TypeName = "decimal(5,4)")] public decimal? SizeAdjPct { get; set; }
+    [Column(TypeName = "decimal(8,4)")] public decimal? AddFactor { get; set; }
+    [Column(TypeName = "decimal(8,4)")] public decimal? SizeAdjPct { get; set; }
     [Column(TypeName = "decimal(18,2)")] public decimal? NewValue { get; set; }
 
     // ── Depreciation ─────────────────────────────────────────────────────
-    [Column(TypeName = "decimal(5,4)")] public decimal? EconomicPct { get; set; }
-    [Column(TypeName = "decimal(5,4)")] public decimal? PhysicalPct { get; set; }
+    // PACS stores these as 0-100 integer percentages (e.g. dep_pct=95 = 95% good).
+    // decimal(6,2) accommodates 0–9999.99 — well above the 100 ceiling.
+    [Column(TypeName = "decimal(6,2)")] public decimal? EconomicPct { get; set; }
+    [Column(TypeName = "decimal(6,2)")] public decimal? PhysicalPct { get; set; }
     [MaxLength(1)] public string? PhysicalPctSource { get; set; }
-    [Column(TypeName = "decimal(5,4)")] public decimal? FunctionalPct { get; set; }
-    [Column(TypeName = "decimal(5,4)")] public decimal? DepPct { get; set; }
+    [Column(TypeName = "decimal(6,2)")] public decimal? FunctionalPct { get; set; }
+    [Column(TypeName = "decimal(6,2)")] public decimal? DepPct { get; set; }
     [MaxLength(255)] public string? EconomicComment { get; set; }
     [MaxLength(255)] public string? PhysicalComment { get; set; }
     [MaxLength(255)] public string? FunctionalComment { get; set; }

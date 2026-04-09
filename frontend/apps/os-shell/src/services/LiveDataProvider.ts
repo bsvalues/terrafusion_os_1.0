@@ -310,16 +310,25 @@ export class LiveDataProvider implements DataProvider {
       assessmentYear: new Date().getFullYear(),
     };
 
-    // Use PACS properties endpoint page 1 to get totalCount
+    // GET /api/terraforge/county-stats — TerraForge county KPI endpoint (Slice 1.3).
+    // Source: pacs_valuations WHERE PropValYear = taxYear AND SupNum = 0
+    const taxYear = new Date().getFullYear();
     try {
-      const data = await apiFetch<PacsPagedResult>(
-        '/api/pacs/properties?page=1&pageSize=1',
-      );
+      const data = await apiFetch<{
+        taxYear: number;
+        totalParcels: number;
+        averageAssessedValue: number;
+        assessedThisYear: number;
+        pendingAssessments: number;
+        assessmentCompletionPercent: number;
+      }>(`/api/terraforge/county-stats?taxYear=${taxYear}`);
       return {
         ...defaults,
-        totalParcels: data.totalCount ?? 0,
-        assessedThisYear: data.totalCount ?? 0,
-        assessmentCompletionPercent: 100,
+        totalParcels: data.totalParcels ?? 0,
+        averageAssessedValue: data.averageAssessedValue ?? 0,
+        assessedThisYear: data.assessedThisYear ?? 0,
+        pendingAssessments: data.pendingAssessments ?? 0,
+        assessmentCompletionPercent: data.assessmentCompletionPercent ?? 0,
       };
     } catch {
       return defaults;

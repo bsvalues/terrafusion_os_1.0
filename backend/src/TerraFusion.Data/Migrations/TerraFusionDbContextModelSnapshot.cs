@@ -843,10 +843,12 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<decimal>("CurrentValue")
-                        .HasColumnType("numeric");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<decimal?>("DecidedValue")
-                        .HasColumnType("numeric");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTime?>("DecisionDate")
                         .HasColumnType("timestamp with time zone");
@@ -870,7 +872,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<decimal>("RequestedValue")
-                        .HasColumnType("numeric");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -889,9 +892,15 @@ namespace TerraFusion.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountyId");
+                    b.HasIndex("CountyId", "Id");
 
-                    b.ToTable("Appeals");
+                    b.HasIndex("CountyId", "Status");
+
+                    b.HasIndex("CountyId", "ParcelId", "FiledDate");
+
+                    b.HasIndex("CountyId", "TaxYear", "FiledDate");
+
+                    b.ToTable("Appeals", (string)null);
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.AuditEvent", b =>
@@ -1207,6 +1216,9 @@ namespace TerraFusion.Data.Migrations
                     b.Property<Guid>("CountyId")
                         .HasColumnType("uuid");
 
+                    b.Property<decimal?>("DepreciationPct")
+                        .HasColumnType("numeric");
+
                     b.Property<int?>("EconomicLife")
                         .HasColumnType("integer");
 
@@ -1240,6 +1252,9 @@ namespace TerraFusion.Data.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
 
+                    b.Property<decimal?>("ImprvVal")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("InteriorFinish")
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
@@ -1258,6 +1273,9 @@ namespace TerraFusion.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<decimal?>("PhysicalDepreciationPct")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("QualityGrade")
                         .HasMaxLength(20)
@@ -1297,6 +1315,78 @@ namespace TerraFusion.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("CamaCharacteristics");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.CamaImprovementDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("Area")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("CalcValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("ClassCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("ConditionCode")
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("DepPct")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("DepreciatedRCN")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("MethodCode")
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<string>("ParcelId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<decimal?>("PhysicalPct")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("SegmentDesc")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("SegmentType")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("SubClassCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<int>("TaxYear")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("UnitPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("YearBuilt")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "ParcelId", "TaxYear" }, "IX_CamaImprvDet_ParcelYear");
+
+                    b.ToTable("cama_improvement_details");
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.CertificationStep", b =>
@@ -1350,9 +1440,16 @@ namespace TerraFusion.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountyId");
+                    b.HasIndex("DependsOnStepId");
 
-                    b.ToTable("CertificationSteps");
+                    b.HasIndex("CountyId", "Id");
+
+                    b.HasIndex("CountyId", "TaxYear", "Status");
+
+                    b.HasIndex("CountyId", "TaxYear", "StepCode")
+                        .IsUnique();
+
+                    b.ToTable("CertificationSteps", (string)null);
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.ChatMessage", b =>
@@ -1998,6 +2095,9 @@ namespace TerraFusion.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<decimal?>("AdjustedSalePrice")
+                        .HasColumnType("numeric");
+
                     b.Property<int?>("Bathrooms")
                         .HasColumnType("integer");
 
@@ -2008,11 +2108,39 @@ namespace TerraFusion.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<bool?>("ContinueCurrentUse")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("CountyId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DecisionAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DecisionBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("DecisionReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("DecisionSource")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int?>("ExciseNumber")
+                        .HasColumnType("integer");
+
                     b.Property<decimal?>("GrossLivingArea")
                         .HasColumnType("numeric");
+
+                    b.Property<string>("ImprvTypeCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<bool?>("IncludeNoCalc")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("IngestedAt")
                         .HasColumnType("timestamp with time zone");
@@ -2025,12 +2153,21 @@ namespace TerraFusion.Data.Migrations
                     b.Property<bool>("IsVerified")
                         .HasColumnType("boolean");
 
+                    b.Property<bool?>("LandOnlySale")
+                        .HasColumnType("boolean");
+
                     b.Property<decimal?>("LotSizeSqft")
                         .HasColumnType("numeric");
 
                     b.Property<string>("Neighborhood")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<int?>("PacsChgOfOwnerId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("PacsComputedRatio")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("ParcelId")
                         .IsRequired()
@@ -2042,20 +2179,112 @@ namespace TerraFusion.Data.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
 
+                    b.Property<string>("QualificationDecision")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("QualificationRecommendation")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
                     b.Property<string>("QualityGrade")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<string>("RawAdjCode")
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<string>("RawAdjReason")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("RawComment")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("RawCountyRatioCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("RawExcludeCalcCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("RawFinancingCode")
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<string>("RawRatioCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("RawRatioCdReason")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("RawRatioTypeCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("RawSaleQualifier")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("RawSaleTypeCode")
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<string>("RawWacCd")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("RecommendationReason")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("RecommendationSource")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("RecommendationVersion")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<decimal?>("SaleAdjustmentAmount")
+                        .HasColumnType("numeric");
+
                     b.Property<DateTime>("SaleDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("SaleExemptionAmount")
+                        .HasColumnType("numeric");
 
                     b.Property<decimal>("SalePrice")
                         .HasColumnType("numeric");
 
-                    b.Property<string>("SaleQualification")
-                        .IsRequired()
+                    b.Property<int?>("SalesYear")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("SlLandAcres")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("SlLandSqft")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("SlLivingArea")
+                        .HasColumnType("numeric");
+
+                    b.Property<int?>("SlYearBuilt")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SuppressOnRatioReason")
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
+
+                    b.Property<string>("SuppressOnRatioRptCd")
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
 
                     b.Property<string>("VerificationSource")
                         .HasMaxLength(200)
@@ -2071,6 +2300,8 @@ namespace TerraFusion.Data.Migrations
                     b.HasIndex("CountyId", "ParcelId");
 
                     b.HasIndex("CountyId", "PropertyType", "SaleDate");
+
+                    b.HasIndex("CountyId", "QualificationDecision", "QualificationRecommendation");
 
                     b.ToTable("ComparableSales");
                 });
@@ -2273,6 +2504,21 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("CountyDeployments");
                 });
 
+            modelBuilder.Entity("TerraFusion.Core.Entities.CountyRatioCode", b =>
+                {
+                    b.Property<string>("RatioCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("RatioDesc")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.HasKey("RatioCd");
+
+                    b.ToTable("CountyRatioCodes", (string)null);
+                });
+
             modelBuilder.Entity("TerraFusion.Core.Entities.DataQualityAssessment", b =>
                 {
                     b.Property<int>("Id")
@@ -2348,6 +2594,32 @@ namespace TerraFusion.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DataQualityAssessments");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.DeedType", b =>
+                {
+                    b.Property<string>("CountyCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("DeedTypeCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("DeedTypeDesc")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("SalesRatioTypeCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<bool?>("SysFlag")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("CountyCd", "DeedTypeCd");
+
+                    b.ToTable("DeedTypes", (string)null);
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.DelinquencyRecord", b =>
@@ -2824,7 +3096,8 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("ExemptionAmount")
-                        .HasColumnType("numeric");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTime?>("ExpirationDate")
                         .HasColumnType("timestamp with time zone");
@@ -2860,9 +3133,15 @@ namespace TerraFusion.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountyId");
+                    b.HasIndex("CountyId", "Id");
 
-                    b.ToTable("Exemptions");
+                    b.HasIndex("CountyId", "Status");
+
+                    b.HasIndex("CountyId", "ParcelId", "ApplicationDate");
+
+                    b.HasIndex("CountyId", "ProgramCode", "Status");
+
+                    b.ToTable("Exemptions", (string)null);
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.GPTConfiguration", b =>
@@ -3707,9 +3986,15 @@ namespace TerraFusion.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountyId");
+                    b.HasIndex("CountyId", "Id");
 
-                    b.ToTable("Notices");
+                    b.HasIndex("CountyId", "TemplateId");
+
+                    b.HasIndex("CountyId", "ParcelId", "CreatedAt");
+
+                    b.HasIndex("CountyId", "Status", "CreatedAt");
+
+                    b.ToTable("Notices", (string)null);
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.NotificationPreferences", b =>
@@ -3723,7 +4008,7 @@ namespace TerraFusion.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<double>("CriticalAlertThreshold")
                         .HasColumnType("double precision");
@@ -3829,7 +4114,7 @@ namespace TerraFusion.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -4607,7 +4892,7 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("numeric");
 
                     b.Property<decimal?>("AddFactor")
-                        .HasColumnType("decimal(5,4)");
+                        .HasColumnType("decimal(8,4)");
 
                     b.Property<decimal?>("CalcArea")
                         .HasColumnType("decimal(12,2)");
@@ -4623,7 +4908,7 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("decimal(12,2)");
 
                     b.Property<decimal?>("DepPct")
-                        .HasColumnType("decimal(5,4)");
+                        .HasColumnType("decimal(6,2)");
 
                     b.Property<decimal?>("DepreciatedReplacementCostNew")
                         .HasColumnType("decimal(18,2)");
@@ -4636,7 +4921,7 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.Property<decimal?>("EconomicPct")
-                        .HasColumnType("decimal(5,4)");
+                        .HasColumnType("decimal(6,2)");
 
                     b.Property<decimal?>("EffectiveTaxYear")
                         .HasColumnType("numeric");
@@ -4649,7 +4934,7 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.Property<decimal?>("FunctionalPct")
-                        .HasColumnType("decimal(5,4)");
+                        .HasColumnType("decimal(6,2)");
 
                     b.Property<decimal?>("Height")
                         .HasColumnType("decimal(10,2)");
@@ -4661,7 +4946,7 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("ImprvDetAdjFactor")
-                        .HasColumnType("decimal(5,4)");
+                        .HasColumnType("decimal(8,4)");
 
                     b.Property<decimal?>("ImprvDetAdjVal")
                         .HasColumnType("decimal(18,2)");
@@ -4799,7 +5084,7 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.Property<decimal?>("PhysicalPct")
-                        .HasColumnType("decimal(5,4)");
+                        .HasColumnType("decimal(6,2)");
 
                     b.Property<string>("PhysicalPctSource")
                         .HasMaxLength(1)
@@ -4812,7 +5097,7 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal?>("SizeAdjPct")
-                        .HasColumnType("decimal(5,4)");
+                        .HasColumnType("decimal(8,4)");
 
                     b.Property<decimal?>("SketchArea")
                         .HasColumnType("decimal(12,2)");
@@ -5129,6 +5414,93 @@ namespace TerraFusion.Data.Migrations
                     b.HasIndex(new[] { "LandTypeCode" }, "IX_PacsLand_TypeCode");
 
                     b.ToTable("pacs_land_details");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Pacs.PacsLevyRate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IncludeInCertification")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LevyCd")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("LevyDescription")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<decimal>("LevyRate")
+                        .HasColumnType("numeric(14,10)");
+
+                    b.Property<string>("LevyTypeCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<int>("TaxDistrictId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "Year" }, "IX_PacsLevyRate_Year");
+
+                    b.HasIndex(new[] { "Year", "TaxDistrictId", "LevyCd" }, "UQ_PacsLevyRate_YearDistrictCode")
+                        .IsUnique();
+
+                    b.ToTable("pacs_levy_rates");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Pacs.PacsLevyTaxAreaAssoc", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LevyCd")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("TaxAreaId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TaxAreaNumber")
+                        .HasMaxLength(23)
+                        .HasColumnType("character varying(23)");
+
+                    b.Property<int>("TaxDistrictId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "Year", "TaxAreaNumber" }, "IX_PacsLevyTaxAreaAssoc_YearArea");
+
+                    b.HasIndex(new[] { "Year", "TaxDistrictId", "LevyCd", "TaxAreaId" }, "UQ_PacsLevyTaxAreaAssoc_Composite")
+                        .IsUnique();
+
+                    b.ToTable("pacs_levy_tax_area_assocs");
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.Pacs.PacsOwner", b =>
@@ -5636,6 +6008,27 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("pacs_property_profiles");
                 });
 
+            modelBuilder.Entity("TerraFusion.Core.Entities.Pacs.PacsReetWacCode", b =>
+                {
+                    b.Property<string>("WacCd")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("Inactive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("SysFlag")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("WacDesc")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("WacCd");
+
+                    b.ToTable("ReetWacCodes", (string)null);
+                });
+
             modelBuilder.Entity("TerraFusion.Core.Entities.Pacs.PacsSale", b =>
                 {
                     b.Property<Guid>("Id")
@@ -5768,7 +6161,7 @@ namespace TerraFusion.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("SaleAdjSlPct")
-                        .HasColumnType("decimal(5,4)");
+                        .HasColumnType("decimal(8,4)");
 
                     b.Property<string>("SaleClassCd")
                         .HasMaxLength(10)
@@ -6370,7 +6763,8 @@ namespace TerraFusion.Data.Migrations
 
                     b.Property<string>("NeighborhoodCode")
                         .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("hood_cd");
 
                     b.Property<decimal?>("NewVal")
                         .HasColumnType("decimal(18,2)");
@@ -7342,9 +7736,15 @@ namespace TerraFusion.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountyId");
+                    b.HasIndex("CountyId", "Id");
 
-                    b.ToTable("QueueItems");
+                    b.HasIndex("CountyId", "AssignedTo", "Status");
+
+                    b.HasIndex("CountyId", "Status", "CreatedAt");
+
+                    b.HasIndex("CountyId", "TaskType", "Status");
+
+                    b.ToTable("QueueItems", (string)null);
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.RcwCalculation", b =>
@@ -7489,6 +7889,27 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("RegressionAnalyses");
                 });
 
+            modelBuilder.Entity("TerraFusion.Core.Entities.SaleRatioType", b =>
+                {
+                    b.Property<string>("SlRatioTypeCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<bool>("InvalidSale")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("RequiresReason")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SlRatioDesc")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.HasKey("SlRatioTypeCd");
+
+                    b.ToTable("SaleRatioTypes", (string)null);
+                });
+
             modelBuilder.Entity("TerraFusion.Core.Entities.SecurityEvent", b =>
                 {
                     b.Property<Guid>("Id")
@@ -7579,6 +8000,24 @@ namespace TerraFusion.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("SessionParticipants");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.SlFinancing", b =>
+                {
+                    b.Property<string>("SlFinancingCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("SlFinancingDesc")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<bool?>("SysFlag")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("SlFinancingCd");
+
+                    b.ToTable("SlFinancings", (string)null);
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.SpatialAnalysis", b =>
@@ -8912,7 +9351,7 @@ namespace TerraFusion.Data.Migrations
                     b.HasOne("TerraFusion.Core.Entities.County", "County")
                         .WithMany()
                         .HasForeignKey("CountyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("County");
@@ -8971,8 +9410,13 @@ namespace TerraFusion.Data.Migrations
                     b.HasOne("TerraFusion.Core.Entities.County", "County")
                         .WithMany()
                         .HasForeignKey("CountyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("TerraFusion.Core.Entities.CertificationStep", null)
+                        .WithMany()
+                        .HasForeignKey("DependsOnStepId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("County");
                 });
@@ -9179,7 +9623,7 @@ namespace TerraFusion.Data.Migrations
                     b.HasOne("TerraFusion.Core.Entities.County", "County")
                         .WithMany()
                         .HasForeignKey("CountyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("County");
@@ -9223,7 +9667,7 @@ namespace TerraFusion.Data.Migrations
                     b.HasOne("TerraFusion.Core.Entities.County", "County")
                         .WithMany()
                         .HasForeignKey("CountyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("County");
@@ -9522,7 +9966,7 @@ namespace TerraFusion.Data.Migrations
                     b.HasOne("TerraFusion.Core.Entities.County", "County")
                         .WithMany()
                         .HasForeignKey("CountyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("County");

@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 1156,
-  "violationCount": 713,
+  "violationCount": 714,
   "violations": [
     {
       "kind": "RAW_HEX",
@@ -3795,14 +3795,21 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\CostApproach.tsx",
-      "line": 159,
+      "line": 112,
+      "column": 18,
+      "excerpt": "#127807; {costAPI.data.waClassificationNote}"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\CostApproach.tsx",
+      "line": 242,
       "column": 26,
       "excerpt": "#128269; Model Inputs\" variant=\"default\">"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\tabs\\forge\\CostApproach.tsx",
-      "line": 229,
+      "line": 312,
       "column": 45,
       "excerpt": "#128200;</div>"
     },
@@ -4997,5 +5004,5 @@
       "excerpt": "hsl(150 50% 50%); /* tf-allow-raw-color */"
     }
   ],
-  "generatedAtIso": "2026-04-01T15:45:18.141Z"
+  "generatedAtIso": "2026-04-03T02:02:46.902Z"
 }

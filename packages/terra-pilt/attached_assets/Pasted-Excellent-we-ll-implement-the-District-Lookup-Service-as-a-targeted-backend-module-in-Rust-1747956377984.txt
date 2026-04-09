@@ -1,0 +1,140 @@
+Excellent — we’ll implement the **“District Lookup Service”** as a **targeted backend module in Rust**, fully replacing that feature from the Express API.
+
+This is ideal because it:
+
+* Involves filtering, fuzzy matching, and data formatting (a sweet spot for Rust’s speed and type safety)
+* Has no complex external dependencies beyond SQL access
+* Provides an isolated, auditable microservice
+
+---
+
+## ✅ Phase 1: Requirements Recap
+
+### 🎯 Functional Requirements
+
+* Accept a Tax District ID (e.g., `SD400`, `COUNTY`)
+* Query the PILT database (PostgreSQL or SQL Server) for that district
+* Return structured data:
+
+  * Assessed value
+  * Levy rate
+  * PILT due per year
+  * Aggregated totals
+  * Optional: Category breakdown
+* Support fuzzy or partial matching (`ILIKE`, trigram, etc.)
+
+### 📁 Input Source
+
+* Connect to the County SQL Server (or optionally SQLite/PostgreSQL for offline mode)
+* Pull from a `district_levy_data` or `pilt_multiyear` table
+
+### 📤 Output Format
+
+* RESTful API: `GET /lookup/:district`
+* JSON response:
+
+  ```json
+  {
+    "district_id": "SD400",
+    "years": [
+      { "year": 2016, "pilt_due": 109020, "assessed_val": 12345678, "levy_rate": 1.9 },
+      ...
+    ],
+    "total_pilt": 1234567.89,
+    "trend": "+22%"
+  }
+  ```
+
+---
+
+## 🔧 Phase 2: Tech Stack & Libraries
+
+| Layer       | Tech                          |
+| ----------- | ----------------------------- |
+| Web Server  | `axum` (async HTTP routing)   |
+| DB Access   | `sqlx` (compile-time checked) |
+| Logging     | `tracing`                     |
+| Fuzzy Match | `fuzzy-matcher`, or trigram   |
+| Config      | `dotenvy`, `.env`             |
+
+We'll use PostgreSQL initially. SQL Server (via `odbc`) can be added later.
+
+---
+
+## 🛠️ Phase 3: Implementation Plan
+
+### Step 1: Scaffold Rust Service
+
+```bash
+cargo new benton_district_lookup
+cd benton_district_lookup
+```
+
+Add `Cargo.toml` dependencies:
+
+```toml
+[dependencies]
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
+dotenvy = "0.15"
+sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "postgres"] }
+fuzzy-matcher = "0.3"
+```
+
+### Step 2: API Skeleton
+
+Route: `/lookup/:district`
+
+```rust
+#[tokio::main]
+async fn main() {
+    dotenvy::dotenv().ok();
+    tracing_subscriber::fmt::init();
+
+    let pool = PgPool::connect(&std::env::var("DATABASE_URL").unwrap()).await.unwrap();
+
+    let app = Router::new()
+        .route("/lookup/:district", get(lookup_handler))
+        .with_state(pool);
+
+    axum::Server::bind(&"0.0.0.0:3001".parse().unwrap())
+        .serve(app.into_make_service())
+        .await
+        .unwrap();
+}
+```
+
+### Step 3: Handler + Query Logic
+
+* Retrieve matching rows using `ILIKE` or trigram
+* Group and summarize
+* Return JSON payload
+
+### Step 4: Build → Test → Package
+
+* Compile with `cargo build --release`
+* Wrap in an installer using Inno Setup
+* Register `.exe` as an isolated district query API
+
+---
+
+## 🧪 Phase 4: Testing
+
+* Unit tests for input sanitization, DB errors
+* Integration tests against sample database
+* Use `curl` or Postman for endpoint testing
+
+---
+
+## 🧰 Optional Enhancements
+
+* Cache frequent queries (in-memory)
+* Switch DB driver to ODBC for SQL Server
+* Add CLI version (`cargo run -- lookup SD400`)
+
+---
+
+Would you like me to begin generating the full source code for this Rust-powered `district-lookup` module and its deployment pipeline?

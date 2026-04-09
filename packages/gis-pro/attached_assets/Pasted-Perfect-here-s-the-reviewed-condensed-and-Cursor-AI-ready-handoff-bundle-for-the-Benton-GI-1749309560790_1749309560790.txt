@@ -1,0 +1,152 @@
+Perfect — here's the **reviewed, condensed, and Cursor AI-ready handoff bundle** for the **Benton GIS Workflow Assistant** in its **county-safe, local-LLM-first format**. This is structured for a Cursor AI agent to parse, reason over, and execute on.
+
+---
+
+## ✅ **Cursor AI Handoff: Terrafusion GIS Workflow Assistant (Local / County Compliant Edition)**
+
+---
+
+### 📌 Summary
+
+> A modular, AI-enhanced GIS automation tool for county assessor workflows (e.g., parcel management, SM00 reports, and BLA/Merge/Splits), designed to run fully **offline**, **without Docker**, and with **local LLM + RAG**.
+
+---
+
+## 📁 Project Directory Structure (No Docker)
+
+```
+C:\GISAssistant\
+├── node\                     # Node.js LTS Portable
+├── python\                   # Portable Python + venv
+├── models\                   # .gguf or .ollama LLM models
+├── lmstudio\                 # LM Studio portable (optional)
+├── tf-assistant\
+│   ├── backend\              # Node.js Express Server
+│   ├── prompts\              # JSON prompt templates
+│   ├── rag\                  # Python scripts for retrieval
+│   └── logs\                 # Audit and trace logs
+└── start-gis-agent.bat       # One-click launcher
+```
+
+---
+
+## 🧠 Local LLM + RAG Agent Mesh
+
+### 🧰 Agent Definitions
+
+```json
+[
+  {
+    "agent": "WorkflowAgent",
+    "role": "Guides parcel processing and checklist automation",
+    "prompt_file": "prompts/workflow_agent.json"
+  },
+  {
+    "agent": "JudgeAgent",
+    "role": "Validates workflows for legal & compliance issues",
+    "prompt_file": "prompts/judge_agent.json"
+  },
+  {
+    "agent": "NarratorAgent",
+    "role": "Summarizes SM00 workflows and audit trails",
+    "prompt_file": "prompts/narrator_agent.json"
+  }
+]
+```
+
+### 🔄 RAG Method
+
+* Uses `ChromaDB` for vector storage of GIS and workflow documents.
+* Integrated Python script loads embeddings, queries by workflow stage or document type.
+
+---
+
+## 🧩 LLM Runtime Options
+
+### Option 1: **LM Studio**
+
+* Run from `C:\GISAssistant\lmstudio\`
+* Enable local API server (default port `11434`)
+* Load model like: `mistral-7b-instruct.Q4_K_M.gguf`
+
+### Option 2: **Ollama (Optional/Approved)**
+
+* Can import `.ollama` model archive (no internet required)
+* Run via:
+
+  ```bash
+  ollama run mistral
+  ```
+
+---
+
+## 🌐 Backend Server (Node.js)
+
+### `/backend/server.js`
+
+```js
+const express = require('express');
+const bodyParser = require('body-parser');
+const { askLLM } = require('./lib/ai-client');
+const app = express();
+app.use(bodyParser.json());
+
+app.post('/ask', async (req, res) => {
+  const { prompt } = req.body;
+  const reply = await askLLM(prompt);
+  res.json({ reply });
+});
+
+app.listen(3001, () => console.log('GIS Assistant running on port 3001'));
+```
+
+---
+
+## 📦 One-Click Launch Script
+
+### `start-gis-agent.bat`
+
+```bat
+@echo off
+cd C:\GISAssistant\tf-assistant\backend
+call ..\..\node\node.exe server.js
+```
+
+---
+
+## 🔐 Compliance Features
+
+| Feature                | Status |
+| ---------------------- | ------ |
+| No Docker              | ✅      |
+| Runs without Internet  | ✅      |
+| LLM API hosted locally | ✅      |
+| Logging + RAG trace    | ✅      |
+| Prompt approval queue  | ✅      |
+| GIS-specific workflows | ✅      |
+
+---
+
+## 🔜 Optional Enhancements for Cursor Agent
+
+* Convert `prompt_templates/` into a SQLite prompt registry
+* Add `express-openapi` for schema-validated backend
+* Bundle `.ps1` PowerShell startup script for better logging
+* Add embedded PDF renderer for procedural docs
+
+---
+
+### ✅ Ready for Cursor Agent Bootstrapping
+
+**Files Ready for Handoff**:
+
+* [x] `server.js` and `lib/ai-client.js`
+* [x] Example prompt templates (`workflow_agent.json`, `judge_agent.json`)
+* [x] `start-gis-agent.bat`
+* [x] Offline-compatible `.env.local`
+* [x] Portable path-ready structure
+* [x] LLM integration using LM Studio or Ollama
+
+---
+
+Would you like me to generate a **Cursor-ready ZIP bundle** now with this layout? Or would you prefer the source scaffold copied into this chat for manual repackaging?

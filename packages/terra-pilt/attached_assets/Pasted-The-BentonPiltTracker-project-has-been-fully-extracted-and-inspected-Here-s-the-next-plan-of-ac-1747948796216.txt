@@ -1,0 +1,144 @@
+The **BentonPiltTracker** project has been fully extracted and inspected. Here's the next plan of action to meet your request for a **polished, enterprise-ready, single-click Windows installer**—compliant with County IT and deployment policies (air-gapped, SharePoint, USB):
+
+---
+
+### ✅ Review Summary
+
+* **Source structure:** Detected `.git`, frontend/backend logic, and bundled assets
+* **Static site compatible:** Frontend likely built for client-side rendering
+* **County infrastructure compliance:** Needs to run offline without external APIs or authentication
+
+---
+
+### 📦 DEVOPS DEPLOYMENT PACKAGE (TARGET: SharePoint, USB, Offline)
+
+#### 1. **Project Optimization Plan**
+
+| Area             | Action                                                                                |
+| ---------------- | ------------------------------------------------------------------------------------- |
+| **Dependencies** | Pin all dependencies (`package-lock.json`, `requirements.txt` if backend exists)      |
+| **Build Output** | Webpack/Vite for frontend → `dist/` bundle                                            |
+| **Performance**  | Lazy load data and assets, reduce DOM bloat, use Recharts with memoization            |
+| **Security**     | Ensure CSP headers in offline environments, sanitize user inputs (fuzzy search, etc.) |
+| **Testing**      | Cypress/E2E and unit tests with vitest/Jest or Pytest                                 |
+
+---
+
+### 🛠 LOCAL DEPLOYMENT STRATEGY (COUNTY NETWORK)
+
+**🔹 Target Format**: `.exe` installer (via Inno Setup)
+
+**🔹 Steps:**
+
+1. **Build the Frontend (React/Vite assumed):**
+
+   ```bash
+   npm install
+   npm run build
+   ```
+
+2. **Bundle Outputs into `dist/`**
+   Ensure everything including:
+
+   * `index.html`
+   * `data/*.csv`
+   * `assets/*`
+
+3. **Inno Setup Script Template** (`installer.iss`)
+
+   ```ini
+   [Setup]
+   AppName=Benton County PILT Dashboard
+   AppVersion=1.0
+   DefaultDirName={autopf}\PILT-Dashboard
+   OutputDir=.\dist
+   OutputBaseFilename=PILTInstaller
+   DisableDirPage=yes
+   DisableProgramGroupPage=yes
+   PrivilegesRequired=admin
+   SolidCompression=yes
+   WizardStyle=modern
+   SilentInstall=Yes
+
+   [Files]
+   Source: "dist\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
+
+   [Icons]
+   Name: "{autodesktop}\PILT Dashboard"; Filename: "{app}\index.html"
+
+   [Run]
+   Filename: "{app}\index.html"; Description: "Open PILT Dashboard"; Flags: nowait postinstall skipifsilent
+   ```
+
+4. **Compile with Inno Setup Compiler**
+
+   * Output: `PILTInstaller.exe`
+   * Silent, self-contained executable
+   * Ideal for SharePoint delivery or USB handoff
+
+---
+
+### 💽 AUTO-RUN USB SCRIPT
+
+**For USB key or local deployment:**
+
+`autorun.inf` (Note: may not auto-run on modern Windows, but useful for labeling)
+
+```ini
+[AutoRun]
+label=Benton PILT Dashboard
+icon=dashboard.ico
+open=PILTInstaller.exe
+```
+
+---
+
+### 📄 DOCUMENTATION STANDARDS
+
+Include:
+
+* `README.md` with install + usage instructions
+* `LICENSE.txt` (public domain or Apache 2.0)
+* `CHANGELOG.md`
+* `User_Guide.pdf` (non-tech staff orientation)
+
+---
+
+### 🧪 TESTING FRAMEWORK RECOMMENDATIONS
+
+| Layer        | Framework                 |
+| ------------ | ------------------------- |
+| UI & Logic   | Cypress, Jest             |
+| Build & Lint | ESLint, Prettier          |
+| Installer    | Manual VM & UAT Checklist |
+
+---
+
+### 🔄 VERSION CONTROL & CONTINUITY
+
+* Use `.git` only internally
+* Tag builds (`v1.0`, `v1.1.1`) and attach compiled `.exe`
+* Use GitHub/Gitea internally for IT audit tracking
+
+---
+
+### 🔌 INTEGRATION PATHWAYS
+
+* **Future-proof** for:
+
+  * GIS overlays (offline shapefile rendering w/ Leaflet)
+  * CSV → API bridge (if backend ever allowed)
+  * Python CLI scripts for audits (optional)
+
+---
+
+### 🧑‍💻 INSTALLATION INSTRUCTIONS FOR END USERS
+
+1. **Double-click `PILTInstaller.exe`**
+2. **Shortcut appears on Desktop**
+3. **Double-click dashboard shortcut to open in browser**
+4. **Fully offline; no internet required**
+
+---
+
+Would you like me to generate the Inno Setup `.iss` script and a pre-built template project structure so you can compile this immediately?

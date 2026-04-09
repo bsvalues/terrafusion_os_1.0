@@ -1,0 +1,295 @@
+{
+  "platform": {
+    "name": "Terrafusion Civil Infrastructure Intelligence Platform",
+    "version": "1.0.0",
+    "description": "Advanced GIS workflow solution for county assessor offices",
+    "repository": "https://github.com/your-org/terrafusion-gis.git",
+    "license": "MIT",
+    "homepage": "https://terrafusionmarket.com"
+  },
+  "architecture": {
+    "type": "fullstack",
+    "frontend": {
+      "framework": "React",
+      "version": "18.x",
+      "language": "TypeScript",
+      "bundler": "Vite",
+      "styling": "TailwindCSS"
+    },
+    "backend": {
+      "runtime": "Node.js",
+      "framework": "Express",
+      "language": "TypeScript",
+      "database": "PostgreSQL",
+      "orm": "Drizzle"
+    },
+    "realtime": "WebSocket",
+    "ai": "Anthropic Claude"
+  },
+  "deployment": {
+    "development": {
+      "port": 5000,
+      "host": "0.0.0.0",
+      "ssl": false,
+      "hot_reload": true
+    },
+    "production": {
+      "port": "${PORT:-5000}",
+      "host": "0.0.0.0",
+      "ssl": true,
+      "cluster_mode": true,
+      "max_memory": "2GB"
+    },
+    "docker": {
+      "base_image": "node:18-alpine",
+      "working_directory": "/app",
+      "exposed_ports": [5000],
+      "health_check": "/api/health"
+    }
+  },
+  "database": {
+    "provider": "PostgreSQL",
+    "version": "14+",
+    "extensions": ["postgis", "postgis_topology"],
+    "connection_pool": {
+      "min": 5,
+      "max": 20,
+      "idle_timeout": 30000
+    },
+    "backup": {
+      "frequency": "daily",
+      "retention": "30 days",
+      "encryption": true
+    }
+  },
+  "security": {
+    "authentication": {
+      "method": "JWT",
+      "token_expiry": "24h",
+      "refresh_token_expiry": "7d",
+      "password_requirements": {
+        "min_length": 8,
+        "require_uppercase": true,
+        "require_lowercase": true,
+        "require_numbers": true,
+        "require_symbols": true
+      }
+    },
+    "authorization": {
+      "roles": ["admin", "assessor", "technician", "viewer"],
+      "permissions": {
+        "admin": ["*"],
+        "assessor": ["read", "write", "approve"],
+        "technician": ["read", "write"],
+        "viewer": ["read"]
+      }
+    },
+    "encryption": {
+      "algorithm": "AES-256-GCM",
+      "key_rotation": "quarterly",
+      "data_at_rest": true,
+      "data_in_transit": true
+    },
+    "headers": {
+      "content_security_policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'",
+      "x_frame_options": "DENY",
+      "x_content_type_options": "nosniff",
+      "referrer_policy": "strict-origin-when-cross-origin"
+    }
+  },
+  "performance": {
+    "caching": {
+      "strategy": "redis",
+      "ttl": 3600,
+      "max_entries": 10000
+    },
+    "compression": {
+      "enabled": true,
+      "algorithm": "gzip",
+      "threshold": 1024
+    },
+    "rate_limiting": {
+      "window_ms": 900000,
+      "max_requests": 100,
+      "skip_successful_requests": false
+    }
+  },
+  "monitoring": {
+    "logging": {
+      "level": "info",
+      "format": "json",
+      "rotation": "daily",
+      "retention": "30 days"
+    },
+    "metrics": {
+      "enabled": true,
+      "endpoint": "/metrics",
+      "custom_metrics": [
+        "gis_operations_total",
+        "document_classifications_total",
+        "websocket_connections_active",
+        "database_query_duration"
+      ]
+    },
+    "health_checks": {
+      "database": true,
+      "external_apis": true,
+      "memory_usage": true,
+      "disk_space": true
+    }
+  },
+  "features": {
+    "gis": {
+      "providers": ["mapbox", "leaflet", "arcgis"],
+      "supported_formats": ["geojson", "shapefile", "kml", "gpx"],
+      "coordinate_systems": ["WGS84", "NAD83", "State Plane"],
+      "analysis_tools": ["buffer", "intersection", "union", "clip"]
+    },
+    "document_processing": {
+      "ai_classification": true,
+      "ocr_extraction": true,
+      "legal_description_parsing": true,
+      "metadata_extraction": true,
+      "supported_formats": ["pdf", "docx", "txt", "jpg", "png", "tiff"]
+    },
+    "collaboration": {
+      "real_time_editing": true,
+      "user_presence": true,
+      "comments_annotations": true,
+      "version_control": true,
+      "conflict_resolution": "last_writer_wins"
+    },
+    "reporting": {
+      "dashboard_analytics": true,
+      "custom_reports": true,
+      "scheduled_reports": true,
+      "export_formats": ["pdf", "excel", "csv", "geojson"]
+    }
+  },
+  "integrations": {
+    "external_apis": {
+      "anthropic": {
+        "purpose": "Document classification and AI assistance",
+        "required": true,
+        "env_var": "ANTHROPIC_API_KEY"
+      },
+      "mapbox": {
+        "purpose": "Advanced mapping and geocoding",
+        "required": false,
+        "env_var": "MAPBOX_ACCESS_TOKEN"
+      },
+      "arcgis": {
+        "purpose": "ESRI services integration",
+        "required": false,
+        "env_var": "ARCGIS_API_KEY"
+      }
+    },
+    "webhooks": {
+      "enabled": true,
+      "events": [
+        "document.processed",
+        "parcel.updated",
+        "assessment.completed",
+        "user.login"
+      ]
+    }
+  },
+  "compliance": {
+    "standards": ["SOC2", "GDPR", "CCPA", "HIPAA"],
+    "audit_logging": {
+      "enabled": true,
+      "events": ["create", "read", "update", "delete", "login", "logout"],
+      "retention": "7 years"
+    },
+    "data_retention": {
+      "user_data": "7 years",
+      "audit_logs": "7 years",
+      "documents": "permanent",
+      "system_logs": "1 year"
+    }
+  },
+  "testing": {
+    "unit_tests": {
+      "framework": "Jest",
+      "coverage_threshold": 80,
+      "test_files": "__tests__/**/*.test.ts"
+    },
+    "integration_tests": {
+      "framework": "Supertest",
+      "database": "test_database",
+      "cleanup": true
+    },
+    "e2e_tests": {
+      "framework": "Puppeteer",
+      "browsers": ["chrome", "firefox"],
+      "viewport": "1920x1080"
+    }
+  },
+  "development": {
+    "git_hooks": {
+      "pre_commit": ["lint", "type-check", "test"],
+      "pre_push": ["test", "build"]
+    },
+    "code_quality": {
+      "linter": "ESLint",
+      "formatter": "Prettier",
+      "type_checker": "TypeScript"
+    },
+    "debugging": {
+      "source_maps": true,
+      "hot_reload": true,
+      "error_overlay": true
+    }
+  },
+  "operations": {
+    "backup_strategy": {
+      "frequency": "daily",
+      "retention": "30 days",
+      "verification": true,
+      "encryption": true
+    },
+    "disaster_recovery": {
+      "rto": "4 hours",
+      "rpo": "1 hour",
+      "backup_locations": ["primary", "secondary"],
+      "failover_strategy": "active_passive"
+    },
+    "scaling": {
+      "horizontal": true,
+      "auto_scaling": true,
+      "load_balancer": "nginx",
+      "session_store": "redis"
+    }
+  },
+  "legal": {
+    "privacy_policy": "docs/legal/privacy-policy.md",
+    "terms_of_service": "docs/legal/terms-of-service.md",
+    "data_processing_agreement": "docs/legal/dpa.md",
+    "security_policy": "docs/legal/security-policy.md"
+  },
+  "support": {
+    "documentation": {
+      "user_guide": "docs/user-guides/",
+      "api_reference": "docs/api/",
+      "technical_docs": "docs/technical/",
+      "troubleshooting": "docs/troubleshooting/"
+    },
+    "contact": {
+      "technical_support": "support@terrafusionmarket.com",
+      "security_issues": "security@terrafusionmarket.com",
+      "general_inquiries": "info@terrafusionmarket.com"
+    }
+  },
+  "roadmap": {
+    "current_version": "1.0.0",
+    "next_release": "1.1.0",
+    "planned_features": [
+      "3D visualization",
+      "Mobile application",
+      "Advanced AI predictions",
+      "Blockchain verification",
+      "IoT sensor integration"
+    ],
+    "deprecation_policy": "6 months notice for breaking changes"
+  }
+}

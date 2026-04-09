@@ -44,6 +44,85 @@ public record CostApproachResult
 
     /// <summary>Cost model input factors for the explain_model_inputs tool.</summary>
     public List<ModelInputEntry> Inputs { get; init; } = [];
+
+    // ── CP-4: Depreciation percentages (IAAO standard — show both $ and %) ──
+    /// <summary>Physical depreciation as a percent of RCN (0–100).</summary>
+    public double PhysicalDepreciationPct { get; init; }
+
+    /// <summary>Functional obsolescence as a percent of RCN (0–100).</summary>
+    public double FunctionalObsolescencePct { get; init; }
+
+    /// <summary>External obsolescence as a percent of RCN (0–100).</summary>
+    public double ExternalObsolescencePct { get; init; }
+
+    // ── CP-4: Building characteristics from CamaCharacteristic ──
+    public int? YearBuilt { get; init; }
+    public int? EffectiveAge { get; init; }
+    public string? QualityGrade { get; init; }
+    public string? ConditionGrade { get; init; }
+    public decimal? BuildingSqFt { get; init; }
+
+    // ── CP-4: Land summary from CamaCharacteristic ──
+    public decimal? LandAreaSqFt { get; init; }
+    public decimal? LandAreaAcres { get; init; }
+
+    // ── CP-4: WA RCW 84.34 agricultural / timber classification ──
+    public bool IsAgriculturalOrTimber { get; init; }
+    public string? WaClassificationNote { get; init; }
+
+    // ── Phase B: Physical building attributes from PACS improvement attributes ──
+    /// <summary>Foundation type (e.g., Crawl/Concrete Perimeter Piers, Slab, Post & Pier).</summary>
+    public string? Foundation { get; init; }
+    /// <summary>Exterior wall material (e.g., Alum siding, Vinyl, Brick Veneer).</summary>
+    public string? ExteriorWall { get; init; }
+    /// <summary>Roof covering type (e.g., Comp Shingle, Comp Shingle - Arch, Metal).</summary>
+    public string? RoofType { get; init; }
+    /// <summary>HVAC system type.</summary>
+    public string? HvacType { get; init; }
+    public int? Bedrooms { get; init; }
+    public int? Bathrooms { get; init; }
+    public int? Fireplaces { get; init; }
+
+    // ── Phase B: Per-segment cost breakdown ──
+    /// <summary>
+    /// Benton county percent-good from the primary segment's age×condition matrix lookup.
+    /// percent-good = 86 means 86% of new value remains; effective depreciation = 14%.
+    /// Null when no segment data is available.
+    /// </summary>
+    public double? CountyPercentGood { get; init; }
+
+    /// <summary>
+    /// Individual building segments with matrix join keys and area/unit-price data.
+    /// Empty when CamaImprovementDetail rows are not present for the parcel.
+    /// </summary>
+    public List<SegmentEntry> Segments { get; init; } = [];
+}
+
+/// <summary>
+/// One building segment row from cama_improvement_details.
+/// Preserves PACS cost matrix join keys for CostForge recalculation.
+/// </summary>
+public record SegmentEntry
+{
+    /// <summary>Segment type code (ImprvDetTypeCd): MA, CovPatio, Patio, Shop, DETGAR, etc.</summary>
+    public string? SegmentType { get; init; }
+    /// <summary>Human-readable PACS description.</summary>
+    public string? SegmentDesc { get; init; }
+    /// <summary>Method code — matrix join key (e.g., R, EXT-B).</summary>
+    public string? MethodCode { get; init; }
+    /// <summary>Class/quality code — matrix join key (e.g., 25, 30, Avg).</summary>
+    public string? ClassCode { get; init; }
+    /// <summary>Sub-class code (* standard, + plus tier).</summary>
+    public string? SubClassCode { get; init; }
+    /// <summary>Floor area in square feet.</summary>
+    public decimal? Area { get; init; }
+    /// <summary>PACS unit cost per square foot.</summary>
+    public decimal? UnitPrice { get; init; }
+    /// <summary>PACS-computed segment value (Area × UnitPrice × adjustments). Null if not loaded.</summary>
+    public decimal? CalcValue { get; init; }
+    /// <summary>Condition code for this segment.</summary>
+    public string? ConditionCode { get; init; }
+    public int? YearBuilt { get; init; }
 }
 
 public record ModelInputEntry
@@ -84,6 +163,46 @@ public record SalesComparisonResult
 
     public string Source { get; init; } = "fallback";
     public double Confidence { get; init; }
+
+    // ── CP-5: IAAO sales ratio statistics ──
+    /// <summary>Median sales ratio (adjusted/sale). 1.0 when no adjustment applied.</summary>
+    public double SalesRatioMedian { get; init; }
+
+    /// <summary>Coefficient of Dispersion per IAAO standards (%). IAAO target: ≤15% residential.</summary>
+    public double CoefficientOfDispersion { get; init; }
+
+    /// <summary>
+    /// Price-Related Differential (IAAO standard). Arithmetic mean / weighted mean.
+    /// IAAO target: 0.98–1.03. >1.03 = assessment regressivity; &lt;0.98 = progressivity.
+    /// 0.0 when fewer than 2 qualified sales with PACS ratios available.
+    /// </summary>
+    public double PriceRelatedDifferential { get; init; }
+
+    /// <summary>Number of sales with EffectiveQualification = "qualified" used in ratio statistics.</summary>
+    public int QualifiedSaleCount { get; init; }
+
+    /// <summary>True when comps were filtered by neighborhood code.</summary>
+    public bool NeighborhoodFilterActive { get; init; }
+
+    // ── OLS Regression (market-extracted adjustments) ──
+    /// <summary>
+    /// Regression-indicated value from OLS model fitted on comparable sales.
+    /// Uses GLA, LotSizeSqft, YearBuilt as predictors.
+    /// Null when fewer than 5 qualified comps are available.
+    /// </summary>
+    public decimal? RegressionIndicatedValue { get; init; }
+
+    /// <summary>Coefficient of determination (R²) for the regression model. Null when model not run.</summary>
+    public double? RegressionRSquared { get; init; }
+
+    /// <summary>Adjusted R² penalising for number of predictors. Null when model not run.</summary>
+    public double? RegressionRSquaredAdj { get; init; }
+
+    /// <summary>Number of comparable sales used in the regression fit.</summary>
+    public int? RegressionCompsUsed { get; init; }
+
+    /// <summary>Regression model coefficients: [intercept, GLA, lot, yearBuilt]. Null when model not run.</summary>
+    public double[]? RegressionBeta { get; init; }
 }
 
 public record ComparableSaleEntry
@@ -94,6 +213,68 @@ public record ComparableSaleEntry
     public decimal AdjustedPrice { get; init; }
     public double Similarity { get; init; }
     public List<string> Notes { get; init; } = [];
+
+    // CP-5: per-comp sales ratio (adjustedPrice / salePrice)
+    public double SalesRatio { get; init; }
+
+    /// <summary>Sale price per square foot of gross living area. Null if GLA not available.</summary>
+    public decimal? PricePerSqFt { get; init; }
+
+    // ── 3-Layer Qualification (read-only for UI display + override surface) ──
+    /// <summary>Stable ID of the ComparableSale record — required for the PATCH override endpoint.</summary>
+    public Guid SaleId { get; init; }
+
+    /// <summary>Layer 2: TF rule engine recommendation (recomputable, not authoritative).</summary>
+    public string? QualificationRecommendation { get; init; }
+
+    /// <summary>Layer 3: Assessor's explicit decision. Null = no override, falls back to recommendation.</summary>
+    public string? QualificationDecision { get; init; }
+
+    /// <summary>"AssessorOverride" | "AcceptedRecommendation" | null</summary>
+    public string? DecisionSource { get; init; }
+
+    /// <summary>Effective qualification used by ValuationService: Decision ?? Recommendation.</summary>
+    public string? EffectiveQualification { get; init; }
+
+    // ── Raw PACS Sale data (Layer 1 verbatim fields for ratio study) ──
+    /// <summary>PACS adjusted_sl_price — the price used in ratio study calculations (raw price ± adjustments). Use this, not SalePrice, for ratio math.</summary>
+    public decimal? AdjustedSalePriceFromPacs { get; init; }
+
+    /// <summary>PACS sl_ratio_type_cd — WA State DOR ratio study type code (e.g. "100").</summary>
+    public string? RawRatioTypeCd { get; init; }
+
+    /// <summary>PACS sl_county_ratio_cd — county's qualified/unqualified designation (e.g. "SWD", "WD").</summary>
+    public string? RawCountyRatioCd { get; init; }
+
+    /// <summary>PACS sl_ratio_cd_reason — human-readable reason for DOR report (e.g. "Gift- Grantee pays debt").</summary>
+    public string? RawRatioCdReason { get; init; }
+
+    /// <summary>PACS sl_type_cd — deed/sale type code.</summary>
+    public string? RawSaleTypeCode { get; init; }
+
+    /// <summary>PACS sl_ratio — pre-computed ratio from PACS (for audit/display; not used in TF calcs).</summary>
+    public decimal? PacsComputedRatio { get; init; }
+
+    /// <summary>PACS land_only_sale — true = land-only; affects which value base the ratio is computed against.</summary>
+    public bool? LandOnlySale { get; init; }
+
+    /// <summary>PACS continue_current_use — WA current use (open space/farm/timber) must continue.</summary>
+    public bool? ContinueCurrentUse { get; init; }
+
+    /// <summary>PACS sales_year — DOR ratio study year assigned by PACS (may differ from SaleDate.Year).</summary>
+    public int? SalesYear { get; init; }
+
+    /// <summary>PACS suppress_on_ratio_rpt_cd — "T" suppresses this sale from the DOR ratio report.</summary>
+    public string? SuppressOnRatioRptCd { get; init; }
+
+    /// <summary>PACS include_no_calc — sale appears in ratio report but is excluded from IAAO calculations.</summary>
+    public bool? IncludeNoCalc { get; init; }
+
+    /// <summary>PACS exemption_amount — REET exemption amount applied to this sale.</summary>
+    public decimal? SaleExemptionAmount { get; init; }
+
+    /// <summary>PACS sl_comment — general sale comment recorded by staff.</summary>
+    public string? RawComment { get; init; }
 }
 
 // ── Income Approach ────────────────────────────────────────────────────
@@ -118,6 +299,25 @@ public record IncomeApproachResult
 
     public string Source { get; init; } = "fallback";
     public double Confidence { get; init; }
+
+    // ── CP-6: Methodology disclosure for assessor review ──
+    /// <summary>Gross income from the canonical valuation record.</summary>
+    public decimal GrossIncome { get; init; }
+
+    /// <summary>Expense ratio used in NOI derivation (e.g. 0.40). Null if NOI was direct from record.</summary>
+    public double? ExpenseRatio { get; init; }
+
+    /// <summary>True when NOI was derived from gross income using assumed expense ratio, not from actual record.</summary>
+    public bool NoiDerived { get; init; }
+
+    /// <summary>True when the cap rate is the Benton County market default (7.0%), not from actual data.</summary>
+    public bool CapRateDefaulted { get; init; }
+
+    /// <summary>Brief methodology note for display: discloses assumptions used.</summary>
+    public string? MethodologyNote { get; init; }
+
+    /// <summary>Whether income approach is applicable to this property type.</summary>
+    public bool IncomeApproachApplicable { get; init; }
 }
 
 // ── Reconciliation ─────────────────────────────────────────────────────

@@ -6,7 +6,58 @@
     <ProjectGuid>{D51C44A1-8F56-45AA-9505-A928F68BF2A4}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql150DatabaseSchemaProvider</DSP>
     <ModelCollation>1033, CI</ModelCollation>
+    <TreatTSqlWarningsAsErrors>False</TreatTSqlWarningsAsErrors>
+    <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- Tables-only build: SSISDB has complex CLR/Windows-auth dependencies.
+         Exclude all non-table objects to produce a deployable schema. -->
+    <Build Remove="internal\Views\**\*.sql" />
+    <Build Remove="catalog\Views\**\*.sql" />
+    <Build Remove="Views\**\*.sql" />
+    <Build Remove="Assemblies\**\*.sql" />
+    <Build Remove="internal\Functions\**\*.sql" />
+    <Build Remove="internal\StoredProcedures\**\*.sql" />
+    <Build Remove="catalog\Functions\**\*.sql" />
+    <Build Remove="catalog\StoredProcedures\**\*.sql" />
+    <Build Remove="Functions\**\*.sql" />
+    <Build Remove="StoredProcedures\**\*.sql" />
+    <Build Remove="DatabaseTriggers\**\*.sql" />
+    <!-- Exclude Windows-domain user/login references (CO\qlue doesn't exist in local dev) -->
+    <Build Remove="Security\CO_qlue.sql" />
+    <Build Remove="Security\CO_qlue_1.sql" />
+    <Build Remove="Security\Permission.sql" />
+    <Build Remove="Security\Permission_1.sql" />
+    <Build Remove="Security\Permission_2.sql" />
+    <Build Remove="Security\Permission_3.sql" />
+    <Build Remove="Security\Permission_4.sql" />
+    <Build Remove="Security\Permission_5.sql" />
+    <Build Remove="Security\Permission_6.sql" />
+    <Build Remove="Security\Permission_7.sql" />
+    <Build Remove="Security\Permission_8.sql" />
+    <Build Remove="Security\Permission_9.sql" />
+    <Build Remove="Security\Permission_10.sql" />
+    <Build Remove="Security\Permission_11.sql" />
+    <Build Remove="Security\Permission_12.sql" />
+    <Build Remove="Security\Permission_13.sql" />
+    <Build Remove="Security\Permission_14.sql" />
+    <Build Remove="Security\Permission_15.sql" />
+    <Build Remove="Security\Permission_16.sql" />
+    <Build Remove="Security\Permission_17.sql" />
+    <Build Remove="Security\Permission_18.sql" />
+    <Build Remove="Security\Permission_19.sql" />
+    <Build Remove="Security\Permission_20.sql" />
+    <!-- Exclude role files that ADD MEMBER [CO\qlue] (role creation is fine but membership fails) -->
+    <Build Remove="Security\ssis_admin.sql" />
+    <Build Remove="Security\ssis_cluster_executor.sql" />
+    <Build Remove="Security\ssis_cluster_worker.sql" />
+    <Build Remove="Security\ssis_failover_monitoring_agent.sql" />
+    <Build Remove="Security\ssis_logreader.sql" />
+    <!-- Exclude scale-out tables that GRANT to excluded roles -->
+    <Build Remove="internal\Tables\event_message_context_scaleout.sql" />
+    <Build Remove="internal\Tables\event_messages_scaleout.sql" />
+    <Build Remove="internal\Tables\operation_messages_scaleout.sql" />
+  </ItemGroup>
   <Target Name="BeforeBuild">
     <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
   </Target>

@@ -1,0 +1,27 @@
+{
+  "name": "@terrafusion/terra-levy",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "description": "TerraFusion Tax Levy Calculation App",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^5.18.0",
+    "@mui/material": "^5.18.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.20",
+    "@types/react-dom": "^18.3.6",
+    "@vitejs/plugin-react": "^4.7.0",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.14"
+  }
+}

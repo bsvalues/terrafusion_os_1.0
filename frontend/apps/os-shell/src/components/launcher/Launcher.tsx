@@ -152,7 +152,7 @@ const LauncherItemButton: React.FC<{
 
   const buttonClasses = useTactile
     ? 'tactile-button w-full text-left group'
-    : 'launcher-item-fallback w-full text-left group hover:bg-white/10 rounded-lg p-3 transition-colors';
+    : 'launcher-item-fallback w-full text-left group rounded-lg p-3 transition-colors hover:bg-[hsl(var(--tf-text)_/_0.06)]';
 
   const handlePinClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -170,7 +170,7 @@ const LauncherItemButton: React.FC<{
       </span>
       <div className='flex-1 min-w-0'>
         <div className='flex items-center gap-2'>
-          <span className='launcher-item-label font-medium text-white truncate'>{item.label}</span>
+          <span className='launcher-item-label font-medium truncate' style={{ color: 'hsl(var(--tf-text))' }}>{item.label}</span>
           <span
             className={`text-[10px] px-1.5 py-0.5 rounded font-medium
               ${item.intent === 'workbench' ? 'bg-emerald-500/80 text-white' : ''}
@@ -182,7 +182,7 @@ const LauncherItemButton: React.FC<{
             {intentBadge}
           </span>
         </div>
-        <p className='text-white/60 text-sm truncate'>{item.description}</p>
+        <p className='text-sm truncate' style={{ color: 'hsl(var(--tf-muted))' }}>{item.description}</p>
       </div>
       {/* Pin Toggle Button */}
       {useTactile ? (
@@ -200,10 +200,10 @@ const LauncherItemButton: React.FC<{
       ) : (
         <button
           type='button'
-          className={`ml-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 
+          className={`ml-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100
                       focus:opacity-100 transition-opacity p-1 rounded
-                      ${isPinned ? 'opacity-100 text-cyan-400' : 'text-white/40 hover:text-white/60'}
-                      focus:outline-none focus:ring-2 focus:ring-cyan-400/50`}
+                      focus:outline-none focus:ring-2`}
+          style={{ color: isPinned ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-muted))' }}
           onClick={handlePinClick}
           aria-label={isPinned ? `Unpin ${item.label}` : `Pin ${item.label}`}
           aria-pressed={isPinned}
@@ -275,7 +275,7 @@ const LauncherSectionView: React.FC<{
   <div role='group' aria-labelledby={`section-${section.id}`} className='mb-4'>
     <h3
       id={`section-${section.id}`}
-      className='text-xs uppercase tracking-wider text-white/50 font-semibold mb-2 px-2'
+      className='text-xs uppercase tracking-wider font-semibold mb-2 px-2' style={{ color: 'hsl(var(--tf-muted))' }}
     >
       {section.label}
     </h3>
@@ -432,7 +432,7 @@ export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => 
           onClick={(e) => e.stopPropagation()}
         >
           {/* Search Input */}
-          <div className='p-4 border-b border-white/10'>
+          <div className='p-4 border-b' style={{ borderColor: 'hsl(var(--tf-border) / 0.4)' }}>
             <input
               ref={searchInputRef}
               type='search'
@@ -441,9 +441,13 @@ export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => 
               placeholder='Search suites, tools, settings...'
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className='w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg
-                       text-white placeholder-white/50
-                       focus:outline-none focus:ring-2 focus:ring-cyan-400/50'
+              className='w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2'
+              style={{
+                background: 'hsl(var(--tf-text) / 0.07)',
+                border: '1px solid hsl(var(--tf-border) / 0.5)',
+                color: 'hsl(var(--tf-text))',
+                caretColor: 'hsl(var(--tf-accent))',
+              }}
             />
           </div>
 
@@ -464,21 +468,21 @@ export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => 
                 />
               ))
             ) : (
-              <div className='text-center text-white/50 py-8'>
+              <div className='text-center py-8' style={{ color: 'hsl(var(--tf-muted))' }}>
                 No results found for "{searchQuery}"
               </div>
             )}
           </div>
 
           {/* Footer Hints */}
-          <div className='p-3 border-t border-white/10 text-white/40 text-xs flex justify-between'>
+          <div className='p-3 border-t text-xs flex justify-between' style={{ borderColor: 'hsl(var(--tf-border) / 0.4)', color: 'hsl(var(--tf-muted))' }}>
             <span>
-              <kbd className='px-1.5 py-0.5 bg-white/10 rounded'>↑↓</kbd> Navigate
+              <kbd className='px-1.5 py-0.5 rounded' style={{ background: 'hsl(var(--tf-text) / 0.08)' }}>↑↓</kbd> Navigate
               <span className='mx-2'>•</span>
-              <kbd className='px-1.5 py-0.5 bg-white/10 rounded'>Enter</kbd> Open
+              <kbd className='px-1.5 py-0.5 rounded' style={{ background: 'hsl(var(--tf-text) / 0.08)' }}>Enter</kbd> Open
             </span>
             <span>
-              <kbd className='px-1.5 py-0.5 bg-white/10 rounded'>Esc</kbd> Close
+              <kbd className='px-1.5 py-0.5 rounded' style={{ background: 'hsl(var(--tf-text) / 0.08)' }}>Esc</kbd> Close
             </span>
           </div>
         </LiquidPanel>
@@ -486,16 +490,19 @@ export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => 
         // Fallback container (no glass effects)
         <div
           ref={containerRef}
-          className='launcher-fallback w-full max-w-xl max-h-[60vh] overflow-hidden flex flex-col
-                     bg-slate-900/95 border border-white/20 rounded-xl shadow-2xl'
+          className='launcher-fallback w-full max-w-xl max-h-[60vh] overflow-hidden flex flex-col rounded-xl shadow-2xl'
           role='dialog'
           aria-modal='true'
           aria-label='TerraFusion Launcher - Search and navigate'
           data-testid='launcher-content'
           onClick={(e) => e.stopPropagation()}
+          style={{
+            background: 'hsl(var(--tf-surface) / 0.96)',
+            border: '1px solid hsl(var(--tf-border) / 0.5)',
+          }}
         >
           {/* Search Input */}
-          <div className='p-4 border-b border-white/10'>
+          <div className='p-4 border-b' style={{ borderColor: 'hsl(var(--tf-border) / 0.4)' }}>
             <input
               ref={searchInputRef}
               type='search'
@@ -504,9 +511,13 @@ export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => 
               placeholder='Search suites, tools, settings...'
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className='w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg
-                       text-white placeholder-white/50
-                       focus:outline-none focus:ring-2 focus:ring-cyan-400/50'
+              className='w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2'
+              style={{
+                background: 'hsl(var(--tf-text) / 0.07)',
+                border: '1px solid hsl(var(--tf-border) / 0.5)',
+                color: 'hsl(var(--tf-text))',
+                caretColor: 'hsl(var(--tf-accent))',
+              }}
             />
           </div>
 
@@ -527,21 +538,21 @@ export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => 
                 />
               ))
             ) : (
-              <div className='text-center text-white/50 py-8'>
+              <div className='text-center py-8' style={{ color: 'hsl(var(--tf-muted))' }}>
                 No results found for "{searchQuery}"
               </div>
             )}
           </div>
 
           {/* Footer Hints */}
-          <div className='p-3 border-t border-white/10 text-white/40 text-xs flex justify-between'>
+          <div className='p-3 border-t text-xs flex justify-between' style={{ borderColor: 'hsl(var(--tf-border) / 0.4)', color: 'hsl(var(--tf-muted))' }}>
             <span>
-              <kbd className='px-1.5 py-0.5 bg-white/10 rounded'>↑↓</kbd> Navigate
+              <kbd className='px-1.5 py-0.5 rounded' style={{ background: 'hsl(var(--tf-text) / 0.08)' }}>↑↓</kbd> Navigate
               <span className='mx-2'>•</span>
-              <kbd className='px-1.5 py-0.5 bg-white/10 rounded'>Enter</kbd> Open
+              <kbd className='px-1.5 py-0.5 rounded' style={{ background: 'hsl(var(--tf-text) / 0.08)' }}>Enter</kbd> Open
             </span>
             <span>
-              <kbd className='px-1.5 py-0.5 bg-white/10 rounded'>Esc</kbd> Close
+              <kbd className='px-1.5 py-0.5 rounded' style={{ background: 'hsl(var(--tf-text) / 0.08)' }}>Esc</kbd> Close
             </span>
           </div>
         </div>

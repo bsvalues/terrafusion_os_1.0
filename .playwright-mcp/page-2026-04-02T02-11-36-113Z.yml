@@ -1,0 +1,222 @@
+- main "TerraFusion Desktop" [ref=e8]:
+  - link "Skip to desktop content" [ref=e9] [cursor=pointer]:
+    - /url: "#desktop-main-content"
+  - generic [ref=e10]:
+    - generic [ref=e12]: TerraFusion OS
+    - generic [ref=e13]:
+      - generic [ref=e14]: Benton County
+      - generic [ref=e16]: Assessor's Office
+    - group "System utilities" [ref=e17]:
+      - button "Search (Ctrl+K)" [ref=e18]:
+        - img [ref=e19]
+        - generic [ref=e22]: ⌘K
+      - button "Scenes (Ctrl+,)" [ref=e23]:
+        - img [ref=e24]
+      - button "Sentinel diagnostics (Ctrl+Shift+S)" [ref=e29]:
+        - status [ref=e30]:
+          - text: SENTINEL
+          - generic [ref=e32]: · 5ms
+      - generic "Backend health responding" [ref=e33]:
+        - generic [ref=e35]: LIVE
+      - button "Notifications - 1 unread" [ref=e373] [cursor=pointer]:
+        - generic [ref=e38]: 🔔
+        - generic [ref=e374]: "1"
+      - 'generic "Current time: 7:11 PM, Wednesday, April 1, 2026" [ref=e39]':
+        - time [ref=e40]:
+          - text: 7:11 PM
+          - generic [ref=e41]: Apr 1
+      - button "Control Center (Ctrl+.)" [ref=e43]:
+        - img [ref=e44]
+      - button "Profile" [ref=e47]:
+        - img [ref=e48]
+  - generic [ref=e375]:
+    - button "Open TerraForge" [ref=e376] [cursor=pointer]:
+      - generic [ref=e377]:
+        - img [ref=e380]
+        - generic [ref=e382]: WB
+      - generic [ref=e383]: TerraForge
+    - button "Open TerraAtlas" [ref=e384] [cursor=pointer]:
+      - generic [ref=e385]:
+        - img [ref=e388]
+        - generic [ref=e391]: WB
+      - generic [ref=e392]: TerraAtlas
+    - button "Open TerraDais" [ref=e393] [cursor=pointer]:
+      - generic [ref=e394]:
+        - img [ref=e397]
+        - generic [ref=e402]: WB
+      - generic [ref=e403]: TerraDais
+    - button "Open TerraDossier" [ref=e404] [cursor=pointer]:
+      - generic [ref=e405]:
+        - img [ref=e408]
+        - generic [ref=e410]: WB
+      - generic [ref=e411]: TerraDossier
+    - button "Open TerraGPT" [ref=e412] [cursor=pointer]:
+      - generic [ref=e413]:
+        - img [ref=e416]
+        - generic [ref=e418]: OS
+      - generic [ref=e419]: TerraGPT
+    - button "Open Property Workbench" [ref=e420] [cursor=pointer]:
+      - generic [ref=e421]:
+        - img [ref=e424]
+        - generic [ref=e426]: OS
+      - generic [ref=e427]: Property Workbench
+    - button "Open TerraPilot" [ref=e428] [cursor=pointer]:
+      - generic [ref=e429]:
+        - img [ref=e432]
+        - generic [ref=e434]: OS
+      - generic [ref=e435]: TerraPilot
+    - button "Open TerraTrace" [ref=e436] [cursor=pointer]:
+      - generic [ref=e437]:
+        - img [ref=e440]
+        - generic [ref=e442]: OS
+      - generic [ref=e443]: TerraTrace
+    - button "Open TerraCanon" [ref=e444] [cursor=pointer]:
+      - generic [ref=e445]:
+        - img [ref=e448]
+        - generic [ref=e450]: OS
+      - generic [ref=e451]: TerraCanon
+  - region "Application windows":
+    - generic [ref=e454]:
+      - generic [ref=e455]:
+        - generic [ref=e457]:
+          - button "Close" [ref=e458]:
+            - generic [ref=e459]: ×
+          - button "Minimize" [ref=e460]:
+            - generic [ref=e461]: −
+          - button "Maximize" [ref=e462]:
+            - generic [ref=e463]: □
+        - generic:
+          - img:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - img
+          - generic: TerraLevy
+      - generic [ref=e467]:
+        - generic [ref=e468]: Starting terra-levy…
+        - iframe [ref=e469]:
+          - generic [ref=f2e3]:
+            - strong [ref=f2e4]: localhost
+            - text: refused to connect.
+  - navigation "Taskbar" [ref=e215]:
+    - button "Start Menu" [ref=e216]
+    - group "Core suites" [ref=e227]:
+      - button "TerraForge" [ref=e228]:
+        - img [ref=e229]
+        - generic [ref=e233]: Forge
+      - button "TerraAtlas" [ref=e234]:
+        - img [ref=e235]
+        - generic [ref=e238]: Atlas
+      - button "TerraDais" [ref=e239]:
+        - img [ref=e240]
+        - generic [ref=e245]: Dais
+      - button "TerraDossier" [ref=e246]:
+        - img [ref=e247]
+        - generic [ref=e251]: Dossier
+      - button "TerraGPT" [ref=e252]:
+        - img [ref=e253]
+        - generic [ref=e256]: GPT
+    - group "Running applications" [ref=e478]:
+      - button "TerraLevy" [pressed] [ref=e479]:
+        - img [ref=e480]
+  - region "Notifications":
+    - status [ref=e484]:
+      - generic [ref=e485]:
+        - img [ref=e487]
+        - generic [ref=e489]:
+          - heading "Module Opened" [level=4] [ref=e490]
+          - paragraph [ref=e491]: TerraLevy is now ready.
+        - button "Dismiss notification" [ref=e492]:
+          - img [ref=e493]
+  - dialog "Sentinel Console" [ref=e257]:
+    - generic [ref=e258]:
+      - generic [ref=e260]: SENTINEL CONSOLE
+      - button "Close Sentinel" [ref=e261]: ✕
+    - generic [ref=e262]:
+      - generic [ref=e263]:
+        - button "HEALTH" [ref=e264]
+        - button "NEURAL FEED" [ref=e265]
+      - generic [ref=e266]:
+        - generic [ref=e267]:
+          - generic [ref=e268]: System Status
+          - generic [ref=e269]: degraded
+        - generic [ref=e270]:
+          - generic [ref=e271]: Latency
+          - generic [ref=e272]: 5 ms
+      - generic [ref=e273]:
+        - generic [ref=e274]: Modules
+        - generic [ref=e275]:
+          - generic [ref=e276]:
+            - generic [ref=e277]: Active
+            - generic [ref=e278]: "0"
+          - generic [ref=e279]:
+            - generic [ref=e280]: Total Detected
+            - generic [ref=e281]: "1"
+      - generic [ref=e282]:
+        - generic [ref=e283]:
+          - generic [ref=e284]: Components
+          - generic [ref=e285]:
+            - generic [ref=e286]: 4 OK
+            - generic [ref=e287]: ·
+            - generic [ref=e288]: 4 TOTAL
+        - generic [ref=e289]:
+          - generic [ref=e290]:
+            - generic [ref=e293]: ModuleLoader
+            - generic [ref=e294]: OK
+          - generic [ref=e295]:
+            - generic [ref=e298]: LegacyIntegration
+            - generic [ref=e299]: OK
+          - generic [ref=e300]:
+            - generic [ref=e303]: AISwarm
+            - generic [ref=e304]: OK
+          - generic [ref=e305]:
+            - generic [ref=e308]: TerraFusionSync
+            - generic [ref=e309]: OK
+      - generic [ref=e310]:
+        - generic [ref=e311]: "SHA: dev"
+        - generic [ref=e312]: "API: /api/system/health"
+        - generic [ref=e313]: "Last Ping: 7:11:30 PM"
+      - generic [ref=e314]:
+        - generic [ref=e316]: Warnings Detected
+        - list [ref=e317]:
+          - listitem [ref=e318]: "Health status reported: Degraded"
+          - listitem [ref=e319]: No active modules loaded (check TF_MODULE_INTENT_FILTER and module path)
+  - dialog "Control Center" [ref=e320]:
+    - generic [ref=e321]:
+      - generic [ref=e322]:
+        - generic [ref=e323]:
+          - img [ref=e324]
+          - generic [ref=e327]: CONTROL CENTER
+        - button "Close Control Center" [ref=e328] [cursor=pointer]:
+          - img [ref=e329]
+      - generic [ref=e332]:
+        - generic [ref=e333]:
+          - generic [ref=e334]:
+            - img [ref=e335]
+            - generic [ref=e337]: Map Layers
+            - status [ref=e338]: "2"
+          - generic [ref=e340]:
+            - generic [ref=e341] [cursor=pointer]:
+              - generic [ref=e342]: Parcels
+              - switch "Parcels" [checked] [ref=e343]
+            - generic [ref=e345] [cursor=pointer]:
+              - generic [ref=e346]: Zoning
+              - switch "Zoning" [ref=e347]
+            - generic [ref=e349] [cursor=pointer]:
+              - generic [ref=e350]: Flood Zones
+              - switch "Flood Zones" [ref=e351]
+            - generic [ref=e353] [cursor=pointer]:
+              - generic [ref=e354]: Aerial Imagery
+              - switch "Aerial Imagery" [checked] [ref=e355]
+            - generic [ref=e357] [cursor=pointer]:
+              - generic [ref=e358]: Contours
+              - switch "Contours" [ref=e359]
+        - generic [ref=e361]:
+          - generic [ref=e362]:
+            - img [ref=e363]
+            - generic [ref=e367]: Model Version
+          - generic [ref=e369]:
+            - button "v2026.1" [pressed] [ref=e370] [cursor=pointer]
+            - button "v2025.2" [ref=e371] [cursor=pointer]
+            - button "v2025.1" [ref=e372] [cursor=pointer]

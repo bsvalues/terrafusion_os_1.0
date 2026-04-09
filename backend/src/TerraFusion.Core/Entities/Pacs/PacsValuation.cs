@@ -144,7 +144,7 @@ public class PacsValuation
     [Column(TypeName = "decimal(10,4)")] public decimal? EffSizeAcres { get; set; }
 
     // ── Geographic Codes ─────────────────────────────────────────────────
-    [MaxLength(10)] public string? NeighborhoodCode { get; set; }
+    [Column("hood_cd")] [MaxLength(10)] public string? NeighborhoodCode { get; set; }
     [MaxLength(10)] public string? AbsSubdvCd { get; set; }
     [MaxLength(5)] public string? RegionCode { get; set; }
     [MaxLength(5)] public string? SubsetCd { get; set; }

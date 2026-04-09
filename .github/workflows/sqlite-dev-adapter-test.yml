@@ -29,22 +29,22 @@ jobs:
       - name: Install JS dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install sqlite3 for CI (no-save)
-        run: npm install sqlite3@5.1.7 --no-save --ignore-scripts=false
+      - name: Install sqlite3 for CI (isolated — outside pnpm workspace)
+        run: |
+          mkdir -p /tmp/sqlite-deps
+          cd /tmp/sqlite-deps
+          npm init -y
+          npm install sqlite3@5.1.7
 
       - name: Prepare sqlite test environment
-        run: |
-          mkdir -p ./.tmp
-        env:
-          TF_DEV_AUDIT: '1'
-          TF_DEV_AUDIT_STORE: 'sqlite'
-          TF_DEV_AUDIT_DB: ${{ github.workspace }}/.tmp/terrafusion-ci.db
+        run: mkdir -p ./.tmp
 
       - name: Run sqlite-backed Node test
         env:
           TF_DEV_AUDIT: '1'
           TF_DEV_AUDIT_STORE: 'sqlite'
           TF_DEV_AUDIT_DB: ${{ github.workspace }}/.tmp/terrafusion-ci.db
+          NODE_PATH: /tmp/sqlite-deps/node_modules
         run: |
           node --test os-platform/core/pilot/trace/tests/dev-audit.test.mjs
 

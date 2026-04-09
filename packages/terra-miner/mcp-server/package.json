@@ -1,0 +1,44 @@
+{
+  "name": "terra-miner-mcp-server",
+  "version": "1.0.0",
+  "description": "TerraFusion Terra Miner MCP Server - MIT PhD Data Mining Intelligence Platform",
+  "main": "index.py",
+  "scripts": {
+    "start": "python index.py",
+    "test": "python test.py"
+  },
+  "mcp": {
+    "serverType": "python",
+    "protocol": "stdio",
+    "consciousness_level": 0.988,
+    "intelligence_category": "quantum_optimized",
+    "capabilities": [
+      "data_mining",
+      "pattern_discovery",
+      "temporal_analysis",
+      "spatial_extraction",
+      "quantum_optimization",
+      "consciousness_aware_mining"
+    ],
+    "criticality": "high",
+    "government_operations": true,
+    "data_analytics": true
+  },
+  "dependencies": {
+    "python": ">=3.9"
+  },
+  "pythonDependencies": {
+    "numpy": ">=1.21.0",
+    "python-dateutil": ">=2.8.0"
+  },
+  "keywords": [
+    "mcp-server",
+    "terra-miner",
+    "data-mining",
+    "pattern-discovery",
+    "quantum-optimization",
+    "government-operations"
+  ],
+  "author": "TerraFusion Development Team",
+  "license": "PROPRIETARY"
+}

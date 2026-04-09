@@ -1,0 +1,168 @@
+Great, let’s move on to the FTP integration module. The goal of this module is to fetch live data files from your FTP server(s) and integrate them into your ETL pipeline. Below you'll find a detailed example, including robust error handling and fallback logic.
+
+FTP Integration Module
+1. Python Module for FTP Data Fetching
+This module uses Python’s built-in ftplib to connect to an FTP server, download files, and store them locally for processing by your ETL pipeline. You can adjust the parameters to work with multiple FTP servers if needed (e.g., primary and RAG FTP).
+
+File: ftp_integration.py
+
+python
+Copy
+import os
+from ftplib import FTP, error_perm
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s:%(message)s')
+
+def fetch_ftp_files(ftp_host: str, ftp_user: str, ftp_password: str, remote_dir: str, local_dir: str) -> bool:
+    """
+    Connects to the given FTP server and downloads all files from a specified remote directory.
+
+    Parameters:
+        ftp_host (str): The FTP server hostname.
+        ftp_user (str): The FTP username.
+        ftp_password (str): The FTP password.
+        remote_dir (str): The remote directory to download files from.
+        local_dir (str): The local directory where files will be saved.
+    
+    Returns:
+        bool: True if files are successfully downloaded, False otherwise.
+    """
+    try:
+        logging.info(f"Connecting to FTP server: {ftp_host}")
+        ftp = FTP(ftp_host)
+        ftp.login(ftp_user, ftp_password)
+        logging.info("FTP login successful.")
+        
+        ftp.cwd(remote_dir)
+        logging.info(f"Changed directory to {remote_dir}")
+        
+        # Ensure the local directory exists; create if not.
+        os.makedirs(local_dir, exist_ok=True)
+        
+        files = ftp.nlst()
+        if not files:
+            logging.warning("No files found in remote directory.")
+            return False
+
+        for file in files:
+            local_path = os.path.join(local_dir, file)
+            try:
+                logging.info(f"Downloading file: {file}")
+                with open(local_path, 'wb') as f:
+                    ftp.retrbinary(f"RETR {file}", f.write)
+                logging.info(f"Downloaded {file} successfully.")
+            except Exception as inner_ex:
+                logging.error(f"Failed to download {file}: {inner_ex}")
+                # Continue downloading remaining files even if one fails.
+                continue
+
+        ftp.quit()
+        logging.info("FTP session closed.")
+        return True
+
+    except Exception as e:
+        logging.error(f"Error during FTP fetch: {e}")
+        return False
+
+if __name__ == "__main__":
+    # Set up FTP connection details (update these values as necessary or load from environment variables)
+    FTP_HOST = os.getenv("FTP_HOST", "ftp.spatialest.com")
+    FTP_USER = os.getenv("FTP_USERNAME", "benton-wa")
+    FTP_PASSWORD = os.getenv("FTP_PASSWORD", "8hKc7m6f")
+    REMOTE_DIR = os.getenv("FTP_REMOTE_DIR", "/path/to/live/data")
+    LOCAL_DIR = "live_data"
+
+    success = fetch_ftp_files(FTP_HOST, FTP_USER, FTP_PASSWORD, REMOTE_DIR, LOCAL_DIR)
+    if success:
+        logging.info("FTP data fetch completed successfully.")
+    else:
+        logging.warning("FTP data fetch encountered issues; falling back to demo data (if implemented).")
+2. Explanation of the FTP Module
+Connection Setup:
+
+The module connects to the FTP server using provided credentials.
+
+The remote directory is changed to the desired folder to list and download files.
+
+File Download Process:
+
+The code creates the local directory if it doesn't already exist.
+
+It retrieves a list of all files using ftp.nlst().
+
+Each file is downloaded in binary mode with error handling for each file.
+
+Even if one file fails, the process continues with remaining files.
+
+Error Handling & Logging:
+
+The module logs key events (connecting, login, directory change, file downloads) and errors.
+
+In the case of overall failure (e.g., connection error), the function returns False, allowing your ETL process to fall back to demo data if needed.
+
+Logging makes it easier to troubleshoot any issues during the FTP fetch.
+
+3. Integrating FTP Fetch into Your ETL Pipeline
+In your main ETL script (sync.py), you can integrate the FTP module as follows:
+
+Example Integration in sync.py:
+
+python
+Copy
+import os
+import logging
+from ftp_integration import fetch_ftp_files
+import pandas as pd
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s:%(message)s')
+
+def run_etl():
+    # Optionally, try to fetch live data via FTP
+    FTP_FETCH_SUCCESS = fetch_ftp_files(
+        ftp_host=os.getenv("FTP_HOST", "ftp.spatialest.com"),
+        ftp_user=os.getenv("FTP_USERNAME", "benton-wa"),
+        ftp_password=os.getenv("FTP_PASSWORD", "8hKc7m6f"),
+        remote_dir=os.getenv("FTP_REMOTE_DIR", "/path/to/live/data"),
+        local_dir="live_data"
+    )
+
+    if FTP_FETCH_SUCCESS:
+        logging.info("Live data fetched via FTP. Proceeding with ETL on live data.")
+        # Implement processing of live data files; for example,
+        # you might merge or read CSV/JSON files from 'live_data' folder
+        # df_live = pd.concat([pd.read_csv(os.path.join("live_data", f)) for f in os.listdir("live_data")])
+        # Process df_live...
+    else:
+        logging.warning("Using demo data due to FTP fetch failure.")
+        # Fallback: Load demo data
+        df_live = pd.DataFrame({
+            'id': [1, 2],
+            'value': ['Demo1', 'Demo2']
+        })
+
+    # Continue with ETL processing...
+    # Transform and export data as needed
+    # export_to_sqlite(df_live, 'example_db.sqlite', 'example_table')
+
+if __name__ == "__main__":
+    run_etl()
+4. Next Steps After FTP Integration Module
+Testing:
+
+Integrate the FTP module into your CI/CD pipeline by adding unit tests to simulate FTP connectivity.
+
+Create test scripts (if possible, mock FTP responses for consistent testing).
+
+Fallback and Robustness:
+
+Develop robust fallback logic so that if live data isn’t available, the ETL process uses demo or cached data.
+
+Documentation:
+
+Update your system documentation to reflect FTP module configuration, including how to set environment variables for FTP credentials and directories.
+
+Conclusion
+You now have a detailed Python module for integrating live FTP data into your ETL pipeline. This module includes robust error handling and logging to ensure that live data can be fetched reliably, with fallbacks in place. This integration will enable your core ETL proces

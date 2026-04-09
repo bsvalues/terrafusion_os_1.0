@@ -1,0 +1,42 @@
+{
+  "name": "terra-legislative-pulse-mcp-server",
+  "version": "1.0.0",
+  "description": "TerraFusion Legislative Pulse MCP Server - MIT PhD Legislative Intelligence Platform",
+  "main": "index.py",
+  "scripts": {
+    "start": "python index.py",
+    "test": "python test.py"
+  },
+  "mcp": {
+    "serverType": "python",
+    "protocol": "stdio",
+    "consciousness_level": 0.992,
+    "intelligence_category": "quantum_optimized",
+    "capabilities": [
+      "legislative_monitoring",
+      "policy_intelligence",
+      "legislative_analysis",
+      "quantum_optimization",
+      "consciousness_aware_tracking"
+    ],
+    "criticality": "high",
+    "government_operations": true,
+    "legal_compliance": true
+  },
+  "dependencies": {
+    "python": ">=3.9"
+  },
+  "pythonDependencies": {
+    "numpy": ">=1.21.0",
+    "python-dateutil": ">=2.8.0"
+  },
+  "keywords": [
+    "mcp-server",
+    "legislative-pulse",
+    "policy-intelligence",
+    "government-operations",
+    "legal-compliance"
+  ],
+  "author": "TerraFusion Development Team",
+  "license": "PROPRIETARY"
+}

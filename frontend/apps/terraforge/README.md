@@ -1,73 +1,84 @@
-# React + TypeScript + Vite
+# TerraForge — Suite-Forge
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Constitutional Suite: forge (Article I)**
+**Layer tag:** Suite-Forge
+**Architecture:** Layer 3 — Domain router + cross-parcel operational workspace
 
-Currently, two official plugins are available:
+> "Does NOT host parcel execution — that lives in the Property Workbench."
+> — `ForgeSuiteHome.tsx` file header
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## What TerraForge Is (from ForgeSuiteHome.tsx)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+TerraForge is the **county-wide valuation suite** — a cross-parcel operational workspace for appraisers. It is not a parcel detail surface.
 
-## Expanding the ESLint configuration
+**Primary modules (standalone launch):**
+- **CostForge** — Benton County Cost Approach, replacement cost, depreciation, RCNLD
+- **Statistics Studio** — Ratio studies, COD/PRD/PRB, IAAO statistical diagnostics
+- **Batch Cost Runs** — County-wide cost model runs with strata, neighborhood, and class filters
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+**Secondary modules (workbench-routed):**
+- CompsForge, Income Valuation, Comparable Sales, Reconciliation, Governed Run, Value Audit, Cost Manual
+- Regression Studio, TerraGAMA, Coefficient Preview (queued)
+- Appeals → routes through TerraDais
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+**Suite layout (from ForgeSuiteHome.tsx):**
+1. KPI Hero Band — 5 large monospaced county-wide metrics
+2. Header — Suite identity (no back arrow — suite IS the home)
+3. Primary tools — 3 large hero cards
+4. Secondary tools — compact grid of specialist modules
+5. Operational Queue — recent parcel activity
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## What Already Exists (from CC4_FORGE_SERVICE_INVENTORY.md)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+**Two live data paths:**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| Path | File | Status |
+|---|---|---|
+| A: Client-side cost engine | `os-shell/src/services/forgeService.ts` (774 lines) | **Real** — deterministic, PACS matrix data. Lineage: BCBSCOSTApp → TerraBuild → CostForge → TerraForge |
+| B: Backend REST API | `os-shell/src/hooks/useCostForgeAPI.ts` (357 lines) | **Real** — JWT, correlationId, 12 `/api/costforge/*` endpoints |
+| C: Pilot API | `pages/workbench/tabs/PropertyForge.tsx` (394 lines) | **Real** — RBAC Gate 5b, tool invocation |
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**Real suite modules using Path A (6 modules, 3,458 lines):**
+`CostForgeModule`, `IncomeForgeModule`, `CompsForgeModule`, `AppealForgeModule`, `ValueAuditModule`, `ReconciliationModule`
+
+**Real components using Path B (2 components, 2,135 lines):**
+`EnhancedCostCalculator`, `CostForgeIntegrationPanel`
+
+**83 pages** already implemented in `os-shell/src/pages/forge/` across:
+statistics, mass-appraisal, sales, regression, valuation, property, comparison, calibration, tax, charts, anatomy, sketch, parcel, cost, scenarios, market, hazard, economic, quality, income, batch, avm
+
+---
+
+## This Standalone App's Job
+
+The standalone `frontend/apps/terraforge/` app is the **dedicated suite shell** that surfaces TerraForge outside of os-shell. It must present the same county-wide suite workspace that `ForgeSuiteHome.tsx` defines — not a tabbed-page placeholder.
+
+**The current shell is a skeleton that does not represent this architecture.**
+TerraForge Assembly review will define the replacement before more suite expansion continues.
+
+---
+
+## Sealed slices
+
+| Slice | Status |
+|---|---|
+| Phase 2.1 TerraLevy — levy rate lookup + bill calculator | ✅ Sealed `3f8536895` |
+
+## Frozen
+
+Phase 2.2, 2.3, 2.4 — frozen pending TerraForge Assembly review and owner task card approval.
+
+---
+
+## Authoritative sources
+
+| Document | What it defines |
+|---|---|
+| `os-shell/src/pages/suites/ForgeSuiteHome.tsx` | Constitutional suite layout and module inventory |
+| `docs/CC4_FORGE_SERVICE_INVENTORY.md` | Full service audit — real vs mock, data paths, consumers |
+| `docs/evidence/cc/forge-cutover.md` | Cost approach engine architecture, localStorage elimination |
+| Master plan — Suite-Forge component inventory | Layer ownership, existing files, what to mine |

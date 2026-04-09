@@ -1,0 +1,211 @@
+- main "TerraFusion Desktop" [ref=e4]:
+  - link "Skip to desktop content" [ref=e5] [cursor=pointer]:
+    - /url: "#desktop-main-content"
+  - generic [ref=e6]:
+    - generic [ref=e8]: TerraFusion OS
+    - generic [ref=e9]:
+      - generic [ref=e10]: Benton County
+      - generic [ref=e12]: Assessor's Office
+    - group "System utilities" [ref=e13]:
+      - button "Search (Ctrl+K)" [ref=e14]:
+        - img [ref=e15]
+        - generic [ref=e18]: ⌘K
+      - button "Scenes (Ctrl+,)" [ref=e19]:
+        - img [ref=e20]
+      - button "Sentinel diagnostics (Ctrl+Shift+S)" [ref=e25]:
+        - status [ref=e26]:
+          - text: SENTINEL
+          - generic [ref=e28]: · 4ms
+      - generic "Backend health unavailable; mock data active" [ref=e29]:
+        - generic [ref=e31]: MOCK
+      - button "Notifications - 0 unread" [ref=e33] [cursor=pointer]:
+        - generic [ref=e34]: 🔔
+      - 'generic "Current time: 9:45 PM, Tuesday, March 31, 2026" [ref=e305]':
+        - time [ref=e36]:
+          - text: 9:45 PM
+          - generic [ref=e37]: Mar 31
+      - button "Control Center (Ctrl+.)" [ref=e39]:
+        - img [ref=e40]
+      - button "Profile" [ref=e43]:
+        - img [ref=e44]
+  - generic [ref=e306]:
+    - button "Open TerraForge" [ref=e307] [cursor=pointer]:
+      - generic [ref=e308]:
+        - img [ref=e311]
+        - generic [ref=e313]: WB
+      - generic [ref=e314]: TerraForge
+    - button "Open TerraAtlas" [ref=e315] [cursor=pointer]:
+      - generic [ref=e316]:
+        - img [ref=e319]
+        - generic [ref=e322]: WB
+      - generic [ref=e323]: TerraAtlas
+    - button "Open TerraDais" [ref=e324] [cursor=pointer]:
+      - generic [ref=e325]:
+        - img [ref=e328]
+        - generic [ref=e333]: WB
+      - generic [ref=e334]: TerraDais
+    - button "Open TerraDossier" [ref=e335] [cursor=pointer]:
+      - generic [ref=e336]:
+        - img [ref=e339]
+        - generic [ref=e341]: WB
+      - generic [ref=e342]: TerraDossier
+    - button "Open TerraGPT" [ref=e343] [cursor=pointer]:
+      - generic [ref=e344]:
+        - img [ref=e347]
+        - generic [ref=e349]: OS
+      - generic [ref=e350]: TerraGPT
+    - button "Open Property Workbench" [ref=e351] [cursor=pointer]:
+      - generic [ref=e352]:
+        - img [ref=e355]
+        - generic [ref=e357]: OS
+      - generic [ref=e358]: Property Workbench
+    - button "Open TerraPilot" [ref=e359] [cursor=pointer]:
+      - generic [ref=e360]:
+        - img [ref=e363]
+        - generic [ref=e365]: OS
+      - generic [ref=e366]: TerraPilot
+    - button "Open TerraTrace" [ref=e367] [cursor=pointer]:
+      - generic [ref=e368]:
+        - img [ref=e371]
+        - generic [ref=e373]: OS
+      - generic [ref=e374]: TerraTrace
+    - button "Open TerraCanon" [ref=e375] [cursor=pointer]:
+      - generic [ref=e376]:
+        - img [ref=e379]
+        - generic [ref=e381]: OS
+      - generic [ref=e382]: TerraCanon
+  - region "Application windows":
+    - generic [ref=e385]:
+      - generic [ref=e386]:
+        - generic [ref=e388]:
+          - button "Close" [ref=e389]:
+            - generic [ref=e390]: ×
+          - button "Minimize" [ref=e391]:
+            - generic [ref=e392]: −
+          - button "Restore" [disabled] [ref=e393]:
+            - generic [ref=e394]: □
+        - generic:
+          - img:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - img
+          - generic: Property Workbench
+      - generic [ref=e398]:
+        - generic [ref=e400]:
+          - generic [ref=e401]:
+            - generic [ref=e402]: 🕓
+            - generic [ref=e403]: Recent Parcels
+          - generic [ref=e405]:
+            - generic [ref=e406]: 🏢
+            - paragraph [ref=e407]:
+              - text: No recent parcels.
+              - text: Use ⌘K to search.
+        - generic [ref=e410]:
+          - generic [ref=e411]: 🏢
+          - heading "Property Workbench" [level=2] [ref=e412]
+          - paragraph [ref=e413]: Search or select a parcel to begin
+          - textbox "Search parcels" [active] [ref=e415]:
+            - /placeholder: Search by parcel number, address, or owner...
+          - paragraph [ref=e416]: Press ⌘K for full search
+        - generic [ref=e418]:
+          - generic [ref=e419]:
+            - generic [ref=e420]: ⚡
+            - generic [ref=e421]: Quick Actions
+          - button "🔍 Search Parcels ⌘K" [ref=e423]:
+            - generic [ref=e424]: 🔍
+            - generic [ref=e426]: Search Parcels
+            - generic [ref=e427]: ⌘K
+  - navigation "Taskbar" [ref=e176]:
+    - button "Start Menu" [ref=e177]
+    - group "Core suites" [ref=e188]:
+      - button "TerraForge" [ref=e189]:
+        - img [ref=e190]
+        - generic [ref=e194]: Forge
+      - button "TerraAtlas" [ref=e195]:
+        - img [ref=e196]
+        - generic [ref=e199]: Atlas
+      - button "TerraDais" [ref=e200]:
+        - img [ref=e201]
+        - generic [ref=e206]: Dais
+      - button "TerraDossier" [ref=e207]:
+        - img [ref=e208]
+        - generic [ref=e212]: Dossier
+      - button "TerraGPT" [ref=e213]:
+        - img [ref=e214]
+        - generic [ref=e217]: GPT
+    - group "Running applications" [ref=e428]:
+      - button "Property Workbench" [pressed] [ref=e429]:
+        - img [ref=e430]
+  - region "Notifications"
+  - dialog "Sentinel Console" [ref=e218]:
+    - generic [ref=e219]:
+      - generic [ref=e221]: SENTINEL CONSOLE
+      - button "Close Sentinel" [ref=e222]: ✕
+    - generic [ref=e223]:
+      - generic [ref=e224]:
+        - button "HEALTH" [ref=e225]
+        - button "NEURAL FEED" [ref=e226]
+      - generic [ref=e227]:
+        - generic [ref=e228]:
+          - generic [ref=e229]: System Status
+          - generic [ref=e230]: degraded
+        - generic [ref=e231]:
+          - generic [ref=e232]: Latency
+          - generic [ref=e233]: 4 ms
+      - generic [ref=e234]:
+        - generic [ref=e235]: Modules
+        - generic [ref=e236]:
+          - generic [ref=e237]:
+            - generic [ref=e238]: Active
+            - generic [ref=e239]: "-"
+          - generic [ref=e240]:
+            - generic [ref=e241]: Total Detected
+            - generic [ref=e242]: "-"
+      - generic [ref=e243]:
+        - generic [ref=e244]: "SHA: dev"
+        - generic [ref=e245]: "API: /api/system/health"
+        - generic [ref=e246]: "Last Ping: 9:45:40 PM"
+      - generic [ref=e247]:
+        - generic [ref=e249]: Warnings Detected
+        - list [ref=e250]:
+          - listitem [ref=e251]: Health probe returned 500
+  - dialog "Control Center" [ref=e252]:
+    - generic [ref=e253]:
+      - generic [ref=e254]:
+        - generic [ref=e255]:
+          - img [ref=e256]
+          - generic [ref=e259]: CONTROL CENTER
+        - button "Close Control Center" [ref=e260] [cursor=pointer]:
+          - img [ref=e261]
+      - generic [ref=e264]:
+        - generic [ref=e265]:
+          - generic [ref=e266]:
+            - img [ref=e267]
+            - generic [ref=e269]: Map Layers
+            - status [ref=e270]: "2"
+          - generic [ref=e272]:
+            - generic [ref=e273] [cursor=pointer]:
+              - generic [ref=e274]: Parcels
+              - switch "Parcels" [checked] [ref=e275]
+            - generic [ref=e277] [cursor=pointer]:
+              - generic [ref=e278]: Zoning
+              - switch "Zoning" [ref=e279]
+            - generic [ref=e281] [cursor=pointer]:
+              - generic [ref=e282]: Flood Zones
+              - switch "Flood Zones" [ref=e283]
+            - generic [ref=e285] [cursor=pointer]:
+              - generic [ref=e286]: Aerial Imagery
+              - switch "Aerial Imagery" [checked] [ref=e287]
+            - generic [ref=e289] [cursor=pointer]:
+              - generic [ref=e290]: Contours
+              - switch "Contours" [ref=e291]
+        - generic [ref=e293]:
+          - generic [ref=e294]:
+            - img [ref=e295]
+            - generic [ref=e299]: Model Version
+          - generic [ref=e301]:
+            - button "v2026.1" [pressed] [ref=e302] [cursor=pointer]
+            - button "v2025.2" [ref=e303] [cursor=pointer]
+            - button "v2025.1" [ref=e304] [cursor=pointer]

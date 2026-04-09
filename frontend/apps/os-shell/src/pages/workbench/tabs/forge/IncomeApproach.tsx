@@ -111,14 +111,29 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
         )}
         {incomeAPI.data && (
           <div className="space-y-3" data-testid="income-approach-live">
+            {/* Applicability notice */}
+            {!incomeAPI.data.incomeApproachApplicable && (
+              <div
+                className="px-3 py-2 rounded text-xs"
+                style={{ background: 'hsl(var(--tf-warning) / 0.10)', color: 'hsl(var(--tf-warning))' }}
+              >
+                Notice: Income approach may not be applicable — no income data found in canonical record. Residential properties typically use cost/sales approaches only.
+              </div>
+            )}
             <div className="grid grid-cols-3 gap-3">
               <div className="tf-panel p-3 text-center">
                 <div className="tf-text-tertiary text-xs">NOI</div>
                 <div className="text-lg font-bold tf-text">{fmtCurrency(incomeAPI.data.netOperatingIncome)}</div>
+                {incomeAPI.data.noiDerived && (
+                  <div className="text-xs tf-text-dim mt-0.5">derived {incomeAPI.data.expenseRatio ? `(${((incomeAPI.data.expenseRatio ?? 0) * 100).toFixed(0)}% exp ratio assumed)` : ''}</div>
+                )}
               </div>
               <div className="tf-panel p-3 text-center">
                 <div className="tf-text-tertiary text-xs">Cap Rate</div>
                 <div className="text-lg font-bold tf-text">{incomeAPI.data.capRate}%</div>
+                {incomeAPI.data.capRateDefaulted && (
+                  <div className="text-xs tf-text-dim mt-0.5">market default (assumed)</div>
+                )}
               </div>
               <div className="tf-panel p-3 text-center">
                 <div className="tf-text-tertiary text-xs">Valuation</div>
@@ -127,6 +142,10 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div className="tf-panel p-3">
+                <span className="tf-text-tertiary text-xs">Gross Income</span>
+                <span className="ml-2 font-mono tf-text">{fmtCurrency(incomeAPI.data.grossIncome)}</span>
+              </div>
+              <div className="tf-panel p-3">
                 <span className="tf-text-tertiary text-xs">GIM</span>
                 <span className="ml-2 font-mono tf-text">{(incomeAPI.data.grossIncomeMultiplier ?? 0).toFixed(2)}</span>
               </div>
@@ -134,11 +153,16 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
                 <span className="tf-text-tertiary text-xs">Risk</span>
                 <span className="ml-2 font-mono tf-text">{incomeAPI.data.riskClassification}</span>
               </div>
-              <div className="tf-panel p-3">
-                <span className="tf-text-tertiary text-xs">Income Indicated</span>
-                <span className="ml-2 font-mono tf-text">{fmtCurrency(incomeAPI.data.incomeIndicatedValue)}</span>
-              </div>
             </div>
+            {/* Methodology disclosure */}
+            {incomeAPI.data.methodologyNote && (
+              <div
+                className="px-3 py-2 rounded text-xs"
+                style={{ background: 'hsl(var(--tf-info) / 0.08)', color: 'hsl(var(--tf-info))' }}
+              >
+                Methodology: {incomeAPI.data.methodologyNote}
+              </div>
+            )}
             <div className="flex items-center gap-3 text-sm">
               <span className="tf-text-tertiary">Confidence:</span>
               <span className="tf-suite-accent-text font-semibold">{formatConfidence(incomeAPI.data.confidence)}</span>

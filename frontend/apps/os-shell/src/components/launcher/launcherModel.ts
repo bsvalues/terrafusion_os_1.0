@@ -9,16 +9,14 @@
 
 import { NavigateFunction } from 'react-router-dom';
 import type { OsActor } from '@/auth/useAuthContext';
+import { useDesktopStore } from '../../stores/desktopStore';
 import {
     CONSTITUTIONAL_SUITES,
     getSuiteIntent,
-    getWorkbenchHrefWithContext,
     INTENT_LABELS,
-    isWorkbenchSuite,
     OS_FEATURES,
     type SuiteId,
 } from '../../config/suiteRegistry';
-import { getCurrentParcelId } from '../../context/parcelContext';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 
 // ============================================================================
@@ -115,24 +113,16 @@ export const SYSTEM_ACTIONS: LauncherItem[] = [
 /**
  * Get launcher items from the suite registry.
  * This adapts the constitutional registry to the launcher model.
- * Uses context-aware workbench href generation (Slice 9).
+ * Suite tiles always open suite homes; parcel handoff happens in-suite.
  */
 export function getLauncherItems(): LauncherItem[] {
-  // Get current parcel context (may be null if no parcel selected)
-  const currentParcelId = getCurrentParcelId();
-
   const suiteItems: LauncherItem[] = CONSTITUTIONAL_SUITES.map((suite) => {
     const intent = getSuiteIntent(suite.id as SuiteId);
     const intentLabel = INTENT_LABELS[intent];
 
-    // Use context-aware href generator (falls back to parcel selection if no context)
-    let route: string;
-    if (isWorkbenchSuite(suite)) {
-      const hrefResult = getWorkbenchHrefWithContext(suite, currentParcelId);
-      route = hrefResult.href;
-    } else {
-      route = suite.route;
-    }
+    // Constitutional suite tiles always open the suite home.
+    // Parcel handoff happens inside the suite after parcel selection.
+    const route = suite.route;
 
     return {
       id: suite.id,
@@ -236,7 +226,7 @@ export function launcherItemToOsAction(item: LauncherItem): OsAction {
 export function navigateToLauncherItem(
   item: LauncherItem,
   navigate: NavigateFunction,
-  actor?: OsActor | null,  // Wave 1: optional auth
+  actor?: OsActor | null,
 ): void {
   // Legacy action items still execute directly (for backward compat)
   if (item.action) {
@@ -244,7 +234,20 @@ export function navigateToLauncherItem(
     return;
   }
 
-  // Route items go through OS action dispatcher for telemetry
+  // Standalone suites open as floating desktop windows
+  if (item.intent === 'standalone' && item.route) {
+    const { openWindow } = useDesktopStore.getState();
+    const suiteModuleId = `suite-${item.id}`;
+    openWindow(
+      suiteModuleId,
+      item.label,
+      item.iconName,
+      { suiteId: item.id, route: item.route }
+    );
+    return;
+  }
+
+  // All other items (workbench, system) navigate via route
   if (item.route) {
     const action = launcherItemToOsAction(item);
     const context: OsActionContext = {

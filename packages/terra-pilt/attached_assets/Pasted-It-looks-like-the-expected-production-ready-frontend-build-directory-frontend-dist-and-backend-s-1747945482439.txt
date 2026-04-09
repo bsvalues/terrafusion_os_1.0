@@ -1,0 +1,67 @@
+It looks like the expected production-ready frontend build directory (`frontend/dist`) and backend server directory (`backend`) were not found in the `BentonPILT_UMBX_Audit_Package`. For a polished, enterprise-ready, zero-code-exposure Windows installer with support for USB and SharePoint deployment, here’s how we proceed:
+
+---
+
+### ✅ **Deployment Optimization & Execution Plan**
+
+#### **1. Structure Finalization (Local / USB / SharePoint Ready)**
+
+We will structure the app as follows:
+
+```
+BentonPILT_Enterprise/
+├── autorun/
+│   └── autorun.bat      # Auto-launch backend and open frontend
+├── app/
+│   ├── frontend/        # Static HTML/JS/CSS (from `npm run build`)
+│   └── backend/         # Node.js backend with Express or lightweight API
+├── install/
+│   └── BentonPILT_Setup.exe   # One-click Windows installer (Inno Setup)
+```
+
+#### **2. Enterprise Installer (Silent One-Click, with GUI, No Code Shown)**
+
+* We'll use **Inno Setup** to package everything.
+* Options:
+
+  * Installer installs everything to `C:\Program Files\BentonPILT\`
+  * Creates desktop/start menu shortcut
+  * Automatically launches app via browser
+  * No need for Node/npm visible to the user
+  * Optionally register uninstaller
+
+#### **3. SharePoint/USB Auto-Run Scripts**
+
+**USB**
+
+* `autorun.bat` script launches backend server (if needed) and browser.
+* Fully local, works without internet.
+
+**SharePoint**
+
+* Static version (`index.html`) can run without backend, if you pre-generate or embed data.
+
+---
+
+### 🔧 **Next Steps Required From You**
+
+Please upload or confirm:
+
+1. **Frontend build artifacts** (`dist/` from `npm run build`)
+   OR the project root so I can build it for you.
+2. **Backend folder** containing `server.js` or `app.py`, etc.
+   Should be ready to run locally (`node server.js` or equivalent).
+3. Optional: Custom icon or branding to embed in installer.
+
+---
+
+### 🚀 After That, I Will Deliver
+
+* ✅ Fully packaged `.exe` installer
+* ✅ Zipped SharePoint and USB-ready folders
+* ✅ All necessary scripts for auto-launch
+* ✅ Digital signing guidance (optional)
+* ✅ Testing checklist
+* ✅ README for IT, including silent install instructions
+
+Would you like me to build a sample Inno Setup script and continue preparing the one-click `.exe` while we wait for the frontend/backend assets?

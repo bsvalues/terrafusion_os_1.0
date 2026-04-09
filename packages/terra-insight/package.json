@@ -1,0 +1,37 @@
+{
+  "name": "@terrafusion/terra-insight",
+  "private": true,
+  "version": "2.1.0",
+  "type": "module",
+  "description": "TerraFusion MIT PhD Intelligence & Analytics Platform - Consciousness-Aware Insight Generation",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "mcp-server": "python3 mcp-server/index.py",
+    "consciousness-test": "npm run test -- --grep consciousness",
+    "quantum-analytics": "npm run dev -- --mode quantum"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^5.18.0",
+    "@mui/material": "^5.18.0",
+    "clsx": "^2.0.0",
+    "framer-motion": "^10.18.0",
+    "lucide-react": "^0.453.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.0",
+    "zustand": "^4.5.7"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.20",
+    "@types/react-dom": "^18.3.6",
+    "@vitejs/plugin-react": "^4.7.0",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.14"
+  }
+}
+

@@ -9,7 +9,7 @@
  *   source = "fallback" when the API call fails (component should use its own fallback data)
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 /* ── Response shapes (mirror backend ForgeValuationDtos.cs) ── */
 
@@ -27,6 +27,42 @@ export interface CostApproachData {
   source: string;
   confidence: number;
   inputs: Array<{ name: string; sourceLabel: string; pii: boolean }>;
+  // CP-4: depreciation percentages + building/land details
+  physicalDepreciationPct: number;
+  functionalObsolescencePct: number;
+  externalObsolescencePct: number;
+  yearBuilt: number | null;
+  effectiveAge: number | null;
+  qualityGrade: string | null;
+  conditionGrade: string | null;
+  buildingSqFt: number | null;
+  landAreaSqFt: number | null;
+  landAreaAcres: number | null;
+  isAgriculturalOrTimber: boolean;
+  waClassificationNote: string | null;
+  // Phase B: physical building attributes from PACS improvement attributes
+  foundation: string | null;
+  exteriorWall: string | null;
+  roofType: string | null;
+  hvacType: string | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  fireplaces: number | null;
+  // Phase B: Benton county percent-good from age×condition matrix (86 = 86% good, 14% depreciation)
+  countyPercentGood: number | null;
+  // Phase B: per-segment breakdown
+  segments: Array<{
+    segmentType: string | null;
+    segmentDesc: string | null;
+    methodCode: string | null;
+    classCode: string | null;
+    subClassCode: string | null;
+    area: number | null;
+    unitPrice: number | null;
+    calcValue: number | null;
+    conditionCode: string | null;
+    yearBuilt: number | null;
+  }>;
 }
 
 export interface ComparableSaleEntry {
@@ -36,6 +72,14 @@ export interface ComparableSaleEntry {
   adjustedPrice: number;
   similarity: number;
   notes: string[];
+  salesRatio: number;  // CP-5: adjustedPrice / salePrice
+  pricePerSqFt: number | null;
+  // 3-Layer Qualification
+  saleId: string;                          // UUID — required for PATCH override
+  qualificationRecommendation: string | null;  // Layer 2: TF rule engine
+  qualificationDecision: string | null;        // Layer 3: assessor override
+  decisionSource: string | null;               // "AssessorOverride" | "AcceptedRecommendation"
+  effectiveQualification: string | null;       // Decision ?? Recommendation
 }
 
 export interface SalesComparisonData {
@@ -49,6 +93,19 @@ export interface SalesComparisonData {
   rationale: string;
   source: string;
   confidence: number;
+  // CP-5: IAAO sales ratio statistics
+  salesRatioMedian: number;
+  coefficientOfDispersion: number;
+  neighborhoodFilterActive: boolean;
+  // R2Wave39: PRD + qualified sale count (0.0 / 0 when < 2 qualified sales with PACS ratios)
+  priceRelatedDifferential: number;
+  qualifiedSaleCount: number;
+  // OLS regression model (market-extracted adjustment derivation)
+  regressionIndicatedValue: number | null;
+  regressionRSquared: number | null;
+  regressionRSquaredAdj: number | null;
+  regressionCompsUsed: number | null;
+  regressionBeta: number[] | null;
 }
 
 export interface IncomeApproachData {
@@ -62,6 +119,13 @@ export interface IncomeApproachData {
   incomeIndicatedValue: number;
   source: string;
   confidence: number;
+  // CP-6: methodology disclosure
+  grossIncome: number;
+  expenseRatio: number | null;
+  noiDerived: boolean;
+  capRateDefaulted: boolean;
+  methodologyNote: string | null;
+  incomeApproachApplicable: boolean;
 }
 
 export interface ApproachSummary {
@@ -221,6 +285,86 @@ export interface ParcelYearsHookResult {
 }
 
 /* ── useParcelYears ─────────────────────────────────────── */
+
+/* ── Sale Qualification Override ──────────────────────────── */
+
+export type QualificationDecisionValue =
+  | 'qualified'
+  | 'non-arms-length'
+  | 'foreclosure'
+  | 'estate'
+  | 'excluded'
+  | 'exempt'
+  | null; // null = clear override
+
+export interface PatchSaleQualificationVars {
+  saleId: string;
+  decision: QualificationDecisionValue;
+  reason?: string;
+}
+
+export interface PatchSaleQualificationResult {
+  saleId: string;
+  qualificationDecision: string | null;
+  decisionBy: string;
+  decisionAt: string;
+  decisionSource: string | null;
+}
+
+/**
+ * PATCH /api/forge/sales/{saleId}/qualification
+ * Assessor Layer 3 override. Invalidates the sales query for the parcel
+ * so the comp list refreshes automatically.
+ */
+export function usePatchSaleQualification(parcelId: string | undefined, taxYear: number) {
+  const queryClient = useQueryClient();
+  return useMutation<PatchSaleQualificationResult, Error, PatchSaleQualificationVars>({
+    mutationFn: async ({ saleId, decision, reason }) => {
+      const res = await fetch(`/api/forge/sales/${encodeURIComponent(saleId)}/qualification`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ decision, reason: reason ?? null }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.error ?? `Override failed: ${res.status}`);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      // Refetch the sales comparison so the updated effective qualification shows
+      queryClient.invalidateQueries({ queryKey: ['forge', 'sales', parcelId, taxYear] });
+    },
+  });
+}
+
+export interface RecomputeRecommendationsResult {
+  updated: number;
+}
+
+/**
+ * POST /api/forge/sales/recompute-recommendations
+ * Triggers Layer 2 (TF rule-engine) recommendation regen for all sales in the
+ * assessor's county. Invalidates all sales queries so the comp list refreshes.
+ */
+export function useRecomputeRecommendations(parcelId: string | undefined, taxYear: number) {
+  const queryClient = useQueryClient();
+  return useMutation<RecomputeRecommendationsResult, Error, void>({
+    mutationFn: async () => {
+      const res = await fetch('/api/forge/sales/recompute-recommendations', {
+        method: 'POST',
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.error ?? `Recompute failed: ${res.status}`);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['forge', 'sales', parcelId, taxYear] });
+    },
+  });
+}
 
 export function useParcelYears(parcelId: string | undefined): ParcelYearsHookResult {
   const query = useQuery<ParcelYearLayersResult>({

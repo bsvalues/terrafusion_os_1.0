@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>TerraFusionPilt - AI That Understands Land | Benton County PILT Dashboard</title>
+    <meta name="description" content="TerraFusion PILT Dashboard - AI-powered transparency for Payment in Lieu of Taxes receipts and distributions. Professional reporting and compliance management for Benton County federal land revenue." />
+    <!-- Open Graph tags for social sharing -->
+    <meta property="og:title" content="TerraFusionPilt - AI That Understands Land" />
+    <meta property="og:description" content="Professional PILT management with TerraFusion AI - supporting Benton County schools, infrastructure, and services." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏢</text></svg>" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+        min-height: 100vh;
+      }
+      .loading {
+        text-align: center;
+        padding: 40px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        max-width: 600px;
+      }
+      .success {
+        color: #0891b2;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+      .status {
+        color: #64748b;
+        font-size: 16px;
+        margin: 10px 0;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading-screen" class="loading">
+      <div class="success">🎉 TerraFusionPilt V2.0.0 - Loading...</div>
+      <div class="status">✅ HTML: Loaded successfully</div>
+      <div class="status">⏳ React: Loading components...</div>
+      <div class="status">🔗 Server: Running on port 5009</div>
+      <div class="status">💾 Database: SQLite initialized</div>
+      <div style="margin-top: 20px; padding: 15px; background: #f1f5f9; border-radius: 8px;">
+        <strong>If this screen doesn't disappear in 5 seconds:</strong><br>
+        1. Hard refresh (Ctrl+F5)<br>
+        2. Open Developer Tools (F12) and check Console for errors<br>
+        3. Try incognito/private mode
+      </div>
+    </div>
+    
+    <div id="root"></div>
+    
+    <script>
+      // Hide loading screen after 10 seconds if React doesn't load
+      setTimeout(() => {
+        const loading = document.getElementById('loading-screen');
+        if (loading && !loading.classList.contains('hidden')) {
+          loading.innerHTML = `
+            <div class="success">❌ React Loading Issue Detected</div>
+            <div class="status">The server is running but React isn't loading properly.</div>
+            <div class="status">✅ Backend APIs: Working on <a href="/api/health" target="_blank">http://localhost:5009/api/health</a></div>
+            <div class="status">✅ Districts API: Working on <a href="/api/pilt/districts?year=2024" target="_blank">http://localhost:5009/api/pilt/districts?year=2024</a></div>
+            <div style="margin-top: 20px; padding: 15px; background: #fef2f2; border-radius: 8px; border: 1px solid #fecaca;">
+              <strong>Next Steps:</strong><br>
+              1. Open Developer Tools (F12)<br>
+              2. Check Console tab for JavaScript errors<br>
+              3. Report any errors you see there
+            </div>
+          `;
+        }
+      }, 10000);
+    </script>
+    
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <script>
+      // Hide loading screen when React loads
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const loading = document.getElementById('loading-screen');
+          const root = document.getElementById('root');
+          if (root && root.children.length > 0) {
+            loading.classList.add('hidden');
+          }
+        }, 2000);
+      });
+    </script>
+  </body>
+</html>

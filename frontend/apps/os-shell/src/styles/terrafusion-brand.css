@@ -4,7 +4,7 @@
   /* Official TerraFusion Quantum Brand Colors */
   --tf-primary: var(--tf-quantum-cyan); /* Terra-Cyan - The Consciousness Color */
   --tf-primary-dark: var(--tf-accent-cyan); /* Terra-Cyan Dark Variant */
-  --tf-accent: 152 100% 50%; /* Quantum Growth & Success  (raw HSL — consumed as hsl(var(--tf-accent))) */
+  /* --tf-accent intentionally not set here — terrafusion-tokens.css owns this (terracotta 16 55% 56%) */
   --tf-accent-dark: hsl(var(--tf-success-hs) var(--tf-l-40)); /* Accent Dark Variant */
   --tf-transcend: var(--tf-transcend-highlight); /* Transcendence & Innovation */
   --tf-dark: var(--tf-void-black); /* Terra-Midnight - The Void */

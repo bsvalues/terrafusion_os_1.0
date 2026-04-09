@@ -1,12 +1,12 @@
 %% Benton County PACS - Cross-Database Integration Architecture
 %% 6 databases with synonyms, cross-DB queries, and ETL flows
-%% Validated: 2025-11-05 snapshot
+%% Validated: 2026-04-02 live counts
 %% 🔗 = Synonym reference; → = Direct query; ⇒ = ETL process
 
 graph TB
     subgraph "Production Environment"
-        PACS_OLTP[(pacs_oltp<br/>2,090 tables<br/>2,086 SPs<br/>1,687 views)]
-        PACS_TRAIN[(pacs_training<br/>2,090 tables<br/>2,086 SPs<br/>1,687 views<br/><b>IDENTICAL TWIN</b>)]
+        PACS_OLTP[(pacs_oltp<br/>2,228 tables<br/>2,118 SPs<br/>1,720 views)]
+        PACS_TRAIN[(pacs_training<br/>2,228 tables<br/>2,118 SPs<br/>1,720 views<br/><b>IDENTICAL TWIN</b>)]
     end
     
     subgraph "Third-Party Add-Ons"

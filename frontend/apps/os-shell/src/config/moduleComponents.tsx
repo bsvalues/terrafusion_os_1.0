@@ -78,6 +78,8 @@ export const MODULE_ALIASES: Record<string, string> = {
   terraminer: 'terra-miner',
   legislative: 'legislative-pulse',
   'legislative-beacon': 'legislative-pulse',
+  insight: 'terra-insight',
+  terrainsight: 'terra-insight',
 
   // Phase C3: Sovereign Dashboard aliases
   dashboard: 'sovereign-dashboard',
@@ -167,6 +169,7 @@ export const MODULE_REGISTRY = new Set<string>([
   'terra-queue',
   'terra-miner',
   'legislative-pulse',
+  'terra-insight',
   // GPT Suite namespaced modules
   'gpt-studio',
   'gpt-marketplace',
@@ -278,12 +281,6 @@ const SovereignDashboardWindow = lazy(() =>
 // ============================================================================
 // Phase C: Rehosted Module Components
 // ============================================================================
-const TerraFlowCommandCenter = lazy(
-  () => import('../components/terra-flow/QuantumCommandCenter')
-);
-const TerraLevyDashboard = lazy(
-  () => import('../applications/terra-levy/TerraLevyDashboard')
-);
 const StatisticsStudio = lazy(
   () => import('../pages/forge/statistics/StatisticsStudio')
 );
@@ -657,19 +654,35 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
     case 'levy-calculator':
     case 'terra-levy':
       return (
-        <Suspense fallback={<ModuleLoadingFallback />}>
-          <TerraLevyDashboard />
-        </Suspense>
+        <AppFrame
+          moduleId="terra-levy"
+          parcelContext={
+            metadata?.parcelId
+              ? {
+                  parcelId: String(metadata.parcelId),
+                  countyId: String(metadata.countyId ?? ''),
+                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
+                }
+              : undefined
+          }
+        />
       );
 
     case 'gis-viewer':
     case 'terra-gis':
     case 'gis-pro':
       return (
-        <QueuedModuleSurface
-          name="TerraGIS Pro"
-          description="Full GIS with parcel boundaries, zoning overlays, aerial imagery, and measurement tools."
-          moduleId="terra-gis"
+        <AppFrame
+          moduleId="gis-pro"
+          parcelContext={
+            metadata?.parcelId
+              ? {
+                  parcelId: String(metadata.parcelId),
+                  countyId: String(metadata.countyId ?? ''),
+                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
+                }
+              : undefined
+          }
         />
       );
 
@@ -743,28 +756,49 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'terra-gama':
       return (
-        <QueuedModuleSurface
-          name="TerraGAMA"
-          description="Geographic Area Market Analysis — neighborhood delineation, market trend analysis, and area-based valuation."
+        <AppFrame
           moduleId="terra-gama"
+          parcelContext={
+            metadata?.parcelId
+              ? {
+                  parcelId: String(metadata.parcelId),
+                  countyId: String(metadata.countyId ?? ''),
+                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
+                }
+              : undefined
+          }
         />
       );
 
     case 'terra-pilt':
       return (
-        <QueuedModuleSurface
-          name="TerraPILT"
-          description="Payment in Lieu of Taxes — federal property calculations, PILT reporting, and compliance tracking."
+        <AppFrame
           moduleId="terra-pilt"
+          parcelContext={
+            metadata?.parcelId
+              ? {
+                  parcelId: String(metadata.parcelId),
+                  countyId: String(metadata.countyId ?? ''),
+                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
+                }
+              : undefined
+          }
         />
       );
 
     case 'property-tax-ai':
       return (
-        <QueuedModuleSurface
-          name="PropertyTax AI"
-          description="AI-powered assessment assistant — LangChain agents for valuation analysis and appeal preparation."
+        <AppFrame
           moduleId="property-tax-ai"
+          parcelContext={
+            metadata?.parcelId
+              ? {
+                  parcelId: String(metadata.parcelId),
+                  countyId: String(metadata.countyId ?? ''),
+                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
+                }
+              : undefined
+          }
         />
       );
 
@@ -779,28 +813,49 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'terra-sync':
       return (
-        <QueuedModuleSurface
-          name="TerraSync"
-          description="County data synchronization & ETL — multi-source ingestion, conflict resolution, and audit trails."
+        <AppFrame
           moduleId="terra-sync"
+          parcelContext={
+            metadata?.parcelId
+              ? {
+                  parcelId: String(metadata.parcelId),
+                  countyId: String(metadata.countyId ?? ''),
+                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
+                }
+              : undefined
+          }
         />
       );
 
     case 'terra-flow':
       return (
-        <QueuedModuleSurface
-          name="TerraFlow"
-          description="Quantum workflow orchestration — multi-agent task routing, event-driven workflows, and county process automation."
+        <AppFrame
           moduleId="terra-flow"
+          parcelContext={
+            metadata?.parcelId
+              ? {
+                  parcelId: String(metadata.parcelId),
+                  countyId: String(metadata.countyId ?? ''),
+                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
+                }
+              : undefined
+          }
         />
       );
 
     case 'terra-permit':
       return (
-        <QueuedModuleSurface
-          name="TerraPermit"
-          description="Building permit tracking — permit intake, inspection scheduling, and valuation impact updates."
+        <AppFrame
           moduleId="terra-permit"
+          parcelContext={
+            metadata?.parcelId
+              ? {
+                  parcelId: String(metadata.parcelId),
+                  countyId: String(metadata.countyId ?? ''),
+                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
+                }
+              : undefined
+          }
         />
       );
 
@@ -987,29 +1042,49 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
 
     case 'terra-miner':
       return (
-        <PlaceholderModule
-          name='TerraMiner'
-          icon='⛏️'
-          description='Property research & outside data mining — aggregates external data sources (MLS, permits, assessor feeds) for parcel enrichment.'
-          status='placeholder'
-          legacySource='TerraMiner (Private)'
-          domain='assessment'
-          scope='county-wide'
-          launchSurface='Standalone window'
+        <AppFrame
+          moduleId="terra-miner"
+          parcelContext={
+            metadata?.parcelId
+              ? {
+                  parcelId: String(metadata.parcelId),
+                  countyId: String(metadata.countyId ?? ''),
+                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
+                }
+              : undefined
+          }
         />
       );
 
     case 'legislative-pulse':
       return (
-        <PlaceholderModule
-          name='Legislative Pulse'
-          icon='📢'
-          description='Legislative research & tracking — monitors WA state bills, fiscal notes, and policy impacts on county assessment/taxation.'
-          status='placeholder'
-          legacySource='legislative-pulse-beacon (Private)'
-          domain='policy'
-          scope='county-wide'
-          launchSurface='Dais suite → Standalone window'
+        <AppFrame
+          moduleId="legislative-pulse"
+          parcelContext={
+            metadata?.parcelId
+              ? {
+                  parcelId: String(metadata.parcelId),
+                  countyId: String(metadata.countyId ?? ''),
+                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
+                }
+              : undefined
+          }
+        />
+      );
+
+    case 'terra-insight':
+      return (
+        <AppFrame
+          moduleId="terra-insight"
+          parcelContext={
+            metadata?.parcelId
+              ? {
+                  parcelId: String(metadata.parcelId),
+                  countyId: String(metadata.countyId ?? ''),
+                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
+                }
+              : undefined
+          }
         />
       );
 
