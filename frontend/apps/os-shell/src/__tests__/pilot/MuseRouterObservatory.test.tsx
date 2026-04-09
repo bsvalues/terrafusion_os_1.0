@@ -60,4 +60,12 @@ describe('MuseRouterObservatory', () => {
     expect(banner).toBeDefined();
     expect(banner.textContent).toContain('FALLBACK ACTIVE');
   });
+
+  it('shows unknown/unreachable state when endpoint errors and no lanes available', () => {
+    mockHook({ error: 'Unable to reach router status endpoint', lanes: null, loading: false });
+    render(<MuseRouterObservatory />);
+    expect(screen.getByTestId('observatory-error')).toBeDefined();
+    expect(screen.queryByTestId('observatory-lanes')).toBeNull();
+    expect(screen.queryByTestId('observatory-loading')).toBeNull();
+  });
 });
