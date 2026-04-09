@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <IsTestProject>false</IsTestProject>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,14 +39,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Tests\**" />
+    <!-- These integration tests reference TerraFusion.API Program class — excluded until wired to API project -->
+    <Compile Remove="Tests\AIAssistantControllerTests.cs" />
+    <Compile Remove="Tests\WorkflowAutomationControllerTests.cs" />
+    <Compile Remove="Tests\IntegrationTests.cs" />
+    <Compile Remove="Tests\GPTServiceTests.cs" />
     <Folder Include="Models\" />
     <Folder Include="Engines\" />
     <Folder Include="Predictors\" />
     <Folder Include="Neural\" />
     <Folder Include="CostForge\" />
   </ItemGroup>
-
-  <!-- Tests re-enabled: removed previous compile exclusion for Tests/** -->
 
 </Project>
