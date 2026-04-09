@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getSession } from '../auth/session';
 import { useCompanionStore } from '../stores/companionStore';
 import type { EditorMarker } from '../stores/companionStore';
+import type { Property } from '../types/domain';
+import { usePropertyStore } from '../stores/propertyStore';
 
 // ============================================================================
 // Design tokens — matches TerraFusion light warm theme
@@ -97,6 +99,43 @@ function buildWelcome(): ChatMessage {
   };
 }
 
+export function buildParcelSummary(
+  parcel: Property | null,
+  activeParcelId: string | null
+): Record<string, unknown> | undefined {
+  if (!parcel || parcel.parcelId !== activeParcelId) return undefined;
+  return {
+    // Identity
+    address: parcel.address,
+    city: parcel.city,
+    propertyType: parcel.propertyType,
+    propertyUseCode: parcel.propertyUseCode,
+    assessmentYear: parcel.assessmentYear,
+    assessmentStatus: parcel.assessmentStatus,
+    // Values
+    totalAssessedValue: parcel.totalAssessedValue,
+    landValue: parcel.landValue,
+    improvementValue: parcel.improvementValue,
+    marketValue: parcel.marketValue,
+    taxableValue: parcel.taxableValue,
+    // Physical
+    yearBuilt: parcel.yearBuilt,
+    buildingSquareFeet: parcel.buildingSquareFeet,
+    landAcreage: parcel.landAcreage,
+    // Sales
+    lastSaleDate: parcel.lastSaleDate,
+    lastSalePrice: parcel.lastSalePrice,
+    // Geo — specialDistricts is string[] on the type; join before serialization
+    // so the backend receives a plain string, not a JSON array
+    neighborhood: parcel.neighborhood,
+    zoning: parcel.zoning,
+    taxDistrictName: parcel.taxDistrictName,
+    specialDistricts: parcel.specialDistricts?.join(', '),
+    latitude: parcel.latitude,
+    longitude: parcel.longitude,
+  };
+}
+
 /**
  * Build a stable signature from the current context so we can detect
  * meaningful changes without firing on every re-render.
@@ -115,11 +154,12 @@ function buildContextSignature(ctx: ExplainContext): string {
   ].join('|');
 }
 
-async function callExplain(
+export async function callExplain(
   query: string,
   countyId: string,
   actorId: string,
-  context: ExplainContext
+  context: ExplainContext,
+  parcelSummary?: Record<string, unknown>
 ): Promise<ExplainApiResponse> {
   const body: Record<string, unknown> = {
     query,
@@ -130,6 +170,7 @@ async function callExplain(
   };
   // Keep legacy parcelId at top level for backward compat with existing backend handler
   if (context.activeParcelId) body.parcelId = context.activeParcelId;
+  if (parcelSummary) body.parcelSummary = parcelSummary;
 
   const res = await fetch('/api/pilot/explain', {
     method: 'POST',
