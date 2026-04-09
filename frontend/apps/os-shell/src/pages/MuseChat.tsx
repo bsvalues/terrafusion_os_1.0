@@ -326,6 +326,8 @@ export function MuseChat(): React.ReactElement {
     editorMarkers,
   } = useCompanionStore();
 
+  const activeParcel = usePropertyStore((s) => s.activeParcel);
+
   const session = getSession();
   const countyId = session?.countyId ?? 'benton';
   const actorId = session?.userId ?? 'operator';
@@ -402,7 +404,7 @@ export function MuseChat(): React.ReactElement {
         ? `I just switched to branch "${activeBranch}". What's the current development context?`
         : `I'm now in the ${activeSuite} suite. What's relevant here?`;
 
-    callExplain(question, countyId, actorId, ctx)
+    callExplain(question, countyId, actorId, ctx, buildParcelSummary(activeParcel, activeParcelId))
       .then((data) => {
         if (cancelled) return;
         setMessages((prev) => [
@@ -449,7 +451,7 @@ export function MuseChat(): React.ReactElement {
     };
 
     try {
-      const data = await callExplain(query, countyId, actorId, ctx);
+      const data = await callExplain(query, countyId, actorId, ctx, buildParcelSummary(activeParcel, activeParcelId));
       const museMsg: ChatMessage = {
         id: makeId(),
         role: 'muse',
