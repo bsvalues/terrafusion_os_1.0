@@ -198,4 +198,43 @@ public sealed class MuseServiceParcelInjectionTests
         Assert.DoesNotContain("Coordinates:", capturedPrompt);
         Assert.DoesNotContain("Special districts:", capturedPrompt);
     }
+
+    [Fact]
+    public async Task ParcelSummary_Identity_Line_Omitted_When_Address_Missing()
+    {
+        string capturedPrompt = string.Empty;
+        var llm = new Mock<IMuseLlmClient>();
+        llm.Setup(x => x.CompleteAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+           .Callback<string, string, CancellationToken>((sys, _, _) => capturedPrompt = sys)
+           .ReturnsAsync("answer");
+
+        var git = new Mock<IGitContextService>();
+        git.Setup(x => x.GetContextAsync(
+                It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+           .ReturnsAsync(new GitContext("main", null, [], false));
+
+        var contracts = new Mock<ISurfaceContractService>();
+        contracts.Setup(x => x.Resolve(
+                It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string?>()))
+                 .Returns((SurfaceContract?)null);
+
+        var sut = new MuseService(
+            NullLogger<MuseService>.Instance, git.Object, contracts.Object, llm.Object);
+
+        // Summary has values but no address — identity line must not emit
+        var request = ParcelRequest(new Dictionary<string, object>
+        {
+            ["totalAssessedValue"] = "342500",
+            ["landValue"] = "75000",
+        });
+
+        // Act
+        await sut.ExplainAsync(request);
+
+        // Assert — no partial "Parcel: ,  | Type: ..." line emitted
+        Assert.DoesNotContain("Parcel:", capturedPrompt);
+        // Values line still present (totalAssessedValue is set)
+        Assert.Contains("342500", capturedPrompt);
+    }
 }

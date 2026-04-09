@@ -104,10 +104,12 @@ public sealed class MuseService : IMuseService
         {
             string S(string k) => ps.TryGetValue(k, out var v) ? v?.ToString() ?? "" : "";
 
-            contextLines.Add(
-                $"Parcel: {S("address")}, {S("city")} | " +
-                $"Type: {S("propertyType")} | " +
-                $"Status: {S("assessmentStatus")} ({S("assessmentYear")})");
+            var address = S("address");
+            if (!string.IsNullOrEmpty(address))
+                contextLines.Add(
+                    $"Parcel: {address}, {S("city")} | " +
+                    $"Type: {S("propertyType")} | " +
+                    $"Status: {S("assessmentStatus")} ({S("assessmentYear")})");
 
             var totalAv = S("totalAssessedValue");
             if (!string.IsNullOrEmpty(totalAv))
