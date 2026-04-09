@@ -128,7 +128,7 @@ export default defineConfig(({ mode }) => {
     },
 
     server: {
-      port: parseInt(process.env.VITE_PORT || '5173'),
+      port: parseInt(process.env.PORT || process.env.VITE_PORT || '5173'),
       host: '0.0.0.0',
       strictPort: false,
       // Suppress the blocking error overlay for pnpm store issues (e.g. stale
