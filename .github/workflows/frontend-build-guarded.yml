@@ -4,16 +4,16 @@ on:
   pull_request:
     branches: [main]
     paths:
-      # Frontend app + shared frontend deps
       - 'frontend/apps/os-shell/**'
       - 'frontend/package.json'
       - 'frontend/pnpm-lock.yaml'
-      # Root/workspace dependency changes that can impact frontend build
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
-      # Workflow changes should self-test
       - '.github/workflows/frontend-build-guarded.yml'
+      # include docs so classifier can decide to skip quickly
+      - 'docs/**'
+      - '**/*.md'
   push:
     branches: [main]
     paths:
@@ -24,9 +24,10 @@ on:
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - '.github/workflows/frontend-build-guarded.yml'
+      - 'docs/**'
+      - '**/*.md'
   workflow_dispatch:
 
-# Prevent duplicate runs for same branch/PR
 concurrency:
   group: frontend-build-guarded-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -35,59 +36,87 @@ permissions:
   contents: read
 
 jobs:
-  # ── Fast-exit classifier ─────────────────────────────────────────────────────
-  # Detects changes that are docs/markdown only and skips the expensive
-  # build+test job when nothing executable changed.
   classify:
     name: Classify changed files
     runs-on: ubuntu-latest
     outputs:
-      skip_build: ${{ steps.check.outputs.skip_build }}
+      docs_only: ${{ steps.classify.outputs.docs_only }}
+      changed_count: ${{ steps.classify.outputs.changed_count }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Detect executable changes
-        id: check
+      - name: Classify docs-only vs code changes
+        id: classify
         shell: bash
         run: |
-          # Compare against base (PR) or HEAD^ (push)
+          set -euo pipefail
+
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            BASE="${{ github.event.pull_request.base.sha }}"
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
           else
-            BASE="HEAD^"
+            BASE_SHA="${{ github.event.before }}"
+            HEAD_SHA="${{ github.sha }}"
           fi
 
-          CHANGED=$(git diff --name-only "$BASE" HEAD 2>/dev/null || git diff --name-only HEAD^ HEAD)
+          # Handle first push / empty before
+          if [[ -z "${BASE_SHA:-}" || "$BASE_SHA" == "0000000000000000000000000000000000000000" ]]; then
+            BASE_SHA="$(git rev-list --max-parents=0 "$HEAD_SHA" | tail -n 1)"
+          fi
 
-          # Files that do NOT trigger a build: docs, markdown, release notes,
-          # runbooks, incident records, CI scripts (non-workflow), images.
-          NON_BUILD_PATTERN="^(docs/|release-notes/|\.github/workflows/.*\.md|.*\.md$|.*\.png$|.*\.jpg$|.*\.svg$|scripts/ci/.*\.sh$)"
+          mapfile -t CHANGED < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          COUNT="${#CHANGED[@]}"
+          echo "changed_count=$COUNT" >> "$GITHUB_OUTPUT"
 
-          # Check whether ALL changed files match the non-build pattern
-          NON_BUILD_ONLY=true
-          while IFS= read -r file; do
-            if ! echo "$file" | grep -qE "$NON_BUILD_PATTERN"; then
-              NON_BUILD_ONLY=false
+          {
+            echo "## Change Classification"
+            echo ""
+            echo "- Base: \`$BASE_SHA\`"
+            echo "- Head: \`$HEAD_SHA\`"
+            echo "- Changed files: \`$COUNT\`"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ "$COUNT" -eq 0 ]]; then
+            echo "docs_only=true" >> "$GITHUB_OUTPUT"
+            echo "✅ No changed files; treating as docs-only/skip." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          docs_only=true
+          for f in "${CHANGED[@]}"; do
+            # Allowed docs-only patterns:
+            # - markdown files anywhere
+            # - docs/ tree
+            # - github markdown docs/meta
+            if [[ "$f" == docs/* || "$f" == *.md || "$f" == .github/*.md || "$f" == .github/**/*.md ]]; then
+              :
+            else
+              docs_only=false
               break
             fi
-          done <<< "$CHANGED"
+          done
 
-          if [[ "$NON_BUILD_ONLY" == "true" && -n "$CHANGED" ]]; then
-            echo "skip_build=true" >> "$GITHUB_OUTPUT"
-            echo "⏭️ All changes are docs/non-executable — skipping build." >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "skip_build=false" >> "$GITHUB_OUTPUT"
-            echo "⚙️ Executable changes detected — running build." >> "$GITHUB_STEP_SUMMARY"
-          fi
+          echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
 
-  # ── Main build job ───────────────────────────────────────────────────────────
+          {
+            echo "- Docs-only: \`$docs_only\`"
+            echo ""
+            echo "<details><summary>Changed files</summary>"
+            printf '\n'
+            for f in "${CHANGED[@]}"; do
+              echo "- \`$f\`"
+            done
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   frontend-build:
     name: Frontend Build (mode-guarded)
     needs: classify
-    if: needs.classify.outputs.skip_build != 'true'
+    if: needs.classify.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -98,8 +127,6 @@ jobs:
 
     env:
       NODE_VERSION: '20'
-      # VITE_DATA_MODE: ""                  # leave unset for live-default
-      # VITE_ALLOW_NON_LIVE_MODE: ""        # set to "1" only when intentionally non-live
 
     steps:
       - name: Checkout
@@ -123,9 +150,6 @@ jobs:
         working-directory: .
         run: pnpm install --frozen-lockfile
 
-      # ── Data mode policy ───────────────────────────────────────────────────
-      # Runs before type-check and build — zero wasted CI time on policy violations.
-
       - name: Assert frontend data mode policy
         env:
           REF_NAME: ${{ github.ref_name }}
@@ -141,7 +165,7 @@ jobs:
           case "$MODE" in
             ""|"live") NORMALIZED_MODE="live" ;;
             "snapshot"|"fixtures") NORMALIZED_MODE="$MODE" ;;
-            *) NORMALIZED_MODE="live" ;; # typo-safe fallback
+            *) NORMALIZED_MODE="live" ;;
           esac
 
           {
@@ -156,37 +180,31 @@ jobs:
             echo ""
           } >> "$GITHUB_STEP_SUMMARY"
 
-          # Tier 1: main hard-forbids non-live
           if [[ "$REF_NAME" == "main" ]]; then
             if [[ "$NORMALIZED_MODE" == "snapshot" || "$NORMALIZED_MODE" == "fixtures" ]]; then
-              echo "❌ Policy violation: \`main\` forbids non-live mode." | tee -a "$GITHUB_STEP_SUMMARY"
+              echo "❌ main forbids non-live mode" | tee -a "$GITHUB_STEP_SUMMARY"
               exit 1
             fi
-            echo "✅ \`main\` policy pass — live-only enforced." >> "$GITHUB_STEP_SUMMARY"
+            echo "✅ main policy pass" >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
-          # Tier 2: non-main allows non-live only with explicit opt-in
           if [[ "$NORMALIZED_MODE" == "snapshot" || "$NORMALIZED_MODE" == "fixtures" ]]; then
             if [[ "$ALLOW" != "1" ]]; then
-              echo "❌ Policy violation: \`$NORMALIZED_MODE\` requires VITE_ALLOW_NON_LIVE_MODE=1." | tee -a "$GITHUB_STEP_SUMMARY"
+              echo "❌ non-main requires VITE_ALLOW_NON_LIVE_MODE=1 for $NORMALIZED_MODE" | tee -a "$GITHUB_STEP_SUMMARY"
               exit 1
             fi
-            echo "⚠️ Non-live mode explicitly allowed: \`$NORMALIZED_MODE\`." >> "$GITHUB_STEP_SUMMARY"
+            echo "⚠️ explicit non-live mode allowed on non-main" >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
-          echo "✅ Non-main policy pass — live-default." >> "$GITHUB_STEP_SUMMARY"
-
-      # ── Type check + build ─────────────────────────────────────────────────
+          echo "✅ live-default mode" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Type check
         run: npx tsc --noEmit
 
       - name: Build
         run: npx vite build
-
-      # ── Contract tests — data-mode forge suite ─────────────────────────────
 
       - name: Run data mode contract tests
         run: |
@@ -206,12 +224,9 @@ jobs:
             echo "\`\`\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # ── Build metadata + artifact ──────────────────────────────────────────
-
       - name: Capture build metadata
         run: |
           set -euo pipefail
-          # Per vite.config.ts, output goes to ../native-shell/ui/dist
           DIST_DIR="../native-shell/ui/dist"
           [[ -d "$DIST_DIR" ]] || DIST_DIR="dist"
           [[ -d "$DIST_DIR" ]] || { echo "❌ Build output not found" | tee -a "$GITHUB_STEP_SUMMARY"; exit 1; }
@@ -236,3 +251,19 @@ jobs:
             frontend/dist
           if-no-files-found: warn
           retention-days: 7
+
+  docs-only-summary:
+    name: Docs-only fast path
+    needs: classify
+    if: needs.classify.outputs.docs_only == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Emit docs-only summary
+        run: |
+          {
+            echo "## Frontend Build Skipped"
+            echo ""
+            echo "- Reason: docs-only change set"
+            echo "- Changed files: ${{ needs.classify.outputs.changed_count }}"
+            echo "- Build job intentionally not executed."
+          } >> "$GITHUB_STEP_SUMMARY"
