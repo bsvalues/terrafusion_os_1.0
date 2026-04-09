@@ -513,6 +513,8 @@ builder.Services.AddSingleton<ISurfaceContractService, TerraFusion.AI.Services.S
                 lanes));
     }
 }
+// Muse router status — probes each lane for live/offline observability
+builder.Services.AddSingleton<IMuseRouterStatusService, TerraFusion.AI.Services.MuseRouterStatusService>();
 // ✅ STUB: Consciousness Engine stub for DI resolution
 builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services
