@@ -1,0 +1,238 @@
+name: Frontend Build Guarded
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      # Frontend app + shared frontend deps
+      - 'frontend/apps/os-shell/**'
+      - 'frontend/package.json'
+      - 'frontend/pnpm-lock.yaml'
+      # Root/workspace dependency changes that can impact frontend build
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      # Workflow changes should self-test
+      - '.github/workflows/frontend-build-guarded.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/apps/os-shell/**'
+      - 'frontend/package.json'
+      - 'frontend/pnpm-lock.yaml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/frontend-build-guarded.yml'
+  workflow_dispatch:
+
+# Prevent duplicate runs for same branch/PR
+concurrency:
+  group: frontend-build-guarded-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ── Fast-exit classifier ─────────────────────────────────────────────────────
+  # Detects changes that are docs/markdown only and skips the expensive
+  # build+test job when nothing executable changed.
+  classify:
+    name: Classify changed files
+    runs-on: ubuntu-latest
+    outputs:
+      skip_build: ${{ steps.check.outputs.skip_build }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect executable changes
+        id: check
+        shell: bash
+        run: |
+          # Compare against base (PR) or HEAD^ (push)
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE="HEAD^"
+          fi
+
+          CHANGED=$(git diff --name-only "$BASE" HEAD 2>/dev/null || git diff --name-only HEAD^ HEAD)
+
+          # Files that do NOT trigger a build: docs, markdown, release notes,
+          # runbooks, incident records, CI scripts (non-workflow), images.
+          NON_BUILD_PATTERN="^(docs/|release-notes/|\.github/workflows/.*\.md|.*\.md$|.*\.png$|.*\.jpg$|.*\.svg$|scripts/ci/.*\.sh$)"
+
+          # Check whether ALL changed files match the non-build pattern
+          NON_BUILD_ONLY=true
+          while IFS= read -r file; do
+            if ! echo "$file" | grep -qE "$NON_BUILD_PATTERN"; then
+              NON_BUILD_ONLY=false
+              break
+            fi
+          done <<< "$CHANGED"
+
+          if [[ "$NON_BUILD_ONLY" == "true" && -n "$CHANGED" ]]; then
+            echo "skip_build=true" >> "$GITHUB_OUTPUT"
+            echo "⏭️ All changes are docs/non-executable — skipping build." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "skip_build=false" >> "$GITHUB_OUTPUT"
+            echo "⚙️ Executable changes detected — running build." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  # ── Main build job ───────────────────────────────────────────────────────────
+  frontend-build:
+    name: Frontend Build (mode-guarded)
+    needs: classify
+    if: needs.classify.outputs.skip_build != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: frontend
+
+    env:
+      NODE_VERSION: '20'
+      # VITE_DATA_MODE: ""                  # leave unset for live-default
+      # VITE_ALLOW_NON_LIVE_MODE: ""        # set to "1" only when intentionally non-live
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: .
+        run: pnpm install --frozen-lockfile
+
+      # ── Data mode policy ───────────────────────────────────────────────────
+      # Runs before type-check and build — zero wasted CI time on policy violations.
+
+      - name: Assert frontend data mode policy
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          VITE_DATA_MODE: ${{ env.VITE_DATA_MODE }}
+          VITE_ALLOW_NON_LIVE_MODE: ${{ env.VITE_ALLOW_NON_LIVE_MODE }}
+        run: |
+          set -euo pipefail
+
+          REF_NAME="${REF_NAME:-}"
+          MODE="${VITE_DATA_MODE:-}"
+          ALLOW="${VITE_ALLOW_NON_LIVE_MODE:-}"
+
+          case "$MODE" in
+            ""|"live") NORMALIZED_MODE="live" ;;
+            "snapshot"|"fixtures") NORMALIZED_MODE="$MODE" ;;
+            *) NORMALIZED_MODE="live" ;; # typo-safe fallback
+          esac
+
+          {
+            echo "## Frontend Data Mode Guard"
+            echo ""
+            echo "| Field | Value |"
+            echo "|-------|-------|"
+            echo "| Branch | \`$REF_NAME\` |"
+            echo "| VITE_DATA_MODE (raw) | \`${MODE:-<unset>}\` |"
+            echo "| VITE_ALLOW_NON_LIVE_MODE | \`${ALLOW:-<unset>}\` |"
+            echo "| Effective mode | \`$NORMALIZED_MODE\` |"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Tier 1: main hard-forbids non-live
+          if [[ "$REF_NAME" == "main" ]]; then
+            if [[ "$NORMALIZED_MODE" == "snapshot" || "$NORMALIZED_MODE" == "fixtures" ]]; then
+              echo "❌ Policy violation: \`main\` forbids non-live mode." | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
+            echo "✅ \`main\` policy pass — live-only enforced." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          # Tier 2: non-main allows non-live only with explicit opt-in
+          if [[ "$NORMALIZED_MODE" == "snapshot" || "$NORMALIZED_MODE" == "fixtures" ]]; then
+            if [[ "$ALLOW" != "1" ]]; then
+              echo "❌ Policy violation: \`$NORMALIZED_MODE\` requires VITE_ALLOW_NON_LIVE_MODE=1." | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
+            echo "⚠️ Non-live mode explicitly allowed: \`$NORMALIZED_MODE\`." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "✅ Non-main policy pass — live-default." >> "$GITHUB_STEP_SUMMARY"
+
+      # ── Type check + build ─────────────────────────────────────────────────
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npx vite build
+
+      # ── Contract tests — data-mode forge suite ─────────────────────────────
+
+      - name: Run data mode contract tests
+        run: |
+          npx vitest run \
+            apps/os-shell/src/__tests__/forge/dataProvider.modeResolution.contract.test.ts \
+            apps/os-shell/src/__tests__/forge/useDataMode.unifiedSource.contract.test.ts \
+            apps/os-shell/src/__tests__/forge/forgeSuiteSourceHonesty.contract.test.tsx \
+            apps/os-shell/src/__tests__/forge/forgeSuiteHome.contract.test.tsx \
+            2>&1 | tee vitest-output.txt
+
+          RESULT=$(grep -E "Tests\s+[0-9]+" vitest-output.txt | tail -1 || echo "result unavailable")
+          {
+            echo "## Data Mode Contract Tests"
+            echo ""
+            echo "\`\`\`"
+            echo "$RESULT"
+            echo "\`\`\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ── Build metadata + artifact ──────────────────────────────────────────
+
+      - name: Capture build metadata
+        run: |
+          set -euo pipefail
+          # Per vite.config.ts, output goes to ../native-shell/ui/dist
+          DIST_DIR="../native-shell/ui/dist"
+          [[ -d "$DIST_DIR" ]] || DIST_DIR="dist"
+          [[ -d "$DIST_DIR" ]] || { echo "❌ Build output not found" | tee -a "$GITHUB_STEP_SUMMARY"; exit 1; }
+          FILE_COUNT=$(find "$DIST_DIR" -type f | wc -l | tr -d ' ')
+          BYTE_SIZE=$(du -sh "$DIST_DIR" | awk '{print $1}')
+          {
+            echo "## Build Output"
+            echo ""
+            echo "| Field | Value |"
+            echo "|-------|-------|"
+            echo "| Output dir | \`$DIST_DIR\` |"
+            echo "| Files | \`$FILE_COUNT\` |"
+            echo "| Size | \`$BYTE_SIZE\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist-${{ github.sha }}
+          path: |
+            native-shell/ui/dist
+            frontend/dist
+          if-no-files-found: warn
+          retention-days: 7
