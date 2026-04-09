@@ -322,6 +322,21 @@ export default function CompsForgeModule() {
         </p>
       </div>
 
+      {/* Data source disclosure — remove when wired to real PACS comparable sales API */}
+      <div
+        role='status'
+        style={{
+          padding: '10px 12px',
+          borderRadius: '8px',
+          border: '1px solid hsl(var(--tf-warning-amber) / 0.3)',
+          background: 'hsl(var(--tf-warning-amber) / 0.08)',
+          color: 'hsl(var(--tf-warning-amber))',
+          fontSize: '12px',
+        }}
+      >
+        Demo data — CompsForge is running on 6 hardcoded Benton County comparable sales. Real PACS comparable sales API is deferred to v1.1.
+      </div>
+
       {/* Controls */}
       <div className='flex items-center gap-4 flex-wrap'>
         <div className='flex items-center gap-2'>

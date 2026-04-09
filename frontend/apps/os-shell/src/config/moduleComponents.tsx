@@ -132,6 +132,7 @@ export function normalizeModuleId(moduleId: string): string {
 export const MODULE_REGISTRY = new Set<string>([
   'federation-dashboard',
   'costforge',
+  'comps-forge',
   'terra-gaia',
   'levy-calculator',
   'gis-viewer',
@@ -276,6 +277,11 @@ const SovereignDashboardWindow = lazy(() =>
   import('../modules/dashboard/SovereignDashboardWindow').then((module) => ({
     default: module.SovereignDashboardWindow,
   }))
+);
+
+// CompsForge — Sales comparison approach (demo data, standalone window)
+const CompsForgeModule = lazy(
+  () => import('../pages/suites/modules/CompsForgeModule')
 );
 
 // ============================================================================
@@ -637,6 +643,14 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
               : undefined
           }
         />
+      );
+
+    // CompsForge — Sales comparison approach (standalone window, demo data)
+    case 'comps-forge':
+      return (
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <CompsForgeModule />
+        </Suspense>
       );
 
     // TerraGaia - Natural Language AI Assistant
