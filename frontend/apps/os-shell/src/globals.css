@@ -45,49 +45,49 @@
 @layer base {
   :root {
     /* TerraFusion Core Variables Override - HSL references → canonical TF tokens */
-    --background: var(--tf-bg); /* 222 25% 7% — canonical void-black */
-    --foreground: 180 100% 50%; /* Terra-Cyan */
-    --card: var(--tf-surface-2); /* 222 29% 11% — deepest solid surface */
-    --card-foreground: 180 100% 50%; /* Terra-Cyan */
-    --popover: var(--tf-surface-2); /* 222 29% 11% */
-    --popover-foreground: 180 100% 50%; /* Terra-Cyan */
-    --primary: 180 100% 50%; /* Terra-Cyan */
-    --primary-foreground: var(--tf-bg); /* void-black */
+    --background: var(--tf-bg);
+    --foreground: var(--tf-text);
+    --card: var(--tf-surface);
+    --card-foreground: var(--tf-text);
+    --popover: var(--tf-surface-2);
+    --popover-foreground: var(--tf-text);
+    --primary: var(--tf-accent);
+    --primary-foreground: 45 18% 97%;
     --secondary: var(--tf-surface-2);
-    --secondary-foreground: 180 100% 50%; /* Terra-Cyan */
-    --muted: var(--tf-surface-2);
-    --muted-foreground: 214 32% 57%; /* Light gray */
-    --accent: 208 100% 50%; /* Terra-Blue */
-    --accent-foreground: 180 100% 50%; /* Terra-Cyan */
-    --destructive: 0 84% 60%; /* Error red */
-    --destructive-foreground: 180 100% 50%; /* Terra-Cyan */
-    --border: 180 100% 50% / 0.2; /* Terra-Cyan with opacity */
+    --secondary-foreground: var(--tf-text);
+    --muted: var(--tf-surface);
+    --muted-foreground: var(--tf-muted);
+    --accent: var(--tf-accent);
+    --accent-foreground: 45 18% 97%;
+    --destructive: var(--tf-error);
+    --destructive-foreground: 45 18% 97%;
+    --border: var(--tf-border);
     --input: var(--tf-surface-2);
-    --ring: 180 100% 50%; /* Terra-Cyan */
+    --ring: var(--tf-accent);
     --radius: 0.5rem;
   }
 
   .dark {
-    /* TerraFusion Dark Mode (Default) - canonical TF token references */
+    /* TerraFusion warm mode — same token system, no separate dark override */
     --background: var(--tf-bg);
-    --foreground: 180 100% 50%; /* Terra-Cyan */
-    --card: var(--tf-surface-2);
-    --card-foreground: 180 100% 50%; /* Terra-Cyan */
+    --foreground: var(--tf-text);
+    --card: var(--tf-surface);
+    --card-foreground: var(--tf-text);
     --popover: var(--tf-surface-2);
-    --popover-foreground: 180 100% 50%; /* Terra-Cyan */
-    --primary: 180 100% 50%; /* Terra-Cyan */
-    --primary-foreground: var(--tf-bg);
+    --popover-foreground: var(--tf-text);
+    --primary: var(--tf-accent);
+    --primary-foreground: 45 18% 97%;
     --secondary: var(--tf-surface-2);
-    --secondary-foreground: 180 100% 50%; /* Terra-Cyan */
-    --muted: var(--tf-surface-2);
-    --muted-foreground: 214 32% 57%; /* Light gray */
-    --accent: 208 100% 50%; /* Terra-Blue */
-    --accent-foreground: 180 100% 50%; /* Terra-Cyan */
-    --destructive: var(--error-red);
-    --destructive-foreground: var(--terra-cyan);
-    --border: var(--tf-transcend-cyan-hs) var(--tf-l-50) / 0.2;
-    --input: var(--terra-slate);
-    --ring: var(--terra-cyan);
+    --secondary-foreground: var(--tf-text);
+    --muted: var(--tf-surface);
+    --muted-foreground: var(--tf-muted);
+    --accent: var(--tf-accent);
+    --accent-foreground: 45 18% 97%;
+    --destructive: var(--tf-error);
+    --destructive-foreground: 45 18% 97%;
+    --border: var(--tf-border);
+    --input: var(--tf-surface-2);
+    --ring: var(--tf-accent);
   }
 }
 
@@ -127,19 +127,22 @@
     -moz-osx-font-smoothing: grayscale;
 
     /* TerraFusion Brand Kit Colors — Lumin tokens */
-    background: hsl(var(--tf-bg));
+    background:
+      radial-gradient(circle at top left, hsl(var(--tf-accent) / 0.08), transparent 26%),
+      radial-gradient(circle at top right, hsl(var(--tf-suite-forge) / 0.06), transparent 24%),
+      hsl(var(--tf-bg));
     color: hsl(var(--tf-text));
     overflow: hidden; /* Prevent scrollbars, this is an OS */
   }
 
   /* Apply TerraFusion default dark theme */
   html {
-    color-scheme: dark;
+    color-scheme: light;
     /* Smooth scroll for any scrollable areas */
     scroll-behavior: smooth;
   }
 
-  /* Headings use cyan accent + Switzer primary */
+  /* Headings use neutral text — suite accents should be intentional, not global */
   h1,
   h2,
   h3,
@@ -147,9 +150,9 @@
   h5,
   h6 {
     font-family: var(--font-primary), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color: hsl(var(--tf-accent));
-    font-weight: 300;
-    letter-spacing: -0.01em;
+    color: hsl(var(--tf-text) / 0.96);
+    font-weight: 600;
+    letter-spacing: -0.025em;
   }
 
   /* Code uses JetBrains Mono */
@@ -175,18 +178,18 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--tf-transcend-cyan-hs) 50% / 0.3);
+    background: hsl(var(--tf-border) / 0.9);
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--tf-transcend-cyan-hs) 50% / 0.5);
+    background: hsl(var(--tf-accent) / 0.42);
   }
 
   /* Selection color */
   ::selection {
-    background: hsl(var(--tf-transcend-cyan-hs) 50% / 0.3);
-    color: hsl(var(--tf-text-primary-hs) 100%);
+    background: hsl(var(--tf-accent) / 0.25);
+    color: hsl(var(--tf-text));
   }
 
   /* Elite Progress Bar Dynamic Width */
@@ -313,27 +316,27 @@
    TERRAFUSION SONOMA GLASS UTILITIES
    ═══════════════════════════════════════════════════════════════ */
 
-/* Taskbar/Dock Material */
+/* Taskbar/Dock Material — Liquid Glass Layer 1 shell chrome */
 .glass-dock {
-  background: hsl(var(--tf-tokens-black-hs) 0% / 0.4);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
-  border-top: 1px solid hsl(var(--tf-text-primary-hs) 100% / 0.05);
+  background: var(--glass-bg);
+  backdrop-filter: saturate(140%) blur(28px);
+  -webkit-backdrop-filter: saturate(140%) blur(28px);
+  border: 1px solid var(--glass-border);
+  border-bottom: none;
 }
 
 /* Desktop Icon hover glass */
 .glass-icon-hover {
-  background: hsl(var(--tf-text-primary-hs) 100% / 0.08);
+  background: hsl(var(--tf-surface) / 0.70);
   backdrop-filter: blur(12px);
-  border: 1px solid hsl(var(--tf-text-primary-hs) 100% / 0.1);
+  border: 1px solid hsl(var(--tf-border) / 0.35);
 }
 
 /* Desktop Icon selected glass */
 .glass-icon-selected {
-  background: hsl(var(--tf-transcend-cyan-hs) 50% / 0.15);
+  background: hsl(var(--tf-text) / 0.1);
   backdrop-filter: blur(16px);
-  border: 1px solid hsl(var(--tf-transcend-cyan-hs) 50% / 0.3);
-  box-shadow: 0 0 20px hsl(var(--tf-transcend-cyan-hs) 50% / 0.2);
+  border: 1px solid hsl(var(--tf-border) / 0.4);
 }
 
 /* Slow pulse animation for ambient orbs */
@@ -358,10 +361,10 @@
    ═══════════════════════════════════════════════════════════════ */
 .tf-ambient-root {
   background:
-    radial-gradient(circle at 20% 20%, hsl(var(--tf-network-blue-hs) 50% / 0.08), transparent 40%),
-    radial-gradient(circle at 80% 30%, hsl(var(--tf-transcend-cyan-hs) 50% / 0.06), transparent 45%),
-    radial-gradient(circle at 50% 80%, hsl(var(--tf-success-hs) 50% / 0.05), transparent 50%),
-    linear-gradient(180deg, hsl(var(--tf-surface-dark-hs) 7% / 0.9), hsl(var(--tf-surface-dark-hs) 7%));
+    radial-gradient(circle at 20% 20%, hsl(16 40% 88% / 0.35), transparent 40%),
+    radial-gradient(circle at 80% 30%, hsl(140 22% 88% / 0.28), transparent 45%),
+    radial-gradient(circle at 50% 80%, hsl(38 28% 90% / 0.25), transparent 50%),
+    hsl(var(--tf-bg));
 }
 
 .tf-css-ambient {
@@ -378,9 +381,9 @@
 
 .tf-ambient-mesh {
   background:
-    radial-gradient(circle at 25% 15%, hsl(var(--tf-transcend-cyan-hs) 50% / 0.08), transparent 40%),
-    radial-gradient(circle at 70% 35%, hsl(var(--tf-network-blue-hs) 50% / 0.06), transparent 45%),
-    radial-gradient(circle at 40% 85%, hsl(var(--tf-success-hs) 50% / 0.05), transparent 50%);
+    radial-gradient(circle at 25% 15%, hsl(16 38% 88% / 0.30), transparent 40%),
+    radial-gradient(circle at 70% 35%, hsl(140 20% 88% / 0.22), transparent 45%),
+    radial-gradient(circle at 40% 85%, hsl(38 25% 90% / 0.20), transparent 50%);
   filter: blur(8px);
   opacity: 0.9;
 }
@@ -389,15 +392,15 @@
   background-image:
     repeating-linear-gradient(
       0deg,
-      hsl(var(--tf-text-primary-hs) 100% / 0.02) 0px,
-      hsl(var(--tf-text-primary-hs) 100% / 0.02) 1px,
+      hsl(var(--tf-text) / 0.025) 0px,
+      hsl(var(--tf-text) / 0.025) 1px,
       transparent 1px,
       transparent 2px
     ),
     repeating-linear-gradient(
       90deg,
-      hsl(var(--tf-text-primary-hs) 100% / 0.015) 0px,
-      hsl(var(--tf-text-primary-hs) 100% / 0.015) 1px,
+      hsl(var(--tf-text) / 0.018) 0px,
+      hsl(var(--tf-text) / 0.018) 1px,
       transparent 1px,
       transparent 2px
     );
@@ -406,7 +409,7 @@
 }
 
 .tf-ambient-vignette {
-  background: radial-gradient(circle at center, transparent 55%, hsl(var(--tf-tokens-black-hs) 0% / 0.6) 100%);
+  background: radial-gradient(circle at center, transparent 55%, hsl(var(--tf-border) / 0.15) 100%);
 }
 
 /* ═══════════════════════════════════════════════════════════════
