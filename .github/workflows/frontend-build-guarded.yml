@@ -200,6 +200,10 @@ jobs:
 
           echo "✅ live-default mode" >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Assert CSS token contract (no raw hsl() in component files)
+        working-directory: .
+        run: bash scripts/ci/assert-no-raw-css-colors.sh
+
       - name: Type check
         run: npx tsc --noEmit
 
