@@ -70,6 +70,16 @@ export interface VirtualDesktop {
   name: string;
 }
 
+// --- Window type contract ---
+export function deriveWindowType(
+  moduleId: string
+): 'normal' | 'companion' | 'workbench' | 'suite' {
+  if (moduleId === 'os-pilot') return 'companion';
+  if (moduleId === 'property-workbench') return 'workbench';
+  if (moduleId.startsWith('suite-')) return 'suite';
+  return 'normal';
+}
+
 export interface DesktopWindow {
   id: string;
   moduleId: string;
@@ -83,6 +93,7 @@ export interface DesktopWindow {
   previousPosition?: Position;
   previousSize?: Size;
   snapZone?: SnapZone;
+  windowType?: 'normal' | 'companion' | 'workbench' | 'suite';
   metadata?: Record<string, any>; // Deep Context Payload
 }
 
@@ -583,6 +594,7 @@ export const useDesktopStore = create<DesktopState>()(
           size: shouldMaximize ? moduleSize : initialBounds!.size,
           state: shouldMaximize ? 'maximized' : 'normal',
           zIndex: nextZIndex,
+          windowType: deriveWindowType(moduleId),
           metadata,
         };
 
