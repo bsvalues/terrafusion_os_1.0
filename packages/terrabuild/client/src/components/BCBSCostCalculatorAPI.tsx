@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import axios from 'axios';
+import { getDevToken } from '@/lib/devAuth';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -129,6 +130,7 @@ const BCBSCostCalculatorAPI = () => {
     setApiError(null);
     try {
       const region = neighborhoodToRegion(data.neighborhood);
+      const token = await getDevToken();
       const response = await axios.post('/api/costforge/cost-estimate', {
         buildingType: data.buildingType,
         region,
@@ -137,7 +139,7 @@ const BCBSCostCalculatorAPI = () => {
         qualityGrade: data.qualityGrade,
         conditionGrade: data.conditionGrade,
         complexityGrade: data.complexityGrade,
-      });
+      }, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
 
       const apiData = response.data;
       if (typeof apiData.totalCost !== 'number') {
