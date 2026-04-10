@@ -291,7 +291,7 @@ const BCBSCostCalculatorAPI = () => {
                                 <TooltipContent className="max-w-sm bg-cyan-950 text-white" side="right">
                                   <div className="space-y-2">
                                     <p className="font-semibold">Building Type Explanation</p>
-                                    <p className="text-sm">The TerraBuild calculator adjusts costs based on building type:</p>
+                                    <p className="text-sm">The CostForge calculator adjusts costs based on building type:</p>
                                     <ul className="text-xs space-y-1 list-disc pl-4">
                                       <li><span className="font-semibold">Residential:</span> Single-family homes, apartments, condos</li>
                                       <li><span className="font-semibold">Commercial:</span> Retail, offices, warehouses</li>
@@ -348,7 +348,7 @@ const BCBSCostCalculatorAPI = () => {
                                 <TooltipContent className="max-w-sm bg-cyan-950 text-white" side="right">
                                   <div className="space-y-2">
                                     <p className="font-semibold">Quality Level Explanation</p>
-                                    <p className="text-sm">The TerraBuild calculator adjusts costs based on construction quality:</p>
+                                    <p className="text-sm">The CostForge calculator adjusts costs based on construction quality:</p>
                                     <ul className="text-xs space-y-1 list-disc pl-4">
                                       <li><span className="font-semibold">Low:</span> Basic materials and minimal features</li>
                                       <li><span className="font-semibold">Standard:</span> Average market-level materials and finishes</li>
@@ -405,7 +405,7 @@ const BCBSCostCalculatorAPI = () => {
                                 <TooltipContent className="max-w-sm bg-cyan-950 text-white" side="right">
                                   <div className="space-y-2">
                                     <p className="font-semibold">Region Explanation</p>
-                                    <p className="text-sm">The TerraBuild calculator uses Benton County's regional cost factors:</p>
+                                    <p className="text-sm">The CostForge calculator uses Benton County's regional cost factors:</p>
                                     <ul className="text-xs space-y-1 list-disc pl-4">
                                       <li><span className="font-semibold">East Benton:</span> Includes rural areas with different labor/material costs</li>
                                       <li><span className="font-semibold">Central Benton:</span> Includes most developed areas and standard costs</li>

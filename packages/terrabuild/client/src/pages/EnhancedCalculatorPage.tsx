@@ -697,7 +697,7 @@ const EnhancedCalculatorPage = () => {
       initialStep="property"
     >
       <PageShell
-        title="TerraBuild Cost Calculator"
+        title="CostForge — Cost Calculator"
         description="Calculate building costs based on property characteristics, building type, and regional factors."
         breadcrumbs={[
           { label: "Home", href: "/" },
