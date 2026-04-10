@@ -1,4 +1,4 @@
-export const APP_NAME = 'TerraBuild';
+export const APP_NAME = 'CostForge';
 export const BENTON_COUNTY_ID = 'benton';
 export const DEFAULT_ASSESSMENT_YEAR = new Date().getFullYear();
 export const API_BASE = '/api';

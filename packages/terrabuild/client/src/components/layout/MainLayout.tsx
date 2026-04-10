@@ -57,30 +57,23 @@ export default function MainLayout({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#0b1120] to-[#1a2332]">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-8 bg-white/10 backdrop-blur-lg rounded-2xl border border-cyan-500/20 flex flex-col items-center"
-          style={{
-            perspective: '1000px',
-            transformStyle: 'preserve-3d',
-          }}
+          className="p-8 bg-card rounded-2xl border border-border flex flex-col items-center shadow-sm"
         >
           <div
-            className="w-16 h-16 mb-6 rounded-full bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] flex items-center justify-center"
-            style={{
-              transform: 'translateZ(10px)',
-              boxShadow: '0 6px 16px -8px rgba(0, 255, 238, 0.3)',
-            }}
+            className="w-16 h-16 mb-6 rounded-full flex items-center justify-center"
+            style={{ background: 'hsl(var(--primary))' }}
           >
-            <Loader2 className="h-8 w-8 animate-spin text-white" />
+            <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'hsl(var(--primary-foreground))' }} />
           </div>
-          <p className="text-cyan-400 font-bold text-lg mb-2" style={{ transform: 'translateZ(5px)' }}>
-            Loading CostForge AI...
+          <p className="font-bold text-lg mb-2 text-foreground">
+            Loading CostForge...
           </p>
-          <p className="text-cyan-300/70 text-sm text-center" style={{ transform: 'translateZ(2px)' }}>
-            Government. Transcended.
+          <p className="text-sm text-center text-muted-foreground">
+            Benton County Assessor
           </p>
         </motion.div>
       </div>
@@ -88,7 +81,7 @@ export default function MainLayout({
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#0b1120] via-[#1a2332] to-[#0b1120]">
+    <div className="flex flex-col h-full bg-background">
       <TerraFusionHeader isLanding={isLanding} />
       <div className="flex flex-1 overflow-hidden">
         {!isLanding && <Sidebar />}
@@ -137,9 +130,9 @@ export default function MainLayout({
                 className="mb-6"
               >
                 {pageTitle && (
-                  <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] bg-clip-text text-transparent">{pageTitle}</h1>
+                  <h1 className="text-2xl md:text-3xl font-bold text-foreground">{pageTitle}</h1>
                 )}
-                {pageDescription && <p className="mt-2 text-cyan-300/80">{pageDescription}</p>}
+                {pageDescription && <p className="mt-2 text-muted-foreground">{pageDescription}</p>}
               </motion.div>
             )}
 
@@ -153,7 +146,7 @@ export default function MainLayout({
               {children}
             </motion.div>
           </main>
-          {!hideFooter && <Footer />}
+          {/* Footer removed — CostForge is OS-hosted, not a public web app */}
         </div>
       </div>
     </div>

@@ -160,6 +160,10 @@ const AnalyticsPage: React.FC = () => {
     <LayoutWrapper>
       <MainContent title="Analytics">
         <div className="container mx-auto py-6 space-y-6">
+          {/* v1: All analytics on this page use hardcoded placeholder data */}
+          <div role="status" style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid hsl(var(--tf-warning-amber) / 0.3)', background: 'hsl(var(--tf-warning-amber) / 0.08)', color: 'hsl(var(--tf-warning-amber))', fontSize: '12px' }}>
+            DEMO DATA — Analytics charts show placeholder values. Real Benton County ratio analytics are deferred to v1.2.
+          </div>
           <div className="flex flex-col space-y-2">
             <h1 className="text-3xl font-bold flex items-center">
               <BarChart3 className="mr-2 h-6 w-6 text-primary" />

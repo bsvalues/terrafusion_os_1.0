@@ -236,7 +236,11 @@ const WorkflowDashboardPage: React.FC = () => {
         { label: 'Workflows', href: '/workflows' },
       ]}
     >
-      <WorkflowDashboard 
+      {/* v1: Workflows use hardcoded demo data, not connected to any backend */}
+      <div role="status" style={{ margin: '0 0 16px', padding: '10px 12px', borderRadius: '8px', border: '1px solid hsl(var(--tf-warning-amber) / 0.3)', background: 'hsl(var(--tf-warning-amber) / 0.08)', color: 'hsl(var(--tf-warning-amber))', fontSize: '12px' }}>
+        DEMO DATA — Workflow dashboard shows placeholder tasks. Real review queue integration is deferred to v1.2.
+      </div>
+      <WorkflowDashboard
         workflows={demoWorkflows}
         categories={demoCategories}
         userRole="admin"
