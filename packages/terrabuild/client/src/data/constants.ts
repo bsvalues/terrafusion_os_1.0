@@ -171,24 +171,27 @@ export const REGIONS = [
 export const regions = REGIONS;
 
 // Quality (Class) grades — API enum values sent to CostEstimateRequest.
-// Labels use UAD Q-scale (Q1–Q6) matching PACS Class_Condition Ratings.xlsx.
-// Q6 maps to ECONOMY — the API has no lower grade.
+// Labels show actual PACS ClassCode numeric scale (10–60) from pacs_property_profiles.
+// ClassCode 30 is the baseline average (26,967 records = majority).
+// Numeric codes pass through PacsCanonicalizer unchanged — these are the values
+// assessors see in PACS. The 5 API buckets collapse the finer PACS scale.
 export const QUALITY_GRADES = [
-  { value: 'ECONOMY',  label: 'Q5/Q6 — Economy',  factor: 0.75 },
-  { value: 'STANDARD', label: 'Q4 — Standard',     factor: 1.00 },
-  { value: 'CUSTOM',   label: 'Q3 — Above Standard', factor: 1.12 },
-  { value: 'PREMIUM',  label: 'Q2 — High Quality', factor: 1.30 },
-  { value: 'LUXURY',   label: 'Q1 — Exceptional',  factor: 1.55 },
+  { value: 'ECONOMY',  label: 'Class 10/20 — Economy',       factor: 0.75 },
+  { value: 'STANDARD', label: 'Class 25/30 — Standard',      factor: 1.00 },
+  { value: 'CUSTOM',   label: 'Class 35 — Above Average',    factor: 1.12 },
+  { value: 'PREMIUM',  label: 'Class 40/45 — High Quality',  factor: 1.30 },
+  { value: 'LUXURY',   label: 'Class 50/55/60 — Exceptional', factor: 1.55 },
 ] as const;
 
 // Condition grades — API enum values sent to CostEstimateRequest.
-// Labels use UAD C-scale (C1–C6) matching PACS Class_Condition Ratings.xlsx.
-// C1/C2 collapse to EXCELLENT; C5/C6 collapse to POOR — the API has 4 grades.
+// Labels show actual PACS ConditionCode numeric scale (1–6) from pacs_property_profiles.
+// Condition 3 is the baseline average (49,741 records = majority).
+// The 4 API buckets collapse the 6-point PACS scale.
 export const CONDITION_GRADES = [
-  { value: 'POOR',      label: 'C5/C6 — Poor',         factor: 0.65 },
-  { value: 'FAIR',      label: 'C4 — Average',          factor: 0.80 },
-  { value: 'GOOD',      label: 'C3 — Good',             factor: 1.00 },
-  { value: 'EXCELLENT', label: 'C1/C2 — Excellent/New', factor: 1.10 },
+  { value: 'POOR',      label: 'Cond 5/6 — Poor',         factor: 0.65 },
+  { value: 'FAIR',      label: 'Cond 4 — Fair',           factor: 0.80 },
+  { value: 'GOOD',      label: 'Cond 3 — Good (Avg)',     factor: 1.00 },
+  { value: 'EXCELLENT', label: 'Cond 1/2 — Excellent',    factor: 1.10 },
 ] as const;
 
 // Complexity grades — matching CostEstimateRequest in CostForgeController.cs
