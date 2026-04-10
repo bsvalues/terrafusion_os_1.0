@@ -109,7 +109,7 @@ const BCBSCostCalculatorAPI = () => {
     qualityGrade: "STANDARD",
     complexityGrade: "STANDARD",
     conditionGrade: "GOOD",
-    neighborhood: "1204",
+    neighborhood: "12040",
     yearBuilt: new Date().getFullYear(),
   };
 
@@ -393,7 +393,7 @@ const BCBSCostCalculatorAPI = () => {
                       name="neighborhood"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Neighborhood (PACS hood_cd)</FormLabel>
+                          <FormLabel>Neighborhood</FormLabel>
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
@@ -429,7 +429,7 @@ const BCBSCostCalculatorAPI = () => {
                             </SelectContent>
                           </Select>
                           <FormDescription>
-                            Select the PACS neighborhood analysis group (hood_cd)
+                            Select the neighborhood where the building is located
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
