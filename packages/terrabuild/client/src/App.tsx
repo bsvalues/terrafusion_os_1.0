@@ -37,6 +37,7 @@ import WorkflowDashboardPage from '@/pages/WorkflowDashboardPage';
 // Use the newly renamed file to avoid casing conflicts
 import ContextualDataPage from '@/pages/contextual-data';
 import CostCalculator from '@/pages/CostCalculator';
+import BCBSCostCalculatorAPI from '@/components/BCBSCostCalculatorAPI';
 import CostWizardPage from '@/pages/CostWizardPage';
 import CreateProjectPage from '@/pages/CreateProjectPage';
 import DataConnectionsPage from '@/pages/DataConnectionsPage';
@@ -302,8 +303,8 @@ const ProtectedRouteWrapper = ({
 function Router() {
   return (
     <Switch>
-      {/* Use LandingPage as the root route without authentication */}
-      <Route path="/" component={LandingPage} />
+      {/* CostForge opens directly to Dashboard — no marketing landing page */}
+      <Route path="/" component={DashboardPage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/documentation" component={DocumentationPage} />
       <Route path="/tutorials" component={TutorialsPage} />
@@ -390,7 +391,8 @@ function Router() {
       <ProtectedRouteWrapper path="/properties/:id" component={PropertyDetailsPage} />
       <ProtectedRouteWrapper path="/geo-assessment" component={GeoAssessmentPage} />
       <ProtectedRouteWrapper path="/mcp-visualizations" component={MCPVisualizationsPage} />
-      <ProtectedRouteWrapper path="/cost-calculator" component={CostCalculator} />
+      <ProtectedRouteWrapper path="/cost-calculator" component={BCBSCostCalculatorAPI} />
+      <ProtectedRouteWrapper path="/cost-calculator-legacy" component={CostCalculator} />
       <ProtectedRouteWrapper path="/ai-swarm" component={SwarmPage} />
 
       <Route component={NotFound} />

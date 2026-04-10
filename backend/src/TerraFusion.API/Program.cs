@@ -1179,7 +1179,18 @@ if (app.Environment.IsDevelopment())
                 "write:dossier",
                 "read:property",
                 "read:levy",
-                "read:costforge"
+                "read:costforge",
+                "access:costforge",
+                "calculate:property-cost",
+                "write:costforge",
+                "read:compsforge",
+                "write:compsforge",
+                "read:incomeforge",
+                "write:incomeforge",
+                "read:system-status",
+                "read:cost-matrix",
+                "read:cost-factors",
+                "read:cost-breakdown"
           }
     };
 

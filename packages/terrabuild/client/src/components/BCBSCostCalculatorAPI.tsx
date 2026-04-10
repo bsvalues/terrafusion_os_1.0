@@ -22,14 +22,15 @@ import { useToast } from "@/hooks/use-toast";
 import CostReportPDFExport from "./CostReportPDFExport";
 import BuildingBlocksAnimation from "./BuildingBlocksAnimation";
 import ScenarioComparisonDashboard from "./ScenarioComparisonDashboard";
+import { BUILDING_TYPES, REGIONS, QUALITY_GRADES, CONDITION_GRADES, COMPLEXITY_GRADES } from '@/data/constants';
 
 // Form schema for calculator
 const calculatorSchema = z.object({
   squareFootage: z.coerce.number().min(1, "Square footage must be greater than 0"),
   buildingType: z.string().min(1, "Building type is required"),
-  quality: z.string().min(1, "Quality level is required"),
-  complexityFactor: z.coerce.number().min(0.5).max(3.0).default(1.0),
-  conditionFactor: z.coerce.number().min(0.6).max(1.1).default(1.0),
+  qualityGrade: z.string().min(1, "Quality grade is required"),
+  complexityGrade: z.string().min(1, "Complexity grade is required"),
+  conditionGrade: z.string().min(1, "Condition grade is required"),
   region: z.string().min(1, "Region is required"),
   yearBuilt: z.coerce.number()
     .min(1900, "Year built must be 1900 or later")
@@ -63,13 +64,13 @@ export interface CalculationResult {
   squareFootage: number;
   baseCost: string;
   regionFactor: string;
-  complexityFactor: number;
+  complexityGrade: string;
+  conditionGrade: string;
   costPerSqft: number;
   totalCost: number;
   adjustedCost: number;
-  conditionFactor: number;
   materialCosts?: MaterialCost;
-  quality?: string;
+  qualityGrade?: string;
   yearBuilt?: number;
 }
 
@@ -104,11 +105,11 @@ const BCBSCostCalculatorAPI = () => {
   // Default form values
   const defaultValues: Partial<CalculatorFormValues> = {
     squareFootage: 1000,
-    buildingType: "RESIDENTIAL",
-    quality: "STANDARD",
-    complexityFactor: 1.0,
-    conditionFactor: 1.0,
-    region: "CENTRAL",
+    buildingType: "R1",
+    qualityGrade: "STANDARD",
+    complexityGrade: "STANDARD",
+    conditionGrade: "GOOD",
+    region: "Central",
     yearBuilt: new Date().getFullYear(),
   };
 
@@ -117,137 +118,56 @@ const BCBSCostCalculatorAPI = () => {
     defaultValues,
   });
 
-  // Building types and quality levels
-  const buildingTypes = [
-    { value: "RESIDENTIAL", label: "Residential" },
-    { value: "COMMERCIAL", label: "Commercial" },
-    { value: "INDUSTRIAL", label: "Industrial" },
-    { value: "OFFICE", label: "Office" },
-  ];
+  // Dropdown options — sourced from constants (verified against benton_matrix_exact_identifiers.json + CostForgeController.cs)
+  const buildingTypes = BUILDING_TYPES;
+  const qualityLevels = QUALITY_GRADES;
+  const regions = REGIONS;
 
-  const qualityLevels = [
-    { value: "STANDARD", label: "Standard" },
-    { value: "PREMIUM", label: "Premium" },
-    { value: "LUXURY", label: "Luxury" },
-    { value: "ECONOMY", label: "Economy" },
-  ];
-
-  const regions = [
-    { value: "CENTRAL", label: "Central" },
-    { value: "RICHLAND", label: "Richland" },
-    { value: "KENNEWICK", label: "Kennewick" },
-    { value: "PASCO", label: "Pasco" },
-    { value: "WEST_RICHLAND", label: "West Richland" },
-    { value: "BENTON_CITY", label: "Benton City" },
-    { value: "PROSSER", label: "Prosser" },
-    { value: "NORTHEAST", label: "Northeast" },
-    { value: "MIDWEST", label: "Midwest" },
-    { value: "SOUTH", label: "South" },
-    { value: "WEST", label: "West" },
-  ];
-
-  // Submit form handler using our API
+  // Submit form handler — calls POST /api/costforge/cost-estimate
   const onSubmit = async (data: CalculatorFormValues) => {
     setIsCalculating(true);
     setApiError(null);
     try {
-      // Call our advanced calculation endpoint
-      const response = await axios.post('/api/building-cost/calculate', {
-        region: data.region,
+      const response = await axios.post('/api/costforge/cost-estimate', {
         buildingType: data.buildingType,
-        squareFootage: data.squareFootage,
-        complexityFactor: data.complexityFactor,
-        conditionFactor: data.conditionFactor,
+        region: data.region,
+        squareFeet: data.squareFootage,
         yearBuilt: data.yearBuilt,
-        quality: data.quality
+        qualityGrade: data.qualityGrade,
+        conditionGrade: data.conditionGrade,
+        complexityGrade: data.complexityGrade,
       });
 
-      // For demo/testing purposes we'll create a valid response structure
-      // In production, this would come directly from the API
-      const baseRate = data.buildingType === 'RESIDENTIAL' ? 150 : 
-                      data.buildingType === 'COMMERCIAL' ? 200 :
-                      data.buildingType === 'INDUSTRIAL' ? 180 : 120;
-      
-      const regionFactor = data.region === 'CENTRAL' ? 1.0 :
-                          data.region === 'RICHLAND' ? 1.1 :
-                          data.region === 'KENNEWICK' ? 1.05 :
-                          data.region === 'PASCO' ? 0.95 : 1.0;
-      
-      const qualityFactor = data.quality === 'ECONOMY' ? 0.8 :
-                           data.quality === 'STANDARD' ? 1.0 :
-                           data.quality === 'PREMIUM' ? 1.3 :
-                           data.quality === 'LUXURY' ? 1.6 : 1.0;
-      
-      // Calculate cost with all factors
-      const costPerSqft = baseRate * regionFactor * data.complexityFactor * data.conditionFactor * qualityFactor;
-      const totalCost = costPerSqft * data.squareFootage;
-      
-      // Create realistic material costs breakdown
-      const materialCosts = {
-        foundations: totalCost * 0.15,
-        framing: totalCost * 0.20,
-        exterior: totalCost * 0.12,
-        roofing: totalCost * 0.08,
-        interior: totalCost * 0.15,
-        electrical: totalCost * 0.10,
-        plumbing: totalCost * 0.08,
-        hvac: totalCost * 0.07,
-        finishes: totalCost * 0.05
-      };
+      const apiData = response.data;
+      if (typeof apiData.totalCost !== 'number') {
+        throw new Error(
+          `API response missing required totalCost field. Got: ${JSON.stringify(apiData)}`
+        );
+      }
 
-      // Create complete calculation result
+      // Create complete calculation result mapped from API response
       const calculationResult: CalculationResult = {
         region: data.region,
         buildingType: data.buildingType,
         squareFootage: data.squareFootage,
-        baseCost: baseRate.toString(),
-        regionFactor: regionFactor.toString(),
-        complexityFactor: data.complexityFactor,
-        costPerSqft: costPerSqft,
-        totalCost: totalCost,
-        adjustedCost: totalCost,
-        conditionFactor: data.conditionFactor,
-        materialCosts: materialCosts,
-        quality: data.quality,
-        yearBuilt: data.yearBuilt
+        baseCost: String(apiData.baseCostPerSqft ?? '—'),
+        regionFactor: String(apiData.regionFactor ?? '—'),
+        complexityGrade: data.complexityGrade,
+        conditionGrade: data.conditionGrade,
+        costPerSqft: apiData.adjustedCostPerSqft ?? 0,
+        totalCost: apiData.totalCost,
+        adjustedCost: apiData.totalCost,
+        qualityGrade: data.qualityGrade,
+        yearBuilt: data.yearBuilt,
       };
       
       // Set the calculation result
       setCalculationResult(calculationResult);
 
-      // Generate cost breakdown from the calculation result
-      const breakdown: CostBreakdown[] = [];
-
-      // Base Cost
-      const baseCost = Number(calculationResult.baseCost) || 0;
-      const squareFootage = calculationResult.squareFootage || 0;
-      breakdown.push({ category: 'Base Cost', cost: baseCost * squareFootage });
-
-      // Complexity Adjustment
-      const complexityFactor = calculationResult.complexityFactor || 1.0;
-      const complexityAdjustment = baseCost * squareFootage * (complexityFactor - 1);
-      breakdown.push({ category: 'Complexity Adjustment', cost: complexityAdjustment });
-
-      // Condition Adjustment
-      const conditionFactor = calculationResult.conditionFactor || 1.0;
-      const conditionAdjustment = baseCost * squareFootage * complexityFactor * (conditionFactor - 1);
-      breakdown.push({ category: 'Condition Adjustment', cost: conditionAdjustment });
-
-      // Region Adjustment (if regionFactor is available)
-      if (calculationResult.regionFactor) {
-        const regionFactor = Number(calculationResult.regionFactor) || 1.0;
-        const regionAdjustment = baseCost * squareFootage * complexityFactor * conditionFactor * (regionFactor - 1);
-        breakdown.push({ category: 'Regional Adjustment', cost: regionAdjustment });
-      }
-
-      // Materials
-      if (calculationResult.materialCosts) {
-        // Add individual material costs
-        Object.entries(calculationResult.materialCosts).forEach(([category, cost]) => {
-          const costValue = typeof cost === 'number' ? cost : Number(cost) || 0;
-          breakdown.push({ category: category.charAt(0).toUpperCase() + category.slice(1), cost: costValue });
-        });
-      }
+      // Simple breakdown: total is authoritative from API, show single line
+      const breakdown: CostBreakdown[] = [
+        { category: 'Replacement Cost New (RCN)', cost: calculationResult.totalCost },
+      ];
 
       setCostBreakdown(breakdown);
       setActiveTab("results");
@@ -412,7 +332,7 @@ const BCBSCostCalculatorAPI = () => {
                     {/* Quality Level */}
                     <FormField
                       control={form.control}
-                      name="quality"
+                      name="qualityGrade"
                       render={({ field }) => (
                         <FormItem>
                           <div className="flex items-center gap-2">
@@ -571,114 +491,58 @@ const BCBSCostCalculatorAPI = () => {
                     />
                   </div>
 
-                  {/* Complexity Factor */}
+                  {/* Complexity Grade */}
                   <FormField
                     control={form.control}
-                    name="complexityFactor"
+                    name="complexityGrade"
                     render={({ field }) => (
                       <FormItem>
-                        <div className="flex items-center gap-2">
-                          <FormLabel>
-                            <div className="flex justify-between w-full">
-                              <span>Complexity Factor</span>
-                              <span className="font-mono">{field.value.toFixed(2)}</span>
-                            </div>
-                          </FormLabel>
-                          <TooltipProvider>
-                            <UITooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-cyan-600">
-                                  <Info className="h-4 w-4" />
-                                  <span className="sr-only">Complexity factor info</span>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-sm bg-cyan-950 text-white" side="top">
-                                <div className="space-y-2">
-                                  <p className="font-semibold">Complexity Factor Explanation</p>
-                                  <p className="text-sm">This factor accounts for architectural and construction complexity:</p>
-                                  <ul className="text-xs space-y-1 list-disc pl-4">
-                                    <li><span className="font-semibold">Simple (0.5):</span> Basic rectangular shapes, standard construction</li>
-                                    <li><span className="font-semibold">Standard (1.0):</span> Normal geometry with some detailed features</li>
-                                    <li><span className="font-semibold">Complex (2.0+):</span> Irregular shapes, multiple levels, custom features</li>
-                                  </ul>
-                                  <p className="text-xs italic mt-2">Higher complexity factors significantly increase labor costs.</p>
-                                </div>
-                              </TooltipContent>
-                            </UITooltip>
-                          </TooltipProvider>
-                        </div>
-                        <FormControl>
-                          <Slider
-                            defaultValue={[field.value]}
-                            min={0.5}
-                            max={3.0}
-                            step={0.01}
-                            onValueChange={(vals) => field.onChange(vals[0])}
-                            className="py-4"
-                          />
-                        </FormControl>
-                        <FormDescription className="flex justify-between text-xs">
-                          <span>Simple (0.5)</span>
-                          <span>Standard (1.0)</span>
-                          <span>Complex (3.0)</span>
+                        <FormLabel>Construction Complexity</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="border-cyan-200 focus:ring-cyan-500">
+                              <SelectValue placeholder="Select complexity" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {COMPLEXITY_GRADES.map(g => (
+                              <SelectItem key={g.value} value={g.value}>
+                                {g.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          Simple = basic rectangular shapes; Highly Complex = irregular geometry, custom features
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  {/* Condition Factor */}
+                  {/* Condition Grade */}
                   <FormField
                     control={form.control}
-                    name="conditionFactor"
+                    name="conditionGrade"
                     render={({ field }) => (
                       <FormItem>
-                        <div className="flex items-center gap-2">
-                          <FormLabel>
-                            <div className="flex justify-between w-full">
-                              <span>Condition Factor</span>
-                              <span className="font-mono">{field.value.toFixed(2)}</span>
-                            </div>
-                          </FormLabel>
-                          <TooltipProvider>
-                            <UITooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-cyan-600">
-                                  <Info className="h-4 w-4" />
-                                  <span className="sr-only">Condition factor info</span>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-sm bg-cyan-950 text-white" side="top">
-                                <div className="space-y-2">
-                                  <p className="font-semibold">Condition Factor Explanation</p>
-                                  <p className="text-sm">This factor accounts for the current condition of existing properties:</p>
-                                  <ul className="text-xs space-y-1 list-disc pl-4">
-                                    <li><span className="font-semibold">Poor (0.6):</span> Significant deterioration requiring major repairs</li>
-                                    <li><span className="font-semibold">Average (0.8):</span> Standard condition with normal wear and tear</li>
-                                    <li><span className="font-semibold">Good (1.0):</span> Well-maintained property in good repair</li>
-                                    <li><span className="font-semibold">Excellent (1.1):</span> Premium condition with recent improvements</li>
-                                  </ul>
-                                  <p className="text-xs italic mt-2">For new construction, use 1.0 (Good condition).</p>
-                                </div>
-                              </TooltipContent>
-                            </UITooltip>
-                          </TooltipProvider>
-                        </div>
-                        <FormControl>
-                          <Slider
-                            defaultValue={[field.value]}
-                            min={0.6}
-                            max={1.1}
-                            step={0.01}
-                            onValueChange={(vals) => field.onChange(vals[0])}
-                            className="py-4"
-                          />
-                        </FormControl>
-                        <FormDescription className="flex justify-between text-xs">
-                          <span>Poor (0.6)</span>
-                          <span>Average (0.8)</span>
-                          <span>Good (1.0)</span>
-                          <span>Excellent (1.1)</span>
+                        <FormLabel>Building Condition</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="border-cyan-200 focus:ring-cyan-500">
+                              <SelectValue placeholder="Select condition" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {CONDITION_GRADES.map(g => (
+                              <SelectItem key={g.value} value={g.value}>
+                                {g.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          For new construction use Good. Poor = significant deterioration requiring major repairs.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -734,12 +598,12 @@ const BCBSCostCalculatorAPI = () => {
                               <span className="font-medium">{formatCurrency(calculationResult.baseCost ? Number(calculationResult.baseCost) : 0)}/sq ft</span>
                             </div>
                             <div className="flex justify-between">
-                              <span>Complexity Factor:</span>
-                              <span className="font-medium">{calculationResult.complexityFactor ? calculationResult.complexityFactor.toFixed(2) : '1.00'}</span>
+                              <span>Complexity:</span>
+                              <span className="font-medium">{calculationResult.complexityGrade ?? '—'}</span>
                             </div>
                             <div className="flex justify-between">
-                              <span>Condition Factor:</span>
-                              <span className="font-medium">{calculationResult.conditionFactor ? calculationResult.conditionFactor.toFixed(2) : '1.00'}</span>
+                              <span>Condition:</span>
+                              <span className="font-medium">{calculationResult.conditionGrade ?? '—'}</span>
                             </div>
                             <div className="flex justify-between">
                               <span>Region Factor:</span>
@@ -876,7 +740,6 @@ const BCBSCostCalculatorAPI = () => {
                         // Add current result to scenarios
                         const updatedScenarios = [...savedScenarios, {
                           ...calculationResult,
-                          quality: form.getValues().quality,
                           yearBuilt: form.getValues().yearBuilt
                         }];
                         setSavedScenarios(updatedScenarios);
