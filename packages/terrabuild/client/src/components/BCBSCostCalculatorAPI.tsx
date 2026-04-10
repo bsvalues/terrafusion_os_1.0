@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -109,7 +109,7 @@ const BCBSCostCalculatorAPI = () => {
     qualityGrade: "STANDARD",
     complexityGrade: "STANDARD",
     conditionGrade: "GOOD",
-    neighborhood: "Richland-South",
+    neighborhood: "1204",
     yearBuilt: new Date().getFullYear(),
   };
 
@@ -393,7 +393,7 @@ const BCBSCostCalculatorAPI = () => {
                       name="neighborhood"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Neighborhood</FormLabel>
+                          <FormLabel>Neighborhood (PACS hood_cd)</FormLabel>
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
@@ -403,16 +403,33 @@ const BCBSCostCalculatorAPI = () => {
                                 <SelectValue placeholder="Select neighborhood" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent>
-                              {neighborhoods.map(n => (
-                                <SelectItem key={n.value} value={n.value}>
-                                  {n.label}
-                                </SelectItem>
-                              ))}
+                            <SelectContent className="max-h-72">
+                              {([
+                                { reval: 1, label: 'Reval 1 — Kennewick NE' },
+                                { reval: 2, label: 'Reval 2 — Kennewick Urban / West Kennewick' },
+                                { reval: 3, label: 'Reval 3 — South Richland / Kennewick West' },
+                                { reval: 4, label: 'Reval 4 — Benton City / Prosser' },
+                                { reval: 5, label: 'Reval 5 — Richland West / Rural' },
+                                { reval: 6, label: 'Reval 6 — Historic Richland' },
+                              ] as const).map(({ reval, label }) => {
+                                const group = neighborhoods.filter(n => n.reval === reval);
+                                return (
+                                  <SelectGroup key={reval}>
+                                    <SelectLabel className="text-xs font-semibold text-cyan-700 uppercase tracking-wide">
+                                      {label}
+                                    </SelectLabel>
+                                    {group.map(n => (
+                                      <SelectItem key={n.value} value={n.value}>
+                                        {n.label}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectGroup>
+                                );
+                              })}
                             </SelectContent>
                           </Select>
                           <FormDescription>
-                            Select the neighborhood where the building is located
+                            Select the PACS neighborhood analysis group (hood_cd)
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
