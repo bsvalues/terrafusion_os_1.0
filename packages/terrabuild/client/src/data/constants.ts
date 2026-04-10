@@ -171,16 +171,18 @@ export const REGIONS = [
 export const regions = REGIONS;
 
 // Quality (Class) grades — API enum values sent to CostEstimateRequest.
-// Labels show actual PACS ClassCode numeric scale (10–60) from pacs_property_profiles.
-// ClassCode 30 is the baseline average (26,967 records = majority).
-// Numeric codes pass through PacsCanonicalizer unchanged — these are the values
-// assessors see in PACS. The 5 API buckets collapse the finer PACS scale.
+// Labels use Benton County Quality Checklist grade names + PACS ClassCode.
+// Scores from the 9-category field checklist map to ClassCode and grade name:
+//   0-5  = Low (10)  |  6-9  = Fair (20)  |  10-13 = Fair+ (25)
+//   14-17 = Average (30)  |  18-21 = Avg+ (35)  |  22-25 = Good (40)
+//   26-29 = Good+ (45)  |  30-32 = Very Good (50)  |  33-35 = VGood+ (55)  |  36-38 = Excellent (60)
+// The 5 API buckets collapse the 10-point Benton scale.
 export const QUALITY_GRADES = [
-  { value: 'ECONOMY',  label: 'Class 10/20 — Economy',       factor: 0.75 },
-  { value: 'STANDARD', label: 'Class 25/30 — Standard',      factor: 1.00 },
-  { value: 'CUSTOM',   label: 'Class 35 — Above Average',    factor: 1.12 },
-  { value: 'PREMIUM',  label: 'Class 40/45 — High Quality',  factor: 1.30 },
-  { value: 'LUXURY',   label: 'Class 50/55/60 — Exceptional', factor: 1.55 },
+  { value: 'ECONOMY',  label: 'Class 10/20 — Low / Fair',              factor: 0.75 },
+  { value: 'STANDARD', label: 'Class 25/30 — Fair+ / Average',         factor: 1.00 },
+  { value: 'CUSTOM',   label: 'Class 35 — Average+',                   factor: 1.12 },
+  { value: 'PREMIUM',  label: 'Class 40/45 — Good / Good+',            factor: 1.30 },
+  { value: 'LUXURY',   label: 'Class 50/55/60 — Very Good to Excellent', factor: 1.55 },
 ] as const;
 
 // Condition grades — API enum values sent to CostEstimateRequest.
