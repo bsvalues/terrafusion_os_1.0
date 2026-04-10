@@ -22,7 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import CostReportPDFExport from "./CostReportPDFExport";
 import BuildingBlocksAnimation from "./BuildingBlocksAnimation";
 import ScenarioComparisonDashboard from "./ScenarioComparisonDashboard";
-import { BUILDING_TYPES, REGIONS, QUALITY_GRADES, CONDITION_GRADES, COMPLEXITY_GRADES } from '@/data/constants';
+import { BUILDING_TYPES, NEIGHBORHOODS, QUALITY_GRADES, CONDITION_GRADES, COMPLEXITY_GRADES, neighborhoodToRegion } from '@/data/constants';
 
 // Form schema for calculator
 const calculatorSchema = z.object({
@@ -31,7 +31,7 @@ const calculatorSchema = z.object({
   qualityGrade: z.string().min(1, "Quality grade is required"),
   complexityGrade: z.string().min(1, "Complexity grade is required"),
   conditionGrade: z.string().min(1, "Condition grade is required"),
-  region: z.string().min(1, "Region is required"),
+  neighborhood: z.string().min(1, "Neighborhood is required"),
   yearBuilt: z.coerce.number()
     .min(1900, "Year built must be 1900 or later")
     .max(new Date().getFullYear(), "Year built cannot be in the future")
@@ -109,7 +109,7 @@ const BCBSCostCalculatorAPI = () => {
     qualityGrade: "STANDARD",
     complexityGrade: "STANDARD",
     conditionGrade: "GOOD",
-    region: "Central",
+    neighborhood: "Richland-South",
     yearBuilt: new Date().getFullYear(),
   };
 
@@ -121,16 +121,17 @@ const BCBSCostCalculatorAPI = () => {
   // Dropdown options — sourced from constants (verified against benton_matrix_exact_identifiers.json + CostForgeController.cs)
   const buildingTypes = BUILDING_TYPES;
   const qualityLevels = QUALITY_GRADES;
-  const regions = REGIONS;
+  const neighborhoods = NEIGHBORHOODS;
 
   // Submit form handler — calls POST /api/costforge/cost-estimate
   const onSubmit = async (data: CalculatorFormValues) => {
     setIsCalculating(true);
     setApiError(null);
     try {
+      const region = neighborhoodToRegion(data.neighborhood);
       const response = await axios.post('/api/costforge/cost-estimate', {
         buildingType: data.buildingType,
-        region: data.region,
+        region,
         squareFeet: data.squareFootage,
         yearBuilt: data.yearBuilt,
         qualityGrade: data.qualityGrade,
@@ -147,7 +148,7 @@ const BCBSCostCalculatorAPI = () => {
 
       // Create complete calculation result mapped from API response
       const calculationResult: CalculationResult = {
-        region: data.region,
+        region: data.neighborhood,
         buildingType: data.buildingType,
         squareFootage: data.squareFootage,
         baseCost: String(apiData.baseCostPerSqft ?? '—'),
@@ -174,7 +175,7 @@ const BCBSCostCalculatorAPI = () => {
       
       toast({
         title: "Calculation Complete",
-        description: `Successfully calculated cost for ${data.squareFootage} sqft ${data.buildingType} in ${data.region}`,
+        description: `Successfully calculated cost for ${data.squareFootage} sqft ${data.buildingType} in ${data.neighborhood}`,
       });
     } catch (error) {
       console.error('Error calculating cost:', error);
@@ -386,56 +387,32 @@ const BCBSCostCalculatorAPI = () => {
                       )}
                     />
 
-                    {/* Region */}
+                    {/* Neighborhood */}
                     <FormField
                       control={form.control}
-                      name="region"
+                      name="neighborhood"
                       render={({ field }) => (
                         <FormItem>
-                          <div className="flex items-center gap-2">
-                            <FormLabel>Region</FormLabel>
-                            <TooltipProvider>
-                              <UITooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full p-0 text-cyan-600">
-                                    <Info className="h-4 w-4" />
-                                    <span className="sr-only">Region info</span>
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className="max-w-sm bg-cyan-950 text-white" side="right">
-                                  <div className="space-y-2">
-                                    <p className="font-semibold">Region Explanation</p>
-                                    <p className="text-sm">The CostForge calculator uses Benton County's regional cost factors:</p>
-                                    <ul className="text-xs space-y-1 list-disc pl-4">
-                                      <li><span className="font-semibold">East Benton:</span> Includes rural areas with different labor/material costs</li>
-                                      <li><span className="font-semibold">Central Benton:</span> Includes most developed areas and standard costs</li>
-                                      <li><span className="font-semibold">West Benton:</span> Includes premium areas with higher labor/material costs</li>
-                                    </ul>
-                                    <p className="text-xs italic mt-2">Each region has specific multipliers that affect the final cost calculation.</p>
-                                  </div>
-                                </TooltipContent>
-                              </UITooltip>
-                            </TooltipProvider>
-                          </div>
+                          <FormLabel>Neighborhood</FormLabel>
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
                           >
                             <FormControl>
                               <SelectTrigger className="border-cyan-200 focus:ring-cyan-500">
-                                <SelectValue placeholder="Select region" />
+                                <SelectValue placeholder="Select neighborhood" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {regions.map(region => (
-                                <SelectItem key={region.value} value={region.value}>
-                                  {region.label}
+                              {neighborhoods.map(n => (
+                                <SelectItem key={n.value} value={n.value}>
+                                  {n.label}
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                           <FormDescription>
-                            Select the region where the building is located
+                            Select the neighborhood where the building is located
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
