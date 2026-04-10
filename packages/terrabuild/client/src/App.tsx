@@ -335,8 +335,8 @@ function Router() {
 
       {/* Other protected routes */}
       <ProtectedRouteWrapper path="/dashboard" component={DashboardPage} />
-      <ProtectedRouteWrapper path="/calculator" component={EnhancedCalculatorPage} />
-      <ProtectedRouteWrapper path="/calculator-v2" component={EnhancedCalculatorPageV2} />
+      <ProtectedRouteWrapper path="/calculator" component={BCBSCostCalculatorAPI} />
+      <ProtectedRouteWrapper path="/calculator-v2" component={EnhancedCalculatorPage} />
       <ProtectedRouteWrapper path="/workflows" component={WorkflowDashboardPage} />
       <ProtectedRouteWrapper path="/calculator-old" component={CalculatorPage} />
       <ProtectedRouteWrapper path="/analytics" component={AnalyticsPage} />

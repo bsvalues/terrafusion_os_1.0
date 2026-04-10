@@ -19,7 +19,7 @@ const PrintDialog = ({ calculation, trigger }: PrintDialogProps) => {
   const [includeDate, setIncludeDate] = useState(true);
   const [includeFooter, setIncludeFooter] = useState(true);
   const [includeMaterials, setIncludeMaterials] = useState(true);
-  const [reportTitle, setReportTitle] = useState('TerraBuild - Building Cost Report');
+  const [reportTitle, setReportTitle] = useState('CostForge — Cost Approach Report');
   const printContentRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = () => {
@@ -305,7 +305,7 @@ const PrintDialog = ({ calculation, trigger }: PrintDialogProps) => {
           
           {includeFooter && (
             <div className="footer">
-              <p>TerraBuild - Benton County • (555) 123-4567 • support@terrabuild.gov</p>
+              <p>Benton County Assessor's Office — Cost Approach Division</p>
               <p>Report generated on {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString()}</p>
             </div>
           )}

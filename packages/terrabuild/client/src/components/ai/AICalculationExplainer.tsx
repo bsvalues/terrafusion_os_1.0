@@ -193,7 +193,7 @@ export default function AICalculationExplainer() {
       <CardFooter className="flex justify-between bg-muted/20 text-xs text-muted-foreground">
         <div className="flex items-center">
           <Info className="h-3 w-3 mr-1" />
-          <span>TerraBuild</span>
+          <span>CostForge</span>
         </div>
         <div className="flex items-center">
           <Database className="h-3 w-3 mr-1" />

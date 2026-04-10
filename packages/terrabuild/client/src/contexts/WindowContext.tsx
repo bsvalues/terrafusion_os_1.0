@@ -108,7 +108,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     }));
     
     // Set up the new window's content
-    newWindow.document.title = `${title} - TerraBuild`;
+    newWindow.document.title = `${title} — CostForge`;
     
     // Apply styles and content
     newWindow.document.body.innerHTML = `
