@@ -186,14 +186,16 @@ export const QUALITY_GRADES = [
 ] as const;
 
 // Condition grades — API enum values sent to CostEstimateRequest.
-// Labels show actual PACS ConditionCode numeric scale (1–6) from pacs_property_profiles.
-// Condition 3 is the baseline average (49,741 records = majority).
-// The 4 API buckets collapse the 6-point PACS scale.
+// Labels use official PACS condition text codes (from JCHARRISPACS PACS_DEEP_DIVE.md):
+//   NEW (New) → EXC (Excellent) → VGD (Very Good) → GD (Good) → AVG (Average) → FAIR (Fair) → POOR (Poor)
+// CostForgeController.ConditionFactors only recognises 4 buckets (POOR/FAIR/GOOD/EXCELLENT).
+// AVG and GD both collapse to GOOD (factor 1.00) — the baseline for most Benton residential.
+// Source: pacs_property_profiles.ConditionCode — Cond 3 (= AVG) has 49,741 of 84,669 records.
 export const CONDITION_GRADES = [
-  { value: 'POOR',      label: 'Cond 5/6 — Poor',         factor: 0.65 },
-  { value: 'FAIR',      label: 'Cond 4 — Fair',           factor: 0.80 },
-  { value: 'GOOD',      label: 'Cond 3 — Good (Avg)',     factor: 1.00 },
-  { value: 'EXCELLENT', label: 'Cond 1/2 — Excellent',    factor: 1.10 },
+  { value: 'POOR',      label: 'POOR — Poor',               factor: 0.65 },
+  { value: 'FAIR',      label: 'FAIR — Fair',               factor: 0.80 },
+  { value: 'GOOD',      label: 'AVG / GD — Average / Good', factor: 1.00 },
+  { value: 'EXCELLENT', label: 'VGD / EXC / NEW — Very Good+', factor: 1.10 },
 ] as const;
 
 // Complexity grades — matching CostEstimateRequest in CostForgeController.cs
