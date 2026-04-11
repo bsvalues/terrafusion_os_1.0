@@ -367,7 +367,12 @@
       "Bash(powershell.exe -Command \"Start-Sleep -Seconds 180; git log --oneline -4 2>&1\")",
       "Bash(powershell.exe -Command \"Get-Content ''C:\\\\Users\\\\bsval\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-bsval-terrafusion-os-1-0\\\\83789007-1f15-4df9-b8e7-af100ec9a9a6\\\\tasks\\\\bx7sqnxwf.output'' | Select-Object -Last 15\")",
       "Bash(powershell.exe -Command \"Get-Process dotnet -ErrorAction SilentlyContinue | Select-Object Id, CPU\")",
-      "Bash(git -C /c/Users/bsval/terrafusion_os_1.0 diff --stat HEAD -- backend/src/TerraFusion.API/Controllers/PropertiesController.cs backend/src/TerraFusion.API/appsettings.Development.json)"
+      "Bash(git -C /c/Users/bsval/terrafusion_os_1.0 diff --stat HEAD -- backend/src/TerraFusion.API/Controllers/PropertiesController.cs backend/src/TerraFusion.API/appsettings.Development.json)",
+      "Bash(git -C \"C:/Users/bsval/terrafusion_os_1.0\" log --oneline -8)",
+      "Bash(grep -m1 \"\"\"packageManager\"\"\" \"C:/Users/bsval/terrafusion_os_1.0/frontend/package.json\")",
+      "Bash(find /mnt/c/Users/bsval/terrafusion_os_1.0 -type f \\\\\\(-name *window*test* -o -name *routing* \\\\\\))",
+      "Bash(VITE_DATA_MODE=snapshot bash scripts/ci/assert-frontend-data-mode.sh)",
+      "Bash(GITHUB_REF_NAME=main VITE_DATA_MODE=snapshot VITE_ALLOW_NON_LIVE_MODE=1 bash scripts/ci/assert-frontend-data-mode.sh)"
     ],
     "deny": [],
     "ask": [],

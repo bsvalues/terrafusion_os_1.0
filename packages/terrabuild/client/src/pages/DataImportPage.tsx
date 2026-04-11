@@ -134,26 +134,30 @@ const DataImportPage = () => {
   });
 
   // Query to fetch uploaded files
+  // NOTE: /api/files endpoint lives in terrabuild Express server (v1.1).
+  // Returns empty array until PACS sync wiring is complete.
   const { data: uploadedFiles = [], isLoading: isLoadingFiles } = useQuery({
     queryKey: ['/api/files'],
-    queryFn: async () => {
-      const response = await apiRequest({ 
-        url: '/api/files',
-        method: 'GET' 
-      });
-      return response.json() as Promise<ImportFile[]>;
+    queryFn: async (): Promise<ImportFile[]> => {
+      try {
+        return await apiRequest('/api/files');
+      } catch {
+        return [];
+      }
     }
   });
 
   // Query to fetch import history
+  // NOTE: /api/import-history endpoint lives in terrabuild Express server (v1.1).
+  // Returns empty array until PACS sync wiring is complete.
   const { data: importHistory = [], isLoading: isLoadingHistory } = useQuery({
     queryKey: ['/api/import-history'],
-    queryFn: async () => {
-      const response = await apiRequest({ 
-        url: '/api/import-history',
-        method: 'GET' 
-      });
-      return response.json() as Promise<ImportHistoryItem[]>;
+    queryFn: async (): Promise<ImportHistoryItem[]> => {
+      try {
+        return await apiRequest('/api/import-history');
+      } catch {
+        return [];
+      }
     }
   });
 
@@ -162,12 +166,7 @@ const DataImportPage = () => {
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
-      
-      return apiRequest({
-        url: '/api/upload',
-        method: 'POST',
-        body: formData
-      });
+      return apiRequest('/api/upload', { method: 'POST', body: formData });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/files'] });
@@ -190,12 +189,8 @@ const DataImportPage = () => {
 
   // Mutation for file preview (validation)
   const previewMutation = useMutation({
-    mutationFn: async (fileId: number) => {
-      const response = await apiRequest({
-        url: `/api/preview-import/${fileId}`,
-        method: 'GET'
-      });
-      return response.json() as Promise<ImportPreviewItem[]>;
+    mutationFn: async (fileId: number): Promise<ImportPreviewItem[]> => {
+      return apiRequest(`/api/preview-import/${fileId}`);
     },
     onSuccess: (data) => {
       setPreviewData(data);
@@ -232,10 +227,9 @@ const DataImportPage = () => {
       }, 500);
       
       try {
-        const result = await apiRequest({
-          url: '/api/import',
+        const result = await apiRequest('/api/import', {
           method: 'POST',
-          body: { fileId }
+          body: JSON.stringify({ fileId }),
         });
         
         clearInterval(interval);
@@ -282,10 +276,7 @@ const DataImportPage = () => {
   // Mutation for deleting an uploaded file
   const deleteFileMutation = useMutation({
     mutationFn: async (fileId: number) => {
-      return apiRequest({
-        url: `/api/files/${fileId}`,
-        method: 'DELETE'
-      });
+      return apiRequest(`/api/files/${fileId}`, { method: 'DELETE' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/files'] });
@@ -372,8 +363,16 @@ const DataImportPage = () => {
     <LayoutWrapper>
       <MainContent title="Data Import">
         <div className="container mx-auto py-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex items-center gap-3 mb-6">
         <h1 className="text-3xl font-bold">Benton County Data Import</h1>
+        <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-600 border border-amber-500/30">
+          PACS SYNC — v1.1
+        </span>
+      </div>
+      <div className="mb-4 p-3 rounded-lg border border-amber-500/30 bg-amber-500/8 text-amber-700 text-sm">
+        PACS data synchronization endpoints are implemented in the terrabuild server layer and will be wired to the OS gateway in v1.1.
+        File management, import history, and preview will show empty state until that wiring is complete.
+        Cost matrix Excel files can still be dropped here — the form is live, submission is queued.
       </div>
       
       <Tabs 

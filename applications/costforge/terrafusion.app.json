@@ -1,0 +1,25 @@
+{
+  "$schema": "../../tools/registry/terrafusion.app.schema.json",
+  "id": "costforge",
+  "displayName": "CostForge",
+  "description": "Benton County Cost Approach — replacement cost schedules, depreciation tables, land schedules, and RCNLD. Lineage: BCBSCOSTApp → TerraBuild → TerraFusionBuild → CostForge.",
+  "iconName": "Hammer",
+  "category": "assessment",
+  "tier": 1,
+  "status": "active",
+  "pinned": false,
+  "autostart": true,
+  "runtime": "node",
+  "version": "1.0.0",
+  "start": {
+    "cmd": "npm",
+    "args": ["run", "dev:client"],
+    "cwd": "../../packages/terrabuild"
+  },
+  "entry": {
+    "type": "url",
+    "url": "http://localhost:${TF_TERRABUILD_CLIENT_PORT:-5002}/"
+  },
+  "tags": ["assessment", "cost", "rcnld", "benton-county"],
+  "permissions": ["county:read", "property:read", "property:write"]
+}

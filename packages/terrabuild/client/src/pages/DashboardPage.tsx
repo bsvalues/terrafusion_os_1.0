@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
+import { apiRequest } from '@/lib/queryClient';
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,15 +39,24 @@ const recentReports = [
 export default function DashboardPage() {
   const [selectedTab, setSelectedTab] = useState<string>('overview');
 
+  // CostForge system status (agent health, calculation throughput)
   const { data: statusData } = useQuery({
     queryKey: ['costforge-status'],
-    queryFn: () => fetch('/api/costforge/status').then(r => r.json()),
+    queryFn: () => apiRequest('/api/costforge/status'),
     staleTime: 60_000,
   });
 
+  // Benton FY2025 cost matrix rows
   const { data: matrixData } = useQuery({
     queryKey: ['costforge-matrix'],
-    queryFn: () => fetch('/api/costforge/cost-matrix/benton').then(r => r.json()),
+    queryFn: () => apiRequest('/api/costforge/cost-matrix/benton'),
+    staleTime: 60_000,
+  });
+
+  // Real parcel count from TerraFusion ecosystem DB
+  const { data: parcelsData } = useQuery({
+    queryKey: ['parcels-count'],
+    queryFn: () => apiRequest('/api/properties?page=1&limit=1'),
     staleTime: 60_000,
   });
 
@@ -56,7 +66,7 @@ export default function DashboardPage() {
   const stats = [
     {
       title: 'Total Parcels',
-      value: fmtNum(statusData?.parcelsLoaded),
+      value: fmtNum(parcelsData?.totalCount),
       icon: <Building className="h-5 w-5" />,
     },
     {
@@ -67,13 +77,13 @@ export default function DashboardPage() {
       icon: <BarChart4 className="h-5 w-5" />,
     },
     {
-      title: 'Pending Reviews',
-      value: fmtNum(statusData?.pendingReviews),
+      title: 'Total Calculations',
+      value: fmtNum(statusData?.totalCalculations),
       icon: <RefreshCw className="h-5 w-5" />,
     },
     {
-      title: 'Assessed This Year',
-      value: fmtNum(statusData?.assessedThisYear),
+      title: 'System Status',
+      value: statusData?.systemStatus === 'optimal' ? 'Optimal' : statusData?.systemStatus ?? '—',
       icon: <ClipboardList className="h-5 w-5" />,
     },
   ];
@@ -132,6 +142,9 @@ export default function DashboardPage() {
                   <CardTitle className="text-base flex items-center gap-2">
                     <Calculator className="h-4 w-4 text-primary" />
                     Recent Calculations
+                    <span className="ml-auto px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-600 border border-amber-500/30">
+                      DEMO DATA
+                    </span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -229,6 +242,9 @@ export default function DashboardPage() {
                 <CardTitle className="text-base flex items-center gap-2">
                   <FileBarChart className="h-4 w-4 text-primary" />
                   Reports Archive
+                  <span className="ml-auto px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-600 border border-amber-500/30">
+                    DEMO DATA
+                  </span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">

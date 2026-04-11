@@ -628,11 +628,14 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         </Suspense>
       );
 
-    // CostForge — iframes the real terrabuild app (packages/terrabuild, port 5002)
+    // CostForge — full-stack MVP app (packages/terrabuild), hosted via AppFrame
+    // Lineage: BCBSCOSTApp → TerraBuild → TerraFusionBuild → CostForge
+    // Autostarts via applications/costforge/terrafusion.app.json at port 5002
     case 'costforge':
       return (
         <AppFrame
           moduleId="costforge"
+          overrideUrl={import.meta.env.DEV ? 'http://localhost:5002' : undefined}
           parcelContext={
             metadata?.parcelId
               ? {

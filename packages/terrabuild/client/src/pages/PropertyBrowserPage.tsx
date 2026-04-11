@@ -1,5 +1,6 @@
 import MainLayout from '@/components/layout/MainLayout';
 import PageHeader from '@/components/layout/PageHeader';
+import { apiRequest } from '@/lib/queryClient';
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -69,17 +70,28 @@ const PropertyBrowserPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const pageSize = 20;
 
-  // Fetch properties with pagination
-  const { data, isLoading, isError } = useQuery({
+  // Fetch properties with pagination from TerraFusion ecosystem DB
+  const { data: rawData, isLoading, isError } = useQuery({
     queryKey: ['/api/properties', page, pageSize],
-    queryFn: async () => {
-      const response = await fetch(`/api/properties?page=${page}&limit=${pageSize}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch properties');
-      }
-      return response.json();
-    }
+    queryFn: () => apiRequest(`/api/properties?page=${page}&limit=${pageSize}`)
   });
+
+  // Map .NET API response shape → local Property interface
+  const data: Property[] | undefined = rawData?.items?.map((p: any) => ({
+    id: p.id ?? 0,
+    propId: p.id ?? 0,
+    ownerName: p.ownerName ?? null,
+    propertyAddress: p.address ?? null,
+    parcelNumber: p.parcelNumber ?? null,
+    propertyCity: null,
+    propertyState: null,
+    propertyZip: null,
+    block: null, tractOrLot: null, legalDesc: null, legalDesc2: null,
+    townshipSection: null, range: null, township: null, section: null,
+    ownerAddress: null, ownerCity: null, ownerState: null, ownerZip: null,
+    zone: null, neighborhood: null, importedAt: p.createdAt ?? '',
+  })) ?? (Array.isArray(rawData) ? rawData : undefined);
+  const totalCount: number = rawData?.totalCount ?? data?.length ?? 0;
 
   // Show error toast only when error state changes
   useEffect(() => {
@@ -98,7 +110,7 @@ const PropertyBrowserPage = () => {
     ? data.filter((property: Property) =>
         (property.propertyAddress && property.propertyAddress.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (property.ownerName && property.ownerName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (property.propId.toString().includes(searchQuery))
+        (property.parcelNumber && property.parcelNumber.includes(searchQuery))
       )
     : data;
 
@@ -172,7 +184,7 @@ const PropertyBrowserPage = () => {
               Property Records
             </CardTitle>
             <CardDescription>
-              Showing {data ? (filteredProperties ? filteredProperties.length : 0) : '0'} of {data ? data.length : 0} properties
+              Showing {filteredProperties ? filteredProperties.length : 0} of {totalCount.toLocaleString()} properties
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -200,7 +212,7 @@ const PropertyBrowserPage = () => {
                       {filteredProperties && filteredProperties.length > 0 ? (
                         filteredProperties.map((property: Property) => (
                           <TableRow key={property.id} className="hover:bg-gray-50">
-                            <TableCell className="font-medium">{property.propId}</TableCell>
+                            <TableCell className="font-medium">{property.parcelNumber}</TableCell>
                             <TableCell>
                               {property.propertyAddress ? (
                                 <>

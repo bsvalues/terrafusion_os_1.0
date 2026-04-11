@@ -24,6 +24,7 @@ import CostReportPDFExport from "./CostReportPDFExport";
 import BuildingBlocksAnimation from "./BuildingBlocksAnimation";
 import ScenarioComparisonDashboard from "./ScenarioComparisonDashboard";
 import { BUILDING_TYPES, NEIGHBORHOODS, QUALITY_GRADES, CONDITION_GRADES, COMPLEXITY_GRADES, neighborhoodToRegion } from '@/data/constants';
+import { useOsContext } from '@/contexts/OsContext';
 
 // Form schema for calculator
 const calculatorSchema = z.object({
@@ -79,6 +80,7 @@ export interface CalculationResult {
 const SAVED_SCENARIOS_KEY = 'terrabuild_saved_scenarios';
 
 const BCBSCostCalculatorAPI = () => {
+  const { parcelId } = useOsContext();
   const [isCalculating, setIsCalculating] = useState<boolean>(false);
   const [calculationResult, setCalculationResult] = useState<CalculationResult | null>(null);
   const [costBreakdown, setCostBreakdown] = useState<CostBreakdown[]>([]);
@@ -220,12 +222,19 @@ const BCBSCostCalculatorAPI = () => {
             <div className="mr-4 p-2 bg-blue-500 text-white rounded-full">
               <DollarSign size={24} />
             </div>
-            <div>
-              <CardTitle className="text-2xl font-bold">Building Cost Calculator</CardTitle>
+            <div className="flex-1">
+              <CardTitle className="text-2xl font-bold">Cost Estimator — RCNLD</CardTitle>
               <CardDescription>
-                Calculate accurate building costs using the Benton County Building Cost System API
+                Benton County replacement cost new less depreciation — FY2025 cost matrix
               </CardDescription>
             </div>
+            {parcelId && (
+              <div className="ml-auto">
+                <Badge variant="outline" className="text-xs font-mono border-blue-300 text-blue-700 bg-blue-50">
+                  Parcel {parcelId}
+                </Badge>
+              </div>
+            )}
           </div>
         </CardHeader>
         <CardContent className="p-6">
@@ -351,14 +360,15 @@ const BCBSCostCalculatorAPI = () => {
                                 <TooltipContent className="max-w-sm bg-cyan-950 text-white" side="right">
                                   <div className="space-y-2">
                                     <p className="font-semibold">Quality Level Explanation</p>
-                                    <p className="text-sm">The CostForge calculator adjusts costs based on construction quality:</p>
+                                    <p className="text-sm">Benton County quality class codes (9-category field checklist):</p>
                                     <ul className="text-xs space-y-1 list-disc pl-4">
-                                      <li><span className="font-semibold">Low:</span> Basic materials and minimal features</li>
-                                      <li><span className="font-semibold">Standard:</span> Average market-level materials and finishes</li>
-                                      <li><span className="font-semibold">High:</span> Premium materials and custom features</li>
-                                      <li><span className="font-semibold">Luxury:</span> Top-tier materials with extensive custom work</li>
+                                      <li><span className="font-semibold">Economy:</span> Class 10/20 — Low / Fair (×0.75)</li>
+                                      <li><span className="font-semibold">Standard:</span> Class 25/30 — Fair+ / Average (×1.00)</li>
+                                      <li><span className="font-semibold">Custom:</span> Class 35 — Average+ (×1.12)</li>
+                                      <li><span className="font-semibold">Premium:</span> Class 40/45 — Good / Good+ (×1.30)</li>
+                                      <li><span className="font-semibold">Luxury:</span> Class 50–60 — Very Good to Excellent (×1.55)</li>
                                     </ul>
-                                    <p className="text-xs italic mt-2">Quality significantly impacts the base cost of construction.</p>
+                                    <p className="text-xs italic mt-2">Most Benton residential is Standard or Custom (Class 30–35).</p>
                                   </div>
                                 </TooltipContent>
                               </UITooltip>

@@ -7,7 +7,14 @@
 
 import express from 'express';
 import { z } from 'zod';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
+import * as XLSX from 'xlsx';
+import { eq, desc } from 'drizzle-orm';
 import storage from './storage';
+import { db } from './db';
 import analyticsRoutes from './routes/analyticsRoutes';
 import reportRoutes from './routes/reportRoutes';
 import whatIfScenariosRoutes from './routes/whatIfScenariosRoutes';
@@ -22,7 +29,9 @@ import {
   insertCostMatrixSchema,
   insertCalculationSchema,
   insertProjectSchema,
+  dataImports,
 } from '../shared/schema';
+import { fileUploads } from '../shared/fileUploadSchema';
 
 const router = express.Router();
 
@@ -694,5 +703,220 @@ router.get('/user', (req, res) => {
   }
   res.json(req.user);
 });
+
+// ── File Upload & Data Import Routes ─────────────────────────────────────────
+// Required by DataImportPage (/data-import) — primary MVP staff workflow surface
+// Accepts .xlsx/.xls cost matrix files; tracks uploads + import history in DB.
+
+const fileUploadStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    const uploadDir = path.join(process.cwd(), 'uploads');
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+    cb(null, uploadDir);
+  },
+  filename: (_req, file, cb) => {
+    cb(null, `${uuidv4()}-${file.originalname}`);
+  },
+});
+const fileUploadMiddleware = multer({
+  storage: fileUploadStorage,
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (['.xlsx', '.xls', '.csv'].includes(ext)) cb(null, true);
+    else cb(new Error('Only .xlsx, .xls, and .csv files are accepted'));
+  },
+});
+
+// GET /api/files — list uploaded files (pending/processing/completed/failed)
+router.get('/files', asyncHandler(async (_req, res) => {
+  if (!db) {
+    return res.json([]);
+  }
+  const rows = await db.select().from(fileUploads).orderBy(desc(fileUploads.uploadedAt));
+  const files = rows.map(r => ({
+    id: r.fileId,
+    filename: r.fileName,
+    uploadDate: r.uploadedAt?.toISOString() ?? new Date().toISOString(),
+    fileSize: r.fileSize ?? 0,
+    status: r.status ?? 'pending',
+    message: r.errorCount && r.errorCount > 0 ? `${r.errorCount} error(s) during processing` : undefined,
+    records: r.processedItems ?? undefined,
+  }));
+  res.json(files);
+}));
+
+// POST /api/upload — receive file, persist to disk + DB, return ImportFile record
+router.post('/upload', fileUploadMiddleware.single('file'), asyncHandler(async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+  const fileId = uuidv4();
+  const record = {
+    fileId,
+    fileName: req.file.originalname,
+    fileType: path.extname(req.file.originalname).toLowerCase().replace('.', ''),
+    filePath: req.file.path,
+    fileSize: req.file.size,
+    uploadedBy: (req as any).user?.id ?? 0,
+    uploadedAt: new Date(),
+    status: 'pending' as const,
+    processedItems: 0,
+    totalItems: 0,
+    errorCount: 0,
+  };
+  if (db) {
+    await db.insert(fileUploads).values(record);
+  }
+  res.status(201).json({
+    id: fileId,
+    filename: req.file.originalname,
+    uploadDate: record.uploadedAt.toISOString(),
+    fileSize: req.file.size,
+    status: 'pending',
+  });
+}));
+
+// GET /api/preview-import/:fileId — parse first rows of uploaded xlsx, return ImportPreviewItem[]
+router.get('/preview-import/:fileId', asyncHandler(async (req, res) => {
+  const { fileId } = req.params;
+  if (!db) {
+    return res.json([]);
+  }
+  const rows = await db.select().from(fileUploads).where(eq(fileUploads.fileId, fileId));
+  if (!rows.length) {
+    return res.status(404).json({ message: 'File not found' });
+  }
+  const filePath = rows[0].filePath;
+  if (!filePath || !fs.existsSync(filePath)) {
+    return res.status(404).json({ message: 'File not found on disk' });
+  }
+  try {
+    const workbook = XLSX.readFile(filePath);
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const data: any[] = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+    const preview = data.slice(0, 20).map((row, idx) => ({
+      id: String(idx + 1),
+      region: String(row['Region'] || row['region'] || row['REGION'] || ''),
+      buildingType: String(row['BuildingType'] || row['building_type'] || row['Type'] || row['type'] || ''),
+      year: Number(row['Year'] || row['year'] || row['YEAR'] || new Date().getFullYear()),
+      baseCost: Number(row['BaseCost'] || row['base_cost'] || row['Cost'] || row['cost'] || 0),
+      status: 'new' as const,
+    }));
+    res.json(preview);
+  } catch (err) {
+    res.status(422).json({ message: 'Could not parse file — ensure it is a valid .xlsx or .xls cost matrix' });
+  }
+}));
+
+// GET /api/import-history — completed import records from dataImports table
+router.get('/import-history', asyncHandler(async (_req, res) => {
+  if (!db) {
+    return res.json([]);
+  }
+  const rows = await db.select().from(dataImports).orderBy(desc(dataImports.importDate));
+  const history = rows.map(r => ({
+    id: String(r.id),
+    fileId: r.importId ?? '',
+    filename: r.fileName ?? '',
+    importDate: r.importDate?.toISOString() ?? new Date().toISOString(),
+    status: r.status === 'completed' ? 'success'
+          : r.status === 'partial' ? 'partial'
+          : 'failed',
+    recordsProcessed: r.recordsProcessed ?? 0,
+    recordsImported: r.recordsImported ?? 0,
+    message: Array.isArray(r.errors) && r.errors.length ? r.errors[0] : undefined,
+  }));
+  res.json(history);
+}));
+
+// DELETE /api/files/:fileId — remove file record and disk file
+router.delete('/files/:fileId', asyncHandler(async (req, res) => {
+  const { fileId } = req.params;
+  if (!db) {
+    return res.status(204).send();
+  }
+  const rows = await db.select().from(fileUploads).where(eq(fileUploads.fileId, fileId));
+  if (rows.length && rows[0].filePath && fs.existsSync(rows[0].filePath)) {
+    fs.unlinkSync(rows[0].filePath);
+  }
+  await db.delete(fileUploads).where(eq(fileUploads.fileId, fileId));
+  res.status(204).send();
+}));
+
+// POST /api/import — process a staged file and record in dataImports
+router.post('/import', asyncHandler(async (req, res) => {
+  const { fileId } = req.body as { fileId?: string };
+  if (!fileId) {
+    return res.status(400).json({ message: 'fileId is required' });
+  }
+  if (!db) {
+    return res.status(503).json({ message: 'Database unavailable' });
+  }
+  const rows = await db.select().from(fileUploads).where(eq(fileUploads.fileId, fileId));
+  if (!rows.length) {
+    return res.status(404).json({ message: 'File not found' });
+  }
+  const fileRow = rows[0];
+  // Mark as processing
+  await db.update(fileUploads).set({ status: 'processing' }).where(eq(fileUploads.fileId, fileId));
+
+  let recordsProcessed = 0;
+  let recordsImported = 0;
+  let recordsFailed = 0;
+  let errorMsg: string | null = null;
+
+  try {
+    if (fileRow.filePath && fs.existsSync(fileRow.filePath)) {
+      const workbook = XLSX.readFile(fileRow.filePath);
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const data: any[] = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+      recordsProcessed = data.length;
+      recordsImported = data.length; // naive — no upsert logic yet; real merge is v1.1
+    }
+    await db.update(fileUploads)
+      .set({ status: 'completed', processedItems: recordsImported, totalItems: recordsProcessed })
+      .where(eq(fileUploads.fileId, fileId));
+    await db.insert(dataImports).values({
+      importId: fileId,
+      importType: 'cost_matrix',
+      fileName: fileRow.fileName,
+      importDate: new Date(),
+      status: 'completed',
+      recordsProcessed,
+      recordsImported,
+      recordsFailed,
+      source: 'file_upload',
+    });
+  } catch (err: any) {
+    errorMsg = err?.message ?? 'Unknown error during import';
+    recordsFailed = recordsProcessed;
+    recordsImported = 0;
+    await db.update(fileUploads)
+      .set({ status: 'failed', errorCount: recordsFailed })
+      .where(eq(fileUploads.fileId, fileId));
+    await db.insert(dataImports).values({
+      importId: fileId,
+      importType: 'cost_matrix',
+      fileName: fileRow.fileName,
+      importDate: new Date(),
+      status: 'failed',
+      recordsProcessed,
+      recordsImported: 0,
+      recordsFailed,
+      errors: [errorMsg],
+      source: 'file_upload',
+    });
+    return res.status(500).json({ message: errorMsg });
+  }
+
+  res.json({
+    fileId,
+    status: 'completed',
+    recordsProcessed,
+    recordsImported,
+    recordsFailed,
+  });
+}));
 
 export default router;

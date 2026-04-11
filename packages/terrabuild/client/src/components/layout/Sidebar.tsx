@@ -355,7 +355,6 @@ export default function Sidebar({ className }: SidebarProps) {
             >
               <SidebarItem href="/dashboard" title="Dashboard" icon={<Home />} />
               <SidebarItem href="/calculator" title="Cost Estimator" icon={<Calculator />} />
-              <SidebarItem href="/properties" title="Property Browser" icon={<Building2 />} />
             </SidebarSection>
             
             {/* ── 2. COST ANALYTICS ────────────────────────── */}
@@ -380,7 +379,7 @@ export default function Sidebar({ className }: SidebarProps) {
               icon={<Settings className="h-4 w-4" />}
               isCollapsed={!isExpanded}
             >
-              <SidebarItem href="/settings" title="Settings" icon={<Settings />} />
+              <SidebarItem href="/settings/ftp-sync" title="Settings" icon={<Settings />} />
               <SidebarItem href="/mcp-overview" title="Integrations" icon={<Share2 />} />
               <SidebarItem href="/mcp-dashboard" title="Integration Health" icon={<Activity />} />
               {isAdmin && (

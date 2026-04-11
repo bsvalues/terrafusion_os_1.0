@@ -11,6 +11,10 @@
 | [KNOWN_CONSTRAINTS.md](KNOWN_CONSTRAINTS.md) | **Non-negotiable facts** — CLR, service account, Docker Hub, recalc queue approach |
 | [TERRAFUSION_INTEGRATION_GUIDE.md](TERRAFUSION_INTEGRATION_GUIDE.md) | Integration steps, env vars, CORS, health probes |
 | [PACS_API_REFERENCE.md](PACS_API_REFERENCE.md) | All 9 endpoints, auth, rate limiting, cURL examples |
+| [SCHEMA_IMPACT_MATRIX.md](SCHEMA_IMPACT_MATRIX.md) | Column-level change blast radius, API impact, and verification checklist |
+| [ASEND_PROVAL_DEEP_DIVE.md](ASEND_PROVAL_DEEP_DIVE.md) | Deep analysis of gis_manatron_2000.mdb and Real_tables1.mdb, schema, joins, and migration risks |
+| [ASEND_PROVAL_COUNTY_OPERATING_MODEL.md](ASEND_PROVAL_COUNTY_OPERATING_MODEL.md) | Future-county support model, quality gates, and migration tiers for Asend/Proval |
+| [ASEND_PROVAL_COUNTY_INTAKE_TEMPLATE.md](ASEND_PROVAL_COUNTY_INTAKE_TEMPLATE.md) | Reusable county onboarding template with profiling, certification, and go/no-go gates |
 | [OPERATIONAL_RUNBOOKS.md](OPERATIONAL_RUNBOOKS.md) | Runbooks + **Runbook 11: Local Dev Quick-Start** |
 
 ---
@@ -142,6 +146,18 @@ Learning guide for PACS system (from prior session)
 
 ### 11. **README.md** (600 lines)
 Quickstart guide (from prior session)
+
+### 12. **SCHEMA_IMPACT_MATRIX.md** (200+ lines)
+Table/column blast radius matrix linking schema changes to route failures and validation steps.
+
+### 13. **ASEND_PROVAL_DEEP_DIVE.md** (250+ lines)
+Legacy Access database deep dive for Asend/Proval datasets with table inventory, key inference, overlap analysis, and integration guidance.
+
+### 14. **ASEND_PROVAL_COUNTY_OPERATING_MODEL.md** (200+ lines)
+County support framework for legacy Asend/Proval operations, including support tiers, quality gates, and compatibility contract strategy.
+
+### 15. **ASEND_PROVAL_COUNTY_INTAKE_TEMPLATE.md** (150+ lines)
+Structured onboarding template for future counties using Asend/Proval with required metadata, quality gates, risk register, and sign-off blocks.
 
 ---
 

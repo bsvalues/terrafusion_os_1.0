@@ -85,7 +85,12 @@ export default function ReportsPage() {
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Assessment Reports</h1>
+        <div className="flex items-center gap-3 mb-2">
+          <h1 className="text-3xl font-bold">Assessment Reports</h1>
+          <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-600 border border-amber-500/30">
+            DEMO DATA — Benton County PACS report wiring in v1.1
+          </span>
+        </div>
         <p className="text-muted-foreground">
           View, analyze, and manage property assessment reports
         </p>

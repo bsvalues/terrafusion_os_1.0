@@ -67,6 +67,7 @@ import { WindowProvider } from './contexts/WindowContext';
 // Theme providers have been replaced with TerraFusion design system
 // Import for NavigationMenuProvider has been removed
 import { EnhancedSupabaseProvider } from '@/components/supabase/EnhancedSupabaseProvider';
+import { OsContextProvider } from './contexts/OsContext';
 import React, { useEffect } from 'react';
 
 // Add TypeScript declaration for our custom window property
@@ -423,6 +424,7 @@ function App() {
         <ThemeProvider>
           <RemixIconLink />
           <ErrorHandlerWrapper />
+          <OsContextProvider>
           <EnhancedSupabaseProvider>
             <WindowProvider>
               {/* Using only the AuthProvider to prevent duplicate context issues */}
@@ -436,6 +438,7 @@ function App() {
               </AuthProvider>
             </WindowProvider>
           </EnhancedSupabaseProvider>
+          </OsContextProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </ErrorBoundary>

@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRoute, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 import LayoutWrapper from '@/components/layout/LayoutWrapper';
 import MainContent from '@/components/layout/MainContent';
 import {
@@ -165,42 +166,43 @@ interface PropertyDetails {
 const PropertyDetailsPage = () => {
   const [, params] = useRoute('/properties/:id');
   const { toast } = useToast();
-  const propertyId = params?.id ? parseInt(params.id) : 0;
+  const propertyId = params?.id ?? '';
 
   // Fetch property details
   const { data, isLoading, isError, dataUpdatedAt, isFetching } = useQuery({
-    queryKey: [`/api/properties/${propertyId}/details`],
+    queryKey: [`/api/properties/${propertyId}`],
     queryFn: async () => {
-      const startTime = Date.now();
-      try {
-        // Show loading indicator with console log for debugging
-        console.log("Fetching property details data...");
-        
-        // Make the API request
-        const response = await fetch(`/api/properties/${propertyId}/details`);
-        
-        // Handle error response
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Property fetch error:", errorText);
-          throw new Error(`Failed to fetch property details: ${response.status} ${response.statusText} ${errorText}`);
-        }
-        
-        // Parse response
-        const data = await response.json() as PropertyDetails;
-        console.log("Received property data:", data);
-        
-        // Ensure loading spinner shows for at least 800ms for better user experience
-        const elapsedTime = Date.now() - startTime;
-        if (elapsedTime < 800) {
-          await new Promise(resolve => setTimeout(resolve, 800 - elapsedTime));
-        }
-        
-        return data;
-      } catch (error) {
-        console.error("Error fetching property data:", error);
-        throw error;
+      const raw: any = await apiRequest(`/api/properties/${propertyId}`);
+      // Map .NET flat response → nested PropertyDetails shape
+      if (raw && !raw.property) {
+        return {
+          property: {
+            id: 0,
+            propId: raw.parcelNumber ?? raw.id ?? 0,
+            propertyAddress: raw.address ?? null,
+            propertyCity: null,
+            propertyState: null,
+            propertyZip: null,
+            ownerName: raw.ownerName ?? null,
+            ownerAddress: null,
+            ownerCity: null,
+            ownerState: null,
+            ownerZip: null,
+            parcelNumber: raw.parcelNumber ?? null,
+            zone: raw.propertyType ?? null,
+            neighborhood: null,
+            block: null, tractOrLot: null, legalDesc: null, legalDesc2: null,
+            townshipSection: null, range: null, township: null, section: null,
+            importedAt: raw.createdAt ?? '',
+            createdAt: raw.createdAt ?? null,
+            updatedAt: raw.updatedAt ?? null,
+          },
+          improvements: [],
+          landDetails: [],
+          valuations: [],
+        } as PropertyDetails;
       }
+      return raw as PropertyDetails;
     },
     enabled: !!propertyId,
     // Add retry logic for better resilience
@@ -209,13 +211,15 @@ const PropertyDetailsPage = () => {
     staleTime: 5 * 60 * 1000, // Data remains fresh for 5 minutes
   });
 
-  if (isError) {
-    toast({
-      title: "Error",
-      description: "Failed to load property details. Please try again later.",
-      variant: "destructive",
-    });
-  }
+  useEffect(() => {
+    if (isError) {
+      toast({
+        title: "Error",
+        description: "Failed to load property details. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  }, [isError]);
 
   // Helper functions for formatting
   const formatAddress = (property: Property) => {

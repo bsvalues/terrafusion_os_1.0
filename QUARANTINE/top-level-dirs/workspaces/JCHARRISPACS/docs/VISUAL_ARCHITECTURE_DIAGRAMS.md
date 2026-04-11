@@ -3,6 +3,8 @@
 
 ## 📐 Diagram Index
 
+Quick companion: See `docs/DATA_DB_WORKFLOW_MAP.md` for a one-page operational map of data ownership, runtime flows, API read/write boundaries, and schema change blast radius.
+
 This document contains **5 comprehensive Mermaid diagrams** that visualize the complex architecture of the Benton County PACS system. These diagrams are essential for rapid comprehension during team onboarding.
 
 ### Diagrams Included:
