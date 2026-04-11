@@ -454,12 +454,18 @@ export interface CountyAggregateStats {
   totalParcels: number;
   totalAssessedValue: number;
   averageAssessedValue: number;
-  medianAssessedValue: number;
-  assessedThisYear: number;
-  pendingAssessments: number;
-  activeAppeals: number;
-  totalLevyRevenue: number;
-  assessmentCompletionPercent: number;
+  /** null = not available from live backend — UI must show '—' */
+  medianAssessedValue: number | null;
+  /** null = not available from live backend */
+  assessedThisYear: number | null;
+  /** null = not available from live backend */
+  pendingAssessments: number | null;
+  /** null = not available from live backend */
+  activeAppeals: number | null;
+  /** null = not available from live backend */
+  totalLevyRevenue: number | null;
+  /** null = not available from live backend */
+  assessmentCompletionPercent: number | null;
   parcelsByType: Record<PropertyType, number>;
   parcelsByCity: Record<string, number>;
 }

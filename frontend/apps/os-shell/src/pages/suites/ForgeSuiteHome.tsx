@@ -200,14 +200,17 @@ export default function ForgeSuiteHome() {
   const recentParcels = usePropertyStore((s) => s.recentParcels);
   const sourceDisclosure = getSourceDisclosure(source);
 
+  // Only show real numbers from the live backend. Snapshot/fixture data
+  // is never displayed as KPI values — it shows '—' instead.
+  const isLive = source === 'live';
   const kpiMetrics = [
-    { label: 'TOTAL PARCELS', value: fmtNum(stats?.totalParcels), tone: 'neutral' },
-    { label: 'AVG ASSESSED', value: fmtCurrency(stats?.averageAssessedValue), tone: 'neutral' },
-    { label: 'ASSESSED THIS YEAR', value: fmtNum(stats?.assessedThisYear), tone: 'neutral' },
-    { label: 'PENDING', value: fmtNum(stats?.pendingAssessments), tone: 'warn' },
+    { label: 'TOTAL PARCELS', value: isLive ? fmtNum(stats?.totalParcels) : '—', tone: 'neutral' },
+    { label: 'AVG ASSESSED', value: isLive ? fmtCurrency(stats?.averageAssessedValue) : '—', tone: 'neutral' },
+    { label: 'ASSESSED THIS YEAR', value: isLive ? fmtNum(stats?.assessedThisYear) : '—', tone: 'neutral' },
+    { label: 'PENDING', value: isLive ? fmtNum(stats?.pendingAssessments) : '—', tone: 'warn' },
     {
       label: 'COMPLETION',
-      value: stats ? `${(stats.assessmentCompletionPercent ?? 0).toFixed(1)}%` : '—',
+      value: isLive && stats ? `${(stats.assessmentCompletionPercent ?? 0).toFixed(1)}%` : '—',
       tone: 'success',
     },
   ] as const;

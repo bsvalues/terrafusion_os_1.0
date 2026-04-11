@@ -731,16 +731,20 @@ export class SnapshotDataProvider implements DataProvider {
       parcelsByCity[p.city] = (parcelsByCity[p.city] ?? 0) + 1;
     }
 
+    // Snapshot mode: return only values derived from real PACS data
+    // (totalParcels + totalAssessed come from benton-aggregates.json).
+    // Fields that would require live backend queries return null/0 so
+    // the UI shows '—' instead of fabricated numbers.
     return {
       totalParcels,
       totalAssessedValue: totalAssessed,
       averageAssessedValue: totalParcels > 0 ? totalAssessed / totalParcels : 0,
-      medianAssessedValue: 190000, // approximate from data
-      assessedThisYear: totalParcels,
-      pendingAssessments: Math.round(totalParcels * 0.02),
-      activeAppeals: properties.filter((p) => p.hasAppeals).length,
-      totalLevyRevenue: Math.round(totalAssessed * 0.012),
-      assessmentCompletionPercent: 98.5,
+      medianAssessedValue: null,        // requires live query — never fabricate
+      assessedThisYear: null,           // requires live query
+      pendingAssessments: null,         // requires live query
+      activeAppeals: null,              // requires live query
+      totalLevyRevenue: null,           // requires live query
+      assessmentCompletionPercent: null, // requires live query
       parcelsByType: parcelsByType as Record<PropertyType, number>,
       parcelsByCity,
     };
