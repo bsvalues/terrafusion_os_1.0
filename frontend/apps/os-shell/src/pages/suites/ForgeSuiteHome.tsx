@@ -4,8 +4,6 @@ import type { WorkbenchTabSlug } from '../../contracts/workbench';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { usePropertyStore } from '../../stores/propertyStore';
-import { CompsPoolBrowser } from './CompsPoolBrowser';
-import { RatioStudyPanel } from './RatioStudyPanel';
 import { SaleQualificationQueue } from './SaleQualificationQueue';
 import './ForgeSuiteHome.css';
 
@@ -29,17 +27,41 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
     id: 'costforge',
     label: 'CostForge',
     description:
-      'Benton County Cost Approach — replacement cost, depreciation, and RCNLD (sample analytics — not county-runtime truth)',
+      'County-wide cost approach — replacement cost schedules, depreciation tables, land schedules, and RCNLD',
     priority: 'primary',
     launchMode: 'standalone',
     moduleId: 'costforge',
-    chipLabel: 'County-wide valuation',
+    chipLabel: 'Cost approach',
   },
+  {
+    id: 'comps-forge',
+    label: 'CompsForge',
+    description:
+      'County-wide sales comparison — adjustment grid studio, paired-sales analysis, and market-derived time trends',
+    priority: 'primary',
+    launchMode: 'standalone',
+    moduleId: 'comps-forge',
+    chipLabel: 'Sales comparison',
+  },
+  {
+    id: 'income-forge',
+    label: 'IncomeForge',
+    description:
+      'County-wide income approach — cap rates, NOI modeling, and rent schedules for commercial properties',
+    priority: 'primary',
+    launchMode: 'standalone',
+    moduleId: 'income-forge',
+    truthState: 'queued',
+    chipLabel: 'Income approach',
+  },
+] as const;
+
+const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
   {
     id: 'statistics-studio',
     label: 'Statistics Studio',
-    description: 'Ratio studies, COD/PRD/PRB & IAAO statistical diagnostics',
-    priority: 'primary',
+    description: 'IAAO ratio studies — COD, PRD, PRB, and assessment quality diagnostics',
+    priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'statistics-studio',
     chipLabel: 'IAAO diagnostics',
@@ -48,54 +70,15 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
     id: 'batch-cost-run',
     label: 'Batch Cost Runs',
     description: 'County-wide cost model runs with strata, neighborhood, and class filters',
-    priority: 'primary',
+    priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'batch-cost-run',
     chipLabel: 'Batch execution',
   },
-] as const;
-
-const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
-  {
-    id: 'comps',
-    label: 'CompsForge',
-    description: 'Sales comparison with paired adjustments',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'forge',
-    chipLabel: 'Parcel workbench',
-  },
-  {
-    id: 'income-val',
-    label: 'Income Valuation',
-    description: 'Direct capitalization & GRM for commercial',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'forge',
-    chipLabel: 'Parcel workbench',
-  },
-  {
-    id: 'comparable-sales',
-    label: 'Comparable Sales',
-    description: 'Comp selection with paired sale adjustments',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'forge',
-    chipLabel: 'Parcel workbench',
-  },
-  {
-    id: 'reconcile',
-    label: 'Reconciliation',
-    description: 'Three-approach reconciliation and final value',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'forge',
-    chipLabel: 'Parcel workbench',
-  },
   {
     id: 'regression-studio',
     label: 'Regression Studio',
-    description: 'MRA regression models & IAAO compliance',
+    description: 'MRA regression models with R² diagnostics for market modeling',
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'regression-studio',
@@ -105,7 +88,7 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
   {
     id: 'terra-gama',
     label: 'TerraGAMA',
-    description: 'Geographic Area Market Analysis',
+    description: 'Geospatial automated mass appraisal with spatial lag models',
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'terra-gama',
@@ -115,58 +98,12 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
   {
     id: 'coefficient-preview',
     label: 'Coefficient Preview',
-    description: 'Current vs proposed coefficient comparison',
+    description: 'Live preview of adjustment coefficients before table publication',
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'coefficient-preview',
     truthState: 'queued',
     chipLabel: 'Planned scene',
-  },
-  {
-    id: 'appeal',
-    label: 'Appeals',
-    description: 'BOE appeal prep → routes through TerraDais',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'dais',
-    chipLabel: 'Routes to Dais',
-  },
-  {
-    id: 'audit',
-    label: 'Value Audit',
-    description: 'FISMA-compliant audit trail for changes',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'audit',
-    chipLabel: 'Audit surface',
-  },
-  {
-    id: 'governed',
-    label: 'Governed Run',
-    description: 'Governed run_valuation_model path',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'forge',
-    chipLabel: 'Parcel workbench',
-  },
-  {
-    id: 'cost-manual',
-    label: 'Cost Manual',
-    description: 'Manual cost schedule — replacement cost tables, depreciation, and RCNLD inputs',
-    priority: 'secondary',
-    launchMode: 'standalone',
-    moduleId: 'cost-manual',
-    chipLabel: 'Reference',
-  },
-  {
-    id: 'value-audit-module',
-    label: 'Value Audit Log',
-    description:
-      'Per-parcel value change audit log — FISMA-compliant history of all assessment changes',
-    priority: 'secondary',
-    launchMode: 'standalone',
-    moduleId: 'value-audit-module',
-    chipLabel: 'Reference',
   },
 ] as const;
 
@@ -200,19 +137,16 @@ export default function ForgeSuiteHome() {
   const recentParcels = usePropertyStore((s) => s.recentParcels);
   const sourceDisclosure = getSourceDisclosure(source);
 
-  // Only show real numbers from the live backend. Snapshot/fixture data
-  // is never displayed as KPI values — it shows '—' instead.
-  const isLive = source === 'live';
+  // KPI values: always '—' until the county-stats endpoint is verified correct.
+  // The live endpoint at /api/terraforge/county-stats currently returns
+  // overcounted parcel totals (95,811 vs real 89,247 Benton parcels).
+  // Re-enable individual fields once each is confirmed against PACS source truth.
   const kpiMetrics = [
-    { label: 'TOTAL PARCELS', value: isLive ? fmtNum(stats?.totalParcels) : '—', tone: 'neutral' },
-    { label: 'AVG ASSESSED', value: isLive ? fmtCurrency(stats?.averageAssessedValue) : '—', tone: 'neutral' },
-    { label: 'ASSESSED THIS YEAR', value: isLive ? fmtNum(stats?.assessedThisYear) : '—', tone: 'neutral' },
-    { label: 'PENDING', value: isLive ? fmtNum(stats?.pendingAssessments) : '—', tone: 'warn' },
-    {
-      label: 'COMPLETION',
-      value: isLive && stats ? `${(stats.assessmentCompletionPercent ?? 0).toFixed(1)}%` : '—',
-      tone: 'success',
-    },
+    { label: 'TOTAL PARCELS', value: '—', tone: 'neutral' },
+    { label: 'AVG ASSESSED', value: '—', tone: 'neutral' },
+    { label: 'ASSESSED THIS YEAR', value: '—', tone: 'neutral' },
+    { label: 'PENDING', value: '—', tone: 'warn' },
+    { label: 'COMPLETION', value: '—', tone: 'success' },
   ] as const;
 
   const handleModuleLaunch = (mod: ForgeModuleDef) => {
@@ -320,7 +254,7 @@ export default function ForgeSuiteHome() {
             <div className="forge-panel__header">
               <div>
                 <p className="forge-panel__eyebrow">Specialist Applications</p>
-                <h2 className="forge-panel__title">Parcel adapters, references, and planned scenes</h2>
+                <h2 className="forge-panel__title">Supporting analytics and batch operations</h2>
               </div>
             </div>
             <div className="forge-secondary-grid">
@@ -347,11 +281,6 @@ export default function ForgeSuiteHome() {
           {/* Slice 1.4 — county-wide sale qualification queue */}
           <SaleQualificationQueue />
 
-          {/* Slice 1.5 — county-wide IAAO ratio study */}
-          <RatioStudyPanel />
-
-          {/* Slice 1.6 — qualified comps pool browser */}
-          <CompsPoolBrowser />
 
           <section className="forge-panel" data-testid="forge-queue">
             <div className="forge-panel__header">
