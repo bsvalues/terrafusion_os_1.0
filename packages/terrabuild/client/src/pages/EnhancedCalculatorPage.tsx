@@ -130,14 +130,14 @@ const PropertySelection = () => {
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button variant="outline">Clear</Button>
-          <Button onClick={handleContinue}>
+          <Button onClick={handleContinue} className="bg-[#29B7D3] hover:bg-[#29B7D3]/90">
             Continue <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </CardFooter>
       </Card>
 
       <div className="mt-6">
-        <Alert>
+        <Alert className="bg-[#e6f7fb] border-[#29B7D3]/30">
           <Info className="h-4 w-4" />
           <AlertTitle>Pro Tip</AlertTitle>
           <AlertDescription>
@@ -154,10 +154,10 @@ const BuildingParameters = () => {
   const { nextStep, previousStep } = useWorkflow();
   const { updateState, state } = useDataFlow();
   const [buildingType, setBuildingType] = useState(state.buildingType || 'R1');
-  const [region, setRegion] = useState(state.region || 'Central');
+  const [region, setRegion] = useState(state.region || 'central');
   const [squareFootage, setSquareFootage] = useState('2500');
-  const [quality, setQuality] = useState(state.quality || 'STANDARD');
-  const [condition, setCondition] = useState(state.condition || 'GOOD');
+  const [quality, setQuality] = useState(state.quality || 'average');
+  const [condition, setCondition] = useState(state.condition || 'average');
   const [complexityFactor, setComplexityFactor] = useState([1.0]);
   const [complexityDescription, setComplexityDescription] = useState('Standard design with typical features');
 
@@ -211,18 +211,14 @@ const BuildingParameters = () => {
                   <SelectValue placeholder="Select building type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="R1">R1 — Single Family Residential</SelectItem>
-                  <SelectItem value="R2">R2 — Multi-Family Residential</SelectItem>
-                  <SelectItem value="R3">R3 — Manufactured Home</SelectItem>
-                  <SelectItem value="C1">C1 — Central Commercial</SelectItem>
-                  <SelectItem value="C2">C2 — General Commercial</SelectItem>
-                  <SelectItem value="C4">C4 — Office Building</SelectItem>
-                  <SelectItem value="I1">I1 — Light Industrial</SelectItem>
-                  <SelectItem value="I2">I2 — Heavy Industrial</SelectItem>
-                  <SelectItem value="A1">A1 — Agricultural</SelectItem>
-                  <SelectItem value="S1">S1 — Storage</SelectItem>
-                  <SelectItem value="OS">OS — Open Space</SelectItem>
-                  <SelectItem value="PF">PF — Public Facility</SelectItem>
+                  <SelectItem value="R1">R1 - Single Family Residential</SelectItem>
+                  <SelectItem value="R2">R2 - Multi-Family Residential</SelectItem>
+                  <SelectItem value="C1">C1 - Retail Commercial</SelectItem>
+                  <SelectItem value="C2">C2 - Office Commercial</SelectItem>
+                  <SelectItem value="C4">C4 - Warehouse</SelectItem>
+                  <SelectItem value="I1">I1 - Light Industrial</SelectItem>
+                  <SelectItem value="I2">I2 - Heavy Industrial</SelectItem>
+                  <SelectItem value="A1">A1 - Agricultural</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -237,9 +233,9 @@ const BuildingParameters = () => {
                   <SelectValue placeholder="Select region" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Central">Central Benton</SelectItem>
-                  <SelectItem value="East">East Benton</SelectItem>
-                  <SelectItem value="West">West Benton</SelectItem>
+                  <SelectItem value="east">East Benton</SelectItem>
+                  <SelectItem value="central">Central Benton</SelectItem>
+                  <SelectItem value="west">West Benton</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -267,11 +263,11 @@ const BuildingParameters = () => {
                   <SelectValue placeholder="Select quality level" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ECONOMY">Economy</SelectItem>
-                  <SelectItem value="STANDARD">Standard</SelectItem>
-                  <SelectItem value="CUSTOM">Custom</SelectItem>
-                  <SelectItem value="PREMIUM">Premium</SelectItem>
-                  <SelectItem value="LUXURY">Luxury</SelectItem>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="fair">Fair</SelectItem>
+                  <SelectItem value="average">Average</SelectItem>
+                  <SelectItem value="good">Good</SelectItem>
+                  <SelectItem value="excellent">Excellent</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -286,10 +282,11 @@ const BuildingParameters = () => {
                   <SelectValue placeholder="Select condition" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="POOR">Poor</SelectItem>
-                  <SelectItem value="FAIR">Fair</SelectItem>
-                  <SelectItem value="GOOD">Good</SelectItem>
-                  <SelectItem value="EXCELLENT">Excellent</SelectItem>
+                  <SelectItem value="poor">Poor</SelectItem>
+                  <SelectItem value="fair">Fair</SelectItem>
+                  <SelectItem value="average">Average</SelectItem>
+                  <SelectItem value="good">Good</SelectItem>
+                  <SelectItem value="excellent">Excellent</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -314,7 +311,7 @@ const BuildingParameters = () => {
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button variant="outline" onClick={previousStep}>Back</Button>
-          <Button onClick={handleContinue}>
+          <Button onClick={handleContinue} className="bg-[#29B7D3] hover:bg-[#29B7D3]/90">
             Continue <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </CardFooter>
@@ -417,14 +414,17 @@ const CalculateStep = () => {
                 </div>
               ) : (
                 <div className="text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <Calculator className="h-8 w-8 text-primary" />
+                  <div className="w-16 h-16 rounded-full bg-[#e6f7fb] flex items-center justify-center mx-auto mb-4">
+                    <Calculator className="h-8 w-8 text-[#29B7D3]" />
                   </div>
-                  <p className="font-medium">Ready to calculate</p>
+                  <p className="text-[#243E4D] font-medium">Ready to calculate</p>
                   <p className="text-sm text-muted-foreground mt-2">
                     Click the button below to calculate the building cost based on the parameters provided
                   </p>
-                  <Button onClick={handleCalculate} className="mt-4">
+                  <Button 
+                    onClick={handleCalculate} 
+                    className="mt-4 bg-[#29B7D3] hover:bg-[#29B7D3]/90"
+                  >
                     Calculate Now
                   </Button>
                 </div>
@@ -432,14 +432,17 @@ const CalculateStep = () => {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-6">
-              <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-4">
-                <Check className="h-8 w-8 text-green-400" />
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <Check className="h-8 w-8 text-green-600" />
               </div>
-              <p className="font-medium">Calculation Complete</p>
+              <p className="text-[#243E4D] font-medium">Calculation Complete</p>
               <p className="text-sm text-muted-foreground mt-2">
                 You can now view the detailed results
               </p>
-              <Button onClick={handleContinue} className="mt-4">
+              <Button 
+                onClick={handleContinue} 
+                className="mt-4 bg-[#29B7D3] hover:bg-[#29B7D3]/90"
+              >
                 View Results <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
@@ -448,7 +451,7 @@ const CalculateStep = () => {
         <CardFooter className="flex justify-between">
           <Button variant="outline" onClick={previousStep}>Back</Button>
           {calculationComplete && (
-            <Button onClick={handleContinue}>
+            <Button onClick={handleContinue} className="bg-[#29B7D3] hover:bg-[#29B7D3]/90">
               Continue <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           )}
@@ -473,19 +476,19 @@ const ResultsStep = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
-              <Card className="border-primary/20">
+              <Card className="bg-[#e6f7fb]/50 border-[#29B7D3]/20">
                 <CardContent className="p-4">
-                  <div className="text-xs uppercase text-muted-foreground font-medium">Total Cost</div>
-                  <div className="text-3xl font-bold text-primary">
+                  <div className="text-xs uppercase text-gray-500 font-medium">Total Cost</div>
+                  <div className="text-3xl font-bold text-[#243E4D]">
                     ${calculationResults.totalCost?.toLocaleString() || '0'}
                   </div>
                 </CardContent>
               </Card>
-
-              <Card className="border-primary/20">
+              
+              <Card className="bg-[#e6f7fb]/50 border-[#29B7D3]/20">
                 <CardContent className="p-4">
-                  <div className="text-xs uppercase text-muted-foreground font-medium">Cost per Sq Ft</div>
-                  <div className="text-3xl font-bold text-primary">
+                  <div className="text-xs uppercase text-gray-500 font-medium">Cost per Sq Ft</div>
+                  <div className="text-3xl font-bold text-[#243E4D]">
                     ${calculationResults.costPerSqFt?.toLocaleString() || '0'}
                   </div>
                 </CardContent>
@@ -512,19 +515,19 @@ const ResultsStep = () => {
             <div>
               <h3 className="text-sm font-medium mb-3">Calculation Factors</h3>
               <div className="grid grid-cols-3 gap-4">
-                <div className="flex flex-col items-center p-3 bg-muted rounded-lg">
-                  <Map className="h-5 w-5 text-muted-foreground mb-1" />
-                  <div className="text-xs text-muted-foreground">Region</div>
+                <div className="flex flex-col items-center p-3 bg-gray-50 rounded-lg">
+                  <Map className="h-5 w-5 text-gray-500 mb-1" />
+                  <div className="text-xs text-gray-500">Region</div>
                   <div className="text-sm font-medium">{calculationResults.regionFactor || '1.0'}</div>
                 </div>
-                <div className="flex flex-col items-center p-3 bg-muted rounded-lg">
-                  <Star className="h-5 w-5 text-muted-foreground mb-1" />
-                  <div className="text-xs text-muted-foreground">Quality</div>
+                <div className="flex flex-col items-center p-3 bg-gray-50 rounded-lg">
+                  <Star className="h-5 w-5 text-gray-500 mb-1" />
+                  <div className="text-xs text-gray-500">Quality</div>
                   <div className="text-sm font-medium">{calculationResults.qualityFactor || '1.0'}</div>
                 </div>
-                <div className="flex flex-col items-center p-3 bg-muted rounded-lg">
-                  <Gauge className="h-5 w-5 text-muted-foreground mb-1" />
-                  <div className="text-xs text-muted-foreground">Condition</div>
+                <div className="flex flex-col items-center p-3 bg-gray-50 rounded-lg">
+                  <Gauge className="h-5 w-5 text-gray-500 mb-1" />
+                  <div className="text-xs text-gray-500">Condition</div>
                   <div className="text-sm font-medium">{calculationResults.conditionFactor || '1.0'}</div>
                 </div>
               </div>
@@ -532,13 +535,13 @@ const ResultsStep = () => {
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button variant="outline" onClick={previousStep}>Back</Button>
-            <Button onClick={nextStep}>
+            <Button onClick={nextStep} className="bg-[#29B7D3] hover:bg-[#29B7D3]/90">
               Save & Export <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </CardFooter>
         </Card>
         
-        <Alert>
+        <Alert className="bg-[#e6f7fb] border-[#29B7D3]/30">
           <Lightbulb className="h-4 w-4" />
           <AlertTitle>Cost Analysis Insights</AlertTitle>
           <AlertDescription>
@@ -697,7 +700,7 @@ const EnhancedCalculatorPage = () => {
       initialStep="property"
     >
       <PageShell
-        title="CostForge — Cost Calculator"
+        title="TerraBuild Cost Calculator"
         description="Calculate building costs based on property characteristics, building type, and regional factors."
         breadcrumbs={[
           { label: "Home", href: "/" },

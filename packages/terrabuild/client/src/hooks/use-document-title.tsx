@@ -11,7 +11,7 @@ export const useDocumentTitle = (
   title: string,
   options: { siteName?: string; separator?: string } = {}
 ) => {
-  const { siteName = 'CostForge', separator = ' | ' } = options;
+  const { siteName = 'BCBS', separator = ' | ' } = options;
 
   useEffect(() => {
     const previousTitle = document.title;

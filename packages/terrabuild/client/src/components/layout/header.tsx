@@ -92,12 +92,12 @@ export default function Header({ isLanding = false }: HeaderProps) {
             <div className="hidden md:flex">
               <div className="flex items-center">
                 <div className="h-8 w-8 rounded-md bg-gradient-to-r from-[#29B7D3] to-[#243E4D] flex items-center justify-center mr-2">
-                  <span className="text-white font-bold text-lg">CF</span>
+                  <span className="text-white font-bold text-lg">TB</span>
                 </div>
                 <span className={cn(
                   "text-xl font-bold",
                   isLanding ? "text-white" : "text-[#243E4D]"
-                )}>CostForge</span>
+                )}>TerraBuild</span>
               </div>
             </div>
             <div className="flex md:hidden">

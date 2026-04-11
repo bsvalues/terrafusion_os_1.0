@@ -27,7 +27,7 @@ interface TerraBuildAppBarProps {
 }
 
 export function TerraBuildAppBar({
-  title = 'CostForge — Benton County',
+  title = 'TerraBuild: Benton County',
   userName = 'Demo User',
   userRole = 'Assessor',
   userAvatar = '',

@@ -513,6 +513,8 @@ builder.Services.AddSingleton<ISurfaceContractService, TerraFusion.AI.Services.S
                 lanes));
     }
 }
+// Muse router status — probes each lane for live/offline observability
+builder.Services.AddSingleton<IMuseRouterStatusService, TerraFusion.AI.Services.MuseRouterStatusService>();
 // ✅ STUB: Consciousness Engine stub for DI resolution
 builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services
@@ -1179,18 +1181,7 @@ if (app.Environment.IsDevelopment())
                 "write:dossier",
                 "read:property",
                 "read:levy",
-                "read:costforge",
-                "access:costforge",
-                "calculate:property-cost",
-                "write:costforge",
-                "read:compsforge",
-                "write:compsforge",
-                "read:incomeforge",
-                "write:incomeforge",
-                "read:system-status",
-                "read:cost-matrix",
-                "read:cost-factors",
-                "read:cost-breakdown"
+                "read:costforge"
           }
     };
 

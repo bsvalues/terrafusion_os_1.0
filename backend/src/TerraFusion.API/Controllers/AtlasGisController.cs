@@ -30,6 +30,7 @@ public class AtlasGisController : ControllerBase
 
     /// <summary>Geocode an address via the Atlas GIS pipeline.</summary>
     /// <param name="address">Street address to geocode.</param>
+    /// <param name="enricher">Injected geospatial enricher service.</param>
     /// <param name="ct">Request cancellation token.</param>
     [HttpGet("geocode")]
     [ProducesResponseType(typeof(GeocodeResponse), StatusCodes.Status200OK)]
@@ -66,6 +67,7 @@ public class AtlasGisController : ControllerBase
     /// <param name="layer">Layer name to query (default "Parcels").</param>
     /// <param name="bbox">Bounding box as "minLng,minLat,maxLng,maxLat".</param>
     /// <param name="filter">Optional attribute filter.</param>
+    /// <param name="connector">Injected GIS connector service.</param>
     /// <param name="limit">Maximum features to return (default 500).</param>
     /// <param name="ct">Request cancellation token.</param>
     [HttpGet("spatial-query")]
@@ -116,6 +118,7 @@ public class AtlasGisController : ControllerBase
     /// <param name="layerName">Layer name (e.g., Parcels, Zoning, FloodZones).</param>
     /// <param name="bbox">Optional bounding box filter.</param>
     /// <param name="filter">Optional attribute filter.</param>
+    /// <param name="connector">Injected GIS connector service.</param>
     /// <param name="ct">Request cancellation token.</param>
     [HttpGet("layers/{layerName}/features")]
     [ProducesResponseType(typeof(FeatureCollection), StatusCodes.Status200OK)]
@@ -173,6 +176,8 @@ public class AtlasGisController : ControllerBase
     /// the local geometry store.
     /// </summary>
     /// <param name="file">Spatial data file.</param>
+    /// <param name="parser">Injected GIS parse service.</param>
+    /// <param name="sync">Injected GIS sync service.</param>
     /// <param name="import">If true, import parsed polygons into the store (default false).</param>
     /// <param name="ct">Request cancellation token.</param>
     [HttpPost("upload-shapefile")]

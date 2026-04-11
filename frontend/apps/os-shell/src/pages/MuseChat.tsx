@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getSession } from '../auth/session';
 import { useCompanionStore } from '../stores/companionStore';
 import type { EditorMarker } from '../stores/companionStore';
-import type { Property } from '../types/domain';
-import { usePropertyStore } from '../stores/propertyStore';
 
 // ============================================================================
 // Design tokens — matches TerraFusion light warm theme
@@ -99,43 +97,6 @@ function buildWelcome(): ChatMessage {
   };
 }
 
-export function buildParcelSummary(
-  parcel: Property | null,
-  activeParcelId: string | null
-): Record<string, unknown> | undefined {
-  if (!parcel || !activeParcelId || parcel.parcelId !== activeParcelId) return undefined;
-  return {
-    // Identity
-    address: parcel.address,
-    city: parcel.city,
-    propertyType: parcel.propertyType,
-    propertyUseCode: parcel.propertyUseCode,
-    assessmentYear: parcel.assessmentYear,
-    assessmentStatus: parcel.assessmentStatus,
-    // Values
-    totalAssessedValue: parcel.totalAssessedValue,
-    landValue: parcel.landValue,
-    improvementValue: parcel.improvementValue,
-    marketValue: parcel.marketValue,
-    taxableValue: parcel.taxableValue,
-    // Physical
-    yearBuilt: parcel.yearBuilt,
-    buildingSquareFeet: parcel.buildingSquareFeet,
-    landAcreage: parcel.landAcreage,
-    // Sales
-    lastSaleDate: parcel.lastSaleDate,
-    lastSalePrice: parcel.lastSalePrice,
-    // Geo — specialDistricts is string[] on the type; join before serialization
-    // so the backend receives a plain string, not a JSON array
-    neighborhood: parcel.neighborhood,
-    zoning: parcel.zoning,
-    taxDistrictName: parcel.taxDistrictName,
-    specialDistricts: parcel.specialDistricts?.join(', '),
-    latitude: parcel.latitude,
-    longitude: parcel.longitude,
-  };
-}
-
 /**
  * Build a stable signature from the current context so we can detect
  * meaningful changes without firing on every re-render.
@@ -154,12 +115,11 @@ function buildContextSignature(ctx: ExplainContext): string {
   ].join('|');
 }
 
-export async function callExplain(
+async function callExplain(
   query: string,
   countyId: string,
   actorId: string,
-  context: ExplainContext,
-  parcelSummary?: Record<string, unknown>
+  context: ExplainContext
 ): Promise<ExplainApiResponse> {
   const body: Record<string, unknown> = {
     query,
@@ -170,7 +130,6 @@ export async function callExplain(
   };
   // Keep legacy parcelId at top level for backward compat with existing backend handler
   if (context.activeParcelId) body.parcelId = context.activeParcelId;
-  if (parcelSummary) body.parcelSummary = parcelSummary;
 
   const res = await fetch('/api/pilot/explain', {
     method: 'POST',
@@ -326,8 +285,6 @@ export function MuseChat(): React.ReactElement {
     editorMarkers,
   } = useCompanionStore();
 
-  const activeParcel = usePropertyStore((s) => s.activeParcel);
-
   const session = getSession();
   const countyId = session?.countyId ?? 'benton';
   const actorId = session?.userId ?? 'operator';
@@ -404,7 +361,7 @@ export function MuseChat(): React.ReactElement {
         ? `I just switched to branch "${activeBranch}". What's the current development context?`
         : `I'm now in the ${activeSuite} suite. What's relevant here?`;
 
-    callExplain(question, countyId, actorId, ctx, buildParcelSummary(activeParcel, activeParcelId))
+    callExplain(question, countyId, actorId, ctx)
       .then((data) => {
         if (cancelled) return;
         setMessages((prev) => [
@@ -426,7 +383,7 @@ export function MuseChat(): React.ReactElement {
   // Deliberately broad dep array — we want to re-evaluate whenever any context field changes.
   // The signature ref is the actual dedup guard.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeParcel, activeParcelId, activeSuite, activeTab, activeBranch, activeFile, buildStatus]);
+  }, [activeParcelId, activeSuite, activeTab, activeBranch, activeFile, buildStatus]);
 
   // ── Manual send ───────────────────────────────────────────────────────────
   const send = async () => {
@@ -451,7 +408,7 @@ export function MuseChat(): React.ReactElement {
     };
 
     try {
-      const data = await callExplain(query, countyId, actorId, ctx, buildParcelSummary(activeParcel, activeParcelId));
+      const data = await callExplain(query, countyId, actorId, ctx);
       const museMsg: ChatMessage = {
         id: makeId(),
         role: 'muse',

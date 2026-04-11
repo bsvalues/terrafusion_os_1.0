@@ -238,7 +238,7 @@ export function SimpleTopMenu() {
             onClick={() => window.location.href = '/'}
           >
             <Logo className="h-6 w-6" />
-            <span className="font-bold">CostForge</span>
+            <span className="font-bold">BCBS</span>
           </div>
         </div>
         

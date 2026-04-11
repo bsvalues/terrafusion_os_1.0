@@ -1,22 +1,21 @@
 .forge-workspace {
-  /* Design-system aliases — no private palette. All color authority lives in --tf-*. */
-  --forge-bg:            hsl(var(--tf-bg));
-  --forge-stage:         hsl(var(--tf-surface));
-  --forge-panel:         hsl(var(--tf-surface-2));
-  --forge-panel-hover:   color-mix(in srgb, hsl(var(--tf-surface-2)) 70%, hsl(var(--tf-text)));
-  --forge-border:        hsl(var(--tf-border) / 0.3);
-  --forge-border-strong: hsl(var(--tf-border) / 0.5);
-  --forge-text:          hsl(var(--tf-text));
-  --forge-muted:         hsl(var(--tf-muted));
-  --forge-subtle:        hsl(var(--tf-muted) / 0.6);
-  --forge-info:          var(--tf-quantum-cyan);
-  --forge-success:       var(--tf-accent-success);
-  --forge-warn:          var(--tf-warning-amber);
-  --forge-shadow:        0 18px 40px hsl(var(--tf-bg) / 0.5);
+  --forge-bg: hsl(222 24% 7%);
+  --forge-stage: hsl(222 22% 9%);
+  --forge-panel: hsl(220 18% 11%);
+  --forge-panel-hover: hsl(220 18% 13%);
+  --forge-border: hsla(210, 20%, 98%, 0.08);
+  --forge-border-strong: hsla(210, 20%, 98%, 0.14);
+  --forge-text: hsla(220, 40%, 96%, 0.95);
+  --forge-muted: hsla(220, 24%, 82%, 0.62);
+  --forge-subtle: hsla(220, 20%, 78%, 0.42);
+  --forge-info: hsl(190 100% 60%);
+  --forge-success: hsl(135 90% 55%);
+  --forge-warn: hsl(40 100% 60%);
+  --forge-shadow: 0 18px 40px hsla(222, 45%, 2%, 0.28);
   min-height: 100%;
   background:
-    radial-gradient(circle at top right, color-mix(in srgb, var(--tf-quantum-cyan) 5%, transparent), transparent 30%),
-    linear-gradient(180deg, hsl(var(--tf-surface)), var(--forge-bg));
+    radial-gradient(circle at top right, hsla(200, 100%, 60%, 0.05), transparent 30%),
+    linear-gradient(180deg, hsl(222 22% 8%), var(--forge-bg));
   color: var(--forge-text);
   overflow: hidden;
 }
@@ -82,21 +81,21 @@
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid var(--forge-border-strong);
-  background: hsl(var(--tf-text) / 0.03);
+  background: hsla(210, 20%, 98%, 0.03);
   font-size: 12px;
   color: var(--forge-muted);
 }
 
 .forge-workspace__notice--warn {
-  border-color: color-mix(in srgb, var(--forge-warn) 24%, transparent);
-  background: color-mix(in srgb, var(--forge-warn) 8%, transparent);
+  border-color: hsla(40, 100%, 60%, 0.24);
+  background: hsla(40, 100%, 60%, 0.08);
   color: var(--forge-warn);
 }
 
 .forge-workspace__notice--error {
-  border-color: hsl(var(--tf-error) / 0.3);
-  background: hsl(var(--tf-error) / 0.1);
-  color: hsl(var(--tf-error));
+  border-color: hsla(0, 72%, 60%, 0.22);
+  background: hsla(0, 72%, 60%, 0.08);
+  color: hsl(0 72% 68%);
 }
 
 .forge-kpi-grid {
@@ -251,22 +250,22 @@
   text-transform: uppercase;
 }
 
-/* Functional category signal — routed through design system tokens */
+/* Functional category signal — neon-cyan per Layer 4 spec */
 .forge-chip--neutral {
-  border: 1px solid color-mix(in srgb, var(--forge-info) 20%, transparent);
-  background: color-mix(in srgb, var(--forge-info) 9%, transparent);
-  color: var(--forge-info);
+  border: 1px solid hsla(190, 100%, 60%, 0.20);
+  background: hsla(190, 100%, 60%, 0.09);
+  color: hsl(190, 100%, 60%);
 }
 
 .forge-chip--warn {
-  border: 1px solid color-mix(in srgb, var(--forge-warn) 24%, transparent);
-  background: color-mix(in srgb, var(--forge-warn) 10%, transparent);
+  border: 1px solid hsla(40, 100%, 60%, 0.24);
+  background: hsla(40, 100%, 60%, 0.1);
   color: var(--forge-warn);
 }
 
 .forge-chip--success {
-  border: 1px solid color-mix(in srgb, var(--forge-success) 20%, transparent);
-  background: color-mix(in srgb, var(--forge-success) 8%, transparent);
+  border: 1px solid hsla(135, 90%, 55%, 0.2);
+  background: hsla(135, 90%, 55%, 0.08);
   color: var(--forge-success);
 }
 

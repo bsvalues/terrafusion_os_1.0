@@ -119,7 +119,7 @@ export default function FAQPage() {
               Frequently Asked Questions
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Find answers to common questions about CostForge — Benton County's Cost Approach Assessment Platform
+              Find answers to common questions about TerraBuild - Benton County's Property Assessment Platform
             </p>
           </motion.div>
 

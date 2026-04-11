@@ -185,7 +185,7 @@ export default function TopNavMenu() {
               }}
             >
               <img src={bentonSeal} alt="Benton County Seal" className="h-8 w-8" />
-              <span className="font-semibold text-xl text-[#243E4D]">CostForge</span>
+              <span className="font-semibold text-xl text-[#243E4D]">BCBS</span>
             </div>
           </NavigationMenuItem>
 

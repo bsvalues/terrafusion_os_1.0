@@ -96,52 +96,6 @@ public sealed class MuseService : IMuseService
             contextLines.Add($"Editor diagnostics: {string.Join(", ", parts)}");
         }
 
-        // --- Parcel property context (Stage 1 injection) ---
-        // ParcelSummary is built by buildParcelSummary() on the frontend and contains
-        // the fields from propertyStore.activeParcel that are relevant to assessment reasoning.
-        // The S() helper is null-safe: missing keys and null values both return "".
-        if (request.ParcelSummary is { Count: > 0 } ps)
-        {
-            string S(string k) => ps.TryGetValue(k, out var v) ? v?.ToString() ?? "" : "";
-
-            var address = S("address");
-            if (!string.IsNullOrEmpty(address))
-                contextLines.Add(
-                    $"Parcel: {address}, {S("city")} | " +
-                    $"Type: {S("propertyType")} | " +
-                    $"Status: {S("assessmentStatus")} ({S("assessmentYear")})");
-
-            var totalAv = S("totalAssessedValue");
-            if (!string.IsNullOrEmpty(totalAv))
-                contextLines.Add(
-                    $"Assessed values: total ${totalAv} | land ${S("landValue")} | " +
-                    $"improvement ${S("improvementValue")} | market ${S("marketValue")} | " +
-                    $"taxable ${S("taxableValue")}");
-
-            var sqft = S("buildingSquareFeet");
-            if (!string.IsNullOrEmpty(sqft) && sqft != "0")
-                contextLines.Add(
-                    $"Physical: {sqft} sq ft built {S("yearBuilt")} | {S("landAcreage")} acres");
-
-            var lastSaleDate = S("lastSaleDate");
-            if (!string.IsNullOrEmpty(lastSaleDate))
-                contextLines.Add($"Last sale: {lastSaleDate} at ${S("lastSalePrice")}");
-
-            var neighborhood = S("neighborhood");
-            var zoning = S("zoning");
-            var district = S("taxDistrictName");
-            if (!string.IsNullOrEmpty(neighborhood) || !string.IsNullOrEmpty(zoning) || !string.IsNullOrEmpty(district))
-                contextLines.Add($"Geo: neighborhood {neighborhood} | zoning {zoning} | district {district}");
-
-            var specials = S("specialDistricts");
-            if (!string.IsNullOrEmpty(specials))
-                contextLines.Add($"Special districts: {specials}");
-
-            var lat = S("latitude");
-            if (!string.IsNullOrEmpty(lat) && lat != "0")
-                contextLines.Add($"Coordinates: {lat}, {S("longitude")}");
-        }
-
         var contextPreamble = contextLines.Count > 0
             ? string.Join("; ", contextLines) + ". "
             : string.Empty;
