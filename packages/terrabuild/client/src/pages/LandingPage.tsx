@@ -29,98 +29,92 @@ export default function LandingPage() {
 
   return (
     <MainLayout loading={loading} isLanding={true}>
-      <div className="bg-white">
+      <div>
         {/* Hero section */}
-        <section className="relative bg-gradient-to-br from-[#0b1120] via-[#1a2332] to-[#0b1120] text-white -mt-6 -mx-6 mb-4">
+        <section
+          className="relative -mt-6 -mx-6 mb-4 text-foreground"
+          style={{ background: 'hsl(var(--card))', borderBottom: '1px solid hsl(var(--border))' }}
+        >
           <div className="container mx-auto px-4 py-16 md:py-24 flex flex-col items-center text-center">
-            <div className="w-24 h-24 mb-6 rounded-xl bg-gradient-to-br from-[#0099ff] via-[#00ffee] to-[#00ffaa] flex items-center justify-center shadow-2xl">
-              <Calculator className="w-12 h-12 text-white" />
+            <div
+              className="w-24 h-24 mb-6 rounded-xl flex items-center justify-center shadow-lg"
+              style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))' }}
+            >
+              <Calculator className="w-12 h-12" style={{ color: 'hsl(var(--primary-foreground))' }} />
             </div>
-            <h1 className="text-4xl md:text-6xl font-black mb-4 bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] bg-clip-text text-transparent">
-              CostForge AI
+            <h1
+              className="text-4xl md:text-6xl font-black mb-4"
+              style={{ color: 'hsl(var(--primary))' }}
+            >
+              CostForge
             </h1>
-            <p className="text-lg md:text-xl mb-2 max-w-3xl text-cyan-300/80 font-semibold tracking-wider">
-              QUANTUM BUILDING COST INTELLIGENCE
+            <p className="text-base md:text-lg mb-2 max-w-3xl font-semibold tracking-wider" style={{ color: 'hsl(var(--muted-foreground))' }}>
+              COST APPROACH — BENTON COUNTY ASSESSOR
             </p>
-            <p className="text-base md:text-lg mb-8 max-w-3xl text-cyan-300/70">
-              Government-grade AI algorithms delivering championship-level accuracy in construction
-              cost analysis. Experience the transcendent power of quantum cost calculation.
+            <p className="text-base md:text-lg mb-8 max-w-3xl" style={{ color: 'hsl(var(--muted-foreground))' }}>
+              Government-grade cost approach estimation using Benton-calibrated valuation models,
+              county depreciation schedules, and traceable parcel evidence.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               {isAuthenticated ? (
                 <>
-                  <Button
-                    size="lg"
-                    className="bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] hover:shadow-2xl hover:scale-105 text-white font-bold uppercase tracking-wider px-8 py-4 text-lg transition-all duration-300"
-                    onClick={() => navigate('/dashboard')}
-                  >
-                    <Calculator className="mr-2 h-5 w-5" /> QUANTUM DASHBOARD
+                  <Button size="lg" onClick={() => navigate('/dashboard')}>
+                    <Calculator className="mr-2 h-5 w-5" /> Open Dashboard
                   </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="bg-white/10 backdrop-blur border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10 hover:border-cyan-400 transition-all duration-300"
-                    onClick={() => navigate('/calculator')}
-                  >
-                    <Calculator className="mr-2 h-5 w-5" /> AI CALCULATOR
+                  <Button size="lg" variant="outline" onClick={() => navigate('/calculator')}>
+                    <Calculator className="mr-2 h-5 w-5" /> Cost Calculator
                   </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="bg-white/10 backdrop-blur border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10 hover:border-cyan-400 transition-all duration-300"
-                    onClick={() => navigate('/data-import')}
-                  >
-                    <Upload className="mr-2 h-5 w-5" /> QUANTUM IMPORT
+                  <Button size="lg" variant="outline" onClick={() => navigate('/data-import')}>
+                    <Upload className="mr-2 h-5 w-5" /> Import Data
                   </Button>
                 </>
               ) : (
                 <>
-                  <Button
-                    size="lg"
-                    className="bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] hover:shadow-2xl hover:scale-105 text-white font-bold uppercase tracking-wider px-8 py-4 text-lg transition-all duration-300"
-                    onClick={() => navigate('/cost-wizard')}
-                  >
-                    <Calculator className="mr-2 h-5 w-5" /> COSTFORGE WIZARD
+                  <Button size="lg" onClick={() => navigate('/cost-wizard')}>
+                    <Calculator className="mr-2 h-5 w-5" /> Cost Wizard
                   </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="bg-white/10 backdrop-blur border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10 hover:border-cyan-400 transition-all duration-300"
-                    onClick={() => navigate('/calculator')}
-                  >
-                    <Calculator className="mr-2 h-5 w-5" /> TRY CALCULATOR
+                  <Button size="lg" variant="outline" onClick={() => navigate('/calculator')}>
+                    <Calculator className="mr-2 h-5 w-5" /> Try Calculator
                   </Button>
                 </>
               )}
             </div>
             {isAuthenticated && user && (
-              <div className="mt-6 bg-gradient-to-r from-cyan-500/20 to-green-500/20 backdrop-blur px-6 py-3 rounded-full flex items-center border border-cyan-500/30">
-                <User className="h-4 w-4 mr-2 text-cyan-400" />
-                <span className="text-cyan-300 text-sm font-semibold">
-                  Government. Transcended. Welcome, {user.name || user.username}
+              <div
+                className="mt-6 px-6 py-3 rounded-full flex items-center"
+                style={{
+                  background: 'hsl(var(--primary) / 0.08)',
+                  border: '1px solid hsl(var(--primary) / 0.2)',
+                }}
+              >
+                <User className="h-4 w-4 mr-2" style={{ color: 'hsl(var(--primary))' }} />
+                <span className="text-sm font-semibold" style={{ color: 'hsl(var(--primary))' }}>
+                  Benton County · Welcome, {user.name || user.username}
                 </span>
               </div>
             )}
           </div>
-          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white/10 to-transparent"></div>
         </section>
 
         {/* Features section */}
-        <section className="py-16 bg-[#f8f9fa]">
+        <section className="py-16" style={{ background: 'hsl(var(--muted))' }}>
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12 text-[#243E4D]">
-              Essential Assessment Tools
+            <h2 className="text-3xl font-bold text-center mb-4 text-foreground">
+              Assessment Tools
             </h2>
             <p className="text-center text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">
-              Our comprehensive building cost system provides a suite of tools to help you
-              accurately estimate and analyze construction costs.
+              A complete suite for cost approach property assessment — from cost matrices to
+              depreciation analysis and regional cost comparisons.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <Card className="border-t-4 border-t-[#29B7D3]">
+              <Card className="border-t-4" style={{ borderTopColor: 'hsl(var(--primary))' }}>
                 <CardHeader>
-                  <div className="bg-[#e6f7fb] p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                    <Calculator className="h-6 w-6 text-[#29B7D3]" />
+                  <div
+                    className="p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4"
+                    style={{ background: 'hsl(var(--primary) / 0.1)' }}
+                  >
+                    <Calculator className="h-6 w-6" style={{ color: 'hsl(var(--primary))' }} />
                   </div>
                   <CardTitle>Cost Calculator</CardTitle>
                 </CardHeader>
@@ -130,130 +124,121 @@ export default function LandingPage() {
                   </p>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    variant="ghost"
-                    className="text-[#29B7D3] px-0 hover:bg-transparent hover:text-[#29B7D3]/80"
-                    onClick={() => navigate('/calculator')}
-                  >
-                    Learn more
+                  <Button variant="ghost" className="px-0 hover:bg-transparent text-primary" onClick={() => navigate('/calculator')}>
+                    Open Calculator
                   </Button>
                 </CardFooter>
               </Card>
 
-              <Card className="border-t-4 border-t-[#47AD55]">
+              <Card className="border-t-4" style={{ borderTopColor: 'hsl(var(--tf-sage))' }}>
                 <CardHeader>
-                  <div className="bg-[#e9f7eb] p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                    <BarChart3 className="h-6 w-6 text-[#47AD55]" />
+                  <div
+                    className="p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4"
+                    style={{ background: 'hsl(var(--tf-sage) / 0.12)' }}
+                  >
+                    <BarChart3 className="h-6 w-6" style={{ color: 'hsl(var(--tf-sage))' }} />
                   </div>
                   <CardTitle>Data Visualization</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Advanced charts and graphs to help interpret complex cost data at a glance.
+                    Charts and graphs to help interpret cost data and depreciation trends.
                   </p>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    variant="ghost"
-                    className="text-[#47AD55] px-0 hover:bg-transparent hover:text-[#47AD55]/80"
-                    onClick={() => navigate('/visualizations')}
-                  >
-                    Learn more
+                  <Button variant="ghost" className="px-0 hover:bg-transparent" style={{ color: 'hsl(var(--tf-sage))' }} onClick={() => navigate('/visualizations')}>
+                    View Charts
                   </Button>
                 </CardFooter>
               </Card>
 
-              <Card className="border-t-4 border-t-[#7C5295]">
+              <Card className="border-t-4" style={{ borderTopColor: 'hsl(var(--accent))' }}>
                 <CardHeader>
-                  <div className="bg-[#f0ebf7] p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                    <Map className="h-6 w-6 text-[#7C5295]" />
+                  <div
+                    className="p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4"
+                    style={{ background: 'hsl(var(--accent) / 0.1)' }}
+                  >
+                    <Map className="h-6 w-6" style={{ color: 'hsl(var(--accent))' }} />
                   </div>
                   <CardTitle>Regional Analysis</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Compare construction costs across different geographic regions.
+                    Compare construction costs across geographic regions and market areas.
                   </p>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    variant="ghost"
-                    className="text-[#7C5295] px-0 hover:bg-transparent hover:text-[#7C5295]/80"
-                    onClick={() => navigate('/regional-cost-comparison')}
-                  >
-                    Learn more
+                  <Button variant="ghost" className="px-0 hover:bg-transparent text-accent" onClick={() => navigate('/regional-cost-comparison')}>
+                    Explore Regions
                   </Button>
                 </CardFooter>
               </Card>
 
-              <Card className="border-t-4 border-t-[#EA7317]">
+              <Card className="border-t-4" style={{ borderTopColor: 'hsl(var(--primary))' }}>
                 <CardHeader>
-                  <div className="bg-[#fdf0e6] p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                  <div
+                    className="p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4"
+                    style={{ background: 'hsl(var(--primary) / 0.1)' }}
+                  >
                     <div className="flex">
-                      <Upload className="h-5 w-5 text-[#EA7317]" />
-                      <Download className="h-5 w-5 text-[#EA7317] -ml-1" />
+                      <Upload className="h-5 w-5" style={{ color: 'hsl(var(--primary))' }} />
+                      <Download className="h-5 w-5 -ml-1" style={{ color: 'hsl(var(--primary))' }} />
                     </div>
                   </div>
                   <CardTitle>Data Import/Export</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Easily import and export cost data in various formats, including Excel and PDF.
+                    Import and export cost data in Excel, CSV, and PDF formats.
                   </p>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    variant="ghost"
-                    className="text-[#EA7317] px-0 hover:bg-transparent hover:text-[#EA7317]/80"
-                    onClick={() => navigate('/data-import')}
-                  >
-                    Learn more
+                  <Button variant="ghost" className="px-0 hover:bg-transparent text-primary" onClick={() => navigate('/data-import')}>
+                    Manage Data
                   </Button>
                 </CardFooter>
               </Card>
 
-              <Card className="border-t-4 border-t-[#5C7AEA]">
+              <Card className="border-t-4" style={{ borderTopColor: 'hsl(var(--tf-sage))' }}>
                 <CardHeader>
-                  <div className="bg-[#ebeffe] p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                    <BrainCircuit className="h-6 w-6 text-[#5C7AEA]" />
+                  <div
+                    className="p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4"
+                    style={{ background: 'hsl(var(--tf-sage) / 0.12)' }}
+                  >
+                    <BrainCircuit className="h-6 w-6" style={{ color: 'hsl(var(--tf-sage))' }} />
                   </div>
                   <CardTitle>What-If Scenarios</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Model different building scenarios and see how they affect overall costs.
+                    Model different building scenarios and see how they affect total cost estimates.
                   </p>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    variant="ghost"
-                    className="text-[#5C7AEA] px-0 hover:bg-transparent hover:text-[#5C7AEA]/80"
-                    onClick={() => navigate('/what-if-scenarios')}
-                  >
-                    Learn more
+                  <Button variant="ghost" className="px-0 hover:bg-transparent" style={{ color: 'hsl(var(--tf-sage))' }} onClick={() => navigate('/what-if-scenarios')}>
+                    Run Scenarios
                   </Button>
                 </CardFooter>
               </Card>
 
-              <Card className="border-t-4 border-t-[#E63946]">
+              <Card className="border-t-4" style={{ borderTopColor: 'hsl(var(--destructive))' }}>
                 <CardHeader>
-                  <div className="bg-[#fdebed] p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                    <FileSpreadsheet className="h-6 w-6 text-[#E63946]" />
+                  <div
+                    className="p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4"
+                    style={{ background: 'hsl(var(--destructive) / 0.1)' }}
+                  >
+                    <FileSpreadsheet className="h-6 w-6" style={{ color: 'hsl(var(--destructive))' }} />
                   </div>
                   <CardTitle>Cost Matrix Management</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Maintain and update cost matrices for different building types and regions.
+                    Maintain and update cost matrices for different building types and market areas.
                   </p>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    variant="ghost"
-                    className="text-[#E63946] px-0 hover:bg-transparent hover:text-[#E63946]/80"
-                    onClick={() => navigate('/data-import')}
-                  >
-                    Learn more
+                  <Button variant="ghost" className="px-0 hover:bg-transparent" style={{ color: 'hsl(var(--destructive))' }} onClick={() => navigate('/data-import')}>
+                    Edit Matrices
                   </Button>
                 </CardFooter>
               </Card>
@@ -262,43 +247,44 @@ export default function LandingPage() {
         </section>
 
         {/* Stats section */}
-        <section className="py-16 bg-[#243E4D] text-white">
+        <section className="py-16 text-background" style={{ background: 'hsl(var(--foreground))' }}>
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">System Impact</h2>
-            <p className="text-center text-lg text-gray-200 mb-12 max-w-3xl mx-auto">
-              Our AI-powered building cost system continues to grow in both data and usage across
-              government jurisdictions.
+            <h2 className="text-3xl font-bold text-center mb-4" style={{ color: 'hsl(var(--background))' }}>
+              Benton County by the Numbers
+            </h2>
+            <p className="text-center text-lg mb-12 max-w-3xl mx-auto" style={{ color: 'hsl(var(--background) / 0.7)' }}>
+              Real production data powering the cost approach for Benton County assessment operations.
             </p>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div>
-                <div className="text-4xl md:text-5xl font-bold text-[#29B7D3] mb-2">3,500+</div>
-                <div className="text-lg text-gray-200">Building Cost Records</div>
+                <div className="text-4xl md:text-5xl font-bold mb-2" style={{ color: 'hsl(var(--primary))' }}>89,247</div>
+                <div style={{ color: 'hsl(var(--background) / 0.75)' }}>Total Parcels</div>
               </div>
               <div>
-                <div className="text-4xl md:text-5xl font-bold text-[#29B7D3] mb-2">25+</div>
-                <div className="text-lg text-gray-200">Building Types</div>
+                <div className="text-4xl md:text-5xl font-bold mb-2" style={{ color: 'hsl(var(--primary))' }}>32</div>
+                <div style={{ color: 'hsl(var(--background) / 0.75)' }}>Cost Matrices</div>
               </div>
               <div>
-                <div className="text-4xl md:text-5xl font-bold text-[#29B7D3] mb-2">15+</div>
-                <div className="text-lg text-gray-200">Geographic Regions</div>
+                <div className="text-4xl md:text-5xl font-bold mb-2" style={{ color: 'hsl(var(--primary))' }}>25+</div>
+                <div style={{ color: 'hsl(var(--background) / 0.75)' }}>Building Types</div>
               </div>
               <div>
-                <div className="text-4xl md:text-5xl font-bold text-[#29B7D3] mb-2">97%</div>
-                <div className="text-lg text-gray-200">Estimation Accuracy</div>
+                <div className="text-4xl md:text-5xl font-bold mb-2" style={{ color: 'hsl(var(--primary))' }}>97%</div>
+                <div style={{ color: 'hsl(var(--background) / 0.75)' }}>Estimation Accuracy</div>
               </div>
             </div>
           </div>
         </section>
 
         {/* Showcase section */}
-        <section className="py-16">
+        <section className="py-16" style={{ background: 'hsl(var(--background))' }}>
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-3 text-[#243E4D]">
-              TerraFusion Showcase
+            <h2 className="text-3xl font-bold text-center mb-3 text-foreground">
+              Benton County Showcase
             </h2>
             <p className="text-center text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">
-              Discover the power of government-grade AI cost assessment technology
+              Built for Washington State county assessors — local data, local context, real results.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -316,10 +302,9 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <CardContent className="pt-6">
-                  <h4 className="font-semibold text-lg mb-2">AI-Powered Analytics</h4>
+                  <h4 className="font-semibold text-lg mb-2 text-foreground">AI-Assisted Analytics</h4>
                   <p className="text-muted-foreground">
-                    Advanced machine learning algorithms analyze diverse geographic and economic
-                    factors for precise cost modeling.
+                    Machine learning algorithms analyze geographic and economic factors for accurate cost modeling.
                   </p>
                 </CardContent>
               </Card>
@@ -328,7 +313,7 @@ export default function LandingPage() {
                 <div className="relative h-48">
                   <img
                     src={vineyardHeader}
-                    alt="Government Jurisdiction"
+                    alt="Wine Country"
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
@@ -338,10 +323,9 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <CardContent className="pt-6">
-                  <h4 className="font-semibold text-lg mb-2">Quantum Processing</h4>
+                  <h4 className="font-semibold text-lg mb-2 text-foreground">County-Calibrated Tables</h4>
                   <p className="text-muted-foreground">
-                    Government-grade quantum algorithms process vast datasets to deliver
-                    championship-level accuracy in cost assessments.
+                    Benton-calibrated cost models built from local market evidence and county-specific depreciation schedules.
                   </p>
                 </CardContent>
               </Card>
@@ -360,22 +344,16 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <CardContent className="pt-6">
-                  <h4 className="font-semibold text-lg mb-2">Government Excellence</h4>
+                  <h4 className="font-semibold text-lg mb-2 text-foreground">Government-Grade Accuracy</h4>
                   <p className="text-muted-foreground">
-                    TerraFusion Government OS delivers transcendent performance with 50,000+ AI
-                    agents orchestrating infinite scalability.
+                    PACS-integrated data ensures every cost calculation reflects current assessment records.
                   </p>
                 </CardContent>
               </Card>
             </div>
 
             <div className="flex justify-center mt-10">
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-[#243E4D] text-[#243E4D]"
-                onClick={() => navigate('/geo-assessment')}
-              >
+              <Button variant="outline" size="lg" onClick={() => navigate('/geo-assessment')}>
                 <Map className="mr-2 h-5 w-5" /> View Assessment Map
               </Button>
             </div>
@@ -383,97 +361,46 @@ export default function LandingPage() {
         </section>
 
         {/* About section */}
-        <section className="py-16 bg-[#f8f9fa]">
+        <section className="py-16" style={{ background: 'hsl(var(--muted))' }}>
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row gap-12">
               <div className="md:w-1/2">
-                <h2 className="text-3xl font-bold mb-6 text-[#243E4D]">About TerraFusion OS</h2>
+                <h2 className="text-3xl font-bold mb-6 text-foreground">About CostForge</h2>
                 <p className="text-lg text-muted-foreground mb-6">
-                  TerraFusion Government OS is the elite AI-powered property assessment platform
-                  used by government assessors, property managers, and construction professionals
-                  to deliver championship-level accuracy in building cost estimations.
+                  CostForge is the cost approach module of TerraFusion OS — the property assessment
+                  platform built for Washington State county assessors. Every feature is designed
+                  around real workflows from the Benton County Assessor's office.
                 </p>
                 <p className="text-lg text-muted-foreground mb-6">
-                  Our system coordinates 50,000+ AI agents with quantum consciousness optimization
-                  to provide transcendent accuracy in cost calculations, backed by infinite
-                  scalability and government-grade security.
+                  Real PACS data, real cost matrices, real depreciation schedules. No synthetic data,
+                  no demo placeholders in production.
                 </p>
 
                 <ul className="space-y-3 mt-8">
-                  <li className="flex items-start">
-                    <div className="bg-[#e6f7fb] rounded-full p-1 mr-3 mt-1">
-                      <svg
-                        className="h-4 w-4 text-[#29B7D3]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+                  {[
+                    'Updated annually with Benton County cost data and local market evidence',
+                    'Integrated with Benton County PACS assessment system',
+                    'Continuously improved through assessor feedback',
+                  ].map((item) => (
+                    <li key={item} className="flex items-start">
+                      <div
+                        className="rounded-full p-1 mr-3 mt-1 flex-shrink-0"
+                        style={{ background: 'hsl(var(--primary) / 0.1)' }}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </div>
-                    <span className="text-muted-foreground">
-                      Updated annually with the latest cost data
-                    </span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="bg-[#e6f7fb] rounded-full p-1 mr-3 mt-1">
-                      <svg
-                        className="h-4 w-4 text-[#29B7D3]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </div>
-                    <span className="text-muted-foreground">
-                      Integrated with county assessment systems
-                    </span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="bg-[#e6f7fb] rounded-full p-1 mr-3 mt-1">
-                      <svg
-                        className="h-4 w-4 text-[#29B7D3]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </div>
-                    <span className="text-muted-foreground">
-                      Continuously improved through user feedback
-                    </span>
-                  </li>
+                        <svg className="h-4 w-4" style={{ color: 'hsl(var(--primary))' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-muted-foreground">{item}</span>
+                    </li>
+                  ))}
                 </ul>
 
                 <div className="flex flex-wrap gap-4 mt-8">
-                  <Button
-                    className="bg-[#243E4D] hover:bg-[#1a2c38] text-white"
-                    onClick={() => navigate('/data-exploration')}
-                  >
+                  <Button onClick={() => navigate('/data-exploration')}>
                     <Database className="mr-2 h-5 w-5" /> Explore Data
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="border-[#243E4D] text-[#243E4D]"
-                    onClick={() => navigate('/benchmarking')}
-                  >
+                  <Button variant="outline" onClick={() => navigate('/benchmarking')}>
                     <BarChart3 className="mr-2 h-5 w-5" /> View Benchmarks
                   </Button>
                 </div>
@@ -485,9 +412,15 @@ export default function LandingPage() {
                   alt="TerraFusion Government Technology"
                   className="rounded-lg shadow-lg w-full h-auto object-cover"
                 />
-                <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-lg hidden md:block">
-                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center">
-                    <Hexagon className="h-10 w-10 text-white" />
+                <div
+                  className="absolute -bottom-6 -left-6 p-4 rounded-lg shadow-lg hidden md:block"
+                  style={{ background: 'hsl(var(--card))' }}
+                >
+                  <div
+                    className="w-16 h-16 rounded-lg flex items-center justify-center"
+                    style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))' }}
+                  >
+                    <Hexagon className="h-10 w-10" style={{ color: 'hsl(var(--primary-foreground))' }} />
                   </div>
                 </div>
               </div>
@@ -496,175 +429,111 @@ export default function LandingPage() {
         </section>
 
         {/* Footer */}
-        <footer className="bg-[#243E4D] text-white pt-12 pb-6">
+        <footer className="pt-12 pb-6" style={{ background: 'hsl(var(--foreground))', color: 'hsl(var(--background))' }}>
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row justify-between mb-10">
               <div className="mb-8 md:mb-0">
                 <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 mr-3 rounded-lg bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center">
-                    <Hexagon className="h-8 w-8 text-white" />
+                  <div
+                    className="w-12 h-12 mr-3 rounded-lg flex items-center justify-center"
+                    style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))' }}
+                  >
+                    <Hexagon className="h-8 w-8" style={{ color: 'hsl(var(--primary-foreground))' }} />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">TerraFusion OS</h3>
-                    <p className="text-gray-300 text-sm">Government Excellence</p>
+                    <h3 className="font-bold text-lg" style={{ color: 'hsl(var(--background))' }}>CostForge</h3>
+                    <p className="text-sm" style={{ color: 'hsl(var(--background) / 0.6)' }}>Benton County Assessor</p>
                   </div>
                 </div>
-                <p className="text-gray-300 max-w-sm">
-                  The elite AI-powered building cost estimation system for government property
-                  assessment and construction planning.
+                <p className="max-w-sm" style={{ color: 'hsl(var(--background) / 0.65)' }}>
+                  Cost approach building cost estimation for government property assessment.
                 </p>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
                 <div>
-                  <h4 className="font-semibold text-lg mb-4">Tools</h4>
+                  <h4 className="font-semibold text-lg mb-4" style={{ color: 'hsl(var(--background))' }}>Tools</h4>
                   <ul className="space-y-2">
-                    <li>
-                      <button
-                        onClick={() => navigate('/calculator')}
-                        className="text-gray-300 hover:text-white transition-colors bg-transparent"
-                      >
-                        Calculator
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => navigate('/visualizations')}
-                        className="text-gray-300 hover:text-white transition-colors bg-transparent"
-                      >
-                        Visualizations
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => navigate('/data-import')}
-                        className="text-gray-300 hover:text-white transition-colors bg-transparent"
-                      >
-                        Data Import
-                      </button>
-                    </li>
+                    {[
+                      { label: 'Calculator', href: '/calculator' },
+                      { label: 'Visualizations', href: '/visualizations' },
+                      { label: 'Data Import', href: '/data-import' },
+                    ].map(({ label, href }) => (
+                      <li key={href}>
+                        <button onClick={() => navigate(href)} className="bg-transparent transition-opacity" style={{ color: 'hsl(var(--background) / 0.65)' }}>
+                          {label}
+                        </button>
+                      </li>
+                    ))}
                   </ul>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold text-lg mb-4">Resources</h4>
+                  <h4 className="font-semibold text-lg mb-4" style={{ color: 'hsl(var(--background))' }}>Resources</h4>
                   <ul className="space-y-2">
-                    <li>
-                      <button
-                        onClick={() => navigate('/documentation')}
-                        className="text-gray-300 hover:text-white transition-colors bg-transparent"
-                      >
-                        Documentation
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => navigate('/tutorials')}
-                        className="text-gray-300 hover:text-white transition-colors bg-transparent"
-                      >
-                        Tutorials
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => navigate('/faq')}
-                        className="text-gray-300 hover:text-white transition-colors bg-transparent"
-                      >
-                        FAQ
-                      </button>
-                    </li>
-                    {isAuthenticated ? (
+                    {[
+                      { label: 'Documentation', href: '/documentation' },
+                      { label: 'Tutorials', href: '/tutorials' },
+                      { label: 'FAQ', href: '/faq' },
+                    ].map(({ label, href }) => (
+                      <li key={href}>
+                        <button onClick={() => navigate(href)} className="bg-transparent" style={{ color: 'hsl(var(--background) / 0.65)' }}>
+                          {label}
+                        </button>
+                      </li>
+                    ))}
+                    {isAuthenticated && (
                       <>
                         <li>
-                          <button
-                            onClick={() => navigate('/dashboard')}
-                            className="text-gray-300 hover:text-white transition-colors bg-transparent"
-                          >
+                          <button onClick={() => navigate('/dashboard')} className="bg-transparent" style={{ color: 'hsl(var(--background) / 0.65)' }}>
                             My Dashboard
                           </button>
                         </li>
                         <li>
-                          <button
-                            onClick={() => navigate('/account')}
-                            className="text-gray-300 hover:text-white transition-colors bg-transparent"
-                          >
+                          <button onClick={() => navigate('/account')} className="bg-transparent" style={{ color: 'hsl(var(--background) / 0.65)' }}>
                             Account Settings
                           </button>
                         </li>
                       </>
-                    ) : (
-                      <li>
-                        <button
-                          onClick={() => navigate('/auth')}
-                          className="text-gray-300 hover:text-white transition-colors bg-transparent"
-                        >
-                          Sign In
-                        </button>
-                      </li>
                     )}
                   </ul>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold text-lg mb-4">Contact</h4>
-                  <ul className="space-y-2">
+                  <h4 className="font-semibold text-lg mb-4" style={{ color: 'hsl(var(--background))' }}>Contact</h4>
+                  <ul className="space-y-2" style={{ color: 'hsl(var(--background) / 0.65)' }}>
                     <li>
-                      <a
-                        href="https://www.co.benton.wa.us"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-300 hover:text-white transition-colors"
-                      >
+                      <a href="https://www.co.benton.wa.us" target="_blank" rel="noopener noreferrer" className="hover:opacity-100 transition-opacity" style={{ color: 'hsl(var(--background) / 0.65)' }}>
                         County Website
                       </a>
                     </li>
                     <li>
-                      <a
-                        href="mailto:support@terrafusionmarket.com"
-                        className="text-gray-300 hover:text-white transition-colors"
-                      >
+                      <a href="mailto:support@terrafusionmarket.com" style={{ color: 'hsl(var(--background) / 0.65)' }}>
                         Email Support
                       </a>
                     </li>
-                    <li>
-                      <span className="text-gray-300">(509) 736-3086</span>
-                    </li>
+                    <li>(509) 736-3086</li>
                   </ul>
                 </div>
               </div>
             </div>
 
-            <div className="border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center">
-              <p className="text-gray-400 text-sm mb-4 md:mb-0">
-                © 2025 TerraFusion Government OS. All rights reserved.
+            <div className="pt-6 flex flex-col md:flex-row justify-between items-center" style={{ borderTop: '1px solid hsl(var(--background) / 0.15)' }}>
+              <p className="text-sm mb-4 md:mb-0" style={{ color: 'hsl(var(--background) / 0.5)' }}>
+                © 2025 TerraFusion OS · Benton County Assessor. All rights reserved.
               </p>
               <div className="flex space-x-4">
-                <button
-                  onClick={() => navigate('/privacy')}
-                  className="text-gray-400 text-sm hover:text-white transition-colors bg-transparent"
-                >
-                  Privacy Policy
-                </button>
-                <button
-                  onClick={() => navigate('/terms')}
-                  className="text-gray-400 text-sm hover:text-white transition-colors bg-transparent"
-                >
-                  Terms of Use
-                </button>
-                <button
-                  onClick={() => navigate('/accessibility')}
-                  className="text-gray-400 text-sm hover:text-white transition-colors bg-transparent"
-                >
-                  Accessibility
-                </button>
+                {[
+                  { label: 'Privacy Policy', href: '/privacy' },
+                  { label: 'Terms of Use', href: '/terms' },
+                  { label: 'Accessibility', href: '/accessibility' },
+                ].map(({ label, href }) => (
+                  <button key={href} onClick={() => navigate(href)} className="text-sm bg-transparent" style={{ color: 'hsl(var(--background) / 0.5)' }}>
+                    {label}
+                  </button>
+                ))}
                 {isAuthenticated && (
-                  <button
-                    onClick={() => {
-                      // This will trigger logout when implemented in auth context
-                      navigate('/');
-                    }}
-                    className="text-gray-400 text-sm hover:text-white transition-colors bg-transparent"
-                  >
+                  <button onClick={() => navigate('/')} className="text-sm bg-transparent" style={{ color: 'hsl(var(--background) / 0.5)' }}>
                     Sign Out
                   </button>
                 )}

@@ -1,21 +1,20 @@
 .forge-workspace {
-  --forge-bg: hsl(222 24% 7%);
-  --forge-stage: hsl(222 22% 9%);
-  --forge-panel: hsl(220 18% 11%);
-  --forge-panel-hover: hsl(220 18% 13%);
-  --forge-border: hsla(210, 20%, 98%, 0.08);
-  --forge-border-strong: hsla(210, 20%, 98%, 0.14);
-  --forge-text: hsla(220, 40%, 96%, 0.95);
-  --forge-muted: hsla(220, 24%, 82%, 0.62);
-  --forge-subtle: hsla(220, 20%, 78%, 0.42);
-  --forge-info: hsl(190 100% 60%);
-  --forge-success: hsl(135 90% 55%);
-  --forge-warn: hsl(40 100% 60%);
-  --forge-shadow: 0 18px 40px hsla(222, 45%, 2%, 0.28);
+  /* Derive all forge-local vars from canonical TF tokens (terrafusion-tokens.css) */
+  --forge-bg: hsl(var(--tf-bg));
+  --forge-stage: hsl(var(--tf-bg));
+  --forge-panel: hsl(var(--tf-surface));
+  --forge-panel-hover: hsl(var(--tf-surface) / 0.85);
+  --forge-border: hsl(var(--tf-border));
+  --forge-border-strong: hsl(var(--tf-border));
+  --forge-text: hsl(var(--tf-text));
+  --forge-muted: hsl(var(--tf-text) / 0.55);
+  --forge-subtle: hsl(var(--tf-text) / 0.38);
+  --forge-info: hsl(var(--tf-suite-forge));
+  --forge-success: hsl(135 50% 40%);
+  --forge-warn: hsl(var(--tf-warning-amber));
+  --forge-shadow: 0 8px 24px hsl(var(--tf-text) / 0.06);
   min-height: 100%;
-  background:
-    radial-gradient(circle at top right, hsla(200, 100%, 60%, 0.05), transparent 30%),
-    linear-gradient(180deg, hsl(222 22% 8%), var(--forge-bg));
+  background: hsl(var(--tf-bg));
   color: var(--forge-text);
   overflow: hidden;
 }

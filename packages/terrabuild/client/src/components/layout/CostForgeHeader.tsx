@@ -49,7 +49,7 @@ export default function CostForgeHeader({ isLanding = false }: CostForgeHeaderPr
       try {
         await logout();
         toast({
-          description: 'Quantum session terminated successfully',
+          description: 'Session terminated successfully',
         });
         navigate('/auth');
       } catch (error) {
@@ -164,7 +164,7 @@ export default function CostForgeHeader({ isLanding = false }: CostForgeHeaderPr
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Toggle quantum interface mode</p>
+                  <p>Toggle dark mode</p>
                 </TooltipContent>
               </Tooltip>
 
@@ -180,7 +180,7 @@ export default function CostForgeHeader({ isLanding = false }: CostForgeHeaderPr
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Consciousness notifications</p>
+                    <p>Notifications</p>
                   </TooltipContent>
                 </Tooltip>
               )}
@@ -195,7 +195,7 @@ export default function CostForgeHeader({ isLanding = false }: CostForgeHeaderPr
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>CostForge AI assistance</p>
+                  <p>Help</p>
                 </TooltipContent>
               </Tooltip>
 
@@ -214,7 +214,7 @@ export default function CostForgeHeader({ isLanding = false }: CostForgeHeaderPr
                           </div>
                           <div className="hidden sm:flex flex-col items-start">
                             <span className="text-sm font-medium">
-                              {user?.name || 'Quantum User'}
+                              {user?.name || 'Assessor'}
                             </span>
                             <span className="text-xs text-muted-foreground">Government Agent</span>
                           </div>
@@ -226,7 +226,7 @@ export default function CostForgeHeader({ isLanding = false }: CostForgeHeaderPr
                         className="w-56 bg-white/95 backdrop-blur border-[#00ffee]/20"
                       >
                         <DropdownMenuLabel className="font-semibold">
-                          Quantum Account
+                          Benton County
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
@@ -238,7 +238,7 @@ export default function CostForgeHeader({ isLanding = false }: CostForgeHeaderPr
                         <DropdownMenuItem asChild>
                           <Link href="/settings" className="flex items-center">
                             <Shield className="mr-2 h-4 w-4" />
-                            <span>Quantum Preferences</span>
+                            <span>Preferences</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -261,7 +261,7 @@ export default function CostForgeHeader({ isLanding = false }: CostForgeHeaderPr
                         className="bg-gradient-to-r from-[#0099ff] via-[#00ffee] to-[#00ffaa] text-white hover:opacity-90"
                         asChild
                       >
-                        <Link href="/auth">Quantum Login</Link>
+                        <Link href="/auth">Sign In</Link>
                       </Button>
                     </div>
                   )}

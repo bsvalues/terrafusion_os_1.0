@@ -5,6 +5,49 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── TerraFusion dark token overrides ──────────────────────────────────────
+   These override the shadcn light defaults so components (Card, Input,
+   DropdownMenu, etc.) render on-dark correctly without modifying any
+   component source. Must come after tailwind directives. */
+:root {
+  /* ── TerraFusion Terracotta design tokens ───────────────────────────────
+     Canonical source: frontend/apps/os-shell/src/styles/terrafusion-tokens.css
+     Default palette: warm linen + terracotta + sage (NOT dark navy)
+     Forge suite brand: copper  --tf-suite-forge: 28 82% 58%            */
+
+  --background: 45 20% 94%; /* warm linen ground */
+  --foreground: 30 20% 8%; /* warm near-black */
+  --card: 44 16% 97%; /* warm paper panel */
+  --card-foreground: 30 20% 8%;
+  --popover: 44 16% 97%;
+  --popover-foreground: 30 20% 8%;
+  --primary: 28 82% 58%; /* Forge copper — suite brand CTA */
+  --primary-foreground: 44 16% 97%;
+  --secondary: 42 18% 90%; /* warm cream inset */
+  --secondary-foreground: 30 20% 8%;
+  --muted: 42 18% 90%; /* warm cream */
+  --muted-foreground: 33 14% 44%; /* warm taupe */
+  --accent: 16 55% 56%; /* TERRACOTTA — spec-exact earthy accent */
+  --accent-foreground: 44 16% 97%;
+  --destructive: 4 55% 50%; /* warm error red */
+  --destructive-foreground: 44 16% 97%;
+  --border: 38 18% 78%; /* warm parchment border */
+  --input: 38 18% 78%;
+  --ring: 28 82% 58%; /* Forge copper focus ring */
+  --radius: 0.5rem;
+
+  /* TF design token aliases — exact match to os-shell Lumin Bridge */
+  --tf-bg: 45 20% 94%;
+  --tf-surface: 44 16% 97%;
+  --tf-surface-2: 42 18% 90%;
+  --tf-fg: 30 20% 8%;
+  --tf-muted: 33 14% 44%;
+  --tf-accent: 16 55% 56%; /* terracotta */
+  --tf-sage: 140 18% 52%; /* sage green */
+  --tf-border: 38 18% 78%;
+  --tf-suite-forge: 28 82% 58%; /* Forge copper brand */
+}
+
 @layer base {
   body {
     font-family:
@@ -19,8 +62,8 @@
       Arial,
       'Noto Sans',
       sans-serif;
-    background-color: #0b1120;
-    color: #ffffff;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
