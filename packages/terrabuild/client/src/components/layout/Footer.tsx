@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="border-t border-gray-200 bg-white/50 backdrop-blur-sm py-6 px-4 md:px-6">
+    <footer className="border-t border-border bg-white/50 backdrop-blur-sm py-6 px-4 md:px-6">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div className="space-y-3">
@@ -18,7 +18,7 @@ const Footer: React.FC = () => {
               </div>
               <span className="text-xl font-bold text-[#243E4D]">TerraBuild</span>
             </div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               Benton County's advanced building cost assessment platform, designed for accuracy and efficiency.
             </p>
           </div>
@@ -27,22 +27,22 @@ const Footer: React.FC = () => {
             <h3 className="font-medium text-[#243E4D] mb-3">Resources</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/documentation" className="text-sm text-gray-600 hover:text-[#29B7D3] transition-colors">
+                <Link href="/documentation" className="text-sm text-muted-foreground hover:text-[#29B7D3] transition-colors">
                   Documentation
                 </Link>
               </li>
               <li>
-                <Link href="/tutorials" className="text-sm text-gray-600 hover:text-[#29B7D3] transition-colors">
+                <Link href="/tutorials" className="text-sm text-muted-foreground hover:text-[#29B7D3] transition-colors">
                   Tutorials
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-sm text-gray-600 hover:text-[#29B7D3] transition-colors">
+                <Link href="/faq" className="text-sm text-muted-foreground hover:text-[#29B7D3] transition-colors">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/resources" className="text-sm text-gray-600 hover:text-[#29B7D3] transition-colors">
+                <Link href="/resources" className="text-sm text-muted-foreground hover:text-[#29B7D3] transition-colors">
                   Resource Library
                 </Link>
               </li>
@@ -53,22 +53,22 @@ const Footer: React.FC = () => {
             <h3 className="font-medium text-[#243E4D] mb-3">Features</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/calculator" className="text-sm text-gray-600 hover:text-[#29B7D3] transition-colors">
+                <Link href="/calculator" className="text-sm text-muted-foreground hover:text-[#29B7D3] transition-colors">
                   Cost Calculator
                 </Link>
               </li>
               <li>
-                <Link href="/properties" className="text-sm text-gray-600 hover:text-[#29B7D3] transition-colors">
+                <Link href="/properties" className="text-sm text-muted-foreground hover:text-[#29B7D3] transition-colors">
                   Property Database
                 </Link>
               </li>
               <li>
-                <Link href="/analytics" className="text-sm text-gray-600 hover:text-[#29B7D3] transition-colors">
+                <Link href="/analytics" className="text-sm text-muted-foreground hover:text-[#29B7D3] transition-colors">
                   Analytics Dashboard
                 </Link>
               </li>
               <li>
-                <Link href="/ai-tools" className="text-sm text-gray-600 hover:text-[#29B7D3] transition-colors">
+                <Link href="/ai-tools" className="text-sm text-muted-foreground hover:text-[#29B7D3] transition-colors">
                   AI Tools
                 </Link>
               </li>
@@ -78,15 +78,15 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="font-medium text-[#243E4D] mb-3">Help & Support</h3>
             <div className="space-y-3">
-              <Button variant="outline" className="w-full justify-start text-sm h-9 border-gray-200">
+              <Button variant="outline" className="w-full justify-start text-sm h-9 border-border">
                 <HelpCircle className="h-4 w-4 mr-2" />
                 <span>Help Center</span>
               </Button>
-              <Button variant="outline" className="w-full justify-start text-sm h-9 border-gray-200">
+              <Button variant="outline" className="w-full justify-start text-sm h-9 border-border">
                 <FileText className="h-4 w-4 mr-2" />
                 <span>Submit a Ticket</span>
               </Button>
-              <Button variant="outline" className="w-full justify-start text-sm h-9 border-gray-200">
+              <Button variant="outline" className="w-full justify-start text-sm h-9 border-border">
                 <Mail className="h-4 w-4 mr-2" />
                 <span>Contact Support</span>
               </Button>
