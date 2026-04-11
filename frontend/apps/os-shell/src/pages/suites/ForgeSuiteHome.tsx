@@ -260,6 +260,7 @@ export default function ForgeSuiteHome() {
                   type="button"
                   className="forge-card forge-card--primary"
                   onClick={() => handleModuleLaunch(mod)}
+                  disabled={mod.truthState === 'queued'}
                 >
                   <div className="forge-card__rail">
                     {mod.chipLabel && <span className="forge-chip forge-chip--neutral">{mod.chipLabel}</span>}
