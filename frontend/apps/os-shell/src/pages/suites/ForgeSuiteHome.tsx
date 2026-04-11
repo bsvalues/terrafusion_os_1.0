@@ -1,3 +1,25 @@
+/**
+ * TerraFusion OS — TerraForge Suite Home
+ *
+ * ⚠️  MODULE LIST IS FROZEN — DO NOT EDIT WITHOUT EXPLICIT INSTRUCTION ⚠️
+ *
+ * The PRIMARY_MODULES and SECONDARY_MODULES arrays below define the v1
+ * TerraForge app list. This list was verified correct at commit 8da26658a.
+ *
+ * IF THIS FILE LOOKS WRONG (wrong apps, wrong labels, wrong grouping):
+ *   git checkout 8da26658a -- frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx
+ *
+ * DO NOT rewrite the module list from memory or "fix" it by editing.
+ * Restore from git. That is the only correct action.
+ *
+ * Verified layout (matches screenshot from 2026-04-09):
+ *   PRIMARY   : CostForge (cost approach, AppFrame → port 5002)
+ *               CompsForge (sales comparison, standalone React module)
+ *               IncomeForge (income approach, queued)
+ *   SPECIALIST: Statistics Studio (IAAO diagnostics)
+ *               Batch Cost Runs (batch execution)
+ *               Regression Studio / TerraGAMA / Coefficient Preview (queued)
+ */
 import { useNavigate } from 'react-router-dom';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
