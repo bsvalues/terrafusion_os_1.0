@@ -1,12 +1,21 @@
 /**
- * Field Studio Dashboard (TFR-073)
+ * Field Studio — Dais Route Shell (TFR-073)
  * ===================================================================
- * Shows pending inspections, completed inspections, sync status.
- * Map view placeholder of inspection locations. Uses fieldStore.
+ * Delegates to FieldStudioDashboard (IndexedDB, offline-first,
+ * harvested from terra-forge-rebuild and adapted for the OS API).
+ *
+ * Legacy localStorage-based implementation replaced by:
+ *   components/field/FieldStudioDashboard.tsx
+ *   services/fieldStoreV2.ts  (IndexedDB)
+ *   services/fieldSyncV2.ts   (.NET API adapter)
+ *   hooks/useFieldSync.ts
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { fieldStore, type FieldObservation } from '../../services/fieldStore';
+export { FieldStudioDashboard as default } from '../../components/field';
+
+// ── Everything below this line is dead code, kept for reference only.
+// ── It will be removed in the next amputation pass.
+// ── DO NOT import or wire anything from here.
 
 // ============================================================================
 // Condition Badge

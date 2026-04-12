@@ -1,0 +1,18 @@
+[package]
+name = "terraforge-kernel-valuation"
+version = "1.0.0"
+edition = "2021"
+description = "TerraForge Valuation Kernel - Computes final property valuation from cost breakdown and land value"
+license = "Apache-2.0"
+authors = ["TerraFusion OS Team"]
+
+[[bin]]
+name = "terraforge-kernel-valuation"
+path = "src/main.rs"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.0", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+

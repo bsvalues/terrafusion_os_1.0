@@ -372,7 +372,10 @@
       "Bash(grep -m1 \"\"\"packageManager\"\"\" \"C:/Users/bsval/terrafusion_os_1.0/frontend/package.json\")",
       "Bash(find /mnt/c/Users/bsval/terrafusion_os_1.0 -type f \\\\\\(-name *window*test* -o -name *routing* \\\\\\))",
       "Bash(VITE_DATA_MODE=snapshot bash scripts/ci/assert-frontend-data-mode.sh)",
-      "Bash(GITHUB_REF_NAME=main VITE_DATA_MODE=snapshot VITE_ALLOW_NON_LIVE_MODE=1 bash scripts/ci/assert-frontend-data-mode.sh)"
+      "Bash(GITHUB_REF_NAME=main VITE_DATA_MODE=snapshot VITE_ALLOW_NON_LIVE_MODE=1 bash scripts/ci/assert-frontend-data-mode.sh)",
+      "Bash(rustc --version)",
+      "Bash(cargo --version)",
+      "Bash(cargo build:*)"
     ],
     "deny": [],
     "ask": [],

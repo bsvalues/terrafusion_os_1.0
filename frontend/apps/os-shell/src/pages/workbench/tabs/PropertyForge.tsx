@@ -40,10 +40,13 @@ import { Reconciliation } from './forge/Reconciliation';
 import { ForgeYearSelector } from './forge/ForgeYearSelector';
 import { ForgeYearContextPanel } from './forge/ForgeYearContextPanel';
 import { CURRENT_YEAR } from './forge/types';
+import { SketchModule } from '../../../components/sketch';
+import { addObservation } from '../../../services/fieldStoreV2';
+import type { FieldObservation } from '../../../types/field';
 
 /* ── Sub-tab definitions ────────────────────────────────── */
 
-type ForgeSubTab = 'overview' | 'cost' | 'sales' | 'income' | 'reconcile';
+type ForgeSubTab = 'overview' | 'cost' | 'sales' | 'income' | 'reconcile' | 'sketch';
 
 const SUB_TABS: { id: ForgeSubTab; label: string; icon: string }[] = [
   { id: 'overview',   label: 'Overview',       icon: '🔥' },
@@ -51,6 +54,7 @@ const SUB_TABS: { id: ForgeSubTab; label: string; icon: string }[] = [
   { id: 'sales',      label: 'Sales',          icon: '🏘️' },
   { id: 'income',     label: 'Income',         icon: '💰' },
   { id: 'reconcile',  label: 'Reconciliation', icon: '⚖️' },
+  { id: 'sketch',     label: 'Sketch',         icon: '📐' },
 ];
 
 const FORGE_SUB_TABS = new Set<ForgeSubTab>(SUB_TABS.map((tab) => tab.id));
@@ -257,6 +261,21 @@ export const PropertyForge: React.FC = () => {
           taxYear={taxYear}
           onHistoryRecord={addHistoryRecord}
           onValueIndicated={handleValueIndicated}
+        />
+      </div>
+
+      <div
+        id="forge-panel-sketch"
+        role="tabpanel"
+        aria-labelledby="forge-tab-sketch"
+        style={{ display: activeSubTab === 'sketch' ? 'block' : 'none' }}
+      >
+        <SketchModule
+          parcelId={parcelId}
+          taxYear={taxYear}
+          onSaveObservation={async (obs: Omit<FieldObservation, 'id' | 'syncStatus'>) => {
+            await addObservation(obs);
+          }}
         />
       </div>
     </div>

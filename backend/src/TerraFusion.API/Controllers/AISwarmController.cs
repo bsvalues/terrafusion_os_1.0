@@ -17,21 +17,15 @@ namespace TerraFusion.API.Controllers
     [Authorize(Policy = "OSCoreAccess")]
     public class AISwarmController : ControllerBase
     {
-        private readonly IAIEngineService _aiEngineService;
-        private readonly IAICommandService _aiCommandService;
         private readonly ILogger<AISwarmController> _logger;
         private readonly IAuditLogger _auditLogger;
         private readonly IAgentTelemetryService _telemetry;
 
         public AISwarmController(
-            IAIEngineService aiEngineService,
-            IAICommandService aiCommandService,
             ILogger<AISwarmController> logger,
             IAuditLogger auditLogger,
             IAgentTelemetryService telemetry)
         {
-            _aiEngineService = aiEngineService;
-            _aiCommandService = aiCommandService;
             _logger = logger;
             _auditLogger = auditLogger;
             _telemetry = telemetry;
