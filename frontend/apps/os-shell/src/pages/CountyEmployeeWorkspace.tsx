@@ -16,6 +16,8 @@ import { AIInsightsPanel } from '@/components/ai/AIInsightsPanel';
 import { AIWorkflowAutomation } from '@/components/ai/AIWorkflowAutomation';
 import { CountyEmployeeDashboard } from '@/components/dashboards/CountyEmployeeDashboard';
 import { Badge, Button, Card, CardContent } from '@/components/terrafusion-design-system';
+import { ExecutiveKpiCards } from '@/components/workbench/ExecutiveKpiCards';
+import { SwarmActivityBar } from '@/components/workbench/SwarmActivityBar';
 import { useAIAssistant } from '@/hooks/useAIAssistant';
 import { usePropertyAnalysis } from '@/hooks/usePropertyAnalysis';
 import { cn } from '@utils/cn';
@@ -92,11 +94,17 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
     switch (activeView) {
       case 'dashboard':
         return (
-          <CountyEmployeeDashboard
-            countyId={countyId}
-            employeeName={employeeName}
-            employeeRole={employeeRole}
-          />
+          <div className='space-y-6'>
+            <ExecutiveKpiCards />
+            {swarmStatus?.phase && (
+              <SwarmActivityBar phase={swarmStatus.phase} />
+            )}
+            <CountyEmployeeDashboard
+              countyId={countyId}
+              employeeName={employeeName}
+              employeeRole={employeeRole}
+            />
+          </div>
         );
 
       case 'workflows':

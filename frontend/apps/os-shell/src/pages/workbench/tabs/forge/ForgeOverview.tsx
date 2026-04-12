@@ -21,6 +21,10 @@ import { getEnv } from '../../../../runtime/env';
 import { usePropertyStore } from '../../../../stores/propertyStore';
 import { BentoGrid } from '../../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../../ui/materials/BentoCard';
+import { AssessmentSparkline } from '../../../../components/workbench/AssessmentSparkline';
+import { AuditTimeline } from '../../../../components/workbench/AuditTimeline';
+import { DataLineageViewer } from '../../../../components/workbench/DataLineageViewer';
+import { ValueChangeExplainer } from '../../../../components/workbench/ValueChangeExplainer';
 import {
   useCostApproach,
   useSalesComparison,
@@ -601,6 +605,26 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
         )}
         {valuationState.status === 'error' && valuationState.error && <ErrorDisplay error={{ message: valuationState.error.message, errorCode: valuationState.error.code, correlationId: valuationState.correlationId }} />}
       </BentoCard>
+
+      {/* Value Trend Sparkline */}
+      {parcelId && (
+        <BentoCard title="Value Trend">
+          <AssessmentSparkline parcelId={parcelId} />
+        </BentoCard>
+      )}
+
+      {/* AI Change Explainer */}
+      {parcelId && (
+        <ValueChangeExplainer parcelId={parcelId} />
+      )}
+
+      {/* Data Lineage */}
+      <DataLineageViewer />
+
+      {/* Audit Timeline */}
+      {parcelId && (
+        <AuditTimeline parcelId={parcelId} />
+      )}
 
       {/* Invocation History */}
       <InvocationHistory

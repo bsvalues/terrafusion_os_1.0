@@ -10,6 +10,7 @@ import { buildPilotContext, buildExplainRequest } from '@/services/pilotBridge';
 import { explain } from '@/services/pilotApi';
 import type { ExplainResponse } from '@/services/pilotApi';
 import { emitToolInvoked, emitToolSucceeded, emitToolFailed, generateCorrelationId } from '@/services/terraTrace';
+import { SwarmActivityBar } from '@/components/workbench/SwarmActivityBar';
 
 interface TerraPilotPanelProps {
   parcelId: string | null;
@@ -106,6 +107,9 @@ export function TerraPilotPanel({ parcelId, parcelData }: TerraPilotPanelProps) 
           {isLoading ? 'Explaining...' : 'Explain'}
         </button>
       </div>
+      {isLoading && (
+        <SwarmActivityBar phase={{ phase: 'executing', message: 'TerraPilot reasoning…' }} />
+      )}
       {error && <div role="alert" data-testid="pilot-error">{error}</div>}
       {response && (
         <div data-testid="pilot-response">
