@@ -58,28 +58,29 @@ const BenchmarkingVisualization: React.FC<BenchmarkingVisualizationProps> = ({
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
       const stats: Array<{
-        BuildingType?: string; buildingType?: string;
-        Count?: number; count?: number;
-        MinValue?: number; minValue?: number;
-        MaxValue?: number; maxValue?: number;
-        MeanValue?: number; meanValue?: number;
+        buildingType?: string; BuildingType?: string;
+        buildingTypeLabel?: string;
+        count?: number; Count?: number;
+        minRate?: number; MinRate?: number; minValue?: number; MinValue?: number;
+        maxRate?: number; MaxRate?: number; maxValue?: number; MaxValue?: number;
+        meanRate?: number; MeanRate?: number; meanValue?: number; MeanValue?: number;
       }> = json?.statistics ?? json?.Statistics ?? json?.data ?? [];
 
       return {
         costPerSqft: stats.map((s) => ({
-          name: (s.BuildingType ?? s.buildingType ?? 'Unknown').substring(0, 15),
-          avg: s.MeanValue ?? s.meanValue ?? 0,
-          min: s.MinValue ?? s.minValue ?? 0,
-          max: s.MaxValue ?? s.maxValue ?? 0,
+          name: (s.buildingTypeLabel ?? s.BuildingType ?? s.buildingType ?? 'Unknown').substring(0, 12),
+          avg: s.meanRate ?? s.MeanRate ?? s.meanValue ?? s.MeanValue ?? 0,
+          min: s.minRate ?? s.MinRate ?? s.minValue ?? s.MinValue ?? 0,
+          max: s.maxRate ?? s.MaxRate ?? s.maxValue ?? s.MaxValue ?? 0,
         })),
         totalCost: stats.map((s) => ({
-          name: (s.BuildingType ?? s.buildingType ?? 'Unknown').substring(0, 15),
-          count: s.Count ?? s.count ?? 0,
-          avg: s.MeanValue ?? s.meanValue ?? 0,
+          name: (s.buildingTypeLabel ?? s.BuildingType ?? s.buildingType ?? 'Unknown').substring(0, 12),
+          count: s.count ?? s.Count ?? 0,
+          avg: s.meanRate ?? s.MeanRate ?? s.meanValue ?? s.MeanValue ?? 0,
         })),
         regionalComparison: stats.map((s) => ({
-          name: (s.BuildingType ?? s.buildingType ?? 'Unknown').substring(0, 15),
-          value: s.MeanValue ?? s.meanValue ?? 0,
+          name: (s.buildingTypeLabel ?? s.BuildingType ?? s.buildingType ?? 'Unknown').substring(0, 12),
+          value: s.meanRate ?? s.MeanRate ?? s.meanValue ?? s.MeanValue ?? 0,
         })),
       };
     },

@@ -59,8 +59,8 @@ import SharedProjectDashboardPage from '@/pages/SharedProjectDashboardPage';
 // SupabaseTestPage removed — Supabase not used in OS module
 import SwarmPage from '@/pages/SwarmPage';
 import TutorialsPage from '@/pages/tutorials';
-// Legacy header replaced with CostForgeHeader in MainLayout
 import ProtectedRoute from '@/components/auth/protected-route';
+import Sidebar from '@/components/layout/Sidebar';
 import DataFlowProvider from '@/contexts/DataFlowContext';
 import { AuthProvider } from './contexts/auth-context';
 import { SidebarProvider } from './contexts/SidebarContext';
@@ -239,7 +239,12 @@ function App() {
               <AuthProvider>
                 <DataFlowProvider>
                   <SidebarProvider>
-                    <Router />
+                    <div className="flex h-screen overflow-hidden bg-background">
+                      <Sidebar />
+                      <main className="flex-1 overflow-hidden">
+                        <Router />
+                      </main>
+                    </div>
                     <Toaster />
                   </SidebarProvider>
                 </DataFlowProvider>

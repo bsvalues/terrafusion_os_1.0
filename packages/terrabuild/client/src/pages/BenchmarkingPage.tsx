@@ -12,15 +12,15 @@ import MainLayout from '@/components/layout/MainLayout';
 const BenchmarkingPage: React.FC = () => {
   // State for benchmarking parameters
   const [formState, setFormState] = useState({
-    buildingType: 'residential',
-    region: 'northwest',
+    buildingType: '',
+    region: '',
     year: new Date().getFullYear(),
     squareFootage: 2500,
   });
-  
+
   const [parameters, setParameters] = useState({
-    buildingType: 'residential',
-    region: 'northwest',
+    buildingType: '',
+    region: '',
     year: new Date().getFullYear(),
     squareFootage: 2500,
   });
