@@ -1,14 +1,19 @@
 /**
  * SketchModule.tsx (TFR-072)
  *
- * Canvas-based building sketch viewer. Display mode only (read from backend sketch data).
- * Toolbar for zoom/pan. No domain math in component.
+ * Sketch page — two modes:
+ *   View: Canvas-based building sketch viewer (pan/zoom/segment display).
+ *   Build: 3-tier interactive builder (Measurement Plan, Sketch Builder, Plan Trace).
  */
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { SketchModule as SketchBuilder } from '@/components/sketch';
+import { addObservation } from '@/services/fieldStoreV2';
+import type { SketchObservation } from '@/components/sketch';
 
 interface SketchData {
   parcelId: string;
@@ -58,6 +63,7 @@ export function SketchModule({ parcelId }: SketchModuleProps) {
   const [loading] = useState(false);
   const [error] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
+  const [activeTab, setActiveTab] = useState<'view' | 'build'>('view');
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null);
   const [sketch] = useState<SketchData>(SAMPLE_SKETCH);
@@ -168,6 +174,18 @@ export function SketchModule({ parcelId }: SketchModuleProps) {
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.25, 0.5));
   const handleReset = () => { setZoom(1); setPanOffset({ x: 0, y: 0 }); };
 
+  const handleSaveObservation = useCallback(async (obs: SketchObservation) => {
+    await addObservation({
+      assignmentId: obs.parcelId,
+      parcelId: obs.parcelId,
+      type: obs.type as 'measurement',
+      timestamp: obs.timestamp,
+      latitude: obs.latitude,
+      longitude: obs.longitude,
+      data: obs.data,
+    });
+  }, []);
+
   return (
     <div className="space-y-4 p-4">
       <div className="flex items-center justify-between">
@@ -175,6 +193,25 @@ export function SketchModule({ parcelId }: SketchModuleProps) {
         <Badge variant="outline">{sketch.parcelId}</Badge>
       </div>
 
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'view' | 'build')}>
+        <TabsList>
+          <TabsTrigger value="view">View</TabsTrigger>
+          <TabsTrigger value="build">Build / Measure</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="build" className="mt-4">
+          {parcelId ? (
+            <SketchBuilder
+              parcelId={parcelId}
+              onBack={() => setActiveTab('view')}
+              onSaveObservation={handleSaveObservation}
+            />
+          ) : (
+            <div className="p-6 text-center text-muted-foreground text-sm">Select a parcel to use the sketch builder.</div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="view" className="mt-4">
       {error && (
         <div className="p-3 rounded bg-red-50 text-red-700 text-sm border border-red-200">{error}</div>
       )}
@@ -265,6 +302,8 @@ export function SketchModule({ parcelId }: SketchModuleProps) {
           </div>
         </div>
       )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
