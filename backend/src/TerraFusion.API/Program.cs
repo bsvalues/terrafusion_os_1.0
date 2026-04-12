@@ -385,6 +385,10 @@ builder.Services.AddSingleton<ScenarioRunRegistry>();
 // 🏛️ Sale Qualification — TerraFusion owns the IAAO ratio-study qualification decision
 builder.Services.AddScoped<TerraFusion.API.Services.ISaleQualificationService, TerraFusion.API.Services.SaleQualificationService>();
 
+// Analytics orchestration — real EF Core queries against Properties + CostMatrices
+builder.Services.AddScoped<TerraFusion.API.Controllers.IAnalyticsOrchestrator,
+                            TerraFusion.API.Controllers.AnalyticsOrchestratorImpl>();
+
 // 🏛️ OLS Regression — IAAO market-extracted adjustment derivation (stateless, pure math → singleton)
 builder.Services.AddSingleton<TerraFusion.API.Services.IOlsRegressionService, TerraFusion.API.Services.OlsRegressionService>();
 
@@ -1194,14 +1198,16 @@ if (app.Environment.IsDevelopment())
                 "read:system-status",
                 "read:cost-matrix",
                 "read:cost-factors",
-                "read:cost-breakdown"
+                "read:cost-breakdown",
+                "read:performance-metrics"
           }
     };
 
     var token = jwtService.GenerateAccessToken(
           userId: "dev-user-001",
           email: "dev@terrafusion.local",
-          roles: new[] { "Developer", "Assessor" },
+          // GovernmentUser satisfies OSCoreAccess policy (AIModulesController, AISwarmController, etc.)
+          roles: new[] { "Developer", "Assessor", "GovernmentUser" },
           customClaims: customClaims);
 
     return Results.Ok(new

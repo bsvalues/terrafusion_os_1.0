@@ -21,11 +21,11 @@ export default function AICostWizardPage() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/"><Home className="h-4 w-4" /></BreadcrumbLink>
+              <BreadcrumbLink asChild><a href="/"><Home className="h-4 w-4" /></a></BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator><ChevronRight className="h-3 w-3" /></BreadcrumbSeparator>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/tools">Tools</BreadcrumbLink>
+              <BreadcrumbLink asChild><a href="/tools">Tools</a></BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator><ChevronRight className="h-3 w-3" /></BreadcrumbSeparator>
             <BreadcrumbItem>

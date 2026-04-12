@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
-import { BuildingCost, InsertBuildingCost } from "@shared/schema";
+import { BuildingCost, InsertBuildingCost } from '@/types/api';
 
 // Type for the calculation request
 export interface CalculationRequest {
@@ -11,7 +11,6 @@ export interface CalculationRequest {
   squareFootage: number;
   complexityMultiplier?: number;
   complexityFactor?: string;
-  // Benton County, Washington specific fields
   taxLotId?: string;
   propertyId?: string;
   assessmentYear?: number;
@@ -30,7 +29,6 @@ export interface CalculationResponse {
   complexityFactor: number;
   costPerSqft: number;
   totalCost: number;
-  // Benton County, Washington specific fields
   taxLotId?: string;
   propertyId?: string;
   assessmentYear?: number;
@@ -54,95 +52,71 @@ export interface Material {
 }
 
 // Type for the materials breakdown response
-export interface MaterialsBreakdownResponse {
-  region: string;
-  buildingType: string;
-  propertyClass?: string;
-  squareFootage: number;
-  baseCost: number;
-  regionFactor: number;
-  complexityFactor: number;
-  costPerSqft: number;
-  totalCost: number;
+export interface MaterialsBreakdownResponse extends CalculationResponse {
   materials: Material[];
-  // Benton County, Washington specific fields
-  taxLotId?: string;
-  propertyId?: string;
-  assessmentYear?: number;
-  yearBuilt?: number;
-  condition?: string;
-  conditionFactor?: number;
-  depreciationAmount?: number;
-  assessedValue?: number;
 }
 
 export function useBuildingCosts() {
-  // Get all building costs
-  const { data: buildingCosts, isLoading: isLoadingCosts, error: costsError } = useQuery({
-    queryKey: ["/api/costs"],
+  // NOTE: /api/costforge/building-costs is a placeholder — no CRUD endpoint exists yet.
+  // Fails gracefully via React Query (isError: true, data: undefined).
+  const { data: buildingCosts, isLoading: isLoadingCosts, error: costsError } = useQuery<BuildingCost[]>({
+    queryKey: ["/api/costforge/building-costs"],
   });
 
-  // Get a specific building cost
   const getBuildingCost = (id: number) => {
-    return useQuery({
-      queryKey: ["/api/costs", id],
+    return useQuery<BuildingCost>({
+      queryKey: ["/api/costforge/building-costs", id],
       enabled: !!id,
     });
   };
 
-  // Create a new building cost
   const createBuildingCost = useMutation({
-    mutationFn: (cost: InsertBuildingCost) => 
-      apiRequest("POST", "/api/costs", cost),
+    mutationFn: (cost: InsertBuildingCost) =>
+      apiRequest("/api/costforge/building-costs", { method: "POST", body: JSON.stringify(cost) }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/costs"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/costforge/building-costs"] });
     }
   });
 
-  // Update a building cost
   const updateBuildingCost = useMutation({
-    mutationFn: ({ id, cost }: { id: number, cost: Partial<InsertBuildingCost> }) => 
-      apiRequest("PATCH", `/api/costs/${id}`, cost),
+    mutationFn: ({ id, cost }: { id: number, cost: Partial<InsertBuildingCost> }) =>
+      apiRequest(`/api/costforge/building-costs/${id}`, { method: "PATCH", body: JSON.stringify(cost) }),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/costs"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/costs", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/costforge/building-costs"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/costforge/building-costs", variables.id] });
     }
   });
 
-  // Delete a building cost
   const deleteBuildingCost = useMutation({
-    mutationFn: (id: number) => 
-      apiRequest("DELETE", `/api/costs/${id}`),
+    mutationFn: (id: number) =>
+      apiRequest(`/api/costforge/building-costs/${id}`, { method: "DELETE" }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/costs"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/costforge/building-costs"] });
     }
   });
 
-  // Calculate a building cost estimate
+  // Real .NET endpoint: POST /api/costforge/calculate
   const calculateCost = useMutation({
-    mutationFn: (params: CalculationRequest) => 
-      apiRequest("POST", "/api/costs/calculate", params),
+    mutationFn: (params: CalculationRequest) =>
+      apiRequest("/api/costforge/calculate", { method: "POST", body: JSON.stringify(params) }),
   });
 
-  // Calculate materials breakdown for a building cost
+  // Real .NET endpoint: POST /api/costforge/calculate (materials breakdown variant)
   const calculateMaterialsBreakdown = useMutation({
-    mutationFn: (params: CalculationRequest) => 
-      apiRequest("POST", "/api/costs/calculate-materials", params),
+    mutationFn: (params: CalculationRequest) =>
+      apiRequest("/api/costforge/calculate", { method: "POST", body: JSON.stringify(params) }),
   });
 
-  // Get materials for a specific building cost
   const getBuildingCostMaterials = (id: number) => {
     return useQuery({
-      queryKey: ["/api/costs", id, "materials"],
+      queryKey: ["/api/costforge/building-costs", id, "materials"],
       enabled: !!id,
     });
   };
 
-  // Helper function to calculate and return building cost directly
   const calculateBuildingCost = async (params: CalculationRequest): Promise<any> => {
     try {
-      const result = await calculateCost.mutateAsync(params);
-      return result;
+      return await calculateCost.mutateAsync(params);
     } catch (error) {
       console.error("Error calculating building cost:", error);
       throw error;
@@ -150,7 +124,7 @@ export function useBuildingCosts() {
   };
 
   return {
-    buildingCosts: buildingCosts as BuildingCost[] | undefined,
+    buildingCosts,
     isLoadingCosts,
     costsError,
     getBuildingCost,

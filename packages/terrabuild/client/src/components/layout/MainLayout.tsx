@@ -1,153 +1,114 @@
+// CostForge is an OS module loaded via AppFrame (iframe).
+// The TerraFusion OS shell owns: window chrome, navigation, auth.
+// MainLayout provides only module-level content structure — no header, no sidebar.
+
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useDataFlow } from '@/contexts/DataFlowContext';
-import { useSidebar } from '@/contexts/SidebarContext';
-import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertTriangle, Loader2, XCircle } from 'lucide-react';
 import { ReactNode, useEffect } from 'react';
-import Footer from './Footer';
-import Sidebar from './Sidebar';
-import TerraFusionHeader from './TerraFusionHeader';
 
 interface MainLayoutProps {
   children: ReactNode;
   pageTitle?: string;
   pageDescription?: string;
-  hideFooter?: boolean;
   fullWidth?: boolean;
   loading?: boolean;
-  isLanding?: boolean;
   error?: {
     title?: string;
     message: string;
     type?: 'error' | 'warning';
   };
+  trackPageView?: boolean;
+  // Legacy props — accepted but ignored (OS owns these concerns)
+  hideFooter?: boolean;
+  isLanding?: boolean;
   breadcrumbs?: { label: string; href?: string }[];
   showDataFlow?: boolean;
-  trackPageView?: boolean;
 }
 
 export default function MainLayout({
   children,
   pageTitle,
   pageDescription,
-  hideFooter = false,
   fullWidth = false,
   loading = false,
-  isLanding = false,
   error,
-  breadcrumbs,
-  showDataFlow = false,
   trackPageView = true,
 }: MainLayoutProps) {
-  const { isExpanded } = useSidebar();
-  const { isLoading: authLoading } = useAuth();
   const { trackUserActivity } = useDataFlow();
 
-  // Show loading state if either auth is loading or component-specific loading
-  const isLoading = authLoading || loading;
-
-  // Track page view in the data flow system
   useEffect(() => {
     if (trackPageView && pageTitle) {
       trackUserActivity(`Viewed page: ${pageTitle}`);
     }
   }, [pageTitle, trackPageView, trackUserActivity]);
 
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="flex items-center justify-center h-full min-h-[200px] bg-background">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-8 bg-card rounded-2xl border border-border flex flex-col items-center shadow-sm"
+          className="flex flex-col items-center gap-3 p-6"
         >
-          <div
-            className="w-16 h-16 mb-6 rounded-full flex items-center justify-center"
-            style={{ background: 'hsl(var(--primary))' }}
-          >
-            <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'hsl(var(--primary-foreground))' }} />
-          </div>
-          <p className="font-bold text-lg mb-2 text-foreground">
-            Loading CostForge...
-          </p>
-          <p className="text-sm text-center text-muted-foreground">
-            Benton County Assessor
-          </p>
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">{pageTitle ? `Loading ${pageTitle}...` : 'Loading...'}</p>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <TerraFusionHeader isLanding={isLanding} />
-      <div className="flex flex-1 overflow-hidden">
-        {!isLanding && <Sidebar />}
-        <div
-          className={cn(
-            'flex-1 flex flex-col transition-all duration-300',
-            !isLanding && (isExpanded ? 'ml-0 md:ml-56' : 'ml-0 md:ml-16')
-          )}
-        >
-          <main
-            className="flex-1 overflow-auto p-4 md:p-6"
-            style={{
-              perspective: '1000px',
-              transformStyle: 'preserve-3d',
-            }}
-          >
-            {/* Error/Warning notifications */}
-            <AnimatePresence>
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="mb-6"
-                >
-                  <Alert variant={error.type === 'warning' ? 'default' : 'destructive'}>
-                    {error.type === 'warning' ? (
-                      <AlertTriangle className="h-4 w-4" />
-                    ) : (
-                      <XCircle className="h-4 w-4" />
-                    )}
-                    {error.title && <AlertTitle>{error.title}</AlertTitle>}
-                    <AlertDescription>{error.message}</AlertDescription>
-                  </Alert>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Page header with title and description */}
-            {(pageTitle || pageDescription) && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1 }}
-                className="mb-6"
-              >
-                {pageTitle && (
-                  <h1 className="text-2xl md:text-3xl font-bold text-foreground">{pageTitle}</h1>
-                )}
-                {pageDescription && <p className="mt-2 text-muted-foreground">{pageDescription}</p>}
-              </motion.div>
-            )}
-
-            {/* Main content */}
+    <div className="h-full w-full overflow-y-auto bg-background">
+      <div className={cn('p-4 md:p-6 mx-auto', fullWidth ? 'w-full' : 'max-w-7xl')}>
+        {/* Error/Warning notifications */}
+        <AnimatePresence>
+          {error && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className={cn('mx-auto', fullWidth ? 'w-full' : 'max-w-7xl')}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="mb-4"
             >
-              {children}
+              <Alert variant={error.type === 'warning' ? 'default' : 'destructive'}>
+                {error.type === 'warning' ? (
+                  <AlertTriangle className="h-4 w-4" />
+                ) : (
+                  <XCircle className="h-4 w-4" />
+                )}
+                {error.title && <AlertTitle>{error.title}</AlertTitle>}
+                <AlertDescription>{error.message}</AlertDescription>
+              </Alert>
             </motion.div>
-          </main>
-          {/* Footer removed — CostForge is OS-hosted, not a public web app */}
-        </div>
+          )}
+        </AnimatePresence>
+
+        {/* Page header */}
+        {(pageTitle || pageDescription) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.05 }}
+            className="mb-6"
+          >
+            {pageTitle && (
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">{pageTitle}</h1>
+            )}
+            {pageDescription && <p className="mt-1 text-muted-foreground">{pageDescription}</p>}
+          </motion.div>
+        )}
+
+        {/* Module content */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          {children}
+        </motion.div>
       </div>
     </div>
   );

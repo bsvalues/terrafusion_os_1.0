@@ -1975,6 +1975,40 @@ public class CostForgeController : ControllerBase
     return CreatedAtAction(nameof(GetValuationRecord), new { id = record.Id }, new { record.Id, record.Status });
   }
 
+  /// <summary>List recent valuation records for the current county (Reports page).</summary>
+  [HttpGet("valuations")]
+  [RequiresPermission("access:costforge")]
+  public async Task<ActionResult> ListValuationRecords([FromQuery] int limit = 50)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+    var records = await _db.ValuationRecords
+      .AsNoTracking()
+      .Where(r => r.CountyId == ctx.CountyId)
+      .OrderByDescending(r => r.CreatedAt)
+      .Take(Math.Min(limit, 200))
+      .Select(r => new
+      {
+        r.Id,
+        r.ParcelId,
+        r.TaxYear,
+        r.PropertyType,
+        r.BuildingType,
+        r.Region,
+        r.SquareFeet,
+        r.Rcn,
+        r.Rcnld,
+        r.FinalReconciledValue,
+        r.Status,
+        r.CreatedAt,
+        r.CreatedBy,
+      })
+      .ToListAsync();
+
+    return Ok(new { valuations = records, count = records.Count });
+  }
+
   /// <summary>Get a saved valuation record by ID.</summary>
   [HttpGet("valuations/{id:guid}")]
   [RequiresPermission("access:costforge")]
@@ -3056,7 +3090,37 @@ public class CostForgeController : ControllerBase
   internal static decimal BankersRound(decimal value)
     => Math.Round(value, 2, MidpointRounding.ToEven);
 
-  // ──── Benton County 2025 Cost Data ────
+  // ──────────────────────────────────────────────────────────────────────────────────
+  // Reference data endpoints — building types, regions (for calculator dropdowns)
+  // ──────────────────────────────────────────────────────────────────────────────────
+
+  /// <summary>GET /api/costforge/building-types — Distinct building type codes from the cost matrix.</summary>
+  [HttpGet("building-types")]
+  public IActionResult GetBuildingTypes()
+  {
+    var types = BentonCostData.CostMatrix
+      .Select(e => new { code = e.BuildingType, label = e.BuildingTypeLabel })
+      .DistinctBy(e => e.code)
+      .OrderBy(e => e.code)
+      .ToList();
+    return Ok(new { buildingTypes = types });
+  }
+
+  /// <summary>GET /api/costforge/regions — Distinct regions from the cost matrix.</summary>
+  [HttpGet("regions")]
+  public IActionResult GetRegions()
+  {
+    var regions = BentonCostData.CostMatrix
+      .Select(e => e.Region)
+      .Distinct()
+      .OrderBy(r => r)
+      .ToList();
+    return Ok(new { regions });
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────────────
+  // Benton County 2025 Cost Data
+  // ──────────────────────────────────────────────────────────────────────────────────
 
   internal static class BentonCostData
   {

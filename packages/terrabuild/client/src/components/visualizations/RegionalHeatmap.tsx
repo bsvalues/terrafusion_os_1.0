@@ -65,14 +65,14 @@ const RegionalHeatmap: React.FC = () => {
   // Process data for heatmap when counties data changes
   useEffect(() => {
     if (countiesData?.counties && Array.isArray(countiesData.counties)) {
-      const processedData = createHeatmapData(
+      const processedData = (createHeatmapData as any)(
         selectedRegion,
         countiesData.counties.map((county: County) => ({
           name: county.name,
           avgCost: county.avgCost
         }))
       );
-      setHeatmapData(processedData);
+      setHeatmapData(processedData as HeatmapData);
     } else {
       setHeatmapData(null);
     }

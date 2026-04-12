@@ -13,7 +13,7 @@ import RecentActivity from '@/components/dashboard/RecentActivity';
 import RepositoryCloneStatus from '@/components/dashboard/RepositoryCloneStatus';
 import StatusCards from '@/components/dashboard/StatusCards';
 import DataSlicer from '@/components/DataSlicer';
-import MainContent from '@/components/layout/MainContent';
+import MainLayout from '@/components/layout/MainLayout';
 import { useWindow } from '@/contexts/WindowContext';
 import { ExternalLink } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
@@ -188,15 +188,7 @@ export default function Dashboard() {
   }, [activeTab]);
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <MainContent
-        title="Mission Control Panel"
-        actionButton={{
-          label: 'Configure',
-          icon: 'ri-settings-3-line',
-          onClick: () => console.log('Configure clicked'),
-        }}
-      >
+    <MainLayout pageTitle="Mission Control Panel">
         <StatusCards />
         <RepositoryCloneStatus />
 
@@ -509,7 +501,6 @@ export default function Dashboard() {
           <RecentActivity />
           <ApplicationDetails />
         </div>
-      </MainContent>
-    </div>
+    </MainLayout>
   );
 }

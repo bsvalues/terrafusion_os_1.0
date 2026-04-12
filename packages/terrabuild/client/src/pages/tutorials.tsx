@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import MainContent from "@/components/layout/MainContent";
-import LayoutWrapper from "@/components/layout/LayoutWrapper";
+import MainLayout from "@/components/layout/MainLayout";
+
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -73,7 +73,7 @@ export default function TutorialsPage() {
   
   const tutorials = [
     {
-      title: "Getting Started with BCBS",
+      title: "Getting Started with CostForge",
       description: "Learn the basics of using the Benton County Building Cost System.",
       category: "beginner",
       duration: "10 min",
@@ -143,8 +143,8 @@ export default function TutorialsPage() {
     : tutorials.filter(tutorial => tutorial.category === selectedLevel);
 
   return (
-    <LayoutWrapper>
-      <MainContent title="Tutorials">
+    
+      <MainLayout pageTitle="Tutorials">
         <div className="container mx-auto px-4 py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -158,7 +158,7 @@ export default function TutorialsPage() {
               className="h-16 w-16 mx-auto mb-4"
             />
             <h1 className="text-3xl font-bold text-[#243E4D] mb-2">
-              BCBS Tutorials
+              CostForge Tutorials
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Step-by-step guides to help you get the most out of the Benton County Building Cost System
@@ -215,7 +215,7 @@ export default function TutorialsPage() {
             ))}
           </div>
         </div>
-      </MainContent>
-    </LayoutWrapper>
+      </MainLayout>
+    
   );
 }

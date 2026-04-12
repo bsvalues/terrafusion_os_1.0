@@ -8,8 +8,8 @@ import { checkFTPConnectionStatus } from '@/utils/ftp-connection-helper';
 import { Loader2, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 
 interface FTPConnectionStatusProps {
-  connectionId: number;
-  connectionName: string;
+  connectionId?: number;
+  connectionName?: string;
   onRefresh?: () => void;
   onStatusChange?: (isConnected: boolean) => void;
 }
@@ -23,8 +23,9 @@ export function FTPConnectionStatus({
   const [isRefreshing, setIsRefreshing] = useState(false);
   
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['/api/ftp/connections', connectionId, 'status'],
-    queryFn: () => checkFTPConnectionStatus(connectionId),
+    queryKey: ['/api/ftp/connections', connectionId ?? 0, 'status'],
+    queryFn: () => checkFTPConnectionStatus(connectionId ?? 0),
+    enabled: connectionId !== undefined,
   });
   
   useEffect(() => {

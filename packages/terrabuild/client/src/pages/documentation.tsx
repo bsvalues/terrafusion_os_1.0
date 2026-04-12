@@ -1,6 +1,6 @@
 import React from "react";
-import MainContent from "@/components/layout/MainContent";
-import LayoutWrapper from "@/components/layout/LayoutWrapper";
+import MainLayout from "@/components/layout/MainLayout";
+
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -40,8 +40,8 @@ function DocumentCard({
 
 export default function DocumentationPage() {
   return (
-    <LayoutWrapper>
-      <MainContent title="Documentation">
+    
+      <MainLayout pageTitle="Documentation">
         <div className="container mx-auto px-4 py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -55,7 +55,7 @@ export default function DocumentationPage() {
               className="h-16 w-16 mx-auto mb-4"
             />
             <h1 className="text-3xl font-bold text-[#243E4D] mb-2">
-              BCBS Documentation
+              CostForge Documentation
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Comprehensive guides and references for the Benton County Building Cost System
@@ -73,7 +73,7 @@ export default function DocumentationPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <DocumentCard 
                   title="Getting Started Guide"
-                  description="Learn the basics of using the BCBS for cost estimation and analysis."
+                  description="Learn the basics of using the CostForge for cost estimation and analysis."
                   lastUpdated="April 2025"
                 />
                 <DocumentCard 
@@ -108,12 +108,12 @@ export default function DocumentationPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <DocumentCard 
                   title="System Architecture"
-                  description="Technical overview of the BCBS architecture and components."
+                  description="Technical overview of the CostForge architecture and components."
                   lastUpdated="January 2025"
                 />
                 <DocumentCard 
                   title="Data Models"
-                  description="Documentation of the data structures used in BCBS."
+                  description="Documentation of the data structures used in CostForge."
                   lastUpdated="March 2025"
                 />
                 <DocumentCard 
@@ -128,7 +128,7 @@ export default function DocumentationPage() {
                 />
                 <DocumentCard 
                   title="Integration Guide"
-                  description="How to integrate BCBS with other county systems."
+                  description="How to integrate CostForge with other county systems."
                   lastUpdated="April 2025"
                 />
                 <DocumentCard 
@@ -143,7 +143,7 @@ export default function DocumentationPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <DocumentCard 
                   title="API Overview"
-                  description="Introduction to the BCBS API and authentication."
+                  description="Introduction to the CostForge API and authentication."
                   lastUpdated="March 2025"
                 />
                 <DocumentCard 
@@ -175,7 +175,7 @@ export default function DocumentationPage() {
             </TabsContent>
           </Tabs>
         </div>
-      </MainContent>
-    </LayoutWrapper>
+      </MainLayout>
+    
   );
 }

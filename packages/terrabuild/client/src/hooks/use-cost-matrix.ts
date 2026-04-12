@@ -1,21 +1,21 @@
 import { toast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { CostMatrix } from "@shared/schema";
+import type { CostMatrix } from '@/types/api';
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 /**
  * Hook for interacting with the cost matrix API
  */
 export function useCostMatrix() {
-  // Get all cost matrix entries
+  // Real .NET endpoint: GET /api/costforge/cost-matrices
   const getAll = useQuery({
-    queryKey: ["/cost-matrices"],
+    queryKey: ["/api/costforge/cost-matrices"],
   });
 
   // Get cost matrix entry by ID
   const getById = (id: number) => {
     return useQuery({
-      queryKey: ["/cost-matrices", id],
+      queryKey: ["/api/costforge/cost-matrices", id],
       enabled: !!id,
     });
   };
@@ -23,9 +23,9 @@ export function useCostMatrix() {
   // Get cost matrix entries by region
   const getByRegion = (region: string) => {
     return useQuery({
-      queryKey: ["/cost-matrices"],
+      queryKey: ["/api/costforge/cost-matrices", { region }],
       queryFn: () =>
-        apiRequest(`/cost-matrices?region=${encodeURIComponent(region)}`),
+        apiRequest(`/api/costforge/cost-matrices?region=${encodeURIComponent(region)}`),
       enabled: !!region,
     });
   };
@@ -33,9 +33,9 @@ export function useCostMatrix() {
   // Get cost matrix entries by building type
   const getByBuildingType = (buildingType: string) => {
     return useQuery({
-      queryKey: ["/cost-matrices"],
+      queryKey: ["/api/costforge/cost-matrices", { buildingType }],
       queryFn: () =>
-        apiRequest(`/cost-matrices?buildingType=${encodeURIComponent(buildingType)}`),
+        apiRequest(`/api/costforge/cost-matrices?buildingType=${encodeURIComponent(buildingType)}`),
       enabled: !!buildingType,
     });
   };
@@ -43,9 +43,9 @@ export function useCostMatrix() {
   // Get cost matrix entry by region and building type
   const getByRegionAndBuildingType = (region: string, buildingType: string) => {
     return useQuery({
-      queryKey: ["/cost-matrices"],
+      queryKey: ["/api/costforge/cost-matrices", { region, buildingType }],
       queryFn: () =>
-        apiRequest(`/cost-matrices?region=${encodeURIComponent(region)}&buildingType=${encodeURIComponent(buildingType)}`),
+        apiRequest(`/api/costforge/cost-matrices?region=${encodeURIComponent(region)}&buildingType=${encodeURIComponent(buildingType)}`),
       enabled: !!region && !!buildingType,
     });
   };
@@ -53,13 +53,13 @@ export function useCostMatrix() {
   // Import cost matrix entries from JSON
   const importFromJson = useMutation({
     mutationFn: async (data: any[]) => {
-      return apiRequest("/cost-matrices/import", {
+      return apiRequest("/api/costforge/cost-matrices/import", {
         method: "POST",
         body: JSON.stringify({ data })
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/cost-matrices"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/costforge/cost-matrices"] });
       toast({
         title: "Cost matrix imported",
         description: "The cost matrix entries have been successfully imported.",
@@ -77,13 +77,13 @@ export function useCostMatrix() {
   // Update cost matrix entry
   const update = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: Partial<CostMatrix> }) => {
-      return apiRequest(`/cost-matrices/${id}`, {
+      return apiRequest(`/api/costforge/cost-matrices/${id}`, {
         method: "PATCH",
         body: JSON.stringify(data)
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/cost-matrices"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/costforge/cost-matrices"] });
       toast({
         title: "Cost matrix updated",
         description: "The cost matrix entry has been successfully updated.",
@@ -101,12 +101,12 @@ export function useCostMatrix() {
   // Delete cost matrix entry
   const remove = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/cost-matrices/${id}`, {
+      return apiRequest(`/api/costforge/cost-matrices/${id}`, {
         method: "DELETE"
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/cost-matrices"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/costforge/cost-matrices"] });
       toast({
         title: "Cost matrix deleted",
         description: "The cost matrix entry has been successfully deleted.",
@@ -124,13 +124,13 @@ export function useCostMatrix() {
   // Create a new cost matrix entry
   const create = useMutation({
     mutationFn: async (data: Omit<CostMatrix, "id" | "createdAt" | "updatedAt">) => {
-      return apiRequest("/cost-matrices", {
+      return apiRequest("/api/costforge/cost-matrices", {
         method: "POST",
         body: JSON.stringify(data)
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/cost-matrices"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/costforge/cost-matrices"] });
       toast({
         title: "Cost matrix created",
         description: "A new cost matrix entry has been successfully created.",

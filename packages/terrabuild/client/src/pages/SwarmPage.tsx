@@ -6,19 +6,16 @@
 
 import React from 'react';
 import { SwarmDashboard } from '@/components/swarm/SwarmDashboard';
+import MainLayout from '@/components/layout/MainLayout';
 
 export default function SwarmPage() {
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">TerraBuild AI Swarm</h1>
-        <p className="text-gray-500">
-          Advanced infrastructure cost assessment using AI agent swarm technology
-        </p>
-      </div>
-      
+    <MainLayout
+      pageTitle="TerraBuild AI Swarm"
+      pageDescription="Advanced infrastructure cost assessment using AI agent swarm technology"
+    >
       <SwarmDashboard />
-      
+
       <div className="mt-12 p-6 bg-gray-50 rounded-lg">
         <h2 className="text-xl font-semibold mb-4">About AI Swarm Technology</h2>
         <p className="mb-4">
@@ -50,6 +47,6 @@ export default function SwarmPage() {
           </div>
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 }

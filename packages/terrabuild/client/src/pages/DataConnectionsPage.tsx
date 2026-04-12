@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Shield, Server, Database, FolderSync, FileType } from 'lucide-react';
 
 const DataConnectionsPage = () => {
-  useDocumentTitle('Data Connections - BCBS');
+  useDocumentTitle('Data Connections - CostForge');
 
   return (
     <div className="container mx-auto py-6 space-y-6">

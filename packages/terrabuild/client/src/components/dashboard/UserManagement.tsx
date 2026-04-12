@@ -44,7 +44,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useUsers } from "@/hooks/use-users";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User, insertUserSchema } from "@shared/schema";
+import { User, insertUserSchema } from '@/types/api';
 import { Check, Loader2, MoreHorizontal, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -92,7 +92,6 @@ const CreateUserForm = ({ onClose }: { onClose: () => void }) => {
       username: "",
       password: "",
       confirmPassword: "",
-      name: "",
       role: "user",
       isActive: true
     },

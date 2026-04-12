@@ -37,7 +37,7 @@ export default function TerraFusionHeader({
   };
 
   // Default navigation links for TerraFusion Government OS
-  const defaultNavLinks = [
+  const defaultNavLinks: { label: string; href: string; active?: boolean }[] = [
     { label: 'Dashboard', href: '/dashboard' },
     { label: 'Calculator', href: '/calculator' },
     { label: 'Analytics', href: '/analytics' },

@@ -1,29 +1,28 @@
 import { toast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
-import { Calculation } from '@shared/schema';
+import { Calculation } from '@/types/api';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 /**
  * Hook for interacting with calculation history API
+ * Real .NET endpoint: GET /api/costforge/calculations
  */
 export function useCalculationHistory() {
   // Get all calculation history
-  const getAll = useQuery({
-    queryKey: ['/api/calculation-history'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/calculation-history');
-      return response.json();
-    }
+  const getAll = useQuery<Calculation[]>({
+    queryKey: ['/api/costforge/calculations'],
   });
 
   // Create a new calculation history entry
   const create = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest('POST', '/api/calculation-history', data);
-      return response.json();
+      return apiRequest('/api/costforge/calculations', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/calculation-history'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/costforge/calculations'] });
       toast({
         title: 'Calculation saved',
         description: 'Calculation has been saved to history.',
@@ -41,10 +40,10 @@ export function useCalculationHistory() {
   // Delete a calculation history entry
   const remove = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest('DELETE', `/api/calculation-history/${id}`);
+      return apiRequest(`/api/costforge/calculations/${id}`, { method: 'DELETE' });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/calculation-history'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/costforge/calculations'] });
       toast({
         title: 'Calculation deleted',
         description: 'Calculation has been removed from history.',
@@ -61,24 +60,18 @@ export function useCalculationHistory() {
 
   // Get calculation history for a specific building type
   const getByBuildingType = (buildingType: string) => {
-    return useQuery({
-      queryKey: ['/api/calculation-history', 'buildingType', buildingType],
-      queryFn: async () => {
-        const response = await apiRequest('GET', `/api/calculation-history/building-type/${buildingType}`);
-        return response.json();
-      },
+    return useQuery<Calculation[]>({
+      queryKey: ['/api/costforge/calculations', 'buildingType', buildingType],
+      queryFn: () => apiRequest(`/api/costforge/calculations?buildingType=${encodeURIComponent(buildingType)}`),
       enabled: !!buildingType,
     });
   };
 
   // Get calculation history for a specific region
   const getByRegion = (region: string) => {
-    return useQuery({
-      queryKey: ['/api/calculation-history', 'region', region],
-      queryFn: async () => {
-        const response = await apiRequest('GET', `/api/calculation-history/region/${region}`);
-        return response.json();
-      },
+    return useQuery<Calculation[]>({
+      queryKey: ['/api/costforge/calculations', 'region', region],
+      queryFn: () => apiRequest(`/api/costforge/calculations?region=${encodeURIComponent(region)}`),
       enabled: !!region,
     });
   };
@@ -89,7 +82,7 @@ export function useCalculationHistory() {
       ...calculation,
       formattedBaseCost: formatCurrency(parseFloat(calculation.baseCost || '0')),
       formattedTotalCost: formatCurrency(parseFloat(calculation.totalCost || '0')),
-      formattedDate: new Date(calculation.createdAt).toLocaleDateString(),
+      formattedDate: calculation.createdAt ? new Date(calculation.createdAt).toLocaleDateString() : '',
     };
   };
 

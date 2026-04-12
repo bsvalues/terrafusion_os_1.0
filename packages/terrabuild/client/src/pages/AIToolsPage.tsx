@@ -5,8 +5,8 @@ import { useMCP } from '@/hooks/use-mcp';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import LayoutWrapper from '@/components/layout/LayoutWrapper';
-import MainContent from '@/components/layout/MainContent';
+
+import MainLayout from '@/components/layout/MainLayout';
 
 /**
  * AI Tools Page
@@ -47,8 +47,8 @@ const AIToolsPage: React.FC = () => {
   };
   
   return (
-    <LayoutWrapper>
-      <MainContent title="AI Tools">
+    
+      <MainLayout pageTitle="AI Tools">
         <div className="container mx-auto py-6 space-y-6">
           <div className="flex flex-col space-y-2">
             <h1 className="text-3xl font-bold flex items-center">
@@ -127,8 +127,8 @@ const AIToolsPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </MainContent>
-    </LayoutWrapper>
+      </MainLayout>
+    
   );
 };
 

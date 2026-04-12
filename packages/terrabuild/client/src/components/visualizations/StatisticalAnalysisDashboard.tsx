@@ -185,11 +185,11 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
     let filtered = [...costMatrixData];
     
     if (filters?.regions && filters.regions.length > 0) {
-      filtered = filtered.filter(item => filters.regions.includes(item.region));
+      filtered = filtered.filter(item => filters.regions!.includes(item.region));
     }
-    
+
     if (filters?.buildingTypes && filters.buildingTypes.length > 0) {
-      filtered = filtered.filter(item => filters.buildingTypes.includes(item.buildingType));
+      filtered = filtered.filter(item => filters.buildingTypes!.includes(item.buildingType));
     }
     
     setFilteredData(filtered);

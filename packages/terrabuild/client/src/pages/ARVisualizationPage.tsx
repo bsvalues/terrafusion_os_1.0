@@ -11,8 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import ARViewer from '@/components/ar/ARViewer';
 import { useToast } from '@/hooks/use-toast';
-import LayoutWrapper from '@/components/layout/LayoutWrapper';
-import MainContent from '@/components/layout/MainContent';
+
+import MainLayout from '@/components/layout/MainLayout';
 import { Glasses } from 'lucide-react';
 
 // Define the form schema for building data
@@ -444,8 +444,8 @@ const ARVisualizationPage = () => {
 // Define it as a function that returns a JSX.Element to match the type expected by the router
 function ARVisualizationPageWrapper(): JSX.Element {
   return (
-    <LayoutWrapper>
-      <MainContent title="AR Visualization">
+    
+      <MainLayout pageTitle="AR Visualization">
         <div className="flex flex-col space-y-2 mb-6">
           <h1 className="text-3xl font-bold flex items-center">
             <Glasses className="mr-2 h-6 w-6 text-primary" />
@@ -456,8 +456,8 @@ function ARVisualizationPageWrapper(): JSX.Element {
           </p>
         </div>
         <ARVisualizationPage />
-      </MainContent>
-    </LayoutWrapper>
+      </MainLayout>
+    
   );
 }
 

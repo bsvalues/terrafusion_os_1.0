@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MainContent from '@/components/layout/MainContent';
+import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -143,7 +143,7 @@ const ContextualDataPage: React.FC = () => {
   };
 
   return (
-    <MainContent title="Contextual Data">
+    <MainLayout pageTitle="Contextual Data">
       <div className="container py-6">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -401,7 +401,7 @@ const ContextualDataPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </MainContent>
+    </MainLayout>
   );
 };
 

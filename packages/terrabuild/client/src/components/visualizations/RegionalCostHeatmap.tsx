@@ -54,9 +54,9 @@ export function RegionalCostHeatmap({
   
   // Handle county selection
   const handleCountyClick = (county: RegionalCostData) => {
-    setSelectedCounty(county.name);
+    setSelectedCounty(county.name ?? null);
     if (onCountySelect) {
-      onCountySelect(county.name);
+      onCountySelect(county.name ?? '');
     }
   };
   
@@ -131,7 +131,7 @@ export function RegionalCostHeatmap({
                 selectedCounty === county.name ? 'ring-2 ring-primary' : ''
               }`}
               style={{
-                backgroundColor: calculateColor(county.avgCost, minCost, maxCost),
+                backgroundColor: calculateColor(county.avgCost, minCost ?? 0, maxCost ?? 0),
                 color: county.avgCost && county.avgCost > (maxCost || 0) * 0.7 ? 'white' : 'black'
               }}
               onClick={() => handleCountyClick(county)}
@@ -154,8 +154,8 @@ export function RegionalCostHeatmap({
             <div className="h-full w-1/3" style={{ background: 'linear-gradient(to right, #ffff00, #ff0000)' }}></div>
           </div>
           <div className="flex justify-between w-full text-xs mt-1">
-            <span>{formatCurrency(minCost)}</span>
-            <span>{formatCurrency(maxCost)}</span>
+            <span>{formatCurrency(minCost ?? 0)}</span>
+            <span>{formatCurrency(maxCost ?? 0)}</span>
           </div>
         </div>
       </CardContent>

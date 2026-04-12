@@ -6,8 +6,8 @@
  */
 
 import { GeoAssessment } from '@/components/geo/GeoAssessment';
-import LayoutWrapper from '@/components/layout/LayoutWrapper';
-import MainContent from '@/components/layout/MainContent';
+
+import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -49,8 +49,8 @@ export default function GeoAssessmentPage() {
   };
 
   return (
-    <LayoutWrapper>
-      <MainContent title="GeoAssessment">
+    
+      <MainLayout pageTitle="GeoAssessment">
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <div>
@@ -254,7 +254,7 @@ export default function GeoAssessmentPage() {
             </Card>
           )}
         </div>
-      </MainContent>
-    </LayoutWrapper>
+      </MainLayout>
+    
   );
 }

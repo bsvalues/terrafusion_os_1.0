@@ -98,10 +98,22 @@ export function useMCP() {
   const [error, setError] = useState<string | null>(null);
   
   /**
-   * Query for checking MCP status
+   * Query for checking MCP/AI module status via TerraFusion OS AI infrastructure
+   * Real endpoint: GET /api/aimodules/status (AIModulesController → IAIModuleOrchestrator)
    */
   const statusQuery = useQuery({
-    queryKey: ['/api/mcp/status'],
+    queryKey: ['/api/aimodules/status'],
+    queryFn: async () => {
+      const res = await fetch('/api/aimodules/status');
+      if (!res.ok) return { status: 'error' as const, message: 'AI modules unavailable' };
+      const data = await res.json();
+      // Normalize TF response to MCPStatusResponse shape
+      return {
+        status: 'ready' as const,
+        message: `${data.TotalModules ?? data.totalModules ?? 0} modules active`,
+        raw: data,
+      };
+    },
     refetchOnWindowFocus: false,
     retry: false,
     staleTime: 60 * 1000, // 1 minute
@@ -115,7 +127,8 @@ export function useMCP() {
       setError(null);
       
       try {
-        const response = await fetch('/api/mcp/predict-cost', {
+        // Route to TerraFusion OS cost estimate endpoint
+        const response = await fetch('/api/costforge/cost-estimate', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -145,12 +158,13 @@ export function useMCP() {
       setError(null);
       
       try {
-        const response = await fetch('/api/mcp/analyze-matrix', {
+        // Route to TerraFusion OS AI module orchestrator
+        const response = await fetch('/api/aimodules/execute', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(params),
+          body: JSON.stringify({ module: 'matrix-analyzer', command: 'analyze', parameters: params }),
         });
         
         if (!response.ok) {
@@ -175,12 +189,13 @@ export function useMCP() {
       setError(null);
       
       try {
-        const response = await fetch('/api/mcp/explain-calculation', {
+        // Route to TerraFusion OS AI module orchestrator
+        const response = await fetch('/api/aimodules/execute', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(params),
+          body: JSON.stringify({ module: 'calculation-explainer', command: 'explain', parameters: params }),
         });
         
         if (!response.ok) {

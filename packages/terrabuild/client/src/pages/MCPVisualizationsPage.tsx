@@ -7,8 +7,8 @@
 
 import React, { useState } from 'react';
 import { Link } from 'wouter';
-import LayoutWrapper from '@/components/layout/LayoutWrapper';
-import MainContent from '@/components/layout/MainContent';
+
+import MainLayout from '@/components/layout/MainLayout';
 import MCPVisualizations from '@/components/visualizations/MCPVisualizations';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -37,8 +37,8 @@ export default function MCPVisualizationsPage() {
   };
   
   return (
-    <LayoutWrapper>
-      <MainContent title="MCP Visualizations">
+    
+      <MainLayout pageTitle="MCP Visualizations">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">MCP Visualizations</h1>
@@ -257,7 +257,7 @@ export default function MCPVisualizationsPage() {
             </Card>
           </TabsContent>
         </Tabs>
-      </MainContent>
-    </LayoutWrapper>
+      </MainLayout>
+    
   );
 }

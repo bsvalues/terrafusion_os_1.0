@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import BenchmarkingVisualization from '@/components/visualizations/BenchmarkingVisualization';
 import { apiRequest } from '@/lib/queryClient';
 import { useQuery } from '@tanstack/react-query';
+import MainLayout from '@/components/layout/MainLayout';
 
 const BenchmarkingPage: React.FC = () => {
   // State for benchmarking parameters
@@ -24,16 +25,28 @@ const BenchmarkingPage: React.FC = () => {
     squareFootage: 2500,
   });
 
-  // Fetch available building types and regions for dropdown selection
-  const { data: buildingTypes, isLoading: loadingBuildingTypes } = useQuery({
-    queryKey: ['buildingTypes'],
-    queryFn: () => apiRequest('/api/building-cost/types')
+  // Fetch available building types and regions from TerraFusion OS CostForge endpoints
+  const { data: buildingTypesData, isLoading: loadingBuildingTypes } = useQuery({
+    queryKey: ['/api/costforge/building-types'],
+    queryFn: async () => {
+      const res = await fetch('/api/costforge/building-types');
+      if (!res.ok) return null;
+      return res.json();
+    },
+    retry: false,
   });
+  const buildingTypes: string[] = buildingTypesData?.buildingTypes?.map((b: { code: string; label: string }) => b.label) ?? [];
 
-  const { data: regions, isLoading: loadingRegions } = useQuery({
-    queryKey: ['regions'],
-    queryFn: () => apiRequest('/api/regions')
+  const { data: regionsData, isLoading: loadingRegions } = useQuery({
+    queryKey: ['/api/costforge/regions'],
+    queryFn: async () => {
+      const res = await fetch('/api/costforge/regions');
+      if (!res.ok) return null;
+      return res.json();
+    },
+    retry: false,
   });
+  const regions: string[] = regionsData?.regions ?? [];
 
   // Handler for form input changes
   const handleInputChange = (field: string, value: string | number) => {
@@ -50,12 +63,10 @@ const BenchmarkingPage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <h1 className="text-3xl font-bold">Building Cost Benchmarking</h1>
-      <p className="text-muted-foreground">
-        Compare building costs against regional and statewide averages to benchmark your project.
-      </p>
-
+    <MainLayout
+      pageTitle="Building Cost Benchmarking"
+      pageDescription="Compare building costs against regional and statewide averages to benchmark your project."
+    >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-1">
           <CardHeader>
@@ -161,7 +172,7 @@ const BenchmarkingPage: React.FC = () => {
           />
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 

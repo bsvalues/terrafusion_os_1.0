@@ -10,10 +10,27 @@ import { Link } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, BookOpen, Code, Database, Server, Workflow } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, BookOpen, Code, Database, Server, Workflow, Activity, Cpu } from 'lucide-react';
 import { MCPVisualizations } from '@/components/visualizations/MCPVisualizations';
+import { useQuery } from '@tanstack/react-query';
 
 export default function MCPOverviewPage() {
+  // Live status from TerraFusion OS AI infrastructure
+  const { data: modulesStatus } = useQuery({
+    queryKey: ['/api/aimodules/status'],
+    queryFn: () => fetch('/api/aimodules/status').then(r => r.ok ? r.json() : null).catch(() => null),
+    refetchInterval: 10_000,
+    retry: false,
+  });
+
+  const { data: mcpTools } = useQuery({
+    queryKey: ['/api/swarm/mcp-tools'],
+    queryFn: () => fetch('/api/swarm/mcp-tools').then(r => r.ok ? r.json() : null).catch(() => null),
+    refetchInterval: 10_000,
+    retry: false,
+  });
+
   return (
     <div className="container py-8 space-y-8">
       <div className="flex justify-between items-center">
@@ -31,8 +48,12 @@ export default function MCPOverviewPage() {
         </Link>
       </div>
       
-      <Tabs defaultValue="overview">
-        <TabsList className="grid grid-cols-4 w-full max-w-3xl">
+      <Tabs defaultValue="live-status">
+        <TabsList className="grid grid-cols-5 w-full max-w-4xl">
+          <TabsTrigger value="live-status">
+            <Activity className="mr-2 h-4 w-4" />
+            Live Status
+          </TabsTrigger>
           <TabsTrigger value="overview">
             <BookOpen className="mr-2 h-4 w-4" />
             Overview
@@ -278,7 +299,7 @@ export default function MCPOverviewPage() {
         <TabsContent value="implementation" className="space-y-6 mt-6">
           <Card>
             <CardHeader>
-              <CardTitle>BCBS MCP Implementation</CardTitle>
+              <CardTitle>CostForge MCP Implementation</CardTitle>
               <CardDescription>
                 How we've implemented the Model Content Protocol in our system
               </CardDescription>
@@ -437,6 +458,67 @@ export default function MCPOverviewPage() {
           </Card>
         </TabsContent>
         
+        <TabsContent value="live-status" className="mt-6 space-y-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Cpu className="h-5 w-5 text-primary" />
+                  AI Module Orchestrator
+                </CardTitle>
+                <CardDescription>TerraFusion OS — real-time module status</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {modulesStatus ? (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Total Modules</span>
+                      <span className="font-mono font-medium">{modulesStatus.TotalModules ?? modulesStatus.totalModules ?? '—'}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Active Modules</span>
+                      <span className="font-mono font-medium">{modulesStatus.ActiveModules ?? modulesStatus.activeModules ?? '—'}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Status</span>
+                      <Badge variant="outline" className="text-xs border-green-500 text-green-700 bg-green-50">Online</Badge>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Connecting to TerraFusion OS AI infrastructure…</p>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-primary" />
+                  MCP Tools Status
+                </CardTitle>
+                <CardDescription>TerraFusion OS — MCP tool registry</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {mcpTools ? (
+                  <div className="space-y-2">
+                    {Array.isArray(mcpTools)
+                      ? mcpTools.slice(0, 5).map((tool: any, i: number) => (
+                          <div key={i} className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">{tool.Name ?? tool.name ?? `Tool ${i + 1}`}</span>
+                            <Badge variant="outline" className="text-xs">{tool.Status ?? tool.status ?? 'active'}</Badge>
+                          </div>
+                        ))
+                      : <p className="text-sm text-muted-foreground">MCP tools connected.</p>
+                    }
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Fetching MCP tool registry…</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
         <TabsContent value="demo" className="mt-6">
           <Card>
             <CardHeader>

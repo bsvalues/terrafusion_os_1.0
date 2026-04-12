@@ -48,7 +48,7 @@ import {
   BarChart,
   RefreshCw
 } from 'lucide-react';
-import { useEnhancedSupabase } from '@/components/supabase/EnhancedSupabaseProvider';
+// useEnhancedSupabase removed — CostForge OS module has no Supabase
 import { localDB } from '@/lib/utils/localDatabase';
 import StepGuidancePanel from './StepGuidancePanel';
 
@@ -296,7 +296,9 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
   const [estimateHistory, setEstimateHistory] = useState<CalculationResult[]>([]);
   
   // Supabase hooks
-  const { isOfflineMode, supabase } = useEnhancedSupabase();
+  const isOfflineMode = false;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const supabase: null = null;
   
   // Toast for notifications
   const { toast } = useToast();
@@ -347,22 +349,6 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
         
         if (data && data.length) {
           setEstimateHistory(data.map((item: any) => item.result));
-        }
-      } else if (supabase) {
-        // Load from Supabase
-        const { data, error } = await supabase
-          .from('calculations')
-          .select('*')
-          .eq('property_id', propertyId);
-        
-        if (error) throw error;
-        
-        if (data && data.length) {
-          setEstimateHistory(data.map(item => ({
-            ...item.result,
-            inputValues: item.input_values,
-            calculationDate: item.calculation_date,
-          })));
         }
       }
     } catch (error) {
@@ -593,34 +579,6 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
         toast({
           title: "Estimate Saved Locally",
           description: "The estimate has been saved to your local database.",
-        });
-      } else if (supabase) {
-        // Save to Supabase
-        const { data, error } = await supabase
-          .from('calculations')
-          .insert({
-            property_id: propertyId || null,
-            building_type: inputs.buildingType,
-            square_feet: inputs.squareFeet,
-            quality: inputs.quality,
-            condition: inputs.condition,
-            year_built: inputs.yearBuilt,
-            region: inputs.region,
-            calculation_date: new Date().toISOString(),
-            total_cost: result.totalCost,
-            cost_per_sqft: result.costPerSqFt,
-            condition_factor: result.conditionFactor,
-            confidence_level: result.confidenceLevel,
-            result: result,
-            project_name: inputs.projectName || `${inputs.buildingType} Building Estimate`,
-            notes: inputs.notes || '',
-          });
-        
-        if (error) throw error;
-        
-        toast({
-          title: "Estimate Saved",
-          description: "The estimate has been saved to the database.",
         });
       }
       

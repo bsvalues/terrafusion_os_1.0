@@ -407,8 +407,8 @@ const SharedProjectDashboardPage: React.FC = () => {
                 <ActivityTrendChart activities={activities} />
               </div>
               
-              <ProjectActivitiesLog 
-                projectId={projectId} 
+              <ProjectActivitiesLog
+                projectId={String(projectId)}
                 className="max-h-[500px] overflow-y-auto"
               />
             </CardContent>

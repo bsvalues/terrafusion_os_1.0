@@ -11,7 +11,7 @@ interface CalculationResult {
   squareFootage: number;
   baseCost: string;
   regionFactor: string;
-  complexityFactor: number;
+  complexityFactor?: number;
   costPerSqft: number;
   totalCost: number;
   adjustedCost?: number;

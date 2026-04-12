@@ -55,7 +55,7 @@ export interface SensitivityAnalysisResult {
  */
 export async function predictCostWithConfidence(input: PredictionInput): Promise<PredictionResult> {
   try {
-    const response = await apiRequest<PredictionResult>({
+    const response = await (apiRequest as any)({
       method: 'POST',
       url: '/api/ai/predict-cost-advanced',
       data: input
@@ -84,7 +84,7 @@ export async function predictCostWithConfidence(input: PredictionInput): Promise
  */
 export async function getInfluentialFactors(buildingType: string): Promise<FeatureImportance[]> {
   try {
-    const response = await apiRequest<FeatureImportance[]>({
+    const response = await (apiRequest as any)({
       method: 'GET',
       url: `/api/ai/factor-importance?buildingType=${encodeURIComponent(buildingType)}`
     });
@@ -108,7 +108,7 @@ export async function performWhatIfAnalysis(
   parameters: WhatIfParameter[]
 ): Promise<WhatIfResult> {
   try {
-    const response = await apiRequest<WhatIfResult>({
+    const response = await (apiRequest as any)({
       method: 'POST',
       url: '/api/ai/what-if-analysis',
       data: {
@@ -144,7 +144,7 @@ export async function generateSensitivityAnalysis(
   input: PredictionInput
 ): Promise<SensitivityAnalysisResult[]> {
   try {
-    const response = await apiRequest<SensitivityAnalysisResult[]>({
+    const response = await (apiRequest as any)({
       method: 'POST',
       url: '/api/ai/sensitivity-analysis',
       data: input
@@ -169,12 +169,7 @@ export async function getModelValidation(): Promise<{
   f1Score: number;
 }> {
   try {
-    const response = await apiRequest<{
-      accuracy: number;
-      precision: number;
-      recall: number;
-      f1Score: number;
-    }>({
+    const response = await (apiRequest as any)({
       method: 'GET',
       url: '/api/ai/model-validation'
     });
@@ -208,12 +203,7 @@ export async function validatePrediction(
   averageError: number;
 }> {
   try {
-    const response = await apiRequest<{
-      isValid: boolean;
-      confidence: number;
-      similarCases: number;
-      averageError: number;
-    }>({
+    const response = await (apiRequest as any)({
       method: 'POST',
       url: '/api/ai/validate-prediction',
       data: {

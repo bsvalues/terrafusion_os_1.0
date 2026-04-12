@@ -23,6 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery } from '@tanstack/react-query';
 import {
     Building,
+    Calculator,
     ChevronLeft,
     ChevronRight,
     FileDown,
@@ -228,12 +229,20 @@ const PropertyBrowserPage = () => {
                             <TableCell>{property.ownerName || 'Unknown'}</TableCell>
                             <TableCell>{property.parcelNumber || 'N/A'}</TableCell>
                             <TableCell className="text-right">
-                              <Link href={`/properties/${property.id}`}>
-                                <Button variant="outline" size="sm" className="hover:bg-[#29B7D3]/10 hover:text-[#29B7D3] hover:border-[#29B7D3]/30">
-                                  <Info className="h-4 w-4 mr-1" />
-                                  Details
-                                </Button>
-                              </Link>
+                              <div className="flex items-center justify-end gap-2">
+                                <Link href={`/properties/${property.id}`}>
+                                  <Button variant="outline" size="sm" className="hover:bg-[#29B7D3]/10 hover:text-[#29B7D3] hover:border-[#29B7D3]/30">
+                                    <Info className="h-4 w-4 mr-1" />
+                                    Details
+                                  </Button>
+                                </Link>
+                                <Link href={`/calculator?parcelId=${property.parcelNumber || property.id}`}>
+                                  <Button variant="outline" size="sm" className="hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300">
+                                    <Calculator className="h-4 w-4 mr-1" />
+                                    Estimate Cost
+                                  </Button>
+                                </Link>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))

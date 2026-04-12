@@ -46,6 +46,18 @@
   --tf-sage: 140 18% 52%; /* sage green */
   --tf-border: 38 18% 78%;
   --tf-suite-forge: 28 82% 58%; /* Forge copper brand */
+  --tf-warning-amber: 43 96% 56%; /* warning amber for alerts and data quality indicators */
+  --tf-success: 140 60% 40%; /* success green */
+  --tf-info: 210 70% 50%; /* info blue */
+
+  /* CostForge / TerraBuild brand palette — canonical hex references */
+  --cf-cyan: #29b7d3;
+  --cf-navy: #243e4d;
+  --cf-green: #47ad55;
+  --cf-electric: #0099ff;
+  --cf-teal: #00ffee;
+  --cf-mint: #00ffaa;
+  --cf-violet: #7b61ff;
 }
 
 @layer base {

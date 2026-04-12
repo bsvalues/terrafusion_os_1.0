@@ -167,6 +167,7 @@ export interface BuildingCalculationResult {
   error?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const buildingCalculationResultSchema: JSONSchemaType<BuildingCalculationResult> = {
   type: 'object',
   properties: {
@@ -179,18 +180,10 @@ export const buildingCalculationResultSchema: JSONSchemaType<BuildingCalculation
     conditionAdjustment: { type: 'number', nullable: true },
     depreciationAdjustment: { type: 'number', nullable: true },
     depreciationRate: { type: 'number', nullable: true },
-    materialCosts: {
-      type: 'object',
-      nullable: true,
-      additionalProperties: { type: 'number' }
-    },
-    breakdown: {
-      type: 'object',
-      nullable: true,
-      additionalProperties: { type: 'number' }
-    },
+    materialCosts: { type: 'object', nullable: true, additionalProperties: { type: 'number' } },
+    breakdown: { type: 'object', nullable: true, additionalProperties: { type: 'number' } },
     error: { type: 'string', nullable: true }
   },
   required: ['baseCost', 'totalCost'],
   additionalProperties: false
-};
+} as unknown as JSONSchemaType<BuildingCalculationResult>;

@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCostMatrix } from "@/hooks/use-cost-matrix";
 import { useFileUploads } from "@/hooks/use-file-uploads";
 import { toast } from "@/hooks/use-toast";
-import { FileUpload } from "@shared/schema";
+import { FileUpload } from '@/types/api';
 import { format } from "date-fns";
 import { AlertCircleIcon, CheckIcon, DatabaseIcon, DownloadIcon, FileIcon, FileUpIcon, RefreshCwIcon, XIcon } from "lucide-react";
 import React, { useRef, useState } from "react";

@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from 'react';
+/**
+ * BenchmarkingVisualization
+ *
+ * Renders bar charts from /api/benchmarking/statistical-data (TerraFusion .NET API).
+ * Shows avg, min, max cost/sqft by building type across Benton County cost matrices.
+ */
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import { apiRequest } from '@/lib/queryClient';
 import { useQuery } from '@tanstack/react-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend 
+  Legend,
 } from 'recharts';
 
 interface BenchmarkingVisualizationProps {
@@ -24,341 +28,145 @@ interface BenchmarkingVisualizationProps {
   calculationId?: number;
 }
 
+interface StatRow {
+  name: string;
+  avg: number;
+  min: number;
+  max: number;
+}
+
+interface BenchmarkData {
+  costPerSqft: StatRow[];
+  totalCost: Array<{ name: string; count: number; avg: number }>;
+  regionalComparison: Array<{ name: string; value: number }>;
+}
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+
 const BenchmarkingVisualization: React.FC<BenchmarkingVisualizationProps> = ({
   buildingType,
   region,
-  year,
-  squareFootage,
-  calculationId
 }) => {
   const [activeTab, setActiveTab] = useState('costPerSqft');
-  
-  // Format query parameters
-  const queryParams = new URLSearchParams();
-  if (buildingType) queryParams.append('buildingType', buildingType);
-  if (region) queryParams.append('region', region);
-  if (year) queryParams.append('year', year.toString());
-  if (squareFootage) queryParams.append('squareFootage', squareFootage.toString());
-  
-  // Determine the API endpoint
-  const endpoint = calculationId 
-    ? `/api/analytics/benchmark/${calculationId}` 
-    : `/api/analytics/benchmark?${queryParams.toString()}`;
-  
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['benchmarkData', calculationId || buildingType, region, year, squareFootage],
-    queryFn: () => apiRequest(endpoint),
-    enabled: !!(calculationId || (buildingType && region && squareFootage))
+
+  const { data, isLoading, error } = useQuery<BenchmarkData>({
+    queryKey: ['/api/benchmarking/statistical-data', buildingType, region],
+    queryFn: async () => {
+      const url = `/api/benchmarking/statistical-data?county=Benton${buildingType ? `&buildingType=${encodeURIComponent(buildingType)}` : ''}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      const stats: Array<{
+        BuildingType?: string; buildingType?: string;
+        Count?: number; count?: number;
+        MinValue?: number; minValue?: number;
+        MaxValue?: number; maxValue?: number;
+        MeanValue?: number; meanValue?: number;
+      }> = json?.statistics ?? json?.Statistics ?? json?.data ?? [];
+
+      return {
+        costPerSqft: stats.map((s) => ({
+          name: (s.BuildingType ?? s.buildingType ?? 'Unknown').substring(0, 15),
+          avg: s.MeanValue ?? s.meanValue ?? 0,
+          min: s.MinValue ?? s.minValue ?? 0,
+          max: s.MaxValue ?? s.maxValue ?? 0,
+        })),
+        totalCost: stats.map((s) => ({
+          name: (s.BuildingType ?? s.buildingType ?? 'Unknown').substring(0, 15),
+          count: s.Count ?? s.count ?? 0,
+          avg: s.MeanValue ?? s.meanValue ?? 0,
+        })),
+        regionalComparison: stats.map((s) => ({
+          name: (s.BuildingType ?? s.buildingType ?? 'Unknown').substring(0, 15),
+          value: s.MeanValue ?? s.meanValue ?? 0,
+        })),
+      };
+    },
   });
-  
+
   if (isLoading) {
     return (
-      <Card className="w-full h-full">
+      <Card className="w-full">
         <CardHeader>
-          <CardTitle><Skeleton className="h-8 w-3/4" /></CardTitle>
-          {/* Fix for DOM nesting error - remove Skeleton from inside CardDescription (p tag) */}
-          <div className="text-sm text-muted-foreground mt-1">
-            <Skeleton className="h-4 w-1/2" />
-          </div>
+          <CardTitle><Skeleton className="h-6 w-3/4" /></CardTitle>
+          <div className="text-sm text-muted-foreground mt-1"><Skeleton className="h-4 w-1/2" /></div>
         </CardHeader>
-        <CardContent>
-          <Skeleton className="h-[300px] w-full" />
-        </CardContent>
+        <CardContent><Skeleton className="h-[300px] w-full" /></CardContent>
       </Card>
     );
   }
-  
-  if (error || !data) {
+
+  if (error || !data || data.costPerSqft.length === 0) {
     return (
-      <Card className="w-full h-full">
+      <Card className="w-full">
         <CardHeader>
-          <CardTitle>Benchmarking Error</CardTitle>
-          <CardDescription>Unable to load benchmarking data.</CardDescription>
+          <CardTitle>Building Cost Benchmarks</CardTitle>
+          <CardDescription>Benton County cost matrix statistics</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
-            No benchmark data available. Please check your parameters and try again.
+            {error ? `Error loading benchmarks: ${(error as Error).message}` : 'No benchmark data available.'}
           </div>
         </CardContent>
       </Card>
     );
   }
-  
-  // Check if we have any data to display
-  if (!data.statistics.regional && !data.statistics.statewide) {
-    return (
-      <Card className="w-full h-full">
-        <CardHeader>
-          <CardTitle>No Benchmark Data</CardTitle>
-          <CardDescription>
-            No comparable data available for {data.buildingType} in {data.region}.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8 text-muted-foreground">
-            {data.message || "Try different parameters to view benchmarking data."}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-  
-  // Format chart data for cost per square foot
-  const costPerSqftChartData = [
-    {
-      name: "Your Building",
-      regional: data.costPerSqftBenchmarks.regional.percentile,
-      statewide: data.costPerSqftBenchmarks.statewide.percentile,
-      costPerSqft: data.costPerSqft
-    }
-  ];
-  
-  // Format chart data for total cost
-  const totalCostChartData = [
-    {
-      name: "Your Building",
-      regional: data.totalCostBenchmarks.regional.percentile,
-      statewide: data.totalCostBenchmarks.statewide.percentile,
-      totalCost: data.totalCost
-    }
-  ];
-  
-  // Format progress values (0-100)
-  const regionalPercentile = data.costPerSqftBenchmarks.regional.percentile;
-  const statewidePercentile = data.costPerSqftBenchmarks.statewide.percentile;
-  
-  // Helper function to get color based on percentile
-  const getPercentileColor = (percentile: number) => {
-    if (percentile < 25) return 'bg-green-500';
-    if (percentile < 50) return 'bg-blue-500';
-    if (percentile < 75) return 'bg-amber-500';
-    return 'bg-red-500';
-  };
-  
-  // Format currency for display
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(value);
-  };
 
   return (
-    <Card className="w-full h-full">
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>Building Cost Benchmarking</CardTitle>
+        <CardTitle>Building Cost Benchmarks</CardTitle>
         <CardDescription>
-          Compare your {data.buildingTypeDescription || data.buildingType} building 
-          against others in {data.regionDescription || data.region} and statewide
+          Benton County cost matrix — avg, min, max base rate by building type
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="costPerSqft" onValueChange={setActiveTab}>
           <TabsList className="mb-4">
-            <TabsTrigger value="costPerSqft">Cost Per Square Foot</TabsTrigger>
-            <TabsTrigger value="totalCost">Total Cost</TabsTrigger>
-            <TabsTrigger value="statistics">Statistics</TabsTrigger>
+            <TabsTrigger value="costPerSqft">Cost / Sq.Ft</TabsTrigger>
+            <TabsTrigger value="totalCost">Sample Counts</TabsTrigger>
+            <TabsTrigger value="regional">Regional Compare</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="costPerSqft">
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <div className="text-sm font-medium">Regional Comparison</div>
-                  <div className="text-sm text-muted-foreground">
-                    {regionalPercentile}% percentile
-                  </div>
-                </div>
-                <Progress 
-                  value={regionalPercentile} 
-                  className={`h-3 ${getPercentileColor(regionalPercentile)}`} 
-                />
-                <div className="text-sm mt-1">
-                  {data.costPerSqftBenchmarks.regional.description}
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <div className="text-sm font-medium">Statewide Comparison</div>
-                  <div className="text-sm text-muted-foreground">
-                    {statewidePercentile}% percentile
-                  </div>
-                </div>
-                <Progress 
-                  value={statewidePercentile} 
-                  className={`h-3 ${getPercentileColor(statewidePercentile)}`} 
-                />
-                <div className="text-sm mt-1">
-                  {data.costPerSqftBenchmarks.statewide.description}
-                </div>
-              </div>
-              
-              <div className="border p-4 rounded-md">
-                <div className="text-sm font-medium mb-2">Your Cost Per Square Foot</div>
-                <div className="text-2xl font-bold mb-2">
-                  {formatCurrency(data.costPerSqft)} / sq.ft
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Based on {data.squareFootage.toLocaleString()} sq.ft {data.buildingType} building
-                </div>
-              </div>
-              
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart
-                  data={costPerSqftChartData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis yAxisId="left" orientation="left" label={{ value: 'Percentile', angle: -90, position: 'insideLeft' }} />
-                  <YAxis yAxisId="right" orientation="right" label={{ value: 'Cost ($/sq.ft)', angle: 90, position: 'insideRight' }} />
-                  <Tooltip formatter={(value, name) => {
-                    if (name === 'costPerSqft') return [formatCurrency(value as number), 'Cost Per Sq.Ft'];
-                    return [`${value}%`, name === 'regional' ? 'Regional Percentile' : 'Statewide Percentile'];
-                  }} />
-                  <Legend />
-                  <Bar yAxisId="left" dataKey="regional" fill="#8884d8" name="Regional Percentile" />
-                  <Bar yAxisId="left" dataKey="statewide" fill="#82ca9d" name="Statewide Percentile" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={data.costPerSqft} margin={{ top: 10, right: 30, left: 20, bottom: 60 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" angle={-35} textAnchor="end" tick={{ fontSize: 11 }} />
+                <YAxis tickFormatter={(v) => `$${v}`} />
+                <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                <Legend />
+                <Bar dataKey="min" fill="#82ca9d" name="Min ($/sqft)" />
+                <Bar dataKey="avg" fill="#8884d8" name="Avg ($/sqft)" />
+                <Bar dataKey="max" fill="#ff7c7c" name="Max ($/sqft)" />
+              </BarChart>
+            </ResponsiveContainer>
           </TabsContent>
-          
+
           <TabsContent value="totalCost">
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <div className="text-sm font-medium">Regional Total Cost</div>
-                  <div className="text-sm text-muted-foreground">
-                    {data.totalCostBenchmarks.regional.percentile}% percentile
-                  </div>
-                </div>
-                <Progress 
-                  value={data.totalCostBenchmarks.regional.percentile} 
-                  className={`h-3 ${getPercentileColor(data.totalCostBenchmarks.regional.percentile)}`} 
-                />
-                <div className="text-sm mt-1">
-                  {data.totalCostBenchmarks.regional.description}
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <div className="text-sm font-medium">Statewide Total Cost</div>
-                  <div className="text-sm text-muted-foreground">
-                    {data.totalCostBenchmarks.statewide.percentile}% percentile
-                  </div>
-                </div>
-                <Progress 
-                  value={data.totalCostBenchmarks.statewide.percentile} 
-                  className={`h-3 ${getPercentileColor(data.totalCostBenchmarks.statewide.percentile)}`} 
-                />
-                <div className="text-sm mt-1">
-                  {data.totalCostBenchmarks.statewide.description}
-                </div>
-              </div>
-              
-              <div className="border p-4 rounded-md">
-                <div className="text-sm font-medium mb-2">Your Total Building Cost</div>
-                <div className="text-2xl font-bold mb-2">
-                  {formatCurrency(data.totalCost)}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  For a {data.squareFootage.toLocaleString()} sq.ft {data.buildingType} building
-                </div>
-              </div>
-            </div>
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={data.totalCost} margin={{ top: 10, right: 30, left: 20, bottom: 60 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" angle={-35} textAnchor="end" tick={{ fontSize: 11 }} />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="count" fill="#8884d8" name="Record Count" />
+              </BarChart>
+            </ResponsiveContainer>
           </TabsContent>
-          
-          <TabsContent value="statistics">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="border p-4 rounded-md">
-                <h3 className="font-medium mb-2">Regional Statistics</h3>
-                <table className="w-full text-sm">
-                  <tbody>
-                    <tr>
-                      <td className="py-1">Minimum Cost/Sq.Ft</td>
-                      <td className="text-right">{formatCurrency(data.statistics.regional.min)}</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1">Maximum Cost/Sq.Ft</td>
-                      <td className="text-right">{formatCurrency(data.statistics.regional.max)}</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1">Average Cost/Sq.Ft</td>
-                      <td className="text-right">{formatCurrency(data.statistics.regional.average)}</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1">Median Cost/Sq.Ft</td>
-                      <td className="text-right">{formatCurrency(data.statistics.regional.median)}</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1">Sample Size</td>
-                      <td className="text-right">{data.statistics.regionalSampleSize} buildings</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              
-              <div className="border p-4 rounded-md">
-                <h3 className="font-medium mb-2">Statewide Statistics</h3>
-                <table className="w-full text-sm">
-                  <tbody>
-                    <tr>
-                      <td className="py-1">Minimum Cost/Sq.Ft</td>
-                      <td className="text-right">{formatCurrency(data.statistics.statewide.min)}</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1">Maximum Cost/Sq.Ft</td>
-                      <td className="text-right">{formatCurrency(data.statistics.statewide.max)}</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1">Average Cost/Sq.Ft</td>
-                      <td className="text-right">{formatCurrency(data.statistics.statewide.average)}</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1">Median Cost/Sq.Ft</td>
-                      <td className="text-right">{formatCurrency(data.statistics.statewide.median)}</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1">Sample Size</td>
-                      <td className="text-right">{data.statistics.statewideSampleSize} buildings</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              
-              <div className="border p-4 rounded-md md:col-span-2">
-                <h3 className="font-medium mb-2">Your Building Details</h3>
-                <table className="w-full text-sm">
-                  <tbody>
-                    <tr>
-                      <td className="py-1">Building Type</td>
-                      <td className="text-right">{data.buildingTypeDescription || data.buildingType}</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1">Region</td>
-                      <td className="text-right">{data.regionDescription || data.region}</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1">Square Footage</td>
-                      <td className="text-right">{data.squareFootage.toLocaleString()} sq.ft</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1">Cost Per Square Foot</td>
-                      <td className="text-right">{formatCurrency(data.costPerSqft)}</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1">Total Cost</td>
-                      <td className="text-right">{formatCurrency(data.totalCost)}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+
+          <TabsContent value="regional">
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={data.regionalComparison} margin={{ top: 10, right: 30, left: 20, bottom: 60 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" angle={-35} textAnchor="end" tick={{ fontSize: 11 }} />
+                <YAxis tickFormatter={(v) => `$${v}`} />
+                <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                <Bar dataKey="value" fill="#8884d8" name="Mean Base Rate" />
+              </BarChart>
+            </ResponsiveContainer>
           </TabsContent>
         </Tabs>
       </CardContent>

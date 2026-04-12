@@ -56,7 +56,7 @@ import {
   BarChart,
   RefreshCw
 } from 'lucide-react';
-import { useEnhancedSupabase } from '@/components/supabase/EnhancedSupabaseProvider';
+// useEnhancedSupabase removed — CostForge OS module has no Supabase
 import { localDB } from '@/lib/utils/localDatabase';
 import StepGuidancePanel from './StepGuidancePanel';
 
@@ -304,7 +304,9 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
   const [estimateHistory, setEstimateHistory] = useState<CalculationResult[]>([]);
   
   // Supabase hooks
-  const { isOfflineMode, supabase } = useEnhancedSupabase();
+  const isOfflineMode = false;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const supabase: null = null;
   
   // Toast for notifications
   const { toast } = useToast();
@@ -332,22 +334,6 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
         
         if (data && data.length) {
           setEstimateHistory(data.map((item: any) => item.result));
-        }
-      } else if (supabase) {
-        // Load from Supabase
-        const { data, error } = await supabase
-          .from('calculations')
-          .select('*')
-          .eq('property_id', propertyId);
-        
-        if (error) throw error;
-        
-        if (data && data.length) {
-          setEstimateHistory(data.map(item => ({
-            ...item.result,
-            inputValues: item.input_values,
-            calculationDate: item.calculation_date,
-          })));
         }
       }
     } catch (error) {
@@ -552,53 +538,6 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
         toast({
           title: 'Calculation Saved Locally',
           description: 'The calculation has been saved locally and will sync when online',
-        });
-      } else if (supabase) {
-        // Save to Supabase
-        const { error } = await supabase
-          .from('calculations')
-          .insert({
-            property_id: propertyId || null,
-            calculation_date: new Date().toISOString(),
-            building_type: result.inputValues.buildingType,
-            square_feet: result.inputValues.squareFeet,
-            quality: result.inputValues.quality,
-            condition: result.inputValues.condition,
-            year_built: result.inputValues.yearBuilt,
-            region: result.inputValues.region,
-            total_cost: result.totalCost,
-            cost_per_sqft: result.costPerSqFt,
-            base_rate: result.baseRate,
-            adjusted_rate: result.adjustedRate,
-            quality_factor: result.qualityFactor,
-            condition_factor: result.conditionFactor,
-            age_factor: result.ageFactor,
-            region_factor: result.regionFactor,
-            confidence_level: result.confidenceLevel,
-            input_values: result.inputValues,
-            result: {
-              totalCost: result.totalCost,
-              costPerSqFt: result.costPerSqFt,
-              breakdownCosts: result.breakdownCosts,
-              factors: {
-                quality: result.qualityFactor,
-                condition: result.conditionFactor,
-                age: result.ageFactor,
-                region: result.regionFactor,
-                complexity: result.complexityFactor,
-                roof: result.roofFactor,
-                exterior: result.exteriorFactor,
-                hvac: result.hvacFactor,
-              }
-            },
-            notes: inputs.notes,
-          });
-        
-        if (error) throw error;
-        
-        toast({
-          title: 'Calculation Saved',
-          description: 'The calculation has been saved to the database',
         });
       }
       

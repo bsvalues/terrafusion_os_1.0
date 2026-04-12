@@ -1,16 +1,16 @@
 import React from 'react';
 import PredictiveCostAnalysis from '../components/predictive/PredictiveCostAnalysis';
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import MainLayout from '@/components/layout/MainLayout';
 import DemoNavigation from '@/components/DemoNavigation';
 
 const PredictiveCostAnalysisDemo: React.FC = () => {
   return (
-    <DashboardLayout>
-      <div className="container mx-auto py-6">
+    <MainLayout pageTitle="Predictive Cost Analysis">
+      <div className="container mx-auto py-2">
         <DemoNavigation />
         <PredictiveCostAnalysis />
       </div>
-    </DashboardLayout>
+    </MainLayout>
   );
 };
 

@@ -99,7 +99,7 @@ export class SchemaValidator {
     
     return {
       valid,
-      errors: valid ? null : validate.errors
+      errors: valid ? null : (validate.errors ?? null)
     };
   }
 }

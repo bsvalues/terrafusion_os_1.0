@@ -1,5 +1,5 @@
-import LayoutWrapper from "@/components/layout/LayoutWrapper";
-import MainContent from "@/components/layout/MainContent";
+
+import MainLayout from "@/components/layout/MainLayout";
 import {
     Accordion,
     AccordionContent,
@@ -22,12 +22,12 @@ export default function FAQPage() {
           answer: "TerraFusion Government OS is the official property assessment platform used by government assessors, property managers, and construction professionals to accurately estimate building costs across any government jurisdiction. It uses real construction data to provide accurate cost estimations based on building type, size, and location."
         },
         {
-          question: "Who can access and use the BCBS?",
+          question: "Who can access and use the CostForge?",
           answer: "TerraFusion Government OS is an open-access system available to all government officials, property developers, construction managers, and general public in your jurisdiction. No authentication is required to use the basic features of the system."
         },
         {
           question: "How accurate are the cost estimates?",
-          answer: "The cost estimates provided by BCBS have a documented accuracy rate of 97% when compared to actual construction costs. The system is regularly updated with the latest cost data to ensure estimates remain accurate and relevant."
+          answer: "The cost estimates provided by CostForge have a documented accuracy rate of 97% when compared to actual construction costs. The system is regularly updated with the latest cost data to ensure estimates remain accurate and relevant."
         },
         {
           question: "How often is the cost data updated?",
@@ -44,7 +44,7 @@ export default function FAQPage() {
         },
         {
           question: "What building types are supported?",
-          answer: "The BCBS supports over 25 different building types including residential (single-family, multi-family), commercial (office, retail, warehouse), industrial, agricultural, and special purpose buildings."
+          answer: "The CostForge supports over 25 different building types including residential (single-family, multi-family), commercial (office, retail, warehouse), industrial, agricultural, and special purpose buildings."
         },
         {
           question: "Can I save my calculation results?",
@@ -86,7 +86,7 @@ export default function FAQPage() {
         },
         {
           question: "Is there an API available for system integration?",
-          answer: "Yes, the BCBS provides a comprehensive API that allows integration with other systems. API documentation is available in the Documentation section of the website."
+          answer: "Yes, the CostForge provides a comprehensive API that allows integration with other systems. API documentation is available in the Documentation section of the website."
         },
         {
           question: "How do I report a bug or suggest a feature?",
@@ -101,8 +101,8 @@ export default function FAQPage() {
   ];
 
   return (
-    <LayoutWrapper>
-      <MainContent title="FAQ">
+    
+      <MainLayout pageTitle="FAQ">
         <div className="container mx-auto px-4 py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -200,7 +200,7 @@ export default function FAQPage() {
             </div>
           </motion.div>
         </div>
-      </MainContent>
-    </LayoutWrapper>
+      </MainLayout>
+    
   );
 }

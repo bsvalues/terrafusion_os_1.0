@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useRoute, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import LayoutWrapper from '@/components/layout/LayoutWrapper';
-import MainContent from '@/components/layout/MainContent';
+
+import MainLayout from '@/components/layout/MainLayout';
 import {
   Card,
   CardContent,
@@ -200,7 +200,7 @@ const PropertyDetailsPage = () => {
           improvements: [],
           landDetails: [],
           valuations: [],
-        } as PropertyDetails;
+        } as unknown as PropertyDetails;
       }
       return raw as PropertyDetails;
     },
@@ -257,8 +257,8 @@ const PropertyDetailsPage = () => {
   };
 
   return (
-    <LayoutWrapper>
-      <MainContent title="Property Details">
+    
+      <MainLayout pageTitle="Property Details">
         {/* Data Flow Status Indicator */}
         <div className="mb-4 px-4 py-2 bg-muted rounded-md text-sm">
           <div className="flex items-center justify-between">
@@ -998,8 +998,8 @@ const PropertyDetailsPage = () => {
             </Link>
           </div>
         )}
-      </MainContent>
-    </LayoutWrapper>
+      </MainLayout>
+    
   );
 };
 

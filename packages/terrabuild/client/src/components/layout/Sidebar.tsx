@@ -36,7 +36,13 @@ import {
   ExternalLink,
   Maximize2,
   MinusSquare,
-  RefreshCw
+  RefreshCw,
+  FlaskConical,
+  Bot,
+  Layers,
+  TrendingUp,
+  Network,
+  FolderSearch,
 } from "lucide-react";
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useWindow } from '@/contexts/WindowContext';
@@ -354,33 +360,52 @@ export default function Sidebar({ className }: SidebarProps) {
               isCollapsed={!isExpanded}
             >
               <SidebarItem href="/dashboard" title="Dashboard" icon={<Home />} />
+              <SidebarItem href="/properties" title="Properties" icon={<Building2 />} />
               <SidebarItem href="/calculator" title="Cost Estimator" icon={<Calculator />} />
             </SidebarSection>
-            
-            {/* ── 2. COST ANALYTICS ────────────────────────── */}
-            {/* v1: analytics pages use fabricated demo data.                */}
-            {/* Removed from primary nav to prevent assessor confusion.      */}
-            {/* Routes still exist for dev access — sidebar links return     */}
-            {/* when pages wire to real CostForge analytics endpoints (v1.2).*/}
 
-            {/* ── 4. REPORTS ───────────────────────────────── */}
+            {/* ── 2. ANALYSIS ──────────────────────────────── */}
             <SidebarSection
-              title="Reports"
+              title="Analysis"
+              icon={<BarChart3 className="h-4 w-4" />}
+              isCollapsed={!isExpanded}
+            >
+              <SidebarItem href="/analytics" title="Analytics" icon={<BarChart3 />} />
+              <SidebarItem href="/benchmarking" title="Benchmarking" icon={<TrendingUp />} />
+              <SidebarItem href="/what-if-scenarios" title="What-If Scenarios" icon={<FlaskConical />} />
+              <SidebarItem href="/regional-cost-comparison" title="Regional Costs" icon={<Map />} />
+            </SidebarSection>
+
+            {/* ── 3. AI & AGENTS ───────────────────────────── */}
+            <SidebarSection
+              title="AI & Agents"
+              icon={<Bot className="h-4 w-4" />}
+              isCollapsed={!isExpanded}
+            >
+              <SidebarItem href="/ai-tools" title="AI Tools" icon={<Zap />} />
+              <SidebarItem href="/ai-cost-wizard" title="AI Cost Wizard" icon={<BrainCircuit />} />
+              <SidebarItem href="/ai-swarm" title="AI Swarm" icon={<Network />} />
+            </SidebarSection>
+
+            {/* ── 4. REPORTS & DATA ────────────────────────── */}
+            <SidebarSection
+              title="Reports & Data"
               icon={<FileBarChart className="h-4 w-4" />}
               isCollapsed={!isExpanded}
             >
               <SidebarItem href="/reports" title="Reports" icon={<FileBarChart />} />
-              <SidebarItem href="/data-import" title="Data Import / Export" icon={<Database />} />
+              <SidebarItem href="/data-import" title="Data Import" icon={<Database />} />
+              <SidebarItem href="/data-connections" title="Data Connections" icon={<Layers />} />
             </SidebarSection>
-            
+
             {/* ── 5. ADMIN / INTEGRATIONS ──────────────────── */}
             <SidebarSection
-              title="Admin / Integrations"
+              title="Admin"
               icon={<Settings className="h-4 w-4" />}
               isCollapsed={!isExpanded}
             >
               <SidebarItem href="/settings/ftp-sync" title="Settings" icon={<Settings />} />
-              <SidebarItem href="/mcp-overview" title="Integrations" icon={<Share2 />} />
+              <SidebarItem href="/mcp-overview" title="MCP Overview" icon={<Share2 />} />
               <SidebarItem href="/mcp-dashboard" title="Integration Health" icon={<Activity />} />
               {isAdmin && (
                 <SidebarItem href="/users" title="User Management" icon={<Users />} />

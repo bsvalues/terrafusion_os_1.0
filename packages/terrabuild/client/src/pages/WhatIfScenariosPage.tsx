@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Helmet } from "react-helmet";
+import MainLayout from "@/components/layout/MainLayout";
 import { 
   Card, 
   CardContent, 
@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import ScenarioResults from "../components/scenarios/ScenarioResults";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircle, Edit, Trash2, Save, BarChartHorizontal } from "lucide-react";
 
 // Define scenario types for TypeScript
@@ -90,73 +90,116 @@ export default function WhatIfScenariosPage() {
     complexityFactor: 1.0
   });
   
-  // Fetch scenarios from API
+  const queryClient = useQueryClient();
+
+  // Fetch scenarios — real TerraFusion OS endpoint (WhatIfScenariosController)
   const { data: scenarios, isLoading, error } = useQuery<Scenario[]>({
     queryKey: ["/api/what-if-scenarios"],
+    queryFn: async () => {
+      const res = await fetch('/api/what-if-scenarios');
+      if (!res.ok) throw new Error(`${res.status}`);
+      const data = await res.json();
+      return data?.scenarios ?? data?.Scenarios ?? data ?? [];
+    },
     refetchOnWindowFocus: false,
   });
-  
+
+  const createMutation = useMutation({
+    mutationFn: async (payload: typeof formData) => {
+      const res = await fetch('/api/what-if-scenarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: payload.name,
+          description: payload.description,
+          assumptions: {
+            buildingType: payload.buildingType,
+            region: payload.region,
+            baseYear: payload.baseYear,
+            comparisonYear: payload.comparisonYear,
+            adjustmentFactor: payload.adjustmentFactor,
+            qualityFactor: payload.qualityFactor,
+            conditionFactor: payload.conditionFactor,
+            complexityFactor: payload.complexityFactor,
+          },
+        }),
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/what-if-scenarios'] });
+      toast({ title: "Scenario Created", description: `${formData.name} has been saved.` });
+      setNewScenarioOpen(false);
+      setFormData({ name: "", description: "", buildingType: "R1", region: "Central Benton", baseYear: 2025, comparisonYear: 2025, adjustmentFactor: 1.0, qualityFactor: 1.0, conditionFactor: 1.0, complexityFactor: 1.0 });
+    },
+    onError: () => toast({ variant: "destructive", title: "Create Failed", description: "Could not save scenario." }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: number; payload: typeof formData }) => {
+      const res = await fetch(`/api/what-if-scenarios/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: payload.name,
+          description: payload.description,
+          assumptions: {
+            buildingType: payload.buildingType,
+            region: payload.region,
+            baseYear: payload.baseYear,
+            comparisonYear: payload.comparisonYear,
+            adjustmentFactor: payload.adjustmentFactor,
+            qualityFactor: payload.qualityFactor,
+            conditionFactor: payload.conditionFactor,
+            complexityFactor: payload.complexityFactor,
+          },
+        }),
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/what-if-scenarios'] });
+      toast({ title: "Scenario Updated", description: `${formData.name} has been updated.` });
+      setEditScenarioOpen(false);
+    },
+    onError: () => toast({ variant: "destructive", title: "Update Failed", description: "Could not update scenario." }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/what-if-scenarios/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`${res.status}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/what-if-scenarios'] });
+      toast({ title: "Scenario Deleted", description: "The scenario has been removed." });
+      setDeleteConfirmOpen(false);
+      setSelectedScenario(null);
+      setActiveTab("scenarios");
+    },
+    onError: () => toast({ variant: "destructive", title: "Delete Failed", description: "Could not delete scenario." }),
+  });
+
   // Handle selecting a scenario
   const handleSelectScenario = (scenario: Scenario) => {
     setSelectedScenario(scenario);
     setActiveTab("results");
   };
-  
-  // Handle creating a new scenario
-  const handleCreateScenario = () => {
-    // Mock API call - In a real app, this would call the API to create the scenario
-    toast({
-      title: "Scenario Created",
-      description: `${formData.name} has been created.`,
-    });
-    
-    setNewScenarioOpen(false);
-    // Reset form data
-    setFormData({
-      name: "",
-      description: "",
-      buildingType: "R1",
-      region: "Central Benton",
-      baseYear: 2025,
-      comparisonYear: 2025,
-      adjustmentFactor: 1.0,
-      qualityFactor: 1.0,
-      conditionFactor: 1.0,
-      complexityFactor: 1.0
-    });
-  };
-  
-  // Handle updating a scenario
+
+  const handleCreateScenario = () => createMutation.mutate(formData);
+
   const handleUpdateScenario = () => {
-    // Mock API call - In a real app, this would call the API to update the scenario
-    toast({
-      title: "Scenario Updated",
-      description: `${formData.name} has been updated.`,
-    });
-    
-    setEditScenarioOpen(false);
+    if (selectedScenario) updateMutation.mutate({ id: selectedScenario.id, payload: formData });
   };
-  
-  // Handle deleting a scenario
+
   const handleDeleteScenario = () => {
-    // Mock API call - In a real app, this would call the API to delete the scenario
-    toast({
-      title: "Scenario Deleted",
-      description: "The scenario has been removed.",
-    });
-    
-    setDeleteConfirmOpen(false);
-    setSelectedScenario(null);
-    setActiveTab("scenarios");
+    if (selectedScenario) deleteMutation.mutate(selectedScenario.id);
   };
-  
-  // Handle saving a scenario
+
   const handleSaveScenario = () => {
-    // Mock API call - In a real app, this would call the API to save the scenario
-    toast({
-      title: "Scenario Saved",
-      description: "The scenario has been saved to your collection.",
-    });
+    if (selectedScenario) updateMutation.mutate({ id: selectedScenario.id, payload: formData });
   };
   
   // Handle edit scenario button
@@ -179,46 +222,35 @@ export default function WhatIfScenariosPage() {
   // Render loading state
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="text-center">
-          <p>Loading scenarios...</p>
-        </div>
-      </div>
+      <MainLayout pageTitle="What-If Scenarios" loading>
+        <div />
+      </MainLayout>
     );
   }
-  
+
   // Render error state
   if (error) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="text-center text-red-500">
-          <p>Error loading scenarios. Please try again.</p>
-        </div>
-      </div>
+      <MainLayout
+        pageTitle="What-If Scenarios"
+        error={{ message: 'Error loading scenarios. Please try again.' }}
+      >
+        <div />
+      </MainLayout>
     );
   }
   
   return (
-    <>
-      <Helmet>
-        <title>What-If Scenarios | BCBS</title>
-      </Helmet>
-      
-      <div className="container mx-auto py-8 px-4">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">What-If Scenarios</h1>
-            <p className="text-muted-foreground">
-              Create and analyze different cost scenarios for building assessments
-            </p>
-          </div>
-          
-          <div className="mt-4 md:mt-0">
-            <Button onClick={() => setNewScenarioOpen(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              New Scenario
-            </Button>
-          </div>
+    <MainLayout
+      pageTitle="What-If Scenarios"
+      pageDescription="Create and analyze different cost scenarios for building assessments"
+    >
+      <div className="py-4">
+        <div className="flex justify-end mb-6">
+          <Button onClick={() => setNewScenarioOpen(true)}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            New Scenario
+          </Button>
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -782,6 +814,6 @@ export default function WhatIfScenariosPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </>
+    </MainLayout>
   );
 }

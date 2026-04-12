@@ -1,286 +1,394 @@
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart3, LineChart, PieChart, TrendingUp, Map } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { BarChart3, LineChart as LineChartIcon, TrendingUp, Map, AlertCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import LayoutWrapper from '@/components/layout/LayoutWrapper';
-import MainContent from '@/components/layout/MainContent';
+import {
+  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  Tooltip, Legend, ResponsiveContainer, Cell
+} from 'recharts';
+import MainLayout from '@/components/layout/MainLayout';
 
-/**
- * Analytics Page
- * 
- * This page provides analytics and visualizations for building cost data:
- * - Cost Trends: Timeline analysis of cost changes
- * - Regional Analysis: Geographic comparison of costs
- * - Building Type Analysis: Comparison across building categories
- * - Predictive Analysis: Forward-looking cost projections
- */
+const CHART_COLORS = ['#1e6fa8', '#2a9d8f', '#e76f51', '#264653', '#f4a261'];
+
+const formatCurrency = (v: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(v);
+
+function ChartSkeleton() {
+  return (
+    <div className="h-[360px] flex flex-col gap-3 p-4">
+      <Skeleton className="h-full w-full" />
+    </div>
+  );
+}
+
+function EndpointPending({ name }: { name: string }) {
+  return (
+    <div className="h-[360px] flex items-center justify-center text-muted-foreground text-sm">
+      <div className="text-center space-y-2">
+        <AlertCircle className="h-8 w-8 mx-auto opacity-40" />
+        <p>{name} endpoint is being provisioned. Check back shortly.</p>
+      </div>
+    </div>
+  );
+}
+
+async function fetchJson(url: string) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  return res.json();
+}
+
 const AnalyticsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('cost-trends');
-  const [timeRange, setTimeRange] = useState('1-year');
+  const [timeRange, setTimeRange] = useState('12m');
   const [region, setRegion] = useState('all');
   const [buildingType, setBuildingType] = useState('all');
-  
-  // Mock data for visualizations
-  const costTrendsData = [
-    { month: 'Jan', value: 2350 },
-    { month: 'Feb', value: 2400 },
-    { month: 'Mar', value: 2200 },
-    { month: 'Apr', value: 2500 },
-    { month: 'May', value: 2700 },
-    { month: 'Jun', value: 2900 },
-    { month: 'Jul', value: 3100 },
-    { month: 'Aug', value: 3200 },
-    { month: 'Sep', value: 3150 },
-    { month: 'Oct', value: 3300 },
-    { month: 'Nov', value: 3400 },
-    { month: 'Dec', value: 3500 },
-  ];
-  
-  // Regional data for map visualization
-  const regionalData = [
-    { region: 'Eastern', value: 3200 },
-    { region: 'Western', value: 3500 },
-    { region: 'Northern', value: 3100 },
-    { region: 'Southern', value: 3300 },
-    { region: 'Central', value: 3400 },
-  ];
-  
-  // Building type data for comparison
-  const buildingTypeData = [
-    { type: 'Residential', value: 3200 },
-    { type: 'Commercial', value: 3900 },
-    { type: 'Industrial', value: 4200 },
-    { type: 'Agricultural', value: 2800 },
-    { type: 'Special Purpose', value: 3700 },
-  ];
-  
-  // Placeholder for visualization components
-  const renderCostTrendsChart = () => (
-    <div className="bg-white p-6 rounded-lg shadow-sm h-[400px] flex items-center justify-center">
-      <div className="text-center">
-        <LineChart className="w-16 h-16 mx-auto mb-4 text-[#29B7D3]" />
-        <h3 className="text-lg font-medium text-gray-800 mb-2">Cost Trends Visualization</h3>
-        <p className="text-gray-500 mb-4">Interactive time series chart showing building cost trends over time</p>
-        <Button size="sm" variant="outline">View Full Data</Button>
-      </div>
-    </div>
-  );
-  
-  const renderRegionalAnalysisChart = () => (
-    <div className="bg-white p-6 rounded-lg shadow-sm h-[400px] flex items-center justify-center">
-      <div className="text-center">
-        <Map className="w-16 h-16 mx-auto mb-4 text-[#47AD55]" />
-        <h3 className="text-lg font-medium text-gray-800 mb-2">Regional Cost Map</h3>
-        <p className="text-gray-500 mb-4">Geographic heatmap showing building costs across different regions</p>
-        <Button size="sm" variant="outline">View Full Data</Button>
-      </div>
-    </div>
-  );
-  
-  const renderBuildingTypeChart = () => (
-    <div className="bg-white p-6 rounded-lg shadow-sm h-[400px] flex items-center justify-center">
-      <div className="text-center">
-        <BarChart3 className="w-16 h-16 mx-auto mb-4 text-[#7B61FF]" />
-        <h3 className="text-lg font-medium text-gray-800 mb-2">Building Type Comparison</h3>
-        <p className="text-gray-500 mb-4">Bar chart comparing costs across different building types and categories</p>
-        <Button size="sm" variant="outline">View Full Data</Button>
-      </div>
-    </div>
-  );
-  
-  const renderPredictiveAnalysisChart = () => (
-    <div className="bg-white p-6 rounded-lg shadow-sm h-[400px] flex items-center justify-center">
-      <div className="text-center">
-        <TrendingUp className="w-16 h-16 mx-auto mb-4 text-[#F59E0B]" />
-        <h3 className="text-lg font-medium text-gray-800 mb-2">Predictive Analysis</h3>
-        <p className="text-gray-500 mb-4">Forecast charts showing projected building costs for future periods</p>
-        <Button size="sm" variant="outline">View Full Data</Button>
-      </div>
-    </div>
-  );
-  
-  // Filter controls
-  const renderFilterControls = () => (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Time Range</label>
-        <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select time range" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1-month">1 Month</SelectItem>
-            <SelectItem value="3-months">3 Months</SelectItem>
-            <SelectItem value="6-months">6 Months</SelectItem>
-            <SelectItem value="1-year">1 Year</SelectItem>
-            <SelectItem value="5-years">5 Years</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Region</label>
-        <Select value={region} onValueChange={setRegion}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select region" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Regions</SelectItem>
-            <SelectItem value="eastern">Eastern</SelectItem>
-            <SelectItem value="western">Western</SelectItem>
-            <SelectItem value="northern">Northern</SelectItem>
-            <SelectItem value="southern">Southern</SelectItem>
-            <SelectItem value="central">Central</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Building Type</label>
-        <Select value={buildingType} onValueChange={setBuildingType}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select building type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="residential">Residential</SelectItem>
-            <SelectItem value="commercial">Commercial</SelectItem>
-            <SelectItem value="industrial">Industrial</SelectItem>
-            <SelectItem value="agricultural">Agricultural</SelectItem>
-            <SelectItem value="special">Special Purpose</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
-  );
-  
+
+  // Real TerraFusion OS endpoint — AnalyticsController.GetTrends()
+  const trendsQuery = useQuery({
+    queryKey: ['/api/analytics/trends', timeRange, region, buildingType],
+    queryFn: () => fetchJson(
+      `/api/analytics/trends?timeRange=${timeRange}` +
+      (region !== 'all' ? `&region=${region}` : '') +
+      (buildingType !== 'all' ? `&buildingType=${buildingType}` : '')
+    ),
+    retry: 1,
+    staleTime: 60_000,
+  });
+
+  // Real TerraFusion OS endpoint — AnalyticsController.GetMarket()
+  const marketQuery = useQuery({
+    queryKey: ['/api/analytics/market', region, buildingType],
+    queryFn: () => fetchJson(
+      `/api/analytics/market` +
+      (region !== 'all' || buildingType !== 'all'
+        ? `?${new URLSearchParams({ ...(region !== 'all' ? { region } : {}), ...(buildingType !== 'all' ? { buildingType } : {}) })}`
+        : '')
+    ),
+    retry: 1,
+    staleTime: 60_000,
+  });
+
+  // New endpoints — Segment 3. Returns 404 until BenchmarkingController is created. Graceful fallback.
+  const regionalQuery = useQuery({
+    queryKey: ['/api/analytics/regional-comparison', buildingType],
+    queryFn: () => fetchJson(
+      `/api/analytics/regional-comparison` +
+      (buildingType !== 'all' ? `?buildingType=${buildingType}` : '')
+    ),
+    retry: false,
+    staleTime: 60_000,
+  });
+
+  const buildingTypeQuery = useQuery({
+    queryKey: ['/api/analytics/building-type-comparison', region],
+    queryFn: () => fetchJson(
+      `/api/analytics/building-type-comparison` +
+      (region !== 'all' ? `?region=${region}` : '')
+    ),
+    retry: false,
+    staleTime: 60_000,
+  });
+
+  // Normalize trend data — TF returns { dataPoints: [{period, value}] } or flat array
+  const trendData: { period: string; value: number }[] = React.useMemo(() => {
+    if (!trendsQuery.data) return [];
+    const raw = trendsQuery.data?.dataPoints ?? trendsQuery.data?.DataPoints ?? trendsQuery.data;
+    if (!Array.isArray(raw)) return [];
+    return raw.map((d: Record<string, unknown>) => ({
+      period: String(d.period ?? d.Period ?? d.month ?? d.Month ?? ''),
+      value: Number(d.value ?? d.Value ?? d.avgCost ?? d.AvgCost ?? 0),
+    }));
+  }, [trendsQuery.data]);
+
+  // Normalize regional data
+  const regionalData: { region: string; avgCost: number; count: number }[] = React.useMemo(() => {
+    if (!regionalQuery.data) return [];
+    const raw = regionalQuery.data?.regions ?? regionalQuery.data?.Regions ?? regionalQuery.data;
+    if (!Array.isArray(raw)) return [];
+    return raw.map((d: Record<string, unknown>) => ({
+      region: String(d.region ?? d.Region ?? ''),
+      avgCost: Number(d.avgCost ?? d.AvgCost ?? d.medianCost ?? d.MedianCost ?? 0),
+      count: Number(d.count ?? d.Count ?? 0),
+    }));
+  }, [regionalQuery.data]);
+
+  // Normalize building type data
+  const buildingTypeData: { type: string; avgCost: number; count: number }[] = React.useMemo(() => {
+    if (!buildingTypeQuery.data) return [];
+    const raw = buildingTypeQuery.data?.buildingTypes ?? buildingTypeQuery.data?.BuildingTypes ?? buildingTypeQuery.data;
+    if (!Array.isArray(raw)) return [];
+    return raw.map((d: Record<string, unknown>) => ({
+      type: String(d.buildingType ?? d.BuildingType ?? d.type ?? d.Type ?? ''),
+      avgCost: Number(d.avgCost ?? d.AvgCost ?? d.baseRate ?? d.BaseRate ?? 0),
+      count: Number(d.count ?? d.Count ?? 0),
+    }));
+  }, [buildingTypeQuery.data]);
+
+  // Market KPIs from /api/analytics/market
+  const marketKPIs = React.useMemo(() => {
+    if (!marketQuery.data) return null;
+    const d = marketQuery.data;
+    return {
+      avgCost: d.AvgCostPerSqft ?? d.avgCostPerSqft ?? d.AverageCost ?? d.averageCost ?? null,
+      totalProperties: d.TotalProperties ?? d.totalProperties ?? null,
+      yoyChange: d.YearOverYearChange ?? d.yearOverYearChange ?? null,
+      topRegion: d.TopRegion ?? d.topRegion ?? null,
+    };
+  }, [marketQuery.data]);
+
   return (
-    <LayoutWrapper>
-      <MainContent title="Analytics">
-        <div className="container mx-auto py-6 space-y-6">
-          {/* v1: All analytics on this page use hardcoded placeholder data */}
-          <div role="status" style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid hsl(var(--tf-warning-amber) / 0.3)', background: 'hsl(var(--tf-warning-amber) / 0.08)', color: 'hsl(var(--tf-warning-amber))', fontSize: '12px' }}>
-            DEMO DATA — Analytics charts show placeholder values. Real Benton County ratio analytics are deferred to v1.2.
+    <MainLayout pageTitle="Analytics Dashboard" pageDescription="Benton County building cost analytics — live data from TerraFusion OS">
+        <div className="space-y-6">
+          {/* KPI Strip */}
+          {marketQuery.isLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[0,1,2,3].map(i => <Skeleton key={i} className="h-20 rounded-lg" />)}
+            </div>
+          ) : marketQuery.isError ? null : marketKPIs ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {marketKPIs.avgCost !== null && (
+                <Card>
+                  <CardContent className="pt-4 pb-3">
+                    <div className="text-xs text-muted-foreground">Avg Assessed Value</div>
+                    <div className="text-2xl font-bold">{formatCurrency(marketKPIs.avgCost)}</div>
+                  </CardContent>
+                </Card>
+              )}
+              {marketKPIs.totalProperties !== null && (
+                <Card>
+                  <CardContent className="pt-4 pb-3">
+                    <div className="text-xs text-muted-foreground">Total Properties</div>
+                    <div className="text-2xl font-bold">{Number(marketKPIs.totalProperties).toLocaleString()}</div>
+                  </CardContent>
+                </Card>
+              )}
+              {marketKPIs.yoyChange !== null && (
+                <Card>
+                  <CardContent className="pt-4 pb-3">
+                    <div className="text-xs text-muted-foreground">YoY Change</div>
+                    <div className="text-2xl font-bold">{Number(marketKPIs.yoyChange).toFixed(1)}%</div>
+                  </CardContent>
+                </Card>
+              )}
+              {marketKPIs.topRegion !== null && (
+                <Card>
+                  <CardContent className="pt-4 pb-3">
+                    <div className="text-xs text-muted-foreground">Top Type</div>
+                    <div className="text-xl font-bold">{String(marketKPIs.topRegion)}</div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          ) : null}
+
+          {/* Filter Controls */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">Time Range</label>
+              <Select value={timeRange} onValueChange={setTimeRange}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="3m">3 Months</SelectItem>
+                  <SelectItem value="6m">6 Months</SelectItem>
+                  <SelectItem value="12m">1 Year</SelectItem>
+                  <SelectItem value="24m">2 Years</SelectItem>
+                  <SelectItem value="60m">5 Years</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">Region</label>
+              <Select value={region} onValueChange={setRegion}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Regions</SelectItem>
+                  <SelectItem value="kennewick">Kennewick</SelectItem>
+                  <SelectItem value="richland">Richland</SelectItem>
+                  <SelectItem value="prosser">Prosser</SelectItem>
+                  <SelectItem value="rural">Rural</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-1">Building Type</label>
+              <Select value={buildingType} onValueChange={setBuildingType}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="R1">Residential (R1)</SelectItem>
+                  <SelectItem value="C1">Commercial (C1)</SelectItem>
+                  <SelectItem value="I1">Industrial (I1)</SelectItem>
+                  <SelectItem value="AG">Agricultural</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div className="flex flex-col space-y-2">
-            <h1 className="text-3xl font-bold flex items-center">
-              <BarChart3 className="mr-2 h-6 w-6 text-primary" />
-              Analytics Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Comprehensive analytics and visualizations for building cost data
-            </p>
-          </div>
-          
-          {renderFilterControls()}
-          
-          <Tabs defaultValue="cost-trends" value={activeTab} onValueChange={setActiveTab} className="w-full">
+
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid grid-cols-4 w-full">
               <TabsTrigger value="cost-trends">
-                <LineChart className="h-4 w-4 mr-2" />
-                Cost Trends
+                <LineChartIcon className="h-4 w-4 mr-2" />Cost Trends
               </TabsTrigger>
               <TabsTrigger value="regional">
-                <Map className="h-4 w-4 mr-2" />
-                Regional Analysis
+                <Map className="h-4 w-4 mr-2" />Regional
               </TabsTrigger>
               <TabsTrigger value="building-type">
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Building Type
+                <BarChart3 className="h-4 w-4 mr-2" />Building Type
               </TabsTrigger>
               <TabsTrigger value="predictive">
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Predictive Analysis
+                <TrendingUp className="h-4 w-4 mr-2" />Predictive
               </TabsTrigger>
             </TabsList>
-            
+
             <div className="mt-6">
+              {/* Cost Trends — /api/analytics/trends */}
               <TabsContent value="cost-trends" className="mt-0">
-                {renderCostTrendsChart()}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Building Cost Trends</CardTitle>
+                    <CardDescription>Average cost per sqft over time — TerraFusion PostgreSQL</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {trendsQuery.isLoading ? <ChartSkeleton /> :
+                     trendsQuery.isError ? (
+                       <Alert variant="destructive">
+                         <AlertCircle className="h-4 w-4" />
+                         <AlertDescription>Unable to load trend data: {(trendsQuery.error as Error)?.message}</AlertDescription>
+                       </Alert>
+                     ) :
+                     trendData.length === 0 ? (
+                       <div className="h-[360px] flex items-center justify-center text-muted-foreground text-sm">No trend data returned for this filter.</div>
+                     ) : (
+                       <ResponsiveContainer width="100%" height={360}>
+                         <LineChart data={trendData}>
+                           <CartesianGrid strokeDasharray="3 3" />
+                           <XAxis dataKey="period" tick={{ fontSize: 11 }} />
+                           <YAxis tickFormatter={v => `$${(v/1).toFixed(0)}`} tick={{ fontSize: 11 }} />
+                           <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                           <Legend />
+                           <Line type="monotone" dataKey="value" stroke="#1e6fa8" strokeWidth={2} dot={false} name="Avg Cost/sqft" />
+                         </LineChart>
+                       </ResponsiveContainer>
+                     )}
+                  </CardContent>
+                </Card>
               </TabsContent>
-              
+
+              {/* Regional Analysis — /api/analytics/regional-comparison */}
               <TabsContent value="regional" className="mt-0">
-                {renderRegionalAnalysisChart()}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Regional Cost Comparison</CardTitle>
+                    <CardDescription>Median assessment by region — Benton County</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {regionalQuery.isLoading ? <ChartSkeleton /> :
+                     regionalQuery.isError ? <EndpointPending name="Regional comparison" /> :
+                     regionalData.length === 0 ? (
+                       <div className="h-[360px] flex items-center justify-center text-muted-foreground text-sm">No regional data returned.</div>
+                     ) : (
+                       <ResponsiveContainer width="100%" height={360}>
+                         <BarChart data={regionalData}>
+                           <CartesianGrid strokeDasharray="3 3" />
+                           <XAxis dataKey="region" tick={{ fontSize: 11 }} />
+                           <YAxis tickFormatter={v => formatCurrency(v)} tick={{ fontSize: 11 }} />
+                           <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                           <Legend />
+                           <Bar dataKey="avgCost" name="Avg Cost/sqft" radius={[4,4,0,0]}>
+                             {regionalData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
+                           </Bar>
+                         </BarChart>
+                       </ResponsiveContainer>
+                     )}
+                  </CardContent>
+                </Card>
               </TabsContent>
-              
+
+              {/* Building Type — /api/analytics/building-type-comparison */}
               <TabsContent value="building-type" className="mt-0">
-                {renderBuildingTypeChart()}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Building Type Comparison</CardTitle>
+                    <CardDescription>Cost distribution by building type code</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {buildingTypeQuery.isLoading ? <ChartSkeleton /> :
+                     buildingTypeQuery.isError ? <EndpointPending name="Building type comparison" /> :
+                     buildingTypeData.length === 0 ? (
+                       <div className="h-[360px] flex items-center justify-center text-muted-foreground text-sm">No building type data returned.</div>
+                     ) : (
+                       <ResponsiveContainer width="100%" height={360}>
+                         <BarChart data={buildingTypeData} layout="vertical">
+                           <CartesianGrid strokeDasharray="3 3" />
+                           <XAxis type="number" tickFormatter={v => formatCurrency(v)} tick={{ fontSize: 11 }} />
+                           <YAxis type="category" dataKey="type" width={80} tick={{ fontSize: 11 }} />
+                           <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                           <Bar dataKey="avgCost" name="Avg Cost/sqft" radius={[0,4,4,0]}>
+                             {buildingTypeData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
+                           </Bar>
+                         </BarChart>
+                       </ResponsiveContainer>
+                     )}
+                  </CardContent>
+                </Card>
               </TabsContent>
-              
+
+              {/* Predictive — uses trend data with simple forward projection */}
               <TabsContent value="predictive" className="mt-0">
-                {renderPredictiveAnalysisChart()}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Predictive Analysis</CardTitle>
+                    <CardDescription>Forward projection based on historical trend — powered by TerraFusion AI</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {trendsQuery.isLoading ? <ChartSkeleton /> :
+                     trendsQuery.isError ? (
+                       <Alert variant="destructive">
+                         <AlertCircle className="h-4 w-4" />
+                         <AlertDescription>Unable to load trend data for projection.</AlertDescription>
+                       </Alert>
+                     ) :
+                     trendData.length < 2 ? (
+                       <EndpointPending name="Trend projection" />
+                     ) : (() => {
+                       // Simple linear extrapolation of last 3 data points for forward projection
+                       const last = trendData[trendData.length - 1].value;
+                       const prev = trendData[Math.max(0, trendData.length - 4)].value;
+                       const slope = trendData.length > 1 ? (last - prev) / Math.min(3, trendData.length - 1) : 0;
+                       const projected = [1,2,3,4,5,6].map(i => ({
+                         period: `+${i}mo`,
+                         projected: Math.round(last + slope * i),
+                       }));
+                       const combined = [
+                         ...trendData.slice(-6).map(d => ({ period: d.period, historical: d.value, projected: undefined })),
+                         ...projected.map(d => ({ period: d.period, historical: undefined, projected: d.projected })),
+                       ];
+                       return (
+                         <ResponsiveContainer width="100%" height={360}>
+                           <LineChart data={combined}>
+                             <CartesianGrid strokeDasharray="3 3" />
+                             <XAxis dataKey="period" tick={{ fontSize: 11 }} />
+                             <YAxis tickFormatter={v => formatCurrency(v)} tick={{ fontSize: 11 }} />
+                             <Tooltip formatter={(v: number) => formatCurrency(v)} />
+                             <Legend />
+                             <Line type="monotone" dataKey="historical" stroke="#1e6fa8" strokeWidth={2} dot={false} name="Historical" connectNulls={false} />
+                             <Line type="monotone" dataKey="projected" stroke="#e76f51" strokeWidth={2} strokeDasharray="5 5" dot={false} name="Projected" connectNulls={false} />
+                           </LineChart>
+                         </ResponsiveContainer>
+                       );
+                     })()}
+                  </CardContent>
+                </Card>
               </TabsContent>
             </div>
           </Tabs>
-          
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Key Insights</CardTitle>
-                <CardDescription>Summary of important analytics findings</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  <li className="flex items-start">
-                    <TrendingUp className="h-5 w-5 text-[#47AD55] mr-2 mt-0.5" />
-                    <span>Building costs have increased by an average of 5.8% over the past year</span>
-                  </li>
-                  <li className="flex items-start">
-                    <Map className="h-5 w-5 text-[#29B7D3] mr-2 mt-0.5" />
-                    <span>Eastern region shows the highest growth rate at 7.2% year-over-year</span>
-                  </li>
-                  <li className="flex items-start">
-                    <BarChart3 className="h-5 w-5 text-[#7B61FF] mr-2 mt-0.5" />
-                    <span>Commercial buildings show cost increases 1.5× residential rates</span>
-                  </li>
-                  <li className="flex items-start">
-                    <PieChart className="h-5 w-5 text-[#F59E0B] mr-2 mt-0.5" />
-                    <span>Material costs represent the largest contributing factor to increases</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Recommendations</CardTitle>
-                <CardDescription>Actions based on current analytics</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  <li className="flex items-start">
-                    <div className="h-5 w-5 rounded-full bg-[#47AD55] flex items-center justify-center mr-2 mt-0.5">
-                      <span className="text-white text-xs">1</span>
-                    </div>
-                    <span>Review cost matrices for Eastern region to ensure accuracy</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="h-5 w-5 rounded-full bg-[#29B7D3] flex items-center justify-center mr-2 mt-0.5">
-                      <span className="text-white text-xs">2</span>
-                    </div>
-                    <span>Consider adjusting commercial building complexity factors</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="h-5 w-5 rounded-full bg-[#7B61FF] flex items-center justify-center mr-2 mt-0.5">
-                      <span className="text-white text-xs">3</span>
-                    </div>
-                    <span>Monitor material cost trends in the quarterly data analysis</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="h-5 w-5 rounded-full bg-[#F59E0B] flex items-center justify-center mr-2 mt-0.5">
-                      <span className="text-white text-xs">4</span>
-                    </div>
-                    <span>Implement predictive analytics for agricultural building sectors</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
         </div>
-      </MainContent>
-    </LayoutWrapper>
+    </MainLayout>
   );
 };
 

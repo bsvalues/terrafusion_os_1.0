@@ -13,7 +13,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "client", "src"),
-      "@shared": path.resolve(__dirname, "shared"),
+      // @shared alias removed — Drizzle schema deleted; types live in client/src/types/api.ts
       "@assets": path.resolve(__dirname, "attached_assets"),
     },
   },

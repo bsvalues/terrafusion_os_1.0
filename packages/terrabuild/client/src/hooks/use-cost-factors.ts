@@ -1,52 +1,50 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
-import { CostFactor, InsertCostFactor } from "@shared/schema";
+import { CostFactor, InsertCostFactor } from '@/types/api';
+
+// NOTE: No /api/cost-factors endpoint exists in TerraFusion.API yet.
+// Queries will return empty via React Query error state (graceful degradation).
 
 export function useCostFactors() {
-  // Get all cost factors
-  const { data: costFactors, isLoading: isLoadingFactors, error: factorsError } = useQuery({
-    queryKey: ["/api/cost-factors"],
+  const { data: costFactors, isLoading: isLoadingFactors, error: factorsError } = useQuery<CostFactor[]>({
+    queryKey: ["/api/costforge/cost-factors"],
   });
 
-  // Get a specific cost factor by region and building type
   const getCostFactorByRegionAndType = (region: string, buildingType: string) => {
-    return useQuery({
-      queryKey: ["/api/cost-factors", region, buildingType],
-      queryFn: () => apiRequest("GET", `/api/cost-factors/${region}/${buildingType}`),
+    return useQuery<CostFactor>({
+      queryKey: ["/api/costforge/cost-factors", region, buildingType],
+      queryFn: () => apiRequest(`/api/costforge/cost-factors/${encodeURIComponent(region)}/${encodeURIComponent(buildingType)}`),
       enabled: !!(region && buildingType),
     });
   };
 
-  // Create a new cost factor
   const createCostFactor = useMutation({
-    mutationFn: (factor: InsertCostFactor) => 
-      apiRequest("POST", "/api/cost-factors", factor),
+    mutationFn: (factor: InsertCostFactor) =>
+      apiRequest("/api/costforge/cost-factors", { method: "POST", body: JSON.stringify(factor) }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/cost-factors"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/costforge/cost-factors"] });
     }
   });
 
-  // Update a cost factor
   const updateCostFactor = useMutation({
-    mutationFn: ({ id, factor }: { id: number, factor: Partial<InsertCostFactor> }) => 
-      apiRequest("PATCH", `/api/cost-factors/${id}`, factor),
+    mutationFn: ({ id, factor }: { id: number, factor: Partial<InsertCostFactor> }) =>
+      apiRequest(`/api/costforge/cost-factors/${id}`, { method: "PATCH", body: JSON.stringify(factor) }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/cost-factors"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/costforge/cost-factors"] });
     }
   });
 
-  // Delete a cost factor
   const deleteCostFactor = useMutation({
-    mutationFn: (id: number) => 
-      apiRequest("DELETE", `/api/cost-factors/${id}`),
+    mutationFn: (id: number) =>
+      apiRequest(`/api/costforge/cost-factors/${id}`, { method: "DELETE" }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/cost-factors"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/costforge/cost-factors"] });
     }
   });
 
   return {
-    costFactors: costFactors as CostFactor[] | undefined,
+    costFactors,
     isLoadingFactors,
     factorsError,
     getCostFactorByRegionAndType,

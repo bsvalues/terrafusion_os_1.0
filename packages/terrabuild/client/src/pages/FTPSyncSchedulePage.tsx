@@ -12,7 +12,7 @@ import FTPConnectionStatus from '@/components/data-connectors/FTPConnectionStatu
 import { useDocumentTitle } from '@/hooks/use-document-title';
 
 const FTPSyncSchedulePage: React.FC = () => {
-  useDocumentTitle('FTP Sync Scheduling - BCBS');
+  useDocumentTitle('FTP Sync Scheduling - CostForge');
   const [ftpConnected, setFtpConnected] = useState<boolean | null>(null);
   const [connectionId, setConnectionId] = useState<number>(1); // Default connection ID
 

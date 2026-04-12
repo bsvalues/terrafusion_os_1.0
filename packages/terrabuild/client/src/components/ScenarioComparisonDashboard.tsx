@@ -8,7 +8,7 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { Copy, Trash2, BarChart3, ArrowRight, Info, Plus, GitCompare, FileDown, RefreshCw } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import type { CalculationResult } from './BCBSCostCalculatorAPI';
+import type { CalculationResult } from './CostCalculatorAPI';
 
 // Helper function to format currency
 const formatCurrency = (value: number) => {

@@ -12,7 +12,7 @@ import AICostWizardPage from '@/pages/AICostWizardPage';
 import AIToolsPage from '@/pages/AIToolsPage';
 import AnalyticsPage from '@/pages/AnalyticsPage';
 import ARVisualizationPage from '@/pages/ARVisualizationPage';
-import AuthPage from '@/pages/auth-page';
+// AuthPage removed — CostForge is an OS module; auth is handled by TerraFusion OS shell
 import BenchmarkingPage from '@/pages/BenchmarkingPage';
 import BentonCountyDemoPage from '@/pages/BentonCountyDemoPage';
 import CalculatorPage from '@/pages/CalculatorPage';
@@ -22,8 +22,10 @@ import DashboardPage from '@/pages/DashboardPage';
 import DataExplorationDemo from '@/pages/DataExplorationDemo';
 import DataImportPage from '@/pages/DataImportPage';
 import EnhancedCalculatorPage from '@/pages/EnhancedCalculatorPage';
-import EnhancedCalculatorPageV2 from '@/pages/EnhancedCalculatorPageV2';
-import LandingPage from '@/pages/LandingPage';
+// EnhancedCalculatorPageV2 — unrouted, kept for future use (uncomment to activate)
+// import EnhancedCalculatorPageV2 from '@/pages/EnhancedCalculatorPageV2';
+// LandingPage — removed; CostForge is an OS module, no marketing landing page
+// import LandingPage from '@/pages/LandingPage';
 import MCPOverviewPage from '@/pages/MCPOverviewPage';
 import PredictiveCostAnalysisDemo from '@/pages/PredictiveCostAnalysisDemo';
 import RegionalCostComparisonPage from '@/pages/RegionalCostComparisonPage';
@@ -37,7 +39,7 @@ import WorkflowDashboardPage from '@/pages/WorkflowDashboardPage';
 // Use the newly renamed file to avoid casing conflicts
 import ContextualDataPage from '@/pages/contextual-data';
 import CostCalculator from '@/pages/CostCalculator';
-import BCBSCostCalculatorAPI from '@/components/BCBSCostCalculatorAPI';
+import CostCalculatorAPI from '@/components/CostCalculatorAPI';
 import CostWizardPage from '@/pages/CostWizardPage';
 import CreateProjectPage from '@/pages/CreateProjectPage';
 import DataConnectionsPage from '@/pages/DataConnectionsPage';
@@ -54,7 +56,7 @@ import ProjectDetailsPage from '@/pages/ProjectDetailsPage';
 import PropertyBrowserPage from '@/pages/PropertyBrowserPage';
 import PropertyDetailsPage from '@/pages/PropertyDetailsPage';
 import SharedProjectDashboardPage from '@/pages/SharedProjectDashboardPage';
-import SupabaseTestPage from '@/pages/SupabaseTestPage';
+// SupabaseTestPage removed — Supabase not used in OS module
 import SwarmPage from '@/pages/SwarmPage';
 import TutorialsPage from '@/pages/tutorials';
 // Legacy header replaced with CostForgeHeader in MainLayout
@@ -65,219 +67,27 @@ import { SidebarProvider } from './contexts/SidebarContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { WindowProvider } from './contexts/WindowContext';
 // Theme providers have been replaced with TerraFusion design system
-// Import for NavigationMenuProvider has been removed
-import { EnhancedSupabaseProvider } from '@/components/supabase/EnhancedSupabaseProvider';
+// EnhancedSupabaseProvider removed — Supabase not used in OS module
 import { OsContextProvider } from './contexts/OsContext';
 import React, { useEffect } from 'react';
-
-// Add TypeScript declaration for our custom window property
-declare global {
-  interface Window {
-    lastSupabaseErrorTime?: number;
-  }
-}
 
 // Add link to Remix Icon for icons
 const RemixIconLink = () => (
   <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
 );
 
-// Track global promise rejections and handle them gracefully
+// Lightweight global error handler — logs unhandled rejections in dev only
 const GlobalErrorHandler = () => {
   useEffect(() => {
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      event.preventDefault(); // Prevent default console error
-      console.warn('Unhandled promise rejection caught:', event.reason);
-
-      try {
-        // Log error details to help with debugging
-        const errorSource = event.reason?.stack?.split('\n')?.[1] || 'Unknown source';
-        const errorMessage = event.reason?.message || 'Unknown error';
-
-        // Determine the error type for more specific handling
-        const isApiError =
-          errorMessage.includes('fetch') ||
-          errorMessage.includes('network') ||
-          errorMessage.includes('API') ||
-          errorMessage.includes('/api/');
-
-        const isAuthError =
-          errorMessage.includes('auth') ||
-          errorMessage.includes('login') ||
-          errorMessage.includes('token') ||
-          errorSource.includes('AuthContext') ||
-          errorSource.includes('useAuth');
-
-        const isSupabaseError =
-          errorMessage.includes('Supabase') ||
-          errorSource.includes('supabase') ||
-          errorSource.includes('Supabase') ||
-          errorMessage.includes('Failed to fetch');
-
-        // Handling specific error types
-        if (isSupabaseError) {
-          // Handle Supabase connection errors more gracefully
-          // Avoid flooding the console with repeated errors
-          const timeSinceLastSupabaseError = Date.now() - (window.lastSupabaseErrorTime || 0);
-          if (timeSinceLastSupabaseError > 5000) {
-            // Throttle to once every 5 seconds
-            window.lastSupabaseErrorTime = Date.now();
-            console.group('Supabase Connection Issue:');
-            console.warn(
-              'The application is having trouble connecting to Supabase. This is expected in development mode.'
-            );
-            console.warn(
-              'If using this in production, check your Supabase credentials and network connection.'
-            );
-            console.groupEnd();
-          }
-
-          // Don't log detailed errors for Supabase in dev mode to reduce console noise
-          return;
-        }
-
-        if (process.env.NODE_ENV === 'development') {
-          // In development, show detailed error information
-          console.group('Error Details:');
-          console.error('Error:', errorMessage);
-          console.error('Source:', errorSource);
-          console.error('Stack:', event.reason?.stack);
-          console.groupEnd();
-        }
-
-        // For production, we could send errors to a monitoring service
-        // logErrorToService({ message: errorMessage, source: errorSource, stack: event.reason?.stack });
-      } catch (handlingError) {
-        // Ensure our error handling doesn't itself cause errors
-        console.error('Error while handling unhandled rejection:', handlingError);
-      }
-    };
-
-    const handleError = (event: ErrorEvent) => {
-      // Determine the type of error
-      const isAuthError =
-        event.message.includes('useAuth') ||
-        event.message.includes('AuthProvider') ||
-        event.message.includes('Authentication') ||
-        event.message.includes('token') ||
-        event.message.includes('login');
-
-      const isSupabaseError =
-        event.message.includes('Supabase') ||
-        event.message.includes('supabase') ||
-        (event.filename && event.filename.includes('supabase')) ||
-        event.message.includes('Failed to fetch');
-
-      // Handle specific error types more gracefully
-      if (isAuthError) {
-        // Don't prevent default for auth errors, but log them specially
-        console.warn('Auth-related error caught:', event.message);
-      }
-
-      // Handle Supabase connection errors more gracefully
-      if (isSupabaseError) {
-        // Throttle Supabase error messages to reduce console noise
-        const timeSinceLastSupabaseError = Date.now() - (window.lastSupabaseErrorTime || 0);
-        if (timeSinceLastSupabaseError > 5000) {
-          // Throttle to once every 5 seconds
-          window.lastSupabaseErrorTime = Date.now();
-          console.group('Supabase Connection Issue:');
-          console.warn(
-            'The application is having trouble connecting to Supabase. This is expected in development mode.'
-          );
-          console.warn(
-            'If using this in production, check your Supabase credentials and network connection.'
-          );
-          console.groupEnd();
-        }
-        return; // Skip further logging for Supabase errors
-      }
-
-      // Log all other errors in development
-      if (process.env.NODE_ENV === 'development') {
-        console.group('Global Error:');
-        console.error('Message:', event.message);
-        console.error('Source:', event.filename, 'Line:', event.lineno, 'Col:', event.colno);
-        console.error('Error object:', event.error);
-        console.groupEnd();
-      }
-    };
-
-    // Add the event listeners
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    window.addEventListener('error', handleError);
-
-    // Clean up the event listeners on component unmount
-    return () => {
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-      window.removeEventListener('error', handleError);
-    };
-  }, []);
-
-  return null;
-};
-
-// Development mode setup - avoid Promise usage to prevent unhandled rejections
-// This is only run once at app startup to set the mock user data
-if (process.env.NODE_ENV === 'development') {
-  // Set mock admin user directly in the query cache
-  queryClient.setQueryData(['/api/user'], {
-    id: 1,
-    username: 'admin',
-    name: 'Admin User',
-    role: 'admin',
-    isActive: true,
-  });
-}
-
-// Global error handler wrapper component to handle unhandled rejections and errors
-const ErrorHandlerWrapper = () => {
-  // For development mode, set mock admin user directly in the query cache
-  useEffect(() => {
-    try {
       if (import.meta.env.DEV) {
-        console.log('Setting up mock admin user for development');
-        // Set mock user data directly to avoid HTML parsing issues
-        queryClient.setQueryData(['/api/user'], {
-          id: 1,
-          username: 'admin',
-          name: 'Admin User',
-          role: 'admin',
-          isActive: true,
-        });
-
-        // Set up a mock implementation for fetch when requesting user data
-        const originalFetch = window.fetch;
-        window.fetch = function (input, init) {
-          // Check if this is a request to /api/user or /api/auth/user
-          if (
-            typeof input === 'string' &&
-            (input.endsWith('/api/user') || input.endsWith('/api/auth/user'))
-          ) {
-            console.log('Intercepting auth request in development mode');
-            return Promise.resolve({
-              ok: true,
-              status: 200,
-              json: () =>
-                Promise.resolve({
-                  id: 1,
-                  username: 'admin',
-                  name: 'Admin User',
-                  role: 'admin',
-                  isActive: true,
-                }),
-            } as Response);
-          }
-          // Otherwise, use the original fetch
-          return originalFetch(input as RequestInfo, init);
-        };
+        console.warn('[CostForge] Unhandled rejection:', event.reason);
       }
-    } catch (error) {
-      console.error('Error setting up mock user:', error);
-    }
+    };
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    return () => window.removeEventListener('unhandledrejection', handleUnhandledRejection);
   }, []);
-
-  return <GlobalErrorHandler />;
+  return null;
 };
 
 // Create a wrapper component to combine Route and ProtectedRoute
@@ -306,13 +116,13 @@ function Router() {
     <Switch>
       {/* CostForge opens directly to Dashboard — no marketing landing page */}
       <Route path="/" component={DashboardPage} />
-      <Route path="/auth" component={AuthPage} />
+      {/* /auth route removed — CostForge is an OS module, auth is owned by TerraFusion OS */}
       <Route path="/documentation" component={DocumentationPage} />
       <Route path="/tutorials" component={TutorialsPage} />
       <Route path="/faq" component={FAQPage} />
 
       {/* Supabase test route - without protection for easier testing */}
-      <Route path="/supabase-test" component={SupabaseTestPage} />
+      {/* /supabase-test route removed — Supabase not used in OS module */}
       <Route path="/cost-wizard" component={CostWizardPage} />
 
       {/* Collaborative routes - without CollaborationProvider at this level */}
@@ -336,7 +146,7 @@ function Router() {
 
       {/* Other protected routes */}
       <ProtectedRouteWrapper path="/dashboard" component={DashboardPage} />
-      <ProtectedRouteWrapper path="/calculator" component={BCBSCostCalculatorAPI} />
+      <ProtectedRouteWrapper path="/calculator" component={CostCalculatorAPI} />
       <ProtectedRouteWrapper path="/calculator-v2" component={EnhancedCalculatorPage} />
       <ProtectedRouteWrapper path="/workflows" component={WorkflowDashboardPage} />
       <ProtectedRouteWrapper path="/calculator-old" component={CalculatorPage} />
@@ -392,7 +202,7 @@ function Router() {
       <ProtectedRouteWrapper path="/properties/:id" component={PropertyDetailsPage} />
       <ProtectedRouteWrapper path="/geo-assessment" component={GeoAssessmentPage} />
       <ProtectedRouteWrapper path="/mcp-visualizations" component={MCPVisualizationsPage} />
-      <ProtectedRouteWrapper path="/cost-calculator" component={BCBSCostCalculatorAPI} />
+      <ProtectedRouteWrapper path="/cost-calculator" component={CostCalculatorAPI} />
       <ProtectedRouteWrapper path="/cost-calculator-legacy" component={CostCalculator} />
       <ProtectedRouteWrapper path="/ai-swarm" component={SwarmPage} />
 
@@ -423,11 +233,9 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <RemixIconLink />
-          <ErrorHandlerWrapper />
+          <GlobalErrorHandler />
           <OsContextProvider>
-          <EnhancedSupabaseProvider>
             <WindowProvider>
-              {/* Using only the AuthProvider to prevent duplicate context issues */}
               <AuthProvider>
                 <DataFlowProvider>
                   <SidebarProvider>
@@ -437,7 +245,6 @@ function App() {
                 </DataFlowProvider>
               </AuthProvider>
             </WindowProvider>
-          </EnhancedSupabaseProvider>
           </OsContextProvider>
         </ThemeProvider>
       </QueryClientProvider>

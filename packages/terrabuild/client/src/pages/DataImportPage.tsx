@@ -3,8 +3,8 @@ import { useDropzone } from "react-dropzone";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import LayoutWrapper from '@/components/layout/LayoutWrapper';
-import MainContent from '@/components/layout/MainContent';
+
+import MainLayout from '@/components/layout/MainLayout';
 import PropertyDataImportHandler from '@/components/data/PropertyDataImportHandler';
 import { 
   Card, 
@@ -360,8 +360,8 @@ const DataImportPage = () => {
   };
   
   return (
-    <LayoutWrapper>
-      <MainContent title="Data Import">
+    
+      <MainLayout pageTitle="Data Import">
         <div className="container mx-auto py-6">
       <div className="flex items-center gap-3 mb-6">
         <h1 className="text-3xl font-bold">Benton County Data Import</h1>
@@ -515,10 +515,7 @@ const DataImportPage = () => {
         
         {/* Property Data Tab */}
         <TabsContent value="property-data">
-          <PropertyDataImportHandler 
-            title="Property Data Import" 
-            description="Upload and import Benton County property data CSV files"
-          />
+          <PropertyDataImportHandler />
         </TabsContent>
         
         {/* Files Tab */}
@@ -886,8 +883,8 @@ const DataImportPage = () => {
         </SheetContent>
       </Sheet>
     </div>
-      </MainContent>
-    </LayoutWrapper>
+      </MainLayout>
+    
   );
 };
 

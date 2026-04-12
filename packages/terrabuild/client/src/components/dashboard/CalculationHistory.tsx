@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCalculationHistory } from "@/hooks/use-calculation-history";
-import type { Calculation } from "@shared/schema";
+import type { Calculation } from '@/types/api';
 import { format } from "date-fns";
 import {
     BuildingIcon,

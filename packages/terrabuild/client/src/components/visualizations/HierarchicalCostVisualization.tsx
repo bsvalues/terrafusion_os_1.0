@@ -60,10 +60,10 @@ export function HierarchicalCostVisualization({
             <span className="font-medium">{node.name}</span>
           </div>
           <div className="text-right">
-            <div>{formatCurrency(node.value)}</div>
-            {node.count !== undefined && (
+            <div>{formatCurrency(node.value ?? 0)}</div>
+            {(node as any).count !== undefined && (
               <div className="text-xs text-muted-foreground">
-                {node.count} data points
+                {(node as any).count} data points
               </div>
             )}
           </div>

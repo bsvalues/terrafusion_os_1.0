@@ -1,15 +1,15 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { insertSettingSchema, Setting } from "../../../shared/schema";
 import { useToast } from "./use-toast";
 import { z } from "zod";
 
-interface AutoLoginData {
-  autoLoginEnabled: boolean;
-  authToken: string;
+// NOTE: /api/settings routes are dead (Express). This hook is a no-op placeholder.
+interface Setting {
+  key: string;
+  value: string;
 }
 
-const updateSettingSchema = insertSettingSchema;
+const updateSettingSchema = z.object({ key: z.string(), value: z.string() });
 type UpdateSettingInput = z.infer<typeof updateSettingSchema>;
 
 export function useAutoLogin() {

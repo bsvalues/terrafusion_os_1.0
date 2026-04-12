@@ -25,7 +25,7 @@ import { useCostMatrix } from "@/hooks/use-cost-matrix";
 import { toast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { CostMatrix } from "@shared/schema";
+import type { CostMatrix } from '@/types/api';
 import { useMutation } from "@tanstack/react-query";
 import {
     ArrowRight,

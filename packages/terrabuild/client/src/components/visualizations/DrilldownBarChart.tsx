@@ -76,10 +76,10 @@ const DrilldownBarChart: React.FC<DrilldownChartProps> = ({
   // Process data for chart when hierarchical data or drill path changes
   useEffect(() => {
     if (hierarchicalData?.data) {
-      const processedData = processDataForDrilldown(hierarchicalData.data, drillPath);
+      const processedData = processDataForDrilldown(hierarchicalData.data as any, drillPath as unknown as any);
       setChartData(processedData);
     } else if (initialData) {
-      const processedData = processDataForDrilldown(initialData, drillPath);
+      const processedData = processDataForDrilldown(initialData as unknown as any[], drillPath as unknown as any);
       setChartData(processedData);
     } else {
       setChartData(null);

@@ -412,8 +412,8 @@ export default function CostPredictionWizard() {
       
       setIsSubmitting(true);
       
-      // Call the API to get the prediction
-      const response = await fetch('/api/mcp/enhanced-predict-cost', {
+      // Call TerraFusion .NET API for AI cost prediction
+      const response = await fetch('/api/aimodules/predict-cost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

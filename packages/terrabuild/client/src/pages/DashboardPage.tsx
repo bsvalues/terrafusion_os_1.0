@@ -13,7 +13,6 @@ import {
   BarChart4,
   TrendingUp,
   PieChart,
-  ArrowUpRight,
   Calendar,
   BarChart,
   ChevronRight,
@@ -22,19 +21,7 @@ import {
   ClipboardList,
 } from 'lucide-react';
 
-const recentCalcs = [
-  { parcel: 'BEN-2024-00142', type: 'R1 — Single Family', value: '$342,000', date: 'Apr 9, 2026' },
-  { parcel: 'BEN-2024-00098', type: 'C2 — Office Commercial', value: '$1,240,000', date: 'Apr 9, 2026' },
-  { parcel: 'BEN-2024-00211', type: 'R2 — Multi-Family', value: '$780,000', date: 'Apr 8, 2026' },
-  { parcel: 'BEN-2024-00055', type: 'I1 — Light Industrial', value: '$2,100,000', date: 'Apr 8, 2026' },
-  { parcel: 'BEN-2024-00307', type: 'A1 — Agricultural', value: '$95,000', date: 'Apr 7, 2026' },
-];
-
-const recentReports = [
-  { title: 'Q1 2026 Cost Approach Summary', date: 'April 1, 2026' },
-  { title: 'Annual Building Type Distribution', date: 'March 28, 2026' },
-  { title: 'Regional Material Cost Variance', date: 'February 12, 2026' },
-];
+// recentCalcs and recentReports are now fetched from the API (see useQuery hooks below)
 
 export default function DashboardPage() {
   const [selectedTab, setSelectedTab] = useState<string>('overview');
@@ -59,6 +46,25 @@ export default function DashboardPage() {
     queryFn: () => apiRequest('/api/properties?page=1&limit=1'),
     staleTime: 60_000,
   });
+
+  // Recent valuation records from CostForge
+  const { data: valuationsData } = useQuery({
+    queryKey: ['/api/costforge/valuations'],
+    queryFn: async () => {
+      const res = await fetch('/api/costforge/valuations?limit=5');
+      if (!res.ok) return null;
+      return res.json();
+    },
+    staleTime: 60_000,
+  });
+
+  const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const recentCalcs: { parcel: string; type: string; value: string; date: string }[] = (valuationsData?.valuations ?? []).slice(0, 5).map((v: Record<string, unknown>) => ({
+    parcel: String(v.ParcelId ?? v.parcelId ?? '—'),
+    type: String(v.BuildingType ?? v.buildingType ?? v.PropertyType ?? v.propertyType ?? '—'),
+    value: fmt.format(Number(v.FinalReconciledValue ?? v.finalReconciledValue ?? v.Rcnld ?? v.rcnld ?? 0)),
+    date: v.CreatedAt || v.createdAt ? new Date(String(v.CreatedAt ?? v.createdAt)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—',
+  }));
 
   const fmtNum = (n: unknown) =>
     typeof n === 'number' ? n.toLocaleString() : '—';
@@ -142,9 +148,9 @@ export default function DashboardPage() {
                   <CardTitle className="text-base flex items-center gap-2">
                     <Calculator className="h-4 w-4 text-primary" />
                     Recent Calculations
-                    <span className="ml-auto px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-600 border border-amber-500/30">
-                      DEMO DATA
-                    </span>
+                    {recentCalcs.length === 0 && (
+                      <span className="ml-auto text-xs text-muted-foreground">No saved valuations yet</span>
+                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -241,27 +247,36 @@ export default function DashboardPage() {
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
                   <FileBarChart className="h-4 w-4 text-primary" />
-                  Reports Archive
-                  <span className="ml-auto px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-600 border border-amber-500/30">
-                    DEMO DATA
-                  </span>
+                  Recent Valuation Reports
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="divide-y divide-border">
-                  {recentReports.map((report, i) => (
-                    <div key={i} className="flex items-center justify-between px-6 py-4">
-                      <div>
-                        <div className="text-sm font-medium">{report.title}</div>
-                        <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                          <Calendar className="h-3 w-3" /> {report.date}
+                  {recentCalcs.length === 0 ? (
+                    <div className="px-6 py-8 text-center text-sm text-muted-foreground">
+                      No saved valuations yet. Run a calculation and save it to see reports here.
+                    </div>
+                  ) : (
+                    recentCalcs.map((calc, i) => (
+                      <div key={i} className="flex items-center justify-between px-6 py-4">
+                        <div>
+                          <div className="text-sm font-medium">{calc.parcel}</div>
+                          <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                            <Calendar className="h-3 w-3" /> {calc.date}
+                            {calc.type !== '—' && <span className="ml-2">{calc.type}</span>}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-primary">{calc.value}</span>
+                          <Button variant="outline" size="sm" asChild>
+                            <Link href="/reports">
+                              <FileDown className="h-3.5 w-3.5 mr-1.5" /> View
+                            </Link>
+                          </Button>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">
-                        <FileDown className="h-3.5 w-3.5 mr-1.5" /> Export
-                      </Button>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
                 <div className="px-6 py-3 border-t border-border">
                   <Button variant="ghost" size="sm" className="text-xs w-full" asChild>
