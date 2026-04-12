@@ -3096,6 +3096,7 @@ public class CostForgeController : ControllerBase
 
   /// <summary>GET /api/costforge/building-types — Distinct building type codes from the cost matrix.</summary>
   [HttpGet("building-types")]
+  [AllowAnonymous]
   public IActionResult GetBuildingTypes()
   {
     var types = BentonCostData.CostMatrix
@@ -3108,6 +3109,7 @@ public class CostForgeController : ControllerBase
 
   /// <summary>GET /api/costforge/regions — Distinct regions from the cost matrix.</summary>
   [HttpGet("regions")]
+  [AllowAnonymous]
   public IActionResult GetRegions()
   {
     var regions = BentonCostData.CostMatrix
