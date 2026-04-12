@@ -90,7 +90,7 @@ export default function TutorialsPage() {
     },
     {
       title: "Regional Cost Analysis",
-      description: "Compare building costs across different regions in Benton County.",
+      description: "Compare building costs across different reval areas in Benton County.",
       category: "intermediate",
       duration: "20 min",
       icon: <Map className="h-10 w-10 text-[#47AD55]" />,

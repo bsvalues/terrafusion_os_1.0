@@ -104,7 +104,7 @@ export default function AIMatrixAnalyzer() {
           <Textarea
             id="matrixData"
             className="min-h-[200px] font-mono text-sm mt-2"
-            placeholder={`{\n  "matrix": [...],\n  "regions": [...],\n  "buildingTypes": [...]\n}`}
+            placeholder={`{\n  "matrix": [...],\n  "revalAreas": [...],\n  "buildingTypes": [...]\n}`}
             value={matrixData}
             onChange={(e) => setMatrixData(e.target.value)}
           />

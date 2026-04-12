@@ -3,7 +3,7 @@ import { apiRequest } from '@/lib/queryClient';
 // Types for prediction input and results
 export interface PredictionInput {
   buildingType: string;
-  region: string;
+  revalArea: string;
   squareFootage: number;
   quality: string;
   complexity: string;

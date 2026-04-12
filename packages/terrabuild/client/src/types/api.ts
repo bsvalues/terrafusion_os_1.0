@@ -53,7 +53,7 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export interface CostMatrix {
   id: number;
   buildingType: string;
-  region: string;
+  revalArea: string;
   year: number;
   baseRate: number;
   description?: string | null;
@@ -89,8 +89,8 @@ export interface Calculation {
   totalCost?: string | null;
   quality?: string | null;
   complexity?: string | null;
-  region?: string | null;
-  regionFactor?: string | null;
+  revalArea?: string | null;
+  revalAreaFactor?: string | null;
   parameters?: Record<string, unknown> | null;
 }
 
@@ -119,7 +119,7 @@ export interface BuildingCost {
   id: number;
   buildingType: string;
   costPerSqFt: number;
-  region: string;
+  revalArea: string;
 }
 
 export type InsertBuildingCost = Omit<BuildingCost, 'id'>;

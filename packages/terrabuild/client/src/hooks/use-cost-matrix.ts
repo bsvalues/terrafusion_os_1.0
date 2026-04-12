@@ -20,13 +20,13 @@ export function useCostMatrix() {
     });
   };
 
-  // Get cost matrix entries by region
-  const getByRegion = (region: string) => {
+  // Get cost matrix entries by Reval Area (PACS Cycle)
+  const getByRevalArea = (revalArea: string) => {
     return useQuery({
-      queryKey: ["/api/costforge/cost-matrices", { region }],
+      queryKey: ["/api/costforge/cost-matrices", { revalArea }],
       queryFn: () =>
-        apiRequest(`/api/costforge/cost-matrices?region=${encodeURIComponent(region)}`),
-      enabled: !!region,
+        apiRequest(`/api/costforge/cost-matrices?revalArea=${encodeURIComponent(revalArea)}`),
+      enabled: !!revalArea,
     });
   };
 
@@ -40,13 +40,13 @@ export function useCostMatrix() {
     });
   };
 
-  // Get cost matrix entry by region and building type
-  const getByRegionAndBuildingType = (region: string, buildingType: string) => {
+  // Get cost matrix entry by Reval Area and building type
+  const getByRevalAreaAndBuildingType = (revalArea: string, buildingType: string) => {
     return useQuery({
-      queryKey: ["/api/costforge/cost-matrices", { region, buildingType }],
+      queryKey: ["/api/costforge/cost-matrices", { revalArea, buildingType }],
       queryFn: () =>
-        apiRequest(`/api/costforge/cost-matrices?region=${encodeURIComponent(region)}&buildingType=${encodeURIComponent(buildingType)}`),
-      enabled: !!region && !!buildingType,
+        apiRequest(`/api/costforge/cost-matrices?revalArea=${encodeURIComponent(revalArea)}&buildingType=${encodeURIComponent(buildingType)}`),
+      enabled: !!revalArea && !!buildingType,
     });
   };
 
@@ -148,9 +148,9 @@ export function useCostMatrix() {
   return {
     getAll,
     getById,
-    getByRegion,
+    getByRevalArea,
     getByBuildingType,
-    getByRegionAndBuildingType,
+    getByRevalAreaAndBuildingType,
     importFromJson,
     create,
     update,

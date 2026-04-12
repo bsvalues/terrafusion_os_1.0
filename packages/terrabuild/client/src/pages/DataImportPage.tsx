@@ -95,7 +95,7 @@ interface ImportHistoryItem {
 
 interface ImportPreviewItem {
   id: string;
-  region: string;
+  revalArea: string;
   buildingType: string;
   year: number;
   baseCost: number;
@@ -140,7 +140,8 @@ const DataImportPage = () => {
     queryKey: ['/api/files'],
     queryFn: async (): Promise<ImportFile[]> => {
       try {
-        return await apiRequest('/api/files');
+        const res = await apiRequest('/api/files');
+        return Array.isArray(res) ? res : (res?.files ?? []);
       } catch {
         return [];
       }
@@ -154,7 +155,8 @@ const DataImportPage = () => {
     queryKey: ['/api/import-history'],
     queryFn: async (): Promise<ImportHistoryItem[]> => {
       try {
-        return await apiRequest('/api/import-history');
+        const res = await apiRequest('/api/import-history');
+        return Array.isArray(res) ? res : (res?.history ?? []);
       } catch {
         return [];
       }
@@ -629,7 +631,7 @@ const DataImportPage = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Region</TableHead>
+                      <TableHead>Reval Area</TableHead>
                       <TableHead>Building Type</TableHead>
                       <TableHead>Year</TableHead>
                       <TableHead>Base Cost</TableHead>
@@ -639,7 +641,7 @@ const DataImportPage = () => {
                   <TableBody>
                     {previewData.slice(0, 10).map((item) => (
                       <TableRow key={item.id}>
-                        <TableCell>{item.region}</TableCell>
+                        <TableCell>{item.revalArea}</TableCell>
                         <TableCell>{item.buildingType}</TableCell>
                         <TableCell>{item.year}</TableCell>
                         <TableCell>${item.baseCost.toLocaleString()}</TableCell>

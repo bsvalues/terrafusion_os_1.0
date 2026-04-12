@@ -6,11 +6,11 @@ import { FileDown, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
 interface CalculationResult {
-  region: string;
+  revalArea: string;
   buildingType: string;
   squareFootage: number;
   baseCost: string;
-  regionFactor: string;
+  revalAreaFactor: string;
   complexityFactor?: number;
   costPerSqft: number;
   totalCost: number;
@@ -53,8 +53,8 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
   const generateFilename = () => {
     const date = new Date().toISOString().split('T')[0];
     const buildingType = calculationResult.buildingType.toLowerCase();
-    const region = calculationResult.region.toLowerCase().replace('_', '-');
-    return `${buildingType}-building-cost-${region}-${date}.pdf`;
+    const revalArea = calculationResult.revalArea.toLowerCase().replace('_', '-');
+    return `${buildingType}-building-cost-${revalArea}-${date}.pdf`;
   };
 
   const exportToPDF = async () => {
@@ -185,7 +185,7 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
           <div className="mb-6">
             <h2 className="text-2xl font-bold mb-2">Cost Calculation Results</h2>
             <p className="text-gray-600">
-              {calculationResult.squareFootage || 0} sq ft {calculationResult.buildingType ? calculationResult.buildingType.toLowerCase() : 'unknown'} building in {calculationResult.region ? calculationResult.region.toLowerCase().replace('_', ' ') : 'unknown location'}
+              {calculationResult.squareFootage || 0} sq ft {calculationResult.buildingType ? calculationResult.buildingType.toLowerCase() : 'unknown'} building in {calculationResult.revalArea ? calculationResult.revalArea.toLowerCase().replace('_', ' ') : 'unknown location'}
             </p>
           </div>
           
@@ -217,8 +217,8 @@ const CostReportPDFExport: React.FC<CostReportPDFExportProps> = ({
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span>Region Factor:</span>
-                  <span className="font-medium">{calculationResult.regionFactor ? Number(calculationResult.regionFactor).toFixed(2) : '1.00'}</span>
+                  <span>Reval Area Factor:</span>
+                  <span className="font-medium">{calculationResult.revalAreaFactor ? Number(calculationResult.revalAreaFactor).toFixed(2) : '1.00'}</span>
                 </div>
               </div>
             </div>

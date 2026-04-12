@@ -721,11 +721,11 @@ const PropertyDetailsPage = () => {
                           // Extract building type based on primary use code
                           const buildingType = determineBuildingType(improvement.primaryUseCd);
                           // Determine region based on property location
-                          const region = determineRegion(data.property);
+                          const revalArea = determineRevalArea(data.property);
                           
                           // Calculate estimated cost based on improvement characteristics
                           const squareFootage = improvement.totalArea ? parseFloat(improvement.totalArea) : 0;
-                          const baseCost = calculateBaseCost(buildingType, region);
+                          const baseCost = calculateBaseCost(buildingType, revalArea);
                           const qualityFactor = determineQualityFactor(improvement);
                           const ageFactor = determineAgeFactor(improvement.actualYearBuilt);
                           
@@ -735,7 +735,7 @@ const PropertyDetailsPage = () => {
                           // Calculation tracking for data flow visibility
                           const calculationSteps = [
                             { step: 'Building Type', value: buildingType, source: `Primary Use Code: ${improvement.primaryUseCd || 'N/A'}` },
-                            { step: 'Region', value: region, source: `Neighborhood: ${data.property.neighborhood || 'N/A'}` },
+                            { step: 'Reval Area', value: revalArea, source: `Neighborhood: ${data.property.neighborhood || 'N/A'}` },
                             { step: 'Square Footage', value: `${squareFootage.toLocaleString()} sq ft`, source: 'Total Area' },
                             { step: 'Base Cost', value: `$${baseCost.toFixed(2)}/sq ft`, source: '2025 Cost Matrix' },
                             { step: 'Quality Factor', value: qualityFactor.toFixed(2), source: `Quality Code: ${improvement.details[0]?.qualityCd || 'Standard'}` },
@@ -761,8 +761,8 @@ const PropertyDetailsPage = () => {
                                     <p className="font-medium">{buildingType || 'Unknown'}</p>
                                   </div>
                                   <div>
-                                    <p className="text-sm text-muted-foreground mb-1">Region</p>
-                                    <p className="font-medium">{region || 'Unknown'}</p>
+                                    <p className="text-sm text-muted-foreground mb-1">Reval Area</p>
+                                    <p className="font-medium">{revalArea || 'Unknown'}</p>
                                   </div>
                                   <div>
                                     <p className="text-sm text-muted-foreground mb-1">Square Footage</p>
@@ -1029,13 +1029,13 @@ const determineBuildingType = (primaryUseCd: string | null): string => {
   return codeMap[primaryUseCd] || 'R1';
 };
 
-const determineRegion = (property: Property): string => {
-  // Determine region based on property location
+const determineRevalArea = (property: Property): string => {
+  // Determine reval area based on property location
   // This is a simple implementation that could be enhanced with more detailed mapping
   if (!property.neighborhood) return 'Central Benton';
 
   const neighborhood = property.neighborhood.toLowerCase();
-  
+
   if (neighborhood.includes('west') || neighborhood.includes('richland')) {
     return 'West Benton';
   } else if (neighborhood.includes('east') || neighborhood.includes('kennewick')) {
@@ -1045,7 +1045,7 @@ const determineRegion = (property: Property): string => {
   }
 };
 
-const calculateBaseCost = (buildingType: string, region: string): number => {
+const calculateBaseCost = (buildingType: string, revalArea: string): number => {
   // Base costs per square foot by building type and region
   const costMatrix: Record<string, Record<string, number>> = {
     'R1': {
@@ -1091,7 +1091,7 @@ const calculateBaseCost = (buildingType: string, region: string): number => {
   };
 
   const regionCosts = costMatrix[buildingType] || costMatrix['R1'];
-  return regionCosts[region] || regionCosts['Central Benton'];
+  return regionCosts[revalArea] || regionCosts['Central Benton'];
 };
 
 const determineQualityFactor = (improvement: Improvement): number => {

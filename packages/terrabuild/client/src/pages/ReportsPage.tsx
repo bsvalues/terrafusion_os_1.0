@@ -68,7 +68,7 @@ export default function ReportsPage() {
     refetchOnWindowFocus: false
   });
 
-  const reports: Report[] = rawReports;
+  const reports: Report[] = Array.isArray(rawReports) ? rawReports : [];
   
   // Get the selected report
   const selectedReport = selectedReportId 

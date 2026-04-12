@@ -46,7 +46,7 @@ export default function StatisticalAnalysisDemo() {
             <AlertDescription className="text-blue-700">
               This dashboard provides advanced statistical analysis of building cost data.
               Explore summary statistics, distribution analysis, outlier detection, and correlation analysis.
-              Use the filters to focus on specific regions or building types.
+              Use the filters to focus on specific reval areas or building types.
             </AlertDescription>
           </Alert>
         )}
@@ -54,7 +54,7 @@ export default function StatisticalAnalysisDemo() {
         <div className="grid gap-6 md:grid-cols-7">
           <div className="md:col-span-2">
             <FilterControlPanel
-              allowedFilters={['regions', 'buildingTypes']}
+              allowedFilters={['revalAreas', 'buildingTypes']}
               compact={true}
             />
             
@@ -171,7 +171,7 @@ export default function StatisticalAnalysisDemo() {
               <div>
                 <h3 className="text-lg font-medium mb-2">Best Practices for Analysis</h3>
                 <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-2">
-                  <li>Compare similar building types and regions for more meaningful insights</li>
+                  <li>Compare similar building types and reval areas for more meaningful insights</li>
                   <li>Be cautious about drawing conclusions from small sample sizes</li>
                   <li>Consider outliers carefully - they may represent errors or genuine special cases</li>
                   <li>Remember that correlation does not imply causation</li>

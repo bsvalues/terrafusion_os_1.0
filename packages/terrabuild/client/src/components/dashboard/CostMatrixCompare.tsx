@@ -48,7 +48,7 @@ import {
 
 interface MatrixDiff {
   buildingType: string;
-  region: string;
+  revalArea: string;
   year1: number;
   year2: number;
   baseCost1: number;
@@ -70,8 +70,8 @@ export default function CostMatrixCompare() {
     decreases: 0,
     noChange: 0,
     averageChange: 0,
-    maxIncrease: { value: 0, type: '', region: '' },
-    maxDecrease: { value: 0, type: '', region: '' },
+    maxIncrease: { value: 0, type: '', revalArea: '' },
+    maxDecrease: { value: 0, type: '', revalArea: '' },
   });
   const [isComparing, setIsComparing] = useState<boolean>(false);
 
@@ -112,18 +112,18 @@ export default function CostMatrixCompare() {
     setTimeout(() => {
       // Generate comparison data for each building type and region combination
       const buildingTypes = [...new Set(matrices.map((m: any) => m.buildingType))];
-      const regions = [...new Set(matrices.map((m: any) => m.region))];
+      const revalAreas = [...new Set(matrices.map((m: any) => m.revalArea))];
 
       const results: MatrixDiff[] = [];
       let totalChange = 0;
       let increases = 0;
       let decreases = 0;
       let noChange = 0;
-      let maxIncrease = { value: 0, type: '', region: '' };
-      let maxDecrease = { value: 0, type: '', region: '' };
+      let maxIncrease = { value: 0, type: '', revalArea: '' };
+      let maxDecrease = { value: 0, type: '', revalArea: '' };
 
       buildingTypes.forEach((type: any) => {
-        regions.forEach((region: any) => {
+        revalAreas.forEach((revalArea: any) => {
           // Get base costs from matrices (or simulate them)
           const baseCost1 = Number(matrix1.baseCost || (Math.random() * 200 + 100).toFixed(2));
           const baseCost2 = Number(matrix2.baseCost || (Math.random() * 200 + 100).toFixed(2));
@@ -137,12 +137,12 @@ export default function CostMatrixCompare() {
           if (percentageChange > 0) {
             increases++;
             if (percentageChange > maxIncrease.value) {
-              maxIncrease = { value: percentageChange, type: String(type), region: String(region) };
+              maxIncrease = { value: percentageChange, type: String(type), revalArea: String(revalArea) };
             }
           } else if (percentageChange < 0) {
             decreases++;
             if (percentageChange < maxDecrease.value) {
-              maxDecrease = { value: percentageChange, type: String(type), region: String(region) };
+              maxDecrease = { value: percentageChange, type: String(type), revalArea: String(revalArea) };
             }
           } else {
             noChange++;
@@ -150,7 +150,7 @@ export default function CostMatrixCompare() {
 
           results.push({
             buildingType: type,
-            region,
+            revalArea,
             year1: matrix1.matrixYear,
             year2: matrix2.matrixYear,
             baseCost1,
@@ -207,8 +207,8 @@ export default function CostMatrixCompare() {
       decreases: 0,
       noChange: 0,
       averageChange: 0,
-      maxIncrease: { value: 0, type: '', region: '' },
-      maxDecrease: { value: 0, type: '', region: '' },
+      maxIncrease: { value: 0, type: '', revalArea: '' },
+      maxDecrease: { value: 0, type: '', revalArea: '' },
     });
   };
 
@@ -243,7 +243,7 @@ export default function CostMatrixCompare() {
                 ))}
                 {matrices.map((matrix: any) => (
                   <SelectItem key={matrix.id} value={String(matrix.id)}>
-                    {matrix.matrixYear} - {matrix.region} - {matrix.buildingType}
+                    {matrix.matrixYear} - {matrix.revalArea} - {matrix.buildingType}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -267,7 +267,7 @@ export default function CostMatrixCompare() {
                 ))}
                 {matrices.map((matrix: any) => (
                   <SelectItem key={matrix.id} value={String(matrix.id)}>
-                    {matrix.matrixYear} - {matrix.region} - {matrix.buildingType}
+                    {matrix.matrixYear} - {matrix.revalArea} - {matrix.buildingType}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -368,7 +368,7 @@ export default function CostMatrixCompare() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Building Type</TableHead>
-                      <TableHead>Region</TableHead>
+                      <TableHead>Reval Area</TableHead>
                       <TableHead>{diffResults[0]?.year1} Cost</TableHead>
                       <TableHead>{diffResults[0]?.year2} Cost</TableHead>
                       <TableHead>Difference</TableHead>
@@ -379,7 +379,7 @@ export default function CostMatrixCompare() {
                     {diffResults.map((diff, index) => (
                       <TableRow key={index}>
                         <TableCell>{diff.buildingType}</TableCell>
-                        <TableCell>{diff.region}</TableCell>
+                        <TableCell>{diff.revalArea}</TableCell>
                         <TableCell>{formatCurrency(diff.baseCost1)}</TableCell>
                         <TableCell>{formatCurrency(diff.baseCost2)}</TableCell>
                         <TableCell>{formatCurrency(diff.difference)}</TableCell>
@@ -437,7 +437,7 @@ export default function CostMatrixCompare() {
                     {summaryStats.maxIncrease.value > 0 ? (
                       <div className="pl-4 border-l-2 border-green-500">
                         <p className="font-medium">
-                          {summaryStats.maxIncrease.type} in {summaryStats.maxIncrease.region}
+                          {summaryStats.maxIncrease.type} in {summaryStats.maxIncrease.revalArea}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           Increased by {formatPercentage(summaryStats.maxIncrease.value)}
@@ -460,7 +460,7 @@ export default function CostMatrixCompare() {
                     {summaryStats.maxDecrease.value < 0 ? (
                       <div className="pl-4 border-l-2 border-red-500">
                         <p className="font-medium">
-                          {summaryStats.maxDecrease.type} in {summaryStats.maxDecrease.region}
+                          {summaryStats.maxDecrease.type} in {summaryStats.maxDecrease.revalArea}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           Decreased by {formatPercentage(Math.abs(summaryStats.maxDecrease.value))}

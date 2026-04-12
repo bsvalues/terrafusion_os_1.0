@@ -17,10 +17,10 @@ const ContextualDataPage: React.FC = () => {
   // Sample cost factors for CostBreakdownCard
   const sampleCostFactors = [
     {
-      name: "Regional Multiplier",
+      name: "Reval Area Multiplier",
       value: 1.25,
       unit: 'multiplier' as const,
-      explanation: "This factor accounts for regional differences in labor and material costs. The Central region has a 1.25x multiplier compared to the base rate.",
+      explanation: "This factor accounts for Reval Area differences in labor and material costs within Benton County. Reval 3 (North Richland / Horn Rapids) carries a 1.25x multiplier compared to the base rate.",
       impact: 'negative' as const,
       trend: [
         { date: "2021", value: 1.18 },
@@ -211,7 +211,7 @@ const ContextualDataPage: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Regional Factors</CardTitle>
+                      <CardTitle>Reval Area Factors</CardTitle>
                       <CardDescription>Contextual data examples</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -220,8 +220,8 @@ const ContextualDataPage: React.FC = () => {
                           <span className="text-sm">Material Cost Index:</span>
                           <DataPointContext
                             value={112.5}
-                            context="Compared to national baseline (100)"
-                            explanation="This index measures the relative cost of materials in this region compared to the national average."
+                            context="Compared to Benton County baseline (100)"
+                            explanation="This index measures the relative cost of materials in this Reval Area compared to the Benton County average."
                             trendData={[
                               { date: "2021", value: 108.2 },
                               { date: "2022", value: 110.1 },
@@ -252,11 +252,11 @@ const ContextualDataPage: React.FC = () => {
                         </div>
                         
                         <div className="flex justify-between items-center">
-                          <span className="text-sm">Regional Multiplier:</span>
+                          <span className="text-sm">Reval Area Multiplier:</span>
                           <DataPointContext
                             value={1.25}
-                            context="Adjustment factor for this region"
-                            explanation="This multiplier is applied to base costs to account for regional variations in labor and material costs."
+                            context="Adjustment factor for this Reval Area"
+                            explanation="This multiplier is applied to base costs to account for Reval Area variations in labor and material costs within Benton County."
                             breakdownData={[
                               { label: "Labor", value: 0.12, percentage: 48 },
                               { label: "Materials", value: 0.08, percentage: 32 },
@@ -264,8 +264,8 @@ const ContextualDataPage: React.FC = () => {
                             ]}
                             contextType="popover"
                             interactionEffect="highlight"
-                            onInteraction={(type, value) => 
-                              handleDataPointInteraction("Regional Multiplier", value, type)
+                            onInteraction={(type, value) =>
+                              handleDataPointInteraction("Reval Area Multiplier", value, type)
                             }
                           />
                         </div>

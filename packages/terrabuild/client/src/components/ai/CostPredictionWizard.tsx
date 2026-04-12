@@ -61,7 +61,7 @@ const buildingTypeSchema = z.object({
 });
 
 const locationSchema = z.object({
-  region: z.string().min(1, "Please select a region"),
+  revalArea: z.string().min(1, "Please select a Reval Area"),
 });
 
 const dimensionsSchema = z.object({
@@ -123,14 +123,14 @@ const wizardSchema = buildingTypeSchema
 // Type for our form values
 type WizardFormValues = z.infer<typeof wizardSchema>;
 
-// Pre-defined values for dropdowns
-const REGIONS = [
-  { id: 'central', name: 'Central Washington' },
-  { id: 'eastern', name: 'Eastern Washington' },
-  { id: 'western', name: 'Western Washington' },
-  { id: 'northern', name: 'Northern Washington' },
-  { id: 'southern', name: 'Southern Washington' },
-  { id: 'benton', name: 'Benton County' },
+// Reval Areas (Benton County WA PACS Cycle areas)
+const REVAL_AREAS = [
+  { id: 'Reval 1', name: 'Reval 1 — Kennewick (Urban Core)', factor: 1.00, description: 'Urban core of Kennewick. Average Benton County construction costs.' },
+  { id: 'Reval 2', name: 'Reval 2 — West Richland / Badger Mtn', factor: 1.05, description: 'West Richland and Badger Mountain growth area. Premium due to newer development.' },
+  { id: 'Reval 3', name: 'Reval 3 — North Richland / Horn Rapids', factor: 1.10, description: 'North Richland and Horn Rapids. Highest costs reflecting newer construction standards.' },
+  { id: 'Reval 4', name: 'Reval 4 — East Benton / Benton City', factor: 0.95, description: 'East Benton County including Benton City. Slightly lower costs.' },
+  { id: 'Reval 5', name: 'Reval 5 — Prosser / Wine Country', factor: 0.90, description: 'Prosser and wine country area. Rural pricing with agricultural character.' },
+  { id: 'Reval 6', name: 'Reval 6 — Rural / Agricultural Lands', factor: 0.82, description: 'Rural and agricultural lands. Lowest cost area reflecting rural construction market.' },
 ];
 
 // AI Provider options
@@ -169,9 +169,9 @@ const STEP_EXPLANATIONS = {
     }
   },
   location: {
-    title: "Location",
-    description: "Geographic location affects material and labor costs due to regional market conditions.",
-    help: "Different regions have varying construction costs based on local regulations, labor rates, and material availability."
+    title: "Reval Area",
+    description: "The reval area affects material and labor costs due to local market conditions within Benton County.",
+    help: "Different reval areas have varying construction costs based on local regulations, labor rates, and material availability."
   },
   dimensions: {
     title: "Building Size",
@@ -219,9 +219,9 @@ const AI_TIPS = {
     "Mixed-use buildings combine multiple types and are typically priced at the higher range"
   ],
   location: [
-    "Western Washington generally has 10-15% higher construction costs than Eastern Washington",
-    "Urban areas typically have higher labor and permit costs than rural locations",
-    "Some regions may have additional requirements for seismic, snow load, or wind considerations"
+    "Reval 3 (North Richland / Horn Rapids) has the highest cost factor at 1.10x due to newer construction standards",
+    "Reval 6 (Rural / Agricultural Lands) has the lowest cost factor at 0.82x reflecting rural construction markets",
+    "Reval 1 (Kennewick Urban Core) is the baseline at 1.00x — average Benton County construction costs"
   ],
   dimensions: [
     "Construction costs generally decrease per square foot as building size increases",
@@ -285,7 +285,7 @@ export default function CostPredictionWizard() {
     resolver: zodResolver(wizardSchema),
     defaultValues: {
       buildingType: undefined,
-      region: '',
+      revalArea: '',
       squareFootage: 0,
       yearBuilt: new Date().getFullYear() - 10,
       buildingAge: 10,
@@ -418,7 +418,7 @@ export default function CostPredictionWizard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           buildingType: values.buildingType,
-          region: values.region,
+          revalArea: values.revalArea,
           squareFootage: values.squareFootage,
           quality: values.quality,
           buildingAge: values.buildingAge,
@@ -737,29 +737,29 @@ export default function CostPredictionWizard() {
           <div className="space-y-4">
             <FormField
               control={form.control}
-              name="region"
+              name="revalArea"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Region</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
+                  <FormLabel>Reval Area (Cycle)</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select region" />
+                        <SelectValue placeholder="Select Reval Area" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {REGIONS.map((region) => (
-                        <SelectItem key={region.id} value={region.id}>
-                          {region.name}
+                      {REVAL_AREAS.map((area) => (
+                        <SelectItem key={area.id} value={area.id}>
+                          {area.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    Select the region where the building is located.
+                    Select the revaluation area (PACS Cycle field) where the building is located.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

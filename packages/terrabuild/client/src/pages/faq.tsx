@@ -40,7 +40,7 @@ export default function FAQPage() {
       items: [
         {
           question: "How do I use the cost calculator?",
-          answer: "To use the cost calculator, select the building type, enter the square footage, choose the region within your jurisdiction, and optionally specify additional parameters like quality grade. The system will instantly provide a cost estimate based on these inputs."
+          answer: "To use the cost calculator, select the building type, enter the square footage, choose the reval area within your jurisdiction, and optionally specify additional parameters like quality grade. The system will instantly provide a cost estimate based on these inputs."
         },
         {
           question: "What building types are supported?",

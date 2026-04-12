@@ -47,7 +47,7 @@ import { useState } from "react";
 
 export function CalculationHistory() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRegion, setSelectedRegion] = useState("all-regions");
+  const [selectedRevalArea, setSelectedRevalArea] = useState("all-reval-areas");
   const [selectedBuildingType, setSelectedBuildingType] = useState("all-building-types");
   const [selectedCalculation, setSelectedCalculation] = useState<any>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -62,22 +62,22 @@ export function CalculationHistory() {
 
   const calculations: Calculation[] = getAll.data || [];
 
-  // Get unique regions and building types for filtering
-  const regions = [...new Set(calculations.map(calc => calc.region))];
+  // Get unique Reval Areas and building types for filtering
+  const revalAreas = [...new Set(calculations.map(calc => calc.revalArea))];
   const buildingTypes = [...new Set(calculations.map(calc => calc.buildingType))];
 
   // Filter calculations based on search term and filters
   const filteredCalculations = calculations.filter(calc => {
     const matchesSearch =
       !searchTerm ||
-      (calc.region && calc.region.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (calc.revalArea && calc.revalArea.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (calc.buildingType && calc.buildingType.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (calc.name && calc.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const matchesRegion = !selectedRegion || selectedRegion === "all-regions" || calc.region === selectedRegion;
+    const matchesRevalArea = !selectedRevalArea || selectedRevalArea === "all-reval-areas" || calc.revalArea === selectedRevalArea;
     const matchesBuildingType = !selectedBuildingType || selectedBuildingType === "all-building-types" || calc.buildingType === selectedBuildingType;
 
-    return matchesSearch && matchesRegion && matchesBuildingType;
+    return matchesSearch && matchesRevalArea && matchesBuildingType;
   });
 
   // Handle view details
@@ -108,7 +108,7 @@ export function CalculationHistory() {
   // Clear all filters
   const clearFilters = () => {
     setSearchTerm("");
-    setSelectedRegion("all-regions");
+    setSelectedRevalArea("all-reval-areas");
     setSelectedBuildingType("all-building-types");
   };
 
@@ -145,18 +145,18 @@ export function CalculationHistory() {
             />
           </div>
           <div className="flex gap-2">
-            <Select value={selectedRegion} onValueChange={setSelectedRegion}>
+            <Select value={selectedRevalArea} onValueChange={setSelectedRevalArea}>
               <SelectTrigger className="w-[150px]">
                 <div className="flex items-center">
                   <MapPinIcon className="mr-2 h-4 w-4" />
-                  {selectedRegion === "all-regions" ? "All Regions" : selectedRegion}
+                  {selectedRevalArea === "all-reval-areas" ? "All Reval Areas" : selectedRevalArea}
                 </div>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all-regions">All Regions</SelectItem>
-                {regions.filter(region => region?.trim()).map((region) => (
-                  <SelectItem key={region} value={region || ''}>
-                    {region}
+                <SelectItem value="all-reval-areas">All Reval Areas</SelectItem>
+                {revalAreas.filter(ra => ra?.trim()).map((ra) => (
+                  <SelectItem key={ra} value={ra || ''}>
+                    {ra}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -179,7 +179,7 @@ export function CalculationHistory() {
               </SelectContent>
             </Select>
 
-            {(searchTerm || selectedRegion !== "all-regions" || selectedBuildingType !== "all-building-types") && (
+            {(searchTerm || selectedRevalArea !== "all-reval-areas" || selectedBuildingType !== "all-building-types") && (
               <Button variant="outline" size="icon" onClick={clearFilters}>
                 <XCircleIcon className="h-4 w-4" />
               </Button>
@@ -209,7 +209,7 @@ export function CalculationHistory() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Date</TableHead>
-                  <TableHead>Region</TableHead>
+                  <TableHead>Reval Area</TableHead>
                   <TableHead>Building Type</TableHead>
                   <TableHead>Square Footage</TableHead>
                   <TableHead className="text-right">Total Cost</TableHead>
@@ -228,7 +228,7 @@ export function CalculationHistory() {
                     <TableCell>
                       <div className="flex items-center">
                         <MapPinIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                        {calculation.region}
+                        {calculation.revalArea}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -297,8 +297,8 @@ export function CalculationHistory() {
               <TabsContent value="summary" className="space-y-4 py-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <p className="text-sm font-medium">Region</p>
-                    <p className="text-sm">{selectedCalculation.region}</p>
+                    <p className="text-sm font-medium">Reval Area</p>
+                    <p className="text-sm">{selectedCalculation.revalArea}</p>
                   </div>
                   <div className="space-y-1">
                     <p className="text-sm font-medium">Building Type</p>
@@ -342,8 +342,8 @@ export function CalculationHistory() {
                     <p className="text-sm">{selectedCalculation.conditionFactor || "N/A"}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-sm font-medium">Region Factor</p>
-                    <p className="text-sm">{selectedCalculation.regionFactor}</p>
+                    <p className="text-sm font-medium">Reval Area Factor</p>
+                    <p className="text-sm">{selectedCalculation.revalAreaFactor}</p>
                   </div>
                   <div className="space-y-1">
                     <p className="text-sm font-medium">Condition</p>

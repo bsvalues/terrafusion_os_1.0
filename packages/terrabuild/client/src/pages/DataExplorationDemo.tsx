@@ -35,7 +35,7 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import DemoNavigation from '@/components/DemoNavigation';
 
 export default function DataExplorationDemo() {
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [selectedRevalArea, setSelectedRevalArea] = useState<string | null>(null);
   const [showIntroduction, setShowIntroduction] = useState(true);
   
   // Fetch cost matrix data for visualizations
@@ -53,7 +53,7 @@ export default function DataExplorationDemo() {
     if (!costMatrixData || !Array.isArray(costMatrixData)) return [];
 
     return costMatrixData.map((item: any) => ({
-      region: item.region,
+      revalArea: item.revalArea ?? item.cycle ?? item.region ?? 'Reval 1',
       baseCost: item.baseCost,
       adjustedCost: item.baseCost * (1 + 
         (item.complexityFactorBase || 0) + 
@@ -83,27 +83,26 @@ export default function DataExplorationDemo() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Handle selecting a region for detailed exploration
-  const handleRegionSelect = (region: string) => {
-    setSelectedRegion(region);
-    // Additional logic for region selection could be added here
+  // Handle selecting a Reval Area for detailed exploration
+  const handleRevalAreaSelect = (revalArea: string) => {
+    setSelectedRevalArea(revalArea);
   };
 
   // Create a Data Explorer Component that uses the visualization context
   const DataExplorerWithContext = () => {
     const {
       filters,
-      addRegionFilter,
-      clearRegionFilters,
-      isRegionFiltered,
+      addRevalAreaFilter,
+      clearRevalAreaFilters,
+      isRevalAreaFiltered,
       isBuildingTypeFiltered,
       getFilterSummary,
     } = useVisualizationContext();
-    
+
     // Filter data based on context
     const filteredData = prepareVisualizationData().filter(item => {
       // Check if filters exist before applying them
-      const passesRegionFilter = !isRegionFiltered || isRegionFiltered(item.region);
+      const passesRegionFilter = !isRevalAreaFiltered || isRevalAreaFiltered(item.revalArea);
       const passesBuildingTypeFilter = !isBuildingTypeFiltered || isBuildingTypeFiltered(item.buildingType);
       const passesCostFilter = !filters?.costRange || 
         (item.baseCost >= filters.costRange[0] && item.baseCost <= filters.costRange[1]);
@@ -111,17 +110,17 @@ export default function DataExplorationDemo() {
       return passesRegionFilter && passesBuildingTypeFilter && passesCostFilter;
     });
     
-    // Handle region selection from visualization
-    const handleRegionSelectWithContext = (region: string) => {
-      setSelectedRegion(region);
-      
-      // Only add region filter if none are currently applied
-      if (!filters?.regions || filters.regions.length === 0) {
-        addRegionFilter && addRegionFilter(region);
+    // Handle Reval Area selection from visualization
+    const handleRevalAreaSelectWithContext = (revalArea: string) => {
+      setSelectedRevalArea(revalArea);
+
+      // Only add filter if none are currently applied
+      if (!filters?.revalAreas || filters.revalAreas.length === 0) {
+        addRevalAreaFilter && addRevalAreaFilter(revalArea);
       } else {
         // Clear existing and add new
-        clearRegionFilters && clearRegionFilters();
-        addRegionFilter && addRegionFilter(region);
+        clearRevalAreaFilters && clearRevalAreaFilters();
+        addRevalAreaFilter && addRevalAreaFilter(revalArea);
       }
     };
     
@@ -142,7 +141,7 @@ export default function DataExplorationDemo() {
           <div className="md:col-span-2">
             <FilterControlPanel />
             
-            {filters && ((filters.regions && filters.regions.length > 0) || 
+            {filters && ((filters.revalAreas && filters.revalAreas.length > 0) ||
                (filters.buildingTypes && filters.buildingTypes.length > 0) || 
                filters.costRange !== null) ? (
               <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-100">
@@ -183,9 +182,9 @@ export default function DataExplorationDemo() {
                     </div>
                     
                     {filteredData.length > 0 ? (
-                      <RegionalCostComparison 
-                        data={filteredData} 
-                        onRegionSelect={handleRegionSelectWithContext}
+                      <RegionalCostComparison
+                        data={filteredData}
+                        onRevalAreaSelect={handleRevalAreaSelectWithContext}
                         buildingTypes={buildingTypes}
                       />
                     ) : (
@@ -198,21 +197,21 @@ export default function DataExplorationDemo() {
                         <Button 
                           size="sm" 
                           variant="outline"
-                          onClick={() => clearRegionFilters && clearRegionFilters()}
+                          onClick={() => clearRevalAreaFilters && clearRevalAreaFilters()}
                         >
-                          Clear Region Filters
+                          Clear Reval Area Filters
                         </Button>
                       </div>
                     )}
                     
-                    {selectedRegion && (
+                    {selectedRevalArea && (
                       <div className="mt-6 p-4 border rounded-md bg-slate-50">
                         <div className="flex items-center gap-2 mb-3">
                           <ArrowRight className="h-4 w-4 text-blue-600" />
-                          <h3 className="font-medium">Region Selected: {selectedRegion}</h3>
+                          <h3 className="font-medium">Reval Area Selected: {selectedRevalArea}</h3>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          You've selected the {selectedRegion} region for exploration. The filter panel now
+                          You've selected {selectedRevalArea} for exploration. The filter panel now
                           shows this as an active filter, affecting all visualizations in the dashboard.
                         </p>
                       </div>

@@ -184,8 +184,8 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
     // Apply filters from context
     let filtered = [...costMatrixData];
     
-    if (filters?.regions && filters.regions.length > 0) {
-      filtered = filtered.filter(item => filters.regions!.includes(item.region));
+    if (filters?.revalAreas && filters.revalAreas.length > 0) {
+      filtered = filtered.filter(item => filters.revalAreas!.includes(item.revalArea));
     }
 
     if (filters?.buildingTypes && filters.buildingTypes.length > 0) {
@@ -722,7 +722,7 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                           <TableCaption>Outliers based on {getMetricDisplayName(selectedMetric)}</TableCaption>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>Region</TableHead>
+                              <TableHead>Reval Area</TableHead>
                               <TableHead>Building Type</TableHead>
                               <TableHead>Value</TableHead>
                               <TableHead>Z-Score</TableHead>
@@ -751,7 +751,7 @@ export function StatisticalAnalysisDashboard({ className = '' }: StatisticalAnal
                               
                               return (
                                 <TableRow key={index}>
-                                  <TableCell>{item.region}</TableCell>
+                                  <TableCell>{item.revalArea ?? item.region}</TableCell>
                                   <TableCell>{item.buildingType}</TableCell>
                                   <TableCell className="font-medium">
                                     {formatValue(value, selectedMetric)}

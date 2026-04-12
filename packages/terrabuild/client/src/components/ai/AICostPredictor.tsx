@@ -39,7 +39,7 @@ import { exportCostPredictionAsPdf } from '@/lib/pdf-export';
 // Validation schema for the cost prediction form
 const costPredictionSchema = z.object({
   buildingType: z.string().min(1, { message: "Building type is required" }),
-  region: z.string().min(1, { message: "Region is required" }),
+  revalArea: z.string().min(1, { message: "Please select a Reval Area" }),
   squareFootage: z.coerce.number().min(1, { message: "Square footage must be greater than 0" }),
   yearBuilt: z.coerce.number().optional(),
   condition: z.string().optional(),
@@ -57,13 +57,14 @@ const buildingTypeOptions = [
   { value: "institutional", label: "Institutional" },
 ];
 
-// Region options (could be fetched from API in a real app)
-const regionOptions = [
-  { value: "north", label: "North Region" },
-  { value: "south", label: "South Region" },
-  { value: "east", label: "East Region" },
-  { value: "west", label: "West Region" },
-  { value: "central", label: "Central Region" },
+// Reval Area options (Benton County WA PACS Cycle areas)
+const REVAL_AREAS = [
+  { id: 'Reval 1', label: 'Reval 1 — Kennewick (Urban Core)', factor: 1.00, description: 'Urban core of Kennewick. Average Benton County construction costs.' },
+  { id: 'Reval 2', label: 'Reval 2 — West Richland / Badger Mtn', factor: 1.05, description: 'West Richland and Badger Mountain growth area. Premium due to newer development.' },
+  { id: 'Reval 3', label: 'Reval 3 — North Richland / Horn Rapids', factor: 1.10, description: 'North Richland and Horn Rapids. Highest costs reflecting newer construction standards.' },
+  { id: 'Reval 4', label: 'Reval 4 — East Benton / Benton City', factor: 0.95, description: 'East Benton County including Benton City. Slightly lower costs.' },
+  { id: 'Reval 5', label: 'Reval 5 — Prosser / Wine Country', factor: 0.90, description: 'Prosser and wine country area. Rural pricing with agricultural character.' },
+  { id: 'Reval 6', label: 'Reval 6 — Rural / Agricultural Lands', factor: 0.82, description: 'Rural and agricultural lands. Lowest cost area reflecting rural construction market.' },
 ];
 
 // Building condition options
@@ -87,7 +88,7 @@ export default function AICostPredictor() {
     resolver: zodResolver(costPredictionSchema),
     defaultValues: {
       buildingType: "",
-      region: "",
+      revalArea: "",
       squareFootage: 0,
       yearBuilt: new Date().getFullYear() - 10, // Default to 10 years old
       condition: "average",
@@ -157,7 +158,7 @@ export default function AICostPredictor() {
         {
           buildingType: formValues.buildingType,
           squareFootage: formValues.squareFootage,
-          region: formValues.region,
+          region: formValues.revalArea,
           yearBuilt: formValues.yearBuilt,
           condition: formValues.condition,
           complexity: formValues.complexity
@@ -254,32 +255,32 @@ export default function AICostPredictor() {
                 )}
               />
               
-              {/* Region */}
+              {/* Reval Area */}
               <FormField
                 control={form.control}
-                name="region"
+                name="revalArea"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Region</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
+                    <FormLabel>Reval Area (Cycle)</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select region" />
+                          <SelectValue placeholder="Select Reval Area" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {regionOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                        {REVAL_AREAS.map((area) => (
+                          <SelectItem key={area.id} value={area.id}>
+                            {area.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                     <FormDescription>
-                      The geographic region of the building
+                      The revaluation area (PACS Cycle field)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -398,8 +399,8 @@ export default function AICostPredictor() {
                     <div className="font-semibold">Estimated Base Cost:</div>
                     <div>${predictionResult.baseCost?.toFixed(2)}</div>
                     
-                    <div className="font-semibold">Region Factor:</div>
-                    <div>{predictionResult.regionFactor}</div>
+                    <div className="font-semibold">Reval Area Factor:</div>
+                    <div>{predictionResult.revalAreaFactor}</div>
                     
                     <div className="font-semibold">Complexity Factor:</div>
                     <div>{predictionResult.complexityFactor}</div>

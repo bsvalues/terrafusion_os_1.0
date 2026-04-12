@@ -104,7 +104,7 @@ export default function LandingPage() {
             </h2>
             <p className="text-center text-lg text-muted-foreground mb-12 max-w-3xl mx-auto">
               A complete suite for cost approach property assessment — from cost matrices to
-              depreciation analysis and regional cost comparisons.
+              depreciation analysis and reval area cost comparisons.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -120,7 +120,7 @@ export default function LandingPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Accurately calculate building costs based on structure type, size, and region.
+                    Accurately calculate building costs based on structure type, size, and reval area.
                   </p>
                 </CardContent>
                 <CardFooter>
@@ -164,12 +164,12 @@ export default function LandingPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Compare construction costs across geographic regions and market areas.
+                    Compare construction costs across reval areas and market zones.
                   </p>
                 </CardContent>
                 <CardFooter>
                   <Button variant="ghost" className="px-0 hover:bg-transparent text-accent" onClick={() => navigate('/regional-cost-comparison')}>
-                    Explore Regions
+                    Explore Reval Areas
                   </Button>
                 </CardFooter>
               </Card>

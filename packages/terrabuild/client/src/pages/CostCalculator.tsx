@@ -7,9 +7,18 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 
+const REVAL_AREAS = [
+  { id: 'Reval 1', label: 'Reval 1 — Kennewick (Urban Core)',       factor: 1.00 },
+  { id: 'Reval 2', label: 'Reval 2 — West Richland / Badger Mtn',   factor: 1.05 },
+  { id: 'Reval 3', label: 'Reval 3 — North Richland / Horn Rapids',  factor: 1.10 },
+  { id: 'Reval 4', label: 'Reval 4 — East Benton / Benton City',     factor: 0.95 },
+  { id: 'Reval 5', label: 'Reval 5 — Prosser / Wine Country',         factor: 0.90 },
+  { id: 'Reval 6', label: 'Reval 6 — Rural / Agricultural Lands',    factor: 0.82 },
+];
+
 interface CalculationRequest {
   buildingType: string;
-  region: string;
+  revalArea: string;
   yearBuilt: number;
   quality: string;
   condition: string;
@@ -22,7 +31,7 @@ interface CalculationResult {
   perSquareFoot: number;
   factors: {
     base: number;
-    region: number;
+    revalArea: number;
     quality: number;
     condition: number;
     age: number;
@@ -30,7 +39,7 @@ interface CalculationResult {
   };
   breakdown: {
     baseCost: number;
-    regionAdjustment: number;
+    revalAreaAdjustment: number;
     qualityAdjustment: number;
     conditionAdjustment: number;
     ageAdjustment: number;
@@ -46,7 +55,7 @@ const CostCalculator = () => {
   const form = useForm<CalculationRequest>({
     defaultValues: {
       buildingType: 'RES',
-      region: 'BC-CENTRAL',
+      revalArea: 'Reval 1',
       yearBuilt: 2020,
       quality: 'STANDARD',
       condition: 'GOOD',
@@ -117,18 +126,18 @@ const CostCalculator = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="region">Region</Label>
+                  <Label htmlFor="revalArea">Reval Area (Cycle)</Label>
                   <Select
-                    defaultValue={form.getValues('region')}
-                    onValueChange={(value) => form.setValue('region', value)}
+                    defaultValue={form.getValues('revalArea')}
+                    onValueChange={(value) => form.setValue('revalArea', value)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select region" />
+                      <SelectValue placeholder="Select Reval Area" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="BC-NORTH">North Benton County</SelectItem>
-                      <SelectItem value="BC-CENTRAL">Central Benton County</SelectItem>
-                      <SelectItem value="BC-SOUTH">South Benton County</SelectItem>
+                      {REVAL_AREAS.map(ra => (
+                        <SelectItem key={ra.id} value={ra.id}>{ra.label}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -255,8 +264,8 @@ const CostCalculator = () => {
                       <span>${result.breakdown.baseCost.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Region Adjustment:</span>
-                      <span>${result.breakdown.regionAdjustment.toLocaleString()}</span>
+                      <span>Reval Area Adjustment:</span>
+                      <span>${result.breakdown.revalAreaAdjustment.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Quality Adjustment:</span>
@@ -287,8 +296,8 @@ const CostCalculator = () => {
                       <div>${result.factors.base}/sqft</div>
                     </div>
                     <div>
-                      <div className="font-medium">Region</div>
-                      <div>{result.factors.region.toFixed(2)}x</div>
+                      <div className="font-medium">Reval Area</div>
+                      <div>{result.factors.revalArea.toFixed(2)}x</div>
                     </div>
                     <div>
                       <div className="font-medium">Quality</div>

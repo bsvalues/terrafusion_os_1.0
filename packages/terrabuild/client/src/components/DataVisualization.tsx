@@ -45,13 +45,13 @@ const DataVisualization: React.FC = () => {
   
   // Time series params
   const [buildingType, setBuildingType] = useState('RES1');
-  const [region, setRegion] = useState('Western');
+  const [revalArea, setRevalArea] = useState('Reval 1');
   const [startYear, setStartYear] = useState('2020');
   const [endYear, setEndYear] = useState('2025');
-  
+
   // Comparison params
   const [comparisonBuildingType, setComparisonBuildingType] = useState('RES1');
-  const [comparisonRegion, setComparisonRegion] = useState('Western');
+  const [comparisonRevalArea, setComparisonRevalArea] = useState('Reval 1');
   const [comparisonYear, setComparisonYear] = useState('2025');
   const [squareFootage, setSquareFootage] = useState('2000');
   
@@ -60,13 +60,13 @@ const DataVisualization: React.FC = () => {
 
   // Fetch time series data
   const timeSeriesQuery = useQuery({
-    queryKey: ['/api/analytics/time-series', buildingType, region, startYear, endYear],
+    queryKey: ['/api/analytics/time-series', buildingType, revalArea, startYear, endYear],
     queryFn: async () => {
-      if (!buildingType || !region || !startYear || !endYear) {
+      if (!buildingType || !revalArea || !startYear || !endYear) {
         return [] as TimeSeriesDataPoint[];
       }
       const response = await fetch(
-        `/api/analytics/time-series?buildingType=${buildingType}&region=${region}&startYear=${startYear}&endYear=${endYear}`
+        `/api/analytics/time-series?buildingType=${buildingType}&revalArea=${revalArea}&startYear=${startYear}&endYear=${endYear}`
       );
       if (!response.ok) {
         throw new Error('Failed to fetch time series data');
@@ -96,13 +96,13 @@ const DataVisualization: React.FC = () => {
 
   // Fetch building type comparison data
   const buildingTypeComparisonQuery = useQuery({
-    queryKey: ['/api/analytics/building-type-comparison', comparisonRegion, comparisonYear, squareFootage],
+    queryKey: ['/api/analytics/building-type-comparison', comparisonRevalArea, comparisonYear, squareFootage],
     queryFn: async () => {
-      if (!comparisonRegion || !comparisonYear || !squareFootage) {
+      if (!comparisonRevalArea || !comparisonYear || !squareFootage) {
         return { values: [] } as ComparisonData;
       }
       const response = await fetch(
-        `/api/analytics/building-type-comparison?region=${comparisonRegion}&year=${comparisonYear}&squareFootage=${squareFootage}`
+        `/api/analytics/building-type-comparison?revalArea=${comparisonRevalArea}&year=${comparisonYear}&squareFootage=${squareFootage}`
       );
       if (!response.ok) {
         throw new Error('Failed to fetch building type comparison data');
@@ -150,8 +150,8 @@ const DataVisualization: React.FC = () => {
       return [];
     }
     
-    return regionalComparisonQuery.data.regions.map((region, index) => ({
-      name: region,
+    return regionalComparisonQuery.data.regions.map((revalAreaItem, index) => ({
+      name: revalAreaItem,
       value: regionalComparisonQuery.data.values[index],
     }));
   }, [regionalComparisonQuery.data]);
@@ -249,20 +249,21 @@ const DataVisualization: React.FC = () => {
                   </Select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-[#243E4D]">Region</label>
-                  <Select 
-                    value={region} 
-                    onValueChange={setRegion}
+                  <label className="block text-sm font-medium mb-1 text-[#243E4D]">Reval Area</label>
+                  <Select
+                    value={revalArea}
+                    onValueChange={setRevalArea}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select region" />
+                      <SelectValue placeholder="Select Reval Area" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Western">Western</SelectItem>
-                      <SelectItem value="Eastern">Eastern</SelectItem>
-                      <SelectItem value="Northern">Northern</SelectItem>
-                      <SelectItem value="Southern">Southern</SelectItem>
-                      <SelectItem value="Central">Central</SelectItem>
+                      <SelectItem value="Reval 1">Reval 1</SelectItem>
+                      <SelectItem value="Reval 2">Reval 2</SelectItem>
+                      <SelectItem value="Reval 3">Reval 3</SelectItem>
+                      <SelectItem value="Reval 4">Reval 4</SelectItem>
+                      <SelectItem value="Reval 5">Reval 5</SelectItem>
+                      <SelectItem value="Reval 6">Reval 6</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -417,20 +418,21 @@ const DataVisualization: React.FC = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Region</label>
-                  <Select 
-                    value={comparisonRegion} 
-                    onValueChange={setComparisonRegion}
+                  <label className="block text-sm font-medium mb-1">Reval Area</label>
+                  <Select
+                    value={comparisonRevalArea}
+                    onValueChange={setComparisonRevalArea}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select region" />
+                      <SelectValue placeholder="Select Reval Area" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Western">Western</SelectItem>
-                      <SelectItem value="Eastern">Eastern</SelectItem>
-                      <SelectItem value="Northern">Northern</SelectItem>
-                      <SelectItem value="Southern">Southern</SelectItem>
-                      <SelectItem value="Central">Central</SelectItem>
+                      <SelectItem value="Reval 1">Reval 1</SelectItem>
+                      <SelectItem value="Reval 2">Reval 2</SelectItem>
+                      <SelectItem value="Reval 3">Reval 3</SelectItem>
+                      <SelectItem value="Reval 4">Reval 4</SelectItem>
+                      <SelectItem value="Reval 5">Reval 5</SelectItem>
+                      <SelectItem value="Reval 6">Reval 6</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

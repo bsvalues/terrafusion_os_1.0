@@ -146,14 +146,14 @@ const demoWorkflows: WorkflowMetadata[] = [
   {
     id: 'regional-comparison',
     title: 'Regional Cost Comparison',
-    description: 'Compare building costs across different regions.',
+    description: 'Compare building costs across different reval areas.',
     category: 'visualizations',
     status: 'in-progress',
     percentComplete: 75,
     lastUpdated: new Date(Date.now() - 43200000), // 12 hours ago
     route: '/regional-cost-comparison',
     steps: [
-      { id: 'regions', label: 'Select Regions' },
+      { id: 'revalAreas', label: 'Select Reval Areas' },
       { id: 'building-types', label: 'Building Types' },
       { id: 'visualization', label: 'View Comparison' },
       { id: 'analysis', label: 'Analyze Differences' },

@@ -13,14 +13,14 @@ const BenchmarkingPage: React.FC = () => {
   // State for benchmarking parameters
   const [formState, setFormState] = useState({
     buildingType: '',
-    region: '',
+    revalArea: '',
     year: new Date().getFullYear(),
     squareFootage: 2500,
   });
 
   const [parameters, setParameters] = useState({
     buildingType: '',
-    region: '',
+    revalArea: '',
     year: new Date().getFullYear(),
     squareFootage: 2500,
   });
@@ -46,7 +46,7 @@ const BenchmarkingPage: React.FC = () => {
     },
     retry: false,
   });
-  const regions: string[] = regionsData?.regions ?? [];
+  const revalAreas: { code: string; label: string; factor: number }[] = regionsData?.revalAreas ?? [];
 
   // Handler for form input changes
   const handleInputChange = (field: string, value: string | number) => {
@@ -65,7 +65,7 @@ const BenchmarkingPage: React.FC = () => {
   return (
     <MainLayout
       pageTitle="Building Cost Benchmarking"
-      pageDescription="Compare building costs against regional and statewide averages to benchmark your project."
+      pageDescription="Benchmark Benton County building costs by building type and Reval Area using the county cost matrix."
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-1">
@@ -105,27 +105,29 @@ const BenchmarkingPage: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="region">Region</Label>
+                <Label htmlFor="revalArea">Reval Area (Cycle)</Label>
                 <Select
-                  value={formState.region}
-                  onValueChange={(value) => handleInputChange('region', value)}
+                  value={formState.revalArea}
+                  onValueChange={(value) => handleInputChange('revalArea', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select region" />
+                    <SelectValue placeholder="Select Reval Area" />
                   </SelectTrigger>
                   <SelectContent>
-                    {!loadingRegions && regions && Array.isArray(regions) ? (
-                      regions.map((region: string) => (
-                        <SelectItem key={region} value={region.toLowerCase()}>
-                          {region}
+                    {!loadingRegions && revalAreas.length > 0 ? (
+                      revalAreas.map((r) => (
+                        <SelectItem key={r.code} value={r.code}>
+                          {r.label}
                         </SelectItem>
                       ))
                     ) : (
                       <>
-                        <SelectItem value="northwest">Northwest</SelectItem>
-                        <SelectItem value="northeast">Northeast</SelectItem>
-                        <SelectItem value="southwest">Southwest</SelectItem>
-                        <SelectItem value="southeast">Southeast</SelectItem>
+                        <SelectItem value="Reval 1">Reval 1 — Kennewick NE</SelectItem>
+                        <SelectItem value="Reval 2">Reval 2 — Kennewick Urban</SelectItem>
+                        <SelectItem value="Reval 3">Reval 3 — South Richland</SelectItem>
+                        <SelectItem value="Reval 4">Reval 4 — Benton City / Prosser</SelectItem>
+                        <SelectItem value="Reval 5">Reval 5 — Richland West</SelectItem>
+                        <SelectItem value="Reval 6">Reval 6 — Historic Richland</SelectItem>
                       </>
                     )}
                   </SelectContent>
@@ -166,7 +168,7 @@ const BenchmarkingPage: React.FC = () => {
         <div className="lg:col-span-2">
           <BenchmarkingVisualization
             buildingType={parameters.buildingType}
-            region={parameters.region}
+            region={parameters.revalArea}
             year={parameters.year}
             squareFootage={parameters.squareFootage}
           />

@@ -281,7 +281,7 @@ export const CostMatrixManager: React.FC = () => {
                     <TableCaption>List of cost matrices in the system</TableCaption>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Region</TableHead>
+                        <TableHead>Reval Area</TableHead>
                         <TableHead>Building Type</TableHead>
                         <TableHead>Base Cost</TableHead>
                         <TableHead>Matrix Year</TableHead>
@@ -291,7 +291,7 @@ export const CostMatrixManager: React.FC = () => {
                     <TableBody>
                       {matrices.map((matrix: any) => (
                         <TableRow key={matrix.id}>
-                          <TableCell className="font-medium">{matrix.region}</TableCell>
+                          <TableCell className="font-medium">{matrix.revalArea ?? matrix.region}</TableCell>
                           <TableCell>{matrix.buildingType}</TableCell>
                           <TableCell>${parseFloat(matrix.baseCost).toFixed(2)}</TableCell>
                           <TableCell>{matrix.matrixYear}</TableCell>

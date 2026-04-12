@@ -39,7 +39,7 @@ interface CostTrendChartProps {
 
 interface CostDataPoint {
   year: number;
-  region: string;
+  revalArea: string;
   buildingType: string;
   baseCost: number;
 }
@@ -55,14 +55,14 @@ export function CostTrendChart({
   className,
   showControls = true
 }: CostTrendChartProps) {
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [selectedRevalArea, setSelectedRevalArea] = useState<string | null>(null);
   const [selectedBuildingType, setSelectedBuildingType] = useState<string | null>(null);
 
   // Fetch time series data from the analytics endpoint
   const { data, isLoading, error } = useQuery<any[]>({
     queryKey: ['/api/analytics/time-series', {
       buildingType: selectedBuildingType || 'residential',
-      region: selectedRegion || 'BC-CENTRAL',
+      revalArea: selectedRevalArea || 'BC-CENTRAL',
       startYear: 2020,
       endYear: 2025
     }],
@@ -90,10 +90,10 @@ export function CostTrendChart({
     }).sort((a: any, b: any) => a.year - b.year);
   };
 
-  // Get unique regions and building types for filters
-  const getUniqueRegions = (data: any[]): string[] => {
+  // Get unique reval areas and building types for filters
+  const getUniqueRevalAreas = (data: any[]): string[] => {
     if (!data || !Array.isArray(data)) return [];
-    return [...new Set(data.map(item => item.region))];
+    return [...new Set(data.map(item => item.revalArea ?? item.region))];
   };
 
   const getUniqueBuildingTypes = (data: any[]): string[] => {
@@ -107,8 +107,8 @@ export function CostTrendChart({
 
     let filtered = [...data];
 
-    if (selectedRegion) {
-      filtered = filtered.filter(item => item.region === selectedRegion);
+    if (selectedRevalArea) {
+      filtered = filtered.filter(item => (item.revalArea ?? item.region) === selectedRevalArea);
     }
 
     if (selectedBuildingType) {
@@ -129,8 +129,8 @@ export function CostTrendChart({
     // Get all keys except 'year'
     const allKeys = Object.keys(processedData[0]).filter(key => key !== 'year');
 
-    // If we have both region and building type filters, return all keys
-    if (selectedRegion && selectedBuildingType) return allKeys;
+    // If we have both reval area and building type filters, return all keys
+    if (selectedRevalArea && selectedBuildingType) return allKeys;
 
     // Otherwise, limit to 5 lines for readability
     return allKeys.slice(0, 5);
@@ -155,8 +155,8 @@ export function CostTrendChart({
     const previousYear = sortedData[1];
 
     // If we have both filters active, we can calculate exact change
-    if (selectedRegion && selectedBuildingType) {
-      const key = `${selectedRegion}_${selectedBuildingType}`;
+    if (selectedRevalArea && selectedBuildingType) {
+      const key = `${selectedRevalArea}_${selectedBuildingType}`;
       const current = currentYear[key] as number;
       const previous = previousYear[key] as number;
 
@@ -238,17 +238,17 @@ export function CostTrendChart({
           {showControls && (
             <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0">
               <Select
-                value={selectedRegion || "all"}
-                onValueChange={(value) => setSelectedRegion(value === "all" ? null : value)}
+                value={selectedRevalArea || "all"}
+                onValueChange={(value) => setSelectedRevalArea(value === "all" ? null : value)}
               >
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="All Regions" />
+                  <SelectValue placeholder="All Reval Areas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Regions</SelectItem>
-                  {getUniqueRegions(data || []).map((region) => (
-                    <SelectItem key={region} value={region}>
-                      {region}
+                  <SelectItem value="all">All Reval Areas</SelectItem>
+                  {getUniqueRevalAreas(data || []).map((revalArea) => (
+                    <SelectItem key={revalArea} value={revalArea}>
+                      {revalArea}
                     </SelectItem>
                   ))}
                 </SelectContent>

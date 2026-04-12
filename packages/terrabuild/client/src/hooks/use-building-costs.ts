@@ -5,7 +5,7 @@ import { BuildingCost, InsertBuildingCost } from '@/types/api';
 
 // Type for the calculation request
 export interface CalculationRequest {
-  region: string;
+  revalArea: string;
   buildingType: string;
   propertyClass?: string;
   squareFootage: number;
@@ -20,12 +20,12 @@ export interface CalculationRequest {
 
 // Type for the calculation response
 export interface CalculationResponse {
-  region: string;
+  revalArea: string;
   buildingType: string;
   propertyClass?: string;
   squareFootage: number;
   baseCost: number;
-  regionFactor: number;
+  revalAreaFactor: number;
   complexityFactor: number;
   costPerSqft: number;
   totalCost: number;

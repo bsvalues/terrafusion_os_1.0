@@ -375,7 +375,7 @@ export default function MCPOverviewPage() {
   type: 'object',
   properties: {
     id: { type: 'integer' },
-    region: { type: 'string' },
+    revalArea: { type: 'string' },
     buildingType: { type: 'string' },
     baseCost: { type: 'number', minimum: 0 },
     county: { type: 'string' },
@@ -386,7 +386,7 @@ export default function MCPOverviewPage() {
     year: { type: 'integer', minimum: 2000 }
   },
   required: [
-    'id', 'region', 'buildingType', 'baseCost', 'county', 'state', 
+    'id', 'revalArea', 'buildingType', 'baseCost', 'county', 'state',
     'complexityFactorBase', 'qualityFactorBase', 'conditionFactorBase', 'year'
   ],
   additionalProperties: false

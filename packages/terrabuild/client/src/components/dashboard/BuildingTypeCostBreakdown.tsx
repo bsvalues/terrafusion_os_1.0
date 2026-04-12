@@ -93,7 +93,7 @@ export function BuildingTypeCostBreakdown({
   className,
   showControls = true
 }: BuildingTypeCostBreakdownProps) {
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [selectedRevalArea, setSelectedRevalArea] = useState<string | null>(null); // "Reval 1"–"Reval 6" or null for all
   const [activeTab, setActiveTab] = useState('typesChart');
 
   // Fetch cost matrix data
@@ -102,10 +102,10 @@ export function BuildingTypeCostBreakdown({
     queryFn: () => fetch('/api/cost-matrices').then(res => res.json())
   });
 
-  // Get unique regions
-  const getUniqueRegions = (data: any[]): string[] => {
+  // Get unique Reval Areas
+  const getUniqueRevalAreas = (data: any[]): string[] => {
     if (!data || !Array.isArray(data)) return [];
-    return [...new Set(data.map(item => item.region))].sort();
+    return [...new Set(data.map(item => item.revalArea))].sort();
   };
 
   // Process data for building types pie chart
@@ -114,8 +114,8 @@ export function BuildingTypeCostBreakdown({
 
     // Filter by region if selected
     let filteredData = data;
-    if (selectedRegion) {
-      filteredData = data.filter(item => item.region === selectedRegion);
+    if (selectedRevalArea) {
+      filteredData = data.filter(item => item.revalArea === selectedRevalArea);
     }
 
     // Group by building type and sum base costs
@@ -167,8 +167,8 @@ export function BuildingTypeCostBreakdown({
     if (!data || !Array.isArray(data)) return 'DEFAULT';
 
     let filteredData = data;
-    if (selectedRegion) {
-      filteredData = data.filter(item => item.region === selectedRegion);
+    if (selectedRevalArea) {
+      filteredData = data.filter(item => item.revalArea === selectedRevalArea);
     }
 
     const typeCounts = filteredData.reduce((acc, item) => {
@@ -191,7 +191,7 @@ export function BuildingTypeCostBreakdown({
   };
 
   const buildingTypeData = processBuildingTypeData();
-  const regions = getUniqueRegions(data || []);
+  const revalAreas = getUniqueRevalAreas(data || []);
   const mostCommonBuildingType = getMostCommonBuildingType();
   const materialBreakdownData = createMaterialBreakdownData(mostCommonBuildingType);
 
@@ -279,17 +279,17 @@ export function BuildingTypeCostBreakdown({
           {showControls && (
             <div className="flex items-center gap-2 mt-4 md:mt-0">
               <Select
-                value={selectedRegion || "all"}
-                onValueChange={(value: string) => setSelectedRegion(value === "all" ? null : value)}
+                value={selectedRevalArea || "all"}
+                onValueChange={(value: string) => setSelectedRevalArea(value === "all" ? null : value)}
               >
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="All Regions" />
+                  <SelectValue placeholder="All Reval Areas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Regions</SelectItem>
-                  {regions.map((region) => (
-                    <SelectItem key={region} value={region}>
-                      {region}
+                  <SelectItem value="all">All Reval Areas</SelectItem>
+                  {revalAreas.map((ra) => (
+                    <SelectItem key={ra} value={ra}>
+                      {ra}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -300,9 +300,9 @@ export function BuildingTypeCostBreakdown({
 
         <div className="flex flex-wrap gap-2 mt-2">
           <Badge variant="outline" className="flex items-center gap-1">
-            {selectedRegion ?
-              <><MapPin className="h-3 w-3" /> {selectedRegion}</> :
-              'All Regions'
+            {selectedRevalArea ?
+              <><MapPin className="h-3 w-3" /> {selectedRevalArea}</> :
+              'All Reval Areas'
             }
           </Badge>
           <Badge variant="outline" className="flex items-center gap-1">

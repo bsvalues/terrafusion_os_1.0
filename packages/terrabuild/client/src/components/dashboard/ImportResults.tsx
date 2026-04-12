@@ -55,7 +55,7 @@ interface FileDetail {
   details?: number;
   year?: number;
   types?: string[];
-  regions?: string[];
+  revalAreas?: string[];
   importResult?: {
     matricesInserted: number;
     detailsInserted: number;
@@ -256,15 +256,15 @@ const ImportResults: React.FC<ImportResultsProps> = ({ results, onClose }) => {
                 
                 <Card>
                   <CardHeader className="py-4">
-                    <CardTitle className="text-sm">Regions</CardTitle>
+                    <CardTitle className="text-sm">Reval Areas</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
                       {Array.from(new Set(
-                        results.details.flatMap(detail => detail.regions || [])
-                      )).map(region => (
-                        <Badge key={region} variant="outline" className="mb-1">
-                          {region}
+                        results.details.flatMap(detail => detail.revalAreas || [])
+                      )).map(revalArea => (
+                        <Badge key={revalArea} variant="outline" className="mb-1">
+                          {revalArea}
                         </Badge>
                       ))}
                     </div>
@@ -406,9 +406,9 @@ const ImportResults: React.FC<ImportResultsProps> = ({ results, onClose }) => {
                                     <span className="font-medium">Building Types:</span> {detail.types.join(', ')}
                                   </div>
                                 )}
-                                {detail.regions && detail.regions.length > 0 && (
+                                {detail.revalAreas && detail.revalAreas.length > 0 && (
                                   <div>
-                                    <span className="font-medium">Regions:</span> {detail.regions.join(', ')}
+                                    <span className="font-medium">Reval Areas:</span> {detail.revalAreas.join(', ')}
                                   </div>
                                 )}
                               </div>

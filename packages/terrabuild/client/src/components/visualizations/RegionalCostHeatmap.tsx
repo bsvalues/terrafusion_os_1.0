@@ -14,7 +14,7 @@ import { AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
  */
 export function RegionalCostHeatmap({
   data,
-  region,
+  revalArea,
   buildingType,
   isLoading = false,
   onCountySelect
@@ -86,16 +86,16 @@ export function RegionalCostHeatmap({
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Regional Cost Analysis</CardTitle>
+          <CardTitle>Reval Area Cost Analysis</CardTitle>
           <CardDescription>
-            Building costs across counties in {region}
+            Building costs across Reval Areas in {revalArea}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              No cost data available for {buildingType} buildings in {region}.
+              No cost data available for {buildingType} buildings in Reval Area {revalArea}.
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -108,9 +108,9 @@ export function RegionalCostHeatmap({
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Regional Cost Analysis</CardTitle>
+            <CardTitle>Reval Area Cost Analysis</CardTitle>
             <CardDescription>
-              Building costs across counties in {region}
+              Building costs by Reval Area (Cycle) — Benton County
             </CardDescription>
           </div>
           <button 

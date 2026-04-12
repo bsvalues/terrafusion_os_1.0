@@ -95,7 +95,7 @@ const AIToolsPage: React.FC = () => {
                 <h3 className="font-medium">Cost Predictor</h3>
                 <p className="text-sm text-muted-foreground">
                   The AI Cost Predictor analyzes building parameters to generate accurate cost estimates.
-                  It considers regional factors, building type, and complexity to provide
+                  It considers Reval Area factors, building type, and complexity to provide
                   tailored predictions.
                 </p>
               </div>
@@ -104,7 +104,7 @@ const AIToolsPage: React.FC = () => {
                 <h3 className="font-medium">Matrix Analyzer</h3>
                 <p className="text-sm text-muted-foreground">
                   The Matrix Analyzer examines your cost matrix data to identify patterns,
-                  regional variations, and building type differences. It provides insights and
+                  Reval Area variations, and building type differences. It provides insights and
                   recommendations based on the data.
                 </p>
               </div>

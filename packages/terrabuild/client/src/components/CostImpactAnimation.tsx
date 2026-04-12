@@ -22,7 +22,7 @@ interface CostImpactAnimationProps {
   conditionFactor: number;
   regionalMultiplier: number;
   ageDepreciation: number;
-  region?: string;
+  revalArea?: string;
   buildingAge?: number;
   squareFootage?: number; 
   onAnimationComplete?: () => void;
@@ -36,7 +36,7 @@ const CostImpactAnimation: React.FC<CostImpactAnimationProps> = ({
   conditionFactor,
   regionalMultiplier,
   ageDepreciation,
-  region = 'MIDWEST',
+  revalArea = 'Reval 1',
   buildingAge = 0,
   squareFootage = 1000,
   onAnimationComplete,
@@ -199,7 +199,7 @@ const CostImpactAnimation: React.FC<CostImpactAnimationProps> = ({
       case 'plumbing':
         return `${conditionFactor > 1 ? 'Excellent' : 'Standard'} condition adds ${Math.abs((conditionFactor - 1) * 100).toFixed(0)}% to value`;
       case 'electrical':
-        return `Regional cost factor for ${region.replace('_', ' ').toLowerCase()} area`;
+        return `Reval Area cost factor for ${revalArea}`;
       case 'finishes':
         return ageDepreciation > 0 
           ? `${buildingAge} years old reduces value by ${ageDepreciation}%` 

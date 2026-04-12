@@ -61,11 +61,11 @@ interface CostBreakdown {
 }
 
 export interface CalculationResult {
-  region: string;
+  revalArea: string;
   buildingType: string;
   squareFootage: number;
   baseCost: string;
-  regionFactor: string;
+  revalAreaFactor: string;
   complexityGrade: string;
   conditionGrade: string;
   costPerSqft: number;
@@ -186,11 +186,11 @@ const CostCalculatorAPI = () => {
     setIsCalculating(true);
     setApiError(null);
     try {
-      const region = neighborhoodToRegion(data.neighborhood);
+      const revalArea = neighborhoodToRegion(data.neighborhood);
       const token = await getDevToken();
       const response = await axios.post('/api/costforge/cost-estimate', {
         buildingType: data.buildingType,
-        region,
+        revalArea,
         squareFeet: data.squareFootage,
         yearBuilt: data.yearBuilt,
         qualityGrade: data.qualityGrade,
@@ -207,11 +207,11 @@ const CostCalculatorAPI = () => {
 
       // Create complete calculation result mapped from API response
       const calculationResult: CalculationResult = {
-        region: data.neighborhood,
+        revalArea: data.neighborhood,
         buildingType: data.buildingType,
         squareFootage: data.squareFootage,
         baseCost: String(apiData.baseCostPerSqft ?? '—'),
-        regionFactor: String(apiData.regionFactor ?? '—'),
+        revalAreaFactor: String(apiData.revalAreaFactor ?? apiData.regionFactor ?? '—'),
         complexityGrade: data.complexityGrade,
         conditionGrade: data.conditionGrade,
         costPerSqft: apiData.adjustedCostPerSqft ?? 0,
@@ -761,7 +761,7 @@ const CostCalculatorAPI = () => {
                     <CardHeader className="pb-2">
                       <CardTitle>Cost Calculation Results</CardTitle>
                       <CardDescription>
-                        {calculationResult.squareFootage} sq ft {calculationResult.buildingType ? calculationResult.buildingType.toLowerCase() : 'unknown'} building in {calculationResult.region ? calculationResult.region.toLowerCase().replace('_', ' ') : 'unknown location'}
+                        {calculationResult.squareFootage} sq ft {calculationResult.buildingType ? calculationResult.buildingType.toLowerCase() : 'unknown'} building in {calculationResult.revalArea ? calculationResult.revalArea.toLowerCase().replace('_', ' ') : 'unknown location'}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -791,8 +791,8 @@ const CostCalculatorAPI = () => {
                               <span className="font-medium">{calculationResult.conditionGrade ?? '—'}</span>
                             </div>
                             <div className="flex justify-between">
-                              <span>Region Factor:</span>
-                              <span className="font-medium">{calculationResult.regionFactor ? Number(calculationResult.regionFactor).toFixed(2) : '1.00'}</span>
+                              <span>Reval Area Factor:</span>
+                              <span className="font-medium">{calculationResult.revalAreaFactor ? Number(calculationResult.revalAreaFactor).toFixed(2) : '1.00'}</span>
                             </div>
                           </div>
                         </div>
@@ -967,7 +967,7 @@ const CostCalculatorAPI = () => {
                           await axios.post('/api/costforge/valuations', {
                             ParcelId: parcelId ?? 'MANUAL',
                             BuildingType: calculationResult.buildingType,
-                            Region: calculationResult.region,
+                            RevalArea: calculationResult.revalArea,
                             SquareFeet: calculationResult.squareFootage,
                             QualityGrade: calculationResult.qualityGrade,
                             ConditionGrade: calculationResult.conditionGrade,

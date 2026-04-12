@@ -104,7 +104,7 @@ export default function AICalculationExplainer() {
           <Textarea
             id="calculationData"
             className="min-h-[200px] font-mono text-sm mt-2"
-            placeholder={`{\n  "buildingType": "commercial",\n  "region": "north",\n  "squareFootage": 5000,\n  "baseCost": 150.00,\n  "regionFactor": 1.2,\n  "complexityFactor": 1.1,\n  "costPerSqft": 198.00,\n  "totalCost": 990000.00\n}`}
+            placeholder={`{\n  "buildingType": "commercial",\n  "revalArea": "Reval 1",\n  "squareFootage": 5000,\n  "baseCost": 150.00,\n  "revalAreaFactor": 1.2,\n  "complexityFactor": 1.1,\n  "costPerSqft": 198.00,\n  "totalCost": 990000.00\n}`}
             value={calculationData}
             onChange={(e) => setCalculationData(e.target.value)}
           />

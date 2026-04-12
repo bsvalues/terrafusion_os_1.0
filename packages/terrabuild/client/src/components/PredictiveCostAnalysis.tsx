@@ -62,7 +62,7 @@ interface PredictiveCostAnalysisProps {
   squareFeet: number;
   quality: string;
   buildingAge: number;
-  region: string;
+  revalArea: string;
   complexityFactor: number;
   conditionFactor: number;
   includeExplanations?: boolean;
@@ -75,7 +75,7 @@ export function PredictiveCostAnalysis({
   squareFeet,
   quality,
   buildingAge,
-  region,
+  revalArea,
   complexityFactor,
   conditionFactor,
   includeExplanations = true,
@@ -113,7 +113,7 @@ export function PredictiveCostAnalysis({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           buildingType,
-          region: region || 'Benton',
+          region: revalArea || 'Benton',
           squareFeet,
           yearBuilt,
           qualityGrade: quality,
@@ -140,7 +140,7 @@ export function PredictiveCostAnalysis({
             { feature: 'Building Type', importance: 0.35, impact: 'positive', explanation: `${buildingType} base rate from Benton 2025 matrix` },
             { feature: 'Square Footage', importance: 0.30, impact: 'positive', explanation: `${squareFeet.toLocaleString()} sqft` },
             { feature: 'Quality Grade', importance: 0.20, impact: 'positive', explanation: `${quality} quality multiplier applied` },
-            { feature: 'Region Factor', importance: 0.10, impact: 'positive', explanation: apiData.regionFactor ? `${Number(apiData.regionFactor).toFixed(2)}×` : 'Regional adjustment' },
+            { feature: 'Reval Area Factor', importance: 0.10, impact: 'positive', explanation: apiData.revalAreaFactor ? `${Number(apiData.revalAreaFactor).toFixed(2)}×` : 'Reval Area adjustment' },
             { feature: 'Effective Age', importance: 0.05, impact: 'negative', explanation: `${buildingAge} year effective age depreciation` },
           ],
           errorMargin: 8,
@@ -224,7 +224,7 @@ export function PredictiveCostAnalysis({
     const ageDepreciation = Math.min(ageDepreciationRate * buildingAge, maxDepreciation);
     
     // Apply adjustments
-    const regionMultiplier = regionMultipliers[region] || 1.0;
+    const regionMultiplier = regionMultipliers[revalArea] || 1.0;
     const ageMultiplier = 1 - ageDepreciation;
     
     // Predictive factors for future costs
@@ -268,7 +268,7 @@ export function PredictiveCostAnalysis({
         feature: 'Regional Factors',
         importance: 0.20,
         impact: regionMultiplier > 1 ? 'positive' : 'negative',
-        explanation: `Construction costs in ${region} are typically ${((regionMultiplier - 1) * 100).toFixed(1)}% ${regionMultiplier > 1 ? 'higher' : 'lower'} than the national average due to labor markets and material availability.`
+        explanation: `Construction costs in ${revalArea} are typically ${((regionMultiplier - 1) * 100).toFixed(1)}% ${regionMultiplier > 1 ? 'higher' : 'lower'} than the national average due to labor markets and material availability.`
       },
       {
         feature: 'Inflation',
@@ -515,7 +515,7 @@ export function PredictiveCostAnalysis({
                       <span className="text-sm font-medium">Location & Factors</span>
                     </div>
                     <div className="text-xs text-gray-500 pl-5.5 space-y-1">
-                      <p><span className="font-medium">Region:</span> {region}</p>
+                      <p><span className="font-medium">Reval Area:</span> {revalArea}</p>
                       <p><span className="font-medium">Complexity:</span> {(complexityFactor * 100).toFixed(0)}%</p>
                       <p><span className="font-medium">Condition:</span> {(conditionFactor * 100).toFixed(0)}%</p>
                     </div>
@@ -860,7 +860,7 @@ export function PredictiveCostAnalysis({
                         <div className="mt-3 text-xs text-gray-600">
                           <p>
                             This chart shows the projected cost growth over time, accounting for inflation
-                            and other economic factors affecting the construction industry in {region}.
+                            and other economic factors affecting the construction industry in {revalArea}.
                           </p>
                         </div>
                       </div>
@@ -905,7 +905,7 @@ export function PredictiveCostAnalysis({
                       <ResponsiveContainer width="100%" height={200}>
                         <BarChart data={[
                           { name: 'National Avg', value: predictionResult.totalCost * 0.95 },
-                          { name: region, value: predictionResult.totalCost },
+                          { name: revalArea, value: predictionResult.totalCost },
                           { name: 'West', value: predictionResult.totalCost * 1.1 },
                           { name: 'Northeast', value: predictionResult.totalCost * 1.15 },
                           { name: 'Midwest', value: predictionResult.totalCost * 0.9 },
@@ -926,8 +926,8 @@ export function PredictiveCostAnalysis({
                       </ResponsiveContainer>
                       <div className="mt-3 text-xs text-gray-600">
                         <p>
-                          This chart compares the predicted cost in {region} with national
-                          averages and other regions for similar {buildingType.toLowerCase()} buildings
+                          This chart compares the predicted cost in {revalArea} with national
+                          averages and other reval areas for similar {buildingType.toLowerCase()} buildings
                           with comparable specifications.
                         </p>
                       </div>

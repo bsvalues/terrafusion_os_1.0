@@ -248,10 +248,10 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
       );
     }
 
-    // Apply region filter from the global context
-    if (filters?.regions && filters.regions.length > 0) {
+    // Apply reval area filter from the global context
+    if (filters?.revalAreas && filters.revalAreas.length > 0) {
       filteredData = filteredData.filter(item =>
-        filters.regions!.includes(item.region)
+        filters.revalAreas!.includes(item.revalArea ?? item.region)
       );
     }
 

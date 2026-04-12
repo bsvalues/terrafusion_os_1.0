@@ -307,7 +307,7 @@ export default function Dashboard() {
                   </span>
                 </h2>
                 <p className="text-neutral-600 mb-6">
-                  Calculate building costs based on region, building type, square footage, and
+                  Calculate building costs based on Reval Area (Cycle), building type, square footage, and
                   complexity.
                 </p>
                 <div
@@ -392,15 +392,16 @@ export default function Dashboard() {
           <DataSlicer
             categories={[
               {
-                id: 'region',
-                name: 'Region',
+                id: 'revalArea',
+                name: 'Reval Area (Cycle)',
                 type: 'select',
                 options: [
-                  { id: 'CENTRAL', label: 'Central', checked: false },
-                  { id: 'EAST', label: 'East', checked: false },
-                  { id: 'WEST', label: 'West', checked: false },
-                  { id: 'NORTH', label: 'North', checked: false },
-                  { id: 'SOUTH', label: 'South', checked: false },
+                  { id: 'REVAL1', label: 'Reval 1 — Kennewick (Urban Core)', checked: false },
+                  { id: 'REVAL2', label: 'Reval 2 — West Richland / Badger Mtn', checked: false },
+                  { id: 'REVAL3', label: 'Reval 3 — North Richland / Horn Rapids', checked: false },
+                  { id: 'REVAL4', label: 'Reval 4 — East Benton / Benton City', checked: false },
+                  { id: 'REVAL5', label: 'Reval 5 — Prosser / Wine Country', checked: false },
+                  { id: 'REVAL6', label: 'Reval 6 — Rural / Agricultural Lands', checked: false },
                 ],
               },
               {
@@ -438,19 +439,19 @@ export default function Dashboard() {
         <div className="mb-6">
           <CarouselCards
             title="Building Cost Insights"
-            description="Latest trends and patterns in building costs across your jurisdiction"
+            description="Latest trends and patterns in building costs across Benton County"
             cardWidth={320}
             cards={[
               <div key="card1" className="p-6 h-full">
                 <h3 className="text-lg font-semibold mb-2">Cost Trends</h3>
                 <p className="text-sm text-gray-600 mb-4">
-                  Regional cost variations across your jurisdiction.
+                  Reval Area cost variations across Benton County.
                 </p>
                 <div className="bg-gray-100 h-40 rounded-md flex items-center justify-center mb-4">
                   <span className="text-gray-500">Cost Trend Chart</span>
                 </div>
                 <p className="text-sm text-gray-700">
-                  Central regions showing 12% increase in commercial costs since last quarter.
+                  Reval 3 (North Richland / Horn Rapids) showing higher commercial cost index this cycle.
                 </p>
               </div>,
               <div key="card2" className="p-6 h-full">
@@ -466,15 +467,15 @@ export default function Dashboard() {
                 </p>
               </div>,
               <div key="card3" className="p-6 h-full">
-                <h3 className="text-lg font-semibold mb-2">Regional Comparison</h3>
+                <h3 className="text-lg font-semibold mb-2">Reval Area Comparison</h3>
                 <p className="text-sm text-gray-600 mb-4">
-                  Building costs across different regions.
+                  Building costs across Benton County Reval Areas (Cycles 1–6).
                 </p>
                 <div className="bg-gray-100 h-40 rounded-md flex items-center justify-center mb-4">
-                  <span className="text-gray-500">Regional Map</span>
+                  <span className="text-gray-500">Reval Area Map</span>
                 </div>
                 <p className="text-sm text-gray-700">
-                  Eastern regions demonstrate the highest cost efficiency for industrial structures.
+                  Reval 6 (Rural / Agricultural Lands) demonstrates the lowest cost index for non-residential structures.
                 </p>
               </div>,
               <div key="card4" className="p-6 h-full">

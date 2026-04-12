@@ -98,7 +98,7 @@ export default function DocumentationPage() {
                 />
                 <DocumentCard 
                   title="Regional Analysis"
-                  description="Comparing building costs across different regions of Benton County."
+                  description="Comparing building costs across different reval areas of Benton County."
                   lastUpdated="February 2025"
                 />
               </div>
@@ -158,7 +158,7 @@ export default function DocumentationPage() {
                 />
                 <DocumentCard 
                   title="Regional Data API"
-                  description="Endpoints for retrieving region-specific cost information."
+                  description="Endpoints for retrieving reval area-specific cost information."
                   lastUpdated="February 2025"
                 />
                 <DocumentCard 

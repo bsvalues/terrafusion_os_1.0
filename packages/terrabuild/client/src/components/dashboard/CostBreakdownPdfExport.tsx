@@ -64,13 +64,13 @@ const PdfIcon = () => (
 
 interface CostBreakdownPdfExportProps {
   data: {
-    region: string;
+    revalArea: string;
     buildingType: string;
     squareFootage: number;
     costPerSqft: number;
     totalCost: number;
     baseCost: number;
-    regionFactor: number;
+    revalAreaFactor: number;
     complexityFactor: number;
     materials: Material[];
   } | null;
@@ -104,7 +104,7 @@ const CostBreakdownPdfExport: React.FC<CostBreakdownPdfExportProps> = ({
     try {
       // Generate PDF filename with project details
       const filename = `${data.buildingType.toLowerCase().replace(/\s+/g, '-')}-${
-        data.region.toLowerCase().replace(/\s+/g, '-')
+        data.revalArea.toLowerCase().replace(/\s+/g, '-')
       }-${data.squareFootage}sqft-cost-breakdown.pdf`;
 
       // Export to PDF
@@ -187,7 +187,7 @@ const CostBreakdownPdfExport: React.FC<CostBreakdownPdfExportProps> = ({
                   <span className="text-blue-600 text-lg">/sq ft</span>
                 </div>
                 <p className="mt-2 text-sm text-blue-600">
-                  For {data.buildingType} building in {data.region} region
+                  For {data.buildingType} building in Reval Area {data.revalArea}
                 </p>
               </div>
                   
@@ -209,11 +209,11 @@ const CostBreakdownPdfExport: React.FC<CostBreakdownPdfExportProps> = ({
                   <div className="space-y-4">
                     <div>
                       <div className="flex justify-between mb-1">
-                        <span className="font-medium">Region Impact</span>
-                        <span className="text-blue-600">{data.regionFactor.toFixed(2)}× multiplier</span>
+                        <span className="font-medium">Reval Area Impact</span>
+                        <span className="text-blue-600">{data.revalAreaFactor.toFixed(2)}× multiplier</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="h-2 bg-blue-600 rounded-full" style={{ width: `${data.regionFactor * 50}%` }}></div>
+                        <div className="h-2 bg-blue-600 rounded-full" style={{ width: `${data.revalAreaFactor * 50}%` }}></div>
                       </div>
                     </div>
                                 
@@ -437,8 +437,8 @@ const CostBreakdownPdfExport: React.FC<CostBreakdownPdfExportProps> = ({
                           <span className="font-medium">{data.buildingType}</span>
                         </div>
                         <div className="flex justify-between py-1 border-b">
-                          <span>Region:</span>
-                          <span className="font-medium">{data.region}</span>
+                          <span>Reval Area:</span>
+                          <span className="font-medium">{data.revalArea}</span>
                         </div>
                         <div className="flex justify-between py-1 border-b">
                           <span>Size:</span>
@@ -459,8 +459,8 @@ const CostBreakdownPdfExport: React.FC<CostBreakdownPdfExportProps> = ({
                           <span className="font-medium text-blue-700">{formatCurrency(data.totalCost)}</span>
                         </div>
                         <div className="flex justify-between py-1 border-b">
-                          <span>Region Factor:</span>
-                          <span className="font-medium">{data.regionFactor.toFixed(2)}×</span>
+                          <span>Reval Area Factor:</span>
+                          <span className="font-medium">{data.revalAreaFactor.toFixed(2)}×</span>
                         </div>
                       </div>
                     </div>
@@ -496,7 +496,7 @@ const CostBreakdownPdfExport: React.FC<CostBreakdownPdfExportProps> = ({
             Building Cost Breakdown
           </h1>
           <h2 style={{ fontSize: '16px', fontWeight: 'normal', color: '#666', marginBottom: '5px' }}>
-            {data.buildingType} in {data.region}
+            {data.buildingType} in Reval Area {data.revalArea}
           </h2>
           <h3 style={{ fontSize: '14px', fontWeight: 'normal', color: '#888' }}>
             {data.squareFootage.toLocaleString()} sq ft
@@ -528,8 +528,8 @@ const CostBreakdownPdfExport: React.FC<CostBreakdownPdfExportProps> = ({
             <span style={{ fontSize: '12px', fontWeight: 'medium' }}>{formatCurrency(data.baseCost)} per sq ft</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-            <span style={{ fontSize: '12px', color: '#666' }}>Region Factor:</span>
-            <span style={{ fontSize: '12px', fontWeight: 'medium' }}>{data.regionFactor.toFixed(2)}×</span>
+            <span style={{ fontSize: '12px', color: '#666' }}>Reval Area Factor:</span>
+            <span style={{ fontSize: '12px', fontWeight: 'medium' }}>{data.revalAreaFactor.toFixed(2)}×</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
             <span style={{ fontSize: '12px', color: '#666' }}>Complexity Factor:</span>

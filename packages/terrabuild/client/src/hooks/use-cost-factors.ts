@@ -11,11 +11,11 @@ export function useCostFactors() {
     queryKey: ["/api/costforge/cost-factors"],
   });
 
-  const getCostFactorByRegionAndType = (region: string, buildingType: string) => {
+  const getCostFactorByRevalAreaAndType = (revalArea: string, buildingType: string) => {
     return useQuery<CostFactor>({
-      queryKey: ["/api/costforge/cost-factors", region, buildingType],
-      queryFn: () => apiRequest(`/api/costforge/cost-factors/${encodeURIComponent(region)}/${encodeURIComponent(buildingType)}`),
-      enabled: !!(region && buildingType),
+      queryKey: ["/api/costforge/cost-factors", revalArea, buildingType],
+      queryFn: () => apiRequest(`/api/costforge/cost-factors/${encodeURIComponent(revalArea)}/${encodeURIComponent(buildingType)}`),
+      enabled: !!(revalArea && buildingType),
     });
   };
 
@@ -47,7 +47,7 @@ export function useCostFactors() {
     costFactors,
     isLoadingFactors,
     factorsError,
-    getCostFactorByRegionAndType,
+    getCostFactorByRevalAreaAndType,
     createCostFactor,
     updateCostFactor,
     deleteCostFactor

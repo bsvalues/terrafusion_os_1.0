@@ -8,7 +8,7 @@ const RegionalCostComparisonPage: React.FC = () => {
   return (
     <MainLayout
       pageTitle="Regional Cost Comparison"
-      pageDescription="Compare building costs across different regions in your jurisdiction."
+      pageDescription="Compare building costs across different reval areas in your jurisdiction."
     >
       <div className="flex gap-2 mb-4">
         <Button variant="outline" size="sm">

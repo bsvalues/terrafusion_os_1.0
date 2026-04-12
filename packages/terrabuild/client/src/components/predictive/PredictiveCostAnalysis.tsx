@@ -24,7 +24,7 @@ interface PredictionFormProps {
 
 const PredictionForm: React.FC<PredictionFormProps> = ({ onPredict, isLoading }) => {
   const [buildingType, setBuildingType] = useState<string>('residential');
-  const [region, setRegion] = useState<string>('Eastern');
+  const [revalArea, setRevalArea] = useState<string>('Reval 1');
   const [squareFootage, setSquareFootage] = useState<number>(2500);
   const [quality, setQuality] = useState<string>('standard');
   const [complexity, setComplexity] = useState<string>('moderate');
@@ -33,7 +33,7 @@ const PredictionForm: React.FC<PredictionFormProps> = ({ onPredict, isLoading })
     e.preventDefault();
     onPredict({
       buildingType,
-      region,
+      revalArea,
       squareFootage,
       quality,
       complexity
@@ -63,19 +63,21 @@ const PredictionForm: React.FC<PredictionFormProps> = ({ onPredict, isLoading })
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="region">Region</Label>
-          <Select 
-            value={region} 
-            onValueChange={setRegion}
+          <Label htmlFor="revalArea">Reval Area</Label>
+          <Select
+            value={revalArea}
+            onValueChange={setRevalArea}
           >
-            <SelectTrigger id="region">
-              <SelectValue placeholder="Select region" />
+            <SelectTrigger id="revalArea">
+              <SelectValue placeholder="Select reval area" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Eastern">Eastern</SelectItem>
-              <SelectItem value="Western">Western</SelectItem>
-              <SelectItem value="Northern">Northern</SelectItem>
-              <SelectItem value="Southern">Southern</SelectItem>
+              <SelectItem value="Reval 1">Reval 1</SelectItem>
+              <SelectItem value="Reval 2">Reval 2</SelectItem>
+              <SelectItem value="Reval 3">Reval 3</SelectItem>
+              <SelectItem value="Reval 4">Reval 4</SelectItem>
+              <SelectItem value="Reval 5">Reval 5</SelectItem>
+              <SelectItem value="Reval 6">Reval 6</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -305,13 +307,13 @@ const WhatIfScenario: React.FC<WhatIfScenarioProps> = ({ baseInput }) => {
   
   const qualities = ['economy', 'standard', 'premium', 'luxury'];
   const complexities = ['simple', 'moderate', 'complex', 'very complex'];
-  const regions = ['Eastern', 'Western', 'Northern', 'Southern'];
+  const revalAreas = ['Reval 1', 'Reval 2', 'Reval 3', 'Reval 4', 'Reval 5', 'Reval 6'];
   const squareFootages = [1500, 2500, 5000, 10000];
   
   const parameterOptions = [
     { value: 'quality', label: 'Quality Level', values: qualities },
     { value: 'complexity', label: 'Complexity', values: complexities },
-    { value: 'region', label: 'Region', values: regions },
+    { value: 'revalArea', label: 'Reval Area', values: revalAreas },
     { value: 'squareFootage', label: 'Square Footage', values: squareFootages }
   ];
   

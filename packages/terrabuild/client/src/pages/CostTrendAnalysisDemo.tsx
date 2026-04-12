@@ -47,7 +47,7 @@ export default function CostTrendAnalysisDemo() {
             <AlertDescription className="text-blue-700">
               This dashboard provides advanced time series analysis of building cost trends.
               Explore trend detection, seasonality analysis, forecasting, and growth rate calculation.
-              Use the filters to focus on specific regions or building types.
+              Use the filters to focus on specific reval areas or building types.
             </AlertDescription>
           </Alert>
         )}
@@ -55,7 +55,7 @@ export default function CostTrendAnalysisDemo() {
         <div className="grid gap-6 md:grid-cols-7">
           <div className="md:col-span-2">
             <FilterControlPanel
-              allowedFilters={['regions', 'buildingTypes']}
+              allowedFilters={['revalAreas', 'buildingTypes']}
               compact={true}
             />
             
@@ -85,7 +85,7 @@ export default function CostTrendAnalysisDemo() {
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-3">
                 <p>
-                  <span className="font-medium text-foreground">Filtering</span>: Use the region and building type filters to focus on specific segments of your data.
+                  <span className="font-medium text-foreground">Filtering</span>: Use the reval area and building type filters to focus on specific segments of your data.
                 </p>
                 <p>
                   <span className="font-medium text-foreground">Time Periods</span>: Switch between yearly, quarterly, and monthly views to see different patterns.

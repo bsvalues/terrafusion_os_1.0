@@ -67,12 +67,12 @@ export function useCalculationHistory() {
     });
   };
 
-  // Get calculation history for a specific region
-  const getByRegion = (region: string) => {
+  // Get calculation history for a specific Reval Area (PACS Cycle)
+  const getByRevalArea = (revalArea: string) => {
     return useQuery<Calculation[]>({
-      queryKey: ['/api/costforge/calculations', 'region', region],
-      queryFn: () => apiRequest(`/api/costforge/calculations?region=${encodeURIComponent(region)}`),
-      enabled: !!region,
+      queryKey: ['/api/costforge/calculations', 'revalArea', revalArea],
+      queryFn: () => apiRequest(`/api/costforge/calculations?revalArea=${encodeURIComponent(revalArea)}`),
+      enabled: !!revalArea,
     });
   };
 
@@ -100,7 +100,7 @@ export function useCalculationHistory() {
     create,
     remove,
     getByBuildingType,
-    getByRegion,
+    getByRevalArea,
     formatCalculation,
     formatCurrency,
   };

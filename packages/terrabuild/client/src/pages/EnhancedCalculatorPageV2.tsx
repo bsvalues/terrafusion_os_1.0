@@ -84,7 +84,7 @@ const calculatorWorkflowSteps: WorkflowStep[] = [
     helpText: 'Review and confirm your selections, then run the calculation process.',
     estimatedTime: '1-2 mins',
     icon: <Calculator className="h-4 w-4" />,
-    requiredData: ['propertyId', 'buildingType', 'region'],
+    requiredData: ['propertyId', 'buildingType', 'revalArea'],
   },
   {
     id: 'results',
@@ -241,7 +241,7 @@ const PropertySelectionStep: React.FC = () => {
               <div>
                 <p className="font-medium text-amber-800">Important Note</p>
                 <p className="text-amber-700">
-                  Selecting a property automatically pulls in its geographic region, 
+                  Selecting a property automatically pulls in its Reval Area (PACS Cycle),
                   which is a critical factor in the cost calculation process.
                 </p>
               </div>
@@ -261,10 +261,19 @@ const BuildingParametersStep: React.FC = () => {
   const [quality, setQuality] = useState<string>(state.quality || '');
   const [condition, setCondition] = useState<string>(state.condition || '');
   const [squareFootage, setSquareFootage] = useState<string>('2500');
-  const [region, setRegion] = useState<string>(state.region || 'CENTRAL');
-  
+  const REVAL_AREAS = [
+    { id: 'Reval 1', label: 'Reval 1 — Kennewick (Urban Core)', factor: 1.00 },
+    { id: 'Reval 2', label: 'Reval 2 — West Richland / Badger Mtn', factor: 1.05 },
+    { id: 'Reval 3', label: 'Reval 3 — North Richland / Horn Rapids', factor: 1.10 },
+    { id: 'Reval 4', label: 'Reval 4 — East Benton / Benton City', factor: 0.95 },
+    { id: 'Reval 5', label: 'Reval 5 — Prosser / Wine Country', factor: 0.90 },
+    { id: 'Reval 6', label: 'Reval 6 — Rural / Agricultural Lands', factor: 0.82 },
+  ];
+
+  const [revalArea, setRevalArea] = useState<string>(state.revalArea || 'Reval 1');
+
   const handleSave = () => {
-    if (!buildingType || !quality || !condition || !region) {
+    if (!buildingType || !quality || !condition || !revalArea) {
       toast({
         title: 'Missing Parameters',
         description: 'Please fill out all required fields before continuing.',
@@ -281,8 +290,8 @@ const BuildingParametersStep: React.FC = () => {
       qualityDetails: { code: quality, name: getQualityName(quality) },
       condition,
       conditionDetails: { code: condition, name: getConditionName(condition) },
-      region,
-      regionDetails: { code: region, name: getRegionName(region) },
+      revalArea,
+      revalAreaDetails: { code: revalArea, name: getRevalAreaName(revalArea) },
     });
     
     toast({
@@ -328,15 +337,16 @@ const BuildingParametersStep: React.FC = () => {
     return conditions[code] || code;
   };
   
-  const getRegionName = (code: string): string => {
-    const regions: Record<string, string> = {
-      CENTRAL: 'Central Benton County',
-      EAST: 'Eastern Benton County',
-      WEST: 'Western Benton County',
-      NORTH: 'Northern Benton County',
-      SOUTH: 'Southern Benton County',
+  const getRevalAreaName = (code: string): string => {
+    const names: Record<string, string> = {
+      'Reval 1': 'Reval 1 — Kennewick (Urban Core)',
+      'Reval 2': 'Reval 2 — West Richland / Badger Mtn',
+      'Reval 3': 'Reval 3 — North Richland / Horn Rapids',
+      'Reval 4': 'Reval 4 — East Benton / Benton City',
+      'Reval 5': 'Reval 5 — Prosser / Wine Country',
+      'Reval 6': 'Reval 6 — Rural / Agricultural Lands',
     };
-    return regions[code] || code;
+    return names[code] || code;
   };
   
   return (
@@ -419,17 +429,15 @@ const BuildingParametersStep: React.FC = () => {
               </div>
               
               <div>
-                <Label htmlFor="region">Region</Label>
-                <Select value={region} onValueChange={setRegion}>
-                  <SelectTrigger id="region" className="w-full">
-                    <SelectValue placeholder="Select region" />
+                <Label htmlFor="revalArea">Reval Area (Cycle)</Label>
+                <Select value={revalArea} onValueChange={setRevalArea}>
+                  <SelectTrigger id="revalArea" className="w-full">
+                    <SelectValue placeholder="Select Reval Area" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="CENTRAL">Central Benton County</SelectItem>
-                    <SelectItem value="EAST">Eastern Benton County</SelectItem>
-                    <SelectItem value="WEST">Western Benton County</SelectItem>
-                    <SelectItem value="NORTH">Northern Benton County</SelectItem>
-                    <SelectItem value="SOUTH">Southern Benton County</SelectItem>
+                    {REVAL_AREAS.map(ra => (
+                      <SelectItem key={ra.id} value={ra.id}>{ra.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -481,9 +489,9 @@ const BuildingParametersStep: React.FC = () => {
               </div>
               
               <div className="bg-amber-50 p-3 rounded-md border border-amber-200">
-                <h4 className="font-medium text-amber-800 mb-1">Region</h4>
+                <h4 className="font-medium text-amber-800 mb-1">Reval Area (Cycle)</h4>
                 <p className="text-amber-700 text-xs">
-                  Geographic location within Benton County, which affects regional cost adjustments.
+                  PACS Cycle field (1–6) identifying the Benton County revaluation area, which determines the local cost adjustment factor.
                 </p>
               </div>
             </div>
@@ -502,7 +510,7 @@ const CalculationStep: React.FC = () => {
   const [calculationComplete, setCalculationComplete] = useState(false);
   
   const handleCalculate = () => {
-    if (!state.propertyId || !state.buildingType || !state.region) {
+    if (!state.propertyId || !state.buildingType || !state.revalArea) {
       toast({
         title: 'Missing Information',
         description: 'Please complete the previous steps before calculating costs.',
@@ -522,7 +530,7 @@ const CalculationStep: React.FC = () => {
         timestamp: new Date().toISOString(),
         propertyId: state.propertyId,
         buildingType: state.buildingType,
-        region: state.region,
+        revalArea: state.revalArea,
         quality: state.quality,
         condition: state.condition,
         baseCost: 125.50, // $ per square foot
@@ -530,7 +538,7 @@ const CalculationStep: React.FC = () => {
         totalCost: calculateTotalCost(),
         confidenceLevel: 'high',
         factors: {
-          regionFactor: getRegionFactor(state.region),
+          regionFactor: getRegionFactor(state.revalArea),
           qualityFactor: getQualityFactor(state.quality),
           conditionFactor: getConditionFactor(state.condition),
         }
@@ -561,7 +569,7 @@ const CalculationStep: React.FC = () => {
   };
   
   // Helper functions for calculation
-  const getRegionFactor = (region: string | null | undefined): number => {
+  const getRegionFactor = (revalArea: string | null | undefined): number => {
     const factors: Record<string, number> = {
       CENTRAL: 1.0,
       EAST: 0.95,
@@ -569,7 +577,7 @@ const CalculationStep: React.FC = () => {
       NORTH: 1.02,
       SOUTH: 0.98,
     };
-    return factors[region || 'CENTRAL'] || 1.0;
+    return factors[revalArea || 'CENTRAL'] || 1.0;
   };
   
   const getQualityFactor = (quality: string | null | undefined): number => {
@@ -596,7 +604,7 @@ const CalculationStep: React.FC = () => {
   
   const calculateAdjustedCost = (): number => {
     const baseCost = 125.50; // $ per square foot
-    const regionFactor = getRegionFactor(state.region);
+    const regionFactor = getRegionFactor(state.revalArea);
     const qualityFactor = getQualityFactor(state.quality);
     const conditionFactor = getConditionFactor(state.condition);
     
@@ -644,9 +652,9 @@ const CalculationStep: React.FC = () => {
                   </div>
                   
                   <div>
-                    <Label className="text-xs text-gray-500">Region</Label>
+                    <Label className="text-xs text-gray-500">Reval Area</Label>
                     <p className="font-medium">
-                      {state.regionDetails?.name || 'Not specified'}
+                      {state.revalAreaDetails?.name || 'Not specified'}
                     </p>
                   </div>
                 </div>
@@ -763,7 +771,7 @@ const ResultsStep: React.FC = () => {
                 ${state.calculationResults.totalCost.toLocaleString()}
               </div>
               <p className="text-blue-700 mt-2">
-                Based on {state.buildingTypeDetails?.name} in {state.regionDetails?.name}
+                Based on {state.buildingTypeDetails?.name} in {state.revalAreaDetails?.name}
               </p>
             </div>
             
@@ -820,7 +828,7 @@ const ResultsStep: React.FC = () => {
                 <div className="space-y-3">
                   <div className="bg-gray-50 p-3 rounded-md">
                     <div className="flex justify-between mb-1">
-                      <span className="text-sm">Region Factor</span>
+                      <span className="text-sm">Reval Area Factor</span>
                       <span className="font-medium">{state.calculationResults.factors.regionFactor.toFixed(2)}</span>
                     </div>
                     <div className="w-full bg-gray-200 h-2 rounded-full">

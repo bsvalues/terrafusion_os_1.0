@@ -31,7 +31,7 @@ const DrilldownBarChart: React.FC<DrilldownChartProps> = ({
 }) => {
   const [drillPath, setDrillPath] = useState<string[]>([]);
   const [chartData, setChartData] = useState<any>(null);
-  const [selectedRegion, setSelectedRegion] = useState<string>('Washington');
+  const [selectedRevalArea, setSelectedRevalArea] = useState<string>('Reval 1');
   const [selectedBuildingType, setSelectedBuildingType] = useState<string>('RESIDENTIAL');
   
   // Get available regions
@@ -49,21 +49,21 @@ const DrilldownBarChart: React.FC<DrilldownChartProps> = ({
   
   // Fetch hierarchical cost data
   const { data: hierarchicalData, isLoading, error } = useQuery({
-    queryKey: ['/api/benchmarking/hierarchical-costs', selectedRegion, selectedBuildingType],
+    queryKey: ['/api/benchmarking/hierarchical-costs', selectedRevalArea, selectedBuildingType],
     queryFn: async () => {
       const response = await fetch('/api/benchmarking/hierarchical-costs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ region: selectedRegion, buildingType: selectedBuildingType })
+        body: JSON.stringify({ revalArea: selectedRevalArea, buildingType: selectedBuildingType })
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch hierarchical cost data');
       }
-      
+
       return response.json();
     },
-    enabled: !!selectedRegion && !!selectedBuildingType,
+    enabled: !!selectedRevalArea && !!selectedBuildingType,
     retry: 1
   });
   
@@ -112,18 +112,18 @@ const DrilldownBarChart: React.FC<DrilldownChartProps> = ({
         
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="flex-1">
-            <label className="text-sm font-medium mb-2 block">Region</label>
+            <label className="text-sm font-medium mb-2 block">Reval Area</label>
             <Select
-              value={selectedRegion}
-              onValueChange={setSelectedRegion}
+              value={selectedRevalArea}
+              onValueChange={setSelectedRevalArea}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Region" />
+                <SelectValue placeholder="Select Reval Area" />
               </SelectTrigger>
               <SelectContent>
-                {Array.isArray(regionsData) && regionsData.map((region: string) => (
-                  <SelectItem key={region} value={region}>
-                    {region}
+                {Array.isArray(regionsData) && regionsData.map((revalArea: string) => (
+                  <SelectItem key={revalArea} value={revalArea}>
+                    {revalArea}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -213,7 +213,7 @@ const DrilldownBarChart: React.FC<DrilldownChartProps> = ({
             
             <div className="text-center mb-4">
               <h3 className="text-lg font-medium">
-                {chartData.current?.name || `${getBuildingTypeLabel(selectedBuildingType)} Costs in ${selectedRegion}`}
+                {chartData.current?.name || `${getBuildingTypeLabel(selectedBuildingType)} Costs in ${selectedRevalArea}`}
               </h3>
               <p className="text-sm text-muted-foreground">
                 Click on bars to drill down

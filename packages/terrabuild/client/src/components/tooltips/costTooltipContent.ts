@@ -31,22 +31,22 @@ export const costTooltipContent = {
     }
   },
   
-  region: {
+  revalArea: {
     richland: {
-      title: "Richland Region",
-      content: "Located in the eastern part of Benton County, this region's construction costs are affected by local labor availability and material transportation distances.",
+      title: "Reval Area — Richland",
+      content: "Located in the eastern part of Benton County, this reval area's construction costs are affected by local labor availability and material transportation distances.",
       funFact: "Richland was originally a small farm town before it boomed during the Manhattan Project in the 1940s!",
       impact: "medium" as const
     },
     kennewick: {
-      title: "Kennewick Region",
+      title: "Reval Area — Kennewick",
       content: "In the central part of Benton County, Kennewick's construction market can vary based on urban density and access to suppliers.",
       funFact: "Kennewick Man, one of the oldest and most complete human skeletons found in North America (9,300 years old), was discovered here in 1996!",
       impact: "medium" as const
     },
     prosser: {
-      title: "Prosser Region",
-      content: "In the western part of Benton County, this region may have different cost considerations due to its more rural nature and distance from major supply centers.",
+      title: "Reval Area — Prosser",
+      content: "In the western part of Benton County, this reval area may have different cost considerations due to its more rural nature and distance from major supply centers.",
       funFact: "Prosser is known as the 'Birthplace of Washington Wine' with the first wine grapes planted in the 1940s!",
       impact: "medium" as const
     }

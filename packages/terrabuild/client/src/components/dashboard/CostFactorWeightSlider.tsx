@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { buildingTypes, regions } from "@/data/constants";
+import { buildingTypes, REVAL_AREAS as regions } from "@/data/constants";
 import { useAuth } from "@/hooks/use-auth";
 import { useCostFactorPresets } from "@/hooks/use-cost-factor-presets";
 import { useCostFactors } from "@/hooks/use-cost-factors";
@@ -17,7 +17,7 @@ import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAx
 
 // Define the cost factor types that can be weighted
 export type CostFactorType =
-  | "regionFactor"
+  | "revalAreaFactor"
   | "complexityFactor"
   | "qualityFactor"
   | "conditionFactor"
@@ -38,13 +38,13 @@ export type CostFactorWeight = {
 // Default cost factor weights (these would ideally come from the database)
 const defaultCostFactors: CostFactorWeight[] = [
   {
-    id: "region",
-    name: "Region Factor",
-    factorType: "regionFactor",
-    description: "Adjusts costs based on geographic region",
+    id: "revalArea",
+    name: "Reval Area Factor",
+    factorType: "revalAreaFactor",
+    description: "Adjusts costs based on Reval Area (PACS Cycle field)",
     defaultWeight: 1.0,
     currentWeight: 1.0,
-    impactDescription: "Higher values increase the impact of regional cost differences"
+    impactDescription: "Higher values increase the impact of Reval Area cost differences"
   },
   {
     id: "complexity",
@@ -116,7 +116,7 @@ const predefinedPresets: PresetItem[] = [
     name: "Standard Assessment",
     description: "Default TerraFusion assessment weights",
     weights: {
-      region: 1.0,
+      revalArea: 1.0,
       complexity: 1.0,
       quality: 1.0,
       condition: 1.0,
@@ -130,7 +130,7 @@ const predefinedPresets: PresetItem[] = [
     name: "Modern Construction",
     description: "Emphasizes quality and complexity factors for modern buildings",
     weights: {
-      region: 1.0,
+      revalArea: 1.0,
       complexity: 1.4,
       quality: 1.3,
       condition: 0.9,
@@ -144,7 +144,7 @@ const predefinedPresets: PresetItem[] = [
     name: "Historic Property",
     description: "Adjusts weights for historic properties",
     weights: {
-      region: 1.0,
+      revalArea: 1.0,
       complexity: 1.2,
       quality: 1.1,
       condition: 0.8,
@@ -158,7 +158,7 @@ const predefinedPresets: PresetItem[] = [
     name: "Commercial Focus",
     description: "Weighted for commercial property assessment",
     weights: {
-      region: 1.2,
+      revalArea: 1.2,
       complexity: 1.2,
       quality: 1.1,
       condition: 1.0,
@@ -171,7 +171,7 @@ const predefinedPresets: PresetItem[] = [
 
 type CostFactorWeightingResult = {
   buildingType: string;
-  region: string;
+  revalArea: string;
   basePrice: number;
   adjustedPrice: number;
   difference: number;
@@ -190,7 +190,7 @@ export function CostFactorWeightSlider() {
   const [presetDescription, setPresetDescription] = useState("");
   const [activeTab, setActiveTab] = useState("editor");
   const [selectedPreset, setSelectedPreset] = useState("");
-  const [selectedRegion, setSelectedRegion] = useState("Central Region");
+  const [selectedRevalArea, setSelectedRevalArea] = useState("Reval 1");
   const [selectedBuildingType, setSelectedBuildingType] = useState("R1");
   const [previewResults, setPreviewResults] = useState<CostFactorWeightingResult | null>(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
@@ -442,7 +442,7 @@ export function CostFactorWeightSlider() {
       const basePrice = 127.50; // Base price per square foot
 
       // Calculate the adjusted price based on weights
-      const regionWeight = weights.find(w => w.id === "region")?.currentWeight || 1.0;
+      const regionWeight = weights.find(w => w.id === "revalArea")?.currentWeight || 1.0;
       const complexityWeight = weights.find(w => w.id === "complexity")?.currentWeight || 1.0;
       const qualityWeight = weights.find(w => w.id === "quality")?.currentWeight || 1.0;
 
@@ -464,7 +464,7 @@ export function CostFactorWeightSlider() {
 
       setPreviewResults({
         buildingType: selectedBuildingType,
-        region: selectedRegion,
+        revalArea: selectedRevalArea,
         basePrice,
         adjustedPrice,
         difference: adjustedPrice - basePrice,
@@ -563,13 +563,13 @@ export function CostFactorWeightSlider() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="preview-region">Region</Label>
+                <Label htmlFor="preview-reval-area">Reval Area (Cycle)</Label>
                 <Select
-                  value={selectedRegion}
-                  onValueChange={setSelectedRegion}
+                  value={selectedRevalArea}
+                  onValueChange={setSelectedRevalArea}
                 >
-                  <SelectTrigger id="preview-region">
-                    <SelectValue placeholder="Select region" />
+                  <SelectTrigger id="preview-reval-area">
+                    <SelectValue placeholder="Select Reval Area" />
                   </SelectTrigger>
                   <SelectContent>
                     {regions.map((region) => (

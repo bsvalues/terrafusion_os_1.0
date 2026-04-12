@@ -153,8 +153,17 @@ const PropertySelection = () => {
 const BuildingParameters = () => {
   const { nextStep, previousStep } = useWorkflow();
   const { updateState, state } = useDataFlow();
+  const REVAL_AREAS = [
+    { id: 'Reval 1', label: 'Reval 1 — Kennewick (Urban Core)',       factor: 1.00 },
+    { id: 'Reval 2', label: 'Reval 2 — West Richland / Badger Mtn',   factor: 1.05 },
+    { id: 'Reval 3', label: 'Reval 3 — North Richland / Horn Rapids',  factor: 1.10 },
+    { id: 'Reval 4', label: 'Reval 4 — East Benton / Benton City',     factor: 0.95 },
+    { id: 'Reval 5', label: 'Reval 5 — Prosser / Wine Country',         factor: 0.90 },
+    { id: 'Reval 6', label: 'Reval 6 — Rural / Agricultural Lands',    factor: 0.82 },
+  ];
+
   const [buildingType, setBuildingType] = useState(state.buildingType || 'R1');
-  const [region, setRegion] = useState(state.region || 'central');
+  const [revalArea, setRevalArea] = useState(state.revalArea || 'Reval 1');
   const [squareFootage, setSquareFootage] = useState('2500');
   const [quality, setQuality] = useState(state.quality || 'average');
   const [condition, setCondition] = useState(state.condition || 'average');
@@ -182,8 +191,8 @@ const BuildingParameters = () => {
     updateState({
       buildingType: buildingType,
       buildingTypeDetails: { code: buildingType },
-      region: region,
-      regionDetails: { code: region },
+      revalArea: revalArea,
+      revalAreaDetails: { code: revalArea },
       quality: quality,
       qualityDetails: { level: quality },
       condition: condition,
@@ -224,18 +233,18 @@ const BuildingParameters = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="region">Region</Label>
+              <Label htmlFor="revalArea">Reval Area (Cycle)</Label>
               <Select
-                value={region}
-                onValueChange={setRegion}
+                value={revalArea}
+                onValueChange={setRevalArea}
               >
-                <SelectTrigger id="region">
-                  <SelectValue placeholder="Select region" />
+                <SelectTrigger id="revalArea">
+                  <SelectValue placeholder="Select Reval Area" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="east">East Benton</SelectItem>
-                  <SelectItem value="central">Central Benton</SelectItem>
-                  <SelectItem value="west">West Benton</SelectItem>
+                  {REVAL_AREAS.map(ra => (
+                    <SelectItem key={ra.id} value={ra.id}>{ra.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -364,7 +373,7 @@ const CalculateStep = () => {
             timestamp: Date.now(),
             data: {
               buildingType: state.buildingType,
-              region: state.region,
+              revalArea: state.revalArea,
               quality: state.quality,
               condition: state.condition
             },
@@ -393,8 +402,8 @@ const CalculateStep = () => {
               <div className="text-muted-foreground">Building Type:</div>
               <div className="font-medium">{state.buildingType || 'Not specified'}</div>
               
-              <div className="text-muted-foreground">Region:</div>
-              <div className="font-medium">{state.region || 'Not specified'}</div>
+              <div className="text-muted-foreground">Reval Area:</div>
+              <div className="font-medium">{state.revalArea || 'Not specified'}</div>
               
               <div className="text-muted-foreground">Quality:</div>
               <div className="font-medium">{state.quality || 'Not specified'}</div>
@@ -517,7 +526,7 @@ const ResultsStep = () => {
               <div className="grid grid-cols-3 gap-4">
                 <div className="flex flex-col items-center p-3 bg-gray-50 rounded-lg">
                   <Map className="h-5 w-5 text-gray-500 mb-1" />
-                  <div className="text-xs text-gray-500">Region</div>
+                  <div className="text-xs text-gray-500">Reval Area</div>
                   <div className="text-sm font-medium">{calculationResults.regionFactor || '1.0'}</div>
                 </div>
                 <div className="flex flex-col items-center p-3 bg-gray-50 rounded-lg">
@@ -545,9 +554,9 @@ const ResultsStep = () => {
           <Lightbulb className="h-4 w-4" />
           <AlertTitle>Cost Analysis Insights</AlertTitle>
           <AlertDescription>
-            Based on similar properties in the {state.region || 'selected'} region, this cost estimate 
-            is approximately 5% higher than the regional average for {state.buildingType || 'this building type'}.
-            Consider adjusting quality factors for a more competitive estimate.
+            Based on similar properties in {state.revalArea || 'the selected Reval Area'}, this cost estimate
+            reflects Benton County cost matrix data for {state.buildingType || 'this building type'}.
+            Consider adjusting quality factors for a more accurate estimate.
           </AlertDescription>
         </Alert>
       </div>

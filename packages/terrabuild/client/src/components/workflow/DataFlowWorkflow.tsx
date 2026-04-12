@@ -344,7 +344,7 @@ export const DataFlowWorkflow: React.FC<DataFlowWorkflowProps> = ({
     if (data.propertyId) {
       return 'property';
     }
-    if (data.buildingType || data.region || data.quality || data.condition) {
+    if (data.buildingType || data.revalArea || data.region || data.quality || data.condition) {
       return 'parameters';
     }
     if (data.calculationId || data.calculationResults) {

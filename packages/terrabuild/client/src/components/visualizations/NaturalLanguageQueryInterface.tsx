@@ -152,7 +152,7 @@ export function NaturalLanguageQueryInterface() {
         }
         
         if (regionEntities.length > 0) {
-          newFilters.regions = regionEntities;
+          newFilters.revalAreas = regionEntities;
         }
         
         // Apply filters if we identified any

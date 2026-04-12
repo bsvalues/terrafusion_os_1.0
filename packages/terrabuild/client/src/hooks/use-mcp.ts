@@ -13,14 +13,15 @@ export const VALID_BUILDING_TYPES = [
 ];
 
 /**
- * Valid regions
+ * Valid reval areas (Benton County WA PACS Cycle areas)
  */
 export const VALID_REGIONS = [
-  'north',
-  'south',
-  'east',
-  'west',
-  'central'
+  'Reval 1',
+  'Reval 2',
+  'Reval 3',
+  'Reval 4',
+  'Reval 5',
+  'Reval 6',
 ];
 
 /**
@@ -40,7 +41,7 @@ export const VALID_CONDITIONS = [
 interface CostPredictionParams {
   buildingType: string;
   squareFootage: number;
-  region: string;
+  revalArea: string;
   yearBuilt?: number;
   condition?: string;
   complexity?: number;
@@ -61,7 +62,7 @@ export interface CostPredictionResponse {
   
   // Additional fields to match the display
   baseCost?: number;
-  regionFactor?: number | string;
+  revalAreaFactor?: number | string;
   complexityFactor?: number | string;
   costPerSqft?: number;
 }

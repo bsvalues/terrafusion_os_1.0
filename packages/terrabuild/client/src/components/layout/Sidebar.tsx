@@ -13,36 +13,21 @@ import {
   BarChart3,
   Home,
   Calculator,
-  Users,
-  Settings,
   BrainCircuit,
-  Glasses,
-  Database,
   Building2,
   FileBarChart,
-  HelpCircle,
   Zap,
-  Activity,
-  BarChart2,
-  LineChart,
-  BookOpen,
-  Share2,
-  UsersRound,
   Map,
   ChevronLeft,
   ChevronRight,
   Pin,
   PinOff,
   ExternalLink,
-  Maximize2,
   MinusSquare,
-  RefreshCw,
   FlaskConical,
   Bot,
-  Layers,
   TrendingUp,
   Network,
-  FolderSearch,
 } from "lucide-react";
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useWindow } from '@/contexts/WindowContext';
@@ -387,29 +372,13 @@ export default function Sidebar({ className }: SidebarProps) {
               <SidebarItem href="/ai-swarm" title="AI Swarm" icon={<Network />} />
             </SidebarSection>
 
-            {/* ── 4. REPORTS & DATA ────────────────────────── */}
+            {/* ── 4. REPORTS ───────────────────────────────── */}
             <SidebarSection
-              title="Reports & Data"
+              title="Reports"
               icon={<FileBarChart className="h-4 w-4" />}
               isCollapsed={!isExpanded}
             >
               <SidebarItem href="/reports" title="Reports" icon={<FileBarChart />} />
-              <SidebarItem href="/data-import" title="Data Import" icon={<Database />} />
-              <SidebarItem href="/data-connections" title="Data Connections" icon={<Layers />} />
-            </SidebarSection>
-
-            {/* ── 5. ADMIN / INTEGRATIONS ──────────────────── */}
-            <SidebarSection
-              title="Admin"
-              icon={<Settings className="h-4 w-4" />}
-              isCollapsed={!isExpanded}
-            >
-              <SidebarItem href="/settings/ftp-sync" title="Settings" icon={<Settings />} />
-              <SidebarItem href="/mcp-overview" title="MCP Overview" icon={<Share2 />} />
-              <SidebarItem href="/mcp-dashboard" title="Integration Health" icon={<Activity />} />
-              {isAdmin && (
-                <SidebarItem href="/users" title="User Management" icon={<Users />} />
-              )}
             </SidebarSection>
           </div>
         </div>

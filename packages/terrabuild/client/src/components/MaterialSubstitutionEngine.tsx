@@ -44,7 +44,7 @@ export interface MaterialSubstitution {
 // Props for the component
 interface MaterialSubstitutionEngineProps {
   buildingType: string;
-  region: string;
+  revalArea: string;
   quality: string;
   currentMaterials: Array<{
     id: string;
@@ -71,7 +71,7 @@ const qualityImpactColors = {
 // Main component
 export function MaterialSubstitutionEngine({
   buildingType,
-  region,
+  revalArea,
   quality,
   currentMaterials,
   onRecommendationsGenerated,

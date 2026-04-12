@@ -1,153 +1,120 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { createHeatmapData } from '@/lib/visualization-utils';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-
-interface County {
-  name: string;
-  avgCost: number;
-  buildingTypes?: Array<{ type: string, avgCost: number, count: number }>;
-}
-
-interface HeatmapData {
-  region: string;
-  data: Array<{ id: string, value: number }>;
-  minValue: number;
-  maxValue: number;
-  colorScale: string[];
-}
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 
 /**
- * Regional Heatmap Component
- * Displays a heatmap visualization of building costs across counties in a region
+ * Benton County Reval Area Cost Heatmap
+ *
+ * Displays building costs by Reval Area (PACS Cycle field, numbered 1–6).
+ * Data source: /api/benchmarking/regional-costs?county=Benton
+ *
+ * Reval Areas are Benton County's cost-cycle zones, not compass directions.
+ * No statewide or national comparison data is available or shown.
  */
+
+interface RevalAreaCost {
+  revalArea: string;
+  avgRate: number;
+  minRate: number;
+  maxRate: number;
+  count: number;
+}
+
+const REVAL_AREAS = [
+  { id: 'Reval 1', label: 'Reval 1 — Kennewick (Urban Core)',       factor: 1.00 },
+  { id: 'Reval 2', label: 'Reval 2 — West Richland / Badger Mtn',   factor: 1.05 },
+  { id: 'Reval 3', label: 'Reval 3 — North Richland / Horn Rapids',  factor: 1.10 },
+  { id: 'Reval 4', label: 'Reval 4 — East Benton / Benton City',     factor: 0.95 },
+  { id: 'Reval 5', label: 'Reval 5 — Prosser / Wine Country',         factor: 0.90 },
+  { id: 'Reval 6', label: 'Reval 6 — Rural / Agricultural Lands',    factor: 0.82 },
+];
+
+// Color scale: low (blue) → mid (green) → high (orange)
+const COLOR_SCALE = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444'];
+
+function getBarColor(value: number, min: number, max: number): string {
+  if (max === min) return COLOR_SCALE[0];
+  const t = (value - min) / (max - min);
+  const idx = Math.min(Math.floor(t * COLOR_SCALE.length), COLOR_SCALE.length - 1);
+  return COLOR_SCALE[idx];
+}
+
 const RegionalHeatmap: React.FC = () => {
-  const [selectedRegion, setSelectedRegion] = useState<string>('Washington');
-  const [selectedBuildingType, setSelectedBuildingType] = useState<string>('RESIDENTIAL');
-  const [heatmapData, setHeatmapData] = useState<HeatmapData | null>(null);
-  
-  // Get available regions
-  const { data: regionsData } = useQuery({
-    queryKey: ['/api/regions'],
-    retry: 1
-  });
-  
-  // For simplicity, we'll use a fixed list of building types
-  const buildingTypes = [
-    { value: 'RESIDENTIAL', label: 'Residential' },
-    { value: 'COMMERCIAL', label: 'Commercial' },
-    { value: 'INDUSTRIAL', label: 'Industrial' }
-  ];
-  
-  // Fetch county data for the selected region
-  const { data: countiesData, isLoading, error } = useQuery({
-    queryKey: ['/api/benchmarking/regional-costs', selectedRegion, selectedBuildingType],
+  const [selectedMetric, setSelectedMetric] = useState<'avgRate' | 'minRate' | 'maxRate'>('avgRate');
+
+  const { data: apiData, isLoading, error } = useQuery({
+    queryKey: ['/api/benchmarking/regional-costs', 'Benton'],
     queryFn: async () => {
-      const response = await fetch('/api/benchmarking/regional-costs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ region: selectedRegion, buildingType: selectedBuildingType })
-      });
-      
+      const response = await fetch('/api/benchmarking/regional-costs?county=Benton');
       if (!response.ok) {
-        throw new Error('Failed to fetch regional cost data');
+        throw new Error('Failed to fetch Reval Area cost data');
       }
-      
-      return response.json();
+      return response.json() as Promise<{ regionalCosts: RevalAreaCost[] }>;
     },
-    enabled: !!selectedRegion && !!selectedBuildingType,
-    retry: 1
+    retry: 1,
   });
-  
-  // Process data for heatmap when counties data changes
-  useEffect(() => {
-    if (countiesData?.counties && Array.isArray(countiesData.counties)) {
-      const processedData = (createHeatmapData as any)(
-        selectedRegion,
-        countiesData.counties.map((county: County) => ({
-          name: county.name,
-          avgCost: county.avgCost
-        }))
-      );
-      setHeatmapData(processedData as HeatmapData);
-    } else {
-      setHeatmapData(null);
-    }
-  }, [countiesData, selectedRegion]);
-  
-  // Helper for building type label
-  const getBuildingTypeLabel = (type: string) => {
-    const found = buildingTypes.find(bt => bt.value === type);
-    return found ? found.label : type;
+
+  // Merge API data with canonical Reval Area labels; fall back to factor-based placeholder
+  const chartData: Array<{ label: string; value: number; count: number }> = REVAL_AREAS.map(ra => {
+    const apiRow = apiData?.regionalCosts?.find(r => r.revalArea === ra.id);
+    return {
+      label: ra.id,
+      value: apiRow ? apiRow[selectedMetric] : 0,
+      count: apiRow?.count ?? 0,
+    };
+  });
+
+  const values = chartData.map(d => d.value).filter(v => v > 0);
+  const minVal = values.length ? Math.min(...values) : 0;
+  const maxVal = values.length ? Math.max(...values) : 0;
+
+  const metricLabels = {
+    avgRate: 'Average Rate ($/sqft)',
+    minRate: 'Min Rate ($/sqft)',
+    maxRate: 'Max Rate ($/sqft)',
   };
-  
-  // Generate a color for a cell based on its value
-  const getCellColor = (value: number) => {
-    if (!heatmapData) return '#e3f2fd'; // Default light blue
-    
-    const { minValue, maxValue, colorScale } = heatmapData;
-    const range = maxValue - minValue;
-    if (range === 0) return colorScale[0]; // All values are the same
-    
-    // Calculate position in the color scale (0 to colorScale.length-1)
-    const position = ((value - minValue) / range) * (colorScale.length - 1);
-    const index = Math.min(Math.floor(position), colorScale.length - 1);
-    
-    return colorScale[index];
-  };
-  
+
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Regional Cost Density</CardTitle>
+        <CardTitle>Benton County Reval Area Cost Heatmap</CardTitle>
         <CardDescription>
-          Building cost heatmap visualization across counties
+          Building cost rates by Reval Area (PACS Cycle field) — Benton County only
         </CardDescription>
-        
-        <div className="flex flex-col gap-4 sm:flex-row">
+
+        <div className="flex flex-col gap-4 sm:flex-row mt-2">
           <div className="flex-1">
-            <label className="text-sm font-medium mb-2 block">Region</label>
+            <label className="text-sm font-medium mb-2 block">Metric</label>
             <Select
-              value={selectedRegion}
-              onValueChange={setSelectedRegion}
+              value={selectedMetric}
+              onValueChange={(v) => setSelectedMetric(v as typeof selectedMetric)}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Region" />
+                <SelectValue placeholder="Select Metric" />
               </SelectTrigger>
               <SelectContent>
-                {Array.isArray(regionsData) && regionsData.map((region: string) => (
-                  <SelectItem key={region} value={region}>
-                    {region}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="flex-1">
-            <label className="text-sm font-medium mb-2 block">Building Type</label>
-            <Select
-              value={selectedBuildingType}
-              onValueChange={setSelectedBuildingType}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Building Type" />
-              </SelectTrigger>
-              <SelectContent>
-                {buildingTypes.map(type => (
-                  <SelectItem key={type.value} value={type.value}>
-                    {type.label}
-                  </SelectItem>
-                ))}
+                <SelectItem value="avgRate">Average Rate</SelectItem>
+                <SelectItem value="minRate">Minimum Rate</SelectItem>
+                <SelectItem value="maxRate">Maximum Rate</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         {isLoading ? (
           <div className="flex items-center justify-center p-8">
@@ -158,90 +125,95 @@ const RegionalHeatmap: React.FC = () => {
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>
-              Failed to load regional cost data. Please try again.
+              Failed to load Reval Area cost data. Please try again.
             </AlertDescription>
           </Alert>
-        ) : heatmapData && heatmapData.data.length > 0 ? (
-          <div className="p-4" data-testid="cost-heatmap">
+        ) : (
+          <>
             <div className="text-center mb-4">
-              <h3 className="text-lg font-medium">
-                {getBuildingTypeLabel(selectedBuildingType)} Building Costs in {selectedRegion}
-              </h3>
               <p className="text-sm text-muted-foreground">
-                Average cost per square foot ($/sqft)
+                {metricLabels[selectedMetric]} — sourced from Benton County cost matrix (11 building types × 6 Reval Areas)
               </p>
             </div>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {heatmapData.data.map(county => (
-                <div
-                  key={county.id}
-                  className="heatmap-cell relative p-4 rounded-md transition-all hover:scale-105"
-                  style={{ backgroundColor: getCellColor(county.value) }}
-                  onMouseOver={(e) => {
-                    // Show tooltip with detailed information
-                    const tooltip = document.getElementById(`tooltip-${county.id}`);
-                    if (tooltip) tooltip.classList.remove('hidden');
+
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart
+                data={chartData}
+                margin={{ top: 10, right: 20, left: 20, bottom: 70 }}
+                barSize={40}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis
+                  dataKey="label"
+                  angle={-35}
+                  textAnchor="end"
+                  height={80}
+                  tickMargin={10}
+                  label={{ value: 'Reval Area (Cycle)', position: 'insideBottom', offset: -60 }}
+                />
+                <YAxis
+                  tickFormatter={(v) => `$${v.toFixed(0)}`}
+                  width={70}
+                  label={{ value: '$/sqft', angle: -90, position: 'insideLeft', offset: 10 }}
+                />
+                <Tooltip
+                  formatter={(value: number) => [`$${value.toFixed(2)}/sqft`, metricLabels[selectedMetric]]}
+                  labelFormatter={(label) => {
+                    const ra = REVAL_AREAS.find(r => r.id === label);
+                    return ra ? ra.label : label;
                   }}
-                  onMouseOut={(e) => {
-                    // Hide tooltip
-                    const tooltip = document.getElementById(`tooltip-${county.id}`);
-                    if (tooltip) tooltip.classList.add('hidden');
-                  }}
-                >
-                  <div className="text-center">
-                    <div className="font-medium truncate">{county.id}</div>
-                    <div className="text-sm font-bold">${county.value.toFixed(2)}</div>
-                  </div>
-                  
-                  {/* Tooltip */}
+                />
+                <Bar dataKey="value" name={metricLabels[selectedMetric]}>
+                  {chartData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.value > 0 ? getBarColor(entry.value, minVal, maxVal) : '#e5e7eb'}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+
+            {/* Reval Area labels */}
+            <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {REVAL_AREAS.map(ra => {
+                const row = chartData.find(d => d.label === ra.id);
+                return (
                   <div
-                    id={`tooltip-${county.id}`}
-                    data-testid="heatmap-tooltip"
-                    className="absolute z-10 hidden bg-white shadow-lg rounded-md p-3 text-sm -top-2 left-1/2 transform -translate-x-1/2 -translate-y-full w-48"
+                    key={ra.id}
+                    className="p-3 rounded-md border text-sm"
+                    style={{ borderLeftColor: row && row.value > 0 ? getBarColor(row.value, minVal, maxVal) : '#e5e7eb', borderLeftWidth: 4 }}
                   >
-                    <div className="font-bold">{county.id} County</div>
-                    <div className="mt-1">Average Cost: <span className="font-medium">${county.value.toFixed(2)}/sqft</span></div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {county.value > heatmapData.minValue + ((heatmapData.maxValue - heatmapData.minValue) * 0.75)
-                        ? 'High cost area'
-                        : county.value < heatmapData.minValue + ((heatmapData.maxValue - heatmapData.minValue) * 0.25)
-                          ? 'Low cost area'
-                          : 'Average cost area'
-                      }
-                    </div>
+                    <div className="font-medium">{ra.id}</div>
+                    <div className="text-xs text-muted-foreground">{ra.label.split('—')[1]?.trim()}</div>
+                    {row && row.value > 0 ? (
+                      <div className="font-semibold mt-1">${row.value.toFixed(2)}/sqft</div>
+                    ) : (
+                      <div className="text-xs text-muted-foreground mt-1">No data</div>
+                    )}
+                    {row && row.count > 0 && (
+                      <div className="text-xs text-muted-foreground">{row.count} building types</div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
-            
-            {/* Legend */}
-            <div className="mt-8">
-              <div className="text-sm font-medium mb-2">Cost Range ($/sqft)</div>
-              <div className="flex h-6">
-                {heatmapData.colorScale.map((color, index) => (
-                  <div
-                    key={index}
-                    className="flex-1"
-                    style={{ backgroundColor: color }}
-                  ></div>
+
+            {/* Color legend */}
+            <div className="mt-4">
+              <div className="text-sm font-medium mb-1">Cost Range</div>
+              <div className="flex h-4 rounded overflow-hidden">
+                {COLOR_SCALE.map((color, i) => (
+                  <div key={i} className="flex-1" style={{ backgroundColor: color }} />
                 ))}
               </div>
-              <div className="flex justify-between text-xs mt-1">
-                <div>${heatmapData.minValue.toFixed(2)}</div>
-                <div>${(heatmapData.minValue + (heatmapData.maxValue - heatmapData.minValue) / 2).toFixed(2)}</div>
-                <div>${heatmapData.maxValue.toFixed(2)}</div>
+              <div className="flex justify-between text-xs mt-1 text-muted-foreground">
+                <span>${minVal.toFixed(2)}</span>
+                <span>Lower → Higher $/sqft</span>
+                <span>${maxVal.toFixed(2)}</span>
               </div>
             </div>
-          </div>
-        ) : (
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>No Data Available</AlertTitle>
-            <AlertDescription>
-              No cost data available for the selected region and building type.
-            </AlertDescription>
-          </Alert>
+          </>
         )}
       </CardContent>
     </Card>

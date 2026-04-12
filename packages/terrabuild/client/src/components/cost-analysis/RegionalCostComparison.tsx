@@ -73,7 +73,7 @@ const COLORS = [
 // Types for cost matrix data from the API
 interface CostMatrixData {
   id: number;
-  region: string;
+  revalArea: string;
   buildingType: string;
   buildingTypeDescription: string;
   baseCost: number;
@@ -91,7 +91,7 @@ interface EnhancedCostMatrixData extends CostMatrixData {
 
 const RegionalCostComparison: React.FC = () => {
   // State for filters
-  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
+  const [selectedRevalAreas, setSelectedRevalAreas] = useState<string[]>([]);
   const [selectedBuildingTypes, setSelectedBuildingTypes] = useState<string[]>([]);
   const [complexityFactor, setComplexityFactor] = useState(1);
   const [qualityFactor, setQualityFactor] = useState(1);
@@ -99,39 +99,55 @@ const RegionalCostComparison: React.FC = () => {
   const [useAdjustedCosts, setUseAdjustedCosts] = useState(true);
   const [chartType, setChartType] = useState('bar'); // 'bar', 'line', 'pie'
 
-  // Fetch cost matrix data
-  const { data: costMatrixData, isLoading, error } = useQuery({
-    queryKey: ['/cost-matrices'],
-    staleTime: 60000, // 1 minute
+  // Fetch cost matrix data from TerraFusion OS API
+  const { data: rawMatrix, isLoading, error } = useQuery({
+    queryKey: ['/api/costforge/cost-matrix/benton'],
+    queryFn: () => fetch('/api/costforge/cost-matrix/benton').then(r => r.json()),
+    staleTime: 60_000,
   });
+  // API returns { count, entries: [...] } — normalize to flat array
+  const costMatrixData: CostMatrixData[] = useMemo(() => {
+    if (!rawMatrix) return [];
+    const arr = rawMatrix?.entries ?? rawMatrix;
+    if (!Array.isArray(arr)) return [];
+    return arr.map((e: Record<string, unknown>) => ({
+      id: 0,
+      revalArea: String(e.revalArea ?? e.region ?? ''),
+      buildingType: String(e.buildingType ?? ''),
+      buildingTypeDescription: String(e.buildingTypeLabel ?? e.buildingType ?? ''),
+      baseCost: Number(e.baseCostPerSqft ?? 0),
+      matrixYear: Number(e.matrixYear ?? 2025),
+      complexityFactorBase: 1.0,
+      qualityFactorBase: 1.0,
+      conditionFactorBase: 1.0,
+    }));
+  }, [rawMatrix]);
 
-  // Get unique regions and building types for filters
-  const regions = useMemo(() => {
-    if (!costMatrixData || !Array.isArray(costMatrixData)) return [];
-    const uniqueRegions = new Set<string>();
-    costMatrixData.forEach((item: CostMatrixData) => uniqueRegions.add(item.region));
-    return Array.from(uniqueRegions).sort();
+  // Get unique Reval Areas and building types for filters
+  const revalAreas = useMemo(() => {
+    const uniqueRevalAreas = new Set<string>();
+    costMatrixData.forEach(item => uniqueRevalAreas.add(item.revalArea));
+    return Array.from(uniqueRevalAreas).sort();
   }, [costMatrixData]);
 
   const buildingTypes = useMemo(() => {
-    if (!costMatrixData || !Array.isArray(costMatrixData)) return [];
     const uniqueTypes = new Set<string>();
-    costMatrixData.forEach((item: CostMatrixData) => uniqueTypes.add(item.buildingType));
+    costMatrixData.forEach(item => uniqueTypes.add(item.buildingType));
     return Array.from(uniqueTypes).sort();
   }, [costMatrixData]);
 
-  // Set default selected regions and building types when data loads
+  // Set default selected Reval Areas and building types when data loads
   useEffect(() => {
-    if (regions.length > 0 && selectedRegions.length === 0) {
-      // Select first 3 regions by default, or all if less than 3
-      setSelectedRegions(regions.slice(0, Math.min(3, regions.length)));
+    if (revalAreas.length > 0 && selectedRevalAreas.length === 0) {
+      // Select first 3 Reval Areas by default, or all if less than 3
+      setSelectedRevalAreas(revalAreas.slice(0, Math.min(3, revalAreas.length)));
     }
-    
+
     if (buildingTypes.length > 0 && selectedBuildingTypes.length === 0) {
       // Select first building type by default
       setSelectedBuildingTypes([buildingTypes[0]]);
     }
-  }, [regions, buildingTypes, selectedRegions, selectedBuildingTypes]);
+  }, [revalAreas, buildingTypes, selectedRevalAreas, selectedBuildingTypes]);
 
   // Calculate adjusted cost based on factors
   const enhancedData: EnhancedCostMatrixData[] = useMemo(() => {
@@ -145,7 +161,7 @@ const RegionalCostComparison: React.FC = () => {
       
       return {
         ...item,
-        label: `${item.region} - ${item.buildingType}`,
+        label: `${item.revalArea} - ${item.buildingType}`,
         adjustedBaseCost
       };
     });
@@ -153,30 +169,29 @@ const RegionalCostComparison: React.FC = () => {
 
   // Apply filters to data
   const filteredData = useMemo(() => {
-    return enhancedData.filter(item => 
-      (selectedRegions.length === 0 || selectedRegions.includes(item.region)) &&
+    return enhancedData.filter(item =>
+      (selectedRevalAreas.length === 0 || selectedRevalAreas.includes(item.revalArea)) &&
       (selectedBuildingTypes.length === 0 || selectedBuildingTypes.includes(item.buildingType))
     );
-  }, [enhancedData, selectedRegions, selectedBuildingTypes]);
+  }, [enhancedData, selectedRevalAreas, selectedBuildingTypes]);
 
-  // Calculate region averages
-  const regionAverages = useMemo(() => {
+  // Calculate Reval Area averages
+  const revalAreaAverages = useMemo(() => {
     if (filteredData.length === 0) return [];
 
-    // Use a regular object instead of Map
-    const regionMap: Record<string, { total: number, count: number }> = {};
-    
+    const revalAreaMap: Record<string, { total: number, count: number }> = {};
+
     filteredData.forEach(item => {
       const cost = useAdjustedCosts ? item.adjustedBaseCost : item.baseCost;
-      if (!regionMap[item.region]) {
-        regionMap[item.region] = { total: 0, count: 0 };
+      if (!revalAreaMap[item.revalArea]) {
+        revalAreaMap[item.revalArea] = { total: 0, count: 0 };
       }
-      regionMap[item.region].total += cost;
-      regionMap[item.region].count += 1;
+      revalAreaMap[item.revalArea].total += cost;
+      revalAreaMap[item.revalArea].count += 1;
     });
-    
-    return Object.entries(regionMap).map(([region, { total, count }]) => ({
-      region,
+
+    return Object.entries(revalAreaMap).map(([revalArea, { total, count }]) => ({
+      revalArea,
       averageCost: total / count,
       count
     }));
@@ -256,9 +271,9 @@ const RegionalCostComparison: React.FC = () => {
   // Format data for charts
   const chartData = useMemo(() => {
     if (chartType === 'pie') {
-      // For Pie chart, we want to show region distribution
-      return regionAverages.map((item, index) => ({
-        name: item.region,
+      // For Pie chart, we want to show Reval Area distribution
+      return revalAreaAverages.map((item, index) => ({
+        name: item.revalArea,
         value: item.averageCost,
         count: item.count,
         color: COLORS[index % COLORS.length]
@@ -270,7 +285,7 @@ const RegionalCostComparison: React.FC = () => {
         cost: useAdjustedCosts ? item.adjustedBaseCost : item.baseCost
       }));
     }
-  }, [chartType, regionAverages, filteredData, useAdjustedCosts]);
+  }, [chartType, revalAreaAverages, filteredData, useAdjustedCosts]);
 
   // Custom tooltip for charts
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -286,7 +301,7 @@ const RegionalCostComparison: React.FC = () => {
       } else {
         return (
           <div className="bg-white p-3 border rounded shadow-sm">
-            <p className="text-sm font-medium">{payload[0].payload.region}</p>
+            <p className="text-sm font-medium">{payload[0].payload.revalArea}</p>
             <p className="text-sm">{payload[0].payload.buildingType} - {payload[0].payload.buildingTypeDescription}</p>
             <p className="text-sm">Cost: {formatCurrency(payload[0].value)}</p>
             <p className="text-xs text-muted-foreground">Complexity Factor: {formatNumber(payload[0].payload.complexityFactorBase)}</p>
@@ -298,12 +313,12 @@ const RegionalCostComparison: React.FC = () => {
     return null;
   };
 
-  // Handle region selection
-  const handleRegionChange = (region: string) => {
-    setSelectedRegions(prev => 
-      prev.includes(region) 
-        ? prev.filter(r => r !== region)
-        : [...prev, region]
+  // Handle Reval Area selection
+  const handleRevalAreaChange = (revalArea: string) => {
+    setSelectedRevalAreas(prev =>
+      prev.includes(revalArea)
+        ? prev.filter(r => r !== revalArea)
+        : [...prev, revalArea]
     );
   };
 
@@ -366,24 +381,24 @@ const RegionalCostComparison: React.FC = () => {
       {/* Filters and controls */}
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Region Filter */}
+          {/* Reval Area Filter */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium flex items-center">
-                <Map className="mr-2 h-4 w-4" /> 
-                Regions
+                <Map className="mr-2 h-4 w-4" />
+                Reval Areas
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {regions.map(region => (
-                  <Badge 
-                    key={region} 
-                    variant={selectedRegions.includes(region) ? "default" : "outline"}
+                {revalAreas.map(ra => (
+                  <Badge
+                    key={ra}
+                    variant={selectedRevalAreas.includes(ra) ? "default" : "outline"}
                     className="cursor-pointer hover:opacity-80"
-                    onClick={() => handleRegionChange(region)}
+                    onClick={() => handleRevalAreaChange(ra)}
                   >
-                    {region}
+                    {ra}
                   </Badge>
                 ))}
               </div>
@@ -665,7 +680,7 @@ const RegionalCostComparison: React.FC = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Region</TableHead>
+                  <TableHead>Reval Area</TableHead>
                   <TableHead>Building Type</TableHead>
                   <TableHead>Description</TableHead>
                   <TableHead>Base Cost</TableHead>
@@ -676,7 +691,7 @@ const RegionalCostComparison: React.FC = () => {
               <TableBody>
                 {filteredData.map(item => (
                   <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.region}</TableCell>
+                    <TableCell className="font-medium">{item.revalArea}</TableCell>
                     <TableCell>{item.buildingType}</TableCell>
                     <TableCell>{item.buildingTypeDescription}</TableCell>
                     <TableCell>{formatCurrency(item.baseCost)}</TableCell>
@@ -694,18 +709,18 @@ const RegionalCostComparison: React.FC = () => {
         {/* Comparison Tab */}
         <TabsContent value="comparison" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Region Comparison */}
+            {/* Reval Area Comparison */}
             <Card>
               <CardHeader>
-                <CardTitle>Region Comparison</CardTitle>
-                <CardDescription>Average costs by region</CardDescription>
+                <CardTitle>Reval Area Comparison</CardTitle>
+                <CardDescription>Average costs by Reval Area</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={regionAverages}>
+                    <BarChart data={revalAreaAverages}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="region" tick={{ fontSize: 12 }} />
+                      <XAxis dataKey="revalArea" tick={{ fontSize: 12 }} />
                       <YAxis tick={{ fontSize: 12 }} tickFormatter={(value) => `$${value}`} />
                       <Tooltip formatter={(value) => formatCurrency(value as number)} />
                       <Bar dataKey="averageCost" name="Average Cost" fill="#3B82F6" />
@@ -748,23 +763,23 @@ const RegionalCostComparison: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Region Details */}
+                {/* Reval Area Details */}
                 <div>
-                  <h4 className="text-sm font-semibold mb-2">Regions</h4>
+                  <h4 className="text-sm font-semibold mb-2">Reval Areas</h4>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Region</TableHead>
+                        <TableHead>Reval Area</TableHead>
                         <TableHead>Avg. Cost</TableHead>
                         <TableHead>Count</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {regionAverages.map(region => (
-                        <TableRow key={region.region}>
-                          <TableCell className="font-medium">{region.region}</TableCell>
-                          <TableCell>{formatCurrency(region.averageCost)}</TableCell>
-                          <TableCell>{region.count}</TableCell>
+                      {revalAreaAverages.map(ra => (
+                        <TableRow key={ra.revalArea}>
+                          <TableCell className="font-medium">{ra.revalArea}</TableCell>
+                          <TableCell>{formatCurrency(ra.averageCost)}</TableCell>
+                          <TableCell>{ra.count}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

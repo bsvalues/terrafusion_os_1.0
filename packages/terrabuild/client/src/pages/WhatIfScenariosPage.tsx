@@ -30,6 +30,16 @@ import ScenarioResults from "../components/scenarios/ScenarioResults";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircle, Edit, Trash2, Save, BarChartHorizontal } from "lucide-react";
 
+// Benton County Reval Areas (PACS Cycle 1–6)
+const REVAL_AREAS = [
+  { id: 'Reval 1', label: 'Reval 1 — Kennewick (Urban Core)',      factor: 1.00 },
+  { id: 'Reval 2', label: 'Reval 2 — West Richland / Badger Mtn',  factor: 1.05 },
+  { id: 'Reval 3', label: 'Reval 3 — North Richland / Horn Rapids', factor: 1.10 },
+  { id: 'Reval 4', label: 'Reval 4 — East Benton / Benton City',   factor: 0.95 },
+  { id: 'Reval 5', label: 'Reval 5 — Prosser / Wine Country',      factor: 0.90 },
+  { id: 'Reval 6', label: 'Reval 6 — Rural / Agricultural Lands',  factor: 0.82 },
+];
+
 // Define scenario types for TypeScript
 interface Scenario {
   id: number;
@@ -37,7 +47,7 @@ interface Scenario {
   description: string;
   parameters: {
     buildingType: string;
-    region: string;
+    revalArea: string;
     baseYear: number;
     comparisonYear: number;
     adjustmentFactor: number;
@@ -81,7 +91,7 @@ export default function WhatIfScenariosPage() {
     name: "",
     description: "",
     buildingType: "R1",
-    region: "Central Benton",
+    revalArea: "Reval 1",
     baseYear: 2025,
     comparisonYear: 2025,
     adjustmentFactor: 1.0,
@@ -114,7 +124,7 @@ export default function WhatIfScenariosPage() {
           description: payload.description,
           assumptions: {
             buildingType: payload.buildingType,
-            region: payload.region,
+            revalArea: payload.revalArea,
             baseYear: payload.baseYear,
             comparisonYear: payload.comparisonYear,
             adjustmentFactor: payload.adjustmentFactor,
@@ -131,7 +141,7 @@ export default function WhatIfScenariosPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/what-if-scenarios'] });
       toast({ title: "Scenario Created", description: `${formData.name} has been saved.` });
       setNewScenarioOpen(false);
-      setFormData({ name: "", description: "", buildingType: "R1", region: "Central Benton", baseYear: 2025, comparisonYear: 2025, adjustmentFactor: 1.0, qualityFactor: 1.0, conditionFactor: 1.0, complexityFactor: 1.0 });
+      setFormData({ name: "", description: "", buildingType: "R1", revalArea: "Reval 1", baseYear: 2025, comparisonYear: 2025, adjustmentFactor: 1.0, qualityFactor: 1.0, conditionFactor: 1.0, complexityFactor: 1.0 });
     },
     onError: () => toast({ variant: "destructive", title: "Create Failed", description: "Could not save scenario." }),
   });
@@ -146,7 +156,7 @@ export default function WhatIfScenariosPage() {
           description: payload.description,
           assumptions: {
             buildingType: payload.buildingType,
-            region: payload.region,
+            revalArea: payload.revalArea,
             baseYear: payload.baseYear,
             comparisonYear: payload.comparisonYear,
             adjustmentFactor: payload.adjustmentFactor,
@@ -208,7 +218,7 @@ export default function WhatIfScenariosPage() {
       name: scenario.name,
       description: scenario.description,
       buildingType: scenario.parameters.buildingType,
-      region: scenario.parameters.region,
+      revalArea: scenario.parameters.revalArea ?? scenario.parameters.region ?? "Reval 1",
       baseYear: scenario.parameters.baseYear,
       comparisonYear: scenario.parameters.comparisonYear,
       adjustmentFactor: scenario.parameters.adjustmentFactor,
@@ -243,7 +253,7 @@ export default function WhatIfScenariosPage() {
   return (
     <MainLayout
       pageTitle="What-If Scenarios"
-      pageDescription="Create and analyze different cost scenarios for building assessments"
+      pageDescription="Create and analyze different Benton County cost scenarios using the cost matrix. Reval Area (Cycle) factors are applied per PACS."
     >
       <div className="py-4">
         <div className="flex justify-end mb-6">
@@ -308,8 +318,8 @@ export default function WhatIfScenariosPage() {
                           <p>{scenario.parameters.buildingType}</p>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Region:</span>
-                          <p>{scenario.parameters.region}</p>
+                          <span className="text-muted-foreground">Reval Area (Cycle):</span>
+                          <p>{scenario.parameters.revalArea ?? scenario.parameters.region ?? '—'}</p>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Base Year:</span>
@@ -433,23 +443,26 @@ export default function WhatIfScenariosPage() {
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="region">Region</Label>
+                <Label htmlFor="revalArea">Reval Area (Cycle)</Label>
                 <Select
-                  value={formData.region}
-                  onValueChange={(value) => setFormData({ ...formData, region: value })}
+                  value={formData.revalArea}
+                  onValueChange={(value) => {
+                    const area = REVAL_AREAS.find(a => a.id === value);
+                    setFormData({ ...formData, revalArea: value, adjustmentFactor: area ? area.factor : 1.0 });
+                  }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select region" />
+                    <SelectValue placeholder="Select Reval Area" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="East Benton">East Benton</SelectItem>
-                    <SelectItem value="Central Benton">Central Benton</SelectItem>
-                    <SelectItem value="West Benton">West Benton</SelectItem>
+                    {REVAL_AREAS.map(area => (
+                      <SelectItem key={area.id} value={area.id}>{area.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="baseYear">Base Year</Label>
@@ -553,26 +566,14 @@ export default function WhatIfScenariosPage() {
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="adjustmentFactor">Regional Adjustment</Label>
-                <Select
-                  value={formData.adjustmentFactor.toString()}
-                  onValueChange={(value) => setFormData({ ...formData, adjustmentFactor: parseFloat(value) })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select factor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0.95">Low (-5%)</SelectItem>
-                    <SelectItem value="1.0">Standard (0%)</SelectItem>
-                    <SelectItem value="1.05">Moderate (+5%)</SelectItem>
-                    <SelectItem value="1.1">High (+10%)</SelectItem>
-                    <SelectItem value="1.15">Very High (+15%)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Reval Area Factor</Label>
+                <div className="flex items-center h-9 px-3 rounded-md border bg-muted text-sm text-muted-foreground">
+                  {formData.adjustmentFactor.toFixed(2)} — set by Reval Area above
+                </div>
               </div>
             </div>
           </div>
-          
+
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setNewScenarioOpen(false)}>
               Cancel
@@ -583,7 +584,7 @@ export default function WhatIfScenariosPage() {
           </div>
         </DialogContent>
       </Dialog>
-      
+
       {/* Edit Scenario Dialog */}
       <Dialog open={editScenarioOpen} onOpenChange={setEditScenarioOpen}>
         <DialogContent className="sm:max-w-[500px]">
@@ -641,23 +642,26 @@ export default function WhatIfScenariosPage() {
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="edit-region">Region</Label>
+                <Label htmlFor="edit-revalArea">Reval Area (Cycle)</Label>
                 <Select
-                  value={formData.region}
-                  onValueChange={(value) => setFormData({ ...formData, region: value })}
+                  value={formData.revalArea}
+                  onValueChange={(value) => {
+                    const area = REVAL_AREAS.find(a => a.id === value);
+                    setFormData({ ...formData, revalArea: value, adjustmentFactor: area ? area.factor : 1.0 });
+                  }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select region" />
+                    <SelectValue placeholder="Select Reval Area" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="East Benton">East Benton</SelectItem>
-                    <SelectItem value="Central Benton">Central Benton</SelectItem>
-                    <SelectItem value="West Benton">West Benton</SelectItem>
+                    {REVAL_AREAS.map(area => (
+                      <SelectItem key={area.id} value={area.id}>{area.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            
+
             {/* Years */}
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
@@ -763,26 +767,14 @@ export default function WhatIfScenariosPage() {
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="edit-adjustmentFactor">Regional Adjustment</Label>
-                <Select
-                  value={formData.adjustmentFactor.toString()}
-                  onValueChange={(value) => setFormData({ ...formData, adjustmentFactor: parseFloat(value) })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select factor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0.95">Low (-5%)</SelectItem>
-                    <SelectItem value="1.0">Standard (0%)</SelectItem>
-                    <SelectItem value="1.05">Moderate (+5%)</SelectItem>
-                    <SelectItem value="1.1">High (+10%)</SelectItem>
-                    <SelectItem value="1.15">Very High (+15%)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Reval Area Factor</Label>
+                <div className="flex items-center h-9 px-3 rounded-md border bg-muted text-sm text-muted-foreground">
+                  {formData.adjustmentFactor.toFixed(2)} — set by Reval Area above
+                </div>
               </div>
             </div>
           </div>
-          
+
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setEditScenarioOpen(false)}>
               Cancel

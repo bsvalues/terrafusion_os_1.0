@@ -39,7 +39,7 @@ interface RegionalCostComparisonProps {
 }
 
 interface RegionalCostData {
-  region: string;
+  revalArea: string;
   buildingType: string;
   baseCost: number;
   buildingTypeDescription: string;
@@ -52,8 +52,8 @@ const COLORS = [
 ];
 
 export function RegionalCostComparison({
-  title = "Regional Cost Comparison",
-  description = "Compare building costs across different regions",
+  title = "Reval Area Cost Comparison",
+  description = "Compare building costs across different reval areas",
   className,
   showControls = true
 }: RegionalCostComparisonProps) {
@@ -111,29 +111,29 @@ export function RegionalCostComparison({
       filteredData = filteredData.filter(item => item.buildingType === mostCommonType);
     }
 
-    // Group by region and calculate average if needed
-    const regionData = filteredData.reduce((acc, item) => {
-      const region = item.region;
-      if (!acc[region]) {
-        acc[region] = {
-          region,
+    // Group by reval area and calculate average if needed
+    const revalAreaData = filteredData.reduce((acc, item) => {
+      const revalArea = item.revalArea ?? item.region;
+      if (!acc[revalArea]) {
+        acc[revalArea] = {
+          revalArea,
           costValue: 0,
           count: 0,
           buildingTypes: []
         };
       }
 
-      acc[region].costValue += parseFloat(item.baseCost);
-      acc[region].count += 1;
-      acc[region].buildingTypes.push(item.buildingType);
+      acc[revalArea].costValue += parseFloat(item.baseCost);
+      acc[revalArea].count += 1;
+      acc[revalArea].buildingTypes.push(item.buildingType);
 
       return acc;
     }, {});
 
     // Convert to array and calculate average cost
-    return Object.values(regionData).map((item: any) => {
+    return Object.values(revalAreaData).map((item: any) => {
       return {
-        region: item.region,
+        revalArea: item.revalArea,
         cost: (item.costValue / item.count).toFixed(2),
         buildingTypes: [...new Set(item.buildingTypes)]
       };
@@ -152,7 +152,7 @@ export function RegionalCostComparison({
     return selectedType ? selectedType.label : selectedBuildingType;
   };
 
-  // Calculate regional cost range
+  // Calculate reval area cost range
   const getRegionalCostRange = () => {
     if (!chartData.length) return { min: 0, max: 0, average: 0, range: 0 };
 
@@ -172,7 +172,7 @@ export function RegionalCostComparison({
 
   const costRange = getRegionalCostRange();
 
-  // Calculate region with highest and lowest costs
+  // Calculate reval area with highest and lowest costs
   const getHighestLowestRegions = () => {
     if (!chartData.length) return { highest: null, lowest: null };
 
@@ -332,7 +332,7 @@ export function RegionalCostComparison({
                   domain={['dataMin - 10', 'dataMax + 10']}
                 />
                 <YAxis
-                  dataKey="region"
+                  dataKey="revalArea"
                   type="category"
                   tick={{ fontSize: 12 }}
                   width={80}
@@ -360,7 +360,7 @@ export function RegionalCostComparison({
               >
                 <CartesianGrid strokeDasharray="3 3" opacity={0.4} />
                 <XAxis
-                  dataKey="region"
+                  dataKey="revalArea"
                   tick={{ fontSize: 12, textAnchor: 'end' }}
                   height={70}
                 />
@@ -400,16 +400,16 @@ export function RegionalCostComparison({
             <div className="flex items-center gap-2 bg-green-50 p-3 rounded-md">
               <MapPin className="h-5 w-5 text-green-500" />
               <div>
-                <p className="font-medium">Lowest Cost Region</p>
-                <p><span className="font-semibold">{lowest.region}</span> at <span className="font-semibold text-green-600">${lowest.cost}/sq.ft</span></p>
+                <p className="font-medium">Lowest Cost Reval Area</p>
+                <p><span className="font-semibold">{lowest.revalArea}</span> at <span className="font-semibold text-green-600">${lowest.cost}/sq.ft</span></p>
               </div>
             </div>
 
             <div className="flex items-center gap-2 bg-red-50 p-3 rounded-md">
               <MapPin className="h-5 w-5 text-red-500" />
               <div>
-                <p className="font-medium">Highest Cost Region</p>
-                <p><span className="font-semibold">{highest.region}</span> at <span className="font-semibold text-red-600">${highest.cost}/sq.ft</span></p>
+                <p className="font-medium">Highest Cost Reval Area</p>
+                <p><span className="font-semibold">{highest.revalArea}</span> at <span className="font-semibold text-red-600">${highest.cost}/sq.ft</span></p>
               </div>
             </div>
           </div>

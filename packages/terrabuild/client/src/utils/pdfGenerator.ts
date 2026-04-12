@@ -6,11 +6,11 @@ interface CostCalculation {
   squareFootage: number;
   quality: string;
   buildingAge: number;
-  region: string;
+  revalArea: string;
   complexityFactor: number;
   conditionFactor: number;
   baseCost: number;
-  regionalMultiplier: number;
+  revalAreaMultiplier: number;
   ageDepreciation: number;
   totalCost: number;
   materialCosts: {
@@ -109,15 +109,13 @@ export async function generateCostReport(
     'INDUSTRIAL': 'Industrial'
   };
 
-  const regionMap = {
-    'NORTHWEST': 'Northwest',
-    'NORTHEAST': 'Northeast',
-    'MIDWEST': 'Midwest',
-    'SOUTHWEST': 'Southwest',
-    'SOUTHEAST': 'Southeast',
-    'WEST': 'West',
-    'EAST': 'East',
-    'CENTRAL': 'Central'
+  const revalAreaMap = {
+    'Reval 1': 'Reval 1 — Kennewick',
+    'Reval 2': 'Reval 2 — West Richland',
+    'Reval 3': 'Reval 3 — North Richland',
+    'Reval 4': 'Reval 4 — East Benton',
+    'Reval 5': 'Reval 5 — Prosser',
+    'Reval 6': 'Reval 6 — Rural'
   };
 
   const qualityMap = {
@@ -133,7 +131,7 @@ export async function generateCostReport(
     `Square Footage: ${calculation.squareFootage.toLocaleString()} sq ft`,
     `Quality Level: ${qualityMap[calculation.quality as keyof typeof qualityMap] || calculation.quality}`,
     `Building Age: ${calculation.buildingAge} ${calculation.buildingAge === 1 ? 'year' : 'years'}`,
-    `Region: ${regionMap[calculation.region as keyof typeof regionMap] || calculation.region}`,
+    `Reval Area: ${revalAreaMap[calculation.revalArea as keyof typeof revalAreaMap] || calculation.revalArea}`,
   ];
 
   let yPos = margin + 30;
@@ -158,7 +156,7 @@ export async function generateCostReport(
     { label: 'Base Cost', value: `$${calculation.baseCost.toLocaleString()}`, color: [36, 62, 77] },
     { label: 'Complexity Factor', value: `×${calculation.complexityFactor.toFixed(2)}`, color: [63, 81, 181] },
     { label: 'Condition Factor', value: `×${calculation.conditionFactor.toFixed(2)}`, color: [60, 171, 54] },
-    { label: 'Regional Multiplier', value: `×${calculation.regionalMultiplier.toFixed(2)}`, color: [41, 183, 211] },
+    { label: 'Reval Area Multiplier', value: `×${calculation.revalAreaMultiplier.toFixed(2)}`, color: [41, 183, 211] },
     { label: 'Age Depreciation', value: `−${calculation.ageDepreciation}%`, color: [245, 166, 35] },
   ];
 

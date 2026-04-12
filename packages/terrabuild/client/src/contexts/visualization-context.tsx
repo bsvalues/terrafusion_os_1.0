@@ -11,7 +11,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 // Define filter types
 export interface VisualizationFilters {
   buildingTypes?: string[];
-  regions?: string[];
+  revalAreas?: string[];
   year?: number;
   qualityLevels?: string[];
   minSquareFeet?: number;
@@ -36,11 +36,11 @@ interface VisualizationContextType {
   clearFilters: () => void;
   setSelectedDatapoint: (datapoint: Datapoint | null) => void;
   
-  // Region filter methods
-  addRegionFilter?: (region: string) => void;
-  removeRegionFilter?: (region: string) => void;
-  clearRegionFilters?: () => void;
-  isRegionFiltered?: (region: string) => boolean;
+  // Reval Area filter methods
+  addRevalAreaFilter?: (revalArea: string) => void;
+  removeRevalAreaFilter?: (revalArea: string) => void;
+  clearRevalAreaFilters?: () => void;
+  isRevalAreaFiltered?: (revalArea: string) => boolean;
   
   // Building type filter methods
   addBuildingTypeFilter?: (buildingType: string) => void;
@@ -97,41 +97,41 @@ export function VisualizationContextProvider({ children }: { children: ReactNode
   // Clear all filters
   const clearFilters = () => setFilters(null);
   
-  // Region filter methods
-  const addRegionFilter = (region: string) => {
+  // Reval Area filter methods
+  const addRevalAreaFilter = (revalArea: string) => {
     setFilters(prev => {
-      const regions = prev?.regions ? [...prev.regions] : [];
-      if (!regions.includes(region)) {
-        regions.push(region);
+      const revalAreas = prev?.revalAreas ? [...prev.revalAreas] : [];
+      if (!revalAreas.includes(revalArea)) {
+        revalAreas.push(revalArea);
       }
-      return { ...(prev || {}), regions };
+      return { ...(prev || {}), revalAreas };
     });
   };
-  
-  const removeRegionFilter = (region: string) => {
+
+  const removeRevalAreaFilter = (revalArea: string) => {
     setFilters(prev => {
-      if (!prev?.regions) return prev;
-      const regions = prev.regions.filter((r: string) => r !== region);
-      const newFilters = { ...prev, regions };
-      if (regions.length === 0 && 'regions' in newFilters) {
-        const { regions, ...rest } = newFilters;
+      if (!prev?.revalAreas) return prev;
+      const revalAreas = prev.revalAreas.filter((r: string) => r !== revalArea);
+      const newFilters = { ...prev, revalAreas };
+      if (revalAreas.length === 0 && 'revalAreas' in newFilters) {
+        const { revalAreas: _ra, ...rest } = newFilters;
         return Object.keys(rest).length === 0 ? null : rest;
       }
       return Object.keys(newFilters).length === 0 ? null : newFilters;
     });
   };
-  
-  const clearRegionFilters = () => {
+
+  const clearRevalAreaFilters = () => {
     setFilters(prev => {
       if (!prev) return null;
-      if (!('regions' in prev)) return prev;
-      const { regions, ...rest } = prev;
+      if (!('revalAreas' in prev)) return prev;
+      const { revalAreas: _ra, ...rest } = prev;
       return Object.keys(rest).length === 0 ? null : rest;
     });
   };
-  
-  const isRegionFiltered = (region: string) => {
-    return filters?.regions ? filters.regions.includes(region) : false;
+
+  const isRevalAreaFiltered = (revalArea: string) => {
+    return filters?.revalAreas ? filters.revalAreas.includes(revalArea) : false;
   };
   
   // Building type filter methods
@@ -228,8 +228,8 @@ export function VisualizationContextProvider({ children }: { children: ReactNode
     if (!filters) return 'No filters applied';
     
     const parts = [];
-    if (filters.regions && filters.regions.length > 0) {
-      parts.push(`${filters.regions.length} region${filters.regions.length > 1 ? 's' : ''}`);
+    if (filters.revalAreas && filters.revalAreas.length > 0) {
+      parts.push(`${filters.revalAreas.length} reval area${filters.revalAreas.length > 1 ? 's' : ''}`);
     }
     if (filters.buildingTypes && filters.buildingTypes.length > 0) {
       parts.push(`${filters.buildingTypes.length} building type${filters.buildingTypes.length > 1 ? 's' : ''}`);
@@ -253,11 +253,11 @@ export function VisualizationContextProvider({ children }: { children: ReactNode
     clearFilters,
     setSelectedDatapoint,
     
-    // Region filter methods
-    addRegionFilter,
-    removeRegionFilter,
-    clearRegionFilters,
-    isRegionFiltered,
+    // Reval Area filter methods
+    addRevalAreaFilter,
+    removeRevalAreaFilter,
+    clearRevalAreaFilters,
+    isRevalAreaFiltered,
     
     // Building type filter methods
     addBuildingTypeFilter,

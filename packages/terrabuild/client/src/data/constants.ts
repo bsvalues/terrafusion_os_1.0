@@ -154,21 +154,29 @@ export const NEIGHBORHOODS = [
   { value: '16200', label: '16200 — Sagewood Meadows / Badger Park Estates', reval: 6, region: 'West'    },
 ] as const;
 
-// Lookup helper: PACS hood_cd → CostForge API region short code
-// Region is embedded in each entry; falls back to Central if code is unrecognized.
-export function neighborhoodToRegion(neighborhoodValue: string): string {
+// Lookup helper: PACS hood_cd → CostForge Reval Area code ("Reval 1" … "Reval 6")
+// Uses the reval field (PACS Cycle) embedded in each NEIGHBORHOODS entry.
+export function neighborhoodToRevalArea(neighborhoodValue: string): string {
   const match = NEIGHBORHOODS.find(n => n.value === neighborhoodValue);
-  return match?.region ?? 'Central';
+  return match ? `Reval ${match.reval}` : 'Reval 1';
 }
 
-// Keep REGIONS for internal reference / any legacy code that reads it
-export const REGIONS = [
-  { value: 'Central', label: 'Central Benton', factor: 1.00 },
-  { value: 'East',    label: 'East Benton',    factor: 0.95 },
-  { value: 'West',    label: 'West Benton',    factor: 1.05 },
+// Legacy alias — any code calling neighborhoodToRegion gets revalArea behavior.
+export const neighborhoodToRegion = neighborhoodToRevalArea;
+
+// Reval Areas (PACS Cycle 1-6) — replaces old compass-direction REGIONS
+export const REVAL_AREAS = [
+  { value: 'Reval 1', label: 'Reval 1 — Kennewick NE',                 factor: 1.00 },
+  { value: 'Reval 2', label: 'Reval 2 — Kennewick Urban / West',        factor: 1.05 },
+  { value: 'Reval 3', label: 'Reval 3 — South Richland / KW West',      factor: 1.10 },
+  { value: 'Reval 4', label: 'Reval 4 — Benton City / Prosser',         factor: 0.95 },
+  { value: 'Reval 5', label: 'Reval 5 — Richland West / Rural',         factor: 0.90 },
+  { value: 'Reval 6', label: 'Reval 6 — Historic Richland',             factor: 0.82 },
 ] as const;
 
-export const regions = REGIONS;
+// Legacy alias
+export const REGIONS = REVAL_AREAS;
+export const regions = REVAL_AREAS;
 
 // Quality (Class) grades — API enum values sent to CostEstimateRequest.
 // Labels use Benton County Quality Checklist grade names + PACS ClassCode.

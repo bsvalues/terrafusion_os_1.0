@@ -19,8 +19,9 @@ interface DataFlowState {
   // Building parameters
   buildingType?: string | null;
   buildingTypeDetails?: Record<string, any> | null;
-  region?: string | null;
-  regionDetails?: Record<string, any> | null;
+  /** Benton County Reval Area (PACS Cycle field), numbered 1–6 */
+  revalArea?: string | null;
+  revalAreaDetails?: Record<string, any> | null;
   quality?: string | null;
   qualityDetails?: Record<string, any> | null;
   condition?: string | null;
@@ -194,7 +195,7 @@ export const DataFlowVisualizer: React.FC<{
             {JSON.stringify({
               propertyId: state.propertyId,
               buildingType: state.buildingType,
-              region: state.region,
+              revalArea: state.revalArea,
               quality: state.quality,
               condition: state.condition,
               calculationId: state.calculationId,

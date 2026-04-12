@@ -17,7 +17,7 @@ import { Glasses } from 'lucide-react';
 
 // Define the form schema for building data
 const buildingSchema = z.object({
-  region: z.string().min(1, 'Region is required'),
+  revalArea: z.string().min(1, 'Reval Area is required'),
   buildingType: z.string().min(1, 'Building type is required'),
   squareFootage: z.coerce.number().min(1, 'Square footage must be at least 1'),
   yearBuilt: z.coerce.number().min(1800, 'Year built must be at least 1800').max(new Date().getFullYear(), `Year built cannot be later than ${new Date().getFullYear()}`),
@@ -51,7 +51,7 @@ const ARVisualizationPage = () => {
   const form = useForm<BuildingFormValues>({
     resolver: zodResolver(buildingSchema),
     defaultValues: {
-      region: 'Benton',
+      revalArea: 'Reval1',
       buildingType: 'Residential',
       squareFootage: 2000,
       yearBuilt: 2000,
@@ -71,7 +71,11 @@ const ARVisualizationPage = () => {
     const age = new Date().getFullYear() - data.yearBuilt;
     const depreciationRate = Math.min(age * 0.01, 0.7); // 1% per year up to 70%
     const depreciationAdjustment = baseCost * depreciationRate * -1;
-    const regionalFactor = data.region === 'Benton' ? 1.0 : (data.region === 'Rural' ? 0.8 : 1.2);
+    const revalFactors: Record<string, number> = {
+      'Reval1': 1.00, 'Reval2': 1.05, 'Reval3': 1.10,
+      'Reval4': 0.95, 'Reval5': 0.90, 'Reval6': 0.82,
+    };
+    const regionalFactor = revalFactors[data.revalArea] ?? 1.0;
     const buildingTypeFactor = 
       data.buildingType === 'Residential' ? 1.0 : 
       data.buildingType === 'Commercial' ? 1.3 : 
@@ -157,27 +161,30 @@ const ARVisualizationPage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
-                      name="region"
+                      name="revalArea"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Region</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
+                          <FormLabel>Reval Area</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
                             defaultValue={field.value}
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select region" />
+                                <SelectValue placeholder="Select Reval Area" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="Benton">Benton County</SelectItem>
-                              <SelectItem value="Urban">Urban Area</SelectItem>
-                              <SelectItem value="Rural">Rural Area</SelectItem>
+                              <SelectItem value="Reval1">Reval 1 — Kennewick (Urban Core)</SelectItem>
+                              <SelectItem value="Reval2">Reval 2 — West Richland / Badger Mtn</SelectItem>
+                              <SelectItem value="Reval3">Reval 3 — North Richland / Horn Rapids</SelectItem>
+                              <SelectItem value="Reval4">Reval 4 — East Benton / Benton City</SelectItem>
+                              <SelectItem value="Reval5">Reval 5 — Prosser / Wine Country</SelectItem>
+                              <SelectItem value="Reval6">Reval 6 — Rural / Agricultural Lands</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormDescription>
-                            The region where the building is located
+                            The Reval Area (PACS Cycle) where the building is located
                           </FormDescription>
                           <FormMessage />
                         </FormItem>

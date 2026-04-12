@@ -38,7 +38,7 @@ const visualizationInputSchema: MCPSchema = {
   type: 'object',
   properties: {
     buildingType: { type: 'string' },
-    regions: { type: 'array', items: { type: 'string' } },
+    revalAreas: { type: 'array', items: { type: 'string' } },
     counties: { type: 'array', items: { type: 'string' } },
     states: { type: 'array', items: { type: 'string' } },
     startYear: { type: 'number' },
@@ -50,7 +50,7 @@ const visualizationInputSchema: MCPSchema = {
 // Visualization filters
 export interface VisualizationFilters {
   buildingType: string;
-  regions: string[];
+  revalAreas: string[];
   counties: string[];
   states: string[];
   startYear: number;
@@ -60,7 +60,7 @@ export interface VisualizationFilters {
 // Default filter values
 const defaultFilters: VisualizationFilters = {
   buildingType: 'residential',
-  regions: [],
+  revalAreas: [],
   counties: [],
   states: [],
   startYear: 2020,
@@ -114,7 +114,7 @@ const reasoningStep: MCPWorkflowStep = {
     // Analyze what data needs to be fetched
     const queryKeys = [];
     
-    if (input.regions?.length > 0 || input.counties?.length > 0 || input.states?.length > 0) {
+    if (input.revalAreas?.length > 0 || input.counties?.length > 0 || input.states?.length > 0) {
       queryKeys.push('regionalCosts');
     }
     
@@ -150,8 +150,8 @@ const actionStep: MCPWorkflowStep = {
     const params = new URLSearchParams();
     params.append('buildingType', input.buildingType);
     
-    if (input.regions?.length > 0) {
-      input.regions.forEach((region: string) => params.append('regions', region));
+    if (input.revalAreas?.length > 0) {
+      input.revalAreas.forEach((revalArea: string) => params.append('revalAreas', revalArea));
     }
     
     if (input.counties?.length > 0) {
@@ -231,7 +231,7 @@ export function MCPVisualizationProvider({ children }: { children: ReactNode }) 
   
   // Queries using React Query
   const regionalCostsQuery = useQuery({
-    queryKey: ['regionalCosts', filters.buildingType, filters.regions, filters.counties, filters.states],
+    queryKey: ['regionalCosts', filters.buildingType, filters.revalAreas, filters.counties, filters.states],
     queryFn: async () => {
       if (!workflow?.action?.endpoints?.includes('/api/analytics/regional-costs')) return null;
       
@@ -241,8 +241,8 @@ export function MCPVisualizationProvider({ children }: { children: ReactNode }) 
       params.append('year', new Date().getFullYear().toString()); // Current year
       params.append('squareFootage', '2000'); // Default value
       
-      if (filters.regions.length > 0) {
-        filters.regions.forEach(region => params.append('regions', region));
+      if (filters.revalAreas.length > 0) {
+        filters.revalAreas.forEach(revalArea => params.append('revalAreas', revalArea));
       }
       
       if (filters.counties.length > 0) {

@@ -12,18 +12,14 @@ import { Label } from '@/components/ui/label';
 import { useVisualization } from './VisualizationController';
 import { RefreshCw } from 'lucide-react';
 
-// Sample regions and building types
-// These would typically come from an API endpoint in production
+// Reval Areas (Benton County WA PACS Cycle areas)
 const AVAILABLE_REGIONS = [
-  'Northwest',
-  'Northeast',
-  'Southwest',
-  'Southeast',
-  'Central',
-  'Eastern',
-  'Western',
-  'Northern',
-  'Southern'
+  'Reval 1 — Kennewick (Urban Core)',
+  'Reval 2 — West Richland / Badger Mtn',
+  'Reval 3 — North Richland / Horn Rapids',
+  'Reval 4 — East Benton / Benton City',
+  'Reval 5 — Prosser / Wine Country',
+  'Reval 6 — Rural / Agricultural Lands',
 ];
 
 const AVAILABLE_BUILDING_TYPES = [
@@ -68,7 +64,7 @@ export function VisualizationFilterControl() {
   }, []);
   
   const handleRegionChange = (value: string) => {
-    setFilters({ region: value });
+    setFilters({ revalArea: value });
   };
   
   const handleBuildingTypeChange = (value: string) => {
@@ -84,13 +80,13 @@ export function VisualizationFilterControl() {
       <CardContent className="pt-6">
         <div className="flex flex-col sm:flex-row gap-4 items-end">
           <div className="space-y-2 flex-1">
-            <Label htmlFor="region-select">Region</Label>
-            <Select 
-              value={filters.region} 
+            <Label htmlFor="reval-area-select">Reval Area (Cycle)</Label>
+            <Select
+              value={filters.revalArea}
               onValueChange={handleRegionChange}
             >
-              <SelectTrigger id="region-select" className="w-full">
-                <SelectValue placeholder="Select region" />
+              <SelectTrigger id="reval-area-select" className="w-full">
+                <SelectValue placeholder="Select Reval Area" />
               </SelectTrigger>
               <SelectContent>
                 {availableRegions.map(region => (

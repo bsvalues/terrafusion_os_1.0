@@ -104,35 +104,14 @@ const CONDITION_OPTIONS = [
     description: 'Like new condition with all systems recently updated.' },
 ];
 
-// Region codes and multipliers with explanations
-const REGIONS = [
-  { id: 'BC-CENTRAL', label: 'Benton County - Central', factor: 1.0, 
-    description: 'Average construction costs for the central region of Benton County.' },
-  { id: 'BC-NORTH', label: 'Benton County - North', factor: 1.05, 
-    description: 'Slightly higher costs due to terrain and access in the northern region.' },
-  { id: 'BC-SOUTH', label: 'Benton County - South', factor: 0.95, 
-    description: 'Slightly lower costs in the more accessible southern region.' },
-  { id: 'BC-EAST', label: 'Benton County - East', factor: 0.98, 
-    description: 'Near average costs with good contractor availability in the eastern region.' },
-  { id: 'BC-WEST', label: 'Benton County - West', factor: 1.02, 
-    description: 'Moderately higher costs due to location factors in the western region.' },
-  { id: 'BC-RICHLAND', label: 'Benton County - Richland', factor: 1.08, 
-    description: 'Higher costs reflecting urban premium in the Richland area.' },
-  { id: 'BC-KENNEWICK', label: 'Benton County - Kennewick', factor: 1.06, 
-    description: 'Higher costs reflecting urban premium in the Kennewick area.' },
-  { id: 'BC-PROSSER', label: 'Benton County - Prosser', factor: 0.93, 
-    description: 'Lower costs in the rural Prosser area.' },
-  // Arkansas regions
-  { id: 'AR-CENTRAL', label: 'Arkansas - Central', factor: 0.9, 
-    description: 'Central Arkansas region including Little Rock area.' },
-  { id: 'AR-NORTHWEST', label: 'Arkansas - Northwest', factor: 0.95, 
-    description: 'Northwest Arkansas including Fayetteville and Bentonville.' },
-  { id: 'AR-NORTHEAST', label: 'Arkansas - Northeast', factor: 0.88, 
-    description: 'Northeast Arkansas including Jonesboro area.' },
-  { id: 'AR-SOUTHWEST', label: 'Arkansas - Southwest', factor: 0.85, 
-    description: 'Southwest Arkansas including Texarkana region.' },
-  { id: 'AR-SOUTHEAST', label: 'Arkansas - Southeast', factor: 0.82, 
-    description: 'Southeast Arkansas including Pine Bluff area.' },
+// Reval Areas (Benton County WA PACS Cycle areas)
+const REVAL_AREAS = [
+  { id: 'Reval 1', label: 'Reval 1 — Kennewick (Urban Core)', factor: 1.00, description: 'Urban core of Kennewick. Average Benton County construction costs.' },
+  { id: 'Reval 2', label: 'Reval 2 — West Richland / Badger Mtn', factor: 1.05, description: 'West Richland and Badger Mountain growth area. Premium due to newer development.' },
+  { id: 'Reval 3', label: 'Reval 3 — North Richland / Horn Rapids', factor: 1.10, description: 'North Richland and Horn Rapids. Highest costs reflecting newer construction standards.' },
+  { id: 'Reval 4', label: 'Reval 4 — East Benton / Benton City', factor: 0.95, description: 'East Benton County including Benton City. Slightly lower costs.' },
+  { id: 'Reval 5', label: 'Reval 5 — Prosser / Wine Country', factor: 0.90, description: 'Prosser and wine country area. Rural pricing with agricultural character.' },
+  { id: 'Reval 6', label: 'Reval 6 — Rural / Agricultural Lands', factor: 0.82, description: 'Rural and agricultural lands. Lowest cost area reflecting rural construction market.' },
 ];
 
 // Roofing types
@@ -211,7 +190,7 @@ const DEFAULT_VALUES = {
   basement: false,
   basementFinished: false,
   yearBuilt: new Date().getFullYear() - 10,
-  region: 'BC-CENTRAL',
+  revalArea: 'Reval 1',
   garageSize: 0,
   complexity: 50,
   roofType: 'ASPHALT',
@@ -233,7 +212,7 @@ interface CalculatorInputs {
   basement: boolean;
   basementFinished: boolean;
   yearBuilt: number;
-  region: string;
+  revalArea: string;
   garageSize: number;
   complexity: number;
   roofType: string;
@@ -255,7 +234,7 @@ interface CalculationResult {
   qualityFactor: number;
   conditionFactor: number;
   ageFactor: number;
-  regionFactor: number;
+  revalAreaFactor: number;
   complexityFactor: number;
   roofFactor: number;
   exteriorFactor: number;
@@ -386,7 +365,7 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
       const buildingTypeInfo = BUILDING_TYPES.find(t => t.id === inputs.buildingType)!;
       const qualityInfo = QUALITY_LEVELS.find(q => q.id === inputs.quality)!;
       const conditionInfo = CONDITION_OPTIONS.find(c => c.id === inputs.condition)!;
-      const regionInfo = REGIONS.find(r => r.id === inputs.region)!;
+      const revalAreaInfo = REVAL_AREAS.find(r => r.id === inputs.revalArea)!;
       const roofInfo = ROOFING_TYPES.find(r => r.id === inputs.roofType)!;
       const exteriorInfo = EXTERIOR_TYPES.find(e => e.id === inputs.exteriorType)!;
       const hvacInfo = HVAC_TYPES.find(h => h.id === inputs.hvacType)!;
@@ -395,7 +374,7 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
       const baseRate = buildingTypeInfo.baseRate;
       const qualityFactor = qualityInfo.factor;
       const conditionFactor = conditionInfo.factor;
-      const regionFactor = regionInfo.factor;
+      const revalAreaFactor = revalAreaInfo.factor;
       const roofFactor = roofInfo.factor;
       const exteriorFactor = exteriorInfo.factor;
       const hvacFactor = hvacInfo.factor;
@@ -436,7 +415,7 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
       const bathroomFactor = 1 + (Math.max(0, inputs.bathrooms - 1) * 0.03); // Each bathroom beyond the first adds 3%
       
       // Calculate the final adjusted rate
-      const adjustedRate = baseRate * qualityFactor * conditionFactor * regionFactor 
+      const adjustedRate = baseRate * qualityFactor * conditionFactor * revalAreaFactor
                          * ageFactor * complexityFactor * storyFactor
                          * (roofFactor * 0.1 + 0.9) // Roof affects 10% of the total
                          * (exteriorFactor * 0.15 + 0.85) // Exterior affects 15% of the total
@@ -474,7 +453,7 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
         qualityFactor,
         conditionFactor,
         ageFactor,
-        regionFactor,
+        revalAreaFactor,
         complexityFactor,
         roofFactor,
         exteriorFactor,
@@ -708,7 +687,7 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
           </li>
           <li className="flex items-start gap-2">
             <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-            <span>Location information for regional cost adjustments</span>
+            <span>Reval area information for accurate cost adjustments</span>
           </li>
           <li className="flex items-start gap-2">
             <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
@@ -724,7 +703,7 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
             <h3 className="font-medium text-blue-800 dark:text-blue-300">How it works</h3>
             <p className="text-sm text-blue-700 dark:text-blue-400">
               The wizard uses the Benton County Building Cost System methodology to calculate building costs
-              based on regional data, quality factors, and current construction costs.
+              based on reval area data, quality factors, and current construction costs.
               Each input affects the final estimate, and you'll see explanations along the way.
             </p>
           </div>
@@ -1041,53 +1020,46 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
       <div>
         <h2 className="text-xl font-bold mb-2">Building Location</h2>
         <p className="text-muted-foreground">
-          Select the region where the building is located for accurate cost adjustments.
+          Select the reval area where the building is located for accurate cost adjustments.
         </p>
       </div>
       
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="region">Region</Label>
+          <Label htmlFor="revalArea">Reval Area (Cycle)</Label>
           <Select
-            value={inputs.region}
-            onValueChange={value => handleInputChange('region', value)}
+            value={inputs.revalArea}
+            onValueChange={value => handleInputChange('revalArea', value)}
           >
-            <SelectTrigger id="region">
-              <SelectValue placeholder="Select region" />
+            <SelectTrigger id="revalArea">
+              <SelectValue placeholder="Select Reval Area" />
             </SelectTrigger>
             <SelectContent>
               <div className="max-h-[300px] overflow-y-auto">
-                <SelectItem value="" disabled>Benton County Regions</SelectItem>
-                {REGIONS.filter(r => r.id.startsWith('BC-')).map(region => (
-                  <SelectItem key={region.id} value={region.id}>
-                    {region.label} ({region.factor.toFixed(2)}x)
-                  </SelectItem>
-                ))}
-                <SelectItem value="" disabled>Arkansas Regions</SelectItem>
-                {REGIONS.filter(r => r.id.startsWith('AR-')).map(region => (
-                  <SelectItem key={region.id} value={region.id}>
-                    {region.label} ({region.factor.toFixed(2)}x)
+                {REVAL_AREAS.map(area => (
+                  <SelectItem key={area.id} value={area.id}>
+                    {area.label} ({area.factor.toFixed(2)}x)
                   </SelectItem>
                 ))}
               </div>
             </SelectContent>
           </Select>
         </div>
-        
-        {/* Show explanation for selected region */}
-        {inputs.region && (
+
+        {/* Show explanation for selected reval area */}
+        {inputs.revalArea && (
           <div className="bg-primary/5 p-3 rounded-md">
             <div className="flex items-start gap-2">
               <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-medium">
-                  {REGIONS.find(r => r.id === inputs.region)?.label}
+                  {REVAL_AREAS.find(r => r.id === inputs.revalArea)?.label}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {REGIONS.find(r => r.id === inputs.region)?.description}
+                  {REVAL_AREAS.find(r => r.id === inputs.revalArea)?.description}
                 </p>
                 <p className="text-sm font-medium mt-1">
-                  Regional Cost Factor: {REGIONS.find(r => r.id === inputs.region)?.factor.toFixed(2)}x
+                  Reval Area Cost Factor: {REVAL_AREAS.find(r => r.id === inputs.revalArea)?.factor.toFixed(2)}x
                 </p>
               </div>
             </div>
@@ -1101,8 +1073,8 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
           <div>
             <h3 className="font-medium">How this affects your estimate</h3>
             <p className="text-sm text-muted-foreground">
-              Construction costs vary significantly by location due to differences in labor costs,
-              material availability, transportation costs, and market conditions. The regional cost
+              Construction costs vary across Benton County reval areas due to differences in labor costs,
+              material availability, transportation costs, and market conditions. The reval area cost
               factor adjusts the base cost to reflect these local variations.
             </p>
           </div>
@@ -1407,8 +1379,8 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
               <div className="font-medium">{result?.conditionFactor.toFixed(2)}x</div>
             </div>
             <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Region</div>
-              <div className="font-medium">{result?.regionFactor.toFixed(2)}x</div>
+              <div className="text-sm text-muted-foreground">Reval Area</div>
+              <div className="font-medium">{result?.revalAreaFactor.toFixed(2)}x</div>
             </div>
             <div className="space-y-1">
               <div className="text-sm text-muted-foreground">Age</div>
@@ -1541,8 +1513,8 @@ const CostEstimationWizard: React.FC<CostEstimationWizardProps> = ({
             <span>{QUALITY_LEVELS.find(q => q.id === inputs.quality)?.label}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Region:</span>
-            <span>{REGIONS.find(r => r.id === inputs.region)?.label.split(' - ')[1]}</span>
+            <span className="text-muted-foreground">Reval Area:</span>
+            <span>{REVAL_AREAS.find(r => r.id === inputs.revalArea)?.label}</span>
           </div>
         </div>
       </div>

@@ -44,7 +44,7 @@ import { z } from "zod";
 
 // Define schema for building cost calculation form
 const calculationSchema = z.object({
-  region: z.string(),
+  revalArea: z.string(),
   buildingType: z.string(),
   squareFootage: z.coerce.number().positive("Square footage must be greater than 0"),
   complexityFactor: z.coerce.number().min(0.5).max(3.0),
@@ -66,8 +66,8 @@ export default function BuildingCostCalculator() {
   const { getAll: getAllMatrices } = useCostMatrix();
   const matrices: CostMatrix[] = Array.isArray(getAllMatrices.data) ? getAllMatrices.data : [];
 
-  // Get unique regions from matrices
-  const regions = [...new Set(matrices.map(matrix => matrix.region))];
+  // Get unique Reval Areas from matrices
+  const revalAreas = [...new Set(matrices.map(matrix => matrix.revalArea))];
 
   // Get unique building types from matrices
   const buildingTypes = [...new Set(matrices.map(matrix => matrix.buildingType))];
@@ -102,7 +102,7 @@ export default function BuildingCostCalculator() {
   const form = useForm<CalculationFormValues>({
     resolver: zodResolver(calculationSchema),
     defaultValues: {
-      region: "select-region",
+      revalArea: "select-reval",
       buildingType: "select-building-type",
       squareFootage: 2000,
       complexityFactor: 1.0,
@@ -117,10 +117,10 @@ export default function BuildingCostCalculator() {
   // Handle form submission
   function onSubmit(data: CalculationFormValues) {
     // Check if placeholder values are selected
-    if (data.region === "select-region" || data.buildingType === "select-building-type") {
+    if (data.revalArea === "select-reval" || data.buildingType === "select-building-type") {
       toast({
         title: "Missing required fields",
-        description: "Please select both a region and building type before calculating.",
+        description: "Please select both a Reval Area and building type before calculating.",
         variant: "destructive",
       });
       return;
@@ -207,33 +207,42 @@ export default function BuildingCostCalculator() {
                         <h3 className="text-lg font-medium">Basic Information</h3>
                       </div>
 
-                      {/* Region Selection */}
+                      {/* Reval Area Selection */}
                       <FormField
                         control={form.control}
-                        name="region"
+                        name="revalArea"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Region</FormLabel>
+                            <FormLabel>Reval Area (Cycle)</FormLabel>
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value}
                             >
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select region" />
+                                  <SelectValue placeholder="Select Reval Area" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="select-region">Select region</SelectItem>
-                                {regions.map((region) => (
-                                  <SelectItem key={region} value={region}>
-                                    {region}
+                                <SelectItem value="select-reval">Select Reval Area</SelectItem>
+                                {revalAreas.length > 0 ? revalAreas.map((ra) => (
+                                  <SelectItem key={ra} value={ra}>
+                                    {ra}
                                   </SelectItem>
-                                ))}
+                                )) : (
+                                  <>
+                                    <SelectItem value="Reval 1">Reval 1 — Kennewick (Urban Core)</SelectItem>
+                                    <SelectItem value="Reval 2">Reval 2 — West Richland / Badger Mtn</SelectItem>
+                                    <SelectItem value="Reval 3">Reval 3 — North Richland / Horn Rapids</SelectItem>
+                                    <SelectItem value="Reval 4">Reval 4 — East Benton / Benton City</SelectItem>
+                                    <SelectItem value="Reval 5">Reval 5 — Prosser / Wine Country</SelectItem>
+                                    <SelectItem value="Reval 6">Reval 6 — Rural / Agricultural Lands</SelectItem>
+                                  </>
+                                )}
                               </SelectContent>
                             </Select>
                             <FormDescription>
-                              Select the region for this building
+                              Select the Reval Area (PACS Cycle) for this building
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -575,8 +584,8 @@ export default function BuildingCostCalculator() {
                     <h3 className="text-lg font-medium mb-3">Input Details</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div>
-                        <p className="text-sm text-muted-foreground">Region</p>
-                        <p className="font-medium">{form.getValues().region}</p>
+                        <p className="text-sm text-muted-foreground">Reval Area</p>
+                        <p className="font-medium">{form.getValues().revalArea}</p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Building Type</p>

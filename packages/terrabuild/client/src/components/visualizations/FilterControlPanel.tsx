@@ -42,14 +42,14 @@ import { useQuery } from '@tanstack/react-query';
 
 interface FilterControlPanelProps {
   compact?: boolean;
-  allowedFilters?: ('regions' | 'buildingTypes' | 'costRange' | 'counties')[];
+  allowedFilters?: ('revalAreas' | 'buildingTypes' | 'costRange' | 'counties')[];
   showClearButton?: boolean;
   className?: string;
 }
 
 export function FilterControlPanel({
   compact = false,
-  allowedFilters = ['regions', 'buildingTypes', 'costRange', 'counties'],
+  allowedFilters = ['revalAreas', 'buildingTypes', 'costRange', 'counties'],
   showClearButton = true,
   className = '',
 }: FilterControlPanelProps) {
@@ -59,12 +59,12 @@ export function FilterControlPanel({
   
   const {
     filters,
-    removeRegionFilter,
+    removeRevalAreaFilter,
     removeBuildingTypeFilter,
     removeCountyFilter,
     setCostRange,
     clearAllFilters,
-    clearRegionFilters,
+    clearRevalAreaFilters,
     clearBuildingTypeFilters,
     clearCountyFilters,
     clearCostRange,
@@ -122,7 +122,7 @@ export function FilterControlPanel({
   
   // Count active filters
   const activeFilterCount = (
-    ((filters?.regions && filters.regions.length > 0) ? 1 : 0) +
+    ((filters?.revalAreas && filters.revalAreas.length > 0) ? 1 : 0) +
     ((filters?.buildingTypes && filters.buildingTypes.length > 0) ? 1 : 0) +
     ((filters?.counties && filters.counties.length > 0) ? 1 : 0) +
     (filters?.costRange !== null ? 1 : 0)
@@ -152,45 +152,45 @@ export function FilterControlPanel({
             </div>
           </CollapsibleTrigger>
           <CardDescription>
-            Filter visualizations by region, building type, and more
+            Filter visualizations by reval area, building type, and more
           </CardDescription>
         </CardHeader>
         
         <CollapsibleContent>
           <CardContent className="pb-3">
-            {allowedFilters.includes('regions') && (
+            {allowedFilters.includes('revalAreas') && (
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1.5">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <h3 className="text-sm font-medium">Regions</h3>
+                    <h3 className="text-sm font-medium">Reval Areas</h3>
                   </div>
-                  {filters?.regions && filters.regions.length > 0 && (
+                  {filters?.revalAreas && filters.revalAreas.length > 0 && (
                     <Button
                       variant="ghost"
                       size="sm"
                       className="h-6 text-xs"
-                      onClick={() => clearRegionFilters && clearRegionFilters()}
+                      onClick={() => clearRevalAreaFilters && clearRevalAreaFilters()}
                     >
                       Clear
                     </Button>
                   )}
                 </div>
-                
-                {filters?.regions && filters.regions.length > 0 ? (
+
+                {filters?.revalAreas && filters.revalAreas.length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
-                    {filters?.regions?.map(region => (
-                      <Badge 
-                        key={region} 
+                    {filters?.revalAreas?.map(revalArea => (
+                      <Badge
+                        key={revalArea}
                         variant="outline"
                         className="flex items-center gap-1 pl-2"
                       >
-                        {region}
+                        {revalArea}
                         <Button
                           variant="ghost"
                           size="sm"
                           className="h-4 w-4 p-0 ml-1 text-muted-foreground hover:text-foreground"
-                          onClick={() => removeRegionFilter && removeRegionFilter(region)}
+                          onClick={() => removeRevalAreaFilter && removeRevalAreaFilter(revalArea)}
                         >
                           <X className="h-3 w-3" />
                         </Button>
@@ -198,7 +198,7 @@ export function FilterControlPanel({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-muted-foreground">No region filters applied</p>
+                  <p className="text-xs text-muted-foreground">No reval area filters applied</p>
                 )}
               </div>
             )}
