@@ -59,7 +59,10 @@ export function CalibrationMemoPanel({ matrixVersionId }: Props) {
       fetch("/api/calibrationmemo/auto-draft", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ matrixVersionId }),
+        body: JSON.stringify({
+          matrixVersionId,
+          countyId: "00000000-0000-0000-0000-000000000001",
+        }),
       }).then((r) => r.json()),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["calibration-memo", matrixVersionId] }),
   });

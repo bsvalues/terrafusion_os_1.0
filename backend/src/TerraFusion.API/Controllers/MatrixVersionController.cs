@@ -50,16 +50,21 @@ public class MatrixVersionController : ControllerBase
         return v is null ? NotFound() : Ok(v);
     }
 
+    // Well-known Benton County GUID — used when the frontend doesn't supply one
+    private static readonly Guid BentonCountyId = new("00000000-0000-0000-0000-000000000001");
+
     [HttpPost]
     public async System.Threading.Tasks.Task<IActionResult> Create([FromBody] CreateMatrixVersionRequest req)
     {
+        var countyId = req.CountyId ?? BentonCountyId;
+
         var exists = await _db.MatrixVersions
-            .AnyAsync(v => v.CountyId == req.CountyId && v.Version == req.Version);
+            .AnyAsync(v => v.CountyId == countyId && v.Version == req.Version);
         if (exists) return Conflict($"Version {req.Version} already exists for this county.");
 
         var version = new MatrixVersion
         {
-            CountyId = req.CountyId,
+            CountyId = countyId,
             Version = req.Version,
             Status = "DRAFT",
             VersionType = req.VersionType ?? "CALIBRATED",
@@ -67,7 +72,7 @@ public class MatrixVersionController : ControllerBase
             SalesWindowStart = req.SalesWindowStart,
             SalesWindowEnd = req.SalesWindowEnd,
             ParentVersionId = req.ParentVersionId,
-            RateSnapshot = req.RateSnapshot ?? "{}",
+            RateSnapshot = req.RateSnapshot ?? SeedRateSnapshot(),
             CreatedBy = User.Identity?.Name ?? "system",
             UpdatedBy = User.Identity?.Name ?? "system",
         };
@@ -123,21 +128,57 @@ public class MatrixVersionController : ControllerBase
     }
 
     [HttpPatch("{id:int}/rates")]
-    public async System.Threading.Tasks.Task<IActionResult> UpdateRates(int id, [FromBody] UpdateRatesRequest req)
+    public async System.Threading.Tasks.Task<IActionResult> UpdateRates(int id, [FromBody] MassAdjustmentRequest req)
     {
         var version = await _db.MatrixVersions.FindAsync(id);
         if (version is null) return NotFound();
         if (version.Status != "DRAFT") return BadRequest("Only DRAFT versions can have rates updated.");
 
-        version.RateSnapshot = req.RateSnapshot;
-        version.PrdAfter = req.PrdAfter;
-        version.PrbAfter = req.PrbAfter;
-        version.CodAfter = req.CodAfter;
-        version.CountyAvImpact = req.CountyAvImpact;
+        // Deserialize current snapshot (seed from BentonCostData if empty)
+        var cells = System.Text.Json.JsonSerializer.Deserialize<List<RateCellDto>>(
+            string.IsNullOrEmpty(version.RateSnapshot) || version.RateSnapshot == "{}"
+                ? SeedRateSnapshot()
+                : version.RateSnapshot,
+            new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+            ?? new List<RateCellDto>();
+
+        foreach (var cell in cells)
+        {
+            bool inScope = req.Scope switch
+            {
+                "all"       => true,
+                "type"      => cell.BuildingType == req.BuildingType,
+                "area"      => cell.RevalArea == req.RevalArea,
+                "type_area" => cell.BuildingType == req.BuildingType && cell.RevalArea == req.RevalArea,
+                _           => false,
+            };
+
+            if (!inScope) continue;
+
+            cell.BaseRate = req.Mode == "percent"
+                ? Math.Round(cell.BaseRate * (1m + req.Value / 100m), 2)
+                : Math.Round(cell.BaseRate + req.Value, 2);
+        }
+
+        version.RateSnapshot = System.Text.Json.JsonSerializer.Serialize(cells);
         version.UpdatedAt = DateTime.UtcNow;
         version.UpdatedBy = User.Identity?.Name ?? "system";
         await _db.SaveChangesAsync();
         return Ok(version);
+    }
+
+    private static string SeedRateSnapshot()
+    {
+        // Seed from BentonCostData so a new draft has real starting rates
+        var cells = CostForgeController.BentonCostData.CostMatrix
+            .Select(c => new RateCellDto
+            {
+                BuildingType = c.BuildingType,
+                RevalArea    = c.Region,
+                BaseRate     = c.BaseCostPerSqft,
+            })
+            .ToList();
+        return System.Text.Json.JsonSerializer.Serialize(cells);
     }
 
     [HttpGet("export/dor")]
@@ -165,9 +206,9 @@ public class MatrixVersionController : ControllerBase
 }
 
 public record CreateMatrixVersionRequest(
-    Guid CountyId,
     string Version,
     string? VersionType,
+    Guid? CountyId,
     string? TriggeringEvent,
     DateTime? SalesWindowStart,
     DateTime? SalesWindowEnd,
@@ -176,9 +217,16 @@ public record CreateMatrixVersionRequest(
 
 public record TransitionRequest(string ToStatus, string? RateSnapshot);
 
-public record UpdateRatesRequest(
-    string RateSnapshot,
-    decimal? PrdAfter,
-    decimal? PrbAfter,
-    decimal? CodAfter,
-    decimal? CountyAvImpact);
+public record MassAdjustmentRequest(
+    string Scope,
+    string Mode,
+    decimal Value,
+    string? BuildingType,
+    string? RevalArea);
+
+public class RateCellDto
+{
+    public string BuildingType { get; set; } = "";
+    public string RevalArea { get; set; } = "";
+    public decimal BaseRate { get; set; }
+}

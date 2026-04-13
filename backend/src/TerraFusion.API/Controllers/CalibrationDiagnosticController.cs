@@ -24,15 +24,15 @@ public class CalibrationDiagnosticController : ControllerBase
     }
 
     [HttpPost("run")]
-    public async System.Threading.Tasks.Task<IActionResult> RunDiagnostics([FromQuery] int matrixVersionId)
+    public async System.Threading.Tasks.Task<IActionResult> RunDiagnostics([FromBody] RunDiagnosticsRequest req)
     {
-        var version = await _db.MatrixVersions.FindAsync(matrixVersionId);
-        if (version is null) return NotFound($"MatrixVersion {matrixVersionId} not found.");
+        var version = await _db.MatrixVersions.FindAsync(req.MatrixVersionId);
+        if (version is null) return NotFound($"MatrixVersion {req.MatrixVersionId} not found.");
 
-        var old = _db.CalibrationFindings.Where(f => f.MatrixVersionId == matrixVersionId);
+        var old = _db.CalibrationFindings.Where(f => f.MatrixVersionId == req.MatrixVersionId);
         _db.CalibrationFindings.RemoveRange(old);
 
-        var findings = await _diagnosticService.RunDiagnosticsAsync(matrixVersionId);
+        var findings = await _diagnosticService.RunDiagnosticsAsync(req.MatrixVersionId);
         _db.CalibrationFindings.AddRange(findings);
         await _db.SaveChangesAsync();
 
@@ -56,8 +56,8 @@ public class CalibrationDiagnosticController : ControllerBase
         var finding = await _db.CalibrationFindings.FindAsync(id);
         if (finding is null) return NotFound();
 
-        finding.ResolutionStatus = req.Status;
-        finding.AppraiserNote = req.Note;
+        finding.ResolutionStatus = req.ResolutionStatus;
+        finding.AppraiserNote = req.AppraiserNote;
         finding.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
         return Ok(finding);
@@ -99,4 +99,5 @@ public class CalibrationDiagnosticController : ControllerBase
     }
 }
 
-public record ResolveFindingRequest(string Status, string? Note);
+public record ResolveFindingRequest(string ResolutionStatus, string? AppraiserNote);
+public record RunDiagnosticsRequest(int MatrixVersionId);

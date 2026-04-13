@@ -80,6 +80,7 @@ export function VersionTimeline({ countyId, activeDraftId, onDraftSelected }: Pr
         body: JSON.stringify({
           version: `v${new Date().getFullYear()}.0-DRAFT`,
           versionType: "CALIBRATED",
+          countyId: "00000000-0000-0000-0000-000000000001",
         }),
       }).then((r) => r.json()),
     onSuccess: (data: MatrixVersion) => {
