@@ -9,3 +9,6 @@ export type { CalibrationFinding, FindingClassification, ResolutionStatus } from
 export type { EvidenceStatus } from "./RevalAreaEvidenceAgeIndicator";
 export { RevalAreaNavigator } from "./RevalAreaNavigator";
 export { AiCopilotBand } from "./AiCopilotBand";
+export { ParcelEvidenceViewer } from "./ParcelEvidenceViewer";
+export { AdjustmentSimulator } from "./AdjustmentSimulator";
+export { StratifiedEquityPanel } from "./StratifiedEquityPanel";
