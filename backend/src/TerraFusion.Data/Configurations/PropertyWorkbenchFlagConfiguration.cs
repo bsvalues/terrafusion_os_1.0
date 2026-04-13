@@ -19,7 +19,8 @@ public class PropertyWorkbenchFlagConfiguration : IEntityTypeConfiguration<Prope
         builder.HasOne(e => e.CalibrationFinding)
             .WithMany()
             .HasForeignKey(e => e.CalibrationFindingId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasIndex(e => e.ParcelId).HasDatabaseName("IX_PropertyWorkbenchFlags_ParcelId");
     }

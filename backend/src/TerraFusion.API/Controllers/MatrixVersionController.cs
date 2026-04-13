@@ -206,6 +206,54 @@ public class MatrixVersionController : ControllerBase
         var report = await _exportService.BuildProvenanceReportAsync(countyId);
         return Ok(report);
     }
+
+    [HttpPost("{id:int}/apply-adjustment")]
+    public async System.Threading.Tasks.Task<IActionResult> ApplyAdjustment(int id, [FromBody] ApplyAdjustmentRequest req)
+    {
+        var version = await _db.MatrixVersions.FindAsync(id);
+        if (version is null) return NotFound($"MatrixVersion {id} not found.");
+        if (version.Status == "LOCKED")
+            return BadRequest("Cannot adjust a LOCKED matrix version.");
+
+        var snapshot = version.RateSnapshot is string s
+            ? System.Text.Json.JsonSerializer.Deserialize<List<RateCellDto>>(s,
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new()
+            : new List<RateCellDto>();
+
+        double factor = 1.0 + req.AdjustmentPct / 100.0;
+        bool changed = false;
+        foreach (var cell in snapshot)
+        {
+            bool matchArea = string.IsNullOrEmpty(req.RevalArea) || cell.RevalArea == req.RevalArea;
+            bool matchType = string.IsNullOrEmpty(req.BuildingType) || cell.BuildingType == req.BuildingType;
+            if (matchArea && matchType)
+            {
+                cell.BaseRate = Math.Round(cell.BaseRate * (decimal)factor, 4);
+                changed = true;
+            }
+        }
+
+        if (!changed) return BadRequest("No rate cells matched the specified area/type.");
+
+        version.RateSnapshot = System.Text.Json.JsonSerializer.Serialize(snapshot, CamelCaseOptions);
+        version.UpdatedAt = DateTime.UtcNow;
+
+        var parts = version.Version.Split('.');
+        if (parts.Length == 3 && int.TryParse(parts[2], out var patch))
+            version.Version = $"{parts[0]}.{parts[1]}.{patch + 1}";
+
+        var auditEntry = $"\n[{DateTime.UtcNow:yyyy-MM-dd HH:mm}] {req.AppraiserNote ?? "Adjustment applied."} " +
+                         $"Area={req.RevalArea ?? "ALL"} Type={req.BuildingType ?? "ALL"} " +
+                         $"Pct={req.AdjustmentPct:+0.###;-0.###;0}% IAAO={req.IaaoReference}";
+
+        // Append audit entry to TriggeringEvent as a running log (AppraiserNote not on entity)
+        version.TriggeringEvent = ((version.TriggeringEvent ?? "") + auditEntry).TrimStart();
+        if (version.TriggeringEvent.Length > 500)
+            version.TriggeringEvent = version.TriggeringEvent[^500..];
+
+        await _db.SaveChangesAsync();
+        return Ok(new { version.Id, version.Version, version.Status, auditEntry });
+    }
 }
 
 public record CreateMatrixVersionRequest(
@@ -226,6 +274,14 @@ public record MassAdjustmentRequest(
     decimal Value,
     string? BuildingType,
     string? RevalArea);
+
+public record ApplyAdjustmentRequest(
+    string? RevalArea,
+    string? BuildingType,
+    double AdjustmentPct,
+    List<int> ExcludedSaleIds,
+    string? AppraiserNote,
+    string? IaaoReference);
 
 public class RateCellDto
 {

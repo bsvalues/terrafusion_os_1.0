@@ -236,7 +236,182 @@ public class CalibrationDiagnosticController : ControllerBase
             return "YELLOW";
         return "GREEN";
     }
+
+    [HttpPost("simulate")]
+    public async System.Threading.Tasks.Task<IActionResult> Simulate([FromBody] SimulateRequest req)
+    {
+        var q = _db.SaleRecords.Where(s => s.MatrixVersionId == req.MatrixVersionId);
+        if (!string.IsNullOrEmpty(req.RevalArea)) q = q.Where(s => s.RevalArea == req.RevalArea);
+        if (!string.IsNullOrEmpty(req.BuildingType)) q = q.Where(s => s.BuildingType == req.BuildingType);
+
+        var all = await q.AsNoTracking().ToListAsync();
+        var active = all.Where(s => !req.ExcludedSaleIds.Contains(s.Id)).ToList();
+
+        if (active.Count == 0) return BadRequest("No active sales after exclusions.");
+
+        double factor = 1.0 + req.AdjustmentPct / 100.0;
+        var projected = active.Select(s => new
+        {
+            AV = (double)s.AssessedValue * factor,
+            SP = (double)s.SalePrice,
+        }).ToList();
+
+        double projPrd = ComputePrd(projected.Select(x => (x.AV, x.SP)));
+        double projPrb = ComputePrb(projected.Select(x => (x.SP, x.AV / x.SP)));
+        double projCod = ComputeCod(projected.Select(x => x.AV / x.SP).ToList());
+        double projMedian = CalibMedian(projected.Select(x => x.AV / x.SP).ToList());
+        decimal avImpact = active.Sum(s => s.AssessedValue) * (decimal)(factor - 1.0);
+
+        var allSales = await _db.SaleRecords
+            .Where(s => s.MatrixVersionId == req.MatrixVersionId)
+            .AsNoTracking().ToListAsync();
+        var crossArea = allSales
+            .GroupBy(s => s.RevalArea)
+            .Select(g =>
+            {
+                var activeSales = g.Where(s => !req.ExcludedSaleIds.Contains(s.Id)).ToList();
+                if (activeSales.Count == 0) return new { revalArea = g.Key, projectedPrd = 1.0 };
+                double prd = ComputePrd(activeSales.Select(s => ((double)s.AssessedValue * factor, (double)s.SalePrice)));
+                return new { revalArea = g.Key, projectedPrd = Math.Round(prd, 4) };
+            }).ToList();
+
+        return Ok(new
+        {
+            projectedPrd = Math.Round(projPrd, 4),
+            projectedPrb = Math.Round(projPrb, 4),
+            projectedCod = Math.Round(projCod, 2),
+            projectedMedianRatio = Math.Round(projMedian, 4),
+            estimatedAvImpact = Math.Round(avImpact, 0),
+            crossAreaImpact = crossArea,
+        });
+    }
+
+    [HttpPost("solve-for-rate")]
+    public async System.Threading.Tasks.Task<IActionResult> SolveForRate([FromBody] SolveForRateRequest req)
+    {
+        var q = _db.SaleRecords.Where(s => s.MatrixVersionId == req.MatrixVersionId);
+        if (!string.IsNullOrEmpty(req.RevalArea)) q = q.Where(s => s.RevalArea == req.RevalArea);
+        if (!string.IsNullOrEmpty(req.BuildingType)) q = q.Where(s => s.BuildingType == req.BuildingType);
+
+        var all = await q.AsNoTracking().ToListAsync();
+        var active = all.Where(s => !req.ExcludedSaleIds.Contains(s.Id)).ToList();
+        if (active.Count == 0) return BadRequest("No active sales.");
+
+        double lo = -50.0, hi = 100.0;
+        double bestAdj = 0.0;
+        for (int iter = 0; iter < 60; iter++)
+        {
+            double mid = (lo + hi) / 2.0;
+            double factor = 1.0 + mid / 100.0;
+            var proj = active.Select(s => ((double)s.AssessedValue * factor, (double)s.SalePrice));
+            double prd = ComputePrd(proj);
+            if (prd < req.TargetPrd) lo = mid; else hi = mid;
+            bestAdj = mid;
+            if (Math.Abs(hi - lo) < 0.001) break;
+        }
+
+        double bestFactor = 1.0 + bestAdj / 100.0;
+        var bestProj = active.Select(s => new { AV = (double)s.AssessedValue * bestFactor, SP = (double)s.SalePrice }).ToList();
+        return Ok(new
+        {
+            suggestedAdjustmentPct = Math.Round(bestAdj, 3),
+            projectedPrd = Math.Round(ComputePrd(bestProj.Select(x => (x.AV, x.SP))), 4),
+            projectedCod = Math.Round(ComputeCod(bestProj.Select(x => x.AV / x.SP).ToList()), 2),
+            projectedPrb = Math.Round(ComputePrb(bestProj.Select(x => (x.SP, x.AV / x.SP))), 4),
+        });
+    }
+
+    [HttpGet("stratified-equity")]
+    public async System.Threading.Tasks.Task<IActionResult> GetStratifiedEquity(
+        [FromQuery] int matrixVersionId,
+        [FromQuery] string? revalArea,
+        [FromQuery] string? buildingType)
+    {
+        var q = _db.SaleRecords.Where(s => s.MatrixVersionId == matrixVersionId);
+        if (!string.IsNullOrEmpty(revalArea)) q = q.Where(s => s.RevalArea == revalArea);
+        if (!string.IsNullOrEmpty(buildingType)) q = q.Where(s => s.BuildingType == buildingType);
+
+        var records = await q.AsNoTracking().ToListAsync();
+
+        var cells = records
+            .GroupBy(s => new { s.ValueQuintile, s.AgeBand })
+            .Select(g =>
+            {
+                var ratios = g.Select(s => (double)s.Ratio).ToList();
+                return new
+                {
+                    quintile = g.Key.ValueQuintile,
+                    ageBand = g.Key.AgeBand,
+                    medianRatio = Math.Round(CalibMedian(ratios), 4),
+                    cod = Math.Round(ComputeCod(ratios), 2),
+                    saleCount = g.Count(),
+                    parcelIds = g.Select(s => s.ParcelId).ToList(),
+                };
+            })
+            .OrderBy(c => c.quintile).ThenBy(c => c.ageBand)
+            .ToList();
+
+        return Ok(cells);
+    }
+
+    [HttpPost("outlier-exclusions")]
+    public async System.Threading.Tasks.Task<IActionResult> RecordOutlierExclusion([FromBody] OutlierExclusionRequest req)
+    {
+        var sale = await _db.SaleRecords.FindAsync(req.SaleRecordId);
+        if (sale is null) return NotFound($"SaleRecord {req.SaleRecordId} not found.");
+
+        var prior = await _db.OutlierExclusions
+            .Where(e => e.MatrixVersionId == req.MatrixVersionId && e.SaleRecordId == req.SaleRecordId)
+            .ToListAsync();
+        _db.OutlierExclusions.RemoveRange(prior);
+
+        var exclusion = new OutlierExclusion
+        {
+            MatrixVersionId = req.MatrixVersionId,
+            SaleRecordId = req.SaleRecordId,
+            DispositionType = req.DispositionType,
+            AppraiserNote = req.AppraiserNote,
+            DataProblemFlagged = req.DispositionType == "FLAGGED_DATA",
+            CreatedBy = "appraiser",
+        };
+        _db.OutlierExclusions.Add(exclusion);
+
+        if (exclusion.DataProblemFlagged)
+        {
+            _db.PropertyWorkbenchFlags.Add(new PropertyWorkbenchFlag
+            {
+                ParcelId = sale.ParcelId,
+                Reason = $"Outlier flagged as DATA_PROBLEM in ratio study. Note: {req.AppraiserNote}",
+                Status = "PENDING",
+                CreatedBy = "calibration-workbench",
+                UpdatedBy = "calibration-workbench",
+            });
+        }
+
+        await _db.SaveChangesAsync();
+        return Ok(new { exclusion.Id, exclusion.DispositionType, exclusion.DataProblemFlagged });
+    }
 }
 
 public record ResolveFindingRequest(string ResolutionStatus, string? AppraiserNote);
 public record RunDiagnosticsRequest(int MatrixVersionId);
+
+public record SimulateRequest(
+    int MatrixVersionId,
+    string? RevalArea,
+    string? BuildingType,
+    double AdjustmentPct,
+    List<int> ExcludedSaleIds);
+
+public record SolveForRateRequest(
+    int MatrixVersionId,
+    string? RevalArea,
+    string? BuildingType,
+    double TargetPrd,
+    List<int> ExcludedSaleIds);
+
+public record OutlierExclusionRequest(
+    int MatrixVersionId,
+    int SaleRecordId,
+    string DispositionType,
+    string? AppraiserNote);

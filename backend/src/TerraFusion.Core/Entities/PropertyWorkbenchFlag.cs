@@ -5,8 +5,8 @@ namespace TerraFusion.Core.Entities;
 public class PropertyWorkbenchFlag
 {
     public int Id { get; set; }
-    public int CalibrationFindingId { get; set; }
-    public CalibrationFinding CalibrationFinding { get; set; } = null!;
+    public int? CalibrationFindingId { get; set; }
+    public CalibrationFinding? CalibrationFinding { get; set; }
 
     [Required][StringLength(50)]
     public string ParcelId { get; set; } = string.Empty;
