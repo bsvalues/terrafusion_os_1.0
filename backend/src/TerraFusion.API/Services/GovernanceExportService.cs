@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.API.Controllers;
 using TerraFusion.Core.Services;
-using TerraFusion.Data;
+using TerraFusionDbContext = TerraFusion.Data.TerraFusionDbContext;
 
 namespace TerraFusion.API.Services;
 
