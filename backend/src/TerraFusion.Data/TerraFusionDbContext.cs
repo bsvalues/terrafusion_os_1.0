@@ -64,6 +64,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<RevalAreaEvidenceAge> RevalAreaEvidenceAges { get; set; }
   public DbSet<CalibrationMemo> CalibrationMemos { get; set; }
   public DbSet<CalibrationFinding> CalibrationFindings { get; set; }
+  public DbSet<SaleRecord> SaleRecords { get; set; }
+  public DbSet<SaleComparableRecord> SaleComparableRecords { get; set; }
+  public DbSet<OutlierExclusion> OutlierExclusions { get; set; }
   public DbSet<PropertyWorkbenchFlag> PropertyWorkbenchFlags { get; set; }
 
   // Security Entities
