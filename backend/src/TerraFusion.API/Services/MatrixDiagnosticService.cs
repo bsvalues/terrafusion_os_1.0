@@ -67,7 +67,7 @@ public class MatrixDiagnosticService : IMatrixDiagnosticService
                 ProposedRateNew = avgRate * (1 + proposedAdj),
                 EstimatedAvImpact = avgRate * group.Count() * proposedAdj * 1_500m,
                 OutlierParcelIds = classification == "DATA_PROBLEM" ? "[\"P-10023\",\"P-10847\"]" : null,
-                EvidenceSummary = BuildEvidenceSummary(prd, prb, cod, 30),
+                EvidenceSummary = BuildEvidenceSummary(prd, prb, cod, ratios.Count),
                 ResolutionStatus = "OPEN",
                 CreatedBy = "ai-diagnostic",
                 UpdatedBy = "ai-diagnostic",
@@ -123,7 +123,9 @@ public class MatrixDiagnosticService : IMatrixDiagnosticService
     {
         if (ratios.Count == 0) return 0m;
         var sorted = ratios.Order().ToList();
-        decimal median = sorted[sorted.Count / 2];
+        decimal median = sorted.Count % 2 == 1
+            ? sorted[sorted.Count / 2]
+            : (sorted[sorted.Count / 2 - 1] + sorted[sorted.Count / 2]) / 2m;
         if (median == 0) return 0m;
         decimal mad = ratios.Average(r => Math.Abs(r - median));
         return (mad / median) * 100m;
