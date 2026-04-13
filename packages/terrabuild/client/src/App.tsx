@@ -9,6 +9,7 @@ import { queryClient } from './lib/queryClient';
 
 // Import all page components
 import AICostWizardPage from '@/pages/AICostWizardPage';
+import CalibrationWorkbench from '@/pages/CalibrationWorkbench';
 import AIToolsPage from '@/pages/AIToolsPage';
 import AnalyticsPage from '@/pages/AnalyticsPage';
 import ARVisualizationPage from '@/pages/ARVisualizationPage';
@@ -205,6 +206,7 @@ function Router() {
       <ProtectedRouteWrapper path="/cost-calculator" component={CostCalculatorAPI} />
       <ProtectedRouteWrapper path="/cost-calculator-legacy" component={CostCalculator} />
       <ProtectedRouteWrapper path="/ai-swarm" component={SwarmPage} />
+      <ProtectedRouteWrapper path="/calibration" component={CalibrationWorkbench} />
 
       <Route component={NotFound} />
     </Switch>
@@ -241,7 +243,7 @@ function App() {
                   <SidebarProvider>
                     <div className="flex h-screen overflow-hidden bg-background">
                       <Sidebar />
-                      <main className="flex-1 overflow-hidden">
+                      <main className="flex-1 overflow-y-auto">
                         <Router />
                       </main>
                     </div>

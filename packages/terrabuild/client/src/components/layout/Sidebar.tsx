@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from "react";
+/**
+ * Sidebar — OS-style vertical side taskbar.
+ *
+ * Three modes:
+ *   compact  — narrow icon rail (DEFAULT, acts like OS taskbar)
+ *   expanded — icon rail + label panel slides out
+ *   hidden   — completely gone; thin edge strip on left lets you bring it back
+ *
+ * Mode persists to localStorage via SidebarContext.
+ */
+import React from "react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { APP_NAME } from "@/data/constants";
-import { useAuth } from "@/hooks/use-auth";
-import BentonBranding, { BentonColors } from '@/components/BentonBranding';
 import {
   BarChart3,
   Home,
@@ -18,374 +22,309 @@ import {
   FileBarChart,
   Zap,
   Map,
-  ChevronLeft,
-  ChevronRight,
-  Pin,
-  PinOff,
-  ExternalLink,
-  MinusSquare,
   FlaskConical,
   Bot,
   TrendingUp,
   Network,
+  SlidersHorizontal,
+  PanelLeftOpen,
+  PanelLeftClose,
+  ChevronsRight,
+  ChevronsLeft,
 } from "lucide-react";
-import { useSidebar } from '@/contexts/SidebarContext';
-import { useWindow } from '@/contexts/WindowContext';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useSidebar } from "@/contexts/SidebarContext";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-interface SidebarProps {
-  className?: string;
-}
+// ─── Nav data ─────────────────────────────────────────────────────────────────
 
-interface SidebarItemProps {
+interface NavItem {
   href: string;
   title: string;
   icon: React.ReactNode;
-  badge?: string;
-  badgeColor?: string;
-  collapsed?: boolean;
 }
 
-function SidebarItem({ href, title, icon, badge, badgeColor = "bg-muted text-muted-foreground", collapsed }: SidebarItemProps) {
+const NAV_SECTIONS: { key: string; title: string; icon: React.ReactNode; items: NavItem[] }[] = [
+  {
+    key: "workspace",
+    title: "Workspace",
+    icon: <Home className="h-4 w-4" />,
+    items: [
+      { href: "/dashboard",  title: "Dashboard",      icon: <Home className="h-[18px] w-[18px]" /> },
+      { href: "/properties", title: "Properties",     icon: <Building2 className="h-[18px] w-[18px]" /> },
+      { href: "/calculator", title: "Cost Estimator", icon: <Calculator className="h-[18px] w-[18px]" /> },
+    ],
+  },
+  {
+    key: "analysis",
+    title: "Analysis",
+    icon: <BarChart3 className="h-4 w-4" />,
+    items: [
+      { href: "/analytics",                title: "Analytics",          icon: <BarChart3 className="h-[18px] w-[18px]" /> },
+      { href: "/benchmarking",             title: "Benchmarking",       icon: <TrendingUp className="h-[18px] w-[18px]" /> },
+      { href: "/what-if-scenarios",        title: "What-If Scenarios",  icon: <FlaskConical className="h-[18px] w-[18px]" /> },
+      { href: "/regional-cost-comparison", title: "Reval Area Costs",   icon: <Map className="h-[18px] w-[18px]" /> },
+      { href: "/calibration",             title: "Calibration",         icon: <SlidersHorizontal className="h-[18px] w-[18px]" /> },
+    ],
+  },
+  {
+    key: "ai",
+    title: "AI & Agents",
+    icon: <Bot className="h-4 w-4" />,
+    items: [
+      { href: "/ai-tools",       title: "AI Tools",       icon: <Zap className="h-[18px] w-[18px]" /> },
+      { href: "/ai-cost-wizard", title: "AI Cost Wizard", icon: <BrainCircuit className="h-[18px] w-[18px]" /> },
+      { href: "/ai-swarm",       title: "AI Swarm",       icon: <Network className="h-[18px] w-[18px]" /> },
+    ],
+  },
+  {
+    key: "reports",
+    title: "Reports",
+    icon: <FileBarChart className="h-4 w-4" />,
+    items: [
+      { href: "/reports", title: "Reports", icon: <FileBarChart className="h-[18px] w-[18px]" /> },
+    ],
+  },
+];
+
+// ─── TaskbarItem ──────────────────────────────────────────────────────────────
+// Single icon button with active indicator, shown in the icon rail.
+
+function TaskbarItem({ href, title, icon, showLabel }: NavItem & { showLabel?: boolean }) {
   const [location] = useLocation();
-  const isActive = location === href;
-  const { detachWindow, isDetached } = useWindow();
-  
-  // Check if this route is currently detached
-  const detached = isDetached(`window-${href.replace(/\//g, '')}`);
+  const isActive = location === href || (href !== "/" && location.startsWith(href));
 
-  const handleDetach = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Create a simple representation of the content
-    detachWindow({
-      id: `window-${href.replace(/\//g, '')}`,
-      title: title,
-      route: href,
-      content: `<div style="text-align: center; padding: 20px;">
-        <h3>${title} content is loading...</h3>
-        <p>This window will show ${title} content.</p>
-      </div>`
-    });
-  };
-
-  if (collapsed) {
+  if (showLabel) {
+    // Expanded mode: icon + label row
     return (
-      <div className={cn(
-        "flex items-center space-x-2 rounded-lg px-2 py-1.5", 
-        isActive ? "bg-accent/10 text-accent" : "text-muted-foreground"
-      )}>
-        {React.cloneElement(icon as React.ReactElement, {
-          className: cn("h-4 w-4", isActive ? "text-accent" : "text-muted-foreground"),
-        })}
-        <span>{title}</span>
-        {badge && (
-          <span className={`ml-auto px-1.5 py-0.5 rounded-full text-[10px] font-medium ${badgeColor}`}>
-            {badge}
+      <Link href={href}>
+        <button
+          className={cn(
+            "flex w-full items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors mb-0.5 text-left",
+            isActive
+              ? "bg-accent/15 text-accent font-medium"
+              : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          )}
+        >
+          <span className={cn("flex-none", isActive ? "text-accent" : "text-muted-foreground")}>
+            {icon}
           </span>
-        )}
-      </div>
+          <span className="truncate">{title}</span>
+          {isActive && (
+            <span className="ml-auto h-1.5 w-1.5 rounded-full bg-accent flex-none" />
+          )}
+        </button>
+      </Link>
     );
   }
 
+  // Compact mode: icon-only with left active bar
   return (
-    <div className="group relative">
-      <Link href={href}>
-        <Button
-          variant="ghost"
-          className={cn(
-            "w-full justify-start mb-1 border-l-2 border-transparent rounded-r-md rounded-l-none transition-all",
-            isActive
-              ? "bg-accent/10 text-accent border-l-accent font-medium shadow-md transform hover:translate-x-0.5"
-              : "text-muted-foreground hover:bg-primary/10 hover:text-foreground hover:shadow-sm hover:translate-x-0.5"
-          )}
-          style={{
-            transformStyle: 'preserve-3d',
-            transition: 'all 0.2s ease',
-          }}
-        >
-          <div className={cn(
-            "absolute inset-0 rounded-r-md opacity-0 transition-opacity",
-            isActive ? "bg-gradient-to-r from-transparent via-accent/10 to-transparent opacity-100" : ""
-          )}></div>
-          {React.cloneElement(icon as React.ReactElement, {
-            className: cn(
-              "mr-2 h-4 w-4 transition-transform", 
-              isActive ? "text-accent scale-110" : "text-muted-foreground"
-            ),
-            style: { transform: isActive ? 'translateZ(3px)' : 'translateZ(0)' },
-          })}
-          <span style={{ transform: isActive ? 'translateZ(2px)' : 'translateZ(0)' }}>
-            {title}
-          </span>
-          {badge && (
-            <span 
-              className={`ml-auto px-1.5 py-0.5 rounded-full text-[10px] font-medium ${badgeColor}`}
-              style={{ transform: 'translateZ(4px)' }}
+    <TooltipProvider>
+      <Tooltip delayDuration={150}>
+        <TooltipTrigger asChild>
+          <Link href={href}>
+            <button
+              className={cn(
+                "relative flex h-10 w-10 items-center justify-center rounded-lg transition-all mx-auto mb-1",
+                isActive
+                  ? "bg-accent/15 text-accent shadow-sm"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
             >
-              {badge}
-            </span>
-          )}
-        </Button>
-      </Link>
-      
-      {/* Pop-out/tear-away button */}
-      <div className={cn(
-        "absolute right-1 top-1/2 -translate-y-1/2 opacity-0 transition-opacity",
-        "group-hover:opacity-100",
-        detached ? "opacity-100" : ""
-      )}>
+              {/* Active indicator — left bar */}
+              {isActive && (
+                <span className="absolute -left-[7px] top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-accent" />
+              )}
+              {icon}
+            </button>
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="text-xs font-medium">
+          {title}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+// ─── Section divider ──────────────────────────────────────────────────────────
+
+function SectionDivider({ title, showLabel }: { title: string; showLabel?: boolean }) {
+  if (showLabel) {
+    return (
+      <div className="flex items-center gap-2 px-3 pt-4 pb-1">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+          {title}
+        </span>
+        <div className="flex-1 h-px bg-border/50" />
+      </div>
+    );
+  }
+  // Compact: just a subtle separator line
+  return <div className="mx-auto w-5 h-px bg-border/50 my-2" />;
+}
+
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
+
+const TASKBAR_W = 52;   // px — compact icon rail width
+const LABEL_W   = 172;  // px — label panel width (added to taskbar)
+
+export default function Sidebar({ className }: { className?: string }) {
+  const { mode, setMode, cycleMode } = useSidebar();
+
+  // ── Hidden mode: edge strip only ──────────────────────────────────────────
+  if (mode === "hidden") {
+    return (
+      <div className="relative flex-none" style={{ width: 0 }}>
         <TooltipProvider>
-          <Tooltip>
+          <Tooltip delayDuration={400}>
             <TooltipTrigger asChild>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-6 w-6 rounded-full bg-muted hover:bg-muted-foreground/20"
-                onClick={handleDetach}
-                style={{ transform: 'translateZ(5px)' }}
-              >
-                {detached ? (
-                  <MinusSquare className="h-3 w-3 text-muted-foreground" />
-                ) : (
-                  <ExternalLink className="h-3 w-3 text-muted-foreground" />
+              <button
+                onClick={() => setMode("compact")}
+                aria-label="Show sidebar"
+                className={cn(
+                  "absolute left-0 top-0 h-full z-30",
+                  "w-1.5 bg-border/30 hover:bg-accent/50 transition-colors",
+                  "flex flex-col items-center justify-center"
                 )}
-              </Button>
+              />
             </TooltipTrigger>
-            <TooltipContent side="right">
-              <p>{detached ? 'Already in separate window' : 'Open in new window'}</p>
+            <TooltipContent side="right" className="text-xs">
+              Show taskbar
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
-    </div>
-  );
-}
-
-interface SidebarSectionProps {
-  title: string;
-  children: React.ReactNode;
-  icon?: React.ReactNode;
-  isCollapsed?: boolean;
-}
-
-function SidebarSection({ title, children, icon, isCollapsed }: SidebarSectionProps) {
-  if (isCollapsed) {
-    return (
-      <TooltipProvider>
-        <Tooltip delayDuration={300}>
-          <TooltipTrigger asChild>
-            <div className="mb-4 mt-4 flex justify-center">
-              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shadow-sm"
-                style={{ transform: 'translateZ(3px)' }}>
-                {icon || <FileBarChart className="h-4 w-4 text-muted-foreground" />}
-              </div>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="right" className="min-w-[160px]">
-            <p className="font-medium">{title}</p>
-            <div className="mt-2 space-y-1">
-              {React.Children.map(children, (child) => {
-                if (React.isValidElement(child)) {
-                  return React.cloneElement(child, { collapsed: true } as any);
-                }
-                return child;
-              })}
-            </div>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
     );
   }
 
-  return (
-    <div className="mb-5">
-      <div className="flex items-center px-4 mb-2">
-        {icon && React.cloneElement(icon as React.ReactElement, {
-          className: "h-4 w-4 text-muted-foreground mr-2",
-        })}
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          {title}
-        </span>
-      </div>
-      <div className="space-y-0.5">
-        {children}
-      </div>
-    </div>
-  );
-}
-
-export default function Sidebar({ className }: SidebarProps) {
-  const { user } = useAuth();
-  const isAdmin = user?.role === "admin";
-  const { isExpanded, isPinned, toggleExpanded, togglePinned, expandSidebar, collapseSidebar } = useSidebar();
-  const [autoHideEnabled, setAutoHideEnabled] = useState(true);
-  
-  const handleMouseEnter = () => {
-    expandSidebar();
-  };
-  
-  const handleMouseLeave = () => {
-    if (!isPinned) {
-      collapseSidebar();
-    }
-  };
-  
-  // Functions to match the old API
-  const toggleSidebar = () => toggleExpanded();
-  const pinSidebar = (pinned: boolean) => {
-    if (pinned !== isPinned) {
-      togglePinned();
-    }
-  };
-  const toggleAutoHide = (enabled: boolean) => {
-    setAutoHideEnabled(enabled);
-  };
+  const isExpanded = mode === "expanded";
+  const totalWidth = isExpanded ? TASKBAR_W + LABEL_W : TASKBAR_W;
 
   return (
     <div
       className={cn(
-        "transition-all duration-300 relative z-20",
-        isExpanded ? "w-56" : "w-16",
-        "border-r overflow-hidden",
+        "flex-none flex flex-row transition-all duration-200 relative z-20",
         className
       )}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        background: 'hsl(var(--card))',
-        borderColor: 'hsl(var(--border))',
-        boxShadow: '2px 0 8px rgba(0, 0, 0, 0.06)',
-        perspective: '1000px',
-        transformStyle: 'preserve-3d'
-      }}
+      style={{ width: totalWidth }}
     >
-      {/* 3D styled toggle button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className={cn(
-          "absolute top-3 right-3 z-50 h-6 w-6 rounded-full shadow-md transition-all border",
-          "hover:bg-primary/10 hover:border-accent/30",
-          "focus:outline-none focus:ring-2 focus:ring-accent/30 focus:ring-offset-0",
-          "text-muted-foreground",
-          isPinned ? "opacity-100" : "opacity-70 hover:opacity-100"
-        )}
-        onClick={toggleExpanded}
+      {/* ── Icon rail (always present in compact + expanded) ──────────────── */}
+      <div
+        className="flex flex-col border-r bg-card"
         style={{
-          transform: 'translateZ(5px)',
-          boxShadow: '0 2px 8px -4px rgba(0, 0, 0, 0.15)',
+          width: TASKBAR_W,
+          minWidth: TASKBAR_W,
+          boxShadow: "1px 0 0 hsl(var(--border))",
         }}
       >
-        {isExpanded ? (
-          <ChevronLeft className="h-3.5 w-3.5" />
-        ) : (
-          <ChevronRight className="h-3.5 w-3.5" />
-        )}
-      </Button>
-
-      {/* Pin/Auto-hide controls */}
-      {isExpanded && (
-        <div className="absolute top-14 right-3 z-50 flex flex-col space-y-2">
+        {/* Top: logo / branding mark */}
+        <div className="flex items-center justify-center h-12 border-b flex-none">
           <TooltipProvider>
-            <Tooltip>
+            <Tooltip delayDuration={300}>
               <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={cn(
-                    "h-6 w-6 rounded-full shadow-sm transition-all border",
-                    isPinned
-                      ? "bg-accent/10 text-accent border-accent/30"
-                      : "text-muted-foreground border-border opacity-70 hover:opacity-100"
-                  )}
-                  onClick={togglePinned}
-                  style={{
-                    transform: 'translateZ(5px)',
-                  }}
+                <button
+                  onClick={cycleMode}
+                  className="h-8 w-8 rounded-md flex items-center justify-center text-accent hover:bg-accent/10 transition-colors font-bold text-xs tracking-tight"
+                  aria-label="Toggle sidebar mode"
                 >
-                  {isPinned ? (
-                    <Pin className="h-3.5 w-3.5" />
-                  ) : (
-                    <PinOff className="h-3.5 w-3.5" />
-                  )}
-                </Button>
+                  CF
+                </button>
               </TooltipTrigger>
-              <TooltipContent side="right">
-                <p>{isPinned ? 'Unpin sidebar' : 'Pin sidebar'}</p>
+              <TooltipContent side="right" className="text-xs">
+                {mode === "compact" ? "Expand labels" : "Collapse labels"} · hold to hide
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
-      )}
 
-      {/* Auto-hide toggle in sidebar footer */}
+        {/* Nav icons */}
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="py-3 px-1.5">
+            {NAV_SECTIONS.map((section, i) => (
+              <div key={section.key}>
+                {i > 0 && <SectionDivider title={section.title} showLabel={false} />}
+                {section.items.map((item) => (
+                  <TaskbarItem key={item.href} {...item} showLabel={false} />
+                ))}
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+
+        {/* Bottom tray */}
+        <div className="flex-none border-t p-1.5 flex flex-col gap-1 items-center">
+          {/* Expand/collapse toggle */}
+          <TooltipProvider>
+            <Tooltip delayDuration={300}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-md text-muted-foreground hover:text-foreground"
+                  onClick={() => setMode(isExpanded ? "compact" : "expanded")}
+                >
+                  {isExpanded
+                    ? <ChevronsLeft className="h-4 w-4" />
+                    : <ChevronsRight className="h-4 w-4" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="text-xs">
+                {isExpanded ? "Collapse labels" : "Show labels"}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* Hide sidebar */}
+          <TooltipProvider>
+            <Tooltip delayDuration={300}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-md text-muted-foreground hover:text-foreground"
+                  onClick={() => setMode("hidden")}
+                >
+                  <PanelLeftClose className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="text-xs">
+                Hide taskbar
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      </div>
+
+      {/* ── Label panel (expanded mode only) ─────────────────────────────── */}
       {isExpanded && (
-        <div className="absolute bottom-4 left-0 right-0 px-4 pt-2 border-t border-border">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="auto-hide" className="text-xs text-muted-foreground">Auto-hide</Label>
-            <Switch
-              id="auto-hide"
-              checked={autoHideEnabled}
-              onCheckedChange={setAutoHideEnabled}
-              className="scale-75 data-[state=checked]:bg-primary"
-            />
+        <div
+          className="flex flex-col bg-card/80 backdrop-blur-sm border-r overflow-hidden"
+          style={{ width: LABEL_W }}
+        >
+          <div className="h-12 border-b flex items-center px-3 flex-none">
+            <span className="text-sm font-semibold text-foreground">CostForge</span>
           </div>
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="py-3 px-2">
+              {NAV_SECTIONS.map((section, i) => (
+                <div key={section.key}>
+                  <SectionDivider title={section.title} showLabel={true} />
+                  {section.items.map((item) => (
+                    <TaskbarItem key={item.href} {...item} showLabel={true} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+          <div className="flex-none border-t h-[52px]" />
         </div>
       )}
-
-      <ScrollArea className="h-[calc(100vh-120px)]">
-        <div className="py-4">
-          <div className="mt-2">
-            {/* ── 1. WORKSPACE ─────────────────────────────── */}
-            <SidebarSection
-              title="Workspace"
-              icon={<Home className="h-4 w-4" />}
-              isCollapsed={!isExpanded}
-            >
-              <SidebarItem href="/dashboard" title="Dashboard" icon={<Home />} />
-              <SidebarItem href="/properties" title="Properties" icon={<Building2 />} />
-              <SidebarItem href="/calculator" title="Cost Estimator" icon={<Calculator />} />
-            </SidebarSection>
-
-            {/* ── 2. ANALYSIS ──────────────────────────────── */}
-            <SidebarSection
-              title="Analysis"
-              icon={<BarChart3 className="h-4 w-4" />}
-              isCollapsed={!isExpanded}
-            >
-              <SidebarItem href="/analytics" title="Analytics" icon={<BarChart3 />} />
-              <SidebarItem href="/benchmarking" title="Benchmarking" icon={<TrendingUp />} />
-              <SidebarItem href="/what-if-scenarios" title="What-If Scenarios" icon={<FlaskConical />} />
-              <SidebarItem href="/regional-cost-comparison" title="Regional Costs" icon={<Map />} />
-            </SidebarSection>
-
-            {/* ── 3. AI & AGENTS ───────────────────────────── */}
-            <SidebarSection
-              title="AI & Agents"
-              icon={<Bot className="h-4 w-4" />}
-              isCollapsed={!isExpanded}
-            >
-              <SidebarItem href="/ai-tools" title="AI Tools" icon={<Zap />} />
-              <SidebarItem href="/ai-cost-wizard" title="AI Cost Wizard" icon={<BrainCircuit />} />
-              <SidebarItem href="/ai-swarm" title="AI Swarm" icon={<Network />} />
-            </SidebarSection>
-
-            {/* ── 4. REPORTS ───────────────────────────────── */}
-            <SidebarSection
-              title="Reports"
-              icon={<FileBarChart className="h-4 w-4" />}
-              isCollapsed={!isExpanded}
-            >
-              <SidebarItem href="/reports" title="Reports" icon={<FileBarChart />} />
-            </SidebarSection>
-          </div>
-        </div>
-      </ScrollArea>
-      
-      {/* Bottom empty space for auto-hide toggle */}
-      <div className="h-14"></div>
     </div>
   );
 }
