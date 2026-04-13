@@ -385,6 +385,11 @@ builder.Services.AddSingleton<ScenarioRunRegistry>();
 // 🏛️ Sale Qualification — TerraFusion owns the IAAO ratio-study qualification decision
 builder.Services.AddScoped<TerraFusion.API.Services.ISaleQualificationService, TerraFusion.API.Services.SaleQualificationService>();
 
+// Calibration Workbench services
+builder.Services.AddScoped<TerraFusion.Core.Services.IMatrixDiagnosticService, TerraFusion.API.Services.MatrixDiagnosticService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.ICalibrationMemoService, TerraFusion.Data.Services.CalibrationMemoService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.IGovernanceExportService, TerraFusion.API.Services.GovernanceExportService>();
+
 // Analytics orchestration — real EF Core queries against Properties + CostMatrices
 builder.Services.AddScoped<TerraFusion.API.Controllers.IAnalyticsOrchestrator,
                             TerraFusion.API.Controllers.AnalyticsOrchestratorImpl>();
@@ -552,6 +557,11 @@ builder.Services.AddScoped<TerraFusion.API.Interfaces.IPerformanceMonitor, Terra
 
 // Phase 10: PropertyForge valuation service (cost/sales/income/reconciliation)
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IValuationService, TerraFusion.API.Services.ValuationService>();
+
+// Calibration Workbench services
+builder.Services.AddScoped<TerraFusion.Core.Services.IMatrixDiagnosticService, TerraFusion.API.Services.MatrixDiagnosticService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.ICalibrationMemoService, TerraFusion.Data.Services.CalibrationMemoService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.IGovernanceExportService, TerraFusion.API.Services.GovernanceExportService>();
 
 // Register flexible module catalog system (no hardcoding!)
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IModuleCatalog, DbModuleCatalog>();
