@@ -569,6 +569,7 @@ builder.Services.AddScoped<TerraFusion.Core.Interfaces.IModuleCatalog, DbModuleC
 builder.Services.AddScoped<ModuleSeedService>();
 builder.Services.AddScoped<TerraFusion.API.Seeds.PacsDataSeeder>();
 builder.Services.AddScoped<TerraFusion.API.Seeds.DevPropertySeeder>(); // CARD-06: dev property projection seeder
+builder.Services.AddScoped<TerraFusion.API.Seeds.SaleRecordSeeder>();
 builder.Services.AddScoped<TerraFusion.API.Seeds.DevGovernmentUserSeeder>(); // CARD-17: dev admin user seeder
 builder.Services.AddScoped<TerraFusion.API.Health.IFileSystemModuleDiscovery, FileSystemModuleDiscovery>();
 builder.Services.AddScoped<TerraFusion.API.Health.IOrchestratorView, OrchestratorModuleView>();
@@ -1959,6 +1960,11 @@ try
     var devGovernmentUserSeeder = devSeedScope.ServiceProvider
         .GetRequiredService<TerraFusion.API.Seeds.DevGovernmentUserSeeder>();
     await devGovernmentUserSeeder.SeedAsync();
+
+    using var saleRecordSeedScope = app.Services.CreateScope();
+    var saleRecordSeeder = saleRecordSeedScope.ServiceProvider
+        .GetRequiredService<TerraFusion.API.Seeds.SaleRecordSeeder>();
+    await saleRecordSeeder.SeedAsync();
   }
 
   Console.WriteLine($"⏳ Calling app.Run()... This should block until shutdown");
