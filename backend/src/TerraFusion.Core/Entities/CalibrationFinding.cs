@@ -39,4 +39,10 @@ public class CalibrationFinding
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    [StringLength(100)]
+    public string CreatedBy { get; set; } = "system";
+
+    [StringLength(100)]
+    public string UpdatedBy { get; set; } = "system";
 }
