@@ -59,6 +59,13 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<PluginRevenue> PluginRevenue { get; set; }
   public DbSet<PluginAnalytics> PluginAnalytics { get; set; }
 
+  // Calibration Workbench Entities
+  public DbSet<MatrixVersion> MatrixVersions { get; set; }
+  public DbSet<RevalAreaEvidenceAge> RevalAreaEvidenceAges { get; set; }
+  public DbSet<CalibrationMemo> CalibrationMemos { get; set; }
+  public DbSet<CalibrationFinding> CalibrationFindings { get; set; }
+  public DbSet<PropertyWorkbenchFlag> PropertyWorkbenchFlags { get; set; }
+
   // Security Entities
   public DbSet<SecurityEvent> SecurityEvents { get; set; }
   public DbSet<UserSession> UserSessions { get; set; }
