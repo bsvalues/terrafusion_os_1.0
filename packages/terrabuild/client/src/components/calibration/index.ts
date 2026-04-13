@@ -7,3 +7,5 @@ export { VersionTimeline } from "./VersionTimeline";
 export { CalibrationMemoPanel } from "./CalibrationMemoPanel";
 export type { CalibrationFinding, FindingClassification, ResolutionStatus } from "./AIFindingQueue";
 export type { EvidenceStatus } from "./RevalAreaEvidenceAgeIndicator";
+export { RevalAreaNavigator } from "./RevalAreaNavigator";
+export { AiCopilotBand } from "./AiCopilotBand";
