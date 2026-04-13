@@ -18,6 +18,6 @@ public class RevalAreaEvidenceAgeConfiguration : IEntityTypeConfiguration<RevalA
         builder.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder.HasIndex(e => new { e.MatrixVersionId, e.RevalArea })
-            .HasDatabaseName("IX_RevalAreaEvidenceAges_VersionId_Area");
+            .HasDatabaseName("IX_RevalAreaEvidenceAges_MatrixVersionId_RevalArea");
     }
 }
