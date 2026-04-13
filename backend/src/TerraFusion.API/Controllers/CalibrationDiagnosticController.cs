@@ -106,6 +106,136 @@ public class CalibrationDiagnosticController : ControllerBase
 
         return Ok(new { flagged = flags.Count, parcelIds });
     }
+
+    [HttpGet("reval-area-summary")]
+    public async System.Threading.Tasks.Task<IActionResult> GetRevalAreaSummary([FromQuery] int matrixVersionId)
+    {
+        var sales = await _db.SaleRecords
+            .Where(s => s.MatrixVersionId == matrixVersionId)
+            .AsNoTracking()
+            .ToListAsync();
+
+        var groups = sales
+            .GroupBy(s => new { s.RevalArea, s.BuildingType })
+            .Select(g =>
+            {
+                var ratios = g.Select(s => (double)s.Ratio).ToList();
+                var prd = ComputePrd(g.Select(s => ((double)s.AssessedValue, (double)s.SalePrice)));
+                var prb = ComputePrb(g.Select(s => ((double)s.SalePrice, (double)s.Ratio)));
+                var cod = ComputeCod(ratios);
+                var healthStatus = GetHealthStatus(prd, prb, cod);
+                return new
+                {
+                    revalArea = g.Key.RevalArea,
+                    buildingType = g.Key.BuildingType,
+                    prd = Math.Round(prd, 4),
+                    prb = Math.Round(prb, 4),
+                    cod = Math.Round(cod, 2),
+                    saleCount = g.Count(),
+                    healthStatus,
+                };
+            })
+            .OrderBy(x => x.revalArea).ThenBy(x => x.buildingType)
+            .ToList();
+
+        return Ok(groups);
+    }
+
+    [HttpGet("parcel-evidence")]
+    public async System.Threading.Tasks.Task<IActionResult> GetParcelEvidence(
+        [FromQuery] int matrixVersionId,
+        [FromQuery] string? revalArea,
+        [FromQuery] string? buildingType)
+    {
+        var q = _db.SaleRecords
+            .Where(s => s.MatrixVersionId == matrixVersionId);
+
+        if (!string.IsNullOrEmpty(revalArea))
+            q = q.Where(s => s.RevalArea == revalArea);
+        if (!string.IsNullOrEmpty(buildingType))
+            q = q.Where(s => s.BuildingType == buildingType);
+
+        var records = await q.AsNoTracking().ToListAsync();
+
+        var excludedIdsList = await _db.OutlierExclusions
+            .Where(e => e.MatrixVersionId == matrixVersionId)
+            .Select(e => e.SaleRecordId)
+            .ToListAsync();
+        var excludedIds = excludedIdsList.ToHashSet();
+
+        var ratios = records.Select(s => (double)s.Ratio).ToList();
+        double medianRatio = CalibMedian(ratios);
+        double cod = ComputeCod(ratios);
+
+        var result = new
+        {
+            medianRatio = Math.Round(medianRatio, 4),
+            cod = Math.Round(cod, 2),
+            saleCount = records.Count,
+            outlierCount = records.Count(s => s.IsOutlierIqr),
+            parcels = records.Select(s => new
+            {
+                s.Id, s.ParcelId, s.RevalArea, s.BuildingType,
+                saleDate = s.SaleDate.ToString("yyyy-MM-dd"),
+                s.SalePrice, s.AssessedValue, s.Ratio,
+                s.IsOutlierIqr, s.AiClassification, s.PacsFlags,
+                s.ValueQuintile, s.AgeBand,
+                isExcluded = excludedIds.Contains(s.Id),
+            }),
+        };
+
+        return Ok(result);
+    }
+
+    private static double ComputePrd(IEnumerable<(double av, double sp)> sales)
+    {
+        var list = sales.ToList();
+        if (list.Count == 0) return 1.0;
+        double meanRatio = list.Average(x => x.av / x.sp);
+        double weightedMean = list.Sum(x => x.av) / list.Sum(x => x.sp);
+        return weightedMean == 0 ? 1.0 : meanRatio / weightedMean;
+    }
+
+    private static double ComputePrb(IEnumerable<(double sp, double ratio)> sales)
+    {
+        var list = sales.Where(x => x.sp > 0).ToList();
+        if (list.Count < 2) return 0.0;
+        var xs = list.Select(x => Math.Log(x.sp)).ToList();
+        var ys = list.Select(x => x.ratio - 1.0).ToList();
+        double xMean = xs.Average();
+        double yMean = ys.Average();
+        double cov = xs.Zip(ys, (x, y) => (x - xMean) * (y - yMean)).Sum();
+        double varX = xs.Sum(x => (x - xMean) * (x - xMean));
+        return varX == 0 ? 0.0 : cov / varX;
+    }
+
+    private static double ComputeCod(IEnumerable<double> ratios)
+    {
+        var list = ratios.ToList();
+        if (list.Count == 0) return 0.0;
+        double med = CalibMedian(list);
+        if (med == 0) return 0.0;
+        return list.Average(r => Math.Abs(r - med)) / med * 100.0;
+    }
+
+    private static double CalibMedian(List<double> values)
+    {
+        if (values.Count == 0) return 0.0;
+        var sorted = values.OrderBy(v => v).ToList();
+        int mid = sorted.Count / 2;
+        return sorted.Count % 2 == 0
+            ? (sorted[mid - 1] + sorted[mid]) / 2.0
+            : sorted[mid];
+    }
+
+    private static string GetHealthStatus(double prd, double prb, double cod)
+    {
+        if (prd > 1.03 || prd < 0.98 || cod > 15 || Math.Abs(prb) > 0.05)
+            return "RED";
+        if (prd > 1.02 || cod > 12)
+            return "YELLOW";
+        return "GREEN";
+    }
 }
 
 public record ResolveFindingRequest(string ResolutionStatus, string? AppraiserNote);
