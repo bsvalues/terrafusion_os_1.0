@@ -10,11 +10,21 @@ import {
   CalibrationMemoPanel,
 } from "@/components/calibration";
 
+interface RateCell { buildingType: string; revalArea: string; baseRate: number; }
+
 interface MatrixVersion {
   id: number;
   version: string;
   status: string;
-  rateSnapshot: Array<{ buildingType: string; revalArea: string; baseRate: number }> | null;
+  rateSnapshot: RateCell[] | string | null;
+}
+
+function parseSnapshot(raw: RateCell[] | string | null): RateCell[] {
+  if (!raw) return [];
+  if (typeof raw === "string") {
+    try { return JSON.parse(raw) as RateCell[]; } catch { return []; }
+  }
+  return raw;
 }
 
 export default function CalibrationWorkbench() {
@@ -33,12 +43,14 @@ export default function CalibrationWorkbench() {
 
   const lockedVersion = versions?.find((v) => v.status === "LOCKED") ?? null;
 
+  const draftCells = parseSnapshot(draft?.rateSnapshot ?? null);
+
   const buildingTypes = Array.from(
-    new Set(draft?.rateSnapshot?.map((c) => c.buildingType) ?? [])
+    new Set(draftCells.map((c) => c.buildingType))
   ).sort();
 
   const revalAreas = Array.from(
-    new Set(draft?.rateSnapshot?.map((c) => c.revalArea) ?? [])
+    new Set(draftCells.map((c) => c.revalArea))
   ).sort();
 
   return (

@@ -11,7 +11,15 @@ interface MatrixVersion {
   id: number;
   version: string;
   status: string;
-  rateSnapshot: RateCell[] | null;
+  rateSnapshot: RateCell[] | string | null;
+}
+
+function parseSnapshot(raw: RateCell[] | string | null): RateCell[] {
+  if (!raw) return [];
+  if (typeof raw === "string") {
+    try { return JSON.parse(raw) as RateCell[]; } catch { return []; }
+  }
+  return raw;
 }
 
 interface Props {
@@ -48,15 +56,16 @@ export function MatrixDiffView({ lockedVersionId, draftVersionId }: Props) {
     enabled: !!lockedVersionId,
   });
 
-  if (!draft?.rateSnapshot) {
+  const draftCells = parseSnapshot(draft?.rateSnapshot ?? null);
+  if (!draft || draftCells.length === 0) {
     return <div className="h-32 bg-muted animate-pulse rounded" />;
   }
 
-  const draftIdx = buildIndex(draft.rateSnapshot);
-  const lockedIdx = locked?.rateSnapshot ? buildIndex(locked.rateSnapshot) : {};
+  const draftIdx = buildIndex(draftCells);
+  const lockedIdx = locked?.rateSnapshot ? buildIndex(parseSnapshot(locked.rateSnapshot)) : {};
 
-  const buildingTypes = Array.from(new Set(draft.rateSnapshot.map((c) => c.buildingType))).sort();
-  const revalAreas = Array.from(new Set(draft.rateSnapshot.map((c) => c.revalArea))).sort();
+  const buildingTypes = Array.from(new Set(draftCells.map((c) => c.buildingType))).sort();
+  const revalAreas = Array.from(new Set(draftCells.map((c) => c.revalArea))).sort();
 
   return (
     <Card>
