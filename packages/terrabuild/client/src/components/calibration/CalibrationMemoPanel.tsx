@@ -48,10 +48,12 @@ export function CalibrationMemoPanel({ matrixVersionId }: Props) {
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState<string>("");
 
-  const { data: memo, isLoading } = useQuery<CalibrationMemo>({
+  const { data: memo, isLoading } = useQuery<CalibrationMemo | null>({
     queryKey: ["calibration-memo", matrixVersionId],
     queryFn: () =>
-      fetch(`/api/calibrationmemo?matrixVersionId=${matrixVersionId}`).then((r) => r.json()),
+      fetch(`/api/calibrationmemo?matrixVersionId=${matrixVersionId}`).then((r) =>
+        r.ok ? r.json() : null
+      ),
   });
 
   const autoDraft = useMutation({

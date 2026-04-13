@@ -36,7 +36,7 @@ public class CalibrationDiagnosticController : ControllerBase
         _db.CalibrationFindings.AddRange(findings);
         await _db.SaveChangesAsync();
 
-        return Ok(new { count = findings.Count, findings });
+        return Ok(new { count = findings.Count, findings = findings.Select(ToDto) });
     }
 
     [HttpGet("findings")]
@@ -47,7 +47,7 @@ public class CalibrationDiagnosticController : ControllerBase
             .OrderByDescending(f => Math.Abs((double)(f.EstimatedAvImpact ?? 0)))
             .AsNoTracking()
             .ToListAsync();
-        return Ok(findings);
+        return Ok(findings.Select(ToDto));
     }
 
     [HttpPatch("findings/{id:int}/resolve")]
@@ -60,8 +60,17 @@ public class CalibrationDiagnosticController : ControllerBase
         finding.AppraiserNote = req.AppraiserNote;
         finding.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
-        return Ok(finding);
+        return Ok(ToDto(finding));
     }
+
+    private static object ToDto(TerraFusion.Core.Entities.CalibrationFinding f) => new
+    {
+        f.Id, f.MatrixVersionId, f.Classification, f.BuildingType, f.RevalArea,
+        f.PrdValue, f.PrbValue, f.CodValue, f.ConfidenceLevel,
+        f.ProposedAdjustmentPct, f.ProposedRateNew, f.EstimatedAvImpact,
+        f.OutlierParcelIds, f.EvidenceSummary, f.ResolutionStatus, f.AppraiserNote,
+        f.CreatedAt, f.UpdatedAt,
+    };
 
     [HttpGet("summary")]
     public async System.Threading.Tasks.Task<IActionResult> GetSummary()

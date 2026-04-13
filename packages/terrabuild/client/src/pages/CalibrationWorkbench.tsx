@@ -19,12 +19,20 @@ interface MatrixVersion {
   rateSnapshot: RateCell[] | string | null;
 }
 
+function normalizeCell(c: Record<string, unknown>): RateCell {
+  return {
+    buildingType: (c.buildingType ?? c.BuildingType) as string,
+    revalArea: (c.revalArea ?? c.RevalArea) as string,
+    baseRate: (c.baseRate ?? c.BaseRate) as number,
+  };
+}
+
 function parseSnapshot(raw: RateCell[] | string | null): RateCell[] {
   if (!raw) return [];
   if (typeof raw === "string") {
-    try { return JSON.parse(raw) as RateCell[]; } catch { return []; }
+    try { return (JSON.parse(raw) as Record<string, unknown>[]).map(normalizeCell); } catch { return []; }
   }
-  return raw;
+  return (raw as unknown as Record<string, unknown>[]).map(normalizeCell);
 }
 
 export default function CalibrationWorkbench() {

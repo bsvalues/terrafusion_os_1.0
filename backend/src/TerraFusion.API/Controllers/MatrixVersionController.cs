@@ -160,12 +160,15 @@ public class MatrixVersionController : ControllerBase
                 : Math.Round(cell.BaseRate + req.Value, 2);
         }
 
-        version.RateSnapshot = System.Text.Json.JsonSerializer.Serialize(cells);
+        version.RateSnapshot = System.Text.Json.JsonSerializer.Serialize(cells, CamelCaseOptions);
         version.UpdatedAt = DateTime.UtcNow;
         version.UpdatedBy = User.Identity?.Name ?? "system";
         await _db.SaveChangesAsync();
         return Ok(version);
     }
+
+    private static readonly System.Text.Json.JsonSerializerOptions CamelCaseOptions =
+        new() { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase };
 
     private static string SeedRateSnapshot()
     {
@@ -178,7 +181,7 @@ public class MatrixVersionController : ControllerBase
                 BaseRate     = c.BaseCostPerSqft,
             })
             .ToList();
-        return System.Text.Json.JsonSerializer.Serialize(cells);
+        return System.Text.Json.JsonSerializer.Serialize(cells, CamelCaseOptions);
     }
 
     [HttpGet("export/dor")]

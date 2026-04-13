@@ -43,7 +43,7 @@ export function RevalAreaEvidenceAgeIndicator({ evidenceAges }: Props) {
             </TooltipTrigger>
             <TooltipContent>
               <p>Last study: {new Date(ea.lastRatioStudyDate).toLocaleDateString()}</p>
-              <p>n={ea.saleCount} · median ratio {ea.medianRatio.toFixed(3)}</p>
+              <p>n={ea.saleCount}{ea.medianRatio != null ? ` · median ratio ${ea.medianRatio.toFixed(3)}` : ""}</p>
               {ea.evidenceStatus === "STALE" && <p className="text-orange-400">WAC 458-07 compliance risk</p>}
               {ea.evidenceStatus === "CRITICAL" && <p className="text-red-400">Immediate review required</p>}
             </TooltipContent>

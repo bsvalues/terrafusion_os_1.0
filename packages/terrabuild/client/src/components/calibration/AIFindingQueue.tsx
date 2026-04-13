@@ -10,20 +10,19 @@ export type ResolutionStatus = "OPEN" | "ACCEPTED" | "OVERRIDDEN" | "DEFERRED" |
 
 export interface CalibrationFinding {
   id: number;
-  calibrationRunId: string;
+  matrixVersionId: number;
   classification: FindingClassification;
   buildingType: string;
-  revalArea: string;
-  prdBefore: number;
-  prbBefore: number;
-  codBefore: number;
+  revalArea: string | null;
+  prdValue: number | null;
+  prbValue: number | null;
+  codValue: number | null;
   proposedAdjustmentPct: number | null;
   estimatedAvImpact: number | null;
-  evidenceSummary: string;
+  evidenceSummary: string | null;
   outlierParcelIds: string | null;
   resolutionStatus: ResolutionStatus;
   appraiserNote: string | null;
-  matrixVersionId: number;
 }
 
 interface Props {
@@ -82,9 +81,11 @@ function FindingCard({ finding }: { finding: CalibrationFinding }) {
             <span className="text-xs text-muted-foreground">· {finding.revalArea}</span>
           )}
           <span className="text-xs font-mono ml-auto">
-            PRD {finding.prdBefore.toFixed(3)} · PRB {finding.prbBefore.toFixed(3)} · COD {finding.codBefore.toFixed(1)}%
+            {finding.prdValue != null && <>PRD {finding.prdValue.toFixed(3)} · </>}
+            {finding.prbValue != null && <>PRB {finding.prbValue.toFixed(3)} · </>}
+            {finding.codValue != null && <>COD {finding.codValue.toFixed(1)}%</>}
           </span>
-          {finding.estimatedAvImpact !== null && (
+          {finding.estimatedAvImpact != null && (
             <span className="text-xs text-muted-foreground">
               AV Δ ${(finding.estimatedAvImpact / 1_000_000).toFixed(1)}M
             </span>
@@ -97,7 +98,7 @@ function FindingCard({ finding }: { finding: CalibrationFinding }) {
         <CardContent className="pt-0 pb-4 px-4 space-y-3">
           <p className="text-xs text-muted-foreground whitespace-pre-wrap">{finding.evidenceSummary}</p>
 
-          {finding.proposedAdjustmentPct !== null && (
+          {finding.proposedAdjustmentPct != null && (
             <div className="text-xs font-mono bg-muted/40 px-3 py-2 rounded">
               Proposed adjustment: <strong>{finding.proposedAdjustmentPct > 0 ? "+" : ""}{finding.proposedAdjustmentPct.toFixed(2)}%</strong>
             </div>
