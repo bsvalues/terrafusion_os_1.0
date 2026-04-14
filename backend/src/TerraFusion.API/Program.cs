@@ -176,6 +176,14 @@ if (args.Contains("--seed-pacs"))
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Background services that fail (e.g. ArcGIS sync, AI swarm) must not kill the API host.
+// StopHost is dangerous in development where external integrations may be unavailable.
+builder.Host.ConfigureServices((_, services) =>
+{
+    services.Configure<HostOptions>(opts =>
+        opts.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore);
+});
+
 // Local developer override — appsettings.Development.local.json is gitignored.
 // Use it to set real connection strings without committing credentials.
 // Example: copy appsettings.Development.json, fill in real passwords, save as .local.json.
@@ -349,6 +357,14 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<ITerrasyncService, TerrasyncService>();
+
+// ArcGIS FeatureServer client — used only by ArcGisSyncService (no request-time calls)
+builder.Services.AddHttpClient("arcgis", client =>
+{
+    client.BaseAddress = new Uri("https://services7.arcgis.com");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.Timeout = TimeSpan.FromSeconds(90);
+});
 builder.Services.AddMemoryCache();
 builder.Services.AddRateLimiter(options =>
 {
@@ -417,6 +433,13 @@ builder.Services.AddHostedService<EliteSignalHandlingService>();
 if (IsFeatureEnabled(builder.Configuration, "HarrisPACS:BackgroundSync:Enabled", "TF_ENABLE_HARRIS_PACS_BACKGROUND_SYNC", false))
 {
   builder.Services.AddHostedService<TerraFusion.Core.Services.HarrisPACSSyncBackgroundService>();
+}
+
+// 🗺️ Benton County ArcGIS GIS Sync — one-way pull from public FeatureServer
+// Isolation: ArcGIS never queried at request time; only ArcGisSyncService writes GisParcelGeometries.
+if (IsFeatureEnabled(builder.Configuration, "ArcGisSync:Enabled", "TF_ENABLE_ARCGIS_SYNC", true))
+{
+  builder.Services.AddHostedService<ArcGisSyncService>();
 }
 
 // TIER 4+ Services - Advanced AI Excellence
@@ -1211,7 +1234,9 @@ if (app.Environment.IsDevelopment())
                 "read:cost-matrix",
                 "read:cost-factors",
                 "read:cost-breakdown",
-                "read:performance-metrics"
+                "read:performance-metrics",
+                "read:parcel",
+                "read:atlas"
           }
     };
 

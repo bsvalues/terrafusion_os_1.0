@@ -71,22 +71,27 @@ export default function LayerWorksModule() {
     let cancelled = false;
     async function load() {
       setLoading(true);
-      const data = await atlasService.getLayers();
-      if (!cancelled) {
-        setLayers(data);
-        const grouped: Record<string, MapLayer[]> = {};
-        for (const l of data) {
-          (grouped[l.category] ??= []).push(l);
+      try {
+        const data = await atlasService.getLayers();
+        if (!cancelled) {
+          setLayers(data);
+          const grouped: Record<string, MapLayer[]> = {};
+          for (const l of data) {
+            (grouped[l.category] ??= []).push(l);
+          }
+          setGroups(
+            Object.entries(grouped).map(([cat, lrs]) => ({
+              id: cat,
+              label: CATEGORY_LABELS[cat] ?? cat,
+              layers: lrs,
+              expanded: true,
+            }))
+          );
         }
-        setGroups(
-          Object.entries(grouped).map(([cat, lrs]) => ({
-            id: cat,
-            label: CATEGORY_LABELS[cat] ?? cat,
-            layers: lrs,
-            expanded: true,
-          }))
-        );
-        setLoading(false);
+      } catch {
+        // layer catalog is Post-R1 — show empty state
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
     load();

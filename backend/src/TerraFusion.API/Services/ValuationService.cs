@@ -291,15 +291,24 @@ public class ValuationService : IValuationService
             .Where(c => (c.QualificationDecision ?? c.QualificationRecommendation ?? c.SaleQualification) == "qualified")
             .ToList();
 
-        // Prefer PACS pre-computed ratio (sl_ratio = appraised_value / adjusted_sl_price).
-        // Fall back to AdjustedSalePrice ratio when PacsComputedRatio not yet synced.
+        // TF computes its own sales ratio: AssessedValue / SalePrice.
+        // PACS is the legacy system being replaced — TF never trusts PACS calculations.
+        var compParcelIds = qualifiedComps.Select(c => c.ParcelId).Distinct().ToList();
+        Dictionary<string, decimal> compAssessedValues = compParcelIds.Count > 0
+            ? await _db.Properties
+                .AsNoTracking()
+                .Where(p => compParcelIds.Contains(p.ParcelId) && p.AssessedValue > 0)
+                .ToDictionaryAsync(p => p.ParcelId, p => p.AssessedValue, ct)
+            : new Dictionary<string, decimal>();
+
+        // Ratio = AssessedValue / SalePrice — IAAO standard; TF-computed, not PACS-sourced.
         var ratioPoints = qualifiedComps
-            .Select(c => (
-                Ratio: c.PacsComputedRatio.HasValue && c.PacsComputedRatio.Value > 0
-                    ? (double)c.PacsComputedRatio.Value
-                    : 0.0,                               // exclude 0/null from stats
-                Price: (double)(c.AdjustedSalePrice ?? c.SalePrice)
-            ))
+            .Select(c => {
+                var salePrice = (double)(c.AdjustedSalePrice ?? c.SalePrice);
+                compAssessedValues.TryGetValue(c.ParcelId, out var av);
+                var ratio = salePrice > 0 && av > 0 ? (double)av / salePrice : 0.0;
+                return (Ratio: ratio, Price: salePrice);
+            })
             .Where(p => p.Ratio > 0 && p.Price > 0)
             .ToList();
 
@@ -358,23 +367,19 @@ public class ValuationService : IValuationService
                     subjectQualityGrade:    subjectCama?.QualityGrade,    // imprv_det_class_cd → ECONOMY…EXCELLENT
                     subjectImprvTypeCode:   subjectCama?.BuildingType),   // imprv_type_cd → R1, R2, A1, etc.
                 Notes         = BuildSaleNotes(c),
-                // Use PACS pre-computed ratio when available; otherwise derive from adjusted price.
-                SalesRatio    = c.PacsComputedRatio.HasValue
-                    ? (double)c.PacsComputedRatio.Value
-                    : (c.AdjustedSalePrice ?? c.SalePrice) > 0 ? 1.0 : 0.0,
+                // TF-computed ratio: AssessedValue / SalePrice. Never uses PACS sl_ratio.
+                SalesRatio    = ((Func<double>)(() => {
+                    var sp = (double)(c.AdjustedSalePrice ?? c.SalePrice);
+                    compAssessedValues.TryGetValue(c.ParcelId, out var tav);
+                    return sp > 0 && tav > 0 ? (double)tav / sp : 0.0;
+                }))(),
                 // 3-layer qualification — expose for UI display and override surface
                 SaleId                    = c.Id,
                 QualificationRecommendation = c.QualificationRecommendation,
                 QualificationDecision     = c.QualificationDecision,
                 DecisionSource            = c.DecisionSource,
                 EffectiveQualification    = c.QualificationDecision ?? c.QualificationRecommendation ?? c.SaleQualification,
-                // PACS Layer 1 raw fields for ratio study display
-                AdjustedSalePriceFromPacs = c.AdjustedSalePrice,
-                RawRatioTypeCd            = c.RawRatioTypeCd,
-                RawCountyRatioCd          = c.RawCountyRatioCd,
-                RawRatioCdReason          = c.RawRatioCdReason,
-                RawSaleTypeCode           = c.RawSaleTypeCode,
-                PacsComputedRatio         = c.PacsComputedRatio,
+                // Qualification-relevant sale flags (imported from ingested data; not PACS calculations)
                 LandOnlySale              = c.LandOnlySale,
                 ContinueCurrentUse        = c.ContinueCurrentUse,
                 SalesYear                 = c.SalesYear,

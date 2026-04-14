@@ -16,17 +16,20 @@ public class TerraForgeController : ControllerBase
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<TerraForgeController> _logger;
     private readonly IOlsRegressionService _ols;
+    private readonly ISaleQualificationService _saleQual;
 
     private static readonly Guid BentonCountyId = Guid.Parse("19190019-1919-1919-1919-191919191919");
 
     public TerraForgeController(
         TerraFusionDbContext db,
         ILogger<TerraForgeController> logger,
-        IOlsRegressionService ols)
+        IOlsRegressionService ols,
+        ISaleQualificationService saleQual)
     {
-        _db     = db;
-        _logger = logger;
-        _ols    = ols;
+        _db       = db;
+        _logger   = logger;
+        _ols      = ols;
+        _saleQual = saleQual;
     }
 
     // ── Sale Qualification ────────────────────────────────────────────────
@@ -58,8 +61,7 @@ public class TerraForgeController : ControllerBase
         var query = _db.ComparableSales
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.SalesYear == taxYear
-                     || (s.SalesYear == null
-                         && s.SaleDate >= lookbackStart
+                     || (s.SaleDate >= lookbackStart
                          && s.SaleDate < lookbackEnd));
 
         query = status.ToLowerInvariant() switch
@@ -118,7 +120,7 @@ public class TerraForgeController : ControllerBase
     /// wins when set; QualificationRecommendation="qualified" is the fallback.
     /// Sales suppressed from the ratio report or flagged IncludeNoCalc are excluded.
     /// Returns IAAO stats (median ratio, mean ratio, COD, PRD) plus paginated detail.
-    /// Ratio = PacsComputedRatio / 100 (PACS stores as 0–100; normalized here to 0–1).
+    /// Ratio = Properties.AssessedValue / ComparableSales.SalePrice (TF-computed; PACS ratio column unused).
     /// </summary>
     [HttpGet("ratio-study")]
     public async Task<IActionResult> GetRatioStudy(
@@ -140,8 +142,7 @@ public class TerraForgeController : ControllerBase
         var baseQuery = _db.ComparableSales
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.SalesYear == taxYear
-                     || (s.SalesYear == null
-                         && s.SaleDate >= lookbackStart
+                     || (s.SaleDate >= lookbackStart
                          && s.SaleDate < lookbackEnd))
             .Where(s => (s.QualificationDecision != null && s.QualificationDecision == "qualified")
                      || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"))
@@ -155,30 +156,23 @@ public class TerraForgeController : ControllerBase
 
         var total = await baseQuery.CountAsync(ct);
 
-        // Load ratio data for IAAO stats.
-        // PacsComputedRatio = assessed_val / sale_price * 100; normalize to 0–1 decimal.
-        // When PacsComputedRatio is null (dev/SQLite), join Properties to compute ratio from current assessed value.
+        // TF computes its own sales ratios: AssessedValue / SalePrice.
+        // PACS is the legacy system being replaced — TF never uses PACS-computed ratio values.
         var salesData = await baseQuery
             .Select(s => new
             {
                 s.ParcelId,
-                s.PacsComputedRatio,
-                SalePrice    = s.AdjustedSalePrice ?? s.SalePrice,
+                SalePrice = s.AdjustedSalePrice ?? s.SalePrice,
             })
             .ToListAsync(ct);
 
-        // For sales without a PACS ratio, look up assessed value from Properties.
-        var parcelsNeedingLookup = salesData
-            .Where(s => s.PacsComputedRatio == null || s.PacsComputedRatio <= 0)
-            .Select(s => s.ParcelId)
-            .Distinct()
-            .ToHashSet();
-
+        // Always look up TF canonical assessed values from Properties.
+        var allParcelIds = salesData.Select(s => s.ParcelId).Distinct().ToHashSet();
         Dictionary<string, decimal> assessedByParcel = new();
-        if (parcelsNeedingLookup.Count > 0)
+        if (allParcelIds.Count > 0)
         {
             assessedByParcel = (await _db.Properties
-                .Where(p => parcelsNeedingLookup.Contains(p.ParcelNumber) && p.AssessedValue > 0)
+                .Where(p => allParcelIds.Contains(p.ParcelNumber) && p.AssessedValue > 0)
                 .Select(p => new { p.ParcelNumber, p.AssessedValue })
                 .ToListAsync(ct))
                 .ToDictionary(p => p.ParcelNumber, p => p.AssessedValue);
@@ -187,11 +181,9 @@ public class TerraForgeController : ControllerBase
         var ratioRows = salesData
             .Select(s =>
             {
-                decimal? computedRatio = s.PacsComputedRatio != null && s.PacsComputedRatio > 0
-                    ? s.PacsComputedRatio.Value / 100m
-                    : (assessedByParcel.TryGetValue(s.ParcelId, out var av) && s.SalePrice > 0
-                        ? av / s.SalePrice
-                        : (decimal?)null);
+                decimal? computedRatio = assessedByParcel.TryGetValue(s.ParcelId, out var av) && s.SalePrice > 0
+                    ? av / s.SalePrice
+                    : (decimal?)null;
                 return new { ratio = computedRatio, salePrice = s.SalePrice, assessedVal = computedRatio.HasValue ? s.SalePrice * computedRatio.Value : 0m };
             })
             .Where(r => r.ratio.HasValue && r.ratio.Value > 0)
@@ -288,7 +280,7 @@ public class TerraForgeController : ControllerBase
         if (prb.HasValue)   complianceNotes.Add($"PRB {prb.Value:F3} {(prbPass ? "✓" : "✗")} (|PRB| < 0.05)");
         if (medianRatio.HasValue) complianceNotes.Add($"Median {medianRatio.Value:F3} {(medPass ? "✓" : "✗")} (0.90–1.10)");
 
-        // Paginated detail — join Properties for assessed value when PacsComputedRatio is absent.
+        // Paginated detail — TF computes sales ratio from Properties.AssessedValue / SalePrice.
         var rawItems = await baseQuery
             .OrderByDescending(s => s.SaleDate)
             .Skip((page - 1) * pageSize)
@@ -301,7 +293,6 @@ public class TerraForgeController : ControllerBase
                 salePrice           = s.AdjustedSalePrice ?? s.SalePrice,
                 rawSalePrice        = s.SalePrice,
                 adjustedSalePrice   = s.AdjustedSalePrice,
-                pacsComputedRatio   = s.PacsComputedRatio,
                 gla                 = s.SlLivingArea ?? s.GrossLivingArea,
                 yearBuilt           = s.SlYearBuilt ?? s.YearBuilt,
                 hood                = s.Neighborhood,
@@ -310,13 +301,8 @@ public class TerraForgeController : ControllerBase
             })
             .ToListAsync(ct);
 
-        // Look up assessed values for page items that need computed ratio.
-        var pageParcelIds = rawItems
-            .Where(i => i.pacsComputedRatio == null || i.pacsComputedRatio <= 0)
-            .Select(i => i.parcelId)
-            .Distinct()
-            .ToHashSet();
-
+        // Look up TF canonical assessed values for all page items.
+        var pageParcelIds = rawItems.Select(i => i.parcelId).Distinct().ToHashSet();
         Dictionary<string, decimal> pageAssessed = new();
         if (pageParcelIds.Count > 0)
         {
@@ -329,15 +315,13 @@ public class TerraForgeController : ControllerBase
 
         var items = rawItems.Select(i =>
         {
-            decimal? ratio = i.pacsComputedRatio != null && i.pacsComputedRatio > 0
-                ? i.pacsComputedRatio / 100m
-                : (pageAssessed.TryGetValue(i.parcelId, out var av) && i.salePrice > 0
-                    ? av / i.salePrice
-                    : (decimal?)null);
+            decimal? salesRatio = pageAssessed.TryGetValue(i.parcelId, out var av) && i.salePrice > 0
+                ? av / i.salePrice
+                : (decimal?)null;
             return new
             {
                 i.saleId, i.parcelId, i.saleDate, i.salePrice, i.rawSalePrice,
-                i.adjustedSalePrice, i.pacsComputedRatio, ratio,
+                i.adjustedSalePrice, salesRatio,
                 i.gla, i.yearBuilt, i.hood, i.propertyType, i.qualificationSource
             };
         }).ToList();
@@ -403,8 +387,7 @@ public class TerraForgeController : ControllerBase
         var query = _db.ComparableSales
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.SalesYear == taxYear
-                     || (s.SalesYear == null
-                         && s.SaleDate >= lookbackStart
+                     || (s.SaleDate >= lookbackStart
                          && s.SaleDate < lookbackEnd))
             .Where(s => (s.QualificationDecision != null && s.QualificationDecision == "qualified")
                      || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"));
@@ -489,8 +472,7 @@ public class TerraForgeController : ControllerBase
         var baseQuery = _db.ComparableSales
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.SalesYear == taxYear
-                     || (s.SalesYear == null
-                         && s.SaleDate >= lookbackStart
+                     || (s.SaleDate >= lookbackStart
                          && s.SaleDate < lookbackEnd))
             .Where(s => (s.QualificationDecision != null && s.QualificationDecision == "qualified")
                      || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"))
@@ -699,53 +681,101 @@ public class TerraForgeController : ControllerBase
     public async Task<IActionResult> ApplyQualificationRecommendations(
         CancellationToken ct = default)
     {
-        // Disqualifying WAC exemption code prefixes (458-61A = REET exemptions → non-arms-length)
-        var disqualifyingWacPrefixes = new[] { "458-61A", "INTER", "GIFT", "INHERIT", "FORECL" };
-
-        var pending = await _db.ComparableSales
-            .Where(s => s.CountyId == BentonCountyId)
-            .Where(s => s.QualificationRecommendation == null && s.QualificationDecision == null)
-            .Where(s => s.SalePrice > 0)
+        // Step 1: Backfill raw PACS qualification codes that were null at import time.
+        // Join ComparableSales → pacs_sales via PacsParcel (GeoId = county parcel number).
+        // Benton's primary qualification source is sl_county_ratio_cd (Layer 2 in the
+        // 4-layer hierarchy). WAC codes are preserved for DOR analytics — they are NOT
+        // the primary disqualification trigger (Benton has its own codes for that).
+        var pacsLookup = await (
+            from ps in _db.PacsSales
+            join pp in _db.PacsParcel on ps.ParcelId equals pp.Id
+            where pp.GeoId != null
+            select new
+            {
+                GeoId            = pp.GeoId!,
+                SaleDate         = ps.SaleDate,
+                SalePrice        = ps.SalePrice,
+                CountyRatioCd    = ps.SaleCountyRatioCd,
+                WacCd            = ps.WacCd,
+                RatioTypeCd      = ps.SaleRatioTypeCd,
+                ExcludeCalcCd    = ps.SalesExcludeCalcCd,
+                SaleQualifier    = ps.SaleQualifier,
+            })
             .ToListAsync(ct);
 
-        int qualified = 0, nonArmsLength = 0;
-
-        foreach (var sale in pending)
+        // Build a lookup keyed by (parcelGeoId, saleDate, salePrice) for fast match.
+        // Use first match per key — sale dates are generally unique per parcel.
+        var pacsByKey = new Dictionary<(string, DateTime?, decimal?), (string? county, string? wac, string? ratioType, string? exclude, string? qualifier)>();
+        foreach (var row in pacsLookup)
         {
-            var wac = sale.RawWacCd ?? "";
-            var qualifier = sale.RawSaleQualifier ?? "";
-            bool isDisqualified = disqualifyingWacPrefixes.Any(p =>
-                wac.StartsWith(p, StringComparison.OrdinalIgnoreCase));
+            var key = (row.GeoId, row.SaleDate, row.SalePrice);
+            if (!pacsByKey.ContainsKey(key))
+                pacsByKey[key] = (row.CountyRatioCd, row.WacCd, row.RatioTypeCd, row.ExcludeCalcCd, row.SaleQualifier);
+        }
 
-            if (isDisqualified || qualifier.Equals("N", StringComparison.OrdinalIgnoreCase))
+        // Backfill any ComparableSale that still has all null raw qualification fields.
+        var toBackfill = await _db.ComparableSales
+            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.RawCountyRatioCd == null && s.RawWacCd == null
+                     && s.RawRatioTypeCd == null && s.RawSaleQualifier == null)
+            .ToListAsync(ct);
+
+        int backfilled = 0;
+        foreach (var sale in toBackfill)
+        {
+            var key = (sale.ParcelId, (DateTime?)sale.SaleDate, (decimal?)sale.SalePrice);
+            if (pacsByKey.TryGetValue(key, out var pacs))
             {
-                sale.QualificationRecommendation = "non-arms-length";
-                sale.RecommendationReason = $"auto: WAC code {wac} indicates non-arms-length";
-                nonArmsLength++;
-            }
-            else
-            {
-                sale.QualificationRecommendation = "qualified";
-                sale.RecommendationReason = "auto: no disqualifying WAC code or sale qualifier indicators";
-                qualified++;
+                sale.RawCountyRatioCd = pacs.county;
+                sale.RawWacCd         = pacs.wac;
+                sale.RawRatioTypeCd   = pacs.ratioType;
+                sale.RawExcludeCalcCd = pacs.exclude;
+                sale.RawSaleQualifier = pacs.qualifier;
+                backfilled++;
             }
         }
 
-        if (pending.Count > 0)
+        if (backfilled > 0)
             await _db.SaveChangesAsync(ct);
 
+        _logger.LogInformation("[TerraForge] apply-recommendations backfill: {Backfilled} sales got raw PACS codes", backfilled);
+
+        // Step 2: Run the proper 4-layer qualification engine (county code → DOR code → WAC → default).
+        // Try FK-aware async version first (needs SaleRatioTypes, CountyRatioCodes, ReetWacCodes seeded).
+        // Falls back to sync version with hardcoded county code map when lookup tables aren't in dev DB.
+        int processed;
+        try
+        {
+            processed = await _saleQual.ComputeRecommendationsAsync(BentonCountyId, ct);
+        }
+        catch (Exception ex) when (ex.Message.Contains("no such table") || ex.Message.Contains("Invalid object name"))
+        {
+            _logger.LogWarning("[TerraForge] Lookup tables not seeded — using hardcoded county code map (dev fallback)");
+            var allSales = await _db.ComparableSales
+                .Where(s => s.CountyId == BentonCountyId)
+                .ToListAsync(ct);
+            _saleQual.ComputeRecommendations(allSales);
+            await _db.SaveChangesAsync(ct);
+            processed = allSales.Count;
+        }
+
+        // Tally results for the response.
+        var summary = await _db.ComparableSales
+            .Where(s => s.CountyId == BentonCountyId)
+            .GroupBy(s => s.QualificationRecommendation)
+            .Select(g => new { recommendation = g.Key, count = g.Count() })
+            .ToListAsync(ct);
+
         _logger.LogInformation(
-            "[TerraForge] apply-recommendations: processed={Total} qualified={Q} nonArmsLength={N}",
-            pending.Count, qualified, nonArmsLength);
+            "[TerraForge] apply-recommendations: processed={Total} backfilled={Backfilled}",
+            processed, backfilled);
 
         return Ok(new
         {
-            processed = pending.Count,
-            qualified,
-            nonArmsLength,
-            message = pending.Count == 0
-                ? "No pending sales found — all already have recommendations."
-                : $"Applied recommendations: {qualified} qualified, {nonArmsLength} non-arms-length."
+            processed,
+            backfilled,
+            summary,
+            message = $"Applied 4-layer qualification to {processed} sales. Benton county codes used as primary source."
         });
     }
 

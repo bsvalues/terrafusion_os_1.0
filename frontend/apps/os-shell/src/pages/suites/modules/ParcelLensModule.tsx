@@ -105,10 +105,13 @@ export default function ParcelLensModule() {
     let cancelled = false;
     async function load() {
       setLoading(true);
-      const data = await atlasService.searchParcels({ query: '', limit: 10 });
-      if (!cancelled) {
-        setParcels(data.results);
-        setLoading(false);
+      try {
+        const data = await atlasService.searchParcels({ query: '', limit: 10 });
+        if (!cancelled) setParcels(data.results);
+      } catch {
+        // auth or backend not available — show empty search
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
     load();
@@ -116,9 +119,13 @@ export default function ParcelLensModule() {
   }, []);
 
   const handleSearch = useCallback(async () => {
-    const data = await atlasService.searchParcels({ query: searchTerm, limit: 20 });
-    setParcels(data.results);
-    setSelected(null);
+    try {
+      const data = await atlasService.searchParcels({ query: searchTerm, limit: 20 });
+      setParcels(data.results);
+      setSelected(null);
+    } catch {
+      // search unavailable
+    }
   }, [searchTerm]);
 
   const selectParcel = useCallback(async (parcel: ParcelResult) => {
