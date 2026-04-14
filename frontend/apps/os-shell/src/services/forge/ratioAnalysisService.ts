@@ -108,8 +108,6 @@ export interface ModelReceipt {
 // API
 // ============================================================================
 
-const MASS_APPRAISAL_BASE_URL = '/api/MassAppraisal';
-
 /**
  * Compute an on-demand ratio study with the specified parameters.
  * Returns full IAAO-standard statistics including COD, PRD, PRB,
@@ -124,15 +122,62 @@ const MASS_APPRAISAL_BASE_URL = '/api/MassAppraisal';
  * @returns Complete ratio study result with compliance assessment
  */
 export async function computeRatioStudy(params: RatioStudyParams): Promise<RatioStudyResult> {
-  const outlierMethod = params.outlierMethod ?? 'iqr';
-  const modelId = encodeURIComponent(`${params.taxYear}-${outlierMethod}`);
-  const response = await fetch(`${MASS_APPRAISAL_BASE_URL}/ratio-study/${modelId}`, {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  // Real endpoint: GET /api/terraforge/ratio-study
+  const query = new URLSearchParams({ taxYear: String(params.taxYear) });
+  if (params.neighborhood) query.set('hood', params.neighborhood);
+  if (params.propertyType) query.set('propertyType', params.propertyType);
+  const response = await fetch(`/api/terraforge/ratio-study?${query.toString()}`);
   if (!response.ok) {
     throw new Error(`Failed to compute ratio study: ${response.statusText}`);
   }
-  return response.json();
+
+  // Map TerraForge response shape → RatioStudyResult
+  const raw = await response.json() as {
+    taxYear:          number;
+    total:            number;
+    countWithRatio:   number;
+    outliersExcluded: number;
+    iaaoCompliant:    boolean;
+    complianceNotes:  string[];
+    stats: {
+      medianRatio?:       number | null;
+      meanRatio?:         number | null;
+      weightedMeanRatio?: number | null;
+      cod?:               number | null;
+      prd?:               number | null;
+      prb?:               number | null;
+      cov?:               number | null;
+    };
+  };
+
+  const s = raw.stats;
+  const now = new Date().toISOString();
+
+  return {
+    medianRatio:       s.medianRatio       ?? 0,
+    meanRatio:         s.meanRatio         ?? 0,
+    weightedMeanRatio: s.weightedMeanRatio ?? 0,
+    cod:               s.cod               ?? 0,
+    prd:               s.prd               ?? 1,
+    prb:               s.prb               ?? 0,
+    cov:               s.cov               ?? 0,
+    sampleSize:        raw.countWithRatio,
+    outlierCount:      raw.outliersExcluded,
+    // Tier medians require stratified data not in this endpoint — computed as zeros
+    // until a dedicated tier-stratification endpoint is added.
+    tierMedians: { q1: 0, q2: 0, q3: 0, q4: 0 },
+    tierSlope: 0,
+    iaaoCompliant:    raw.iaaoCompliant,
+    complianceNotes:  raw.complianceNotes ?? [],
+    computedAt:       now,
+    params: {
+      taxYear:           params.taxYear,
+      salesWindowMonths: params.salesWindowMonths,
+      neighborhood:      params.neighborhood,
+      outlierMethod:     params.outlierMethod,
+      propertyType:      params.propertyType,
+    },
+  };
 }
 
 /**

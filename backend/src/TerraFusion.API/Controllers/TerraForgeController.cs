@@ -175,6 +175,7 @@ public class TerraForgeController : ControllerBase
         // Statistics are computed on the trimmed population; all rows still appear
         // in the paginated detail so staff can review and act on anomalous ratios.
         double? medianRatio = null, meanRatio = null, cod = null, prd = null;
+        double? weightedMeanRatio = null, prb = null, cov = null;
         int trimmedCount = 0;
 
         if (countWithRatio > 0)
@@ -206,13 +207,55 @@ public class TerraForgeController : ControllerBase
                 if (medianRatio > 0)
                     cod = ratios.Average(r => Math.Abs(r - medianRatio.Value)) / medianRatio.Value * 100.0;
 
-                // PRD = mean ratio / weighted mean ratio   where weighted = Σassessed / Σsale_price
+                // Weighted mean ratio = Σassessed / Σsale_price
                 var sumAssessed  = trimmedRatioRows.Sum(r => (double)r.assessedVal);
                 var sumSalePrice = trimmedRatioRows.Sum(r => (double)r.salePrice);
-                if (sumSalePrice > 0 && meanRatio > 0)
-                    prd = meanRatio.Value / (sumAssessed / sumSalePrice);
+                if (sumSalePrice > 0)
+                    weightedMeanRatio = sumAssessed / sumSalePrice;
+
+                // PRD = mean ratio / weighted mean ratio   (IAAO §6)
+                if (weightedMeanRatio.HasValue && meanRatio > 0 && weightedMeanRatio.Value > 0)
+                    prd = meanRatio.Value / weightedMeanRatio.Value;
+
+                // COV = stddev / mean × 100
+                if (meanRatio > 0 && nt > 1)
+                {
+                    var variance = ratios.Sum(r => Math.Pow(r - meanRatio.Value, 2)) / (nt - 1);
+                    cov = Math.Sqrt(variance) / meanRatio.Value * 100.0;
+                }
+
+                // PRB = OLS β₁ of (ratio − mean) on (ln(sp) − mean(ln(sp)))
+                // Measures price-related bias: positive → regressivity (low values over-assessed)
+                if (nt >= 5)
+                {
+                    var logPrices  = trimmedRatioRows.Select(r => Math.Log((double)r.salePrice)).ToArray();
+                    var meanLogSP  = logPrices.Average();
+                    var numerator  = 0.0;
+                    var denominator = 0.0;
+                    for (var i = 0; i < trimmedRatioRows.Count; i++)
+                    {
+                        var dLog   = logPrices[i] - meanLogSP;
+                        var dRatio = (double)trimmedRatioRows[i].ratio - meanRatio.Value;
+                        numerator   += dRatio * dLog;
+                        denominator += dLog * dLog;
+                    }
+                    if (denominator > 0)
+                        prb = numerator / denominator;
+                }
             }
         }
+
+        // IAAO compliance thresholds (residential SFR defaults)
+        var codPass  = cod.HasValue  && cod.Value  < 15.0;
+        var prdPass  = prd.HasValue  && prd.Value  is >= 0.98 and <= 1.03;
+        var prbPass  = prb.HasValue  && Math.Abs(prb.Value) < 0.05;
+        var medPass  = medianRatio.HasValue && medianRatio.Value is >= 0.90 and <= 1.10;
+        var iaaoCompliant = codPass && prdPass && prbPass && medPass;
+        var complianceNotes = new List<string>();
+        if (cod.HasValue)   complianceNotes.Add($"COD {cod.Value:F1} {(codPass ? "✓" : "✗")} (< 15.0)");
+        if (prd.HasValue)   complianceNotes.Add($"PRD {prd.Value:F3} {(prdPass ? "✓" : "✗")} (0.98–1.03)");
+        if (prb.HasValue)   complianceNotes.Add($"PRB {prb.Value:F3} {(prbPass ? "✓" : "✗")} (|PRB| < 0.05)");
+        if (medianRatio.HasValue) complianceNotes.Add($"Median {medianRatio.Value:F3} {(medPass ? "✓" : "✗")} (0.90–1.10)");
 
         // Paginated detail.
         var items = await baseQuery
@@ -251,12 +294,17 @@ public class TerraForgeController : ControllerBase
             total,
             countWithRatio,
             outliersExcluded = trimmedCount,
+            iaaoCompliant,
+            complianceNotes,
             stats = new
             {
-                medianRatio = medianRatio.HasValue ? Math.Round(medianRatio.Value, 4) : (double?)null,
-                meanRatio   = meanRatio.HasValue   ? Math.Round(meanRatio.Value,   4) : (double?)null,
-                cod         = cod.HasValue         ? Math.Round(cod.Value,         2) : (double?)null,
-                prd         = prd.HasValue         ? Math.Round(prd.Value,         4) : (double?)null
+                medianRatio       = medianRatio.HasValue       ? Math.Round(medianRatio.Value,       4) : (double?)null,
+                meanRatio         = meanRatio.HasValue         ? Math.Round(meanRatio.Value,         4) : (double?)null,
+                weightedMeanRatio = weightedMeanRatio.HasValue ? Math.Round(weightedMeanRatio.Value, 4) : (double?)null,
+                cod               = cod.HasValue               ? Math.Round(cod.Value,               2) : (double?)null,
+                prd               = prd.HasValue               ? Math.Round(prd.Value,               4) : (double?)null,
+                prb               = prb.HasValue               ? Math.Round(prb.Value,               4) : (double?)null,
+                cov               = cov.HasValue               ? Math.Round(cov.Value,               2) : (double?)null,
             },
             filters = new { taxYear, hood, propertyType },
             page,
