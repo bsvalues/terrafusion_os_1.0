@@ -297,15 +297,19 @@ public class CalibrationDiagnosticController : ControllerBase
         var active = all.Where(s => !req.ExcludedSaleIds.Contains(s.Id)).ToList();
         if (active.Count == 0) return BadRequest("No active sales.");
 
+        // Solve for the adjustment % that achieves the target median ratio.
+        // Median ratio = median(AV/SP). A uniform factor k applied to all AVs
+        // scales every ratio by k, so new_median = old_median * k.
+        // Binary search converges quickly; analytical solution is factor = target/current.
         double lo = -50.0, hi = 100.0;
         double bestAdj = 0.0;
         for (int iter = 0; iter < 60; iter++)
         {
             double mid = (lo + hi) / 2.0;
             double factor = 1.0 + mid / 100.0;
-            var proj = active.Select(s => ((double)s.AssessedValue * factor, (double)s.SalePrice));
-            double prd = ComputePrd(proj);
-            if (prd < req.TargetPrd) lo = mid; else hi = mid;
+            var projRatios = active.Select(s => (double)s.Ratio * factor).ToList();
+            double projMedian = CalibMedian(projRatios);
+            if (projMedian < req.TargetMedianRatio) lo = mid; else hi = mid;
             bestAdj = mid;
             if (Math.Abs(hi - lo) < 0.001) break;
         }
@@ -315,6 +319,7 @@ public class CalibrationDiagnosticController : ControllerBase
         return Ok(new
         {
             suggestedAdjustmentPct = Math.Round(bestAdj, 3),
+            projectedMedianRatio = Math.Round(CalibMedian(bestProj.Select(x => x.AV / x.SP).ToList()), 4),
             projectedPrd = Math.Round(ComputePrd(bestProj.Select(x => (x.AV, x.SP))), 4),
             projectedCod = Math.Round(ComputeCod(bestProj.Select(x => x.AV / x.SP).ToList()), 2),
             projectedPrb = Math.Round(ComputePrb(bestProj.Select(x => (x.SP, x.AV / x.SP))), 4),
@@ -407,7 +412,7 @@ public record SolveForRateRequest(
     int MatrixVersionId,
     string? RevalArea,
     string? BuildingType,
-    double TargetPrd,
+    double TargetMedianRatio,
     List<int> ExcludedSaleIds);
 
 public record OutlierExclusionRequest(

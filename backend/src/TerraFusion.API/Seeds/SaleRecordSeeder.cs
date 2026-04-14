@@ -36,7 +36,7 @@ public sealed class SaleRecordSeeder
             return;
         }
 
-        var revalAreas = new[] { "REVAL-1", "REVAL-2", "REVAL-3" };
+        var revalAreas = new[] { "Reval 1", "Reval 2", "Reval 3" };
         var buildingTypes = new[] { "S1", "S2" };
         var rng = new Random(42);
         var records = new List<SaleRecord>();
