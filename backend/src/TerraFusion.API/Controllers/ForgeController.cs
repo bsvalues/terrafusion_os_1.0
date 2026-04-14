@@ -79,8 +79,16 @@ public class ForgeController : ControllerBase
         var year = taxYear ?? DateTime.UtcNow.Year;
         _logger.LogInformation("Forge sales comparison requested for {ParcelId} year {TaxYear}", parcelId, year);
 
-        var result = await _valuationService.CalculateSalesComparisonAsync(parcelId, year, ct);
-        return Ok(result);
+        try
+        {
+            var result = await _valuationService.CalculateSalesComparisonAsync(parcelId, year, ct);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Sales comparison failed for {ParcelId}: {Message}", parcelId, ex.Message);
+            return StatusCode(500, new { error = ex.GetType().Name, message = ex.Message });
+        }
     }
 
     /// <summary>GET /api/forge/{parcelId}/income?taxYear=2025</summary>
