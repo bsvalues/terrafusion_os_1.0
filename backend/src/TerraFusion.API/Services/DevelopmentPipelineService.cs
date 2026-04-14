@@ -82,13 +82,8 @@ public class DevelopmentPipelineService : BackgroundService
 
         _logger.LogInformation("🚀 TerraFusion Development Pipeline ACTIVATED - Elite Military-Grade Operations");
 
-        // Audit log with scoped service resolution
-        using (var scope = _scopeFactory.CreateScope())
-        {
-            var auditLogger = scope.ServiceProvider.GetRequiredService<IAuditLogger>();
-            await auditLogger.LogAsync("DEVELOPMENT_PIPELINE_START",
-                $"WorkspaceCount: {_workspaceStatuses.Count}, PipelineVersion: v1.0.0-elite, MilitaryGrade: true, Government: Washington State, Classification: ELITE_OPERATIONS");
-        }
+        await TryAuditAsync("DEVELOPMENT_PIPELINE_START",
+            $"WorkspaceCount: {_workspaceStatuses.Count}, PipelineVersion: v1.0.0-elite, MilitaryGrade: true, Government: Washington State, Classification: ELITE_OPERATIONS");
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -102,16 +97,23 @@ public class DevelopmentPipelineService : BackgroundService
                 _logger.LogInformation("🛑 Development Pipeline shutdown requested");
                 break;
             }
+            catch (ObjectDisposedException)
+            {
+                // DI container disposed — host is shutting down, exit cleanly
+                _logger.LogInformation("🛑 Development Pipeline: DI container disposed, stopping");
+                break;
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "❌ Development Pipeline cycle failed");
 
-                // Audit log with scoped service resolution
-                using (var scope = _scopeFactory.CreateScope())
+                try
                 {
+                    using var scope = _scopeFactory.CreateScope();
                     var auditLogger = scope.ServiceProvider.GetRequiredService<IAuditLogger>();
                     await auditLogger.LogAsync("PIPELINE_CYCLE_FAILED", $"Error: {ex.Message}");
                 }
+                catch (ObjectDisposedException) { /* host shutting down */ }
 
                 await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
@@ -170,13 +172,8 @@ public class DevelopmentPipelineService : BackgroundService
             };
         }
 
-        // Audit log with scoped service resolution
-        using (var scope = _scopeFactory.CreateScope())
-        {
-            var auditLogger = scope.ServiceProvider.GetRequiredService<IAuditLogger>();
-            await auditLogger.LogAsync("DEPENDENCY_ANALYSIS",
-                $"TotalWorkspaces: {_workspaceStatuses.Count}, ReadyWorkspaces: {_workspaceStatuses.Count(kvp => kvp.Value.DependencyStatus == DependencyStatus.Ready)}, WaitingWorkspaces: {_workspaceStatuses.Count(kvp => kvp.Value.DependencyStatus == DependencyStatus.Waiting)}");
-        }
+        await TryAuditAsync("DEPENDENCY_ANALYSIS",
+            $"TotalWorkspaces: {_workspaceStatuses.Count}, ReadyWorkspaces: {_workspaceStatuses.Count(kvp => kvp.Value.DependencyStatus == DependencyStatus.Ready)}, WaitingWorkspaces: {_workspaceStatuses.Count(kvp => kvp.Value.DependencyStatus == DependencyStatus.Waiting)}");
     }
 
     private async Task OrchestrateBuildSequence(CancellationToken cancellationToken)
@@ -223,13 +220,8 @@ public class DevelopmentPipelineService : BackgroundService
                     _logger.LogWarning("❌ Build failed: {Workspace}", workspace);
                 }
 
-                // Audit log with scoped service resolution
-                using (var scope = _scopeFactory.CreateScope())
-                {
-                    var auditLogger = scope.ServiceProvider.GetRequiredService<IAuditLogger>();
-                    await auditLogger.LogAsync("WORKSPACE_BUILD",
-                        $"Workspace: {workspace}, Status: {(isSuccess ? "SUCCESS" : "FAILED")}, BuildTime: {DateTime.UtcNow}");
-                }
+                await TryAuditAsync("WORKSPACE_BUILD",
+                    $"Workspace: {workspace}, Status: {(isSuccess ? "SUCCESS" : "FAILED")}, BuildTime: {DateTime.UtcNow}");
             }
             catch (Exception ex)
             {
@@ -285,12 +277,8 @@ public class DevelopmentPipelineService : BackgroundService
             }
 
             // Audit log with scoped service resolution
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var auditLogger = scope.ServiceProvider.GetRequiredService<IAuditLogger>();
-                await auditLogger.LogAsync("QUALITY_GATE_VALIDATION",
-                    $"Workspace: {workspace}, Status: {(allChecksPassed ? "PASSED" : "FAILED")}, Checks: {string.Join(",", qualityChecks.Select(kvp => $"{kvp.Key}:{kvp.Value}"))}, GovernmentCompliance: {allChecksPassed}");
-            }
+            await TryAuditAsync("QUALITY_GATE_VALIDATION",
+                $"Workspace: {workspace}, Status: {(allChecksPassed ? "PASSED" : "FAILED")}, Checks: {string.Join(",", qualityChecks.Select(kvp => $"{kvp.Key}:{kvp.Value}"))}, GovernmentCompliance: {allChecksPassed}");
         }
     }
 
@@ -312,13 +300,8 @@ public class DevelopmentPipelineService : BackgroundService
 
             var integrationSuccess = Random.Shared.NextDouble() > 0.05; // 95% success rate
 
-            // Audit log with scoped service resolution
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var auditLogger = scope.ServiceProvider.GetRequiredService<IAuditLogger>();
-                await auditLogger.LogAsync("INTEGRATION_TESTING",
-                    $"WorkspaceCount: {readyForIntegration}, Status: {(integrationSuccess ? "SUCCESS" : "FAILED")}, TestSuite: TerraFusion Elite Integration Tests, Government: Washington State Compliance");
-            }
+            await TryAuditAsync("INTEGRATION_TESTING",
+                $"WorkspaceCount: {readyForIntegration}, Status: {(integrationSuccess ? "SUCCESS" : "FAILED")}, TestSuite: TerraFusion Elite Integration Tests, Government: Washington State Compliance");
 
             if (integrationSuccess)
             {
@@ -350,13 +333,8 @@ public class DevelopmentPipelineService : BackgroundService
                                    performanceMetrics.NetworkLatency < 30 &&
                                    performanceMetrics.ThroughputRPS > 2000;
 
-        // Audit log with scoped service resolution
-        using (var scope = _scopeFactory.CreateScope())
-        {
-            var auditLogger = scope.ServiceProvider.GetRequiredService<IAuditLogger>();
-            await auditLogger.LogAsync("PERFORMANCE_VALIDATION",
-                $"Metrics: BuildTime:{performanceMetrics.BuildTime}, Memory:{performanceMetrics.MemoryUsage}MB, CPU:{performanceMetrics.CPUUtilization}%, NetworkLatency:{performanceMetrics.NetworkLatency}ms, Throughput:{performanceMetrics.ThroughputRPS}RPS, TargetsMet: {performanceTargetsMet}, GovernmentStandards: Elite Military-Grade Performance");
-        }
+        await TryAuditAsync("PERFORMANCE_VALIDATION",
+            $"Metrics: BuildTime:{performanceMetrics.BuildTime}, Memory:{performanceMetrics.MemoryUsage}MB, CPU:{performanceMetrics.CPUUtilization}%, NetworkLatency:{performanceMetrics.NetworkLatency}ms, Throughput:{performanceMetrics.ThroughputRPS}RPS, TargetsMet: {performanceTargetsMet}, GovernmentStandards: Elite Military-Grade Performance");
 
         if (performanceTargetsMet)
         {
@@ -384,13 +362,20 @@ public class DevelopmentPipelineService : BackgroundService
         _logger.LogInformation("📊 Pipeline Report - Success: {Success}/{Total}, Quality: {Quality}, Health: {Health}%",
             report.SuccessfulBuilds, report.TotalWorkspaces, report.QualityGatesPassed, report.OverallHealthScore);
 
-        // Audit log with scoped service resolution
-        using (var scope = _scopeFactory.CreateScope())
+        await TryAuditAsync("PIPELINE_REPORT",
+            $"Timestamp: {report.Timestamp}, TotalWorkspaces: {report.TotalWorkspaces}, SuccessfulBuilds: {report.SuccessfulBuilds}, FailedBuilds: {report.FailedBuilds}, QualityGatesPassed: {report.QualityGatesPassed}, OverallHealthScore: {report.OverallHealthScore}%, GovernmentCompliance: {report.GovernmentCompliance}");
+    }
+
+    /// <summary>Audit log without crashing if DI container is already disposed (shutdown race).</summary>
+    private async Task TryAuditAsync(string type, string details)
+    {
+        try
         {
+            using var scope = _scopeFactory.CreateScope();
             var auditLogger = scope.ServiceProvider.GetRequiredService<IAuditLogger>();
-            await auditLogger.LogAsync("PIPELINE_REPORT",
-                $"Timestamp: {report.Timestamp}, TotalWorkspaces: {report.TotalWorkspaces}, SuccessfulBuilds: {report.SuccessfulBuilds}, FailedBuilds: {report.FailedBuilds}, QualityGatesPassed: {report.QualityGatesPassed}, OverallHealthScore: {report.OverallHealthScore}%, GovernmentCompliance: {report.GovernmentCompliance}");
+            await auditLogger.LogAsync(type, details);
         }
+        catch (ObjectDisposedException) { /* host shutting down — skip audit */ }
     }
 
     private double CalculateOverallHealthScore()

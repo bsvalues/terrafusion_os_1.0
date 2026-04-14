@@ -3,7 +3,7 @@
     "TerraFusion.API": {
       "commandName": "Project",
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:${TF_API_PORT:-5046}",
+      "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DOTNET_ENVIRONMENT": "Development"

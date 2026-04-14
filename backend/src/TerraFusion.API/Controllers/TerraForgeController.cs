@@ -155,17 +155,48 @@ public class TerraForgeController : ControllerBase
 
         var total = await baseQuery.CountAsync(ct);
 
-        // Load ratio data for IAAO stats — only rows where PACS computed a ratio.
+        // Load ratio data for IAAO stats.
         // PacsComputedRatio = assessed_val / sale_price * 100; normalize to 0–1 decimal.
-        var ratioRows = await baseQuery
-            .Where(s => s.PacsComputedRatio != null && s.PacsComputedRatio > 0)
+        // When PacsComputedRatio is null (dev/SQLite), join Properties to compute ratio from current assessed value.
+        var salesData = await baseQuery
             .Select(s => new
             {
-                ratio        = s.PacsComputedRatio!.Value / 100m,
-                salePrice    = s.AdjustedSalePrice ?? s.SalePrice,
-                assessedVal  = (s.AdjustedSalePrice ?? s.SalePrice) * s.PacsComputedRatio!.Value / 100m
+                s.ParcelId,
+                s.PacsComputedRatio,
+                SalePrice    = s.AdjustedSalePrice ?? s.SalePrice,
             })
             .ToListAsync(ct);
+
+        // For sales without a PACS ratio, look up assessed value from Properties.
+        var parcelsNeedingLookup = salesData
+            .Where(s => s.PacsComputedRatio == null || s.PacsComputedRatio <= 0)
+            .Select(s => s.ParcelId)
+            .Distinct()
+            .ToHashSet();
+
+        Dictionary<string, decimal> assessedByParcel = new();
+        if (parcelsNeedingLookup.Count > 0)
+        {
+            assessedByParcel = (await _db.Properties
+                .Where(p => parcelsNeedingLookup.Contains(p.ParcelNumber) && p.AssessedValue > 0)
+                .Select(p => new { p.ParcelNumber, p.AssessedValue })
+                .ToListAsync(ct))
+                .ToDictionary(p => p.ParcelNumber, p => p.AssessedValue);
+        }
+
+        var ratioRows = salesData
+            .Select(s =>
+            {
+                decimal? computedRatio = s.PacsComputedRatio != null && s.PacsComputedRatio > 0
+                    ? s.PacsComputedRatio.Value / 100m
+                    : (assessedByParcel.TryGetValue(s.ParcelId, out var av) && s.SalePrice > 0
+                        ? av / s.SalePrice
+                        : (decimal?)null);
+                return new { ratio = computedRatio, salePrice = s.SalePrice, assessedVal = computedRatio.HasValue ? s.SalePrice * computedRatio.Value : 0m };
+            })
+            .Where(r => r.ratio.HasValue && r.ratio.Value > 0)
+            .Select(r => new { ratio = r.ratio!.Value, salePrice = r.salePrice, assessedVal = r.assessedVal })
+            .ToList();
 
         var countWithRatio = ratioRows.Count;
 
@@ -257,8 +288,8 @@ public class TerraForgeController : ControllerBase
         if (prb.HasValue)   complianceNotes.Add($"PRB {prb.Value:F3} {(prbPass ? "✓" : "✗")} (|PRB| < 0.05)");
         if (medianRatio.HasValue) complianceNotes.Add($"Median {medianRatio.Value:F3} {(medPass ? "✓" : "✗")} (0.90–1.10)");
 
-        // Paginated detail.
-        var items = await baseQuery
+        // Paginated detail — join Properties for assessed value when PacsComputedRatio is absent.
+        var rawItems = await baseQuery
             .OrderByDescending(s => s.SaleDate)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -271,9 +302,6 @@ public class TerraForgeController : ControllerBase
                 rawSalePrice        = s.SalePrice,
                 adjustedSalePrice   = s.AdjustedSalePrice,
                 pacsComputedRatio   = s.PacsComputedRatio,
-                ratio               = s.PacsComputedRatio != null
-                                        ? s.PacsComputedRatio / 100m
-                                        : (decimal?)null,
                 gla                 = s.SlLivingArea ?? s.GrossLivingArea,
                 yearBuilt           = s.SlYearBuilt ?? s.YearBuilt,
                 hood                = s.Neighborhood,
@@ -281,6 +309,38 @@ public class TerraForgeController : ControllerBase
                 qualificationSource = s.QualificationDecision != null ? "decision" : "recommendation"
             })
             .ToListAsync(ct);
+
+        // Look up assessed values for page items that need computed ratio.
+        var pageParcelIds = rawItems
+            .Where(i => i.pacsComputedRatio == null || i.pacsComputedRatio <= 0)
+            .Select(i => i.parcelId)
+            .Distinct()
+            .ToHashSet();
+
+        Dictionary<string, decimal> pageAssessed = new();
+        if (pageParcelIds.Count > 0)
+        {
+            pageAssessed = (await _db.Properties
+                .Where(p => pageParcelIds.Contains(p.ParcelNumber) && p.AssessedValue > 0)
+                .Select(p => new { p.ParcelNumber, p.AssessedValue })
+                .ToListAsync(ct))
+                .ToDictionary(p => p.ParcelNumber, p => p.AssessedValue);
+        }
+
+        var items = rawItems.Select(i =>
+        {
+            decimal? ratio = i.pacsComputedRatio != null && i.pacsComputedRatio > 0
+                ? i.pacsComputedRatio / 100m
+                : (pageAssessed.TryGetValue(i.parcelId, out var av) && i.salePrice > 0
+                    ? av / i.salePrice
+                    : (decimal?)null);
+            return new
+            {
+                i.saleId, i.parcelId, i.saleDate, i.salePrice, i.rawSalePrice,
+                i.adjustedSalePrice, i.pacsComputedRatio, ratio,
+                i.gla, i.yearBuilt, i.hood, i.propertyType, i.qualificationSource
+            };
+        }).ToList();
 
         _logger.LogInformation(
             "[TerraForge] RatioStudy: year={Year} hood={Hood} total={Total} withRatio={WithRatio} " +
@@ -626,6 +686,66 @@ public class TerraForgeController : ControllerBase
             assessedThisYear            = totalParcels,   // proxy: all working-layer rows = assessed this year
             pendingAssessments,
             assessmentCompletionPercent = completionPct,
+        });
+    }
+
+    /// <summary>
+    /// Apply WAC-code-based qualification recommendations to all pending ComparableSales.
+    /// Mimics the AI recommendation engine: sales with no disqualifying WAC code or
+    /// sale qualifier → recommended "qualified". This is the standard DOR workflow step
+    /// that normally runs after PACS import, before staff review.
+    /// </summary>
+    [HttpPost("apply-recommendations")]
+    public async Task<IActionResult> ApplyQualificationRecommendations(
+        CancellationToken ct = default)
+    {
+        // Disqualifying WAC exemption code prefixes (458-61A = REET exemptions → non-arms-length)
+        var disqualifyingWacPrefixes = new[] { "458-61A", "INTER", "GIFT", "INHERIT", "FORECL" };
+
+        var pending = await _db.ComparableSales
+            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.QualificationRecommendation == null && s.QualificationDecision == null)
+            .Where(s => s.SalePrice > 0)
+            .ToListAsync(ct);
+
+        int qualified = 0, nonArmsLength = 0;
+
+        foreach (var sale in pending)
+        {
+            var wac = sale.RawWacCd ?? "";
+            var qualifier = sale.RawSaleQualifier ?? "";
+            bool isDisqualified = disqualifyingWacPrefixes.Any(p =>
+                wac.StartsWith(p, StringComparison.OrdinalIgnoreCase));
+
+            if (isDisqualified || qualifier.Equals("N", StringComparison.OrdinalIgnoreCase))
+            {
+                sale.QualificationRecommendation = "non-arms-length";
+                sale.RecommendationReason = $"auto: WAC code {wac} indicates non-arms-length";
+                nonArmsLength++;
+            }
+            else
+            {
+                sale.QualificationRecommendation = "qualified";
+                sale.RecommendationReason = "auto: no disqualifying WAC code or sale qualifier indicators";
+                qualified++;
+            }
+        }
+
+        if (pending.Count > 0)
+            await _db.SaveChangesAsync(ct);
+
+        _logger.LogInformation(
+            "[TerraForge] apply-recommendations: processed={Total} qualified={Q} nonArmsLength={N}",
+            pending.Count, qualified, nonArmsLength);
+
+        return Ok(new
+        {
+            processed = pending.Count,
+            qualified,
+            nonArmsLength,
+            message = pending.Count == 0
+                ? "No pending sales found — all already have recommendations."
+                : $"Applied recommendations: {qualified} qualified, {nonArmsLength} non-arms-length."
         });
     }
 

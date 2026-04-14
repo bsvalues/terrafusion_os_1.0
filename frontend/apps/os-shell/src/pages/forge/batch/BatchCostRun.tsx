@@ -225,7 +225,17 @@ export function BatchCostRun() {
 
   useEffect(() => {
     fetch('/api/forge/cost/batch/history')
-      .then((res) => { if (res.ok) setHistoryIsFixtureBacked(false); })
+      .then((res) => {
+        if (res.ok) {
+          setHistoryIsFixtureBacked(false);
+          return res.json();
+        }
+      })
+      .then((data: RunRecord[] | undefined) => {
+        if (Array.isArray(data)) {
+          setHistory(data);
+        }
+      })
       .catch(() => { /* endpoint unreachable — fixture banner stays */ });
   }, []);
 
