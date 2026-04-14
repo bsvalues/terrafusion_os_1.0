@@ -172,7 +172,7 @@ export function RatioStudyPanel({ taxYear = TAX_YEAR }: Props) {
     dispatch({ type: 'FETCH_START' });
     try {
       const url =
-        `/api/terraforge/ratio-study` +
+        `/terraforge/ratio-study` +
         `?taxYear=${taxYear}&page=${state.page}&pageSize=${RS_PAGE_SIZE}`;
       const res = await apiFetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);

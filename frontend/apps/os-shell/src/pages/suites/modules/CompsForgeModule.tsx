@@ -217,7 +217,7 @@ function buildUrl(taxYear: number, filters: CommittedFilters, page: number): str
   if (filters.propertyType) p.set('propertyType', filters.propertyType);
   if (filters.minGla)       p.set('minGla',       String(filters.minGla));
   if (filters.maxGla)       p.set('maxGla',       String(filters.maxGla));
-  return `/api/terraforge/comps-pool?${p.toString()}`;
+  return `/terraforge/comps-pool?${p.toString()}`;
 }
 
 async function fetchCompsPool(url: string): Promise<CompsPoolPage> {

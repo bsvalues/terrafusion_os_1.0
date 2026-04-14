@@ -182,7 +182,7 @@ export function CompsPoolBrowser({ taxYear = TAX_YEAR }: Props) {
       if (f.maxPrice)     params.set('maxPrice',     String(f.maxPrice));
       if (f.minGla)       params.set('minGla',       String(f.minGla));
       if (f.maxGla)       params.set('maxGla',       String(f.maxGla));
-      return `/api/terraforge/comps-pool?${params.toString()}`;
+      return `/terraforge/comps-pool?${params.toString()}`;
     },
     [taxYear],
   );
