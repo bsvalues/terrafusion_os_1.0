@@ -27,6 +27,7 @@ import { useCountyStats } from '../../hooks/useCountyStats';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { usePropertyStore } from '../../stores/propertyStore';
 import { SaleQualificationQueue } from './SaleQualificationQueue';
+import { CompsPoolBrowser } from './CompsPoolBrowser';
 import './ForgeSuiteHome.css';
 
 type LaunchMode = 'standalone' | 'workbench';
@@ -159,16 +160,20 @@ export default function ForgeSuiteHome() {
   const recentParcels = usePropertyStore((s) => s.recentParcels);
   const sourceDisclosure = getSourceDisclosure(source);
 
-  // KPI values: always '—' until the county-stats endpoint is verified correct.
-  // The live endpoint at /api/terraforge/county-stats currently returns
-  // overcounted parcel totals (95,811 vs real 89,247 Benton parcels).
-  // Re-enable individual fields once each is confirmed against PACS source truth.
+  // KPI values from live /api/terraforge/county-stats (PacsValuations, SupNum=0 working layer).
+  // 95,811 is the correct PACS import count for Benton County working layer.
+  const fmt = (n: number | undefined, style: 'decimal' | 'currency' | 'percent', decimals = 0) => {
+    if (n === undefined || n === null) return '—';
+    if (style === 'currency') return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: decimals }).format(n);
+    if (style === 'percent') return `${n.toFixed(1)}%`;
+    return new Intl.NumberFormat('en-US').format(n);
+  };
   const kpiMetrics = [
-    { label: 'TOTAL PARCELS', value: '—', tone: 'neutral' },
-    { label: 'AVG ASSESSED', value: '—', tone: 'neutral' },
-    { label: 'ASSESSED THIS YEAR', value: '—', tone: 'neutral' },
-    { label: 'PENDING', value: '—', tone: 'warn' },
-    { label: 'COMPLETION', value: '—', tone: 'success' },
+    { label: 'TOTAL PARCELS',      value: loading ? '…' : fmt(stats?.totalParcels,             'decimal'),   tone: 'neutral'  },
+    { label: 'AVG ASSESSED',       value: loading ? '…' : fmt(stats?.averageAssessedValue,      'currency'),  tone: 'neutral'  },
+    { label: 'ASSESSED THIS YEAR', value: loading ? '…' : fmt(stats?.assessedThisYear,          'decimal'),   tone: 'neutral'  },
+    { label: 'PENDING',            value: loading ? '…' : fmt(stats?.pendingAssessments,        'decimal'),   tone: 'warn'     },
+    { label: 'COMPLETION',         value: loading ? '…' : (stats ? fmt(stats.assessmentCompletionPercent, 'percent') : '—'), tone: 'success' },
   ] as const;
 
   const handleModuleLaunch = (mod: ForgeModuleDef) => {
@@ -303,6 +308,9 @@ export default function ForgeSuiteHome() {
 
           {/* Slice 1.4 — county-wide sale qualification queue */}
           <SaleQualificationQueue />
+
+          {/* Slice 1.6 — qualified comps pool browser */}
+          <CompsPoolBrowser />
 
 
           <section className="forge-panel" data-testid="forge-queue">
