@@ -1657,7 +1657,9 @@ public class TerraForgeController : ControllerBase
             static (double lo, double hi) Pct(double[] arr)
             {
                 var s = arr.OrderBy(x => x).ToArray();
-                return (s[(int)(0.025 * arr.Length)], s[(int)(0.975 * arr.Length)]);
+                int loIdx = (int)Math.Round(0.025 * (arr.Length - 1));
+                int hiIdx = (int)Math.Round(0.975 * (arr.Length - 1));
+                return (s[loIdx], s[hiIdx]);
             }
 
             var (medLo, medHi) = Pct(medianBoots);
