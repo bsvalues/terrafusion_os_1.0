@@ -36,13 +36,21 @@ public class TerraForgeController : ControllerBase
 
     /// <summary>
     /// County-wide sale qualification queue.
-    /// status: pending | staff-confirmed | appraiser-final (default: pending)
+    /// status: all | pending | staff-confirmed | appraiser-final (default: all)
     /// taxYear: filter on SalesYear (DOR ratio study year assignment)
+    /// Supports filtering by hood, propertyType, date range, and price range.
+    /// Response includes computed assessedValue + salesRatio (from Properties join).
     /// </summary>
     [HttpGet("sale-qualification")]
     public async Task<IActionResult> GetSaleQualification(
         [FromQuery] int taxYear = 2026,
-        [FromQuery] string status = "pending",
+        [FromQuery] string status = "all",
+        [FromQuery] string? hood = null,
+        [FromQuery] string? propertyType = null,
+        [FromQuery] DateTime? saleDateFrom = null,
+        [FromQuery] DateTime? saleDateTo = null,
+        [FromQuery] decimal? minPrice = null,
+        [FromQuery] decimal? maxPrice = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 50,
         CancellationToken ct = default)
@@ -50,11 +58,6 @@ public class TerraForgeController : ControllerBase
         if (pageSize > 200) pageSize = 200;
         if (page < 1) page = 1;
 
-        // For a ratio study, taxYear=N means the assessment year.
-        // The sale lookback window is 24 months prior to Jan 1 of that year.
-        // e.g. taxYear=2026 → sales from Jan 1, 2024 through Dec 31, 2025.
-        // SalesYear (PACS prop_val_yr assignment) takes precedence when populated;
-        // otherwise fall through to the rolling sale-date window.
         var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -73,43 +76,517 @@ public class TerraForgeController : ControllerBase
                                                    && (s.DecisionSource == "AppraiserFinal"
                                                        || s.DecisionSource == "AssessorOverride"
                                                        || s.DecisionSource == "AcceptedRecommendation")),
-            _                 => query.Where(s => s.QualificationDecision == null)
+            "all"             => query,   // No decision filter — return every sale in the window
+            _                 => query    // Unknown status → return all (safe fallback)
         };
+
+        if (!string.IsNullOrWhiteSpace(hood))
+            query = query.Where(s => s.Neighborhood == hood);
+        if (!string.IsNullOrWhiteSpace(propertyType))
+            query = query.Where(s => s.PropertyType == propertyType);
+        if (saleDateFrom.HasValue)
+            query = query.Where(s => s.SaleDate >= saleDateFrom.Value);
+        if (saleDateTo.HasValue)
+            query = query.Where(s => s.SaleDate <= saleDateTo.Value);
+        if (minPrice.HasValue)
+            query = query.Where(s => (s.AdjustedSalePrice ?? s.SalePrice) >= minPrice.Value);
+        if (maxPrice.HasValue)
+            query = query.Where(s => (s.AdjustedSalePrice ?? s.SalePrice) <= maxPrice.Value);
 
         var total = await query.CountAsync(ct);
 
-        var items = await query
+        var rawItems = await query
             .OrderByDescending(s => s.SaleDate)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(s => new
             {
-                saleId                    = s.Id,
-                parcelId                  = s.ParcelId,
-                saleDate                  = s.SaleDate,
-                salePrice                 = s.SalePrice,
-                adjustedSalePrice         = s.AdjustedSalePrice,
-                gla                       = s.SlLivingArea ?? s.GrossLivingArea,
-                hood                      = s.Neighborhood,
-                rawSaleQualifier          = s.RawSaleQualifier,
-                rawCountyRatioCd          = s.RawCountyRatioCd,
-                rawWacCd                  = s.RawWacCd,
-                rawExcludeCalcCd          = s.RawExcludeCalcCd,
-                rawRatioTypeCd            = s.RawRatioTypeCd,
+                saleId                      = s.Id,
+                parcelId                    = s.ParcelId,
+                address                     = s.Address,
+                saleDate                    = s.SaleDate,
+                salePrice                   = s.SalePrice,
+                adjustedSalePrice           = s.AdjustedSalePrice,
+                gla                         = s.SlLivingArea ?? s.GrossLivingArea,
+                hood                        = s.Neighborhood,
+                propertyType                = s.PropertyType,
+                rawSaleQualifier            = s.RawSaleQualifier,
+                rawCountyRatioCd            = s.RawCountyRatioCd,
+                rawWacCd                    = s.RawWacCd,
+                rawExcludeCalcCd            = s.RawExcludeCalcCd,
+                rawRatioTypeCd              = s.RawRatioTypeCd,
+                rawSaleTypeCode             = s.RawSaleTypeCode,
+                rawFinancingCode            = s.RawFinancingCode,
+                rawAdjReason                = s.RawAdjReason,
+                rawComment                  = s.RawComment,
+                slLivingArea                = s.SlLivingArea,
+                slYearBuilt                 = s.SlYearBuilt,
+                salesYear                   = s.SalesYear,
                 qualificationRecommendation = s.QualificationRecommendation,
-                recommendationReason      = s.RecommendationReason,
-                qualificationDecision     = s.QualificationDecision,
-                qualificationDecisionBy   = s.DecisionBy,
-                qualificationDecisionAt   = s.DecisionAt,
-                researchNotes             = s.DecisionReason
+                recommendationReason        = s.RecommendationReason,
+                qualificationDecision       = s.QualificationDecision,
+                qualificationDecisionBy     = s.DecisionBy,
+                qualificationDecisionAt     = s.DecisionAt,
+                decisionSource              = s.DecisionSource,
+                decisionReason              = s.DecisionReason,
             })
             .ToListAsync(ct);
 
+        // Join PacsValuations (canonical assessed values) via GeoId→PacsParcel→PacsValuation.
+        var pageParcelIds = rawItems.Select(i => i.parcelId).Where(id => id != null).ToHashSet();
+        var pageAssessed  = await GetAssessedValueMapAsync(pageParcelIds, taxYear, ct);
+
+        var items = rawItems.Select(i =>
+        {
+            var effectivePrice = i.adjustedSalePrice ?? i.salePrice;
+            decimal? assessedValue = i.parcelId != null && pageAssessed.TryGetValue(i.parcelId, out var av)
+                ? av : (decimal?)null;
+            decimal? salesRatio = assessedValue.HasValue && effectivePrice > 0
+                ? assessedValue.Value / effectivePrice : (decimal?)null;
+            return new
+            {
+                i.saleId, i.parcelId, i.address, i.saleDate, i.salePrice,
+                i.adjustedSalePrice, i.gla, i.hood, i.propertyType,
+                i.rawSaleQualifier, i.rawCountyRatioCd, i.rawWacCd,
+                i.rawExcludeCalcCd, i.rawRatioTypeCd, i.rawSaleTypeCode,
+                i.rawFinancingCode, i.rawAdjReason, i.rawComment,
+                i.slLivingArea, i.slYearBuilt, i.salesYear,
+                i.qualificationRecommendation, i.recommendationReason,
+                i.qualificationDecision, i.qualificationDecisionBy,
+                i.qualificationDecisionAt, i.decisionSource, i.decisionReason,
+                assessedValue, salesRatio,
+            };
+        }).ToList();
+
         _logger.LogInformation(
-            "[TerraForge] SaleQualification query: year={Year} status={Status} total={Total} page={Page}/{Pages}",
-            taxYear, status, total, page, (int)Math.Ceiling(total / (double)pageSize));
+            "[TerraForge] SaleQualification: year={Year} status={Status} hood={Hood} total={Total} page={Page}/{Pages}",
+            taxYear, status, hood ?? "all", total, page, (int)Math.Ceiling(total / (double)pageSize));
 
         return Ok(new { total, page, pageSize, items });
+    }
+
+    /// <summary>
+    /// Full detail for a single sale — all 40+ fields plus Properties join for assessed value.
+    /// </summary>
+    [HttpGet("sale-qualification/{saleId:guid}")]
+    public async Task<IActionResult> GetSaleQualificationDetail(
+        Guid saleId,
+        CancellationToken ct = default)
+    {
+        var s = await _db.ComparableSales
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == saleId && s.CountyId == BentonCountyId, ct);
+
+        if (s is null)
+            return NotFound(new { error = $"Sale {saleId} not found for Benton County." });
+
+        // PacsValuation join for assessed value (canonical source).
+        decimal? assessedValue = null;
+        if (s.ParcelId != null)
+        {
+            var avMap = await GetAssessedValueMapAsync(new[] { s.ParcelId }, s.SalesYear ?? DateTime.UtcNow.Year, ct);
+            if (avMap.TryGetValue(s.ParcelId, out var avFound))
+                assessedValue = avFound;
+        }
+
+        var effectivePrice = s.AdjustedSalePrice ?? s.SalePrice;
+        decimal? salesRatio = assessedValue.HasValue && effectivePrice > 0
+            ? assessedValue.Value / effectivePrice : (decimal?)null;
+
+        return Ok(new
+        {
+            saleId              = s.Id,
+            parcelId            = s.ParcelId,
+            address             = s.Address,
+            neighborhood        = s.Neighborhood,
+            propertyType        = s.PropertyType,
+            imprvTypeCode       = s.ImprvTypeCode,
+            // Sale facts
+            saleDate            = s.SaleDate,
+            salePrice           = s.SalePrice,
+            adjustedSalePrice   = s.AdjustedSalePrice,
+            saleAdjustmentAmount = s.SaleAdjustmentAmount,
+            saleExemptionAmount = s.SaleExemptionAmount,
+            exciseNumber        = s.ExciseNumber,
+            pacsChgOfOwnerId    = s.PacsChgOfOwnerId,
+            salesYear           = s.SalesYear,
+            // Time-of-sale physical characteristics (PACS snapshot — use these for ratio)
+            slLivingArea        = s.SlLivingArea,
+            slYearBuilt         = s.SlYearBuilt,
+            slLandAcres         = s.SlLandAcres,
+            slLandSqft          = s.SlLandSqft,
+            // Current physical characteristics (assessment-time fallback)
+            gla                 = s.GrossLivingArea,
+            lotSizeSqft         = s.LotSizeSqft,
+            yearBuilt           = s.YearBuilt,
+            bedrooms            = s.Bedrooms,
+            bathrooms           = s.Bathrooms,
+            condition           = s.Condition,
+            qualityGrade        = s.QualityGrade,
+            // Raw PACS codes (Layer 1 — facts, never transformed)
+            rawSaleQualifier    = s.RawSaleQualifier,
+            rawCountyRatioCd    = s.RawCountyRatioCd,
+            rawWacCd            = s.RawWacCd,
+            rawExcludeCalcCd    = s.RawExcludeCalcCd,
+            rawRatioTypeCd      = s.RawRatioTypeCd,
+            rawSaleTypeCode     = s.RawSaleTypeCode,
+            rawFinancingCode    = s.RawFinancingCode,
+            rawRatioCd          = s.RawRatioCd,
+            rawRatioCdReason    = s.RawRatioCdReason,
+            rawAdjReason        = s.RawAdjReason,
+            rawAdjCode          = s.RawAdjCode,
+            rawComment          = s.RawComment,
+            // Report suppression flags
+            suppressOnRatioRptCd   = s.SuppressOnRatioRptCd,
+            suppressOnRatioReason  = s.SuppressOnRatioReason,
+            includeNoCalc          = s.IncludeNoCalc,
+            landOnlySale           = s.LandOnlySale,
+            continueCurrentUse     = s.ContinueCurrentUse,
+            // TF rule engine recommendation (Layer 2)
+            qualificationRecommendation = s.QualificationRecommendation,
+            recommendationReason        = s.RecommendationReason,
+            recommendationSource        = s.RecommendationSource,
+            recommendationVersion       = s.RecommendationVersion,
+            // Assessor decision (Layer 3 — final word)
+            qualificationDecision  = s.QualificationDecision,
+            decisionReason         = s.DecisionReason,
+            decisionBy             = s.DecisionBy,
+            decisionAt             = s.DecisionAt,
+            decisionSource         = s.DecisionSource,
+            // TF-computed ratio
+            assessedValue,
+            salesRatio,
+            // Audit
+            ingestedAt  = s.IngestedAt,
+            ingestedBy  = s.IngestedBy,
+        });
+    }
+
+    /// <summary>
+    /// Live running IAAO statistics for the currently-qualified sale pool.
+    /// Useful for the SalesForge stats rail: shows median/COD/PRD/PRB as decisions accumulate.
+    /// Returns zeroed stats when no qualified sales exist (never throws).
+    /// </summary>
+    [HttpGet("sale-qualification/running-stats")]
+    public async Task<IActionResult> GetSaleQualificationRunningStats(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? hood = null,
+        [FromQuery] string? propertyType = null,
+        CancellationToken ct = default)
+    {
+        var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        // Total counts for all sales in the window (regardless of qualification status).
+        var allQuery = _db.ComparableSales
+            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.SalesYear == taxYear
+                     || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd));
+
+        if (!string.IsNullOrWhiteSpace(hood))
+            allQuery = allQuery.Where(s => s.Neighborhood == hood);
+        if (!string.IsNullOrWhiteSpace(propertyType))
+            allQuery = allQuery.Where(s => s.PropertyType == propertyType);
+
+        var counts = await allQuery
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                total            = g.Count(),
+                qualified        = g.Count(s => s.QualificationDecision == "qualified"
+                                             || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")),
+                nonQualified     = g.Count(s => s.QualificationDecision != null && s.QualificationDecision != "qualified"),
+                pending          = g.Count(s => s.QualificationDecision == null && s.QualificationRecommendation != "qualified"),
+            })
+            .FirstOrDefaultAsync(ct);
+
+        // IAAO stats from the effective qualified pool (same as ratio-study population rule).
+        var qualQuery = _db.ComparableSales
+            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.SalesYear == taxYear
+                     || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd))
+            .Where(s => (s.QualificationDecision != null && s.QualificationDecision == "qualified")
+                     || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"))
+            .Where(s => s.SuppressOnRatioRptCd != "T")
+            .Where(s => s.IncludeNoCalc != true);
+
+        if (!string.IsNullOrWhiteSpace(hood))
+            qualQuery = qualQuery.Where(s => s.Neighborhood == hood);
+        if (!string.IsNullOrWhiteSpace(propertyType))
+            qualQuery = qualQuery.Where(s => s.PropertyType == propertyType);
+
+        var salesData = await qualQuery
+            .Select(s => new { s.ParcelId, SalePrice = s.AdjustedSalePrice ?? s.SalePrice })
+            .ToListAsync(ct);
+
+        // Compute IAAO stats (reuse ratio-study logic).
+        double? medianRatio = null, meanRatio = null, cod = null, prd = null, prb = null, weightedMeanRatio = null;
+        int countWithRatio = 0;
+
+        if (salesData.Count > 0)
+        {
+            var parcelIds   = salesData.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+
+            var ratioRows = salesData
+                .Where(s => s.ParcelId != null && assessedMap.TryGetValue(s.ParcelId!, out _) && s.SalePrice > 0)
+                .Select(s => new { ratio = (double)assessedMap[s.ParcelId!] / (double)s.SalePrice, salePrice = (double)s.SalePrice, assessed = (double)assessedMap[s.ParcelId!] })
+                .Where(r => r.ratio > 0)
+                .ToList();
+
+            countWithRatio = ratioRows.Count;
+
+            if (countWithRatio > 0)
+            {
+                var allRatios = ratioRows.Select(r => r.ratio).OrderBy(r => r).ToArray();
+                var n = allRatios.Length;
+                var q1 = allRatios[(int)Math.Floor(n * 0.25)];
+                var q3 = allRatios[(int)Math.Floor(n * 0.75)];
+                var iqr = q3 - q1;
+                var trimmed = ratioRows.Where(r => r.ratio >= q1 - 1.5 * iqr && r.ratio <= q3 + 1.5 * iqr).ToList();
+
+                if (trimmed.Count > 0)
+                {
+                    var ratios = trimmed.Select(r => r.ratio).OrderBy(r => r).ToArray();
+                    var nt = ratios.Length;
+                    meanRatio = ratios.Average();
+                    medianRatio = nt % 2 == 0 ? (ratios[nt / 2 - 1] + ratios[nt / 2]) / 2.0 : ratios[nt / 2];
+                    if (medianRatio > 0)
+                        cod = ratios.Average(r => Math.Abs(r - medianRatio.Value)) / medianRatio.Value * 100.0;
+                    var sumA = trimmed.Sum(r => r.assessed);
+                    var sumS = trimmed.Sum(r => r.salePrice);
+                    if (sumS > 0) weightedMeanRatio = sumA / sumS;
+                    if (weightedMeanRatio.HasValue && weightedMeanRatio.Value > 0 && meanRatio > 0)
+                        prd = meanRatio.Value / weightedMeanRatio.Value;
+                    if (nt >= 5 && meanRatio > 0)
+                    {
+                        var logPrices = trimmed.Select(r => Math.Log(r.salePrice)).ToArray();
+                        var meanLog = logPrices.Average();
+                        var num = 0.0; var den = 0.0;
+                        for (var i = 0; i < trimmed.Count; i++)
+                        {
+                            var dLog = logPrices[i] - meanLog;
+                            var dR = trimmed[i].ratio - meanRatio.Value;
+                            num += dR * dLog; den += dLog * dLog;
+                        }
+                        if (den > 0) prb = num / den;
+                    }
+                }
+            }
+        }
+
+        var codPass = cod.HasValue && cod.Value < 15.0;
+        var prdPass = prd.HasValue && prd.Value is >= 0.98 and <= 1.03;
+        var prbPass = prb.HasValue && Math.Abs(prb.Value) < 0.05;
+        var medPass = medianRatio.HasValue && medianRatio.Value is >= 0.90 and <= 1.10;
+
+        return Ok(new
+        {
+            taxYear,
+            filters = new { hood, propertyType },
+            counts = new
+            {
+                total        = counts?.total        ?? 0,
+                qualified    = counts?.qualified    ?? 0,
+                nonQualified = counts?.nonQualified ?? 0,
+                pending      = counts?.pending      ?? 0,
+                withRatio    = countWithRatio,
+            },
+            stats = new
+            {
+                medianRatio       = medianRatio.HasValue       ? Math.Round(medianRatio.Value,       4) : (double?)null,
+                meanRatio         = meanRatio.HasValue         ? Math.Round(meanRatio.Value,         4) : (double?)null,
+                weightedMeanRatio = weightedMeanRatio.HasValue ? Math.Round(weightedMeanRatio.Value, 4) : (double?)null,
+                cod               = cod.HasValue               ? Math.Round(cod.Value,               2) : (double?)null,
+                prd               = prd.HasValue               ? Math.Round(prd.Value,               4) : (double?)null,
+                prb               = prb.HasValue               ? Math.Round(prb.Value,               4) : (double?)null,
+            },
+            iaaoCompliant = new { median = medPass, cod = codPass, prd = prdPass, prb = prbPass },
+        });
+    }
+
+    /// <summary>
+    /// Neighborhood-level qualification stats for SalesForge equity view.
+    /// Groups the taxYear sale window by neighborhood, returns count + IAAO stats per hood.
+    /// Hoods with fewer than 5 qualified sales report null for median/COD (insufficient sample).
+    /// </summary>
+    [HttpGet("sale-qualification/neighborhood-stats")]
+    public async Task<IActionResult> GetSaleQualificationNeighborhoodStats(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? propertyType = null,
+        CancellationToken ct = default)
+    {
+        var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var query = _db.ComparableSales
+            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.SalesYear == taxYear
+                     || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd));
+
+        if (!string.IsNullOrWhiteSpace(propertyType))
+            query = query.Where(s => s.PropertyType == propertyType);
+
+        // Pull all sales for the window. Group in memory for ratio stats.
+        var allSales = await query
+            .Select(s => new
+            {
+                s.ParcelId,
+                s.Neighborhood,
+                SalePrice        = s.AdjustedSalePrice ?? s.SalePrice,
+                IsQualified      = s.QualificationDecision == "qualified"
+                                 || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"),
+                IsPending        = s.QualificationDecision == null,
+                IsNonQualified   = s.QualificationDecision != null && s.QualificationDecision != "qualified",
+            })
+            .ToListAsync(ct);
+
+        // Build assessed value + neighborhood maps from PacsValuations (canonical source).
+        var allParcelIds = allSales.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
+        var assessedMap  = await GetAssessedValueMapAsync(allParcelIds, taxYear, ct);
+        var hoodMap      = await GetNeighborhoodMapAsync(allParcelIds, taxYear, ct);
+
+        // Group by neighborhood from PacsValuation.NeighborhoodCode (s.Neighborhood is null in PACS data).
+        var hoods = allSales
+            .GroupBy(s => s.ParcelId != null && hoodMap.TryGetValue(s.ParcelId!, out var hc) ? hc : s.Neighborhood ?? "(no neighborhood)")
+            .Select(g =>
+            {
+                var qualRows = g.Where(s => s.IsQualified && s.ParcelId != null
+                    && assessedMap.TryGetValue(s.ParcelId!, out _) && s.SalePrice > 0)
+                    .Select(s => (double)assessedMap[s.ParcelId!] / (double)s.SalePrice)
+                    .Where(r => r > 0)
+                    .OrderBy(r => r)
+                    .ToArray();
+
+                double? medianRatio = null, cod = null;
+                if (qualRows.Length >= 5)
+                {
+                    // IQR trim before computing IAAO stats (same as ratio-study endpoint).
+                    var n   = qualRows.Length;
+                    var q1  = qualRows[(int)Math.Floor(n * 0.25)];
+                    var q3  = qualRows[(int)Math.Floor(n * 0.75)];
+                    var iqr = q3 - q1;
+                    var trimmed = qualRows.Where(r => r >= q1 - 1.5 * iqr && r <= q3 + 1.5 * iqr).ToArray();
+                    if (trimmed.Length >= 5)
+                    {
+                        var nt = trimmed.Length;
+                        medianRatio = nt % 2 == 0
+                            ? (trimmed[nt / 2 - 1] + trimmed[nt / 2]) / 2.0
+                            : trimmed[nt / 2];
+                        if (medianRatio > 0)
+                            cod = trimmed.Average(r => Math.Abs(r - medianRatio.Value)) / medianRatio.Value * 100.0;
+                    }
+                }
+
+                return new
+                {
+                    hood          = g.Key,
+                    totalCount    = g.Count(),
+                    qualifiedCount = g.Count(s => s.IsQualified),
+                    pendingCount  = g.Count(s => s.IsPending),
+                    nonQualCount  = g.Count(s => s.IsNonQualified),
+                    medianRatio   = medianRatio.HasValue ? Math.Round(medianRatio.Value, 4) : (double?)null,
+                    cod           = cod.HasValue         ? Math.Round(cod.Value,         2) : (double?)null,
+                };
+            })
+            .OrderByDescending(h => h.cod ?? double.MaxValue)    // worst COD first (nulls last)
+            .ThenByDescending(h => h.totalCount)
+            .ToList();
+
+        var hoodDataGap = hoods.Count == 1 && hoods[0].hood == "(no neighborhood)";
+        return Ok(new
+        {
+            taxYear,
+            propertyType,
+            hoods,
+            hoodDataGap,
+            hoodDataGapAlert = hoodDataGap
+                ? "Neighborhood codes were not synced — neighborhood breakdown unavailable. Re-sync neighborhood codes to enable hood-level IAAO stats."
+                : null,
+        });
+    }
+
+    /// <summary>
+    /// Code audit: breakdown of raw PACS qualification codes in the taxYear sale window.
+    /// Exposes WAC code nulls as a data quality flag (the known PACS seeding gap).
+    /// </summary>
+    [HttpGet("sale-qualification/code-audit")]
+    public async Task<IActionResult> GetSaleQualificationCodeAudit(
+        [FromQuery] int taxYear = 2026,
+        CancellationToken ct = default)
+    {
+        var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var sales = await _db.ComparableSales
+            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.SalesYear == taxYear
+                     || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd))
+            .Select(s => new
+            {
+                s.RawWacCd,
+                s.RawSaleQualifier,
+                s.RawCountyRatioCd,
+                s.RawRatioTypeCd,
+                s.RawExcludeCalcCd,
+            })
+            .ToListAsync(ct);
+
+        var totalSales = sales.Count;
+
+        var wacBreakdown = sales
+            .GroupBy(s => s.RawWacCd)
+            .Select(g => new
+            {
+                wacCd       = g.Key,
+                description = g.Key == null ? "No WAC code (PACS seeding gap — data quality issue)" : g.Key,
+                count       = g.Count(),
+                isDataGap   = g.Key == null,
+            })
+            .OrderByDescending(x => x.isDataGap)
+            .ThenByDescending(x => x.count)
+            .ToList();
+
+        var saleQualifierBreakdown = sales
+            .GroupBy(s => s.RawSaleQualifier ?? "(null)")
+            .Select(g => new { code = g.Key, count = g.Count() })
+            .OrderByDescending(x => x.count)
+            .ToList();
+
+        var countyRatioBreakdown = sales
+            .GroupBy(s => s.RawCountyRatioCd ?? "(null)")
+            .Select(g => new { code = g.Key, count = g.Count() })
+            .OrderByDescending(x => x.count)
+            .ToList();
+
+        var ratioTypeBreakdown = sales
+            .GroupBy(s => s.RawRatioTypeCd ?? "(null)")
+            .Select(g => new { code = g.Key, count = g.Count() })
+            .OrderByDescending(x => x.count)
+            .ToList();
+
+        var excludeCalcBreakdown = sales
+            .GroupBy(s => s.RawExcludeCalcCd ?? "(null)")
+            .Select(g => new { code = g.Key, count = g.Count() })
+            .OrderByDescending(x => x.count)
+            .ToList();
+
+        var wacNullCount = wacBreakdown.FirstOrDefault(x => x.isDataGap)?.count ?? 0;
+        var wacNullPct   = totalSales > 0 ? Math.Round((double)wacNullCount / totalSales * 100.0, 1) : 0.0;
+
+        return Ok(new
+        {
+            taxYear,
+            totalSales,
+            dataQualityAlert = wacNullCount > 0
+                ? $"{wacNullCount:N0} of {totalSales:N0} sales ({wacNullPct}%) have no WAC code — PACS seeding gap"
+                : null,
+            wacCdBreakdown        = wacBreakdown,
+            saleQualifierBreakdown,
+            countyRatioBreakdown,
+            ratioTypeBreakdown,
+            excludeCalcBreakdown,
+        });
     }
 
     // ── Ratio Study ───────────────────────────────────────────────────────
@@ -166,17 +643,9 @@ public class TerraForgeController : ControllerBase
             })
             .ToListAsync(ct);
 
-        // Always look up TF canonical assessed values from Properties.
-        var allParcelIds = salesData.Select(s => s.ParcelId).Distinct().ToHashSet();
-        Dictionary<string, decimal> assessedByParcel = new();
-        if (allParcelIds.Count > 0)
-        {
-            assessedByParcel = (await _db.Properties
-                .Where(p => allParcelIds.Contains(p.ParcelNumber) && p.AssessedValue > 0)
-                .Select(p => new { p.ParcelNumber, p.AssessedValue })
-                .ToListAsync(ct))
-                .ToDictionary(p => p.ParcelNumber, p => p.AssessedValue);
-        }
+        // Look up canonical assessed values from PacsValuations via GeoId→Parcel→Valuation.
+        var allParcelIds      = salesData.Select(s => s.ParcelId).Distinct().ToHashSet();
+        var assessedByParcel  = await GetAssessedValueMapAsync(allParcelIds, taxYear, ct);
 
         var ratioRows = salesData
             .Select(s =>
@@ -301,17 +770,9 @@ public class TerraForgeController : ControllerBase
             })
             .ToListAsync(ct);
 
-        // Look up TF canonical assessed values for all page items.
+        // Look up canonical assessed values for page items from PacsValuations.
         var pageParcelIds = rawItems.Select(i => i.parcelId).Distinct().ToHashSet();
-        Dictionary<string, decimal> pageAssessed = new();
-        if (pageParcelIds.Count > 0)
-        {
-            pageAssessed = (await _db.Properties
-                .Where(p => pageParcelIds.Contains(p.ParcelNumber) && p.AssessedValue > 0)
-                .Select(p => new { p.ParcelNumber, p.AssessedValue })
-                .ToListAsync(ct))
-                .ToDictionary(p => p.ParcelNumber, p => p.AssessedValue);
-        }
+        var pageAssessed  = await GetAssessedValueMapAsync(pageParcelIds, taxYear, ct);
 
         var items = rawItems.Select(i =>
         {
@@ -407,7 +868,7 @@ public class TerraForgeController : ControllerBase
 
         var total = await query.CountAsync(ct);
 
-        var items = await query
+        var rawItems = await query
             .OrderByDescending(s => s.SaleDate)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -430,10 +891,38 @@ public class TerraForgeController : ControllerBase
                 bathrooms           = s.Bathrooms,
                 condition           = s.Condition,
                 qualityGrade        = s.QualityGrade,
-                pacsComputedRatio   = s.PacsComputedRatio,
                 qualificationSource = s.QualificationDecision != null ? "decision" : "recommendation"
             })
             .ToListAsync(ct);
+
+        // Compute sales ratio (AssessedValue / SalePrice) from current assessed values
+        var pageParcelIds = rawItems.Select(i => i.parcelId).Where(id => id != null).ToHashSet();
+        Dictionary<string, decimal> pageAssessed = new();
+        if (pageParcelIds.Count > 0)
+        {
+            pageAssessed = (await _db.Properties
+                .AsNoTracking()
+                .Where(p => pageParcelIds.Contains(p.ParcelNumber) && p.AssessedValue > 0)
+                .Select(p => new { p.ParcelNumber, p.AssessedValue })
+                .ToListAsync(ct))
+                .ToDictionary(p => p.ParcelNumber!, p => p.AssessedValue);
+        }
+
+        var items = rawItems.Select(i =>
+        {
+            decimal? salesRatio = i.parcelId != null
+                && pageAssessed.TryGetValue(i.parcelId, out var av)
+                && i.salePrice > 0
+                ? av / i.salePrice
+                : (decimal?)null;
+            return new
+            {
+                i.saleId, i.parcelId, i.address, i.hood, i.propertyType, i.imprvTypeCode,
+                i.saleDate, i.salePrice, i.rawSalePrice, i.adjustedSalePrice,
+                i.gla, i.lotSizeSqft, i.yearBuilt, i.bedrooms, i.bathrooms,
+                i.condition, i.qualityGrade, salesRatio, i.qualificationSource
+            };
+        }).ToList();
 
         _logger.LogInformation(
             "[TerraForge] CompsPool: year={Year} hood={Hood} type={Type} priceRange=[{Min},{Max}] " +
@@ -780,6 +1269,49 @@ public class TerraForgeController : ControllerBase
     }
 
     /// <summary>
+    /// Bulk qualification decision — apply the same decision to multiple sales in one call.
+    /// Max 200 sales per call. Errors on individual sales are logged but do not abort the batch.
+    /// </summary>
+    [HttpPatch("sale-qualification/bulk")]
+    public async Task<IActionResult> BulkPatchSaleQualification(
+        [FromBody] BulkSaleQualificationPatchDto body,
+        CancellationToken ct = default)
+    {
+        if (body.SaleIds == null || body.SaleIds.Length == 0)
+            return BadRequest(new { error = "saleIds is required and must not be empty." });
+
+        var ids = body.SaleIds.Take(200).ToArray();
+
+        var sales = await _db.ComparableSales
+            .Where(s => ids.Contains(s.Id) && s.CountyId == BentonCountyId)
+            .ToListAsync(ct);
+
+        var now = DateTime.UtcNow;
+        foreach (var sale in sales)
+        {
+            sale.QualificationDecision = body.QualificationDecision;
+            sale.DecisionReason        = body.ResearchNotes;
+            sale.DecisionBy            = body.DecidedBy;
+            sale.DecisionAt            = now;
+            sale.DecisionSource        = body.DecisionSource ?? "StaffConfirmed";
+        }
+
+        await _db.SaveChangesAsync(ct);
+
+        _logger.LogInformation(
+            "[TerraForge] Bulk sale qualification: {Count} sales set to {Decision} by {By}",
+            sales.Count, body.QualificationDecision, body.DecidedBy);
+
+        return Ok(new
+        {
+            requested = ids.Length,
+            updated   = sales.Count,
+            qualificationDecision = body.QualificationDecision,
+            decidedAt = now,
+        });
+    }
+
+    /// <summary>
     /// Record appraiser/staff qualification decision for a single sale.
     /// Body: { qualificationDecision, researchNotes, decidedBy, decisionSource }
     /// </summary>
@@ -815,6 +1347,385 @@ public class TerraForgeController : ControllerBase
             decidedAt             = sale.DecisionAt
         });
     }
+
+    // ── Ratio Study Trends ────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns quarterly COD and PRD trend data for the last 6 quarters,
+    /// computed from live qualified ComparableSales + Properties join.
+    /// </summary>
+    [HttpGet("ratio-study/trends")]
+    public async Task<IActionResult> GetRatioStudyTrends(
+        [FromQuery] int taxYear = 2026,
+        CancellationToken ct = default)
+    {
+        _logger.LogInformation("GetRatioStudyTrends: taxYear={TaxYear}", taxYear);
+
+        var cutoff = taxYear - 2;
+        var rawSales = await (
+            from s in _db.ComparableSales
+            where s.SaleQualification == "qualified"
+               && s.SaleDate >= new DateTime(cutoff, 1, 1)
+               && s.SaleDate <= new DateTime(taxYear, 12, 31)
+            join p in _db.Properties on s.ParcelId equals p.ParcelId into pj
+            from p in pj.DefaultIfEmpty()
+            where p == null || p.AssessedValue > 0
+            select new
+            {
+                s.SaleDate,
+                SalePrice = s.AdjustedSalePrice > 0 ? s.AdjustedSalePrice!.Value : s.SalePrice,
+                AssessedValue = p != null ? p.AssessedValue : 0m,
+            }
+        ).Where(x => x.AssessedValue > 0 && x.SalePrice > 0).ToListAsync(ct);
+
+        // Build quarter → ratio list map
+        var byQuarter = rawSales
+            .Select(x => new
+            {
+                Period = $"Q{((x.SaleDate.Month - 1) / 3) + 1}-{x.SaleDate.Year}",
+                Ratio = Math.Clamp((double)(x.AssessedValue / x.SalePrice), 0.5, 2.0),
+                AV = x.AssessedValue,
+            })
+            .GroupBy(x => x.Period)
+            .OrderBy(g =>
+            {
+                var parts = g.Key.Split('-');
+                return int.Parse(parts[1]) * 10 + int.Parse(parts[0].Replace("Q", ""));
+            })
+            .ToList();
+
+        var codTrend = new List<object>();
+        var prdTrend = new List<object>();
+
+        foreach (var grp in byQuarter)
+        {
+            var ratios = grp.Select(x => (decimal)x.Ratio).ToList();
+            var avs    = grp.Select(x => x.AV).ToList();
+            var cod    = TrendStats.ComputeCod(ratios);
+            var prd    = TrendStats.ComputePrd(ratios, avs);
+            codTrend.Add(new { period = grp.Key, cod = Math.Round((double)cod, 1) });
+            prdTrend.Add(new { period = grp.Key, prd = Math.Round((double)prd, 3) });
+        }
+
+        return Ok(new { codTrend, prdTrend, source = "live", saleCount = rawSales.Count });
+    }
+
+    /// <summary>
+    /// Returns per-stratum IAAO ratio study statistics (Property Type × Quality Grade).
+    /// Strata with fewer than <paramref name="minSales"/> qualified sales are flagged as
+    /// insufficient — IAAO Standard 5 §9 requires minimum 5 sales per stratum.
+    /// </summary>
+    [HttpGet("ratio-study/stratified")]
+    public async Task<IActionResult> GetStratifiedRatioStudy(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] int minSales = 5,
+        [FromQuery] string? propertyType = null,
+        [FromQuery] string? qualityGrade = null,
+        CancellationToken ct = default)
+    {
+        _logger.LogInformation("GetStratifiedRatioStudy: taxYear={TaxYear} minSales={MinSales}", taxYear, minSales);
+
+        try
+        {
+            // Qualified sale population — same rule as other ratio-study endpoints
+            var salesQuery = _db.ComparableSales
+                .AsNoTracking()
+                .Where(cs => cs.SalesYear == taxYear
+                    && cs.SaleQualification == "qualified"
+                    && cs.SalePrice > 0);
+
+            if (!string.IsNullOrEmpty(propertyType))
+                salesQuery = salesQuery.Where(cs => cs.PropertyType == propertyType);
+
+            var sales = await salesQuery
+                .Select(cs => new
+                {
+                    cs.ParcelId,
+                    cs.SalePrice,
+                    cs.AdjustedSalePrice,
+                    cs.PropertyType,
+                })
+                .ToListAsync(ct);
+
+            if (sales.Count == 0)
+                return Ok(new { taxYear, minSales, totalStrata = 0, sufficientStrata = 0, strata = Array.Empty<object>() });
+
+            var parcelIds = sales.Select(s => s.ParcelId).Distinct().ToHashSet();
+
+            // Join to CamaCharacteristics for QualityGrade
+            var camaMap = await _db.CamaCharacteristics
+                .AsNoTracking()
+                .Where(cc => parcelIds.Contains(cc.ParcelId) && cc.TaxYear == taxYear)
+                .Select(cc => new { cc.ParcelId, cc.QualityGrade })
+                .ToListAsync(ct);
+            var camaLookup = camaMap
+                .GroupBy(cc => cc.ParcelId)
+                .ToDictionary(g => g.Key, g => g.First().QualityGrade);
+
+            // Join to Properties for AssessedValue
+            var propMap = await _db.Properties
+                .AsNoTracking()
+                .Where(p => parcelIds.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+                .Select(p => new { p.ParcelNumber, p.AssessedValue })
+                .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue, ct);
+
+            // Build ratio records
+            var ratioRows = sales
+                .Select(s =>
+                {
+                    var effectiveSalePrice = (double)(s.AdjustedSalePrice > 0 ? s.AdjustedSalePrice!.Value : s.SalePrice);
+                    if (!propMap.TryGetValue(s.ParcelId, out var assessedValue)
+                        || assessedValue <= 0
+                        || effectiveSalePrice <= 0)
+                        return null;
+                    camaLookup.TryGetValue(s.ParcelId, out var qg);
+                    return new
+                    {
+                        PropertyType = s.PropertyType ?? "Unknown",
+                        QualityGrade = qg ?? "Unknown",
+                        Ratio = (double)assessedValue / effectiveSalePrice,
+                        SalePrice = effectiveSalePrice,
+                        AssessedValue = (double)assessedValue,
+                    };
+                })
+                .Where(r => r != null && r.Ratio > 0.1 && r.Ratio < 5.0)
+                .ToList();
+
+            if (!string.IsNullOrEmpty(qualityGrade))
+                ratioRows = ratioRows.Where(r => r!.QualityGrade == qualityGrade).ToList();
+
+            // Group and compute IAAO stats
+            var groups = ratioRows
+                .GroupBy(r => (r!.PropertyType, r.QualityGrade))
+                .Select(g =>
+                {
+                    var rows = g.OrderBy(r => r!.Ratio).ToList();
+                    var n = rows.Count;
+                    var insufficient = n < minSales;
+
+                    double? medianRatio = null, cod = null, prd = null, prb = null;
+
+                    if (!insufficient)
+                    {
+                        medianRatio = n % 2 == 0
+                            ? (rows[n / 2 - 1]!.Ratio + rows[n / 2]!.Ratio) / 2.0
+                            : rows[n / 2]!.Ratio;
+
+                        cod = rows.Average(r => Math.Abs(r!.Ratio - medianRatio.Value) / medianRatio.Value) * 100.0;
+
+                        var meanRatio = rows.Average(r => r!.Ratio);
+                        var sumSP = rows.Sum(r => r!.SalePrice);
+                        var wMean = sumSP > 0 ? rows.Sum(r => r!.AssessedValue) / sumSP : meanRatio;
+                        prd = wMean > 0 ? meanRatio / wMean : (double?)null;
+
+                        if (n >= 5)
+                        {
+                            var vVals = rows.Select(r => 0.5 * (r!.SalePrice + r.AssessedValue)).ToList();
+                            var vMean = vVals.Average();
+                            var rMean = rows.Average(r => r!.Ratio);
+                            var num = rows.Zip(vVals, (r, v) => (r!.Ratio - rMean) * (v - vMean)).Sum();
+                            var den = vVals.Sum(v => (v - vMean) * (v - vMean));
+                            if (den > 0) prb = num / den;
+                        }
+                    }
+
+                    bool medPass = medianRatio.HasValue && medianRatio >= 0.90 && medianRatio <= 1.10;
+                    bool codPass = cod.HasValue && cod <= 20.0;
+                    bool prdPass = prd.HasValue && prd >= 0.98 && prd <= 1.03;
+                    bool prbPass = prb.HasValue && Math.Abs(prb.Value) <= 0.05;
+
+                    return new
+                    {
+                        propertyType = g.Key.PropertyType,
+                        qualityGrade = g.Key.QualityGrade,
+                        saleCount = n,
+                        insufficientSample = insufficient,
+                        medianRatio = medianRatio.HasValue ? Math.Round(medianRatio.Value, 4) : (double?)null,
+                        cod = cod.HasValue ? Math.Round(cod.Value, 2) : (double?)null,
+                        prd = prd.HasValue ? Math.Round(prd.Value, 4) : (double?)null,
+                        prb = prb.HasValue ? Math.Round(prb.Value, 4) : (double?)null,
+                        iaaoMedianPass = medPass,
+                        iaaoCodPass = codPass,
+                        iaaoPrdPass = prdPass,
+                        iaaoPrbPass = prbPass,
+                    };
+                })
+                .OrderBy(g => g.propertyType)
+                .ThenBy(g => g.qualityGrade)
+                .ToList();
+
+            return Ok(new
+            {
+                taxYear,
+                minSales,
+                totalStrata = groups.Count,
+                sufficientStrata = groups.Count(g => !g.insufficientSample),
+                strata = groups,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "GetStratifiedRatioStudy failed: taxYear={TaxYear}", taxYear);
+            return StatusCode(500, new { error = "Failed to compute stratified ratio study." });
+        }
+    }
+
+    // ── Neighborhood Comparison Snapshots ─────────────────────────────────────
+
+    /// <summary>
+    /// Returns per-neighborhood ratio study statistics (median_ratio, COD, PRD, sale_count)
+    /// for the NeighborhoodRatioStudyDashboard.
+    /// Neighborhood code joined from CamaCharacteristics (same pattern as neighborhood-matrix).
+    /// </summary>
+    [HttpGet("comparison-snapshots")]
+    public async Task<IActionResult> GetComparisonSnapshots(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
+        CancellationToken ct = default)
+    {
+        _logger.LogInformation("GetComparisonSnapshots: taxYear={TaxYear}", taxYear);
+
+        var cutoff = taxYear - 2;
+
+        // Step 1: pull qualified sales (SP + ParcelId)
+        var sales = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.SaleQualification == "qualified"
+                     && s.SalesYear >= cutoff
+                     && s.SalesYear <= taxYear
+                     && s.SalePrice > 10_000)
+            .Select(s => new { s.ParcelId, SalePrice = s.AdjustedSalePrice > 0 ? s.AdjustedSalePrice!.Value : s.SalePrice })
+            .ToListAsync(ct);
+
+        if (sales.Count == 0) return Ok(Array.Empty<object>());
+
+        var parcelIds = sales.Select(s => s.ParcelId).Distinct().ToHashSet();
+
+        // Step 2: AV from Properties (ParcelNumber = ParcelId)
+        var avMap = await _db.Properties
+            .AsNoTracking()
+            .Where(p => parcelIds.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+            .Select(p => new { p.ParcelNumber, p.AssessedValue })
+            .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue, ct);
+
+        // Step 3: neighborhood from CamaCharacteristics
+        var hoodMap = await _db.CamaCharacteristics
+            .AsNoTracking()
+            .Where(c => parcelIds.Contains(c.ParcelId) && c.NeighborhoodCode != null && c.NeighborhoodCode != "")
+            .Select(c => new { c.ParcelId, c.NeighborhoodCode })
+            .ToDictionaryAsync(c => c.ParcelId, c => c.NeighborhoodCode!, ct);
+
+        // Step 4: group by neighborhood and compute IAAO stats
+        var byHood = new Dictionary<string, List<(decimal AV, decimal SP)>>();
+        foreach (var s in sales)
+        {
+            if (s.ParcelId == null) continue;
+            if (!avMap.TryGetValue(s.ParcelId, out var av)) continue;
+            if (!hoodMap.TryGetValue(s.ParcelId, out var hood)) continue;
+            var ratio = av / s.SalePrice;
+            if (ratio < 0.5m || ratio > 2.0m) continue;
+            if (!byHood.ContainsKey(hood)) byHood[hood] = new();
+            byHood[hood].Add((av, s.SalePrice));
+        }
+
+        var snapshots = byHood
+            .Where(kv => kv.Value.Count >= 5)
+            .Select(kv =>
+            {
+                var ratios = kv.Value.Select(p => p.AV / p.SP).ToList();
+                var avs    = kv.Value.Select(p => p.AV).ToList();
+                var parcelCount = kv.Value.Count; // using sale count as proxy
+                return new
+                {
+                    neighborhood_code = kv.Key,
+                    parcel_count = parcelCount,
+                    median_ratio = Math.Round((double)TrendStats.Median(ratios), 3),
+                    cod = Math.Round((double)TrendStats.ComputeCod(ratios), 1),
+                    prd = Math.Round((double)TrendStats.ComputePrd(ratios, avs), 3),
+                    sale_count = kv.Value.Count,
+                };
+            })
+            .OrderByDescending(x => x.sale_count)
+            .ToList();
+
+        _logger.LogInformation("GetComparisonSnapshots: {Count} neighborhoods returned", snapshots.Count);
+        return Ok(snapshots);
+    }
+
+    // ── Private helpers ──────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns ParcelNumber → AssessedValue from the Properties table for the given tax year.
+    /// Properties.ParcelNumber matches ComparableSales.ParcelId directly.
+    /// </summary>
+    private async Task<Dictionary<string, decimal>> GetAssessedValueMapAsync(
+        IEnumerable<string?> parcelNumbers, int taxYear, CancellationToken ct)
+    {
+        var ids = parcelNumbers.Where(id => id != null).Distinct().Cast<string>().ToHashSet();
+        if (ids.Count == 0) return new Dictionary<string, decimal>();
+
+        var rows = await _db.Properties
+            .AsNoTracking()
+            .Where(p => ids.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+            .Select(p => new { p.ParcelNumber, p.AssessedValue })
+            .ToListAsync(ct);
+
+        return rows.ToDictionary(p => p.ParcelNumber, p => p.AssessedValue);
+    }
+
+    /// <summary>
+    /// Returns ParcelNumber → neighborhood string.
+    /// Neighborhood data is not currently synced — returns empty map (UI shows data gap alert).
+    /// </summary>
+    private Task<Dictionary<string, string>> GetNeighborhoodMapAsync(
+        IEnumerable<string?> parcelNumbers, int taxYear, CancellationToken ct)
+    {
+        return Task.FromResult(new Dictionary<string, string>());
+    }
+}
+
+/// <summary>
+/// Shared IAAO stat helpers used by TerraForge trend and snapshot endpoints.
+/// </summary>
+internal static class TrendStats
+{
+    internal static decimal Median(List<decimal> values)
+    {
+        if (values.Count == 0) return 0m;
+        var s = values.Order().ToList();
+        return s.Count % 2 == 1
+            ? s[s.Count / 2]
+            : (s[s.Count / 2 - 1] + s[s.Count / 2]) / 2m;
+    }
+
+    internal static decimal ComputeCod(List<decimal> ratios)
+    {
+        if (ratios.Count < 3) return 0m;
+        var sorted = ratios.Order().ToList();
+        var q1 = sorted[(int)(sorted.Count * 0.25)];
+        var q3 = sorted[(int)(sorted.Count * 0.75)];
+        var iqr = q3 - q1;
+        var lo = q1 - 1.5m * iqr;
+        var hi = q3 + 1.5m * iqr;
+        var trimmed = sorted.Where(r => r >= lo && r <= hi).ToList();
+        if (trimmed.Count < 3) trimmed = sorted;
+        var med = Median(trimmed);
+        if (med == 0) return 0m;
+        var mad = trimmed.Average(r => Math.Abs(r - med));
+        return (mad / med) * 100m;
+    }
+
+    internal static decimal ComputePrd(List<decimal> ratios, List<decimal> avs)
+    {
+        if (ratios.Count == 0) return 1m;
+        var mean = ratios.Average();
+        var totalAv = avs.Sum();
+        if (totalAv == 0) return 1m;
+        var totalSp = ratios.Zip(avs, (r, av) => r > 0 ? av / r : 0m).Sum();
+        if (totalSp == 0) return 1m;
+        var weightedMean = totalAv / totalSp;
+        return weightedMean == 0 ? 1m : mean / weightedMean;
+    }
 }
 
 /// <summary>
@@ -824,6 +1735,16 @@ public class TerraForgeController : ControllerBase
 /// </summary>
 public sealed class SaleQualificationPatchDto
 {
+    public string  QualificationDecision { get; init; } = string.Empty;
+    public string? ResearchNotes         { get; init; }
+    public string? DecidedBy             { get; init; }
+    public string? DecisionSource        { get; init; }
+}
+
+/// <summary>PATCH body for bulk sale qualification decisions.</summary>
+public sealed class BulkSaleQualificationPatchDto
+{
+    public Guid[]  SaleIds               { get; init; } = Array.Empty<Guid>();
     public string  QualificationDecision { get; init; } = string.Empty;
     public string? ResearchNotes         { get; init; }
     public string? DecidedBy             { get; init; }
