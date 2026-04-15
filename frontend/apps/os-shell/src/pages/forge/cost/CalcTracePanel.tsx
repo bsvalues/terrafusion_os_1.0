@@ -58,13 +58,13 @@ function TraceCard({ trace }: { trace: CalcTraceRow }) {
           <div>
             <div className="text-muted-foreground">Base Unit Cost</div>
             <div className="font-medium text-foreground tabular-nums">
-              {trace.base_unit_cost != null ? `$${trace.base_unit_cost}/sqft` : "--"}
+              {trace.base_unit_cost != null ? `$${trace.base_unit_cost}/sq ft` : "--"}
             </div>
           </div>
           <div>
             <div className="text-muted-foreground">Area</div>
             <div className="font-medium text-foreground tabular-nums">
-              {trace.area_sqft != null ? `${trace.area_sqft.toLocaleString()} sqft` : "--"}
+              {trace.area_sqft != null ? `${trace.area_sqft.toLocaleString()} sq ft` : "--"}
             </div>
           </div>
           <div>

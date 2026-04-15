@@ -88,6 +88,13 @@ public class CamaCharacteristic
   public decimal? FunctionalObsolescence { get; set; }
   public decimal? ExternalObsolescence { get; set; }
 
+  // ── Location / Market Area ──
+  [StringLength(10)]
+  public string? NeighborhoodCode { get; set; }
+
+  [StringLength(10)]
+  public string? AbsSubdv { get; set; }
+
   // ── Ownership ──
   public Guid CountyId { get; set; }
   public County County { get; set; } = null!;

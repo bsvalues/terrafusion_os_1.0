@@ -21,10 +21,8 @@ import { getEnv } from '../../../../runtime/env';
 import { usePropertyStore } from '../../../../stores/propertyStore';
 import { BentoGrid } from '../../../../ui/materials/BentoGrid';
 import { BentoCard } from '../../../../ui/materials/BentoCard';
-import { AssessmentSparkline } from '../../../../components/workbench/AssessmentSparkline';
 import { AuditTimeline } from '../../../../components/workbench/AuditTimeline';
 import { DataLineageViewer } from '../../../../components/workbench/DataLineageViewer';
-import { ValueChangeExplainer } from '../../../../components/workbench/ValueChangeExplainer';
 import {
   useCostApproach,
   useSalesComparison,
@@ -197,7 +195,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
     <div className="space-y-4">
       {/* Live Forge API Summary */}
       <BentoCard
-        title="&#128293; Forge Valuation Summary"
+        title="🔥 Forge Valuation Summary"
         variant="default"
         actions={<WorkbenchSourceBadge source={overviewSource} />}
       >
@@ -224,7 +222,9 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
             {incomeAPI.data && (
               <div className="tf-panel p-3 text-center">
                 <div className="tf-text-tertiary text-xs">Income Indicated</div>
-                <div className="text-lg font-bold tf-text">{fmtCurrency(incomeAPI.data.valuation)}</div>
+                <div className="text-lg font-bold tf-text">
+                  {incomeAPI.data.valuation > 0 ? fmtCurrency(incomeAPI.data.valuation) : <span className="tf-text-dim text-base">N/A</span>}
+                </div>
               </div>
             )}
             {reconAPI.data && (
@@ -235,7 +235,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
             )}
           </div>
         )}
-        {!costAPI.loading && !salesAPI.loading && liveCount === 0 && (
+        {!costAPI.loading && !salesAPI.loading && !incomeAPI.loading && !reconAPI.loading && liveCount === 0 && (
           <p className="tf-text-tertiary text-sm py-2">
             Forge API data not yet available. Use the tools below to generate valuations.
           </p>
@@ -246,14 +246,14 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
       {(activeParcel || assessments.length > 0) && (
         <BentoGrid columns="auto" gap={0.75} padding={0}>
           {activeParcel && (
-            <BentoCard variant="stat" title="Loaded Market Value">
+            <BentoCard variant="stat" title="Market Value">
               <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}>
                 {fmtCurrency(activeParcel.marketValue)}
               </p>
             </BentoCard>
           )}
           {activeParcel && (
-            <BentoCard variant="stat" title="Loaded Assessed">
+            <BentoCard variant="stat" title="Assessed Value">
               <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-success))' }}>
                 {fmtCurrency(activeParcel.totalAssessedValue)}
               </p>
@@ -275,7 +275,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
       {/* Main Content Grid — Controls + Results */}
       <BentoGrid columns="auto" gap={1.5} padding={0}>
         {/* Controls Panel */}
-        <BentoCard variant="form" title="Valuation Parameters" actions={<span>&#9881;&#65039;</span>}>
+        <BentoCard variant="form" title="Valuation Parameters" actions={<span>⚙️</span>}>
           {/* Audience Selector */}
           <div className="mb-4">
             <label htmlFor="audience" className="block tf-text-secondary text-sm mb-2">Audience</label>
@@ -343,13 +343,13 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="tf-suite-accent-text font-semibold flex items-center gap-2">
-                  <span>&#10004;&#65039;</span> Valuation Explanation
+                  ✔️ Valuation Explanation
                 </h4>
                 {explainState.correlationId && (
                   <div className="flex items-center gap-2 text-xs">
                     <span className="tf-text-muted">ID:</span>
                     <code className="tf-suite-accent-text font-mono">{explainState.correlationId.slice(0, 16)}...</code>
-                    <button onClick={() => copyToClipboard(explainState.correlationId!)} className="tf-text-tertiary hover:tf-text" aria-label="Copy correlation ID">&#128203;</button>
+                    <button onClick={() => copyToClipboard(explainState.correlationId!)} className="tf-text-tertiary hover:tf-text" aria-label="Copy correlation ID">📋</button>
                   </div>
                 )}
               </div>
@@ -367,14 +367,14 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
 
               {explainState.result.explanation && (
                 <div className="tf-panel p-4">
-                  <h5 className="tf-text font-medium mb-2" style={{ opacity: 0.8 }}>&#128221; Explanation</h5>
+                  <h5 className="tf-text font-medium mb-2" style={{ opacity: 0.8 }}>📝 Explanation</h5>
                   <p className="tf-text-secondary">{explainState.result.explanation}</p>
                 </div>
               )}
 
               {explainState.result.drivers && explainState.result.drivers.length > 0 && (
                 <div className="tf-panel p-4">
-                  <h5 className="tf-text font-medium mb-3" style={{ opacity: 0.8 }}>&#128202; Value Drivers</h5>
+                  <h5 className="tf-text font-medium mb-3" style={{ opacity: 0.8 }}>📊 Value Drivers</h5>
                   <div className="space-y-2">
                     {explainState.result.drivers.map((driver, idx) => (
                       <div key={idx} className="flex items-center justify-between py-2 px-3 tf-panel rounded">
@@ -408,7 +408,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
             </div>
           ) : explainState.status === 'idle' ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="text-4xl mb-2">&#128293;</div>
+              <div className="text-4xl mb-2">🔥</div>
               <p className="tf-text-tertiary">Configure parameters and click Explain Valuation</p>
               <p className="tf-text-dim text-sm mt-1">Get tool-generated analysis of the selected valuation model results</p>
             </div>
@@ -423,7 +423,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
 
       {/* Value Change Analysis */}
       <BentoCard
-        title="&#128200; Value Change Analysis"
+        title="📈 Value Change Analysis"
         variant="default"
         actions={
           <WorkbenchSourceBadge
@@ -469,14 +469,14 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
 
             {valueChangeState.result.explanation && (
               <div className="tf-panel p-4">
-                <h5 className="tf-text font-medium mb-2" style={{ opacity: 0.8 }}>&#128221; Change Explanation</h5>
+                <h5 className="tf-text font-medium mb-2" style={{ opacity: 0.8 }}>📝 Change Explanation</h5>
                 <p className="tf-text-secondary">{valueChangeState.result.explanation}</p>
               </div>
             )}
 
             {valueChangeState.result.factors && valueChangeState.result.factors.length > 0 && (
               <div className="tf-panel p-4">
-                <h5 className="tf-text font-medium mb-3" style={{ opacity: 0.8 }}>&#128202; Contributing Factors</h5>
+                <h5 className="tf-text font-medium mb-3" style={{ opacity: 0.8 }}>📊 Contributing Factors</h5>
                 <div className="space-y-2">
                   {valueChangeState.result.factors.map((f, idx) => (
                     <div key={idx} className="flex items-center justify-between py-2 px-3 tf-panel rounded">
@@ -492,7 +492,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
               <div className="flex items-center gap-2 text-xs">
                 <span className="tf-text-muted">ID:</span>
                 <code className="tf-suite-accent-text font-mono">{valueChangeState.correlationId.slice(0, 16)}...</code>
-                <button onClick={() => copyToClipboard(valueChangeState.correlationId!)} className="tf-text-tertiary hover:tf-text" aria-label="Copy correlation ID">&#128203;</button>
+                <button onClick={() => copyToClipboard(valueChangeState.correlationId!)} className="tf-text-tertiary hover:tf-text" aria-label="Copy correlation ID">📋</button>
               </div>
             )}
           </div>
@@ -505,7 +505,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
 
       {/* Value History Trend */}
       <BentoCard
-        title="&#128202; Value History Trend"
+        title="📊 Value History Trend"
         variant="default"
         actions={
           <WorkbenchSourceBadge
@@ -543,7 +543,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
 
       {/* Run Valuation Model (write_high) */}
       <BentoCard
-        title="&#127959;&#65039; Run Valuation Model"
+        title="🏗️ Run Valuation Model"
         actions={
           <>
             <span className="text-xs tf-badge-error px-2 py-0.5 rounded">write_high</span>
@@ -578,7 +578,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
           </div>
         </div>
         <button onClick={handleRunValuation} disabled={valuationState.status === 'loading' || !valuationConfirmed} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4 disabled:opacity-50">
-          {valuationState.status === 'loading' ? 'Running Model...' : valuationConfirmed ? 'Run Valuation Model' : '&#9888;&#65039; Confirm Above to Enable'}
+          {valuationState.status === 'loading' ? 'Running Model...' : valuationConfirmed ? 'Run Valuation Model' : '⚠️ Confirm Above to Enable'}
         </button>
         {valuationState.status === 'loading' && <div role="status" className="flex items-center justify-center py-6 gap-3"><div className="tf-spinner h-8 w-8" /><span className="tf-text-tertiary">Running valuation model...</span></div>}
         {valuationState.status === 'success' && valuationState.result && (
@@ -606,20 +606,10 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
         {valuationState.status === 'error' && valuationState.error && <ErrorDisplay error={{ message: valuationState.error.message, errorCode: valuationState.error.code, correlationId: valuationState.correlationId }} />}
       </BentoCard>
 
-      {/* Value Trend Sparkline */}
-      {parcelId && (
-        <BentoCard title="Value Trend">
-          <AssessmentSparkline parcelId={parcelId} />
-        </BentoCard>
-      )}
-
-      {/* AI Change Explainer */}
-      {parcelId && (
-        <ValueChangeExplainer parcelId={parcelId} />
-      )}
-
       {/* Data Lineage */}
-      <DataLineageViewer />
+      <div className="rounded-lg p-4" style={{ background: 'hsl(var(--tf-surface) / 0.7)', border: '1px solid hsl(var(--tf-border) / 0.6)' }}>
+        <DataLineageViewer />
+      </div>
 
       {/* Audit Timeline */}
       {parcelId && (

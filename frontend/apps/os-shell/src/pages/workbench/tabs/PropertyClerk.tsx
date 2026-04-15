@@ -243,10 +243,10 @@ export const PropertyClerk: React.FC = () => {
     <div className='tf-suite-clerk space-y-4'>
       <ParcelContextHeader icon='📜' title='TerraClerk' parcelId={parcelId} subtitle={`Recording & title services for ${parcelId}`} />
 
-      {/* Loaded recording history from store */}
+      {/* Recording history from store */}
       {recordings.length > 0 && (
-        <BentoCard variant="table" title={`Loaded Recording History (${recordings.length})`}>
-          <p className='tf-text-tertiary text-sm mb-3'>Shown from the recording history currently loaded for this parcel.</p>
+        <BentoCard variant="table" title={`Recording History (${recordings.length})`}>
+          <p className='tf-text-tertiary text-sm mb-3'>Recording entries on file for this parcel.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
               <thead>

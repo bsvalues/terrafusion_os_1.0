@@ -182,14 +182,18 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
                     )}
                     {costAPI.data.buildingSqFt && (
                       <div className="flex justify-between text-xs">
-                        <span className="tf-text-dim">Sq Ft</span>
+                        <span className="tf-text-dim">GLA (Sq Ft)</span>
                         <span className="tf-text-secondary font-medium">{costAPI.data.buildingSqFt.toLocaleString()}</span>
                       </div>
                     )}
                     {costAPI.data.qualityGrade && (
                       <div className="flex justify-between text-xs">
                         <span className="tf-text-dim">Quality</span>
-                        <span className="tf-text-secondary font-medium capitalize">{costAPI.data.qualityGrade.toLowerCase()}</span>
+                        <span className="tf-text-secondary font-medium">
+                          {/^\d+$/.test(String(costAPI.data.qualityGrade))
+                            ? `Class ${costAPI.data.qualityGrade}`
+                            : costAPI.data.qualityGrade.toLowerCase()}
+                        </span>
                       </div>
                     )}
                     {costAPI.data.conditionGrade && (
@@ -206,7 +210,7 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
                     <div className="tf-text-tertiary text-xs font-semibold uppercase tracking-wide mb-2">Land</div>
                     {costAPI.data.landAreaSqFt && (
                       <div className="flex justify-between text-xs">
-                        <span className="tf-text-dim">Sq Ft</span>
+                        <span className="tf-text-dim">Lot Size (Sq Ft)</span>
                         <span className="tf-text-secondary font-medium">{costAPI.data.landAreaSqFt.toLocaleString()}</span>
                       </div>
                     )}
@@ -304,7 +308,9 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
                             {seg.unitPrice != null ? `$${seg.unitPrice.toFixed(2)}` : '—'}
                           </td>
                           <td className="text-right py-1 tf-text-dim">
-                            {seg.classCode || '—'}
+                            {seg.classCode != null
+                              ? (/^\d+$/.test(String(seg.classCode)) ? `C${seg.classCode}` : String(seg.classCode))
+                              : '—'}
                           </td>
                         </tr>
                       ))}

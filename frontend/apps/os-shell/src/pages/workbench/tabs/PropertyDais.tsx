@@ -34,7 +34,6 @@ import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
     InvocationHistory,
-    ParcelContextHeader,
     WorkbenchSourceBadge,
     type InvocationRecord,
 } from '../../../components/workbench';
@@ -171,12 +170,8 @@ export const PropertyDais: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const appeals = usePropertyStore((s) => s.appeals);
 
-  const [statusState, setStatusState] = useState<StatusState>({ status: 'idle' });
-  const [piltState, setPiltState] = useState<PiltState>({ status: 'idle' });
   const [exemptionState, setExemptionState] = useState<ExemptionState>({ status: 'idle' });
   const [levyState, setLevyState] = useState<DaisToolState<LevyResult>>({ status: 'idle' });
-  const [memoState, setMemoState] = useState<DaisToolState<MemoResult>>({ status: 'idle' });
-  const [memoTopic, setMemoTopic] = useState<string>('');
   const [noticeState, setNoticeState] = useState<DaisToolState<NoticeResult>>({ status: 'idle' });
   const [noticeReasons, setNoticeReasons] = useState<string>('');
   const [appealState, setAppealState] = useState<DaisToolState<AppealResponseResult>>({ status: 'idle' });
@@ -208,187 +203,11 @@ export const PropertyDais: React.FC = () => {
   const [hearingAppealId, setHearingAppealId] = useState<string>('');
   const [hearingDate, setHearingDate] = useState<string>('');
   const [hearingConfirmed, setHearingConfirmed] = useState(false);
-  const [certProgressState, setCertProgressState] = useState<DaisToolState<CertProgressResult>>({ status: 'idle' });
-  const [signOffState, setSignOffState] = useState<DaisToolState<SignOffResult>>({ status: 'idle' });
-  const [signOffStepId, setSignOffStepId] = useState<string>('');
-  const [signOffName, setSignOffName] = useState<string>('');
-  const [signOffConfirmed, setSignOffConfirmed] = useState(false);
   const [queueNoticeState, setQueueNoticeState] = useState<DaisToolState<QueueNoticeResult>>({ status: 'idle' });
   const [queueNoticeIds, setQueueNoticeIds] = useState<string>('');
-  const [queueStatsState, setQueueStatsState] = useState<DaisToolState<QueueStatsResult>>({ status: 'idle' });
   const [escalateState, setEscalateState] = useState<DaisToolState<EscalateResult>>({ status: 'idle' });
   const [escalateTaskId, setEscalateTaskId] = useState<string>('');
   const [escalateReason, setEscalateReason] = useState<string>('');
-
-  const handleCheckStatus = useCallback(async () => {
-    setStatusState({ status: 'loading' });
-
-    const taxYear = new Date().getFullYear();
-
-    const params = {
-      county: 'benton',
-      taxYear,
-    };
-
-    try {
-      const response = await invokeTool({
-        toolId: 'check_cert_status',
-        params,
-        parcelId,
-      });
-
-      if (response.success && response.result) {
-        let parsed: StatusResult;
-        try {
-          parsed =
-            typeof response.result.output === 'string'
-              ? JSON.parse(response.result.output)
-              : response.result.output;
-        } catch {
-          parsed = { county: 'benton', taxYear, status: 'unknown', completedSteps: [], remainingSteps: [] };
-        }
-
-        setStatusState({
-          status: 'success',
-          result: parsed,
-          correlationId: response.correlationId,
-        });
-
-        setHistory((prev) => [
-          {
-            id: crypto.randomUUID(),
-            toolId: 'check_cert_status',
-            status: 'success',
-            correlationId: response.correlationId || 'unknown',
-            timestamp: new Date(),
-            meta: { county: 'benton', taxYear },
-          },
-          ...prev.slice(0, 9),
-        ]);
-      } else {
-        const errorInfo: ErrorInfo = {
-          code: response.error?.code || 'STATUS_CHECK_FAILED',
-          message: response.error?.message || 'Failed to check workflow status',
-          severity: 'error' as const,
-          correlationId: response.correlationId,
-        };
-
-        setStatusState({
-          status: 'error',
-          correlationId: response.correlationId,
-          error: errorInfo,
-        });
-
-        setHistory((prev) => [
-          {
-            id: crypto.randomUUID(),
-            toolId: 'check_cert_status',
-            status: 'error',
-            correlationId: response.correlationId || 'unknown',
-            timestamp: new Date(),
-            errorCode: response.error?.code || 'STATUS_CHECK_FAILED',
-            meta: { county: 'benton', taxYear },
-          },
-          ...prev.slice(0, 9),
-        ]);
-      }
-    } catch (err) {
-      const clientCorrelationId = `net-${crypto.randomUUID().slice(0, 8)}`;
-      const networkError: ErrorInfo = {
-        code: 'NETWORK_ERROR',
-        message: err instanceof Error ? err.message : 'Network error occurred',
-        severity: 'error' as const,
-        correlationId: clientCorrelationId,
-      };
-
-      setStatusState({
-        status: 'error',
-        correlationId: clientCorrelationId,
-        error: networkError,
-      });
-
-      setHistory((prev) => [
-        {
-          id: crypto.randomUUID(),
-          toolId: 'check_cert_status',
-          status: 'error',
-          correlationId: clientCorrelationId,
-          timestamp: new Date(),
-          errorCode: 'NETWORK_ERROR',
-          meta: { county: 'benton', taxYear },
-        },
-        ...prev.slice(0, 9),
-      ]);
-    }
-  }, [parcelId]);
-
-  /** calculate_pilt_payment — PILT district payment calculation */
-  const handleCalculatePilt = useCallback(async () => {
-    setPiltState({ status: 'loading' });
-    const fiscalYear = new Date().getFullYear();
-
-    try {
-      const response = await invokeTool({
-        toolId: 'calculate_pilt_payment',
-        params: { county: 'benton', fiscalYear },
-        parcelId,
-      });
-
-      if (response.success && response.result) {
-        let parsed: PiltResult;
-        try {
-          const rawParsed = typeof response.result.output === 'string'
-            ? JSON.parse(response.result.output)
-            : response.result.output;
-          parsed = {
-            county: rawParsed.county ?? 'BENTON',
-            fiscalYear: rawParsed.fiscalYear ?? rawParsed.taxYear ?? fiscalYear,
-            totalAssessedValue: rawParsed.totalAssessedValue ?? 0,
-            totalPiltDue: rawParsed.totalPiltDue ?? 0,
-            districtCount: rawParsed.districtCount ?? rawParsed.districtsCount ?? rawParsed.districts?.length ?? 0,
-            summary: rawParsed.summary
-              ?? `PILT request returned ${rawParsed.districtCount ?? rawParsed.districtsCount ?? rawParsed.districts?.length ?? 0} districts with total due $${(rawParsed.totalPiltDue ?? 0).toLocaleString()}.`,
-          };
-        } catch {
-          parsed = {
-            county: 'BENTON',
-            fiscalYear,
-            totalAssessedValue: 0,
-            totalPiltDue: 0,
-            districtCount: 0,
-            summary: 'No PILT summary returned.',
-          };
-        }
-
-        setPiltState({ status: 'success', result: parsed, correlationId: response.correlationId });
-        setHistory((prev) => [{
-          id: crypto.randomUUID(), toolId: 'calculate_pilt_payment', status: 'success',
-          correlationId: response.correlationId || 'unknown', timestamp: new Date(),
-        }, ...prev.slice(0, 9)]);
-      } else {
-        setPiltState({
-          status: 'error', correlationId: response.correlationId,
-          error: { code: response.error?.code || 'PILT_FAILED', message: response.error?.message || 'PILT calculation failed', severity: 'error', correlationId: response.correlationId },
-        });
-        setHistory((prev) => [{
-          id: crypto.randomUUID(), toolId: 'calculate_pilt_payment', status: 'error',
-          correlationId: response.correlationId || 'unknown', timestamp: new Date(),
-          errorCode: response.error?.code || 'PILT_FAILED',
-        }, ...prev.slice(0, 9)]);
-      }
-    } catch (err) {
-      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
-      setPiltState({
-        status: 'error', correlationId: cid,
-        error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid },
-      });
-      setHistory((prev) => [{
-        id: crypto.randomUUID(), toolId: 'calculate_pilt_payment', status: 'error',
-        correlationId: cid, timestamp: new Date(), errorCode: 'NETWORK_ERROR',
-      }, ...prev.slice(0, 9)]);
-    }
-  }, [parcelId]);
-
   /** explain_senior_exemption_impact — senior exemption impact summary */
   const handleExemptionImpact = useCallback(async () => {
     setExemptionState({ status: 'loading' });
@@ -458,26 +277,6 @@ export const PropertyDais: React.FC = () => {
       setLevyState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId]);
-
-  /** Invoke generate_commissioner_memo */
-  const handleCommissionerMemo = useCallback(async () => {
-    if (!memoTopic.trim()) return;
-    setMemoState({ status: 'loading' });
-    try {
-      const response = await invokeTool({ toolId: 'generate_commissioner_memo', params: { county: 'benton', topic: memoTopic, taxYear: new Date().getFullYear(), format: 'brief' }, parcelId });
-      if (response.success && response.result) {
-        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
-        setMemoState({ status: 'success', result: parsed, correlationId: response.correlationId });
-        setHistory(prev => [{ id: crypto.randomUUID(), toolId: 'generate_commissioner_memo', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { topic: memoTopic } }, ...prev.slice(0, 19)]);
-      } else {
-        setMemoState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'MEMO_FAILED', message: response.error?.message || 'Memo generation failed', severity: 'error', correlationId: response.correlationId } });
-      }
-    } catch (err) {
-      const cid = `net-${crypto.randomUUID().slice(0, 8)}`;
-      setMemoState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
-    }
-  }, [parcelId, memoTopic]);
-
   /** Invoke draft_value_change_notice — write_low notice draft */
   const handleDraftNotice = useCallback(async () => {
     const codes = noticeReasons.split(',').map(s => s.trim()).filter(Boolean);
@@ -682,41 +481,6 @@ export const PropertyDais: React.FC = () => {
     }
   }, [parcelId, hearingAppealId, hearingDate]);
 
-  const handleGetCertProgress = useCallback(async () => {
-    setCertProgressState({ status: 'loading' });
-    try {
-      const response = await invokeTool({ toolId: 'get_certification_progress', params: { county: 'benton', taxYear: new Date().getFullYear() }, parcelId });
-      if (response.success && response.result) {
-        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
-        setCertProgressState({ status: 'success', result: parsed, correlationId: response.correlationId });
-        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'get_certification_progress', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev.slice(0, 19)]);
-      } else {
-        setCertProgressState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'CERT_PROGRESS_FAILED', message: response.error?.message || 'Certification progress lookup failed', severity: 'error', correlationId: response.correlationId } });
-      }
-    } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
-      setCertProgressState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
-    }
-  }, [parcelId]);
-
-  const handleSignOff = useCallback(async () => {
-    if (!signOffStepId.trim() || !signOffName.trim()) { setSignOffState({ status: 'error', error: { code: 'VALIDATION', message: 'Step ID and signer name are required', severity: 'error' } }); return; }
-    setSignOffState({ status: 'loading' });
-    try {
-      const response = await invokeTool({ toolId: 'sign_off_certification_step', params: { county: 'benton', taxYear: new Date().getFullYear(), stepId: signOffStepId.trim(), signedBy: signOffName.trim() }, parcelId });
-      if (response.success && response.result) {
-        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
-        setSignOffState({ status: 'success', result: parsed, correlationId: response.correlationId });
-        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'sign_off_certification_step', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { stepId: signOffStepId } }, ...prev.slice(0, 19)]);
-      } else {
-        setSignOffState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'SIGN_OFF_FAILED', message: response.error?.message || 'Certification sign-off failed', severity: 'error', correlationId: response.correlationId } });
-      }
-    } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
-      setSignOffState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
-    }
-  }, [parcelId, signOffStepId, signOffName]);
-
   const handleQueueNotice = useCallback(async () => {
     const ids = queueNoticeIds.split(',').map(s => s.trim()).filter(Boolean);
     if (ids.length === 0) { setQueueNoticeState({ status: 'error', error: { code: 'VALIDATION', message: 'Enter at least one notice ID', severity: 'error' } }); return; }
@@ -735,23 +499,6 @@ export const PropertyDais: React.FC = () => {
       setQueueNoticeState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, queueNoticeIds]);
-
-  const handleGetQueueStats = useCallback(async () => {
-    setQueueStatsState({ status: 'loading' });
-    try {
-      const response = await invokeTool({ toolId: 'get_queue_statistics', params: { county: 'benton' }, parcelId });
-      if (response.success && response.result) {
-        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
-        setQueueStatsState({ status: 'success', result: parsed, correlationId: response.correlationId });
-        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'get_queue_statistics', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev.slice(0, 19)]);
-      } else {
-        setQueueStatsState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'STATS_FAILED', message: response.error?.message || 'Queue statistics failed', severity: 'error', correlationId: response.correlationId } });
-      }
-    } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
-      setQueueStatsState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
-    }
-  }, [parcelId]);
 
   const handleEscalateTask = useCallback(async () => {
     if (!escalateTaskId.trim() || !escalateReason.trim()) { setEscalateState({ status: 'error', error: { code: 'VALIDATION', message: 'Task ID and reason are required', severity: 'error' } }); return; }
@@ -783,67 +530,19 @@ export const PropertyDais: React.FC = () => {
       return dateStr;
     }
   };
-
-  const getStepIcon = (status: 'completed' | 'current' | 'pending') => {
-    switch (status) {
-      case 'completed':
-        return '✅';
-      case 'current':
-        return '🔄';
-      case 'pending':
-        return '⏳';
-    }
-  };
-
-  const buildWorkflowSteps = (result: StatusResult): WorkflowStep[] => {
-    const steps: WorkflowStep[] = [];
-
-    if (result.completedSteps) {
-      result.completedSteps.forEach((step) => {
-        steps.push({ name: step, status: 'completed' });
-      });
-    }
-
-    if (result.remainingSteps) {
-      result.remainingSteps.forEach((step) => {
-        steps.push({ name: step, status: 'pending' });
-      });
-    }
-
-    return steps;
-  };
-
   const isDev = getEnv('MODE') === 'development';
 
   return (
     <div className='tf-suite-dais space-y-4' data-testid='property-dais-tab'>
-      {/* Header */}
-      <ParcelContextHeader
-        icon='📊'
-        title='TerraDais'
-        parcelId={parcelId}
-        subtitle={`Governed workflow tools requested via TerraDais for ${parcelId}`}
-      />
-
-      {/* Baseline Disclosure */}
-      <div className="tf-status-info rounded-xl p-4" data-testid="dais-baseline-disclosure">
-        <div className="flex items-start justify-between gap-3">
-          <p className="tf-text">
-            All tool sections below are idle until you submit a request. Results are returned from governed tool invocations and displayed with their correlation IDs. No data is simulated or pre-loaded.
-          </p>
-          <WorkbenchSourceBadge source="fallback" className="shrink-0" />
-        </div>
-      </div>
-
-      {/* Loaded Appeals from Store */}
+      {/* Active Appeals from Store */}
       {appeals.length > 0 && (
         <BentoGrid columns="auto" gap={0.75} padding={0}>
-          <BentoCard variant="stat" title="Loaded Appeals">
+          <BentoCard variant="stat" title="Active Appeals">
             <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-error, 0 80% 60%))' }}>
               {appeals.length} appeal{appeals.length !== 1 ? 's' : ''}
             </p>
             <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-              Shown from the appeal records currently loaded for this parcel.
+              Appeal records on file for this parcel.
             </p>
           </BentoCard>
           {appeals.slice(0, 2).map((a) => (
@@ -858,234 +557,6 @@ export const PropertyDais: React.FC = () => {
           ))}
         </BentoGrid>
       )}
-
-      {/* Main Content Grid */}
-      <BentoGrid columns="auto" gap={1.5} padding={0}>
-        {/* Controls Panel */}
-        <BentoCard variant="form" title="Certification Status Request" actions={<span>⚙️</span>}>
-          <p className='tf-text-tertiary text-sm mb-4'>
-            Submit a governed certification-status request for Benton County and the current tax year, then review the returned county, tax year, status, completed steps, remaining steps, and certified-at timestamp
-          </p>
-
-          {/* Check Status Button */}
-          <button
-            onClick={handleCheckStatus}
-            disabled={statusState.status === 'loading'}
-            className='tf-suite-dais-cta w-full py-2 px-4 rounded-lg font-semibold transition-all'
-          >
-            {statusState.status === 'loading' ? 'Submitting...' : 'Submit Certification Status Request'}
-          </button>
-        </BentoCard>
-
-        {/* Results Panel */}
-        <BentoCard span="2x1">
-          {statusState.status === 'loading' ? (
-            <div role='status' className='flex flex-col items-center justify-center py-12 gap-3'>
-              <div className='tf-spinner h-10 w-10' />
-              <span className='tf-text-tertiary'>Submitting certification-status request...</span>
-            </div>
-          ) : statusState.status === 'success' && statusState.result ? (
-            <div className='space-y-4'>
-              {/* Status Summary */}
-              <div className='flex items-center justify-between mb-3'>
-                <h4 className='tf-suite-accent-text font-semibold flex items-center gap-2'>
-                  <span>✅</span> Certification Status
-                </h4>
-                {statusState.correlationId && (
-                  <div className='flex items-center gap-2 text-xs'>
-                    <span className='tf-text-muted'>ID:</span>
-                    <code className='tf-suite-accent-text font-mono'>
-                      {statusState.correlationId.slice(0, 16)}...
-                    </code>
-                    <button
-                      onClick={() => copyToClipboard(statusState.correlationId!)}
-                      className='tf-text-tertiary hover:text-[hsl(var(--tf-text))]'
-                      aria-label='Copy correlation ID'
-                    >
-                      📋
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Status Cards */}
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                <div className='tf-panel p-4'>
-                  <div className='tf-text-tertiary text-sm'>Status</div>
-                  <div className='text-xl font-bold tf-text'>
-                    {statusState.result.status || 'unknown'}
-                  </div>
-                </div>
-                <div className='tf-panel p-4'>
-                  <div className='tf-text-tertiary text-sm'>County</div>
-                  <div className='text-xl font-bold tf-text'>
-                    {statusState.result.county || 'unknown'}
-                  </div>
-                </div>
-                <div className='tf-panel p-4'>
-                  <div className='tf-text-tertiary text-sm'>Tax Year</div>
-                  <div className='text-xl font-bold tf-text'>
-                    {statusState.result.taxYear}
-                  </div>
-                </div>
-              </div>
-
-              <p className='tf-text-tertiary text-sm'>
-                Shows the returned county, tax year, status, completed steps, remaining steps, and certified-at timestamp for this certification-status request.
-              </p>
-
-              {/* Workflow Steps */}
-              {(statusState.result.completedSteps?.length ||
-                statusState.result.remainingSteps?.length) && (
-                <div className='tf-panel p-4'>
-                  <h5 className='tf-text-secondary font-medium mb-3'>📋 Workflow Steps</h5>
-                  <div className='space-y-2'>
-                    {buildWorkflowSteps(statusState.result).map((step, idx) => (
-                      <div
-                        key={idx}
-                        className={`flex items-center gap-3 py-2 px-3 rounded ${step.status === 'completed' ? 'tf-status-success' : 'tf-panel'}`}
-                      >
-                        <span>{getStepIcon(step.status)}</span>
-                        <span
-                          className={
-                            step.status === 'completed'
-                                ? ''
-                                : 'tf-text-muted'
-                          }
-                          style={
-                            step.status === 'completed'
-                              ? { color: 'hsl(var(--tf-success))' }
-                              : undefined
-                          }
-                        >
-                          {step.name}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Certified At */}
-              {statusState.result.certifiedAt && (
-                <div className='text-xs tf-text-dim'>
-                  Certified at: {formatDate(statusState.result.certifiedAt)}
-                </div>
-              )}
-
-              {/* Dev Info */}
-              {isDev && statusState.correlationId && (
-                <div className='text-xs tf-text-dim border-t tf-border pt-3'>
-                  <details>
-                    <summary className='cursor-pointer hover:text-[hsl(var(--tf-text)/0.6)]'>Developer Info</summary>
-                    <pre className='mt-2 tf-overlay rounded p-2 overflow-x-auto'>
-                      pnpm run trace:query --correlation {statusState.correlationId}
-                    </pre>
-                  </details>
-                </div>
-              )}
-            </div>
-          ) : statusState.status === 'idle' ? (
-            <div className='flex flex-col items-center justify-center py-12 text-center'>
-              <div className='text-4xl mb-2'>📊</div>
-              <p className='tf-text-tertiary'>Submit a certification-status request to view the returned status and steps</p>
-              <p className='tf-text-dim text-sm mt-1'>
-                Review the returned county, tax year, completed steps, remaining steps, and certified-at timestamp
-              </p>
-            </div>
-          ) : null}
-        </BentoCard>
-      </BentoGrid>
-
-      {/* Error Display */}
-      {statusState.status === 'error' && statusState.error && (
-        <ErrorDisplay
-          error={{
-            message: statusState.error.message,
-            errorCode: statusState.error.code,
-            correlationId: statusState.correlationId,
-          }}
-        />
-      )}
-
-      {/* ================================================================ */}
-      {/* PILT Calculator — calculate_pilt_payment governed tool            */}
-      {/* ================================================================ */}
-      <BentoGrid columns="auto" gap={1.5} padding={0}>
-        <BentoCard title="PILT Calculator" actions={<span>🏛️</span>}>
-          <p className='tf-text-dim text-sm mb-3'>
-            Submit a governed PILT summary request for Benton County and the current fiscal year, then review the returned total due, district count, assessed value, and summary text
-          </p>
-          <p className='text-xs tf-text-tertiary mb-3'>
-            Limited applicability: this TerraPILT-style calculation does not apply to every parcel and is better treated as a standalone county or fiscal module when needed.
-          </p>
-          <button
-            onClick={handleCalculatePilt}
-            disabled={piltState.status === 'loading'}
-            className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta'
-          >
-            {piltState.status === 'loading' ? 'Submitting...' : 'Submit PILT Summary Request'}
-          </button>
-
-          {piltState.status === 'success' && piltState.result && (
-            <div className='mt-4 space-y-3'>
-              <div className='flex items-center justify-between'>
-                <span className='tf-text-secondary text-sm'>Total PILT Due</span>
-                <span className='tf-text font-bold text-lg'>
-                  ${piltState.result.totalPiltDue?.toLocaleString() ?? '0'}
-                </span>
-              </div>
-              <div className='flex items-center justify-between text-sm'>
-                <span className='tf-text-dim'>District Count</span>
-                <span className='tf-text'>{piltState.result.districtCount}</span>
-              </div>
-              <div className='flex items-center justify-between text-sm'>
-                <span className='tf-text-dim'>Assessed Value</span>
-                <span className='tf-text'>${piltState.result.totalAssessedValue?.toLocaleString() ?? '0'}</span>
-              </div>
-              <p className='text-xs tf-text-dim'>Shows the returned total due, district count, assessed value, and summary text for this PILT request.</p>
-              {piltState.correlationId && (
-                <div className='flex items-center gap-2 text-xs'>
-                  <span className='tf-text-muted'>ID:</span>
-                  <code className='tf-suite-accent-text font-mono'>{piltState.correlationId.slice(0, 16)}...</code>
-                  <button onClick={() => copyToClipboard(piltState.correlationId!)} className='tf-text-tertiary' aria-label='Copy'>📋</button>
-                  <WorkbenchSourceBadge source='live' />
-                </div>
-              )}
-            </div>
-          )}
-
-          {piltState.status === 'error' && piltState.error && (
-            <div className='mt-3'>
-              <ErrorDisplay error={{ message: piltState.error.message, errorCode: piltState.error.code, correlationId: piltState.correlationId }} />
-            </div>
-          )}
-        </BentoCard>
-
-        {/* PILT Request Summary */}
-        <BentoCard title="PILT Request Summary" actions={<span>📋</span>}>
-          {piltState.status === 'success' && piltState.result ? (
-            <div className='space-y-3'>
-              <div className='tf-panel p-4'>
-                <p className='tf-text-secondary text-sm whitespace-pre-wrap'>Returned summary text: {piltState.result.summary}</p>
-              </div>
-              <div className='flex items-center justify-between text-xs tf-text-dim'>
-                <span>County: {piltState.result.county}</span>
-                <span>FY {piltState.result.fiscalYear}</span>
-              </div>
-            </div>
-          ) : piltState.status === 'idle' ? (
-            <div className='flex flex-col items-center justify-center py-8 text-center'>
-              <div className='text-3xl mb-2'>🏛️</div>
-              <p className='tf-text-tertiary text-sm'>Submit a PILT summary request to view the returned summary text</p>
-            </div>
-          ) : piltState.status === 'loading' ? (
-            <div className='flex items-center justify-center py-8' role='status'>
-              <div className='tf-spinner h-8 w-8' />
-            </div>
-          ) : null}
-        </BentoCard>
-      </BentoGrid>
 
       {/* ================================================================ */}
       {/* Senior Exemption Impact — explain_senior_exemption_impact tool    */}
@@ -1179,40 +650,6 @@ export const PropertyDais: React.FC = () => {
           </div>
         )}
         {levyState.status === 'error' && levyState.error && <ErrorDisplay error={{ message: levyState.error.message, errorCode: levyState.error.code, correlationId: levyState.correlationId }} />}
-      </BentoCard>
-
-      {/* Commissioner Memo */}
-      <BentoCard title='📝 Commissioner Memo' actions={<span>🏛️</span>}>
-        <p className='tf-text-tertiary text-sm mb-4'>Submit a governed commissioner-memo draft request for the selected topic and current tax year, then review the returned memo title, body, and word count</p>
-        <div className='mb-4'>
-          <label htmlFor='memo-topic' className='block tf-text-secondary text-sm mb-2'>Topic</label>
-          <input id='memo-topic' type='text' value={memoTopic} onChange={e => setMemoTopic(e.target.value)} placeholder='e.g. Annual revaluation summary' className='w-full tf-input px-3 py-2' />
-        </div>
-        <button onClick={handleCommissionerMemo} disabled={memoState.status === 'loading' || !memoTopic.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {memoState.status === 'loading' ? 'Submitting...' : 'Submit Commissioner Memo Draft Request'}
-        </button>
-        {memoState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Submitting commissioner-memo draft request...</span></div>}
-        {memoState.status === 'success' && memoState.result && (
-          <div className='space-y-3'>
-            <div className='tf-panel p-4'>
-              <h5 className='tf-text font-semibold mb-2'>{memoState.result.memo.title}</h5>
-              <p className='tf-text-secondary whitespace-pre-wrap'>{memoState.result.memo.body}</p>
-              <p className='text-xs tf-text-dim mt-2'>Shows the returned memo title, body, and word count for this commissioner-memo draft request.</p>
-            </div>
-            <div className='flex items-center gap-4 text-xs tf-text-dim'>
-              <span>{memoState.result.wordCount} words</span>
-              {memoState.correlationId && (
-                <span className='flex items-center gap-1'>
-                  <span>ID:</span>
-                  <code className='tf-suite-accent-text font-mono'>{memoState.correlationId.slice(0, 16)}...</code>
-                  <button onClick={() => copyToClipboard(memoState.correlationId!)} className='tf-text-tertiary hover:tf-text' aria-label='Copy correlation ID'>📋</button>
-                  <WorkbenchSourceBadge source='live' />
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-        {memoState.status === 'error' && memoState.error && <ErrorDisplay error={{ message: memoState.error.message, errorCode: memoState.error.code, correlationId: memoState.correlationId }} />}
       </BentoCard>
 
       {/* Value Change Notice (write_low) */}
@@ -1503,59 +940,6 @@ export const PropertyDais: React.FC = () => {
         {hearingState.status === 'error' && hearingState.error && <ErrorDisplay error={{ message: hearingState.error.message, errorCode: hearingState.error.code, correlationId: hearingState.correlationId }} />}
       </BentoCard>
 
-      {/* ═══ R2.9 TerraCert Module ═══ */}
-
-      {/* Certification Progress (read_only) */}
-      <BentoCard title='📊 Certification Progress' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Request the returned certification progress fields, then review the returned percent complete, checklist steps, and blockers</p>
-        <button onClick={handleGetCertProgress} disabled={certProgressState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {certProgressState.status === 'loading' ? 'Requesting...' : 'Request Certification Progress'}
-        </button>
-        {certProgressState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Requesting certification progress...</span></div>}
-        {certProgressState.status === 'success' && certProgressState.result && (
-          <div className='space-y-2'>
-            <div className='tf-panel p-4'>
-              <div className='flex items-center justify-between mb-2'>
-                <span className='font-semibold tf-text'>Returned percent complete: {certProgressState.result.percentComplete}%</span>
-                <span className='text-xs tf-badge px-2 py-0.5 rounded'>Returned tax year: {certProgressState.result.taxYear}</span>
-              </div>
-              <div className='w-full tf-border rounded-full h-2 mb-3'><div className='bg-[color:var(--terra-green,#22c55e)] h-2 rounded-full transition-all' style={{ width: `${certProgressState.result.percentComplete}%` }} /></div>
-              {certProgressState.result.steps.length > 0 && <div className='space-y-1'>{certProgressState.result.steps.map(s => <div key={s.id} className='flex items-center gap-2 text-sm'><span>{s.complete ? '✅' : '⏳'}</span><span className='tf-text'>{s.name}</span></div>)}</div>}
-              {certProgressState.result.blockers.length > 0 && <div className='mt-2 text-xs text-red-400'>Blockers: {certProgressState.result.blockers.join(', ')}</div>}
-              <p className='text-xs tf-text-dim mt-2'>Shows the returned percent complete, checklist steps, and blockers for this certification progress request.</p>
-            </div>
-            {certProgressState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{certProgressState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
-          </div>
-        )}
-        {certProgressState.status === 'error' && certProgressState.error && <ErrorDisplay error={{ message: certProgressState.error.message, errorCode: certProgressState.error.code, correlationId: certProgressState.correlationId }} />}
-      </BentoCard>
-
-      {/* Certification Sign-Off (write_high) */}
-      <BentoCard title='✍️ Certification Sign-Off' actions={<span className='text-xs tf-badge-danger px-2 py-0.5 rounded'>write_high</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Submit a governed certification sign-off request for this step, then review the returned step ID, signer, and signed-at timestamp</p>
-        <div className='space-y-2 mb-3'>
-          <input type='text' value={signOffStepId} onChange={e => setSignOffStepId(e.target.value)} placeholder='Step ID (e.g. step-review-001)' className='w-full p-2 rounded-lg tf-input' />
-          <input type='text' value={signOffName} onChange={e => setSignOffName(e.target.value)} placeholder='Signer name' className='w-full p-2 rounded-lg tf-input' />
-          <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
-            <label className='flex items-center gap-3 cursor-pointer'>
-              <input type='checkbox' checked={signOffConfirmed} onChange={e => setSignOffConfirmed(e.target.checked)} className='h-4 w-4' />
-              <span className='text-sm tf-text'>I confirm this certification sign-off request is ready for submission for step <strong>{signOffStepId || '...'}</strong></span>
-            </label>
-          </div>
-        </div>
-        <button onClick={handleSignOff} disabled={signOffState.status === 'loading' || !signOffStepId.trim() || !signOffName.trim() || !signOffConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-          {signOffState.status === 'loading' ? 'Submitting...' : signOffConfirmed ? 'Submit Certification Sign-Off Request' : '⚠️ Confirm Above to Enable'}
-        </button>
-        {signOffState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Submitting certification sign-off request...</span></div>}
-        {signOffState.status === 'success' && signOffState.result && (
-          <div className='space-y-2'>
-            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Returned step ID: {signOffState.result.stepId}</span><p className='tf-text-secondary text-sm'>Returned signer: {signOffState.result.signedBy} | Returned signed-at: {formatDate(signOffState.result.signedAt)}</p><p className='text-xs tf-text-dim mt-2'>Shows the returned step ID, signer, and signed-at timestamp for this certification sign-off request.</p></div>
-            {signOffState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{signOffState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
-          </div>
-        )}
-        {signOffState.status === 'error' && signOffState.error && <ErrorDisplay error={{ message: signOffState.error.message, errorCode: signOffState.error.code, correlationId: signOffState.correlationId }} />}
-      </BentoCard>
-
       {/* ═══ R2.9 TerraNotice Module ═══ */}
 
       {/* Queue Notice for Mailing (write_low) */}
@@ -1573,42 +957,6 @@ export const PropertyDais: React.FC = () => {
           </div>
         )}
         {queueNoticeState.status === 'error' && queueNoticeState.error && <ErrorDisplay error={{ message: queueNoticeState.error.message, errorCode: queueNoticeState.error.code, correlationId: queueNoticeState.correlationId }} />}
-      </BentoCard>
-
-      {/* ═══ R2.9 TerraQueue Module ═══ */}
-
-      {/* Queue Statistics (read_only) */}
-      <BentoCard
-        title='📈 Queue Statistics'
-        actions={
-          <>
-            <span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>
-            {queueStatsState.status !== 'success' && (
-              <WorkbenchSourceBadge source='unavailable' className='ml-2' />
-            )}
-          </>
-        }
-      >
-        <p className='tf-text-tertiary text-sm mb-3'>Request returned queue totals, completion count, overdue count, and SLA compliance for this request</p>
-        <button onClick={handleGetQueueStats} disabled={queueStatsState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
-          {queueStatsState.status === 'loading' ? 'Loading...' : 'Get Queue Statistics'}
-        </button>
-        {queueStatsState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Loading statistics...</span></div>}
-        {queueStatsState.status === 'success' && queueStatsState.result && (
-          <div className='space-y-2'>
-            <div className='tf-panel p-4'>
-              <div className='grid grid-cols-2 gap-3'>
-                <div><span className='text-xs tf-text-dim'>Total Tasks</span><p className='font-semibold tf-text'>{queueStatsState.result.totalTasks}</p></div>
-                <div><span className='text-xs tf-text-dim'>Completed</span><p className='font-semibold tf-text'>{queueStatsState.result.completedTasks}</p></div>
-                <div><span className='text-xs tf-text-dim'>SLA Compliance</span><p className='font-semibold tf-text'>{queueStatsState.result.slaCompliance}%</p></div>
-                <div><span className='text-xs tf-text-dim'>Overdue</span><p className='font-semibold text-red-400'>{queueStatsState.result.overdueCount}</p></div>
-              </div>
-              <p className='text-xs tf-text-dim mt-2'>Shows the total tasks, completed tasks, overdue count, and SLA compliance returned by this request.</p>
-            </div>
-            {queueStatsState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>ID: <code className='tf-suite-accent-text font-mono'>{queueStatsState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
-          </div>
-        )}
-        {queueStatsState.status === 'error' && queueStatsState.error && <ErrorDisplay error={{ message: queueStatsState.error.message, errorCode: queueStatsState.error.code, correlationId: queueStatsState.correlationId }} />}
       </BentoCard>
 
       {/* Escalate Task (write_low) */}

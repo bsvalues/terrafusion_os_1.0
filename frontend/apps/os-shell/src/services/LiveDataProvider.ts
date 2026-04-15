@@ -55,6 +55,44 @@ interface PacsPagedResult {
   totalCount: number;
 }
 
+// ---------------------------------------------------------------------------
+// Properties API DTO shapes (SQLite dev — always available)
+// Endpoint: GET /api/properties  and  GET /api/properties/parcel/{parcelNumber}
+// ---------------------------------------------------------------------------
+
+/** GET /api/properties?search=...  → items[] */
+interface PropertiesListDto {
+  id: string;
+  parcelNumber: string;
+  address: string;
+  ownerName: string | null;
+  assessedValue: number;
+  landValue: number;
+  improvementValue: number;
+  marketValue: number;
+  propertyType: string | null;
+  yearBuilt: number | null;
+  squareFeet: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  landAcres: number | null;
+  neighborhood: string | null;
+  propertyUseCode: string | null;
+  taxDistrictCode: string | null;
+  taxDistrictName: string | null;
+  taxYear: number;
+  assessmentDate: string | null;
+  countyId: string;
+  countyName: string;
+}
+
+interface PropertiesPagedResult {
+  items: PropertiesListDto[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}
+
 /** GET /ops/pacs/property/{geoId} */
 interface PacsPropertyDetailDto {
   propId: number;
@@ -138,6 +176,97 @@ function mapPacsSummaryToSearchResult(dto: PacsSummaryDto): PropertySearchResult
   };
 }
 
+// Map /api/properties list item → PropertySearchResult
+function mapPropertiesDtoToSearchResult(dto: PropertiesListDto): PropertySearchResult {
+  const parts = (dto.address ?? '').split(/[\r\n,]+/).map((s) => s.trim()).filter(Boolean);
+  return {
+    parcelId: dto.parcelNumber,
+    parcelNumber: dto.parcelNumber,
+    address: parts[0] ?? dto.address ?? '',
+    city: parts[1] ?? '',
+    ownerName: dto.ownerName ?? '',
+    totalAssessedValue: dto.assessedValue ?? 0,
+    propertyType: (dto.propertyType ?? 'R') as any,
+    assessmentYear: dto.taxYear ?? new Date().getFullYear(),
+  };
+}
+
+// WA State DOR property use code descriptions (Benton County PACS codes)
+const WA_USE_CODE_DESC: Record<string, string> = {
+  '11': 'Single Family Residence',
+  '12': 'Single Family Residence w/ Accessory',
+  '13': 'Mobile Home',
+  '14': 'Condominium',
+  '18': 'Recreational / Vacation Residence',
+  '19': 'Other Residential',
+  '21': 'Duplex',
+  '22': 'Triplex',
+  '23': 'Four-Plex',
+  '24': 'Multi-Family (5+ Units)',
+  '39': 'Other Commercial',
+  '48': 'Light Industrial',
+  '53': 'Agriculture – Orchard',
+  '58': 'Agriculture – Dryland',
+  '59': 'Agriculture – Irrigated',
+  '62': 'Timber',
+  '63': 'Agriculture – Grain',
+  '65': 'Agriculture – Other',
+  '66': 'Agriculture – Pasture',
+  '69': 'Agriculture – Misc',
+  '76': 'State-Assessed Utility',
+  '81': 'Vacant Land – Residential',
+  '83': 'Vacant Land – Commercial',
+  '91': 'Exempt – Government',
+};
+
+// Map /api/properties/parcel/{n} detail → Property
+function mapPropertiesDtoToProperty(dto: PropertiesListDto): Property {
+  const parts = (dto.address ?? '').split(/[\r\n,]+/).map((s) => s.trim()).filter(Boolean);
+  const streetAddr = parts[0] ?? '';
+  const city = parts[1] ?? '';
+  const stateZip = parts[2] ?? '';
+  const stParts = stateZip.split(/\s+/);
+  const state = stParts[0] ?? 'WA';
+  const zip = stParts[1] ?? '';
+
+  return {
+    parcelId: dto.parcelNumber,
+    countyCode: 'benton',
+    address: streetAddr,
+    city,
+    state,
+    zip,
+    legalDescription: '',
+    ownerName: dto.ownerName ?? '',
+    propertyType: dto.propertyType ?? 'R',
+    landAcreage: dto.landAcres ?? 0,
+    yearBuilt: dto.yearBuilt ?? 0,
+    buildingSquareFeet: dto.squareFeet ?? 0,
+    bedrooms: dto.bedrooms ?? undefined,
+    bathrooms: dto.bathrooms ?? undefined,
+    neighborhood: dto.neighborhood ?? undefined,
+    propertyUseCode: dto.propertyUseCode ?? undefined,
+    landUseDescription: dto.propertyUseCode ? (WA_USE_CODE_DESC[dto.propertyUseCode] ?? undefined) : undefined,
+    taxDistrictCode: dto.taxDistrictCode ?? undefined,
+    taxDistrictName: dto.taxDistrictName ?? undefined,
+    landValue: dto.landValue ?? 0,
+    improvementValue: dto.improvementValue ?? 0,
+    totalAssessedValue: dto.assessedValue ?? 0,
+    marketValue: dto.marketValue ?? dto.assessedValue ?? 0,
+    taxableValue: dto.assessedValue ?? 0,
+    exemptionAmount: 0,
+    assessmentStatus: 'active',
+    assessmentYear: dto.taxYear ?? new Date().getFullYear(),
+    assessmentDate: dto.assessmentDate ?? new Date().toISOString(),
+    lastUpdated: dto.assessmentDate ?? new Date().toISOString(),
+    latitude: 46.2396,
+    longitude: -119.2687,
+    hasActivePermits: false,
+    hasAppeals: false,
+    dataSource: 'live',
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Provider
 // ---------------------------------------------------------------------------
@@ -153,18 +282,44 @@ export class LiveDataProvider implements DataProvider {
     params.set('pageSize', String(query.pageSize ?? 20));
     params.set('page', String(query.page ?? 1));
 
-    const data = await apiFetch<PacsPagedResult>(
-      `/api/pacs/properties?${params.toString()}`,
-    );
-    return {
-      items: data.items.map(mapPacsSummaryToSearchResult),
-      totalCount: data.totalCount,
-      page: data.page,
-      pageSize: data.pageSize,
-    };
+    // Use the SQLite-backed Properties API (always available in dev)
+    // Falls back to PACS endpoint if Properties API unavailable
+    try {
+      const data = await apiFetch<PropertiesPagedResult>(
+        `/api/properties?${params.toString()}`,
+      );
+      return {
+        items: data.items.map(mapPropertiesDtoToSearchResult),
+        totalCount: data.totalCount,
+        page: data.page,
+        pageSize: data.pageSize,
+      };
+    } catch {
+      // Fallback: PACS summary endpoint (requires SQL Server)
+      const data = await apiFetch<PacsPagedResult>(
+        `/api/pacs/properties?${params.toString()}`,
+      );
+      return {
+        items: data.items.map(mapPacsSummaryToSearchResult),
+        totalCount: data.totalCount,
+        page: data.page,
+        pageSize: data.pageSize,
+      };
+    }
   }
 
   async getParcel(parcelId: string): Promise<Property | null> {
+    // Primary: SQLite-backed Properties API (always available in dev)
+    try {
+      const dto = await apiFetch<PropertiesListDto>(
+        `/api/properties/parcel/${encodeURIComponent(parcelId)}`,
+      );
+      return mapPropertiesDtoToProperty(dto);
+    } catch {
+      // no-op — try PACS fallback below
+    }
+
+    // Fallback: PACS ops endpoint (requires SQL Server — production)
     try {
       const dto = await apiFetch<PacsPropertyDetailDto>(
         `/ops/pacs/property/${encodeURIComponent(parcelId)}`,
@@ -178,17 +333,17 @@ export class LiveDataProvider implements DataProvider {
   // ── Assessment ──────────────────────────────────────────────────────────
 
   async getAssessments(parcelId: string): Promise<Assessment[]> {
-    // Build a synthetic assessment from the PACS property data
+    // Build a synthetic assessment from the Properties API data (SQLite dev)
     try {
-      const dto = await apiFetch<PacsPropertyDetailDto>(
-        `/ops/pacs/property/${encodeURIComponent(parcelId)}`,
+      const dto = await apiFetch<PropertiesListDto>(
+        `/api/properties/parcel/${encodeURIComponent(parcelId)}`,
       );
       return [
         {
-          assessmentId: `pacs-${dto.propId}`,
+          assessmentId: `prop-${dto.id}`,
           parcelId,
-          assessmentYear: dto.appraisalYear ?? new Date().getFullYear(),
-          assessmentDate: dto.lastModified ?? new Date().toISOString(),
+          assessmentYear: dto.taxYear ?? new Date().getFullYear(),
+          assessmentDate: dto.assessmentDate ?? new Date().toISOString(),
           landValue: dto.landValue ?? 0,
           improvementValue: dto.improvementValue ?? 0,
           totalAssessedValue: dto.assessedValue ?? 0,

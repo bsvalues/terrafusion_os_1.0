@@ -444,14 +444,14 @@ export function SketchBuilderPanel({ onSave, saving, currentGLA }: SketchBuilder
               <Calculator className="w-4 h-4 text-primary" />
               <div>
                 <p className="text-sm font-medium text-foreground">
-                  GLA: {Math.round(totalArea).toLocaleString()} sqft
+                  GLA: {Math.round(totalArea).toLocaleString()} sq ft
                 </p>
                 <p className="text-[10px] text-muted-foreground">
                   {segments.length} walls · {segments.reduce((s, w) => s + w.length, 0).toFixed(0)}' perimeter
                 </p>
                 {delta !== null && (
                   <p className={`text-[10px] ${Math.abs(delta) / (currentGLA || 1) > 0.15 ? "text-destructive" : "text-muted-foreground"}`}>
-                    Δ {delta > 0 ? "+" : ""}{Math.round(delta).toLocaleString()} sqft from record
+                    Δ {delta > 0 ? "+" : ""}{Math.round(delta).toLocaleString()} sq ft from record
                   </p>
                 )}
               </div>

@@ -1,239 +1,431 @@
 /**
- * CostRatioAnalysis.tsx (TFR-100)
+ * CostRatioAnalysis.tsx
  *
- * Shows cost-to-sale ratios by property type, neighborhood.
- * Charts + summary stats. No domain math in component.
+ * Calibration matrix — per-neighborhood IAAO ratio study.
+ * Pulls live data from GET /api/costforge/calibration/neighborhood-matrix.
+ * Sorts by COD descending (worst first) so the appraiser sees what needs fixing.
  */
 
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { apiFetch } from '@/lib/apiBase';
+import { useDesktopStore } from '@/stores/desktopStore';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ScatterChart, Scatter, ReferenceLine,
-  Cell,
+  ResponsiveContainer, ReferenceLine, Cell,
 } from 'recharts';
 
-interface RatioByType {
-  propertyType: string;
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+interface NeighborhoodRow {
+  hoodCd: string;
+  revalArea: string;
+  saleCount: number;
   medianRatio: number;
   cod: number;
-  sampleCount: number;
-  withinRange: boolean;
+  prd: number;
+  p25: number;
+  p75: number;
+  ratioOk: boolean;
+  codOk: boolean;
+  iaaoCompliant: boolean;
 }
 
-interface RatioByNeighborhood {
-  neighborhood: string;
-  medianRatio: number;
-  cod: number;
-  sampleCount: number;
+interface MatrixResponse {
+  neighborhoods: NeighborhoodRow[];
+  totalSales: number;
+  matchedSales: number;
+  taxYear: number;
+  hoodCount: number;
+  outOfCompliance: number;
+  source: 'live' | 'static';
 }
 
-interface RatioScatterPoint {
-  salePrice: number;
-  assessedValue: number;
-  ratio: number;
-  propertyType: string;
+// ── Mass Adjust Modal ─────────────────────────────────────────────────────────
+
+interface AdjustPreview {
+  parcelCount: number;
+  matchedSales: number;
+  totalAvBefore: number;
+  totalAvAfter: number;
+  totalAvDelta: number;
+  medianRatioBefore: number;
+  medianRatioAfter: number;
+  ratioDelta: number;
+  iaaoCompliantAfter: boolean;
 }
 
-const RATIOS_BY_TYPE: RatioByType[] = [
-  { propertyType: 'Single Family', medianRatio: 0.96, cod: 8.2, sampleCount: 1245, withinRange: true },
-  { propertyType: 'Multi-Family', medianRatio: 0.93, cod: 11.4, sampleCount: 87, withinRange: true },
-  { propertyType: 'Commercial', medianRatio: 0.91, cod: 14.8, sampleCount: 124, withinRange: true },
-  { propertyType: 'Industrial', medianRatio: 0.88, cod: 16.2, sampleCount: 42, withinRange: false },
-  { propertyType: 'Vacant Land', medianRatio: 0.94, cod: 19.5, sampleCount: 156, withinRange: false },
-];
+function MassAdjustPanel({
+  hood,
+  taxYear,
+  onClose,
+}: {
+  hood: NeighborhoodRow;
+  taxYear: number;
+  onClose: () => void;
+}) {
+  const [pct, setPct] = useState<number>(0);
+  const [preview, setPreview] = useState<AdjustPreview | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
-const RATIOS_BY_NEIGHBORHOOD: RatioByNeighborhood[] = [
-  { neighborhood: 'Downtown', medianRatio: 0.97, cod: 7.8, sampleCount: 234 },
-  { neighborhood: 'West Richland', medianRatio: 0.95, cod: 9.1, sampleCount: 312 },
-  { neighborhood: 'South Ridge', medianRatio: 0.93, cod: 10.4, sampleCount: 198 },
-  { neighborhood: 'Badger Mountain', medianRatio: 0.98, cod: 6.5, sampleCount: 156 },
-  { neighborhood: 'Horn Rapids', medianRatio: 0.92, cod: 11.2, sampleCount: 89 },
-  { neighborhood: 'Canyon Lakes', medianRatio: 0.96, cod: 8.9, sampleCount: 145 },
-  { neighborhood: 'Country Estates', medianRatio: 0.89, cod: 14.3, sampleCount: 67 },
-];
+  // Suggest adjustment to hit 1.00 median ratio
+  const suggested = hood.medianRatio > 0
+    ? Math.round(((1.0 / hood.medianRatio) - 1) * 1000) / 10
+    : 0;
 
-const SCATTER_DATA: RatioScatterPoint[] = Array.from({ length: 80 }, () => {
-  const salePrice = 150000 + Math.random() * 450000;
-  const ratio = 0.85 + Math.random() * 0.25;
-  return {
-    salePrice,
-    assessedValue: salePrice * ratio,
-    ratio,
-    propertyType: ['Single Family', 'Commercial', 'Multi-Family'][Math.floor(Math.random() * 3)],
-  };
-});
+  async function runPreview() {
+    setLoading(true); setErr(null);
+    try {
+      const res = await apiFetch('/costforge/calibration/mass-adjust-preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ neighborhoodCode: hood.hoodCd, adjustmentPct: pct, taxYear }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setPreview(await res.json() as AdjustPreview);
+    } catch (e: unknown) {
+      setErr(e instanceof Error ? e.message : 'Request failed');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const fmt = (n: number) => n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  const fmtM = (n: number) => `$${(n / 1_000_000).toFixed(1)}M`;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+      <div className="bg-background border border-border rounded-xl p-6 w-full max-w-lg space-y-4 shadow-2xl">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold">Mass Adjustment — Hood {hood.hoodCd}</h2>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground text-xl">✕</button>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 text-sm">
+          <div className="rounded border p-2 text-center">
+            <div className="font-bold">{hood.medianRatio.toFixed(4)}</div>
+            <div className="text-muted-foreground text-xs">Current Ratio</div>
+          </div>
+          <div className="rounded border p-2 text-center">
+            <div className="font-bold">{hood.cod.toFixed(1)}</div>
+            <div className="text-muted-foreground text-xs">COD</div>
+          </div>
+          <div className="rounded border p-2 text-center">
+            <div className="font-bold">{hood.saleCount}</div>
+            <div className="text-muted-foreground text-xs">Sales</div>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Adjustment % (+ raises AV, - lowers)</label>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              step="0.1"
+              value={pct}
+              onChange={e => setPct(parseFloat(e.target.value) || 0)}
+              className="border rounded px-3 py-1 w-28 text-sm bg-background"
+            />
+            <Button size="sm" variant="outline" onClick={() => setPct(suggested)}>
+              Suggest ({suggested > 0 ? '+' : ''}{suggested.toFixed(1)}%)
+            </Button>
+            <Button size="sm" onClick={runPreview} disabled={loading}>
+              {loading ? 'Running…' : 'Preview'}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Suggested: {suggested > 0 ? '+' : ''}{suggested.toFixed(1)}% to reach 1.000 ratio
+          </p>
+        </div>
+
+        {err && <p className="text-sm text-destructive">{err}</p>}
+
+        {preview && (
+          <div className="border rounded-lg p-4 space-y-3 bg-muted/30">
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <div className="text-muted-foreground text-xs">Parcels affected</div>
+                <div className="font-bold">{fmt(preview.parcelCount)}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-xs">Sales matched</div>
+                <div className="font-bold">{fmt(preview.matchedSales)}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-xs">AV before</div>
+                <div className="font-bold">{fmtM(preview.totalAvBefore)}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-xs">AV after</div>
+                <div className="font-bold">{fmtM(preview.totalAvAfter)}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-xs">AV delta</div>
+                <div className={`font-bold ${preview.totalAvDelta >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {preview.totalAvDelta >= 0 ? '+' : ''}{fmtM(preview.totalAvDelta)}
+                </div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-xs">Ratio after</div>
+                <div className={`font-bold ${preview.iaaoCompliantAfter ? 'text-green-600' : 'text-amber-600'}`}>
+                  {preview.medianRatioAfter.toFixed(4)}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {preview.iaaoCompliantAfter
+                ? <Badge className="bg-green-100 text-green-800">✓ IAAO Compliant after adjustment</Badge>
+                : <Badge className="bg-amber-100 text-amber-800">⚠ Still out of range after adjustment</Badge>
+              }
+            </div>
+
+            <p className="text-xs text-muted-foreground italic">
+              Preview only — no values have been changed. Apply in your assessment system after supervisor review.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Main Component ─────────────────────────────────────────────────────────────
 
 export function CostRatioAnalysis() {
-  const [loading] = useState(false);
+  const [selectedHood, setSelectedHood] = useState<NeighborhoodRow | null>(null);
+  const [sortBy, setSortBy] = useState<'cod' | 'ratio' | 'sales'>('cod');
+  const [filterOoc, setFilterOoc] = useState(false);
+  const taxYear = new Date().getFullYear();
+  const openWindow = useDesktopStore(s => s.openWindow);
 
-  const overallMedian = 0.95;
-  const overallCOD = 9.8;
-  const totalSamples = RATIOS_BY_TYPE.reduce((s, r) => s + r.sampleCount, 0);
+  const { data, isLoading, isError, refetch } = useQuery<MatrixResponse>({
+    queryKey: ['calibration-neighborhood-matrix', taxYear],
+    queryFn: async () => {
+      const res = await apiFetch(`/costforge/calibration/neighborhood-matrix?taxYear=${taxYear}&minSales=3`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json() as Promise<MatrixResponse>;
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const rows = data?.neighborhoods ?? [];
+
+  const sorted = [...rows]
+    .filter(r => !filterOoc || !r.iaaoCompliant)
+    .sort((a, b) => {
+      if (sortBy === 'cod')   return b.cod - a.cod;
+      if (sortBy === 'ratio') return a.medianRatio - b.medianRatio;
+      return b.saleCount - a.saleCount;
+    });
+
+  // Chart data — top 20 by COD
+  const chartData = [...rows]
+    .sort((a, b) => b.cod - a.cod)
+    .slice(0, 20)
+    .map(r => ({ name: r.hoodCd, cod: r.cod, ratio: r.medianRatio, compliant: r.iaaoCompliant }));
+
+  const overallMedian = rows.length
+    ? rows.reduce((s, r) => s + r.medianRatio * r.saleCount, 0) / rows.reduce((s, r) => s + r.saleCount, 0)
+    : 0;
+  const overallCOD = rows.length
+    ? rows.reduce((s, r) => s + r.cod, 0) / rows.length
+    : 0;
 
   return (
     <div className="space-y-4 p-4">
-      <h1 className="text-2xl font-bold">Cost Ratio Analysis</h1>
-
-      {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <span className="text-muted-foreground">Loading ratio data...</span>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Calibration Matrix</h1>
+          <p className="text-sm text-muted-foreground">
+            {data ? `${data.hoodCount} neighborhoods · ${data.matchedSales.toLocaleString()} matched sales · TY${data.taxYear}` : ''}
+          </p>
         </div>
-      ) : (
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => setFilterOoc(f => !f)}>
+            {filterOoc ? 'Show All' : 'Out of Compliance Only'}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => refetch()}>↻ Refresh</Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => openWindow('neighborhood-ratio-study', 'Neighborhood Ratio Study', 'Map')}
+          >
+            Neighborhood Study ↗
+          </Button>
+        </div>
+      </div>
+
+      {isLoading && (
+        <div className="flex items-center justify-center py-20 text-muted-foreground">Computing calibration matrix…</div>
+      )}
+
+      {isError && (
+        <div className="rounded border border-destructive/30 p-6 text-center text-sm text-destructive">
+          Failed to load calibration data
+        </div>
+      )}
+
+      {data && (
         <>
-          {/* Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Summary KPIs */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card>
-              <CardContent className="pt-6 text-center">
-                <div className="text-3xl font-bold">{overallMedian.toFixed(2)}</div>
-                <div className="text-sm text-muted-foreground">Overall Median Ratio</div>
-                <Badge variant="default" className="mt-1">Within IAAO Standard</Badge>
+              <CardContent className="pt-5 text-center">
+                <div className={`text-3xl font-bold ${overallMedian >= 0.9 && overallMedian <= 1.1 ? 'text-green-600' : 'text-red-500'}`}>
+                  {overallMedian.toFixed(3)}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">Wtd. Median Ratio</div>
+                <Badge className="mt-1 text-xs" variant={overallMedian >= 0.9 && overallMedian <= 1.1 ? 'default' : 'destructive'}>
+                  {overallMedian >= 0.9 && overallMedian <= 1.1 ? 'IAAO OK' : 'Out of Range'}
+                </Badge>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="pt-6 text-center">
-                <div className="text-3xl font-bold">{overallCOD}</div>
-                <div className="text-sm text-muted-foreground">Overall COD</div>
-                <Badge variant="default" className="mt-1">Good Uniformity</Badge>
+              <CardContent className="pt-5 text-center">
+                <div className={`text-3xl font-bold ${overallCOD <= 15 ? 'text-green-600' : 'text-amber-500'}`}>
+                  {overallCOD.toFixed(1)}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">Avg COD</div>
+                <Badge className="mt-1 text-xs" variant={overallCOD <= 15 ? 'default' : 'secondary'}>
+                  {overallCOD <= 15 ? '≤15 Residential' : 'Review Needed'}
+                </Badge>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="pt-6 text-center">
-                <div className="text-3xl font-bold">{totalSamples.toLocaleString()}</div>
-                <div className="text-sm text-muted-foreground">Total Sales Samples</div>
+              <CardContent className="pt-5 text-center">
+                <div className="text-3xl font-bold text-red-500">{data.outOfCompliance}</div>
+                <div className="text-xs text-muted-foreground mt-1">Out of Compliance</div>
+                <div className="text-xs text-muted-foreground">of {data.hoodCount} hoods</div>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="pt-6 text-center">
-                <div className="text-3xl font-bold">1.02</div>
-                <div className="text-sm text-muted-foreground">PRD</div>
-                <Badge variant="default" className="mt-1">No Regressivity</Badge>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Ratio by Property Type */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Median Ratio by Property Type</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={280}>
-                  <BarChart data={RATIOS_BY_TYPE} margin={{ left: 10, right: 10, bottom: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="propertyType" angle={-15} textAnchor="end" height={50} />
-                    <YAxis domain={[0.8, 1.1]} />
-                    <Tooltip formatter={(value: number) => value.toFixed(3)} />
-                    <ReferenceLine y={0.90} stroke="#ef4444" strokeDasharray="3 3" label="Min" />
-                    <ReferenceLine y={1.10} stroke="#ef4444" strokeDasharray="3 3" label="Max" />
-                    <ReferenceLine y={1.00} stroke="#6366f1" strokeDasharray="3 3" label="Target" />
-                    <Bar dataKey="medianRatio" name="Median Ratio" radius={[4, 4, 0, 0]}>
-                      {RATIOS_BY_TYPE.map((entry, index) => (
-                        <Cell key={index} fill={entry.withinRange ? '#10b981' : '#ef4444'} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Ratio Scatter */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Assessed vs Sale Price</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={280}>
-                  <ScatterChart margin={{ left: 10, right: 10, bottom: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      type="number"
-                      dataKey="salePrice"
-                      name="Sale Price"
-                      tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
-                      label={{ value: 'Sale Price', position: 'insideBottom', offset: -10 }}
-                    />
-                    <YAxis
-                      type="number"
-                      dataKey="assessedValue"
-                      name="Assessed"
-                      tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
-                      label={{ value: 'Assessed Value', angle: -90, position: 'insideLeft' }}
-                    />
-                    <Tooltip formatter={(value: number) => `$${value.toLocaleString()}`} />
-                    <Scatter data={SCATTER_DATA} fill="#3b82f6" fillOpacity={0.5} r={3} />
-                  </ScatterChart>
-                </ResponsiveContainer>
+              <CardContent className="pt-5 text-center">
+                <div className="text-3xl font-bold">{data.matchedSales.toLocaleString()}</div>
+                <div className="text-xs text-muted-foreground mt-1">Qualified Sales</div>
+                <div className="text-xs text-muted-foreground">with AV match</div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Ratio by Neighborhood */}
+          {/* COD bar chart — top 20 worst */}
           <Card>
-            <CardHeader>
-              <CardTitle>Ratios by Neighborhood</CardTitle>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Top 20 Neighborhoods by COD — Highest Dispersion First</CardTitle>
             </CardHeader>
             <CardContent>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">Neighborhood</th>
-                    <th className="text-right py-2">Median Ratio</th>
-                    <th className="text-right py-2">COD</th>
-                    <th className="text-right py-2">Samples</th>
-                    <th className="text-center py-2">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {RATIOS_BY_NEIGHBORHOOD.map(n => (
-                    <tr key={n.neighborhood} className="border-b hover:bg-gray-50">
-                      <td className="py-2 font-medium">{n.neighborhood}</td>
-                      <td className="py-2 text-right font-mono">{n.medianRatio.toFixed(3)}</td>
-                      <td className="py-2 text-right font-mono">{n.cod.toFixed(1)}</td>
-                      <td className="py-2 text-right">{n.sampleCount}</td>
-                      <td className="py-2 text-center">
-                        <Badge variant={n.cod <= 15 ? 'default' : 'destructive'}>
-                          {n.cod <= 10 ? 'Excellent' : n.cod <= 15 ? 'Acceptable' : 'Review'}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={chartData} margin={{ left: 0, right: 10, bottom: 30 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} tick={{ fontSize: 10 }} />
+                  <YAxis label={{ value: 'COD', angle: -90, position: 'insideLeft', fontSize: 11 }} />
+                  <Tooltip formatter={(v: number) => [`${v.toFixed(1)}`, 'COD']} />
+                  <ReferenceLine y={15} stroke="#ef4444" strokeDasharray="4 2" label={{ value: 'IAAO Max', fill: '#ef4444', fontSize: 10 }} />
+                  <Bar dataKey="cod" radius={[3, 3, 0, 0]}>
+                    {chartData.map((entry, i) => (
+                      <Cell key={i} fill={entry.compliant ? '#10b981' : '#ef4444'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
 
-          {/* IAAO Standards Reference */}
+          {/* Sortable table */}
           <Card>
-            <CardHeader>
-              <CardTitle>IAAO Standards Reference</CardTitle>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">Neighborhood Detail</CardTitle>
+                <div className="flex gap-1 text-xs">
+                  <span className="text-muted-foreground mr-1">Sort:</span>
+                  {(['cod', 'ratio', 'sales'] as const).map(s => (
+                    <button
+                      key={s}
+                      onClick={() => setSortBy(s)}
+                      className={`px-2 py-0.5 rounded border text-xs ${sortBy === s ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
+                    >
+                      {s === 'cod' ? 'COD ↓' : s === 'ratio' ? 'Ratio ↑' : 'Sales ↓'}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div className="p-3 rounded bg-gray-50">
-                  <div className="font-medium">Median Ratio</div>
-                  <div className="text-muted-foreground">Target: 0.90 - 1.10</div>
-                  <div className="text-muted-foreground">Current: {overallMedian.toFixed(2)}</div>
-                </div>
-                <div className="p-3 rounded bg-gray-50">
-                  <div className="font-medium">COD (Uniformity)</div>
-                  <div className="text-muted-foreground">SFR: 5-15 | Commercial: 5-20</div>
-                  <div className="text-muted-foreground">Current: {overallCOD}</div>
-                </div>
-                <div className="p-3 rounded bg-gray-50">
-                  <div className="font-medium">PRD (Equity)</div>
-                  <div className="text-muted-foreground">Target: 0.98 - 1.03</div>
-                  <div className="text-muted-foreground">Current: 1.02</div>
-                </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-muted-foreground text-xs">
+                      <th className="text-left py-1 pr-3">Hood</th>
+                      <th className="text-left py-1 pr-3">Area</th>
+                      <th className="text-right py-1 pr-3">Sales</th>
+                      <th className="text-right py-1 pr-3">Median Ratio</th>
+                      <th className="text-right py-1 pr-3">COD</th>
+                      <th className="text-right py-1 pr-3">PRD</th>
+                      <th className="text-right py-1 pr-3">P25–P75</th>
+                      <th className="text-center py-1 pr-3">Status</th>
+                      <th className="text-center py-1">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sorted.map(r => (
+                      <tr key={r.hoodCd} className="border-b hover:bg-muted/30 transition-colors">
+                        <td className="py-1.5 pr-3 font-mono font-medium">{r.hoodCd}</td>
+                        <td className="py-1.5 pr-3 text-muted-foreground text-xs">{r.revalArea}</td>
+                        <td className="py-1.5 pr-3 text-right">{r.saleCount}</td>
+                        <td className={`py-1.5 pr-3 text-right font-mono ${r.ratioOk ? '' : 'text-red-500 font-bold'}`}>
+                          {r.medianRatio.toFixed(4)}
+                        </td>
+                        <td className={`py-1.5 pr-3 text-right font-mono ${r.codOk ? '' : 'text-amber-500 font-bold'}`}>
+                          {r.cod.toFixed(1)}
+                        </td>
+                        <td className="py-1.5 pr-3 text-right font-mono">{r.prd.toFixed(4)}</td>
+                        <td className="py-1.5 pr-3 text-right text-xs text-muted-foreground font-mono">
+                          {r.p25.toFixed(3)}–{r.p75.toFixed(3)}
+                        </td>
+                        <td className="py-1.5 pr-3 text-center">
+                          {r.iaaoCompliant
+                            ? <Badge className="bg-green-100 text-green-800 text-xs">✓</Badge>
+                            : <Badge className="bg-red-100 text-red-800 text-xs">
+                                {!r.ratioOk && !r.codOk ? 'Ratio+COD' : !r.ratioOk ? 'Ratio' : 'COD'}
+                              </Badge>
+                          }
+                        </td>
+                        <td className="py-1.5 text-center">
+                          <button
+                            onClick={() => setSelectedHood(r)}
+                            className="text-xs text-primary underline hover:no-underline"
+                          >
+                            Adjust
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {sorted.length === 0 && (
+                      <tr>
+                        <td colSpan={9} className="text-center py-8 text-muted-foreground text-sm">
+                          {filterOoc ? 'All neighborhoods are IAAO compliant' : 'No data'}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </CardContent>
           </Card>
         </>
       )}
+
+      {selectedHood && (
+        <MassAdjustPanel
+          hood={selectedHood}
+          taxYear={taxYear}
+          onClose={() => setSelectedHood(null)}
+        />
+      )}
     </div>
   );
 }
-
-export default CostRatioAnalysis;

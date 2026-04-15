@@ -118,7 +118,7 @@ export function CostForgeDashboard() {
                     : '—'}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Avg Res. Cost/sqft
+                  Avg Res. Cost/Sq Ft
                   {stats?.source === 'live' && stats?.avgResCostPerSqft != null && (
                     <span className="ml-1 text-xs text-green-500">(Live)</span>
                   )}

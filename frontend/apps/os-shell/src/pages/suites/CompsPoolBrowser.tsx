@@ -34,7 +34,7 @@ interface CompsPoolItem {
   bathrooms:          number | null;
   condition:          string | null;
   qualityGrade:       string | null;
-  pacsComputedRatio:  number | null;
+  salesRatio:         number | null;
   qualificationSource: 'decision' | 'recommendation';
 }
 
@@ -143,9 +143,9 @@ function fmtNum(n: number | null): string {
 }
 
 function fmtRatio(n: number | null): string {
-  // pacsComputedRatio is on the 0–100 scale from PACS
+  // salesRatio is a 0–1 decimal (TF-computed: AssessedValue / SalePrice)
   if (n == null) return '—';
-  return `${n.toFixed(1)}%`;
+  return `${(n * 100).toFixed(1)}%`;
 }
 
 function conditionLabel(c: string | null): string {
@@ -389,7 +389,7 @@ export function CompsPoolBrowser({ taxYear = TAX_YEAR }: Props) {
             <span role="columnheader">Yr blt</span>
             <span role="columnheader">Bed/Bath</span>
             <span role="columnheader">Condition</span>
-            <span role="columnheader">PACS ratio</span>
+            <span role="columnheader">Sales ratio</span>
             <span role="columnheader">Source</span>
           </div>
 
@@ -427,13 +427,13 @@ export function CompsPoolBrowser({ taxYear = TAX_YEAR }: Props) {
                 {conditionLabel(item.condition)}
               </span>
               <span className="cp-cell cp-cell--num" role="cell">
-                {item.pacsComputedRatio != null ? (
+                {item.salesRatio != null ? (
                   <span className={`cp-ratio-badge ${
-                    item.pacsComputedRatio >= 90 && item.pacsComputedRatio <= 110
+                    item.salesRatio >= 0.9 && item.salesRatio <= 1.1
                       ? 'cp-ratio-badge--ok'
                       : 'cp-ratio-badge--out'
                   }`}>
-                    {fmtRatio(item.pacsComputedRatio)}
+                    {fmtRatio(item.salesRatio)}
                   </span>
                 ) : (
                   <span className="cp-ratio-badge cp-ratio-badge--missing">—</span>

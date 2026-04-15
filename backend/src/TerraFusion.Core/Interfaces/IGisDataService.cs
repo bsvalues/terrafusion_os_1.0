@@ -20,7 +20,7 @@ public interface IGisDataService
 
 // ── Response DTOs ────────────────────────────────────────────────────────
 
-/// <summary>Parcel boundary result with centroid and dimension data from PACS.</summary>
+/// <summary>Parcel boundary result with centroid, dimension, and optional ArcGIS polygon data.</summary>
 public record ParcelBoundaryResult(
     string ParcelId,
     string Source,
@@ -28,7 +28,15 @@ public record ParcelBoundaryResult(
     ParcelDimensions? Dimensions,
     decimal? AreaAcres,
     decimal? AreaSqFt,
-    string? SitusDisplay);
+    string? SitusDisplay,
+    /// <summary>
+    /// JSON array of [lng,lat] pairs forming the outer ring of the parcel polygon (WGS-84).
+    /// Null when ArcGIS sync has not yet seeded this parcel.
+    /// </summary>
+    string? RingJson = null,
+    string? OwnerName = null,
+    string? ImageUrl = null,
+    string? SketchUrl = null);
 
 /// <summary>Centroid coordinates (lat/lng) derived from situs address or fallback.</summary>
 public record ParcelCentroid(double Lat, double Lng, string DerivedFrom);

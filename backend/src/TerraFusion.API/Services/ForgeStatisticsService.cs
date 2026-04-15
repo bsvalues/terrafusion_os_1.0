@@ -1,201 +1,406 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TerraFusion.API.Interfaces;
+using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 
 namespace TerraFusion.API.Services;
 
 /// <summary>
-/// Forge statistics service — deterministic IAAO ratio study analysis.
-/// Generates strata (neighborhood × propertyType), outlier detection (IQR/trim),
-/// model comparison, and segment discovery using simple grouping.
+/// Real IAAO ratio study statistics computed from live Benton County
+/// ComparableSales + Properties data. Replaces the prior Random()-based stub.
 /// </summary>
 public class ForgeStatisticsService : IForgeStatisticsService
 {
-  // ── Benton County reference data (deterministic) ────────────────────
+    private readonly DataDbContext _db;
+    private readonly ILogger<ForgeStatisticsService> _logger;
 
-  private static readonly string[] Neighborhoods = { "Richland", "Kennewick", "Pasco", "West Richland", "Prosser" };
-  private static readonly string[] PropertyTypes = { "SFR", "MFR" };
-
-  private static readonly Dictionary<string, int> NeighborhoodParcels = new()
-  {
-    ["Richland"] = 523,
-    ["Kennewick"] = 487,
-    ["Pasco"] = 412,
-    ["West Richland"] = 268,
-    ["Prosser"] = 157,
-  };
-
-  // ── Strata ──────────────────────────────────────────────────────────
-
-  public Task<List<StrataResultDto>> GetStrataAsync(string modelId, Guid countyId, CancellationToken ct = default)
-  {
-    var strata = new List<StrataResultDto>();
-    var rng = new Random(modelId.GetHashCode() ^ countyId.GetHashCode());
-
-    foreach (var nbhd in Neighborhoods)
+    public ForgeStatisticsService(DataDbContext db, ILogger<ForgeStatisticsService> logger)
     {
-      foreach (var pt in PropertyTypes)
-      {
-        var baseParcels = NeighborhoodParcels.GetValueOrDefault(nbhd, 200);
-        var sampleSize = pt == "SFR"
-            ? (int)(baseParcels * 0.80)
-            : (int)(baseParcels * 0.20);
+        _db = db;
+        _logger = logger;
+    }
 
-        if (sampleSize < 30) continue; // IAAO minimum
+    // ── Helpers ───────────────────────────────────────────────────────────────
 
-        var median = 0.95 + rng.NextDouble() * 0.10;  // 0.95–1.05
-        var cod = 9.0 + rng.NextDouble() * 7.0;       // 9–16
-        var prd = 0.99 + rng.NextDouble() * 0.04;      // 0.99–1.03
-        var qualified = cod <= 15.0 && prd >= 0.98 && prd <= 1.03;
+    private static int ParseTaxYear(string modelId)
+    {
+        if (int.TryParse(modelId, out var y) && y >= 2000 && y <= 2100) return y;
+        return DateTime.UtcNow.Year;
+    }
 
-        var id = $"{nbhd[..Math.Min(4, nbhd.Length)].ToLowerInvariant()}-{pt.ToLowerInvariant()}";
+    private static decimal Median(List<decimal> values)
+    {
+        if (values.Count == 0) return 0m;
+        var s = values.Order().ToList();
+        return s.Count % 2 == 1
+            ? s[s.Count / 2]
+            : (s[s.Count / 2 - 1] + s[s.Count / 2]) / 2m;
+    }
 
-        strata.Add(new StrataResultDto
+    private static decimal ComputeCod(List<decimal> ratios)
+    {
+        if (ratios.Count < 3) return 0m;
+        var sorted = ratios.Order().ToList();
+        var q1 = sorted[(int)(sorted.Count * 0.25)];
+        var q3 = sorted[(int)(sorted.Count * 0.75)];
+        var iqr = q3 - q1;
+        var lo = q1 - 1.5m * iqr;
+        var hi = q3 + 1.5m * iqr;
+        var trimmed = sorted.Where(r => r >= lo && r <= hi).ToList();
+        if (trimmed.Count < 3) trimmed = sorted;
+        var med = Median(trimmed);
+        if (med == 0) return 0m;
+        var mad = trimmed.Average(r => Math.Abs(r - med));
+        return (mad / med) * 100m;
+    }
+
+    private static decimal ComputePrd(List<decimal> ratios, List<decimal> avs)
+    {
+        if (ratios.Count == 0) return 1m;
+        var mean = ratios.Average();
+        var totalAv = avs.Sum();
+        if (totalAv == 0) return 1m;
+        var totalSp = ratios.Zip(avs, (r, av) => r > 0 ? av / r : 0m).Sum();
+        if (totalSp == 0) return 1m;
+        var weightedMean = totalAv / totalSp;
+        return weightedMean == 0 ? 1m : mean / weightedMean;
+    }
+
+    private static decimal ComputePrb(List<decimal> ratios, List<decimal> avs)
+    {
+        if (ratios.Count < 2) return 0m;
+        var lnAvs = avs.Select(v => v > 0 ? (decimal)Math.Log((double)v) : 0m).ToList();
+        var xMean = lnAvs.Average();
+        var yMean = ratios.Average();
+        var num = lnAvs.Zip(ratios, (x, y) => (x - xMean) * (y - yMean)).Sum();
+        var den = lnAvs.Sum(x => (x - xMean) * (x - xMean));
+        return den == 0 ? 0m : num / den;
+    }
+
+    /// <summary>
+    /// Pull qualified sales with assessed values and neighborhood codes for the given year window.
+    /// Neighborhood is resolved from CamaCharacteristics (same pattern as TerraForgeController).
+    /// Returns a flat projection used by all stat methods.
+    /// </summary>
+    private async Task<List<SaleRow>> FetchSaleRowsAsync(
+        int taxYear, int windowYears, CancellationToken ct)
+    {
+        var cutoff = taxYear - (windowYears - 1);
+
+        // Step 1: pull sales
+        var rawSales = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.SaleQualification == "qualified"
+                     && s.SalesYear >= cutoff
+                     && s.SalesYear <= taxYear
+                     && s.SalePrice > 10_000)
+            .Select(s => new
+            {
+                s.ParcelId,
+                s.Address,
+                s.PropertyType,
+                SalePrice = s.AdjustedSalePrice > 0 ? s.AdjustedSalePrice!.Value : s.SalePrice,
+                s.SaleDate,
+            })
+            .ToListAsync(ct);
+
+        if (rawSales.Count == 0) return new List<SaleRow>();
+
+        var parcelIds = rawSales.Select(s => s.ParcelId).Distinct().ToHashSet();
+
+        // Step 2: AV from Properties (ParcelNumber matches ParcelId)
+        var avMap = await _db.Properties
+            .AsNoTracking()
+            .Where(p => parcelIds.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+            .Select(p => new { p.ParcelNumber, p.AssessedValue })
+            .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue, ct);
+
+        // Step 3: neighborhood from CamaCharacteristics
+        var hoodMap = await _db.CamaCharacteristics
+            .AsNoTracking()
+            .Where(c => parcelIds.Contains(c.ParcelId) && c.NeighborhoodCode != null && c.NeighborhoodCode != "")
+            .Select(c => new { c.ParcelId, c.NeighborhoodCode })
+            .ToDictionaryAsync(c => c.ParcelId, c => c.NeighborhoodCode!, ct);
+
+        // Step 4: build SaleRow list
+        var rows = new List<SaleRow>(rawSales.Count);
+        foreach (var s in rawSales)
         {
-          StrataId = id,
-          StrataLabel = $"{nbhd} {pt}",
-          Neighborhood = nbhd,
-          PropertyType = pt,
-          SampleSize = sampleSize,
-          MedianRatio = Math.Round(median, 3),
-          Cod = Math.Round(cod, 1),
-          Prd = Math.Round(prd, 3),
-          Qualified = qualified,
-        });
-      }
+            if (s.ParcelId == null) continue;
+            if (!avMap.TryGetValue(s.ParcelId, out var av) || av <= 0) continue;
+            if (s.SalePrice <= 0) continue;
+            var ratio = Math.Clamp((double)(av / s.SalePrice), 0.5, 2.0);
+            rows.Add(new SaleRow
+            {
+                ParcelId      = s.ParcelId,
+                Address       = s.Address ?? "",
+                Neighborhood  = hoodMap.TryGetValue(s.ParcelId, out var hood) ? hood : "Unknown",
+                PropertyType  = s.PropertyType ?? "residential",
+                SalePrice     = s.SalePrice,
+                AssessedValue = av,
+                SaleDate      = s.SaleDate,
+                Ratio         = ratio,
+            });
+        }
+        return rows;
     }
 
-    return Task.FromResult(strata);
-  }
-
-  // ── Outliers ────────────────────────────────────────────────────────
-
-  public Task<List<OutlierRecordDto>> GetOutliersAsync(string modelId, Guid countyId, CancellationToken ct = default)
-  {
-    var outliers = new List<OutlierRecordDto>();
-    var rng = new Random(modelId.GetHashCode() ^ countyId.GetHashCode() ^ 7);
-
-    // Generate deterministic outlier set (seeded by model + county)
-    var streetNames = new[] { "George Washington Way", "W Canal Dr", "Road 68", "Jadwin Ave", "Stevens Dr",
-                                  "W 10th Ave", "N 20th Ave", "Paradise Way", "6th St", "Lee Blvd",
-                                  "S Ely St", "W Lewis St", "Bombing Range Rd", "Columbia Center Blvd", "W Court St" };
-
-    for (int i = 0; i < 15; i++)
+    private sealed class SaleRow
     {
-      var nbhd = Neighborhoods[i % Neighborhoods.Length];
-      var salePrice = 150000 + rng.Next(500000);
-      var isHigh = i % 2 == 0;
-      var ratioFactor = isHigh ? (1.25 + rng.NextDouble() * 0.20) : (0.68 + rng.NextDouble() * 0.15);
-      var assessed = (int)(salePrice * ratioFactor);
-      var ratio = Math.Round((double)assessed / salePrice, 3);
-      var deviation = Math.Round(ratio - 0.985, 3);
-      var method = i % 3 == 0 ? "trim" : "iqr";
-      var reason = isHigh ? $"ratio > Q3 + 1.5*IQR" : $"ratio < Q1 - 1.5*IQR";
-      if (method == "trim")
-        reason = isHigh ? "ratio in top 5% trim" : "ratio in bottom 5% trim";
-
-      outliers.Add(new OutlierRecordDto
-      {
-        ParcelId = $"1-{rng.Next(100, 999):D4}-{rng.Next(100, 400):D3}-{rng.Next(1, 200):D4}",
-        Address = $"{rng.Next(100, 9999)} {streetNames[i]}",
-        Neighborhood = nbhd,
-        SalePrice = salePrice,
-        AssessedValue = assessed,
-        Ratio = ratio,
-        RatioDeviation = deviation,
-        OutlierMethod = method,
-        FlagReason = reason,
-        Confidence = Math.Round(85 + rng.NextDouble() * 13, 0),
-        ReviewStatus = i < 12 ? "pending" : (i == 12 ? "confirmed" : "dismissed"),
-      });
+        public string ParcelId { get; set; } = "";
+        public string Address { get; set; } = "";
+        public string Neighborhood { get; set; } = "Unknown";
+        public string PropertyType { get; set; } = "residential";
+        public decimal SalePrice { get; set; }
+        public decimal AssessedValue { get; set; }
+        public DateTime SaleDate { get; set; }
+        public double Ratio { get; set; }
     }
 
-    return Task.FromResult(outliers);
-  }
+    // ── Strata ────────────────────────────────────────────────────────────────
 
-  // ── Model Comparison ────────────────────────────────────────────────
-
-  public Task<ModelComparisonDto> CompareModelsAsync(CompareModelsRequest request, Guid countyId, CancellationToken ct = default)
-  {
-    var rngA = new Random(request.ModelIdA.GetHashCode() ^ countyId.GetHashCode());
-    var rngB = new Random(request.ModelIdB.GetHashCode() ^ countyId.GetHashCode());
-
-    var modelA = BuildModelSummary(request.ModelIdA, rngA);
-    var modelB = BuildModelSummary(request.ModelIdB, rngB);
-
-    var deltas = new ComparisonDeltasDto
+    public async Task<List<StrataResultDto>> GetStrataAsync(
+        string modelId, Guid countyId, CancellationToken ct = default)
     {
-      Cod = Math.Round(modelB.Cod - modelA.Cod, 1),
-      Prd = Math.Round(modelB.Prd - modelA.Prd, 3),
-      Prb = Math.Round(modelB.Prb - modelA.Prb, 3),
-      MedianRatio = Math.Round(modelB.MedianRatio - modelA.MedianRatio, 3),
-      SampleSize = modelB.SampleSize - modelA.SampleSize,
-    };
+        var taxYear = ParseTaxYear(modelId);
+        _logger.LogInformation("GetStrataAsync: taxYear={TaxYear} countyId={CountyId}", taxYear, countyId);
 
-    var improved = new List<string>();
-    var degraded = new List<string>();
-    if (deltas.Cod < 0) improved.Add("cod"); else if (deltas.Cod > 0) degraded.Add("cod");
-    if (Math.Abs(deltas.Prd) < Math.Abs(modelA.Prd - 1.0)) improved.Add("prd"); else degraded.Add("prd");
-    if (Math.Abs(deltas.Prb) < Math.Abs(modelA.Prb)) improved.Add("prb"); else degraded.Add("prb");
-    if (Math.Abs(deltas.MedianRatio) < Math.Abs(modelA.MedianRatio - 1.0)) improved.Add("medianRatio"); else degraded.Add("medianRatio");
+        var rows = await FetchSaleRowsAsync(taxYear, 3, ct);
+        _logger.LogInformation("GetStrataAsync: {Count} qualified sale rows loaded", rows.Count);
 
-    return Task.FromResult(new ModelComparisonDto
-    {
-      ModelA = modelA,
-      ModelB = modelB,
-      Deltas = deltas,
-      ImprovedMetrics = improved,
-      DegradedMetrics = degraded,
-    });
-  }
+        // Normalize PropertyType → readable label
+        static string NormalizeType(string raw) => raw.ToUpperInvariant() switch
+        {
+            "R" or "R1" or "RESIDENTIAL" => "Residential",
+            "MH" or "R2" or "MOBILE" or "MANUFACTURED" => "Manufactured",
+            "C" or "C1" or "C2" or "C3" or "C4" or "COMMERCIAL" => "Commercial",
+            "A" or "A1" or "A2" or "APT" or "APARTMENT" => "Apartment",
+            "I" or "I1" or "INDUSTRIAL" => "Industrial",
+            "P" or "PERSONAL" => "Personal",
+            _ => raw,
+        };
 
-  // ── Segment Discovery (deterministic neighborhood × propertyType grouping) ──
-
-  public Task<List<DiscoveredSegmentDto>> DiscoverSegmentsAsync(string modelId, Guid countyId, CancellationToken ct = default)
-  {
-    var segments = new List<DiscoveredSegmentDto>();
-    var rng = new Random(modelId.GetHashCode() ^ countyId.GetHashCode() ^ 13);
-
-    foreach (var nbhd in Neighborhoods)
-    {
-      var parcels = NeighborhoodParcels.GetValueOrDefault(nbhd, 200);
-      var medianValue = 250000m + (decimal)(rng.NextDouble() * 300000);
-      var avgSqft = 1200 + rng.NextDouble() * 1800;
-      var avgAge = 10 + rng.NextDouble() * 40;
-
-      segments.Add(new DiscoveredSegmentDto
-      {
-        Id = $"seg-{nbhd[..Math.Min(4, nbhd.Length)].ToLowerInvariant()}-{modelId[..Math.Min(4, modelId.Length)]}",
-        Name = $"{nbhd} Residential",
-        BoundaryDescription = $"Residential properties within {nbhd} city limits",
-        Status = "pending",
-        Confidence = Math.Round(0.70 + rng.NextDouble() * 0.25, 2),
-        ParcelCount = parcels,
-        MedianValue = Math.Round(medianValue, 0),
-        AvgSqft = Math.Round(avgSqft, 0),
-        AvgAge = Math.Round(avgAge, 1),
-        KeyCharacteristics = new List<string>
+        var groups = rows
+            .GroupBy(r => (Neighborhood: r.Neighborhood, PropertyType: NormalizeType(r.PropertyType)))
+            .Where(g => g.Count() >= 5) // IAAO minimum
+            .Select(g =>
+            {
+                var ratios = g.Select(r => (decimal)r.Ratio).ToList();
+                var avs    = g.Select(r => r.AssessedValue).ToList();
+                var med    = Median(ratios);
+                var cod    = ComputeCod(ratios);
+                var prd    = ComputePrd(ratios, avs);
+                var qualified = cod <= 15m && prd >= 0.98m && prd <= 1.03m && med >= 0.90m && med <= 1.10m;
+                var hood  = g.Key.Neighborhood;
+                var pt    = g.Key.PropertyType;
+                var id    = $"{hood.ToLowerInvariant().Replace(" ", "-")}-{pt.ToLowerInvariant()}";
+                return new StrataResultDto
                 {
-                    $"Median {nbhd} residential",
-                    $"~{parcels} parcels",
-                    $"Avg age {Math.Round(avgAge, 0)} years",
-                },
-      });
+                    StrataId     = id,
+                    StrataLabel  = $"{hood} {pt}",
+                    Neighborhood = hood,
+                    PropertyType = pt,
+                    SampleSize   = g.Count(),
+                    MedianRatio  = Math.Round((double)med, 3),
+                    Cod          = Math.Round((double)cod, 1),
+                    Prd          = Math.Round((double)prd, 3),
+                    Qualified    = qualified,
+                };
+            })
+            .OrderBy(s => s.Neighborhood)
+            .ThenBy(s => s.PropertyType)
+            .ToList();
+
+        _logger.LogInformation("GetStrataAsync: {Count} strata computed", groups.Count);
+        return groups;
     }
 
-    return Task.FromResult(segments);
-  }
+    // ── Outliers ──────────────────────────────────────────────────────────────
 
-  // ── Helpers ──────────────────────────────────────────────────────────
-
-  private static ModelSummaryDto BuildModelSummary(string modelId, Random rng)
-  {
-    return new ModelSummaryDto
+    public async Task<List<OutlierRecordDto>> GetOutliersAsync(
+        string modelId, Guid countyId, CancellationToken ct = default)
     {
-      Label = modelId,
-      MedianRatio = Math.Round(0.97 + rng.NextDouble() * 0.06, 3),
-      Cod = Math.Round(10.0 + rng.NextDouble() * 5.0, 1),
-      Prd = Math.Round(0.99 + rng.NextDouble() * 0.04, 3),
-      Prb = Math.Round(-0.03 + rng.NextDouble() * 0.06, 3),
-      SampleSize = 1500 + rng.Next(2000),
-    };
-  }
+        var taxYear = ParseTaxYear(modelId);
+        _logger.LogInformation("GetOutliersAsync: taxYear={TaxYear}", taxYear);
+
+        var rows = await FetchSaleRowsAsync(taxYear, 3, ct);
+        if (rows.Count == 0) return new List<OutlierRecordDto>();
+
+        // Global IQR fence
+        var ratios = rows.Select(r => (decimal)r.Ratio).Order().ToList();
+        var q1 = ratios[(int)(ratios.Count * 0.25)];
+        var q3 = ratios[(int)(ratios.Count * 0.75)];
+        var iqr = q3 - q1;
+        var lo  = q1 - 1.5m * iqr;
+        var hi  = q3 + 1.5m * iqr;
+        var globalMedian = Median(ratios);
+
+        var outliers = rows
+            .Where(r => (decimal)r.Ratio < lo || (decimal)r.Ratio > hi)
+            .Select(r =>
+            {
+                var ratio = (decimal)r.Ratio;
+                var isHigh = ratio > hi;
+                var method = "iqr";
+                var reason = isHigh
+                    ? $"ratio {ratio:F3} > Q3 + 1.5×IQR ({hi:F3})"
+                    : $"ratio {ratio:F3} < Q1 - 1.5×IQR ({lo:F3})";
+                var deviation = ratio - globalMedian;
+                return new OutlierRecordDto
+                {
+                    ParcelId       = r.ParcelId,
+                    Address        = r.Address,
+                    Neighborhood   = r.Neighborhood,
+                    SalePrice      = r.SalePrice,
+                    AssessedValue  = r.AssessedValue,
+                    Ratio          = Math.Round((double)ratio, 3),
+                    RatioDeviation = Math.Round((double)deviation, 3),
+                    OutlierMethod  = method,
+                    FlagReason     = reason,
+                    Confidence     = Math.Round(Math.Min(99, 70 + Math.Abs((double)deviation) * 50), 0),
+                    ReviewStatus   = "pending",
+                };
+            })
+            .OrderByDescending(o => Math.Abs(o.RatioDeviation))
+            .Take(200)
+            .ToList();
+
+        _logger.LogInformation("GetOutliersAsync: {Count} outliers detected", outliers.Count);
+        return outliers;
+    }
+
+    // ── Model Comparison ──────────────────────────────────────────────────────
+
+    public async Task<ModelComparisonDto> CompareModelsAsync(
+        CompareModelsRequest request, Guid countyId, CancellationToken ct = default)
+    {
+        // Convention: ModelIdA = taxYear for 1-year window, ModelIdB = taxYear for 3-year window
+        // If both parseable and equal, compare 1yr vs 3yr for that taxYear.
+        // If different years, compare each year's 1-year window.
+        var yearA = ParseTaxYear(request.ModelIdA);
+        var yearB = ParseTaxYear(request.ModelIdB);
+
+        _logger.LogInformation("CompareModelsAsync: A={A} B={B}", yearA, yearB);
+
+        List<SaleRow> rowsA, rowsB;
+        string labelA, labelB;
+
+        if (yearA == yearB)
+        {
+            // Same year: compare 1-year vs 3-year rolling windows
+            rowsA  = await FetchSaleRowsAsync(yearA, 1, ct);
+            rowsB  = await FetchSaleRowsAsync(yearB, 3, ct);
+            labelA = $"{yearA} (1-year)";
+            labelB = $"{yearB} (3-year)";
+        }
+        else
+        {
+            // Different years: compare each year's 3-year window
+            rowsA  = await FetchSaleRowsAsync(yearA, 3, ct);
+            rowsB  = await FetchSaleRowsAsync(yearB, 3, ct);
+            labelA = $"{yearA} study";
+            labelB = $"{yearB} study";
+        }
+
+        var summaryA = BuildSummary(labelA, rowsA);
+        var summaryB = BuildSummary(labelB, rowsB);
+
+        var deltas = new ComparisonDeltasDto
+        {
+            Cod         = Math.Round(summaryB.Cod - summaryA.Cod, 1),
+            Prd         = Math.Round(summaryB.Prd - summaryA.Prd, 3),
+            Prb         = Math.Round(summaryB.Prb - summaryA.Prb, 3),
+            MedianRatio = Math.Round(summaryB.MedianRatio - summaryA.MedianRatio, 3),
+            SampleSize  = summaryB.SampleSize - summaryA.SampleSize,
+        };
+
+        var improved = new List<string>();
+        var degraded = new List<string>();
+        if (deltas.Cod < 0) improved.Add("cod"); else if (deltas.Cod > 0.5) degraded.Add("cod");
+        if (Math.Abs(summaryB.Prd - 1.0) < Math.Abs(summaryA.Prd - 1.0)) improved.Add("prd"); else degraded.Add("prd");
+        if (Math.Abs(summaryB.Prb) < Math.Abs(summaryA.Prb)) improved.Add("prb"); else degraded.Add("prb");
+        if (Math.Abs(summaryB.MedianRatio - 1.0) < Math.Abs(summaryA.MedianRatio - 1.0)) improved.Add("medianRatio"); else degraded.Add("medianRatio");
+
+        return new ModelComparisonDto
+        {
+            ModelA           = summaryA,
+            ModelB           = summaryB,
+            Deltas           = deltas,
+            ImprovedMetrics  = improved,
+            DegradedMetrics  = degraded,
+        };
+    }
+
+    private static ModelSummaryDto BuildSummary(string label, List<SaleRow> rows)
+    {
+        if (rows.Count == 0)
+            return new ModelSummaryDto { Label = label, SampleSize = 0 };
+
+        var ratios = rows.Select(r => (decimal)r.Ratio).ToList();
+        var avs    = rows.Select(r => r.AssessedValue).ToList();
+        return new ModelSummaryDto
+        {
+            Label       = label,
+            MedianRatio = Math.Round((double)Median(ratios), 3),
+            Cod         = Math.Round((double)ComputeCod(ratios), 1),
+            Prd         = Math.Round((double)ComputePrd(ratios, avs), 3),
+            Prb         = Math.Round((double)ComputePrb(ratios, avs), 3),
+            SampleSize  = rows.Count,
+        };
+    }
+
+    // ── Segment Discovery ─────────────────────────────────────────────────────
+
+    public async Task<List<DiscoveredSegmentDto>> DiscoverSegmentsAsync(
+        string modelId, Guid countyId, CancellationToken ct = default)
+    {
+        var taxYear = ParseTaxYear(modelId);
+        _logger.LogInformation("DiscoverSegmentsAsync: taxYear={TaxYear}", taxYear);
+
+        // Get neighborhood summaries from CamaCharacteristics
+        var nbhdStats = await _db.CamaCharacteristics
+            .Where(c => c.TaxYear == taxYear && c.NeighborhoodCode != null && c.NeighborhoodCode != "")
+            .GroupBy(c => c.NeighborhoodCode!)
+            .Select(g => new
+            {
+                Hood      = g.Key,
+                Count     = g.Count(),
+                AvgSqft   = g.Average(c => (double?)c.SquareFeet) ?? 0.0,
+                AvgYear   = g.Average(c => (double?)c.YearBuilt) ?? 0.0,
+                MedianVal = g.Average(c => (double?)c.ImprvVal) ?? 0.0,
+            })
+            .OrderByDescending(x => x.Count)
+            .Take(50)
+            .ToListAsync(ct);
+
+        // Enrich with Property AV (median per neighborhood via CamaCharacteristics parcel join)
+        var currentYear = taxYear;
+        var segments = nbhdStats.Select(n =>
+        {
+            var avgAge     = currentYear - n.AvgYear;
+            var medianVal  = n.MedianVal > 0 ? (decimal)n.MedianVal : 0m;
+            var confidence = Math.Min(0.95, 0.60 + (n.Count > 50 ? 0.25 : n.Count / 200.0));
+            return new DiscoveredSegmentDto
+            {
+                Id                  = $"seg-{n.Hood.ToLowerInvariant()}-{taxYear}",
+                Name                = $"Neighborhood {n.Hood}",
+                BoundaryDescription = $"Properties within neighborhood code {n.Hood}",
+                Status              = "pending",
+                Confidence          = Math.Round(confidence, 2),
+                ParcelCount         = n.Count,
+                MedianValue         = Math.Round(medianVal, 0),
+                AvgSqft             = Math.Round(n.AvgSqft, 0),
+                AvgAge              = Math.Round(avgAge, 1),
+                KeyCharacteristics  = new List<string>
+                {
+                    $"Neighborhood code {n.Hood}",
+                    $"{n.Count:N0} parcels",
+                    n.AvgYear > 0 ? $"Avg built {(int)n.AvgYear}" : "Year built unknown",
+                },
+            };
+        }).ToList();
+
+        _logger.LogInformation("DiscoverSegmentsAsync: {Count} segments found", segments.Count);
+        return segments;
+    }
 }

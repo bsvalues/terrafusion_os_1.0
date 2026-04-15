@@ -19,7 +19,7 @@ const CHART_COLORS = ['#1e6fa8', '#2a9d8f', '#e76f51', '#264653', '#f4a261', '#e
 
 const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 const formatCurrency = (v: number) => fmt.format(v);
-const fmtRate = (v: number) => `$${v.toFixed(2)}/sqft`;
+const fmtRate = (v: number | undefined | null) => v != null ? `$${Number(v).toFixed(2)}/sqft` : '—';
 
 function ChartSkeleton({ height = 360 }: { height?: number }) {
   return <div style={{ height }} className="flex items-center justify-center"><Skeleton className="h-full w-full" /></div>;

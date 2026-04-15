@@ -1,0 +1,44 @@
+- generic [ref=e2]:
+    - generic [ref=e4]:
+        - generic [ref=e5]:
+            - heading "Analytics Dashboard" [level=1] [ref=e6]
+            - paragraph [ref=e7]: Benton County building cost analytics — live data from TerraFusion OS
+        - generic [ref=e9]:
+            - generic [ref=e10]:
+                - generic [ref=e11]:
+                    - generic [ref=e12]: Time Range
+                    - combobox [ref=e13] [cursor=pointer]:
+                        - generic: 1 Year
+                        - img [ref=e14]
+                - generic [ref=e16]:
+                    - generic [ref=e17]: Region
+                    - combobox [ref=e18] [cursor=pointer]:
+                        - generic: All Regions
+                        - img [ref=e19]
+                - generic [ref=e21]:
+                    - generic [ref=e22]: Building Type
+                    - combobox [ref=e23] [cursor=pointer]:
+                        - generic: All Types
+                        - img [ref=e24]
+            - generic [ref=e26]:
+                - tablist [ref=e27]:
+                    - tab "Cost Trends" [selected] [ref=e28] [cursor=pointer]:
+                        - img [ref=e29]
+                        - text: Cost Trends
+                    - tab "Regional" [ref=e32] [cursor=pointer]:
+                        - img [ref=e33]
+                        - text: Regional
+                    - tab "Building Type" [ref=e35] [cursor=pointer]:
+                        - img [ref=e36]
+                        - text: Building Type
+                    - tab "Predictive" [ref=e38] [cursor=pointer]:
+                        - img [ref=e39]
+                        - text: Predictive
+                - tabpanel "Cost Trends" [ref=e43]:
+                    - generic [ref=e44]:
+                        - generic [ref=e45]:
+                            - heading "Building Cost Trends" [level=3] [ref=e46]
+                            - paragraph [ref=e47]: Average cost per sqft over time — TerraFusion PostgreSQL
+                        - generic [ref=e49]: No trend data returned for this filter.
+    - region "Notifications (F8)":
+        - list

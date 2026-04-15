@@ -5,7 +5,7 @@ using TerraFusion.API.Services.Telemetry;
 namespace TerraFusion.API.Controllers;
 
 [ApiController]
-[Route("api/agents")]
+[Route("api/agents/telemetry")]
 public sealed class AgentTelemetryController : ControllerBase
 {
     private readonly IAgentTelemetryService _telemetry;

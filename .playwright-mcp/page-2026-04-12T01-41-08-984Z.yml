@@ -1,0 +1,88 @@
+- generic [ref=e2]:
+    - generic [ref=e4]:
+        - generic [ref=e6]:
+            - img [ref=e8]
+            - generic [ref=e10]:
+                - heading "Cost Estimator — RCNLD" [level=3] [ref=e11]
+                - paragraph [ref=e12]: Benton County replacement cost new less depreciation — FY2025 cost matrix
+        - generic [ref=e14]:
+            - tablist [ref=e15]:
+                - tab "Calculator" [selected] [ref=e16] [cursor=pointer]:
+                    - generic [ref=e17]:
+                        - img [ref=e18]
+                        - generic [ref=e21]: Calculator
+                - tab "Results & Analysis" [disabled]:
+                    - generic:
+                        - img
+                        - generic: Results & Analysis
+            - tabpanel "Calculator" [ref=e22]:
+                - generic [ref=e23]:
+                    - generic [ref=e24]:
+                        - generic [ref=e25]:
+                            - text: Square Footage
+                            - spinbutton "Square Footage" [ref=e26]: '1000'
+                            - paragraph [ref=e27]: Enter the total square footage of the building
+                        - generic [ref=e28]:
+                            - generic [ref=e29]:
+                                - generic [ref=e30]: Building Type
+                                - button "Building type info" [ref=e31] [cursor=pointer]:
+                                    - img
+                                    - generic [ref=e32]: Building type info
+                            - combobox "Building Type" [ref=e33] [cursor=pointer]:
+                                - generic: Residential — Single Family
+                                - img [ref=e34]
+                            - combobox [ref=e36]
+                            - paragraph [ref=e37]: Select the type of building
+                        - generic [ref=e38]:
+                            - generic [ref=e39]:
+                                - generic [ref=e40]: Quality Level
+                                - button "Quality level info" [ref=e41] [cursor=pointer]:
+                                    - img
+                                    - generic [ref=e42]: Quality level info
+                            - combobox "Quality Level" [ref=e43] [cursor=pointer]:
+                                - generic: Class 25/30 — Fair+ / Average
+                                - img [ref=e44]
+                            - combobox [ref=e46]
+                            - paragraph [ref=e47]: Select the quality level of construction
+                        - generic [ref=e48]:
+                            - text: Neighborhood
+                            - combobox "Neighborhood" [ref=e49] [cursor=pointer]:
+                                - generic: 12040 — Downtown Kennewick
+                                - img [ref=e50]
+                            - combobox [ref=e52]
+                            - paragraph [ref=e53]: Select the neighborhood where the building is located
+                        - generic [ref=e54]:
+                            - generic [ref=e55]:
+                                - generic [ref=e56]: Year Built
+                                - button "Year built info" [ref=e57] [cursor=pointer]:
+                                    - img
+                                    - generic [ref=e58]: Year built info
+                            - spinbutton "Year Built" [ref=e59]: '2026'
+                            - paragraph [ref=e60]: Enter the year the building was built or leave as current year for new construction
+                    - generic [ref=e61]:
+                        - text: Construction Complexity
+                        - combobox "Construction Complexity" [ref=e62] [cursor=pointer]:
+                            - generic: Standard
+                            - img [ref=e63]
+                        - combobox [ref=e65]
+                        - paragraph [ref=e66]: Simple = basic rectangular shapes; Highly Complex = irregular geometry, custom features
+                    - generic [ref=e67]:
+                        - text: Building Condition
+                        - combobox "Building Condition" [ref=e68] [cursor=pointer]:
+                            - generic: AVG / GD — Average / Good
+                            - img [ref=e69]
+                        - combobox [ref=e71]
+                        - paragraph [ref=e72]: For new construction use Good. Poor = significant deterioration requiring major repairs.
+                    - button "Secondary Features (Benton Method) ▼ Show" [ref=e74] [cursor=pointer]:
+                        - generic [ref=e75]:
+                            - img [ref=e76]
+                            - text: Secondary Features (Benton Method)
+                        - generic [ref=e77]: ▼ Show
+                    - button "Calculate Cost" [ref=e79] [cursor=pointer]:
+                        - img
+                        - text: Calculate Cost
+        - generic [ref=e81]:
+            - paragraph [ref=e82]: Calculation uses the official Benton County Building Cost API
+            - paragraph [ref=e83]: All calculations are approximate and may require professional validation.
+    - region "Notifications (F8)":
+        - list

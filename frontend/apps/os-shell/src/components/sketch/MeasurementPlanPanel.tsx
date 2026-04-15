@@ -204,11 +204,11 @@ export function MeasurementPlanPanel({ onSave, saving, currentGLA }: Measurement
               <Calculator className="w-4 h-4 text-primary" />
               <div>
                 <p className="text-sm font-medium text-foreground">
-                  Est. Area: {Math.round(area).toLocaleString()} sqft
+                  Est. Area: {Math.round(area).toLocaleString()} sq ft
                 </p>
                 {delta !== null && (
                   <p className={`text-[10px] ${Math.abs(deltaPct ?? 0) > 15 ? "text-destructive" : "text-muted-foreground"}`}>
-                    Δ {delta > 0 ? "+" : ""}{Math.round(delta).toLocaleString()} sqft
+                    Δ {delta > 0 ? "+" : ""}{Math.round(delta).toLocaleString()} sq ft
                     ({deltaPct !== null ? `${deltaPct > 0 ? "+" : ""}${deltaPct.toFixed(1)}%` : ""})
                     {Math.abs(deltaPct ?? 0) > 15 && " ⚠️ Review Required"}
                   </p>

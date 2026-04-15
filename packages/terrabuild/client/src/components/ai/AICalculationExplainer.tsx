@@ -1,205 +1,312 @@
+/**
+ * Assessment Narrative
+ *
+ * Appraiser enters parcel characteristics, gets a plain-English explanation
+ * of the RCNLD calculation they can use to defend value at a BOR hearing.
+ */
 import { useState } from 'react';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Loader2, FileText, Copy, CheckCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useMCP } from '@/hooks/use-mcp';
-import { Loader2, Database, Info } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+interface BuildingTypeOption { value: string; label: string; }
+interface RevalAreaOption    { value: string; label: string; }
+
+interface FormValues {
+  buildingType: string;
+  revalArea: string;
+  squareFeet: string;
+  yearBuilt: string;
+  quality: string;
+  condition: string;
+  parcelId: string;
+  ownerName: string;
+}
+
+const QUALITY_OPTIONS = [
+  { value: 'ECONOMY',  label: 'Economy' },
+  { value: 'STANDARD', label: 'Standard' },
+  { value: 'GOOD',     label: 'Good' },
+  { value: 'CUSTOM',   label: 'Custom' },
+  { value: 'LUXURY',   label: 'Luxury' },
+];
+
+const CONDITION_OPTIONS = [
+  { value: 'POOR',      label: 'Poor' },
+  { value: 'FAIR',      label: 'Fair' },
+  { value: 'AVERAGE',   label: 'Average' },
+  { value: 'GOOD',      label: 'Good' },
+  { value: 'EXCELLENT', label: 'Excellent' },
+];
+
+async function fetchBuildingTypes(): Promise<BuildingTypeOption[]> {
+  const res = await fetch('/api/costforge/building-types');
+  if (!res.ok) return [];
+  const d = await res.json();
+  const types = d.buildingTypes ?? d ?? [];
+  return types.map((t: any) => ({ value: t.code ?? t, label: t.label ?? t }));
+}
+
+async function fetchRevalAreas(): Promise<RevalAreaOption[]> {
+  const res = await fetch('/api/costforge/regions');
+  if (!res.ok) return [];
+  const d = await res.json();
+  const regions = d.regions ?? d ?? [];
+  return regions.map((r: any) => ({ value: r.name ?? r, label: r.name ?? r }));
+}
+
+async function generateNarrative(values: FormValues & { costResult: any }): Promise<string> {
+  const res = await fetch('/api/aimodules/execute', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      command: 'generate-assessment-narrative',
+      parameters: {
+        parcelId: values.parcelId || 'Unknown',
+        ownerName: values.ownerName || 'Property Owner',
+        buildingType: values.buildingType,
+        squareFeet: Number(values.squareFeet),
+        yearBuilt: Number(values.yearBuilt),
+        quality: values.quality,
+        condition: values.condition,
+        revalArea: values.revalArea,
+        costResult: values.costResult,
+        context: 'Generate a professional assessment narrative suitable for a Washington State Board of Equalization hearing. Explain the cost approach (RCN, depreciation schedule, RCNLD) in plain English. Reference Benton County assessor methodology.',
+      },
+    }),
+  });
+  if (!res.ok) throw new Error('Narrative generation failed');
+  const d = await res.json();
+  return typeof d.result === 'string' ? d.result : JSON.stringify(d.result);
+}
 
 export default function AICalculationExplainer() {
   const { toast } = useToast();
-  const { explainCalculation, isExplaining, isError, error, mcpStatus } = useMCP();
-  const [calculationData, setCalculationData] = useState<string>('');
-  const [explanationResult, setExplanationResult] = useState<any>(null);
-  
-  // Handle form submission for explanation
-  const handleExplain = () => {
-    if (!calculationData.trim()) {
-      toast({
-        title: "Input Required",
-        description: "Please enter calculation data to explain",
-        variant: "destructive",
+  const [copied, setCopied] = useState(false);
+  const [narrative, setNarrative] = useState('');
+  const [costResult, setCostResult] = useState<any>(null);
+
+  const [form, setForm] = useState<FormValues>({
+    buildingType: '',
+    revalArea: '',
+    squareFeet: '',
+    yearBuilt: String(new Date().getFullYear() - 15),
+    quality: 'STANDARD',
+    condition: 'AVERAGE',
+    parcelId: '',
+    ownerName: '',
+  });
+
+  const { data: buildingTypes = [], isLoading: loadingTypes } = useQuery({
+    queryKey: ['building-types-narrative'],
+    queryFn: fetchBuildingTypes,
+  });
+
+  const { data: revalAreas = [], isLoading: loadingAreas } = useQuery({
+    queryKey: ['reval-areas-narrative'],
+    queryFn: fetchRevalAreas,
+  });
+
+  const set = (field: keyof FormValues, value: string) =>
+    setForm(prev => ({ ...prev, [field]: value }));
+
+  // First compute cost, then generate narrative
+  const mutation = useMutation({
+    mutationFn: async (values: FormValues) => {
+      // Step 1: compute RCNLD
+      const costRes = await fetch('/api/costforge/cost-estimate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          buildingType: values.buildingType,
+          squareFeet: Number(values.squareFeet),
+          yearBuilt: Number(values.yearBuilt),
+          quality: values.quality,
+          condition: values.condition,
+          revalArea: values.revalArea,
+        }),
       });
-      return;
-    }
-    
-    // Try to parse the JSON data
-    try {
-      const parsedData = JSON.parse(calculationData);
-      
-      // Call the MCP service to explain the calculation
-      explainCalculation({ calculationData: parsedData }, {
-        onSuccess: (result) => {
-          setExplanationResult(result);
-          toast({
-            title: "Explanation Complete",
-            description: "AI has explained the building cost calculation",
-          });
-        },
-        onError: (error) => {
-          toast({
-            title: "Explanation Failed",
-            description: error instanceof Error ? error.message : "An unknown error occurred",
-            variant: "destructive",
-          });
-        },
-      });
-    } catch (parseError) {
-      toast({
-        title: "Invalid JSON",
-        description: "The provided data is not valid JSON",
-        variant: "destructive",
-      });
-    }
+      if (!costRes.ok) throw new Error('Cost calculation failed');
+      const cost = await costRes.json();
+      setCostResult(cost);
+
+      // Step 2: generate narrative
+      return generateNarrative({ ...values, costResult: cost });
+    },
+    onSuccess: (text) => {
+      setNarrative(text);
+    },
+    onError: (err: Error) => {
+      toast({ title: 'Failed', description: err.message, variant: 'destructive' });
+    },
+  });
+
+  const isReady = form.buildingType && form.revalArea && form.squareFeet && form.yearBuilt;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(narrative).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
-  
-  // Display API key missing warning if needed
-  if (mcpStatus && mcpStatus.status === "api_key_missing") {
-    return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Info className="h-5 w-5" />
-            AI Calculation Explainer
-          </CardTitle>
-          <CardDescription>
-            Get detailed explanations of building cost calculations
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Alert variant="destructive">
-            <AlertTitle>API Key Missing</AlertTitle>
-            <AlertDescription>
-              OpenAI API key is not configured. Please contact your administrator to set up the API key.
-            </AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
-    );
-  }
-  
+
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Info className="h-5 w-5" />
-          AI Calculation Explainer
+          <FileText className="h-5 w-5 text-primary" />
+          Assessment Narrative
         </CardTitle>
         <CardDescription>
-          Get detailed explanations of your building cost calculations
+          Enter parcel characteristics and generate a plain-English cost approach narrative
+          suitable for BOR hearings and assessment defense.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div>
-          <Label htmlFor="calculationData">Enter Calculation Data (JSON format)</Label>
-          <Textarea
-            id="calculationData"
-            className="min-h-[200px] font-mono text-sm mt-2"
-            placeholder={`{\n  "buildingType": "commercial",\n  "revalArea": "Reval 1",\n  "squareFootage": 5000,\n  "baseCost": 150.00,\n  "revalAreaFactor": 1.2,\n  "complexityFactor": 1.1,\n  "costPerSqft": 198.00,\n  "totalCost": 990000.00\n}`}
-            value={calculationData}
-            onChange={(e) => setCalculationData(e.target.value)}
-          />
-          <p className="text-xs text-muted-foreground mt-1">
-            Paste calculation data in JSON format for AI explanation
-          </p>
+
+      <CardContent className="space-y-5">
+        {/* Optional parcel header */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs">Parcel ID <span className="text-muted-foreground">(optional)</span></Label>
+            <Input
+              placeholder="12-34-56-78-9000"
+              value={form.parcelId}
+              onChange={e => set('parcelId', e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Owner Name <span className="text-muted-foreground">(optional)</span></Label>
+            <Input
+              placeholder="Smith, John"
+              value={form.ownerName}
+              onChange={e => set('ownerName', e.target.value)}
+            />
+          </div>
         </div>
-        
-        <div className="flex justify-end">
-          <Button 
-            onClick={handleExplain} 
-            disabled={isExplaining || !calculationData.trim()}
-          >
-            {isExplaining ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating Explanation...
-              </>
-            ) : (
-              <>Explain Calculation</>
+
+        <div className="h-px bg-border" />
+
+        {/* Building inputs */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs">Building Type *</Label>
+            {loadingTypes ? <Skeleton className="h-9 w-full" /> : (
+              <Select value={form.buildingType} onValueChange={v => set('buildingType', v)}>
+                <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                <SelectContent>
+                  {buildingTypes.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
             )}
-          </Button>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Reval Area *</Label>
+            {loadingAreas ? <Skeleton className="h-9 w-full" /> : (
+              <Select value={form.revalArea} onValueChange={v => set('revalArea', v)}>
+                <SelectTrigger><SelectValue placeholder="Select reval area" /></SelectTrigger>
+                <SelectContent>
+                  {revalAreas.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Square Feet *</Label>
+            <Input
+              type="number"
+              placeholder="1800"
+              value={form.squareFeet}
+              onChange={e => set('squareFeet', e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Year Built *</Label>
+            <Input
+              type="number"
+              placeholder="2005"
+              value={form.yearBuilt}
+              onChange={e => set('yearBuilt', e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Quality Grade</Label>
+            <Select value={form.quality} onValueChange={v => set('quality', v)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {QUALITY_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Condition</Label>
+            <Select value={form.condition} onValueChange={v => set('condition', v)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {CONDITION_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        
-        {/* Explanation Results Display */}
-        {explanationResult && (
-          <Card className="bg-muted/50">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">AI Explanation</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Basic Explanation */}
-                {explanationResult.explanation && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Calculation Explanation</h3>
-                    <p className="text-sm whitespace-pre-line">{explanationResult.explanation}</p>
-                  </div>
-                )}
-                
-                {/* Formula Breakdown */}
-                {explanationResult.formulaBreakdown && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Formula Breakdown</h3>
-                    <div className="text-sm bg-background p-3 rounded-md font-mono">
-                      {explanationResult.formulaBreakdown}
-                    </div>
-                  </div>
-                )}
-                
-                {/* Factor Explanations */}
-                {explanationResult.factorExplanations && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Factor Explanations</h3>
-                    <ul className="text-sm list-disc pl-5 space-y-1">
-                      {Object.entries(explanationResult.factorExplanations).map(([factor, explanation], index) => (
-                        <li key={index}>
-                          <span className="font-medium">{factor}:</span> {explanation as string}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                
-                {/* Additional Insights */}
-                {explanationResult.additionalInsights && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Additional Insights</h3>
-                    <p className="text-sm">{explanationResult.additionalInsights}</p>
-                  </div>
-                )}
+
+        {/* Computed cost preview */}
+        {costResult && (
+          <div className="rounded-md border bg-muted/30 p-3 text-sm grid grid-cols-3 gap-3">
+            <div>
+              <div className="text-xs text-muted-foreground">Base Rate</div>
+              <div className="font-medium">${costResult.baseCostPerSqft?.toFixed(2)}/sqft</div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">Depreciation</div>
+              <div className="font-medium">{((1 - (costResult.depreciationFactor ?? 1)) * 100).toFixed(0)}%</div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">RCNLD</div>
+              <div className="font-semibold text-primary">
+                ${costResult.totalCost?.toLocaleString('en-US', { maximumFractionDigits: 0 })}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
-        
-        {isError && (
-          <Alert variant="destructive">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
-              {error || "An error occurred generating the explanation. Please try again."}
-            </AlertDescription>
-          </Alert>
+
+        <Button
+          onClick={() => mutation.mutate(form)}
+          disabled={!isReady || mutation.isPending}
+          className="w-full"
+        >
+          {mutation.isPending ? (
+            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating narrative…</>
+          ) : (
+            'Generate Assessment Narrative'
+          )}
+        </Button>
+
+        {/* Narrative output */}
+        {narrative && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Narrative
+              </Label>
+              <Button variant="ghost" size="sm" onClick={handleCopy} className="h-7 text-xs gap-1.5">
+                {copied ? <CheckCheck className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied ? 'Copied' : 'Copy'}
+              </Button>
+            </div>
+            <Textarea
+              readOnly
+              value={narrative}
+              className="min-h-[220px] text-sm font-mono bg-muted/30 resize-y"
+            />
+          </div>
         )}
       </CardContent>
-      <CardFooter className="flex justify-between bg-muted/20 text-xs text-muted-foreground">
-        <div className="flex items-center">
-          <Info className="h-3 w-3 mr-1" />
-          <span>TerraBuild</span>
-        </div>
-        <div className="flex items-center">
-          <Database className="h-3 w-3 mr-1" />
-          <span>Powered by AI</span>
-        </div>
-      </CardFooter>
     </Card>
   );
 }

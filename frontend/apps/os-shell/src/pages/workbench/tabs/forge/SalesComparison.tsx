@@ -148,7 +148,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
                 {recompute.error?.message ?? 'Recompute failed'}
               </span>
             )}
-            {recompute.isSuccess && (
+            {recompute.isSuccess && (recompute.data as { updated: number }).updated > 0 && (
               <span className="text-xs" style={{ color: 'hsl(var(--tf-success))' }}>
                 ✓ {(recompute.data as { updated: number }).updated} updated
               </span>
@@ -188,9 +188,10 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
                 <div className="tf-text-tertiary text-xs">Median Adj. Price</div>
                 <div className="text-lg font-bold tf-text">{fmtCurrency(salesAPI.data.medianAdjustedPrice)}</div>
               </div>
-              <div className="tf-panel p-3 text-center">
-                <div className="tf-text-tertiary text-xs">Adjustment Range</div>
+              <div className="tf-panel p-3 text-center" title="Difference between highest and lowest sale price in the comp pool">
+                <div className="tf-text-tertiary text-xs">Sale Price Range</div>
                 <div className="text-lg font-bold tf-text">{fmtCurrency(salesAPI.data.adjustmentRange)}</div>
+                <div className="text-xs tf-text-dim mt-0.5">high − low</div>
               </div>
             </div>
             {/* IAAO ratio statistics */}
@@ -198,22 +199,31 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div className="tf-panel p-3 text-center">
                   <div className="tf-text-tertiary text-xs">Sales Ratio Median</div>
-                  <div className="text-sm font-semibold tf-text">{salesAPI.data.salesRatioMedian.toFixed(3)}</div>
-                  <div className="text-xs tf-text-dim mt-0.5">IAAO target: 0.950\u20131.050</div>
+                  <div
+                    className="text-sm font-semibold tf-text"
+                    style={{ color: salesAPI.data.salesRatioMedian > 1.10 || salesAPI.data.salesRatioMedian < 0.90 ? 'hsl(0 84% 60%)' : salesAPI.data.salesRatioMedian > 1.05 || salesAPI.data.salesRatioMedian < 0.95 ? 'hsl(38 92% 50%)' : undefined }}
+                  >{salesAPI.data.salesRatioMedian.toFixed(3)}</div>
+                  <div className="text-xs tf-text-dim mt-0.5">{'IAAO target: 0.950\u20131.050'}</div>
                 </div>
                 <div className="tf-panel p-3 text-center">
                   <div className="tf-text-tertiary text-xs">COD (IAAO)</div>
-                  <div className="text-sm font-semibold tf-text">{salesAPI.data.coefficientOfDispersion.toFixed(1)}%</div>
+                  <div
+                    className="text-sm font-semibold tf-text"
+                    style={{ color: salesAPI.data.coefficientOfDispersion > 20 ? 'hsl(0 84% 60%)' : salesAPI.data.coefficientOfDispersion > 15 ? 'hsl(38 92% 50%)' : undefined }}
+                  >{salesAPI.data.coefficientOfDispersion.toFixed(1)}%</div>
                   <div className="text-xs tf-text-dim mt-0.5">Target: &lt;15% residential</div>
                 </div>
                 <div className="tf-panel p-3 text-center">
                   <div className="tf-text-tertiary text-xs">PRD (IAAO)</div>
-                  <div className="text-sm font-semibold tf-text">
+                  <div
+                    className="text-sm font-semibold tf-text"
+                    style={{ color: salesAPI.data.priceRelatedDifferential > 1.05 || (salesAPI.data.priceRelatedDifferential > 0 && salesAPI.data.priceRelatedDifferential < 0.95) ? 'hsl(0 84% 60%)' : salesAPI.data.priceRelatedDifferential > 1.03 || (salesAPI.data.priceRelatedDifferential > 0 && salesAPI.data.priceRelatedDifferential < 0.98) ? 'hsl(38 92% 50%)' : undefined }}
+                  >
                     {salesAPI.data.priceRelatedDifferential > 0
                       ? salesAPI.data.priceRelatedDifferential.toFixed(3)
                       : '–'}
                   </div>
-                  <div className="text-xs tf-text-dim mt-0.5">Target: 0.98\u20131.03</div>
+                  <div className="text-xs tf-text-dim mt-0.5">{'Target: 0.98\u20131.03'}</div>
                 </div>
                 <div className="tf-panel p-3 text-center">
                   <div className="tf-text-tertiary text-xs">Qualified Sales</div>
@@ -260,7 +270,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
                                 : `TF recommendation: ${effective ?? 'pending'}`
                             }
                           >
-                            {isOverridden ? '⚑ ' : ''}{effective ?? 'pending'}
+                            {isOverridden ? '⚑ ' : ''}{effective === null ? 'Unreviewed' : effective}
                           </span>
                           <span className="text-sm font-semibold tf-suite-accent-text">
                             {Math.round(c.similarity * 100)}% match
@@ -270,7 +280,8 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
                       <div className="flex gap-4 text-xs tf-text-dim flex-wrap">
                         <span>Sale: {fmtCurrency(c.salePrice)}</span>
                         <span>Adjusted: {fmtCurrency(c.adjustedPrice)}</span>
-                        <span>Ratio: {c.salesRatio.toFixed(3)}</span>
+                        {c.pricePerSqFt != null && <span>${c.pricePerSqFt.toFixed(0)}/sf</span>}
+                        <span style={{ color: c.salesRatio < 0.70 || c.salesRatio > 1.30 ? 'hsl(0 84% 60%)' : c.salesRatio < 0.80 || c.salesRatio > 1.20 ? 'hsl(38 92% 50%)' : undefined }}>Ratio: {c.salesRatio.toFixed(3)}{(c.salesRatio < 0.80 || c.salesRatio > 1.20) ? ' ⚠' : ''}</span>
                         {c.saleDate && (
                           <span>
                             {new Date(c.saleDate).toLocaleDateString()}
@@ -370,7 +381,16 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
               <div className="tf-panel p-3 space-y-2" data-testid="ols-regression-panel">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold tf-text-secondary">OLS Regression Model</span>
-                  <span className="text-xs tf-text-dim">
+                  <span
+                    className="text-xs"
+                    style={{
+                      color: salesAPI.data.regressionRSquared != null
+                        ? salesAPI.data.regressionRSquared < 0.30 ? 'hsl(0 84% 60%)'
+                        : salesAPI.data.regressionRSquared < 0.50 ? 'hsl(38 92% 50%)'
+                        : 'hsl(var(--tf-text-dim))'
+                        : 'hsl(var(--tf-text-dim))'
+                    }}
+                  >
                     n={salesAPI.data.regressionCompsUsed ?? '—'}
                     &nbsp;·&nbsp;
                     R²={salesAPI.data.regressionRSquared != null ? salesAPI.data.regressionRSquared.toFixed(3) : '—'}
@@ -386,7 +406,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
                 </div>
                 {salesAPI.data.regressionBeta && salesAPI.data.regressionBeta.length === 4 && (
                   <div className="grid grid-cols-4 gap-2 text-xs tf-text-dim">
-                    <div><span className="opacity-60">β₀</span> {salesAPI.data.regressionBeta[0].toFixed(0)}</div>
+                    <div><span className="opacity-60">Intercept</span> {salesAPI.data.regressionBeta[0].toFixed(0)}</div>
                     <div><span className="opacity-60">β_GLA</span> {salesAPI.data.regressionBeta[1].toFixed(2)}</div>
                     <div><span className="opacity-60">β_Lot</span> {salesAPI.data.regressionBeta[2].toFixed(2)}</div>
                     <div><span className="opacity-60">β_Year</span> {salesAPI.data.regressionBeta[3].toFixed(0)}</div>

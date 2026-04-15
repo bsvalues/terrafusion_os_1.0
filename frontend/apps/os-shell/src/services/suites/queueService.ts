@@ -64,7 +64,16 @@ export async function getQueueMetrics(options?: QueueReadOptions): Promise<Queue
   try {
     const res = await fetch(`${API}/metrics`, { headers: authHeadersReadOnly() });
     if (!res.ok) throw new Error(res.statusText);
-    return res.json();
+    const data = await res.json();
+    // Backend uses totalQueued; frontend type uses totalPendingReview — normalize
+    return {
+      totalUnassigned: data.totalUnassigned ?? data.totalQueued ?? 0,
+      totalInProgress: data.totalInProgress ?? 0,
+      totalPendingReview: data.totalPendingReview ?? data.totalQueued ?? 0,
+      completedThisWeek: data.completedThisWeek ?? data.totalCompleted ?? 0,
+      slaViolations: data.slaViolations ?? data.totalFailed ?? 0,
+      avgDaysToComplete: data.avgDaysToComplete ?? 0,
+    };
   } catch (err) {
     if (options?.throwOnError) throw err;
     return QUEUE_METRICS;

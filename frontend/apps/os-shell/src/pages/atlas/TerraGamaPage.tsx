@@ -55,9 +55,9 @@ const ZONING_COLORS: Record<string, string> = {
 const REGULATION_DATA: Record<string, { maxHeight: string; setback: string; lotCoverage: string; parking: string }> = {
   'R-1': { maxHeight: '35 ft', setback: '20 ft front', lotCoverage: '40%', parking: '2 spaces/unit' },
   'R-2': { maxHeight: '45 ft', setback: '15 ft front', lotCoverage: '50%', parking: '1.5 spaces/unit' },
-  'C-1': { maxHeight: '50 ft', setback: '0 ft front', lotCoverage: '80%', parking: '1 space/500 sqft' },
-  'C-2': { maxHeight: '75 ft', setback: '0 ft front', lotCoverage: '90%', parking: '1 space/400 sqft' },
-  'I-1': { maxHeight: '60 ft', setback: '30 ft front', lotCoverage: '60%', parking: '1 space/1000 sqft' },
+  'C-1': { maxHeight: '50 ft', setback: '0 ft front', lotCoverage: '80%', parking: '1 space/500 sq ft' },
+  'C-2': { maxHeight: '75 ft', setback: '0 ft front', lotCoverage: '90%', parking: '1 space/400 sq ft' },
+  'I-1': { maxHeight: '60 ft', setback: '30 ft front', lotCoverage: '60%', parking: '1 space/1000 sq ft' },
   AG: { maxHeight: '35 ft', setback: '50 ft front', lotCoverage: '10%', parking: 'N/A' },
   PUD: { maxHeight: 'Per plan', setback: 'Per plan', lotCoverage: 'Per plan', parking: 'Per plan' },
 };

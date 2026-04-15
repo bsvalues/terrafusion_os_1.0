@@ -76,6 +76,11 @@ public sealed record LevyEntry(
     string TaxingDistrict,
     decimal TaxRate,
     decimal LevyAmount,
+    /// <summary>
+    /// This parcel's annual levy obligation = TaxRate × (AssessedValue / 1000).
+    /// Distinct from LevyAmount, which is the district-wide budget total.
+    /// </summary>
+    decimal ParcelLevyAmount,
     int TaxYear,
     string Purpose,
     DateTime EffectiveDate

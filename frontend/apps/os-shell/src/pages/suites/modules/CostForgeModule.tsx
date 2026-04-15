@@ -629,7 +629,7 @@ export default function CostForgeModule() {
                   {formatCurrency(result.rcnld)}
                 </p>
                 <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
-                  {formatCurrency(result.costPerSqFt)}/sqft
+                  {formatCurrency(result.costPerSqFt)}/sq ft
                 </p>
                 <Badge className={CONFIDENCE_COLORS[result.confidence]} variant='outline'>
                   {result.confidence} Confidence

@@ -1,0 +1,223 @@
+<h2>Edge Cases — Multi-County, State DOR, Legislative Audit</h2>
+<p class="subtitle">TerraFusion serves 39+ WA counties. The matrix versioning system must satisfy all of these simultaneously.</p>
+
+<div class="section">
+  <div class="label">Edge Case 1 — State DOR Equalization Audit</div>
+  <div style="background:#1e293b;border:1px solid #ef4444;border-radius:8px;padding:14px;margin-top:10px;font-size:11px;">
+    <div style="color:#ef4444;font-weight:700;margin-bottom:8px;">📋 Scenario: State DOR calls. They want every ratio study and calibration record for Benton County, 2020–2025.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div style="background:#0f172a;border-radius:6px;padding:10px;">
+        <div style="color:#f59e0b;font-weight:600;margin-bottom:6px;">Without TerraFusion versioning</div>
+        <div style="color:#94a3b8;line-height:1.5;">Staff searches shared drives, email threads, Excel files. 2021 calibration memo is missing. 2022 ratio study is in a format the DOR doesn't recognize. Chief appraiser spends 3 weeks assembling a package that still has gaps. Potential equalization order.</div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:10px;">
+        <div style="color:#22c55e;font-weight:600;margin-bottom:6px;">With TerraFusion</div>
+        <div style="color:#94a3b8;line-height:1.5;">AI generates DOR audit package in minutes: all matrix versions with timestamps, every Calibration Memo with sign-off chain, ratio study evidence linked to each version change, PRD/PRB/COD trends across all years. Exported in DOR-required format.</div>
+        <div style="color:#22c55e;font-size:9px;margin-top:6px;">Output: "Benton County Equalization Audit Package 2020–2025 — generated in 4 minutes"</div>
+      </div>
+    </div>
+    <div style="background:#0f172a;border-radius:6px;padding:10px;margin-top:10px;">
+      <div style="color:#38bdf8;font-weight:600;margin-bottom:6px;">What TerraFusion must store per matrix version to satisfy DOR:</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:10px;color:#94a3b8;">
+        <div>✓ Matrix snapshot (all rates at lock date)</div>
+        <div>✓ Triggering event (PRD/PRB/COD that prompted review)</div>
+        <div>✓ Sales data universe (window, cleaning rules, exclusions)</div>
+        <div>✓ Diagnostics summary (before/after PRD/PRB)</div>
+        <div>✓ Change description (old rate → new rate, version numbers)</div>
+        <div>✓ Sign-off chain (analyst → chief appraiser → assessor)</div>
+        <div>✓ Effective date</div>
+        <div>✓ Verification results (post-change ratio study)</div>
+        <div>✓ Next review date</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Edge Case 2 — State-Mandated Equalization Order</div>
+  <div style="background:#1e293b;border:1px solid #a78bfa;border-radius:8px;padding:14px;margin-top:10px;font-size:11px;">
+    <div style="color:#a78bfa;font-weight:700;margin-bottom:8px;">⚡ Scenario: State DOR issues an equalization order — Benton County must raise all residential assessments by 8% before tax roll closes.</div>
+    <div style="color:#94a3b8;line-height:1.6;margin-bottom:10px;">This is NOT a locally-driven calibration. It's state-mandated. The matrix version for this change needs a special classification: <span style="color:#a78bfa">MANDATED</span> vs <span style="color:#38bdf8">CALIBRATED</span>. The Calibration Memo still generates but the triggering event is "State DOR Equalization Order #2025-47" not a local ratio study finding.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="background:#0f172a;border-radius:6px;padding:10px;">
+        <div style="color:#a78bfa;font-weight:600;margin-bottom:4px;">Version Classification</div>
+        <div style="color:#94a3b8;font-size:10px;">v2025.2-MANDATED<br>Trigger: DOR Order #2025-47<br>Scope: R1 residential only<br>Change: SFR base rate +8%<br>Authority: State DOR (overrides local)</div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:10px;">
+        <div style="color:#22c55e;font-weight:600;margin-bottom:4px;">AI Behavior</div>
+        <div style="color:#94a3b8;font-size:10px;">AI pre-fills memo with DOR order citation. Calculates exact rate change needed. Shows county AV impact (+$186M). Flags which reval areas are affected. Generates taxpayer communication template. Cannot be overridden by local calibration tools.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Edge Case 3 — Multi-County Architecture</div>
+  <div style="background:#1e293b;border:1px solid #38bdf8;border-radius:8px;padding:14px;margin-top:10px;font-size:11px;">
+    <div style="color:#38bdf8;font-weight:700;margin-bottom:8px;">🗺️ 39+ WA counties. Each county's data is sovereign. But the state cares about cross-county equity.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div style="background:#0f172a;border-radius:6px;padding:10px;text-align:center;">
+        <div style="color:#38bdf8;font-weight:700;font-size:13px;">BENTON</div>
+        <div style="color:#64748b;font-size:9px;margin-top:4px;">89,247 parcels<br>SFR: $123.68/sqft<br>Hospital: $190.57/sqft<br>v2025.0-LOCKED</div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:10px;text-align:center;">
+        <div style="color:#a78bfa;font-weight:700;font-size:13px;">YAKIMA</div>
+        <div style="color:#64748b;font-size:9px;margin-top:4px;">~110,000 parcels<br>SFR: $118.40/sqft<br>Hospital: $185.20/sqft<br>v2025.0-LOCKED</div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:10px;text-align:center;">
+        <div style="color:#22c55e;font-weight:700;font-size:13px;">GRANT</div>
+        <div style="color:#64748b;font-size:9px;margin-top:4px;">~42,000 parcels<br>SFR: $109.20/sqft<br>Hospital: $178.90/sqft<br>v2025.0-LOCKED</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div style="background:#0f172a;border-radius:6px;padding:10px;">
+        <div style="color:#38bdf8;font-weight:600;margin-bottom:6px;">Sovereign County Model (current)</div>
+        <div style="color:#94a3b8;font-size:10px;line-height:1.5;">Each county's matrix is fully isolated. A Benton appraiser cannot see Yakima's rates. Multi-county access requires explicit authorization. This is FISMA-compliant and legally correct.</div>
+        <div style="color:#22c55e;font-size:9px;margin-top:4px;">✓ Already implemented in TerraFusion OS</div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:10px;">
+        <div style="color:#f59e0b;font-weight:600;margin-bottom:6px;">State DOR Needs Cross-County View</div>
+        <div style="color:#94a3b8;font-size:10px;line-height:1.5;">The DOR needs to see all counties' ratios to issue equalization. TerraFusion needs a <span style="color:#f59e0b">State DOR role</span> that has read-only access to aggregate metrics (not individual parcel data) across all counties. Benchmarking without exposing sovereign data.</div>
+        <div style="color:#f59e0b;font-size:9px;margin-top:4px;">⚠ Design needed: aggregated cross-county report</div>
+      </div>
+    </div>
+    <div style="background:#0f172a;border-radius:6px;padding:10px;margin-top:10px;">
+      <div style="color:#22c55e;font-weight:600;margin-bottom:6px;">Cross-County Benchmarking (Chief Appraiser View)</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.5;">With proper authorization, a chief appraiser can see anonymized or authorized peer county rates. "How does Benton's Agricultural rate compare to the Eastern WA median?" AI answers: "Benton Agricultural ($89.73/sqft) is 6.2% above the Eastern WA county median ($84.50). Within normal variance — no action indicated." This requires inter-county data sharing agreement, not automatic.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Edge Case 4 — Reval Area Cycle (Benton-Specific)</div>
+  <div style="background:#1e293b;border:1px solid #f59e0b;border-radius:8px;padding:14px;margin-top:10px;font-size:11px;">
+    <div style="color:#f59e0b;font-weight:700;margin-bottom:8px;">🔄 Benton County has 6 Reval Areas. Each area rotates through the active revaluation cycle. The matrix is county-wide but the CALIBRATION EVIDENCE is area-specific.</div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:10px;text-align:center;font-size:10px;">
+      <div style="background:#22c55e15;border:1px solid #22c55e;border-radius:6px;padding:8px;">
+        <div style="color:#22c55e;font-weight:700;">R1</div>
+        <div style="color:#22c55e;font-size:9px;">Kennewick NE</div>
+        <div style="color:#64748b;font-size:9px;margin-top:4px;">ACTIVE 2025<br>Full ratio study<br>Evidence current</div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:6px;padding:8px;">
+        <div style="color:#64748b;font-weight:700;">R2</div>
+        <div style="color:#64748b;font-size:9px;">Kennewick Urban</div>
+        <div style="color:#64748b;font-size:9px;margin-top:4px;">Last: 2024<br>Evidence: 12mo old</div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:6px;padding:8px;">
+        <div style="color:#64748b;font-weight:700;">R3</div>
+        <div style="color:#64748b;font-size:9px;">South Richland</div>
+        <div style="color:#64748b;font-size:9px;margin-top:4px;">Last: 2023<br>Evidence: 24mo old</div>
+      </div>
+      <div style="background:#ef444415;border:1px solid #ef4444;border-radius:6px;padding:8px;">
+        <div style="color:#ef4444;font-weight:700;">R6</div>
+        <div style="color:#ef4444;font-size:9px;">Historic Richland</div>
+        <div style="color:#ef4444;font-size:9px;margin-top:4px;">Last: 2020<br>Evidence: 60mo old<br>⚠ STALE</div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:6px;padding:8px;">
+        <div style="color:#64748b;font-weight:700;">R4</div>
+        <div style="color:#64748b;font-size:9px;">Benton City</div>
+        <div style="color:#64748b;font-size:9px;margin-top:4px;">Last: 2022<br>Evidence: 36mo old</div>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:6px;padding:8px;">
+        <div style="color:#64748b;font-weight:700;">R5</div>
+        <div style="color:#64748b;font-size:9px;">Richland West</div>
+        <div style="color:#64748b;font-size:9px;margin-top:4px;">Last: 2021<br>Evidence: 48mo old</div>
+      </div>
+    </div>
+    <div style="background:#0f172a;border-radius:6px;padding:10px;">
+      <div style="color:#f59e0b;font-weight:600;margin-bottom:6px;">AI insight this unlocks:</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.6;">"The county-wide matrix applies a single set of area factors, but the supporting evidence for each factor varies dramatically by age. R6's factor (0.845) is supported by 2020 sales — 5 years old. The Historic Richland market has changed significantly since then. <span style="color:#ef4444">This is the highest-priority calibration item for the 2026 cycle.</span> R1's factor (1.031) is supported by 2025 sales — strong evidence. R5 and R6 factors are potentially the most legally exposed in a BOR challenge."</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Edge Case 5 — Matrix Inheritance (New Assessor / New Staff)</div>
+  <div style="background:#1e293b;border:1px solid #22c55e;border-radius:8px;padding:14px;margin-top:10px;font-size:11px;">
+    <div style="color:#22c55e;font-weight:700;margin-bottom:8px;">👋 Scenario: New chief appraiser starts. They inherit the current matrix. They need to understand every rate and why it is what it is.</div>
+    <div style="color:#94a3b8;line-height:1.6;margin-bottom:10px;">Without TerraFusion: rates exist in spreadsheets with no history. Nobody knows why Warehouse is $52.65 or when that was last calibrated. New staff are flying blind.</div>
+    <div style="background:#0f172a;border-radius:6px;padding:10px;">
+      <div style="color:#22c55e;font-weight:600;margin-bottom:6px;">AI-Generated Matrix Provenance Report</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.6;">
+        "Warehouse (C4) — Current rate: $52.65/sqft<br>
+        Last calibrated: v2022.0 (Jan 2022). Change: +$3.10 from $49.55.<br>
+        Evidence: 14 warehouse sales, Benton County 2021. Median ratio pre-change: 0.906. Post-change: 0.994.<br>
+        Signed off: Jane Smith (Chief Appraiser) · Bob Jones (Assessor) · 2022-01-15<br>
+        Evidence age: 36 months. <span style="color:#f59e0b">Flagged for 2026 recalibration review.</span><br>
+        Market context: Warehouse market appreciated ~18% in Benton County 2022–2025 per TerraFusion sales data. Current rate may be under-market by 8–12%."
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">Edge Case 6 — Legislative / Performance Audit</div>
+  <div style="background:#1e293b;border:1px solid #64748b;border-radius:8px;padding:14px;margin-top:10px;font-size:11px;">
+    <div style="color:#94a3b8;font-weight:700;margin-bottom:8px;">🏛️ Scenario: WA State Auditor's Office conducts performance audit of Benton County Assessment. They want to see: "Has the county maintained vertical equity across all property types over the past 4 years? Show your work."</div>
+    <div style="background:#0f172a;border-radius:6px;padding:10px;">
+      <div style="color:#38bdf8;font-weight:600;margin-bottom:6px;">TerraFusion Audit Package — AI-Generated in minutes</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:10px;color:#94a3b8;">
+        <div>📊 PRD/PRB trend chart 2021–2025 (all within 0.98–1.03)</div>
+        <div>📋 All 12 Calibration Memos with sign-off chains</div>
+        <div>📈 COD by property class, all years, vs IAAO thresholds</div>
+        <div>🔍 Every rate change with triggering evidence</div>
+        <div>⚖️ Value-tier equity analysis (no systematic regressivity)</div>
+        <div>📄 WAC 458-07 compliance checklist — all area factors documented</div>
+      </div>
+      <div style="color:#22c55e;font-size:10px;margin-top:8px;border-top:1px solid #1e293b;padding-top:6px;">Result: "Benton County Assessment demonstrates sustained vertical equity 2021–2025. All IAAO standards met. All changes market-evidenced. System: TerraFusion OS CostForge."</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">What This Means for the Design — Non-Negotiable Requirements</div>
+  <div style="background:#0f172a;border-radius:8px;padding:14px;margin-top:10px;font-size:11px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div>
+        <div style="color:#38bdf8;font-weight:700;margin-bottom:8px;">Every matrix version must store:</div>
+        <div style="color:#94a3b8;line-height:1.8;">
+          ✓ Full rate snapshot (immutable)<br>
+          ✓ Version type: CALIBRATED / MANDATED / PATCH<br>
+          ✓ Triggering event + evidence link<br>
+          ✓ Sales data universe (window, rules, exclusions)<br>
+          ✓ PRD/PRB/COD before AND after<br>
+          ✓ Sign-off chain with timestamps<br>
+          ✓ Reval area evidence age per factor<br>
+          ✓ County AV impact statement<br>
+          ✓ Next review date
+        </div>
+      </div>
+      <div>
+        <div style="color:#a78bfa;font-weight:700;margin-bottom:8px;">System must support:</div>
+        <div style="color:#94a3b8;line-height:1.8;">
+          ✓ Sovereign county data isolation<br>
+          ✓ State DOR aggregate read role (no parcel data)<br>
+          ✓ Cross-county benchmarking (authorized only)<br>
+          ✓ Reval area evidence age tracking<br>
+          ✓ MANDATED version type (state-ordered)<br>
+          ✓ Matrix provenance / inheritance report<br>
+          ✓ DOR export format (ratio study package)<br>
+          ✓ WA State Auditor package generation<br>
+          ✓ Non-annual reval cycle support (4yr, 6yr)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="options" style="margin-top:16px;">
+  <div class="option" data-choice="ready" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content">
+      <h3>I've seen enough — ready to see the full design proposal</h3>
+      <p>All edge cases covered. Let's see the complete Calibration Workbench architecture laid out as a design spec.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="more" onclick="toggleSelect(this)">
+    <div class="letter">+</div>
+    <div class="content">
+      <h3>One more thing — non-annual reval cycles</h3>
+      <p>Some WA counties do 4-year or 6-year cycles. How does the versioning model work for them?</p>
+    </div>
+  </div>
+</div>

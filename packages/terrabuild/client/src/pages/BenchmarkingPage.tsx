@@ -141,7 +141,7 @@ const BenchmarkingPage: React.FC = () => {
                   type="number"
                   value={formState.year}
                   onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
-                  min={2020}
+                  min={1850}
                   max={2030}
                 />
               </div>

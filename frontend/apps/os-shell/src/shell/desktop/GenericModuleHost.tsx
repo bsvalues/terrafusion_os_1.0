@@ -247,7 +247,7 @@ export function GenericModuleHost({ module }: GenericModuleHostProps) {
   if (entry.type === 'route') {
     return (
       <div className='p-4'>
-        Route entry not yet wired: <code>{entry.route}</code>
+        This module is not yet available: <code>{entry.route}</code>
       </div>
     );
   }
@@ -255,7 +255,7 @@ export function GenericModuleHost({ module }: GenericModuleHostProps) {
   if (entry.type === 'mf') {
     return (
       <div className='p-4'>
-        MF entry not yet wired: <code>{entry.remote}</code> / <code>{entry.module}</code>
+        This module is not yet available: <code>{entry.remote}</code> / <code>{entry.module}</code>
       </div>
     );
   }

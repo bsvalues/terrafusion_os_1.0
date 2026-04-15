@@ -26,12 +26,14 @@ import { OutlierReviewPanel } from './OutlierReviewPanel';
 import { ModelComparisonPanel } from './ModelComparisonPanel';
 import { CostRatioAnalysis } from '../cost/CostRatioAnalysis';
 import { CostForgeDashboard } from '../cost/CostForgeDashboard';
+import { StratifiedStudyPanel } from './StratifiedStudyPanel';
+import { ValueDriverPanel } from './ValueDriverPanel';
 import { useForgeStatisticsStore } from '@/stores/forgeStatisticsStore';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { RATIO_STUDY_RESULT } from '@/data/forgeStatisticsFixtures';
 import { apiFetch } from '@/lib/apiBase';
 
-type Tab = 'ratio-study' | 'trends' | 'equity' | 'outliers' | 'comparison' | 'calibration' | 'cost-analytics';
+type Tab = 'ratio-study' | 'stratified' | 'trends' | 'equity' | 'outliers' | 'comparison' | 'calibration' | 'cost-analytics';
 
 // --- Ratio study data from store or fixture fallback ---
 
@@ -131,6 +133,7 @@ export function StatisticsStudio() {
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'ratio-study', label: 'Ratio Study' },
+    { key: 'stratified', label: 'Stratified Study' },
     { key: 'calibration', label: 'Calibration Matrix' },
     { key: 'trends', label: 'Trends' },
     { key: 'equity', label: 'Equity (VEI)' },
@@ -178,6 +181,9 @@ export function StatisticsStudio() {
           </CardContent>
         </Card>
       )}
+
+      {/* Tab: Stratified Study — IAAO DOR strata table */}
+      {activeTab === 'stratified' && <StratifiedStudyPanel />}
 
       {/* Tab: Trends — live quarterly COD/PRD */}
       {activeTab === 'trends' && (
@@ -234,8 +240,13 @@ export function StatisticsStudio() {
       {/* Tab: Comparison (Phase 16) */}
       {activeTab === 'comparison' && <ModelComparisonPanel />}
 
-      {/* Tab: Calibration Matrix — live neighborhood ratio study + mass adjust */}
-      {activeTab === 'calibration' && <CostRatioAnalysis />}
+      {/* Tab: Calibration Matrix — live neighborhood ratio study + value driver attribution */}
+      {activeTab === 'calibration' && (
+        <div className="space-y-4">
+          <CostRatioAnalysis />
+          <ValueDriverPanel />
+        </div>
+      )}
 
       {/* Tab: Cost Analytics — CostForge dashboard stats (property type dist, depreciation) */}
       {activeTab === 'cost-analytics' && <CostForgeDashboard />}

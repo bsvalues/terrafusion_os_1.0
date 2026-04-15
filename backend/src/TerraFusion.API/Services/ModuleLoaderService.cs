@@ -140,8 +140,9 @@ public class ModuleLoaderService : BackgroundService, IModuleLoaderService
             }
 
             var modules = _runtimeModules.Values
+                .Where(m => m is not null)
                 .OrderBy(m => m.Priority)
-                .ThenBy(m => m.Name, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(m => m.Name ?? string.Empty, StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
             _logger.LogInformation(

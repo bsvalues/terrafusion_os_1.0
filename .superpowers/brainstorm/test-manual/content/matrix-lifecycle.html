@@ -1,0 +1,187 @@
+<h2>Matrix Versioning & Lifecycle — Deep Dive</h2>
+<p class="subtitle">The cost matrix is set yearly — but calibration is continuous. How should TerraFusion model this?</p>
+
+<div class="section">
+  <div class="label">The Reality of the County Assessment Cycle</div>
+  <div style="background:#0f172a;border-radius:10px;padding:16px;margin-top:10px;font-size:11px;font-family:monospace;overflow-x:auto;">
+
+    <!-- Timeline -->
+    <div style="display:flex;align-items:flex-start;gap:0;position:relative;margin-bottom:20px;">
+
+      <!-- Jan -->
+      <div style="flex:1;text-align:center;">
+        <div style="background:#1e293b;border:2px solid #ef4444;border-radius:6px;padding:8px 4px;margin:0 2px;">
+          <div style="color:#ef4444;font-weight:700;font-size:10px;">JAN</div>
+          <div style="color:#94a3b8;font-size:9px;margin-top:4px;">Reval cycle OPENS</div>
+          <div style="color:#f59e0b;font-size:9px;margin-top:2px;">Matrix v2025 LOCKED</div>
+          <div style="color:#64748b;font-size:9px;margin-top:2px;">89,247 parcels valued against this matrix. Cannot change.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;padding-top:20px;color:#334155;font-size:16px;">→</div>
+
+      <!-- Feb-May -->
+      <div style="flex:1.5;text-align:center;">
+        <div style="background:#1e293b;border:2px solid #22c55e;border-radius:6px;padding:8px 4px;margin:0 2px;">
+          <div style="color:#22c55e;font-weight:700;font-size:10px;">FEB–MAY</div>
+          <div style="color:#94a3b8;font-size:9px;margin-top:4px;">Field work + ratio studies</div>
+          <div style="color:#38bdf8;font-size:9px;margin-top:2px;">TerraFusion collects sales</div>
+          <div style="color:#64748b;font-size:9px;margin-top:2px;">AI running continuous ratio analysis against locked matrix. Building evidence for 2026 calibration.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;padding-top:20px;color:#334155;font-size:16px;">→</div>
+
+      <!-- Jun-Aug -->
+      <div style="flex:1.5;text-align:center;">
+        <div style="background:#1e293b;border:2px solid #a78bfa;border-radius:6px;padding:8px 4px;margin:0 2px;">
+          <div style="color:#a78bfa;font-weight:700;font-size:10px;">JUN–AUG</div>
+          <div style="color:#94a3b8;font-size:9px;margin-top:4px;">BOR / Appeal season</div>
+          <div style="color:#ef4444;font-size:9px;margin-top:2px;">Defend current matrix</div>
+          <div style="color:#64748b;font-size:9px;margin-top:2px;">Calibration Memos from prior year are the defense. AI generates testimony scripts from versioned evidence.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;padding-top:20px;color:#334155;font-size:16px;">→</div>
+
+      <!-- Sep-Nov -->
+      <div style="flex:1.5;text-align:center;">
+        <div style="background:#1e293b;border:2px solid #38bdf8;border-radius:6px;padding:8px 4px;margin:0 2px;">
+          <div style="color:#38bdf8;font-weight:700;font-size:10px;">SEP–NOV</div>
+          <div style="color:#94a3b8;font-size:9px;margin-top:4px;">Calibration Workbench ACTIVE</div>
+          <div style="color:#22c55e;font-size:9px;margin-top:2px;">Build 2026 matrix draft</div>
+          <div style="color:#64748b;font-size:9px;margin-top:2px;">AI proposes rate adjustments based on full year of ratio evidence. Chief appraiser reviews, overrides, approves.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;padding-top:20px;color:#334155;font-size:16px;">→</div>
+
+      <!-- Dec -->
+      <div style="flex:1;text-align:center;">
+        <div style="background:#1e293b;border:2px solid #f59e0b;border-radius:6px;padding:8px 4px;margin:0 2px;">
+          <div style="color:#f59e0b;font-weight:700;font-size:10px;">DEC</div>
+          <div style="color:#94a3b8;font-size:9px;margin-top:4px;">2026 matrix APPROVED</div>
+          <div style="color:#22c55e;font-size:9px;margin-top:2px;">Staged — ready to lock</div>
+          <div style="color:#64748b;font-size:9px;margin-top:2px;">Sits staged until Jan. Full memo package complete. Assessor signs.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="border-top:1px solid #1e293b;padding-top:12px;color:#64748b;font-size:10px;text-align:center;">
+      Meanwhile: <span style="color:#38bdf8">v2026 draft is being built all year</span> · <span style="color:#ef4444">v2025 is locked and defended</span> · <span style="color:#64748b">v2024 is archived (BOR evidence)</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">The Version State Machine — Every Matrix Has a Status</div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px;font-size:11px;text-align:center;">
+    <div style="background:#1e293b;border:1px solid #38bdf8;border-radius:8px;padding:12px;">
+      <div style="font-size:20px;margin-bottom:6px;">✏️</div>
+      <div style="color:#38bdf8;font-weight:700;margin-bottom:4px;">DRAFT</div>
+      <div style="color:#94a3b8;font-size:9px;">Working copy. AI is proposing. Chief appraiser is calibrating. Not yet submitted. Can change freely.</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;color:#334155;font-size:20px;">→</div>
+    <div style="background:#1e293b;border:1px solid #a78bfa;border-radius:8px;padding:12px;">
+      <div style="font-size:20px;margin-bottom:6px;">👁️</div>
+      <div style="color:#a78bfa;font-weight:700;margin-bottom:4px;">REVIEW</div>
+      <div style="color:#94a3b8;font-size:9px;">Submitted for approval. Chief appraiser → Assessor sign-off chain. Changes require re-submission.</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;color:#334155;font-size:20px;">→</div>
+    <div style="background:#1e293b;border:1px solid #22c55e;border-radius:8px;padding:12px;">
+      <div style="font-size:20px;margin-bottom:6px;">✅</div>
+      <div style="color:#22c55e;font-weight:700;margin-bottom:4px;">APPROVED</div>
+      <div style="color:#94a3b8;font-size:9px;">Signed off. Staged and ready. Not yet active — waiting for reval cycle open date.</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;font-size:11px;text-align:center;">
+    <div></div>
+    <div style="background:#1e293b;border:2px solid #ef4444;border-radius:8px;padding:12px;">
+      <div style="font-size:20px;margin-bottom:6px;">🔒</div>
+      <div style="color:#ef4444;font-weight:700;margin-bottom:4px;">LOCKED / ACTIVE</div>
+      <div style="color:#94a3b8;font-size:9px;">Applied to current reval year. 89,247 parcels valued against this. IMMUTABLE. Any correction requires new Draft.</div>
+      <div style="color:#ef4444;font-size:9px;margin-top:6px;border-top:1px solid #334155;padding-top:4px;">v2025 — Active Jan 1 2025</div>
+    </div>
+    <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:12px;">
+      <div style="font-size:20px;margin-bottom:6px;">📦</div>
+      <div style="color:#64748b;font-weight:700;margin-bottom:4px;">ARCHIVED</div>
+      <div style="color:#94a3b8;font-size:9px;">Prior year matrices. Read-only. Always available for BOR defense, audit, legislative inquiry. Never deleted.</div>
+      <div style="color:#64748b;font-size:9px;margin-top:6px;border-top:1px solid #334155;padding-top:4px;">v2024 · v2023 · v2022...</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">The Critical Edge Case — Mid-Cycle Correction</div>
+  <div style="background:#1e293b;border:1px solid #ef4444;border-radius:8px;padding:14px;margin-top:10px;">
+    <div style="color:#ef4444;font-weight:700;font-size:12px;margin-bottom:8px;">⚡ What if a systematic error is found AFTER the matrix is locked?</div>
+    <div style="color:#94a3b8;font-size:11px;line-height:1.6;margin-bottom:10px;">
+      Example: It's March 2025. Matrix v2025 is locked. A BOR hearing reveals that all 847 Historic Richland parcels were systematically over-assessed because the R6 factor was miscalibrated. The assessor needs to act.
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:11px;">
+      <div style="background:#0f172a;border-radius:6px;padding:10px;">
+        <div style="color:#f59e0b;font-weight:600;margin-bottom:6px;">Option A: Correction Within Cycle</div>
+        <div style="color:#94a3b8;line-height:1.5;">Create v2025.1 (patch). Document the correction with a Calibration Memo. Apply correction only to affected parcels. Both v2025.0 and v2025.1 remain in the audit trail.</div>
+        <div style="color:#22c55e;font-size:9px;margin-top:6px;">✓ Transparent · Defensible · WAC 458-07 compliant</div>
+      </div>
+      <div style="background:#0f172a;border-radius:6px;padding:10px;">
+        <div style="color:#38bdf8;font-weight:600;margin-bottom:6px;">Option B: Feeds 2026 Calibration Only</div>
+        <div style="color:#94a3b8;line-height:1.5;">The locked matrix stays locked. The finding feeds directly into the 2026 draft as a high-priority calibration item. AI marks R6 factor as "evidence-flagged" for next cycle.</div>
+        <div style="color:#64748b;font-size:9px;margin-top:6px;">Lower risk · No mid-cycle disruption · Some taxpayers wait a year</div>
+      </div>
+    </div>
+    <div style="color:#f59e0b;font-size:11px;margin-top:10px;text-align:center;">TerraFusion should support BOTH. Which path the assessor takes is a policy decision — AI flags the choice, documents whatever is chosen.</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">What AI Adds to Versioning That Humans Can't Do Alone</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;font-size:11px;">
+    <div style="background:#1e293b;border-radius:8px;padding:12px;border-left:3px solid #38bdf8;">
+      <div style="color:#38bdf8;font-weight:600;margin-bottom:6px;">Version Diff Intelligence</div>
+      <div style="color:#94a3b8;line-height:1.5;">"Between v2024 and v2025, Hospital rates increased 8.2% — was this supported by ratio study evidence? I found 12 comparable sales showing 9.1% appreciation. <span style="color:#22c55e">Supported ✓</span>"</div>
+    </div>
+    <div style="background:#1e293b;border-radius:8px;padding:12px;border-left:3px solid #a78bfa;">
+      <div style="color:#a78bfa;font-weight:600;margin-bottom:6px;">Drift Detection</div>
+      <div style="color:#94a3b8;line-height:1.5;">"Agricultural rates have not changed in 3 cycles (2022–2025). Market appreciation in Benton City / Prosser over same period: <span style="color:#ef4444">+14.3%</span>. This type is likely under-assessed."</div>
+    </div>
+    <div style="background:#1e293b;border-radius:8px;padding:12px;border-left:3px solid #22c55e;">
+      <div style="color:#22c55e;font-weight:600;margin-bottom:6px;">Forward Projection</div>
+      <div style="color:#94a3b8;line-height:1.5;">"Based on current ratio study trends, the 2026 matrix will need: SFR +3.1%, Commercial Retail +5.8%, Warehouse +8.4%. I've pre-staged these as the 2026 draft starting point."</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">My Recommendation — How TerraFusion Should Model This</div>
+  <div style="background:#0f172a;border:1px solid #38bdf8;border-radius:8px;padding:14px;margin-top:10px;font-size:12px;line-height:1.7;color:#94a3b8;">
+    <p><span style="color:#38bdf8;font-weight:700;">Git-model versioning for cost matrices.</span> Every matrix has a semantic version (v2025.0, v2025.1, v2026.0-draft). The Calibration Workbench is always working on the current draft. Draft → Review → Approved → Locked is a one-way state machine per version. Locked matrices are immutable — always queryable for BOR defense. AI compares across versions, detects drift, projects forward.</p>
+    <p><span style="color:#22c55e;font-weight:700;">Two simultaneous views always present:</span> current locked matrix (what's applied to parcels right now) and next year draft (what's being built). The appraiser sees both side-by-side with the diff highlighted.</p>
+    <p><span style="color:#a78bfa;font-weight:700;">Mid-cycle corrections</span> create patch versions (v2025.1) that are themselves a full Draft → Review → Approve → Lock cycle — just scoped narrower and faster.</p>
+  </div>
+</div>
+
+<div class="options" style="margin-top:16px;">
+  <div class="option" data-choice="gitmodel" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content">
+      <h3>This recommendation feels right — proceed with design</h3>
+      <p>Git-model versioning. Draft → Review → Approved → Locked. Two simultaneous views. AI version intelligence layer.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="simpler" onclick="toggleSelect(this)">
+    <div class="letter">↓</div>
+    <div class="content">
+      <h3>Simpler — annual only, no patch versions</h3>
+      <p>Just yearly versioning. No mid-cycle corrections in the system — those are handled outside TerraFusion for now.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="deeper" onclick="toggleSelect(this)">
+    <div class="letter">+</div>
+    <div class="content">
+      <h3>Go deeper — I want to think through more edge cases</h3>
+      <p>Multi-county scenarios, legislative audit requirements, state DOR reporting — let's cover those too.</p>
+    </div>
+  </div>
+</div>

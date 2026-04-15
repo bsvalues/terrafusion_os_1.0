@@ -195,7 +195,7 @@ function toProperty(raw: RawSnapshotParcel): Property {
     ownerName: raw.ownerName ?? `Owner ${h % 10000}`,
     propertyType: mapPropertyType(raw.propertyType),
     landAcreage: Math.round(acres * 100) / 100,
-    yearBuilt: raw.yearBuilt ?? 0,
+    yearBuilt: raw.yearBuilt ?? null,
     buildingSquareFeet: raw.squareFeet ?? 0,
     bedrooms: raw.bedrooms ?? undefined,
     bathrooms: raw.bathrooms ?? undefined,

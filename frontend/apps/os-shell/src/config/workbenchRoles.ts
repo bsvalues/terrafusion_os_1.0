@@ -159,15 +159,15 @@ export const ROLE_DEFINITIONS: readonly RoleDefinition[] = [
  * They still get Summary if they happen to open a parcel.
  */
 const ROLE_VISIBLE_TABS: Record<CountyRole, readonly WorkbenchTabSlug[]> = {
-  residential_appraiser: ['summary', 'forge', 'atlas', 'dossier', 'pilot'],
-  commercial_appraiser:  ['summary', 'forge', 'atlas', 'dossier', 'pilot'],
-  mass_appraisal_analyst: ['summary', 'forge', 'atlas', 'pilot'],
+  residential_appraiser: ['summary', 'forge', 'atlas', 'dossier'],
+  commercial_appraiser:  ['summary', 'forge', 'atlas', 'dossier'],
+  mass_appraisal_analyst: ['summary', 'forge', 'atlas'],
   gis_technician:        ['summary', 'atlas', 'dossier'],
-  spatial_analyst:       ['summary', 'forge', 'atlas', 'pilot'],
+  spatial_analyst:       ['summary', 'forge', 'atlas'],
   clerk:                 ['summary', 'clerk', 'dossier'],
   exemption_clerk:       ['summary', 'dais', 'clerk', 'dossier'],
-  assessor:              ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'],
-  deputy_chief:          ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'],
+  assessor:              ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier'],
+  deputy_chief:          ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier'],
   bpp_specialist:        ['summary'],
   it_director:           ['summary'],
   devops_admin:          ['summary'],
@@ -179,7 +179,7 @@ const ROLE_VISIBLE_TABS: Record<CountyRole, readonly WorkbenchTabSlug[]> = {
 
 /** Canonical tab order — NEVER mutate. */
 export const ALL_TAB_SLUGS: readonly WorkbenchTabSlug[] = [
-  'summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot',
+  'summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier',
 ] as const;
 
 // ============================================================================

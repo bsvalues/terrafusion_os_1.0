@@ -13,6 +13,7 @@ import {
   ParcelEvidenceViewer,
   AdjustmentSimulator,
   StratifiedEquityPanel,
+  NeighborhoodMatrix,
 } from "@/components/calibration";
 import {
   CalibrationContext,
@@ -54,11 +55,11 @@ function parseSnapshot(raw: RateCell[] | string | null): RateCell[] {
   return (raw as unknown as Record<string, unknown>[]).map(normalizeCell);
 }
 
-type PhDTab = "evidence" | "simulator" | "equity";
+type PhDTab = "neighborhood" | "evidence" | "simulator" | "equity";
 
 export default function CalibrationWorkbench() {
   const [activeDraftId, setActiveDraftId] = useState<number | null>(null);
-  const [activePhDTab, setActivePhDTab] = useState<PhDTab>("evidence");
+  const [activePhDTab, setActivePhDTab] = useState<PhDTab>("neighborhood");
   const [simulatorAdjPct, setSimulatorAdjPct] = useState(0);
 
   // Shared calibration context
@@ -146,8 +147,8 @@ export default function CalibrationWorkbench() {
 
         {/* Main content */}
         <div className="flex flex-col flex-1 min-w-0 overflow-y-auto gap-4 p-4">
-          {/* AI Co-pilot Band */}
-          {activeDraftId && (
+          {/* AI Co-pilot Band (draft-gated) */}
+          {activeDraftId && activePhDTab !== "neighborhood" && (
             <AiCopilotBand
               current={current}
               projected={projected}
@@ -157,48 +158,72 @@ export default function CalibrationWorkbench() {
           )}
 
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-            {/* Left: PhD tabs + existing panels */}
+            {/* Left: PhD tabs + panels */}
             <div className="xl:col-span-2 space-y-4">
-              {activeDraftId ? (
-                <>
-                  {/* PhD Appraiser tabs */}
-                  <Card>
-                    <CardHeader className="py-3 px-4 pb-0">
-                      <div className="flex gap-1 text-xs">
-                        {(["evidence", "simulator", "equity"] as PhDTab[]).map((tab) => (
+              {/* Tab bar — Neighborhood Study always available; others require a draft */}
+              <Card>
+                <CardHeader className="py-3 px-4 pb-0">
+                  <div className="flex gap-1 text-xs flex-wrap">
+                    {(["neighborhood", "evidence", "simulator", "equity"] as PhDTab[]).map(
+                      (tab) => {
+                        const requiresDraft =
+                          tab === "evidence" || tab === "simulator" || tab === "equity";
+                        const disabled = requiresDraft && !activeDraftId;
+                        return (
                           <button
                             key={tab}
+                            disabled={disabled}
+                            title={
+                              disabled ? "Select a draft version to use this tab" : undefined
+                            }
                             className={`px-3 py-1.5 rounded-t transition-colors ${
                               activePhDTab === tab
                                 ? "bg-primary text-primary-foreground"
+                                : disabled
+                                ? "bg-muted text-muted-foreground/40 cursor-not-allowed"
                                 : "bg-muted hover:bg-muted/80 text-muted-foreground"
                             }`}
-                            onClick={() => setActivePhDTab(tab)}
+                            onClick={() => !disabled && setActivePhDTab(tab)}
                           >
-                            {tab === "evidence"
+                            {tab === "neighborhood"
+                              ? "Neighborhood Study"
+                              : tab === "evidence"
                               ? "Evidence & Outliers"
                               : tab === "simulator"
                               ? "Adjustment Simulator"
                               : "Stratified Equity"}
                           </button>
-                        ))}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-4 pb-4">
-                      {activePhDTab === "evidence" && <ParcelEvidenceViewer />}
-                      {activePhDTab === "simulator" && (
-                        <AdjustmentSimulator
-                          matrixVersionId={activeDraftId}
-                          current={current}
-                          projected={projected}
-                          onAdjustmentChange={setSimulatorAdjPct}
-                        />
-                      )}
-                      {activePhDTab === "equity" && <StratifiedEquityPanel />}
-                    </CardContent>
-                  </Card>
+                        );
+                      }
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-4 pb-4">
+                  {activePhDTab === "neighborhood" && <NeighborhoodMatrix />}
+                  {activePhDTab === "evidence" && activeDraftId && <ParcelEvidenceViewer />}
+                  {activePhDTab === "simulator" && activeDraftId && (
+                    <AdjustmentSimulator
+                      matrixVersionId={activeDraftId}
+                      current={current}
+                      projected={projected}
+                      onAdjustmentChange={setSimulatorAdjPct}
+                    />
+                  )}
+                  {activePhDTab === "equity" && activeDraftId && <StratifiedEquityPanel />}
+                  {(activePhDTab === "evidence" ||
+                    activePhDTab === "simulator" ||
+                    activePhDTab === "equity") &&
+                    !activeDraftId && (
+                      <p className="text-sm text-muted-foreground text-center py-8">
+                        Select or create a draft version on the right to use this tab.
+                      </p>
+                    )}
+                </CardContent>
+              </Card>
 
-                  {/* Existing panels */}
+              {/* Draft-gated panels */}
+              {activeDraftId && activePhDTab !== "neighborhood" && (
+                <>
                   <Card>
                     <CardContent className="pt-4 pb-4">
                       <AIFindingQueue matrixVersionId={activeDraftId} />
@@ -225,12 +250,6 @@ export default function CalibrationWorkbench() {
                     </Card>
                   )}
                 </>
-              ) : (
-                <Card>
-                  <CardContent className="py-12 text-center text-muted-foreground text-sm">
-                    Select or create a draft version on the right to begin calibration.
-                  </CardContent>
-                </Card>
               )}
             </div>
 

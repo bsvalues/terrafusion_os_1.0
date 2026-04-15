@@ -26,7 +26,6 @@ import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import {
-  ParcelContextHeader,
   InvocationHistory,
   EvidenceSnapshotPanel,
   type InvocationRecord,
@@ -153,7 +152,10 @@ const PropertySection: React.FC<{ data: NonNullable<import('../../../contracts/d
       {data.propertyType && (
         <div className='flex justify-between'>
           <span className='tf-text-dim text-sm'>Type</span>
-          <span className='tf-text text-sm'>{data.propertyType}</span>
+          <span className='tf-text text-sm'>{({
+            R: 'R — Residential', C: 'C — Commercial', I: 'I — Industrial',
+            A: 'A — Agricultural', M: 'M — Multi-Family', X: 'X — Exempt',
+          } as Record<string, string>)[data.propertyType] ?? data.propertyType}</span>
         </div>
       )}
       {data.yearBuilt && (
@@ -212,9 +214,10 @@ const ValuationSection: React.FC<{ data: NonNullable<import('../../../contracts/
   <div className='space-y-3'>
     <div className='tf-panel p-4'>
       <div className='flex justify-between mb-3'>
-        <span className='tf-text-dim text-sm'>Total Value</span>
+        <span className='tf-text-dim text-sm'>Cost Approach Total</span>
         <span className='tf-text font-semibold'>{formatCurrency(data.totalValue)}</span>
       </div>
+      <p className='text-xs tf-text-dim opacity-60 mb-3'>CAMA component breakdown · may differ from Forge cost tab by rounding</p>
       <div className='space-y-2'>
         {data.categories.map((cat: DossierValuationCategory, idx: number) => (
           <div key={idx} className='flex items-center justify-between text-sm'>
@@ -233,7 +236,9 @@ const ValuationSection: React.FC<{ data: NonNullable<import('../../../contracts/
 );
 
 /** Levy details section */
-const LevySection: React.FC<{ data: NonNullable<import('../../../contracts/dossierDetails').DossierDetailsResponse['levies']> }> = ({ data }) => (
+const LevySection: React.FC<{ data: NonNullable<import('../../../contracts/dossierDetails').DossierDetailsResponse['levies']> }> = ({ data }) => {
+  const totalParcelLevy = data.recent.reduce((sum: number, levy: DossierLevyEntry) => sum + (levy.parcelLevyAmount ?? 0), 0);
+  return (
   <div className='space-y-3'>
     <div className='tf-panel p-4'>
       <div className='flex justify-between mb-3'>
@@ -246,20 +251,27 @@ const LevySection: React.FC<{ data: NonNullable<import('../../../contracts/dossi
           <div key={levy.taxLevyId} className='tf-overlay rounded p-3 text-sm'>
             <div className='flex justify-between'>
               <span className='tf-text font-medium'>{levy.taxingDistrict}</span>
-              <span className='tf-text font-semibold'>{formatCurrency(levy.levyAmount)}</span>
+              <span className='tf-text font-semibold'>{formatCurrency(levy.parcelLevyAmount ?? levy.levyAmount)}</span>
             </div>
             <div className='flex justify-between mt-1'>
               <span className='tf-text-dim text-xs'>{levy.purpose}</span>
               <span className='tf-text-dim text-xs'>
-                Rate: {levy.taxRate.toFixed(4)} | {levy.taxYear}
+                Rate: {levy.taxRate.toFixed(4)} per $1K | {levy.taxYear}
               </span>
             </div>
           </div>
         ))}
       </div>
+      {totalParcelLevy > 0 && (
+        <div className='flex justify-between mt-3 pt-3' style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.2)' }}>
+          <span className='tf-text-secondary text-sm font-medium'>Estimated Annual Tax</span>
+          <span className='tf-text font-bold'>{formatCurrency(totalParcelLevy)}</span>
+        </div>
+      )}
     </div>
   </div>
-);
+  );
+};
 
 /** Note headers section (PII-redacted: metadata only, no content) */
 const NotesSection: React.FC<{ data: NonNullable<import('../../../contracts/dossierDetails').DossierDetailsResponse['notes']> }> = ({ data }) => (
@@ -584,23 +596,15 @@ export const PropertyDossier: React.FC = () => {
 
   return (
     <div className='tf-suite-dossier space-y-4' data-testid='property-dossier-tab'>
-      {/* Header */}
-      <ParcelContextHeader
-        icon="📁"
-        title="TerraDossier"
-        parcelId={parcelId}
-        subtitle={`Documents for parcel ${parcelId}`}
-      />
-
       {/* Documents on File from Store */}
       {documents.length > 0 && (
         <BentoGrid columns="auto" gap={0.75} padding={0}>
-          <BentoCard variant="stat" title="Loaded Documents">
+          <BentoCard variant="stat" title="Documents on File">
             <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}>
               {documents.length}
             </p>
             <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-              Shown from the document entries currently loaded for this parcel.
+              Document entries on file for this parcel.
             </p>
           </BentoCard>
           {documents.slice(0, 2).map((d) => (

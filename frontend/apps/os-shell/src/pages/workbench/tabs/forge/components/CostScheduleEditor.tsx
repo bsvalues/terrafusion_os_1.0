@@ -92,7 +92,7 @@ export function CostScheduleEditor({ countyId = 'benton', taxYear = 2026 }: Cost
               onClick={handleSave}
               disabled
               size="sm"
-              title="Save not yet wired to backend"
+
             >
               Save Changes
             </Button>
@@ -116,7 +116,7 @@ export function CostScheduleEditor({ countyId = 'benton', taxYear = 2026 }: Cost
                   <tr className="border-b">
                     <th className="text-left py-3 px-2 font-medium">Building Type</th>
                     <th className="text-left py-3 px-2 font-medium">Quality Grade</th>
-                    <th className="text-right py-3 px-2 font-medium">Base Cost / sqft</th>
+                    <th className="text-right py-3 px-2 font-medium">Base Cost / Sq Ft</th>
                     <th className="text-left py-3 px-2 font-medium">Effective Date</th>
                     <th className="text-center py-3 px-2 font-medium">Status</th>
                   </tr>

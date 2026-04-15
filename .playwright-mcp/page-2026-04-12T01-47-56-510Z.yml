@@ -1,0 +1,37 @@
+- generic [ref=e2]:
+    - generic [ref=e4]:
+        - generic [ref=e5]:
+            - heading "Building Cost Benchmarking" [level=1] [ref=e6]
+            - paragraph [ref=e7]: Compare building costs against regional and statewide averages to benchmark your project.
+        - generic [ref=e9]:
+            - generic [ref=e10]:
+                - generic [ref=e11]:
+                    - heading "Benchmarking Parameters" [level=3] [ref=e12]
+                    - paragraph [ref=e13]: Enter the details of your building to compare against similar buildings.
+                - generic [ref=e15]:
+                    - generic [ref=e16]:
+                        - text: Building Type
+                        - combobox [ref=e17] [cursor=pointer]:
+                            - generic: Residential
+                            - img [ref=e18]
+                        - combobox [ref=e20]
+                    - generic [ref=e21]:
+                        - text: Region
+                        - combobox [ref=e22] [cursor=pointer]:
+                            - generic: Northwest
+                            - img [ref=e23]
+                        - combobox [ref=e25]
+                    - generic [ref=e26]:
+                        - text: Year
+                        - spinbutton "Year" [ref=e27]: '2026'
+                    - generic [ref=e28]:
+                        - text: Square Footage
+                        - spinbutton "Square Footage" [ref=e29]: '2500'
+                    - button "Generate Benchmark" [ref=e30] [cursor=pointer]
+            - generic [ref=e32]:
+                - generic [ref=e33]:
+                    - heading "Building Cost Benchmarks" [level=3] [ref=e34]
+                    - paragraph [ref=e35]: Benton County cost matrix statistics
+                - generic [ref=e37]: 'Error loading benchmarks: HTTP 500'
+    - region "Notifications (F8)":
+        - list

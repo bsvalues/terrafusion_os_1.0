@@ -116,12 +116,15 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
     [indications],
   );
 
-  /* Derived: weighted-average value */
+  /* Derived: weighted-average value — only normalize over active (>0) approaches */
   const weightedAvg = useMemo(() => {
-    if (totalWeight === 0) return 0;
-    const sum = indications.reduce((s, a) => s + a.indicatedValue * a.weight, 0);
-    return Math.round(sum / totalWeight);
-  }, [indications, totalWeight]);
+    const active = indications.filter(a => a.indicatedValue > 0);
+    if (active.length === 0) return 0;
+    const activeWeightTotal = active.reduce((s, a) => s + a.weight, 0);
+    if (activeWeightTotal === 0) return 0;
+    const sum = active.reduce((s, a) => s + a.indicatedValue * a.weight, 0);
+    return Math.round(sum / activeWeightTotal);
+  }, [indications]);
 
   /* Compute final value based on method */
   const computeFinal = useCallback((): number => {
@@ -176,7 +179,7 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
       {/* ── Data Source Indicator ─────────────────────── */}
       <div className="flex items-center justify-between">
         <span className="tf-text-secondary text-sm">
-          Approach indications {seededFromAPI ? 'loaded from API' : 'using fallback data'}
+          Approach indications {seededFromAPI ? 'sourced from API' : 'using fallback data'}
         </span>
         <WorkbenchSourceBadge source={reconAPI.source} />
       </div>
@@ -189,7 +192,7 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
       )}
 
       {/* ── Approach Cards ─────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ overflow: 'hidden' }}>
         {indications.map((ind, idx) => {
           const meta = APPROACH_LABELS[ind.approach];
           return (
@@ -209,12 +212,21 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
                     className="tf-input w-full px-3 py-1.5 text-sm"
                     data-testid={`approach-value-${ind.approach}`}
                   />
+                  {ind.indicatedValue > 0 && (
+                    <p className="text-xs tf-text-tertiary mt-0.5">
+                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(ind.indicatedValue)}
+                    </p>
+                  )}
                 </div>
 
                 {/* Weight Slider */}
                 <div>
                   <label className="block tf-text-secondary text-xs mb-1">
-                    Weight: <span className="font-semibold">{ind.weight}%</span>
+                    {ind.indicatedValue === 0 ? (
+                      <span className="tf-text-dim">Weight: <span className="font-semibold line-through">{ind.weight}%</span> <span className="italic">(excluded — no value)</span></span>
+                    ) : (
+                      <>Weight: <span className="font-semibold">{ind.weight}%</span></>
+                    )}
                   </label>
                   <input
                     type="range"
@@ -223,6 +235,7 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
                     value={ind.weight}
                     onChange={(e) => updateApproach(idx, { weight: Number(e.target.value) })}
                     className="w-full accent-current"
+                    disabled={ind.indicatedValue === 0}
                     data-testid={`approach-weight-${ind.approach}`}
                   />
                 </div>
@@ -263,7 +276,7 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
         variant="default"
         actions={
           <WorkbenchSourceBadge
-            source={reconciled ? 'live' : reconAPI.source === 'live' ? 'partial' : 'unavailable'}
+            source={reconciled || seededFromAPI ? 'live' : 'unavailable'}
             className="ml-2"
           />
         }
@@ -303,10 +316,20 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
           )}
 
           {/* Preview */}
-          <div className="flex items-center justify-between px-4 py-3 rounded-lg bg-white/5 border tf-border">
+          <div
+            className="flex items-center justify-between px-4 py-3 rounded-lg"
+            style={{
+              background: 'hsl(var(--tf-surface) / 0.8)',
+              border: '1px solid hsl(var(--tf-border) / 0.6)',
+            }}
+          >
             <div>
               <div className="text-xs tf-text-tertiary">Preview</div>
-              <div className="text-2xl font-bold" data-testid="preview-value">
+              <div
+                className="text-2xl font-bold"
+                style={{ color: 'hsl(var(--tf-text))' }}
+                data-testid="preview-value"
+              >
                 {fmtCurrency(computeFinal())}
               </div>
             </div>
@@ -348,3 +371,5 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
 };
 
 export default Reconciliation;
+
+

@@ -205,7 +205,7 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
   const activeParcel = usePropertyStore((s) => s.activeParcel);
 
   // Income inputs
-  const [annualRentalIncome, setAnnualRentalIncome] = useState(240000);
+  const [annualRentalIncome, setAnnualRentalIncome] = useState(0);
   const [vacancyRate, setVacancyRate] = useState(5);
   const [otherIncome, setOtherIncome] = useState(0);
   const [expenses, setExpenses] = useState<IncomeExpenses>(DEFAULT_EXPENSES);
@@ -221,15 +221,20 @@ export const IncomeValuationPanel: React.FC<IncomeValuationPanelProps> = ({
   const [recordNotice, setRecordNotice] = useState<string | null>(null);
   const [recordError, setRecordError] = useState<string | null>(null);
 
-  // Derive property type from parcel if available
+  // Derive property type and location from parcel if available
   useEffect(() => {
     if (activeParcel?.propertyType) {
       const match = INCOME_PROPERTY_TYPES.find(
-        (t) =>
-          t.label.toLowerCase().includes(activeParcel.propertyType?.toLowerCase() || '') ||
-          activeParcel.propertyType?.includes(t.id),
+        (t) => t.code === activeParcel.propertyType,
       );
       if (match) setPropertyType(match.id);
+    }
+    if (activeParcel?.city) {
+      const cityNorm = activeParcel.city.trim().toLowerCase();
+      const locMatch = BENTON_LOCATIONS.find(
+        (l) => l.id.toLowerCase() === cityNorm || l.label.toLowerCase() === cityNorm,
+      );
+      if (locMatch) setLocation(locMatch.id);
     }
   }, [activeParcel]);
 

@@ -10,9 +10,12 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
+  BarChart as ReBarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
+  Cell,
 } from 'recharts';
 import {
   RefreshCw,
@@ -319,27 +322,109 @@ export default function DashboardPage() {
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { title: 'Cost Prediction', desc: 'Forecast building costs using trend analysis', icon: TrendingUp },
-                { title: 'Type Comparison', desc: 'Compare costs across building types and reval areas', icon: BarChart4 },
-                { title: 'Historical Analysis', desc: 'Analyze cost trends and historical patterns', icon: BarChart },
-                { title: 'Reval Area Variance', desc: 'Cost factor breakdown by Reval Area (Cycle 1–6)', icon: PieChart },
-              ].map((item, i) => (
-                <Card key={i} className="cursor-pointer hover:border-primary/50 transition-colors">
-                  <CardContent className="p-5 flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <item.icon className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-sm">{item.title}</div>
-                      <div className="text-xs text-muted-foreground mt-1">{item.desc}</div>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto mt-0.5" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            {(() => {
+              const entries: { buildingType: string; buildingTypeLabel: string; region: string; baseCostPerSqft: number }[] =
+                Array.isArray(matrixData?.entries) ? matrixData.entries : [];
+
+              // Avg $/sqft by building type
+              const byType = Object.values(
+                entries.reduce((acc: Record<string, { label: string; total: number; count: number }>, e) => {
+                  if (!acc[e.buildingType]) acc[e.buildingType] = { label: e.buildingTypeLabel ?? e.buildingType, total: 0, count: 0 };
+                  acc[e.buildingType].total += Number(e.baseCostPerSqft);
+                  acc[e.buildingType].count += 1;
+                  return acc;
+                }, {})
+              ).map(v => ({ name: v.label.replace(/^[A-Z]\d — /, '').substring(0, 14), avg: Math.round(v.total / v.count) }))
+               .sort((a, b) => b.avg - a.avg);
+
+              // Avg $/sqft by Reval Area
+              const byArea = Object.values(
+                entries.reduce((acc: Record<string, { total: number; count: number }>, e) => {
+                  const k = e.region ?? '';
+                  if (!acc[k]) acc[k] = { total: 0, count: 0 };
+                  acc[k].total += Number(e.baseCostPerSqft);
+                  acc[k].count += 1;
+                  return acc;
+                }, {})
+              ).map((v, i, arr) => {
+                const key = entries.find(e => {
+                  const g = arr; void g;
+                  return true;
+                });
+                void key;
+                return v;
+              });
+              const areaEntries = [...new Set(entries.map(e => e.region))].sort().map(region => ({
+                name: region.replace('Reval ', 'R'),
+                avg: Math.round(entries.filter(e => e.region === region).reduce((s, e) => s + Number(e.baseCostPerSqft), 0) /
+                  entries.filter(e => e.region === region).length),
+              }));
+
+              const COLORS = ['#1e6fa8','#2a9d8f','#e76f51','#264653','#f4a261','#e9c46a'];
+
+              return (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm flex items-center gap-2">
+                        <BarChart4 className="h-4 w-4 text-primary" />
+                        Avg $/sqft by Building Type
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {byType.length === 0 ? (
+                        <div className="h-48 flex items-center justify-center text-xs text-muted-foreground">Loading matrix…</div>
+                      ) : (
+                        <ResponsiveContainer width="100%" height={220}>
+                          <ReBarChart data={byType} layout="vertical" margin={{ left: 8, right: 16, top: 4, bottom: 4 }}>
+                            <XAxis type="number" tick={{ fontSize: 10 }} tickFormatter={v => `$${v}`} />
+                            <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={80} />
+                            <Tooltip formatter={(v: number) => [`$${v}/sqft`, 'Avg Rate']} />
+                            <Bar dataKey="avg" radius={[0, 3, 3, 0]}>
+                              {byType.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                            </Bar>
+                          </ReBarChart>
+                        </ResponsiveContainer>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4 text-primary" />
+                        Avg $/sqft by Reval Area (Cycle)
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {areaEntries.length === 0 ? (
+                        <div className="h-48 flex items-center justify-center text-xs text-muted-foreground">Loading matrix…</div>
+                      ) : (
+                        <ResponsiveContainer width="100%" height={220}>
+                          <ReBarChart data={areaEntries} margin={{ left: 8, right: 16, top: 4, bottom: 4 }}>
+                            <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                            <YAxis tick={{ fontSize: 10 }} tickFormatter={v => `$${v}`} width={42} />
+                            <Tooltip formatter={(v: number) => [`$${v}/sqft`, 'Avg Rate']} />
+                            <Bar dataKey="avg" radius={[3, 3, 0, 0]}>
+                              {areaEntries.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                            </Bar>
+                          </ReBarChart>
+                        </ResponsiveContainer>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card className="lg:col-span-2">
+                    <CardContent className="p-4 flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Full analytics, filtering, and cost build-up on the Analytics page</span>
+                      <Button size="sm" variant="outline" asChild>
+                        <Link href="/analytics">Open Analytics <ChevronRight className="h-3.5 w-3.5 ml-1" /></Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              );
+            })()}
           </TabsContent>
         </Tabs>
       </div>

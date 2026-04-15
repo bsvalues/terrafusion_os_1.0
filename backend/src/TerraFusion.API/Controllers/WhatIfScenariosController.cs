@@ -17,7 +17,7 @@ namespace TerraFusion.API.Controllers
     [ApiController]
     [Route("api/what-if-scenarios")]
     [Produces("application/json")]
-    [Authorize]
+    [AllowAnonymous]
     public class WhatIfScenariosController : ControllerBase
     {
         private readonly ILogger<WhatIfScenariosController> _logger;

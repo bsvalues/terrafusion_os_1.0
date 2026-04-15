@@ -91,14 +91,25 @@ public sealed class DevPropertySeeder
                 g => g.OrderByDescending(s => s.PrimaryFlag == "Y" ? 1 : 0).First(),
                 ct);
 
-        var valuationLookup = await _db.PacsValuations
+        // Two-step projection avoids EF materialising the full PacsValuation entity
+        // (which selects hood_cd — a SQLite column that may be named differently).
+        var rawValuations = await _db.PacsValuations
             .AsNoTracking()
-            .Where(v => parcelIds.Contains(v.ParcelId))
+            .Where(v => v.SupNum == 0 && parcelIds.Contains(v.ParcelId))
+            .Select(v => new
+            {
+                v.ParcelId, v.PropValYear,
+                v.AssessedVal, v.Market, v.AppraisedVal, v.ImprvVal,
+                v.LandHstdVal, v.LandNonHstdVal,
+                v.ImprvHstdVal, v.ImprvNonHstdVal,
+            })
+            .ToListAsync(ct);
+
+        var valuationLookup = rawValuations
             .GroupBy(v => v.ParcelId)
-            .ToDictionaryAsync(
+            .ToDictionary(
                 g => g.Key,
-                g => g.OrderByDescending(v => v.PropValYear).First(),
-                ct);
+                g => g.OrderByDescending(v => v.PropValYear).First());
 
         var profileLookup = await _db.PacsPropertyProfiles
             .AsNoTracking()

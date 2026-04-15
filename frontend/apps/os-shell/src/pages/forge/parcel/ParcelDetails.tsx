@@ -72,7 +72,7 @@ export function ParcelDetails({ parcelId }: ParcelDetailsProps) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <Detail label="Year Built" value={String(property.yearBuilt)} />
               <Detail label="Sq Ft" value={property.squareFeet.toLocaleString()} />
-              <Detail label="Lot Size" value={`${property.lotSize.toLocaleString()} sqft`} />
+              <Detail label="Lot Size" value={`${property.lotSize.toLocaleString()} sq ft`} />
               <Detail label="Bedrooms" value={String(property.bedrooms)} />
               <Detail label="Bathrooms" value={String(property.bathrooms)} />
               <Detail label="Neighborhood" value={property.neighborhood} />

@@ -559,7 +559,7 @@ export function DcfPanel({ initialSqft = 20000, initialPropertyType = "Office", 
                     <div className="grid grid-cols-4 gap-3 text-xs">
                       {[
                         { lbl: "SUITE",           field: "suite",              type: "text" as const },
-                        { lbl: "SQFT",            field: "sqft",               type: "number" as const, step: 100 },
+                        { lbl: "SQ FT",           field: "sqft",               type: "number" as const, step: 100 },
                         { lbl: "LEASE START",     field: "leaseStart",         type: "date" as const },
                         { lbl: "LEASE END",       field: "leaseEnd",           type: "date" as const },
                         { lbl: "RENT ($/SF/YR)",  field: "currentRent",        type: "number" as const, step: 0.5 },

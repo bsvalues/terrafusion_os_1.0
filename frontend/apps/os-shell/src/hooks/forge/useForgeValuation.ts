@@ -182,13 +182,15 @@ function useForgeQuery<T>(
     queryKey: ['forge', key, parcelId, taxYear],
     queryFn: () => fetchForge<T>(parcelId!, approach, taxYear),
     enabled: !!parcelId,
-    retry: 1,
+    retry: false,
+    retryOnMount: false,
     staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
 
   return {
     data: query.data,
-    loading: query.isLoading || query.isFetching,
+    loading: query.isLoading,
     error: query.error as Error | null,
     source: query.data ? 'live' : 'fallback',
     refetch: query.refetch,

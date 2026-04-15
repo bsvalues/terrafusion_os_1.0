@@ -246,6 +246,7 @@ public class AtlasGisController : ControllerBase
     /// <param name="parcelId">GeoId or SimpleGeoId of the parcel.</param>
     /// <param name="ct">Request cancellation token.</param>
     [HttpGet("parcels/{parcelId}/boundary")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(ParcelBoundaryResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetParcelBoundary(string parcelId, CancellationToken ct)
@@ -253,26 +254,48 @@ public class AtlasGisController : ControllerBase
         _logger.LogInformation("Atlas parcel boundary: {ParcelId}", parcelId);
         var result = await _gisData.GetParcelBoundaryAsync(parcelId, ct);
 
-        if (result.Source == "fallback" && result.Centroid is null)
-            return NotFound(new { error = $"Parcel '{parcelId}' not found in PACS mirror." });
+        if (result.Source == "unavailable")
+            return NotFound(new { error = $"Parcel '{parcelId}' not found." });
 
         return Ok(result);
     }
 
     /// <summary>
-    /// Return GIS layer data (zoning, flood zone, tax area, land classification)
-    /// for a parcel from PACS tables.
+    /// Return GIS layer data (flood zone, tax area, land classification) for a parcel.
     /// </summary>
-    /// <param name="parcelId">GeoId or SimpleGeoId of the parcel.</param>
+    /// <param name="parcelId">GeoId of the parcel.</param>
     /// <param name="ct">Request cancellation token.</param>
     [HttpGet("parcels/{parcelId}/layers")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(ParcelLayersResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetParcelLayers(string parcelId, CancellationToken ct)
     {
         _logger.LogInformation("Atlas parcel layers: {ParcelId}", parcelId);
         var result = await _gisData.GetParcelLayersAsync(parcelId, ct);
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Combined boundary + layers in one round trip — the preferred endpoint for the UI.
+    /// Single query to GisParcelGeometries.
+    /// </summary>
+    /// <param name="parcelId">GeoId of the parcel.</param>
+    /// <param name="ct">Request cancellation token.</param>
+    [HttpGet("parcels/{parcelId}")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetParcel(string parcelId, CancellationToken ct)
+    {
+        _logger.LogInformation("Atlas parcel combined: {ParcelId}", parcelId);
+        // Both methods share the same underlying query — no extra DB hit
+        var boundary = await _gisData.GetParcelBoundaryAsync(parcelId, ct);
+
+        if (boundary.Source == "unavailable")
+            return NotFound(new { error = $"Parcel '{parcelId}' not found." });
+
+        var layers = await _gisData.GetParcelLayersAsync(parcelId, ct);
+        return Ok(new { boundary, layers });
     }
 
     // ── Response DTOs ────────────────────────────────────────────────

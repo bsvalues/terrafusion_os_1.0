@@ -116,7 +116,7 @@ export default function DossierSuiteHome() {
           style={{ color: 'hsl(var(--tf-muted))' }}
         >
           Document and evidence tools open in the Property Workbench for parcel-scoped operations.
-          PACS DataBridge, TerraSync, and TerraFlow are queued — these integrations are not yet implemented in this build.
+          PACS DataBridge, TerraSync, and TerraFlow integrations are scheduled for a future release.
         </p>
         <SuiteModuleGrid modules={DOSSIER_MODULES} accentVar="--tf-suite-dossier" />
         <OperationalQueue title="Recent Parcels" accentVar="--tf-suite-dossier" emptyMessage="No recent parcel activity" />

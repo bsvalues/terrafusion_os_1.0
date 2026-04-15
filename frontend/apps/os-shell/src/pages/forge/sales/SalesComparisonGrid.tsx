@@ -86,7 +86,7 @@ export function SalesComparisonGrid() {
 
   const handleExport = () => {
     const csv = [
-      ['APN', 'Address', 'Sale Date', 'Sale Price', 'Sqft', '$/Sqft', 'Adjusted Price'].join(','),
+      ['APN', 'Address', 'Sale Date', 'Sale Price', 'Sq Ft', '$/Sq Ft', 'Adjusted Price'].join(','),
       ...filtered.map((s) =>
         [s.apn, `"${s.address}"`, s.saleDate, s.salePrice, s.sqft, s.pricePerSqft.toFixed(2), s.adjustedPrice].join(',')
       ),
@@ -125,7 +125,7 @@ export function SalesComparisonGrid() {
             <SelectItem value="saleDate">Sale Date</SelectItem>
             <SelectItem value="salePrice">Sale Price</SelectItem>
             <SelectItem value="sqft">Square Feet</SelectItem>
-            <SelectItem value="pricePerSqft">Price/Sqft</SelectItem>
+            <SelectItem value="pricePerSqft">Price/Sq Ft</SelectItem>
           </SelectContent>
         </Select>
         <Button variant="outline" onClick={handleExport} disabled={filtered.length === 0}>
@@ -145,8 +145,8 @@ export function SalesComparisonGrid() {
                   <TableHead className="cursor-pointer" onClick={() => handleSort('address')}>Address</TableHead>
                   <TableHead className="cursor-pointer" onClick={() => handleSort('saleDate')}>Sale Date</TableHead>
                   <TableHead className="text-right cursor-pointer" onClick={() => handleSort('salePrice')}>Sale Price</TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort('sqft')}>Sqft</TableHead>
-                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort('pricePerSqft')}>$/Sqft</TableHead>
+                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort('sqft')}>Sq Ft</TableHead>
+                  <TableHead className="text-right cursor-pointer" onClick={() => handleSort('pricePerSqft')}>$/Sq Ft</TableHead>
                   <TableHead className="text-right">Adj Total</TableHead>
                   <TableHead className="text-right">Adj Price</TableHead>
                 </TableRow>

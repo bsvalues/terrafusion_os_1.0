@@ -101,6 +101,8 @@ export interface DossierLevyEntry {
   taxingDistrict: string;
   taxRate: number;
   levyAmount: number;
+  /** This parcel's annual obligation = taxRate × (assessedValue / 1000). */
+  parcelLevyAmount: number;
   taxYear: number;
   purpose: string;
   effectiveDate: string; // ISO 8601

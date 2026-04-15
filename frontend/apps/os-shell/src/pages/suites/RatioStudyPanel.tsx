@@ -32,8 +32,7 @@ interface RatioStudyItem {
   salePrice:          number;
   rawSalePrice:       number;
   adjustedSalePrice:  number | null;
-  pacsComputedRatio:  number | null;
-  ratio:              number | null;
+  salesRatio:         number | null;
   gla:                number | null;
   yearBuilt:          number | null;
   hood:               string | null;
@@ -301,13 +300,13 @@ export function RatioStudyPanel({ taxYear = TAX_YEAR }: Props) {
                     {fmtPrice(item.salePrice)}
                   </span>
                   <span className="rs-cell rs-cell--ratio" role="cell">
-                    {item.ratio != null ? (
+                    {item.salesRatio != null ? (
                       <span className={`rs-ratio-badge ${
-                        item.ratio >= 0.9 && item.ratio <= 1.1
+                        item.salesRatio >= 0.9 && item.salesRatio <= 1.1
                           ? 'rs-ratio-badge--ok'
                           : 'rs-ratio-badge--out'
                       }`}>
-                        {fmtRatio(item.ratio)}
+                        {fmtRatio(item.salesRatio)}
                       </span>
                     ) : (
                       <span className="rs-ratio-badge rs-ratio-badge--missing">—</span>

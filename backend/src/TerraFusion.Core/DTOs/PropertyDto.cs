@@ -34,6 +34,22 @@ public class PropertyDto
 
     public int? YearBuilt { get; set; }
 
+    public decimal? SquareFeet { get; set; }
+
+    public int? Bedrooms { get; set; }
+
+    public int? Bathrooms { get; set; }
+
+    public decimal? LandAcres { get; set; }
+
+    public string? Neighborhood { get; set; }
+
+    public string? PropertyUseCode { get; set; }
+
+    public string? TaxDistrictCode { get; set; }
+
+    public string? TaxDistrictName { get; set; }
+
     public int TaxYear { get; set; }
 
     public DateTime AssessmentDate { get; set; }

@@ -421,14 +421,14 @@ export function PlanTracePanel({ onSave, saving, currentGLA }: PlanTracePanelPro
                     <Calculator className="w-4 h-4 text-primary" />
                     <div>
                       <p className="text-sm font-medium text-foreground">
-                        Traced Area: {Math.round(tracedArea).toLocaleString()} sqft
+                        Traced Area: {Math.round(tracedArea).toLocaleString()} sq ft
                       </p>
                       <p className="text-[10px] text-muted-foreground">
                         Perimeter: {computePerimeter().toFixed(0)}' · {tracePoints.length} vertices
                       </p>
                       {delta !== null && (
                         <p className={`text-[10px] ${Math.abs(deltaPct ?? 0) > 15 ? "text-destructive" : "text-muted-foreground"}`}>
-                          Δ {delta > 0 ? "+" : ""}{Math.round(delta).toLocaleString()} sqft
+                          Δ {delta > 0 ? "+" : ""}{Math.round(delta).toLocaleString()} sq ft
                           ({deltaPct ? `${deltaPct > 0 ? "+" : ""}${deltaPct.toFixed(1)}%` : ""})
                           {Math.abs(deltaPct ?? 0) > 15 && (
                             <span className="ml-1">

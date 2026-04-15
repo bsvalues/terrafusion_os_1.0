@@ -15,6 +15,7 @@ import { ErrorDisplay } from '../../../../components/errors/ErrorDisplay';
 import { BentoCard } from '../../../../ui/materials/BentoCard';
 import { WorkbenchSourceBadge } from '../../../../components/workbench/WorkbenchSourceBadge';
 import { IncomeValuationPanel } from '../../../../components/workbench/IncomeValuationPanel';
+import { DcfPanel } from '../../income/DcfPanel';
 import { useIncomeApproach as useIncomeApproachAPI } from '../../../../hooks/forge/useForgeValuation';
 import {
   type ForgeSubTabProps,
@@ -37,6 +38,7 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
 
   const [rentalIncome, setRentalIncome] = useState<string>('');
   const [incomeState, setIncomeState] = useState<ToolState<IncomeResult>>({ status: 'idle' });
+  const [showDcf, setShowDcf] = useState(false);
 
   /* ── run_income_valuation ─────────────────────────────── */
 
@@ -96,7 +98,7 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
   /* ── Render ───────────────────────────────────────────── */
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" style={{ overflow: 'hidden' }}>
       {/* Live Income Approach Data */}
       <BentoCard
         title="&#128176; Income Approach Summary"
@@ -166,7 +168,11 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
             <div className="flex items-center gap-3 text-sm">
               <span className="tf-text-tertiary">Confidence:</span>
               <span className="tf-suite-accent-text font-semibold">{formatConfidence(incomeAPI.data.confidence)}</span>
-              <span className="tf-text-dim text-xs ml-auto">Source: {incomeAPI.data.source}</span>
+              <span className="tf-text-dim text-xs ml-auto">
+                {incomeAPI.data.source === 'stub' && !incomeAPI.data.incomeApproachApplicable
+                  ? 'N/A — residential'
+                  : `Source: ${incomeAPI.data.source}`}
+              </span>
             </div>
           </div>
         )}
@@ -184,7 +190,7 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
       {/* Governed Tool: Quick Income Valuation */}
       <BentoCard title="&#128176; Quick Income Valuation" variant="default">
         <p className="tf-text-tertiary text-sm mb-4">
-          Income capitalization for commercial property valuation
+          Income capitalization estimate using entered rental income and a market-derived cap rate.
         </p>
 
         <div className="mb-4">
@@ -264,6 +270,22 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
               correlationId: incomeState.correlationId,
             }}
           />
+        )}
+      </BentoCard>
+
+      {/* Advanced: DCF Model (commercial properties) */}
+      <BentoCard variant="default" title="">
+        <button
+          onClick={() => setShowDcf((v) => !v)}
+          className="w-full flex items-center justify-between text-sm font-semibold tf-text-secondary hover:tf-text"
+        >
+          <span>&#128200; DCF Income Model — 10-Year Discounted Cash Flow</span>
+          <span className="tf-text-dim text-xs font-normal">{showDcf ? 'Hide ▲' : 'Show ▼'} USPAP SR 1-4(c)</span>
+        </button>
+        {showDcf && (
+          <div className="mt-4">
+            <DcfPanel />
+          </div>
         )}
       </BentoCard>
     </div>

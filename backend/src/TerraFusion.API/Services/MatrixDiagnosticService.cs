@@ -1,121 +1,246 @@
-using TerraFusion.API.Controllers;
+using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
+using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 
 namespace TerraFusion.API.Services;
 
+/// <summary>
+/// Runs IAAO-standard calibration diagnostics against real Benton County
+/// assessment and sales data.  Results surface in CalibrationDiagnosticController.
+/// </summary>
 public class MatrixDiagnosticService : IMatrixDiagnosticService
 {
-    private static readonly Dictionary<string, decimal> AreaDrift = new()
+    private readonly DataDbContext _db;
+    private readonly ILogger<MatrixDiagnosticService> _logger;
+
+    public MatrixDiagnosticService(
+        DataDbContext db,
+        ILogger<MatrixDiagnosticService> logger)
     {
-        { "Reval 1", -0.04m },
-        { "Reval 2",  0.01m },
-        { "Reval 3", -0.08m },
-        { "Reval 4",  0.02m },
-        { "Reval 5",  0.00m },
-        { "Reval 6",  0.03m },
-    };
+        _db    = db;
+        _logger = logger;
+    }
 
-    private static readonly HashSet<string> AgriculturalTypes = new(StringComparer.OrdinalIgnoreCase)
-        { "AG", "A1", "A2", "Agricultural" };
+    // ── Main diagnostic run ───────────────────────────────────────────────────
 
-    public System.Threading.Tasks.Task<IReadOnlyList<CalibrationFinding>> RunDiagnosticsAsync(
+    public async Task<IReadOnlyList<CalibrationFinding>> RunDiagnosticsAsync(
         int matrixVersionId, CancellationToken ct = default)
     {
-        var matrix = CostForgeController.BentonCostData.CostMatrix;
+        int taxYear     = DateTime.UtcNow.Year;
+        int salesYearMin = taxYear - 3;
+
+        // 1. Pull qualified sales (3-year rolling window)
+        var sales = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.SalePrice > 10_000
+                     && s.SaleQualification == "qualified"
+                     && s.SalesYear >= salesYearMin
+                     && s.SalesYear <= taxYear)
+            .Select(s => new { s.ParcelId, s.SalePrice })
+            .ToListAsync(ct);
+
+        if (sales.Count == 0)
+        {
+            _logger.LogWarning("MatrixDiagnostic: no qualified sales found for {YearMin}-{Year}", salesYearMin, taxYear);
+            return Array.Empty<CalibrationFinding>();
+        }
+
+        var parcelIds = sales
+            .Where(s => s.ParcelId != null)
+            .Select(s => s.ParcelId!)
+            .ToHashSet();
+
+        // 2. Assessed values (current TY from Properties table — canonical)
+        var avMap = await _db.Properties
+            .AsNoTracking()
+            .Where(p => parcelIds.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+            .Select(p => new { p.ParcelNumber, p.AssessedValue })
+            .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue, ct);
+
+        // 3. Neighborhood + building type from CamaCharacteristics
+        var camaMap = await _db.CamaCharacteristics
+            .AsNoTracking()
+            .Where(c => parcelIds.Contains(c.ParcelId) && c.NeighborhoodCode != null)
+            .Select(c => new { c.ParcelId, c.NeighborhoodCode, c.BuildingType })
+            .ToDictionaryAsync(c => c.ParcelId, c => c, ct);
+
+        // 4. Build ratio records grouped by (NeighborhoodCode × BuildingType)
+        // Carry AV and SP for proper PRD computation
+        var groups = new Dictionary<(string Hood, string BType), List<(decimal AV, decimal SP)>>();
+
+        foreach (var s in sales)
+        {
+            if (s.ParcelId == null) continue;
+            if (!avMap.TryGetValue(s.ParcelId, out var av)) continue;
+            if (!camaMap.TryGetValue(s.ParcelId, out var cama)) continue;
+
+            var ratio = av / s.SalePrice;
+            if (ratio < 0.5m || ratio > 2.0m) continue;   // IAAO extraordinary-outlier clamp
+
+            var key = (cama.NeighborhoodCode!, cama.BuildingType ?? "R1");
+            if (!groups.ContainsKey(key)) groups[key] = new();
+            groups[key].Add((av, s.SalePrice));
+        }
+
+        // 5. Compute IAAO stats per group and emit findings
         var findings = new List<CalibrationFinding>();
 
-        var groups = matrix
-            .GroupBy(e => new { e.BuildingType, e.Region })
-            .ToList();
-
-        foreach (var group in groups)
+        foreach (var kv in groups.Where(g => g.Value.Count >= 5))
         {
-            var drift = AreaDrift.TryGetValue(group.Key.Region, out var d) ? d : 0m;
-            var typeDrift = AgriculturalTypes.Contains(group.Key.BuildingType) ? drift - 0.05m : drift;
+            var pairs = kv.Value;
+            var ratios = pairs.Select(p => p.AV / p.SP).ToList();
 
-            var rng = new Random(HashCode.Combine(group.Key.BuildingType, group.Key.Region));
-            var ratios = Enumerable.Range(0, 30)
-                .Select(_ => 1.0m + typeDrift + (decimal)(rng.NextDouble() * 0.12 - 0.06))
-                .ToList();
-
-            decimal avgRate = group.Average(e => e.BaseCostPerSqft);
-            List<decimal> values = Enumerable.Range(0, 30)
-                .Select(i => avgRate * (0.8m + (decimal)((double)i * 0.02)))
-                .ToList();
-
-            decimal prd = ComputePrd(ratios, values);
-            decimal prb = ComputePrb(ratios, values);
             decimal cod = ComputeCod(ratios);
+            decimal prd = ComputePrd(ratios, pairs.Select(p => p.AV).ToList());
+            decimal prb = ComputePrb(ratios, pairs.Select(p => p.AV).ToList());
 
             var classification = Classify(prd, prb, cod);
             if (classification == "NO_ACTION") continue;
 
-            decimal proposedAdj = prd > 1.03m ? -(prd - 1.005m) : prd < 0.98m ? (1.005m - prd) : 0m;
+            var revalDigit = kv.Key.Hood.Length >= 1 ? kv.Key.Hood[0].ToString() : "1";
+            var revalArea  = int.TryParse(revalDigit, out var d) && d >= 1 && d <= 6
+                             ? $"Reval {d}" : "Reval 1";
+
+            decimal medianRatio = Median(ratios);
+            decimal proposedAdj = medianRatio > 0
+                ? Math.Round((1.0m / medianRatio) - 1.0m, 4)
+                : 0m;
+
+            decimal totalAv = pairs.Sum(p => p.AV);
+            decimal estimatedImpact = totalAv * proposedAdj;
+
+            // Flag extreme outliers (ratio < 0.70 or > 1.30 within group)
+            var outlierParcelIds = sales
+                .Where(s => s.ParcelId != null
+                         && avMap.TryGetValue(s.ParcelId!, out var av2)
+                         && camaMap.TryGetValue(s.ParcelId!, out var c2)
+                         && c2.NeighborhoodCode == kv.Key.Hood
+                         && (c2.BuildingType ?? "R1") == kv.Key.BType)
+                .Where(s => {
+                    var r = avMap[s.ParcelId!] / s.SalePrice;
+                    return r < 0.70m || r > 1.30m;
+                })
+                .Select(s => s.ParcelId!)
+                .Take(10)
+                .ToList();
 
             findings.Add(new CalibrationFinding
             {
-                MatrixVersionId = matrixVersionId,
-                Classification = classification,
-                BuildingType = group.Key.BuildingType,
-                RevalArea = group.Key.Region,
-                PrdValue = prd,
-                PrbValue = prb,
-                CodValue = cod,
-                ConfidenceLevel = ComputeConfidence(prd, prb, cod),
-                ProposedAdjustmentPct = proposedAdj * 100,
-                ProposedRateNew = avgRate * (1 + proposedAdj),
-                EstimatedAvImpact = avgRate * group.Count() * proposedAdj * 1_500m,
-                OutlierParcelIds = classification == "DATA_PROBLEM" ? "[\"P-10023\",\"P-10847\"]" : null,
-                EvidenceSummary = BuildEvidenceSummary(prd, prb, cod, ratios.Count),
-                ResolutionStatus = "OPEN",
-                CreatedBy = "ai-diagnostic",
-                UpdatedBy = "ai-diagnostic",
+                MatrixVersionId     = matrixVersionId,
+                Classification      = classification,
+                BuildingType        = kv.Key.BType,
+                RevalArea           = revalArea,
+                PrdValue            = Math.Round(prd, 4),
+                PrbValue            = Math.Round(prb, 4),
+                CodValue            = Math.Round(cod, 2),
+                ConfidenceLevel     = ComputeConfidence(prd, prb, cod),
+                ProposedAdjustmentPct = Math.Round(proposedAdj * 100, 2),
+                ProposedRateNew     = null,
+                EstimatedAvImpact   = Math.Round(estimatedImpact, 0),
+                OutlierParcelIds    = outlierParcelIds.Count > 0
+                    ? System.Text.Json.JsonSerializer.Serialize(outlierParcelIds)
+                    : null,
+                EvidenceSummary     = BuildEvidenceSummary(prd, prb, cod, pairs.Count,
+                    kv.Key.Hood, medianRatio),
+                ResolutionStatus    = "OPEN",
+                CreatedBy           = "ai-diagnostic",
+                UpdatedBy           = "ai-diagnostic",
             });
         }
 
         findings.Sort((a, b) =>
             Math.Abs(b.EstimatedAvImpact ?? 0).CompareTo(Math.Abs(a.EstimatedAvImpact ?? 0)));
 
-        return System.Threading.Tasks.Task.FromResult<IReadOnlyList<CalibrationFinding>>(findings);
+        _logger.LogInformation(
+            "MatrixDiagnostic: {Total} qualified sales → {Findings} findings across {Groups} groups",
+            sales.Count, findings.Count, groups.Count);
+
+        return findings;
     }
 
-    public System.Threading.Tasks.Task<DiagnosticsSummary> GetSummaryAsync(CancellationToken ct = default)
+    // ── Summary (county-level IAAO stats from real data) ─────────────────────
+
+    public async Task<DiagnosticsSummary> GetSummaryAsync(CancellationToken ct = default)
     {
-        var matrix = CostForgeController.BentonCostData.CostMatrix;
-        List<decimal> all = matrix.Select(e =>
-        {
-            decimal drift = AreaDrift.TryGetValue(e.Region, out var d) ? d : 0m;
-            return 1.0m + drift;
-        }).ToList();
+        int taxYear      = DateTime.UtcNow.Year;
+        int salesYearMin = taxYear - 3;
 
-        List<decimal> fakeValues = matrix.Select(e => e.BaseCostPerSqft).ToList();
-        decimal prd = ComputePrd(all, fakeValues);
-        decimal prb = ComputePrb(all, fakeValues);
-        decimal cod = ComputeCod(all);
+        var sales = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.SalePrice > 10_000
+                     && s.SaleQualification == "qualified"
+                     && s.SalesYear >= salesYearMin
+                     && s.SalesYear <= taxYear)
+            .Select(s => new { s.ParcelId, s.SalePrice })
+            .ToListAsync(ct);
 
-        return System.Threading.Tasks.Task.FromResult(
-            new DiagnosticsSummary(prd, prb, cod, all.Count * 30, 0, DateTime.UtcNow));
+        if (sales.Count == 0)
+            return new DiagnosticsSummary(1m, 0m, 0m, 0, 0, DateTime.UtcNow);
+
+        var parcelIds = sales.Where(s => s.ParcelId != null).Select(s => s.ParcelId!).ToHashSet();
+
+        var avMap = await _db.Properties
+            .AsNoTracking()
+            .Where(p => parcelIds.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+            .Select(p => new { p.ParcelNumber, p.AssessedValue })
+            .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue, ct);
+
+        var pairs = sales
+            .Where(s => s.ParcelId != null && avMap.ContainsKey(s.ParcelId!))
+            .Select(s => (AV: avMap[s.ParcelId!], SP: s.SalePrice))
+            .Where(p => {
+                var r = p.AV / p.SP;
+                return r >= 0.5m && r <= 2.0m;
+            })
+            .ToList();
+
+        if (pairs.Count == 0)
+            return new DiagnosticsSummary(1m, 0m, 0m, 0, 0, DateTime.UtcNow);
+
+        var ratios = pairs.Select(p => p.AV / p.SP).ToList();
+        var avList = pairs.Select(p => p.AV).ToList();
+
+        decimal prd = ComputePrd(ratios, avList);
+        decimal prb = ComputePrb(ratios, avList);
+        decimal cod = ComputeCod(ratios);
+
+        int outOfCompliance = 0;  // placeholder — full count done by neighborhood matrix
+
+        return new DiagnosticsSummary(prd, prb, cod, pairs.Count, outOfCompliance, DateTime.UtcNow);
     }
 
-    private static decimal ComputePrd(List<decimal> ratios, List<decimal> values)
+    // ── IAAO stat helpers (static, pure) ─────────────────────────────────────
+
+    private static decimal Median(List<decimal> ratios)
+    {
+        var s = ratios.Order().ToList();
+        return s.Count % 2 == 1
+            ? s[s.Count / 2]
+            : (s[s.Count / 2 - 1] + s[s.Count / 2]) / 2m;
+    }
+
+    private static decimal ComputePrd(List<decimal> ratios, List<decimal> avs)
     {
         if (ratios.Count == 0) return 1m;
         decimal mean = ratios.Average();
-        decimal totalValue = values.Sum();
-        if (totalValue == 0) return 1m;
-        decimal weightedMean = ratios.Zip(values, (r, v) => r * v).Sum() / totalValue;
+        decimal totalAv = avs.Sum();
+        if (totalAv == 0) return 1m;
+        // Weighted mean = sum(AV) / sum(SP) = sum(AV) / sum(AV/ratio)
+        decimal weightedMean = ratios.Zip(avs, (r, av) => r > 0 ? av / r : 0m).Sum() is var totalSp && totalSp > 0
+            ? totalAv / totalSp
+            : mean;
         return weightedMean == 0 ? 1m : mean / weightedMean;
     }
 
-    private static decimal ComputePrb(List<decimal> ratios, List<decimal> values)
+    private static decimal ComputePrb(List<decimal> ratios, List<decimal> avs)
     {
         if (ratios.Count < 2) return 0m;
-        var lnValues = values.Select(v => v > 0 ? (decimal)Math.Log((double)v) : 0m).ToList();
-        decimal xMean = lnValues.Average();
+        var lnAvs = avs.Select(v => v > 0 ? (decimal)Math.Log((double)v) : 0m).ToList();
+        decimal xMean = lnAvs.Average();
         decimal yMean = ratios.Average();
-        decimal num = lnValues.Zip(ratios, (x, y) => (x - xMean) * (y - yMean)).Sum();
-        decimal den = lnValues.Sum(x => (x - xMean) * (x - xMean));
+        decimal num = lnAvs.Zip(ratios, (x, y) => (x - xMean) * (y - yMean)).Sum();
+        decimal den = lnAvs.Sum(x => (x - xMean) * (x - xMean));
         return den == 0 ? 0m : num / den;
     }
 
@@ -123,11 +248,19 @@ public class MatrixDiagnosticService : IMatrixDiagnosticService
     {
         if (ratios.Count == 0) return 0m;
         var sorted = ratios.Order().ToList();
-        decimal median = sorted.Count % 2 == 1
-            ? sorted[sorted.Count / 2]
-            : (sorted[sorted.Count / 2 - 1] + sorted[sorted.Count / 2]) / 2m;
+        // IQR trim before COD
+        var q1 = sorted[(int)(sorted.Count * 0.25)];
+        var q3 = sorted[(int)(sorted.Count * 0.75)];
+        var iqr = q3 - q1;
+        var lo = q1 - 1.5m * iqr;
+        var hi = q3 + 1.5m * iqr;
+        var trimmed = sorted.Where(r => r >= lo && r <= hi).ToList();
+        if (trimmed.Count < 3) trimmed = sorted;
+        decimal median = trimmed.Count % 2 == 1
+            ? trimmed[trimmed.Count / 2]
+            : (trimmed[trimmed.Count / 2 - 1] + trimmed[trimmed.Count / 2]) / 2m;
         if (median == 0) return 0m;
-        decimal mad = ratios.Average(r => Math.Abs(r - median));
+        decimal mad = trimmed.Average(r => Math.Abs(r - median));
         return (mad / median) * 100m;
     }
 
@@ -135,8 +268,8 @@ public class MatrixDiagnosticService : IMatrixDiagnosticService
     {
         decimal score = 1.0m;
         if (Math.Abs(prd - 1.0m) > 0.05m) score -= 0.1m;
-        if (Math.Abs(prb) > 0.05m) score -= 0.1m;
-        if (cod > 20m) score -= 0.15m;
+        if (Math.Abs(prb) > 0.05m)         score -= 0.1m;
+        if (cod > 20m)                      score -= 0.15m;
         return Math.Max(0.5m, score);
     }
 
@@ -147,12 +280,12 @@ public class MatrixDiagnosticService : IMatrixDiagnosticService
         bool codBad = cod > 20m;
 
         if (!prdBad && !prbBad && !codBad) return "NO_ACTION";
-        if (prdBad && Math.Abs(prd - 1.0m) > 0.05m) return "RATE_PROBLEM";
-        if (codBad && !prdBad) return "DATA_PROBLEM";
-        if (prbBad) return "RATE_PROBLEM";
+        if (codBad && !prdBad)             return "DATA_PROBLEM";
+        if (prbBad || prdBad)              return "RATE_PROBLEM";
         return "RATE_PROBLEM";
     }
 
-    private static string BuildEvidenceSummary(decimal prd, decimal prb, decimal cod, int n) =>
-        $"n={n} sales. PRD={prd:F3} (target 0.98-1.03). PRB={prb:F3} (target |PRB|<0.05). COD={cod:F1}%.";
+    private static string BuildEvidenceSummary(decimal prd, decimal prb, decimal cod, int n, string hood, decimal medianRatio) =>
+        $"Hood {hood}: n={n} sales, median ratio={medianRatio:F4}, PRD={prd:F3} (target 0.98-1.03), " +
+        $"PRB={prb:F3} (target |PRB|<0.05), COD={cod:F1}%.";
 }

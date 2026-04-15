@@ -124,7 +124,7 @@ export function SketchModule({ parcelId }: SketchModuleProps) {
       ctx.fillText(seg.label, cx, cy - 6);
       ctx.fillStyle = '#64748b';
       ctx.font = '10px sans-serif';
-      ctx.fillText(`${seg.sqft} sqft`, cx, cy + 8);
+      ctx.fillText(`${seg.sqft} sq ft`, cx, cy + 8);
     });
 
     // Dimensions
@@ -256,7 +256,7 @@ export function SketchModule({ parcelId }: SketchModuleProps) {
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Sqft</span>
+                  <span className="text-muted-foreground">Total Sq Ft</span>
                   <span className="font-mono font-bold">{sketch.totalSqft.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
@@ -294,7 +294,7 @@ export function SketchModule({ parcelId }: SketchModuleProps) {
                       />
                       <span className="text-sm font-medium">{seg.label}</span>
                     </div>
-                    <span className="text-sm font-mono">{seg.sqft} sqft</span>
+                    <span className="text-sm font-mono">{seg.sqft} sq ft</span>
                   </div>
                 ))}
               </CardContent>

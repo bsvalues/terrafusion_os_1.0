@@ -1,0 +1,70 @@
+<h2>The PhD Appraiser's Superpower Gap</h2>
+<p class="subtitle">What the current Calibration Workbench can and can't do — pick where we go next</p>
+
+<div class="section">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+    <div style="background:#1a2a1a;border:1px solid #2d4a2d;border-radius:8px;padding:16px">
+      <div class="label" style="color:#4ade80;margin-bottom:10px">✅ What Exists Today</div>
+      <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.9;color:#ccc">
+        <li>County-level PRD / PRB / COD summary</li>
+        <li>AI findings classified by type &amp; area</li>
+        <li>Mass adjustment (% or flat, by type/area)</li>
+        <li>Version state machine (Draft → Locked)</li>
+        <li>Calibration memo (SOP §5.3)</li>
+        <li>Evidence age by reval area</li>
+      </ul>
+    </div>
+    <div style="background:#2a1a1a;border:1px solid #4a2d2d;border-radius:8px;padding:16px">
+      <div class="label" style="color:#f87171;margin-bottom:10px">❌ What's Missing for PhD-Level Work</div>
+      <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.9;color:#ccc">
+        <li>See <em>which parcels</em> are driving a finding</li>
+        <li>Simulate adjustment <em>before</em> applying it</li>
+        <li>Stratified equity (by value decile, age, time)</li>
+        <li>Identify &amp; exclude outlier sales from study</li>
+        <li>Time-trend: is the market moving mid-year?</li>
+        <li>Adjustment audit trail (what changed, why)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<h3>Which superpower should we build first?</h3>
+<p class="subtitle">Each unlocks a different part of the PhD audit workflow. Pick the one that changes your work the most.</p>
+
+<div class="options">
+  <div class="option" data-choice="A" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Parcel Evidence Viewer</h3>
+      <p>Click any AI finding → see the individual sales behind it. Ratio scatter plot, sale price vs. AV, sale date, parcel IDs. Answer: <em>"Is this really a rate problem, or are 3 distressed sales poisoning the study?"</em></p>
+      <div style="margin-top:8px;font-size:11px;color:#94a3b8">Root cause → data problem vs. rate problem vs. outlier</div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="B" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Adjustment Simulator ("What If")</h3>
+      <p>Type a proposed adjustment → instantly see projected PRD / PRB / COD <em>before</em> applying. Know the outcome before you commit. Answer: <em>"If I push S1 up 8%, does that fix Reval 3 without breaking Reval 1?"</em></p>
+      <div style="margin-top:8px;font-size:11px;color:#94a3b8">Fly with instruments, not blind</div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="C" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Stratified Equity Report</h3>
+      <p>PRD / PRB / COD broken out by value quintile, age band, size band, and reval area simultaneously. Spot regressivity in low-value vs. high-value parcels. Answer: <em>"Am I equitable across all strata, not just the county average?"</em></p>
+      <div style="margin-top:8px;font-size:11px;color:#94a3b8">IAAO-standard ratio study depth</div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="D" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <h3>All Three — Design as a Suite</h3>
+      <p>Parcel Evidence + Adjustment Simulator + Stratified Equity form a complete PhD audit loop. Design them together so data flows between them: outlier exclusion in the evidence viewer feeds the simulator, which feeds the equity report.</p>
+      <div style="margin-top:8px;font-size:11px;color:#94a3b8">Coherent audit system, not three disconnected tools</div>
+    </div>
+  </div>
+</div>

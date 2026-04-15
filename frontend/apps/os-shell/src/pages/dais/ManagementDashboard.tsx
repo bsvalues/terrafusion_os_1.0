@@ -137,17 +137,17 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
     // Certification — compose from getCertificationStatus
     try {
       const certData = await getCertificationStatus();
-      if (certData && certData.length > 0) {
+      if (certData) {
         setCertificationAreas(certData.map(mapCertToArea));
         setCertSource('live');
         anyApi = true;
       }
     } catch { /* fixture fallback — already set */ }
 
-    // Appeals — compose from getAllAppeals
+    // Appeals — compose from getAllAppeals (empty array = live, no appeals on file)
     try {
       const appealsData = await getAllAppeals();
-      if (appealsData && appealsData.length > 0) {
+      if (appealsData != null) {
         setRecentAppeals(mapAppealsToRecent(appealsData));
         setAppealsSummary(computeAppealsSummary(appealsData));
         setAppealsSource('live');
@@ -164,11 +164,11 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       }
     } catch { /* fixture fallback */ }
 
-    // Workload — compose from getAppraiserProductivity
+    // Workload — compose from getAppraiserProductivity (empty array = live)
     try {
       const prodData = await getAppraiserProductivity({ throwOnError: true });
-      if (prodData && prodData.length > 0) {
-        setAppraisers(mapProductivityToAppraisers(prodData));
+      if (prodData != null) {
+        if (prodData.length > 0) setAppraisers(mapProductivityToAppraisers(prodData));
         setWorkloadSource('live');
         anyApi = true;
       }

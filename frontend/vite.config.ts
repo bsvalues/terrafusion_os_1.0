@@ -139,7 +139,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         // Capture error boundary reports in pilot runtime (dev diagnostics)
         '/api/errors': {
-          target: `http://localhost:${process.env.PILOT_PORT || 4317}`,
+          target: backendUrl,
           changeOrigin: true,
           secure: false,
         },
@@ -159,11 +159,14 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
-        // Proxy Pilot runtime (TerraCanon dev-pilot-runtime)
+        // Proxy Pilot runtime — routes /pilot/** to .NET backend /api/pilot/**
+        // The dedicated pilot runtime (port 4317) is optional; when offline the
+        // backend stubs return gracefully-degraded responses.
         '/pilot': {
-          target: `http://localhost:${process.env.PILOT_PORT || 4317}`,
+          target: backendUrl,
           changeOrigin: true,
           secure: false,
+          rewrite: (path: string) => path.replace(/^\/pilot/, '/api/pilot'),
         },
       },
     },

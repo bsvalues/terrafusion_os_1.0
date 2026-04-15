@@ -28,6 +28,8 @@ import { WorkbenchSourceBadge } from '../../../components/workbench/WorkbenchSou
 const fmt = (v: number | undefined | null) => (v ? `$${v.toLocaleString()}` : '—');
 const num = (v: number | undefined | null) => (v != null ? v.toLocaleString() : '—');
 const dash = (v: string | number | undefined | null) => (v != null && v !== '' ? String(v) : '—');
+/** Render a year value — treats 0 as missing because year 0 is not a valid built year. */
+const dashYear = (v: number | undefined | null) => (v != null && v !== 0 ? String(v) : '—');
 
 function daysSince(dateStr: string | undefined | null): string {
   if (!dateStr) return '';
@@ -116,7 +118,7 @@ export const PropertySummary: React.FC = () => {
               <>
                 {dash(propertyData.address)}
                 {activeParcel?.city && (
-                  <span className="text-xs ml-1" style={{ color: 'hsl(var(--tf-text) / 0.45)' }}>
+                  <span className="block text-xs mt-0.5" style={{ color: 'hsl(var(--tf-text) / 0.45)' }}>
                     {activeParcel.city}{activeParcel.zip ? `, ${activeParcel.zip}` : ''}
                   </span>
                 )}
@@ -149,7 +151,7 @@ export const PropertySummary: React.FC = () => {
               label="Tax District"
               value={
                 activeParcel.taxDistrictName
-                  ? `${activeParcel.taxDistrictName}${activeParcel.taxDistrictCode ? ` (${activeParcel.taxDistrictCode})` : ''}`
+                  ? `${activeParcel.taxDistrictName}${activeParcel.taxDistrictCode && activeParcel.taxDistrictCode !== activeParcel.taxDistrictName ? ` (${activeParcel.taxDistrictCode})` : ''}`
                   : '—'
               }
             />
@@ -215,10 +217,10 @@ export const PropertySummary: React.FC = () => {
         <Block>
           <BlockHeader label="Physical Characteristics" />
           <div className="grid grid-cols-5 gap-x-4 gap-y-2.5">
-            <Field label="Year Built" value={dash(activeParcel.yearBuilt)} mono />
-            <Field label="Sq Ft" value={num(activeParcel.buildingSquareFeet)} mono />
+            <Field label="Year Built" value={dashYear(activeParcel.yearBuilt)} mono />
+            <Field label="Total Sq Ft" value={num(activeParcel.buildingSquareFeet)} mono />
             <Field label="Bedrooms" value={dash(activeParcel.bedrooms)} mono />
-            <Field label="Bathrooms" value={dash(activeParcel.bathrooms)} mono />
+            <Field label="Bathrooms" value={activeParcel.bathrooms != null ? String(activeParcel.bathrooms) : 'Not on record'} mono />
             <Field label="Land Acres" value={activeParcel.landAcreage ? activeParcel.landAcreage.toFixed(2) : '—'} mono />
           </div>
         </Block>

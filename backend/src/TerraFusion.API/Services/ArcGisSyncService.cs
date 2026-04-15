@@ -82,7 +82,14 @@ public sealed class ArcGisSyncService : BackgroundService
                     CheckInterval.TotalHours);
             }
 
-            await System.Threading.Tasks.Task.Delay(CheckInterval, stoppingToken);
+            try
+            {
+                await System.Threading.Tasks.Task.Delay(CheckInterval, stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
         }
 
         _logger.LogInformation("ArcGisSyncService: stopped");

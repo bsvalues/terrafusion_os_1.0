@@ -27,7 +27,6 @@ import React, { useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import {
-  ParcelContextHeader,
   WorkbenchSourceBadge,
   type InvocationRecord,
 } from '../../../components/workbench';
@@ -115,14 +114,6 @@ export const PropertyForge: React.FC = () => {
 
   return (
     <div className="tf-suite-forge space-y-4" data-testid="property-forge-tab">
-      {/* Header */}
-      <ParcelContextHeader
-        icon="🔥"
-        title="TerraForge"
-        parcelId={parcelId}
-        subtitle={`Governed valuation tools requested via Forge for ${parcelId}`}
-      />
-
       {/* PACS Year Selector */}
       <ForgeYearSelector
         parcelId={parcelId}
@@ -133,19 +124,13 @@ export const PropertyForge: React.FC = () => {
       {/* Year context panel — shows lock state, programs, AV/MV for selected year */}
       <ForgeYearContextPanel layer={selectedLayer} taxYear={taxYear} />
 
-      <div className="tf-status-info rounded-xl p-4" data-testid="forge-baseline-disclosure">
-        <div className="flex items-start justify-between gap-3">
-          <p className="tf-text">
-            Overview baseline values reflect the parcel snapshot already loaded in the workbench.
-            Changing Tax Year here changes the governed tool requests below; it does not relabel those baseline cards until a tool result is returned from the selected tool.
-          </p>
-          <WorkbenchSourceBadge source={forgeProbe.source} className="shrink-0" />
-        </div>
+      <div className="flex justify-end" data-testid="forge-baseline-disclosure">
+        <WorkbenchSourceBadge source={forgeProbe.source} />
       </div>
 
       {/* Sub-Tab Bar */}
       <nav
-        className="flex gap-1 border-b tf-border pb-0"
+        className="flex gap-1 flex-wrap"
         role="tablist"
         aria-label="Forge approach tabs"
       >
@@ -157,11 +142,11 @@ export const PropertyForge: React.FC = () => {
             aria-controls={`forge-panel-${tab.id}`}
             onClick={() => setActiveSubTab(tab.id)}
             className={`
-              flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-t-lg
-              transition-all border-b-2
+              flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full
+              transition-all
               ${activeSubTab === tab.id
-                ? 'tf-suite-accent-text border-current'
-                : 'tf-text-tertiary border-transparent hover:tf-text-secondary hover:border-current/30'
+                ? 'tf-suite-accent-text ring-1 ring-current/30'
+                : 'tf-text-tertiary hover:tf-text-secondary'
               }
             `}
           >
@@ -273,6 +258,7 @@ export const PropertyForge: React.FC = () => {
         <SketchModule
           parcelId={parcelId}
           taxYear={taxYear}
+          onBack={() => setActiveSubTab('overview')}
           onSaveObservation={async (obs: Omit<FieldObservation, 'id' | 'syncStatus'>) => {
             await addObservation(obs);
           }}

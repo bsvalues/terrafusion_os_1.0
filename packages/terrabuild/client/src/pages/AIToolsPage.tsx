@@ -65,8 +65,8 @@ const AIToolsPage: React.FC = () => {
           <Tabs defaultValue="predictor" value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid grid-cols-3 w-full md:w-[600px]">
               <TabsTrigger value="predictor">Cost Predictor</TabsTrigger>
-              <TabsTrigger value="analyzer">Matrix Analyzer</TabsTrigger>
-              <TabsTrigger value="explainer">Calculation Explainer</TabsTrigger>
+              <TabsTrigger value="analyzer">Rate Matrix Review</TabsTrigger>
+              <TabsTrigger value="explainer">Assessment Narrative</TabsTrigger>
             </TabsList>
             
             <div className="mt-6">
@@ -101,28 +101,29 @@ const AIToolsPage: React.FC = () => {
               </div>
               
               <div className="space-y-2">
-                <h3 className="font-medium">Matrix Analyzer</h3>
+                <h3 className="font-medium">Rate Matrix Review</h3>
                 <p className="text-sm text-muted-foreground">
-                  The Matrix Analyzer examines your cost matrix data to identify patterns,
-                  Reval Area variations, and building type differences. It provides insights and
-                  recommendations based on the data.
+                  Runs a client-side equity check on the live Benton County cost matrix. Flags
+                  rate disparity across Reval Areas and building types using COV and outlier
+                  detection — no AI service required, instant results.
                 </p>
               </div>
-              
+
               <div className="space-y-2">
-                <h3 className="font-medium">Calculation Explainer</h3>
+                <h3 className="font-medium">Assessment Narrative</h3>
                 <p className="text-sm text-muted-foreground">
-                  The Calculation Explainer breaks down complex cost calculations into
-                  understandable explanations. It shows how different factors contribute to
-                  the final cost and provides additional insights.
+                  Enter parcel characteristics to generate a plain-English cost approach narrative
+                  (RCN, depreciation, RCNLD) suitable for Board of Equalization hearings and
+                  assessment defense under Washington State methodology.
                 </p>
               </div>
             </div>
             
             <div className="mt-6 text-sm text-muted-foreground">
               <p>
-                All AI tools are powered by the Model Content Protocol (MCP) using OpenAI's language models.
-                They provide insights and recommendations based on building cost data and industry knowledge.
+                Rate Matrix Review runs entirely client-side on live county data — no external service required.
+                Assessment Narrative uses the TerraFusion AI module to generate BOR-ready narrative text from
+                the RCNLD cost approach calculation.
               </p>
             </div>
           </div>

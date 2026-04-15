@@ -109,7 +109,7 @@ export function CostApproachRunner() {
             </div>
 
             <div className="space-y-1">
-              <Label className="text-xs">Area (sqft)</Label>
+              <Label className="text-xs">Area (Sq Ft)</Label>
               <Input
                 className="h-9 text-sm"
                 value={form.area}

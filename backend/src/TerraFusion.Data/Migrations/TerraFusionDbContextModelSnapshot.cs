@@ -1343,6 +1343,10 @@ namespace TerraFusion.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("AbsSubdv")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
                     b.Property<decimal?>("BasementSqft")
                         .HasColumnType("numeric");
 
@@ -1424,6 +1428,10 @@ namespace TerraFusion.Data.Migrations
                     b.Property<string>("LandZone")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<string>("NeighborhoodCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("ParcelId")
                         .IsRequired()
@@ -2418,6 +2426,10 @@ namespace TerraFusion.Data.Migrations
 
                     b.Property<decimal>("SalePrice")
                         .HasColumnType("numeric");
+
+                    b.Property<string>("SaleQualification")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<int?>("SalesYear")
                         .HasColumnType("integer");

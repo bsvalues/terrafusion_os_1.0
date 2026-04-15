@@ -267,11 +267,11 @@ export function InspectionPanel({
             <CardContent className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-xs">Building Area (sqft)</Label>
+                  <Label className="text-xs">Building Area (Sq Ft)</Label>
                   <Input type="number" value={buildingArea} onChange={(e) => setBuildingArea(e.target.value)} />
                 </div>
                 <div>
-                  <Label className="text-xs">Land Area (sqft)</Label>
+                  <Label className="text-xs">Land Area (Sq Ft)</Label>
                   <Input type="number" value={landArea} onChange={(e) => setLandArea(e.target.value)} />
                 </div>
                 <div>

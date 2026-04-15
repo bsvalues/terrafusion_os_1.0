@@ -1,0 +1,366 @@
+<h2>CostForge Calibration Workbench — Full Design</h2>
+<p class="subtitle">The first AI-native county cost matrix calibration system. Four layers working together.</p>
+
+<div class="section">
+  <div class="label" style="font-size:13px;color:#38bdf8;">THE FOUR LAYERS</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:12px;font-size:11px;text-align:center;">
+    <div style="background:#1e293b;border:2px solid #38bdf8;border-radius:8px;padding:14px;">
+      <div style="font-size:22px;margin-bottom:6px;">🧠</div>
+      <div style="color:#38bdf8;font-weight:700;margin-bottom:6px;">LAYER 1<br>AI Diagnostic Engine</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.5;">Runs continuously. Pulls TerraFusion sales. Computes real PRD/PRB/COD. Classifies every issue. Proposes exact rate changes. Tracks evidence age. Done before you open the tool.</div>
+    </div>
+    <div style="background:#1e293b;border:2px solid #a78bfa;border-radius:8px;padding:14px;">
+      <div style="font-size:22px;margin-bottom:6px;">🎛️</div>
+      <div style="color:#a78bfa;font-weight:700;margin-bottom:6px;">LAYER 2<br>Calibration Cockpit</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.5;">AI finding queue + working matrix heat map + mass adjustment controls + live PRD/COD recalculation. Expert can accept AI proposals or override with their own judgment. Always non-linear.</div>
+    </div>
+    <div style="background:#1e293b;border:2px solid #f59e0b;border-radius:8px;padding:14px;">
+      <div style="font-size:22px;margin-bottom:6px;">📚</div>
+      <div style="color:#f59e0b;font-weight:700;margin-bottom:6px;">LAYER 3<br>Matrix Version Registry</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.5;">Git-model versioning. DRAFT → REVIEW → APPROVED → LOCKED → ARCHIVED. Evidence age per factor. Version types: CALIBRATED / MANDATED / PATCH. Immutable history forever.</div>
+    </div>
+    <div style="background:#1e293b;border:2px solid #22c55e;border-radius:8px;padding:14px;">
+      <div style="font-size:22px;margin-bottom:6px;">⚖️</div>
+      <div style="color:#22c55e;font-weight:700;margin-bottom:6px;">LAYER 4<br>Governance Engine</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.5;">Calibration Memo auto-drafts throughout. Sign-off chain enforced. WAC 458-07 compliance checked. DOR audit package generated on demand. Legislative audit package in minutes.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">LAYER 1 — AI Diagnostic Engine (What AI Knows Before You Touch Anything)</div>
+  <div style="background:#0f172a;border-radius:8px;padding:14px;margin-top:10px;font-size:11px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div>
+        <div style="color:#38bdf8;font-weight:600;margin-bottom:8px;">Data AI pulls from TerraFusion</div>
+        <div style="color:#94a3b8;line-height:1.8;">
+          • All arm's-length sales, current 24-month window<br>
+          • Each sale matched to assessed value at date of sale<br>
+          • Building type, reval area, size, age, condition per parcel<br>
+          • Current locked matrix (what was applied at assessment)<br>
+          • Prior 4 matrix versions (for drift detection)<br>
+          • Evidence age per reval area factor
+        </div>
+      </div>
+      <div>
+        <div style="color:#38bdf8;font-weight:600;margin-bottom:8px;">What AI computes and outputs</div>
+        <div style="color:#94a3b8;line-height:1.8;">
+          • Real PRD/PRB per building type AND per reval area<br>
+          • Real COD by type, by area, by value tier (Low/Mid/High)<br>
+          • Classification: Rate Problem / Data Problem / External / None<br>
+          • For Rate Problems: exact $/sqft adjustment to hit PRD target<br>
+          • County AV impact for each proposed adjustment<br>
+          • Evidence age flag per reval area (stale &gt; 36 months)<br>
+          • Parcels to flag to Property Workbench (misclassified)
+        </div>
+      </div>
+    </div>
+    <div style="background:#1e293b;border-radius:6px;padding:10px;margin-top:10px;">
+      <div style="color:#38bdf8;font-size:10px;font-weight:600;margin-bottom:6px;">EXAMPLE AI FINDING — Rate Problem</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.6;">"Agricultural (A1/A2): 23 arm's-length farm sales, 2023–2025. Median ratio: 0.874 (under-assessed 12.6%). PRD: 1.041 (regressive — lower-value farms over-assessed relative to higher-value). PRB slope: -0.068 (significant). <span style="color:#ef4444">Rate Problem confirmed.</span> Recommended adjustment: +$11.20/sqft (+12.5%) to A1, +$10.69/sqft (+12.5%) to A2. County AV impact: +$23.4M across 847 agricultural parcels. Evidence: strong (23 sales, tight distribution, no outliers flagged)."</div>
+    </div>
+    <div style="background:#1e293b;border-radius:6px;padding:10px;margin-top:8px;">
+      <div style="color:#f59e0b;font-size:10px;font-weight:600;margin-bottom:6px;">EXAMPLE AI FINDING — Data Problem → Flag to Property Workbench</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.6;">"Commercial Retail (C1), Reval 3: 8 sales analyzed. 2 sales flagged as outliers (parcel IDs 12045-003, 12045-119): sale prices 340% above median — likely mixed-use properties mis-coded as pure retail. Excluding outliers: PRD drops from 1.089 to 1.002. <span style="color:#22c55e">No rate adjustment needed.</span> Flagging 2 parcels to Property Workbench for classification review."</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">LAYER 2 — Calibration Cockpit UI (The Expert's Command Center)</div>
+  <div style="background:#0f172a;border-radius:8px;padding:12px;margin-top:10px;font-family:monospace;font-size:10px;">
+
+    <!-- Top bar -->
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1e293b;padding-bottom:8px;margin-bottom:10px;">
+      <div>
+        <span style="color:#38bdf8;font-weight:700;">Calibration Workbench</span>
+        <span style="color:#334155;margin:0 8px;">|</span>
+        <span style="color:#f59e0b;">v2026.0-DRAFT</span>
+        <span style="color:#334155;margin:0 8px;">|</span>
+        <span style="color:#64748b;">Based on: v2025.0-LOCKED · 89,247 parcels</span>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <span style="background:#22c55e20;color:#22c55e;padding:2px 8px;border-radius:4px;">PRD 0.991 ✓</span>
+        <span style="background:#22c55e20;color:#22c55e;padding:2px 8px;border-radius:4px;">COD 9.2% ✓</span>
+        <span style="background:#ef444420;color:#ef4444;padding:2px 8px;border-radius:4px;">4 AI findings</span>
+        <span style="background:#a78bfa20;color:#a78bfa;padding:2px 8px;border-radius:4px;">Memo: 73% drafted</span>
+        <span style="background:#f59e0b20;color:#f59e0b;padding:2px 8px;border-radius:4px;">Submit for Review →</span>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:10px;">
+
+      <!-- Left column: Findings + Adjustments -->
+      <div>
+        <!-- Finding queue -->
+        <div style="color:#64748b;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">AI FINDING QUEUE</div>
+
+        <div style="background:#1e293b;border-left:3px solid #ef4444;border-radius:4px;padding:8px;margin-bottom:6px;">
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:#ef4444;font-weight:600;">① Agricultural — Rate Problem (PRD 1.041)</span>
+            <span style="color:#64748b;font-size:9px;">HIGH · +$23.4M AV</span>
+          </div>
+          <div style="color:#94a3b8;font-size:9px;margin:4px 0;">Recommend +12.5% base rate. 23 sales. Strong evidence. PRB -0.068 → 0.002 after adjustment.</div>
+          <div style="display:flex;gap:4px;margin-top:4px;">
+            <span style="background:#22c55e20;color:#22c55e;padding:1px 6px;border-radius:3px;cursor:pointer;">✓ Accept</span>
+            <span style="background:#334155;color:#94a3b8;padding:1px 6px;border-radius:3px;cursor:pointer;">Modify</span>
+            <span style="background:#334155;color:#94a3b8;padding:1px 6px;border-radius:3px;cursor:pointer;">Drill into sales</span>
+            <span style="background:#334155;color:#94a3b8;padding:1px 6px;border-radius:3px;cursor:pointer;">Override</span>
+          </div>
+        </div>
+
+        <div style="background:#1e293b;border-left:3px solid #ef4444;border-radius:4px;padding:8px;margin-bottom:6px;">
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:#ef4444;font-weight:600;">② R6 Area Factor — Evidence Stale (60mo)</span>
+            <span style="color:#64748b;font-size:9px;">HIGH · WAC 458-07</span>
+          </div>
+          <div style="color:#94a3b8;font-size:9px;margin:4px 0;">0.845 factor unsupported. Need 2022–2025 sales for Historic Richland. 14 sales available in TerraFusion — pull and analyze.</div>
+          <div style="display:flex;gap:4px;margin-top:4px;">
+            <span style="background:#38bdf820;color:#38bdf8;padding:1px 6px;border-radius:3px;cursor:pointer;">▶ Run ratio study</span>
+            <span style="background:#334155;color:#94a3b8;padding:1px 6px;border-radius:3px;cursor:pointer;">Adjust factor manually</span>
+          </div>
+        </div>
+
+        <div style="background:#1e293b;border-left:3px solid #f59e0b;border-radius:4px;padding:8px;margin-bottom:6px;">
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:#f59e0b;font-weight:600;">③ C1 Reval 3 — 2 parcels → Property Workbench</span>
+            <span style="color:#64748b;font-size:9px;">DATA · No rate change</span>
+          </div>
+          <div style="color:#94a3b8;font-size:9px;margin:4px 0;">Parcels 12045-003, 12045-119 mis-coded as retail. Without them, C1 R3 PRD: 1.002. Rate is correct.</div>
+          <div style="display:flex;gap:4px;margin-top:4px;">
+            <span style="background:#f59e0b20;color:#f59e0b;padding:1px 6px;border-radius:3px;cursor:pointer;">Send to Workbench</span>
+            <span style="background:#334155;color:#94a3b8;padding:1px 6px;border-radius:3px;cursor:pointer;">Review parcels</span>
+          </div>
+        </div>
+
+        <div style="background:#1e293b;border-left:3px solid #22c55e;border-radius:4px;padding:8px;margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:#22c55e;font-weight:600;">④ Secondary Features — Lump-Sum Audit Pending</span>
+            <span style="color:#64748b;font-size:9px;">BENTON SOP</span>
+          </div>
+          <div style="color:#94a3b8;font-size:9px;margin:4px 0;">Patios, shops, basements: verify %-of-base. Last audit: not on record.</div>
+          <div style="display:flex;gap:4px;margin-top:4px;">
+            <span style="background:#22c55e20;color:#22c55e;padding:1px 6px;border-radius:3px;cursor:pointer;">▶ Run feature audit</span>
+          </div>
+        </div>
+
+        <!-- Mass adjustment panel -->
+        <div style="color:#64748b;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">MASS ADJUSTMENT CONTROLS</div>
+        <div style="background:#1e293b;border-radius:4px;padding:8px;font-size:10px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
+            <div><span style="color:#64748b;">Scope: </span><span style="color:#38bdf8;">All Agricultural ▼</span></div>
+            <div><span style="color:#64748b;">Type: </span><span style="color:#22c55e;">% of rate ▼</span></div>
+          </div>
+          <div style="color:#64748b;margin-bottom:4px;">Adjustment: <span style="color:#f8fafc;font-size:12px;font-weight:700;">+12.5%</span></div>
+          <div style="background:#0f172a;border-radius:4px;padding:6px;font-size:9px;">
+            <div style="color:#64748b;margin-bottom:3px;">IMPACT PREVIEW</div>
+            <div style="color:#94a3b8;">A1: $89.73 → <span style="color:#22c55e">$100.94</span> &nbsp;|&nbsp; A2: $85.51 → <span style="color:#22c55e">$96.20</span></div>
+            <div style="color:#94a3b8;">County AV impact: <span style="color:#22c55e">+$23.4M</span> across 847 parcels</div>
+            <div style="color:#94a3b8;">PRD after: <span style="color:#22c55e">0.998</span> &nbsp;|&nbsp; PRB after: <span style="color:#22c55e">-0.002</span></div>
+          </div>
+          <div style="display:flex;gap:4px;margin-top:6px;">
+            <span style="background:#22c55e;color:#0f172a;padding:3px 10px;border-radius:3px;font-weight:700;cursor:pointer;">Apply to Draft</span>
+            <span style="background:#334155;color:#94a3b8;padding:3px 8px;border-radius:3px;cursor:pointer;">Clear</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column: Matrix + Memo -->
+      <div>
+        <div style="color:#64748b;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">WORKING DRAFT v2026.0 — vs LOCKED v2025.0</div>
+        <div style="background:#1e293b;border-radius:4px;padding:8px;margin-bottom:8px;font-size:9px;">
+          <div style="display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:2px;color:#64748b;margin-bottom:4px;">
+            <div>Type</div><div style="text-align:center;">2025</div><div style="text-align:center;">2026 Draft</div><div style="text-align:center;">Δ</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:2px;padding:3px 0;border-bottom:1px solid #0f172a;">
+            <div style="color:#94a3b8;">Hospital</div><div style="text-align:center;color:#64748b;">$190.57</div><div style="text-align:center;color:#64748b;">$190.57</div><div style="text-align:center;color:#64748b;">—</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:2px;padding:3px 0;border-bottom:1px solid #0f172a;background:#22c55e08;">
+            <div style="color:#94a3b8;">Agri. Farm</div><div style="text-align:center;color:#64748b;">$89.73</div><div style="text-align:center;color:#22c55e;font-weight:700;">$100.94</div><div style="text-align:center;color:#22c55e;">+12.5%</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:2px;padding:3px 0;border-bottom:1px solid #0f172a;background:#22c55e08;">
+            <div style="color:#94a3b8;">Agri. Ranch</div><div style="text-align:center;color:#64748b;">$85.51</div><div style="text-align:center;color:#22c55e;font-weight:700;">$96.20</div><div style="text-align:center;color:#22c55e;">+12.5%</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:2px;padding:3px 0;border-bottom:1px solid #0f172a;">
+            <div style="color:#94a3b8;">SFR</div><div style="text-align:center;color:#64748b;">$123.68</div><div style="text-align:center;color:#64748b;">$123.68</div><div style="text-align:center;color:#64748b;">—</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:2px;padding:3px 0;">
+            <div style="color:#ef4444;">R6 Factor</div><div style="text-align:center;color:#64748b;">0.845</div><div style="text-align:center;color:#ef4444;">⚠ pending</div><div style="text-align:center;color:#ef4444;">?</div>
+          </div>
+        </div>
+
+        <div style="color:#64748b;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">VERSION TIMELINE</div>
+        <div style="background:#1e293b;border-radius:4px;padding:8px;margin-bottom:8px;font-size:9px;">
+          <div style="display:flex;align-items:center;gap:4px;margin-bottom:5px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#38bdf8;flex-shrink:0;"></div>
+            <div style="color:#38bdf8;font-weight:600;">v2026.0-DRAFT</div>
+            <div style="color:#64748b;margin-left:auto;">In progress · 2 changes</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;margin-bottom:5px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#ef4444;flex-shrink:0;"></div>
+            <div style="color:#ef4444;font-weight:600;">v2025.0-LOCKED</div>
+            <div style="color:#64748b;margin-left:auto;">Jan 1 2025 · Active</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;margin-bottom:5px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#334155;flex-shrink:0;"></div>
+            <div style="color:#64748b;">v2024.0-ARCHIVED</div>
+            <div style="color:#64748b;margin-left:auto;">Jan 1 2024</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#334155;flex-shrink:0;"></div>
+            <div style="color:#64748b;">v2023.0-ARCHIVED</div>
+            <div style="color:#64748b;margin-left:auto;">Jan 1 2023</div>
+          </div>
+        </div>
+
+        <div style="color:#64748b;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">CALIBRATION MEMO — AUTO-DRAFTING</div>
+        <div style="background:#a78bfa10;border:1px solid #a78bfa30;border-radius:4px;padding:8px;font-size:9px;">
+          <div style="color:#a78bfa;font-weight:600;margin-bottom:4px;">v2026.0 — Benton County 2026 Working Year Matrix</div>
+          <div style="color:#64748b;line-height:1.6;">
+            Trigger: PRD 1.041 agricultural (23 sales, 2023–2025) ✓<br>
+            Data: 24-month window, arm's-length only, 4 exclusions ✓<br>
+            Diagnostics: PRD 1.041→0.998 · PRB -0.068→-0.002 ✓<br>
+            Change: A1/A2 +12.5% · R6 factor ⚠ pending<br>
+            AV Impact: +$23.4M agricultural ✓<br>
+            Sign-off: <span style="color:#ef4444">[Chief Appraiser signature required]</span>
+          </div>
+          <div style="margin-top:6px;display:flex;gap:4px;">
+            <span style="background:#a78bfa20;color:#a78bfa;padding:2px 6px;border-radius:3px;cursor:pointer;">Preview full memo</span>
+            <span style="background:#334155;color:#94a3b8;padding:2px 6px;border-radius:3px;cursor:pointer;">Export PDF</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">LAYER 3 — Matrix Version Registry (Backend Schema)</div>
+  <div style="background:#0f172a;border-radius:8px;padding:14px;margin-top:10px;font-size:11px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div>
+        <div style="color:#f59e0b;font-weight:600;margin-bottom:8px;">MatrixVersion record stores:</div>
+        <div style="color:#94a3b8;font-family:monospace;font-size:10px;line-height:1.8;">
+          id, countyId, version (semver)<br>
+          status: DRAFT|REVIEW|APPROVED|LOCKED|ARCHIVED<br>
+          versionType: CALIBRATED|MANDATED|PATCH<br>
+          effectiveDate, lockedAt, lockedBy<br>
+          rateSnapshot: JSON (full matrix at lock)<br>
+          triggeringEvent: string<br>
+          salesWindowStart, salesWindowEnd<br>
+          salesExclusionRules: JSON<br>
+          prdBefore, prdAfter, prbBefore, prbAfter<br>
+          codBefore, codAfter<br>
+          countyAvImpact: decimal<br>
+          signOffChain: JSON (analyst→chief→assessor)<br>
+          calibrationMemoId: FK<br>
+          nextReviewDate<br>
+          parentVersionId: FK (for patch lineage)
+        </div>
+      </div>
+      <div>
+        <div style="color:#f59e0b;font-weight:600;margin-bottom:8px;">RevalAreaEvidenceAge tracks:</div>
+        <div style="color:#94a3b8;font-family:monospace;font-size:10px;line-height:1.8;">
+          matrixVersionId, revalArea<br>
+          factor (area multiplier)<br>
+          lastRatioStudyDate<br>
+          saleCount, medianRatio<br>
+          evidenceAgeMonths (computed)<br>
+          evidenceStatus: CURRENT|AGING|STALE|CRITICAL<br>
+          — CURRENT: &lt;24 months<br>
+          — AGING: 24–36 months<br>
+          — STALE: 36–60 months (flag)<br>
+          — CRITICAL: &gt;60 months (WAC 458-07 risk)
+        </div>
+        <div style="background:#1e293b;border-radius:4px;padding:8px;margin-top:8px;font-size:10px;">
+          <div style="color:#22c55e;font-weight:600;margin-bottom:4px;">State/DOR Role (cross-county read)</div>
+          <div style="color:#94a3b8;">Sees: aggregate PRD/PRB/COD per county, no parcel data, no individual rates. Used for equalization analysis. Per-authorization only.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">LAYER 4 — Governance Engine (What Gets Auto-Generated)</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;font-size:11px;">
+    <div style="background:#1e293b;border-radius:8px;padding:12px;border-top:3px solid #22c55e;">
+      <div style="color:#22c55e;font-weight:700;margin-bottom:6px;">Calibration Memo</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.5;">Auto-drafts as appraiser works. All 8 required sections per SOP §5.3. Fills in PRD/PRB before/after, sales universe, change made, AV impact. Appraiser adds context, signs. Done.</div>
+    </div>
+    <div style="background:#1e293b;border-radius:8px;padding:12px;border-top:3px solid #38bdf8;">
+      <div style="color:#38bdf8;font-weight:700;margin-bottom:6px;">DOR Equalization Package</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.5;">On-demand: all matrix versions + memos + ratio studies for any date range. DOR format. Includes PRD/COD trend charts. Takes 4 minutes, not 3 weeks.</div>
+    </div>
+    <div style="background:#1e293b;border-radius:8px;padding:12px;border-top:3px solid #a78bfa;">
+      <div style="color:#a78bfa;font-weight:700;margin-bottom:6px;">Legislative Audit Package</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.5;">5-year equity trend report. Every rate change with market evidence. WAC 458-07 compliance checklist. Value-tier equity analysis. BOR testimony scripts from AI. Signed provenance chain.</div>
+    </div>
+    <div style="background:#1e293b;border-radius:8px;padding:12px;border-top:3px solid #f59e0b;">
+      <div style="color:#f59e0b;font-weight:700;margin-bottom:6px;">Matrix Provenance Report</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.5;">For new staff: "Why is Warehouse $52.65?" AI traces every rate to its calibration event, the sales evidence, who signed it, how old it is. Full inheritance brief on day one.</div>
+    </div>
+    <div style="background:#1e293b;border-radius:8px;padding:12px;border-top:3px solid #ef4444;">
+      <div style="color:#ef4444;font-weight:700;margin-bottom:6px;">Drift Alert</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.5;">"Warehouse hasn't changed in 3 cycles but market appreciated 18%. Under-assessed by est. 8–12%." Pushed to appraiser proactively — no one has to remember to check.</div>
+    </div>
+    <div style="background:#1e293b;border-radius:8px;padding:12px;border-top:3px solid #64748b;">
+      <div style="color:#94a3b8;font-weight:700;margin-bottom:6px;">Property Workbench Flagging</div>
+      <div style="color:#94a3b8;font-size:10px;line-height:1.5;">Data problems identified by AI (misclassified parcels) are routed directly to Property Workbench as flagged audit items. CostForge never touches parcel-level records.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">What Gets Built — New vs Extended</div>
+  <div style="background:#0f172a;border-radius:8px;padding:14px;margin-top:10px;font-size:11px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div>
+        <div style="color:#22c55e;font-weight:600;margin-bottom:8px;">NEW — Calibration Workbench page</div>
+        <div style="color:#94a3b8;line-height:1.8;">
+          • /calibration route in CostForge<br>
+          • AI Finding Queue component<br>
+          • Mass Adjustment Controls component<br>
+          • Live PRD/COD recalculation (client-side)<br>
+          • Matrix Diff view (2026 draft vs 2025 locked)<br>
+          • Version Timeline component<br>
+          • Calibration Memo panel (auto-drafting)
+        </div>
+      </div>
+      <div>
+        <div style="color:#38bdf8;font-weight:600;margin-bottom:8px;">NEW — Backend (TerraFusion.API)</div>
+        <div style="color:#94a3b8;line-height:1.8;">
+          • MatrixVersion entity + DB table<br>
+          • RevalAreaEvidenceAge entity + table<br>
+          • CalibrationMemo entity + table<br>
+          • AI Diagnostic service (ratio study + classification)<br>
+          • MatrixVersionController<br>
+          • CalibrationMemoController<br>
+          • DOR export endpoint<br>
+          • Property Workbench flag relay
+        </div>
+      </div>
+    </div>
+    <div style="background:#1e293b;border-radius:6px;padding:10px;margin-top:10px;">
+      <div style="color:#f59e0b;font-weight:600;margin-bottom:4px;">EXTENDED — Existing components</div>
+      <div style="color:#94a3b8;font-size:10px;">AIMatrixAnalyzer.tsx → becomes the read-only audit view (what it already does). The Calibration Workbench is the write surface that sits alongside it. BenchmarkingController → add ratio study query endpoints. Sidebar → add "Calibration" nav item.</div>
+    </div>
+  </div>
+</div>
+
+<div class="options" style="margin-top:16px;">
+  <div class="option" data-choice="approve" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content">
+      <h3>This is the design — write the spec</h3>
+      <p>All four layers correct. Write the design doc and get to an implementation plan.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="adjust" onclick="toggleSelect(this)">
+    <div class="letter">~</div>
+    <div class="content">
+      <h3>Almost — I want to adjust something</h3>
+      <p>Tell me what to change and I'll revise before writing the spec.</p>
+    </div>
+  </div>
+</div>

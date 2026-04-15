@@ -110,7 +110,7 @@ export const ForgeYearSelector: React.FC<ForgeYearSelectorProps> = ({
           className="tf-text-dim text-xs"
           title={error?.message}
         >
-          {error ? '⚠ year data unavailable' : 'no PACS layers found'}
+          {error ? '⚠ year data unavailable' : 'no assessment layers found'}
         </span>
       </div>
     );
@@ -127,7 +127,7 @@ export const ForgeYearSelector: React.FC<ForgeYearSelectorProps> = ({
         value={taxYear}
         onChange={(e) => onTaxYearChange(Number(e.target.value))}
         className="tf-input px-3 py-1.5 text-sm font-mono"
-        aria-label="Select PACS tax year"
+        aria-label="Select tax year"
       >
         {data.layers.map((layer) => (
           <option
@@ -139,7 +139,7 @@ export const ForgeYearSelector: React.FC<ForgeYearSelectorProps> = ({
         ))}
       </select>
       <span className="tf-text-dim text-xs" data-testid="forge-year-source-badge">
-        PACS · {data.layers.length} layer{data.layers.length !== 1 ? 's' : ''}
+        TerraFusion · {data.layers.length} year layer{data.layers.length !== 1 ? 's' : ''}
       </span>
     </div>
   );

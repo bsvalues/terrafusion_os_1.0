@@ -66,7 +66,7 @@ export function SketchModule({ parcelId, currentGLA, onBack, onSaveObservation }
       toast.success("Sketch saved", {
         description: flaggedForReview
           ? `⚠️ GLA differs by ${Math.abs(glaDeltaPct ?? 0).toFixed(1)}% — flagged for review`
-          : `${derivedGLA.toLocaleString()} sqft recorded`,
+          : `${derivedGLA.toLocaleString()} sq ft recorded`,
       });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Unknown error";
@@ -77,16 +77,27 @@ export function SketchModule({ parcelId, currentGLA, onBack, onSaveObservation }
   };
 
   return (
-    <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-4">
+    <div
+      className="p-4 sm:p-6 max-w-4xl mx-auto space-y-4"
+      style={{
+        color: 'hsl(var(--tf-text))',
+        background: 'transparent',
+        /* Re-anchor shadcn tokens to TF values so child text-muted-foreground resolves visibly */
+        ['--muted-foreground' as string]: 'hsl(var(--tf-text) / 0.65)',
+        ['--foreground' as string]: 'hsl(var(--tf-text))',
+        ['--card' as string]: 'hsl(var(--tf-surface))',
+        ['--border' as string]: 'hsl(var(--tf-border))',
+      }}
+    >
       {/* Header */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div className="flex-1">
-          <h2 className="font-semibold text-foreground">Building Sketch</h2>
-          <p className="text-xs text-muted-foreground">
-            Capture geometry as defensible evidence · Event-sourced
+          <h2 className="font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>Building Sketch</h2>
+          <p className="text-xs" style={{ color: 'hsl(var(--tf-text) / 0.65)' }}>
+            Capture geometry as defensible evidence for the record
           </p>
         </div>
         {currentGLA && (
@@ -97,11 +108,14 @@ export function SketchModule({ parcelId, currentGLA, onBack, onSaveObservation }
       </div>
 
       {/* Info Banner */}
-      <Card className="border-primary/20 bg-primary/5">
+      <Card
+        className="border-primary/20"
+        style={{ background: 'hsl(var(--tf-surface) / 0.7)', border: '1px solid hsl(var(--tf-accent) / 0.25)' }}
+      >
         <CardContent className="p-3 flex items-start gap-2">
-          <Info className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-          <p className="text-xs text-muted-foreground">
-            Sketches are saved as field observations. Domain services decide whether to update the canonical improvement record.
+          <Info className="w-4 h-4 mt-0.5 shrink-0" style={{ color: 'hsl(var(--tf-accent))' }} />
+          <p className="text-xs" style={{ color: 'hsl(var(--tf-text) / 0.72)' }}>
+            Sketches are saved as field observations.
             GLA differences &gt;15% are automatically flagged for supervisor review.
           </p>
         </CardContent>
@@ -109,7 +123,7 @@ export function SketchModule({ parcelId, currentGLA, onBack, onSaveObservation }
 
       {/* Mode Tabs */}
       <Tabs value={activeMode} onValueChange={(v) => setActiveMode(v as SketchMode)}>
-        <TabsList className="bg-muted/50 w-full grid grid-cols-3">
+        <TabsList className="w-full grid grid-cols-3" style={{ background: 'hsl(var(--tf-surface) / 0.6)' }}>
           <TabsTrigger value="measurement" className="text-xs flex items-center gap-1.5">
             <Ruler className="w-3.5 h-3.5" />
             Measure

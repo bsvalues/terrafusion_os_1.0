@@ -17,7 +17,6 @@
 
 import React, { useMemo } from 'react';
 import { LiquidPanel } from '../../ui/materials/LiquidPanel';
-import { WorkModeSelector } from './WorkModeSelector';
 import type { Badge, QuickActionDefinition, WorkMode } from '../../contracts/workbench';
 
 // ============================================================================
@@ -37,10 +36,10 @@ export interface ContextRibbonProps {
   badges?: Badge[];
   /** Role-aware quick actions */
   quickActions?: QuickActionDefinition[];
-  /** Current work mode */
-  workMode: WorkMode;
-  /** Work mode change callback */
-  onWorkModeChange: (mode: WorkMode) => void;
+  /** @deprecated Work mode is no longer surfaced in the ribbon. */
+  workMode?: WorkMode;
+  /** @deprecated Work mode selector has been removed. */
+  onWorkModeChange?: (mode: WorkMode) => void;
   /** Quick action execution callback */
   onQuickAction?: (action: QuickActionDefinition) => void;
   /** Optional "Pop out" callback for window mode */
@@ -172,8 +171,7 @@ export const ContextRibbon: React.FC<ContextRibbonProps> = ({
           </div>
         </div>
 
-        {/* Center: Work Mode Selector */}
-        <WorkModeSelector activeMode={workMode} onModeChange={onWorkModeChange} />
+
 
         {/* Right: Quick Actions + Pop Out */}
         <div className="flex items-center gap-2">

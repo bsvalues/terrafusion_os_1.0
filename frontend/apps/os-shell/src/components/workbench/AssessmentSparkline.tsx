@@ -17,7 +17,7 @@ export interface AssessmentSparklineProps {
 }
 
 export function AssessmentSparkline({ history }: AssessmentSparklineProps) {
-  if (history.length < 2) return null;
+  if (!history || history.length < 2) return null;
 
   const data = [...history]
     .sort((a, b) => a.taxYear - b.taxYear)

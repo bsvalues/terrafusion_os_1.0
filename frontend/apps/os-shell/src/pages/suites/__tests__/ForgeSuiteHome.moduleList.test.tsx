@@ -68,11 +68,12 @@ function renderForge() {
 // ── Contract tests ─────────────────────────────────────────────────────────
 
 describe('ForgeSuiteHome — frozen module list', () => {
-  it('renders the three primary approach cards', () => {
+  it('renders the four primary approach cards', () => {
     renderForge();
     expect(screen.getByText('CostForge')).toBeInTheDocument();
     expect(screen.getByText('CompsForge')).toBeInTheDocument();
     expect(screen.getByText('IncomeForge')).toBeInTheDocument();
+    expect(screen.getByText('SalesForge')).toBeInTheDocument();
   });
 
   it('renders Statistics Studio and Batch Cost Runs as specialist apps', () => {
@@ -124,11 +125,11 @@ describe('ForgeSuiteHome — frozen module list', () => {
     });
   });
 
-  it('primary section has exactly 3 cards', () => {
+  it('primary section has exactly 4 cards', () => {
     renderForge();
     const primarySection = screen.getByTestId('forge-primary-applications');
     const cards = primarySection.querySelectorAll('button.forge-card');
-    expect(cards).toHaveLength(3);
+    expect(cards).toHaveLength(4);
   });
 
   it('specialist section has exactly 5 cards', () => {

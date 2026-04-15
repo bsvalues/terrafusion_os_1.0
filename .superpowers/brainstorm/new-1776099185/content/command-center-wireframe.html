@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reval Area Command Center — PhD Appraiser Design</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d1117; color: #e6edf3; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 13px; height: 100vh; overflow: hidden; }
+
+  .subtitle { color: #8b949e; font-size: 12px; margin-bottom: 20px; line-height: 1.6; }
+
+  /* ── TOP: COPILOT BAND ── */
+  .copilot-band {
+    background: #0f1923;
+    border-bottom: 1px solid #1f3a5f;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .copilot-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #38bdf8;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .stat-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #161f2c;
+    border: 1px solid #1f3a5f;
+    border-radius: 6px;
+    padding: 5px 10px;
+  }
+  .stat-badge.warn { border-color: #7c3a00; background: #1a1208; }
+  .stat-badge.ok { border-color: #1a3a1a; background: #0d1a0d; }
+  .stat-badge .label { font-size: 10px; color: #8b949e; }
+  .stat-badge .val { font-size: 14px; font-weight: 700; font-family: 'Consolas', monospace; }
+  .stat-badge.warn .val { color: #f97316; }
+  .stat-badge.ok .val { color: #4ade80; }
+  .stat-badge .projected { font-size: 10px; color: #4ade80; margin-left: 4px; }
+
+  .copilot-alert {
+    background: #1a1208;
+    border: 1px solid #7c3a00;
+    border-radius: 6px;
+    padding: 5px 10px;
+    color: #f97316;
+    font-size: 11px;
+    flex: 1;
+  }
+  .copilot-alert strong { color: #fb923c; }
+
+  .mode-badge {
+    font-size: 10px;
+    background: #0e2a0e;
+    border: 1px solid #4ade80;
+    color: #4ade80;
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+  /* ── MAIN LAYOUT ── */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    height: calc(100vh - 47px);
+  }
+
+  /* ── LEFT: REVAL NAVIGATOR ── */
+  .reval-nav {
+    background: #0d1117;
+    border-right: 1px solid #21262d;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #8b949e;
+    text-transform: uppercase;
+    padding: 8px 12px 4px;
+  }
+  .reval-item {
+    padding: 6px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-left: 2px solid transparent;
+  }
+  .reval-item:hover { background: #161b22; }
+  .reval-item.active { background: #0d2137; border-left-color: #38bdf8; }
+  .reval-item .icon { font-size: 11px; }
+  .reval-item .name { font-size: 12px; font-weight: 500; flex: 1; }
+  .reval-item.active .name { color: #38bdf8; }
+  .reval-item .health { width: 8px; height: 8px; border-radius: 50%; }
+  .health-red { background: #ef4444; }
+  .health-yellow { background: #f59e0b; }
+  .health-green { background: #22c55e; }
+
+  .sub-item {
+    padding: 4px 12px 4px 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sub-item:hover { background: #161b22; }
+  .sub-item.active { background: #0a1f35; }
+  .sub-item .name { font-size: 11px; color: #8b949e; flex: 1; }
+  .sub-item.active .name { color: #38bdf8; }
+
+  .nav-divider { border-top: 1px solid #21262d; margin: 8px 0; }
+  .county-view-btn {
+    margin: 4px 8px;
+    padding: 6px 10px;
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 6px;
+    color: #8b949e;
+    font-size: 11px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .county-view-btn:hover { background: #1f2937; color: #e6edf3; }
+
+  /* ── RIGHT: WORKSPACE ── */
+  .workspace {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Context header */
+  .context-header {
+    background: #161b22;
+    border-bottom: 1px solid #21262d;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .context-header h2 { font-size: 14px; font-weight: 600; }
+  .context-header .breadcrumb { color: #8b949e; font-size: 11px; }
+  .context-header .spacer { flex: 1; }
+  .apply-btn {
+    background: #238636;
+    border: 1px solid #2ea043;
+    color: #fff;
+    border-radius: 6px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Tabs */
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid #21262d;
+    padding: 0 16px;
+    background: #0d1117;
+  }
+  .tab {
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #8b949e;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .tab.active { color: #38bdf8; border-bottom-color: #38bdf8; }
+  .tab:hover:not(.active) { color: #e6edf3; }
+
+  /* Tab content */
+  .tab-content { flex: 1; overflow-y: auto; padding: 16px; }
+
+  /* Evidence panel */
+  .evidence-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 16px;
+    height: 100%;
+  }
+
+  .panel-card {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .panel-card-header {
+    padding: 10px 14px;
+    border-bottom: 1px solid #21262d;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .panel-card-header .spacer { flex: 1; }
+  .panel-card-header .meta { font-size: 10px; color: #8b949e; font-weight: 400; }
+
+  /* Scatter plot */
+  .scatter-area {
+    padding: 12px;
+    background: #0d1117;
+    position: relative;
+    height: 260px;
+  }
+  .scatter-svg { width: 100%; height: 100%; }
+
+  /* Axis labels */
+  .axis-label { font-size: 10px; fill: #8b949e; font-family: 'Segoe UI', sans-serif; }
+  .axis-line { stroke: #21262d; stroke-width: 1; }
+  .threshold-line { stroke: #4ade80; stroke-width: 1; stroke-dasharray: 4,4; opacity: 0.6; }
+  .sale-dot { cursor: pointer; }
+  .sale-dot:hover { opacity: 0.9; }
+  .outlier-ring { fill: none; stroke: #ef4444; stroke-width: 1.5; }
+
+  /* Time trend legend */
+  .legend {
+    display: flex;
+    gap: 12px;
+    padding: 8px 12px;
+    border-top: 1px solid #21262d;
+    font-size: 10px;
+    color: #8b949e;
+  }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; vertical-align: middle; }
+
+  /* Outlier panel */
+  .outlier-list { padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .outlier-card {
+    background: #1a1208;
+    border: 1px solid #7c3a00;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .outlier-card .parcel-id { font-family: 'Consolas', monospace; font-size: 11px; color: #fb923c; font-weight: 700; }
+  .outlier-card .parcel-meta { font-size: 10px; color: #8b949e; margin-top: 2px; }
+  .outlier-card .ratio-val { font-size: 13px; font-weight: 700; color: #ef4444; float: right; }
+  .outlier-actions { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
+  .btn-xs {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .btn-exclude { background: #1a1208; border-color: #7c3a00; color: #f97316; }
+  .btn-flag { background: #0d1a2a; border-color: #1e4a7a; color: #60a5fa; }
+  .btn-accept { background: #0d1a0d; border-color: #1a3a1a; color: #86efac; }
+
+  /* AI rationale */
+  .ai-rationale {
+    padding: 8px 12px;
+    background: #0e1a2a;
+    border-top: 1px solid #21262d;
+    font-size: 11px;
+    color: #8b949e;
+    line-height: 1.6;
+  }
+  .ai-rationale strong { color: #60a5fa; }
+
+  /* Stats below scatter */
+  .evidence-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: #21262d;
+    border-top: 1px solid #21262d;
+  }
+  .evidence-stat {
+    background: #161b22;
+    padding: 8px 12px;
+    text-align: center;
+  }
+  .evidence-stat .label { font-size: 10px; color: #8b949e; }
+  .evidence-stat .val { font-size: 14px; font-weight: 700; font-family: 'Consolas', monospace; margin-top: 2px; }
+  .evidence-stat .val.warn { color: #f97316; }
+  .evidence-stat .val.ok { color: #4ade80; }
+
+  /* Design callout boxes */
+  .callout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .callout {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .callout.highlight { border-color: #1f3a5f; background: #0d1f35; }
+  .callout h4 { font-size: 12px; font-weight: 700; color: #38bdf8; margin-bottom: 8px; }
+  .callout p { font-size: 11px; color: #8b949e; line-height: 1.7; }
+  .callout ul { margin-left: 14px; font-size: 11px; color: #8b949e; line-height: 1.8; }
+
+  .page-title { font-size: 16px; font-weight: 700; padding: 16px; border-bottom: 1px solid #21262d; }
+  .page-title span { color: #8b949e; font-size: 12px; font-weight: 400; margin-left: 8px; }
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="page-title">
+  Reval Area Command Center
+  <span>— PhD Appraiser Superpower Suite — Approach 1 Design</span>
+</div>
+
+<!-- ── AI CO-PILOT BAND ── -->
+<div class="copilot-band">
+  <div class="copilot-label">🤖 AI Co-pilot</div>
+
+  <div class="stat-badge warn">
+    <div>
+      <div class="label">PRD</div>
+      <div class="val">1.094 <span class="projected">→ 1.012</span></div>
+    </div>
+  </div>
+
+  <div class="stat-badge ok">
+    <div>
+      <div class="label">PRB</div>
+      <div class="val">−0.031 <span class="projected">→ −0.008</span></div>
+    </div>
+  </div>
+
+  <div class="stat-badge warn">
+    <div>
+      <div class="label">COD</div>
+      <div class="val">18.2% <span class="projected">→ 11.4%</span></div>
+    </div>
+  </div>
+
+  <div class="copilot-alert">
+    <strong>Simulation active (+6% on S1 / Reval 3):</strong> PRD improves to 1.012 · COD drops to 11.4% · Reval 1 impact: PRD +0.02 (still within IAAO threshold)
+  </div>
+
+  <div class="mode-badge">LIVE SIMULATION</div>
+</div>
+
+<!-- ── MAIN LAYOUT ── -->
+<div class="main-layout">
+
+  <!-- LEFT: REVAL NAVIGATOR -->
+  <div class="reval-nav">
+    <div class="nav-section-label">Reval Areas</div>
+
+    <div class="reval-item active">
+      <span class="icon">▼</span>
+      <span class="name">Reval 3</span>
+      <span class="health health-red"></span>
+    </div>
+    <div class="sub-item active">
+      <span class="name">S1 — Single Family</span>
+      <span class="health health-red"></span>
+    </div>
+    <div class="sub-item">
+      <span class="name">S2 — Multi-Family</span>
+      <span class="health health-yellow"></span>
+    </div>
+    <div class="sub-item">
+      <span class="name">S3 — Commercial</span>
+      <span class="health health-green"></span>
+    </div>
+
+    <div class="reval-item">
+      <span class="icon">▶</span>
+      <span class="name">Reval 1</span>
+      <span class="health health-yellow"></span>
+    </div>
+    <div class="reval-item">
+      <span class="icon">▶</span>
+      <span class="name">Reval 2</span>
+      <span class="health health-green"></span>
+    </div>
+    <div class="reval-item">
+      <span class="icon">▶</span>
+      <span class="name">Reval 4</span>
+      <span class="health health-green"></span>
+    </div>
+    <div class="reval-item">
+      <span class="icon">▶</span>
+      <span class="name">Reval 5</span>
+      <span class="health health-green"></span>
+    </div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">County-Wide</div>
+    <div class="county-view-btn">Equity Heatmap →</div>
+    <div class="county-view-btn">Stratified Report →</div>
+  </div>
+
+  <!-- RIGHT: WORKSPACE -->
+  <div class="workspace">
+
+    <!-- Context header -->
+    <div class="context-header">
+      <div>
+        <span class="breadcrumb">Reval 3 /</span>
+        <h2>S1 — Single Family &nbsp;·&nbsp; 2026 Working Matrix</h2>
+      </div>
+      <div class="spacer"></div>
+      <button class="apply-btn">Apply +6% Adjustment →</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <div class="tab active">Evidence &amp; Outliers</div>
+      <div class="tab">Adjustment Simulator</div>
+      <div class="tab">Stratified Equity</div>
+    </div>
+
+    <!-- EVIDENCE TAB CONTENT -->
+    <div class="tab-content">
+      <div class="evidence-grid">
+
+        <!-- LEFT: SCATTER + STATS -->
+        <div>
+          <div class="panel-card" style="margin-bottom:12px">
+            <div class="panel-card-header">
+              Ratio Study — Sale Price vs. Ratio
+              <span class="spacer"></span>
+              <span class="meta">47 sales · Jan–Dec 2025 · Reval 3 / S1</span>
+            </div>
+            <div class="scatter-area">
+              <svg class="scatter-svg" viewBox="0 0 580 220">
+                <!-- Axes -->
+                <line x1="40" y1="10" x2="40" y2="190" class="axis-line"/>
+                <line x1="40" y1="190" x2="570" y2="190" class="axis-line"/>
+
+                <!-- Threshold line at ratio = 1.00 -->
+                <line x1="40" y1="100" x2="570" y2="100" class="threshold-line"/>
+                <text x="545" y="96" class="axis-label">1.00</text>
+
+                <!-- Y axis labels -->
+                <text x="4" y="14" class="axis-label">1.40</text>
+                <text x="4" y="57" class="axis-label">1.20</text>
+                <text x="4" y="100" class="axis-label">1.00</text>
+                <text x="4" y="143" class="axis-label">0.80</text>
+                <text x="4" y="186" class="axis-label">0.60</text>
+
+                <!-- X axis labels -->
+                <text x="60" y="205" class="axis-label">$200k</text>
+                <text x="190" y="205" class="axis-label">$350k</text>
+                <text x="330" y="205" class="axis-label">$500k</text>
+                <text x="460" y="205" class="axis-label">$650k</text>
+
+                <!-- Normal sales (early year = blue, late = teal) -->
+                <circle cx="80" cy="85" r="5" fill="#3b82f6" opacity="0.7" class="sale-dot"/>
+                <circle cx="105" cy="90" r="5" fill="#3b82f6" opacity="0.7" class="sale-dot"/>
+                <circle cx="130" cy="88" r="5" fill="#3b82f6" opacity="0.7" class="sale-dot"/>
+                <circle cx="150" cy="82" r="5" fill="#38bdf8" opacity="0.7" class="sale-dot"/>
+                <circle cx="170" cy="86" r="5" fill="#38bdf8" opacity="0.7" class="sale-dot"/>
+                <circle cx="195" cy="80" r="5" fill="#38bdf8" opacity="0.7" class="sale-dot"/>
+                <circle cx="215" cy="84" r="5" fill="#4ade80" opacity="0.7" class="sale-dot"/>
+                <circle cx="235" cy="78" r="5" fill="#4ade80" opacity="0.7" class="sale-dot"/>
+                <circle cx="260" cy="82" r="5" fill="#4ade80" opacity="0.7" class="sale-dot"/>
+                <circle cx="280" cy="75" r="5" fill="#4ade80" opacity="0.7" class="sale-dot"/>
+                <circle cx="300" cy="79" r="5" fill="#a3e635" opacity="0.7" class="sale-dot"/>
+                <circle cx="320" cy="72" r="5" fill="#a3e635" opacity="0.7" class="sale-dot"/>
+                <circle cx="345" cy="76" r="5" fill="#a3e635" opacity="0.7" class="sale-dot"/>
+                <circle cx="365" cy="70" r="5" fill="#facc15" opacity="0.7" class="sale-dot"/>
+                <circle cx="390" cy="74" r="5" fill="#facc15" opacity="0.7" class="sale-dot"/>
+                <circle cx="415" cy="68" r="5" fill="#facc15" opacity="0.7" class="sale-dot"/>
+                <circle cx="440" cy="72" r="5" fill="#fb923c" opacity="0.7" class="sale-dot"/>
+                <circle cx="465" cy="65" r="5" fill="#fb923c" opacity="0.7" class="sale-dot"/>
+                <circle cx="490" cy="69" r="5" fill="#fb923c" opacity="0.7" class="sale-dot"/>
+                <circle cx="515" cy="63" r="5" fill="#f87171" opacity="0.7" class="sale-dot"/>
+                <circle cx="540" cy="67" r="5" fill="#f87171" opacity="0.7" class="sale-dot"/>
+
+                <!-- More mid-range sales -->
+                <circle cx="175" cy="92" r="5" fill="#38bdf8" opacity="0.7" class="sale-dot"/>
+                <circle cx="200" cy="87" r="5" fill="#38bdf8" opacity="0.7" class="sale-dot"/>
+                <circle cx="225" cy="83" r="5" fill="#4ade80" opacity="0.7" class="sale-dot"/>
+                <circle cx="250" cy="80" r="5" fill="#4ade80" opacity="0.7" class="sale-dot"/>
+                <circle cx="270" cy="76" r="5" fill="#4ade80" opacity="0.7" class="sale-dot"/>
+                <circle cx="310" cy="78" r="5" fill="#a3e635" opacity="0.7" class="sale-dot"/>
+                <circle cx="335" cy="73" r="5" fill="#a3e635" opacity="0.7" class="sale-dot"/>
+                <circle cx="360" cy="71" r="5" fill="#facc15" opacity="0.7" class="sale-dot"/>
+                <circle cx="385" cy="66" r="5" fill="#facc15" opacity="0.7" class="sale-dot"/>
+                <circle cx="410" cy="64" r="5" fill="#fb923c" opacity="0.7" class="sale-dot"/>
+                <circle cx="430" cy="70" r="5" fill="#fb923c" opacity="0.7" class="sale-dot"/>
+                <circle cx="455" cy="62" r="5" fill="#f87171" opacity="0.7" class="sale-dot"/>
+                <circle cx="478" cy="60" r="5" fill="#f87171" opacity="0.7" class="sale-dot"/>
+
+                <!-- OUTLIER PARCELS — flagged -->
+                <circle cx="112" cy="38" r="7" fill="#fbbf24" opacity="0.9" class="sale-dot"/>
+                <circle cx="112" cy="38" r="11" class="outlier-ring"/>
+                <text x="120" y="35" class="axis-label" fill="#fbbf24">1</text>
+
+                <circle cx="92" cy="155" r="7" fill="#f43f5e" opacity="0.9" class="sale-dot"/>
+                <circle cx="92" cy="155" r="11" class="outlier-ring"/>
+                <text x="100" y="152" class="axis-label" fill="#f43f5e">2</text>
+
+                <circle cx="210" cy="158" r="7" fill="#f43f5e" opacity="0.9" class="sale-dot"/>
+                <circle cx="210" cy="158" r="11" class="outlier-ring"/>
+                <text x="218" y="155" class="axis-label" fill="#f43f5e">3</text>
+
+                <!-- Trend line (showing downward drift — market appreciation) -->
+                <line x1="60" y1="88" x2="555" y2="62" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.6"/>
+                <text x="510" y="55" class="axis-label" fill="#818cf8">trend</text>
+              </svg>
+            </div>
+
+            <div class="legend">
+              <span><span class="legend-dot" style="background:#3b82f6"></span>Q1 2025</span>
+              <span><span class="legend-dot" style="background:#38bdf8"></span>Q2</span>
+              <span><span class="legend-dot" style="background:#4ade80"></span>Q3</span>
+              <span><span class="legend-dot" style="background:#facc15"></span>Q4</span>
+              <span><span class="legend-dot" style="background:#fbbf24;border:1px solid #f97316"></span>Outlier (high)</span>
+              <span><span class="legend-dot" style="background:#f43f5e;border:1px solid #ef4444"></span>Outlier (low)</span>
+              <span style="color:#818cf8">— Market time trend: +3.1% drift (Jan→Dec)</span>
+            </div>
+
+            <div class="evidence-stats">
+              <div class="evidence-stat"><div class="label">Median Ratio</div><div class="val warn">1.094</div></div>
+              <div class="evidence-stat"><div class="label">COD</div><div class="val warn">18.2%</div></div>
+              <div class="evidence-stat"><div class="label">Sales Count</div><div class="val ok">47</div></div>
+              <div class="evidence-stat"><div class="label">Outliers (IQR)</div><div class="val warn">3</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: OUTLIER PANEL -->
+        <div>
+          <div class="panel-card" style="height: 100%">
+            <div class="panel-card-header">
+              Outlier Parcels — IQR Flagged
+              <span class="spacer"></span>
+              <span class="meta">3 of 47 sales</span>
+            </div>
+            <div class="outlier-list">
+
+              <div class="outlier-card">
+                <div>
+                  <span class="parcel-id">11502-0040</span>
+                  <span class="ratio-val">1.41</span>
+                </div>
+                <div class="parcel-meta">412 Clearwater Rd · Sale: $218,000 (Jan 2025) · AV: $307,380</div>
+                <div class="parcel-meta" style="color:#fb923c;margin-top:4px">⚠ AI: Estate sale — likely below market. Ratio 2.4σ above median.</div>
+                <div class="outlier-actions">
+                  <button class="btn-xs btn-exclude">Exclude from Study</button>
+                  <button class="btn-xs btn-flag">Flag Data Problem</button>
+                  <button class="btn-xs btn-accept">Accept as Valid</button>
+                </div>
+              </div>
+
+              <div class="outlier-card">
+                <div>
+                  <span class="parcel-id">11502-0187</span>
+                  <span class="ratio-val" style="color:#f43f5e">0.61</span>
+                </div>
+                <div class="parcel-meta">817 Kennewick Ave · Sale: $445,000 (Mar 2025) · AV: $271,450</div>
+                <div class="parcel-meta" style="color:#fb923c;margin-top:4px">⚠ AI: High-end renovation — AV not updated. Data problem candidate.</div>
+                <div class="outlier-actions">
+                  <button class="btn-xs btn-exclude">Exclude from Study</button>
+                  <button class="btn-xs btn-flag">Flag Data Problem</button>
+                  <button class="btn-xs btn-accept">Accept as Valid</button>
+                </div>
+              </div>
+
+              <div class="outlier-card">
+                <div>
+                  <span class="parcel-id">11502-0291</span>
+                  <span class="ratio-val" style="color:#f43f5e">0.64</span>
+                </div>
+                <div class="parcel-meta">1203 Columbia Dr · Sale: $389,000 (Feb 2025) · AV: $249,560</div>
+                <div class="parcel-meta" style="color:#fb923c;margin-top:4px">⚠ AI: Related-party sale flagged in PACS. Non-arm's-length indicator.</div>
+                <div class="outlier-actions">
+                  <button class="btn-xs btn-exclude">Exclude from Study</button>
+                  <button class="btn-xs btn-flag">Flag Data Problem</button>
+                  <button class="btn-xs btn-accept">Accept as Valid</button>
+                </div>
+              </div>
+
+            </div>
+            <div class="ai-rationale">
+              <strong>AI analysis:</strong> Excluding these 3 outliers drops COD to <strong>11.4%</strong> (IAAO standard ≤15%) and median ratio to <strong>1.071</strong>. The remaining 44 sales suggest a genuine rate problem, not data variance. Recommended: exclude all three + apply +6.5% rate adjustment.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Design callouts -->
+      <div class="callout-grid">
+        <div class="callout highlight">
+          <h4>AI Co-pilot Band</h4>
+          <p>Always visible above the workspace. Shows live PRD/PRB/COD for the current reval area × building type. When the simulator is active, shows projected values side-by-side. Pushes cross-area impact alerts before you commit.</p>
+        </div>
+        <div class="callout highlight">
+          <h4>Dual-Effect Outlier Action</h4>
+          <p>Each flagged parcel has three choices:</p>
+          <ul>
+            <li><strong>Exclude</strong> — drops from study, stats update instantly, logged to audit trail</li>
+            <li><strong>Flag Data Problem</strong> — creates Property Workbench finding simultaneously</li>
+            <li><strong>Accept</strong> — override with required reason, logged</li>
+          </ul>
+        </div>
+        <div class="callout highlight">
+          <h4>Reval Navigator</h4>
+          <p>Health indicators (red/yellow/green) show which areas need attention. Work Reval 3 first during active reval inspection, then expand to county-wide. "County View" button shows the equity heatmap across all areas simultaneously.</p>
+        </div>
+      </div>
+
+    </div><!-- /tab-content -->
+  </div><!-- /workspace -->
+</div><!-- /main-layout -->
+
+</body>
+</html>

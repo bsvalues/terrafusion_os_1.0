@@ -12,3 +12,4 @@ export { AiCopilotBand } from "./AiCopilotBand";
 export { ParcelEvidenceViewer } from "./ParcelEvidenceViewer";
 export { AdjustmentSimulator } from "./AdjustmentSimulator";
 export { StratifiedEquityPanel } from "./StratifiedEquityPanel";
+export { NeighborhoodMatrix } from "./NeighborhoodMatrix";

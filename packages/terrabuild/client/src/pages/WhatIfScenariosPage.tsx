@@ -42,7 +42,7 @@ const REVAL_AREAS = [
 
 // Define scenario types for TypeScript
 interface Scenario {
-  id: number;
+  id: string | number;
   name: string;
   description: string;
   parameters: {
@@ -56,7 +56,7 @@ interface Scenario {
     complexityFactor: number;
     [key: string]: any;
   };
-  results: {
+  results?: {
     baseCost: number;
     adjustedCost: number;
     difference: number;
@@ -67,7 +67,7 @@ interface Scenario {
       percentImpact: number;
     }[];
     chartData?: any[];
-  };
+  } | null;
   is_saved: boolean;
   created_at: string;
 }
@@ -103,13 +103,39 @@ export default function WhatIfScenariosPage() {
   const queryClient = useQueryClient();
 
   // Fetch scenarios — real TerraFusion OS endpoint (WhatIfScenariosController)
-  const { data: scenarios, isLoading, error } = useQuery<Scenario[]>({
+  const { data: scenarios, isLoading, error } = useQuery({
     queryKey: ["/api/what-if-scenarios"],
     queryFn: async () => {
       const res = await fetch('/api/what-if-scenarios');
       if (!res.ok) throw new Error(`${res.status}`);
       const data = await res.json();
-      return data?.scenarios ?? data?.Scenarios ?? data ?? [];
+      const raw: any[] = data?.scenarios ?? data?.Scenarios ?? (Array.isArray(data) ? data : []);
+      // Normalize backend shape (scenarioId + assumptions) to frontend shape (id + parameters)
+      return raw.map((s: any) => ({
+        id: s.scenarioId ?? s.id ?? 0,
+        name: s.name ?? '',
+        description: s.description ?? '',
+        parameters: {
+          buildingType: s.assumptions?.buildingType ?? s.parameters?.buildingType ?? 'R1',
+          revalArea: s.assumptions?.revalArea ?? s.parameters?.revalArea ?? 'Reval 1',
+          baseYear: Number(s.assumptions?.baseYear ?? s.parameters?.baseYear ?? 2025),
+          comparisonYear: Number(s.assumptions?.comparisonYear ?? s.parameters?.comparisonYear ?? 2025),
+          adjustmentFactor: Number(s.assumptions?.adjustmentFactor ?? s.parameters?.adjustmentFactor ?? 1.0),
+          qualityFactor: Number(s.assumptions?.qualityFactor ?? s.parameters?.qualityFactor ?? 1.0),
+          conditionFactor: Number(s.assumptions?.conditionFactor ?? s.parameters?.conditionFactor ?? 1.0),
+          complexityFactor: Number(s.assumptions?.complexityFactor ?? s.parameters?.complexityFactor ?? 1.0),
+        },
+        results: s.results ? {
+          baseCost: Number(s.results.baseCost ?? 0),
+          adjustedCost: Number(s.results.adjustedCost ?? 0),
+          difference: Number(s.results.difference ?? 0),
+          percentChange: Number(s.results.percentChange ?? 0),
+          details: s.results.details ?? [],
+          chartData: s.results.chartData ?? [],
+        } : null,
+        is_saved: true,
+        created_at: s.createdAt ?? s.created_at ?? new Date().toISOString(),
+      })) as Scenario[];
     },
     refetchOnWindowFocus: false,
   });
@@ -147,7 +173,7 @@ export default function WhatIfScenariosPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, payload }: { id: number; payload: typeof formData }) => {
+    mutationFn: async ({ id, payload }: { id: string | number; payload: typeof formData }) => {
       const res = await fetch(`/api/what-if-scenarios/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -178,7 +204,7 @@ export default function WhatIfScenariosPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string | number) => {
       const res = await fetch(`/api/what-if-scenarios/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error(`${res.status}`);
     },

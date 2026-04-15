@@ -35,8 +35,8 @@ public class PropertyService : IPropertyService
                                    (p.OwnerName != null && p.OwnerName.Contains(search)));
         }
 
-        // Apply county filter
-        if (countyId.HasValue)
+        // Apply county filter (Guid.Empty = dev/anonymous — no filter)
+        if (countyId.HasValue && countyId.Value != Guid.Empty)
         {
             query = query.Where(p => p.CountyId == countyId.Value);
         }
@@ -75,11 +75,15 @@ public class PropertyService : IPropertyService
 
     public async Task<PropertyDto?> GetPropertyByIdAsync(Guid id, Guid countyId)
     {
-        var property = await _context.Properties
+        var query = _context.Properties
             .Include(p => p.County)
             .Include(p => p.Valuations)
-            .FirstOrDefaultAsync(p => p.Id == id && p.CountyId == countyId);
+            .Where(p => p.Id == id);
 
+        if (countyId != Guid.Empty)
+            query = query.Where(p => p.CountyId == countyId);
+
+        var property = await query.FirstOrDefaultAsync();
         return property != null ? MapPropertyDto(property) : null;
     }
 
@@ -105,11 +109,15 @@ public class PropertyService : IPropertyService
 
     public async Task<PropertyDto?> GetPropertyByParcelAsync(string parcelNumber, Guid countyId)
     {
-        var property = await _context.Properties
+        var query = _context.Properties
             .Include(p => p.County)
             .Include(p => p.Valuations)
-            .FirstOrDefaultAsync(p => p.ParcelNumber == parcelNumber && p.CountyId == countyId);
+            .Where(p => p.ParcelNumber == parcelNumber);
 
+        if (countyId != Guid.Empty)
+            query = query.Where(p => p.CountyId == countyId);
+
+        var property = await query.FirstOrDefaultAsync();
         return property != null ? MapPropertyDto(property) : null;
     }
 

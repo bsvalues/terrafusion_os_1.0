@@ -40,7 +40,7 @@ export function NeighborhoodRatioStudyDashboard() {
 
   const { data: snapshots = [], isLoading, isError, error } = useQuery<NeighborhoodSnapshot[]>({
     queryKey: ["neighborhood-ratio-snapshots", countyId],
-    queryFn: () => apiFetch(`/comparison-snapshots?countyId=${encodeURIComponent(countyId)}`),
+    queryFn: () => apiFetch(`/terraforge/comparison-snapshots?taxYear=2026&countyId=${encodeURIComponent(countyId)}`).then((r) => r.json()),
     staleTime: 5 * 60 * 1000,
   });
 

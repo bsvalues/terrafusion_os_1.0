@@ -1,0 +1,82 @@
+- generic [ref=e2]:
+    - generic [ref=e6]:
+        - generic [ref=e7]:
+            - generic [ref=e8]:
+                - heading "CostForge Dashboard" [level=1] [ref=e9]
+                - paragraph [ref=e10]: Benton County — Cost Approach Assessment
+            - generic [ref=e11]:
+                - button "Refresh" [ref=e12] [cursor=pointer]:
+                    - img
+                    - text: Refresh
+                - link "New Calculation" [ref=e13] [cursor=pointer]:
+                    - /url: /calculator
+                    - img
+                    - text: New Calculation
+        - generic [ref=e14]:
+            - generic [ref=e16]:
+                - generic [ref=e17]:
+                    - generic [ref=e18]: Total Parcels
+                    - img [ref=e20]
+                - generic [ref=e23]: —
+            - generic [ref=e25]:
+                - generic [ref=e26]:
+                    - generic [ref=e27]: Cost Matrices
+                    - img [ref=e29]
+                - generic [ref=e31]: —
+            - generic [ref=e33]:
+                - generic [ref=e34]:
+                    - generic [ref=e35]: Total Calculations
+                    - img [ref=e37]
+                - generic [ref=e42]: —
+            - generic [ref=e44]:
+                - generic [ref=e45]:
+                    - generic [ref=e46]: System Status
+                    - img [ref=e48]
+                - generic [ref=e51]: —
+        - generic [ref=e52]:
+            - tablist [ref=e53]:
+                - tab "Overview" [selected] [ref=e54] [cursor=pointer]
+                - tab "Reports" [ref=e55] [cursor=pointer]
+                - tab "Analytics" [ref=e56] [cursor=pointer]
+            - tabpanel "Overview" [ref=e57]:
+                - generic [ref=e58]:
+                    - generic [ref=e59]:
+                        - heading "Recent Calculations No saved valuations yet" [level=3] [ref=e61]:
+                            - img [ref=e62]
+                            - text: Recent Calculations
+                            - generic [ref=e64]: No saved valuations yet
+                        - link "Run new calculation →" [ref=e67] [cursor=pointer]:
+                            - /url: /calculator
+                    - generic [ref=e68]:
+                        - heading "Cost Trends — Central Benton" [level=3] [ref=e70]:
+                            - img [ref=e71]
+                            - text: Cost Trends — Central Benton
+                        - generic [ref=e74]:
+                            - img [ref=e75]
+                            - text: Cost trend chart — coming in Phase 3
+                - generic [ref=e78]:
+                    - heading "Quick Access" [level=3] [ref=e80]
+                    - generic [ref=e82]:
+                        - link "Calculator Run a cost calculation" [ref=e83] [cursor=pointer]:
+                            - /url: /calculator
+                            - generic [ref=e84]:
+                                - img [ref=e86]
+                                - generic [ref=e88]:
+                                    - generic [ref=e89]: Calculator
+                                    - generic [ref=e90]: Run a cost calculation
+                        - link "Reports View saved reports" [ref=e91] [cursor=pointer]:
+                            - /url: /reports
+                            - generic [ref=e92]:
+                                - img [ref=e94]
+                                - generic [ref=e97]:
+                                    - generic [ref=e98]: Reports
+                                    - generic [ref=e99]: View saved reports
+                        - link "Analytics Cost breakdown analysis" [ref=e100] [cursor=pointer]:
+                            - /url: /analytics
+                            - generic [ref=e101]:
+                                - img [ref=e103]
+                                - generic [ref=e106]:
+                                    - generic [ref=e107]: Analytics
+                                    - generic [ref=e108]: Cost breakdown analysis
+    - region "Notifications (F8)":
+        - list

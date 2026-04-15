@@ -191,7 +191,20 @@ export async function processExemption(
 export async function getCertificationStatus(): Promise<CertificationStatus[]> {
   const res = await fetch(`${API}/cert/status`, { headers: authHeadersReadOnly() });
   if (!res.ok) throw new Error(`Failed to fetch certification status: ${res.statusText}`);
-  return res.json();
+  const data = await res.json();
+  // Backend returns either an array or a single roll-status object
+  if (Array.isArray(data)) return data;
+  // Normalize single roll-status object → one CertificationStatus entry
+  return [{
+    area: (data.county as string) ?? 'Benton County',
+    totalParcels: (data.totalParcelCount as number) ?? 0,
+    completedParcels: (data.certifiedParcelCount as number) ?? 0,
+    percentComplete: (data.completionPct as number) ?? 0,
+    deadline: (data.dueDate as string) ?? '',
+    status: data.completionPct >= 100 ? 'on-track'
+          : data.rollStatus === 'certified' ? 'on-track'
+          : 'at-risk',
+  }];
 }
 
 // ============================================================================

@@ -20,7 +20,6 @@
  *               Batch Cost Runs (batch execution)
  *               Regression Studio / TerraGAMA / Coefficient Preview (queued)
  */
-import { useNavigate } from 'react-router-dom';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
 import { useCountyStats } from '../../hooks/useCountyStats';
@@ -76,6 +75,16 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
     moduleId: 'income-forge',
     truthState: 'queued',
     chipLabel: 'Income approach',
+  },
+  {
+    id: 'sales-forge',
+    label: 'SalesForge',
+    description:
+      'Sale qualification & ratio audit — qualify sales, audit WAC codes, review IAAO stats, and export DOR-certified study',
+    priority: 'primary',
+    launchMode: 'standalone',
+    moduleId: 'sales-forge',
+    chipLabel: 'Sale qualification',
   },
 ] as const;
 
@@ -154,7 +163,6 @@ function getLaunchLabel(mod: ForgeModuleDef): string {
 }
 
 export default function ForgeSuiteHome() {
-  const navigate = useNavigate();
   const { stats, loading, error, source } = useCountyStats();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const recentParcels = usePropertyStore((s) => s.recentParcels);
@@ -186,17 +194,15 @@ export default function ForgeSuiteHome() {
         return;
       }
       const parcelId = activeParcel?.parcelId;
-      if (parcelId) {
-        navigate(`/property/${parcelId}/${mod.workbenchTab}`);
-      } else {
-        navigate(`/property?openTab=${mod.workbenchTab}`);
-      }
+      void activateModule('property-workbench', {
+        source: 'system',
+        metadata: { tab: mod.workbenchTab, ...(parcelId ? { parcelId } : {}) },
+      });
       return;
     }
 
     const targetId = mod.moduleId ?? mod.id;
     void activateModule(targetId, { source: 'system' });
-    navigate('/');
   };
 
   const handleParcelOpen = (parcelId: string) => {

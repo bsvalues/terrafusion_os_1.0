@@ -195,6 +195,12 @@ export const MODULE_REGISTRY = new Set<string>([
   'mass-appraisal-gis',
   'cost-manual',
   'value-audit-module',
+  // SalesForge — sale qualification & ratio audit flagship
+  'sales-forge',
+  // Neighborhood Ratio Study — per-hood COD/PRD/Median dashboard
+  'neighborhood-ratio-study',
+  // Cost Analytics — CostForge dashboard stats (property type dist, depreciation)
+  'cost-analytics',
 ]);
 
 /**
@@ -319,6 +325,21 @@ const TerraQueue = lazy(
   () => import('../pages/dais/TerraQueue')
 );
 
+// SalesForge — sale qualification & ratio audit flagship (standalone window)
+const SalesForge = lazy(
+  () => import('../pages/forge/sales/SalesForge')
+);
+
+// Neighborhood Ratio Study — per-hood COD/PRD dashboard
+const NeighborhoodRatioStudyDashboard = lazy(
+  () => import('../pages/forge/valuation/NeighborhoodRatioStudyDashboard').then(m => ({ default: m.NeighborhoodRatioStudyDashboard }))
+);
+
+// Cost Analytics — CostForge dashboard stats
+const CostForgeDashboard = lazy(
+  () => import('../pages/forge/cost/CostForgeDashboard').then(m => ({ default: m.CostForgeDashboard }))
+);
+
 // NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
 
 // ============================================================================
@@ -392,6 +413,8 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'mass-appraisal-gis': { Component: MassAppraisalGIS },
   'cost-manual': { Component: CostManual },
   'value-audit-module': { Component: ValueAuditModule },
+  // SalesForge — sale qualification & ratio audit flagship
+  'sales-forge': { Component: SalesForge },
 };
 
 export function getModuleEntry(moduleId: string): ModuleEntry | undefined {
@@ -1208,6 +1231,43 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
           <ValueAuditModule />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // SALESFORGE — Sale Qualification & Ratio Audit flagship
+    // ========================================================================
+
+    case 'sales-forge':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading SalesForge...</span></div>}>
+          <SalesForge />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // NEIGHBORHOOD RATIO STUDY — per-hood COD/PRD/Median dashboard
+    // ========================================================================
+
+    case 'neighborhood-ratio-study':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Neighborhood Ratio Study...</span></div>}>
+          <div className="p-6 overflow-y-auto h-full">
+            <NeighborhoodRatioStudyDashboard />
+          </div>
+        </Suspense>
+      );
+
+    // ========================================================================
+    // COST ANALYTICS — CostForge dashboard stats
+    // ========================================================================
+
+    case 'cost-analytics':
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading Cost Analytics...</span></div>}>
+          <div className="p-6 overflow-y-auto h-full">
+            <CostForgeDashboard />
+          </div>
         </Suspense>
       );
 

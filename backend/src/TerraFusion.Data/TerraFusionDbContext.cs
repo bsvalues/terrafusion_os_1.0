@@ -201,6 +201,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<PacsOwnerVal> PacsOwnerVals { get; set; } = null!;
   public DbSet<PacsTaxAreaAssoc> PacsTaxAreaAssocs { get; set; } = null!;
 
+  // ArcGIS GIS Sync — Benton County ArcGIS FeatureServer geometry mirror
+  // Sync engine is the only writer; populated by ArcGisSyncService (IHostedService).
+  public DbSet<GisParcelGeometry> GisParcelGeometries { get; set; } = null!;
+
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
     if (!optionsBuilder.IsConfigured)

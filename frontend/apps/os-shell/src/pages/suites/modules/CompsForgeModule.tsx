@@ -62,7 +62,7 @@ interface ComparableSaleFromApi {
   bathrooms:          number | null;
   condition:          string | null;
   qualityGrade:       string | null;
-  pacsComputedRatio:  number | null;
+  salesRatio:         number | null;
   qualificationSource: 'decision' | 'recommendation';
 }
 
@@ -295,7 +295,7 @@ export default function CompsForgeModule() {
         case 'date':  return new Date(b.saleDate).getTime() - new Date(a.saleDate).getTime();
         case 'price': return a.salePrice - b.salePrice;
         case 'size':  return (a.gla ?? 0) - (b.gla ?? 0);
-        case 'ratio': return (a.pacsComputedRatio ?? 0) - (b.pacsComputedRatio ?? 0);
+        case 'ratio': return (a.salesRatio ?? 0) - (b.salesRatio ?? 0);
         default:      return 0;
       }
     });
@@ -383,7 +383,7 @@ export default function CompsForgeModule() {
             />
           </div>
           <div>
-            <Label className='text-xs mb-1 block' style={{ color: 'hsl(var(--tf-muted))' }}>Min GLA (sqft)</Label>
+            <Label className='text-xs mb-1 block' style={{ color: 'hsl(var(--tf-muted))' }}>Min GLA (Sq Ft)</Label>
             <Input
               type='number'
               placeholder='1000'
@@ -394,7 +394,7 @@ export default function CompsForgeModule() {
             />
           </div>
           <div>
-            <Label className='text-xs mb-1 block' style={{ color: 'hsl(var(--tf-muted))' }}>Max GLA (sqft)</Label>
+            <Label className='text-xs mb-1 block' style={{ color: 'hsl(var(--tf-muted))' }}>Max GLA (Sq Ft)</Label>
             <Input
               type='number'
               placeholder='4000'
@@ -427,7 +427,7 @@ export default function CompsForgeModule() {
               <SelectItem value='date'>Sale date</SelectItem>
               <SelectItem value='price'>Sale price</SelectItem>
               <SelectItem value='size'>GLA</SelectItem>
-              <SelectItem value='ratio'>PACS ratio</SelectItem>
+              <SelectItem value='ratio'>Sales ratio</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -514,7 +514,7 @@ export default function CompsForgeModule() {
                       </p>
                       {comp.gla && comp.gla > 0 && (
                         <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-                          {formatCurrency(comp.salePrice / comp.gla)}/sqft
+                          {formatCurrency(comp.salePrice / comp.gla)}/sq ft
                         </p>
                       )}
                     </div>
@@ -528,7 +528,7 @@ export default function CompsForgeModule() {
                     {comp.gla && (
                       <span className='flex items-center gap-1'>
                         <Ruler size={12} />
-                        {comp.gla.toLocaleString()} sqft
+                        {comp.gla.toLocaleString()} sq ft
                       </span>
                     )}
                     {comp.yearBuilt && (
@@ -545,9 +545,9 @@ export default function CompsForgeModule() {
                     {comp.condition && (
                       <span>C: {comp.condition}</span>
                     )}
-                    {comp.pacsComputedRatio != null && (
+                    {comp.salesRatio != null && (
                       <span style={{ color: 'hsl(var(--tf-suite-forge))' }}>
-                        Ratio: {(comp.pacsComputedRatio / 100).toFixed(3)}
+                        Ratio: {comp.salesRatio.toFixed(3)}
                       </span>
                     )}
                   </div>
@@ -699,7 +699,7 @@ export default function CompsForgeModule() {
               )}
               <div className='flex justify-between'>
                 <span style={{ color: 'hsl(var(--tf-muted))' }}>GLA</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{subject.gla.toLocaleString()} sqft</span>
+                <span style={{ color: 'hsl(var(--tf-fg))' }}>{subject.gla.toLocaleString()} sq ft</span>
               </div>
               <div className='flex justify-between'>
                 <span style={{ color: 'hsl(var(--tf-muted))' }}>Year Built</span>
@@ -715,7 +715,7 @@ export default function CompsForgeModule() {
               </div>
               <div className='flex justify-between'>
                 <span style={{ color: 'hsl(var(--tf-muted))' }}>Lot</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{subject.lotSizeSqft.toLocaleString()} sqft</span>
+                <span style={{ color: 'hsl(var(--tf-fg))' }}>{subject.lotSizeSqft.toLocaleString()} sq ft</span>
               </div>
               {!activeParcel && (
                 <p className='text-xs pt-2' style={{ color: 'hsl(var(--tf-muted) / 0.6)' }}>
