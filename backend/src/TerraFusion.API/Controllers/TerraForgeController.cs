@@ -1570,6 +1570,134 @@ public class TerraForgeController : ControllerBase
         }
     }
 
+    // ── Driver Analysis ───────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns median ratio deviation by physical improvement feature type.
+    /// Identifies which features (basement, pool, garage, etc.) are pulling
+    /// ratios above or below county median — calibration signals for the cost schedule.
+    /// </summary>
+    [HttpGet("ratio-study/driver-analysis")]
+    public async Task<IActionResult> GetDriverAnalysis(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? propertyType = null)
+    {
+        _logger.LogInformation("GetDriverAnalysis: taxYear={TaxYear}", taxYear);
+
+        var featureMap = new Dictionary<string, string>
+        {
+            { "BSMT",     "Basement" },
+            { "POOL",     "Pool" },
+            { "ATTGAR",   "Attached Garage" },
+            { "CovPatio", "Covered Patio" },
+            { "POLEBLDG", "Pole Building" },
+            { "DETGAR",   "Detached Garage" },
+            { "MA",       "Manufactured Addition" },
+        };
+
+        try
+        {
+            // County-wide qualified sale population (same population rule as ratio-study)
+            var salesQuery = _db.ComparableSales
+                .Where(cs => cs.SalesYear == taxYear
+                    && cs.SaleQualification == "qualified"
+                    && cs.SalePrice > 0);
+            if (!string.IsNullOrEmpty(propertyType))
+                salesQuery = salesQuery.Where(cs => cs.PropertyType == propertyType);
+
+            var allSales = await salesQuery
+                .Select(cs => new { cs.ParcelId, cs.SalePrice, cs.AdjustedSalePrice })
+                .ToListAsync();
+
+            var allParcelIds = allSales.Select(s => s.ParcelId).ToList();
+            var allPropMap = await _db.Properties
+                .Where(p => allParcelIds.Contains(p.ParcelNumber) && p.AssessedValue > 0)
+                .Select(p => new { p.ParcelNumber, p.AssessedValue })
+                .ToDictionaryAsync(p => p.ParcelNumber, p => p.AssessedValue);
+
+            // Build county ratio list
+            var countyRatios = allSales
+                .Where(s => allPropMap.ContainsKey(s.ParcelId))
+                .Select(s =>
+                {
+                    var sp = (double)(s.AdjustedSalePrice ?? s.SalePrice);
+                    var av = (double)allPropMap[s.ParcelId]!;
+                    return av / sp;
+                })
+                .Where(r => r > 0.1 && r < 5.0)
+                .OrderBy(r => r)
+                .ToList();
+
+            double countyMedian = countyRatios.Count == 0 ? 1.0
+                : countyRatios.Count % 2 == 0
+                    ? (countyRatios[countyRatios.Count / 2 - 1] + countyRatios[countyRatios.Count / 2]) / 2.0
+                    : countyRatios[countyRatios.Count / 2];
+
+            // Per-feature analysis — join CamaImprovementDetails by SegmentType
+            var results = new List<object>();
+            foreach (var (featureCode, featureLabel) in featureMap)
+            {
+                var featureParcelIds = await _db.CamaImprovementDetails
+                    .Where(d => d.SegmentType == featureCode
+                        && d.TaxYear == taxYear
+                        && allParcelIds.Contains(d.ParcelId))
+                    .Select(d => d.ParcelId)
+                    .Distinct()
+                    .ToListAsync();
+
+                var featureSales = allSales
+                    .Where(s => featureParcelIds.Contains(s.ParcelId) && allPropMap.ContainsKey(s.ParcelId))
+                    .Select(s =>
+                    {
+                        var sp = (double)(s.AdjustedSalePrice ?? s.SalePrice);
+                        var av = (double)allPropMap[s.ParcelId]!;
+                        return av / sp;
+                    })
+                    .Where(r => r > 0.1 && r < 5.0)
+                    .OrderBy(r => r)
+                    .ToList();
+
+                double? featureMedian = null;
+                double? deviation = null;
+                string signal = "insufficient";
+
+                if (featureSales.Count >= 5)
+                {
+                    featureMedian = featureSales.Count % 2 == 0
+                        ? (featureSales[featureSales.Count / 2 - 1] + featureSales[featureSales.Count / 2]) / 2.0
+                        : featureSales[featureSales.Count / 2];
+                    deviation = featureMedian.Value - countyMedian;
+                    signal = Math.Abs(deviation.Value) <= 0.04 ? "ok"
+                        : deviation.Value > 0 ? "under"
+                        : "over";
+                }
+
+                results.Add(new
+                {
+                    featureCode,
+                    featureLabel,
+                    saleCount = featureSales.Count,
+                    medianRatio = featureMedian.HasValue ? Math.Round(featureMedian.Value, 4) : (double?)null,
+                    deviationFromCountyMedian = deviation.HasValue ? Math.Round(deviation.Value, 4) : (double?)null,
+                    signal,
+                });
+            }
+
+            return Ok(new
+            {
+                taxYear,
+                countyMedianRatio = Math.Round(countyMedian, 4),
+                countyQualifiedSaleCount = countyRatios.Count,
+                features = results,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "GetDriverAnalysis failed: taxYear={TaxYear}", taxYear);
+            return StatusCode(500, new { error = "Failed to compute driver analysis." });
+        }
+    }
+
     // ── Neighborhood Comparison Snapshots ─────────────────────────────────────
 
     /// <summary>
