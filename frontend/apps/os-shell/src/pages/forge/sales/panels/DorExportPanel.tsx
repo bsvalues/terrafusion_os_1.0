@@ -8,7 +8,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSalesForgeStore } from '../salesForgeStore';
 import { apiFetch } from '../../../../lib/apiBase';
 import type { SaleQueueItem } from '../salesForgeTypes';
-import { SALESFORGE_TAX_YEAR } from '../salesForgeTypes';
 
 // DOR CSV columns — certified submission format
 const DOR_COLUMNS: { key: keyof SaleQueueItem | string; label: string }[] = [
@@ -84,7 +83,7 @@ export function DorExportPanel() {
   const [error, setError] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
 
-  const loadExportPreview = useCallback(async () => {
+  const loadExportPreview = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
     setError(null);
     const params = new URLSearchParams({
@@ -99,19 +98,23 @@ export function DorExportPanel() {
     if (committedFilters.saleDateTo)   params.set('saleDateTo',   committedFilters.saleDateTo);
 
     try {
-      const res = await apiFetch(`/terraforge/sale-qualification?${params}`);
+      const res = await apiFetch(`/terraforge/sale-qualification?${params}`, { signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const page = await res.json() as { total: number; items: SaleQueueItem[] };
+      if (signal?.aborted) return;
       setExportData(page.items);
     } catch (e) {
+      if ((e as Error)?.name === 'AbortError') return;
       setError(e instanceof Error ? e.message : 'Failed to load export data');
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) setLoading(false);
     }
   }, [taxYear, committedFilters]);
 
   useEffect(() => {
-    void loadExportPreview();
+    const ctrl = new AbortController();
+    void loadExportPreview(ctrl.signal);
+    return () => ctrl.abort();
   }, [loadExportPreview]);
 
   const handleExport = useCallback(() => {
@@ -119,15 +122,20 @@ export function DorExportPanel() {
     setExporting(true);
     try {
       const csv = buildCsv(exportData);
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const bom = '\uFEFF';
+      const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       const hood = committedFilters.hood ? `_${committedFilters.hood}` : '';
-      a.href = url;
-      a.download = `DOR_SaleQualification_BentonCounty_${taxYear}${hood}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } finally {
+      try {
+        a.href = url;
+        a.download = `DOR_SaleQualification_BentonCounty_${taxYear}${hood}.csv`;
+        a.click();
+      } finally {
+        URL.revokeObjectURL(url);
+        setExporting(false);
+      }
+    } catch {
       setExporting(false);
     }
   }, [exportData, taxYear, committedFilters.hood]);

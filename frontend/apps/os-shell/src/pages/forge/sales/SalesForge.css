@@ -714,6 +714,21 @@
   padding: 5px 4px;
 }
 
+/* ── Null alert (neighborhood data gap) ─────────────────────────────────── */
+
+.sf-null-alert {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  background: color-mix(in srgb, var(--sf-warn) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--sf-warn) 35%, transparent);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: var(--sf-warn);
+  margin: 12px 16px;
+}
+
 /* ── State messages ─────────────────────────────────────────────────────────── */
 
 .sf-state {

@@ -42,10 +42,10 @@ function BreakdownTable({ title, rows, nullLabel = 'No code (null)' }: Breakdown
           <span className="sf-cell sf-cell--num" role="columnheader">Count</span>
           <span className="sf-cell sf-cell--num" role="columnheader">% of total</span>
         </div>
-        {sorted.map((row, idx) => {
+        {sorted.map((row) => {
           const isNull = row.code == null;
           return (
-            <div key={idx} className="sf-row sf-row--data" role="row">
+            <div key={row.code ?? '__null__'} className="sf-row sf-row--data" role="row">
               <span className="sf-cell" role="cell">
                 {isNull
                   ? <span className="sf-null-flag">null</span>
@@ -80,6 +80,7 @@ export function CodeAuditPanel() {
 
   useEffect(() => {
     void fetchCodeAudit();
+    // fetchCodeAudit is a stable Zustand action reference — safe to omit
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [committedFilters]);
 
@@ -154,7 +155,7 @@ export function CodeAuditPanel() {
             <BreakdownTable
               title="WAC Code (RCW 458-61A) breakdown"
               rows={wacRows}
-              nullLabel="No WAC code — not yet synced"
+              nullLabel="No WAC code on file"
             />
           )}
 

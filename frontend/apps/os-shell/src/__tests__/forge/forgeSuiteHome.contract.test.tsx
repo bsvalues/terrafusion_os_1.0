@@ -8,8 +8,8 @@
  * because a test failed, the zombie is back. Find the wrong component source
  * and kill it again.
  *
- * Locked taxonomy (IAAO three-approaches-to-value):
- *   PRIMARY:   CostForge · CompsForge · IncomeForge
+ * Locked taxonomy (IAAO three-approaches-to-value + sale qualification):
+ *   PRIMARY:   CostForge · CompsForge · IncomeForge · SalesForge
  *   SECONDARY: Statistics Studio · Batch Cost Runs · Regression Studio ·
  *              TerraGAMA · Coefficient Preview
  *   QUEUE:     SaleQualificationQueue (the only panel surface)
@@ -17,7 +17,7 @@
  * BANNED from suite home:
  *   - Governed Run, Cost Manual, Value Audit Log (reference/legacy cards)
  *   - ComparableSales, Reconciliation, Appeals, Value Audit (workbench openers)
- *   - RatioStudyPanel, CompsPoolBrowser (removed surfaces)
+ *   - RatioStudyPanel (removed surface)
  *   - "Parcel adapters, references, and planned scenes" heading
  *   - Any card that opens a property workbench from suite home
  */
@@ -59,6 +59,12 @@ vi.mock('../../components/workbench/ParcelContextBanner', () => ({
   ParcelContextBanner: () => null,
 }));
 
+// CompsPoolBrowser is imported from './CompsPoolBrowser' in ForgeSuiteHome —
+// rendered in Slice 1.6. Mock to null so it doesn't surface "/comps pool/i" text.
+vi.mock('../../pages/suites/CompsPoolBrowser', () => ({
+  CompsPoolBrowser: () => null,
+}));
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 async function renderForgeSuiteHome() {
@@ -81,11 +87,11 @@ describe('TerraForge suite home — taxonomy contract', () => {
 
   // ── Primary tier ────────────────────────────────────────────────────────────
 
-  it('renders exactly three primary valuation scenes — the three approaches to value', async () => {
+  it('renders exactly four primary valuation scenes — three approaches to value plus SalesForge', async () => {
     await renderForgeSuiteHome();
     const primary = screen.getByTestId('forge-primary-applications');
     const cards = within(primary).getAllByRole('button');
-    expect(cards).toHaveLength(3);
+    expect(cards).toHaveLength(4);
   });
 
   it('renders CostForge in the primary tier', async () => {
@@ -104,6 +110,12 @@ describe('TerraForge suite home — taxonomy contract', () => {
     await renderForgeSuiteHome();
     const primary = screen.getByTestId('forge-primary-applications');
     expect(within(primary).getByText('IncomeForge')).toBeDefined();
+  });
+
+  it('renders SalesForge in the primary tier', async () => {
+    await renderForgeSuiteHome();
+    const primary = screen.getByTestId('forge-primary-applications');
+    expect(within(primary).getByText('SalesForge')).toBeDefined();
   });
 
   // ── Secondary tier ──────────────────────────────────────────────────────────

@@ -27,6 +27,7 @@ export function RunningStatsPanel() {
 
   useEffect(() => {
     void fetchStats();
+    // fetchStats is a stable Zustand action reference — safe to omit
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [committedFilters]);
 
@@ -57,10 +58,16 @@ export function RunningStatsPanel() {
             {statsLoading ? '…' : fmtCount(counts?.pending ?? 0)}
           </span>
         </div>
-        <div className="sf-stats-kpi" style={{ borderBottom: 'none' }}>
+        <div className="sf-stats-kpi">
           <span className="sf-stats-kpi__label">Total window</span>
           <span className="sf-stats-kpi__value">
             {statsLoading ? '…' : fmtCount(counts?.total ?? 0)}
+          </span>
+        </div>
+        <div className="sf-stats-kpi" style={{ borderBottom: 'none' }}>
+          <span className="sf-stats-kpi__label">With ratio</span>
+          <span className="sf-stats-kpi__value">
+            {statsLoading ? '…' : fmtCount(counts?.withRatio ?? 0)}
           </span>
         </div>
       </div>
@@ -74,6 +81,14 @@ export function RunningStatsPanel() {
             {statsLoading ? '…' : fmtRatio(stats?.medianRatio ?? null)}
           </span>
         </div>
+        {stats?.weightedMeanRatio != null && (
+          <div className="sf-stats-kpi">
+            <span className="sf-stats-kpi__label">Weighted mean</span>
+            <span className="sf-stats-kpi__value">
+              {statsLoading ? '…' : fmtRatio(stats.weightedMeanRatio)}
+            </span>
+          </div>
+        )}
         <div className="sf-stats-kpi">
           <span className="sf-stats-kpi__label">COD</span>
           <span className="sf-stats-kpi__value">
@@ -100,7 +115,7 @@ export function RunningStatsPanel() {
         {iaao ? (
           <>
             <IaaoRow label="Median (0.90–1.10)" pass={iaao.median} />
-            <IaaoRow label="COD (< 15.0)" pass={iaao.cod} />
+            <IaaoRow label="COD (< 15 improved res)" pass={iaao.cod} />
             <IaaoRow label="PRD (0.98–1.03)" pass={iaao.prd} />
             <IaaoRow label="PRB (|x| < 0.05)" pass={iaao.prb} />
           </>

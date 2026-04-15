@@ -1,11 +1,13 @@
 /**
  * RatioAuditPanel — Tab 2 of SalesForge.
  * All qualified sales sorted by ratio, with outlier flags and quick decision override.
+ * Fetches all sales independently (pageSize=2000) — not piggy-backing on the Queue page slice.
  */
 
 import { useCallback, useEffect, useState } from 'react';
 import { useSalesForgeStore } from '../salesForgeStore';
 import { QualDecisionButtons } from '../components/QualDecisionButtons';
+import { apiFetch } from '../../../../lib/apiBase';
 import type { SaleQueueItem } from '../salesForgeTypes';
 
 type SortDir = 'asc' | 'desc';
@@ -51,30 +53,57 @@ function OutlierBadge({ ratio }: { ratio: number | null | undefined }) {
 }
 
 export function RatioAuditPanel() {
-  const queueData    = useSalesForgeStore((s) => s.queueData);
-  const queueLoading = useSalesForgeStore((s) => s.queueLoading);
-  const queueError   = useSalesForgeStore((s) => s.queueError);
-  const fetchQueue   = useSalesForgeStore((s) => s.fetchQueue);
-  const selectSale   = useSalesForgeStore((s) => s.selectSale);
-  const clearSelection = useSalesForgeStore((s) => s.clearSelection);
-  const selectedSaleId = useSalesForgeStore((s) => s.selectedSaleId);
-  const saleDetail   = useSalesForgeStore((s) => s.saleDetail);
-  const detailLoading = useSalesForgeStore((s) => s.detailLoading);
+  const taxYear          = useSalesForgeStore((s) => s.taxYear);
   const committedFilters = useSalesForgeStore((s) => s.committedFilters);
+  const selectSale       = useSalesForgeStore((s) => s.selectSale);
+  const clearSelection   = useSalesForgeStore((s) => s.clearSelection);
+  const selectedSaleId   = useSalesForgeStore((s) => s.selectedSaleId);
+  const saleDetail       = useSalesForgeStore((s) => s.saleDetail);
+  const detailLoading    = useSalesForgeStore((s) => s.detailLoading);
 
-  const [sortDir, setSortDir] = useState<SortDir>('asc');
+  const [auditSales, setAuditSales]     = useState<SaleQueueItem[]>([]);
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [auditError, setAuditError]     = useState<string | null>(null);
+
+  const [sortDir, setSortDir]               = useState<SortDir>('asc');
   const [showOutliersOnly, setShowOutliersOnly] = useState(false);
 
-  // Load all qualified sales on mount (large page, no decision filter)
-  useEffect(() => {
-    void fetchQueue();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [committedFilters]);
+  const fetchAuditSales = useCallback(async (signal?: AbortSignal) => {
+    setAuditLoading(true);
+    setAuditError(null);
+    const params = new URLSearchParams({
+      taxYear: String(taxYear),
+      status: 'all',
+      pageSize: '2000',
+      page: '1',
+    });
+    if (committedFilters.hood)         params.set('hood', committedFilters.hood);
+    if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
+    if (committedFilters.saleDateFrom) params.set('saleDateFrom', committedFilters.saleDateFrom);
+    if (committedFilters.saleDateTo)   params.set('saleDateTo', committedFilters.saleDateTo);
+    try {
+      const res = await apiFetch(`/terraforge/sale-qualification?${params}`, { signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (signal?.aborted) return;
+      const page = await res.json() as { items: SaleQueueItem[] };
+      if (signal?.aborted) return;
+      setAuditSales(page.items);
+    } catch (e) {
+      if ((e as Error)?.name === 'AbortError') return;
+      setAuditError(e instanceof Error ? e.message : 'Failed to load ratio audit data');
+    } finally {
+      if (!signal?.aborted) setAuditLoading(false);
+    }
+  }, [taxYear, committedFilters]);
 
-  const items = queueData?.items ?? [];
+  useEffect(() => {
+    const ctrl = new AbortController();
+    void fetchAuditSales(ctrl.signal);
+    return () => ctrl.abort();
+  }, [fetchAuditSales]);
 
   // Filter to qualified-only and sort by ratio
-  const auditItems = items
+  const auditItems = auditSales
     .filter((i) => {
       const isQualified = i.qualificationDecision === 'qualified'
         || (i.qualificationDecision == null && i.qualificationRecommendation === 'qualified');
@@ -89,10 +118,11 @@ export function RatioAuditPanel() {
       return sortDir === 'asc' ? ra - rb : rb - ra;
     });
 
-  const outlierCount = items.filter(
-    (i) => (i.qualificationDecision === 'qualified' || i.qualificationRecommendation === 'qualified')
-      && getOutlierLevel(i.salesRatio) !== 'ok'
-  ).length;
+  const outlierCount = auditSales.filter((i) => {
+    const isQualified = i.qualificationDecision === 'qualified'
+      || (i.qualificationDecision == null && i.qualificationRecommendation === 'qualified');
+    return isQualified && getOutlierLevel(i.salesRatio) !== 'ok';
+  }).length;
 
   const handleRowClick = useCallback((item: SaleQueueItem) => {
     if (selectedSaleId === item.saleId) {
@@ -107,7 +137,7 @@ export function RatioAuditPanel() {
       <div className="sf-ratio-audit-toolbar">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: '0.8125rem', color: 'var(--sf-muted)' }}>
-            {auditItems.length.toLocaleString()} qualified sales
+            {auditSales.length.toLocaleString()} total · {auditItems.length.toLocaleString()} qualified
             {outlierCount > 0 && (
               <span style={{ marginLeft: 8, color: 'var(--sf-warn)', fontWeight: 600 }}>
                 · {outlierCount} outliers (&lt;85% or &gt;115%)
@@ -146,13 +176,13 @@ export function RatioAuditPanel() {
       </div>
 
       <div className="sf-table-scroll">
-        {queueLoading && !queueData && (
+        {auditLoading && auditSales.length === 0 && (
           <div className="sf-state" role="status">Loading sales…</div>
         )}
-        {queueError && (
-          <div className="sf-state sf-state--error" role="alert">{queueError}</div>
+        {auditError && (
+          <div className="sf-state sf-state--error" role="alert">{auditError}</div>
         )}
-        {!queueLoading && auditItems.length === 0 && (
+        {!auditLoading && auditItems.length === 0 && !auditError && (
           <div className="sf-state">
             {showOutliersOnly ? 'No outliers found.' : 'No qualified sales in current filter window.'}
           </div>
@@ -222,59 +252,60 @@ export function RatioAuditPanel() {
       </div>
 
       {/* Detail expand for selected sale */}
-      {selectedSaleId && saleDetail && !detailLoading && (
+      {selectedSaleId && (
         <div className="sf-detail-panel">
           <div className="sf-detail-header">
             <div className="sf-detail-title">
-              {saleDetail.parcelId ?? 'Sale Detail'} — {saleDetail.address ?? ''}
+              {detailLoading
+                ? 'Loading detail…'
+                : saleDetail
+                  ? `${saleDetail.parcelId ?? 'Sale Detail'} — ${saleDetail.address ?? ''}`
+                  : 'Sale Detail'}
             </div>
             <button type="button" className="sf-detail-close" onClick={clearSelection} aria-label="Close detail">
               ✕
             </button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '8px 16px', padding: '12px 16px' }}>
-            <div className="sf-detail-field">
-              <div className="sf-detail-field__label">Sale price</div>
-              <span className="sf-detail-field__value">{fmtPrice(saleDetail.salePrice)}</span>
-            </div>
-            <div className="sf-detail-field">
-              <div className="sf-detail-field__label">Adjusted price</div>
-              <span className="sf-detail-field__value">{fmtPrice(saleDetail.adjustedSalePrice)}</span>
-            </div>
-            <div className="sf-detail-field">
-              <div className="sf-detail-field__label">Assessed value</div>
-              <span className={`sf-detail-field__value ${saleDetail.assessedValue == null ? 'sf-null-flag' : ''}`}>
-                {saleDetail.assessedValue != null ? fmtPrice(saleDetail.assessedValue) : '—'}
-              </span>
-            </div>
-            <div className="sf-detail-field">
-              <div className="sf-detail-field__label">Sales ratio</div>
-              <span className="sf-detail-field__value">{fmtRatio(saleDetail.salesRatio)}</span>
-            </div>
-            <div className="sf-detail-field">
-              <div className="sf-detail-field__label">GLA (time of sale)</div>
-              <span className="sf-detail-field__value">
-                {saleDetail.slLivingArea != null ? `${saleDetail.slLivingArea.toLocaleString()} sf` : '—'}
-              </span>
-            </div>
-            <div className="sf-detail-field">
-              <div className="sf-detail-field__label">Year built (ToS)</div>
-              <span className="sf-detail-field__value">{saleDetail.slYearBuilt ?? '—'}</span>
-            </div>
-            <div className="sf-detail-field">
-              <div className="sf-detail-field__label">Neighborhood</div>
-              <span className="sf-detail-field__value">{saleDetail.hood ?? '—'}</span>
-            </div>
-            <div className="sf-detail-field">
-              <div className="sf-detail-field__label">WAC code</div>
-              <span className={`sf-detail-field__value ${!saleDetail.rawWacCd ? 'sf-null-flag' : ''}`}>
-                {saleDetail.rawWacCd ?? '—'}
-              </span>
-            </div>
-          </div>
-          <div style={{ padding: '0 16px 12px' }}>
-            <QualDecisionButtons saleId={saleDetail.saleId} />
-          </div>
+
+          {detailLoading && (
+            <div className="sf-state" role="status" style={{ padding: '12px 16px' }}>Loading…</div>
+          )}
+
+          {!detailLoading && saleDetail && (
+            <>
+              <div className="sf-detail-grid" style={{ padding: '12px 16px' }}>
+                <div className="sf-detail-field">
+                  <div className="sf-detail-field__label">Sale price</div>
+                  <span className="sf-detail-field__value">{fmtPrice(saleDetail.salePrice)}</span>
+                </div>
+                <div className="sf-detail-field">
+                  <div className="sf-detail-field__label">Assessed value</div>
+                  <span className={`sf-detail-field__value ${saleDetail.assessedValue == null ? 'sf-null-flag' : ''}`}>
+                    {saleDetail.assessedValue != null ? fmtPrice(saleDetail.assessedValue) : '—'}
+                  </span>
+                </div>
+                <div className="sf-detail-field">
+                  <div className="sf-detail-field__label">Sales ratio</div>
+                  <span className="sf-detail-field__value">{fmtRatio(saleDetail.salesRatio)}</span>
+                </div>
+                <div className="sf-detail-field">
+                  <div className="sf-detail-field__label">GLA (time of sale)</div>
+                  <span className="sf-detail-field__value">
+                    {saleDetail.slLivingArea != null ? `${saleDetail.slLivingArea.toLocaleString()} sf` : '—'}
+                  </span>
+                </div>
+                <div className="sf-detail-field">
+                  <div className="sf-detail-field__label">WAC code</div>
+                  <span className={`sf-detail-field__value ${!saleDetail.rawWacCd ? 'sf-null-flag' : ''}`}>
+                    {saleDetail.rawWacCd ?? '—'}
+                  </span>
+                </div>
+              </div>
+              <div style={{ padding: '0 16px 12px' }}>
+                <QualDecisionButtons saleId={saleDetail.saleId} />
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
