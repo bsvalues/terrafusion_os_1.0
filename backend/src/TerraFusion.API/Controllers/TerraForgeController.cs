@@ -1799,6 +1799,358 @@ public class TerraForgeController : ControllerBase
         }
     }
 
+    // ── Influence Diagnostics (Cook's D) ─────────────────────────────────────
+
+    /// <summary>
+    /// Identifies influential observations in the ratio study using Cook's Distance.
+    /// Sales with Cook's D exceeding 4/n are flagged as potentially distorting statistics.
+    /// </summary>
+    [HttpGet("ratio-study/influence-diagnostics")]
+    public async Task<IActionResult> GetInfluenceDiagnostics(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? propertyType = null,
+        CancellationToken ct = default)
+    {
+        _logger.LogInformation("GetInfluenceDiagnostics: taxYear={TaxYear}", taxYear);
+        try
+        {
+            var salesQuery = _db.ComparableSales
+                .AsNoTracking()
+                .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
+                         && s.SalePrice > 0
+                         && (s.QualificationDecision == "qualified"
+                             || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+
+            if (!string.IsNullOrEmpty(propertyType))
+                salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
+
+            var salesData = await salesQuery
+                .Select(s => new { s.Id, s.ParcelId, s.Address, SalePrice = s.AdjustedSalePrice ?? s.SalePrice })
+                .ToListAsync(ct);
+
+            var parcelIds = salesData.Select(s => s.ParcelId).Distinct();
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+
+            var rows = salesData
+                .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+                .Select(s => new
+                {
+                    saleId    = s.Id,
+                    parcelId  = s.ParcelId,
+                    address   = s.Address,
+                    salePrice = (long)s.SalePrice,
+                    ratio     = (double)assessedMap[s.ParcelId!] / (double)s.SalePrice,
+                })
+                .Where(r => r.ratio > 0.1 && r.ratio < 5.0)
+                .ToList();
+
+            var n = rows.Count;
+            if (n < 10)
+                return Ok(new { error = "Insufficient data for influence diagnostics.", sampleSize = n });
+
+            var meanRatio  = rows.Average(r => r.ratio);
+            var variance   = rows.Average(r => Math.Pow(r.ratio - meanRatio, 2));
+            var threshold  = 4.0 / n;
+
+            var items = rows
+                .Select(r => new
+                {
+                    r.saleId,
+                    r.parcelId,
+                    r.address,
+                    r.salePrice,
+                    ratio         = Math.Round(r.ratio, 4),
+                    cookD         = Math.Round(Math.Pow(r.ratio - meanRatio, 2) / Math.Max(variance, 1e-10), 6),
+                    isInfluential = (Math.Pow(r.ratio - meanRatio, 2) / Math.Max(variance, 1e-10)) > threshold,
+                })
+                .OrderByDescending(r => r.cookD)
+                .Take(100)
+                .ToList();
+
+            return Ok(new
+            {
+                taxYear,
+                sampleSize       = n,
+                threshold        = Math.Round(threshold, 6),
+                influentialCount = items.Count(r => r.isInfluential),
+                items,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "GetInfluenceDiagnostics failed");
+            return StatusCode(500, new { error = "Failed to compute influence diagnostics." });
+        }
+    }
+
+    // ── Time Trend (Monthly Median Ratio) ────────────────────────────────────
+
+    /// <summary>
+    /// Returns monthly median assessment ratio for the trailing 24 months ending in taxYear.
+    /// Useful for detecting time-trend bias in ratio studies.
+    /// </summary>
+    [HttpGet("ratio-study/time-trend")]
+    public async Task<IActionResult> GetTimeTrend(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? propertyType = null,
+        CancellationToken ct = default)
+    {
+        _logger.LogInformation("GetTimeTrend: taxYear={TaxYear}", taxYear);
+        try
+        {
+            var periodStart = new DateTime(taxYear - 2, 1, 1);
+            var periodEnd   = new DateTime(taxYear + 1, 1, 1);
+
+            var salesQuery = _db.ComparableSales
+                .AsNoTracking()
+                .Where(s => s.CountyId == BentonCountyId
+                         && s.SaleDate >= periodStart
+                         && s.SaleDate < periodEnd
+                         && s.SalePrice > 0
+                         && (s.QualificationDecision == "qualified"
+                             || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+
+            if (!string.IsNullOrEmpty(propertyType))
+                salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
+
+            var salesData = await salesQuery
+                .Select(s => new { s.ParcelId, SalePrice = s.AdjustedSalePrice ?? s.SalePrice, s.SaleDate })
+                .ToListAsync(ct);
+
+            var parcelIds  = salesData.Select(s => s.ParcelId).Distinct();
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+
+            var rows = salesData
+                .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+                .Select(s => new
+                {
+                    year   = s.SaleDate.Year,
+                    month  = s.SaleDate.Month,
+                    ratio  = (double)assessedMap[s.ParcelId!] / (double)s.SalePrice,
+                })
+                .Where(r => r.ratio > 0.1 && r.ratio < 5.0)
+                .ToList();
+
+            var groups = rows
+                .GroupBy(r => new { r.year, r.month })
+                .OrderBy(g => g.Key.year).ThenBy(g => g.Key.month)
+                .ToList();
+
+            var monthly = groups.Select(g =>
+            {
+                var ratios  = g.Select(r => r.ratio).OrderBy(r => r).ToList();
+                var cnt     = ratios.Count;
+                var med     = cnt % 2 == 0
+                    ? (ratios[cnt / 2 - 1] + ratios[cnt / 2]) / 2.0
+                    : ratios[cnt / 2];
+                return new
+                {
+                    year        = g.Key.year,
+                    month       = g.Key.month,
+                    period      = $"{g.Key.year}-{g.Key.month:D2}",
+                    saleCount   = cnt,
+                    medianRatio = Math.Round(med, 4),
+                };
+            }).ToList();
+
+            var totalSalesCount = rows.Count;
+            return Ok(new
+            {
+                taxYear,
+                propertyType,
+                periodStart = periodStart.ToString("yyyy-MM"),
+                periodEnd   = new DateTime(taxYear, 12, 31).ToString("yyyy-MM"),
+                totalSales  = totalSalesCount,
+                monthly,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "GetTimeTrend failed");
+            return StatusCode(500, new { error = "Failed to compute time trend." });
+        }
+    }
+
+    // ── Spatial Autocorrelation (Planned P2) ─────────────────────────────────
+
+    /// <summary>
+    /// Placeholder for Moran's I spatial autocorrelation. Requires parcel centroid coordinates.
+    /// </summary>
+    [HttpGet("ratio-study/spatial-autocorrelation")]
+    public IActionResult GetSpatialAutocorrelation([FromQuery] int taxYear = 2026)
+    {
+        return Ok(new
+        {
+            taxYear,
+            status   = "planned",
+            note     = "Requires parcel centroid lat/lon data. Source: ArcGIS parcel layer or PACS geocoded addresses. Moran's I will be computed once coordinates are seeded.",
+            moransI  = (double?)null,
+            pValue   = (double?)null,
+        });
+    }
+
+    // ── Hedonic Regression (Planned P2) ──────────────────────────────────────
+
+    /// <summary>
+    /// Placeholder for ML.NET OLS hedonic regression. Requires fully-populated CAMA characteristics.
+    /// </summary>
+    [HttpGet("ratio-study/hedonic-regression")]
+    public IActionResult GetHedonicRegression(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? propertyType = null)
+    {
+        return Ok(new
+        {
+            taxYear,
+            propertyType,
+            status       = "planned",
+            note         = "ML.NET OLS regression on CamaCharacteristics + ComparableSales. Requires GrossLivingArea, YearBuilt, ImprovementDetail feature sqft to be fully populated in PACS seeding.",
+            coefficients = Array.Empty<object>(),
+        });
+    }
+
+    // ── Variance Decomposition (Planned P2) ──────────────────────────────────
+
+    /// <summary>
+    /// Placeholder for hierarchical mixed-effects variance decomposition.
+    /// </summary>
+    [HttpGet("ratio-study/variance-decomposition")]
+    public IActionResult GetVarianceDecomposition([FromQuery] int taxYear = 2026)
+    {
+        return Ok(new
+        {
+            taxYear,
+            status = "planned",
+            note   = "Hierarchical mixed-effects model. Requires neighborhood grouping variable. Planned P2.",
+        });
+    }
+
+    // ── Sale Chasing Test (Planned P2) ───────────────────────────────────────
+
+    /// <summary>
+    /// Placeholder for sale chasing (post-sale revaluation bias) detection.
+    /// </summary>
+    [HttpGet("ratio-study/sale-chasing")]
+    public IActionResult GetSaleChasing([FromQuery] int taxYear = 2026)
+    {
+        return Ok(new
+        {
+            taxYear,
+            status = "planned",
+            note   = "ΔR² test requires pre-sale and post-sale assessed values for the same parcel. Planned P2.",
+        });
+    }
+
+    // ── Cross-Validation (Planned P2) ────────────────────────────────────────
+
+    /// <summary>
+    /// Placeholder for 5-fold cross-validation on hedonic model.
+    /// </summary>
+    [HttpGet("ratio-study/cross-validation")]
+    public IActionResult GetCrossValidation([FromQuery] int taxYear = 2026)
+    {
+        return Ok(new
+        {
+            taxYear,
+            status = "planned",
+            note   = "5-fold cross-validation on hedonic model. Depends on hedonic-regression endpoint. Planned P2.",
+        });
+    }
+
+    // ── KS Shift Test (Two-Sample Kolmogorov–Smirnov) ────────────────────────
+
+    /// <summary>
+    /// Two-sample KS test comparing qualified ratio distributions between taxYear and taxYear-1.
+    /// Detects statistically significant year-over-year shifts in the ratio distribution.
+    /// </summary>
+    [HttpGet("ratio-study/ks-shift-test")]
+    public async Task<IActionResult> GetKsShiftTest(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? propertyType = null,
+        CancellationToken ct = default)
+    {
+        _logger.LogInformation("GetKsShiftTest: taxYear={TaxYear}", taxYear);
+        try
+        {
+            var priorYear = taxYear - 1;
+
+            async Task<List<double>> FetchRatios(int year)
+            {
+                var q = _db.ComparableSales
+                    .AsNoTracking()
+                    .Where(s => s.CountyId == BentonCountyId && s.SalesYear == year
+                             && s.SalePrice > 0
+                             && (s.QualificationDecision == "qualified"
+                                 || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+                if (!string.IsNullOrEmpty(propertyType))
+                    q = q.Where(s => s.PropertyType == propertyType);
+                var sd = await q
+                    .Select(s => new { s.ParcelId, SalePrice = s.AdjustedSalePrice ?? s.SalePrice })
+                    .ToListAsync(ct);
+                var pids = sd.Select(s => s.ParcelId).Distinct();
+                var amap = await GetAssessedValueMapAsync(pids, year, ct);
+                return sd
+                    .Where(s => s.ParcelId != null && amap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+                    .Select(s => (double)amap[s.ParcelId!] / (double)s.SalePrice)
+                    .Where(r => r > 0.1 && r < 5.0)
+                    .OrderBy(r => r)
+                    .ToList();
+            }
+
+            var current = await FetchRatios(taxYear);
+            var prior   = await FetchRatios(priorYear);
+
+            var n1 = current.Count;
+            var n2 = prior.Count;
+
+            if (n1 < 5 || n2 < 5)
+                return Ok(new
+                {
+                    currentYear      = taxYear,
+                    priorYear,
+                    currentYearCount = n1,
+                    priorYearCount   = n2,
+                    error            = "Insufficient data in one or both years for KS test.",
+                });
+
+            // Compute KS statistic over union of values
+            var allValues = current.Concat(prior).Distinct().OrderBy(v => v).ToList();
+            var ksD = allValues.Max(v =>
+                Math.Abs(
+                    (double)current.Count(r => r <= v) / n1 -
+                    (double)prior.Count(r => r <= v)   / n2
+                )
+            );
+
+            var ksStat = ksD * Math.Sqrt((double)(n1 * n2) / (n1 + n2));
+            var pValue = 2.0 * Math.Exp(-2.0 * ksStat * ksStat);
+            pValue = Math.Min(1.0, pValue); // clamp to [0,1]
+
+            string interpretation;
+            if (pValue < 0.05)
+                interpretation = $"Significant distributional shift detected between {priorYear} and {taxYear} (p={Math.Round(pValue, 4)}). Review market conditions and assessment equity.";
+            else
+                interpretation = $"No significant distributional shift between {priorYear} and {taxYear} (p={Math.Round(pValue, 4)}).";
+
+            return Ok(new
+            {
+                currentYear      = taxYear,
+                priorYear,
+                currentYearCount = n1,
+                priorYearCount   = n2,
+                ksStatistic      = Math.Round(ksD, 6),
+                pValue           = Math.Round(pValue, 6),
+                significantShift = pValue < 0.05,
+                interpretation,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "GetKsShiftTest failed");
+            return StatusCode(500, new { error = "Failed to compute KS shift test." });
+        }
+    }
+
     // ── Driver Analysis ───────────────────────────────────────────────────────
 
     /// <summary>
