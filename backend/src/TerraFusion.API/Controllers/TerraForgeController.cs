@@ -1773,8 +1773,8 @@ public class TerraForgeController : ControllerBase
                 };
             }).ToList();
 
-            var highDecileDeviation = deciles[8].deviationFromCountyMedian;
-            var lowDecileDeviation = deciles[1].deviationFromCountyMedian;
+            var highDecileDeviation = deciles[9].deviationFromCountyMedian;
+            var lowDecileDeviation = deciles[0].deviationFromCountyMedian;
             string interpretation;
             if (highDecileDeviation < -0.04 && lowDecileDeviation > 0.04)
                 interpretation = "Regressive: high-value properties under-assessed relative to low-value";
