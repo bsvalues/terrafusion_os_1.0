@@ -1700,6 +1700,105 @@ public class TerraForgeController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Computes median ratio by sale price decile (10 equal groups, lowest to highest value).
+    /// Detects regressive/progressive vertical inequity in assessment.
+    /// IAAO Standard 5 §6.3: PRB and decile analysis for vertical equity.
+    /// </summary>
+    [HttpGet("ratio-study/vertical-equity")]
+    public async Task<IActionResult> GetVerticalEquity(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? propertyType = null,
+        CancellationToken ct = default)
+    {
+        _logger.LogInformation("GetVerticalEquity: taxYear={TaxYear}", taxYear);
+
+        try
+        {
+            var salesQuery = _db.ComparableSales
+                .AsNoTracking()
+                .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
+                         && s.SalePrice > 0
+                         && (s.QualificationDecision == "qualified"
+                             || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+
+            if (!string.IsNullOrEmpty(propertyType))
+                salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
+
+            var salesData = await salesQuery
+                .Select(s => new { s.ParcelId, SalePrice = s.AdjustedSalePrice ?? s.SalePrice })
+                .ToListAsync(ct);
+
+            var parcelIds = salesData.Select(s => s.ParcelId).Distinct();
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+
+            var rows = salesData
+                .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+                .Select(s => new
+                {
+                    ratio = (double)assessedMap[s.ParcelId!] / (double)s.SalePrice,
+                    salePrice = (double)s.SalePrice,
+                })
+                .Where(r => r.ratio > 0.1 && r.ratio < 5.0)
+                .OrderBy(r => r.salePrice)
+                .ToList();
+
+            var rowCount = rows.Count;
+            if (rowCount < 10)
+                return Ok(new { error = "Insufficient data for decile analysis.", sampleSize = rowCount });
+
+            var sortedRatios = rows.Select(r => r.ratio).OrderBy(r => r).ToList();
+            var countyMedian = rowCount % 2 == 0
+                ? (sortedRatios[rowCount / 2 - 1] + sortedRatios[rowCount / 2]) / 2.0
+                : sortedRatios[rowCount / 2];
+
+            var decileSize = rowCount / 10;
+            var deciles = Enumerable.Range(0, 10).Select(d =>
+            {
+                var takeCount = d == 9 ? rowCount - d * decileSize : decileSize;
+                var slice = rows.Skip(d * decileSize).Take(takeCount).ToList();
+                var sliceRatios = slice.Select(r => r.ratio).OrderBy(r => r).ToList();
+                var m = sliceRatios.Count;
+                var med = m % 2 == 0
+                    ? (sliceRatios[m / 2 - 1] + sliceRatios[m / 2]) / 2.0
+                    : sliceRatios[m / 2];
+                return new
+                {
+                    decile = d + 1,
+                    minSalePrice = (int)slice.Min(r => r.salePrice),
+                    maxSalePrice = (int)slice.Max(r => r.salePrice),
+                    saleCount = m,
+                    medianRatio = Math.Round(med, 4),
+                    deviationFromCountyMedian = Math.Round(med - countyMedian, 4),
+                };
+            }).ToList();
+
+            var highDecileDeviation = deciles[8].deviationFromCountyMedian;
+            var lowDecileDeviation = deciles[1].deviationFromCountyMedian;
+            string interpretation;
+            if (highDecileDeviation < -0.04 && lowDecileDeviation > 0.04)
+                interpretation = "Regressive: high-value properties under-assessed relative to low-value";
+            else if (highDecileDeviation > 0.04 && lowDecileDeviation < -0.04)
+                interpretation = "Progressive: high-value properties over-assessed relative to low-value";
+            else
+                interpretation = "No significant vertical equity pattern detected";
+
+            return Ok(new
+            {
+                taxYear,
+                sampleSize = rowCount,
+                countyMedianRatio = Math.Round(countyMedian, 4),
+                deciles,
+                interpretation,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "GetVerticalEquity failed");
+            return StatusCode(500, new { error = "Failed to compute vertical equity." });
+        }
+    }
+
     // ── Driver Analysis ───────────────────────────────────────────────────────
 
     /// <summary>
