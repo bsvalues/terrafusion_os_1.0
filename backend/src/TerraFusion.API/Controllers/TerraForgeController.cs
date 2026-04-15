@@ -2078,11 +2078,16 @@ public class TerraForgeController : ControllerBase
                     if (W[i, j] > 0)
                         num += W[i, j] * (x[i] - mean) * (x[j] - mean);
 
-            var moransI = den > 0 ? num / den : 0;
+            // S0 = sum of all weights (= n for perfectly row-standardized weights)
+            double s0 = 0;
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                    s0 += W[i, j];
+            var moransI = den > 0 ? (s0 > 0 ? (n / s0) * (num / den) : 0.0) : 0;
             var expectedI = -1.0 / (n - 1);
 
             // Variance (normal approximation)
-            double S0 = n; // row-standardized
+            double S0 = s0; // explicit sum of all weights
             double S1 = 0, S2 = 0;
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
@@ -2341,7 +2346,8 @@ public class TerraForgeController : ControllerBase
         {
             var salesQuery = _db.ComparableSales
                 .AsNoTracking()
-                .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear && s.SalePrice > 0);
+                .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear && s.SalePrice > 0
+                    && (s.QualificationDecision == "qualified" || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
 
             if (!string.IsNullOrEmpty(propertyType))
                 salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
@@ -2712,6 +2718,10 @@ public class TerraForgeController : ControllerBase
 
     private static double NormalCdf(double x)
     {
+        // Guard against underflow for extreme z-scores
+        if (x > 40.0) return 1.0;
+        if (x < -40.0) return 0.0;
+
         // Abramowitz & Stegun 26.2.17
         var t = 1.0 / (1.0 + 0.2316419 * Math.Abs(x));
         var poly = t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
