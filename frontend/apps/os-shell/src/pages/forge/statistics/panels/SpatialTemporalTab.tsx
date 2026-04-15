@@ -23,8 +23,20 @@ interface TimeTrendResponse {
   monthlyTrend: MonthlyPoint[];
 }
 interface SpatialResponse {
-  taxYear: number; status: string; note: string;
-  moransI: number | null; pValue: number | null;
+  taxYear: number;
+  sampleSize: number;
+  sampleWithCoords: number;
+  kNeighbors: number;
+  moransI: number;
+  expectedI: number;
+  variance: number;
+  zScore: number;
+  pValue: number;
+  significantClustering: boolean;
+  interpretation: string;
+  // graceful fallback if backend returns planned state:
+  status?: string;
+  note?: string;
 }
 interface KsResponse {
   currentYear: number; priorYear: number;
@@ -138,15 +150,48 @@ export function SpatialTemporalTab() {
         </CardContent>
       </Card>
 
-      {/* ── Moran's I Spatial Autocorrelation (planned) ── */}
-      <Card data-material="bento" className="opacity-60">
+      {/* ── Moran's I Spatial Autocorrelation ── */}
+      <Card data-material="bento">
         <CardHeader>
-          <CardTitle className="text-sm font-semibold">Spatial Autocorrelation — Moran&apos;s I</CardTitle>
+          <CardTitle className="text-sm font-semibold">
+            Spatial Autocorrelation — Moran&apos;s I
+            <span className="ml-2 text-xs text-muted-foreground font-normal">
+              {spatialQuery.data?.sampleWithCoords != null
+                ? `${spatialQuery.data.sampleWithCoords.toLocaleString()} of ${spatialQuery.data.sampleSize.toLocaleString()} sales geocoded · k=${spatialQuery.data.kNeighbors} neighbors`
+                : '…'}
+            </span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-xs text-muted-foreground italic">
-            {spatialQuery.data?.note ?? 'Requires parcel centroid lat/lon data. Planned P2.'}
-          </p>
+          {spatialQuery.isLoading ? (
+            <p className="text-muted-foreground text-sm">Computing Moran&apos;s I…</p>
+          ) : spatialQuery.data?.status === 'planned' ? (
+            <p className="text-xs text-muted-foreground italic">{spatialQuery.data.note ?? 'Planned — requires geocoded parcel centroids.'}</p>
+          ) : spatialQuery.data ? (
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 text-sm">
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">Moran&apos;s I</div>
+                  <div className="font-mono font-semibold">{spatialQuery.data.moransI.toFixed(4)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">Expected I</div>
+                  <div className="font-mono">{spatialQuery.data.expectedI.toFixed(4)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">z-score</div>
+                  <div className="font-mono">{spatialQuery.data.zScore.toFixed(3)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">p-value</div>
+                  <div className="font-mono">{spatialQuery.data.pValue < 0.001 ? '<0.001' : spatialQuery.data.pValue.toFixed(4)}</div>
+                </div>
+              </div>
+              <div className={`text-sm rounded px-3 py-2 ${spatialQuery.data.significantClustering ? 'bg-amber-500/10 text-amber-600' : 'bg-green-500/10 text-green-600'}`}>
+                {spatialQuery.data.significantClustering ? '⚠ ' : '✓ '}{spatialQuery.data.interpretation}
+              </div>
+            </div>
+          ) : null}
         </CardContent>
       </Card>
 
