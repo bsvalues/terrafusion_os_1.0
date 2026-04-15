@@ -28,12 +28,15 @@ import { CostRatioAnalysis } from '../cost/CostRatioAnalysis';
 import { CostForgeDashboard } from '../cost/CostForgeDashboard';
 import { StratifiedStudyPanel } from './StratifiedStudyPanel';
 import { ValueDriverPanel } from './ValueDriverPanel';
+import { DiagnosticsTab } from './panels/DiagnosticsTab';
+import { SpatialTemporalTab } from './panels/SpatialTemporalTab';
+import { CalibrationEngineTab } from './panels/CalibrationEngineTab';
 import { useForgeStatisticsStore } from '@/stores/forgeStatisticsStore';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { RATIO_STUDY_RESULT } from '@/data/forgeStatisticsFixtures';
 import { apiFetch } from '@/lib/apiBase';
 
-type Tab = 'ratio-study' | 'stratified' | 'trends' | 'equity' | 'outliers' | 'comparison' | 'calibration' | 'cost-analytics';
+type Tab = 'ratio-study' | 'stratified' | 'trends' | 'equity' | 'outliers' | 'comparison' | 'calibration' | 'cost-analytics' | 'diagnostics' | 'spatial-temporal' | 'calibration-engine';
 
 // --- Ratio study data from store or fixture fallback ---
 
@@ -67,8 +70,11 @@ function useRatioData() {
 
 // --- Component ---
 
+const ADVANCED_TABS: Tab[] = ['diagnostics', 'spatial-temporal', 'calibration-engine'];
+
 export function StatisticsStudio() {
   const [activeTab, setActiveTab] = useState<Tab>('ratio-study');
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const fetchStudy = useForgeStatisticsStore((s) => s.fetchStudy);
   const loadComparison = useForgeStatisticsStore((s) => s.loadComparison);
   const isFixture = useForgeStatisticsStore((s) => s.isFixture);
@@ -151,7 +157,7 @@ export function StatisticsStudio() {
           <h1 className="text-2xl font-bold">Statistics Studio</h1>
           <Badge variant="secondary">IAAO Compliant</Badge>
         </div>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap items-center">
           {tabs.map((tab) => (
             <Button
               key={tab.key}
@@ -163,6 +169,47 @@ export function StatisticsStudio() {
               {tab.label}
             </Button>
           ))}
+          <div className="border-l border-border mx-2 self-stretch" />
+          <button
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors px-1"
+            onClick={() => {
+              const next = !showAdvanced;
+              setShowAdvanced(next);
+              if (!next && ADVANCED_TABS.includes(activeTab)) {
+                setActiveTab('ratio-study');
+              }
+            }}
+          >
+            {showAdvanced ? 'Hide Advanced ↑' : 'Show Advanced Analysis ↓'}
+          </button>
+          {showAdvanced && (
+            <>
+              <Button
+                data-testid="tab-diagnostics"
+                variant={activeTab === 'diagnostics' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveTab('diagnostics')}
+              >
+                Diagnostics
+              </Button>
+              <Button
+                data-testid="tab-spatial-temporal"
+                variant={activeTab === 'spatial-temporal' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveTab('spatial-temporal')}
+              >
+                Spatial &amp; Temporal
+              </Button>
+              <Button
+                data-testid="tab-calibration-engine"
+                variant={activeTab === 'calibration-engine' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveTab('calibration-engine')}
+              >
+                Calibration Engine
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -250,6 +297,11 @@ export function StatisticsStudio() {
 
       {/* Tab: Cost Analytics — CostForge dashboard stats (property type dist, depreciation) */}
       {activeTab === 'cost-analytics' && <CostForgeDashboard />}
+
+      {/* Advanced Analysis Tabs */}
+      {activeTab === 'diagnostics' && <DiagnosticsTab />}
+      {activeTab === 'spatial-temporal' && <SpatialTemporalTab />}
+      {activeTab === 'calibration-engine' && <CalibrationEngineTab />}
     </div>
   );
 }
