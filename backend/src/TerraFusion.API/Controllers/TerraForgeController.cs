@@ -1936,7 +1936,7 @@ public class TerraForgeController : ControllerBase
                 .OrderBy(g => g.Key.year).ThenBy(g => g.Key.month)
                 .ToList();
 
-            var monthly = groups.Select(g =>
+            var byMonth = groups.Select(g =>
             {
                 var ratios  = g.Select(r => r.ratio).OrderBy(r => r).ToList();
                 var cnt     = ratios.Count;
@@ -1945,23 +1945,18 @@ public class TerraForgeController : ControllerBase
                     : ratios[cnt / 2];
                 return new
                 {
-                    year        = g.Key.year,
-                    month       = g.Key.month,
-                    period      = $"{g.Key.year}-{g.Key.month:D2}",
+                    month       = $"{g.Key.year}-{g.Key.month:D2}",
                     saleCount   = cnt,
                     medianRatio = Math.Round(med, 4),
                 };
             }).ToList();
 
-            var totalSalesCount = rows.Count;
             return Ok(new
             {
                 taxYear,
-                propertyType,
-                periodStart = periodStart.ToString("yyyy-MM"),
-                periodEnd   = new DateTime(taxYear, 12, 31).ToString("yyyy-MM"),
-                totalSales  = totalSalesCount,
-                monthly,
+                method = "monthly-median-ratio",
+                note = "Full repeat-sales index (Case-Shiller) requires parcel-level multi-sale pairs — planned for P1 full implementation.",
+                monthlyTrend = byMonth,
             });
         }
         catch (Exception ex)
