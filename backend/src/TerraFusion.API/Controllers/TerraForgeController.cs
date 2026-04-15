@@ -2719,8 +2719,8 @@ public class TerraForgeController : ControllerBase
     private static double NormalCdf(double x)
     {
         // Guard against underflow for extreme z-scores
-        if (x > 40.0) return 1.0;
-        if (x < -40.0) return 0.0;
+        if (x > 38.0) return 1.0;
+        if (x < -38.0) return 0.0;
 
         // Abramowitz & Stegun 26.2.17
         var t = 1.0 / (1.0 + 0.2316419 * Math.Abs(x));
