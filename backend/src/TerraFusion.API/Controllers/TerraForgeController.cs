@@ -1577,10 +1577,12 @@ public class TerraForgeController : ControllerBase
     /// 1,000 non-parametric resamples. Cached 10 minutes.
     /// IAAO Standard 5: CIs support audit defensibility of ratio study statistics.
     /// </summary>
+    [ResponseCache(Duration = 600)]
     [HttpGet("ratio-study/confidence-intervals")]
     public async Task<IActionResult> GetConfidenceIntervals(
         [FromQuery] int taxYear = 2026,
-        [FromQuery] string? propertyType = null)
+        [FromQuery] string? propertyType = null,
+        [FromQuery] string? qualityClass = null)
     {
         _logger.LogInformation("GetConfidenceIntervals: taxYear={TaxYear}", taxYear);
 
@@ -1592,6 +1594,8 @@ public class TerraForgeController : ControllerBase
                     && cs.SalePrice > 0);
             if (!string.IsNullOrEmpty(propertyType))
                 salesQuery = salesQuery.Where(cs => cs.PropertyType == propertyType);
+            if (!string.IsNullOrEmpty(qualityClass))
+                salesQuery = salesQuery.Where(cs => cs.QualityGrade == qualityClass);
 
             var sales = await salesQuery
                 .Select(cs => new { cs.ParcelId, cs.SalePrice, cs.AdjustedSalePrice })
