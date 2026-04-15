@@ -1972,90 +1972,770 @@ public class TerraForgeController : ControllerBase
         }
     }
 
-    // ── Spatial Autocorrelation (Planned P2) ─────────────────────────────────
+    // ── Spatial Autocorrelation (Moran's I, k-NN weights) ────────────────────
 
     /// <summary>
-    /// Placeholder for Moran's I spatial autocorrelation. Requires parcel centroid coordinates.
+    /// Computes Moran's I spatial autocorrelation on qualified sale ratios using
+    /// k-nearest-neighbor (k=8) binary row-standardized weights. Detects spatial
+    /// clustering of over/under-assessment.
     /// </summary>
     [HttpGet("ratio-study/spatial-autocorrelation")]
-    public IActionResult GetSpatialAutocorrelation([FromQuery] int taxYear = 2026)
+    [ResponseCache(Duration = 600)]
+    public async Task<IActionResult> GetSpatialAutocorrelation(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? propertyType = null,
+        CancellationToken ct = default)
     {
-        return Ok(new
+        _logger.LogInformation("GetSpatialAutocorrelation: taxYear={TaxYear}", taxYear);
+        try
         {
-            taxYear,
-            status   = "planned",
-            note     = "Requires parcel centroid lat/lon data. Source: ArcGIS parcel layer or PACS geocoded addresses. Moran's I will be computed once coordinates are seeded.",
-            moransI  = (double?)null,
-            pValue   = (double?)null,
-        });
+            var salesQuery = _db.ComparableSales
+                .AsNoTracking()
+                .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
+                         && s.SalePrice > 0
+                         && (s.QualificationDecision == "qualified"
+                             || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+
+            if (!string.IsNullOrEmpty(propertyType))
+                salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
+
+            var salesData = await salesQuery
+                .Select(s => new { s.ParcelId, SalePrice = s.AdjustedSalePrice ?? s.SalePrice })
+                .ToListAsync(ct);
+
+            var parcelIds = salesData.Select(s => s.ParcelId).Distinct().ToList();
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+
+            var baseRows = salesData
+                .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+                .Select(s => new
+                {
+                    parcelId = s.ParcelId!,
+                    ratio = (double)assessedMap[s.ParcelId!] / (double)s.SalePrice,
+                })
+                .Where(r => r.ratio > 0.1 && r.ratio < 5.0)
+                .ToList();
+
+            var n0 = baseRows.Count;
+            if (n0 < 10)
+                return Ok(new { error = "Insufficient data for spatial autocorrelation.", sampleSize = n0 });
+
+            var parcelSet = baseRows.Select(r => r.parcelId).Distinct().ToHashSet();
+            var geom = await _db.GisParcelGeometries
+                .AsNoTracking()
+                .Where(g => parcelSet.Contains(g.ParcelId) && g.CentroidLat != null && g.CentroidLng != null)
+                .Select(g => new { g.ParcelId, Lat = g.CentroidLat!.Value, Lng = g.CentroidLng!.Value })
+                .ToListAsync(ct);
+
+            var geomMap = geom.GroupBy(g => g.ParcelId).ToDictionary(g => g.Key, g => g.First());
+
+            // Dedup by parcel — take first ratio per parcel
+            var perParcel = baseRows
+                .GroupBy(r => r.parcelId)
+                .Where(g => geomMap.ContainsKey(g.Key))
+                .Select(g => new
+                {
+                    parcelId = g.Key,
+                    ratio = g.Average(x => x.ratio),
+                    lat = geomMap[g.Key].Lat,
+                    lng = geomMap[g.Key].Lng,
+                })
+                .ToList();
+
+            var n = perParcel.Count;
+            if (n < 10)
+                return Ok(new
+                {
+                    taxYear,
+                    sampleSize = n0,
+                    sampleWithCoords = n,
+                    error = "Insufficient parcels with geometry for Moran's I (need 10+).",
+                });
+
+            var k = Math.Min(8, n - 1);
+            var x = perParcel.Select(p => p.ratio).ToArray();
+            var lat = perParcel.Select(p => p.lat).ToArray();
+            var lng = perParcel.Select(p => p.lng).ToArray();
+            var mean = x.Average();
+
+            // Build k-NN weight matrix (row-standardized binary weights = 1/k)
+            var W = new double[n, n];
+            for (int i = 0; i < n; i++)
+            {
+                var dists = new (int j, double d)[n];
+                for (int j = 0; j < n; j++)
+                    dists[j] = (j, i == j ? double.MaxValue : HaversineKm(lat[i], lng[i], lat[j], lng[j]));
+                Array.Sort(dists, (a, b) => a.d.CompareTo(b.d));
+                for (int m = 0; m < k; m++)
+                    W[i, dists[m].j] = 1.0 / k; // row-standardized
+            }
+
+            // Moran's I with row-standardized weights: S0 = n
+            double num = 0, den = 0;
+            for (int i = 0; i < n; i++) den += (x[i] - mean) * (x[i] - mean);
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                    if (W[i, j] > 0)
+                        num += W[i, j] * (x[i] - mean) * (x[j] - mean);
+
+            var moransI = den > 0 ? num / den : 0;
+            var expectedI = -1.0 / (n - 1);
+
+            // Variance (normal approximation)
+            double S0 = n; // row-standardized
+            double S1 = 0, S2 = 0;
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                {
+                    var wij = W[i, j] + W[j, i];
+                    S1 += wij * wij;
+                }
+            S1 *= 0.5;
+            for (int i = 0; i < n; i++)
+            {
+                double rowSum = 0, colSum = 0;
+                for (int j = 0; j < n; j++)
+                {
+                    rowSum += W[i, j];
+                    colSum += W[j, i];
+                }
+                S2 += (rowSum + colSum) * (rowSum + colSum);
+            }
+
+            double m2 = 0, m4 = 0;
+            for (int i = 0; i < n; i++)
+            {
+                var d = x[i] - mean;
+                m2 += d * d;
+                m4 += d * d * d * d;
+            }
+            m2 /= n; m4 /= n;
+            var kurt = m2 > 0 ? m4 / (m2 * m2) : 0;
+
+            var varNum = n * ((n * n - 3.0 * n + 3) * S1 - n * S2 + 3 * S0 * S0)
+                       - kurt * (n * (n - 1) * S1 - 2.0 * n * S2 + 6 * S0 * S0);
+            var varDen = (n - 1.0) * (n - 2) * (n - 3) * S0 * S0;
+            var varI = varDen > 0 ? (varNum / varDen) - (expectedI * expectedI) : 0;
+
+            double z = 0, pValue = 1;
+            if (varI > 0)
+            {
+                z = (moransI - expectedI) / Math.Sqrt(varI);
+                pValue = 2.0 * (1.0 - NormalCdf(Math.Abs(z)));
+            }
+
+            var significant = pValue < 0.05;
+            string interpretation;
+            if (significant && moransI > expectedI)
+                interpretation = $"Significant positive spatial autocorrelation detected (I={moransI:F4}, p={pValue:F4}). High-ratio and low-ratio parcels cluster spatially — review neighborhood equity.";
+            else if (significant && moransI < expectedI)
+                interpretation = $"Significant negative spatial autocorrelation (I={moransI:F4}, p={pValue:F4}). Ratios alternate spatially — unusual pattern.";
+            else
+                interpretation = $"No significant spatial clustering (I={moransI:F4}, p={pValue:F4}). Ratios are spatially random.";
+
+            return Ok(new
+            {
+                taxYear,
+                sampleSize = n0,
+                sampleWithCoords = n,
+                kNeighbors = k,
+                moransI = Math.Round(moransI, 6),
+                expectedI = Math.Round(expectedI, 6),
+                variance = Math.Round(varI, 8),
+                zScore = Math.Round(z, 4),
+                pValue = Math.Round(pValue, 6),
+                significantClustering = significant,
+                interpretation,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "GetSpatialAutocorrelation failed");
+            return StatusCode(500, new { error = "Failed to compute spatial autocorrelation." });
+        }
     }
 
-    // ── Hedonic Regression (Planned P2) ──────────────────────────────────────
+    // ── Hedonic Regression (OLS) ─────────────────────────────────────────────
 
     /// <summary>
-    /// Placeholder for ML.NET OLS hedonic regression. Requires fully-populated CAMA characteristics.
+    /// OLS hedonic regression of log(SalePrice) on log(GLA), age, quality grade ordinal,
+    /// and time trend. Returns coefficients with standard errors, t-stats, and p-values.
     /// </summary>
     [HttpGet("ratio-study/hedonic-regression")]
-    public IActionResult GetHedonicRegression(
+    public async Task<IActionResult> GetHedonicRegression(
         [FromQuery] int taxYear = 2026,
-        [FromQuery] string? propertyType = null)
+        [FromQuery] string? propertyType = null,
+        CancellationToken ct = default)
     {
-        return Ok(new
+        _logger.LogInformation("GetHedonicRegression: taxYear={TaxYear}", taxYear);
+        try
         {
-            taxYear,
-            propertyType,
-            status       = "planned",
-            note         = "ML.NET OLS regression on CamaCharacteristics + ComparableSales. Requires GrossLivingArea, YearBuilt, ImprovementDetail feature sqft to be fully populated in PACS seeding.",
-            coefficients = Array.Empty<object>(),
-        });
+            var data = await BuildHedonicDataset(taxYear, propertyType, ct);
+            if (data.Count < 20)
+                return Ok(new { error = "Insufficient data for hedonic regression.", sampleSize = data.Count });
+
+            var result = FitOls(data);
+
+            var featureNames = new[] { "Intercept", "Log(GLA)", "YearBuilt (since 1980)", "Quality Grade", "Time Trend (yrs since 2020)" };
+            var coefs = new List<object>();
+            for (int i = 0; i < result.Beta.Length; i++)
+            {
+                var se = result.StdErrors[i];
+                var t = se > 0 ? result.Beta[i] / se : 0;
+                var p = 2.0 * (1.0 - NormalCdf(Math.Abs(t)));
+                coefs.Add(new
+                {
+                    feature = featureNames[i],
+                    coefficient = Math.Round(result.Beta[i], 6),
+                    stdError = Math.Round(se, 6),
+                    tStat = Math.Round(t, 4),
+                    pValue = Math.Round(p, 6),
+                });
+            }
+
+            var adjR2 = 1.0 - (1.0 - result.RSquared) * (data.Count - 1.0) / (data.Count - result.Beta.Length);
+
+            return Ok(new
+            {
+                taxYear,
+                sampleSize = data.Count,
+                rSquared = Math.Round(result.RSquared, 4),
+                adjustedRSquared = Math.Round(adjR2, 4),
+                mse = Math.Round(result.Mse, 6),
+                coefficients = coefs,
+                interpretation = $"R²={result.RSquared:F3}. GLA, year built, quality grade, and time trend modeled against log(SalePrice) on {data.Count} qualified sales.",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "GetHedonicRegression failed");
+            return StatusCode(500, new { error = "Failed to compute hedonic regression." });
+        }
     }
 
-    // ── Variance Decomposition (Planned P2) ──────────────────────────────────
+    // ── Variance Decomposition (ICC by Neighborhood) ─────────────────────────
 
     /// <summary>
-    /// Placeholder for hierarchical mixed-effects variance decomposition.
+    /// Decomposes ratio variance into between-neighborhood and within-neighborhood components,
+    /// reporting ICC (intraclass correlation) as the proportion of variance explained by
+    /// neighborhood membership.
     /// </summary>
     [HttpGet("ratio-study/variance-decomposition")]
-    public IActionResult GetVarianceDecomposition([FromQuery] int taxYear = 2026)
+    public async Task<IActionResult> GetVarianceDecomposition(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? propertyType = null,
+        CancellationToken ct = default)
     {
-        return Ok(new
+        _logger.LogInformation("GetVarianceDecomposition: taxYear={TaxYear}", taxYear);
+        try
         {
-            taxYear,
-            status = "planned",
-            note   = "Hierarchical mixed-effects model. Requires neighborhood grouping variable. Planned P2.",
-        });
+            var salesQuery = _db.ComparableSales
+                .AsNoTracking()
+                .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
+                         && s.SalePrice > 0
+                         && (s.QualificationDecision == "qualified"
+                             || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+
+            if (!string.IsNullOrEmpty(propertyType))
+                salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
+
+            var salesData = await salesQuery
+                .Select(s => new { s.ParcelId, SalePrice = s.AdjustedSalePrice ?? s.SalePrice, s.Neighborhood })
+                .ToListAsync(ct);
+
+            var parcelIds = salesData.Select(s => s.ParcelId).Distinct();
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+
+            var rows = salesData
+                .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+                .Select(s => new
+                {
+                    hood = string.IsNullOrWhiteSpace(s.Neighborhood) ? "Unknown" : s.Neighborhood!,
+                    ratio = (double)assessedMap[s.ParcelId!] / (double)s.SalePrice,
+                })
+                .Where(r => r.ratio > 0.1 && r.ratio < 5.0)
+                .ToList();
+
+            if (rows.Count < 20)
+                return Ok(new { error = "Insufficient data for variance decomposition.", sampleSize = rows.Count });
+
+            var grouped = rows
+                .GroupBy(r => r.hood)
+                .Where(g => g.Count() >= 5)
+                .ToList();
+
+            if (grouped.Count < 2)
+                return Ok(new { error = "Need at least 2 neighborhoods with ≥5 sales each.", sampleSize = rows.Count });
+
+            var allRatios = grouped.SelectMany(g => g.Select(r => r.ratio)).ToList();
+            var grandN = allRatios.Count;
+            var grandMean = allRatios.Average();
+
+            double ssBetween = 0, ssWithin = 0;
+            var hoodList = new List<object>();
+            foreach (var g in grouped)
+            {
+                var vals = g.Select(r => r.ratio).ToList();
+                var ni = vals.Count;
+                var meanI = vals.Average();
+                ssBetween += ni * (meanI - grandMean) * (meanI - grandMean);
+                foreach (var v in vals) ssWithin += (v - meanI) * (v - meanI);
+
+                var sortedVals = vals.OrderBy(v => v).ToList();
+                var med = ni % 2 == 0 ? (sortedVals[ni / 2 - 1] + sortedVals[ni / 2]) / 2.0 : sortedVals[ni / 2];
+                var variance = vals.Sum(v => (v - meanI) * (v - meanI)) / Math.Max(ni - 1, 1);
+                var stdDev = Math.Sqrt(variance);
+
+                hoodList.Add(new
+                {
+                    neighborhood = g.Key,
+                    count = ni,
+                    medianRatio = Math.Round(med, 4),
+                    meanRatio = Math.Round(meanI, 4),
+                    stdDev = Math.Round(stdDev, 4),
+                    deviationFromGrandMean = Math.Round(meanI - grandMean, 4),
+                });
+            }
+
+            var ssTotal = ssBetween + ssWithin;
+            var icc = ssTotal > 0 ? ssBetween / ssTotal : 0;
+
+            var sortedHoods = hoodList
+                .OrderByDescending(h => Math.Abs((double)h.GetType().GetProperty("deviationFromGrandMean")!.GetValue(h)!))
+                .ToList();
+
+            return Ok(new
+            {
+                taxYear,
+                totalSampleSize = grandN,
+                neighborhoodCount = grouped.Count,
+                icc = Math.Round(icc, 4),
+                ssBetween = Math.Round(ssBetween, 4),
+                ssWithin = Math.Round(ssWithin, 4),
+                ssTotal = Math.Round(ssTotal, 4),
+                interpretation = $"{icc * 100:F1}% of ratio variance is explained by neighborhood membership. Review neighborhoods with largest deviation from county mean.",
+                neighborhoods = sortedHoods,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "GetVarianceDecomposition failed");
+            return StatusCode(500, new { error = "Failed to compute variance decomposition." });
+        }
     }
 
-    // ── Sale Chasing Test (Planned P2) ───────────────────────────────────────
+    // ── Sale Chasing (Temporal Regressivity Test) ────────────────────────────
 
     /// <summary>
-    /// Placeholder for sale chasing (post-sale revaluation bias) detection.
+    /// Tests for sale chasing by correlating sale recency (months before Jan 1 of taxYear)
+    /// with ratio values. Negative correlation with significance indicates potential chasing.
     /// </summary>
     [HttpGet("ratio-study/sale-chasing")]
-    public IActionResult GetSaleChasing([FromQuery] int taxYear = 2026)
+    public async Task<IActionResult> GetSaleChasing(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? propertyType = null,
+        CancellationToken ct = default)
     {
-        return Ok(new
+        _logger.LogInformation("GetSaleChasing: taxYear={TaxYear}", taxYear);
+        try
         {
-            taxYear,
-            status = "planned",
-            note   = "ΔR² test requires pre-sale and post-sale assessed values for the same parcel. Planned P2.",
-        });
+            var salesQuery = _db.ComparableSales
+                .AsNoTracking()
+                .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear && s.SalePrice > 0);
+
+            if (!string.IsNullOrEmpty(propertyType))
+                salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
+
+            var salesData = await salesQuery
+                .Select(s => new { s.ParcelId, SalePrice = s.AdjustedSalePrice ?? s.SalePrice, s.SaleDate })
+                .ToListAsync(ct);
+
+            var parcelIds = salesData.Select(s => s.ParcelId).Distinct();
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+
+            var assessmentDate = new DateTime(taxYear, 1, 1);
+            var rows = salesData
+                .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+                .Select(s => new
+                {
+                    ratio = (double)assessedMap[s.ParcelId!] / (double)s.SalePrice,
+                    monthsBefore = (assessmentDate - s.SaleDate).TotalDays / 30.0,
+                })
+                .Where(r => r.ratio > 0.1 && r.ratio < 5.0)
+                .ToList();
+
+            var n = rows.Count;
+            if (n < 20)
+                return Ok(new { error = "Insufficient data for sale chasing test.", sampleSize = n });
+
+            var months = rows.Select(r => r.monthsBefore).ToArray();
+            var ratios = rows.Select(r => r.ratio).ToArray();
+            var absDev = rows.Select(r => Math.Abs(r.ratio - 1.0)).ToArray();
+
+            var corrMonthsAbsDev = Pearson(months, absDev);
+            var corrMonthsRatio = Pearson(months, ratios);
+
+            // p-value for correlation: t = r * sqrt((n-2)/(1-r²))
+            double pRatio = 1;
+            if (Math.Abs(corrMonthsRatio) < 0.9999)
+            {
+                var tStat = corrMonthsRatio * Math.Sqrt((n - 2) / (1 - corrMonthsRatio * corrMonthsRatio));
+                pRatio = 2.0 * (1.0 - NormalCdf(Math.Abs(tStat)));
+            }
+
+            var chasingDetected = corrMonthsRatio < -0.10 && pRatio < 0.05;
+
+            // Quartiles by monthsBefore (ascending = most recent first)
+            var sorted = rows.OrderBy(r => r.monthsBefore).ToList();
+            var quartiles = new List<object>();
+            var qLabels = new[] { "Q1 (most recent)", "Q2", "Q3", "Q4 (oldest)" };
+            for (int q = 0; q < 4; q++)
+            {
+                var start = q * n / 4;
+                var end = q == 3 ? n : (q + 1) * n / 4;
+                var slice = sorted.Skip(start).Take(end - start).ToList();
+                if (slice.Count == 0) continue;
+                var sliceRatios = slice.Select(r => r.ratio).OrderBy(r => r).ToList();
+                var cnt = sliceRatios.Count;
+                var med = cnt % 2 == 0 ? (sliceRatios[cnt / 2 - 1] + sliceRatios[cnt / 2]) / 2.0 : sliceRatios[cnt / 2];
+                var sliceAbs = slice.Select(r => Math.Abs(r.ratio - 1.0)).OrderBy(r => r).ToList();
+                var medAbs = cnt % 2 == 0 ? (sliceAbs[cnt / 2 - 1] + sliceAbs[cnt / 2]) / 2.0 : sliceAbs[cnt / 2];
+                quartiles.Add(new
+                {
+                    label = qLabels[q],
+                    maxMonthsBefore = Math.Round(slice.Max(r => r.monthsBefore), 2),
+                    count = cnt,
+                    medianRatio = Math.Round(med, 4),
+                    medianAbsDeviation = Math.Round(medAbs, 4),
+                });
+            }
+
+            var interp = chasingDetected
+                ? $"Sale chasing signal detected. Correlation between sale recency and ratio: {corrMonthsRatio:F3} (p={pRatio:F3}). Recent sales have ratios closer to 1.0 — investigate post-sale revaluation."
+                : $"No significant sale chasing pattern detected. Correlation between sale recency and ratio: {corrMonthsRatio:F3} (p={pRatio:F3}).";
+
+            return Ok(new
+            {
+                taxYear,
+                sampleSize = n,
+                correlationMonthsVsAbsDeviation = Math.Round(corrMonthsAbsDev, 4),
+                correlationMonthsVsRatio = Math.Round(corrMonthsRatio, 4),
+                pValueMonthsVsRatio = Math.Round(pRatio, 4),
+                chasingSignalDetected = chasingDetected,
+                interpretation = interp,
+                quartiles,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "GetSaleChasing failed");
+            return StatusCode(500, new { error = "Failed to compute sale chasing test." });
+        }
     }
 
-    // ── Cross-Validation (Planned P2) ────────────────────────────────────────
+    // ── 5-Fold Cross-Validation (Hedonic Model) ──────────────────────────────
 
     /// <summary>
-    /// Placeholder for 5-fold cross-validation on hedonic model.
+    /// 5-fold cross-validation of the hedonic model. Reports out-of-sample RMSE
+    /// and R² per fold and averaged across folds.
     /// </summary>
     [HttpGet("ratio-study/cross-validation")]
-    public IActionResult GetCrossValidation([FromQuery] int taxYear = 2026)
+    public async Task<IActionResult> GetCrossValidation(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? propertyType = null,
+        CancellationToken ct = default)
     {
-        return Ok(new
+        _logger.LogInformation("GetCrossValidation: taxYear={TaxYear}", taxYear);
+        try
         {
-            taxYear,
-            status = "planned",
-            note   = "5-fold cross-validation on hedonic model. Depends on hedonic-regression endpoint. Planned P2.",
-        });
+            var data = await BuildHedonicDataset(taxYear, propertyType, ct);
+            if (data.Count < 50)
+                return Ok(new { error = "Insufficient data for 5-fold cross-validation.", sampleSize = data.Count });
+
+            // Deterministic shuffle (seed 42)
+            var rng = new Random(42);
+            var shuffled = data.OrderBy(_ => rng.Next()).ToList();
+            var n = shuffled.Count;
+            var folds = 5;
+            var foldResults = new List<object>();
+            var rmses = new List<double>();
+            var r2s = new List<double>();
+
+            for (int f = 0; f < folds; f++)
+            {
+                var testStart = f * n / folds;
+                var testEnd = f == folds - 1 ? n : (f + 1) * n / folds;
+                var test = shuffled.Skip(testStart).Take(testEnd - testStart).ToList();
+                var train = shuffled.Take(testStart).Concat(shuffled.Skip(testEnd)).ToList();
+
+                var fit = FitOls(train);
+
+                // Score test fold
+                double sse = 0, sst = 0;
+                var testMean = test.Average(r => r.Y);
+                foreach (var r in test)
+                {
+                    var pred = fit.Beta[0]
+                             + fit.Beta[1] * r.X1
+                             + fit.Beta[2] * r.X2
+                             + fit.Beta[3] * r.X3
+                             + fit.Beta[4] * r.X4;
+                    sse += (pred - r.Y) * (pred - r.Y);
+                    sst += (r.Y - testMean) * (r.Y - testMean);
+                }
+                var rmse = Math.Sqrt(sse / test.Count);
+                var r2 = sst > 0 ? 1.0 - sse / sst : 0;
+                rmses.Add(rmse);
+                r2s.Add(r2);
+
+                foldResults.Add(new
+                {
+                    fold = f + 1,
+                    trainSize = train.Count,
+                    testSize = test.Count,
+                    rmse = Math.Round(rmse, 4),
+                    rSquared = Math.Round(r2, 4),
+                });
+            }
+
+            var meanRmse = rmses.Average();
+            var meanR2 = r2s.Average();
+            var stdRmse = Math.Sqrt(rmses.Sum(r => (r - meanRmse) * (r - meanRmse)) / rmses.Count);
+
+            // In-sample R² for comparison
+            var fullFit = FitOls(shuffled);
+
+            return Ok(new
+            {
+                taxYear,
+                sampleSize = n,
+                folds,
+                meanRmse = Math.Round(meanRmse, 4),
+                meanRSquared = Math.Round(meanR2, 4),
+                stdDevRmse = Math.Round(stdRmse, 4),
+                foldResults,
+                interpretation = $"5-fold cross-validated RMSE={meanRmse:F3} (log scale). Mean out-of-sample R²={meanR2:F3} vs in-sample R²={fullFit.RSquared:F3}.",
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "GetCrossValidation failed");
+            return StatusCode(500, new { error = "Failed to compute cross-validation." });
+        }
+    }
+
+    // ── Statistical helpers ─────────────────────────────────────────────────
+
+    private record HedonicRow(double Y, double X1, double X2, double X3, double X4);
+
+    private record OlsResult(double[] Beta, double[] StdErrors, double RSquared, double Mse);
+
+    private async Task<List<HedonicRow>> BuildHedonicDataset(int taxYear, string? propertyType, CancellationToken ct)
+    {
+        var salesQuery = _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
+                     && s.SalePrice > 10000
+                     && (s.QualificationDecision == "qualified"
+                         || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+
+        if (!string.IsNullOrEmpty(propertyType))
+            salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
+
+        var sales = await salesQuery
+            .Select(s => new { s.ParcelId, SalePrice = s.AdjustedSalePrice ?? s.SalePrice, s.SaleDate })
+            .ToListAsync(ct);
+
+        var parcelIds = sales.Where(s => s.ParcelId != null).Select(s => s.ParcelId!).Distinct().ToHashSet();
+        var cama = await _db.CamaCharacteristics
+            .AsNoTracking()
+            .Where(c => parcelIds.Contains(c.ParcelId) && c.SquareFeet > 100)
+            .Select(c => new { c.ParcelId, c.SquareFeet, c.YearBuilt, c.QualityGrade })
+            .ToListAsync(ct);
+
+        var camaMap = cama.GroupBy(c => c.ParcelId).ToDictionary(g => g.Key, g => g.First());
+
+        var baseDate = new DateTime(2020, 1, 1);
+        var data = new List<HedonicRow>();
+        foreach (var s in sales)
+        {
+            if (s.ParcelId == null || !camaMap.TryGetValue(s.ParcelId, out var cc)) continue;
+            if (cc.SquareFeet <= 100) continue;
+            var sp = (double)s.SalePrice;
+            if (sp <= 10000) continue;
+            var y = Math.Log(sp);
+            var x1 = Math.Log(Math.Max((double)cc.SquareFeet, 1));
+            var x2 = (cc.YearBuilt ?? 1980) - 1980;
+            var x3 = QualityOrdinal(cc.QualityGrade);
+            var x4 = (s.SaleDate - baseDate).TotalDays / 365.25;
+            // ratio filter via implied ratio check skipped here — hedonic is on SP directly
+            data.Add(new HedonicRow(y, x1, x2, x3, x4));
+        }
+        return data;
+    }
+
+    private static OlsResult FitOls(List<HedonicRow> data)
+    {
+        int n = data.Count;
+        int p = 5;
+        var X = new double[n, p];
+        var y = new double[n];
+        for (int i = 0; i < n; i++)
+        {
+            X[i, 0] = 1.0;
+            X[i, 1] = data[i].X1;
+            X[i, 2] = data[i].X2;
+            X[i, 3] = data[i].X3;
+            X[i, 4] = data[i].X4;
+            y[i] = data[i].Y;
+        }
+
+        // X'X (p x p)
+        var XtX = new double[p, p];
+        for (int i = 0; i < p; i++)
+            for (int j = 0; j < p; j++)
+            {
+                double s = 0;
+                for (int r = 0; r < n; r++) s += X[r, i] * X[r, j];
+                XtX[i, j] = s;
+            }
+        // X'y
+        var Xty = new double[p];
+        for (int i = 0; i < p; i++)
+        {
+            double s = 0;
+            for (int r = 0; r < n; r++) s += X[r, i] * y[r];
+            Xty[i] = s;
+        }
+
+        var XtXInv = InvertMatrix(XtX);
+
+        var beta = new double[p];
+        for (int i = 0; i < p; i++)
+        {
+            double s = 0;
+            for (int j = 0; j < p; j++) s += XtXInv[i, j] * Xty[j];
+            beta[i] = s;
+        }
+
+        // Residuals & R²
+        var yMean = y.Average();
+        double ssRes = 0, ssTot = 0;
+        for (int r = 0; r < n; r++)
+        {
+            double pred = 0;
+            for (int i = 0; i < p; i++) pred += X[r, i] * beta[i];
+            ssRes += (y[r] - pred) * (y[r] - pred);
+            ssTot += (y[r] - yMean) * (y[r] - yMean);
+        }
+        var r2 = ssTot > 0 ? 1.0 - ssRes / ssTot : 0;
+        var mse = ssRes / Math.Max(n - p, 1);
+        var stdErrs = new double[p];
+        for (int i = 0; i < p; i++)
+            stdErrs[i] = Math.Sqrt(Math.Max(mse * XtXInv[i, i], 0));
+
+        return new OlsResult(beta, stdErrs, r2, mse);
+    }
+
+    private static double[,] InvertMatrix(double[,] m)
+    {
+        int n = m.GetLength(0);
+        var a = new double[n, 2 * n];
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++) a[i, j] = m[i, j];
+            a[i, n + i] = 1.0;
+        }
+        // Gauss-Jordan with partial pivoting
+        for (int col = 0; col < n; col++)
+        {
+            int piv = col;
+            double max = Math.Abs(a[col, col]);
+            for (int r = col + 1; r < n; r++)
+            {
+                if (Math.Abs(a[r, col]) > max)
+                {
+                    max = Math.Abs(a[r, col]);
+                    piv = r;
+                }
+            }
+            if (max < 1e-12) throw new InvalidOperationException("Singular matrix in OLS.");
+            if (piv != col)
+                for (int j = 0; j < 2 * n; j++)
+                    (a[col, j], a[piv, j]) = (a[piv, j], a[col, j]);
+
+            var pivVal = a[col, col];
+            for (int j = 0; j < 2 * n; j++) a[col, j] /= pivVal;
+            for (int r = 0; r < n; r++)
+            {
+                if (r == col) continue;
+                var factor = a[r, col];
+                if (factor == 0) continue;
+                for (int j = 0; j < 2 * n; j++) a[r, j] -= factor * a[col, j];
+            }
+        }
+        var inv = new double[n, n];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                inv[i, j] = a[i, n + j];
+        return inv;
+    }
+
+    private static double QualityOrdinal(string? grade)
+    {
+        if (string.IsNullOrWhiteSpace(grade)) return 3;
+        var g = grade.Trim().ToUpperInvariant();
+        return g switch
+        {
+            "A+" or "EXCELLENT+" or "LUXURY" => 7,
+            "A" or "EXCELLENT" => 6,
+            "B+" => 5,
+            "B" or "GOOD" => 4,
+            "C+" => 3,
+            "C" or "STANDARD" or "AVERAGE" => 2,
+            "D+" or "FAIR" => 1,
+            "D" or "ECONOMY" or "POOR" => 0,
+            _ => 3,
+        };
+    }
+
+    private static double HaversineKm(double lat1, double lng1, double lat2, double lng2)
+    {
+        const double R = 6371.0;
+        var dLat = (lat2 - lat1) * Math.PI / 180.0;
+        var dLng = (lng2 - lng1) * Math.PI / 180.0;
+        var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180) *
+                Math.Sin(dLng / 2) * Math.Sin(dLng / 2);
+        return R * 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+    }
+
+    private static double NormalCdf(double x)
+    {
+        // Abramowitz & Stegun 26.2.17
+        var t = 1.0 / (1.0 + 0.2316419 * Math.Abs(x));
+        var poly = t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+        var pdf = Math.Exp(-0.5 * x * x) / Math.Sqrt(2 * Math.PI);
+        var cdf = 1.0 - pdf * poly;
+        return x >= 0 ? cdf : 1.0 - cdf;
+    }
+
+    private static double Pearson(double[] a, double[] b)
+    {
+        int n = a.Length;
+        if (n < 2) return 0;
+        double ma = a.Average(), mb = b.Average();
+        double num = 0, da = 0, db = 0;
+        for (int i = 0; i < n; i++)
+        {
+            var xa = a[i] - ma;
+            var xb = b[i] - mb;
+            num += xa * xb;
+            da += xa * xa;
+            db += xb * xb;
+        }
+        var denom = Math.Sqrt(da * db);
+        return denom > 0 ? num / denom : 0;
     }
 
     // ── KS Shift Test (Two-Sample Kolmogorov–Smirnov) ────────────────────────
