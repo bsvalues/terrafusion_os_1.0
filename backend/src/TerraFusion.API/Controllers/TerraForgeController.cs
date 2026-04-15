@@ -1849,7 +1849,11 @@ public class TerraForgeController : ControllerBase
                 return Ok(new { error = "Insufficient data for influence diagnostics.", sampleSize = n });
 
             var meanRatio  = rows.Average(r => r.ratio);
-            var variance   = rows.Average(r => Math.Pow(r.ratio - meanRatio, 2));
+            // MSE for mean-only OLS model
+            var mse        = rows.Average(r => Math.Pow(r.ratio - meanRatio, 2));
+            // Hat matrix diagonal for balanced model: h_ii = 1/n
+            var h          = 1.0 / n;
+            // Cook's D threshold: 4/n (standard rule of thumb)
             var threshold  = 4.0 / n;
 
             var items = rows
@@ -1860,8 +1864,10 @@ public class TerraForgeController : ControllerBase
                     r.address,
                     r.salePrice,
                     ratio         = Math.Round(r.ratio, 4),
-                    cookD         = Math.Round(Math.Pow(r.ratio - meanRatio, 2) / Math.Max(variance, 1e-10), 6),
-                    isInfluential = (Math.Pow(r.ratio - meanRatio, 2) / Math.Max(variance, 1e-10)) > threshold,
+                    // Cook's D for mean-only model (p=1):
+                    // D_i = (e_i² / (p * MSE)) * h_ii / (1 - h_ii)²
+                    cookD         = Math.Round((Math.Pow(r.ratio - meanRatio, 2) / Math.Max(mse, 1e-10)) * (h / Math.Pow(1.0 - h, 2)), 6),
+                    isInfluential = ((Math.Pow(r.ratio - meanRatio, 2) / Math.Max(mse, 1e-10)) * (h / Math.Pow(1.0 - h, 2))) > threshold,
                 })
                 .OrderByDescending(r => r.cookD)
                 .Take(100)
