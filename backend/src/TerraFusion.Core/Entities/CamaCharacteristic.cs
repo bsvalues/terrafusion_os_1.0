@@ -95,6 +95,23 @@ public class CamaCharacteristic
   [StringLength(10)]
   public string? AbsSubdv { get; set; }
 
+  // ── City / Stratification (T0: CostForge Benton Method v2) ──
+  /// <summary>
+  /// City name for rollups. One of: Kennewick, Richland, Pasco, Prosser,
+  /// Benton City, West Richland, Unincorporated. Populated by PacsCanonicalizer
+  /// from PacsSitus.SitusCity.
+  /// </summary>
+  [StringLength(50)]
+  public string? City { get; set; }
+
+  /// <summary>
+  /// Property-use stratum for cross-cutting analysis. One of:
+  /// R (residential SFR), M (manufactured home), C (commercial), A (agricultural),
+  /// V (vacant), X (exempt). Derived from BuildingType during canonicalization.
+  /// </summary>
+  [StringLength(2)]
+  public string? PropertyUseStratum { get; set; }
+
   // ── Ownership ──
   public Guid CountyId { get; set; }
   public County County { get; set; } = null!;
