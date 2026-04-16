@@ -40,11 +40,19 @@ public class PacsCanonicalizer : IPacsCanonicalizer
     public async Task<CanonicalizerResult> PopulateCityAndStratumAsync(
         Guid countyId, int taxYear, CancellationToken ct = default)
     {
-        // Step 1: build GeoId -> Pacs parcel Guid lookup
-        var geoToPacsId = await _context.PacsParcel
+        // Step 1: build GeoId -> Pacs parcel Guid lookup.
+        // PacsParcel may have multiple rows per GeoId (historical dupes from
+        // PACS sync); dedupe by taking the last-updated row per GeoId.
+        var pacsRows = await _context.PacsParcel
             .Where(p => p.CountyId == countyId && p.GeoId != null)
-            .Select(p => new { p.Id, p.GeoId })
-            .ToDictionaryAsync(p => p.GeoId!, p => p.Id, ct);
+            .Select(p => new { p.Id, p.GeoId, p.SyncedAt })
+            .ToListAsync(ct);
+
+        var geoToPacsId = pacsRows
+            .GroupBy(p => p.GeoId!)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(p => p.SyncedAt).First().Id);
 
         // Step 2: build PacsParcel.Guid -> City map from primary PacsSitus rows
         var pacsIdToCity = await _context.PacsSituses
