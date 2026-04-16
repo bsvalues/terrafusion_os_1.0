@@ -25,39 +25,13 @@ import {
 import { useFieldSync } from "@/hooks/useFieldSync";
 import { InspectionPanel } from "./InspectionPanel";
 import { SyncStatusBanner } from "./SyncStatusBanner";
+import { PreVisitBriefingPanel } from "./PreVisitBriefingPanel";
 import type { FieldAssignment, FieldObservation, InspectionStatus } from "@/types/field";
 
 // ── API helpers ────────────────────────────────────────────────────
 const API_PORT = (globalThis as Record<string, unknown>).TF_API_PORT ?? 5046;
 
-async function fetchParcelsForAssignment(count = 20): Promise<FieldAssignment[]> {
-  const res = await fetch(
-    `http://localhost:${API_PORT}/api/properties?page=1&limit=${count}`,
-    { headers: { "Content-Type": "application/json" } },
-  );
-  if (!res.ok) throw new Error(`Properties fetch failed: ${res.status}`);
-  const body = await res.json();
-  const items: unknown[] = Array.isArray(body) ? body : (body?.data ?? []);
-  return items.map((p: unknown) => {
-    const pp = p as Record<string, unknown>;
-    return {
-      id: crypto.randomUUID(),
-      parcelId: String(pp.id ?? pp.parcelId ?? ""),
-      parcelNumber: String(pp.parcelNumber ?? pp.parcel_number ?? ""),
-      address: String(pp.address ?? ""),
-      city: String(pp.city ?? ""),
-      latitude: typeof pp.latitude === "number" ? pp.latitude : null,
-      longitude: typeof pp.longitude === "number" ? pp.longitude : null,
-      currentValue: typeof pp.assessedValue === "number"
-        ? pp.assessedValue
-        : typeof pp.assessed_value === "number"
-          ? pp.assessed_value
-          : null,
-      propertyClass: String(pp.propertyClass ?? pp.property_class ?? ""),
-      priority: "routine" as const,
-      status: "assigned" as const,
-      assignedAt: new Date().toISOString(),
-      inspectedAt: null,
+// \u2500\u2500 Primary: fetch from the real work queue \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nasync function fetchFieldAssignments(): Promise<FieldAssignment[]> {\n  const res = await fetch(\n    `http://localhost:${API_PORT}/api/field/assignments`,\n    { headers: { "Content-Type": "application/json" } },\n  );\n  if (!res.ok) throw new Error(`Field assignments fetch failed: ${res.status}`);\n  const body = await res.json();\n  const items: unknown[] = Array.isArray(body) ? body : (body?.assignments ?? []);\n  return items.map((p: unknown) => {\n    const pp = p as Record<string, unknown>;\n    return {\n      id: String(pp.id ?? crypto.randomUUID()),\n      parcelId: String(pp.parcelId ?? pp.parcel_id ?? ""),\n      parcelNumber: String(pp.parcelNumber ?? pp.parcel_number ?? ""),\n      address: String(pp.address ?? ""),\n      city: String(pp.city ?? ""),\n      latitude: typeof pp.latitude === "number" ? pp.latitude : null,\n      longitude: typeof pp.longitude === "number" ? pp.longitude : null,\n      currentValue: typeof pp.currentValue === "number" ? pp.currentValue\n        : typeof pp.current_value === "number" ? pp.current_value\n        : null,\n      propertyClass: String(pp.propertyClass ?? ""),\n      priority: (String(pp.priority ?? "routine")) as FieldAssignment["priority"],\n      status: (String(pp.status ?? "assigned")) as FieldAssignment["status"],\n      assignedAt: String(pp.assignedAt ?? pp.assigned_at ?? new Date().toISOString()),\n      inspectedAt: typeof pp.inspectedAt === "string" ? pp.inspectedAt : null,
       notes: null,
     };
   });
@@ -67,6 +41,7 @@ async function fetchParcelsForAssignment(count = 20): Promise<FieldAssignment[]>
 export function FieldStudioDashboard() {
   const [assignments, setAssignments] = useState<FieldAssignment[]>([]);
   const [activeInspection, setActiveInspection] = useState<FieldAssignment | null>(null);
+  const [showBriefing, setShowBriefing] = useState(false);
   const [observations, setObservations] = useState<StoredObservation[]>([]);
   const [activeTab, setActiveTab] = useState("assigned");
   const sync = useFieldSync();
@@ -116,11 +91,11 @@ export function FieldStudioDashboard() {
   const pullAssignments = async () => {
     if (!sync.isOnline) { toast.error("Cannot pull assignments while offline"); return; }
     try {
-      const newAssignments = await fetchParcelsForAssignment(20);
-      if (!newAssignments.length) { toast.info("No parcels available"); return; }
+      const newAssignments = await fetchFieldAssignments();
+      if (!newAssignments.length) { toast.info("No active field assignments in queue"); return; }
       await saveAssignments(newAssignments);
       await loadData();
-      toast.success(`${newAssignments.length} assignments cached for field work`);
+      toast.success(`${newAssignments.length} assignments loaded from queue`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Unknown error";
       toast.error("Failed to pull assignments", { description: msg });
@@ -144,11 +119,25 @@ export function FieldStudioDashboard() {
   const hasPending = sync.queueStats.pending > 0 || sync.queueStats.error > 0;
 
   // ── Active inspection view ─────────────────────────────────────
+  // Step 1 — Pre-visit brief (human review gate)
+  if (activeInspection && showBriefing) {
+    return (
+      <div className="p-4 sm:p-6 max-w-2xl mx-auto space-y-4">
+        <PreVisitBriefingPanel
+          assignment={activeInspection}
+          onStartInspection={() => setShowBriefing(false)}
+          onDismiss={() => { setActiveInspection(null); setShowBriefing(false); }}
+        />
+      </div>
+    );
+  }
+
+  // Step 2 — Inspection panel (after human has reviewed brief)
   if (activeInspection) {
     return (
       <InspectionPanel
         assignment={activeInspection}
-        onBack={() => { setActiveInspection(null); loadData(); }}
+        onBack={() => { setActiveInspection(null); setShowBriefing(false); loadData(); }}
         onSaveObservation={handleSaveObservation}
         onUpdateStatus={handleUpdateStatus}
         onRefreshObservations={handleRefreshObservations}
@@ -277,10 +266,10 @@ export function FieldStudioDashboard() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="assigned" className="mt-4 space-y-2">
-          <AssignmentList items={filterByStatus("assigned")} onSelect={setActiveInspection} emptyMessage="No assignments. Tap 'Pull' to fetch parcels." />
+          <AssignmentList items={filterByStatus("assigned")} onSelect={(a) => { setActiveInspection(a); setShowBriefing(true); }} emptyMessage="No assignments. Tap 'Pull' to fetch parcels." />
         </TabsContent>
         <TabsContent value="in_progress" className="mt-4 space-y-2">
-          <AssignmentList items={filterByStatus("in_progress")} onSelect={setActiveInspection} emptyMessage="No inspections in progress." />
+          <AssignmentList items={filterByStatus("in_progress")} onSelect={(a) => { setActiveInspection(a); setShowBriefing(false); }} emptyMessage="No inspections in progress." />
         </TabsContent>
         <TabsContent value="completed" className="mt-4 space-y-2">
           <AssignmentList

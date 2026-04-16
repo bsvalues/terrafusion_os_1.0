@@ -218,6 +218,13 @@ export function InspectionPanel({
                 className="text-sm"
                 rows={2}
               />
+              {/* Field guidance: heuristic consistency flag (not AI — rule-based) */}
+              {condOverall >= 5 && condNotes.trim().length < 15 && (
+                <div className="flex items-start gap-2 rounded bg-yellow-50 border border-yellow-200 px-3 py-2 text-xs text-yellow-800">
+                  <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0 text-yellow-600" />
+                  C5+ condition: field notes are required to support this rating on appeals and cert review.
+                </div>
+              )}
               <Button onClick={() => saveObservation("condition", {
                 overall: condOverall, roof: condRoof, exterior: condExterior,
                 interior: condInterior, mechanical: condMechanical, notes: condNotes,

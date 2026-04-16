@@ -37,18 +37,106 @@ interface SketchModuleProps {
   parcelId?: string;
 }
 
-const SAMPLE_SKETCH: SketchData = {
-  parcelId: '1-0001-100-0001-00',
-  buildingId: 'B001',
-  label: 'Main Residence',
-  totalSqft: 2150,
+// ── API response shape ────────────────────────────────────────────
+interface ApiSketchSegment {
+  id: string;
+  label: string;
+  typeCode: string | null;
+  sqft: number;
+  conditionCode: string | null;
+  length: number | null;
+  width: number | null;
+  yearBuilt: number | null;
+  numStories: number | null;
+  hasSketchCommands: boolean;
+}
+
+interface ApiBuilding {
+  buildingId: string;
+  label: string;
+  typeCode: string | null;
+  isPrimary: boolean;
+  totalSqft: number;
+  yearBuilt: number;
+  segments: ApiSketchSegment[];
+}
+
+interface ApiSketchResult {
+  parcelNumber: string;
+  sketchUrl: string | null;
+  buildings: ApiBuilding[];
+}
+
+// ── Segment type inference from PACS type codes ───────────────────
+const SEGMENT_TYPE_MAP: Record<string, SketchSegment['type']> = {
+  HOS: 'main', GLA: 'main', LVA: 'main', LVG: 'main',
+  GAR: 'garage', CTG: 'garage', BG: 'garage',
+  POR: 'porch', DEC: 'porch', SCR: 'porch',
+  ADD: 'addition', REM: 'addition',
+};
+
+function inferSegmentType(typeCode: string | null, idx: number): SketchSegment['type'] {
+  if (typeCode && SEGMENT_TYPE_MAP[typeCode.toUpperCase()]) return SEGMENT_TYPE_MAP[typeCode.toUpperCase()];
+  const fallback: SketchSegment['type'][] = ['main', 'garage', 'porch', 'addition'];
+  return fallback[Math.min(idx, 3)];
+}
+
+// ── Layout builder: auto-positions segments from area/dimensions ──
+function mapApiToSketchData(parcelId: string, building: ApiBuilding): SketchData {
+  const SCALE = 1.2;
+  const GAP = 8;
+  const CANVAS_W = 480;
+  let cursor = { x: 20, y: 20 };
+  let rowMaxH = 0;
+
+  const segments: SketchSegment[] = building.segments.map((seg, i) => {
+    const sqft = seg.sqft || 0;
+    let w: number, h: number;
+    if (seg.width && seg.length) {
+      w = Math.max(seg.width * SCALE, 30);
+      h = Math.max(seg.length * SCALE, 20);
+    } else if (sqft > 0) {
+      const aspect = i === 0 ? 1.5 : 1.1;
+      w = Math.max(Math.sqrt(sqft * aspect) * SCALE * 0.65, 30);
+      h = Math.max((sqft / Math.sqrt(sqft * aspect)) * SCALE * 0.65, 20);
+    } else {
+      w = 60; h = 40;
+    }
+    if (cursor.x + w > CANVAS_W) {
+      cursor = { x: 20, y: cursor.y + rowMaxH + GAP };
+      rowMaxH = 0;
+    }
+    const x0 = cursor.x, y0 = cursor.y;
+    rowMaxH = Math.max(rowMaxH, h);
+    cursor = { x: cursor.x + w + GAP, y: cursor.y };
+    return {
+      id: seg.id,
+      label: seg.label,
+      points: [{ x: x0, y: y0 }, { x: x0 + w, y: y0 }, { x: x0 + w, y: y0 + h }, { x: x0, y: y0 + h }],
+      sqft,
+      type: inferSegmentType(seg.typeCode, i),
+    };
+  });
+
+  return {
+    parcelId,
+    buildingId: building.buildingId,
+    label: building.label,
+    totalSqft: building.totalSqft,
+    stories: 1,
+    yearBuilt: building.yearBuilt || 0,
+    segments,
+  };
+}
+
+const PLACEHOLDER_SKETCH: SketchData = {
+  parcelId: '',
+  buildingId: '',
+  label: 'No sketch data',
+  totalSqft: 0,
   stories: 1,
-  yearBuilt: 1998,
-  segments: [
-    { id: 's1', label: 'Main', points: [{ x: 50, y: 50 }, { x: 250, y: 50 }, { x: 250, y: 200 }, { x: 50, y: 200 }], sqft: 1600, type: 'main' },
-    { id: 's2', label: 'Garage', points: [{ x: 250, y: 80 }, { x: 370, y: 80 }, { x: 370, y: 200 }, { x: 250, y: 200 }], sqft: 400, type: 'garage' },
-    { id: 's3', label: 'Porch', points: [{ x: 100, y: 200 }, { x: 200, y: 200 }, { x: 200, y: 240 }, { x: 100, y: 240 }], sqft: 150, type: 'porch' },
-  ],
+  yearBuilt: 0,
+  segments: [],
 };
 
 const SEGMENT_COLORS: Record<string, string> = {
@@ -58,15 +146,19 @@ const SEGMENT_COLORS: Record<string, string> = {
   addition: '#f59e0b',
 };
 
+const API_BASE = `http://localhost:${(globalThis as Record<string, unknown>).TF_API_PORT ?? 5046}`;
+
 export function SketchModule({ parcelId }: SketchModuleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [loading] = useState(false);
-  const [error] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
   const [activeTab, setActiveTab] = useState<'view' | 'build'>('view');
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null);
-  const [sketch] = useState<SketchData>(SAMPLE_SKETCH);
+  const [sketch, setSketch] = useState<SketchData>(PLACEHOLDER_SKETCH);
+  const [sketchImageUrl, setSketchImageUrl] = useState<string | null>(null);
+  const [apiData, setApiData] = useState<ApiSketchResult | null>(null);
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
 
@@ -156,6 +248,29 @@ export function SketchModule({ parcelId }: SketchModuleProps) {
     drawSketch();
   }, [drawSketch]);
 
+  // ── Fetch real sketch data from backend ──────────────────────────
+  useEffect(() => {
+    if (!parcelId) return;
+    setLoading(true);
+    setError(null);
+    fetch(`${API_BASE}/api/properties/parcel/${encodeURIComponent(parcelId)}/sketch`)
+      .then(async r => {
+        if (!r.ok) throw new Error(`Sketch fetch failed: ${r.status}`);
+        return r.json() as Promise<ApiSketchResult>;
+      })
+      .then(data => {
+        setApiData(data);
+        setSketchImageUrl(data.sketchUrl ?? null);
+        const primary = data.buildings.find(b => b.isPrimary) ?? data.buildings[0];
+        if (primary) setSketch(mapApiToSketchData(parcelId, primary));
+      })
+      .catch(err => {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        setError(msg);
+      })
+      .finally(() => setLoading(false));
+  }, [parcelId]);
+
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     setIsPanning(true);
     setPanStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
@@ -190,7 +305,12 @@ export function SketchModule({ parcelId }: SketchModuleProps) {
     <div className="space-y-4 p-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Building Sketch</h1>
-        <Badge variant="outline">{sketch.parcelId}</Badge>
+        <div className="flex items-center gap-2">
+          {sketch.totalSqft > 0 && (
+            <Badge variant="secondary" className="font-mono">{sketch.totalSqft.toLocaleString()} sq ft</Badge>
+          )}
+          <Badge variant="outline">{parcelId ?? sketch.parcelId}</Badge>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'view' | 'build')}>
@@ -203,6 +323,8 @@ export function SketchModule({ parcelId }: SketchModuleProps) {
           {parcelId ? (
             <SketchBuilder
               parcelId={parcelId}
+              currentGLA={apiData?.buildings?.find(b => b.isPrimary)?.totalSqft
+                ?? apiData?.buildings?.[0]?.totalSqft}
               onBack={() => setActiveTab('view')}
               onSaveObservation={handleSaveObservation}
             />
@@ -218,7 +340,24 @@ export function SketchModule({ parcelId }: SketchModuleProps) {
 
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <span className="text-muted-foreground">Loading sketch data...</span>
+          <span className="text-muted-foreground">Loading sketch data…</span>
+        </div>
+      ) : sketchImageUrl ? (
+        <div className="space-y-3">
+          <div className="text-xs text-muted-foreground bg-muted/40 rounded px-3 py-1.5">
+            Scanned sketch on file — {sketch.label} · {sketch.totalSqft > 0 ? `${sketch.totalSqft.toLocaleString()} sq ft` : 'area unknown'}
+          </div>
+          <img
+            src={sketchImageUrl}
+            alt={`Parcel sketch for ${parcelId}`}
+            className="w-full max-h-[500px] object-contain rounded border bg-white"
+            onError={() => setSketchImageUrl(null)}
+          />
+        </div>
+      ) : sketch.segments.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 gap-2 text-muted-foreground">
+          <span className="text-sm">No PACS sketch data on record for this parcel.</span>
+          <span className="text-xs">Use the Build tab to create a new sketch.</span>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
@@ -302,7 +441,7 @@ export function SketchModule({ parcelId }: SketchModuleProps) {
           </div>
         </div>
       )}
-        </TabsContent>
+      </TabsContent>
       </Tabs>
     </div>
   );

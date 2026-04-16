@@ -315,4 +315,122 @@ public class PropertiesController : ControllerBase
         _logger.LogDebug("Activity requested for parcel {ParcelNumber} — returning stub empty list", parcelNumber);
         return Ok(new { items = Array.Empty<object>(), total = 0 });
     }
+
+    /// <summary>
+    /// Returns sketch data for a parcel — building improvements with detail segments.
+    /// Joins: GeoId → PacsParcel → PacsImprovement (latest PropValYear, SupNum=0) → PacsImprovementDetail.
+    /// Also pulls GisParcelGeometry.SketchUrl for scanned sketch image display.
+    /// Returns empty buildings array (not 404) when parcel has no PACS improvements.
+    /// </summary>
+    [HttpGet("parcel/{parcelNumber}/sketch")]
+    public async Task<IActionResult> GetParcelSketch(string parcelNumber)
+    {
+        try
+        {
+            var pacsParcel = await _db.PacsParcel
+                .AsNoTracking()
+                .Where(p => p.GeoId == parcelNumber)
+                .Select(p => new { p.Id })
+                .FirstOrDefaultAsync();
+
+            if (pacsParcel == null)
+                return Ok(new { parcelNumber, sketchUrl = (string?)null, buildings = Array.Empty<object>() });
+
+            var allImprovements = await _db.PacsImprovements
+                .AsNoTracking()
+                .Where(i => i.ParcelId == pacsParcel.Id && i.SupNum == 0)
+                .Select(i => new
+                {
+                    i.Id,
+                    i.PacsImprvId,
+                    i.PropValYear,
+                    i.ImprvTypeCode,
+                    i.ImprvDesc,
+                    i.BuildingName,
+                    i.BuildingNumber,
+                    i.PrimaryImprv,
+                })
+                .ToListAsync();
+
+            if (!allImprovements.Any())
+                return Ok(new { parcelNumber, sketchUrl = (string?)null, buildings = Array.Empty<object>() });
+
+            var latestYear = allImprovements.Max(i => i.PropValYear);
+            var improvements = allImprovements.Where(i => i.PropValYear == latestYear).ToList();
+            var improvementIds = improvements.Select(i => i.Id).ToList();
+
+            var details = await _db.PacsImprovementDetails
+                .AsNoTracking()
+                .Where(d => improvementIds.Contains(d.ImprovementId) && d.SupNum == 0)
+                .OrderBy(d => d.ImprovementId)
+                .ThenBy(d => d.SeqNum)
+                .Select(d => new
+                {
+                    d.ImprovementId,
+                    d.ImprvDetTypeCd,
+                    d.ImprvDetDesc,
+                    d.ImprvDetArea,
+                    d.SketchArea,
+                    d.CalcArea,
+                    d.ConditionCode,
+                    d.YearBuilt,
+                    d.Length,
+                    d.Width,
+                    d.NumStories,
+                    d.SketchCommands,
+                })
+                .ToListAsync();
+
+            var sketchUrl = await _db.GisParcelGeometries
+                .AsNoTracking()
+                .Where(g => g.ParcelId == parcelNumber)
+                .Select(g => g.SketchUrl)
+                .FirstOrDefaultAsync();
+
+            var buildings = improvements.Select((imprv, idx) =>
+            {
+                var segs = details
+                    .Where(d => d.ImprovementId == imprv.Id)
+                    .Select((d, si) => new
+                    {
+                        id = $"s{si + 1}",
+                        label = !string.IsNullOrWhiteSpace(d.ImprvDetDesc)
+                            ? d.ImprvDetDesc
+                            : d.ImprvDetTypeCd ?? $"Seg {si + 1}",
+                        typeCode = d.ImprvDetTypeCd,
+                        sqft = (double)(d.SketchArea ?? d.ImprvDetArea ?? d.CalcArea ?? 0m),
+                        conditionCode = d.ConditionCode,
+                        length = d.Length.HasValue ? (double?)((double)d.Length.Value) : null,
+                        width = d.Width.HasValue ? (double?)((double)d.Width.Value) : null,
+                        yearBuilt = d.YearBuilt.HasValue ? (int?)((int)d.YearBuilt.Value) : null,
+                        numStories = d.NumStories,
+                        hasSketchCommands = !string.IsNullOrWhiteSpace(d.SketchCommands),
+                    })
+                    .ToList();
+
+                var totalSqft = segs.Sum(s => s.sqft);
+                var yearBuilt = segs.Select(s => s.yearBuilt).FirstOrDefault(y => y is > 0) ?? 0;
+
+                return (object)new
+                {
+                    buildingId = $"B{imprv.PacsImprvId:D3}",
+                    label = !string.IsNullOrWhiteSpace(imprv.BuildingName) ? imprv.BuildingName
+                           : !string.IsNullOrWhiteSpace(imprv.ImprvDesc) ? imprv.ImprvDesc
+                           : $"Building {idx + 1}",
+                    typeCode = imprv.ImprvTypeCode,
+                    isPrimary = imprv.PrimaryImprv == "Y",
+                    totalSqft,
+                    yearBuilt,
+                    segments = segs,
+                };
+            }).ToList();
+
+            return Ok(new { parcelNumber, sketchUrl, buildings });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving sketch for parcel {ParcelNumber}", parcelNumber);
+            return StatusCode(500, "Internal server error");
+        }
+    }
 }
