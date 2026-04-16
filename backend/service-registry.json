@@ -1,13 +1,13 @@
 {
-  "LastUpdated": "2026-04-16T02:28:22.3484465Z",
+  "LastUpdated": "2026-04-16T04:49:00.6347522Z",
   "Services": {
     "backend": {
       "Name": "backend",
       "Port": 5000,
       "Url": "http://localhost:5000",
       "Status": "running",
-      "Pid": 34940,
-      "StartedAt": "2026-04-16T02:28:22.3484463Z"
+      "Pid": 7240,
+      "StartedAt": "2026-04-16T04:49:00.6347519Z"
     },
     "costforge": {
       "Name": "costforge",

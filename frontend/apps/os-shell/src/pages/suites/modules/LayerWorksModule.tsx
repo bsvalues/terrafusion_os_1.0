@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -43,6 +44,12 @@ interface SpatialAnalysis {
   result?: string;
 }
 
+interface LayerAuditSummary {
+  narrative: string;
+  hotspotCount: number;
+  recommendedAction: string;
+}
+
 const MOCK_ANALYSES: SpatialAnalysis[] = [
   { id: 'flood-risk', name: 'Flood Risk Overlay', description: 'Intersect parcels with FEMA flood zones', status: 'complete', layers: ['parcels', 'flood'], result: '2,341 parcels in flood zones' },
   { id: 'zoning-conflict', name: 'Zoning Conflict Detection', description: 'Find parcels with incompatible land use vs zoning', status: 'complete', layers: ['parcels', 'zoning'], result: '87 potential conflicts' },
@@ -65,7 +72,9 @@ export default function LayerWorksModule() {
   const [layers, setLayers] = useState<MapLayer[]>([]);
   const [groups, setGroups] = useState<LayerGroup[]>([]);
   const [analyses, setAnalyses] = useState<SpatialAnalysis[]>(MOCK_ANALYSES);
+  const [auditMetric, setAuditMetric] = useState<'boundary' | 'uniformity' | 'zoning'>('boundary');
   const [loading, setLoading] = useState(true);
+  const [layerAudit, setLayerAudit] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: LayerAuditSummary; correlationId?: string; error?: string }>({ status: 'idle' });
 
   useEffect(() => {
     let cancelled = false;
@@ -138,6 +147,39 @@ export default function LayerWorksModule() {
       );
     }, 1500);
   }, []);
+
+  const runGovernedLayerAudit = useCallback(async () => {
+    setLayerAudit({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'explain_spatial_anomaly',
+        params: {
+          county: 'benton',
+          geographyType: 'layer',
+          anomalyMetric: auditMetric,
+        },
+      });
+
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string'
+          ? JSON.parse(response.result.output) as LayerAuditSummary
+          : response.result.output as LayerAuditSummary;
+        setLayerAudit({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setLayerAudit({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: response.error?.message || 'Failed to explain layer anomaly.',
+        });
+      }
+    } catch (error) {
+      setLayerAudit({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: error instanceof Error ? error.message : 'Failed to explain layer anomaly.',
+      });
+    }
+  }, [auditMetric]);
 
   const enabledCount = layers.filter((l) => l.enabled).length;
 
@@ -225,6 +267,55 @@ export default function LayerWorksModule() {
 
         {/* Spatial Analysis */}
         <div className='space-y-4'>
+          <Card data-testid="layerworks-governed-brief" style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+            <CardHeader>
+              <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>
+                Governed Layer Audit
+              </CardTitle>
+              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                Use Atlas to explain layer conflicts and geometry drift. Route county calibration to TerraForge and parcel corrections to Workbench.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-3'>
+              <label className='space-y-1 text-sm'>
+                <span className='block text-xs font-medium uppercase tracking-wider' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Audit Metric
+                </span>
+                <select
+                  value={auditMetric}
+                  onChange={(event) => setAuditMetric(event.target.value as 'boundary' | 'uniformity' | 'zoning')}
+                  className='w-full rounded-md border border-border bg-background px-3 py-2 text-sm'
+                >
+                  <option value='boundary'>Boundary Mismatch</option>
+                  <option value='uniformity'>Uniformity Drift</option>
+                  <option value='zoning'>Zoning Conflict</option>
+                </select>
+              </label>
+              <Button type='button' onClick={runGovernedLayerAudit}>
+                {layerAudit.status === 'loading' ? 'Running Audit…' : 'Explain Layer Anomaly'}
+              </Button>
+
+              {layerAudit.status === 'success' && layerAudit.result && (
+                <div className='rounded-lg border p-3 text-sm' style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}>
+                  <p style={{ color: 'hsl(var(--tf-fg))' }}>{layerAudit.result.narrative}</p>
+                  <p className='mt-2' style={{ color: 'hsl(var(--tf-muted))' }}>Hotspots: {layerAudit.result.hotspotCount}</p>
+                  <p className='mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>{layerAudit.result.recommendedAction}</p>
+                  {layerAudit.correlationId && (
+                    <p className='mt-2 font-mono text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                      Correlation: {layerAudit.correlationId}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {layerAudit.status === 'error' && (
+                <div className='rounded-lg border p-3 text-sm' style={{ borderColor: 'hsl(var(--tf-suite-dossier) / 0.4)', color: 'hsl(var(--tf-suite-dossier))' }}>
+                  {layerAudit.error}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
             <CardHeader>
               <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>

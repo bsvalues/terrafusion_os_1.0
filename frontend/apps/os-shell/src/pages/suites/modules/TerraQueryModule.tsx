@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -38,6 +39,12 @@ interface SavedQuery {
   query: string;
   category: 'assessment' | 'zoning' | 'analysis' | 'compliance';
   lastRun?: string;
+}
+
+interface QueryAuditSummary {
+  narrative: string;
+  hotspotCount: number;
+  recommendedAction: string;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -123,6 +130,7 @@ export default function TerraQueryModule() {
   const [result, setResult] = useState<QueryResult | null>(null);
   const [activeQuery, setActiveQuery] = useState<SavedQuery | null>(null);
   const [running, setRunning] = useState(false);
+  const [queryAudit, setQueryAudit] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: QueryAuditSummary; correlationId?: string; error?: string }>({ status: 'idle' });
 
   const runQuery = useCallback((savedQuery?: SavedQuery) => {
     const sq = savedQuery ?? activeQuery;
@@ -152,6 +160,40 @@ export default function TerraQueryModule() {
       setRunning(false);
     }, 800);
   }, [activeQuery, query]);
+
+  const runGovernedQueryAudit = useCallback(async () => {
+    const scope = activeQuery?.category === 'zoning' ? 'zoning' : activeQuery?.category === 'analysis' ? 'analysis' : 'county';
+    setQueryAudit({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'explain_spatial_anomaly',
+        params: {
+          county: 'benton',
+          geographyType: scope,
+          anomalyMetric: activeQuery?.category === 'zoning' ? 'zoning' : 'uniformity',
+        },
+      });
+
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string'
+          ? JSON.parse(response.result.output) as QueryAuditSummary
+          : response.result.output as QueryAuditSummary;
+        setQueryAudit({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setQueryAudit({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: response.error?.message || 'Failed to explain query anomaly.',
+        });
+      }
+    } catch (error) {
+      setQueryAudit({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: error instanceof Error ? error.message : 'Failed to explain query anomaly.',
+      });
+    }
+  }, [activeQuery]);
 
   return (
     <div className='p-6 space-y-6'>
@@ -211,6 +253,46 @@ export default function TerraQueryModule() {
 
         {/* Query Editor + Results */}
         <div className='lg:col-span-3 space-y-4'>
+          <Card data-testid="terraquery-governed-brief" style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+            <CardHeader className='pb-2'>
+              <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>
+                Governed Query Audit
+              </CardTitle>
+              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                Use Atlas queries to surface county signals, then route verified valuation issues to TerraForge and parcel defects to Workbench.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-3'>
+              <div className='flex items-center gap-3'>
+                <Button type='button' onClick={runGovernedQueryAudit}>
+                  {queryAudit.status === 'loading' ? 'Analyzing…' : 'Explain Query Signal'}
+                </Button>
+                <span className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Scope: {activeQuery ? activeQuery.name : 'Ad hoc county query'}
+                </span>
+              </div>
+
+              {queryAudit.status === 'success' && queryAudit.result && (
+                <div className='rounded-lg border p-3 text-sm' style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}>
+                  <p style={{ color: 'hsl(var(--tf-fg))' }}>{queryAudit.result.narrative}</p>
+                  <p className='mt-2' style={{ color: 'hsl(var(--tf-muted))' }}>Hotspots: {queryAudit.result.hotspotCount}</p>
+                  <p className='mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>{queryAudit.result.recommendedAction}</p>
+                  {queryAudit.correlationId && (
+                    <p className='mt-2 font-mono text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                      Correlation: {queryAudit.correlationId}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {queryAudit.status === 'error' && (
+                <div className='rounded-lg border p-3 text-sm' style={{ borderColor: 'hsl(var(--tf-suite-dossier) / 0.4)', color: 'hsl(var(--tf-suite-dossier))' }}>
+                  {queryAudit.error}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Query Editor */}
           <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
             <CardHeader className='pb-2'>
