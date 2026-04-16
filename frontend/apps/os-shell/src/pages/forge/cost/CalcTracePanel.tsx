@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ClipboardList, Info } from "lucide-react";
 import { useParcelCostTraces } from "@/hooks/useParcelCostTraces";
 import type { CalcTraceRow } from "@/hooks/useParcelCostTraces";
+import { useCostForgeWorkspaceStore } from "./costForgeWorkspaceStore";
 
 function fmtCurrency(value: number | null | undefined): string {
   if (value == null) return "--";
@@ -116,18 +117,17 @@ function TraceCard({ trace }: { trace: CalcTraceRow }) {
   );
 }
 
-interface CalcTracePanelProps {
-  parcelId: string | null;
-}
-
-export function CalcTracePanel({ parcelId }: CalcTracePanelProps) {
+export function CalcTracePanel() {
+  const parcelId = useCostForgeWorkspaceStore((s) => s.selectedParcelId);
   const { data: traces, isLoading, isError, error } = useParcelCostTraces(parcelId);
 
   if (!parcelId) {
     return (
       <div className="flex flex-col items-center justify-center py-10 gap-2 text-center">
         <Info className="w-6 h-6 text-muted-foreground/40" />
-        <p className="text-sm text-muted-foreground">Select a parcel to view cost approach traces.</p>
+        <p className="text-sm text-muted-foreground">
+          Select a parcel in the Parcel tab to view its RCNLD calculation audit trail.
+        </p>
       </div>
     );
   }

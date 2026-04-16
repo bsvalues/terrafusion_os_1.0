@@ -35,7 +35,6 @@ const TABS: { id: CostForgeTab; label: string; title: string }[] = [
 ];
 
 function ActivePanel({ tab }: { tab: CostForgeTab }) {
-  const selectedParcelId = useCostForgeWorkspaceStore((s) => s.selectedParcelId);
   switch (tab) {
     case 'triage':       return <TriageTab />;
     case 'hood-audit':   return <NeighborhoodAuditTab />;
@@ -44,7 +43,7 @@ function ActivePanel({ tab }: { tab: CostForgeTab }) {
     case 'depreciation': return <DepreciationCalculator />;
     case 'data-quality': return <DataQualityTab />;
     case 'schedule':     return <CostManual />;
-    case 'calc-trace':   return <CalcTracePanel parcelId={selectedParcelId} />;
+    case 'calc-trace':   return <CalcTracePanel />;
   }
 }
 
