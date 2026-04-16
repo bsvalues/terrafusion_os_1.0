@@ -2,8 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
+using System.Text.Json;
 using TerraFusion.API.Security;
 using TerraFusion.Core.DTOs;
+using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 
@@ -274,6 +277,72 @@ public class ForgeController : ControllerBase
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+// Reconciliation Commit — human-gated final value submission for supervisor review
+// ─────────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// POST /api/forge/{parcelId}/reconciliation/commit
+    ///
+    /// Appraiser submits a reconciled value for supervisor review.
+    /// Creates a PropertyWorkbenchFlag with Status="RECONCILIATION_PENDING".
+    /// The flag stores method, final value, and approach weights as JSON so the
+    /// supervisor has full context before approving or rejecting.
+    ///
+    /// This does NOT update assessed value — that is a supervisor action.
+    /// </summary>
+    [Authorize]
+    [RequiresPermission("access:forge")]
+    [HttpPost("{parcelId}/reconciliation/commit")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CommitReconciliation(
+        string parcelId,
+        [FromBody] ReconciliationCommitRequest request,
+        CancellationToken ct)
+    {
+        var appraiserName = User.FindFirst(ClaimTypes.Name)?.Value
+                         ?? User.FindFirst("sub")?.Value
+                         ?? "unknown";
+
+        // Serialize the reconciliation context into the flag reason for full audit trail
+        var reasonJson = JsonSerializer.Serialize(new
+        {
+            method = request.Method,
+            finalValue = request.FinalValue,
+            taxYear = request.TaxYear,
+            appraiserNote = request.AppraiserNote,
+            approaches = request.Approaches,
+        }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+        var flag = new PropertyWorkbenchFlag
+        {
+            ParcelId = parcelId,
+            Reason = reasonJson,
+            Status = "RECONCILIATION_PENDING",
+            CreatedBy = appraiserName,
+            UpdatedBy = appraiserName,
+        };
+
+        _db.PropertyWorkbenchFlags.Add(flag);
+        await _db.SaveChangesAsync(ct);
+
+        _logger.LogInformation(
+            "Reconciliation committed for {ParcelId} by {User}: {Method} -> ${Value} (TaxYear {Year})",
+            parcelId, appraiserName, request.Method, request.FinalValue, request.TaxYear);
+
+        return Ok(new
+        {
+            flagId = flag.Id,
+            parcelId,
+            finalValue = request.FinalValue,
+            method = request.Method,
+            status = flag.Status,
+            createdAt = flag.CreatedAt,
+        });
+    }
+}
+
 /// <summary>Request body for PATCH /api/forge/sales/{saleId}/qualification.</summary>
 public sealed record SaleQualificationOverrideRequest
 {
@@ -286,4 +355,31 @@ public sealed record SaleQualificationOverrideRequest
     /// <summary>Assessor's stated reason for the override (optional but recommended).</summary>
     [MaxLength(500)]
     public string? Reason { get; init; }
+}
+
+/// <summary>Single approach entry in a reconciliation commit.</summary>
+public sealed record ReconciliationApproachInput
+{
+    [Required] public string Approach { get; init; } = "";
+    public decimal IndicatedValue { get; init; }
+    public int Weight { get; init; }
+}
+
+/// <summary>Request body for POST /api/forge/{parcelId}/reconciliation/commit.</summary>
+public sealed record ReconciliationCommitRequest
+{
+    [Required]
+    public string Method { get; init; } = "";
+
+    [Required]
+    public decimal FinalValue { get; init; }
+
+    [Required]
+    public int TaxYear { get; init; }
+
+    [MaxLength(500)]
+    public string? AppraiserNote { get; init; }
+
+    public IReadOnlyList<ReconciliationApproachInput> Approaches { get; init; }
+        = Array.Empty<ReconciliationApproachInput>();
 }

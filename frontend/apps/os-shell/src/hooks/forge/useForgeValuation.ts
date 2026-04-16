@@ -344,6 +344,45 @@ export interface RecomputeRecommendationsResult {
   updated: number;
 }
 
+export interface ReconciliationCommitInput {
+  method: string;
+  finalValue: number;
+  taxYear: number;
+  appraiserNote?: string;
+  approaches: Array<{ approach: string; indicatedValue: number; weight: number }>;
+}
+
+export interface ReconciliationCommitResult {
+  flagId: number;
+  parcelId: string;
+  finalValue: number;
+  method: string;
+  status: string;
+  createdAt: string;
+}
+
+/**
+ * POST /api/forge/{parcelId}/reconciliation/commit
+ * Appraiser submits a reconciled value for supervisor review.
+ * Creates a RECONCILIATION_PENDING flag — does NOT update assessed value.
+ */
+export function useCommitReconciliation(parcelId: string | undefined) {
+  return useMutation<ReconciliationCommitResult, Error, ReconciliationCommitInput>({
+    mutationFn: async (input) => {
+      const res = await fetch(`/api/forge/${encodeURIComponent(parcelId!)}/reconciliation/commit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body?.error ?? `Reconciliation commit failed: ${res.status}`);
+      }
+      return res.json() as Promise<ReconciliationCommitResult>;
+    },
+  });
+}
+
 /**
  * POST /api/forge/sales/recompute-recommendations
  * Triggers Layer 2 (TF rule-engine) recommendation regen for all sales in the
