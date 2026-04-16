@@ -41,11 +41,53 @@ function computePriorityScore(hood: NeighborhoodRow): number {
   return (codDeviation * 2 + ratioDeviation * 100) * impact;
 }
 
+/** Tier thresholds: Critical ≥ 20, Watch ≥ 5, OK < 5 (based on priority formula scale) */
 function PriorityBadge({ score }: { score: number }) {
-  const tier = score > 20 ? 'critical' : score > 5 ? 'warn' : 'ok';
-  const label = score > 20 ? '!' : score > 5 ? '~' : '✓';
+  if (score >= 20) {
+    return (
+      <span
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 3,
+          fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.04em',
+          padding: '2px 7px', borderRadius: 4,
+          background: 'hsl(0 60% 22%)', color: 'var(--cf-danger)',
+          whiteSpace: 'nowrap',
+        }}
+        title={`Priority score: ${score.toFixed(1)}`}
+      >
+        ▲ Critical
+      </span>
+    );
+  }
+  if (score >= 5) {
+    return (
+      <span
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 3,
+          fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.04em',
+          padding: '2px 7px', borderRadius: 4,
+          background: 'hsl(38 60% 16%)', color: 'var(--cf-warn)',
+          whiteSpace: 'nowrap',
+        }}
+        title={`Priority score: ${score.toFixed(1)}`}
+      >
+        ● Watch
+      </span>
+    );
+  }
   return (
-    <span className={`cf-priority-badge cf-priority-badge--${tier}`}>{label}</span>
+    <span
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 3,
+        fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.04em',
+        padding: '2px 7px', borderRadius: 4,
+        background: 'hsl(142 40% 12%)', color: 'var(--cf-success)',
+        whiteSpace: 'nowrap',
+      }}
+      title={`Priority score: ${score.toFixed(1)}`}
+    >
+      ✓ OK
+    </span>
   );
 }
 
@@ -124,7 +166,45 @@ export function TriageTab() {
         </button>
       </div>
 
-      {error && <div className="cf-state cf-state--error">{error}</div>}
+      {error && (
+        <div className="cf-state cf-state--error">
+          {error}
+          <button type="button" className="cf-btn cf-btn--ghost" style={{ marginLeft: 12 }} onClick={load}>
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Loading skeleton */}
+      {loading && (
+        <div style={{ padding: '8px 0' }}>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '80px 1fr 60px 70px 60px 60px 60px',
+                gap: 8,
+                padding: '10px',
+                borderBottom: '1px solid var(--cf-border)',
+                opacity: 1 - i * 0.12,
+              }}
+            >
+              {Array.from({ length: 7 }).map((_, j) => (
+                <div
+                  key={j}
+                  style={{
+                    height: 14,
+                    borderRadius: 4,
+                    background: 'hsl(222 16% 18%)',
+                    width: j === 1 ? '70%' : '90%',
+                  }}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
 
       {!loading && !error && (
         <div className="cf-table-scroll">
@@ -143,10 +223,19 @@ export function TriageTab() {
               <span role="columnheader" style={{ fontSize: '0.6875rem', color: 'var(--cf-muted)', fontWeight: 700, textAlign: 'right' }}>PRD</span>
               <span role="columnheader" style={{ fontSize: '0.6875rem', color: 'var(--cf-muted)', fontWeight: 700 }}>IAAO</span>
             </div>
-            {rows.length === 0 && (
-              <div className="cf-state">
-                {data ? 'All neighborhoods in compliance ✓' : 'No data loaded'}
+            {rows.length === 0 && data && (
+              <div className="cf-state" style={{ flexDirection: 'column', gap: 6 }}>
+                <span style={{ fontSize: '1.25rem' }}>✓</span>
+                <span style={{ color: 'var(--cf-success)', fontWeight: 600 }}>
+                  All {data.neighborhoods.length} neighborhoods in IAAO compliance
+                </span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--cf-subtle)' }}>
+                  Switch to "All neighborhoods" to review the full matrix.
+                </span>
               </div>
+            )}
+            {rows.length === 0 && !data && !loading && (
+              <div className="cf-state">No data — click Refresh to load the neighborhood matrix.</div>
             )}
             {rows.map((hood) => {
               const ratioBadge = hood.medianRatio == null

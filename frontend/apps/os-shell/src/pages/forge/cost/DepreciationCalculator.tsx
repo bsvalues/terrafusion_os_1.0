@@ -70,10 +70,12 @@ export function DepreciationCalculator() {
         <div>
           <h1 className="text-2xl font-bold">Depreciation Lab</h1>
           <p className="text-muted-foreground">
-            Physical · Functional · External — IAAO cost approach depreciation
+            Physical · Functional · External — IAAO Standard on Mass Appraisal §6.6
           </p>
         </div>
-        <Badge variant="outline">BIV-086</Badge>
+        <Badge variant="outline" title="Straight-line age/life with condition adjustment">
+          Age/Life Method
+        </Badge>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

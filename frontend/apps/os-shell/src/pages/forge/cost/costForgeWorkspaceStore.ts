@@ -38,6 +38,7 @@ interface CostForgeWorkspaceState {
   setActiveTab(tab: CostForgeTab): void;
   setSelectedHood(hoodCd: string | null): void;
   setSelectedParcel(parcelId: string | null): void;
+  setTaxYear(year: number): void;
   /** Navigate to hood-audit tab for the given neighborhood */
   drillIntoHood(hoodCd: string): void;
   /** Navigate to parcel tab for the given parcel */
@@ -57,6 +58,7 @@ export const useCostForgeWorkspaceStore = create<CostForgeWorkspaceState>((set, 
   setActiveTab: (tab) => set({ activeTab: tab }),
   setSelectedHood: (hoodCd) => set({ selectedHoodCd: hoodCd }),
   setSelectedParcel: (parcelId) => set({ selectedParcelId: parcelId }),
+  setTaxYear: (year) => set({ taxYear: year, dashboardStats: null }),
 
   drillIntoHood: (hoodCd) => set({ selectedHoodCd: hoodCd, activeTab: 'hood-audit' }),
   drillIntoParcel: (parcelId) => set({ selectedParcelId: parcelId, activeTab: 'parcel' }),

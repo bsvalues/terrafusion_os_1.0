@@ -32,10 +32,18 @@ export function BatchCostApplyPanel() {
   const [startError, setStartError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  // Poll job status every 5 s until terminal (covers 'pending' → 'running' → 'completed'/'failed')
+  // Poll job status every 5 s until terminal; give up after 180 polls (15 min)
   useEffect(() => {
     if (!job || job.status === 'completed' || job.status === 'failed') return;
+    let polls = 0;
+    const MAX_POLLS = 180;
     const interval = setInterval(async () => {
+      polls += 1;
+      if (polls >= MAX_POLLS) {
+        clearInterval(interval);
+        setJob((prev) => prev ? { ...prev, status: 'failed' } : null);
+        return;
+      }
       try {
         const updated = await apiFetchJson<BatchJob>(`/costforge/batch/status/${job.jobId}`);
         setJob(updated);

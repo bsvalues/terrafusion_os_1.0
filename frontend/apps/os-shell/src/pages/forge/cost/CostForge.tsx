@@ -121,11 +121,14 @@ function CostForgeStatsRail() {
   );
 }
 
+const TAX_YEARS = [2024, 2025, 2026];
+
 export default function CostForge() {
   const activeTab    = useCostForgeWorkspaceStore((s) => s.activeTab);
   const setActiveTab = useCostForgeWorkspaceStore((s) => s.setActiveTab);
   const fetchStats   = useCostForgeWorkspaceStore((s) => s.fetchDashboardStats);
   const taxYear      = useCostForgeWorkspaceStore((s) => s.taxYear);
+  const setTaxYear   = useCostForgeWorkspaceStore((s) => s.setTaxYear);
   const abortRef     = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -133,7 +136,7 @@ export default function CostForge() {
     void fetchStats(abortRef.current.signal);
     return () => { abortRef.current?.abort(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [taxYear]);  // re-fetch when year changes
 
   return (
     <div className="cf-workspace" data-testid="cf-workspace">
@@ -144,7 +147,26 @@ export default function CostForge() {
             <h1 className="cf-header__title">CostForge</h1>
           </div>
           <div className="cf-header__badges">
-            <span className="forge-chip">{taxYear} Study</span>
+            {/* Tax year selector */}
+            <select
+              value={taxYear}
+              onChange={(e) => setTaxYear(Number(e.target.value))}
+              aria-label="Tax year"
+              style={{
+                background: 'hsl(222 16% 16%)',
+                border: '1px solid var(--cf-border)',
+                borderRadius: 5,
+                color: 'var(--cf-accent)',
+                fontSize: '0.8125rem',
+                fontWeight: 600,
+                padding: '3px 8px',
+                cursor: 'pointer',
+              }}
+            >
+              {TAX_YEARS.map((y) => (
+                <option key={y} value={y}>{y} Study</option>
+              ))}
+            </select>
             <span className="forge-chip">Benton County</span>
           </div>
         </div>

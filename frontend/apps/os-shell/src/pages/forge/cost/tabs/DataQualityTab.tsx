@@ -147,8 +147,11 @@ export function DataQualityTab() {
 
           {/* Issues list */}
           {result.issues.length === 0 ? (
-            <div style={{ padding: '16px', color: 'var(--cf-success)', fontSize: '0.875rem' }}>
-              ✓ No data quality issues found.
+            <div style={{ padding: '20px 16px', color: 'var(--cf-success)', fontSize: '0.875rem', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <span style={{ fontWeight: 700 }}>✓ No data quality issues found</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--cf-subtle)' }}>
+                All {taxYear} cost approach records passed completeness, accuracy, and consistency checks.
+              </span>
             </div>
           ) : (
             <div>
@@ -187,7 +190,10 @@ export function DataQualityTab() {
           )}
 
           <div style={{ padding: '10px 0', fontSize: '0.75rem', color: 'var(--cf-subtle)' }}>
-            Assessed: {new Date(result.assessedAt).toLocaleString()}
+            Assessed:{' '}
+            {result.assessedAt
+              ? (() => { try { return new Date(result.assessedAt).toLocaleString(); } catch { return result.assessedAt; } })()
+              : '—'}
           </div>
         </>
       )}

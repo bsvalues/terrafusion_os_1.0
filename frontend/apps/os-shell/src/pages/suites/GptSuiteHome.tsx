@@ -15,6 +15,7 @@ import { ParcelContextBanner } from '../../components/workbench/ParcelContextBan
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
 import { GPTManagementDashboard } from '../../components/gpt/GPTManagementDashboard';
 import { RAGDatasetManager } from '../../components/gpt/RAGDatasetManager';
+import { GptQuickChat } from '../../components/gpt/GptQuickChat';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
   ArrowLeft,
@@ -56,8 +57,8 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
     id: 'studio',
     label: 'GPT Studio',
     icon: MessageSquare,
-    description: 'Conversation workspace. Coming soon.',
-    status: 'queued',
+    description: 'Inline conversation workspace — pick a system GPT and start chatting.',
+    status: 'live',
   },
   {
     id: 'marketplace',
@@ -82,7 +83,7 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
   },
 ];
 
-const LIVE_WORKSPACE_VIEWS: WorkspaceView[] = ['management', 'rag'];
+const LIVE_WORKSPACE_VIEWS: WorkspaceView[] = ['management', 'rag', 'studio'];
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
@@ -171,6 +172,8 @@ export default function GptSuiteHome() {
         );
       case 'rag':
         return <RAGDatasetManager />;
+      case 'studio':
+        return <GptQuickChat />;
       default:
         return renderQueuedPanel(activeCard);
     }

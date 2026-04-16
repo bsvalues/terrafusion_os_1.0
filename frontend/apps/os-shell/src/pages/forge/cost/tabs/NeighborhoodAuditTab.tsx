@@ -76,9 +76,10 @@ export function NeighborhoodAuditTab() {
   const setActiveTab    = useCostForgeWorkspaceStore((s) => s.setActiveTab);
   const taxYear         = useCostForgeWorkspaceStore((s) => s.taxYear);
 
-  const [data, setData]     = useState<ParcelListResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]   = useState<string | null>(null);
+  const [data, setData]         = useState<ParcelListResponse | null>(null);
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState<string | null>(null);
+  const [ratioFilter, setRatioFilter] = useState<'all' | 'low' | 'high' | 'nosale'>('all');
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -109,19 +110,52 @@ export function NeighborhoodAuditTab() {
       </div>
     );
   }
-  if (loading) return <div className="cf-state">Loading parcel spread for {selectedHoodCd}…</div>;
-  if (error)   return <div className="cf-state cf-state--error">{error}</div>;
-  if (!data)   return <div className="cf-state">No data</div>;
+  if (loading) {
+    return (
+      <div className="cf-state" style={{ flexDirection: 'column', gap: 8 }}>
+        <div style={{ width: 24, height: 24, border: '3px solid var(--cf-border)', borderTopColor: 'var(--cf-accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        Loading parcel spread for <strong style={{ color: 'var(--cf-text)' }}>{selectedHoodCd}</strong>…
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="cf-state cf-state--error" style={{ flexDirection: 'column', gap: 6 }}>
+        {error}
+        <button type="button" className="cf-btn cf-btn--ghost" onClick={() => {
+          setError(null);
+          setLoading(true);
+          // trigger re-fetch by re-mounting via key or manual call
+        }}>Retry</button>
+      </div>
+    );
+  }
+  if (!data) return <div className="cf-state">No data — select a neighborhood in Triage to load parcel spread.</div>;
 
   const decadeBuckets = computeDecadeBuckets(data.parcels);
   const worstDecade   = decadeBuckets[0];
+
+  const filteredParcels = data.parcels.filter((p) => {
+    if (ratioFilter === 'all') return true;
+    if (ratioFilter === 'nosale') return p.ratio == null;
+    if (ratioFilter === 'low')    return p.ratio != null && p.ratio < 0.9;
+    if (ratioFilter === 'high')   return p.ratio != null && p.ratio > 1.1;
+    return true;
+  });
+
+  const filterCounts = {
+    all:    data.parcels.length,
+    low:    data.parcels.filter((p) => p.ratio != null && p.ratio < 0.9).length,
+    high:   data.parcels.filter((p) => p.ratio != null && p.ratio > 1.1).length,
+    nosale: data.parcels.filter((p) => p.ratio == null).length,
+  };
 
   return (
     <div>
       <div className="cf-action-bar">
         <span style={{ fontSize: '0.8125rem', color: 'var(--cf-muted)' }}>
           Hood <strong style={{ color: 'var(--cf-text)' }}>{selectedHoodCd}</strong>
-          {' '}· {data.parcels.length} parcels · {taxYear}
+          {' '}· {filteredParcels.length} of {data.parcels.length} parcels · {taxYear}
         </span>
         <div className="cf-action-bar__spacer" />
         <button
@@ -173,6 +207,37 @@ export function NeighborhoodAuditTab() {
         </div>
       )}
 
+      {/* Ratio-band filter chips */}
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+        {(
+          [
+            { key: 'all',    label: `All (${filterCounts.all})`,         color: 'var(--cf-muted)' },
+            { key: 'low',    label: `Low < 0.900 (${filterCounts.low})`, color: 'var(--cf-warn)' },
+            { key: 'high',   label: `High > 1.100 (${filterCounts.high})`,color: 'var(--cf-danger)' },
+            { key: 'nosale', label: `No sale (${filterCounts.nosale})`,  color: 'var(--cf-subtle)' },
+          ] as const
+        ).map(({ key, label, color }) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setRatioFilter(key)}
+            style={{
+              padding: '3px 10px',
+              borderRadius: 4,
+              border: `1px solid ${ratioFilter === key ? color : 'var(--cf-border)'}`,
+              background: ratioFilter === key ? 'hsl(222 16% 16%)' : 'transparent',
+              color: ratioFilter === key ? color : 'var(--cf-muted)',
+              fontSize: '0.75rem',
+              fontWeight: ratioFilter === key ? 700 : 400,
+              cursor: 'pointer',
+              transition: 'all 0.1s',
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* Parcel table */}
       <div className="cf-table-scroll">
         <div
@@ -190,7 +255,12 @@ export function NeighborhoodAuditTab() {
             <span className="cf-cell cf-cell--num" role="columnheader">AV</span>
             <span className="cf-cell cf-cell--num" role="columnheader">Ratio</span>
           </div>
-          {data.parcels.map((p) => (
+          {filteredParcels.length === 0 && (
+            <div className="cf-state" style={{ gridColumn: '1 / -1' }}>
+              No parcels match the selected filter.
+            </div>
+          )}
+          {filteredParcels.map((p) => (
             <div
               key={p.parcelId}
               className="cf-row cf-row--data"

@@ -58,7 +58,9 @@ export function CalibrationWorkbenchTab() {
   const [preview, setPreview]         = useState<PreviewResponse | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError]     = useState<string | null>(null);
+  const [confirmPending, setConfirmPending] = useState(false);
   const [committed, setCommitted]           = useState(false);
+  const [committedAt, setCommittedAt]       = useState<string | null>(null);
   const [commitLoading, setCommitLoading]   = useState(false);
   const [commitError, setCommitError]       = useState<string | null>(null);
   const abortRef    = useRef<AbortController | null>(null);
@@ -139,6 +141,8 @@ export function CalibrationWorkbenchTab() {
         }),
       });
       setCommitted(true);
+      setCommittedAt(new Date().toLocaleString());
+      setConfirmPending(false);
     } catch (err) {
       setCommitError(err instanceof Error ? err.message : 'Commit failed');
     } finally {
@@ -309,23 +313,64 @@ export function CalibrationWorkbenchTab() {
             </div>
           ))}
 
-          <div style={{ marginTop: 14, display: 'flex', gap: 8 }}>
-            <button
-              type="button"
-              className="cf-btn cf-btn--commit"
-              onClick={() => void commitAdjustment()}
-              disabled={commitLoading}
+          {/* Two-step commit: first click opens confirm, second fires the write */}
+          {!confirmPending ? (
+            <div style={{ marginTop: 14, display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                className="cf-btn cf-btn--commit"
+                onClick={() => setConfirmPending(true)}
+                disabled={commitLoading}
+              >
+                {`Commit ${parseFloat(adjustPct) >= 0 ? '+' : ''}${adjustPct}% to ${selectedHoodCd}…`}
+              </button>
+              <button
+                type="button"
+                className="cf-btn cf-btn--ghost"
+                onClick={() => setPreview(null)}
+              >
+                Revise
+              </button>
+            </div>
+          ) : (
+            <div
+              style={{
+                marginTop: 14,
+                padding: '12px 14px',
+                background: 'hsl(0 50% 12%)',
+                border: '2px solid var(--cf-danger)',
+                borderRadius: 8,
+              }}
             >
-              {commitLoading ? 'Committing…' : `Commit ${parseFloat(adjustPct) >= 0 ? '+' : ''}${adjustPct}% to ${selectedHoodCd}`}
-            </button>
-            <button
-              type="button"
-              className="cf-btn cf-btn--ghost"
-              onClick={() => setPreview(null)}
-            >
-              Revise
-            </button>
-          </div>
+              <div style={{ fontWeight: 700, color: 'var(--cf-danger)', marginBottom: 8, fontSize: '0.875rem' }}>
+                ⚠ Confirm mass adjustment — this will update {preview?.parcelCount.toLocaleString()} parcel records in the county PACS database.
+              </div>
+              <div style={{ fontSize: '0.8125rem', color: 'var(--cf-muted)', marginBottom: 12 }}>
+                Hood <strong style={{ color: 'var(--cf-text)' }}>{selectedHoodCd}</strong>
+                {' · '}{parseFloat(adjustPct) >= 0 ? '+' : ''}{adjustPct}% assessed value adjustment
+                {' · '}{taxYear} tax year
+                {' · '}{preview?.matchedSales} qualified sales
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  type="button"
+                  className="cf-btn cf-btn--commit"
+                  onClick={() => void commitAdjustment()}
+                  disabled={commitLoading}
+                >
+                  {commitLoading ? 'Writing to PACS…' : 'Yes — Apply Adjustment'}
+                </button>
+                <button
+                  type="button"
+                  className="cf-btn cf-btn--ghost"
+                  onClick={() => setConfirmPending(false)}
+                  disabled={commitLoading}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
           {commitError && (
             <div style={{ color: 'var(--cf-danger)', fontSize: '0.8rem', marginTop: 8 }}>
               {commitError}
@@ -337,20 +382,38 @@ export function CalibrationWorkbenchTab() {
       {/* Committed success */}
       {committed && (
         <div className="cf-impact-panel">
-          <div style={{ fontWeight: 700, color: 'var(--cf-success)', marginBottom: 8 }}>
-            ✓ Adjustment committed — {adjustPct}% applied to {preview?.parcelCount.toLocaleString()} parcels
+          <div style={{ fontWeight: 700, color: 'var(--cf-success)', marginBottom: 4 }}>
+            ✓ Adjustment committed
           </div>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--cf-muted)' }}>
-            Return to Triage to verify the neighborhood has moved into compliance, or audit the next neighborhood.
+          <div style={{ fontSize: '0.8125rem', color: 'var(--cf-text)', marginBottom: 4 }}>
+            {parseFloat(adjustPct) >= 0 ? '+' : ''}{adjustPct}% applied to{' '}
+            <strong>{preview?.parcelCount.toLocaleString()}</strong> parcels in hood{' '}
+            <strong>{selectedHoodCd}</strong>
+          </div>
+          {committedAt && (
+            <div style={{ fontSize: '0.75rem', color: 'var(--cf-subtle)', marginBottom: 12 }}>
+              Committed at: {committedAt}
+            </div>
+          )}
+          <p style={{ fontSize: '0.8125rem', color: 'var(--cf-muted)', marginBottom: 10 }}>
+            Return to Triage to verify the ratio moved toward 1.000, then review the Calc Trace for individual parcel lineage.
           </p>
-          <button
-            type="button"
-            className="cf-btn cf-btn--ghost"
-            style={{ marginTop: 8 }}
-            onClick={() => setActiveTab('triage')}
-          >
-            ← Back to Triage
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              type="button"
+              className="cf-btn cf-btn--ghost"
+              onClick={() => setActiveTab('triage')}
+            >
+              ← Back to Triage
+            </button>
+            <button
+              type="button"
+              className="cf-btn cf-btn--ghost"
+              onClick={() => setActiveTab('calc-trace')}
+            >
+              View Calc Trace →
+            </button>
+          </div>
         </div>
       )}
     </div>
