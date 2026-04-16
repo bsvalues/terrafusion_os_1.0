@@ -27,18 +27,19 @@ public class PropertyService : IPropertyService
             .Include(p => p.Valuations)
             .AsQueryable();
 
-        // Apply search filter
+        // Apply search filter (case-insensitive: PACS data stored uppercase, so normalize search term)
         if (!string.IsNullOrEmpty(search))
         {
+            var searchUpper = search.ToUpperInvariant();
             query = query.Where(p =>
-                (p.ParcelNumber != null && p.ParcelNumber.Contains(search)) ||
-                (p.Address != null && p.Address.Contains(search)) ||
-                (p.OwnerName != null && p.OwnerName.Contains(search)) ||
+                (p.ParcelNumber != null && p.ParcelNumber.ToUpper().Contains(searchUpper)) ||
+                (p.Address != null && p.Address.ToUpper().Contains(searchUpper)) ||
+                (p.OwnerName != null && p.OwnerName.ToUpper().Contains(searchUpper)) ||
                 // Neighborhood code from CAMA (e.g. "540100") — allows staff to search by market area
                 _context.CamaCharacteristics.Any(c =>
                     c.ParcelId == p.ParcelNumber &&
                     c.NeighborhoodCode != null &&
-                    c.NeighborhoodCode.Contains(search)));
+                    c.NeighborhoodCode.ToUpper().Contains(searchUpper)));
         }
 
         // Apply county filter (Guid.Empty = dev/anonymous — no filter)
@@ -68,16 +69,17 @@ public class PropertyService : IPropertyService
 
     public async Task<IEnumerable<PropertyDto>> SearchPropertiesAsync(string searchTerm)
     {
+        var searchUpper = searchTerm.ToUpperInvariant();
         var properties = await _context.Properties
             .Include(p => p.County)
             .Where(p =>
-                (p.ParcelNumber != null && p.ParcelNumber.Contains(searchTerm)) ||
-                (p.Address != null && p.Address.Contains(searchTerm)) ||
-                (p.OwnerName != null && p.OwnerName.Contains(searchTerm)) ||
+                (p.ParcelNumber != null && p.ParcelNumber.ToUpper().Contains(searchUpper)) ||
+                (p.Address != null && p.Address.ToUpper().Contains(searchUpper)) ||
+                (p.OwnerName != null && p.OwnerName.ToUpper().Contains(searchUpper)) ||
                 _context.CamaCharacteristics.Any(c =>
                     c.ParcelId == p.ParcelNumber &&
                     c.NeighborhoodCode != null &&
-                    c.NeighborhoodCode.Contains(searchTerm)))
+                    c.NeighborhoodCode.ToUpper().Contains(searchUpper)))
             .Take(100) // Limit results
             .ToListAsync();
 
