@@ -42,6 +42,18 @@ public class PropertyDto
 
     public decimal? LandAcres { get; set; }
 
+    /// <summary>Full legal description — up to 2000 chars from CAMA record.</summary>
+    public string? LegalDescription { get; set; }
+
+    /// <summary>Gross Living Area (above-grade finished area only). Does NOT include basement or garage.</summary>
+    public decimal? GrossLivingArea { get; set; }
+
+    /// <summary>Basement area (below-grade). Excluded from GLA per USPAP.</summary>
+    public decimal? BasementSqft { get; set; }
+
+    /// <summary>Attached/detached garage area. Excluded from GLA per USPAP.</summary>
+    public decimal? GarageSqft { get; set; }
+
     public string? Neighborhood { get; set; }
 
     public string? PropertyUseCode { get; set; }

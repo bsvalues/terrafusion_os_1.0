@@ -73,6 +73,10 @@ interface PropertiesListDto {
   propertyType: string | null;
   yearBuilt: number | null;
   squareFeet: number | null;
+  grossLivingArea: number | null;
+  basementSqft: number | null;
+  garageSqft: number | null;
+  legalDescription: string | null;
   bedrooms: number | null;
   bathrooms: number | null;
   landAcres: number | null;
@@ -236,12 +240,15 @@ function mapPropertiesDtoToProperty(dto: PropertiesListDto): Property {
     city,
     state,
     zip,
-    legalDescription: '',
+    legalDescription: dto.legalDescription ?? '',
     ownerName: dto.ownerName ?? '',
     propertyType: dto.propertyType ?? 'R',
     landAcreage: dto.landAcres ?? 0,
     yearBuilt: dto.yearBuilt ?? 0,
     buildingSquareFeet: dto.squareFeet ?? 0,
+    grossLivingArea: dto.grossLivingArea ?? undefined,
+    basementSqft: dto.basementSqft ?? undefined,
+    garageSqft: dto.garageSqft ?? undefined,
     bedrooms: dto.bedrooms ?? undefined,
     bathrooms: dto.bathrooms ?? undefined,
     neighborhood: dto.neighborhood ?? undefined,

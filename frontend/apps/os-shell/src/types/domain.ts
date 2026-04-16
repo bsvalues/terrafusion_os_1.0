@@ -42,7 +42,10 @@ export interface Property {
   // Physical
   landAcreage: number;
   yearBuilt: number;
-  buildingSquareFeet: number;
+  buildingSquareFeet: number;   // GLA proxy (above-grade finished area)
+  grossLivingArea?: number;     // Gross Living Area — above-grade only (USPAP)
+  basementSqft?: number;        // Below-grade area — excluded from GLA per USPAP
+  garageSqft?: number;          // Garage area — excluded from GLA per USPAP
   bedrooms?: number;
   bathrooms?: number;
 

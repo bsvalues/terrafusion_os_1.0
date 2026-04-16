@@ -169,6 +169,8 @@ public class PropertiesController : ControllerBase
                 .OrderByDescending(c => c.TaxYear)
                 .Select(c => new {
                     c.SquareFeet,
+                    c.BasementSqft,
+                    c.GarageSqft,
                     c.YearBuilt,
                     c.Bedrooms,
                     c.Bathrooms,
@@ -178,8 +180,16 @@ public class PropertiesController : ControllerBase
 
             if (cama != null)
             {
+                // SquareFeet in CamaCharacteristic = GLA (above-grade finished area, USPAP-compliant).
+                // Basement and garage are separate — must NOT be summed into GLA.
                 if (property.SquareFeet is null or 0 && cama.SquareFeet > 0)
-                    property.SquareFeet = cama.SquareFeet;
+                    property.SquareFeet = cama.SquareFeet;               // GLA proxy
+                if (property.GrossLivingArea is null or 0 && cama.SquareFeet > 0)
+                    property.GrossLivingArea = cama.SquareFeet;          // explicit GLA column
+                if (cama.BasementSqft is > 0)
+                    property.BasementSqft = cama.BasementSqft;
+                if (cama.GarageSqft is > 0)
+                    property.GarageSqft = cama.GarageSqft;
                 if (property.YearBuilt is null or 0 && cama.YearBuilt is > 0)
                     property.YearBuilt = cama.YearBuilt;
                 if (property.Bedrooms is null && cama.Bedrooms is > 0)
@@ -188,6 +198,39 @@ public class PropertiesController : ControllerBase
                     property.Bathrooms = cama.Bathrooms;
                 if (property.LandAcres is null or 0 && cama.LandAreaSqft is > 0)
                     property.LandAcres = Math.Round(cama.LandAreaSqft.Value / 43560m, 4);
+            }
+
+            // Enrich legal description — primary source: GisParcelGeometry (ArcGIS-synced, max 255 chars)
+            // Secondary source: property_assessments flat table (raw SQL, max 2000 chars — full text)
+            if (string.IsNullOrEmpty(property.LegalDescription))
+            {
+                var gisLegal = await _db.GisParcelGeometries
+                    .AsNoTracking()
+                    .Where(g => g.ParcelId == parcelNumber && !string.IsNullOrEmpty(g.LegalDescription))
+                    .Select(g => g.LegalDescription)
+                    .FirstOrDefaultAsync();
+                if (!string.IsNullOrEmpty(gisLegal))
+                    property.LegalDescription = gisLegal;
+            }
+
+            // Full legal description from property_assessments table (varchar 2000 — untruncated)
+            if (string.IsNullOrEmpty(property.LegalDescription) || property.LegalDescription.Length < 10)
+            {
+                try
+                {
+                    var rawResults = await _db.Database
+                        .SqlQueryRaw<string>(
+                            "SELECT legal_description AS \"Value\" FROM property_assessments WHERE parcel_id = {0} AND legal_description IS NOT NULL AND legal_description <> '' ORDER BY assessment_year DESC LIMIT 1",
+                            parcelNumber)
+                        .ToListAsync();
+                    var fullLegal = rawResults.FirstOrDefault();
+                    if (!string.IsNullOrEmpty(fullLegal))
+                        property.LegalDescription = fullLegal;
+                }
+                catch
+                {
+                    // property_assessments table absent in this environment — GIS value retained
+                }
             }
 
             // Enrich Neighborhood, UseCode, TaxDistrict from PACS tables
