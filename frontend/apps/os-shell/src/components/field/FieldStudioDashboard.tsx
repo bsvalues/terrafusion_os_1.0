@@ -74,6 +74,7 @@ export function FieldStudioDashboard() {
   const [assignments, setAssignments] = useState<FieldAssignment[]>([]);
   const [activeInspection, setActiveInspection] = useState<FieldAssignment | null>(null);
   const [showBriefing, setShowBriefing] = useState(false);
+  const [showManualObservation, setShowManualObservation] = useState(false);
   const [reviewAssignment, setReviewAssignment] = useState<FieldAssignment | null>(null);
   const [reviewObservations, setReviewObservations] = useState<StoredObservation[]>([]);
   const [observations, setObservations] = useState<StoredObservation[]>([]);
@@ -190,7 +191,7 @@ export function FieldStudioDashboard() {
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6">
+    <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6" data-testid="field-studio">
       <SyncStatusBanner sync={sync} />
 
       {/* Header */}
@@ -221,7 +222,7 @@ export function FieldStudioDashboard() {
       </div>
 
       {/* Sync Bar */}
-      <Card className="border-border/50 bg-card/80">
+      <Card className="border-border/50 bg-card/80" data-testid="sync-status">
         <CardContent className="p-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
@@ -273,6 +274,14 @@ export function FieldStudioDashboard() {
               )}
             </div>
             <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowManualObservation((current) => !current)}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                New Observation
+              </Button>
               <Button size="sm" variant="outline" onClick={pullAssignments} disabled={!sync.isOnline}>
                 <Plus className="w-4 h-4 mr-1" />
                 Pull
@@ -292,6 +301,23 @@ export function FieldStudioDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {showManualObservation && (
+        <Card className="border-border/50 bg-card/80" data-testid="observation-form">
+          <CardContent className="p-4 space-y-2">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">Ad Hoc Observation Intake</h2>
+              <p className="text-xs text-muted-foreground">
+                Pull an assignment or open a parcel in the workbench before committing field evidence.
+              </p>
+            </div>
+            <div className="rounded-md border border-border/50 bg-background/60 p-3 text-xs text-muted-foreground">
+              The offline inspection workflow still uses assignment-backed capture. This intake card preserves the
+              route contract and gives staff a clear next step instead of a dead-end shell.
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Assignment Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
