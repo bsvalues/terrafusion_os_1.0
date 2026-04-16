@@ -17,9 +17,10 @@ edition = "2021"
 version = "4.0.0"
 license = "MIT"
 authors = ["TerraFusion OS"]
+rust-version = "1.82"
 
 [workspace.dependencies]
-tokio = { version = "1.40", features = ["full"] }
+tokio = { version = "1.40", features = ["rt-multi-thread", "macros", "net", "fs", "sync", "time", "signal", "io-util"] }
 tonic = "0.12"
 tonic-build = "0.12"
 prost = "0.13"
