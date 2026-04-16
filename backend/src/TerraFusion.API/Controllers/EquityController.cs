@@ -23,15 +23,18 @@ public class EquityController : ControllerBase
 
     private readonly IEquityMetricService _equity;
     private readonly IRollupService _rollup;
+    private readonly IBentonCustomMetricService _custom;
     private readonly ILogger<EquityController> _logger;
 
     public EquityController(
         IEquityMetricService equity,
         IRollupService rollup,
+        IBentonCustomMetricService custom,
         ILogger<EquityController> logger)
     {
         _equity = equity;
         _rollup = rollup;
+        _custom = custom;
         _logger = logger;
     }
 
@@ -114,5 +117,60 @@ public class EquityController : ControllerBase
                 countyId, taxYear, by);
             return StatusCode(500, new { error = "rollup computation failed", detail = ex.Message });
         }
+    }
+
+    // ── Track 3: Benton custom metrics beyond IAAO ──
+
+    [HttpGet("deciles")]
+    public async Task<IActionResult> GetDeciles(
+        [FromQuery] Guid countyId, [FromQuery] int taxYear,
+        [FromQuery] string by = "none", [FromQuery] string? segment = null,
+        CancellationToken ct = default)
+    {
+        return Ok(await _custom.GetDecilesAsync(countyId, taxYear, by, segment, ct));
+    }
+
+    [HttpGet("stratified-cod")]
+    public async Task<IActionResult> GetStratifiedCod(
+        [FromQuery] Guid countyId, [FromQuery] int taxYear,
+        [FromQuery] string by = "none", [FromQuery] string? segment = null,
+        [FromQuery] string splitBy = "vintage",
+        CancellationToken ct = default)
+    {
+        try
+        {
+            return Ok(await _custom.GetStratifiedCodAsync(countyId, taxYear, by, segment, splitBy, ct));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("condition-bias")]
+    public async Task<IActionResult> GetConditionBias(
+        [FromQuery] Guid countyId, [FromQuery] int taxYear,
+        [FromQuery] string by = "none", [FromQuery] string? segment = null,
+        CancellationToken ct = default)
+    {
+        return Ok(await _custom.GetConditionBiasAsync(countyId, taxYear, by, segment, ct));
+    }
+
+    [HttpGet("segment-drift")]
+    public async Task<IActionResult> GetSegmentDrift(
+        [FromQuery] Guid countyId, [FromQuery] int taxYear,
+        [FromQuery] string by = "none", [FromQuery] string? segment = null,
+        CancellationToken ct = default)
+    {
+        return Ok(await _custom.GetSegmentDriftAsync(countyId, taxYear, by, segment, ct));
+    }
+
+    [HttpGet("grade-drift")]
+    public async Task<IActionResult> GetGradeDrift(
+        [FromQuery] Guid countyId, [FromQuery] int taxYear,
+        [FromQuery] string by = "none", [FromQuery] string? segment = null,
+        CancellationToken ct = default)
+    {
+        return Ok(await _custom.GetGradeDriftAsync(countyId, taxYear, by, segment, ct));
     }
 }

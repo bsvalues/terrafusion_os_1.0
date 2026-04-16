@@ -575,6 +575,11 @@ builder.Services.AddScoped<TerraFusion.Core.Interfaces.IEquityMetricService,
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IRollupService,
     TerraFusion.AI.Valuation.RollupService>();
 
+// CostForge Benton Method v2 — Track 3 Benton custom metrics beyond IAAO
+// (decile, stratified COD, condition bias, segment drift, grade drift)
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.IBentonCustomMetricService,
+    TerraFusion.AI.Valuation.BentonCustomMetricService>();
+
 // TIER 5+ Cognitive Framework - 3-6-9-12 Development Excellence
 builder.Services.AddScoped<ICognitiveFrameworkService, CognitiveFrameworkService>();
 
