@@ -86,6 +86,14 @@ export const MODULE_ALIASES: Record<string, string> = {
   'doc-viewer': 'sovereign-dashboard',
   'document-viewer': 'sovereign-dashboard',
 
+  // Atlas suite module aliases
+  'layer-works': 'layer-works',
+  layerworks: 'layer-works',
+  layers: 'layer-works',
+  'terra-query': 'terra-query',
+  terraquery: 'terra-query',
+  'spatial-query': 'terra-query',
+
   // Property Workbench (desktop window adapter)
   workbench: 'property-workbench',
   'property-workbench-window': 'property-workbench',
@@ -201,6 +209,9 @@ export const MODULE_REGISTRY = new Set<string>([
   'neighborhood-ratio-study',
   // Cost Analytics — CostForge dashboard stats (property type dist, depreciation)
   'cost-analytics',
+  // Atlas suite modules (Phase 36+)
+  'layer-works',
+  'terra-query',
 ]);
 
 /**
@@ -342,6 +353,14 @@ const CostForgeDashboard = lazy(
   () => import('../pages/forge/cost/CostForgeDashboard').then(m => ({ default: m.CostForgeDashboard }))
 );
 
+// Atlas suite modules — LayerWorks + TerraQuery
+const LayerWorksModule = lazy(
+  () => import('../pages/suites/modules/LayerWorksModule')
+);
+const TerraQueryModule = lazy(
+  () => import('../pages/suites/modules/TerraQueryModule')
+);
+
 // NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
 
 // ============================================================================
@@ -417,6 +436,9 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'value-audit-module': { Component: ValueAuditModule },
   // SalesForge — sale qualification & ratio audit flagship
   'sales-forge': { Component: SalesForge },
+  // Atlas suite modules
+  'layer-works': { Component: LayerWorksModule },
+  'terra-query': { Component: TerraQueryModule },
 };
 
 export function getModuleEntry(moduleId: string): ModuleEntry | undefined {
