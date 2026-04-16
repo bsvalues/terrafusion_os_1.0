@@ -5529,109 +5529,165 @@ public class CostForgeController : ControllerBase
   // Wave 32 ΓÇö Data Quality Assessment
   // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
-  /// <summary>Run a data quality assessment on county property data.</summary>
+  /// <summary>
+  /// POST /api/costforge/analytics/data-quality/assess
+  /// Self-contained CAMA quality scan — queries CamaCharacteristics directly,
+  /// returns completeness/accuracy/consistency scores and issue list.
+  /// DataQualityTab sends { taxYear } and expects scores on 0-1 scale.
+  /// </summary>
   [HttpPost("analytics/data-quality/assess")]
+  [AllowAnonymous]
   public async Task<IActionResult> AssessDataQuality([FromBody] DataQualityRequest req)
   {
-    var ctx = await ResolveCountyContextAsync();
-    if (ctx is null) return Unauthorized(new { error = "County context required" });
+    var taxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year;
 
-    var records = req.Records ?? new List<DataQualityRecord>();
-    var total = records.Count;
-    if (total == 0) return BadRequest(new { error = "At least one record is required" });
+    // Pull CAMA characteristics for quality analysis
+    var cama = await _db.CamaCharacteristics
+        .AsNoTracking()
+        .Where(c => c.TaxYear == taxYear)
+        .Select(c => new {
+            c.ParcelId,
+            c.YearBuilt,
+            SquareFeet   = (double?)c.SquareFeet,
+            c.QualityGrade,
+            c.ConditionGrade,
+            c.NeighborhoodCode,
+            c.EffectiveAge,
+            c.EconomicLife,
+            c.ImprvVal,
+        })
+        .ToListAsync();
 
-    var requiredFields = req.RequiredFields ?? new List<string> { "parcelId", "assessedValue", "landArea" };
-    var timelinessWindow = req.TimelinessWindowDays > 0 ? req.TimelinessWindowDays : 365;
-    var cutoff = DateTime.UtcNow.AddDays(-timelinessWindow);
-
-    var completeCount = 0;
-    var consistentCount = 0;
-    var timelyCount = 0;
-    var accurateCount = 0;
-    var issues = new List<string>();
-
-    foreach (var rec in records)
+    var total = cama.Count;
+    if (total == 0)
     {
-      // Completeness: all required fields non-null/non-empty
-      var fields = rec.Fields ?? new Dictionary<string, string?>();
-      var allPresent = requiredFields.All(f => fields.ContainsKey(f) && !string.IsNullOrWhiteSpace(fields[f]));
-      if (allPresent) completeCount++;
-      else issues.Add($"Record '{rec.ParcelId ?? "?"}': missing required fields");
-
-      // Consistency: assessed value should be >= 0, land area should be > 0 if provided
-      var consistent = true;
-      if (fields.TryGetValue("assessedValue", out var av) && decimal.TryParse(av, out var avVal) && avVal < 0)
-      { consistent = false; issues.Add($"Record '{rec.ParcelId ?? "?"}': negative assessed value"); }
-      if (fields.TryGetValue("landArea", out var la) && decimal.TryParse(la, out var laVal) && laVal <= 0)
-      { consistent = false; issues.Add($"Record '{rec.ParcelId ?? "?"}': non-positive land area"); }
-      if (consistent) consistentCount++;
-
-      // Timeliness: last updated within window
-      if (rec.LastUpdated.HasValue && rec.LastUpdated.Value >= cutoff) timelyCount++;
-      else if (!rec.LastUpdated.HasValue) issues.Add($"Record '{rec.ParcelId ?? "?"}': no update timestamp");
-
-      // Accuracy: value within plausible range
-      if (fields.TryGetValue("assessedValue", out var avAcc) && decimal.TryParse(avAcc, out var accVal))
-      {
-        if (accVal >= 0 && accVal <= 100_000_000m) accurateCount++;
-        else issues.Add($"Record '{rec.ParcelId ?? "?"}': assessed value out of plausible range");
-      }
-      else accurateCount++; // no value field ΓåÆ skip accuracy check
+        // No CAMA for this year — try without year filter (dev data may lack TaxYear)
+        cama = await _db.CamaCharacteristics
+            .AsNoTracking()
+            .Select(c => new {
+                c.ParcelId,
+                c.YearBuilt,
+                SquareFeet   = (double?)c.SquareFeet,
+                c.QualityGrade,
+                c.ConditionGrade,
+                c.NeighborhoodCode,
+                c.EffectiveAge,
+                c.EconomicLife,
+                c.ImprvVal,
+            })
+            .Take(50_000)
+            .ToListAsync();
+        total = cama.Count;
     }
 
-    var completeness = total > 0 ? Math.Round((double)completeCount / total * 100, 2) : 0;
-    var consistency = total > 0 ? Math.Round((double)consistentCount / total * 100, 2) : 0;
-    var timeliness = total > 0 ? Math.Round((double)timelyCount / total * 100, 2) : 0;
-    var accuracy = total > 0 ? Math.Round((double)accurateCount / total * 100, 2) : 0;
+    if (total == 0)
+        return Ok(new {
+            completenessScore = 0.0, accuracyScore = 0.0, consistencyScore = 0.0,
+            outlierDetection = new { flaggedCount = 0, method = "IQR" },
+            issues = new object[0], assessedAt = DateTime.UtcNow.ToString("o"),
+        });
 
-    // Weighted overall: 30% completeness, 25% consistency, 20% timeliness, 25% accuracy
-    var overall = Math.Round(completeness * 0.30 + consistency * 0.25 + timeliness * 0.20 + accuracy * 0.25, 2);
+    // ── Completeness ────────────────────────────────────────────────────────
+    var missingYearBuilt    = cama.Count(c => c.YearBuilt == null || c.YearBuilt == 0);
+    var missingSquareFeet   = cama.Count(c => c.SquareFeet == null || c.SquareFeet <= 0);
+    var missingQuality      = cama.Count(c => string.IsNullOrWhiteSpace(c.QualityGrade));
+    var missingCondition    = cama.Count(c => string.IsNullOrWhiteSpace(c.ConditionGrade));
+    var missingHood         = cama.Count(c => string.IsNullOrWhiteSpace(c.NeighborhoodCode));
 
-    var grade = overall switch
+    var completenessScore = 1.0 - (double)(missingYearBuilt + missingSquareFeet + missingQuality) / (total * 3.0);
+    completenessScore = Math.Max(0, Math.Round(completenessScore, 4));
+
+    // ── Accuracy ────────────────────────────────────────────────────────────
+    var currentYear = DateTime.UtcNow.Year;
+    var badYearBuilt  = cama.Count(c => c.YearBuilt.HasValue && (c.YearBuilt < 1800 || c.YearBuilt > currentYear + 1));
+    var badSquareFeet = cama.Count(c => c.SquareFeet.HasValue && (c.SquareFeet < 50 || c.SquareFeet > 50_000));
+    var badImprvVal   = cama.Count(c => c.ImprvVal.HasValue && c.ImprvVal < 0);
+
+    var accuracyScore = 1.0 - (double)(badYearBuilt + badSquareFeet + badImprvVal) / (total * 3.0);
+    accuracyScore = Math.Max(0, Math.Round(accuracyScore, 4));
+
+    // ── Consistency ─────────────────────────────────────────────────────────
+    // EffectiveAge should not exceed EconomicLife
+    var effExceedsLife = cama.Count(c =>
+        c.EffectiveAge.HasValue && c.EconomicLife.HasValue &&
+        c.EconomicLife.Value > 0 &&
+        c.EffectiveAge.Value > c.EconomicLife.Value);
+    // ImprvVal = 0 but has SquareFeet (undervalued building)
+    var zeroImprvWithSqft = cama.Count(c =>
+        c.ImprvVal is 0 or null && c.SquareFeet > 200);
+
+    var consistencyScore = 1.0 - (double)(effExceedsLife + zeroImprvWithSqft) / (total * 2.0);
+    consistencyScore = Math.Max(0, Math.Round(consistencyScore, 4));
+
+    // ── IQR Outlier Detection (on unit value = ImprvVal / SquareFeet) ───────
+    var unitValues = cama
+        .Where(c => c.ImprvVal > 0 && c.SquareFeet > 100)
+        .Select(c => Convert.ToDouble(c.ImprvVal!.Value) / Convert.ToDouble(c.SquareFeet!.Value))
+        .OrderBy(v => v)
+        .ToList();
+
+    var flaggedCount = 0;
+    if (unitValues.Count >= 4)
     {
-      >= 90 => "A",
-      >= 80 => "B",
-      >= 70 => "C",
-      >= 60 => "D",
-      _ => "F",
-    };
+        var q1 = unitValues[(int)(unitValues.Count * 0.25)];
+        var q3 = unitValues[(int)(unitValues.Count * 0.75)];
+        var iqr = q3 - q1;
+        var lo  = q1 - 1.5 * iqr;
+        var hi  = q3 + 1.5 * iqr;
+        flaggedCount = unitValues.Count(v => v < lo || v > hi);
+    }
 
-    var entity = new TerraFusion.Core.Entities.DataQualityAssessment
-    {
-      CountyId = ctx.CountyId,
-      Scope = req.Scope ?? "county",
-      ParcelId = req.ParcelId,
-      TotalRecords = total,
-      CompleteRecords = completeCount,
-      CompletenessScore = completeness,
-      ConsistentRecords = consistentCount,
-      ConsistencyScore = consistency,
-      TimelyRecords = timelyCount,
-      TimelinessScore = timeliness,
-      AccurateRecords = accurateCount,
-      AccuracyScore = accuracy,
-      OverallScore = overall,
-      Grade = grade,
-      IssueCount = issues.Count,
-      Issues = System.Text.Json.JsonSerializer.Serialize(issues),
-      CreatedBy = User.FindFirst("sub")?.Value ?? "system",
-    };
-    _db.Set<TerraFusion.Core.Entities.DataQualityAssessment>().Add(entity);
-    await _db.SaveChangesAsync();
+    // ── Issues List ─────────────────────────────────────────────────────────
+    var issues = new List<object>();
+    if (missingYearBuilt > 0)
+        issues.Add(new { category = "Completeness", field = "YearBuilt", affectedCount = missingYearBuilt,
+            description = "Year built is null or zero — required for age-life depreciation calculation.",
+            severity = missingYearBuilt > total * 0.05 ? "critical" : "warning" });
+    if (missingSquareFeet > 0)
+        issues.Add(new { category = "Completeness", field = "SquareFeet", affectedCount = missingSquareFeet,
+            description = "Square footage is null or zero — BIV and unit cost calculations will fail.",
+            severity = missingSquareFeet > total * 0.02 ? "critical" : "warning" });
+    if (missingQuality > 0)
+        issues.Add(new { category = "Completeness", field = "QualityGrade", affectedCount = missingQuality,
+            description = "Quality grade is blank — cost multiplier cannot be applied.",
+            severity = "warning" });
+    if (missingCondition > 0)
+        issues.Add(new { category = "Completeness", field = "ConditionGrade", affectedCount = missingCondition,
+            description = "Condition grade is blank — physical depreciation estimate will default.",
+            severity = "info" });
+    if (missingHood > 0)
+        issues.Add(new { category = "Completeness", field = "NeighborhoodCode", affectedCount = missingHood,
+            description = "Neighborhood code is blank — parcel cannot be assigned to a calibration zone.",
+            severity = missingHood > total * 0.10 ? "critical" : "warning" });
+    if (badYearBuilt > 0)
+        issues.Add(new { category = "Accuracy", field = "YearBuilt", affectedCount = badYearBuilt,
+            description = $"Year built is outside 1800–{currentYear + 1} — likely a data entry error.",
+            severity = "warning" });
+    if (badSquareFeet > 0)
+        issues.Add(new { category = "Accuracy", field = "SquareFeet", affectedCount = badSquareFeet,
+            description = "Square footage < 50 or > 50,000 — outside plausible residential range.",
+            severity = "warning" });
+    if (badImprvVal > 0)
+        issues.Add(new { category = "Accuracy", field = "ImprvVal", affectedCount = badImprvVal,
+            description = "Improvement value is negative — invalid; check PACS source.",
+            severity = "critical" });
+    if (effExceedsLife > 0)
+        issues.Add(new { category = "Consistency", field = "EffectiveAge/EconomicLife", affectedCount = effExceedsLife,
+            description = "Effective age exceeds economic life — % good would be negative; cap at 0%.",
+            severity = "warning" });
+    if (zeroImprvWithSqft > 0)
+        issues.Add(new { category = "Consistency", field = "ImprvVal", affectedCount = zeroImprvWithSqft,
+            description = "Improvement value is $0 but building has significant square footage — possible omission.",
+            severity = "info" });
 
-    return Ok(new
-    {
-      id = entity.Id,
-      scope = entity.Scope,
-      totalRecords = entity.TotalRecords,
-      completenessScore = entity.CompletenessScore,
-      consistencyScore = entity.ConsistencyScore,
-      timelinessScore = entity.TimelinessScore,
-      accuracyScore = entity.AccuracyScore,
-      overallScore = entity.OverallScore,
-      grade = entity.Grade,
-      issueCount = entity.IssueCount,
-      issues,
+    return Ok(new {
+        completenessScore,
+        accuracyScore,
+        consistencyScore,
+        outlierDetection = new { flaggedCount, method = "IQR (1.5×)" },
+        issues,
+        assessedAt = DateTime.UtcNow.ToString("o"),
+        totalRecords = total,
     });
   }
 
@@ -7174,6 +7230,7 @@ public class LevyDistrictInput
 
 public class DataQualityRequest
 {
+  public int TaxYear { get; set; }
   public string? Scope { get; set; }
   public string? ParcelId { get; set; }
   public List<string>? RequiredFields { get; set; }
