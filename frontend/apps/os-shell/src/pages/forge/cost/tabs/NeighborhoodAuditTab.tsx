@@ -82,7 +82,7 @@ export function NeighborhoodAuditTab() {
   const [ratioFilter, setRatioFilter] = useState<'all' | 'low' | 'high' | 'nosale'>('all');
   const abortRef = useRef<AbortController | null>(null);
 
-  useEffect(() => {
+  const load = () => {
     if (!selectedHoodCd) { setData(null); return; }
     abortRef.current?.abort();
     abortRef.current = new AbortController();
@@ -99,8 +99,12 @@ export function NeighborhoodAuditTab() {
         setError(err instanceof Error ? err.message : 'Failed to load neighborhood parcels');
         setLoading(false);
       });
+  };
 
+  useEffect(() => {
+    load();
     return () => abortRef.current?.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedHoodCd, taxYear]);
 
   if (!selectedHoodCd) {
@@ -122,11 +126,7 @@ export function NeighborhoodAuditTab() {
     return (
       <div className="cf-state cf-state--error" style={{ flexDirection: 'column', gap: 6 }}>
         {error}
-        <button type="button" className="cf-btn cf-btn--ghost" onClick={() => {
-          setError(null);
-          setLoading(true);
-          // trigger re-fetch by re-mounting via key or manual call
-        }}>Retry</button>
+        <button type="button" className="cf-btn cf-btn--ghost" onClick={load}>Retry</button>
       </div>
     );
   }

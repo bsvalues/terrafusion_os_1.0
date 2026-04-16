@@ -12,7 +12,7 @@ import { apiFetchJson } from '@/lib/apiBase';
 
 interface BatchJob {
   jobId: string;
-  status: 'pending' | 'running' | 'completed' | 'failed';
+  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
   totalParcels: number;
   processedParcels: number;
   startedAt?: string;
@@ -101,7 +101,7 @@ export function BatchCostApplyPanel() {
     if (!job) return;
     try {
       await apiFetchJson<unknown>(`/costforge/batch/cancel/${job.jobId}`, { method: 'POST' });
-      setJob((prev) => prev ? { ...prev, status: 'failed' } : null);
+      setJob((prev) => prev ? { ...prev, status: 'cancelled' } : null);
     } catch {
       // ignore cancel errors — polling will pick up final state
     }
@@ -186,6 +186,7 @@ export function BatchCostApplyPanel() {
                 <Badge variant={
                   job.status === 'completed' ? 'default' :
                   job.status === 'failed' ? 'destructive' :
+                  job.status === 'cancelled' ? 'destructive' :
                   'outline'
                 }>
                   {job.status}
@@ -227,6 +228,12 @@ export function BatchCostApplyPanel() {
             {job.status === 'failed' && (
               <p className="text-sm text-destructive">
                 Batch failed{job.errorCount > 0 ? ` — ${job.errorCount} errors` : ''}.
+              </p>
+            )}
+
+            {job.status === 'cancelled' && (
+              <p className="text-sm text-muted-foreground">
+                Job cancelled by user — no changes were committed.
               </p>
             )}
 

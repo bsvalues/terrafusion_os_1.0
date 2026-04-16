@@ -155,7 +155,7 @@ export function CalcTracePanel() {
       <div className="flex flex-col items-center justify-center py-10 gap-2 text-center">
         <ClipboardList className="w-7 h-7 text-muted-foreground/30" />
         <p className="text-sm text-muted-foreground">
-          No cost approach traces found. Run a cost approach calculation in the Forge tab.
+          No cost approach traces found. Run a cost approach calculation in the Parcel tab, then return here to review the RCNLD audit trail.
         </p>
       </div>
     );

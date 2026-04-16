@@ -47,9 +47,13 @@ export interface CostForgeResult {
   secondaryFeatures?: CostForgeSecondaryFeature[];
 }
 
-export type ImprvTypeCode = string;
+export interface ImprvTypeCode {
+  code: string;
+  description: string;
+  bivPct: number;
+}
 
-/** All active improvement type codes for the county. */
+/** All active improvement type codes for the county with human-readable labels. */
 export function useImprvTypeCodes(countyId: string) {
   return useQuery<ImprvTypeCode[]>({
     queryKey: ['costforge-type-codes', countyId],

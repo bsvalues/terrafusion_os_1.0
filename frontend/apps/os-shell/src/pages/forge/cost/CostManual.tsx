@@ -119,11 +119,10 @@ export function CostManual() {
     };
   }, [qualityFilter]);
 
-  const filtered = rows.filter((row) => {
-    const matchesSearch = row.buildingClass.toLowerCase().includes(search.toLowerCase());
-    const matchesQuality = qualityFilter === 'all' || row.qualityGrade.toLowerCase() === qualityFilter.toLowerCase();
-    return matchesSearch && matchesQuality;
-  });
+  // Server already filters by qualityClass — only apply client-side search
+  const filtered = rows.filter((row) =>
+    row.buildingClass.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="space-y-4 p-4">

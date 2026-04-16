@@ -208,8 +208,10 @@ export function CostApproachRunner() {
                 <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">None</SelectItem>
-                  {imprvTypeCodes.map((code) => (
-                    <SelectItem key={String(code)} value={String(code)}>{String(code)}</SelectItem>
+                  {imprvTypeCodes.map((item) => (
+                    <SelectItem key={item.code} value={item.code}>
+                      {item.description} ({item.code})
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>

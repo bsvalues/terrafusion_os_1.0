@@ -53,6 +53,8 @@ export function DepreciationCalculator() {
             condition,
             quality,
             replacementCostNew: parseFloat(replacementCost),
+            functionalObsolescence: functionalObsolescence ? parseFloat(functionalObsolescence) : 0,
+            externalObsolescence: externalObsolescence ? parseFloat(externalObsolescence) : 0,
           }),
           signal: ctrlRef.current.signal,
         }
