@@ -27,19 +27,14 @@ public class PropertyService : IPropertyService
             .Include(p => p.Valuations)
             .AsQueryable();
 
-        // Apply search filter (case-insensitive: PACS data stored uppercase, so normalize search term)
+        // Apply search filter: SQLite LIKE is case-insensitive for ASCII by default
         if (!string.IsNullOrEmpty(search))
         {
-            var searchUpper = search.ToUpperInvariant();
+            var pattern = $"%{search}%";
             query = query.Where(p =>
-                (p.ParcelNumber != null && p.ParcelNumber.ToUpper().Contains(searchUpper)) ||
-                (p.Address != null && p.Address.ToUpper().Contains(searchUpper)) ||
-                (p.OwnerName != null && p.OwnerName.ToUpper().Contains(searchUpper)) ||
-                // Neighborhood code from CAMA (e.g. "540100") — allows staff to search by market area
-                _context.CamaCharacteristics.Any(c =>
-                    c.ParcelId == p.ParcelNumber &&
-                    c.NeighborhoodCode != null &&
-                    c.NeighborhoodCode.ToUpper().Contains(searchUpper)));
+                (p.ParcelNumber != null && EF.Functions.Like(p.ParcelNumber, pattern)) ||
+                (p.Address != null && EF.Functions.Like(p.Address, pattern)) ||
+                (p.OwnerName != null && EF.Functions.Like(p.OwnerName, pattern)));
         }
 
         // Apply county filter (Guid.Empty = dev/anonymous — no filter)
@@ -69,17 +64,13 @@ public class PropertyService : IPropertyService
 
     public async Task<IEnumerable<PropertyDto>> SearchPropertiesAsync(string searchTerm)
     {
-        var searchUpper = searchTerm.ToUpperInvariant();
+        var pattern = $"%{searchTerm}%";
         var properties = await _context.Properties
             .Include(p => p.County)
             .Where(p =>
-                (p.ParcelNumber != null && p.ParcelNumber.ToUpper().Contains(searchUpper)) ||
-                (p.Address != null && p.Address.ToUpper().Contains(searchUpper)) ||
-                (p.OwnerName != null && p.OwnerName.ToUpper().Contains(searchUpper)) ||
-                _context.CamaCharacteristics.Any(c =>
-                    c.ParcelId == p.ParcelNumber &&
-                    c.NeighborhoodCode != null &&
-                    c.NeighborhoodCode.ToUpper().Contains(searchUpper)))
+                (p.ParcelNumber != null && EF.Functions.Like(p.ParcelNumber, pattern)) ||
+                (p.Address != null && EF.Functions.Like(p.Address, pattern)) ||
+                (p.OwnerName != null && EF.Functions.Like(p.OwnerName, pattern)))
             .Take(100) // Limit results
             .ToListAsync();
 
