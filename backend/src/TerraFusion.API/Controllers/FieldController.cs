@@ -100,7 +100,7 @@ public class FieldController : ControllerBase
             var props = await _db.Properties
                 .AsNoTracking()
                 .Where(p => p.ParcelNumber != null && parcelIds.Contains(p.ParcelNumber))
-                .Select(p => new { p.ParcelNumber, p.Address, p.City, p.AssessedValue })
+                .Select(p => new { p.ParcelNumber, p.Address, p.AssessedValue })
                 .ToListAsync();
 
             var propsMap = props
@@ -118,7 +118,7 @@ public class FieldController : ControllerBase
                     parcelId = qi.ParcelId,
                     parcelNumber = qi.ParcelId,
                     address = g?.SitusAddress ?? p?.Address ?? "",
-                    city = p?.City ?? "",
+                    city = "",
                     latitude = g?.CentroidLat,
                     longitude = g?.CentroidLng,
                     currentValue = (decimal?)p?.AssessedValue,

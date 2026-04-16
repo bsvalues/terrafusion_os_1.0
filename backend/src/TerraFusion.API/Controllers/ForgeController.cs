@@ -275,7 +275,6 @@ public class ForgeController : ControllerBase
 
         return Ok(new { updated, countyId });
     }
-}
 
 // ─────────────────────────────────────────────────────────────────────────
 // Reconciliation Commit — human-gated final value submission for supervisor review

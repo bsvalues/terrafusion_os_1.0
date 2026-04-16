@@ -20,6 +20,7 @@ import { OperationalQueue } from '../../components/suites/OperationalQueue';
 import NoticeBatchQueuePanel from '../../components/dais/NoticeBatchQueuePanel';
 import CertRollPanel from '../../components/dais/CertRollPanel';
 import ManagementDashboardPanel from '../../components/dais/ManagementDashboardPanel';
+import SupervisorFlagQueue from '../../components/dais/SupervisorFlagQueue';
 import { useDaisSuiteStats } from './useDaisSuiteStats';
 import {
   Scale,
@@ -372,6 +373,9 @@ export default function DaisSuiteHome() {
         <div data-testid="dais-modules">
           <SuiteModuleGrid modules={DAIS_MODULES} accentVar="--tf-suite-dais" />
         </div>
+        <section className="px-6 pb-2" data-testid="dais-supervisor-queue">
+          <SupervisorFlagQueue />
+        </section>
         <div data-testid="dais-mgmt-ops">
           <ManagementDashboardPanel stats={stats} />
         </div>
