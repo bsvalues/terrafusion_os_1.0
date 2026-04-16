@@ -1,0 +1,32 @@
+syntax = "proto3";
+package terrafusion.sync.v4.policy;
+
+service PolicyEngine {
+    rpc Evaluate(EvaluateRequest) returns (EvaluateResponse);
+    rpc ValidateManifest(ValidateManifestRequest) returns (ValidateManifestResponse);
+}
+
+message EvaluateRequest {
+    string actor_identity = 1;
+    string action = 2;
+    string resource_kind = 3;
+    string resource_id = 4;
+    string county_id = 5;
+    map<string, string> context = 6;
+}
+
+message EvaluateResponse {
+    bool allowed = 1;
+    string rule_matched = 2;
+    string reason = 3;
+}
+
+message ValidateManifestRequest {
+    string manifest_yaml = 1;
+}
+
+message ValidateManifestResponse {
+    bool valid = 1;
+    repeated string errors = 2;
+    repeated string warnings = 3;
+}

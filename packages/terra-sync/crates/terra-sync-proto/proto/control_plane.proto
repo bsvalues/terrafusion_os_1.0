@@ -1,0 +1,72 @@
+syntax = "proto3";
+package terrafusion.sync.v4.control;
+
+import "google/protobuf/timestamp.proto";
+
+service ControlPlane {
+    rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
+    rpc ListConnectors(ListConnectorsRequest) returns (ListConnectorsResponse);
+    rpc GetConnector(GetConnectorRequest) returns (Connector);
+    rpc PauseConnector(PauseConnectorRequest) returns (PauseConnectorResponse);
+    rpc ResumeConnector(ResumeConnectorRequest) returns (ResumeConnectorResponse);
+}
+
+message GetStatusRequest {}
+
+message GetStatusResponse {
+    string version = 1;
+    google.protobuf.Timestamp server_time = 2;
+    bool healthy = 3;
+    map<string, string> component_states = 4;
+}
+
+message ListConnectorsRequest {
+    string county_filter = 1;
+}
+
+message ListConnectorsResponse {
+    repeated Connector connectors = 1;
+}
+
+message GetConnectorRequest {
+    string name = 1;
+}
+
+message Connector {
+    string name = 1;
+    string county_id = 2;
+    string county_name = 3;
+    string vendor = 4;
+    ConnectorState state = 5;
+    google.protobuf.Timestamp last_cdc_event = 6;
+    int64 cdc_lag_seconds = 7;
+    string snapshot_state = 8;
+    int32 snapshot_percent = 9;
+    string pause_reason = 10;
+}
+
+enum ConnectorState {
+    STATE_UNSPECIFIED = 0;
+    RUNNING = 1;
+    PAUSED = 2;
+    DEGRADED = 3;
+    SNAPSHOTTING = 4;
+    FAILED = 5;
+}
+
+message PauseConnectorRequest {
+    string name = 1;
+    string reason = 2;
+}
+
+message PauseConnectorResponse {
+    string audit_event_id = 1;
+}
+
+message ResumeConnectorRequest {
+    string name = 1;
+}
+
+message ResumeConnectorResponse {
+    string audit_event_id = 1;
+}

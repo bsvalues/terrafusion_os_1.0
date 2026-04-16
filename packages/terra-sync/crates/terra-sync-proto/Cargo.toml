@@ -3,8 +3,13 @@ name = "terra-sync-proto"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-
-[lib]
-path = "src/lib.rs"
+description = "gRPC protobuf contracts for TerraFusion Sync v4"
 
 [dependencies]
+tonic = { workspace = true }
+prost = { workspace = true }
+prost-types = { workspace = true }
+serde = { workspace = true }
+
+[build-dependencies]
+tonic-build = { workspace = true }

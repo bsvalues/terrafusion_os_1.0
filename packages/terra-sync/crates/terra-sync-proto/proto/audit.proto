@@ -1,0 +1,37 @@
+syntax = "proto3";
+package terrafusion.sync.v4.audit;
+
+import "google/protobuf/timestamp.proto";
+
+message AuditEvent {
+    string audit_id = 1;
+    string event_type = 2;
+    google.protobuf.Timestamp occurred_at = 3;
+    Actor actor = 4;
+    string county_id = 5;
+    Subject subject = 6;
+    Outcome outcome = 7;
+    repeated string policy_refs = 8;
+    string prev_hash = 9;
+    string hash = 10;
+    map<string, string> metadata = 11;
+}
+
+message Actor {
+    string identity = 1;
+    string auth_method = 2;
+    string certificate_fingerprint = 3;
+}
+
+message Subject {
+    string kind = 1;
+    string id = 2;
+    map<string, string> attrs = 3;
+}
+
+enum Outcome {
+    OUTCOME_UNSPECIFIED = 0;
+    SUCCESS = 1;
+    DENIED = 2;
+    FAILED = 3;
+}
