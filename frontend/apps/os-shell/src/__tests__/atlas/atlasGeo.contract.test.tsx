@@ -248,4 +248,19 @@ describe('MassAppraisalGIS — contract', () => {
     const violations = findLightModeViolations(container.innerHTML);
     expect(violations).toEqual([]);
   });
+
+  it('renders a governed spatial audit brief for county anomaly routing', async () => {
+    render(<MassAppraisalGIS />);
+
+    expect(screen.getByTestId('mass-appraisal-governed-brief')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Residual clustering is concentrated in the governed Benton audit area\./i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Route neighborhood review to TerraForge and parcel defects to Workbench\./i)
+      ).toBeInTheDocument();
+    });
+  });
 });

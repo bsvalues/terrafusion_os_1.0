@@ -14,6 +14,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
+import { invokeTool } from '@/api/pilotApi';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -43,6 +44,12 @@ interface LayerConfig {
   label: string;
   visible: boolean;
   color: string;
+}
+
+interface SpatialAnomalySummary {
+  narrative: string;
+  hotspotCount: number;
+  recommendedAction: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -302,6 +309,7 @@ function ParcelSidebar({ parcel, onClose }: ParcelSidebarProps) {
 export default function MassAppraisalGIS() {
   const [overlayMode, setOverlayMode] = useState<OverlayMode>('neighborhood');
   const [selectedParcel, setSelectedParcel] = useState<ParcelFeature | null>(null);
+  const [auditMetric, setAuditMetric] = useState<'residuals' | 'uniformity' | 'zoning'>('residuals');
   const [layers, setLayers] = useState<LayerConfig[]>([
     { id: 'parcels', label: 'Parcels', visible: true, color: '#00FFFF' },
     { id: 'roads', label: 'Roads', visible: true, color: '#94A3B8' },
@@ -311,6 +319,7 @@ export default function MassAppraisalGIS() {
   ]);
   const [parcels, setParcels] = useState<ParcelFeature[]>(DEMO_PARCELS);
   const [isFixtureParcels, setIsFixtureParcels] = useState(true);
+  const [spatialAudit, setSpatialAudit] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: SpatialAnomalySummary; correlationId?: string; error?: string }>({ status: 'idle' });
 
   // Load live parcels on mount; fall back to DEMO_PARCELS if unavailable
   useEffect(() => {
@@ -363,11 +372,97 @@ export default function MassAppraisalGIS() {
       .map(([label, color]) => ({ label, color }));
   }, [overlayMode]);
 
+  const handleSpatialAudit = useCallback(async () => {
+    setSpatialAudit({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'explain_spatial_anomaly',
+        params: {
+          county: 'benton',
+          geographyType: overlayMode === 'none' ? 'county' : overlayMode,
+          anomalyMetric: auditMetric,
+        },
+      });
+
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string'
+          ? JSON.parse(response.result.output) as SpatialAnomalySummary
+          : response.result.output as SpatialAnomalySummary;
+        setSpatialAudit({
+          status: 'success',
+          result: parsed,
+          correlationId: response.correlationId,
+        });
+      } else {
+        setSpatialAudit({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: response.error?.message || 'Failed to explain spatial anomaly.',
+        });
+      }
+    } catch (error) {
+      setSpatialAudit({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: error instanceof Error ? error.message : 'Failed to explain spatial anomaly.',
+      });
+    }
+  }, [auditMetric, overlayMode]);
+
   return (
     <div data-testid="mass-appraisal-gis" className="flex h-full bg-terra-midnight text-white">
       {isFixtureParcels && <DemoDataBanner module="Mass Appraisal GIS" />}
       {/* Layer panel */}
       <aside className="flex-shrink-0 p-4 space-y-4 overflow-y-auto border-r border-white/10">
+        <Card variant="glass" data-material="bento" data-testid="mass-appraisal-governed-brief" className="w-64">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-terra-cyan">Governed Spatial Audit</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-xs text-white/60">
+              Atlas explains county hotspots and routes action. Forge owns calibration changes, and Workbench owns parcel repair.
+            </p>
+
+            <label className="block text-xs uppercase tracking-wider text-white/50">
+              Audit Metric
+              <select
+                value={auditMetric}
+                onChange={(event) => setAuditMetric(event.target.value as 'residuals' | 'uniformity' | 'zoning')}
+                className="mt-2 w-full rounded border border-white/10 bg-terra-slate/70 px-2 py-1.5 text-xs text-white"
+              >
+                <option value="residuals">Residual Clustering</option>
+                <option value="uniformity">Uniformity Drift</option>
+                <option value="zoning">Zoning Conflict</option>
+              </select>
+            </label>
+
+            <button
+              type="button"
+              onClick={handleSpatialAudit}
+              className="w-full rounded border border-terra-cyan/40 bg-terra-cyan/10 px-3 py-2 text-xs font-medium text-terra-cyan hover:bg-terra-cyan/15"
+            >
+              {spatialAudit.status === 'loading' ? 'Running Audit…' : 'Explain Spatial Anomaly'}
+            </button>
+
+            {spatialAudit.status === 'success' && spatialAudit.result && (
+              <div className="space-y-2 rounded border border-white/10 bg-white/5 p-3 text-xs">
+                <p className="text-white/80">{spatialAudit.result.narrative}</p>
+                <p className="text-white/60">Hotspots: {spatialAudit.result.hotspotCount}</p>
+                <p className="text-white/70">{spatialAudit.result.recommendedAction}</p>
+                {spatialAudit.correlationId && (
+                  <p className="font-mono text-[10px] text-white/40">{spatialAudit.correlationId}</p>
+                )}
+              </div>
+            )}
+
+            {spatialAudit.status === 'error' && (
+              <div className="rounded border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-200">
+                {spatialAudit.error}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <LayerTogglePanel
           layers={layers}
           overlayMode={overlayMode}
