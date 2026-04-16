@@ -1987,7 +1987,11 @@ try
   await app.Services.InitializeUltimateCostForgeAsync();
 
   // CARD-06: Seed Properties from PacsParcel in Development (idempotent).
-  if (app.Environment.IsDevelopment())
+  // Respect TF_SKIP_DEV_SEEDERS env var — useful when starting against a
+  // Postgres DB that already has canonical data (avoids unique-key conflicts).
+  if (app.Environment.IsDevelopment() &&
+      !string.Equals(Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS"), "true", StringComparison.OrdinalIgnoreCase) &&
+      !string.Equals(Environment.GetEnvironmentVariable("TF_SKIP_DEV_SEEDERS"), "1", StringComparison.OrdinalIgnoreCase))
   {
     using var devSeedScope = app.Services.CreateScope();
     var devPropSeeder = devSeedScope.ServiceProvider

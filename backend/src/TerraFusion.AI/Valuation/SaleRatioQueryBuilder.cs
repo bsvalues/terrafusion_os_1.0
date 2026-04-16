@@ -93,12 +93,15 @@ public static class SaleRatioQueryBuilder
             .GroupBy(x => x.ParcelId)
             .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
 
-        // Step 4: Pull candidate sales (filter at DB, further filter in memory)
+        // Step 4: Pull candidate sales (filter at DB, further filter in memory).
+        // Prefer AdjustedSalePrice (adjusted for ratio study per PACS spec); fall back
+        // to SalePrice when AdjustedSalePrice hasn't been populated during canonical sync.
         var cutoff = DateTime.UtcNow.AddYears(-4);
         var salesRaw = await ctx.ComparableSales
             .Where(cs => cs.CountyId == countyId
-                         && cs.AdjustedSalePrice != null && cs.AdjustedSalePrice > 0m
-                         && cs.SaleDate >= cutoff)
+                         && cs.SaleDate >= cutoff
+                         && ((cs.AdjustedSalePrice != null && cs.AdjustedSalePrice > 0m)
+                             || cs.SalePrice > 0m))
             .ToListAsync(ct);
 
         // Step 5: Apply exclusions + qualification + assemble SaleRatio[]
@@ -112,7 +115,10 @@ public static class SaleRatioQueryBuilder
             if (!IsQualified(cs)) continue;
             if (!avByParcel.TryGetValue(cs.ParcelId, out var av)) continue;
 
-            var price = cs.AdjustedSalePrice!.Value;
+            // AdjustedSalePrice preferred; fall back to SalePrice if not populated.
+            var price = (cs.AdjustedSalePrice.HasValue && cs.AdjustedSalePrice.Value > 0)
+                ? cs.AdjustedSalePrice.Value
+                : cs.SalePrice;
             if (price <= 0) continue;
             var ratio = av / price;
 

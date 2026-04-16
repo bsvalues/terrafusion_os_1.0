@@ -31,9 +31,10 @@ public sealed class DevPropertySeeder
     {
         var propertiesPopulated = await _db.Properties.AnyAsync(ct);
 
-        // Ensure Benton County row exists.
+        // Ensure Benton County row exists. Look up by FipsCode (stable key);
+        // Name may be "Benton" or "Benton County" depending on seed lineage.
         var bentonCounty = await _db.Counties
-            .FirstOrDefaultAsync(c => c.Name == "Benton" && c.State == "WA", ct);
+            .FirstOrDefaultAsync(c => c.FipsCode == "53005", ct);
 
         if (bentonCounty is null)
         {
