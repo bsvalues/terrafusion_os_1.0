@@ -1,0 +1,436 @@
+/* CostForge.css — cf-* namespace. Forge copper accent.          */
+/* Mirrors SalesForge.css (sf-*) structure exactly.              */
+
+.cf-workspace {
+  --cf-bg:      hsl(222 20% 9%);
+  --cf-surface: hsl(222 16% 12%);
+  --cf-border:  hsl(222 16% 20%);
+  --cf-text:    hsl(210 20% 94%);
+  --cf-muted:   hsl(215 15% 62%);
+  --cf-subtle:  hsl(215 10% 42%);
+  --cf-accent:  hsl(28 82% 58%);
+  --cf-info:    hsl(210 80% 60%);
+  --cf-success: hsl(142 70% 50%);
+  --cf-warn:    hsl(38 95% 55%);
+  --cf-danger:  hsl(0 72% 55%);
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--cf-bg);
+  color: var(--cf-text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 0.875rem;
+}
+
+/* ── Header ──────────────────────────────────────────── */
+.cf-header {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--cf-border);
+  padding: 12px 20px 0;
+  background: var(--cf-surface);
+}
+.cf-header__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.cf-header__eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cf-accent);
+  margin-bottom: 2px;
+}
+.cf-header__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--cf-text);
+  line-height: 1.2;
+}
+.cf-header__badges {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+  align-items: flex-start;
+  padding-top: 2px;
+}
+
+/* ── Tab bar ─────────────────────────────────────────── */
+.cf-tabbar {
+  display: flex;
+  gap: 0;
+  margin: 0 -20px;
+  padding: 0 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.cf-tabbar::-webkit-scrollbar { display: none; }
+.cf-tab {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--cf-muted);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.12s, border-color 0.12s;
+  white-space: nowrap;
+}
+.cf-tab:hover { color: var(--cf-text); }
+.cf-tab--active {
+  color: var(--cf-accent);
+  border-bottom-color: var(--cf-accent);
+}
+
+/* ── Body layout ─────────────────────────────────────── */
+.cf-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.cf-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  height: 100%;
+  min-height: 0;
+}
+.cf-main {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+.cf-stats-rail {
+  min-height: 0;
+  overflow-y: auto;
+  border-left: 1px solid var(--cf-border);
+  background: var(--cf-surface);
+  padding: 14px;
+}
+
+/* ── Stats rail ──────────────────────────────────────── */
+.cf-stats-section {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--cf-border);
+}
+.cf-stats-section:last-of-type { border-bottom: none; }
+.cf-stats-heading {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--cf-subtle);
+  margin-bottom: 10px;
+}
+.cf-stats-kpi {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid hsl(222 16% 17%);
+}
+.cf-stats-kpi:last-child { border-bottom: none; }
+.cf-stats-kpi__label { font-size: 0.75rem; color: var(--cf-muted); }
+.cf-stats-kpi__value {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--cf-text);
+}
+.cf-stats-kpi__value--warn  { color: var(--cf-warn); }
+.cf-stats-kpi__value--ok    { color: var(--cf-success); }
+.cf-stats-kpi__value--alert { color: var(--cf-danger); }
+
+/* ── Priority score badge ─────────────────────────────── */
+.cf-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.cf-priority-badge--critical { background: hsl(0 60% 22%);  color: var(--cf-danger); }
+.cf-priority-badge--warn     { background: hsl(38 60% 16%); color: var(--cf-warn); }
+.cf-priority-badge--ok       { background: hsl(142 40% 12%);color: var(--cf-success); }
+
+/* ── Triage list ─────────────────────────────────────── */
+.cf-triage-row {
+  display: grid;
+  grid-template-columns: 32px 1fr 80px 64px 64px 64px 100px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--cf-border);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.cf-triage-row:hover { background: hsl(222 16% 14%); }
+.cf-triage-row--selected {
+  background: hsl(28 20% 11%);
+  border-left: 2px solid var(--cf-accent);
+}
+.cf-triage-row--head {
+  background: var(--cf-surface);
+  cursor: default;
+  border-bottom: 2px solid var(--cf-border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* ── Ratio badge ─────────────────────────────────────── */
+.cf-ratio-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.cf-ratio-badge--ok      { background: hsl(142 40% 14%); color: var(--cf-success); }
+.cf-ratio-badge--low     { background: hsl(38 60% 14%);  color: var(--cf-warn); }
+.cf-ratio-badge--high    { background: hsl(0 50% 16%);   color: var(--cf-danger); }
+.cf-ratio-badge--missing { background: hsl(222 16% 17%); color: var(--cf-subtle); }
+
+/* ── BIV section (Benton Method) ─────────────────────── */
+.cf-biv-section {
+  margin: 14px 0;
+  padding: 14px;
+  background: hsl(28 30% 10%);
+  border: 1px solid hsl(28 50% 22%);
+  border-radius: 8px;
+}
+.cf-biv-section__heading {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--cf-accent);
+  margin-bottom: 10px;
+}
+.cf-biv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid hsl(28 20% 18%);
+  font-size: 0.8125rem;
+}
+.cf-biv-row:last-child { border-bottom: none; }
+.cf-biv-row__label { color: var(--cf-muted); }
+.cf-biv-row__value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--cf-text);
+}
+.cf-biv-row__pct {
+  font-size: 0.75rem;
+  color: var(--cf-subtle);
+  margin-left: 6px;
+}
+.cf-biv-total .cf-biv-row__value {
+  color: var(--cf-accent);
+  font-size: 1rem;
+}
+
+/* ── Depreciation waterfall bar ───────────────────────── */
+.cf-deprec-bar {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--cf-border);
+  overflow: hidden;
+  display: flex;
+  margin: 6px 0;
+}
+.cf-deprec-bar__physical   { background: var(--cf-warn); }
+.cf-deprec-bar__functional { background: var(--cf-accent); }
+.cf-deprec-bar__external   { background: var(--cf-danger); }
+
+/* ── Impact preview panel ────────────────────────────── */
+.cf-impact-panel {
+  padding: 14px;
+  background: hsl(142 20% 9%);
+  border: 1px solid hsl(142 30% 18%);
+  border-radius: 8px;
+  margin-top: 12px;
+}
+.cf-impact-panel--warn {
+  background: hsl(38 30% 9%);
+  border-color: hsl(38 50% 22%);
+}
+.cf-impact-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  font-size: 0.8125rem;
+  border-bottom: 1px solid hsl(222 16% 17%);
+}
+.cf-impact-row:last-child { border-bottom: none; }
+.cf-impact-row__label { color: var(--cf-muted); }
+.cf-impact-row__before { color: var(--cf-subtle); font-variant-numeric: tabular-nums; }
+.cf-impact-row__after  { font-weight: 600; font-variant-numeric: tabular-nums; }
+.cf-impact-row__after--better { color: var(--cf-success); }
+.cf-impact-row__after--worse  { color: var(--cf-danger); }
+
+/* ── Buttons ─────────────────────────────────────────── */
+.cf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.12s, opacity 0.12s;
+}
+.cf-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.cf-btn--primary {
+  background: var(--cf-accent);
+  color: hsl(222 20% 9%);
+  border-color: var(--cf-accent);
+}
+.cf-btn--primary:hover:not(:disabled) { opacity: 0.88; }
+.cf-btn--ghost {
+  background: transparent;
+  color: var(--cf-muted);
+  border-color: var(--cf-border);
+}
+.cf-btn--ghost:hover:not(:disabled) {
+  background: hsl(222 16% 16%);
+  color: var(--cf-text);
+}
+.cf-btn--danger {
+  background: transparent;
+  color: var(--cf-danger);
+  border-color: var(--cf-danger);
+}
+.cf-btn--danger:hover:not(:disabled) { background: hsl(0 72% 20%); }
+.cf-btn--commit {
+  background: var(--cf-success);
+  color: hsl(222 20% 9%);
+  border-color: var(--cf-success);
+}
+.cf-btn--commit:hover:not(:disabled) { opacity: 0.88; }
+
+/* ── Filter bar ──────────────────────────────────────── */
+.cf-filterbar {
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: var(--cf-surface);
+  border: 1px solid var(--cf-border);
+  border-radius: 8px;
+}
+.cf-filter-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.cf-filter-group { display: flex; flex-direction: column; gap: 3px; }
+.cf-filter-label { font-size: 0.6875rem; color: var(--cf-muted); font-weight: 500; }
+.cf-filter-input {
+  padding: 5px 9px;
+  background: var(--cf-bg);
+  border: 1px solid var(--cf-border);
+  border-radius: 5px;
+  color: var(--cf-text);
+  font-size: 0.8125rem;
+}
+.cf-filter-input:focus { outline: none; border-color: var(--cf-accent); }
+.cf-filter-actions { display: flex; gap: 6px; margin-left: auto; }
+
+/* ── Tables ──────────────────────────────────────────── */
+.cf-table-scroll { overflow-x: auto; }
+.cf-table { min-width: 600px; }
+.cf-row { display: grid; border-bottom: 1px solid var(--cf-border); }
+.cf-row--head {
+  background: var(--cf-surface);
+  border-bottom: 2px solid var(--cf-border);
+  position: sticky; top: 0; z-index: 1;
+}
+.cf-row--data:hover { background: hsl(222 16% 14%); }
+.cf-row--selected {
+  background: hsl(28 30% 12%);
+  border-left: 2px solid var(--cf-accent);
+}
+.cf-cell {
+  padding: 7px 10px;
+  font-size: 0.8125rem;
+  color: var(--cf-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cf-cell[role="columnheader"] {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cf-muted);
+}
+.cf-cell--num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ── Null / data gap ─────────────────────────────────── */
+.cf-null-flag { font-size: 0.75rem; color: var(--cf-warn); font-style: italic; }
+
+/* ── State messages ──────────────────────────────────── */
+.cf-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  font-size: 0.875rem;
+  color: var(--cf-muted);
+}
+.cf-state--error { color: var(--cf-danger); }
+
+/* ── Progress bar ────────────────────────────────────── */
+.cf-progress-track {
+  height: 8px;
+  background: var(--cf-border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+.cf-progress-fill {
+  height: 100%;
+  background: var(--cf-accent);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* ── Action bar ──────────────────────────────────────── */
+.cf-action-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.cf-action-bar__spacer { flex: 1; }
+
+/* ── AI insight callout ───────────────────────────────── */
+.cf-ai-callout {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  background: hsl(210 40% 10%);
+  border: 1px solid hsl(210 50% 22%);
+  border-left: 3px solid var(--cf-info);
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  color: var(--cf-text);
+}
+.cf-ai-callout__label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cf-info);
+  margin-bottom: 4px;
+}
