@@ -3093,7 +3093,7 @@ public class CostForgeController : ControllerBase
         "Reval 4" => "Reval 4 — East Benton / Benton City",
         "Reval 5" => "Reval 5 — Prosser / Wine Country",
         "Reval 6" => "Reval 6 — Rural / Agricultural Lands",
-        _         => kv.Key,
+        _ => kv.Key,
       },
     }).OrderBy(r => r.code);
     return Ok(new { revalAreas });
@@ -3121,7 +3121,7 @@ public class CostForgeController : ControllerBase
       var neighborhoods = rows.Select(r =>
       {
         var revalDigit = r.hoodCd.Length >= 1 ? r.hoodCd[0].ToString() : "1";
-        var revalArea  = int.TryParse(revalDigit, out var d) && d >= 1 && d <= 6
+        var revalArea = int.TryParse(revalDigit, out var d) && d >= 1 && d <= 6
                          ? $"Reval {d}" : "Reval 1";
         return new { hoodCd = r.hoodCd, name = r.hoodCd, revalArea, parcelCount = r.parcelCount };
       });
@@ -3131,9 +3131,9 @@ public class CostForgeController : ControllerBase
     // Fallback: static list when CAMA not yet seeded
     var fallback = BentonSalesData.NeighborhoodStats.Select(n => new
     {
-      hoodCd      = (string?)null,
-      name        = n.Area,
-      revalArea   = n.RevalArea,
+      hoodCd = (string?)null,
+      name = n.Area,
+      revalArea = n.RevalArea,
       parcelCount = (int?)null,
     });
     return Ok(new { neighborhoods = fallback, count = BentonSalesData.NeighborhoodStats.Length, source = "static" });
@@ -3222,34 +3222,34 @@ public class CostForgeController : ControllerBase
       {
         var ratios = kv.Value.Select(p => p.AV / p.SP).OrderBy(r => r).ToList();
         var sorted = ratios;
-        var med    = Median(sorted);
-        var cod    = IqrCod(sorted);
-        var mean   = sorted.Average();
+        var med = Median(sorted);
+        var cod = IqrCod(sorted);
+        var mean = sorted.Average();
         // PRD = mean ratio / weighted mean ratio (IAAO standard)
         // weighted mean = sum(AV) / sum(SP)
         var sumAv = kv.Value.Sum(p => p.AV);
         var sumSp = kv.Value.Sum(p => p.SP);
         var weightedMean = sumSp > 0 ? sumAv / sumSp : mean;
-        var prd    = weightedMean > 0 ? mean / weightedMean : 1.0;
+        var prd = weightedMean > 0 ? mean / weightedMean : 1.0;
         var revalDigit = kv.Key.Length >= 1 ? kv.Key[0].ToString() : "1";
-        var revalArea  = int.TryParse(revalDigit, out var d) && d >= 1 && d <= 6
+        var revalArea = int.TryParse(revalDigit, out var d) && d >= 1 && d <= 6
                          ? $"Reval {d}" : "Reval 1";
         // Compliance thresholds (IAAO residential)
         var ratioOk = med >= 0.90 && med <= 1.10;
-        var codOk   = cod <= 15.0;
+        var codOk = cod <= 15.0;
         return new
         {
-          hoodCd      = kv.Key,
+          hoodCd = kv.Key,
           revalArea,
-          saleCount   = sorted.Count,
+          saleCount = sorted.Count,
           medianRatio = Math.Round(med, 4),
-          cod         = Math.Round(cod, 2),
-          prd         = Math.Round(prd, 4),
+          cod = Math.Round(cod, 2),
+          prd = Math.Round(prd, 4),
           ratioOk,
           codOk,
           iaaoCompliant = ratioOk && codOk,
-          p25         = Math.Round(sorted[(int)(sorted.Count * 0.25)], 4),
-          p75         = Math.Round(sorted[(int)(sorted.Count * 0.75)], 4),
+          p25 = Math.Round(sorted[(int)(sorted.Count * 0.25)], 4),
+          p75 = Math.Round(sorted[(int)(sorted.Count * 0.75)], 4),
         };
       })
       .OrderByDescending(n => n.cod)   // worst COD first — most actionable
@@ -3258,12 +3258,12 @@ public class CostForgeController : ControllerBase
     return Ok(new
     {
       neighborhoods,
-      totalSales      = sales.Count,
+      totalSales = sales.Count,
       matchedSales,
       taxYear,
-      hoodCount       = neighborhoods.Count,
+      hoodCount = neighborhoods.Count,
       outOfCompliance = neighborhoods.Count(n => !n.iaaoCompliant),
-      source          = "live",
+      source = "live",
     });
   }
 
@@ -3279,7 +3279,7 @@ public class CostForgeController : ControllerBase
       return BadRequest(new { error = "AdjustmentPct must be between -50 and 100" });
 
     var taxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year;
-    var factor  = 1.0m + (decimal)req.AdjustmentPct / 100m;
+    var factor = 1.0m + (decimal)req.AdjustmentPct / 100m;
 
     // Sales in this neighborhood
     var hoodParcels = await _db.CamaCharacteristics
@@ -3312,7 +3312,7 @@ public class CostForgeController : ControllerBase
       .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue);
 
     var ratiosBefore = new List<double>();
-    var ratiosAfter  = new List<double>();
+    var ratiosAfter = new List<double>();
     decimal totalAvBefore = 0, totalAvAfter = 0;
     int matchedSales = 0;
 
@@ -3320,7 +3320,7 @@ public class CostForgeController : ControllerBase
     {
       if (s.ParcelId == null || !avMap.TryGetValue(s.ParcelId, out var av)) continue;
       var rBefore = (double)(av / s.SalePrice);
-      var rAfter  = (double)(av * factor / s.SalePrice);
+      var rAfter = (double)(av * factor / s.SalePrice);
       if (rBefore < 0.5 || rBefore > 2.0) continue;  // IAAO extraordinary-outlier clamp
       ratiosBefore.Add(rBefore);
       ratiosAfter.Add(rAfter);
@@ -3328,30 +3328,30 @@ public class CostForgeController : ControllerBase
     }
 
     totalAvBefore = avMap.Values.Sum();
-    totalAvAfter  = avMap.Values.Sum(v => v * factor);
+    totalAvAfter = avMap.Values.Sum(v => v * factor);
 
     static double Med(List<double> lst) =>
       lst.Count % 2 == 1 ? lst[lst.Count / 2] : (lst[lst.Count / 2 - 1] + lst[lst.Count / 2]) / 2.0;
 
     ratiosBefore.Sort(); ratiosAfter.Sort();
     var medBefore = ratiosBefore.Count > 0 ? Med(ratiosBefore) : 0;
-    var medAfter  = ratiosAfter.Count  > 0 ? Med(ratiosAfter)  : 0;
+    var medAfter = ratiosAfter.Count > 0 ? Med(ratiosAfter) : 0;
 
     return Ok(new
     {
-      neighborhoodCode    = req.NeighborhoodCode,
-      adjustmentPct       = req.AdjustmentPct,
-      factor              = Math.Round(factor, 4),
-      parcelCount         = hoodParcels.Count,
-      avParcelCount       = avMap.Count,
+      neighborhoodCode = req.NeighborhoodCode,
+      adjustmentPct = req.AdjustmentPct,
+      factor = Math.Round(factor, 4),
+      parcelCount = hoodParcels.Count,
+      avParcelCount = avMap.Count,
       matchedSales,
-      totalAvBefore       = Math.Round(totalAvBefore, 0),
-      totalAvAfter        = Math.Round(totalAvAfter, 0),
-      totalAvDelta        = Math.Round(totalAvAfter - totalAvBefore, 0),
-      medianRatioBefore   = Math.Round(medBefore, 4),
-      medianRatioAfter    = Math.Round(medAfter, 4),
-      ratioDelta          = Math.Round(medAfter - medBefore, 4),
-      iaaoCompliantAfter  = medAfter >= 0.90 && medAfter <= 1.10,
+      totalAvBefore = Math.Round(totalAvBefore, 0),
+      totalAvAfter = Math.Round(totalAvAfter, 0),
+      totalAvDelta = Math.Round(totalAvAfter - totalAvBefore, 0),
+      medianRatioBefore = Math.Round(medBefore, 4),
+      medianRatioAfter = Math.Round(medAfter, 4),
+      ratioDelta = Math.Round(medAfter - medBefore, 4),
+      iaaoCompliantAfter = medAfter >= 0.90 && medAfter <= 1.10,
     });
   }
 
@@ -3366,12 +3366,12 @@ public class CostForgeController : ControllerBase
       factor = kv.Value,
       label = kv.Key switch
       {
-        "ECONOMY"  => "Economy — Grade E (below average construction)",
+        "ECONOMY" => "Economy — Grade E (below average construction)",
         "STANDARD" => "Standard — Grade C (typical residential construction)",
-        "CUSTOM"   => "Custom — Grade B (above average, upgraded finishes)",
-        "PREMIUM"  => "Premium — Grade A (high-end, custom features)",
-        "LUXURY"   => "Luxury — Grade A+ (architect-designed, premium materials)",
-        _          => kv.Key,
+        "CUSTOM" => "Custom — Grade B (above average, upgraded finishes)",
+        "PREMIUM" => "Premium — Grade A (high-end, custom features)",
+        "LUXURY" => "Luxury — Grade A+ (architect-designed, premium materials)",
+        _ => kv.Key,
       },
     }).OrderBy(g => g.factor);
     return Ok(new { qualityGrades = grades });
@@ -3388,11 +3388,11 @@ public class CostForgeController : ControllerBase
       factor = kv.Value,
       label = kv.Key switch
       {
-        "POOR"      => "Poor — Significant deferred maintenance, major repairs needed",
-        "FAIR"      => "Fair — Below average, some repairs/updating needed",
-        "GOOD"      => "Good — Average condition, well maintained",
+        "POOR" => "Poor — Significant deferred maintenance, major repairs needed",
+        "FAIR" => "Fair — Below average, some repairs/updating needed",
+        "GOOD" => "Good — Average condition, well maintained",
         "EXCELLENT" => "Excellent — Like new condition, fully updated",
-        _           => kv.Key,
+        _ => kv.Key,
       },
     }).OrderBy(g => g.factor);
     return Ok(new { conditionGrades = grades });
@@ -3428,13 +3428,13 @@ public class CostForgeController : ControllerBase
   [HttpGet("cost-breakdown")]
   [AllowAnonymous]
   public IActionResult GetCostBreakdown(
-    [FromQuery] string buildingType  = "R1",
-    [FromQuery] string revalArea     = "Reval 1",
-    [FromQuery] string quality       = "STANDARD",
-    [FromQuery] string condition     = "GOOD",
-    [FromQuery] string complexity    = "STANDARD",
-    [FromQuery] int    squareFootage = 2000,
-    [FromQuery] int    effectiveAge  = 10)
+    [FromQuery] string buildingType = "R1",
+    [FromQuery] string revalArea = "Reval 1",
+    [FromQuery] string quality = "STANDARD",
+    [FromQuery] string condition = "GOOD",
+    [FromQuery] string complexity = "STANDARD",
+    [FromQuery] int squareFootage = 2000,
+    [FromQuery] int effectiveAge = 10)
   {
     var entry = BentonCostData.CostMatrix.FirstOrDefault(e =>
       e.BuildingType.Equals(buildingType, StringComparison.OrdinalIgnoreCase) &&
@@ -3443,23 +3443,23 @@ public class CostForgeController : ControllerBase
     if (entry is null)
       return NotFound(new { error = $"No cost matrix entry for type={buildingType} revalArea={revalArea}" });
 
-    var qualityFactor    = BentonCostData.QualityFactors.GetValueOrDefault(quality.ToUpperInvariant(), 1.00m);
-    var conditionFactor  = BentonCostData.ConditionFactors.GetValueOrDefault(condition.ToUpperInvariant(), 1.00m);
+    var qualityFactor = BentonCostData.QualityFactors.GetValueOrDefault(quality.ToUpperInvariant(), 1.00m);
+    var conditionFactor = BentonCostData.ConditionFactors.GetValueOrDefault(condition.ToUpperInvariant(), 1.00m);
     var complexityFactor = BentonCostData.ComplexityFactors.GetValueOrDefault(complexity.ToUpperInvariant(), 1.00m);
 
     var isResidential = buildingType.StartsWith("R", StringComparison.OrdinalIgnoreCase)
                      || buildingType.StartsWith("A", StringComparison.OrdinalIgnoreCase);
-    var deprTable    = isResidential ? BentonCostData.ResidentialDepreciation : BentonCostData.CommercialDepreciation;
-    var deprBracket  = deprTable.FirstOrDefault(b => effectiveAge >= b.MinAge && effectiveAge <= b.MaxAge);
-    var deprFactor   = deprBracket?.Factor ?? 0.35m;
+    var deprTable = isResidential ? BentonCostData.ResidentialDepreciation : BentonCostData.CommercialDepreciation;
+    var deprBracket = deprTable.FirstOrDefault(b => effectiveAge >= b.MinAge && effectiveAge <= b.MaxAge);
+    var deprFactor = deprBracket?.Factor ?? 0.35m;
 
-    var baseRate         = entry.BaseCostPerSqft;
-    var qualAdjRate      = baseRate * qualityFactor;
-    var complexAdjRate   = qualAdjRate * complexityFactor;
-    var rcnTotal         = complexAdjRate * squareFootage;
-    var deprAmount       = rcnTotal * (1m - deprFactor);
-    var rcnAfterDepr     = rcnTotal - deprAmount;
-    var rcnld            = rcnAfterDepr * conditionFactor;
+    var baseRate = entry.BaseCostPerSqft;
+    var qualAdjRate = baseRate * qualityFactor;
+    var complexAdjRate = qualAdjRate * complexityFactor;
+    var rcnTotal = complexAdjRate * squareFootage;
+    var deprAmount = rcnTotal * (1m - deprFactor);
+    var rcnAfterDepr = rcnTotal - deprAmount;
+    var rcnld = rcnAfterDepr * conditionFactor;
 
     return Ok(new
     {
@@ -3497,13 +3497,13 @@ public class CostForgeController : ControllerBase
       },
       summary = new
       {
-        baseRatePerSqft   = baseRate,
-        rcnPerSqft        = complexAdjRate,
-        rcnTotal          = Math.Round(rcnTotal,    2),
-        depreciationPct   = Math.Round((1m - deprFactor) * 100, 1),
-        depreciatedAmount = Math.Round(deprAmount,  2),
-        rcnld             = Math.Round(rcnld,       2),
-        rcnldPerSqft      = Math.Round(rcnld / squareFootage, 2),
+        baseRatePerSqft = baseRate,
+        rcnPerSqft = complexAdjRate,
+        rcnTotal = Math.Round(rcnTotal, 2),
+        depreciationPct = Math.Round((1m - deprFactor) * 100, 1),
+        depreciatedAmount = Math.Round(deprAmount, 2),
+        rcnld = Math.Round(rcnld, 2),
+        rcnldPerSqft = Math.Round(rcnld / squareFootage, 2),
         effectiveAgeBracket = $"{deprBracket?.MinAge ?? 0}-{deprBracket?.MaxAge ?? 999} years",
         depreciationTable = isResidential ? "Residential (40-yr life)" : "Commercial (35-yr life)",
       },
@@ -4645,7 +4645,7 @@ public class CostForgeController : ControllerBase
   }
 
 
-// ΓöÇΓöÇ Wave 28 Request DTOs ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  // ΓöÇΓöÇ Wave 28 Request DTOs ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 
   // r2/wave-29-forge-market-analysis
@@ -4658,91 +4658,91 @@ public class CostForgeController : ControllerBase
   public async Task<IActionResult> RunComparableSalesAnalysis(
       [FromBody] MarketAnalysisRequest request)
   {
-      var ctx = await ResolveCountyContextAsync();
-      if (ctx is null) return Unauthorized(new { error = "County context required." });
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
 
-      if (request.Sales == null || request.Sales.Count < 3)
-          return BadRequest(new { error = "At least 3 sales required" });
+    if (request.Sales == null || request.Sales.Count < 3)
+      return BadRequest(new { error = "At least 3 sales required" });
 
-      // ΓöÇΓöÇ Basic statistics ΓöÇΓöÇ
-      var prices = request.Sales.Select(s => s.SalePrice).OrderBy(p => p).ToList();
-      var n = prices.Count;
-      var median = n % 2 == 1
-          ? prices[n / 2]
-          : (prices[n / 2 - 1] + prices[n / 2]) / 2m;
-      var mean = prices.Average();
+    // ΓöÇΓöÇ Basic statistics ΓöÇΓöÇ
+    var prices = request.Sales.Select(s => s.SalePrice).OrderBy(p => p).ToList();
+    var n = prices.Count;
+    var median = n % 2 == 1
+        ? prices[n / 2]
+        : (prices[n / 2 - 1] + prices[n / 2]) / 2m;
+    var mean = prices.Average();
 
-      var sqftPrices = request.Sales
-          .Where(s => s.SquareFeet > 0)
-          .Select(s => s.SalePrice / s.SquareFeet)
-          .OrderBy(p => p).ToList();
-      var medianPsf = sqftPrices.Count > 0
-          ? (sqftPrices.Count % 2 == 1
-              ? sqftPrices[sqftPrices.Count / 2]
-              : (sqftPrices[sqftPrices.Count / 2 - 1] + sqftPrices[sqftPrices.Count / 2]) / 2m)
-          : 0m;
+    var sqftPrices = request.Sales
+        .Where(s => s.SquareFeet > 0)
+        .Select(s => s.SalePrice / s.SquareFeet)
+        .OrderBy(p => p).ToList();
+    var medianPsf = sqftPrices.Count > 0
+        ? (sqftPrices.Count % 2 == 1
+            ? sqftPrices[sqftPrices.Count / 2]
+            : (sqftPrices[sqftPrices.Count / 2 - 1] + sqftPrices[sqftPrices.Count / 2]) / 2m)
+        : 0m;
 
-      // ΓöÇΓöÇ Ratio study (COD + PRD) ΓöÇΓöÇ
-      var ratios = request.Sales
-          .Where(s => s.SalePrice > 0 && s.AssessedValue > 0)
-          .Select(s => (double)(s.AssessedValue / s.SalePrice))
-          .ToList();
+    // ΓöÇΓöÇ Ratio study (COD + PRD) ΓöÇΓöÇ
+    var ratios = request.Sales
+        .Where(s => s.SalePrice > 0 && s.AssessedValue > 0)
+        .Select(s => (double)(s.AssessedValue / s.SalePrice))
+        .ToList();
 
-      double medianRatio = 0, cod = 0, prd = 0;
-      if (ratios.Count > 0)
-      {
-          var sortedRatios = ratios.OrderBy(r => r).ToList();
-          var rn = sortedRatios.Count;
-          medianRatio = rn % 2 == 1
-              ? sortedRatios[rn / 2]
-              : (sortedRatios[rn / 2 - 1] + sortedRatios[rn / 2]) / 2.0;
+    double medianRatio = 0, cod = 0, prd = 0;
+    if (ratios.Count > 0)
+    {
+      var sortedRatios = ratios.OrderBy(r => r).ToList();
+      var rn = sortedRatios.Count;
+      medianRatio = rn % 2 == 1
+          ? sortedRatios[rn / 2]
+          : (sortedRatios[rn / 2 - 1] + sortedRatios[rn / 2]) / 2.0;
 
-          if (medianRatio > 0)
-              cod = sortedRatios.Average(r => Math.Abs(r - medianRatio)) / medianRatio * 100.0;
+      if (medianRatio > 0)
+        cod = sortedRatios.Average(r => Math.Abs(r - medianRatio)) / medianRatio * 100.0;
 
-          var meanRatio = ratios.Average();
-          var totalAssessed = request.Sales.Where(s => s.SalePrice > 0 && s.AssessedValue > 0)
-              .Sum(s => (double)s.AssessedValue);
-          var totalSale = request.Sales.Where(s => s.SalePrice > 0 && s.AssessedValue > 0)
-              .Sum(s => (double)s.SalePrice);
-          var weightedMeanRatio = totalSale > 0 ? totalAssessed / totalSale : meanRatio;
-          prd = weightedMeanRatio > 0 ? meanRatio / weightedMeanRatio : 1.0;
-      }
+      var meanRatio = ratios.Average();
+      var totalAssessed = request.Sales.Where(s => s.SalePrice > 0 && s.AssessedValue > 0)
+          .Sum(s => (double)s.AssessedValue);
+      var totalSale = request.Sales.Where(s => s.SalePrice > 0 && s.AssessedValue > 0)
+          .Sum(s => (double)s.SalePrice);
+      var weightedMeanRatio = totalSale > 0 ? totalAssessed / totalSale : meanRatio;
+      prd = weightedMeanRatio > 0 ? meanRatio / weightedMeanRatio : 1.0;
+    }
 
-      var entity = new TerraFusion.Core.Entities.MarketAnalysis
-      {
-          CountyId = ctx.CountyId,
-          AnalysisType = "comparable_sales",
-          MarketAreaName = request.MarketAreaName ?? "Unnamed",
-          ParcelIds = System.Text.Json.JsonSerializer.Serialize(
-              request.Sales.Select(s => s.ParcelId).ToList()),
-          SampleSize = n,
-          MedianSalePrice = median,
-          MeanSalePrice = Math.Round(mean, 2),
-          MedianPricePerSqft = Math.Round(medianPsf, 2),
-          CoefficientOfDispersion = Math.Round(cod, 4),
-          PriceRelatedDifferential = Math.Round(prd, 4),
-          MedianRatio = Math.Round(medianRatio, 4),
-          CreatedBy = User.Identity?.Name ?? "system",
-          CreatedAt = DateTime.UtcNow,
-      };
+    var entity = new TerraFusion.Core.Entities.MarketAnalysis
+    {
+      CountyId = ctx.CountyId,
+      AnalysisType = "comparable_sales",
+      MarketAreaName = request.MarketAreaName ?? "Unnamed",
+      ParcelIds = System.Text.Json.JsonSerializer.Serialize(
+            request.Sales.Select(s => s.ParcelId).ToList()),
+      SampleSize = n,
+      MedianSalePrice = median,
+      MeanSalePrice = Math.Round(mean, 2),
+      MedianPricePerSqft = Math.Round(medianPsf, 2),
+      CoefficientOfDispersion = Math.Round(cod, 4),
+      PriceRelatedDifferential = Math.Round(prd, 4),
+      MedianRatio = Math.Round(medianRatio, 4),
+      CreatedBy = User.Identity?.Name ?? "system",
+      CreatedAt = DateTime.UtcNow,
+    };
 
-      _db.Set<TerraFusion.Core.Entities.MarketAnalysis>().Add(entity);
-      await _db.SaveChangesAsync();
+    _db.Set<TerraFusion.Core.Entities.MarketAnalysis>().Add(entity);
+    await _db.SaveChangesAsync();
 
-      return Ok(new
-      {
-          id = entity.Id,
-          analysisType = entity.AnalysisType,
-          marketAreaName = entity.MarketAreaName,
-          sampleSize = entity.SampleSize,
-          medianSalePrice = entity.MedianSalePrice,
-          meanSalePrice = entity.MeanSalePrice,
-          medianPricePerSqft = entity.MedianPricePerSqft,
-          coefficientOfDispersion = entity.CoefficientOfDispersion,
-          priceRelatedDifferential = entity.PriceRelatedDifferential,
-          medianRatio = entity.MedianRatio,
-      });
+    return Ok(new
+    {
+      id = entity.Id,
+      analysisType = entity.AnalysisType,
+      marketAreaName = entity.MarketAreaName,
+      sampleSize = entity.SampleSize,
+      medianSalePrice = entity.MedianSalePrice,
+      meanSalePrice = entity.MeanSalePrice,
+      medianPricePerSqft = entity.MedianPricePerSqft,
+      coefficientOfDispersion = entity.CoefficientOfDispersion,
+      priceRelatedDifferential = entity.PriceRelatedDifferential,
+      medianRatio = entity.MedianRatio,
+    });
   }
 
   /// <summary>Run a time-trend analysis for a set of sales.</summary>
@@ -4750,82 +4750,82 @@ public class CostForgeController : ControllerBase
   public async Task<IActionResult> RunTimeTrendAnalysis(
       [FromBody] TimeTrendRequest request)
   {
-      var ctx = await ResolveCountyContextAsync();
-      if (ctx is null) return Unauthorized(new { error = "County context required." });
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
 
-      if (request.Sales == null || request.Sales.Count < 3)
-          return BadRequest(new { error = "At least 3 sales required" });
+    if (request.Sales == null || request.Sales.Count < 3)
+      return BadRequest(new { error = "At least 3 sales required" });
 
-      var sorted = request.Sales.OrderBy(s => s.SaleDate).ToList();
-      var baseDate = sorted.First().SaleDate;
+    var sorted = request.Sales.OrderBy(s => s.SaleDate).ToList();
+    var baseDate = sorted.First().SaleDate;
 
-      var xs = sorted.Select(s => (s.SaleDate - baseDate).TotalDays / 30.4375).ToArray();
-      var ys = sorted.Select(s => (double)s.SalePrice).ToArray();
-      var n = xs.Length;
+    var xs = sorted.Select(s => (s.SaleDate - baseDate).TotalDays / 30.4375).ToArray();
+    var ys = sorted.Select(s => (double)s.SalePrice).ToArray();
+    var n = xs.Length;
 
-      var xMean = xs.Average();
-      var yMean = ys.Average();
-      var ssxy = 0.0;
-      var ssxx = 0.0;
-      for (int i = 0; i < n; i++)
+    var xMean = xs.Average();
+    var yMean = ys.Average();
+    var ssxy = 0.0;
+    var ssxx = 0.0;
+    for (int i = 0; i < n; i++)
+    {
+      ssxy += (xs[i] - xMean) * (ys[i] - yMean);
+      ssxx += (xs[i] - xMean) * (xs[i] - xMean);
+    }
+
+    var slope = ssxx > 0 ? ssxy / ssxx : 0;
+    var intercept = yMean - slope * xMean;
+
+    var ssTotal = ys.Sum(y => (y - yMean) * (y - yMean));
+    var ssResidual = 0.0;
+    for (int i = 0; i < n; i++)
+    {
+      var predicted = intercept + slope * xs[i];
+      ssResidual += (ys[i] - predicted) * (ys[i] - predicted);
+    }
+    var rSquared = ssTotal > 0 ? 1.0 - ssResidual / ssTotal : 0;
+
+    var monthlyPctChange = intercept > 0 ? slope / intercept * 100.0 : 0;
+
+    var entity = new TerraFusion.Core.Entities.MarketAnalysis
+    {
+      CountyId = ctx.CountyId,
+      AnalysisType = "time_trend",
+      MarketAreaName = request.MarketAreaName ?? "Unnamed",
+      ParcelIds = System.Text.Json.JsonSerializer.Serialize(
+            sorted.Select(s => s.ParcelId).Where(p => p != null).ToList()),
+      SampleSize = n,
+      TimeTrendCoefficient = Math.Round(monthlyPctChange, 4),
+      TimeTrendRSquared = Math.Round(rSquared, 4),
+      PeriodStart = sorted.First().SaleDate,
+      PeriodEnd = sorted.Last().SaleDate,
+      MedianSalePrice = (decimal)yMean,
+      MeanSalePrice = (decimal)Math.Round(yMean, 2),
+      AdditionalMetrics = System.Text.Json.JsonSerializer.Serialize(new
       {
-          ssxy += (xs[i] - xMean) * (ys[i] - yMean);
-          ssxx += (xs[i] - xMean) * (xs[i] - xMean);
-      }
+        slopePerMonth = Math.Round(slope, 2),
+        interceptValue = Math.Round(intercept, 2),
+        monthsSpanned = Math.Round(xs.Last(), 1),
+      }),
+      CreatedBy = User.Identity?.Name ?? "system",
+      CreatedAt = DateTime.UtcNow,
+    };
 
-      var slope = ssxx > 0 ? ssxy / ssxx : 0;
-      var intercept = yMean - slope * xMean;
+    _db.Set<TerraFusion.Core.Entities.MarketAnalysis>().Add(entity);
+    await _db.SaveChangesAsync();
 
-      var ssTotal = ys.Sum(y => (y - yMean) * (y - yMean));
-      var ssResidual = 0.0;
-      for (int i = 0; i < n; i++)
-      {
-          var predicted = intercept + slope * xs[i];
-          ssResidual += (ys[i] - predicted) * (ys[i] - predicted);
-      }
-      var rSquared = ssTotal > 0 ? 1.0 - ssResidual / ssTotal : 0;
-
-      var monthlyPctChange = intercept > 0 ? slope / intercept * 100.0 : 0;
-
-      var entity = new TerraFusion.Core.Entities.MarketAnalysis
-      {
-          CountyId = ctx.CountyId,
-          AnalysisType = "time_trend",
-          MarketAreaName = request.MarketAreaName ?? "Unnamed",
-          ParcelIds = System.Text.Json.JsonSerializer.Serialize(
-              sorted.Select(s => s.ParcelId).Where(p => p != null).ToList()),
-          SampleSize = n,
-          TimeTrendCoefficient = Math.Round(monthlyPctChange, 4),
-          TimeTrendRSquared = Math.Round(rSquared, 4),
-          PeriodStart = sorted.First().SaleDate,
-          PeriodEnd = sorted.Last().SaleDate,
-          MedianSalePrice = (decimal)yMean,
-          MeanSalePrice = (decimal)Math.Round(yMean, 2),
-          AdditionalMetrics = System.Text.Json.JsonSerializer.Serialize(new
-          {
-              slopePerMonth = Math.Round(slope, 2),
-              interceptValue = Math.Round(intercept, 2),
-              monthsSpanned = Math.Round(xs.Last(), 1),
-          }),
-          CreatedBy = User.Identity?.Name ?? "system",
-          CreatedAt = DateTime.UtcNow,
-      };
-
-      _db.Set<TerraFusion.Core.Entities.MarketAnalysis>().Add(entity);
-      await _db.SaveChangesAsync();
-
-      return Ok(new
-      {
-          id = entity.Id,
-          analysisType = entity.AnalysisType,
-          marketAreaName = entity.MarketAreaName,
-          sampleSize = entity.SampleSize,
-          timeTrendCoefficient = entity.TimeTrendCoefficient,
-          timeTrendRSquared = entity.TimeTrendRSquared,
-          periodStart = entity.PeriodStart,
-          periodEnd = entity.PeriodEnd,
-          additionalMetrics = entity.AdditionalMetrics,
-      });
+    return Ok(new
+    {
+      id = entity.Id,
+      analysisType = entity.AnalysisType,
+      marketAreaName = entity.MarketAreaName,
+      sampleSize = entity.SampleSize,
+      timeTrendCoefficient = entity.TimeTrendCoefficient,
+      timeTrendRSquared = entity.TimeTrendRSquared,
+      periodStart = entity.PeriodStart,
+      periodEnd = entity.PeriodEnd,
+      additionalMetrics = entity.AdditionalMetrics,
+    });
   }
 
   /// <summary>Run a ratio study for a set of sales with assessed values.</summary>
@@ -4833,122 +4833,122 @@ public class CostForgeController : ControllerBase
   public async Task<IActionResult> RunRatioStudy(
       [FromBody] MarketAnalysisRequest request)
   {
-      var ctx = await ResolveCountyContextAsync();
-      if (ctx is null) return Unauthorized(new { error = "County context required." });
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
 
-      if (request.Sales == null || request.Sales.Count < 3)
-          return BadRequest(new { error = "At least 3 sales required" });
+    if (request.Sales == null || request.Sales.Count < 3)
+      return BadRequest(new { error = "At least 3 sales required" });
 
-      var valid = request.Sales.Where(s => s.SalePrice > 0 && s.AssessedValue > 0).ToList();
-      if (valid.Count < 3)
-          return BadRequest(new { error = "At least 3 sales with assessed values required" });
+    var valid = request.Sales.Where(s => s.SalePrice > 0 && s.AssessedValue > 0).ToList();
+    if (valid.Count < 3)
+      return BadRequest(new { error = "At least 3 sales with assessed values required" });
 
-      var ratios = valid.Select(s => (double)(s.AssessedValue / s.SalePrice)).OrderBy(r => r).ToList();
-      var n = ratios.Count;
-      var medianRatio = n % 2 == 1
-          ? ratios[n / 2]
-          : (ratios[n / 2 - 1] + ratios[n / 2]) / 2.0;
-      var meanRatio = ratios.Average();
+    var ratios = valid.Select(s => (double)(s.AssessedValue / s.SalePrice)).OrderBy(r => r).ToList();
+    var n = ratios.Count;
+    var medianRatio = n % 2 == 1
+        ? ratios[n / 2]
+        : (ratios[n / 2 - 1] + ratios[n / 2]) / 2.0;
+    var meanRatio = ratios.Average();
 
-      var cod = medianRatio > 0
-          ? ratios.Average(r => Math.Abs(r - medianRatio)) / medianRatio * 100.0
-          : 0;
+    var cod = medianRatio > 0
+        ? ratios.Average(r => Math.Abs(r - medianRatio)) / medianRatio * 100.0
+        : 0;
 
-      var totalAssessed = valid.Sum(s => (double)s.AssessedValue);
-      var totalSale = valid.Sum(s => (double)s.SalePrice);
-      var weightedMean = totalSale > 0 ? totalAssessed / totalSale : meanRatio;
-      var prd = weightedMean > 0 ? meanRatio / weightedMean : 1.0;
+    var totalAssessed = valid.Sum(s => (double)s.AssessedValue);
+    var totalSale = valid.Sum(s => (double)s.SalePrice);
+    var weightedMean = totalSale > 0 ? totalAssessed / totalSale : meanRatio;
+    var prd = weightedMean > 0 ? meanRatio / weightedMean : 1.0;
 
-      double W29Percentile(List<double> sorted, double p)
+    double W29Percentile(List<double> sorted, double p)
+    {
+      var idx = (sorted.Count - 1) * p;
+      var lo = (int)Math.Floor(idx);
+      var hi = (int)Math.Ceiling(idx);
+      if (lo == hi) return sorted[lo];
+      return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
+    }
+
+    var p10 = W29Percentile(ratios, 0.10);
+    var p25 = W29Percentile(ratios, 0.25);
+    var p75 = W29Percentile(ratios, 0.75);
+    var p90 = W29Percentile(ratios, 0.90);
+
+    var iaaoCompliant = cod >= 5.0 && cod <= 15.0 && prd >= 0.98 && prd <= 1.03;
+
+    var entity = new TerraFusion.Core.Entities.MarketAnalysis
+    {
+      CountyId = ctx.CountyId,
+      AnalysisType = "ratio_study",
+      MarketAreaName = request.MarketAreaName ?? "Unnamed",
+      ParcelIds = System.Text.Json.JsonSerializer.Serialize(
+            valid.Select(s => s.ParcelId).ToList()),
+      SampleSize = n,
+      MedianRatio = Math.Round(medianRatio, 4),
+      CoefficientOfDispersion = Math.Round(cod, 4),
+      PriceRelatedDifferential = Math.Round(prd, 4),
+      AdditionalMetrics = System.Text.Json.JsonSerializer.Serialize(new
       {
-          var idx = (sorted.Count - 1) * p;
-          var lo = (int)Math.Floor(idx);
-          var hi = (int)Math.Ceiling(idx);
-          if (lo == hi) return sorted[lo];
-          return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
-      }
+        meanRatio = Math.Round(meanRatio, 4),
+        p10 = Math.Round(p10, 4),
+        p25 = Math.Round(p25, 4),
+        p75 = Math.Round(p75, 4),
+        p90 = Math.Round(p90, 4),
+        iaaoCompliant,
+      }),
+      CreatedBy = User.Identity?.Name ?? "system",
+      CreatedAt = DateTime.UtcNow,
+    };
 
-      var p10 = W29Percentile(ratios, 0.10);
-      var p25 = W29Percentile(ratios, 0.25);
-      var p75 = W29Percentile(ratios, 0.75);
-      var p90 = W29Percentile(ratios, 0.90);
+    _db.Set<TerraFusion.Core.Entities.MarketAnalysis>().Add(entity);
+    await _db.SaveChangesAsync();
 
-      var iaaoCompliant = cod >= 5.0 && cod <= 15.0 && prd >= 0.98 && prd <= 1.03;
-
-      var entity = new TerraFusion.Core.Entities.MarketAnalysis
-      {
-          CountyId = ctx.CountyId,
-          AnalysisType = "ratio_study",
-          MarketAreaName = request.MarketAreaName ?? "Unnamed",
-          ParcelIds = System.Text.Json.JsonSerializer.Serialize(
-              valid.Select(s => s.ParcelId).ToList()),
-          SampleSize = n,
-          MedianRatio = Math.Round(medianRatio, 4),
-          CoefficientOfDispersion = Math.Round(cod, 4),
-          PriceRelatedDifferential = Math.Round(prd, 4),
-          AdditionalMetrics = System.Text.Json.JsonSerializer.Serialize(new
-          {
-              meanRatio = Math.Round(meanRatio, 4),
-              p10 = Math.Round(p10, 4),
-              p25 = Math.Round(p25, 4),
-              p75 = Math.Round(p75, 4),
-              p90 = Math.Round(p90, 4),
-              iaaoCompliant,
-          }),
-          CreatedBy = User.Identity?.Name ?? "system",
-          CreatedAt = DateTime.UtcNow,
-      };
-
-      _db.Set<TerraFusion.Core.Entities.MarketAnalysis>().Add(entity);
-      await _db.SaveChangesAsync();
-
-      return Ok(new
-      {
-          id = entity.Id,
-          analysisType = entity.AnalysisType,
-          marketAreaName = entity.MarketAreaName,
-          sampleSize = entity.SampleSize,
-          medianRatio = entity.MedianRatio,
-          coefficientOfDispersion = entity.CoefficientOfDispersion,
-          priceRelatedDifferential = entity.PriceRelatedDifferential,
-          additionalMetrics = entity.AdditionalMetrics,
-          iaaoCompliant,
-      });
+    return Ok(new
+    {
+      id = entity.Id,
+      analysisType = entity.AnalysisType,
+      marketAreaName = entity.MarketAreaName,
+      sampleSize = entity.SampleSize,
+      medianRatio = entity.MedianRatio,
+      coefficientOfDispersion = entity.CoefficientOfDispersion,
+      priceRelatedDifferential = entity.PriceRelatedDifferential,
+      additionalMetrics = entity.AdditionalMetrics,
+      iaaoCompliant,
+    });
   }
 
   /// <summary>Retrieve a market analysis result by ID.</summary>
   [HttpGet("analytics/market/{id:int}")]
   public async Task<IActionResult> GetMarketAnalysis(int id)
   {
-      var ctx = await ResolveCountyContextAsync();
-      if (ctx is null) return Unauthorized(new { error = "County context required." });
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
 
-      var result = await _db.Set<TerraFusion.Core.Entities.MarketAnalysis>()
-          .FirstOrDefaultAsync(m => m.Id == id && m.CountyId == ctx.CountyId);
+    var result = await _db.Set<TerraFusion.Core.Entities.MarketAnalysis>()
+        .FirstOrDefaultAsync(m => m.Id == id && m.CountyId == ctx.CountyId);
 
-      if (result == null)
-          return NotFound(new { error = "Market analysis not found" });
+    if (result == null)
+      return NotFound(new { error = "Market analysis not found" });
 
-      return Ok(new
-      {
-          id = result.Id,
-          analysisType = result.AnalysisType,
-          marketAreaName = result.MarketAreaName,
-          sampleSize = result.SampleSize,
-          medianSalePrice = result.MedianSalePrice,
-          meanSalePrice = result.MeanSalePrice,
-          medianPricePerSqft = result.MedianPricePerSqft,
-          coefficientOfDispersion = result.CoefficientOfDispersion,
-          priceRelatedDifferential = result.PriceRelatedDifferential,
-          medianRatio = result.MedianRatio,
-          timeTrendCoefficient = result.TimeTrendCoefficient,
-          timeTrendRSquared = result.TimeTrendRSquared,
-          periodStart = result.PeriodStart,
-          periodEnd = result.PeriodEnd,
-          additionalMetrics = result.AdditionalMetrics,
-          createdBy = result.CreatedBy,
-          createdAt = result.CreatedAt,
-      });
+    return Ok(new
+    {
+      id = result.Id,
+      analysisType = result.AnalysisType,
+      marketAreaName = result.MarketAreaName,
+      sampleSize = result.SampleSize,
+      medianSalePrice = result.MedianSalePrice,
+      meanSalePrice = result.MeanSalePrice,
+      medianPricePerSqft = result.MedianPricePerSqft,
+      coefficientOfDispersion = result.CoefficientOfDispersion,
+      priceRelatedDifferential = result.PriceRelatedDifferential,
+      medianRatio = result.MedianRatio,
+      timeTrendCoefficient = result.TimeTrendCoefficient,
+      timeTrendRSquared = result.TimeTrendRSquared,
+      periodStart = result.PeriodStart,
+      periodEnd = result.PeriodEnd,
+      additionalMetrics = result.AdditionalMetrics,
+      createdBy = result.CreatedBy,
+      createdAt = result.CreatedAt,
+    });
   }
 
   /// <summary>Get market analysis history for the county.</summary>
@@ -4957,35 +4957,35 @@ public class CostForgeController : ControllerBase
       [FromQuery] string? analysisType = null,
       [FromQuery] int limit = 20)
   {
-      var ctx = await ResolveCountyContextAsync();
-      if (ctx is null) return Unauthorized(new { error = "County context required." });
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
 
-      var query = _db.Set<TerraFusion.Core.Entities.MarketAnalysis>()
-          .Where(m => m.CountyId == ctx.CountyId);
+    var query = _db.Set<TerraFusion.Core.Entities.MarketAnalysis>()
+        .Where(m => m.CountyId == ctx.CountyId);
 
-      if (!string.IsNullOrEmpty(analysisType))
-          query = query.Where(m => m.AnalysisType == analysisType);
+    if (!string.IsNullOrEmpty(analysisType))
+      query = query.Where(m => m.AnalysisType == analysisType);
 
-      var results = await query
-          .OrderByDescending(m => m.CreatedAt)
-          .Take(Math.Clamp(limit, 1, 100))
-          .Select(m => new
-          {
-              id = m.Id,
-              analysisType = m.AnalysisType,
-              marketAreaName = m.MarketAreaName,
-              sampleSize = m.SampleSize,
-              medianRatio = m.MedianRatio,
-              coefficientOfDispersion = m.CoefficientOfDispersion,
-              createdAt = m.CreatedAt,
-          })
-          .ToListAsync();
+    var results = await query
+        .OrderByDescending(m => m.CreatedAt)
+        .Take(Math.Clamp(limit, 1, 100))
+        .Select(m => new
+        {
+          id = m.Id,
+          analysisType = m.AnalysisType,
+          marketAreaName = m.MarketAreaName,
+          sampleSize = m.SampleSize,
+          medianRatio = m.MedianRatio,
+          coefficientOfDispersion = m.CoefficientOfDispersion,
+          createdAt = m.CreatedAt,
+        })
+        .ToListAsync();
 
-      return Ok(new { count = results.Count, results });
+    return Ok(new { count = results.Count, results });
   }
 
 
-// ΓòÉΓòÉΓòÉ R2 Wave 29 ΓÇö Market Analysis DTOs ΓòÉΓòÉΓòÉ
+  // ΓòÉΓòÉΓòÉ R2 Wave 29 ΓÇö Market Analysis DTOs ΓòÉΓòÉΓòÉ
 
 
   // r2/wave-30-forge-rcw-calculators
@@ -4997,260 +4997,260 @@ public class CostForgeController : ControllerBase
   [HttpPost("analytics/rcw/84-34")]
   public async Task<IActionResult> CalculateRcw8434([FromBody] Rcw8434Request request)
   {
-      var ctx = await ResolveCountyContextAsync();
-      if (ctx is null) return Unauthorized(new { error = "County context required." });
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
 
-      // Classification rates per acre (simplified WA schedule)
-      var ratePerAcre = (request.Classification?.ToLowerInvariant()) switch
+    // Classification rates per acre (simplified WA schedule)
+    var ratePerAcre = (request.Classification?.ToLowerInvariant()) switch
+    {
+      "farm_and_agricultural" => 500m,
+      "timber" => 300m,
+      "open_space" => 200m,
+      _ => 400m,
+    };
+
+    var currentUseValue = ratePerAcre * request.Acreage;
+    var exemption = request.MarketValue - currentUseValue;
+    if (exemption < 0) exemption = 0;
+    var taxSavings = exemption * (decimal)request.LevyRate / 1000m;
+
+    var entity = new RcwCalculation
+    {
+      CountyId = ctx.CountyId,
+      Statute = "rcw_84_34",
+      ParcelId = request.ParcelId ?? "",
+      CurrentUseClassification = request.Classification ?? "open_space",
+      MarketValue = request.MarketValue,
+      ReducedValue = currentUseValue,
+      ExemptionAmount = exemption,
+      TaxSavings = Math.Round(taxSavings, 2),
+      LevyRate = request.LevyRate,
+      TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
+      Qualifies = request.Acreage >= 5 && request.MarketValue > 0,
+      DisqualificationReason = request.Acreage < 5
+            ? "Minimum 5 acres required for current-use classification"
+            : "",
+      Details = System.Text.Json.JsonSerializer.Serialize(new
       {
-          "farm_and_agricultural" => 500m,
-          "timber" => 300m,
-          "open_space" => 200m,
-          _ => 400m,
-      };
+        acreage = request.Acreage,
+        ratePerAcre,
+        classification = request.Classification ?? "open_space",
+      }),
+      CreatedBy = User.Identity?.Name ?? "system",
+      CreatedAt = DateTime.UtcNow,
+    };
 
-      var currentUseValue = ratePerAcre * request.Acreage;
-      var exemption = request.MarketValue - currentUseValue;
-      if (exemption < 0) exemption = 0;
-      var taxSavings = exemption * (decimal)request.LevyRate / 1000m;
+    _db.Set<RcwCalculation>().Add(entity);
+    await _db.SaveChangesAsync();
 
-      var entity = new RcwCalculation
-      {
-          CountyId = ctx.CountyId,
-          Statute = "rcw_84_34",
-          ParcelId = request.ParcelId ?? "",
-          CurrentUseClassification = request.Classification ?? "open_space",
-          MarketValue = request.MarketValue,
-          ReducedValue = currentUseValue,
-          ExemptionAmount = exemption,
-          TaxSavings = Math.Round(taxSavings, 2),
-          LevyRate = request.LevyRate,
-          TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
-          Qualifies = request.Acreage >= 5 && request.MarketValue > 0,
-          DisqualificationReason = request.Acreage < 5
-              ? "Minimum 5 acres required for current-use classification"
-              : "",
-          Details = System.Text.Json.JsonSerializer.Serialize(new
-          {
-              acreage = request.Acreage,
-              ratePerAcre,
-              classification = request.Classification ?? "open_space",
-          }),
-          CreatedBy = User.Identity?.Name ?? "system",
-          CreatedAt = DateTime.UtcNow,
-      };
-
-      _db.Set<RcwCalculation>().Add(entity);
-      await _db.SaveChangesAsync();
-
-      return Ok(new
-      {
-          id = entity.Id,
-          statute = entity.Statute,
-          parcelId = entity.ParcelId,
-          classification = entity.CurrentUseClassification,
-          marketValue = entity.MarketValue,
-          reducedValue = entity.ReducedValue,
-          exemptionAmount = entity.ExemptionAmount,
-          taxSavings = entity.TaxSavings,
-          qualifies = entity.Qualifies,
-          disqualificationReason = entity.DisqualificationReason,
-      });
+    return Ok(new
+    {
+      id = entity.Id,
+      statute = entity.Statute,
+      parcelId = entity.ParcelId,
+      classification = entity.CurrentUseClassification,
+      marketValue = entity.MarketValue,
+      reducedValue = entity.ReducedValue,
+      exemptionAmount = entity.ExemptionAmount,
+      taxSavings = entity.TaxSavings,
+      qualifies = entity.Qualifies,
+      disqualificationReason = entity.DisqualificationReason,
+    });
   }
 
   /// <summary>RCW 84.26 ΓÇö Historic Property special valuation.</summary>
   [HttpPost("analytics/rcw/84-26")]
   public async Task<IActionResult> CalculateRcw8426([FromBody] Rcw8426Request request)
   {
-      var ctx = await ResolveCountyContextAsync();
-      if (ctx is null) return Unauthorized(new { error = "County context required." });
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
 
-      // Historic property: valuation frozen at pre-rehabilitation value
-      // for 10-year special valuation period
-      var qualifies = request.YearDesignated > 0
-                      && request.RehabilitationCost > 0
-                      && request.RehabilitationCost >= request.PreRehabValue * 0.25m; // 25% minimum
+    // Historic property: valuation frozen at pre-rehabilitation value
+    // for 10-year special valuation period
+    var qualifies = request.YearDesignated > 0
+                    && request.RehabilitationCost > 0
+                    && request.RehabilitationCost >= request.PreRehabValue * 0.25m; // 25% minimum
 
-      var reducedValue = qualifies ? request.PreRehabValue : request.MarketValue;
-      var exemption = request.MarketValue - reducedValue;
-      if (exemption < 0) exemption = 0;
-      var taxSavings = exemption * (decimal)request.LevyRate / 1000m;
+    var reducedValue = qualifies ? request.PreRehabValue : request.MarketValue;
+    var exemption = request.MarketValue - reducedValue;
+    if (exemption < 0) exemption = 0;
+    var taxSavings = exemption * (decimal)request.LevyRate / 1000m;
 
-      var yearsRemaining = qualifies
-          ? Math.Max(0, 10 - (request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year) + request.YearDesignated)
-          : 0;
+    var yearsRemaining = qualifies
+        ? Math.Max(0, 10 - (request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year) + request.YearDesignated)
+        : 0;
 
-      var entity = new RcwCalculation
+    var entity = new RcwCalculation
+    {
+      CountyId = ctx.CountyId,
+      Statute = "rcw_84_26",
+      ParcelId = request.ParcelId ?? "",
+      MarketValue = request.MarketValue,
+      ReducedValue = reducedValue,
+      ExemptionAmount = exemption,
+      TaxSavings = Math.Round(taxSavings, 2),
+      LevyRate = request.LevyRate,
+      TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
+      Qualifies = qualifies,
+      DisqualificationReason = !qualifies
+            ? "Rehabilitation cost must be >= 25% of pre-rehabilitation value"
+            : "",
+      Details = System.Text.Json.JsonSerializer.Serialize(new
       {
-          CountyId = ctx.CountyId,
-          Statute = "rcw_84_26",
-          ParcelId = request.ParcelId ?? "",
-          MarketValue = request.MarketValue,
-          ReducedValue = reducedValue,
-          ExemptionAmount = exemption,
-          TaxSavings = Math.Round(taxSavings, 2),
-          LevyRate = request.LevyRate,
-          TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
-          Qualifies = qualifies,
-          DisqualificationReason = !qualifies
-              ? "Rehabilitation cost must be >= 25% of pre-rehabilitation value"
-              : "",
-          Details = System.Text.Json.JsonSerializer.Serialize(new
-          {
-              preRehabValue = request.PreRehabValue,
-              rehabilitationCost = request.RehabilitationCost,
-              yearDesignated = request.YearDesignated,
-              yearsRemaining,
-          }),
-          CreatedBy = User.Identity?.Name ?? "system",
-          CreatedAt = DateTime.UtcNow,
-      };
+        preRehabValue = request.PreRehabValue,
+        rehabilitationCost = request.RehabilitationCost,
+        yearDesignated = request.YearDesignated,
+        yearsRemaining,
+      }),
+      CreatedBy = User.Identity?.Name ?? "system",
+      CreatedAt = DateTime.UtcNow,
+    };
 
-      _db.Set<RcwCalculation>().Add(entity);
-      await _db.SaveChangesAsync();
+    _db.Set<RcwCalculation>().Add(entity);
+    await _db.SaveChangesAsync();
 
-      return Ok(new
-      {
-          id = entity.Id,
-          statute = entity.Statute,
-          parcelId = entity.ParcelId,
-          marketValue = entity.MarketValue,
-          reducedValue = entity.ReducedValue,
-          exemptionAmount = entity.ExemptionAmount,
-          taxSavings = entity.TaxSavings,
-          qualifies = entity.Qualifies,
-          disqualificationReason = entity.DisqualificationReason,
-          yearsRemaining,
-      });
+    return Ok(new
+    {
+      id = entity.Id,
+      statute = entity.Statute,
+      parcelId = entity.ParcelId,
+      marketValue = entity.MarketValue,
+      reducedValue = entity.ReducedValue,
+      exemptionAmount = entity.ExemptionAmount,
+      taxSavings = entity.TaxSavings,
+      qualifies = entity.Qualifies,
+      disqualificationReason = entity.DisqualificationReason,
+      yearsRemaining,
+    });
   }
 
   /// <summary>RCW 84.36.381 ΓÇö Senior/Disabled Persons exemption.</summary>
   [HttpPost("analytics/rcw/84-36-381")]
   public async Task<IActionResult> CalculateRcw8436381([FromBody] Rcw8436381Request request)
   {
-      var ctx = await ResolveCountyContextAsync();
-      if (ctx is null) return Unauthorized(new { error = "County context required." });
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
 
-      // 2025-2026 WA income thresholds (simplified)
-      const decimal tier1Limit = 40_000m;   // Full exemption on excess levy
-      const decimal tier2Limit = 50_000m;   // Partial: frozen value
-      const decimal tier3Limit = 65_000m;   // Partial: reduced rate
+    // 2025-2026 WA income thresholds (simplified)
+    const decimal tier1Limit = 40_000m;   // Full exemption on excess levy
+    const decimal tier2Limit = 50_000m;   // Partial: frozen value
+    const decimal tier3Limit = 65_000m;   // Partial: reduced rate
 
-      var income = request.Income;
-      string tier;
-      decimal reducedValue;
-      bool qualifies = request.Age >= 61 || request.IsDisabled;
+    var income = request.Income;
+    string tier;
+    decimal reducedValue;
+    bool qualifies = request.Age >= 61 || request.IsDisabled;
 
-      if (!qualifies)
-      {
-          tier = "none";
-          reducedValue = request.MarketValue;
-      }
-      else if (income <= tier1Limit)
-      {
-          tier = "tier_1";
-          // Exempt from all excess levies, value frozen
-          reducedValue = Math.Min(request.MarketValue, 150_000m);
-      }
-      else if (income <= tier2Limit)
-      {
-          tier = "tier_2";
-          reducedValue = Math.Min(request.MarketValue, 200_000m);
-      }
-      else if (income <= tier3Limit)
-      {
-          tier = "tier_3";
-          reducedValue = Math.Min(request.MarketValue, request.MarketValue * 0.90m);
-      }
-      else
-      {
-          tier = "over_income";
-          reducedValue = request.MarketValue;
-          qualifies = false;
-      }
+    if (!qualifies)
+    {
+      tier = "none";
+      reducedValue = request.MarketValue;
+    }
+    else if (income <= tier1Limit)
+    {
+      tier = "tier_1";
+      // Exempt from all excess levies, value frozen
+      reducedValue = Math.Min(request.MarketValue, 150_000m);
+    }
+    else if (income <= tier2Limit)
+    {
+      tier = "tier_2";
+      reducedValue = Math.Min(request.MarketValue, 200_000m);
+    }
+    else if (income <= tier3Limit)
+    {
+      tier = "tier_3";
+      reducedValue = Math.Min(request.MarketValue, request.MarketValue * 0.90m);
+    }
+    else
+    {
+      tier = "over_income";
+      reducedValue = request.MarketValue;
+      qualifies = false;
+    }
 
-      var exemption = request.MarketValue - reducedValue;
-      if (exemption < 0) exemption = 0;
-      var taxSavings = exemption * (decimal)request.LevyRate / 1000m;
+    var exemption = request.MarketValue - reducedValue;
+    if (exemption < 0) exemption = 0;
+    var taxSavings = exemption * (decimal)request.LevyRate / 1000m;
 
-      var entity = new RcwCalculation
+    var entity = new RcwCalculation
+    {
+      CountyId = ctx.CountyId,
+      Statute = "rcw_84_36_381",
+      ParcelId = request.ParcelId ?? "",
+      MarketValue = request.MarketValue,
+      ReducedValue = reducedValue,
+      ExemptionAmount = exemption,
+      TaxSavings = Math.Round(taxSavings, 2),
+      LevyRate = request.LevyRate,
+      TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
+      Income = income,
+      Qualifies = qualifies,
+      DisqualificationReason = !qualifies
+            ? (request.Age < 61 && !request.IsDisabled
+                ? "Must be age 61+ or disabled"
+                : "Income exceeds maximum threshold")
+            : "",
+      Details = System.Text.Json.JsonSerializer.Serialize(new
       {
-          CountyId = ctx.CountyId,
-          Statute = "rcw_84_36_381",
-          ParcelId = request.ParcelId ?? "",
-          MarketValue = request.MarketValue,
-          ReducedValue = reducedValue,
-          ExemptionAmount = exemption,
-          TaxSavings = Math.Round(taxSavings, 2),
-          LevyRate = request.LevyRate,
-          TaxYear = request.TaxYear > 0 ? request.TaxYear : DateTime.UtcNow.Year,
-          Income = income,
-          Qualifies = qualifies,
-          DisqualificationReason = !qualifies
-              ? (request.Age < 61 && !request.IsDisabled
-                  ? "Must be age 61+ or disabled"
-                  : "Income exceeds maximum threshold")
-              : "",
-          Details = System.Text.Json.JsonSerializer.Serialize(new
-          {
-              age = request.Age,
-              isDisabled = request.IsDisabled,
-              income,
-              tier,
-          }),
-          CreatedBy = User.Identity?.Name ?? "system",
-          CreatedAt = DateTime.UtcNow,
-      };
+        age = request.Age,
+        isDisabled = request.IsDisabled,
+        income,
+        tier,
+      }),
+      CreatedBy = User.Identity?.Name ?? "system",
+      CreatedAt = DateTime.UtcNow,
+    };
 
-      _db.Set<RcwCalculation>().Add(entity);
-      await _db.SaveChangesAsync();
+    _db.Set<RcwCalculation>().Add(entity);
+    await _db.SaveChangesAsync();
 
-      return Ok(new
-      {
-          id = entity.Id,
-          statute = entity.Statute,
-          parcelId = entity.ParcelId,
-          marketValue = entity.MarketValue,
-          reducedValue = entity.ReducedValue,
-          exemptionAmount = entity.ExemptionAmount,
-          taxSavings = entity.TaxSavings,
-          qualifies = entity.Qualifies,
-          disqualificationReason = entity.DisqualificationReason,
-          tier,
-      });
+    return Ok(new
+    {
+      id = entity.Id,
+      statute = entity.Statute,
+      parcelId = entity.ParcelId,
+      marketValue = entity.MarketValue,
+      reducedValue = entity.ReducedValue,
+      exemptionAmount = entity.ExemptionAmount,
+      taxSavings = entity.TaxSavings,
+      qualifies = entity.Qualifies,
+      disqualificationReason = entity.DisqualificationReason,
+      tier,
+    });
   }
 
   /// <summary>Retrieve an RCW calculation result by ID.</summary>
   [HttpGet("analytics/rcw/{id:int}")]
   public async Task<IActionResult> GetRcwCalculation(int id)
   {
-      var ctx = await ResolveCountyContextAsync();
-      if (ctx is null) return Unauthorized(new { error = "County context required." });
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
 
-      var result = await _db.Set<RcwCalculation>()
-          .FirstOrDefaultAsync(r => r.Id == id && r.CountyId == ctx.CountyId);
+    var result = await _db.Set<RcwCalculation>()
+        .FirstOrDefaultAsync(r => r.Id == id && r.CountyId == ctx.CountyId);
 
-      if (result == null)
-          return NotFound(new { error = "RCW calculation not found" });
+    if (result == null)
+      return NotFound(new { error = "RCW calculation not found" });
 
-      return Ok(new
-      {
-          id = result.Id,
-          statute = result.Statute,
-          parcelId = result.ParcelId,
-          classification = result.CurrentUseClassification,
-          marketValue = result.MarketValue,
-          reducedValue = result.ReducedValue,
-          exemptionAmount = result.ExemptionAmount,
-          taxSavings = result.TaxSavings,
-          qualifies = result.Qualifies,
-          disqualificationReason = result.DisqualificationReason,
-          income = result.Income,
-          taxYear = result.TaxYear,
-          details = result.Details,
-          createdBy = result.CreatedBy,
-          createdAt = result.CreatedAt,
-      });
+    return Ok(new
+    {
+      id = result.Id,
+      statute = result.Statute,
+      parcelId = result.ParcelId,
+      classification = result.CurrentUseClassification,
+      marketValue = result.MarketValue,
+      reducedValue = result.ReducedValue,
+      exemptionAmount = result.ExemptionAmount,
+      taxSavings = result.TaxSavings,
+      qualifies = result.Qualifies,
+      disqualificationReason = result.DisqualificationReason,
+      income = result.Income,
+      taxYear = result.TaxYear,
+      details = result.Details,
+      createdBy = result.CreatedBy,
+      createdAt = result.CreatedAt,
+    });
   }
 
   /// <summary>Get RCW calculation history for the county.</summary>
@@ -5259,35 +5259,35 @@ public class CostForgeController : ControllerBase
       [FromQuery] string? statute = null,
       [FromQuery] int limit = 20)
   {
-      var ctx = await ResolveCountyContextAsync();
-      if (ctx is null) return Unauthorized(new { error = "County context required." });
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
 
-      var query = _db.Set<RcwCalculation>()
-          .Where(r => r.CountyId == ctx.CountyId);
+    var query = _db.Set<RcwCalculation>()
+        .Where(r => r.CountyId == ctx.CountyId);
 
-      if (!string.IsNullOrEmpty(statute))
-          query = query.Where(r => r.Statute == statute);
+    if (!string.IsNullOrEmpty(statute))
+      query = query.Where(r => r.Statute == statute);
 
-      var results = await query
-          .OrderByDescending(r => r.CreatedAt)
-          .Take(Math.Clamp(limit, 1, 100))
-          .Select(r => new
-          {
-              id = r.Id,
-              statute = r.Statute,
-              parcelId = r.ParcelId,
-              qualifies = r.Qualifies,
-              exemptionAmount = r.ExemptionAmount,
-              taxSavings = r.TaxSavings,
-              createdAt = r.CreatedAt,
-          })
-          .ToListAsync();
+    var results = await query
+        .OrderByDescending(r => r.CreatedAt)
+        .Take(Math.Clamp(limit, 1, 100))
+        .Select(r => new
+        {
+          id = r.Id,
+          statute = r.Statute,
+          parcelId = r.ParcelId,
+          qualifies = r.Qualifies,
+          exemptionAmount = r.ExemptionAmount,
+          taxSavings = r.TaxSavings,
+          createdAt = r.CreatedAt,
+        })
+        .ToListAsync();
 
-      return Ok(new { count = results.Count, results });
+    return Ok(new { count = results.Count, results });
   }
 
 
-// ΓòÉΓòÉΓòÉ R2 Wave 30 ΓÇö RCW Calculator DTOs ΓòÉΓòÉΓòÉ
+  // ΓòÉΓòÉΓòÉ R2 Wave 30 ΓÇö RCW Calculator DTOs ΓòÉΓòÉΓòÉ
 
 
   // r2/wave-31-forge-levy-certification
@@ -5519,9 +5519,9 @@ public class CostForgeController : ControllerBase
   }
 
 
-// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
-// Wave 31 ΓÇö Levy DTOs
-// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  // Wave 31 ΓÇö Levy DTOs
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 
   // r2/wave-32-forge-data-quality
@@ -5545,63 +5545,69 @@ public class CostForgeController : ControllerBase
     var cama = await _db.CamaCharacteristics
         .AsNoTracking()
         .Where(c => c.TaxYear == taxYear)
-        .Select(c => new {
-            c.ParcelId,
-            c.YearBuilt,
-            SquareFeet   = (double?)c.SquareFeet,
-            c.QualityGrade,
-            c.ConditionGrade,
-            c.NeighborhoodCode,
-            c.EffectiveAge,
-            c.EconomicLife,
-            c.ImprvVal,
+        .Select(c => new
+        {
+          c.ParcelId,
+          c.YearBuilt,
+          SquareFeet = (double?)c.SquareFeet,
+          c.QualityGrade,
+          c.ConditionGrade,
+          c.NeighborhoodCode,
+          c.EffectiveAge,
+          c.EconomicLife,
+          c.ImprvVal,
         })
         .ToListAsync();
 
     var total = cama.Count;
     if (total == 0)
     {
-        // No CAMA for this year — try without year filter (dev data may lack TaxYear)
-        cama = await _db.CamaCharacteristics
-            .AsNoTracking()
-            .Select(c => new {
-                c.ParcelId,
-                c.YearBuilt,
-                SquareFeet   = (double?)c.SquareFeet,
-                c.QualityGrade,
-                c.ConditionGrade,
-                c.NeighborhoodCode,
-                c.EffectiveAge,
-                c.EconomicLife,
-                c.ImprvVal,
-            })
-            .Take(50_000)
-            .ToListAsync();
-        total = cama.Count;
+      // No CAMA for this year — try without year filter (dev data may lack TaxYear)
+      cama = await _db.CamaCharacteristics
+          .AsNoTracking()
+          .Select(c => new
+          {
+            c.ParcelId,
+            c.YearBuilt,
+            SquareFeet = (double?)c.SquareFeet,
+            c.QualityGrade,
+            c.ConditionGrade,
+            c.NeighborhoodCode,
+            c.EffectiveAge,
+            c.EconomicLife,
+            c.ImprvVal,
+          })
+          .Take(50_000)
+          .ToListAsync();
+      total = cama.Count;
     }
 
     if (total == 0)
-        return Ok(new {
-            completenessScore = 0.0, accuracyScore = 0.0, consistencyScore = 0.0,
-            outlierDetection = new { flaggedCount = 0, method = "IQR" },
-            issues = new object[0], assessedAt = DateTime.UtcNow.ToString("o"),
-        });
+      return Ok(new
+      {
+        completenessScore = 0.0,
+        accuracyScore = 0.0,
+        consistencyScore = 0.0,
+        outlierDetection = new { flaggedCount = 0, method = "IQR" },
+        issues = new object[0],
+        assessedAt = DateTime.UtcNow.ToString("o"),
+      });
 
     // ── Completeness ────────────────────────────────────────────────────────
-    var missingYearBuilt    = cama.Count(c => c.YearBuilt == null || c.YearBuilt == 0);
-    var missingSquareFeet   = cama.Count(c => c.SquareFeet == null || c.SquareFeet <= 0);
-    var missingQuality      = cama.Count(c => string.IsNullOrWhiteSpace(c.QualityGrade));
-    var missingCondition    = cama.Count(c => string.IsNullOrWhiteSpace(c.ConditionGrade));
-    var missingHood         = cama.Count(c => string.IsNullOrWhiteSpace(c.NeighborhoodCode));
+    var missingYearBuilt = cama.Count(c => c.YearBuilt == null || c.YearBuilt == 0);
+    var missingSquareFeet = cama.Count(c => c.SquareFeet == null || c.SquareFeet <= 0);
+    var missingQuality = cama.Count(c => string.IsNullOrWhiteSpace(c.QualityGrade));
+    var missingCondition = cama.Count(c => string.IsNullOrWhiteSpace(c.ConditionGrade));
+    var missingHood = cama.Count(c => string.IsNullOrWhiteSpace(c.NeighborhoodCode));
 
     var completenessScore = 1.0 - (double)(missingYearBuilt + missingSquareFeet + missingQuality) / (total * 3.0);
     completenessScore = Math.Max(0, Math.Round(completenessScore, 4));
 
     // ── Accuracy ────────────────────────────────────────────────────────────
     var currentYear = DateTime.UtcNow.Year;
-    var badYearBuilt  = cama.Count(c => c.YearBuilt.HasValue && (c.YearBuilt < 1800 || c.YearBuilt > currentYear + 1));
+    var badYearBuilt = cama.Count(c => c.YearBuilt.HasValue && (c.YearBuilt < 1800 || c.YearBuilt > currentYear + 1));
     var badSquareFeet = cama.Count(c => c.SquareFeet.HasValue && (c.SquareFeet < 50 || c.SquareFeet > 50_000));
-    var badImprvVal   = cama.Count(c => c.ImprvVal.HasValue && c.ImprvVal < 0);
+    var badImprvVal = cama.Count(c => c.ImprvVal.HasValue && c.ImprvVal < 0);
 
     var accuracyScore = 1.0 - (double)(badYearBuilt + badSquareFeet + badImprvVal) / (total * 3.0);
     accuracyScore = Math.Max(0, Math.Round(accuracyScore, 4));
@@ -5629,65 +5635,116 @@ public class CostForgeController : ControllerBase
     var flaggedCount = 0;
     if (unitValues.Count >= 4)
     {
-        var q1 = unitValues[(int)(unitValues.Count * 0.25)];
-        var q3 = unitValues[(int)(unitValues.Count * 0.75)];
-        var iqr = q3 - q1;
-        var lo  = q1 - 1.5 * iqr;
-        var hi  = q3 + 1.5 * iqr;
-        flaggedCount = unitValues.Count(v => v < lo || v > hi);
+      var q1 = unitValues[(int)(unitValues.Count * 0.25)];
+      var q3 = unitValues[(int)(unitValues.Count * 0.75)];
+      var iqr = q3 - q1;
+      var lo = q1 - 1.5 * iqr;
+      var hi = q3 + 1.5 * iqr;
+      flaggedCount = unitValues.Count(v => v < lo || v > hi);
     }
 
     // ── Issues List ─────────────────────────────────────────────────────────
     var issues = new List<object>();
     if (missingYearBuilt > 0)
-        issues.Add(new { category = "Completeness", field = "YearBuilt", affectedCount = missingYearBuilt,
-            description = "Year built is null or zero — required for age-life depreciation calculation.",
-            severity = missingYearBuilt > total * 0.05 ? "critical" : "warning" });
+      issues.Add(new
+      {
+        category = "Completeness",
+        field = "YearBuilt",
+        affectedCount = missingYearBuilt,
+        description = "Year built is null or zero — required for age-life depreciation calculation.",
+        severity = missingYearBuilt > total * 0.05 ? "critical" : "warning"
+      });
     if (missingSquareFeet > 0)
-        issues.Add(new { category = "Completeness", field = "SquareFeet", affectedCount = missingSquareFeet,
-            description = "Square footage is null or zero — BIV and unit cost calculations will fail.",
-            severity = missingSquareFeet > total * 0.02 ? "critical" : "warning" });
+      issues.Add(new
+      {
+        category = "Completeness",
+        field = "SquareFeet",
+        affectedCount = missingSquareFeet,
+        description = "Square footage is null or zero — BIV and unit cost calculations will fail.",
+        severity = missingSquareFeet > total * 0.02 ? "critical" : "warning"
+      });
     if (missingQuality > 0)
-        issues.Add(new { category = "Completeness", field = "QualityGrade", affectedCount = missingQuality,
-            description = "Quality grade is blank — cost multiplier cannot be applied.",
-            severity = "warning" });
+      issues.Add(new
+      {
+        category = "Completeness",
+        field = "QualityGrade",
+        affectedCount = missingQuality,
+        description = "Quality grade is blank — cost multiplier cannot be applied.",
+        severity = "warning"
+      });
     if (missingCondition > 0)
-        issues.Add(new { category = "Completeness", field = "ConditionGrade", affectedCount = missingCondition,
-            description = "Condition grade is blank — physical depreciation estimate will default.",
-            severity = "info" });
+      issues.Add(new
+      {
+        category = "Completeness",
+        field = "ConditionGrade",
+        affectedCount = missingCondition,
+        description = "Condition grade is blank — physical depreciation estimate will default.",
+        severity = "info"
+      });
     if (missingHood > 0)
-        issues.Add(new { category = "Completeness", field = "NeighborhoodCode", affectedCount = missingHood,
-            description = "Neighborhood code is blank — parcel cannot be assigned to a calibration zone.",
-            severity = missingHood > total * 0.10 ? "critical" : "warning" });
+      issues.Add(new
+      {
+        category = "Completeness",
+        field = "NeighborhoodCode",
+        affectedCount = missingHood,
+        description = "Neighborhood code is blank — parcel cannot be assigned to a calibration zone.",
+        severity = missingHood > total * 0.10 ? "critical" : "warning"
+      });
     if (badYearBuilt > 0)
-        issues.Add(new { category = "Accuracy", field = "YearBuilt", affectedCount = badYearBuilt,
-            description = $"Year built is outside 1800–{currentYear + 1} — likely a data entry error.",
-            severity = "warning" });
+      issues.Add(new
+      {
+        category = "Accuracy",
+        field = "YearBuilt",
+        affectedCount = badYearBuilt,
+        description = $"Year built is outside 1800–{currentYear + 1} — likely a data entry error.",
+        severity = "warning"
+      });
     if (badSquareFeet > 0)
-        issues.Add(new { category = "Accuracy", field = "SquareFeet", affectedCount = badSquareFeet,
-            description = "Square footage < 50 or > 50,000 — outside plausible residential range.",
-            severity = "warning" });
+      issues.Add(new
+      {
+        category = "Accuracy",
+        field = "SquareFeet",
+        affectedCount = badSquareFeet,
+        description = "Square footage < 50 or > 50,000 — outside plausible residential range.",
+        severity = "warning"
+      });
     if (badImprvVal > 0)
-        issues.Add(new { category = "Accuracy", field = "ImprvVal", affectedCount = badImprvVal,
-            description = "Improvement value is negative — invalid; check PACS source.",
-            severity = "critical" });
+      issues.Add(new
+      {
+        category = "Accuracy",
+        field = "ImprvVal",
+        affectedCount = badImprvVal,
+        description = "Improvement value is negative — invalid; check PACS source.",
+        severity = "critical"
+      });
     if (effExceedsLife > 0)
-        issues.Add(new { category = "Consistency", field = "EffectiveAge/EconomicLife", affectedCount = effExceedsLife,
-            description = "Effective age exceeds economic life — % good would be negative; cap at 0%.",
-            severity = "warning" });
+      issues.Add(new
+      {
+        category = "Consistency",
+        field = "EffectiveAge/EconomicLife",
+        affectedCount = effExceedsLife,
+        description = "Effective age exceeds economic life — % good would be negative; cap at 0%.",
+        severity = "warning"
+      });
     if (zeroImprvWithSqft > 0)
-        issues.Add(new { category = "Consistency", field = "ImprvVal", affectedCount = zeroImprvWithSqft,
-            description = "Improvement value is $0 but building has significant square footage — possible omission.",
-            severity = "info" });
+      issues.Add(new
+      {
+        category = "Consistency",
+        field = "ImprvVal",
+        affectedCount = zeroImprvWithSqft,
+        description = "Improvement value is $0 but building has significant square footage — possible omission.",
+        severity = "info"
+      });
 
-    return Ok(new {
-        completenessScore,
-        accuracyScore,
-        consistencyScore,
-        outlierDetection = new { flaggedCount, method = "IQR (1.5×)" },
-        issues,
-        assessedAt = DateTime.UtcNow.ToString("o"),
-        totalRecords = total,
+    return Ok(new
+    {
+      completenessScore,
+      accuracyScore,
+      consistencyScore,
+      outlierDetection = new { flaggedCount, method = "IQR (1.5×)" },
+      issues,
+      assessedAt = DateTime.UtcNow.ToString("o"),
+      totalRecords = total,
     });
   }
 
@@ -5747,9 +5804,9 @@ public class CostForgeController : ControllerBase
   }
 
 
-// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
-// Wave 32 ΓÇö Data Quality DTOs
-// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  // Wave 32 ΓÇö Data Quality DTOs
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 
   // r2/wave-33-forge-etl-sync
@@ -5906,9 +5963,9 @@ public class CostForgeController : ControllerBase
   }
 
 
-// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
-// Wave 33 ΓÇö ETL/Sync DTOs
-// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  // Wave 33 ΓÇö ETL/Sync DTOs
+  // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 
   // r2/wave-34-forge-ml-integration
@@ -6055,7 +6112,7 @@ public class CostForgeController : ControllerBase
   }
 
 
-// ΓöÇΓöÇ Wave 34 DTOs ΓöÇΓöÇ
+  // ΓöÇΓöÇ Wave 34 DTOs ΓöÇΓöÇ
 
 
   // r2/wave-35-forge-valuation-pipeline
@@ -6238,15 +6295,15 @@ public class CostForgeController : ControllerBase
 
     static string NormalizeLabel(string bt) => bt.ToUpperInvariant() switch
     {
-        "R" or "R1" or "SFR" or "RESIDENTIAL" => "Residential",
-        "R2" or "MH" or "MHOME" or "MOBILE" or "MANUFACTURED" => "Manufactured",
-        "C" or "C1" or "C2" or "C3" or "C4" or "COMM" or "COMMERCIAL" => "Commercial",
-        "I" or "I1" or "IND" or "INDUSTRIAL" => "Industrial",
-        "A" or "A1" or "A2" or "APT" or "APARTMENT" => "Apartment",
-        "S" or "S1" or "S2" or "AG" or "AGR" or "AGRICULTURAL" => "Agricultural",
-        "PERMC" or "PERSONAL" or "PP" => "Personal Property",
-        "CONV" => "Convalescent",
-        _ => bt,
+      "R" or "R1" or "SFR" or "RESIDENTIAL" => "Residential",
+      "R2" or "MH" or "MHOME" or "MOBILE" or "MANUFACTURED" => "Manufactured",
+      "C" or "C1" or "C2" or "C3" or "C4" or "COMM" or "COMMERCIAL" => "Commercial",
+      "I" or "I1" or "IND" or "INDUSTRIAL" => "Industrial",
+      "A" or "A1" or "A2" or "APT" or "APARTMENT" => "Apartment",
+      "S" or "S1" or "S2" or "AG" or "AGR" or "AGRICULTURAL" => "Agricultural",
+      "PERMC" or "PERSONAL" or "PP" => "Personal Property",
+      "CONV" => "Convalescent",
+      _ => bt,
     };
 
     // Aggregate by normalized label
@@ -6262,12 +6319,12 @@ public class CostForgeController : ControllerBase
         .GroupBy(c => 1)
         .Select(g => new
         {
-            AvgPhysical     = g.Average(c => (double?)c.PhysicalDepreciationPct) ?? 0.0,
-            MaxPhysical     = g.Max(c => (double?)c.PhysicalDepreciationPct) ?? 0.0,
-            AvgFunctional   = g.Average(c => (double?)c.FunctionalObsolescence) ?? 0.0,
-            MaxFunctional   = g.Max(c => (double?)c.FunctionalObsolescence) ?? 0.0,
-            AvgExternal     = g.Average(c => (double?)c.ExternalObsolescence) ?? 0.0,
-            MaxExternal     = g.Max(c => (double?)c.ExternalObsolescence) ?? 0.0,
+          AvgPhysical = g.Average(c => (double?)c.PhysicalDepreciationPct) ?? 0.0,
+          MaxPhysical = g.Max(c => (double?)c.PhysicalDepreciationPct) ?? 0.0,
+          AvgFunctional = g.Average(c => (double?)c.FunctionalObsolescence) ?? 0.0,
+          MaxFunctional = g.Max(c => (double?)c.FunctionalObsolescence) ?? 0.0,
+          AvgExternal = g.Average(c => (double?)c.ExternalObsolescence) ?? 0.0,
+          MaxExternal = g.Max(c => (double?)c.ExternalObsolescence) ?? 0.0,
         })
         .FirstOrDefaultAsync(ct);
 
@@ -6287,31 +6344,31 @@ public class CostForgeController : ControllerBase
 
     try
     {
-        var resCostRows = await _db.Properties
-            .Where(p => p.PropertyType == "Residential" && p.ImprovementValue > 0)
-            .Join(
-                _db.Set<TerraFusion.Core.Entities.CamaCharacteristic>()
-                    .Where(cc => cc.TaxYear == taxYear && cc.SquareFeet > 200),
-                p => p.ParcelNumber,
-                cc => cc.ParcelId,
-                (p, cc) => new { p.ImprovementValue, cc.SquareFeet }
-            )
-            .ToListAsync(ct);
+      var resCostRows = await _db.Properties
+          .Where(p => p.PropertyType == "Residential" && p.ImprovementValue > 0)
+          .Join(
+              _db.Set<TerraFusion.Core.Entities.CamaCharacteristic>()
+                  .Where(cc => cc.TaxYear == taxYear && cc.SquareFeet > 200),
+              p => p.ParcelNumber,
+              cc => cc.ParcelId,
+              (p, cc) => new { p.ImprovementValue, cc.SquareFeet }
+          )
+          .ToListAsync(ct);
 
-        if (resCostRows.Count > 0)
-        {
-            var validRows = resCostRows
-                .Where(r => r.SquareFeet > 0)
-                .ToList();
-            if (validRows.Count > 0)
-                avgResCostPerSqft = Math.Round(
-                    validRows.Average(r => (double)r.ImprovementValue / (double)r.SquareFeet),
-                    0);
-        }
+      if (resCostRows.Count > 0)
+      {
+        var validRows = resCostRows
+            .Where(r => r.SquareFeet > 0)
+            .ToList();
+        if (validRows.Count > 0)
+          avgResCostPerSqft = Math.Round(
+              validRows.Average(r => (double)r.ImprovementValue / (double)r.SquareFeet),
+              0);
+      }
     }
     catch (Exception ex)
     {
-        _logger.LogWarning(ex, "GetDashboardStats: avgResCostPerSqft query failed");
+      _logger.LogWarning(ex, "GetDashboardStats: avgResCostPerSqft query failed");
     }
 
     // Physical depreciation integrity check
@@ -6319,7 +6376,7 @@ public class CostForgeController : ControllerBase
     var physicalAvg = deprStats?.AvgPhysical ?? 0.0;
     if (physicalAvg > 95.0)
     {
-        dataIntegrityWarning = "PhysicalDepreciationPct avg exceeds 95% — verify PACS source column scale before relying on this figure.";
+      dataIntegrityWarning = "PhysicalDepreciationPct avg exceeds 95% — verify PACS source column scale before relying on this figure.";
     }
 
     // ── Additional KPI stats the workspace store expects ──────────────────────
@@ -6327,12 +6384,12 @@ public class CostForgeController : ControllerBase
     double? avgPctGood = null;
     try
     {
-        var pctGoodRows = await _db.Set<TerraFusion.Core.Entities.CamaCharacteristic>()
-            .Where(c => c.TaxYear == taxYear && c.DepreciationPct.HasValue)
-            .Select(c => c.DepreciationPct!.Value)
-            .ToListAsync(ct);
-        if (pctGoodRows.Count > 0)
-            avgPctGood = Math.Round(pctGoodRows.Average(d => (double)(1m - d / 100m)) * 100.0, 1);
+      var pctGoodRows = await _db.Set<TerraFusion.Core.Entities.CamaCharacteristic>()
+          .Where(c => c.TaxYear == taxYear && c.DepreciationPct.HasValue)
+          .Select(c => c.DepreciationPct!.Value)
+          .ToListAsync(ct);
+      if (pctGoodRows.Count > 0)
+        avgPctGood = Math.Round(pctGoodRows.Average(d => (double)(1m - d / 100m)) * 100.0, 1);
     }
     catch (Exception ex) { _logger.LogWarning(ex, "GetDashboardStats: avgPctGood query failed"); }
 
@@ -6343,85 +6400,85 @@ public class CostForgeController : ControllerBase
     int hoodsOutOfCompliance = 0;
     try
     {
-        int salesYearMin = taxYear - 3;
-        var salesRaw = await _db.ComparableSales
+      int salesYearMin = taxYear - 3;
+      var salesRaw = await _db.ComparableSales
+          .AsNoTracking()
+          .Where(s => s.SalePrice > 10_000
+                   && s.SaleQualification == "qualified"
+                   && s.SalesYear >= salesYearMin
+                   && s.SalesYear <= taxYear)
+          .Select(s => new { s.ParcelId, s.SalePrice })
+          .ToListAsync(ct);
+      qualifiedSalesCount = salesRaw.Count;
+
+      if (salesRaw.Count > 0)
+      {
+        var parcelIds2 = salesRaw.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
+        var avMap2 = await _db.Properties
             .AsNoTracking()
-            .Where(s => s.SalePrice > 10_000
-                     && s.SaleQualification == "qualified"
-                     && s.SalesYear >= salesYearMin
-                     && s.SalesYear <= taxYear)
-            .Select(s => new { s.ParcelId, s.SalePrice })
-            .ToListAsync(ct);
-        qualifiedSalesCount = salesRaw.Count;
+            .Where(p => parcelIds2.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+            .Select(p => new { p.ParcelNumber, p.AssessedValue })
+            .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue);
+        var hoodMap2 = await _db.CamaCharacteristics
+            .AsNoTracking()
+            .Where(c => parcelIds2.Contains(c.ParcelId) && c.NeighborhoodCode != null)
+            .Select(c => new { c.ParcelId, c.NeighborhoodCode })
+            .ToDictionaryAsync(c => c.ParcelId, c => c.NeighborhoodCode!);
 
-        if (salesRaw.Count > 0)
+        var pairsByHood2 = new Dictionary<string, List<(double AV, double SP)>>();
+        foreach (var s in salesRaw)
         {
-            var parcelIds2 = salesRaw.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
-            var avMap2 = await _db.Properties
-                .AsNoTracking()
-                .Where(p => parcelIds2.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
-                .Select(p => new { p.ParcelNumber, p.AssessedValue })
-                .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue);
-            var hoodMap2 = await _db.CamaCharacteristics
-                .AsNoTracking()
-                .Where(c => parcelIds2.Contains(c.ParcelId) && c.NeighborhoodCode != null)
-                .Select(c => new { c.ParcelId, c.NeighborhoodCode })
-                .ToDictionaryAsync(c => c.ParcelId, c => c.NeighborhoodCode!);
-
-            var pairsByHood2 = new Dictionary<string, List<(double AV, double SP)>>();
-            foreach (var s in salesRaw)
-            {
-                if (s.ParcelId == null || !avMap2.TryGetValue(s.ParcelId, out var av2)) continue;
-                if (!hoodMap2.TryGetValue(s.ParcelId, out var hood2)) continue;
-                var ratio2 = (double)(av2 / s.SalePrice);
-                if (ratio2 < 0.5 || ratio2 > 2.0) continue;
-                if (!pairsByHood2.ContainsKey(hood2)) pairsByHood2[hood2] = new();
-                pairsByHood2[hood2].Add(((double)av2, (double)s.SalePrice));
-            }
-
-            static double Median2(List<double> s) => s.Count % 2 == 1 ? s[s.Count / 2] : (s[s.Count / 2 - 1] + s[s.Count / 2]) / 2.0;
-            var allRatios = new List<double>();
-            var codValues = new List<double>();
-            foreach (var kv in pairsByHood2)
-            {
-                if (kv.Value.Count < 3) continue;
-                var ratios2 = kv.Value.Select(p => p.AV / p.SP).OrderBy(r => r).ToList();
-                var med2 = Median2(ratios2);
-                var cod2 = ratios2.Count >= 4
-                    ? (ratios2.Average(r => Math.Abs(r - med2)) / med2 * 100.0)
-                    : 0.0;
-                allRatios.AddRange(ratios2);
-                codValues.Add(cod2);
-                if (med2 < 0.90 || med2 > 1.10 || cod2 > 15.0) hoodsOutOfCompliance++;
-            }
-            if (allRatios.Count > 0)
-            {
-                allRatios.Sort();
-                weightedMedianRatio = Math.Round(Median2(allRatios), 4);
-            }
-            if (codValues.Count > 0)
-                avgCod = Math.Round(codValues.Average(), 2);
+          if (s.ParcelId == null || !avMap2.TryGetValue(s.ParcelId, out var av2)) continue;
+          if (!hoodMap2.TryGetValue(s.ParcelId, out var hood2)) continue;
+          var ratio2 = (double)(av2 / s.SalePrice);
+          if (ratio2 < 0.5 || ratio2 > 2.0) continue;
+          if (!pairsByHood2.ContainsKey(hood2)) pairsByHood2[hood2] = new();
+          pairsByHood2[hood2].Add(((double)av2, (double)s.SalePrice));
         }
+
+        static double Median2(List<double> s) => s.Count % 2 == 1 ? s[s.Count / 2] : (s[s.Count / 2 - 1] + s[s.Count / 2]) / 2.0;
+        var allRatios = new List<double>();
+        var codValues = new List<double>();
+        foreach (var kv in pairsByHood2)
+        {
+          if (kv.Value.Count < 3) continue;
+          var ratios2 = kv.Value.Select(p => p.AV / p.SP).OrderBy(r => r).ToList();
+          var med2 = Median2(ratios2);
+          var cod2 = ratios2.Count >= 4
+              ? (ratios2.Average(r => Math.Abs(r - med2)) / med2 * 100.0)
+              : 0.0;
+          allRatios.AddRange(ratios2);
+          codValues.Add(cod2);
+          if (med2 < 0.90 || med2 > 1.10 || cod2 > 15.0) hoodsOutOfCompliance++;
+        }
+        if (allRatios.Count > 0)
+        {
+          allRatios.Sort();
+          weightedMedianRatio = Math.Round(Median2(allRatios), 4);
+        }
+        if (codValues.Count > 0)
+          avgCod = Math.Round(codValues.Average(), 2);
+      }
     }
     catch (Exception ex) { _logger.LogWarning(ex, "GetDashboardStats: ratio stats query failed"); }
 
     return Ok(new
     {
-        taxYear,
-        totalParcels,
-        // KPI fields expected by workspace store DashboardStats interface
-        avgCostPerSqft         = avgResCostPerSqft,
-        avgPctGood,
-        weightedMedianRatio,
-        avgCod,
-        hoodsOutOfCompliance,
-        qualifiedSalesCount,
-        // Chart data for CostForgeDashboard (kept for backward compat)
-        propertyTypeDistribution = labelGroups,
-        depreciationSummary = depreciation,
-        avgResCostPerSqft,
-        dataIntegrityWarning,
-        source = "live",
+      taxYear,
+      totalParcels,
+      // KPI fields expected by workspace store DashboardStats interface
+      avgCostPerSqft = avgResCostPerSqft,
+      avgPctGood,
+      weightedMedianRatio,
+      avgCod,
+      hoodsOutOfCompliance,
+      qualifiedSalesCount,
+      // Chart data for CostForgeDashboard (kept for backward compat)
+      propertyTypeDistribution = labelGroups,
+      depreciationSummary = depreciation,
+      avgResCostPerSqft,
+      dataIntegrityWarning,
+      source = "live",
     });
   }
 
@@ -6446,15 +6503,15 @@ public class CostForgeController : ControllerBase
         .Where(c => c.NeighborhoodCode == hoodCd)
         .Select(c => new
         {
-            c.ParcelId,
-            c.YearBuilt,
-            SquareFeet = (int)c.SquareFeet,
-            c.QualityGrade,
+          c.ParcelId,
+          c.YearBuilt,
+          SquareFeet = (int)c.SquareFeet,
+          c.QualityGrade,
         })
         .ToListAsync();
 
     if (cama.Count == 0)
-        return NotFound(new { error = $"No CAMA records for neighborhood {hoodCd}" });
+      return NotFound(new { error = $"No CAMA records for neighborhood {hoodCd}" });
 
     var parcelIds = cama.Select(c => c.ParcelId).ToHashSet();
 
@@ -6477,22 +6534,22 @@ public class CostForgeController : ControllerBase
 
     var parcels = cama.Select(c =>
     {
-        var av = avMap.TryGetValue(c.ParcelId, out var a) ? a : null;
-        var sp = salesMap.TryGetValue(c.ParcelId, out var s) ? s : null;
-        double? ratio = av.HasValue && sp.HasValue && sp.Value > 0
-            ? Math.Round((double)(av.Value / sp.Value), 4)
-            : null;
-        return new
-        {
-            parcelId      = c.ParcelId,
-            parcelNumber  = c.ParcelId,
-            yearBuilt     = c.YearBuilt,
-            squareFeet    = c.SquareFeet,
-            qualityGrade  = c.QualityGrade,
-            salePrice     = sp.HasValue ? (long?)((long)sp.Value) : null,
-            assessedValue = av.HasValue ? (long?)((long)av.Value) : null,
-            ratio,
-        };
+      var av = avMap.TryGetValue(c.ParcelId, out var a) ? a : null;
+      var sp = salesMap.TryGetValue(c.ParcelId, out var s) ? s : null;
+      double? ratio = av.HasValue && sp.HasValue && sp.Value > 0
+          ? Math.Round((double)(av.Value / sp.Value), 4)
+          : null;
+      return new
+      {
+        parcelId = c.ParcelId,
+        parcelNumber = c.ParcelId,
+        yearBuilt = c.YearBuilt,
+        squareFeet = c.SquareFeet,
+        qualityGrade = c.QualityGrade,
+        salePrice = sp.HasValue ? (long?)((long)sp.Value) : null,
+        assessedValue = av.HasValue ? (long?)((long)av.Value) : null,
+        ratio,
+      };
     }).ToList();
 
     return Ok(new { parcels, hood = hoodCd, taxYear });
@@ -6508,7 +6565,7 @@ public class CostForgeController : ControllerBase
   public async Task<IActionResult> GetCalcTraces([FromQuery] string parcelId)
   {
     if (string.IsNullOrWhiteSpace(parcelId))
-        return BadRequest(new { error = "parcelId is required" });
+      return BadRequest(new { error = "parcelId is required" });
 
     var records = await _db.CamaCharacteristics
         .AsNoTracking()
@@ -6517,47 +6574,47 @@ public class CostForgeController : ControllerBase
         .ToListAsync();
 
     if (records.Count == 0)
-        return Ok(Array.Empty<object>());
+      return Ok(Array.Empty<object>());
 
     // Synthesize CalcTraceRow shape from CAMA data + Benton cost matrix
     var traces = records.Select((c, i) =>
     {
-        var entry = BentonCostData.CostMatrix.FirstOrDefault(e =>
-            e.BuildingType.Equals(c.BuildingType, StringComparison.OrdinalIgnoreCase) &&
-            (string.IsNullOrEmpty(c.Region) || e.Region.Equals(c.Region, StringComparison.OrdinalIgnoreCase)));
-        var baseUnitCost = entry?.BaseCostPerSqft;
-        var qualFactor   = c.QualityGrade is not null && BentonCostData.QualityFactors.TryGetValue(c.QualityGrade, out var qf) ? qf : 1.00m;
-        var rcn          = baseUnitCost.HasValue && c.SquareFeet > 0
-            ? Math.Round(baseUnitCost.Value * qualFactor * c.SquareFeet, 0)
-            : (decimal?)null;
-        var deprFactor   = c.EffectiveAge.HasValue ? GetDepreciationFactor(c.EffectiveAge.Value, true) : 1.0m;
-        var pctGood      = Math.Round(deprFactor * 100m, 1);
-        var rcnld        = rcn.HasValue ? Math.Round(rcn.Value * deprFactor, 0) : (decimal?)null;
+      var entry = BentonCostData.CostMatrix.FirstOrDefault(e =>
+          e.BuildingType.Equals(c.BuildingType, StringComparison.OrdinalIgnoreCase) &&
+          (string.IsNullOrEmpty(c.Region) || e.Region.Equals(c.Region, StringComparison.OrdinalIgnoreCase)));
+      var baseUnitCost = entry?.BaseCostPerSqft;
+      var qualFactor = c.QualityGrade is not null && BentonCostData.QualityFactors.TryGetValue(c.QualityGrade, out var qf) ? qf : 1.00m;
+      var rcn = baseUnitCost.HasValue && c.SquareFeet > 0
+          ? Math.Round(baseUnitCost.Value * qualFactor * c.SquareFeet, 0)
+          : (decimal?)null;
+      var deprFactor = c.EffectiveAge.HasValue ? GetDepreciationFactor(c.EffectiveAge.Value, true) : 1.0m;
+      var pctGood = Math.Round(deprFactor * 100m, 1);
+      var rcnld = rcn.HasValue ? Math.Round(rcn.Value * deprFactor, 0) : (decimal?)null;
 
-        return new
-        {
-            id                  = $"{c.ParcelId}-{c.TaxYear}-{i}",
-            parcel_id           = c.ParcelId,
-            schedule_source     = $"Benton County Cost Matrix FY {c.TaxYear}",
-            calc_year           = c.TaxYear,
-            imprv_sequence      = i + 1,
-            imprv_type_cd       = c.BuildingType,
-            calc_method         = "Cost Approach (Age/Life)",
-            base_unit_cost      = baseUnitCost.HasValue ? (double?)((double)baseUnitCost.Value) : null,
-            area_sqft           = (int)c.SquareFeet,
-            local_multiplier    = entry is not null ? (double?)1.0 : null,
-            current_cost_mult   = (double)qualFactor,
-            rcn_before_ref      = rcn.HasValue ? (long?)((long)rcn.Value) : null,
-            refinements_total   = (long?)0,
-            rcn                 = rcn.HasValue ? (long?)((long)rcn.Value) : null,
-            construction_class  = c.BuildingType,
-            quality_grade       = c.QualityGrade,
-            age_years           = c.EffectiveAge,
-            effective_life_years= c.EconomicLife ?? 40,
-            pct_good            = (double)pctGood,
-            rcnld               = rcnld.HasValue ? (long?)((long)rcnld.Value) : null,
-            calc_run_at         = c.UpdatedAt.ToString("O"),
-        };
+      return new
+      {
+        id = $"{c.ParcelId}-{c.TaxYear}-{i}",
+        parcel_id = c.ParcelId,
+        schedule_source = $"Benton County Cost Matrix FY {c.TaxYear}",
+        calc_year = c.TaxYear,
+        imprv_sequence = i + 1,
+        imprv_type_cd = c.BuildingType,
+        calc_method = "Cost Approach (Age/Life)",
+        base_unit_cost = baseUnitCost.HasValue ? (double?)((double)baseUnitCost.Value) : null,
+        area_sqft = (int)c.SquareFeet,
+        local_multiplier = entry is not null ? (double?)1.0 : null,
+        current_cost_mult = (double)qualFactor,
+        rcn_before_ref = rcn.HasValue ? (long?)((long)rcn.Value) : null,
+        refinements_total = (long?)0,
+        rcn = rcn.HasValue ? (long?)((long)rcn.Value) : null,
+        construction_class = c.BuildingType,
+        quality_grade = c.QualityGrade,
+        age_years = c.EffectiveAge,
+        effective_life_years = c.EconomicLife ?? 40,
+        pct_good = (double)pctGood,
+        rcnld = rcnld.HasValue ? (long?)((long)rcnld.Value) : null,
+        calc_run_at = c.UpdatedAt.ToString("O"),
+      };
     }).ToList();
 
     return Ok(traces);
@@ -6596,10 +6653,10 @@ public class CostForgeController : ControllerBase
 
     return Ok(new
     {
-        buildingTypes,
-        featureCodes,
-        qualityGrades = BentonCostData.QualityFactors.Select(kv => new { grade = kv.Key, factor = kv.Value }).ToList(),
-        conditionGrades = BentonCostData.ConditionFactors.Select(kv => new { grade = kv.Key, factor = kv.Value }).ToList(),
+      buildingTypes,
+      featureCodes,
+      qualityGrades = BentonCostData.QualityFactors.Select(kv => new { grade = kv.Key, factor = kv.Value }).ToList(),
+      conditionGrades = BentonCostData.ConditionFactors.Select(kv => new { grade = kv.Key, factor = kv.Value }).ToList(),
     });
   }
 
@@ -6618,36 +6675,36 @@ public class CostForgeController : ControllerBase
     var rows = new List<object>();
     foreach (var entry in BentonCostData.CostMatrix)
     {
-        foreach (var qKey in qualityKeys)
-        {
-            // If quality filter supplied, only return that class
-            if (!string.IsNullOrWhiteSpace(qualityClass) &&
-                !qKey.Equals(qualityClass, StringComparison.OrdinalIgnoreCase))
-                continue;
+      foreach (var qKey in qualityKeys)
+      {
+        // If quality filter supplied, only return that class
+        if (!string.IsNullOrWhiteSpace(qualityClass) &&
+            !qKey.Equals(qualityClass, StringComparison.OrdinalIgnoreCase))
+          continue;
 
-            var factor = BentonCostData.QualityFactors.TryGetValue(qKey, out var qf) ? qf : 1.00m;
-            var label  = qKey switch
-            {
-                "ECONOMY"  => "Economy",
-                "STANDARD" => "Standard",
-                "CUSTOM"   => "Custom",
-                "PREMIUM"  => "Premium",
-                "LUXURY"   => "Luxury",
-                _          => qKey,
-            };
-            rows.Add(new
-            {
-                code          = $"{entry.BuildingType}-{qKey}",
-                description   = $"{entry.BuildingTypeLabel} — {entry.Region}",
-                qualityClass  = label,
-                baseCost      = Math.Round(entry.BaseCostPerSqft * factor, 2),
-                unit          = "$/SF",
-                effectiveDate = "2025-01-01",
-                buildingType  = entry.BuildingType,
-                revalArea     = entry.Region,
-                qualityFactor = factor,
-            });
-        }
+        var factor = BentonCostData.QualityFactors.TryGetValue(qKey, out var qf) ? qf : 1.00m;
+        var label = qKey switch
+        {
+          "ECONOMY" => "Economy",
+          "STANDARD" => "Standard",
+          "CUSTOM" => "Custom",
+          "PREMIUM" => "Premium",
+          "LUXURY" => "Luxury",
+          _ => qKey,
+        };
+        rows.Add(new
+        {
+          code = $"{entry.BuildingType}-{qKey}",
+          description = $"{entry.BuildingTypeLabel} — {entry.Region}",
+          qualityClass = label,
+          baseCost = Math.Round(entry.BaseCostPerSqft * factor, 2),
+          unit = "$/SF",
+          effectiveDate = "2025-01-01",
+          buildingType = entry.BuildingType,
+          revalArea = entry.Region,
+          qualityFactor = factor,
+        });
+      }
     }
     return Ok(rows);
   }
@@ -6662,16 +6719,16 @@ public class CostForgeController : ControllerBase
       [FromQuery] int actualAge,
       [FromQuery] int effectiveAge,
       [FromQuery] string condition = "average",
-      [FromQuery] string quality   = "average",
-      [FromQuery] decimal rcn      = 0)
+      [FromQuery] string quality = "average",
+      [FromQuery] decimal rcn = 0)
   {
     var req = new DepreciationCalculationRequest
     {
-        ActualAge          = actualAge,
-        EffectiveAge       = effectiveAge,
-        Condition          = condition,
-        Quality            = quality,
-        ReplacementCostNew = rcn,
+      ActualAge = actualAge,
+      EffectiveAge = effectiveAge,
+      Condition = condition,
+      Quality = quality,
+      ReplacementCostNew = rcn,
     };
     return await CalculateDepreciation(req);
   }
@@ -6686,10 +6743,10 @@ public class CostForgeController : ControllerBase
   public async Task<IActionResult> MassAdjustApply([FromBody] MassAdjustPreviewRequest req)
   {
     if (req.AdjustmentPct < -50 || req.AdjustmentPct > 100)
-        return BadRequest(new { error = "AdjustmentPct must be between -50 and 100" });
+      return BadRequest(new { error = "AdjustmentPct must be between -50 and 100" });
 
     var taxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year;
-    var factor  = 1.0m + (decimal)req.AdjustmentPct / 100m;
+    var factor = 1.0m + (decimal)req.AdjustmentPct / 100m;
 
     // Resolve parcel IDs in this neighborhood
     var hoodParcelIds = await _db.CamaCharacteristics
@@ -6699,7 +6756,7 @@ public class CostForgeController : ControllerBase
         .ToListAsync();
 
     if (hoodParcelIds.Count == 0)
-        return NotFound(new { error = $"No parcels found for neighborhood {req.NeighborhoodCode}" });
+      return NotFound(new { error = $"No parcels found for neighborhood {req.NeighborhoodCode}" });
 
     // Apply to Properties table — update AssessedValue and ImprovementValue proportionally
     var updated = await _db.Properties
@@ -6709,13 +6766,13 @@ public class CostForgeController : ControllerBase
     int appliedCount = 0;
     foreach (var prop in updated)
     {
-        if (prop.AssessedValue > 0)
-        {
-            prop.AssessedValue    = BankersRound(prop.AssessedValue * factor);
-            prop.ImprovementValue = BankersRound(prop.ImprovementValue * factor);
-            prop.UpdatedAt        = DateTime.UtcNow;
-            appliedCount++;
-        }
+      if (prop.AssessedValue > 0)
+      {
+        prop.AssessedValue = BankersRound(prop.AssessedValue * factor);
+        prop.ImprovementValue = BankersRound(prop.ImprovementValue * factor);
+        prop.UpdatedAt = DateTime.UtcNow;
+        appliedCount++;
+      }
     }
 
     await _db.SaveChangesAsync();
@@ -6727,13 +6784,13 @@ public class CostForgeController : ControllerBase
 
     return Ok(new
     {
-        neighborhoodCode = req.NeighborhoodCode,
-        adjustmentPct    = req.AdjustmentPct,
-        factor           = Math.Round(factor, 4),
-        parcelsUpdated   = appliedCount,
-        taxYear,
-        appliedAt        = DateTime.UtcNow,
-        status           = "committed",
+      neighborhoodCode = req.NeighborhoodCode,
+      adjustmentPct = req.AdjustmentPct,
+      factor = Math.Round(factor, 4),
+      parcelsUpdated = appliedCount,
+      taxYear,
+      appliedAt = DateTime.UtcNow,
+      status = "committed",
     });
   }
 
@@ -6750,10 +6807,10 @@ public class CostForgeController : ControllerBase
     var query = _db.CamaCharacteristics.AsNoTracking();
 
     if (!string.IsNullOrWhiteSpace(neighborhood))
-        query = query.Where(c => c.NeighborhoodCode == neighborhood);
+      query = query.Where(c => c.NeighborhoodCode == neighborhood);
 
     if (!string.IsNullOrWhiteSpace(propertyType))
-        query = query.Where(c => c.BuildingType == propertyType);
+      query = query.Where(c => c.BuildingType == propertyType);
 
     var matchCount = await query.CountAsync();
     return Ok(new { matchCount, neighborhood, propertyType });
@@ -6769,26 +6826,26 @@ public class CostForgeController : ControllerBase
   public async Task<IActionResult> BatchApply([FromBody] BatchApplyRequest req)
   {
     var countyCtx = await ResolveCountyContextAsync();
-    var countyId  = countyCtx?.CountyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+    var countyId = countyCtx?.CountyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
 
     var parcelCount = await _db.CamaCharacteristics
         .AsNoTracking()
         .Where(c =>
             (string.IsNullOrEmpty(req.NeighborhoodFilter) || c.NeighborhoodCode == req.NeighborhoodFilter) &&
-            (string.IsNullOrEmpty(req.PropertyType)       || c.BuildingType == req.PropertyType))
+            (string.IsNullOrEmpty(req.PropertyType) || c.BuildingType == req.PropertyType))
         .CountAsync();
 
     var pipeline = new TerraFusion.Core.Entities.ValuationPipeline
     {
-        CountyId         = countyId,
-        PipelineName     = $"batch-cost-schedule-{req.CostScheduleId}-{DateTime.UtcNow:yyyyMMddHHmmss}",
-        TaxYear          = DateTime.UtcNow.Year,
-        TotalParcels     = parcelCount,
-        CompletedParcels = 0,
-        FailedParcels    = 0,
-        CurrentStage     = "cost-schedule",
-        Status           = "running",
-        CreatedAt        = DateTime.UtcNow,
+      CountyId = countyId,
+      PipelineName = $"batch-cost-schedule-{req.CostScheduleId}-{DateTime.UtcNow:yyyyMMddHHmmss}",
+      TaxYear = DateTime.UtcNow.Year,
+      TotalParcels = parcelCount,
+      CompletedParcels = 0,
+      FailedParcels = 0,
+      CurrentStage = "cost-schedule",
+      Status = "running",
+      CreatedAt = DateTime.UtcNow,
     };
 
     _db.Set<TerraFusion.Core.Entities.ValuationPipeline>().Add(pipeline);
@@ -6796,78 +6853,78 @@ public class CostForgeController : ControllerBase
 
     // Capture IServiceScopeFactory (singleton) before the request scope is disposed
     var scopeFactory = HttpContext.RequestServices.GetRequiredService<IServiceScopeFactory>();
-    var pipelineId   = pipeline.Id;
+    var pipelineId = pipeline.Id;
     var neighborhoodFilter = req.NeighborhoodFilter;
-    var propertyType       = req.PropertyType;
-    var logger             = _logger;
+    var propertyType = req.PropertyType;
+    var logger = _logger;
 
     // Background: update improvement values using Benton cost matrix
     _ = System.Threading.Tasks.Task.Run(async () =>
     {
+      try
+      {
+        await System.Threading.Tasks.Task.Delay(500); // Let response flush
+        using var scope = scopeFactory.CreateScope();
+        var db2 = scope.ServiceProvider.GetRequiredService<DataDbContext>();
+
+        var camaQ = db2.CamaCharacteristics.AsQueryable();
+        if (!string.IsNullOrEmpty(neighborhoodFilter))
+          camaQ = camaQ.Where(c => c.NeighborhoodCode == neighborhoodFilter);
+        if (!string.IsNullOrEmpty(propertyType))
+          camaQ = camaQ.Where(c => c.BuildingType == propertyType);
+        var camaRecords = await camaQ.ToListAsync();
+
+        int processed = 0, errors = 0;
+        foreach (var c in camaRecords)
+        {
+          try
+          {
+            var entry = BentonCostData.CostMatrix.FirstOrDefault(e =>
+                e.BuildingType.Equals(c.BuildingType, StringComparison.OrdinalIgnoreCase));
+            if (entry is null) { errors++; continue; }
+            c.ImprvVal = entry.BaseCostPerSqft * c.SquareFeet;
+            c.UpdatedAt = DateTime.UtcNow;
+            processed++;
+          }
+          catch { errors++; }
+        }
+
+        await db2.SaveChangesAsync();
+
+        var pl2 = await db2.Set<TerraFusion.Core.Entities.ValuationPipeline>()
+            .FirstOrDefaultAsync(p => p.Id == pipelineId);
+        if (pl2 is not null)
+        {
+          pl2.CompletedParcels = processed;
+          pl2.FailedParcels = errors;
+          pl2.Status = "completed";
+          pl2.CurrentStage = "done";
+          await db2.SaveChangesAsync();
+        }
+      }
+      catch (Exception ex)
+      {
+        logger.LogError(ex, "Batch apply background task failed for pipeline {Id}", pipelineId);
         try
         {
-            await System.Threading.Tasks.Task.Delay(500); // Let response flush
-            using var scope = scopeFactory.CreateScope();
-            var db2 = scope.ServiceProvider.GetRequiredService<DataDbContext>();
-
-            var camaQ = db2.CamaCharacteristics.AsQueryable();
-            if (!string.IsNullOrEmpty(neighborhoodFilter))
-                camaQ = camaQ.Where(c => c.NeighborhoodCode == neighborhoodFilter);
-            if (!string.IsNullOrEmpty(propertyType))
-                camaQ = camaQ.Where(c => c.BuildingType == propertyType);
-            var camaRecords = await camaQ.ToListAsync();
-
-            int processed = 0, errors = 0;
-            foreach (var c in camaRecords)
-            {
-                try
-                {
-                    var entry = BentonCostData.CostMatrix.FirstOrDefault(e =>
-                        e.BuildingType.Equals(c.BuildingType, StringComparison.OrdinalIgnoreCase));
-                    if (entry is null) { errors++; continue; }
-                    c.ImprvVal  = entry.BaseCostPerSqft * c.SquareFeet;
-                    c.UpdatedAt = DateTime.UtcNow;
-                    processed++;
-                }
-                catch { errors++; }
-            }
-
-            await db2.SaveChangesAsync();
-
-            var pl2 = await db2.Set<TerraFusion.Core.Entities.ValuationPipeline>()
-                .FirstOrDefaultAsync(p => p.Id == pipelineId);
-            if (pl2 is not null)
-            {
-                pl2.CompletedParcels = processed;
-                pl2.FailedParcels    = errors;
-                pl2.Status           = "completed";
-                pl2.CurrentStage     = "done";
-                await db2.SaveChangesAsync();
-            }
+          using var scope2 = scopeFactory.CreateScope();
+          var db3 = scope2.ServiceProvider.GetRequiredService<DataDbContext>();
+          var pl3 = await db3.Set<TerraFusion.Core.Entities.ValuationPipeline>()
+              .FirstOrDefaultAsync(p => p.Id == pipelineId);
+          if (pl3 is not null) { pl3.Status = "failed"; await db3.SaveChangesAsync(); }
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Batch apply background task failed for pipeline {Id}", pipelineId);
-            try
-            {
-                using var scope2 = scopeFactory.CreateScope();
-                var db3 = scope2.ServiceProvider.GetRequiredService<DataDbContext>();
-                var pl3 = await db3.Set<TerraFusion.Core.Entities.ValuationPipeline>()
-                    .FirstOrDefaultAsync(p => p.Id == pipelineId);
-                if (pl3 is not null) { pl3.Status = "failed"; await db3.SaveChangesAsync(); }
-            }
-            catch { /* best effort */ }
-        }
+        catch { /* best effort */ }
+      }
     });
 
     return Ok(new
     {
-        jobId            = pipeline.Id.ToString(),
-        status           = "running",
-        totalParcels     = pipeline.TotalParcels,
-        processedParcels = 0,
-        errorCount       = 0,
-        startedAt        = pipeline.CreatedAt,
+      jobId = pipeline.Id.ToString(),
+      status = "running",
+      totalParcels = pipeline.TotalParcels,
+      processedParcels = 0,
+      errorCount = 0,
+      startedAt = pipeline.CreatedAt,
     });
   }
 
@@ -6880,7 +6937,7 @@ public class CostForgeController : ControllerBase
   public async Task<IActionResult> BatchStatus(string jobId)
   {
     if (!int.TryParse(jobId, out var id))
-        return BadRequest(new { error = "Invalid jobId" });
+      return BadRequest(new { error = "Invalid jobId" });
 
     var pl = await _db.Set<TerraFusion.Core.Entities.ValuationPipeline>()
         .FirstOrDefaultAsync(p => p.Id == id);
@@ -6889,21 +6946,21 @@ public class CostForgeController : ControllerBase
 
     return Ok(new
     {
-        jobId            = pl.Id.ToString(),
-        status           = pl.Status switch
-        {
-            "queued"    => "pending",
-            "running"   => "running",
-            "completed" => "completed",
-            "failed"    => "failed",
-            "cancelled" => "failed",
-            _           => pl.Status,
-        },
-        totalParcels     = pl.TotalParcels,
-        processedParcels = pl.CompletedParcels,
-        errorCount       = pl.FailedParcels,
-        startedAt        = pl.CreatedAt,
-        completedAt      = pl.Status is "completed" or "failed" or "cancelled" ? pl.CreatedAt : (DateTime?)null,
+      jobId = pl.Id.ToString(),
+      status = pl.Status switch
+      {
+        "queued" => "pending",
+        "running" => "running",
+        "completed" => "completed",
+        "failed" => "failed",
+        "cancelled" => "failed",
+        _ => pl.Status,
+      },
+      totalParcels = pl.TotalParcels,
+      processedParcels = pl.CompletedParcels,
+      errorCount = pl.FailedParcels,
+      startedAt = pl.CreatedAt,
+      completedAt = pl.Status is "completed" or "failed" or "cancelled" ? pl.CreatedAt : (DateTime?)null,
     });
   }
 
@@ -6916,7 +6973,7 @@ public class CostForgeController : ControllerBase
   public async Task<IActionResult> BatchCancel(string jobId)
   {
     if (!int.TryParse(jobId, out var id))
-        return BadRequest(new { error = "Invalid jobId" });
+      return BadRequest(new { error = "Invalid jobId" });
 
     var pl = await _db.Set<TerraFusion.Core.Entities.ValuationPipeline>()
         .FirstOrDefaultAsync(p => p.Id == id);
