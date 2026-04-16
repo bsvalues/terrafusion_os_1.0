@@ -500,6 +500,533 @@
       "officeScope": "assessor"
     },
     {
+      "toolId": "generate_morning_brief",
+      "displayName": "Generate Morning Brief",
+      "suite": "dais",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["workflow", "dossier", "parcel"],
+      "description": "Generate a ranked morning work brief for an assessor staff lane using governed findings and county scope.",
+      "crossSuiteReads": ["forge", "atlas", "dossier"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "chief_appraiser",
+              "residential_analyst",
+              "commercial_analyst",
+              "gis_analyst",
+              "field_appraiser",
+              "appeals_specialist",
+              "assessor_leadership"
+            ]
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year used for the briefing"
+          },
+          "queueType": {
+            "type": "string",
+            "enum": [
+              "morning_brief",
+              "calibration_review",
+              "parcel_correction",
+              "appeal_packet",
+              "certification"
+            ]
+          }
+        },
+        "required": ["county", "role", "taxYear"]
+      },
+      "officeScope": "assessor"
+    },
+    {
+      "toolId": "classify_county_finding",
+      "displayName": "Classify County Finding",
+      "suite": "forge",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["parcel", "model", "map"],
+      "description": "Classify a county signal into a governed finding type, staff lane, and next tool recommendation.",
+      "crossSuiteReads": ["atlas", "dais", "dossier"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Assessment tax year"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "county",
+              "reval_area",
+              "neighborhood",
+              "parcel",
+              "appeal"
+            ],
+            "default": "county"
+          },
+          "signal": {
+            "type": "string",
+            "enum": [
+              "ratio_drift",
+              "parcel_outlier",
+              "market_shift",
+              "residual_cluster",
+              "appeal_spike",
+              "evidence_stale"
+            ],
+            "default": "ratio_drift"
+          },
+          "subjectId": {
+            "type": "string",
+            "description": "Optional subject identifier for the scope"
+          },
+          "includeSpatialContext": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": ["county", "taxYear"]
+      },
+      "officeScope": "assessor"
+    },
+    {
+      "toolId": "propose_rate_adjustment",
+      "displayName": "Propose Rate Adjustment",
+      "suite": "forge",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["model", "parcel"],
+      "description": "Preview a county or neighborhood rate adjustment and show the working impact before any write is attempted.",
+      "crossSuiteReads": ["atlas", "dossier"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Assessment tax year"
+          },
+          "draftVersion": {
+            "type": "string",
+            "description": "Working draft version identifier"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "county",
+              "reval_area",
+              "neighborhood",
+              "parcel",
+              "appeal"
+            ],
+            "default": "county"
+          },
+          "scopeId": {
+            "type": "string",
+            "description": "Optional target scope identifier"
+          }
+        },
+        "required": ["county", "taxYear", "draftVersion"]
+      },
+      "officeScope": "assessor"
+    },
+    {
+      "toolId": "apply_rate_adjustment_to_draft",
+      "displayName": "Apply Rate Adjustment To Draft",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "forge",
+      "touches": ["model", "workflow"],
+      "description": "Apply a governed rate adjustment to the working draft and produce a sign-off packet reference.",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": [
+        "market_adjustment",
+        "annual_certification",
+        "operator_correction"
+      ],
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "draftVersion": {
+            "type": "string",
+            "description": "Working draft version identifier"
+          },
+          "adjustmentId": {
+            "type": "string",
+            "description": "Proposed adjustment identifier"
+          },
+          "scopeId": {
+            "type": "string",
+            "description": "Optional target scope identifier"
+          },
+          "factor": {
+            "type": "number",
+            "description": "Adjustment multiplier to apply"
+          },
+          "reasonCode": {
+            "type": "string",
+            "description": "Echoed reason code for downstream packets"
+          }
+        },
+        "required": ["county", "draftVersion"]
+      },
+      "officeScope": "assessor"
+    },
+    {
+      "toolId": "rerun_ratio_study",
+      "displayName": "Rerun Ratio Study",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["model", "parcel"],
+      "description": "Recompute ratio study metrics for a county or draft scope without applying any valuation changes.",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Assessment tax year"
+          },
+          "draftVersion": {
+            "type": "string",
+            "description": "Optional working draft version"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "county",
+              "reval_area",
+              "neighborhood",
+              "parcel",
+              "appeal"
+            ],
+            "default": "county"
+          }
+        },
+        "required": ["county", "taxYear"]
+      },
+      "officeScope": "assessor"
+    },
+    {
+      "toolId": "compare_matrix_versions",
+      "displayName": "Compare Matrix Versions",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["model"],
+      "description": "Compare two matrix versions and summarize the changed cells and affected scopes.",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "baseVersion": {
+            "type": "string",
+            "description": "Baseline matrix version"
+          },
+          "compareVersion": {
+            "type": "string",
+            "description": "Candidate matrix version"
+          }
+        },
+        "required": ["county", "baseVersion", "compareVersion"]
+      },
+      "officeScope": "assessor"
+    },
+    {
+      "toolId": "flag_parcel_data_issue",
+      "displayName": "Flag Parcel Data Issue",
+      "suite": "forge",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "forge",
+      "touches": ["parcel", "workflow"],
+      "description": "Route a parcel-level defect into the correction lane with explicit upstream finding linkage.",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["operator_correction", "workflow_update"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "findingId": {
+            "type": "string",
+            "description": "Upstream county finding identifier"
+          },
+          "issueType": {
+            "type": "string",
+            "enum": [
+              "classification",
+              "condition",
+              "geometry",
+              "sale_linkage",
+              "permit_gap"
+            ],
+            "default": "condition"
+          },
+          "reasonCode": {
+            "type": "string",
+            "description": "Echoed reason code for downstream workflows"
+          }
+        },
+        "required": ["county", "parcelId", "findingId"]
+      },
+      "officeScope": "assessor"
+    },
+    {
+      "toolId": "explain_spatial_anomaly",
+      "displayName": "Explain Spatial Anomaly",
+      "suite": "atlas",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["map", "parcel"],
+      "description": "Translate residual clusters and map anomalies into a governed explanation and handoff recommendation.",
+      "crossSuiteReads": ["forge"],
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Assessment tax year"
+          },
+          "metric": {
+            "type": "string",
+            "enum": ["prd", "prb", "cod", "residual_cluster"]
+          },
+          "geographyId": {
+            "type": "string",
+            "description": "Optional neighborhood or residual cluster identifier"
+          }
+        },
+        "required": ["county", "taxYear", "metric"]
+      },
+      "officeScope": "assessor"
+    },
+    {
+      "toolId": "open_appeal_packet",
+      "displayName": "Open Appeal Packet",
+      "suite": "dossier",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["dossier", "workflow"],
+      "description": "Open the current appeal packet view and return the packet reference and chain-of-custody summary.",
+      "crossSuiteReads": ["dais", "forge"],
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "appealId": {
+            "type": "string",
+            "description": "Appeal case identifier"
+          }
+        },
+        "required": ["county", "appealId"]
+      },
+      "officeScope": "assessor"
+    },
+    {
+      "toolId": "generate_calibration_memo",
+      "displayName": "Generate Calibration Memo",
+      "suite": "forge",
+      "mode": "muse",
+      "risk": "write_low",
+      "writeLane": "forge",
+      "touches": ["model", "dossier"],
+      "description": "Generate a defensible calibration memo draft with impact preview and sign-off sections.",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": [
+        "market_adjustment",
+        "annual_certification",
+        "operator_correction"
+      ],
+      "crossSuiteReads": ["atlas", "dossier", "dais"],
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "draftVersion": {
+            "type": "string",
+            "description": "Working draft version identifier"
+          },
+          "audience": {
+            "type": "string",
+            "enum": ["internal", "board", "dor"],
+            "default": "internal"
+          },
+          "reasonCode": {
+            "type": "string",
+            "description": "Echoed reason code for downstream packets"
+          }
+        },
+        "required": ["county", "draftVersion"]
+      },
+      "officeScope": "assessor"
+    },
+    {
+      "toolId": "export_equalization_package",
+      "displayName": "Export Equalization Package",
+      "suite": "dossier",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "dossier",
+      "touches": ["dossier", "workflow"],
+      "description": "Export the county equalization evidence package for certification review.",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["annual_certification", "board_directive"],
+      "crossSuiteReads": ["forge", "atlas", "dais"],
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "dossier",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "draftVersion": {
+            "type": "string",
+            "description": "Working draft version identifier"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Assessment tax year"
+          },
+          "reasonCode": {
+            "type": "string",
+            "description": "Echoed reason code for downstream exports"
+          }
+        },
+        "required": ["county", "draftVersion", "taxYear"]
+      },
+      "officeScope": "assessor"
+    },
+    {
+      "toolId": "export_audit_bundle",
+      "displayName": "Export Audit Bundle",
+      "suite": "audit",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "audit",
+      "touches": ["dossier", "workflow", "trace"],
+      "description": "Export an audit-ready bundle that links packet artifacts and trace references for review.",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": [
+        "annual_certification",
+        "board_directive",
+        "legal_compliance"
+      ],
+      "crossSuiteReads": ["forge", "atlas", "dais", "dossier"],
+      "piiHandling": "payload_ref",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "audit",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code (must match context.countyId)"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Assessment tax year"
+          },
+          "bundleScope": {
+            "type": "string",
+            "enum": ["county", "appeal", "neighborhood"],
+            "default": "county"
+          },
+          "subjectId": {
+            "type": "string",
+            "description": "Optional subject identifier for the bundle scope"
+          },
+          "reasonCode": {
+            "type": "string",
+            "description": "Echoed reason code for downstream exports"
+          }
+        },
+        "required": ["county", "taxYear"]
+      },
+      "officeScope": "assessor"
+    },
+    {
       "toolId": "search_trace_by_correlation",
       "displayName": "Search Trace By Correlation",
       "suite": "os",

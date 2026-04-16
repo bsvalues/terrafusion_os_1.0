@@ -56,6 +56,34 @@ const COMMANDS = {
     desc: "Show workspace status (node, git, ports)",
     load: () => import("./commands/status.mjs"),
   },
+  assessor: {
+    desc: "Assessor role briefings and lane orchestration",
+    load: () => import("./commands/assessor.mjs"),
+  },
+  forge: {
+    desc: "Forge audit, calibration, ratios, and memo workflows",
+    load: () => import("./commands/forge.mjs"),
+  },
+  atlas: {
+    desc: "Atlas anomaly and parcel-layer workflows",
+    load: () => import("./commands/atlas.mjs"),
+  },
+  dais: {
+    desc: "Dais queue review and operational briefings",
+    load: () => import("./commands/dais.mjs"),
+  },
+  dossier: {
+    desc: "Dossier packet and export workflows",
+    load: () => import("./commands/dossier.mjs"),
+  },
+  workbench: {
+    desc: "Property Workbench parcel correction routing",
+    load: () => import("./commands/workbench.mjs"),
+  },
+  trace: {
+    desc: "Trace query wrapper for correlation-first debugging",
+    load: () => import("./commands/trace.mjs"),
+  },
   dev: {
     desc: "Start development servers",
     load: () => import("./commands/dev.mjs"),

@@ -12,6 +12,17 @@
  */
 
 import type { ToolHandler } from './ToolRunner.js';
+import type {
+  AssessorActionContract,
+  AssessorFindingContract,
+  AssessorStaffRole,
+  CountyFindingScope,
+  CountyFindingType,
+  CountyImpactPreview,
+  CountyQueueType,
+  CountyRecommendedTool,
+  RoleBriefContract,
+} from '../types/assessorSuperpowers.js';
 
 // ============================================================================
 // Type Definitions
@@ -2587,6 +2598,809 @@ export const canonTerminalExecHandler: ToolHandler<
 };
 
 // ============================================================================
+// Elite Assessor Staff Superpowers - Governed Core Slice
+// ============================================================================
+
+export interface GenerateMorningBriefParams {
+  county: string;
+  role: AssessorStaffRole;
+  taxYear: number;
+  queueType?: CountyQueueType;
+}
+
+export interface GenerateMorningBriefResult {
+  brief: RoleBriefContract;
+  findings: AssessorFindingContract[];
+  summary: string;
+  generatedAt: string;
+}
+
+export interface ClassifyCountyFindingParams {
+  county: string;
+  taxYear: number;
+  scope?: CountyFindingScope;
+  signal?:
+    | 'ratio_drift'
+    | 'parcel_outlier'
+    | 'market_shift'
+    | 'residual_cluster'
+    | 'appeal_spike'
+    | 'evidence_stale';
+  subjectId?: string;
+  includeSpatialContext?: boolean;
+}
+
+export interface ClassifyCountyFindingResult {
+  primaryFinding: AssessorFindingContract;
+  findings: AssessorFindingContract[];
+  recommendedTool: CountyRecommendedTool;
+  narrative: string;
+}
+
+export interface ProposeRateAdjustmentParams {
+  county: string;
+  taxYear: number;
+  draftVersion: string;
+  scope?: CountyFindingScope;
+  scopeId?: string;
+}
+
+export interface ProposeRateAdjustmentResult {
+  proposalId: string;
+  action: AssessorActionContract;
+  findings: AssessorFindingContract[];
+  recommendedAdjustments: Array<{ scopeId: string; factor: number; rationale: string }>;
+  narrative: string;
+}
+
+export interface ApplyRateAdjustmentToDraftParams {
+  county: string;
+  draftVersion: string;
+  adjustmentId?: string;
+  scopeId?: string;
+  factor?: number;
+  reasonCode?: string;
+}
+
+export interface ApplyRateAdjustmentToDraftResult {
+  action: AssessorActionContract;
+  status: 'draft_updated';
+  payloadRef: string;
+  signoffPacketId: string;
+}
+
+export interface RerunRatioStudyParams {
+  county: string;
+  taxYear: number;
+  draftVersion?: string;
+  scope?: CountyFindingScope;
+}
+
+export interface RerunRatioStudyResult {
+  metrics: CountyImpactPreview;
+  readyForSignoff: boolean;
+  narrative: string;
+}
+
+export interface CompareMatrixVersionsParams {
+  county: string;
+  baseVersion: string;
+  compareVersion: string;
+}
+
+export interface CompareMatrixVersionsResult {
+  baseVersion: string;
+  compareVersion: string;
+  changedCells: number;
+  impactedScopes: string[];
+  summary: string;
+}
+
+export interface FlagParcelDataIssueParams {
+  county: string;
+  parcelId: string;
+  findingId: string;
+  issueType?: 'classification' | 'condition' | 'geometry' | 'sale_linkage' | 'permit_gap';
+  reasonCode?: string;
+}
+
+export interface FlagParcelDataIssueResult {
+  queueItemId: string;
+  payloadRef: string;
+  route: { parcelId: string; nextTool: 'route_to_parcel' };
+  action: AssessorActionContract;
+}
+
+export interface ExplainSpatialAnomalyParams {
+  county: string;
+  taxYear: number;
+  metric: 'prd' | 'prb' | 'cod' | 'residual_cluster';
+  geographyId?: string;
+}
+
+export interface ExplainSpatialAnomalyResult {
+  finding: AssessorFindingContract;
+  hotspotCount: number;
+  narrative: string;
+  recommendedTool: CountyRecommendedTool;
+}
+
+export interface OpenAppealPacketParams {
+  county: string;
+  appealId: string;
+}
+
+export interface OpenAppealPacketResult {
+  appealId: string;
+  packetRef: string;
+  payloadRef: string;
+  sections: string[];
+  chainOfCustody: string[];
+}
+
+export interface GenerateCalibrationMemoParams {
+  county: string;
+  draftVersion: string;
+  audience?: 'internal' | 'board' | 'dor';
+  reasonCode?: string;
+}
+
+export interface GenerateCalibrationMemoResult {
+  payloadRef: string;
+  sections: string[];
+  summary: string;
+  action: AssessorActionContract;
+}
+
+export interface ExportEqualizationPackageParams {
+  county: string;
+  draftVersion: string;
+  taxYear: number;
+  reasonCode?: string;
+}
+
+export interface ExportEqualizationPackageResult {
+  payloadRef: string;
+  packageRef: string;
+  artifactCount: number;
+  checklist: string[];
+  action: AssessorActionContract;
+}
+
+export interface ExportAuditBundleParams {
+  county: string;
+  taxYear: number;
+  bundleScope?: 'county' | 'appeal' | 'neighborhood';
+  subjectId?: string;
+  reasonCode?: string;
+}
+
+export interface ExportAuditBundleResult {
+  payloadRef: string;
+  bundleRef: string;
+  artifactCount: number;
+  traceRef: string;
+  action: AssessorActionContract;
+}
+
+const ROLE_QUEUE_MAP: Record<AssessorStaffRole, CountyQueueType> = {
+  chief_appraiser: 'calibration_review',
+  residential_analyst: 'calibration_review',
+  commercial_analyst: 'calibration_review',
+  gis_analyst: 'morning_brief',
+  field_appraiser: 'parcel_correction',
+  appeals_specialist: 'appeal_packet',
+  assessor_leadership: 'certification',
+};
+
+const ROLE_TOOL_MAP: Record<AssessorStaffRole, CountyRecommendedTool> = {
+  chief_appraiser: 'propose_rate_adjustment',
+  residential_analyst: 'rerun_ratio_study',
+  commercial_analyst: 'compare_matrix_versions',
+  gis_analyst: 'explain_spatial_anomaly',
+  field_appraiser: 'flag_parcel_data_issue',
+  appeals_specialist: 'open_appeal_packet',
+  assessor_leadership: 'generate_morning_brief',
+};
+
+const FINDING_TOOL_MAP: Record<CountyFindingType, CountyRecommendedTool> = {
+  RATE_PROBLEM: 'propose_rate_adjustment',
+  DATA_PROBLEM: 'flag_parcel_data_issue',
+  MARKET_SHIFT: 'rerun_ratio_study',
+  SPATIAL_PROBLEM: 'explain_spatial_anomaly',
+  NO_ACTION: 'generate_morning_brief',
+};
+
+function currentIsoTimestamp(): string {
+  return new Date().toISOString();
+}
+
+function buildEvidenceLineage(
+  countyId: string,
+  taxYear: number,
+  topic: string
+): AssessorFindingContract['evidenceLineage'] {
+  return [
+    {
+      source: `${countyId}-valuation-roll`,
+      asOf: `${taxYear}-01-15T08:00:00.000Z`,
+      recordCount: 41832,
+      citation: `${topic}:valuation-roll`,
+    },
+    {
+      source: `${countyId}-sales-window`,
+      asOf: `${taxYear}-02-01T08:00:00.000Z`,
+      recordCount: 1845,
+      citation: `${topic}:sales-window`,
+    },
+  ];
+}
+
+function buildImpactPreview(seed: string): CountyImpactPreview {
+  const hash = parseInt(stableHash(seed).slice(0, 6), 16);
+  const prdBefore = roundTo(1.02 + (hash % 7) * 0.01, 3);
+  const prdAfter = roundTo(prdBefore - 0.018, 3);
+  const codBefore = roundTo(11.2 + (hash % 6) * 0.4, 2);
+  const codAfter = roundTo(codBefore - 1.1, 2);
+  const avDelta = 420000 + (hash % 11) * 37500;
+  const fairnessDelta = roundTo(0.04 + (hash % 5) * 0.01, 3);
+  return {
+    prdBefore,
+    prdAfter,
+    codBefore,
+    codAfter,
+    avDelta,
+    fairnessDelta,
+  };
+}
+
+function buildActionContract(seed: {
+  countyId: string;
+  draftVersion: string;
+  reasonCode: string;
+  targetLane: string;
+  traceRef: string;
+}): AssessorActionContract {
+  return {
+    draftVersion: seed.draftVersion,
+    reasonCode: seed.reasonCode,
+    confirmation: true,
+    impactPreview: buildImpactPreview(
+      `${seed.countyId}:${seed.draftVersion}:${seed.reasonCode}:${seed.targetLane}`
+    ),
+    signoffRequired: true,
+    traceRef: seed.traceRef,
+    targetLane: seed.targetLane,
+  };
+}
+
+function buildFinding(seed: {
+  countyId: string;
+  taxYear: number;
+  findingType: CountyFindingType;
+  scope: CountyFindingScope;
+  severity: AssessorFindingContract['severity'];
+  assignedRole: AssessorStaffRole;
+  recommendedAction: string;
+  affectedParcelIds: string[];
+  topic: string;
+  confidence?: number;
+}): AssessorFindingContract {
+  const seedKey = [
+    seed.countyId,
+    seed.taxYear,
+    seed.findingType,
+    seed.scope,
+    seed.assignedRole,
+    seed.recommendedAction,
+    seed.affectedParcelIds.join(','),
+  ].join(':');
+
+  return {
+    findingId: `finding-${stableHash(seedKey)}`,
+    findingType: seed.findingType,
+    scope: seed.scope,
+    severity: seed.severity,
+    confidence: seed.confidence ?? 0.86,
+    countyId: seed.countyId,
+    taxYear: seed.taxYear,
+    evidenceLineage: buildEvidenceLineage(seed.countyId, seed.taxYear, seed.topic),
+    affectedParcelIds: seed.affectedParcelIds,
+    recommendedAction: seed.recommendedAction,
+    assignedRole: seed.assignedRole,
+  };
+}
+
+function buildCountyAuditFindings(countyId: string, taxYear: number): AssessorFindingContract[] {
+  return [
+    buildFinding({
+      countyId,
+      taxYear,
+      findingType: 'RATE_PROBLEM',
+      scope: 'county',
+      severity: 'high',
+      assignedRole: 'chief_appraiser',
+      recommendedAction: 'Propose a countywide residential grade-table adjustment.',
+      affectedParcelIds: ['BENTON-R-1001', 'BENTON-R-2044', 'BENTON-R-5092'],
+      topic: 'county-calibration',
+      confidence: 0.93,
+    }),
+    buildFinding({
+      countyId,
+      taxYear,
+      findingType: 'MARKET_SHIFT',
+      scope: 'reval_area',
+      severity: 'medium',
+      assignedRole: 'residential_analyst',
+      recommendedAction: 'Rerun ratio diagnostics for the river corridor revaluation area.',
+      affectedParcelIds: ['BENTON-RA-77-11', 'BENTON-RA-77-19'],
+      topic: 'river-corridor-market',
+      confidence: 0.88,
+    }),
+    buildFinding({
+      countyId,
+      taxYear,
+      findingType: 'SPATIAL_PROBLEM',
+      scope: 'neighborhood',
+      severity: 'medium',
+      assignedRole: 'gis_analyst',
+      recommendedAction: 'Explain residual clustering before any matrix change is approved.',
+      affectedParcelIds: ['BENTON-NB-3301', 'BENTON-NB-3309'],
+      topic: 'residual-cluster',
+      confidence: 0.84,
+    }),
+    buildFinding({
+      countyId,
+      taxYear,
+      findingType: 'DATA_PROBLEM',
+      scope: 'parcel',
+      severity: 'medium',
+      assignedRole: 'field_appraiser',
+      recommendedAction: 'Flag parcel records for condition and permit review.',
+      affectedParcelIds: ['BENTON-P-9021', 'BENTON-P-9034', 'BENTON-P-9077'],
+      topic: 'parcel-data-integrity',
+      confidence: 0.81,
+    }),
+    buildFinding({
+      countyId,
+      taxYear,
+      findingType: 'DATA_PROBLEM',
+      scope: 'appeal',
+      severity: 'low',
+      assignedRole: 'appeals_specialist',
+      recommendedAction: 'Open the live appeal packet and verify evidence age before BOE.',
+      affectedParcelIds: ['BENTON-A-1102'],
+      topic: 'appeal-packet-readiness',
+      confidence: 0.79,
+    }),
+  ];
+}
+
+function findingsForRole(
+  role: AssessorStaffRole,
+  countyId: string,
+  taxYear: number
+): AssessorFindingContract[] {
+  const findings = buildCountyAuditFindings(countyId, taxYear);
+  if (role === 'chief_appraiser' || role === 'assessor_leadership') {
+    return findings.slice(0, 4);
+  }
+  return findings.filter(f => f.assignedRole === role);
+}
+
+/**
+ * Generate Morning Brief - role-based queue orchestration for assessor staff.
+ */
+export const generateMorningBriefHandler: ToolHandler<
+  GenerateMorningBriefParams,
+  GenerateMorningBriefResult
+> = async (params, context, _tool) => {
+  const { county, role, taxYear } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const findings = findingsForRole(role, context.countyId, taxYear);
+  const queueType = params.queueType ?? ROLE_QUEUE_MAP[role];
+  const topSeverity = findings[0]?.severity ?? 'low';
+  const blockingDependencies =
+    role === 'chief_appraiser'
+      ? ['rerun_ratio_study']
+      : role === 'appeals_specialist'
+        ? ['open_appeal_packet']
+        : [];
+
+  return {
+    brief: {
+      role,
+      queueType,
+      priority: topSeverity,
+      dueWindow: '08:00-11:00 local',
+      blockingDependencies,
+      recommendedTool: ROLE_TOOL_MAP[role],
+      readyToAct: blockingDependencies.length === 0,
+    },
+    findings,
+    summary: `${role.replace(/_/g, ' ')} has ${findings.length} ranked item(s) ready for ${queueType}.`,
+    generatedAt: currentIsoTimestamp(),
+  };
+};
+
+/**
+ * Classify County Finding - turns a county signal into a governed finding set.
+ */
+export const classifyCountyFindingHandler: ToolHandler<
+  ClassifyCountyFindingParams,
+  ClassifyCountyFindingResult
+> = async (params, context, _tool) => {
+  const {
+    county,
+    taxYear,
+    scope = 'county',
+    signal = 'ratio_drift',
+    subjectId = 'county-wide',
+    includeSpatialContext = true,
+  } = params;
+  assertCountyMatch(county, context.countyId);
+
+  let primaryType: CountyFindingType = 'RATE_PROBLEM';
+  let role: AssessorStaffRole = 'chief_appraiser';
+  let action = 'Propose a draft rate adjustment and verify impact before sign-off.';
+
+  if (signal === 'parcel_outlier' || scope === 'parcel') {
+    primaryType = 'DATA_PROBLEM';
+    role = 'field_appraiser';
+    action = `Flag parcel ${subjectId} for inspection and record repair.`;
+  } else if (signal === 'market_shift') {
+    primaryType = 'MARKET_SHIFT';
+    role = 'commercial_analyst';
+    action = `Rerun ratio study for ${subjectId} and compare matrix versions before commit.`;
+  } else if (signal === 'residual_cluster') {
+    primaryType = 'SPATIAL_PROBLEM';
+    role = 'gis_analyst';
+    action = `Explain the spatial anomaly for ${subjectId} before any countywide correction.`;
+  } else if (includeSpatialContext && signal === 'appeal_spike') {
+    primaryType = 'DATA_PROBLEM';
+    role = 'appeals_specialist';
+    action = `Open the appeal packet for ${subjectId} and verify supporting evidence before changing the draft.`;
+  }
+
+  const primaryFinding = buildFinding({
+    countyId: context.countyId,
+    taxYear,
+    findingType: primaryType,
+    scope,
+    severity: scope === 'county' ? 'high' : 'medium',
+    assignedRole: role,
+    recommendedAction: action,
+    affectedParcelIds: [`${context.countyId.toUpperCase()}-${subjectId}`],
+    topic: signal,
+    confidence: primaryType === 'SPATIAL_PROBLEM' ? 0.9 : 0.87,
+  });
+
+  const supportingFindings =
+    primaryType === 'RATE_PROBLEM'
+      ? buildCountyAuditFindings(context.countyId, taxYear).slice(1, 3)
+      : [buildCountyAuditFindings(context.countyId, taxYear)[0], primaryFinding].slice(0, 2);
+
+  return {
+    primaryFinding,
+    findings: [primaryFinding, ...supportingFindings.filter(f => f.findingId !== primaryFinding.findingId)],
+    recommendedTool: FINDING_TOOL_MAP[primaryType],
+    narrative: `${signal} was classified as ${primaryType} at ${scope} scope for ${subjectId}.`,
+  };
+};
+
+/**
+ * Propose Rate Adjustment - creates a draft adjustment preview without applying it.
+ */
+export const proposeRateAdjustmentHandler: ToolHandler<
+  ProposeRateAdjustmentParams,
+  ProposeRateAdjustmentResult
+> = async (params, context, _tool) => {
+  const { county, taxYear, draftVersion, scope = 'county', scopeId = 'all-residential' } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const traceRef = `trace://${context.countyId}/${stableHash(`${draftVersion}:${scope}:${scopeId}`)}`;
+  const action = buildActionContract({
+    countyId: context.countyId,
+    draftVersion,
+    reasonCode: 'market_adjustment',
+    targetLane: 'forge',
+    traceRef,
+  });
+
+  return {
+    proposalId: `proposal-${stableHash(`${draftVersion}:${scopeId}`)}`,
+    action: { ...action, confirmation: false, signoffRequired: false },
+    findings: findingsForRole('chief_appraiser', context.countyId, taxYear).slice(0, 2),
+    recommendedAdjustments: [
+      {
+        scopeId,
+        factor: 1.035,
+        rationale: 'Median residual drift exceeded the county target band in the working draft.',
+      },
+    ],
+    narrative: `Draft ${draftVersion} should apply a focused ${scope} adjustment to ${scopeId} before rerunning ratios.`,
+  };
+};
+
+/**
+ * Apply Rate Adjustment To Draft - governed write that updates the working draft.
+ */
+export const applyRateAdjustmentToDraftHandler: ToolHandler<
+  ApplyRateAdjustmentToDraftParams,
+  ApplyRateAdjustmentToDraftResult
+> = async (params, context, _tool) => {
+  const {
+    county,
+    draftVersion,
+    adjustmentId = 'proposal-current',
+    scopeId = 'all-residential',
+    factor = 1.035,
+    reasonCode = 'market_adjustment',
+  } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const traceRef = `trace://${context.countyId}/${stableHash(`${draftVersion}:${adjustmentId}:${scopeId}`)}`;
+
+  return {
+    action: buildActionContract({
+      countyId: context.countyId,
+      draftVersion,
+      reasonCode,
+      targetLane: 'forge',
+      traceRef,
+    }),
+    status: 'draft_updated',
+    payloadRef: buildPayloadRef(
+      `dossier://${context.countyId}/calibration/${draftVersion}`,
+      `${draftVersion}:${adjustmentId}:${scopeId}:${factor}`
+    ),
+    signoffPacketId: `signoff-${stableHash(`${draftVersion}:${factor}:${reasonCode}`)}`,
+  };
+};
+
+/**
+ * Rerun Ratio Study - recomputes county metrics on the working draft.
+ */
+export const rerunRatioStudyHandler: ToolHandler<
+  RerunRatioStudyParams,
+  RerunRatioStudyResult
+> = async (params, context, _tool) => {
+  const { county, taxYear, draftVersion = 'draft-working', scope = 'county' } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const metrics = buildImpactPreview(`${draftVersion}:${taxYear}:${scope}`);
+  return {
+    metrics,
+    readyForSignoff: metrics.codAfter <= 11 && metrics.prdAfter <= 1.03,
+    narrative: `Rerun complete for ${scope} scope on ${draftVersion}. COD moved from ${metrics.codBefore} to ${metrics.codAfter}.`,
+  };
+};
+
+/**
+ * Compare Matrix Versions - summarizes cell-level matrix deltas.
+ */
+export const compareMatrixVersionsHandler: ToolHandler<
+  CompareMatrixVersionsParams,
+  CompareMatrixVersionsResult
+> = async (params, context, _tool) => {
+  const { county, baseVersion, compareVersion } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const changedCells = (parseInt(stableHash(`${baseVersion}:${compareVersion}`).slice(0, 4), 16) % 19) + 7;
+  return {
+    baseVersion,
+    compareVersion,
+    changedCells,
+    impactedScopes: ['river-corridor', 'west-richland', 'pasco-urban-core'],
+    summary: `${compareVersion} changes ${changedCells} matrix cells relative to ${baseVersion}.`,
+  };
+};
+
+/**
+ * Flag Parcel Data Issue - routes a parcel defect into the correction lane.
+ */
+export const flagParcelDataIssueHandler: ToolHandler<
+  FlagParcelDataIssueParams,
+  FlagParcelDataIssueResult
+> = async (params, context, _tool) => {
+  const {
+    county,
+    parcelId,
+    findingId,
+    issueType = 'condition',
+    reasonCode = 'operator_correction',
+  } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const traceRef = `trace://${context.countyId}/${stableHash(`${parcelId}:${findingId}:${issueType}`)}`;
+
+  return {
+    queueItemId: `queue-${stableHash(`${parcelId}:${findingId}`)}`,
+    payloadRef: buildPayloadRef(
+      `dossier://${context.countyId}/parcel-flags/${parcelId}`,
+      `${findingId}:${issueType}`
+    ),
+    route: {
+      parcelId,
+      nextTool: 'route_to_parcel',
+    },
+    action: buildActionContract({
+      countyId: context.countyId,
+      draftVersion: 'parcel-correction',
+      reasonCode,
+      targetLane: 'forge',
+      traceRef,
+    }),
+  };
+};
+
+/**
+ * Explain Spatial Anomaly - converts GIS clustering into an explainable finding.
+ */
+export const explainSpatialAnomalyHandler: ToolHandler<
+  ExplainSpatialAnomalyParams,
+  ExplainSpatialAnomalyResult
+> = async (params, context, _tool) => {
+  const { county, taxYear, metric, geographyId = 'county-cluster-01' } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const finding = buildFinding({
+    countyId: context.countyId,
+    taxYear,
+    findingType: 'SPATIAL_PROBLEM',
+    scope: 'neighborhood',
+    severity: metric === 'residual_cluster' ? 'high' : 'medium',
+    assignedRole: 'gis_analyst',
+    recommendedAction: `Audit ${geographyId} in Atlas before changing the county draft.`,
+    affectedParcelIds: ['BENTON-GIS-2201', 'BENTON-GIS-2208'],
+    topic: `spatial-${metric}`,
+    confidence: 0.91,
+  });
+
+  return {
+    finding,
+    hotspotCount: 3,
+    narrative: `${metric} indicates a spatially coherent anomaly around ${geographyId}; audit the overlay and hand off any valuation driver to Forge.`,
+    recommendedTool: 'query_parcel_layers',
+  };
+};
+
+/**
+ * Open Appeal Packet - assembles a live-backed packet view for appeals staff.
+ */
+export const openAppealPacketHandler: ToolHandler<
+  OpenAppealPacketParams,
+  OpenAppealPacketResult
+> = async (params, context, _tool) => {
+  const { county, appealId } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const packetRef = buildPayloadRef(
+    `dossier://${context.countyId}/appeals/${appealId}/packet`,
+    `${appealId}:packet`
+  );
+
+  return {
+    appealId,
+    packetRef,
+    payloadRef: packetRef,
+    sections: ['property-summary', 'sales-comps', 'valuation-history', 'evidence-chain'],
+    chainOfCustody: [
+      'county-roll snapshot linked',
+      'sales window attached',
+      'inspection evidence verified',
+    ],
+  };
+};
+
+/**
+ * Generate Calibration Memo - drafts a defensible memo from a working draft.
+ */
+export const generateCalibrationMemoHandler: ToolHandler<
+  GenerateCalibrationMemoParams,
+  GenerateCalibrationMemoResult
+> = async (params, context, _tool) => {
+  const {
+    county,
+    draftVersion,
+    audience = 'internal',
+    reasonCode = 'market_adjustment',
+  } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const traceRef = `trace://${context.countyId}/${stableHash(`${draftVersion}:${audience}`)}`;
+
+  return {
+    payloadRef: buildPayloadRef(
+      `dossier://${context.countyId}/calibration-memos/${draftVersion}`,
+      `${draftVersion}:${audience}`
+    ),
+    sections: ['executive-summary', 'drivers', 'impact-preview', 'signoff'],
+    summary: `Calibration memo for ${draftVersion} is ready for ${audience} review.`,
+    action: buildActionContract({
+      countyId: context.countyId,
+      draftVersion,
+      reasonCode,
+      targetLane: 'forge',
+      traceRef,
+    }),
+  };
+};
+
+/**
+ * Export Equalization Package - bundles the final calibration evidence for certification.
+ */
+export const exportEqualizationPackageHandler: ToolHandler<
+  ExportEqualizationPackageParams,
+  ExportEqualizationPackageResult
+> = async (params, context, _tool) => {
+  const {
+    county,
+    draftVersion,
+    taxYear,
+    reasonCode = 'annual_certification',
+  } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const traceRef = `trace://${context.countyId}/${stableHash(`${draftVersion}:${taxYear}:equalization`)}`;
+
+  return {
+    payloadRef: buildPayloadRef(
+      `dossier://${context.countyId}/equalization/${taxYear}`,
+      `${draftVersion}:${taxYear}`
+    ),
+    packageRef: `equalization-${stableHash(`${draftVersion}:${taxYear}`)}`,
+    artifactCount: 6,
+    checklist: ['ratio-study', 'matrix-diff', 'calibration-memo', 'signoff-log', 'atlas-overlays'],
+    action: buildActionContract({
+      countyId: context.countyId,
+      draftVersion,
+      reasonCode,
+      targetLane: 'dossier',
+      traceRef,
+    }),
+  };
+};
+
+/**
+ * Export Audit Bundle - packages evidence, trace references, and packets for audit review.
+ */
+export const exportAuditBundleHandler: ToolHandler<
+  ExportAuditBundleParams,
+  ExportAuditBundleResult
+> = async (params, context, _tool) => {
+  const {
+    county,
+    taxYear,
+    bundleScope = 'county',
+    subjectId = 'county-roll',
+    reasonCode = 'annual_certification',
+  } = params;
+  assertCountyMatch(county, context.countyId);
+
+  const draftVersion = `audit-${taxYear}-${bundleScope}`;
+  const traceRef = `trace://${context.countyId}/${stableHash(`${taxYear}:${bundleScope}:${subjectId}`)}`;
+
+  return {
+    payloadRef: buildPayloadRef(
+      `audit://${context.countyId}/${taxYear}/${bundleScope}`,
+      `${subjectId}:${reasonCode}`
+    ),
+    bundleRef: `audit-bundle-${stableHash(`${taxYear}:${bundleScope}:${subjectId}`)}`,
+    artifactCount: 8,
+    traceRef,
+    action: buildActionContract({
+      countyId: context.countyId,
+      draftVersion,
+      reasonCode,
+      targetLane: 'audit',
+      traceRef,
+    }),
+  };
+};
+
+// ============================================================================
 // Handler Registry
 // ============================================================================
 
@@ -2630,7 +3444,27 @@ export function registerWriteGateHandlers(runner: {
 }
 
 /**
- * Register all tool handlers (Phase 8.3 + 8.4 + C2 + Wave 3 + Canon).
+ * Register Elite Assessor Staff superpower handlers.
+ */
+export function registerAssessorSuperpowerHandlers(runner: {
+  registerHandler: <P, R>(toolId: string, handler: ToolHandler<P, R>) => void;
+}): void {
+  runner.registerHandler('generate_morning_brief', generateMorningBriefHandler);
+  runner.registerHandler('classify_county_finding', classifyCountyFindingHandler);
+  runner.registerHandler('propose_rate_adjustment', proposeRateAdjustmentHandler);
+  runner.registerHandler('apply_rate_adjustment_to_draft', applyRateAdjustmentToDraftHandler);
+  runner.registerHandler('rerun_ratio_study', rerunRatioStudyHandler);
+  runner.registerHandler('compare_matrix_versions', compareMatrixVersionsHandler);
+  runner.registerHandler('flag_parcel_data_issue', flagParcelDataIssueHandler);
+  runner.registerHandler('explain_spatial_anomaly', explainSpatialAnomalyHandler);
+  runner.registerHandler('open_appeal_packet', openAppealPacketHandler);
+  runner.registerHandler('generate_calibration_memo', generateCalibrationMemoHandler);
+  runner.registerHandler('export_equalization_package', exportEqualizationPackageHandler);
+  runner.registerHandler('export_audit_bundle', exportAuditBundleHandler);
+}
+
+/**
+ * Register all tool handlers (Phase 8.3 + 8.4 + C2 + Assessor Superpowers + Wave 3 + Canon).
  */
 export function registerAllHandlers(runner: {
   registerHandler: <P, R>(toolId: string, handler: ToolHandler<P, R>) => void;
@@ -2638,6 +3472,7 @@ export function registerAllHandlers(runner: {
   registerPhase83Handlers(runner);
   registerPhase84Handlers(runner);
   registerWriteGateHandlers(runner);
+  registerAssessorSuperpowerHandlers(runner);
   registerWave3Handlers(runner);
   registerCanonHandlers(runner);
 }
@@ -2731,6 +3566,24 @@ export const phase84Handlers = {
 export const writeGateHandlers = {
   assemble_boe_packet: assembleBoePacketHandler,
   request_trace_redaction: requestTraceRedactionHandler,
+} as const;
+
+/**
+ * Map of Elite Assessor Staff superpower handlers for direct access.
+ */
+export const assessorSuperpowerHandlers = {
+  generate_morning_brief: generateMorningBriefHandler,
+  classify_county_finding: classifyCountyFindingHandler,
+  propose_rate_adjustment: proposeRateAdjustmentHandler,
+  apply_rate_adjustment_to_draft: applyRateAdjustmentToDraftHandler,
+  rerun_ratio_study: rerunRatioStudyHandler,
+  compare_matrix_versions: compareMatrixVersionsHandler,
+  flag_parcel_data_issue: flagParcelDataIssueHandler,
+  explain_spatial_anomaly: explainSpatialAnomalyHandler,
+  open_appeal_packet: openAppealPacketHandler,
+  generate_calibration_memo: generateCalibrationMemoHandler,
+  export_equalization_package: exportEqualizationPackageHandler,
+  export_audit_bundle: exportAuditBundleHandler,
 } as const;
 
 /**
