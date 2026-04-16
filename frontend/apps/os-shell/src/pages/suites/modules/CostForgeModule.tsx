@@ -10,6 +10,8 @@
  */
 
 import { useCallback, useMemo, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
+import { usePropertyStore } from '@/stores/propertyStore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -45,6 +47,8 @@ import {
   WifiOff,
   Loader2,
   ShieldCheck,
+  Lock,
+  CheckCircle2,
 } from 'lucide-react';
 import {
   BUILDING_TYPES,
@@ -61,6 +65,19 @@ import {
   type CostCalculationResult,
   type CostScenario,
 } from '@/services/forgeService';
+
+interface CostCommitResult {
+  caseId: string;
+  packetRef: string;
+  sections: string[];
+  payloadRef: string;
+}
+
+type CostCommitState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'success'; result: CostCommitResult; correlationId: string }
+  | { status: 'error'; error: string; correlationId: string };
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -108,6 +125,11 @@ export default function CostForgeModule() {
   const [scenarios, setScenarios] = useState<CostScenario[]>(() => loadScenarios());
   const [scenarioName, setScenarioName] = useState('');
   const [compareId, setCompareId] = useState<string | null>(null);
+
+  // TerraPilot: cost approach commit gate
+  const activeParcel = usePropertyStore((s) => s.activeParcel);
+  const [costCommitConfirmed, setCostCommitConfirmed] = useState(false);
+  const [costCommitState, setCostCommitState] = useState<CostCommitState>({ status: 'idle' });
 
   const result: CostCalculationResult = useMemo(() => calculateCost(inputs), [inputs]);
 
@@ -174,6 +196,34 @@ export default function CostForgeModule() {
   }, []);
 
   const compareScenario = scenarios.find((s) => s.id === compareId);
+
+  const handleCommitCostValue = useCallback(async () => {
+    if (!costCommitConfirmed) return;
+    const caseId = activeParcel?.parcelId ?? activeParcel?.parcelNumber ?? 'unknown';
+    setCostCommitState({ status: 'loading' });
+    try {
+      const res = await invokeTool<CostCommitResult>({
+        toolId: 'assemble_boe_packet',
+        params: {
+          county: 'benton',
+          caseId,
+          include: ['evidence', 'valuation_history', 'cost_approach'],
+        },
+      });
+      setCostCommitState({
+        status: 'success',
+        result: res.result,
+        correlationId: res.correlationId,
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Commit failed';
+      setCostCommitState({
+        status: 'error',
+        error: msg,
+        correlationId: (err as { correlationId?: string })?.correlationId ?? 'unknown',
+      });
+    }
+  }, [costCommitConfirmed, activeParcel]);
 
   // Group building types by category
   const groupedTypes = useMemo(() => {
@@ -908,6 +958,106 @@ export default function CostForgeModule() {
                 <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
                   API offline or auth required — local calculation remains authoritative
                 </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* TerraPilot: Commit Cost Value Gate */}
+          <Card
+            data-testid='cost-commit-gate'
+            style={{
+              background: 'hsl(var(--tf-card-bg))',
+              borderColor: 'hsl(var(--tf-suite-forge) / 0.4)',
+            }}
+          >
+            <CardHeader className='pb-2'>
+              <CardTitle
+                className='text-sm flex items-center gap-2'
+                style={{ color: 'hsl(var(--tf-fg))' }}
+              >
+                <Lock size={14} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
+                TerraPilot: Commit Cost Value
+              </CardTitle>
+              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                Assemble and lock the cost approach into the BOE packet
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-3'>
+              <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                RCNLD{' '}
+                <span className='font-mono font-semibold' style={{ color: 'hsl(var(--tf-suite-forge))' }}>
+                  {formatCurrency(result.rcnld)}
+                </span>{' '}
+                for{' '}
+                <span className='font-mono' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {activeParcel?.parcelId ?? activeParcel?.parcelNumber ?? 'no parcel selected'}
+                </span>
+                . TerraPilot will assemble the cost approach into the BOE packet — you review before any submission.
+              </p>
+
+              <label className='flex items-center gap-2 cursor-pointer'>
+                <input
+                  type='checkbox'
+                  checked={costCommitConfirmed}
+                  onChange={(e) => setCostCommitConfirmed(e.target.checked)}
+                  data-testid='cost-commit-confirm-checkbox'
+                  style={{ accentColor: 'hsl(var(--tf-suite-forge))' }}
+                />
+                <span className='text-xs' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  I confirm the cost inputs and RCNLD are correct and authorise TerraPilot to commit this value.
+                </span>
+              </label>
+
+              <TactileButton
+                size='sm'
+                onClick={handleCommitCostValue}
+                disabled={!costCommitConfirmed || costCommitState.status === 'loading'}
+                data-testid='cost-commit-submit-btn'
+                fullWidth
+                leftIcon={<Lock size={14} />}
+              >
+                {costCommitState.status === 'loading' ? 'Committing…' : 'Commit Cost Value'}
+              </TactileButton>
+
+              {/* Error */}
+              {costCommitState.status === 'error' && (
+                <div
+                  className='p-2 rounded text-xs space-y-1'
+                  style={{ background: 'hsl(var(--tf-error-hs) 60% / 0.1)', color: 'hsl(var(--tf-error-hs) 60%)' }}
+                >
+                  <p>{costCommitState.error}</p>
+                  <p className='font-mono text-[10px]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    ref: {costCommitState.correlationId}
+                  </p>
+                </div>
+              )}
+
+              {/* Success */}
+              {costCommitState.status === 'success' && (
+                <div
+                  className='p-3 rounded space-y-1'
+                  style={{
+                    background: 'hsl(var(--tf-success-hs) 45% / 0.1)',
+                    border: '1px solid hsl(var(--tf-success-hs) 45% / 0.3)',
+                  }}
+                  data-testid='cost-commit-success'
+                >
+                  <div className='flex items-center gap-2'>
+                    <CheckCircle2 size={14} style={{ color: 'hsl(var(--tf-success-hs) 45%)' }} />
+                    <span className='text-xs font-medium' style={{ color: 'hsl(var(--tf-success-hs) 45%)' }}>
+                      Cost value committed to BOE packet
+                    </span>
+                  </div>
+                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    ref: {costCommitState.result.packetRef}
+                  </p>
+                  <p className='text-[10px]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Sections: {costCommitState.result.sections?.join(', ')}
+                  </p>
+                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    correlationId: {costCommitState.correlationId}
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>
