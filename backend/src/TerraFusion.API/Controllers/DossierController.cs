@@ -1417,7 +1417,7 @@ public class DossierController : ControllerBase
           "verified", 2, ["MLS", "County Auditor", "Excise Tax Affidavit"]),
       new("cost-analysis", "Cost Approach Evidence",
           "Replacement/reproduction cost data and depreciation schedules",
-          "verified", 2, ["Marshall & Swift", "CostForge", "County Cost Tables"]),
+          "verified", 2, ["CostForge", "Benton County Cost Schedule", "County Cost Tables"]),
       new("income-analysis", "Income Approach Evidence",
           "Rental income, vacancy rates, and capitalization data",
           "verified", 2, ["Property Owner", "Market Survey", "CoStar"]),

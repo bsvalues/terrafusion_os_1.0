@@ -1,7 +1,7 @@
 /**
  * CostManual.tsx
  *
- * Forge Cost Schedule — Benton County Marshall & Swift base rates.
+ * Forge Cost Schedule — Benton County local cost schedules (ratio-study calibrated).
  * Fetches live cost matrix rows from /costforge/schedule (all 66 building-type ×
  * reval-area combinations × 5 quality tiers). Search and quality filter applied
  * client-side after load.

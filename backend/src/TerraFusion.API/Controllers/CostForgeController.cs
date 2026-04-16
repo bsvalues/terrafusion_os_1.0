@@ -2277,9 +2277,9 @@ public class CostForgeController : ControllerBase
       ["cost-approach"] = new
       {
         modelId = "cost-approach",
-        name = "Marshall & Swift Cost Approach",
+        name = "Benton County Cost Approach",
         version = "2025.1",
-        description = "Replacement Cost New Less Depreciation (RCNLD) using Marshall & Swift cost tables",
+        description = "Replacement Cost New Less Depreciation (RCNLD) using Benton County locally calibrated cost schedules",
         inputs = new object[]
         {
           new { name = "buildingType", type = "string", required = true, description = "Primary building classification (e.g., SFR, MFR, COM)" },
