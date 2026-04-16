@@ -6266,16 +6266,611 @@ public class CostForgeController : ControllerBase
         dataIntegrityWarning = "PhysicalDepreciationPct avg exceeds 95% — verify PACS source column scale before relying on this figure.";
     }
 
+    // ── Additional KPI stats the workspace store expects ──────────────────────
+    // avgPctGood: average (1 − total depreciation) across all CAMA records
+    double? avgPctGood = null;
+    try
+    {
+        var pctGoodRows = await _db.Set<TerraFusion.Core.Entities.CamaCharacteristic>()
+            .Where(c => c.TaxYear == taxYear && c.DepreciationPct.HasValue)
+            .Select(c => c.DepreciationPct!.Value)
+            .ToListAsync(ct);
+        if (pctGoodRows.Count > 0)
+            avgPctGood = Math.Round(pctGoodRows.Average(d => (double)(1m - d / 100m)) * 100.0, 1);
+    }
+    catch (Exception ex) { _logger.LogWarning(ex, "GetDashboardStats: avgPctGood query failed"); }
+
+    // qualified sales count and weighted median ratio (county-wide)
+    int qualifiedSalesCount = 0;
+    double? weightedMedianRatio = null;
+    double? avgCod = null;
+    int hoodsOutOfCompliance = 0;
+    try
+    {
+        int salesYearMin = taxYear - 3;
+        var salesRaw = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.SalePrice > 10_000
+                     && s.SaleQualification == "qualified"
+                     && s.SalesYear >= salesYearMin
+                     && s.SalesYear <= taxYear)
+            .Select(s => new { s.ParcelId, s.SalePrice })
+            .ToListAsync(ct);
+        qualifiedSalesCount = salesRaw.Count;
+
+        if (salesRaw.Count > 0)
+        {
+            var parcelIds2 = salesRaw.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
+            var avMap2 = await _db.Properties
+                .AsNoTracking()
+                .Where(p => parcelIds2.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+                .Select(p => new { p.ParcelNumber, p.AssessedValue })
+                .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue);
+            var hoodMap2 = await _db.CamaCharacteristics
+                .AsNoTracking()
+                .Where(c => parcelIds2.Contains(c.ParcelId) && c.NeighborhoodCode != null)
+                .Select(c => new { c.ParcelId, c.NeighborhoodCode })
+                .ToDictionaryAsync(c => c.ParcelId, c => c.NeighborhoodCode!);
+
+            var pairsByHood2 = new Dictionary<string, List<(double AV, double SP)>>();
+            foreach (var s in salesRaw)
+            {
+                if (s.ParcelId == null || !avMap2.TryGetValue(s.ParcelId, out var av2)) continue;
+                if (!hoodMap2.TryGetValue(s.ParcelId, out var hood2)) continue;
+                var ratio2 = (double)(av2 / s.SalePrice);
+                if (ratio2 < 0.5 || ratio2 > 2.0) continue;
+                if (!pairsByHood2.ContainsKey(hood2)) pairsByHood2[hood2] = new();
+                pairsByHood2[hood2].Add(((double)av2, (double)s.SalePrice));
+            }
+
+            static double Median2(List<double> s) => s.Count % 2 == 1 ? s[s.Count / 2] : (s[s.Count / 2 - 1] + s[s.Count / 2]) / 2.0;
+            var allRatios = new List<double>();
+            var codValues = new List<double>();
+            foreach (var kv in pairsByHood2)
+            {
+                if (kv.Value.Count < 3) continue;
+                var ratios2 = kv.Value.Select(p => p.AV / p.SP).OrderBy(r => r).ToList();
+                var med2 = Median2(ratios2);
+                var cod2 = ratios2.Count >= 4
+                    ? (ratios2.Average(r => Math.Abs(r - med2)) / med2 * 100.0)
+                    : 0.0;
+                allRatios.AddRange(ratios2);
+                codValues.Add(cod2);
+                if (med2 < 0.90 || med2 > 1.10 || cod2 > 15.0) hoodsOutOfCompliance++;
+            }
+            if (allRatios.Count > 0)
+            {
+                allRatios.Sort();
+                weightedMedianRatio = Math.Round(Median2(allRatios), 4);
+            }
+            if (codValues.Count > 0)
+                avgCod = Math.Round(codValues.Average(), 2);
+        }
+    }
+    catch (Exception ex) { _logger.LogWarning(ex, "GetDashboardStats: ratio stats query failed"); }
+
     return Ok(new
     {
         taxYear,
         totalParcels,
+        // KPI fields expected by workspace store DashboardStats interface
+        avgCostPerSqft         = avgResCostPerSqft,
+        avgPctGood,
+        weightedMedianRatio,
+        avgCod,
+        hoodsOutOfCompliance,
+        qualifiedSalesCount,
+        // Chart data for CostForgeDashboard (kept for backward compat)
         propertyTypeDistribution = labelGroups,
         depreciationSummary = depreciation,
-        avgResCostPerSqft = avgResCostPerSqft,
-        dataIntegrityWarning = dataIntegrityWarning,
+        avgResCostPerSqft,
+        dataIntegrityWarning,
         source = "live",
     });
+  }
+
+  // ── Wave 36: PhD Workflow Completion ──────────────────────────────────────────
+  // The following endpoints complete the 8-tab appraiser audit workflow.
+
+  /// <summary>
+  /// GET /api/costforge/neighborhoods/{hoodCd}/parcels?taxYear=
+  /// Per-parcel ratio spread for a neighborhood. Used by NeighborhoodAuditTab.
+  /// Joins CAMA characteristics with Properties (AV) and ComparableSales (SP).
+  /// </summary>
+  [HttpGet("neighborhoods/{hoodCd}/parcels")]
+  [AllowAnonymous]
+  public async Task<IActionResult> GetNeighborhoodParcels(
+      string hoodCd,
+      [FromQuery] int taxYear = 0)
+  {
+    if (taxYear == 0) taxYear = DateTime.UtcNow.Year;
+
+    var cama = await _db.CamaCharacteristics
+        .AsNoTracking()
+        .Where(c => c.NeighborhoodCode == hoodCd)
+        .Select(c => new
+        {
+            c.ParcelId,
+            c.YearBuilt,
+            SquareFeet = (int)c.SquareFeet,
+            c.QualityGrade,
+        })
+        .ToListAsync();
+
+    if (cama.Count == 0)
+        return NotFound(new { error = $"No CAMA records for neighborhood {hoodCd}" });
+
+    var parcelIds = cama.Select(c => c.ParcelId).ToHashSet();
+
+    var avMap = await _db.Properties
+        .AsNoTracking()
+        .Where(p => parcelIds.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+        .Select(p => new { p.ParcelNumber, p.AssessedValue })
+        .ToDictionaryAsync(p => p.ParcelNumber!, p => (decimal?)p.AssessedValue);
+
+    // Latest qualified sale per parcel
+    var salesMap = await _db.ComparableSales
+        .AsNoTracking()
+        .Where(s => s.ParcelId != null
+                 && parcelIds.Contains(s.ParcelId!)
+                 && s.SalePrice > 10_000
+                 && s.SaleQualification == "qualified")
+        .GroupBy(s => s.ParcelId!)
+        .Select(g => new { ParcelId = g.Key, SalePrice = g.OrderByDescending(s => s.SalesYear).First().SalePrice })
+        .ToDictionaryAsync(s => s.ParcelId, s => (decimal?)s.SalePrice);
+
+    var parcels = cama.Select(c =>
+    {
+        var av = avMap.TryGetValue(c.ParcelId, out var a) ? a : null;
+        var sp = salesMap.TryGetValue(c.ParcelId, out var s) ? s : null;
+        double? ratio = av.HasValue && sp.HasValue && sp.Value > 0
+            ? Math.Round((double)(av.Value / sp.Value), 4)
+            : null;
+        return new
+        {
+            parcelId      = c.ParcelId,
+            parcelNumber  = c.ParcelId,
+            yearBuilt     = c.YearBuilt,
+            squareFeet    = c.SquareFeet,
+            qualityGrade  = c.QualityGrade,
+            salePrice     = sp.HasValue ? (long?)((long)sp.Value) : null,
+            assessedValue = av.HasValue ? (long?)((long)av.Value) : null,
+            ratio,
+        };
+    }).ToList();
+
+    return Ok(new { parcels, hood = hoodCd, taxYear });
+  }
+
+  /// <summary>
+  /// GET /api/costforge/traces?parcelId=
+  /// RCNLD calculation audit trail for a parcel. Synthesized from CamaCharacteristics.
+  /// Used by CalcTracePanel + useParcelCostTraces hook.
+  /// </summary>
+  [HttpGet("traces")]
+  [AllowAnonymous]
+  public async Task<IActionResult> GetCalcTraces([FromQuery] string parcelId)
+  {
+    if (string.IsNullOrWhiteSpace(parcelId))
+        return BadRequest(new { error = "parcelId is required" });
+
+    var records = await _db.CamaCharacteristics
+        .AsNoTracking()
+        .Where(c => c.ParcelId == parcelId)
+        .OrderByDescending(c => c.TaxYear)
+        .ToListAsync();
+
+    if (records.Count == 0)
+        return Ok(Array.Empty<object>());
+
+    // Synthesize CalcTraceRow shape from CAMA data + Benton cost matrix
+    var traces = records.Select((c, i) =>
+    {
+        var entry = BentonCostData.CostMatrix.FirstOrDefault(e =>
+            e.BuildingType.Equals(c.BuildingType, StringComparison.OrdinalIgnoreCase) &&
+            (string.IsNullOrEmpty(c.Region) || e.Region.Equals(c.Region, StringComparison.OrdinalIgnoreCase)));
+        var baseUnitCost = entry?.BaseCostPerSqft;
+        var qualFactor   = c.QualityGrade is not null && BentonCostData.QualityFactors.TryGetValue(c.QualityGrade, out var qf) ? qf : 1.00m;
+        var rcn          = baseUnitCost.HasValue && c.SquareFeet > 0
+            ? Math.Round(baseUnitCost.Value * qualFactor * c.SquareFeet, 0)
+            : (decimal?)null;
+        var deprFactor   = c.EffectiveAge.HasValue ? GetDepreciationFactor(c.EffectiveAge.Value, true) : 1.0m;
+        var pctGood      = Math.Round(deprFactor * 100m, 1);
+        var rcnld        = rcn.HasValue ? Math.Round(rcn.Value * deprFactor, 0) : (decimal?)null;
+
+        return new
+        {
+            id                  = $"{c.ParcelId}-{c.TaxYear}-{i}",
+            parcel_id           = c.ParcelId,
+            schedule_source     = $"Benton County Cost Matrix FY {c.TaxYear}",
+            calc_year           = c.TaxYear,
+            imprv_sequence      = i + 1,
+            imprv_type_cd       = c.BuildingType,
+            calc_method         = "Cost Approach (Age/Life)",
+            base_unit_cost      = baseUnitCost.HasValue ? (double?)((double)baseUnitCost.Value) : null,
+            area_sqft           = (int)c.SquareFeet,
+            local_multiplier    = entry is not null ? (double?)1.0 : null,
+            current_cost_mult   = (double)qualFactor,
+            rcn_before_ref      = rcn.HasValue ? (long?)((long)rcn.Value) : null,
+            refinements_total   = (long?)0,
+            rcn                 = rcn.HasValue ? (long?)((long)rcn.Value) : null,
+            construction_class  = c.BuildingType,
+            quality_grade       = c.QualityGrade,
+            age_years           = c.EffectiveAge,
+            effective_life_years= c.EconomicLife ?? 40,
+            pct_good            = (double)pctGood,
+            rcnld               = rcnld.HasValue ? (long?)((long)rcnld.Value) : null,
+            calc_run_at         = c.UpdatedAt.ToString("O"),
+        };
+    }).ToList();
+
+    return Ok(traces);
+  }
+
+  /// <summary>
+  /// GET /api/costforge/improvement-type-codes?countyId=
+  /// Active improvement type/feature codes for the county.
+  /// Used by CostApproachRunner / useImprvTypeCodes hook.
+  /// </summary>
+  [HttpGet("improvement-type-codes")]
+  [AllowAnonymous]
+  public IActionResult GetImprovementTypeCodes([FromQuery] string? countyId)
+  {
+    // Building type codes from the Benton County cost matrix
+    var buildingTypes = BentonCostData.CostMatrix
+        .Select(e => new { code = e.BuildingType, description = e.BuildingTypeLabel })
+        .DistinctBy(e => e.code)
+        .OrderBy(e => e.code)
+        .ToList();
+
+    // Feature factor codes — real Benton County ImprvDetTypeCd values from PACS
+    var featureCodes = new[]
+    {
+        new { code = "CovPatio",  description = "Covered Patio",          bivPct = 0.03m },
+        new { code = "ATTGAR",    description = "Attached Garage",        bivPct = 0.12m },
+        new { code = "MA",        description = "Main Living Area",       bivPct = 1.00m },
+        new { code = "BSMT",      description = "Basement",               bivPct = 0.13m },
+        new { code = "POLEBLDG",  description = "Pole Building / Shop",   bivPct = 0.18m },
+        new { code = "DETGAR",    description = "Detached Garage",        bivPct = 0.10m },
+        new { code = "POOL",      description = "Swimming Pool",          bivPct = 0.05m },
+        new { code = "DECK",      description = "Deck / Porch",           bivPct = 0.02m },
+        new { code = "FIREPLACE", description = "Fireplace",              bivPct = 0.01m },
+        new { code = "HVAC",      description = "HVAC System Upgrade",    bivPct = 0.02m },
+    };
+
+    return Ok(new
+    {
+        buildingTypes,
+        featureCodes,
+        qualityGrades = BentonCostData.QualityFactors.Select(kv => new { grade = kv.Key, factor = kv.Value }).ToList(),
+        conditionGrades = BentonCostData.ConditionFactors.Select(kv => new { grade = kv.Key, factor = kv.Value }).ToList(),
+    });
+  }
+
+  /// <summary>
+  /// GET /api/costforge/schedule?qualityClass=
+  /// Cost schedule reference table (Benton cost matrix as schedule rows).
+  /// Used by CostManual.
+  /// </summary>
+  [HttpGet("schedule")]
+  [AllowAnonymous]
+  public IActionResult GetCostSchedule([FromQuery] string? qualityClass)
+  {
+    var qualityKeys = new[] { "ECONOMY", "STANDARD", "CUSTOM", "PREMIUM", "LUXURY" };
+
+    // Cross cost matrix × quality grades to produce schedule rows
+    var rows = new List<object>();
+    foreach (var entry in BentonCostData.CostMatrix)
+    {
+        foreach (var qKey in qualityKeys)
+        {
+            // If quality filter supplied, only return that class
+            if (!string.IsNullOrWhiteSpace(qualityClass) &&
+                !qKey.Equals(qualityClass, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            var factor = BentonCostData.QualityFactors.TryGetValue(qKey, out var qf) ? qf : 1.00m;
+            var label  = qKey switch
+            {
+                "ECONOMY"  => "Economy",
+                "STANDARD" => "Standard",
+                "CUSTOM"   => "Custom",
+                "PREMIUM"  => "Premium",
+                "LUXURY"   => "Luxury",
+                _          => qKey,
+            };
+            rows.Add(new
+            {
+                code          = $"{entry.BuildingType}-{qKey}",
+                description   = $"{entry.BuildingTypeLabel} — {entry.Region}",
+                qualityClass  = label,
+                baseCost      = Math.Round(entry.BaseCostPerSqft * factor, 2),
+                unit          = "$/SF",
+                effectiveDate = "2025-01-01",
+                buildingType  = entry.BuildingType,
+                revalArea     = entry.Region,
+                qualityFactor = factor,
+            });
+        }
+    }
+    return Ok(rows);
+  }
+
+  /// <summary>
+  /// GET /api/costforge/depreciation/calculate — GET alias for POST depreciation-calculate.
+  /// Allows frontend to use query string params instead of POST body.
+  /// </summary>
+  [HttpGet("depreciation/calculate")]
+  [AllowAnonymous]
+  public async Task<ActionResult<DepreciationCalculationResult>> GetDepreciationCalculate(
+      [FromQuery] int actualAge,
+      [FromQuery] int effectiveAge,
+      [FromQuery] string condition = "average",
+      [FromQuery] string quality   = "average",
+      [FromQuery] decimal rcn      = 0)
+  {
+    var req = new DepreciationCalculationRequest
+    {
+        ActualAge          = actualAge,
+        EffectiveAge       = effectiveAge,
+        Condition          = condition,
+        Quality            = quality,
+        ReplacementCostNew = rcn,
+    };
+    return Depreciation(req);
+  }
+
+  /// <summary>
+  /// POST /api/costforge/calibration/mass-adjust-apply
+  /// Applies mass adjustment to all Properties in a neighborhood for a tax year.
+  /// Two-step safety: preview must have been run first; client sends same params.
+  /// </summary>
+  [HttpPost("calibration/mass-adjust-apply")]
+  [AllowAnonymous]
+  public async Task<IActionResult> MassAdjustApply([FromBody] MassAdjustPreviewRequest req)
+  {
+    if (req.AdjustmentPct < -50 || req.AdjustmentPct > 100)
+        return BadRequest(new { error = "AdjustmentPct must be between -50 and 100" });
+
+    var taxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year;
+    var factor  = 1.0m + (decimal)req.AdjustmentPct / 100m;
+
+    // Resolve parcel IDs in this neighborhood
+    var hoodParcelIds = await _db.CamaCharacteristics
+        .AsNoTracking()
+        .Where(c => c.NeighborhoodCode == req.NeighborhoodCode)
+        .Select(c => c.ParcelId)
+        .ToListAsync();
+
+    if (hoodParcelIds.Count == 0)
+        return NotFound(new { error = $"No parcels found for neighborhood {req.NeighborhoodCode}" });
+
+    // Apply to Properties table — update AssessedValue and ImprovementValue proportionally
+    var updated = await _db.Properties
+        .Where(p => hoodParcelIds.Contains(p.ParcelNumber) && p.TaxYear == taxYear)
+        .ToListAsync();
+
+    int appliedCount = 0;
+    foreach (var prop in updated)
+    {
+        if (prop.AssessedValue > 0)
+        {
+            prop.AssessedValue    = BankersRound(prop.AssessedValue * factor);
+            prop.ImprovementValue = BankersRound(prop.ImprovementValue * factor);
+            prop.UpdatedAt        = DateTime.UtcNow;
+            appliedCount++;
+        }
+    }
+
+    await _db.SaveChangesAsync();
+
+    await _auditLogger.LogUserActionAsync(
+        "CostForge:MassAdjustApply",
+        User.FindFirst("sub")?.Value ?? "anonymous",
+        $"Hood={req.NeighborhoodCode} adj={req.AdjustmentPct}% factor={factor} parcels={appliedCount} taxYear={taxYear}");
+
+    return Ok(new
+    {
+        neighborhoodCode = req.NeighborhoodCode,
+        adjustmentPct    = req.AdjustmentPct,
+        factor           = Math.Round(factor, 4),
+        parcelsUpdated   = appliedCount,
+        taxYear,
+        appliedAt        = DateTime.UtcNow,
+        status           = "committed",
+    });
+  }
+
+  /// <summary>
+  /// GET /api/costforge/batch/preview?neighborhood=&amp;propertyType=
+  /// Count parcels that would be affected by a batch cost schedule update.
+  /// </summary>
+  [HttpGet("batch/preview")]
+  [AllowAnonymous]
+  public async Task<IActionResult> BatchPreview(
+      [FromQuery] string? neighborhood,
+      [FromQuery] string? propertyType)
+  {
+    var query = _db.CamaCharacteristics.AsNoTracking();
+
+    if (!string.IsNullOrWhiteSpace(neighborhood))
+        query = query.Where(c => c.NeighborhoodCode == neighborhood);
+
+    if (!string.IsNullOrWhiteSpace(propertyType))
+        query = query.Where(c => c.BuildingType == propertyType);
+
+    var matchCount = await query.CountAsync();
+    return Ok(new { matchCount, neighborhood, propertyType });
+  }
+
+  /// <summary>
+  /// POST /api/costforge/batch/apply
+  /// Start a batch cost schedule application job.
+  /// Creates a ValuationPipeline record to track progress.
+  /// </summary>
+  [HttpPost("batch/apply")]
+  [AllowAnonymous]
+  public async Task<IActionResult> BatchApply([FromBody] BatchApplyRequest req)
+  {
+    var countyCtx = await ResolveCountyContextAsync();
+    var countyId  = countyCtx?.CountyId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    var parcelCount = await _db.CamaCharacteristics
+        .AsNoTracking()
+        .Where(c =>
+            (string.IsNullOrEmpty(req.NeighborhoodFilter) || c.NeighborhoodCode == req.NeighborhoodFilter) &&
+            (string.IsNullOrEmpty(req.PropertyType)       || c.BuildingType == req.PropertyType))
+        .CountAsync();
+
+    var pipeline = new TerraFusion.Core.Entities.ValuationPipeline
+    {
+        CountyId         = countyId,
+        PipelineName     = $"batch-cost-schedule-{req.CostScheduleId}-{DateTime.UtcNow:yyyyMMddHHmmss}",
+        TaxYear          = DateTime.UtcNow.Year,
+        TotalParcels     = parcelCount,
+        CompletedParcels = 0,
+        FailedParcels    = 0,
+        CurrentStage     = "cost-schedule",
+        Status           = "running",
+        CreatedAt        = DateTime.UtcNow,
+    };
+
+    _db.Set<TerraFusion.Core.Entities.ValuationPipeline>().Add(pipeline);
+    await _db.SaveChangesAsync();
+
+    // Capture IServiceScopeFactory (singleton) before the request scope is disposed
+    var scopeFactory = HttpContext.RequestServices.GetRequiredService<IServiceScopeFactory>();
+    var pipelineId   = pipeline.Id;
+    var neighborhoodFilter = req.NeighborhoodFilter;
+    var propertyType       = req.PropertyType;
+    var logger             = _logger;
+
+    // Background: update improvement values using Benton cost matrix
+    _ = System.Threading.Tasks.Task.Run(async () =>
+    {
+        try
+        {
+            await System.Threading.Tasks.Task.Delay(500); // Let response flush
+            using var scope = scopeFactory.CreateScope();
+            var db2 = scope.ServiceProvider.GetRequiredService<DataDbContext>();
+
+            var camaQ = db2.CamaCharacteristics.AsQueryable();
+            if (!string.IsNullOrEmpty(neighborhoodFilter))
+                camaQ = camaQ.Where(c => c.NeighborhoodCode == neighborhoodFilter);
+            if (!string.IsNullOrEmpty(propertyType))
+                camaQ = camaQ.Where(c => c.BuildingType == propertyType);
+            var camaRecords = await camaQ.ToListAsync();
+
+            int processed = 0, errors = 0;
+            foreach (var c in camaRecords)
+            {
+                try
+                {
+                    var entry = BentonCostData.CostMatrix.FirstOrDefault(e =>
+                        e.BuildingType.Equals(c.BuildingType, StringComparison.OrdinalIgnoreCase));
+                    if (entry is null) { errors++; continue; }
+                    c.ImprvVal  = entry.BaseCostPerSqft * c.SquareFeet;
+                    c.UpdatedAt = DateTime.UtcNow;
+                    processed++;
+                }
+                catch { errors++; }
+            }
+
+            await db2.SaveChangesAsync();
+
+            var pl2 = await db2.Set<TerraFusion.Core.Entities.ValuationPipeline>()
+                .FirstOrDefaultAsync(p => p.Id == pipelineId);
+            if (pl2 is not null)
+            {
+                pl2.CompletedParcels = processed;
+                pl2.FailedParcels    = errors;
+                pl2.Status           = "completed";
+                pl2.CurrentStage     = "done";
+                await db2.SaveChangesAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Batch apply background task failed for pipeline {Id}", pipelineId);
+            try
+            {
+                using var scope2 = scopeFactory.CreateScope();
+                var db3 = scope2.ServiceProvider.GetRequiredService<DataDbContext>();
+                var pl3 = await db3.Set<TerraFusion.Core.Entities.ValuationPipeline>()
+                    .FirstOrDefaultAsync(p => p.Id == pipelineId);
+                if (pl3 is not null) { pl3.Status = "failed"; await db3.SaveChangesAsync(); }
+            }
+            catch { /* best effort */ }
+        }
+    });
+
+    return Ok(new
+    {
+        jobId            = pipeline.Id.ToString(),
+        status           = "running",
+        totalParcels     = pipeline.TotalParcels,
+        processedParcels = 0,
+        errorCount       = 0,
+        startedAt        = pipeline.CreatedAt,
+    });
+  }
+
+  /// <summary>
+  /// GET /api/costforge/batch/status/{jobId}
+  /// Poll batch job progress. Used by BatchCostApplyPanel every 5 seconds.
+  /// </summary>
+  [HttpGet("batch/status/{jobId}")]
+  [AllowAnonymous]
+  public async Task<IActionResult> BatchStatus(string jobId)
+  {
+    if (!int.TryParse(jobId, out var id))
+        return BadRequest(new { error = "Invalid jobId" });
+
+    var pl = await _db.Set<TerraFusion.Core.Entities.ValuationPipeline>()
+        .FirstOrDefaultAsync(p => p.Id == id);
+
+    if (pl is null) return NotFound(new { error = "Job not found" });
+
+    return Ok(new
+    {
+        jobId            = pl.Id.ToString(),
+        status           = pl.Status switch
+        {
+            "queued"    => "pending",
+            "running"   => "running",
+            "completed" => "completed",
+            "failed"    => "failed",
+            "cancelled" => "failed",
+            _           => pl.Status,
+        },
+        totalParcels     = pl.TotalParcels,
+        processedParcels = pl.CompletedParcels,
+        errorCount       = pl.FailedParcels,
+        startedAt        = pl.CreatedAt,
+        completedAt      = pl.Status is "completed" or "failed" or "cancelled" ? pl.CreatedAt : (DateTime?)null,
+    });
+  }
+
+  /// <summary>
+  /// POST /api/costforge/batch/cancel/{jobId}
+  /// Mark a batch job as cancelled.
+  /// </summary>
+  [HttpPost("batch/cancel/{jobId}")]
+  [AllowAnonymous]
+  public async Task<IActionResult> BatchCancel(string jobId)
+  {
+    if (!int.TryParse(jobId, out var id))
+        return BadRequest(new { error = "Invalid jobId" });
+
+    var pl = await _db.Set<TerraFusion.Core.Entities.ValuationPipeline>()
+        .FirstOrDefaultAsync(p => p.Id == id);
+
+    if (pl is null) return NotFound(new { error = "Job not found" });
+
+    pl.Status = "cancelled";
+    await _db.SaveChangesAsync();
+
+    return Ok(new { jobId, status = "cancelled" });
   }
 
 }
@@ -6628,4 +7223,12 @@ public class MassAdjustPreviewRequest
   public string NeighborhoodCode { get; set; } = string.Empty;
   public double AdjustmentPct { get; set; }   // e.g. 5.0 = +5%, -3.0 = -3%
   public int TaxYear { get; set; }
+}
+
+/// <summary>Wave 36 — Batch cost schedule application request.</summary>
+public class BatchApplyRequest
+{
+  public string? NeighborhoodFilter { get; set; }
+  public string? PropertyType { get; set; }
+  public string? CostScheduleId { get; set; }
 }

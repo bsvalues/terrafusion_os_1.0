@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Data;
 using SystemTask = System.Threading.Tasks.Task;
 
@@ -202,5 +203,235 @@ public sealed class DevPropertySeeder
             "EX" or "EXEMPT" => "Exempt",
             _ => propertyUseCd?.Trim() ?? "Residential",
         };
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Dev fixtures: specific canonical sample parcels that must always exist.
+    // Idempotent — skips if the parcel already exists.
+    // ─────────────────────────────────────────────────────────────────────────
+    public async SystemTask EnsureFixturesAsync(CancellationToken ct = default)
+    {
+        var bentonCounty = await _db.Counties
+            .FirstOrDefaultAsync(c => c.Name == "Benton" && c.State == "WA", ct);
+        if (bentonCounty is null)
+        {
+            _logger.LogWarning("[DevPropertySeeder] Benton County not found — skipping fixtures.");
+            return;
+        }
+
+        await EnsureOakmontCtAsync(bentonCounty.Id, ct);
+    }
+
+    // 106 Oakmont Ct, Richland WA — complete SFR fixture with GLA, lot dims, legal desc.
+    private async SystemTask EnsureOakmontCtAsync(Guid countyId, CancellationToken ct)
+    {
+        const string geoId    = "9990-0106-000";
+        const int    propId   = 9990106;
+        const int    taxYear  = 2025;
+
+        // Idempotent: skip if already seeded.
+        if (await _db.Properties.AnyAsync(p => p.ParcelNumber == geoId, ct))
+        {
+            _logger.LogDebug("[DevPropertySeeder] 106 Oakmont Ct fixture already present.");
+            return;
+        }
+
+        _logger.LogInformation("[DevPropertySeeder] Seeding 106 Oakmont Ct fixture (propId={PropId})...", propId);
+
+        // ── PacsParcel ────────────────────────────────────────────────────────
+        var pacsParcelId = Guid.NewGuid();
+        _db.PacsParcel.Add(new PacsParcel
+        {
+            Id        = pacsParcelId,
+            PropId    = propId,
+            GeoId     = geoId,
+            PropTypeCd = "R",
+            CountyId  = countyId,
+        });
+
+        // ── PacsSitus ─────────────────────────────────────────────────────────
+        _db.PacsSituses.Add(new PacsSitus
+        {
+            Id           = Guid.NewGuid(),
+            ParcelId     = pacsParcelId,
+            PacsPropId   = propId,
+            PacsSitusId  = 1,
+            StreetNum    = "106",
+            StreetName   = "OAKMONT",
+            StreetSuffix = "CT",
+            City         = "RICHLAND",
+            State        = "WA",
+            Zip          = "99352",
+            SitusDisplay = "106 OAKMONT CT, RICHLAND WA 99352",
+            PrimaryFlag  = "Y",
+        });
+
+        // ── PacsValuation ─────────────────────────────────────────────────────
+        _db.PacsValuations.Add(new PacsValuation
+        {
+            Id           = Guid.NewGuid(),
+            ParcelId     = pacsParcelId,
+            PacsPropId   = propId,
+            PropValYear  = taxYear,
+            SupNum       = 0,
+            AppraisedVal = 485000m,
+            AssessedVal  = 485000m,
+            Market       = 485000m,
+            ImprvVal     = 400000m,
+            ImprvHstdVal = 400000m,
+            LandHstdVal  = 85000m,
+            LegalDesc    = "LOT 19 OAKMONT MEADOWS DIV 1 AS PER PLAT RECORDED IN VOLUME 32 OF PLATS PAGE 15 RECORDS OF BENTON COUNTY WASHINGTON",
+        });
+
+        // ── PacsPropertyProfile ───────────────────────────────────────────────
+        _db.PacsPropertyProfiles.Add(new PacsPropertyProfile
+        {
+            Id              = Guid.NewGuid(),
+            ParcelId        = pacsParcelId,
+            PacsPropId      = propId,
+            PropValYear     = taxYear,
+            SupNum          = 0,
+            LivingArea      = 2185m,
+            YearBuilt       = 2004m,
+            PropertyUseCd   = "1101",
+            NeighborhoodCode = "RICH05",
+            LandFrontFeet   = 75m,
+            LandDepth       = 120m,
+        });
+
+        // ── PacsLandDetail ────────────────────────────────────────────────────
+        _db.PacsLandDetails.Add(new PacsLandDetail
+        {
+            Id             = Guid.NewGuid(),
+            ParcelId       = pacsParcelId,
+            PacsPropId     = propId,
+            PropValYear    = taxYear,
+            PacsLandSegId  = 1,
+            SupNum         = 0,
+            LandTypeCode   = "SFR",
+            SizeSquareFeet = 9000m,
+            EffectiveFront = 75m,
+            EffectiveDepth = 120m,
+            WidthFront     = 75m,
+            DepthRight     = 120m,
+        });
+
+        // ── PacsImprovement ───────────────────────────────────────────────────
+        var improvementId = Guid.NewGuid();
+        _db.PacsImprovements.Add(new PacsImprovement
+        {
+            Id              = improvementId,
+            ParcelId        = pacsParcelId,
+            PacsPropId      = propId,
+            PropValYear     = taxYear,
+            PacsImprvId     = 1,
+            SupNum          = 0,
+            ImprvTypeCode   = "R",
+            ImprvVal        = 400000m,
+            ActualYearBuilt = 2004,
+            EffectiveYearBuilt = 2013,
+        });
+
+        // ── PacsImprovementDetail ─────────────────────────────────────────────
+        // Main floor + upper floor = GLA 2185; garage = 480 (not in GLA)
+        var details = new[]
+        {
+            new PacsImprovementDetail
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1, SupNum = 0,
+                ImprvDetTypeCd = "1ST", ImprvDetDesc = "First Floor", ImprvDetArea = 1285m,
+                ImprvDetClassCd = "avg",
+            },
+            new PacsImprovementDetail
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 2, SupNum = 0,
+                ImprvDetTypeCd = "2ND", ImprvDetDesc = "Second Floor", ImprvDetArea = 900m,
+                ImprvDetClassCd = "avg",
+            },
+            new PacsImprovementDetail
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 3, SupNum = 0,
+                ImprvDetTypeCd = "GARATT", ImprvDetDesc = "Attached Garage", ImprvDetArea = 480m,
+                ImprvDetClassCd = "avg",
+            },
+        };
+        _db.PacsImprovementDetails.AddRange(details);
+
+        // ── PacsImprovementAttribute ──────────────────────────────────────────
+        // AttrCode="Count", AttrUnit=3 → bedrooms; AttrUnit=2 → bathrooms; value = count
+        var attrs = new[]
+        {
+            new PacsImprovementAttribute
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1,
+                PacsImprvAttrId = 1, SupNum = 0,
+                AttributeCode = "Count", AttrUnit = 3m, AttributeValue = 4m, // 4 bedrooms
+            },
+            new PacsImprovementAttribute
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1,
+                PacsImprvAttrId = 2, SupNum = 0,
+                AttributeCode = "Count", AttrUnit = 2m, AttributeValue = 3m, // 3 bathrooms
+            },
+            new PacsImprovementAttribute
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1,
+                PacsImprvAttrId = 3, SupNum = 0,
+                AttributeCode = "Vinyl", AttrUnit = 1m, AttributeValue = 1m,
+            },
+            new PacsImprovementAttribute
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1,
+                PacsImprvAttrId = 4, SupNum = 0,
+                AttributeCode = "Comp Shingle", AttrUnit = 1m, AttributeValue = 1m,
+            },
+            new PacsImprovementAttribute
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1,
+                PacsImprvAttrId = 5, SupNum = 0,
+                AttributeCode = "Heat pump", AttrUnit = 1m, AttributeValue = 1m,
+            },
+            new PacsImprovementAttribute
+            {
+                Id = Guid.NewGuid(), ImprovementId = improvementId,
+                PacsPropId = propId, PropValYear = taxYear, PacsImprvId = 1, PacsImprvDetId = 1,
+                PacsImprvAttrId = 6, SupNum = 0,
+                AttributeCode = "Crawl/Concrete Perimeter Piers", AttrUnit = 1m, AttributeValue = 1m,
+            },
+        };
+        _db.PacsImprovementAttributes.AddRange(attrs);
+
+        // ── canonical Property ─────────────────────────────────────────────────
+        _db.Properties.Add(new Property
+        {
+            Id               = Guid.NewGuid(),
+            PropertyId       = propId.ToString(),
+            ParcelId         = geoId,
+            ParcelNumber     = geoId,
+            Address          = "106 Oakmont Ct, Richland WA 99352",
+            PropertyType     = "Residential",
+            YearBuilt        = 2004,
+            AssessedValue    = 485000m,
+            LandValue        = 85000m,
+            ImprovementValue = 400000m,
+            MarketValue      = 485000m,
+            AssessmentDate   = DateTime.UtcNow,
+            LastUpdated      = DateTime.UtcNow,
+            TaxYear          = taxYear,
+            CountyId         = countyId,
+            CreatedAt        = DateTime.UtcNow,
+            UpdatedAt        = DateTime.UtcNow,
+        });
+
+        await _db.SaveChangesAsync(ct);
+        _logger.LogInformation("[DevPropertySeeder] 106 Oakmont Ct fixture inserted (parcel={GeoId}).", geoId);
     }
 }

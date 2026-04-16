@@ -248,6 +248,29 @@ export const PropertySummary: React.FC = () => {
               mono
             />
           </div>
+          {/* Row 3: Lot dimensions */}
+          {(activeParcel.lotWidthFront || activeParcel.lotDepth) && (
+            <div className="grid grid-cols-4 gap-x-4 gap-y-2.5 mt-2 pt-2" style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.12)' }}>
+              <Field
+                label="Lot Frontage"
+                value={activeParcel.lotWidthFront ? `${activeParcel.lotWidthFront.toFixed(0)}'` : '\u2014'}
+                mono
+              />
+              <Field
+                label="Lot Depth"
+                value={activeParcel.lotDepth ? `${activeParcel.lotDepth.toFixed(0)}'` : '\u2014'}
+                mono
+              />
+              <Field
+                label="Lot Size (ft²)"
+                value={(activeParcel.lotWidthFront && activeParcel.lotDepth)
+                  ? num(activeParcel.lotWidthFront * activeParcel.lotDepth)
+                  : '\u2014'}
+                mono
+              />
+              <div />
+            </div>
+          )}
         </Block>
       )}
 

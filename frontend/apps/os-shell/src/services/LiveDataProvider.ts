@@ -76,6 +76,8 @@ interface PropertiesListDto {
   grossLivingArea: number | null;
   basementSqft: number | null;
   garageSqft: number | null;
+  lotWidthFront: number | null;
+  lotDepth: number | null;
   legalDescription: string | null;
   bedrooms: number | null;
   bathrooms: number | null;
@@ -249,6 +251,8 @@ function mapPropertiesDtoToProperty(dto: PropertiesListDto): Property {
     grossLivingArea: dto.grossLivingArea ?? undefined,
     basementSqft: dto.basementSqft ?? undefined,
     garageSqft: dto.garageSqft ?? undefined,
+    lotWidthFront: dto.lotWidthFront ?? undefined,
+    lotDepth: dto.lotDepth ?? undefined,
     bedrooms: dto.bedrooms ?? undefined,
     bathrooms: dto.bathrooms ?? undefined,
     neighborhood: dto.neighborhood ?? undefined,

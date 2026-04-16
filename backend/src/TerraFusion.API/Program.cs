@@ -1981,6 +1981,7 @@ try
     var devPropSeeder = devSeedScope.ServiceProvider
         .GetRequiredService<TerraFusion.API.Seeds.DevPropertySeeder>();
     await devPropSeeder.SeedAsync();
+    await devPropSeeder.EnsureFixturesAsync();
 
     var devGovernmentUserSeeder = devSeedScope.ServiceProvider
         .GetRequiredService<TerraFusion.API.Seeds.DevGovernmentUserSeeder>();

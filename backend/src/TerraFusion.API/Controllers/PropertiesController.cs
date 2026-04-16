@@ -200,8 +200,7 @@ public class PropertiesController : ControllerBase
                     property.LandAcres = Math.Round(cama.LandAreaSqft.Value / 43560m, 4);
             }
 
-            // Enrich legal description — primary source: GisParcelGeometry (ArcGIS-synced, max 255 chars)
-            // Secondary source: property_assessments flat table (raw SQL, max 2000 chars — full text)
+            // Enrich legal description — GIS (varchar 255, ArcGIS-synced) as quick fallback
             if (string.IsNullOrEmpty(property.LegalDescription))
             {
                 var gisLegal = await _db.GisParcelGeometries
@@ -211,26 +210,6 @@ public class PropertiesController : ControllerBase
                     .FirstOrDefaultAsync();
                 if (!string.IsNullOrEmpty(gisLegal))
                     property.LegalDescription = gisLegal;
-            }
-
-            // Full legal description from property_assessments table (varchar 2000 — untruncated)
-            if (string.IsNullOrEmpty(property.LegalDescription) || property.LegalDescription.Length < 10)
-            {
-                try
-                {
-                    var rawResults = await _db.Database
-                        .SqlQueryRaw<string>(
-                            "SELECT legal_description AS \"Value\" FROM property_assessments WHERE parcel_id = {0} AND legal_description IS NOT NULL AND legal_description <> '' ORDER BY assessment_year DESC LIMIT 1",
-                            parcelNumber)
-                        .ToListAsync();
-                    var fullLegal = rawResults.FirstOrDefault();
-                    if (!string.IsNullOrEmpty(fullLegal))
-                        property.LegalDescription = fullLegal;
-                }
-                catch
-                {
-                    // property_assessments table absent in this environment — GIS value retained
-                }
             }
 
             // Enrich Neighborhood, UseCode, TaxDistrict from PACS tables
@@ -246,7 +225,7 @@ public class PropertiesController : ControllerBase
                     .AsNoTracking()
                     .Where(p => p.PacsPropId == pacsPropId)
                     .OrderByDescending(p => p.PropValYear)
-                    .Select(p => new { p.NeighborhoodCode, p.PropertyUseCd })
+                    .Select(p => new { p.NeighborhoodCode, p.PropertyUseCd, p.LivingArea })
                     .FirstOrDefaultAsync();
 
                 if (profile != null)
@@ -255,6 +234,13 @@ public class PropertiesController : ControllerBase
                         property.Neighborhood = profile.NeighborhoodCode;
                     if (string.IsNullOrEmpty(property.PropertyUseCode) && !string.IsNullOrEmpty(profile.PropertyUseCd))
                         property.PropertyUseCode = profile.PropertyUseCd;
+                    // GLA fallback: if CamaCharacteristic was absent or zero, use property_profile.living_area
+                    if ((property.GrossLivingArea is null or 0) && profile.LivingArea is > 0)
+                    {
+                        property.GrossLivingArea = profile.LivingArea;
+                        if (property.SquareFeet is null or 0)
+                            property.SquareFeet = (int)profile.LivingArea.Value;
+                    }
                 }
 
                 var taxArea = await _db.PacsTaxAreas
@@ -270,6 +256,41 @@ public class PropertiesController : ControllerBase
                         property.TaxDistrictCode = taxArea.TaxAreaNumber;
                     if (string.IsNullOrEmpty(property.TaxDistrictName) && !string.IsNullOrEmpty(taxArea.TaxAreaDescription))
                         property.TaxDistrictName = taxArea.TaxAreaDescription;
+                }
+
+                // Authoritative legal description from PACS property_val (varchar 2000, full metes & bounds)
+                // This overwrites the truncated GIS value if we got a longer/better string.
+                var pacsLegal = await _db.PacsValuations
+                    .AsNoTracking()
+                    .Where(v => v.PacsPropId == pacsPropId && v.SupNum == 0
+                           && !string.IsNullOrEmpty(v.LegalDesc))
+                    .OrderByDescending(v => v.PropValYear)
+                    .Select(v => new { v.LegalDesc, v.LegalDesc2 })
+                    .FirstOrDefaultAsync();
+                if (pacsLegal != null)
+                {
+                    var full = (pacsLegal.LegalDesc ?? "").TrimEnd();
+                    if (!string.IsNullOrEmpty(pacsLegal.LegalDesc2))
+                        full = full + " " + pacsLegal.LegalDesc2.Trim();
+                    if (!string.IsNullOrEmpty(full) &&
+                        full.Length > (property.LegalDescription?.Length ?? 0))
+                        property.LegalDescription = full;
+                }
+
+                // Lot dimensions from PACS land_detail (width_front, depth_right)
+                var landDims = await _db.PacsLandDetails
+                    .AsNoTracking()
+                    .Where(l => l.PacsPropId == pacsPropId && l.SupNum == 0)
+                    .OrderByDescending(l => l.PropValYear)
+                    .ThenByDescending(l => l.SizeSquareFeet)
+                    .Select(l => new { l.WidthFront, l.WidthBack, l.DepthRight, l.DepthLeft, l.EffectiveFront, l.EffectiveDepth })
+                    .FirstOrDefaultAsync();
+                if (landDims != null)
+                {
+                    if (property.LotWidthFront is null or 0)
+                        property.LotWidthFront = landDims.EffectiveFront ?? landDims.WidthFront;
+                    if (property.LotDepth is null or 0)
+                        property.LotDepth = landDims.EffectiveDepth ?? landDims.DepthRight ?? landDims.DepthLeft;
                 }
             }
 

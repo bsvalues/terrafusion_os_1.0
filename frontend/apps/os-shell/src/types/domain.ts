@@ -46,6 +46,8 @@ export interface Property {
   grossLivingArea?: number;     // Gross Living Area — above-grade only (USPAP)
   basementSqft?: number;        // Below-grade area — excluded from GLA per USPAP
   garageSqft?: number;          // Garage area — excluded from GLA per USPAP
+  lotWidthFront?: number;       // Lot frontage width in feet (PACS land_detail)
+  lotDepth?: number;            // Lot depth in feet (PACS land_detail)
   bedrooms?: number;
   bathrooms?: number;
 

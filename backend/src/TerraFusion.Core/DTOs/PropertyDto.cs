@@ -54,6 +54,12 @@ public class PropertyDto
     /// <summary>Attached/detached garage area. Excluded from GLA per USPAP.</summary>
     public decimal? GarageSqft { get; set; }
 
+    /// <summary>Lot width at street frontage in feet (PACS land_detail.effective_front or width_front).</summary>
+    public decimal? LotWidthFront { get; set; }
+
+    /// <summary>Lot depth in feet (PACS land_detail.effective_depth or depth_right).</summary>
+    public decimal? LotDepth { get; set; }
+
     public string? Neighborhood { get; set; }
 
     public string? PropertyUseCode { get; set; }

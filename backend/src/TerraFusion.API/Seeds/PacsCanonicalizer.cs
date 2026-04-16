@@ -521,6 +521,7 @@ public sealed class PacsCanonicalizer
             {
                 i.Id,
                 i.ParcelId,
+                i.PacsPropId,
                 i.PropValYear,
                 i.ImprvTypeCode,
                 i.ActualYearBuilt,
@@ -592,6 +593,17 @@ public sealed class PacsCanonicalizer
                     var maxYear = g.Max(x => x.PropValYear);
                     return g.Where(x => x.PropValYear == maxYear).Sum(x => x.SizeSquareFeet ?? 0m);
                 });
+
+        // Load PacsPropertyProfile GLA (living_area = above-grade finished sqft)
+        _logger.LogDebug("[PacsCanonicalizer] Loading property profile GLA...");
+        var allProfileGla = await _db.PacsPropertyProfiles
+            .Where(p => p.SupNum == 0 && p.LivingArea > 0)
+            .Select(p => new { p.PacsPropId, p.PropValYear, p.LivingArea })
+            .ToListAsync(ct);
+
+        var profileGlaMap = allProfileGla
+            .GroupBy(p => (p.PacsPropId, p.PropValYear))
+            .ToDictionary(g => g.Key, g => g.Max(x => x.LivingArea));
 
         // Segments grouped by ImprovementId — raw list used for CamaImprovementDetail inserts
         var allSegmentsByImprv = allDetailRaw
@@ -670,11 +682,26 @@ public sealed class PacsCanonicalizer
                         or "Warmed & Cooled Air/Heat Pump")?.AttributeCode;
 
                 int? fireplaces = (int?)(attrList.FirstOrDefault(a => a.AttributeCode == "FIREPLACE")?.AttrUnit);
-                // Bedrooms: AttrCode="Count", AttrUnit=3; Bathrooms: AttrCode="Count", AttrUnit=2
-                int? bedrooms  = (int?)(attrList.FirstOrDefault(a => a.AttributeCode == "Count" && a.AttrUnit == 3m)?.AttrUnit);
-                int? bathrooms = (int?)(attrList.FirstOrDefault(a => a.AttributeCode == "Count" && a.AttrUnit == 2m)?.AttrUnit);
+                // Bedrooms: AttrCode="Count", AttrUnit=3, AttributeValue=actual count
+                // Bathrooms: AttrCode="Count", AttrUnit=2, AttributeValue=actual count
+                int? bedrooms  = (int?)(attrList.FirstOrDefault(a => a.AttributeCode == "Count" && a.AttrUnit == 3m)?.AttributeValue);
+                int? bathrooms = (int?)(attrList.FirstOrDefault(a => a.AttributeCode == "Count" && a.AttrUnit == 2m)?.AttributeValue);
 
-                var sqft     = detail?.TotalArea ?? 0m;
+                // GLA from property_profile.living_area (above-grade finished only).
+                // Fall back to total detail area only if profile has no living_area.
+                profileGlaMap.TryGetValue((imprv.PacsPropId, imprv.PropValYear), out var profileGla);
+                var sqft = profileGla > 0
+                    ? profileGla!.Value
+                    : detail?.TotalArea ?? 0m;
+
+                // Basement and garage sqft from improvement detail segments by type code.
+                var detSegments = allSegmentsByImprv.TryGetValue(imprv.Id, out var segs) ? segs : null;
+                var basementSqft = detSegments?
+                    .Where(s => IsBasementSegmentType(s.ImprvDetTypeCd))
+                    .Sum(s => s.ImprvDetArea ?? 0m) ?? 0m;
+                var garageSqft = detSegments?
+                    .Where(s => IsGarageSegmentType(s.ImprvDetTypeCd))
+                    .Sum(s => s.ImprvDetArea ?? 0m) ?? 0m;
                 var yearBuilt = detail?.YearBuilt.HasValue == true
                     ? (int?)detail.YearBuilt.Value
                     : imprv.ActualYearBuilt.HasValue
@@ -711,6 +738,8 @@ public sealed class PacsCanonicalizer
                     Bedrooms              = bedrooms,
                     Bathrooms             = bathrooms,
                     Fireplaces            = fireplaces,
+                    BasementSqft          = basementSqft > 0 ? basementSqft : null,
+                    GarageSqft            = garageSqft > 0 ? garageSqft : null,
                     ImprvVal              = imprv.ImprvVal,
                     PhysicalDepreciationPct = imprv.PhysicalPct ?? detail?.PhysicalPct,
                     DepreciationPct       = imprv.DepPct,
@@ -794,6 +823,24 @@ public sealed class PacsCanonicalizer
             null            => null,
             _               => rawClassCd   // pass through unrecognized codes
         };
+
+    /// <summary>Returns true for PACS ImprvDetTypeCd values that represent basement area.</summary>
+    private static bool IsBasementSegmentType(string? typeCd)
+    {
+        if (string.IsNullOrEmpty(typeCd)) return false;
+        var t = typeCd.Trim().ToUpperInvariant();
+        return t.StartsWith("BAS", StringComparison.Ordinal) ||
+               t is "BSMT" or "BSM" or "BFIN" or "BUNF" or "BFLO" or "BGAR";
+    }
+
+    /// <summary>Returns true for PACS ImprvDetTypeCd values that represent garage area.</summary>
+    private static bool IsGarageSegmentType(string? typeCd)
+    {
+        if (string.IsNullOrEmpty(typeCd)) return false;
+        var t = typeCd.Trim().ToUpperInvariant();
+        return t.StartsWith("GAR", StringComparison.Ordinal) ||
+               t is "ATG" or "GARD" or "GARA";
+    }
 }
 
 // ── Result DTO ────────────────────────────────────────────────────────────────
