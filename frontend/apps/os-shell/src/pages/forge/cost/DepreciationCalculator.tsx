@@ -188,7 +188,7 @@ export function DepreciationCalculator() {
         </div>
         <div className="flex gap-2 shrink-0 items-start pt-1">
           <Badge
-            style={{ background: 'hsl(28 60% 18%)', color: 'var(--cf-accent)', border: '1px solid hsl(28 50% 30%)' }}
+            style={{ background: 'hsl(28 30% 10%)', color: 'var(--cf-accent)', border: '1px solid hsl(28 50% 22%)' }}
             title="Benton County bracket table — calibrated from ratio studies"
           >
             Benton Method ★ Primary
@@ -284,7 +284,7 @@ export function DepreciationCalculator() {
           <div style={{
             padding: 16,
             background: 'hsl(28 30% 10%)',
-            border: '1px solid hsl(28 50% 25%)',
+            border: '1px solid hsl(28 50% 22%)',
             borderRadius: 8,
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
@@ -312,9 +312,9 @@ export function DepreciationCalculator() {
                       borderRadius: 4,
                       fontSize: '0.75rem',
                       fontWeight: active ? 700 : 400,
-                      background: active ? 'hsl(28 60% 22%)' : 'var(--cf-surface)',
+                      background: active ? 'hsl(28 30% 10%)' : 'var(--cf-surface)',
                       color: active ? 'var(--cf-accent)' : 'var(--cf-subtle)',
-                      border: `1px solid ${active ? 'hsl(28 50% 35%)' : 'var(--cf-border)'}`,
+                      border: `1px solid ${active ? 'hsl(28 50% 22%)' : 'var(--cf-border)'}`,
                     }}>
                       {b.label}: {Math.round(b.pctGood * 100)}%
                     </span>
@@ -366,8 +366,8 @@ export function DepreciationCalculator() {
             <div style={{
               marginTop: 12,
               padding: '10px 12px',
-              background: 'hsl(28 40% 12%)',
-              border: '1px solid hsl(28 50% 28%)',
+              background: 'hsl(28 30% 10%)',
+              border: '1px solid hsl(28 50% 22%)',
               borderRadius: 6,
             }}>
               <div style={{ fontSize: '0.6875rem', color: 'var(--cf-accent)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>
