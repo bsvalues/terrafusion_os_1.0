@@ -253,6 +253,7 @@ describe('MassAppraisalGIS — contract', () => {
     render(<MassAppraisalGIS />);
 
     expect(screen.getByTestId('mass-appraisal-governed-brief')).toBeInTheDocument();
+    screen.getByRole('button', { name: /explain spatial anomaly/i }).click();
 
     await waitFor(() => {
       expect(

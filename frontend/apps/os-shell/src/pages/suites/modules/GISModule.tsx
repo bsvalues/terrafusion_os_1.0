@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,12 @@ import {
 import { Map, Layers, Search, ZoomIn, ZoomOut, Expand, Crosshair, Eye, EyeOff } from 'lucide-react';
 import { atlasService, type MapLayer, type ParcelResult } from '@/services/atlasService';
 
+interface SpatialAuditSummary {
+  narrative: string;
+  hotspotCount: number;
+  recommendedAction: string;
+}
+
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
 }
@@ -31,7 +38,9 @@ export default function GISModule() {
   const [layers, setLayers] = useState<MapLayer[]>([]);
   const [parcels, setParcels] = useState<ParcelResult[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [auditMetric, setAuditMetric] = useState<'residuals' | 'uniformity' | 'boundary'>('residuals');
   const [loading, setLoading] = useState(true);
+  const [spatialAudit, setSpatialAudit] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: SpatialAuditSummary; correlationId?: string; error?: string }>({ status: 'idle' });
 
   // Load initial data
   useEffect(() => {
@@ -62,6 +71,39 @@ export default function GISModule() {
     setParcels(result.results);
   }, [searchTerm]);
 
+  const runSpatialAudit = useCallback(async () => {
+    setSpatialAudit({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'explain_spatial_anomaly',
+        params: {
+          county: 'benton',
+          geographyType: 'county',
+          anomalyMetric: auditMetric,
+        },
+      });
+
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string'
+          ? JSON.parse(response.result.output) as SpatialAuditSummary
+          : response.result.output as SpatialAuditSummary;
+        setSpatialAudit({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setSpatialAudit({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: response.error?.message || 'Failed to explain spatial anomaly.',
+        });
+      }
+    } catch (error) {
+      setSpatialAudit({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: error instanceof Error ? error.message : 'Failed to explain spatial anomaly.',
+      });
+    }
+  }, [auditMetric]);
+
   const enabledCount = layers.filter((l) => l.enabled).length;
 
   if (loading) {
@@ -88,6 +130,57 @@ export default function GISModule() {
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
         {/* Map Viewer */}
         <div className='lg:col-span-2 space-y-4'>
+          <Card data-testid="gis-governed-brief" style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+            <CardHeader className='pb-3'>
+              <CardTitle style={{ color: 'hsl(var(--tf-fg))' }} className='text-base'>
+                Governed Spatial Audit
+              </CardTitle>
+              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                TerraAtlas explains county GIS anomalies here. County calibration still routes to TerraForge, and parcel repair still routes to Workbench.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-4'>
+              <div className='flex flex-wrap items-end gap-3'>
+                <label className='space-y-1 text-sm'>
+                  <span className='block text-xs font-medium uppercase tracking-wider' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Audit Metric
+                  </span>
+                  <select
+                    value={auditMetric}
+                    onChange={(event) => setAuditMetric(event.target.value as 'residuals' | 'uniformity' | 'boundary')}
+                    className='rounded-md border border-border bg-background px-3 py-2 text-sm'
+                  >
+                    <option value='residuals'>Residual Clustering</option>
+                    <option value='uniformity'>Uniformity Drift</option>
+                    <option value='boundary'>Boundary Mismatch</option>
+                  </select>
+                </label>
+                <Button type='button' onClick={runSpatialAudit}>
+                  {spatialAudit.status === 'loading' ? 'Running Audit…' : 'Explain Spatial Anomaly'}
+                </Button>
+              </div>
+
+              {spatialAudit.status === 'success' && spatialAudit.result && (
+                <div className='rounded-lg border p-3 text-sm' style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}>
+                  <p style={{ color: 'hsl(var(--tf-fg))' }}>{spatialAudit.result.narrative}</p>
+                  <p className='mt-2' style={{ color: 'hsl(var(--tf-muted))' }}>Hotspots: {spatialAudit.result.hotspotCount}</p>
+                  <p className='mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>{spatialAudit.result.recommendedAction}</p>
+                  {spatialAudit.correlationId && (
+                    <p className='mt-2 font-mono text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                      Correlation: {spatialAudit.correlationId}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {spatialAudit.status === 'error' && (
+                <div className='rounded-lg border p-3 text-sm' style={{ borderColor: 'hsl(var(--tf-suite-dossier) / 0.4)', color: 'hsl(var(--tf-suite-dossier))' }}>
+                  {spatialAudit.error}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
             <CardContent className='p-0'>
               {/* Map toolbar */}
