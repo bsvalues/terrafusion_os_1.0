@@ -13,18 +13,45 @@ vi.mock('@/api/pilotApi', () => ({
 vi.mock('@/services/atlasService', () => ({
   atlasService: {
     getLayers: vi.fn().mockResolvedValue([
-      { id: 'parcels', name: 'Parcels', category: 'base', enabled: true, source: 'county', features: 89247 },
-      { id: 'flood', name: 'Flood Zones', category: 'analysis', enabled: false, source: 'fema', features: 1240 },
+      { id: 'parcels', name: 'Parcels', category: 'base', enabled: true, source: 'Benton County ArcGIS FeatureServer', type: 'geojson', url: 'https://example.test/parcels' },
+      { id: 'zoning', name: 'Zoning Districts', category: 'overlay', enabled: true, source: 'Benton County ArcGIS FeatureServer', type: 'geojson', url: 'https://example.test/zoning' },
+      { id: 'flood-100yr', name: '100-Year Flood Zone', category: 'analysis', enabled: false, source: 'Benton County ArcGIS FeatureServer', type: 'geojson', url: 'https://example.test/flood' },
     ]),
-    searchParcels: vi.fn().mockResolvedValue({
-      results: [
+    getMassAppraisalStats: vi.fn().mockResolvedValue({
+      totalParcels: 89247,
+      totalAcreage: 0,
+      zoningDistrictCount: 0,
+      floodZoneCount: 0,
+      lastDataUpdate: '2026-04-16T00:00:00Z',
+      averageMarketValue: 445000,
+      typeBreakdown: [{ type: 'Residential', count: 70000 }],
+    }),
+    searchMassAppraisalParcels: vi.fn().mockResolvedValue({
+      type: 'FeatureCollection',
+      features: [
         {
-          parcelId: 'P-100',
-          address: '123 Benton Ave',
-          owner: 'Benton County',
-          zoning: 'R-1',
-          acreage: 0.25,
-          assessedValue: 450000,
+          type: 'Feature',
+          id: 'P-100',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[
+              [-119.22, 46.24],
+              [-119.2195, 46.24],
+              [-119.2195, 46.2405],
+              [-119.22, 46.2405],
+              [-119.22, 46.24],
+            ]],
+          },
+          properties: {
+            Parcel_ID: 'P-100',
+            situs_display: '123 Benton Ave',
+            Property_Type: 'Residential',
+            neighborhood: '150007',
+            zoning: 'R-1',
+            Current_Ratio: 0.97,
+            TotalMarketValue: 450000,
+            Shape__Area: 10890,
+          },
         },
       ],
     }),
@@ -51,6 +78,7 @@ describe('GISModule contract', () => {
     render(<GISModule />);
 
     expect(await screen.findByTestId('gis-governed-brief')).toBeInTheDocument();
+    expect(await screen.findByText(/live benton county parcel geometry and arcgis layer services/i)).toBeInTheDocument();
   });
 
   it('runs governed anomaly routing from the GIS module surface', async () => {

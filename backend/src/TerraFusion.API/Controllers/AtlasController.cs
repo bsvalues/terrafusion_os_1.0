@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using TerraFusion.Core.Entities;
 using TerraFusion.Data;
@@ -141,6 +142,36 @@ public class AtlasController : ControllerBase
     return !string.IsNullOrWhiteSpace(parcelId) && ParcelIdPattern.IsMatch(parcelId);
   }
 
+  private static string MapLayerCategory(string category)
+  {
+    return category switch
+    {
+      "parcels" => "base",
+      "admin" => "overlay",
+      "zoning" => "overlay",
+      "hazards" => "analysis",
+      "assessment" => "analysis",
+      "infrastructure" => "overlay",
+      _ => "overlay",
+    };
+  }
+
+  private static string MapLayerType(string geometryType)
+  {
+    return geometryType switch
+    {
+      "polygon" => "geojson",
+      "point" => "geojson",
+      "line" => "geojson",
+      _ => "vector",
+    };
+  }
+
+  private static bool IsDefaultEnabledLayer(string layerId)
+  {
+    return layerId is "parcels" or "assessor-values" or "zoning" or "city-limits" or "flood-100yr";
+  }
+
   private ActionResult BuildPostR1DisabledResponse(string operation, string detail)
   {
     HttpContext.Response.Headers["X-R1-Scope"] = "Post-R1";
@@ -169,9 +200,20 @@ public class AtlasController : ControllerBase
   [RequiresPermission("read:parcel")]
   public IActionResult GetLayers()
   {
-    return BuildPostR1DisabledResponse(
-        "layers",
-        "The atlas layer catalog remains Post-R1. Parcel-specific atlas reads are live, but the broader layer catalog endpoint is intentionally disabled.");
+    Response.Headers["X-Atlas-Source"] = "benton-arcgis-layer-catalog-fy2025";
+
+    return Ok(BentonArcGisData.Layers.Select(layer => new
+    {
+      id = layer.Id,
+      name = layer.Name,
+      category = MapLayerCategory(layer.Category),
+      enabled = IsDefaultEnabledLayer(layer.Id),
+      opacity = layer.Id == "parcels" ? 0.92m : 0.7m,
+      source = "Benton County ArcGIS FeatureServer",
+      type = MapLayerType(layer.GeometryType),
+      url = layer.ServiceUrl,
+      description = layer.Description,
+    }));
   }
 
   public record ParcelSearchRequest(string? Query, string? PropertyType, int Limit = 50, int Offset = 0);
@@ -645,6 +687,28 @@ public class AtlasController : ControllerBase
       string? PropertyType,
       int Limit = 25);
 
+  public record GeoEquityAreaDto(
+      string Id,
+      string Name,
+      string NeighborhoodCode,
+      string PropertyType,
+      string PropertyTypeCategory,
+      double EquityRatio,
+      double RatioStdDev,
+      int ParcelCount,
+      double AverageMarketValue,
+      double[] Center);
+
+  public record GeometryHealthAreaDto(
+      string Id,
+      string Name,
+      string NeighborhoodCode,
+      int TotalParcels,
+      int ParcelsWithGeometry,
+      int ParcelsMissingGeometry,
+      int FlaggedGeometryRecords,
+      double[] Center);
+
   /// <summary>
   /// Execute a live Benton County parcel polygon query for Mass Appraisal GIS.
   /// Returns GeoJSON directly from the AssessorPropVal layer so Atlas can render
@@ -712,6 +776,288 @@ public class AtlasController : ControllerBase
       return StatusCode(StatusCodes.Status502BadGateway, new
       {
         error = "Atlas could not retrieve live mass appraisal parcels",
+        detail = ex.Message,
+      });
+    }
+  }
+
+  /// <summary>
+  /// Execute a live Benton County neighborhood equity aggregation for GeoEquity.
+  /// Groups AssessorPropVal ratios by neighborhood and property type.
+  /// </summary>
+  [HttpGet("geo-equity/areas")]
+  [RequiresPermission("read:parcel")]
+  public async Task<IActionResult> GetGeoEquityAreas([FromQuery] int minParcelCount = 25)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var boundedMinParcelCount = Math.Clamp(minParcelCount, 10, 500);
+    const string whereClause =
+        "Current_Ratio IS NOT NULL AND Current_Ratio > 0.5 AND Current_Ratio < 1.5 " +
+        "AND neighborhood IS NOT NULL AND Property_Type IS NOT NULL";
+
+    var outStatistics = Uri.EscapeDataString("""
+[
+  {"statisticType":"count","onStatisticField":"OBJECTID","outStatisticFieldName":"parcelCount"},
+  {"statisticType":"avg","onStatisticField":"Current_Ratio","outStatisticFieldName":"avgRatio"},
+  {"statisticType":"stddev","onStatisticField":"Current_Ratio","outStatisticFieldName":"ratioStdDev"},
+  {"statisticType":"avg","onStatisticField":"CENTROID_Y","outStatisticFieldName":"avgLat"},
+  {"statisticType":"avg","onStatisticField":"CENTROID_X","outStatisticFieldName":"avgLng"},
+  {"statisticType":"avg","onStatisticField":"TotalMarketValue","outStatisticFieldName":"avgMarketValue"}
+]
+""");
+
+    var queryUrl = $"{BentonArcGisData.AssessorValServiceUrl}/query" +
+                   $"?where={Uri.EscapeDataString(whereClause)}" +
+                   "&groupByFieldsForStatistics=neighborhood,Property_Type" +
+                   $"&outStatistics={outStatistics}" +
+                   $"&havingClause={Uri.EscapeDataString($"COUNT(OBJECTID) >= {boundedMinParcelCount}")}" +
+                   "&orderByFields=parcelCount DESC" +
+                   "&returnGeometry=false&f=json";
+
+    try
+    {
+      using var httpClient = new HttpClient();
+      httpClient.Timeout = TimeSpan.FromSeconds(30);
+      httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("TerraFusionOS/1.0");
+
+      var response = await httpClient.GetAsync(queryUrl);
+      var content = await response.Content.ReadAsStringAsync();
+
+      if (!response.IsSuccessStatusCode)
+      {
+        _logger.LogWarning(
+            "GeoEquity ArcGIS query failed with status {StatusCode}: {Body}",
+            response.StatusCode,
+            content);
+
+        return StatusCode((int)response.StatusCode, new
+        {
+          error = "ArcGIS geo-equity query failed",
+          detail = content,
+          source = "Benton County ArcGIS AssessorPropVal",
+        });
+      }
+
+      using var document = JsonDocument.Parse(content);
+      var areas = document.RootElement.TryGetProperty("features", out var featureArray)
+          ? featureArray.EnumerateArray()
+              .Select(feature => feature.TryGetProperty("attributes", out var attributes) ? attributes : default)
+              .Where(attributes => attributes.ValueKind == JsonValueKind.Object)
+              .Select(attributes =>
+              {
+                var neighborhoodCode = GetString(attributes, "neighborhood");
+                var propertyType = GetString(attributes, "Property_Type");
+                var parcelCount = GetInt(attributes, "parcelCount");
+                var equityRatio = GetNullableDouble(attributes, "avgRatio");
+                var ratioStdDev = GetNullableDouble(attributes, "ratioStdDev") ?? 0;
+                var avgLat = GetNullableDouble(attributes, "avgLat");
+                var avgLng = GetNullableDouble(attributes, "avgLng");
+                var avgMarketValue = GetNullableDouble(attributes, "avgMarketValue") ?? 0;
+
+                if (string.IsNullOrWhiteSpace(neighborhoodCode) ||
+                    string.IsNullOrWhiteSpace(propertyType) ||
+                    equityRatio is null ||
+                    avgLat is null ||
+                    avgLng is null ||
+                    parcelCount <= 0)
+                {
+                  return null;
+                }
+
+                return new GeoEquityAreaDto(
+                    Id: $"{neighborhoodCode}:{NormalizePropertyTypeCategory(propertyType)}",
+                    Name: $"Neighborhood {neighborhoodCode}",
+                    NeighborhoodCode: neighborhoodCode,
+                    PropertyType: propertyType,
+                    PropertyTypeCategory: NormalizePropertyTypeCategory(propertyType),
+                    EquityRatio: Math.Round(equityRatio.Value, 4),
+                    RatioStdDev: Math.Round(ratioStdDev, 4),
+                    ParcelCount: parcelCount,
+                    AverageMarketValue: Math.Round(avgMarketValue, 2),
+                    Center: [Math.Round(avgLat.Value, 6), Math.Round(avgLng.Value, 6)]);
+              })
+              .Where(area => area is not null)
+              .Cast<GeoEquityAreaDto>()
+              .OrderByDescending(area => area.ParcelCount)
+              .ToList()
+          : new List<GeoEquityAreaDto>();
+
+      Response.Headers["X-Atlas-Source"] = "benton-arcgis-geo-equity-fy2025";
+      return Ok(new
+      {
+        count = areas.Count,
+        asOf = DateTime.UtcNow,
+        source = "Benton County ArcGIS AssessorPropVal grouped by neighborhood and property type",
+        areas,
+      });
+    }
+    catch (Exception ex)
+    {
+      _logger.LogError(ex, "GeoEquity ArcGIS query failed");
+      return StatusCode(StatusCodes.Status502BadGateway, new
+      {
+        error = "Atlas could not retrieve live geo-equity areas",
+        detail = ex.Message,
+      });
+    }
+  }
+
+  /// <summary>
+  /// Execute a live Benton County geometry health aggregation for Atlas.
+  /// Measures geometry coverage and flagged recalculation records by neighborhood.
+  /// </summary>
+  [HttpGet("geometry-health")]
+  [RequiresPermission("read:parcel")]
+  public async Task<IActionResult> GetGeometryHealth([FromQuery] int minParcelCount = 50)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var boundedMinParcelCount = Math.Clamp(minParcelCount, 25, 500);
+    const string groupedWhereClause = "neighborhood IS NOT NULL";
+
+    var overviewStatistics = Uri.EscapeDataString("""
+[
+  {"statisticType":"count","onStatisticField":"OBJECTID","outStatisticFieldName":"totalParcels"},
+  {"statisticType":"sum","onStatisticField":"CASE WHEN Shape__Area > 0 AND CENTROID_X IS NOT NULL AND CENTROID_Y IS NOT NULL THEN 1 ELSE 0 END","outStatisticFieldName":"parcelsWithGeometry"},
+  {"statisticType":"sum","onStatisticField":"CASE WHEN recalc_error_flag = 1 THEN 1 ELSE 0 END","outStatisticFieldName":"flaggedGeometryRecords"}
+]
+""");
+
+    var areaStatistics = Uri.EscapeDataString("""
+[
+  {"statisticType":"count","onStatisticField":"OBJECTID","outStatisticFieldName":"totalParcels"},
+  {"statisticType":"sum","onStatisticField":"CASE WHEN Shape__Area > 0 AND CENTROID_X IS NOT NULL AND CENTROID_Y IS NOT NULL THEN 1 ELSE 0 END","outStatisticFieldName":"parcelsWithGeometry"},
+  {"statisticType":"sum","onStatisticField":"CASE WHEN recalc_error_flag = 1 THEN 1 ELSE 0 END","outStatisticFieldName":"flaggedGeometryRecords"},
+  {"statisticType":"avg","onStatisticField":"CENTROID_Y","outStatisticFieldName":"avgLat"},
+  {"statisticType":"avg","onStatisticField":"CENTROID_X","outStatisticFieldName":"avgLng"}
+]
+""");
+
+    var overviewUrl = $"{BentonArcGisData.AssessorValServiceUrl}/query" +
+                      $"?where={Uri.EscapeDataString(groupedWhereClause)}" +
+                      $"&outStatistics={overviewStatistics}" +
+                      "&returnGeometry=false&f=json";
+
+    var areasUrl = $"{BentonArcGisData.AssessorValServiceUrl}/query" +
+                   $"?where={Uri.EscapeDataString(groupedWhereClause)}" +
+                   "&groupByFieldsForStatistics=neighborhood" +
+                   $"&outStatistics={areaStatistics}" +
+                   $"&havingClause={Uri.EscapeDataString($"COUNT(OBJECTID) >= {boundedMinParcelCount}")}" +
+                   "&orderByFields=totalParcels DESC" +
+                   "&returnGeometry=false&f=json";
+
+    try
+    {
+      using var httpClient = new HttpClient();
+      httpClient.Timeout = TimeSpan.FromSeconds(30);
+      httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("TerraFusionOS/1.0");
+
+      var overviewResponse = await httpClient.GetAsync(overviewUrl);
+      var overviewContent = await overviewResponse.Content.ReadAsStringAsync();
+      if (!overviewResponse.IsSuccessStatusCode)
+      {
+        _logger.LogWarning(
+            "GeometryHealth overview ArcGIS query failed with status {StatusCode}: {Body}",
+            overviewResponse.StatusCode,
+            overviewContent);
+        return StatusCode((int)overviewResponse.StatusCode, new
+        {
+          error = "ArcGIS geometry-health overview query failed",
+          detail = overviewContent,
+          source = "Benton County ArcGIS AssessorPropVal",
+        });
+      }
+
+      var areasResponse = await httpClient.GetAsync(areasUrl);
+      var areasContent = await areasResponse.Content.ReadAsStringAsync();
+      if (!areasResponse.IsSuccessStatusCode)
+      {
+        _logger.LogWarning(
+            "GeometryHealth area ArcGIS query failed with status {StatusCode}: {Body}",
+            areasResponse.StatusCode,
+            areasContent);
+        return StatusCode((int)areasResponse.StatusCode, new
+        {
+          error = "ArcGIS geometry-health area query failed",
+          detail = areasContent,
+          source = "Benton County ArcGIS AssessorPropVal",
+        });
+      }
+
+      using var overviewDocument = JsonDocument.Parse(overviewContent);
+      using var areaDocument = JsonDocument.Parse(areasContent);
+
+      var overviewAttributes = overviewDocument.RootElement.TryGetProperty("features", out var overviewFeatures) &&
+                               overviewFeatures.GetArrayLength() > 0 &&
+                               overviewFeatures[0].TryGetProperty("attributes", out var firstAttributes)
+          ? firstAttributes
+          : default;
+
+      var totalParcels = GetInt(overviewAttributes, "totalParcels");
+      var parcelsWithGeometry = GetInt(overviewAttributes, "parcelsWithGeometry");
+      var flaggedGeometryRecords = GetInt(overviewAttributes, "flaggedGeometryRecords");
+
+      var areaStats = areaDocument.RootElement.TryGetProperty("features", out var featureArray)
+          ? featureArray.EnumerateArray()
+              .Select(feature => feature.TryGetProperty("attributes", out var attributes) ? attributes : default)
+              .Where(attributes => attributes.ValueKind == JsonValueKind.Object)
+              .Select(attributes =>
+              {
+                var neighborhoodCode = GetString(attributes, "neighborhood");
+                var total = GetInt(attributes, "totalParcels");
+                var linked = GetInt(attributes, "parcelsWithGeometry");
+                var flagged = GetInt(attributes, "flaggedGeometryRecords");
+                var avgLat = GetNullableDouble(attributes, "avgLat");
+                var avgLng = GetNullableDouble(attributes, "avgLng");
+
+                if (string.IsNullOrWhiteSpace(neighborhoodCode) ||
+                    total <= 0 ||
+                    avgLat is null ||
+                    avgLng is null)
+                {
+                  return null;
+                }
+
+                var boundedLinked = Math.Min(total, Math.Max(0, linked));
+                return new GeometryHealthAreaDto(
+                    Id: neighborhoodCode,
+                    Name: $"Neighborhood {neighborhoodCode}",
+                    NeighborhoodCode: neighborhoodCode,
+                    TotalParcels: total,
+                    ParcelsWithGeometry: boundedLinked,
+                    ParcelsMissingGeometry: Math.Max(0, total - boundedLinked),
+                    FlaggedGeometryRecords: Math.Max(0, flagged),
+                    Center: [Math.Round(avgLat.Value, 6), Math.Round(avgLng.Value, 6)]);
+              })
+              .Where(area => area is not null)
+              .Cast<GeometryHealthAreaDto>()
+              .OrderByDescending(area => area.TotalParcels)
+              .ToList()
+          : new List<GeometryHealthAreaDto>();
+
+      Response.Headers["X-Atlas-Source"] = "benton-arcgis-geometry-health-fy2025";
+      return Ok(new
+      {
+        totalParcels,
+        parcelsWithGeometry,
+        parcelsMissingGeometry = Math.Max(0, totalParcels - parcelsWithGeometry),
+        flaggedGeometryRecords,
+        lastSyncTimestamp = DateTime.UtcNow,
+        source = "Benton County ArcGIS AssessorPropVal geometry coverage and recalculation flags grouped by neighborhood",
+        areaStats,
+      });
+    }
+    catch (Exception ex)
+    {
+      _logger.LogError(ex, "GeometryHealth ArcGIS query failed");
+      return StatusCode(StatusCodes.Status502BadGateway, new
+      {
+        error = "Atlas could not retrieve live geometry health",
         detail = ex.Message,
       });
     }
@@ -2041,6 +2387,55 @@ public class AtlasController : ControllerBase
         new { id = "EA-002", name = "Riverside", equityRatio = 0.95m, parcelCount = 287, propertyType = "Residential", medianRatio = 0.95m },
       },
     });
+  }
+
+  private static string NormalizePropertyTypeCategory(string propertyType)
+  {
+    var value = propertyType.Trim();
+    if (value.Contains("Residential", StringComparison.OrdinalIgnoreCase))
+      return "Residential";
+    if (value.Contains("Commercial", StringComparison.OrdinalIgnoreCase) ||
+        value.Contains("Service", StringComparison.OrdinalIgnoreCase))
+      return "Commercial";
+    if (value.Contains("Industrial", StringComparison.OrdinalIgnoreCase) ||
+        value.Contains("Manufacturing", StringComparison.OrdinalIgnoreCase) ||
+        value.Contains("Utility", StringComparison.OrdinalIgnoreCase) ||
+        value.Contains("Transportation", StringComparison.OrdinalIgnoreCase))
+      return "Industrial";
+    if (value.Contains("Agriculture", StringComparison.OrdinalIgnoreCase) ||
+        value.Contains("Resource Production", StringComparison.OrdinalIgnoreCase))
+      return "Agricultural";
+    return "Other";
+  }
+
+  private static string? GetString(JsonElement element, string propertyName)
+  {
+    return element.TryGetProperty(propertyName, out var value) && value.ValueKind == JsonValueKind.String
+        ? value.GetString()
+        : null;
+  }
+
+  private static int GetInt(JsonElement element, string propertyName)
+  {
+    if (!element.TryGetProperty(propertyName, out var value))
+      return 0;
+
+    if (value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out var intValue))
+      return intValue;
+
+    if (value.ValueKind == JsonValueKind.Number && value.TryGetDouble(out var doubleValue))
+      return (int)Math.Round(doubleValue);
+
+    return 0;
+  }
+
+  private static double? GetNullableDouble(JsonElement element, string propertyName)
+  {
+    return element.TryGetProperty(propertyName, out var value) &&
+           value.ValueKind == JsonValueKind.Number &&
+           value.TryGetDouble(out var doubleValue)
+        ? doubleValue
+        : null;
   }
 
   internal sealed record ArcGisLayerEntry(

@@ -13,10 +13,58 @@ vi.mock('@/api/pilotApi', () => ({
 vi.mock('@/services/atlasService', () => ({
   atlasService: {
     getLayers: vi.fn().mockResolvedValue([
-      { id: 'parcels', name: 'Parcels', category: 'base', enabled: true, opacity: 100, source: 'county', features: 89247 },
-      { id: 'zoning', name: 'Zoning', category: 'overlay', enabled: true, opacity: 80, source: 'county', features: 89247 },
-      { id: 'flood', name: 'Flood Zones', category: 'analysis', enabled: false, opacity: 55, source: 'fema', features: 1240 },
+      { id: 'parcels', name: 'Parcels', category: 'base', enabled: true, opacity: 92, source: 'Benton County ArcGIS FeatureServer', type: 'geojson', url: 'https://example.test/parcels' },
+      { id: 'zoning', name: 'Zoning', category: 'overlay', enabled: true, opacity: 70, source: 'Benton County ArcGIS FeatureServer', type: 'geojson', url: 'https://example.test/zoning' },
+      { id: 'flood-100yr', name: 'Flood Zones', category: 'analysis', enabled: false, opacity: 70, source: 'Benton County ArcGIS FeatureServer', type: 'geojson', url: 'https://example.test/flood' },
     ]),
+    getLayerConfigs: vi.fn().mockResolvedValue({
+      count: 2,
+      source: 'terra-playground-production arcgis-service.ts',
+      baseUrl: 'https://example.test/arcgis',
+      layers: [
+        {
+          Id: 'zoning',
+          Name: 'Zoning Districts',
+          FeatureServerPath: 'Zoning_Districts/FeatureServer/0',
+          serviceUrl: 'https://example.test/zoning',
+          queryUrl: 'https://example.test/zoning/query',
+          Fields: ['ZONE_CODE', 'ZONE_NAME'],
+          GeometryType: 'polygon',
+          SpatialCapabilities: ['intersect', 'envelope'],
+        },
+        {
+          Id: 'flood-zones',
+          Name: 'Flood Zones',
+          FeatureServerPath: 'Flood_Zones/FeatureServer/0',
+          serviceUrl: 'https://example.test/flood',
+          queryUrl: 'https://example.test/flood/query',
+          Fields: ['FLD_ZONE', 'FIRM_PANEL'],
+          GeometryType: 'polygon',
+          SpatialCapabilities: ['intersect'],
+        },
+      ],
+    }),
+    getParcelSpatialProfile: vi.fn().mockResolvedValue({
+      parcelId: 'P-100',
+      workflow: 'spatial-profile',
+      overlayLayers: ['zoning', 'flood-zones'],
+      expectedResults: {
+        zoningDistrict: 'Zone code, name, permitted uses',
+        floodZone: 'FEMA zone designation, SFHA status',
+      },
+      source: 'Benton County ArcGIS — full overlay analysis from terra-playground-production',
+      steps: [
+        { step: 1, action: 'Fetch parcel geometry', url: 'https://example.test/parcels/query' },
+        {
+          step: 2,
+          action: 'Run spatial intersections',
+          overlayCount: 2,
+          overlays: [
+            { layerId: 'zoning', layerName: 'Zoning Districts', queryUrl: 'https://example.test/zoning/query', fields: ['ZONE_CODE'], note: 'Pass parcel geometry from step 1 as geometry parameter' },
+          ],
+        },
+      ],
+    }),
   },
 }));
 
@@ -40,6 +88,7 @@ describe('LayerWorksModule contract', () => {
     render(<LayerWorksModule />);
 
     expect(await screen.findByTestId('layerworks-governed-brief')).toBeInTheDocument();
+    expect(await screen.findByText(/live benton arcgis layer composition and overlay workflow assembly/i)).toBeInTheDocument();
   });
 
   it('runs governed layer anomaly routing', async () => {

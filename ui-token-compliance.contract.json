@@ -3,7 +3,7 @@
   "version": "v1",
   "ok": false,
   "scannedFileCount": 1240,
-  "violationCount": 767,
+  "violationCount": 799,
   "violations": [
     {
       "kind": "RAW_HEX",
@@ -813,170 +813,212 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 39,
+      "line": 10,
       "column": 34,
-      "excerpt": "#22C55E'; // green: 0.97-1.03"
+      "excerpt": "#22C55E';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 40,
+      "line": 11,
       "column": 34,
-      "excerpt": "#F59E0B'; // yellow: 0.93-1.07"
+      "excerpt": "#F59E0B';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 41,
+      "line": 12,
       "column": 11,
-      "excerpt": "#EF4444'; // red: outside 0.93-1.07"
+      "excerpt": "#EF4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 225,
-      "column": 57,
+      "line": 179,
+      "column": 59,
       "excerpt": "#22C55E]\" /> 97-103%"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 228,
-      "column": 57,
+      "line": 182,
+      "column": 59,
       "excerpt": "#F59E0B]\" /> 93-107%"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 231,
-      "column": 57,
+      "line": 185,
+      "column": 59,
       "excerpt": "#EF4444]\" /> Outside"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 225,
-      "column": 53,
+      "line": 179,
+      "column": 55,
       "excerpt": "bg-[#22C55E]\" /> 97-103%"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 228,
-      "column": 53,
+      "line": 182,
+      "column": 55,
       "excerpt": "bg-[#F59E0B]\" /> 93-107%"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeoEquityDashboard.tsx",
-      "line": 231,
-      "column": 53,
+      "line": 185,
+      "column": 55,
       "excerpt": "bg-[#EF4444]\" /> Outside"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 65,
-      "column": 28,
+      "line": 28,
+      "column": 54,
       "excerpt": "#22C55E';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 66,
-      "column": 28,
+      "line": 29,
+      "column": 53,
       "excerpt": "#F59E0B';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 67,
+      "line": 30,
       "column": 11,
       "excerpt": "#EF4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 200,
-      "column": 37,
-      "excerpt": "#22C55E] font-medium\">{HEALTH_DATA.parcelsWithPolygons.toLocaleString()}</p>"
+      "line": 199,
+      "column": 57,
+      "excerpt": "#22C55E]\" /> Clean coverage"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 204,
-      "column": 37,
-      "excerpt": "#EF4444] font-medium\">{HEALTH_DATA.parcelsMissingGeometry.toLocaleString()}</p>"
+      "line": 202,
+      "column": 57,
+      "excerpt": "#F59E0B]\" /> Minor review load"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 208,
-      "column": 37,
-      "excerpt": "#F59E0B] font-medium\">{HEALTH_DATA.orphanedPolygons.toLocaleString()}</p>"
+      "line": 205,
+      "column": 57,
+      "excerpt": "#EF4444]\" /> Active issues"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
+      "line": 248,
+      "column": 49,
+      "excerpt": "#22C55E]\">{data.parcelsWithGeometry.toLocaleString()}</p>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
+      "line": 252,
+      "column": 49,
+      "excerpt": "#EF4444]\">{data.parcelsMissingGeometry.toLocaleString()}</p>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
       "line": 256,
-      "column": 40,
-      "excerpt": "#22C55E]\">{selectedArea.linkedParcels.toLocaleString()}</dd>"
+      "column": 49,
+      "excerpt": "#F59E0B]\">{data.flaggedGeometryRecords.toLocaleString()}</p>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 260,
+      "line": 330,
       "column": 40,
-      "excerpt": "#EF4444]\">{selectedArea.missingGeometry.toLocaleString()}</dd>"
+      "excerpt": "#22C55E]\">{selectedArea.parcelsWithGeometry.toLocaleString()}</dd>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 264,
+      "line": 334,
       "column": 40,
-      "excerpt": "#F59E0B]\">{selectedArea.orphanedPolygons.toLocaleString()}</dd>"
+      "excerpt": "#EF4444]\">{selectedArea.parcelsMissingGeometry.toLocaleString()}</dd>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
+      "line": 338,
+      "column": 40,
+      "excerpt": "#F59E0B]\">{selectedArea.flaggedGeometryRecords.toLocaleString()}</dd>"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 200,
-      "column": 31,
-      "excerpt": "text-[#22C55E] font-medium\">{HEALTH_DATA.parcelsWithPolygons.toLocaleString()}</p>"
+      "line": 199,
+      "column": 53,
+      "excerpt": "bg-[#22C55E]\" /> Clean coverage"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 204,
-      "column": 31,
-      "excerpt": "text-[#EF4444] font-medium\">{HEALTH_DATA.parcelsMissingGeometry.toLocaleString()}</p>"
+      "line": 202,
+      "column": 53,
+      "excerpt": "bg-[#F59E0B]\" /> Minor review load"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 208,
-      "column": 31,
-      "excerpt": "text-[#F59E0B] font-medium\">{HEALTH_DATA.orphanedPolygons.toLocaleString()}</p>"
+      "line": 205,
+      "column": 53,
+      "excerpt": "bg-[#EF4444]\" /> Active issues"
+    },
+    {
+      "kind": "TAILWIND_ARBITRARY_COLOR",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
+      "line": 248,
+      "column": 43,
+      "excerpt": "text-[#22C55E]\">{data.parcelsWithGeometry.toLocaleString()}</p>"
+    },
+    {
+      "kind": "TAILWIND_ARBITRARY_COLOR",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
+      "line": 252,
+      "column": 43,
+      "excerpt": "text-[#EF4444]\">{data.parcelsMissingGeometry.toLocaleString()}</p>"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
       "line": 256,
-      "column": 34,
-      "excerpt": "text-[#22C55E]\">{selectedArea.linkedParcels.toLocaleString()}</dd>"
+      "column": 43,
+      "excerpt": "text-[#F59E0B]\">{data.flaggedGeometryRecords.toLocaleString()}</p>"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 260,
+      "line": 330,
       "column": 34,
-      "excerpt": "text-[#EF4444]\">{selectedArea.missingGeometry.toLocaleString()}</dd>"
+      "excerpt": "text-[#22C55E]\">{selectedArea.parcelsWithGeometry.toLocaleString()}</dd>"
     },
     {
       "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
-      "line": 264,
+      "line": 334,
       "column": 34,
-      "excerpt": "text-[#F59E0B]\">{selectedArea.orphanedPolygons.toLocaleString()}</dd>"
+      "excerpt": "text-[#EF4444]\">{selectedArea.parcelsMissingGeometry.toLocaleString()}</dd>"
+    },
+    {
+      "kind": "TAILWIND_ARBITRARY_COLOR",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\GeometryHealth.tsx",
+      "line": 338,
+      "column": 34,
+      "excerpt": "text-[#F59E0B]\">{selectedArea.flaggedGeometryRecords.toLocaleString()}</dd>"
     },
     {
       "kind": "RAW_HEX",
@@ -1065,233 +1107,191 @@
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 60,
-      "column": 14,
-      "excerpt": "#3B82F6',"
+      "line": 51,
+      "column": 56,
+      "excerpt": "#84cc16',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
+      "line": 52,
+      "column": 34,
+      "excerpt": "#94a3b8',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
+      "line": 53,
+      "column": 17,
+      "excerpt": "#22c55e',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
+      "line": 54,
+      "column": 16,
+      "excerpt": "#38bdf8',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
+      "line": 55,
+      "column": 16,
+      "excerpt": "#f59e0b',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
+      "line": 56,
+      "column": 20,
+      "excerpt": "#8b5cf6',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
+      "line": 57,
+      "column": 13,
+      "excerpt": "#20d4c8',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
       "line": 61,
-      "column": 15,
-      "excerpt": "#10B981',"
+      "column": 13,
+      "excerpt": "#0ea5e9',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
       "line": 62,
-      "column": 18,
-      "excerpt": "#F59E0B',"
+      "column": 11,
+      "excerpt": "#22c55e',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
       "line": 63,
-      "column": 14,
-      "excerpt": "#EF4444',"
+      "column": 11,
+      "excerpt": "#16a34a',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
       "line": 64,
-      "column": 16,
-      "excerpt": "#8B5CF6',"
+      "column": 11,
+      "excerpt": "#38bdf8',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
       "line": 65,
-      "column": 15,
-      "excerpt": "#EC4899',"
+      "column": 11,
+      "excerpt": "#0284c7',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
       "line": 66,
-      "column": 13,
-      "excerpt": "#6B7280',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 70,
-      "column": 11,
-      "excerpt": "#22C55E',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 71,
-      "column": 11,
-      "excerpt": "#16A34A',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 72,
-      "column": 11,
-      "excerpt": "#15803D',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 73,
-      "column": 11,
-      "excerpt": "#3B82F6',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 74,
-      "column": 11,
-      "excerpt": "#2563EB',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 75,
-      "column": 11,
-      "excerpt": "#1D4ED8',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 76,
-      "column": 11,
-      "excerpt": "#F59E0B',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 77,
-      "column": 11,
-      "excerpt": "#D97706',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 78,
       "column": 8,
-      "excerpt": "#A3E635',"
+      "excerpt": "#84cc16',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 79,
-      "column": 9,
-      "excerpt": "#A855F7',"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 80,
+      "line": 67,
       "column": 13,
-      "excerpt": "#9CA3AF',"
+      "excerpt": "#f59e0b',"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 84,
-      "column": 17,
-      "excerpt": "#22C55E',"
+      "line": 176,
+      "column": 30,
+      "excerpt": "#94a3b8';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 85,
-      "column": 16,
-      "excerpt": "#3B82F6',"
+      "line": 177,
+      "column": 28,
+      "excerpt": "#ef4444';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 86,
-      "column": 16,
-      "excerpt": "#F59E0B',"
+      "line": 178,
+      "column": 28,
+      "excerpt": "#f59e0b';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 87,
-      "column": 18,
-      "excerpt": "#A3E635',"
+      "line": 179,
+      "column": 11,
+      "excerpt": "#22c55e';"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 88,
-      "column": 12,
-      "excerpt": "#9CA3AF',"
+      "line": 263,
+      "column": 57,
+      "excerpt": "#05161d\" />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 89,
-      "column": 20,
-      "excerpt": "#8B5CF6',"
+      "line": 278,
+      "column": 35,
+      "excerpt": "#ffffff' : '#7dd3fc'}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 90,
-      "column": 13,
-      "excerpt": "#6B7280',"
+      "line": 278,
+      "column": 47,
+      "excerpt": "#7dd3fc'}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 94,
-      "column": 32,
-      "excerpt": "#00FFFF';"
+      "line": 514,
+      "column": 103,
+      "excerpt": "#041118]\">"
     },
     {
-      "kind": "RAW_HEX",
+      "kind": "TAILWIND_ARBITRARY_COLOR",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 106,
-      "column": 60,
-      "excerpt": "#6B7280';"
+      "line": 514,
+      "column": 99,
+      "excerpt": "bg-[#041118]\">"
     },
     {
-      "kind": "RAW_HEX",
+      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 314,
-      "column": 63,
-      "excerpt": "#00FFFF' },"
+      "line": 569,
+      "column": 56,
+      "excerpt": "rgba(32,212,200,0.55)' : 'rgba(255,255,255,0.08)',"
     },
     {
-      "kind": "RAW_HEX",
+      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 315,
-      "column": 59,
-      "excerpt": "#94A3B8' },"
+      "line": 569,
+      "column": 82,
+      "excerpt": "rgba(255,255,255,0.08)',"
     },
     {
-      "kind": "RAW_HEX",
+      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 316,
-      "column": 67,
-      "excerpt": "#3B82F6' },"
+      "line": 570,
+      "column": 55,
+      "excerpt": "rgba(32,212,200,0.12)' : 'rgba(255,255,255,0.04)',"
     },
     {
-      "kind": "RAW_HEX",
+      "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 317,
-      "column": 66,
-      "excerpt": "#EF4444' },"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 318,
-      "column": 71,
-      "excerpt": "#A3E635' },"
-    },
-    {
-      "kind": "RAW_HEX",
-      "file": "frontend\\apps\\os-shell\\src\\pages\\atlas\\MassAppraisalGIS.tsx",
-      "line": 530,
-      "column": 50,
-      "excerpt": "#FFFFFF' : `${color}88`,"
+      "line": 570,
+      "column": 81,
+      "excerpt": "rgba(255,255,255,0.04)',"
     },
     {
       "kind": "RAW_HEX",
@@ -1977,7 +1977,7 @@
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\DepreciationCalculator.tsx",
       "line": 191,
       "column": 99,
-      "excerpt": "hsl(28 50% 30%)' }}"
+      "excerpt": "hsl(28 50% 22%)' }}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -1991,7 +1991,7 @@
       "file": "frontend\\apps\\os-shell\\src\\pages\\forge\\cost\\DepreciationCalculator.tsx",
       "line": 287,
       "column": 32,
-      "excerpt": "hsl(28 50% 25%)',"
+      "excerpt": "hsl(28 50% 22%)',"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
@@ -4088,57 +4088,281 @@
     },
     {
       "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 43,
+      "column": 17,
+      "excerpt": "#22c55e',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 44,
+      "column": 16,
+      "excerpt": "#38bdf8',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 45,
+      "column": 16,
+      "excerpt": "#f59e0b',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 46,
+      "column": 56,
+      "excerpt": "#84cc16',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 47,
+      "column": 34,
+      "excerpt": "#94a3b8',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 48,
+      "column": 13,
+      "excerpt": "#20d4c8',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 52,
+      "column": 13,
+      "excerpt": "#0ea5e9',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 53,
+      "column": 11,
+      "excerpt": "#22c55e',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 54,
+      "column": 11,
+      "excerpt": "#16a34a',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 55,
+      "column": 11,
+      "excerpt": "#38bdf8',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 56,
+      "column": 11,
+      "excerpt": "#0284c7',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 57,
+      "column": 8,
+      "excerpt": "#84cc16',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 58,
+      "column": 13,
+      "excerpt": "#f59e0b',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 343,
+      "column": 102,
+      "excerpt": "#041118]'>"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 365,
+      "column": 71,
+      "excerpt": "#05161d' />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 377,
+      "column": 49,
+      "excerpt": "#ffffff' : '#7dd3fc'}"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 377,
+      "column": 61,
+      "excerpt": "#7dd3fc'}"
+    },
+    {
+      "kind": "TAILWIND_ARBITRARY_COLOR",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 343,
+      "column": 98,
+      "excerpt": "bg-[#041118]'>"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 413,
+      "column": 54,
+      "excerpt": "rgba(32,212,200,0.55)' : 'rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 413,
+      "column": 80,
+      "excerpt": "rgba(255,255,255,0.08)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 414,
+      "column": 53,
+      "excerpt": "rgba(32,212,200,0.12)' : 'rgba(255,255,255,0.04)',"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\GISModule.tsx",
+      "line": 414,
+      "column": 79,
+      "excerpt": "rgba(255,255,255,0.04)',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ParcelLensModule.tsx",
+      "line": 128,
+      "column": 46,
+      "excerpt": "#07131a' rx='16' />"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ParcelLensModule.tsx",
+      "line": 129,
+      "column": 65,
+      "excerpt": "#7dd3fc' strokeWidth='2.2' />"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ParcelLensModule.tsx",
+      "line": 129,
+      "column": 34,
+      "excerpt": "rgba(32,212,200,0.24)' stroke='#7dd3fc' strokeWidth='2.2' />"
+    },
+    {
+      "kind": "DISALLOWED_COLOR_FUNCTION",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\ParcelLensModule.tsx",
+      "line": 354,
+      "column": 38,
+      "excerpt": "rgba(32,212,200,0.08)',"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraPrintModule.tsx",
+      "line": 146,
+      "column": 79,
+      "excerpt": "#0f172a; }"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraPrintModule.tsx",
+      "line": 149,
+      "column": 72,
+      "excerpt": "#cbd5e1; padding-bottom: 6px; }"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraPrintModule.tsx",
+      "line": 152,
+      "column": 22,
+      "excerpt": "#475569; font-size: 13px; margin-bottom: 16px; }"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraPrintModule.tsx",
+      "line": 153,
+      "column": 33,
+      "excerpt": "#cbd5e1; border-radius: 12px; padding: 16px; margin-top: 16px; }"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraPrintModule.tsx",
+      "line": 155,
+      "column": 23,
+      "excerpt": "#475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }"
+    },
+    {
+      "kind": "RAW_HEX",
+      "file": "frontend\\apps\\os-shell\\src\\pages\\suites\\modules\\TerraPrintModule.tsx",
+      "line": 157,
+      "column": 23,
+      "excerpt": "#64748b; }"
+    },
+    {
+      "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 244,
+      "line": 267,
       "column": 64,
       "excerpt": "#128339;</span>} title=\"Recent Parcels\" />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 248,
+      "line": 271,
       "column": 45,
       "excerpt": "#127970;</span>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 259,
-      "column": 52,
+      "line": 284,
+      "column": 54,
       "excerpt": "#127970;</span>}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 273,
+      "line": 300,
       "column": 52,
       "excerpt": "#127970;</span>"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 357,
+      "line": 408,
       "column": 64,
       "excerpt": "#9889;</span>} title=\"Quick Actions\" />"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 360,
+      "line": 411,
       "column": 48,
       "excerpt": "#128269;</span>}"
     },
     {
       "kind": "RAW_HEX",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 367,
+      "line": 418,
       "column": 50,
       "excerpt": "#9654;</span>}"
     },
     {
       "kind": "DISALLOWED_COLOR_FUNCTION",
       "file": "frontend\\apps\\os-shell\\src\\pages\\workbench\\PropertyWorkbenchWindow.tsx",
-      "line": 321,
+      "line": 348,
       "column": 44,
       "excerpt": "hsl(0 0% 0% / 0.3)',"
     },
@@ -5375,5 +5599,5 @@
       "excerpt": "hsl(220 24% 35% / 0.45);"
     }
   ],
-  "generatedAtIso": "2026-04-16T13:54:03.188Z"
+  "generatedAtIso": "2026-04-16T18:48:22.210Z"
 }

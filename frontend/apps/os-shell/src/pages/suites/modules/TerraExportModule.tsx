@@ -1,13 +1,11 @@
 /**
- * TerraExport Module -- GIS Data Export
+ * TerraExport Module -- Live Atlas Export
  * ===================================================================
  * Constitutional module of TerraAtlas (Article V Section 5.1).
- * Owns: Data export (Shapefile, GeoJSON, KML, CSV), batch operations.
+ * Owns: live Benton ArcGIS layer export with truthful download lineage.
  */
 
-import { useCallback, useState, useEffect } from 'react';
-import { invokeTool } from '@/api/pilotApi';
-import { useParcelCount } from '../../../hooks/useParcelCount';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,522 +18,394 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { Download, FileDown, Globe, Database, FileText, CheckCircle2, Clock, AlertCircle, Lock } from 'lucide-react';
+import {
+  ArrowUpRight,
+  CheckCircle2,
+  Database,
+  Download,
+  FileDown,
+  Globe,
+  Layers3,
+} from 'lucide-react';
+import {
+  atlasService,
+  type AtlasExportFormat,
+  type AtlasLayerExportArtifact,
+  type LiveAtlasExportLayer,
+} from '@/services/atlasService';
 
-/* -------------------------------------------------------------------------- */
-/* Types                                                                       */
-/* -------------------------------------------------------------------------- */
-
-interface EqualizationExportResult {
-  payloadRef: string;
-  packageRef: string;
-  artifactCount: number;
-  checklist: string[];
-}
-
-interface AuditBundleResult {
-  payloadRef: string;
-  bundleRef: string;
-  artifactCount: number;
-  traceRef: string;
-}
-
-type EqExportState =
-  | { status: 'idle' }
-  | { status: 'loading' }
-  | { status: 'success'; result: EqualizationExportResult; correlationId: string }
-  | { status: 'error'; error: string; correlationId: string };
-
-type AuditExportState =
-  | { status: 'idle' }
-  | { status: 'loading' }
-  | { status: 'success'; result: AuditBundleResult; correlationId: string }
-  | { status: 'error'; error: string; correlationId: string };
-
-type ExportFormat = 'shapefile' | 'geojson' | 'kml' | 'csv' | 'geopackage';
-
-interface ExportLayer {
+interface ExportHistoryEntry {
   id: string;
-  name: string;
-  features: number;
-  selected: boolean;
-}
-
-interface ExportJob {
-  id: string;
-  name: string;
-  format: ExportFormat;
-  layers: string[];
+  layerName: string;
+  format: AtlasExportFormat;
   featureCount: number;
-  status: 'queued' | 'processing' | 'complete' | 'failed';
   createdAt: string;
-  fileSize?: string;
-  error?: string;
+  fileSizeLabel: string;
+  filename: string;
+  source: string;
+  downloadUrl: string;
 }
 
-/* -------------------------------------------------------------------------- */
-/* Mock data                                                                   */
-/* -------------------------------------------------------------------------- */
-
-const EXPORT_LAYERS: ExportLayer[] = [
-  { id: 'parcels', name: 'Parcel Boundaries', features: 89_247, selected: true },
-  { id: 'streets', name: 'Street Centerlines', features: 12_840, selected: false },
-  { id: 'zoning', name: 'Zoning Districts', features: 156, selected: false },
-  { id: 'flood', name: 'FEMA Flood Zones', features: 342, selected: false },
-  { id: 'wetlands', name: 'Wetland Boundaries', features: 89, selected: false },
-  { id: 'soil', name: 'Soil Classification', features: 2_148, selected: false },
-  { id: 'fire', name: 'Wildfire Risk Zones', features: 64, selected: false },
-  { id: 'addresses', name: 'Address Points', features: 68_452, selected: false },
-];
-
-const FORMAT_INFO: Record<ExportFormat, { label: string; ext: string; description: string }> = {
-  shapefile: { label: 'Shapefile', ext: '.shp/.dbf/.shx', description: 'ESRI Shapefile — widely compatible, geometry + attributes' },
-  geojson: { label: 'GeoJSON', ext: '.geojson', description: 'JSON-based geospatial format — web-friendly, UTF-8' },
-  kml: { label: 'KML', ext: '.kml', description: 'Keyhole Markup Language — Google Earth compatible' },
-  csv: { label: 'CSV', ext: '.csv', description: 'Comma-separated values — attribute table only, WKT geometry' },
-  geopackage: { label: 'GeoPackage', ext: '.gpkg', description: 'OGC GeoPackage — SQLite-based, multi-layer support' },
+const FORMAT_INFO: Record<
+  AtlasExportFormat,
+  { label: string; description: string; extension: string }
+> = {
+  geojson: {
+    label: 'GeoJSON',
+    description: 'Full ArcGIS geometry plus all returned attributes in GeoJSON.',
+    extension: '.geojson',
+  },
+  csv: {
+    label: 'CSV',
+    description: 'Attribute export with a geometry_json column for the live layer geometry.',
+    extension: '.csv',
+  },
 };
 
-const RECENT_EXPORTS: ExportJob[] = [
-  { id: 'exp-001', name: 'Benton Parcels Full', format: 'shapefile', layers: ['Parcel Boundaries'], featureCount: 89_247, status: 'complete', createdAt: '2:30 PM', fileSize: '145 MB' },
-  { id: 'exp-002', name: 'Flood Zone Analysis', format: 'geojson', layers: ['FEMA Flood Zones', 'Parcel Boundaries'], featureCount: 2_683, status: 'complete', createdAt: '1:15 PM', fileSize: '12.4 MB' },
-  { id: 'exp-003', name: 'Zoning Districts KML', format: 'kml', layers: ['Zoning Districts'], featureCount: 156, status: 'processing', createdAt: '12:45 PM' },
-  { id: 'exp-004', name: 'Address Points CSV', format: 'csv', layers: ['Address Points'], featureCount: 68_452, status: 'complete', createdAt: '11:00 AM', fileSize: '8.2 MB' },
-];
-
-const STATUS_STYLES: Record<string, { bg: string; fg: string; border: string }> = {
-  complete: { bg: 'hsl(var(--tf-success-hs) 45% / 0.15)', fg: 'hsl(var(--tf-success-hs) 45%)', border: 'hsl(var(--tf-success-hs) 45% / 0.3)' },
-  processing: { bg: 'hsl(var(--tf-warning-hs) 50% / 0.15)', fg: 'hsl(var(--tf-warning-hs) 50%)', border: 'hsl(var(--tf-warning-hs) 50% / 0.3)' },
-  queued: { bg: 'hsl(var(--tf-muted) / 0.1)', fg: 'hsl(var(--tf-muted))', border: 'hsl(var(--tf-border))' },
-  failed: { bg: 'hsl(0 84% 60% / 0.15)', fg: 'hsl(var(--tf-error-hs) 60%)', border: 'hsl(var(--tf-error-hs) 60% / 0.3)' },
-};
-
-/* -------------------------------------------------------------------------- */
-/* Component                                                                   */
-/* -------------------------------------------------------------------------- */
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 export default function TerraExportModule() {
-  const [exportLayers, setExportLayers] = useState<ExportLayer[]>(EXPORT_LAYERS);
-  const [format, setFormat] = useState<ExportFormat>('shapefile');
+  const [layers, setLayers] = useState<LiveAtlasExportLayer[]>([]);
+  const [loadingLayers, setLoadingLayers] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [selectedLayerId, setSelectedLayerId] = useState<string>('');
+  const [format, setFormat] = useState<AtlasExportFormat>('geojson');
   const [exportName, setExportName] = useState('');
-  const [coordSystem, setCoordSystem] = useState('epsg-4326');
-  const [jobs, setJobs] = useState<ExportJob[]>(RECENT_EXPORTS);
-
-  // TerraPilot: export_equalization_package gate
-  const [eqExportConfirmed, setEqExportConfirmed] = useState(false);
-  const [eqTaxYear] = useState<number>(new Date().getFullYear());
-  const [eqExportState, setEqExportState] = useState<EqExportState>({ status: 'idle' });
-  const [auditExportState, setAuditExportState] = useState<AuditExportState>({ status: 'idle' });
-
-  const handleExportEqualizationPackage = useCallback(async () => {
-    if (!eqExportConfirmed) return;
-    setEqExportState({ status: 'loading' });
-    try {
-      const res = await invokeTool<EqualizationExportResult>({
-        toolId: 'export_equalization_package',
-        params: {
-          county: 'benton',
-          draftVersion: `v${eqTaxYear}-draft`,
-          taxYear: eqTaxYear,
-          reasonCode: 'annual_certification',
-        },
-      });
-      setEqExportState({
-        status: 'success',
-        result: res.result,
-        correlationId: res.correlationId,
-      });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Export failed';
-      setEqExportState({
-        status: 'error',
-        error: msg,
-        correlationId: (err as { correlationId?: string })?.correlationId ?? 'unknown',
-      });
-    }
-  }, [eqExportConfirmed, eqTaxYear]);
-
-  const handleExportAuditBundle = useCallback(async () => {
-    setAuditExportState({ status: 'loading' });
-    try {
-      const res = await invokeTool<AuditBundleResult>({
-        toolId: 'export_audit_bundle',
-        params: {
-          county: 'benton',
-          taxYear: eqTaxYear,
-          bundleScope: 'county',
-          reasonCode: 'annual_certification',
-        },
-        confirmation: {
-          confirmed: true,
-          reasonCode: 'annual_certification',
-        },
-      });
-      setAuditExportState({
-        status: 'success',
-        result: res.result,
-        correlationId: res.correlationId,
-      });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Audit bundle export failed';
-      setAuditExportState({
-        status: 'error',
-        error: msg,
-        correlationId: (err as { correlationId?: string })?.correlationId ?? 'unknown',
-      });
-    }
-  }, [eqTaxYear]);
-
-  const { data: statsData } = useParcelCount();
+  const [exportState, setExportState] = useState<
+    | { status: 'idle' }
+    | { status: 'loading' }
+    | { status: 'success'; artifact: AtlasLayerExportArtifact; downloadUrl: string }
+    | { status: 'error'; error: string }
+  >({ status: 'idle' });
+  const [history, setHistory] = useState<ExportHistoryEntry[]>([]);
 
   useEffect(() => {
-    if (statsData?.totalParcels) {
-      setExportLayers((prev) =>
-        prev.map((l) => (l.id === 'parcels' ? { ...l, features: statsData.totalParcels } : l))
-      );
-      setJobs((prev) =>
-        prev.map((j) => (j.id === 'exp-001' ? { ...j, featureCount: statsData.totalParcels } : j))
-      );
-    }
-  }, [statsData?.totalParcels]);
+    let cancelled = false;
 
-  const toggleLayer = useCallback((id: string) => {
-    setExportLayers((prev) => prev.map((l) => (l.id === id ? { ...l, selected: !l.selected } : l)));
+    async function loadLayers() {
+      setLoadingLayers(true);
+      setLoadError(null);
+      try {
+        const liveLayers = await atlasService.getLiveExportLayers();
+        if (cancelled) return;
+        setLayers(liveLayers);
+        setSelectedLayerId((current) => current || liveLayers[0]?.id || '');
+      } catch (error) {
+        if (cancelled) return;
+        setLayers([]);
+        setLoadError(error instanceof Error ? error.message : 'Atlas layer inventory failed to load.');
+      } finally {
+        if (!cancelled) setLoadingLayers(false);
+      }
+    }
+
+    void loadLayers();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const selectedLayers = exportLayers.filter((l) => l.selected);
-  const totalFeatures = selectedLayers.reduce((sum, l) => sum + l.features, 0);
+  const selectedLayer = useMemo(
+    () => layers.find((layer) => layer.id === selectedLayerId) ?? null,
+    [layers, selectedLayerId],
+  );
 
-  const handleExport = useCallback(() => {
-    if (selectedLayers.length === 0) return;
-    const name = exportName || `export-${Date.now()}`;
-    const newJob: ExportJob = {
-      id: `exp-${Date.now()}`,
-      name,
-      format,
-      layers: selectedLayers.map((l) => l.name),
-      featureCount: totalFeatures,
-      status: 'queued',
-      createdAt: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
-    };
-    setJobs((prev) => [newJob, ...prev]);
-    setTimeout(() => {
-      setJobs((prev) => prev.map((j) => (j.id === newJob.id ? { ...j, status: 'processing' as const } : j)));
-    }, 500);
-    setTimeout(() => {
-      setJobs((prev) =>
-        prev.map((j) =>
-          j.id === newJob.id
-            ? { ...j, status: 'complete' as const, fileSize: `${(totalFeatures * 0.0016).toFixed(1)} MB` }
-            : j
-        )
-      );
-    }, 2500);
-  }, [selectedLayers, format, exportName, totalFeatures]);
+  const handleExport = useCallback(async () => {
+    if (!selectedLayer) return;
+    setExportState({ status: 'loading' });
+
+    try {
+      const artifact = await atlasService.exportAtlasLayer(selectedLayer, format);
+      const downloadUrl = URL.createObjectURL(artifact.blob);
+      const filename = exportName.trim()
+        ? `${exportName.trim().replace(/[^a-zA-Z0-9-_]+/g, '-')}${FORMAT_INFO[format].extension}`
+        : artifact.filename;
+
+      setExportState({ status: 'success', artifact: { ...artifact, filename }, downloadUrl });
+      setHistory((current) => [
+        {
+          id: `${selectedLayer.id}-${Date.now()}`,
+          layerName: selectedLayer.name,
+          format,
+          featureCount: artifact.featureCount,
+          createdAt: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+          fileSizeLabel: formatBytes(artifact.blob.size),
+          filename,
+          source: artifact.source,
+          downloadUrl,
+        },
+        ...current,
+      ]);
+    } catch (error) {
+      setExportState({
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Live Atlas export failed.',
+      });
+    }
+  }, [exportName, format, selectedLayer]);
 
   return (
     <div className='p-6 space-y-6'>
-      {/* Header */}
       <div>
         <h2 className='text-2xl font-semibold flex items-center gap-3' style={{ color: 'hsl(var(--tf-fg))' }}>
           <Download style={{ color: 'hsl(var(--tf-suite-atlas))' }} size={28} />
           TerraExport
         </h2>
         <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
-          GIS data export — Shapefile, GeoJSON, KML, CSV, GeoPackage
+          Live Benton layer export — real ArcGIS inventory, real download artifacts, no simulated job queue.
         </p>
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-        {/* Layer Selection */}
         <div className='lg:col-span-2 space-y-4'>
-          <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
-            <CardHeader>
+          <Card
+            data-testid='terraexport-governed-brief'
+            style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}
+          >
+            <CardHeader className='pb-2'>
               <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
-                <Database size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
-                Select Layers
+                <Globe size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                Live Export Posture
               </CardTitle>
               <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
-                {selectedLayers.length} layer{selectedLayers.length !== 1 ? 's' : ''} selected · {totalFeatures.toLocaleString()} features
+                TerraExport now operates only on live Benton ArcGIS layer configs and emits real downloadable files. Unsupported fake formats and simulated queue states were removed.
               </CardDescription>
             </CardHeader>
-            <CardContent className='space-y-2'>
-              {exportLayers.map((layer) => (
-                <label
-                  key={layer.id}
-                  className='flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors hover:bg-white/5'
-                  style={{ background: layer.selected ? 'hsl(var(--tf-suite-atlas) / 0.06)' : 'hsl(var(--tf-bg))', border: `1px solid ${layer.selected ? 'hsl(var(--tf-suite-atlas) / 0.3)' : 'hsl(var(--tf-border))'}` }}
+            <CardContent className='space-y-3'>
+              <div className='rounded-lg border px-3 py-2 text-xs' style={{ borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-muted))' }}>
+                Available formats are limited to what Atlas can generate truthfully today: GeoJSON and CSV.
+              </div>
+              {selectedLayer && (
+                <div
+                  className='rounded-lg border p-3 text-sm space-y-2'
+                  style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}
                 >
-                  <input
-                    type='checkbox'
-                    checked={layer.selected}
-                    onChange={() => toggleLayer(layer.id)}
-                    className='accent-current'
+                  <p style={{ color: 'hsl(var(--tf-fg))' }}>
+                    Selected layer: {selectedLayer.name}
+                  </p>
+                  <p style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Feature count: {typeof selectedLayer.featureCount === 'number'
+                      ? selectedLayer.featureCount.toLocaleString()
+                      : 'Unavailable from live service'}
+                  </p>
+                  <p style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Fields: {selectedLayer.fields.length}
+                  </p>
+                  <a
+                    href={selectedLayer.queryUrl}
+                    target='_blank'
+                    rel='noreferrer'
+                    className='inline-flex items-center gap-1 text-sm'
                     style={{ color: 'hsl(var(--tf-suite-atlas))' }}
-                  />
-                  <div className='flex-1'>
-                    <p className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>{layer.name}</p>
-                  </div>
-                  <Badge variant='outline' className='text-xs' style={{ borderColor: 'hsl(var(--tf-border))' }}>
-                    {layer.features.toLocaleString()} features
-                  </Badge>
-                </label>
-              ))}
+                  >
+                    Open live ArcGIS query
+                    <ArrowUpRight size={14} />
+                  </a>
+                </div>
+              )}
             </CardContent>
           </Card>
 
-          {/* Export History */}
           <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
-            <CardHeader className='pb-2'>
-              <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>Export History</CardTitle>
+            <CardHeader>
+              <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
+                <Layers3 size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                Live Layer Inventory
+              </CardTitle>
+              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                Select a Benton layer to export directly from the live Atlas ArcGIS inventory.
+              </CardDescription>
             </CardHeader>
             <CardContent className='space-y-2'>
-              {jobs.map((job) => {
-                const style = STATUS_STYLES[job.status];
-                const fmtInfo = FORMAT_INFO[job.format];
-                return (
-                  <div key={job.id} className='flex items-center justify-between p-3 rounded-lg' style={{ background: 'hsl(var(--tf-bg))', border: '1px solid hsl(var(--tf-border))' }}>
-                    <div className='flex items-center gap-3 min-w-0'>
-                      {job.status === 'complete' && <CheckCircle2 size={16} style={{ color: style.fg }} />}
-                      {job.status === 'processing' && <Clock size={16} style={{ color: style.fg }} className='animate-spin' />}
-                      {job.status === 'queued' && <Clock size={16} style={{ color: style.fg }} />}
-                      {job.status === 'failed' && <AlertCircle size={16} style={{ color: style.fg }} />}
-                      <div className='min-w-0'>
-                        <p className='text-sm truncate' style={{ color: 'hsl(var(--tf-fg))' }}>{job.name}</p>
-                        <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-                          {fmtInfo.label} · {job.featureCount.toLocaleString()} features · {job.createdAt}
-                        </p>
+              {loadingLayers ? (
+                <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Loading live Benton export layers…
+                </p>
+              ) : loadError ? (
+                <div
+                  className='rounded-lg border p-3 text-sm'
+                  style={{ borderColor: 'hsl(var(--tf-suite-dossier) / 0.4)', color: 'hsl(var(--tf-suite-dossier))' }}
+                >
+                  {loadError}
+                </div>
+              ) : (
+                layers.map((layer) => {
+                  const isSelected = selectedLayerId === layer.id;
+                  return (
+                    <button
+                      key={layer.id}
+                      type='button'
+                      onClick={() => setSelectedLayerId(layer.id)}
+                      className='w-full rounded-lg border p-3 text-left transition-colors'
+                      style={{
+                        borderColor: isSelected ? 'rgba(32,212,200,0.4)' : 'hsl(var(--tf-border))',
+                        background: isSelected ? 'rgba(32,212,200,0.08)' : 'hsl(var(--tf-bg))',
+                      }}
+                    >
+                      <div className='flex items-center justify-between gap-3'>
+                        <div>
+                          <p className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+                            {layer.name}
+                          </p>
+                          <p className='text-xs mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>
+                            {layer.geometryType ?? 'Unknown geometry'} · {layer.fields.length} fields
+                          </p>
+                        </div>
+                        <Badge variant='outline' style={{ borderColor: 'hsl(var(--tf-border))' }}>
+                          {typeof layer.featureCount === 'number'
+                            ? `${layer.featureCount.toLocaleString()} features`
+                            : 'Live count unavailable'}
+                        </Badge>
                       </div>
+                    </button>
+                  );
+                })
+              )}
+            </CardContent>
+          </Card>
+
+          <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+            <CardHeader className='pb-2'>
+              <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
+                <Database size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                Export History
+              </CardTitle>
+            </CardHeader>
+            <CardContent className='space-y-2'>
+              {history.length === 0 ? (
+                <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  No live Atlas export has been generated in this session yet.
+                </p>
+              ) : (
+                history.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className='flex items-center justify-between gap-3 rounded-lg border p-3'
+                    style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}
+                  >
+                    <div>
+                      <p className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+                        {entry.filename}
+                      </p>
+                      <p className='text-xs mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>
+                        {entry.layerName} · {entry.featureCount.toLocaleString()} features · {entry.fileSizeLabel} · {entry.createdAt}
+                      </p>
                     </div>
-                    <div className='flex items-center gap-2 shrink-0'>
-                      {job.fileSize && (
-                        <span className='text-xs font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>{job.fileSize}</span>
-                      )}
-                      <Badge variant='outline' style={{ background: style.bg, color: style.fg, borderColor: style.border }}>
-                        {job.status}
-                      </Badge>
-                      {job.status === 'complete' && (
-                        <Button variant='ghost' size='sm'><FileDown size={14} /></Button>
-                      )}
-                    </div>
+                    <Button asChild variant='ghost' size='sm'>
+                      <a href={entry.downloadUrl} download={entry.filename} aria-label={`Download ${entry.filename}`}>
+                        <FileDown size={14} />
+                      </a>
+                    </Button>
                   </div>
-                );
-              })}
+                ))
+              )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Export Settings */}
         <div className='space-y-4'>
-          <Card data-testid='terraexport-governed-brief' style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-suite-atlas) / 0.35)' }}>
-            <CardHeader>
-              <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
-                <Globe size={14} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
-                Governed Export Posture
-              </CardTitle>
-              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
-                Atlas exports must preserve audit lineage. County packages route through governed equalization and audit bundle tools, not ad hoc file download alone.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className='space-y-3'>
-              <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-                Use Atlas exports for evidence packaging, then route valuation decisions to TerraForge and parcel fixes to Workbench. This panel tracks county-level export posture and traceability.
-              </p>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={handleExportAuditBundle}
-                disabled={auditExportState.status === 'loading'}
-              >
-                {auditExportState.status === 'loading' ? 'Assembling Audit Bundle…' : 'Export Audit Bundle'}
-              </Button>
-
-              {auditExportState.status === 'success' && (
-                <div className='p-3 rounded space-y-1' style={{ background: 'hsl(var(--tf-success-hs) 45% / 0.1)', border: '1px solid hsl(var(--tf-success-hs) 45% / 0.3)' }}>
-                  <p className='text-xs font-medium' style={{ color: 'hsl(var(--tf-success-hs) 45%)' }}>
-                    Audit bundle assembled — {auditExportState.result.artifactCount} artifacts
-                  </p>
-                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
-                    ref: {auditExportState.result.bundleRef}
-                  </p>
-                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
-                    trace: {auditExportState.result.traceRef}
-                  </p>
-                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
-                    correlationId: {auditExportState.correlationId}
-                  </p>
-                </div>
-              )}
-
-              {auditExportState.status === 'error' && (
-                <div className='p-2 rounded text-xs space-y-1' style={{ background: 'hsl(var(--tf-error-hs) 60% / 0.1)', color: 'hsl(var(--tf-error-hs) 60%)' }}>
-                  <p>{auditExportState.error}</p>
-                  <p className='font-mono text-[10px]' style={{ color: 'hsl(var(--tf-muted))' }}>
-                    ref: {auditExportState.correlationId}
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
           <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
             <CardHeader>
-              <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>Export Settings</CardTitle>
+              <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>
+                Export Settings
+              </CardTitle>
             </CardHeader>
             <CardContent className='space-y-4'>
               <div>
-                <label className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Export Name</label>
+                <label className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Export Name
+                </label>
                 <Input
-                  placeholder='e.g. Benton Parcels 2026'
+                  placeholder='Optional file prefix'
                   value={exportName}
-                  onChange={(e) => setExportName(e.target.value)}
+                  onChange={(event) => setExportName(event.target.value)}
                   className='mt-1'
                   style={{ background: 'hsl(var(--tf-input-bg))', borderColor: 'hsl(var(--tf-border))' }}
                 />
               </div>
               <div>
-                <label className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Format</label>
-                <Select value={format} onValueChange={(v) => setFormat(v as ExportFormat)}>
+                <label className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Format
+                </label>
+                <Select value={format} onValueChange={(value) => setFormat(value as AtlasExportFormat)}>
                   <SelectTrigger className='mt-1' style={{ background: 'hsl(var(--tf-input-bg))', borderColor: 'hsl(var(--tf-border))' }}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.entries(FORMAT_INFO).map(([key, info]) => (
-                      <SelectItem key={key} value={key}>{info.label} ({info.ext})</SelectItem>
+                    {Object.entries(FORMAT_INFO).map(([key, value]) => (
+                      <SelectItem key={key} value={key}>
+                        {value.label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <p className='text-xs mt-1' style={{ color: 'hsl(var(--tf-muted) / 0.6)' }}>{FORMAT_INFO[format].description}</p>
-              </div>
-              <div>
-                <label className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Coordinate System</label>
-                <Select value={coordSystem} onValueChange={setCoordSystem}>
-                  <SelectTrigger className='mt-1' style={{ background: 'hsl(var(--tf-input-bg))', borderColor: 'hsl(var(--tf-border))' }}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='epsg-4326'>WGS 84 (EPSG:4326)</SelectItem>
-                    <SelectItem value='epsg-2927'>WA State Plane South (EPSG:2927)</SelectItem>
-                    <SelectItem value='epsg-3857'>Web Mercator (EPSG:3857)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <p className='text-xs mt-1' style={{ color: 'hsl(var(--tf-muted) / 0.7)' }}>
+                  {FORMAT_INFO[format].description}
+                </p>
               </div>
 
-              <Separator style={{ background: 'hsl(var(--tf-border))' }} />
-
-              <div className='space-y-1'>
-                <div className='flex justify-between'>
-                  <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Layers</span>
-                  <span className='text-xs font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>{selectedLayers.length}</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Total Features</span>
-                  <span className='text-xs font-mono font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>{totalFeatures.toLocaleString()}</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Est. Size</span>
-                  <span className='text-xs font-mono font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>{(totalFeatures * 0.0016).toFixed(1)} MB</span>
-                </div>
-              </div>
-
-              <TactileButton
-                onClick={handleExport}
-                disabled={selectedLayers.length === 0}
-                fullWidth
-                leftIcon={<Download size={14} />}
-              >
-                Export Data
-              </TactileButton>
-            </CardContent>
-          </Card>
-
-          {/* TerraPilot: Equalization Package Export Gate */}
-          <Card
-            data-testid='eq-export-gate'
-            style={{
-              background: 'hsl(var(--tf-card-bg))',
-              borderColor: 'hsl(var(--tf-suite-atlas) / 0.4)',
-            }}
-          >
-            <CardHeader>
-              <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
-                <Lock size={14} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
-                TerraPilot: Equalization Package
-              </CardTitle>
-              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
-                Assemble and export the {eqTaxYear} annual equalization package for Benton County
-              </CardDescription>
-            </CardHeader>
-            <CardContent className='space-y-3'>
-              <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-                TerraPilot will assemble the ratio study, matrix diff, calibration memo, signoff log,
-                and atlas overlays into a governed equalization package. You review the checklist before
-                any certification submission.
-              </p>
-
-              <label className='flex items-center gap-2 cursor-pointer'>
-                <input
-                  type='checkbox'
-                  checked={eqExportConfirmed}
-                  onChange={(e) => setEqExportConfirmed(e.target.checked)}
-                  data-testid='eq-export-confirm-checkbox'
-                  style={{ accentColor: 'hsl(var(--tf-suite-atlas))' }}
-                />
-                <span className='text-xs' style={{ color: 'hsl(var(--tf-fg))' }}>
-                  I confirm the {eqTaxYear} equalization data is ready and authorise TerraPilot to assemble the package.
-                </span>
-              </label>
-
-              <TactileButton
-                size='sm'
-                onClick={handleExportEqualizationPackage}
-                disabled={!eqExportConfirmed || eqExportState.status === 'loading'}
-                data-testid='eq-export-submit-btn'
-                fullWidth
-                leftIcon={<Lock size={14} />}
-              >
-                {eqExportState.status === 'loading' ? 'Assembling…' : 'Export Equalization Package'}
-              </TactileButton>
-
-              {/* Error */}
-              {eqExportState.status === 'error' && (
-                <div
-                  className='p-2 rounded text-xs space-y-1'
-                  style={{ background: 'hsl(var(--tf-error-hs) 60% / 0.1)', color: 'hsl(var(--tf-error-hs) 60%)' }}
-                >
-                  <p>{eqExportState.error}</p>
-                  <p className='font-mono text-[10px]' style={{ color: 'hsl(var(--tf-muted))' }}>
-                    ref: {eqExportState.correlationId}
+              {selectedLayer && (
+                <div className='rounded-lg border p-3 text-sm space-y-2' style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}>
+                  <p style={{ color: 'hsl(var(--tf-fg))' }}>
+                    Ready to export {selectedLayer.name}
+                  </p>
+                  <p style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Source: {selectedLayer.source}
+                  </p>
+                  <p style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Service: {selectedLayer.serviceUrl}
                   </p>
                 </div>
               )}
 
-              {/* Success */}
-              {eqExportState.status === 'success' && (
+              <TactileButton
+                onClick={handleExport}
+                disabled={!selectedLayer || loadingLayers || exportState.status === 'loading'}
+                fullWidth
+                loading={exportState.status === 'loading'}
+                leftIcon={<Download size={14} />}
+              >
+                {exportState.status === 'loading' ? 'Generating Live Export…' : 'Generate Live Export'}
+              </TactileButton>
+
+              {exportState.status === 'success' && (
                 <div
-                  className='p-3 rounded space-y-1'
+                  className='rounded-lg border p-3 text-sm space-y-2'
                   style={{
-                    background: 'hsl(var(--tf-success-hs) 45% / 0.1)',
-                    border: '1px solid hsl(var(--tf-success-hs) 45% / 0.3)',
+                    borderColor: 'hsl(var(--tf-success-hs) 45% / 0.35)',
+                    background: 'hsl(var(--tf-success-hs) 45% / 0.08)',
                   }}
-                  data-testid='eq-export-success'
                 >
                   <div className='flex items-center gap-2'>
                     <CheckCircle2 size={14} style={{ color: 'hsl(var(--tf-success-hs) 45%)' }} />
-                    <span className='text-xs font-medium' style={{ color: 'hsl(var(--tf-success-hs) 45%)' }}>
-                      Package assembled — {eqExportState.result.artifactCount} artifacts
-                    </span>
+                    <p style={{ color: 'hsl(var(--tf-success-hs) 45%)' }}>
+                      Live export ready
+                    </p>
                   </div>
-                  <p className='text-[10px]' style={{ color: 'hsl(var(--tf-muted))' }}>
-                    Checklist: {eqExportState.result.checklist?.join(', ')}
+                  <p style={{ color: 'hsl(var(--tf-fg))' }}>
+                    {exportState.artifact.filename} · {exportState.artifact.featureCount.toLocaleString()} features
                   </p>
-                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
-                    ref: {eqExportState.result.packageRef}
-                  </p>
-                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
-                    correlationId: {eqExportState.correlationId}
-                  </p>
+                  <Button asChild variant='outline' size='sm'>
+                    <a href={exportState.downloadUrl} download={exportState.artifact.filename}>
+                      Download Export
+                    </a>
+                  </Button>
+                </div>
+              )}
+
+              {exportState.status === 'error' && (
+                <div
+                  className='rounded-lg border p-3 text-sm'
+                  style={{
+                    borderColor: 'hsl(var(--tf-suite-dossier) / 0.35)',
+                    color: 'hsl(var(--tf-suite-dossier))',
+                  }}
+                >
+                  {exportState.error}
                 </div>
               )}
             </CardContent>

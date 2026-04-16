@@ -1,80 +1,77 @@
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import TerraExportModule from '../../pages/suites/modules/TerraExportModule';
 
-const mockInvokeTool = vi.fn();
+const mockGetLiveExportLayers = vi.fn();
+const mockExportAtlasLayer = vi.fn();
+const mockCreateObjectURL = vi.fn(() => 'blob:atlas-export');
 
-vi.mock('@/api/pilotApi', () => ({
-  invokeTool: (...args: unknown[]) => mockInvokeTool(...args),
+vi.mock('@/services/atlasService', () => ({
+  atlasService: {
+    getLiveExportLayers: (...args: unknown[]) => mockGetLiveExportLayers(...args),
+    exportAtlasLayer: (...args: unknown[]) => mockExportAtlasLayer(...args),
+  },
 }));
 
 describe('TerraExportModule contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockInvokeTool.mockImplementation(async ({ toolId }: { toolId: string }) => {
-      if (toolId === 'export_audit_bundle') {
-        return {
-          result: {
-            payloadRef: 'payload:atlas-audit',
-            bundleRef: 'bundle:atlas-audit',
-            artifactCount: 7,
-            traceRef: 'trace:atlas-audit',
-          },
-          correlationId: 'corr-export-001',
-        };
-      }
+    vi.stubGlobal(
+      'URL',
+      Object.assign(URL, {
+        createObjectURL: mockCreateObjectURL,
+        revokeObjectURL: vi.fn(),
+      }),
+    );
+    mockGetLiveExportLayers.mockResolvedValue([
+      {
+        id: 'parcels',
+        name: 'Parcel Boundaries',
+        serviceUrl: 'https://example.test/FeatureServer/0',
+        queryUrl: 'https://example.test/FeatureServer/0/query?where=1%3D1&f=geojson',
+        fields: ['PARCEL_ID', 'SITE_ADDR', 'ASSESSED_VAL'],
+        geometryType: 'esriGeometryPolygon',
+        featureCount: 89247,
+        source: 'Benton County ArcGIS layer configs',
+      },
+    ]);
 
-      if (toolId === 'export_equalization_package') {
-        return {
-          result: {
-            payloadRef: 'payload:eq',
-            packageRef: 'package:eq',
-            artifactCount: 5,
-            checklist: ['ratio-study'],
-          },
-          correlationId: 'corr-eq-001',
-        };
-      }
-
-      throw new Error(`Unexpected tool: ${toolId}`);
+    mockExportAtlasLayer.mockResolvedValue({
+      filename: 'parcel-boundaries.geojson',
+      format: 'geojson',
+      featureCount: 89247,
+      source: 'Benton County ArcGIS layer configs',
+      blob: new Blob(['{"type":"FeatureCollection","features":[]}'], { type: 'application/geo+json' }),
     });
   });
 
-  const renderModule = () => {
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: {
-          retry: false,
-        },
-      },
-    });
-
-    return render(
-      <QueryClientProvider client={queryClient}>
-        <TerraExportModule />
-      </QueryClientProvider>
-    );
-  };
-
-  it('renders governed export posture surface', () => {
-    renderModule();
+  it('renders live export posture surface', async () => {
+    render(<TerraExportModule />);
 
     expect(screen.getByTestId('terraexport-governed-brief')).toBeInTheDocument();
-  });
-
-  it('exports a governed audit bundle and shows trace refs', async () => {
-    renderModule();
-
-    fireEvent.click(screen.getByRole('button', { name: /Export Audit Bundle/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/Audit bundle assembled/i)).toBeInTheDocument();
-      expect(screen.getByText(/bundle:atlas-audit/i)).toBeInTheDocument();
-      expect(screen.getByText(/trace:atlas-audit/i)).toBeInTheDocument();
-      expect(screen.getByText(/corr-export-001/i)).toBeInTheDocument();
+      expect(screen.getByText(/Selected layer:\s*Parcel Boundaries/i)).toBeInTheDocument();
+      expect(screen.getByText(/89,247 features/i)).toBeInTheDocument();
+    });
+  });
+
+  it('generates a live Atlas export artifact and records it in history', async () => {
+    render(<TerraExportModule />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Ready to export\s+Parcel Boundaries/i)).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Generate Live Export/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Live export ready/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/parcel-boundaries\.geojson/i).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/89,247 features/i).length).toBeGreaterThan(0);
+      expect(screen.getByRole('link', { name: /Download parcel-boundaries\.geojson/i })).toBeInTheDocument();
     });
   });
 });
