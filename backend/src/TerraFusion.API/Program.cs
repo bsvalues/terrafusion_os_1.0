@@ -559,6 +559,12 @@ builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceServi
 // TerraGaiaService doesn't run background tasks, so Scoped lifetime is appropriate for on-demand AI consciousness queries
 builder.Services.AddScoped<ITerraGaiaService, TerraGaiaService>();
 
+// CostForge Benton Method v2 — Track 0 canonical data foundation
+// PacsCanonicalizer is the sole bridge from Pacs* staging entities to canonical
+// CamaCharacteristic.City and CamaCharacteristic.PropertyUseStratum.
+builder.Services.AddScoped<TerraFusion.Data.Canonicalizers.IPacsCanonicalizer,
+    TerraFusion.Data.Canonicalizers.PacsCanonicalizer>();
+
 // TIER 5+ Cognitive Framework - 3-6-9-12 Development Excellence
 builder.Services.AddScoped<ICognitiveFrameworkService, CognitiveFrameworkService>();
 
