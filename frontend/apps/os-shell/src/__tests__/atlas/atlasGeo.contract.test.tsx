@@ -24,6 +24,7 @@
 import '@testing-library/jest-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 
 // ---------------------------------------------------------------------------
 // UI primitive mocks — use relative paths, not @/ aliases
@@ -56,6 +57,20 @@ vi.mock('../../hooks/useParcelCount', () => ({
     error: null,
     isSuccess: true,
   }),
+}));
+
+vi.mock('../../api/pilotApi', () => ({
+  invokeTool: vi.fn(async () => ({
+    success: true,
+    correlationId: 'corr-atlas-001',
+    result: {
+      output: JSON.stringify({
+        narrative: 'Residual clustering is concentrated in the governed Benton audit area.',
+        hotspotCount: 3,
+        recommendedAction: 'Route neighborhood review to TerraForge and parcel defects to Workbench.',
+      }),
+    },
+  })),
 }));
 
 // ---------------------------------------------------------------------------
@@ -133,6 +148,21 @@ describe('GeoEquityDashboard — contract', () => {
     const { container } = render(<GeoEquityDashboard />);
     const violations = findLightModeViolations(container.innerHTML);
     expect(violations).toEqual([]);
+  });
+
+  it('renders a governed anomaly brief for the selected Atlas scope', async () => {
+    render(<GeoEquityDashboard />);
+
+    expect(screen.getByTestId('geo-equity-governed-brief')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Residual clustering is concentrated in the governed Benton audit area\./i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Route neighborhood review to TerraForge and parcel defects to Workbench\./i)
+      ).toBeInTheDocument();
+    });
   });
 });
 

@@ -13,6 +13,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 
+import { invokeTool } from '@/api/pilotApi';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { useAtlasSpatialStore } from '@/stores/atlasSpatialStore';
@@ -22,6 +23,12 @@ import type { EquityArea } from '@/data/atlasSpatialFixtures';
 export type { EquityArea };
 
 type PropertyTypeFilter = 'All' | 'Residential' | 'Commercial' | 'Industrial' | 'Agricultural';
+
+interface SpatialAnomalySummary {
+  narrative: string;
+  hotspotCount: number;
+  recommendedAction: string;
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -41,6 +48,14 @@ function equityLabel(ratio: number): string {
   return 'Inequitable';
 }
 
+function parseToolOutput<T>(output: unknown, fallback: T): T {
+  try {
+    return typeof output === 'string' ? JSON.parse(output) as T : output as T;
+  } catch {
+    return fallback;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -49,6 +64,12 @@ export default function GeoEquityDashboard() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [propertyTypeFilter, setPropertyTypeFilter] = useState<PropertyTypeFilter>('All');
   const [isFixture, setIsFixture] = useState(true);
+  const [spatialNarrative, setSpatialNarrative] = useState<{
+    status: 'idle' | 'loading' | 'success' | 'error';
+    result?: SpatialAnomalySummary;
+    correlationId?: string;
+    error?: string;
+  }>({ status: 'idle' });
 
   // Consume from store if available, fall back to fixtures
   const storeAreas = useAtlasSpatialStore((s) => s.equityAreas);
@@ -78,6 +99,65 @@ export default function GeoEquityDashboard() {
   );
 
   const propertyTypes: PropertyTypeFilter[] = ['All', 'Residential', 'Commercial', 'Industrial', 'Agricultural'];
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const geographyId = selectedArea?.id ?? 'countywide';
+    const metric = selectedArea && Math.abs(selectedArea.prd - 1) > 0.07 ? 'prd' : 'residual_cluster';
+
+    const loadNarrative = async () => {
+      setSpatialNarrative({ status: 'loading' });
+      try {
+        const response = await invokeTool({
+          toolId: 'explain_spatial_anomaly',
+          params: {
+            county: 'benton',
+            taxYear: 2026,
+            metric,
+            geographyId,
+          },
+        });
+
+        if (cancelled) {
+          return;
+        }
+
+        if (response.success && response.result) {
+          setSpatialNarrative({
+            status: 'success',
+            correlationId: response.correlationId,
+            result: parseToolOutput<SpatialAnomalySummary>(response.result.output, {
+              narrative: 'No governed anomaly narrative available.',
+              hotspotCount: 0,
+              recommendedAction: 'Open TerraAtlas suite for county-level review.',
+            }),
+          });
+        } else {
+          setSpatialNarrative({
+            status: 'error',
+            correlationId: response.correlationId,
+            error: response.error?.message || 'Governed anomaly narrative unavailable.',
+          });
+        }
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+        setSpatialNarrative({
+          status: 'error',
+          correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+          error: error instanceof Error ? error.message : 'Governed anomaly narrative unavailable.',
+        });
+      }
+    };
+
+    void loadNarrative();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedArea]);
 
   return (
     <div data-testid="geo-equity-dashboard" className="flex flex-col h-full bg-terra-midnight text-white">
@@ -209,6 +289,38 @@ export default function GeoEquityDashboard() {
                 </button>
               );
             })}
+          </CardContent>
+        </Card>
+
+        <Card variant="glass" data-material="bento" data-testid="geo-equity-governed-brief">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-terra-cyan">Governed Spatial Finding</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <p className="text-white/70">
+              {spatialNarrative.status === 'success'
+                ? spatialNarrative.result?.narrative
+                : spatialNarrative.status === 'loading'
+                  ? 'Loading governed anomaly narrative...'
+                  : spatialNarrative.error ?? 'Governed anomaly narrative unavailable.'}
+            </p>
+            <div className="rounded border border-white/10 bg-white/5 p-3 space-y-1 text-xs">
+              <div className="flex justify-between gap-3">
+                <span className="text-white/40">Scope</span>
+                <span>{selectedArea?.name ?? 'Countywide residual clusters'}</span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-white/40">Hotspots</span>
+                <span>{spatialNarrative.result?.hotspotCount ?? 0}</span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-white/40">Route</span>
+                <span className="text-right">{spatialNarrative.result?.recommendedAction ?? 'Open TerraAtlas suite for county-level review.'}</span>
+              </div>
+            </div>
+            <p className="text-[11px] text-white/40">
+              {spatialNarrative.correlationId ? `corr ${spatialNarrative.correlationId}` : 'corr pending'} | Atlas explains the spatial signal; Forge still owns county calibration changes and Workbench owns parcel fixes.
+            </p>
           </CardContent>
         </Card>
 
