@@ -19,7 +19,7 @@ import { Award,
   TrendingUp,
   Upload,
   Zap
- } from '@mui/icons-material';
+ } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link } from "wouter";
 
@@ -116,29 +116,26 @@ export default function ConsolidatedDashboard() {
       {/* Enhanced Header */}
       <div className="tf-card p-8 bg-gradient-to-r from-white via-cyan-50/30 to-blue-50/30">
         <div className="flex justify-between items-center">
-          <div className="space-y-2"><>
+          <div className="space-y-2">
 
             <h1 className="text-4xl font-bold tf-gradient-text">
               Benton County PILT Management
             </h1>
-            <p
-</> className="text-lg text-slate-600 font-medium">
+            <p className="text-lg text-slate-600 font-medium">
               Payment in Lieu of Taxes • Federal Compliance Dashboard
             </p>
             <div className="flex items-center space-x-4 mt-4">
-              <div className="tf-badge"><>
+              <div className="tf-badge">
 
                 <Award className="w-4 h-4 mr-1" />
                 Federal Certified
               </div>
-              <div
-</> className="tf-badge"><>
+              <div className="tf-badge">
 
                 <Target className="w-4 h-4 mr-1" />
                 99.9% Accurate
               </div>
-              <div
-</> className="tf-badge">
+              <div className="tf-badge">
                 <CheckCircle className="w-4 h-4 mr-1" />
                 Real-time Data
               </div>
@@ -146,12 +143,11 @@ export default function ConsolidatedDashboard() {
           </div>
           <div className="flex gap-4 items-center">
             <Select value={selectedYear} onValueChange={setSelectedYear}>
-              <SelectTrigger className="tf-input w-40 h-12 text-lg font-semibold"><>
+              <SelectTrigger className="tf-input w-40 h-12 text-lg font-semibold">
 
                 <SelectValue placeholder="Select Year" />
               </SelectTrigger>
-              <SelectContent
-</> className="tf-card">
+              <SelectContent className="tf-card">
                 {availableYears.map(year => (
                   <SelectItem key={year} value={year} className="text-lg">{year}</SelectItem>
                 ))}
@@ -165,19 +161,17 @@ export default function ConsolidatedDashboard() {
       {currentYearData && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 tf-animate-slide-up">
           <div className="tf-metric-card tf-glow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3"><>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
 
               <CardTitle className="text-sm font-semibold text-slate-600 uppercase tracking-wide">PILT Amount</CardTitle>
-              <div
-</> className="p-2 bg-gradient-to-r from-[#0891b2] to-[#00d2ff] rounded-lg">
+              <div className="p-2 bg-gradient-to-r from-[#0891b2] to-[#00d2ff] rounded-lg">
                 <DollarSign className="h-5 w-5 text-white" />
               </div>
             </CardHeader>
-            <CardContent><>
+            <CardContent>
 
               <div className="text-3xl font-bold tf-gradient-text">${currentYearData.amount.toLocaleString()}</div>
-              <p
-</> className="text-sm text-slate-500 mt-2 flex items-center">
+              <p className="text-sm text-slate-500 mt-2 flex items-center">
                 <TrendingUp className="w-4 h-4 mr-1" />
                 {yearOverYearChange > 0 ? "+" : ""}{yearOverYearChange.toFixed(1)}% from {parseInt(selectedYear) - 1}
               </p>
@@ -185,34 +179,31 @@ export default function ConsolidatedDashboard() {
           </div>
 
           <div className="tf-metric-card tf-glow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3"><>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
 
               <CardTitle className="text-sm font-semibold text-slate-600 uppercase tracking-wide">Assessed Value</CardTitle>
-              <div
-</> className="p-2 bg-gradient-to-r from-[#0891b2] to-[#00d2ff] rounded-lg">
+              <div className="p-2 bg-gradient-to-r from-[#0891b2] to-[#00d2ff] rounded-lg">
                 <Building className="h-5 w-5 text-white" />
               </div>
             </CardHeader>
-            <CardContent><>
+            <CardContent>
 
               <div className="text-3xl font-bold tf-gradient-text">${currentYearData.assessedValue?.toLocaleString() || 'N/A'}</div>
-              <p
-</> className="text-sm text-slate-500 mt-2">
+              <p className="text-sm text-slate-500 mt-2">
                 Total Hanford assessed value
               </p>
             </CardContent>
           </div>
 
           <div className="tf-metric-card tf-glow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3"><>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
 
               <CardTitle className="text-sm font-semibold text-slate-600 uppercase tracking-wide">Effective Rate</CardTitle>
-              <div
-</> className="p-2 bg-gradient-to-r from-[#0891b2] to-[#00d2ff] rounded-lg">
+              <div className="p-2 bg-gradient-to-r from-[#0891b2] to-[#00d2ff] rounded-lg">
                 <Calculator className="h-5 w-5 text-white" />
               </div>
             </CardHeader>
-            <CardContent><>
+            <CardContent>
 
               <div className="text-3xl font-bold tf-gradient-text">
                 {currentYearData.assessedValue
@@ -220,27 +211,24 @@ export default function ConsolidatedDashboard() {
                   : 'N/A'
                 }
               </div>
-              <p
-</> className="text-sm text-slate-500 mt-2">
+              <p className="text-sm text-slate-500 mt-2">
                 PILT as % of assessed value
               </p>
             </CardContent>
           </div>
 
           <div className="tf-metric-card tf-glow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3"><>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
 
               <CardTitle className="text-sm font-semibold text-slate-600 uppercase tracking-wide">Status</CardTitle>
-              <div
-</> className="p-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg">
+              <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg">
                 <CheckCircle className="h-5 w-5 text-white" />
               </div>
             </CardHeader>
-            <CardContent><>
+            <CardContent>
 
               <div className="text-3xl font-bold text-green-600">Current</div>
-              <p
-</> className="text-sm text-slate-500 mt-2">
+              <p className="text-sm text-slate-500 mt-2">
                 Data verified & complete
               </p>
             </CardContent>
@@ -251,25 +239,22 @@ export default function ConsolidatedDashboard() {
       {/* Enhanced Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="tf-card p-2 bg-white/80 backdrop-blur-sm grid w-full grid-cols-4 h-14">
-          <TabsTrigger value="overview" className="tf-btn-ghost data-[state=active]:tf-btn-primary data-[state=active]:text-white"><>
+          <TabsTrigger value="overview" className="tf-btn-ghost data-[state=active]:tf-btn-primary data-[state=active]:text-white">
 
             <BarChart3 className="w-4 h-4 mr-2" />
             Overview
           </TabsTrigger>
-          <TabsTrigger
-</> value="calculations" className="tf-btn-ghost data-[state=active]:tf-btn-primary data-[state=active]:text-white"><>
+          <TabsTrigger value="calculations" className="tf-btn-ghost data-[state=active]:tf-btn-primary data-[state=active]:text-white">
 
             <Calculator className="w-4 h-4 mr-2" />
             Calculations
           </TabsTrigger>
-          <TabsTrigger
-</> value="reports" className="tf-btn-ghost data-[state=active]:tf-btn-primary data-[state=active]:text-white"><>
+          <TabsTrigger value="reports" className="tf-btn-ghost data-[state=active]:tf-btn-primary data-[state=active]:text-white">
 
             <FileText className="w-4 h-4 mr-2" />
             Reports
           </TabsTrigger>
-          <TabsTrigger
-</> value="history" className="tf-btn-ghost data-[state=active]:tf-btn-primary data-[state=active]:text-white">
+          <TabsTrigger value="history" className="tf-btn-ghost data-[state=active]:tf-btn-primary data-[state=active]:text-white">
             <Calendar className="w-4 h-4 mr-2" />
             History
           </TabsTrigger>
@@ -279,11 +264,10 @@ export default function ConsolidatedDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Enhanced Distribution Chart */}
             <div className="tf-card tf-glow">
-              <CardHeader className="pb-4"><>
+              <CardHeader className="pb-4">
 
                 <CardTitle className="text-xl font-bold tf-gradient-text">Distribution by District</CardTitle>
-                <CardDescription
-</> className="text-slate-600">PILT payments allocated to taxing districts</CardDescription>
+                <CardDescription className="text-slate-600">PILT payments allocated to taxing districts</CardDescription>
               </CardHeader>
               <CardContent>
                 {processedDistributionData && (
@@ -300,25 +284,23 @@ export default function ConsolidatedDashboard() {
 
             {/* Enhanced Quick Actions */}
             <div className="tf-card tf-glow">
-              <CardHeader className="pb-4"><>
+              <CardHeader className="pb-4">
 
                 <CardTitle className="text-xl font-bold tf-gradient-text">Quick Actions</CardTitle>
-                <CardDescription
-</> className="text-slate-600">Common PILT management tasks</CardDescription>
+                <CardDescription className="text-slate-600">Common PILT management tasks</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button
                   onClick={() => generateReport()}
                   disabled={reportLoading}
                   className="tf-btn-primary w-full h-12 text-lg"
-                ><>
+                >
 
                   <FileText className="mr-3 h-5 w-5" />
                   {reportLoading ? "Generating..." : `Generate ${selectedYear} Report`}
                 </Button>
 
-                <Link
-</> href="/reports">
+                <Link href="/reports">
                   <Button className="tf-btn-secondary w-full h-12 text-lg">
                     <Download className="mr-3 h-5 w-5" />
                     View All Reports
@@ -337,23 +319,21 @@ export default function ConsolidatedDashboard() {
 
           {/* Enhanced Recent PILT History */}
           <div className="tf-card tf-glow">
-            <CardHeader className="pb-4"><>
+            <CardHeader className="pb-4">
 
               <CardTitle className="text-xl font-bold tf-gradient-text">Recent PILT Payments</CardTitle>
-              <CardDescription
-</> className="text-slate-600">Last 5 years of PILT receipts</CardDescription>
+              <CardDescription className="text-slate-600">Last 5 years of PILT receipts</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {historyData?.slice(0, 5).map((pilt /* , index */) => (
+                {historyData?.slice(0, 5).map((pilt , index) => (
                   <div key={index} className="flex justify-between items-center p-4 rounded-lg bg-gradient-to-r from-slate-50 to-cyan-50/30 border border-slate-200/60 hover:shadow-md transition-all duration-200">
                     <div className="flex items-center gap-4">
-                      <div className="p-2 bg-gradient-to-r from-[#0891b2] to-[#00d2ff] rounded-lg"><>
+                      <div className="p-2 bg-gradient-to-r from-[#0891b2] to-[#00d2ff] rounded-lg">
 
                         <Calendar className="h-4 w-4 text-white" />
                       </div>
-                      <div
-</>>
+                      <div>
                         <span className="font-bold text-lg tf-gradient-text">{pilt.year}</span>
                         {pilt.assessedValue && (
                           <p className="text-sm text-slate-500">
@@ -376,25 +356,22 @@ export default function ConsolidatedDashboard() {
           {reportData && reportData.success && (
             <div className="space-y-6">
               <div className="tf-card tf-glow">
-                <CardHeader className="pb-4"><>
+                <CardHeader className="pb-4">
 
                   <CardTitle className="text-xl font-bold tf-gradient-text">PILT Calculation Summary - {selectedYear}</CardTitle>
-                  <CardDescription
-</> className="text-slate-600">District-by-district breakdown using actual levy rates</CardDescription>
+                  <CardDescription className="text-slate-600">District-by-district breakdown using actual levy rates</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-2 gap-6">
-                    <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-200/60"><>
+                    <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-200/60">
 
                       <p className="text-sm font-semibold text-blue-600 uppercase tracking-wide">Database Amount</p>
-                      <p
-</> className="text-3xl font-bold tf-gradient-text mt-2">${reportData.total_pilt.toLocaleString()}</p>
+                      <p className="text-3xl font-bold tf-gradient-text mt-2">${reportData.total_pilt.toLocaleString()}</p>
                     </div>
-                    <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200/60"><>
+                    <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200/60">
 
                       <p className="text-sm font-semibold text-green-600 uppercase tracking-wide">Calculated Amount</p>
-                      <p
-</> className="text-3xl font-bold text-green-700 mt-2">${Math.round(reportData.calculated_pilt).toLocaleString()}</p>
+                      <p className="text-3xl font-bold text-green-700 mt-2">${Math.round(reportData.calculated_pilt).toLocaleString()}</p>
                     </div>
                   </div>
 
@@ -409,28 +386,24 @@ export default function ConsolidatedDashboard() {
                   <div className="tf-table">
                     <table className="w-full">
                       <thead>
-                        <tr><>
+                        <tr>
 
                           <th>District</th>
-                          <th
-</>>Levy Rate</th><>
+                          <th>Levy Rate</th>
 
                           <th>Assessed Value</th>
-                          <th
-</>>PILT Amount</th>
+                          <th>PILT Amount</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {reportData.districts.slice(0, 12).map((district /* , index */) => (
-                          <tr key={index}><>
+                        {reportData.districts.slice(0, 12).map((district , index) => (
+                          <tr key={index}>
 
                             <td className="font-semibold">{district.district}</td>
-                            <td
-</>>{(district.levyRate * 100).toFixed(4)}%</td><>
+                            <td>{(district.levyRate * 100).toFixed(4)}%</td>
 
                             <td>${district.assessedValue.toLocaleString()}</td>
-                            <td
-</> className="font-bold tf-gradient-text">${Math.round(district.amount).toLocaleString()}</td>
+                            <td className="font-bold tf-gradient-text">${Math.round(district.amount).toLocaleString()}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -444,16 +417,14 @@ export default function ConsolidatedDashboard() {
           {!reportData && (
             <div className="tf-card tf-glow text-center p-12">
               <div className="space-y-4">
-                <div className="mx-auto w-16 h-16 bg-gradient-to-r from-[#0891b2] to-[#00d2ff] rounded-full flex items-center justify-center"><>
+                <div className="mx-auto w-16 h-16 bg-gradient-to-r from-[#0891b2] to-[#00d2ff] rounded-full flex items-center justify-center">
 
                   <Calculator className="h-8 w-8 text-white" />
                 </div>
-                <CardTitle
-</> className="text-2xl font-bold tf-gradient-text">Generate Calculation Report</CardTitle><>
+                <CardTitle className="text-2xl font-bold tf-gradient-text">Generate Calculation Report</CardTitle>
 
                 <CardDescription className="text-lg text-slate-600">Click to calculate PILT distribution for {selectedYear}</CardDescription>
-                <Button
-</> onClick={() => generateReport()} disabled={reportLoading} className="tf-btn-primary text-lg px-8 py-3 mt-6">
+                <Button onClick={() => generateReport()} disabled={reportLoading} className="tf-btn-primary text-lg px-8 py-3 mt-6">
                   {reportLoading ? "Calculating..." : "Calculate PILT Distribution"}
                 </Button>
               </div>
@@ -464,11 +435,10 @@ export default function ConsolidatedDashboard() {
         <TabsContent value="reports" className="space-y-6 tf-animate-slide-up">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="tf-card tf-glow">
-              <CardHeader className="pb-4"><>
+              <CardHeader className="pb-4">
 
                 <CardTitle className="text-xl font-bold tf-gradient-text">Certification Letters</CardTitle>
-                <CardDescription
-</> className="text-slate-600">Official DOE correspondence</CardDescription>
+                <CardDescription className="text-slate-600">Official DOE correspondence</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Link href="/reports">
@@ -487,20 +457,18 @@ export default function ConsolidatedDashboard() {
             </div>
 
             <div className="tf-card tf-glow">
-              <CardHeader className="pb-4"><>
+              <CardHeader className="pb-4">
 
                 <CardTitle className="text-xl font-bold tf-gradient-text">Data Export</CardTitle>
-                <CardDescription
-</> className="text-slate-600">Download PILT data in various formats</CardDescription>
+                <CardDescription className="text-slate-600">Download PILT data in various formats</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Button className="tf-btn-secondary w-full h-12 text-lg"><>
+                <Button className="tf-btn-secondary w-full h-12 text-lg">
 
                   <Download className="mr-3 h-5 w-5" />
                   Export to Excel
                 </Button>
-                <Button
-</> className="tf-btn-secondary w-full h-12 text-lg">
+                <Button className="tf-btn-secondary w-full h-12 text-lg">
                   <Download className="mr-3 h-5 w-5" />
                   Export to CSV
                 </Button>
@@ -511,21 +479,19 @@ export default function ConsolidatedDashboard() {
 
         <TabsContent value="history" className="space-y-6 tf-animate-slide-up">
           <div className="tf-card tf-glow">
-            <CardHeader className="pb-4"><>
+            <CardHeader className="pb-4">
 
               <CardTitle className="text-xl font-bold tf-gradient-text">Historical PILT Data</CardTitle>
-              <CardDescription
-</> className="text-slate-600">Complete payment history from 2014-{new Date().getFullYear()}</CardDescription>
+              <CardDescription className="text-slate-600">Complete payment history from 2014-{new Date().getFullYear()}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {historyData?.map((pilt /* , index */) => (
+                {historyData?.map((pilt , index) => (
                   <div key={index} className="flex justify-between items-center p-4 rounded-lg bg-gradient-to-r from-slate-50 to-cyan-50/30 border border-slate-200/60 hover:shadow-md transition-all duration-200">
-                    <div className="flex items-center gap-4"><>
+                    <div className="flex items-center gap-4">
 
                       <div className="tf-badge text-lg px-4 py-2">{pilt.year}</div>
-                      <div
-</>>
+                      <div>
                         <p className="font-bold text-lg tf-gradient-text">${pilt.amount.toLocaleString()}</p>
                         {pilt.assessedValue && (
                           <p className="text-sm text-slate-500">

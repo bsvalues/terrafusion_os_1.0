@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import { LucideIcon  } from '@mui/icons-material';
+import { LucideIcon  } from 'lucide-react';
 
 interface MetricCardProps {
   title: string;
@@ -40,13 +40,12 @@ export function MetricCard({
     <Card className="overflow-hidden">
       <CardContent className="p-6">
         <div className="flex items-center gap-4">
-          <div className={cn("p-2 rounded-full", colorVariants[color])}><>
+          <div className={cn("p-2 rounded-full", colorVariants[color])}>
 
             <Icon className="h-5 w-5" />
           </div>
           
-          <div
-</> className="space-y-1">
+          <div className="space-y-1">
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
             
             {isLoading ? (

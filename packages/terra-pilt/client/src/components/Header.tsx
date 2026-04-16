@@ -9,7 +9,7 @@ import { BarChart3,
   Zap,
   Target,
   TrendingUp
- } from '@mui/icons-material';
+ } from 'lucide-react';
 
 const Header: React.FC = () => {
   const [location] = useLocation();
@@ -28,16 +28,14 @@ const Header: React.FC = () => {
           {/* Logo and Title */}
           <Link href="/">
             <div className="flex items-center space-x-3 cursor-pointer">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-lg flex items-center justify-center"><>
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-lg flex items-center justify-center">
 
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
-              <div
-</>><>
+              <div>
 
                 <h1 className="text-xl font-bold text-gray-900">TerraFusionPilt</h1>
-                <p
-</> className="text-xs text-gray-600">V2.0.0 - Advanced PILT Management</p>
+                <p className="text-xs text-gray-600">V2.0.0 - Advanced PILT Management</p>
               </div>
             </div>
           </Link>
@@ -81,13 +79,12 @@ const Header: React.FC = () => {
 
           {/* Status Indicators */}
           <div className="flex items-center space-x-3">
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200"><>
+            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
 
               <Zap className="w-3 h-3 mr-1" />
               PACS Connected
             </Badge>
-            <Badge
-</> variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
               <Target className="w-3 h-3 mr-1" />
               Production Ready
             </Badge>

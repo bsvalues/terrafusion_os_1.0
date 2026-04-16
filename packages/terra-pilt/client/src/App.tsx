@@ -3,7 +3,6 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/not-found";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ConsolidatedDashboard from "@/pages/ConsolidatedDashboard";
@@ -24,7 +23,12 @@ function App() {
               <Route path="/bulk-import" component={BulkImport} />
               <Route path="/analytics" component={AdvancedAnalyticsDashboard} />
               <Route path="/monitor" component={RealTimePiltMonitor} />
-              <Route component={NotFound} />
+              <Route>
+                <div className="p-8 text-center">
+                  <h1 className="text-2xl font-semibold text-slate-800">404</h1>
+                  <p className="text-slate-600">Page not found</p>
+                </div>
+              </Route>
             </Switch>
           </main>
           <Footer />

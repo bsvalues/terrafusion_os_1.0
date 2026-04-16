@@ -9,7 +9,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, AlertCircle, Download  } from '@mui/icons-material';
+import { Loader2, AlertCircle, Download  } from 'lucide-react';
 import { DistributionData, CHART_COLORS } from "@/lib/data";
 import { formatCurrency } from "@/lib/utils";
 
@@ -43,11 +43,10 @@ const DistributionPieChart: React.FC<DistributionPieChartProps> = ({
       const percentage = ((item.amount / total) * 100).toFixed(1);
       
       return (
-        <div className="bg-white p-3 border border-gray-200 shadow-md rounded-md"><>
+        <div className="bg-white p-3 border border-gray-200 shadow-md rounded-md">
 
           <p className="font-medium">{item.district}</p>
-          <p
-</>>{`Amount: ${formatCurrency(item.amount)}`}</p>
+          <p>{`Amount: ${formatCurrency(item.amount)}`}</p>
           <p>{`Percentage: ${percentage}%`}</p>
         </div>
       );
@@ -61,7 +60,7 @@ const DistributionPieChart: React.FC<DistributionPieChartProps> = ({
     
     return (
       <div className="mt-6 grid grid-cols-2 gap-2">
-        {payload.map((entry: any /* , index */: number) => (
+          {payload.map((entry: any, index: number) => (
           <div key={`legend-${index}`} className="flex items-center">
             <span 
               className="h-3 w-3 rounded-full mr-2" 
@@ -100,11 +99,10 @@ const DistributionPieChart: React.FC<DistributionPieChartProps> = ({
             </div>
           ) : error ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center text-red-600">
-              <AlertCircle className="h-10 w-10 mb-2" /><>
+              <AlertCircle className="h-10 w-10 mb-2" />
 
               <p className="text-center">Error loading chart data</p>
-              <p
-</> className="text-sm text-center">{error.message}</p>
+              <p className="text-sm text-center">{error.message}</p>
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
@@ -121,16 +119,14 @@ const DistributionPieChart: React.FC<DistributionPieChartProps> = ({
                   paddingAngle={2}
                   isAnimationActive={true}
                 >
-                  {data?.map((entry /* , index */) => (<>
-
+                  {data?.map((entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
                       fill={CHART_COLORS[index % CHART_COLORS.length]} 
                     />
                   ))}
                 </Pie>
-                <Tooltip
-</> content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip />} />
                 <Legend
                   content={renderLegend}
                   layout="horizontal"
