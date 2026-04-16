@@ -259,10 +259,12 @@ function MapPlaceholder({ observations }: { observations: FieldObservation[] }) 
 }
 
 // ============================================================================
-// Main Page
+// Main Page (re-exported for backwards-compat — active implementation is FieldStudioDashboard)
+// See top-of-file export { FieldStudioDashboard as default } from '../../components/field'
 // ============================================================================
 
-export default function FieldStudio() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function FieldStudioLegacyReference() {
   const [observations, setObservations] = useState<FieldObservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
