@@ -34,10 +34,23 @@ interface EqualizationExportResult {
   checklist: string[];
 }
 
+interface AuditBundleResult {
+  payloadRef: string;
+  bundleRef: string;
+  artifactCount: number;
+  traceRef: string;
+}
+
 type EqExportState =
   | { status: 'idle' }
   | { status: 'loading' }
   | { status: 'success'; result: EqualizationExportResult; correlationId: string }
+  | { status: 'error'; error: string; correlationId: string };
+
+type AuditExportState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'success'; result: AuditBundleResult; correlationId: string }
   | { status: 'error'; error: string; correlationId: string };
 
 type ExportFormat = 'shapefile' | 'geojson' | 'kml' | 'csv' | 'geopackage';
@@ -113,6 +126,7 @@ export default function TerraExportModule() {
   const [eqExportConfirmed, setEqExportConfirmed] = useState(false);
   const [eqTaxYear] = useState<number>(new Date().getFullYear());
   const [eqExportState, setEqExportState] = useState<EqExportState>({ status: 'idle' });
+  const [auditExportState, setAuditExportState] = useState<AuditExportState>({ status: 'idle' });
 
   const handleExportEqualizationPackage = useCallback(async () => {
     if (!eqExportConfirmed) return;
@@ -141,6 +155,37 @@ export default function TerraExportModule() {
       });
     }
   }, [eqExportConfirmed, eqTaxYear]);
+
+  const handleExportAuditBundle = useCallback(async () => {
+    setAuditExportState({ status: 'loading' });
+    try {
+      const res = await invokeTool<AuditBundleResult>({
+        toolId: 'export_audit_bundle',
+        params: {
+          county: 'benton',
+          taxYear: eqTaxYear,
+          bundleScope: 'county',
+          reasonCode: 'annual_certification',
+        },
+        confirmation: {
+          confirmed: true,
+          reasonCode: 'annual_certification',
+        },
+      });
+      setAuditExportState({
+        status: 'success',
+        result: res.result,
+        correlationId: res.correlationId,
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Audit bundle export failed';
+      setAuditExportState({
+        status: 'error',
+        error: msg,
+        correlationId: (err as { correlationId?: string })?.correlationId ?? 'unknown',
+      });
+    }
+  }, [eqTaxYear]);
 
   const { data: statsData } = useParcelCount();
 
@@ -283,6 +328,57 @@ export default function TerraExportModule() {
 
         {/* Export Settings */}
         <div className='space-y-4'>
+          <Card data-testid='terraexport-governed-brief' style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-suite-atlas) / 0.35)' }}>
+            <CardHeader>
+              <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
+                <Globe size={14} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                Governed Export Posture
+              </CardTitle>
+              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                Atlas exports must preserve audit lineage. County packages route through governed equalization and audit bundle tools, not ad hoc file download alone.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-3'>
+              <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                Use Atlas exports for evidence packaging, then route valuation decisions to TerraForge and parcel fixes to Workbench. This panel tracks county-level export posture and traceability.
+              </p>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={handleExportAuditBundle}
+                disabled={auditExportState.status === 'loading'}
+              >
+                {auditExportState.status === 'loading' ? 'Assembling Audit Bundle…' : 'Export Audit Bundle'}
+              </Button>
+
+              {auditExportState.status === 'success' && (
+                <div className='p-3 rounded space-y-1' style={{ background: 'hsl(var(--tf-success-hs) 45% / 0.1)', border: '1px solid hsl(var(--tf-success-hs) 45% / 0.3)' }}>
+                  <p className='text-xs font-medium' style={{ color: 'hsl(var(--tf-success-hs) 45%)' }}>
+                    Audit bundle assembled — {auditExportState.result.artifactCount} artifacts
+                  </p>
+                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    ref: {auditExportState.result.bundleRef}
+                  </p>
+                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    trace: {auditExportState.result.traceRef}
+                  </p>
+                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    correlationId: {auditExportState.correlationId}
+                  </p>
+                </div>
+              )}
+
+              {auditExportState.status === 'error' && (
+                <div className='p-2 rounded text-xs space-y-1' style={{ background: 'hsl(var(--tf-error-hs) 60% / 0.1)', color: 'hsl(var(--tf-error-hs) 60%)' }}>
+                  <p>{auditExportState.error}</p>
+                  <p className='font-mono text-[10px]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    ref: {auditExportState.correlationId}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
             <CardHeader>
               <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>Export Settings</CardTitle>

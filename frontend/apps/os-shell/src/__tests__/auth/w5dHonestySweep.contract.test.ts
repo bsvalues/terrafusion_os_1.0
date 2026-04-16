@@ -259,22 +259,25 @@ describe('Gate 7 — ValueAuditModule renders DemoDataBanner for DEMO_ENTRIES', 
 });
 
 // ============================================================================
-// Gate 8 — MassAppraisalGIS: DEMO_PARCELS unconditional → DemoDataBanner required
+// Gate 8 — MassAppraisalGIS: live Atlas query with no demo parcel fallback
 // ============================================================================
 
-describe('Gate 8 — MassAppraisalGIS renders DemoDataBanner for DEMO_PARCELS', () => {
+describe('Gate 8 — MassAppraisalGIS uses live Atlas geometry without demo fallback', () => {
   const src = readSrc('pages/atlas/MassAppraisalGIS.tsx');
 
-  it('imports DemoDataBanner from governance', () => {
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toMatch(/from\s+['"].*governance\/DemoDataBanner['"]/);
+  it('does not import DemoDataBanner', () => {
+    expect(src).not.toContain('DemoDataBanner');
   });
 
-  it('renders DemoDataBanner with module="Mass Appraisal GIS"', () => {
-    expect(src).toContain('module="Mass Appraisal GIS"');
+  it('does not define DEMO_PARCELS', () => {
+    expect(src).not.toContain('DEMO_PARCELS');
   });
 
-  it('still defines DEMO_PARCELS constant', () => {
-    expect(src).toContain('DEMO_PARCELS');
+  it('loads the live mass appraisal parcel slice from atlasService', () => {
+    expect(src).toContain('searchMassAppraisalParcels');
+  });
+
+  it('renders an explicit live-state disclosure', () => {
+    expect(src).toContain('data-testid="mass-appraisal-live-state"');
   });
 });

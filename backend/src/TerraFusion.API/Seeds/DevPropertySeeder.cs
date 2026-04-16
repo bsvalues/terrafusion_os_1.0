@@ -189,9 +189,10 @@ public sealed class DevPropertySeeder
 
             // Fix-up: PropertyId was previously set to geo_id instead of PropId.
             // Any row where PropertyId == ParcelNumber is wrong — correct it.
-            var geoIdToPropId = parcels.ToDictionary(
-                p => p.GeoId ?? p.SimpleGeoId ?? p.PropId.ToString(),
-                p => p.PropId.ToString());
+            // Use GroupBy to handle parcels where GeoId/SimpleGeoId is not unique.
+            var geoIdToPropId = parcels
+                .GroupBy(p => p.GeoId ?? p.SimpleGeoId ?? p.PropId.ToString())
+                .ToDictionary(g => g.Key, g => g.First().PropId.ToString());
 
             var badRows = await _db.Properties
                 .Where(p => p.PropertyId == p.ParcelNumber)

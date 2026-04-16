@@ -177,7 +177,25 @@ export default defineConfig(({ mode }) => {
     },
 
     optimizeDeps: {
-      include: ['react', 'react-dom', '@mui/material', 'recharts'],
+      include: [
+        'react',
+        'react-dom',
+        '@mui/material',
+        'recharts',
+        '@radix-ui/react-slot',
+        '@radix-ui/react-label',
+        '@radix-ui/react-select',
+        '@radix-ui/react-dropdown-menu',
+        '@radix-ui/react-dialog',
+        '@radix-ui/react-tooltip',
+        '@radix-ui/react-tabs',
+        '@radix-ui/react-popover',
+        'class-variance-authority',
+        'clsx',
+        'tailwind-merge',
+        'lucide-react',
+        'zustand',
+      ],
     },
 
     define: {
