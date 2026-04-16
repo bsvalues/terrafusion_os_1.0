@@ -222,6 +222,67 @@ public class FieldController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+
+    // ── POST /api/field/assignments/{id}/cama-flag ─────────────────────────────
+    /// <summary>
+    /// Creates a PropertyWorkbenchFlag for CAMA review when field observations
+    /// differ from the PACS record. Requires explicit human confirmation before
+    /// the flag is persisted (enforced on the client; this endpoint records the
+    /// result of that confirmation).
+    /// </summary>
+    [HttpPost("assignments/{id}/cama-flag")]
+    public async Task<IActionResult> FlagForCamaReview(
+        Guid id,
+        [FromBody] CamaFlagRequest request)
+    {
+        try
+        {
+            var assignment = await _db.QueueItems.FirstOrDefaultAsync(q => q.Id == id);
+            if (assignment is null)
+                return NotFound(new { error = "Assignment not found" });
+
+            var flag = new PropertyWorkbenchFlag
+            {
+                ParcelId   = assignment.ParcelId,
+                Reason     = request.Reason,
+                Status     = "PENDING_REVIEW",
+                CreatedBy  = request.ReviewerName ?? "field-appraiser",
+                UpdatedBy  = request.ReviewerName ?? "field-appraiser",
+                CreatedAt  = DateTime.UtcNow,
+                UpdatedAt  = DateTime.UtcNow,
+            };
+
+            _db.PropertyWorkbenchFlags.Add(flag);
+
+            // Also close the assignment
+            assignment.Status      = "completed";
+            assignment.CompletedAt = DateTime.UtcNow;
+            assignment.Notes       = string.IsNullOrWhiteSpace(assignment.Notes)
+                ? $"CAMA flag created: {request.Reason}"
+                : assignment.Notes + $"\nCAMA flag: {request.Reason}";
+            assignment.UpdatedAt   = DateTime.UtcNow;
+
+            await _db.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "CAMA flag created for parcel {ParcelId} from assignment {AssignmentId}, flag {FlagId}",
+                assignment.ParcelId, id, flag.Id);
+
+            return Ok(new
+            {
+                flagId    = flag.Id,
+                parcelId  = flag.ParcelId,
+                reason    = flag.Reason,
+                status    = flag.Status,
+                createdAt = flag.CreatedAt,
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating CAMA flag for assignment {Id}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
 }
 
 public record CreateFieldAssignmentsRequest(
@@ -233,3 +294,11 @@ public record CreateFieldAssignmentsRequest(
     Guid? CountyId);
 
 public record UpdateFieldStatusRequest(string Status);
+
+public record CamaFlagRequest(
+    string Reason,
+    string? ReviewerName,
+    string? FieldConditionCode,
+    string? PacsConditionCode,
+    decimal? FieldAreaSqft,
+    decimal? PacsAreaSqft);
