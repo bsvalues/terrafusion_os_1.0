@@ -8,7 +8,7 @@
  * Extracted from PropertyForge.tsx monolith.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useWorkbenchTab } from '../../../../context/workbenchTabContext';
 import { invokeTool } from '../../../../api/pilotApi';
 import { ErrorDisplay } from '../../../../components/errors/ErrorDisplay';
@@ -26,6 +26,31 @@ import {
   formatConfidence,
 } from './types';
 
+// ── NOI Waterfall types ──────────────────────────────────────
+interface NoiInputs {
+  grossRentalIncome: string;
+  vacancyRate: string;
+  creditLossRate: string;
+  operatingExpenses: string;
+  capRateOverride: string;
+}
+
+function computeNoi(inputs: NoiInputs) {
+  const gri = parseFloat(inputs.grossRentalIncome) || 0;
+  const vacancy = Math.min(Math.max(parseFloat(inputs.vacancyRate) || 0, 0), 100) / 100;
+  const creditLoss = Math.min(Math.max(parseFloat(inputs.creditLossRate) || 0, 0), 100) / 100;
+  const opex = parseFloat(inputs.operatingExpenses) || 0;
+  const capRate = Math.max(parseFloat(inputs.capRateOverride) || 0, 0.01) / 100;
+
+  const vacancyLoss = gri * vacancy;
+  const creditLossAmt = gri * creditLoss;
+  const egi = gri - vacancyLoss - creditLossAmt;
+  const noi = egi - opex;
+  const indicatedValue = capRate > 0 && noi > 0 ? noi / capRate : 0;
+
+  return { gri, vacancyLoss, creditLossAmt, egi, opex, noi, indicatedValue, capRate };
+}
+
 export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
   taxYear,
   onHistoryRecord,
@@ -39,6 +64,45 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
   const [rentalIncome, setRentalIncome] = useState<string>('');
   const [incomeState, setIncomeState] = useState<ToolState<IncomeResult>>({ status: 'idle' });
   const [showDcf, setShowDcf] = useState(false);
+
+  /* ── NOI Waterfall ──────────────────────────────────────── */
+  const [noiInputs, setNoiInputs] = useState<NoiInputs>({
+    grossRentalIncome: '',
+    vacancyRate: '5',
+    creditLossRate: '1',
+    operatingExpenses: '',
+    capRateOverride: '7.5',
+  });
+  const [lockConfirmed, setLockConfirmed] = useState(false);
+  const [locked, setLocked] = useState(false);
+
+  const waterfall = useMemo(() => computeNoi(noiInputs), [noiInputs]);
+
+  const setNoiField = (field: keyof NoiInputs) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNoiInputs((prev) => ({ ...prev, [field]: e.target.value }));
+    setLocked(false);
+    setLockConfirmed(false);
+  };
+
+  const handleLockIncome = useCallback(() => {
+    if (!lockConfirmed || waterfall.indicatedValue <= 0) return;
+    onValueIndicated?.('income', waterfall.indicatedValue);
+    onHistoryRecord({
+      id: crypto.randomUUID(),
+      toolId: 'lock_income_indication',
+      status: 'success',
+      correlationId: `income-lock-${crypto.randomUUID().slice(0, 8)}`,
+      timestamp: new Date(),
+      meta: {
+        indicatedValue: waterfall.indicatedValue,
+        noi: waterfall.noi,
+        capRate: waterfall.capRate,
+        taxYear,
+      },
+    });
+    setLocked(true);
+    setLockConfirmed(false);
+  }, [lockConfirmed, waterfall, onValueIndicated, onHistoryRecord, taxYear]);
 
   /* ── run_income_valuation ─────────────────────────────── */
 
@@ -186,6 +250,116 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
 
       {/* Full IncomeValuationPanel — existing 555-line component, no changes */}
       <IncomeValuationPanel taxYear={taxYear} />
+
+      {/* NOI Waterfall — editable direct-cap build-up */}
+      <BentoCard
+        title="&#128200; NOI Waterfall — Direct Capitalization Build-up"
+        variant="default"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-testid="income-noi-waterfall">
+          {/* Inputs column */}
+          <div className="space-y-3">
+            {(
+              [
+                { field: 'grossRentalIncome', label: 'Potential Gross Income ($)', placeholder: '120000' },
+                { field: 'vacancyRate',        label: 'Vacancy Rate (%)',           placeholder: '5' },
+                { field: 'creditLossRate',     label: 'Credit Loss Rate (%)',       placeholder: '1' },
+                { field: 'operatingExpenses',  label: 'Operating Expenses ($)',     placeholder: '24000' },
+                { field: 'capRateOverride',    label: 'Capitalization Rate (%)',    placeholder: '7.5' },
+              ] as { field: keyof NoiInputs; label: string; placeholder: string }[]
+            ).map(({ field, label, placeholder }) => (
+              <div key={field} className="space-y-1">
+                <label htmlFor={`noi-${field}`} className="block tf-text-secondary text-xs">
+                  {label}
+                </label>
+                <input
+                  id={`noi-${field}`}
+                  type="number"
+                  min="0"
+                  step={field === 'grossRentalIncome' || field === 'operatingExpenses' ? '1000' : '0.1'}
+                  value={noiInputs[field]}
+                  onChange={setNoiField(field)}
+                  placeholder={placeholder}
+                  className="w-full tf-input px-3 py-1.5 text-sm"
+                  disabled={locked}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Waterfall column */}
+          <div className="space-y-1.5 text-sm" data-testid="income-waterfall-steps">
+            {[
+              { label: 'Potential Gross Income',  value: waterfall.gri,            divider: false },
+              { label: '  \u2013 Vacancy Loss',   value: -waterfall.vacancyLoss,   divider: false },
+              { label: '  \u2013 Credit Loss',    value: -waterfall.creditLossAmt, divider: false },
+              { label: 'Effective Gross Income',  value: waterfall.egi,            divider: true  },
+              { label: '  \u2013 Oper. Expenses', value: -waterfall.opex,          divider: false },
+            ].map(({ label, value, divider }) => (
+              <div key={label} className={`flex justify-between ${divider ? 'border-t border-current/10 pt-1.5' : ''}`}>
+                <span className="tf-text-tertiary">{label}</span>
+                <span className={value < 0 ? 'text-amber-400' : 'tf-text'}>{fmtCurrency(Math.abs(value))}</span>
+              </div>
+            ))}
+            <div className="border-t border-current/20 pt-2 flex justify-between font-semibold">
+              <span className="tf-text">Net Operating Income</span>
+              <span className={waterfall.noi < 0 ? 'text-destructive' : 'tf-suite-accent-text'}>
+                {fmtCurrency(waterfall.noi)}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs tf-text-dim pt-1">
+              <span>&#247; Cap Rate {(waterfall.capRate * 100).toFixed(2)}%</span>
+            </div>
+            <div className="border-t border-current/30 pt-2 flex justify-between text-base font-bold">
+              <span className="tf-text">Income-Indicated Value</span>
+              <span className="tf-suite-accent-text">{fmtCurrency(waterfall.indicatedValue)}</span>
+            </div>
+
+            {/* Human-gated lock */}
+            <div
+              className="mt-4 p-3 rounded-lg space-y-3"
+              style={{ border: '1px solid hsl(var(--tf-border) / 0.2)', background: 'hsl(var(--tf-surface) / 0.5)' }}
+              data-testid="income-lock-gate"
+            >
+              {locked ? (
+                <div
+                  className="flex items-center gap-2 text-sm font-semibold"
+                  style={{ color: 'hsl(var(--tf-success, 142 76% 52%))' }}
+                >
+                  <span>&#10003;</span>
+                  <span>Income indication locked &mdash; {fmtCurrency(waterfall.indicatedValue)}</span>
+                </div>
+              ) : (
+                <>
+                  <label className="flex items-start gap-2 cursor-pointer text-xs tf-text-secondary">
+                    <input
+                      type="checkbox"
+                      checked={lockConfirmed}
+                      onChange={(e) => setLockConfirmed(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 accent-current"
+                      disabled={waterfall.indicatedValue <= 0}
+                      data-testid="income-lock-checkbox"
+                    />
+                    <span>
+                      I confirm the income-indicated value of{' '}
+                      <strong>{fmtCurrency(waterfall.indicatedValue)}</strong> is correct and
+                      ready to carry into reconciliation.
+                    </span>
+                  </label>
+                  <button
+                    onClick={handleLockIncome}
+                    disabled={!lockConfirmed || waterfall.indicatedValue <= 0}
+                    className="w-full py-1.5 px-4 rounded-lg text-sm font-semibold transition-all tf-suite-forge-cta disabled:opacity-40"
+                    data-testid="income-lock-btn"
+                  >
+                    Lock Income Indication
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </BentoCard>
 
       {/* Governed Tool: Quick Income Valuation */}
       <BentoCard title="&#128176; Quick Income Valuation" variant="default">
