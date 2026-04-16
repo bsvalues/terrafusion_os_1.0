@@ -58,11 +58,19 @@ export const MAX_RECENT_PARCELS = 10;
 /**
  * Parcel context store state.
  */
+/** Human-readable metadata stored alongside a recent parcel ID */
+export interface RecentParcelMeta {
+  address: string;
+  ownerName: string;
+}
+
 interface ParcelContextState {
   /** Current parcel context (null if none) */
   context: ParcelContext | null;
   /** Recent parcels (MRU order, most recent first) */
   recentParcels: string[];
+  /** Address/owner metadata keyed by parcel ID */
+  recentParcelMeta: Record<string, RecentParcelMeta>;
   /** Set parcel context */
   setContext: (context: ParcelContext | null) => void;
   /** Clear parcel context */
@@ -71,6 +79,8 @@ interface ParcelContextState {
   setFromRoute: (parcelId: string, parcelName?: string) => void;
   /** Record a parcel to recents (internal) */
   recordRecent: (parcelId: string) => void;
+  /** Record address/owner metadata for a recent parcel */
+  recordRecentMeta: (parcelId: string, meta: RecentParcelMeta) => void;
 }
 
 // ============================================================================
@@ -83,6 +93,9 @@ const SESSION_STORAGE_KEY = 'tf:parcel-context';
 /** Session storage key for persisting recent parcels */
 const RECENT_PARCELS_STORAGE_KEY = 'tf:recent-parcels';
 
+/** localStorage key for persisting recent parcel metadata (address/owner) */
+const RECENT_PARCELS_META_KEY = 'tf:recent-parcels-meta';
+
 // ============================================================================
 // Store
 // ============================================================================
@@ -94,6 +107,7 @@ const RECENT_PARCELS_STORAGE_KEY = 'tf:recent-parcels';
 export const useParcelContextStore = create<ParcelContextState>((set, get) => ({
   context: restoreFromSession(),
   recentParcels: restoreRecentsFromSession(),
+  recentParcelMeta: restoreRecentMetaFromStorage(),
 
   setContext: (context) => {
     set({ context });
@@ -134,6 +148,14 @@ export const useParcelContextStore = create<ParcelContextState>((set, get) => ({
 
     set({ recentParcels: updated });
     persistRecentsToSession(updated);
+  },
+
+  recordRecentMeta: (parcelId, meta) => {
+    if (!parcelId) return;
+    const { recentParcelMeta } = get();
+    const updated = { ...recentParcelMeta, [parcelId]: meta };
+    set({ recentParcelMeta: updated });
+    persistRecentMetaToStorage(updated);
   },
 }));
 
@@ -181,6 +203,24 @@ function persistRecentsToSession(recents: string[]): void {
   } catch {
     // localStorage might be unavailable (private browsing, etc.)
   }
+}
+
+function persistRecentMetaToStorage(meta: Record<string, RecentParcelMeta>): void {
+  try {
+    localStorage.setItem(RECENT_PARCELS_META_KEY, JSON.stringify(meta));
+  } catch {
+    // Storage unavailable
+  }
+}
+
+function restoreRecentMetaFromStorage(): Record<string, RecentParcelMeta> {
+  try {
+    const stored = localStorage.getItem(RECENT_PARCELS_META_KEY);
+    if (stored) return JSON.parse(stored) as Record<string, RecentParcelMeta>;
+  } catch {
+    // Storage unavailable
+  }
+  return {};
 }
 
 function restoreRecentsFromSession(): string[] {
@@ -369,6 +409,20 @@ export function selectRecentParcel(parcelId: string): void {
  */
 export function useRecentParcels(): string[] {
   return useParcelContextStore((state) => state.recentParcels);
+}
+
+/**
+ * Hook to access recent parcel metadata (address/owner keyed by parcel ID).
+ */
+export function useRecentParcelMeta(): Record<string, RecentParcelMeta> {
+  return useParcelContextStore((state) => state.recentParcelMeta);
+}
+
+/**
+ * Record address/owner metadata for a parcel (call after search result selection).
+ */
+export function recordRecentParcelMeta(parcelId: string, meta: RecentParcelMeta): void {
+  useParcelContextStore.getState().recordRecentMeta(parcelId, meta);
 }
 
 // ============================================================================

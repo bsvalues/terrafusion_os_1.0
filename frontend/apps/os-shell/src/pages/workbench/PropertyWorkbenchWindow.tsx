@@ -32,7 +32,7 @@ import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, Workbenc
 import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
 import { validateWorkbenchHost } from '../../contracts/objectPlacement';
 import type { WorkbenchHostViolation } from '../../contracts/objectPlacement';
-import { useRecentParcels, openWorkbenchWindow } from '../../context/parcelContext';
+import { useRecentParcels, useRecentParcelMeta, recordRecentParcelMeta, openWorkbenchWindow } from '../../context/parcelContext';
 import { useCompanionStore } from '../../stores/companionStore';
 import { useParcelSearch } from '../../shell/command-palette/useParcelSearch';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
@@ -195,13 +195,15 @@ const StartActionRow: React.FC<{
 /** Workbench Start Scene — parcel intake when no parcel is active */
 const WorkbenchStartScene: React.FC = () => {
   const recentParcels = useRecentParcels();
+  const recentMeta = useRecentParcelMeta();
   const openPalette = useCommandPaletteStore((s) => s.open);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Inline search
   const [searchQuery, setSearchQuery] = useState('');
-  const { results, isLoading } = useParcelSearch(searchQuery, searchQuery.length >= 3);
+  const { results, totalCount, isLoading } = useParcelSearch(searchQuery, searchQuery.length >= 3);
   const [showResults, setShowResults] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
   // Autofocus the search input
   useEffect(() => {
@@ -209,12 +211,14 @@ const WorkbenchStartScene: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Show results when we have them
+  // Show results when we have them; reset selection
   useEffect(() => {
     setShowResults(results.length > 0);
+    setSelectedIndex(-1);
   }, [results]);
 
-  const handleSelectParcel = useCallback((parcelId: string) => {
+  const handleSelectParcel = useCallback((parcelId: string, meta?: { address: string; ownerName: string }) => {
+    if (meta) recordRecentParcelMeta(parcelId, meta);
     openWorkbenchWindow(parcelId);
   }, []);
 
@@ -225,22 +229,34 @@ const WorkbenchStartScene: React.FC = () => {
   }, [recentParcels]);
 
   const handleSearchKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((i) => Math.min(i + 1, results.length - 1));
+      return;
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((i) => Math.max(i - 1, -1));
+      return;
+    }
     if (e.key === 'Enter') {
       e.preventDefault();
       const trimmed = searchQuery.trim();
-      if (results.length > 0) {
-        // Text search: navigate to first result
-        openWorkbenchWindow(results[0].parcelNumber);
+      const target = selectedIndex >= 0 ? results[selectedIndex] : results[0];
+      if (target) {
+        // Text search: navigate to selected/first result
+        handleSelectParcel(target.parcelNumber, { address: target.address, ownerName: target.ownerName });
       } else if (/^\d+$/.test(trimmed) && trimmed.length >= 3) {
-        // All-digit input: direct parcel number navigation (no API search needed)
+        // All-digit input: direct parcel number navigation
         openWorkbenchWindow(trimmed);
       }
     }
     if (e.key === 'Escape') {
       setSearchQuery('');
       setShowResults(false);
+      setSelectedIndex(-1);
     }
-  }, [results, searchQuery]);
+  }, [results, searchQuery, selectedIndex, handleSelectParcel]);
 
   return (
     <div className="h-full flex gap-3 p-6" style={{ background: 'hsl(var(--tf-bg))' }}>
@@ -256,18 +272,22 @@ const WorkbenchStartScene: React.FC = () => {
                 <p className="text-xs text-center" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
                   No recent parcels.
                   <br />
-                  Use ⌘K to search.
+                  Use Ctrl+K to search.
                 </p>
               </div>
             ) : (
-              recentParcels.slice(0, 8).map((parcelId) => (
-                <StartActionRow
-                  key={parcelId}
-                  icon={<span className="text-sm">&#127970;</span>}
-                  label={parcelId}
-                  onClick={() => handleSelectParcel(parcelId)}
-                />
-              ))
+              recentParcels.slice(0, 8).map((parcelId) => {
+                const meta = recentMeta[parcelId];
+                return (
+                  <StartActionRow
+                    key={parcelId}
+                    icon={<span className="text-sm">&#127970;</span>}
+                    label={meta?.address ? meta.address : parcelId}
+                    sublabel={meta?.ownerName ? `${parcelId} — ${meta.ownerName}` : parcelId !== (meta?.address ?? parcelId) ? parcelId : undefined}
+                    onClick={() => handleSelectParcel(parcelId)}
+                  />
+                );
+              })
             )}
           </div>
         </StartGlassCard>
@@ -328,15 +348,18 @@ const WorkbenchStartScene: React.FC = () => {
                     boxShadow: '0 4px 12px hsl(0 0% 0% / 0.3)',
                   }}
                 >
-                  {results.map((r) => (
+                  {results.map((r, idx) => (
                     <button
                       key={r.parcelNumber}
                       onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => handleSelectParcel(r.parcelNumber)}
+                      onMouseEnter={() => setSelectedIndex(idx)}
+                      onClick={() => handleSelectParcel(r.parcelNumber, { address: r.address, ownerName: r.ownerName })}
                       className={cn(
                         'flex flex-col w-full px-4 py-2.5 text-left',
                         'transition-colors duration-100',
-                        'hover:bg-[hsl(var(--tf-text)_/_0.06)]',
+                        idx === selectedIndex
+                          ? 'bg-[hsl(var(--tf-accent)_/_0.12)]'
+                          : 'hover:bg-[hsl(var(--tf-text)_/_0.06)]',
                       )}
                     >
                       <span className="text-sm font-medium" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
@@ -347,12 +370,33 @@ const WorkbenchStartScene: React.FC = () => {
                       </span>
                     </button>
                   ))}
+                  {totalCount > results.length && (
+                    <button
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={openPalette}
+                      className="flex w-full items-center justify-center px-4 py-2 text-xs font-medium"
+                      style={{
+                        color: 'hsl(var(--tf-accent))',
+                        borderTop: '1px solid hsl(var(--tf-border) / 0.12)',
+                      }}
+                    >
+                      Show all {totalCount.toLocaleString()} results (Ctrl+K)
+                    </button>
+                  )}
                 </div>
               )}
             </div>
 
             <p className="text-xs" style={{ color: 'hsl(var(--tf-text) / 0.3)' }}>
-              Press ⌘K for full search
+              Or{' '}
+              <button
+                onClick={openPalette}
+                className="underline-offset-2 hover:underline"
+                style={{ color: 'hsl(var(--tf-accent) / 0.7)' }}
+              >
+                Advanced Search (Ctrl+K)
+              </button>
+              {' '}for filters
             </p>
           </div>
         </StartGlassCard>
@@ -373,7 +417,7 @@ const WorkbenchStartScene: React.FC = () => {
               <StartActionRow
                 icon={<span className="text-sm">&#9654;</span>}
                 label="Resume Last Parcel"
-                sublabel={recentParcels[0]}
+                sublabel={recentMeta[recentParcels[0]]?.address ?? recentParcels[0]}
                 onClick={handleResumeLast}
               />
             )}
