@@ -565,6 +565,12 @@ builder.Services.AddScoped<ITerraGaiaService, TerraGaiaService>();
 builder.Services.AddScoped<TerraFusion.Data.Canonicalizers.IPacsCanonicalizer,
     TerraFusion.Data.Canonicalizers.PacsCanonicalizer>();
 
+// CostForge Benton Method v2 — Track 1 equity metric compute
+// EquityMetricService is the sole source of IAAO + Benton-method equity metrics.
+// Every stratum view (Triage, Audit, Rollup, Calibration preview) goes through this.
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.IEquityMetricService,
+    TerraFusion.AI.Valuation.EquityMetricService>();
+
 // TIER 5+ Cognitive Framework - 3-6-9-12 Development Excellence
 builder.Services.AddScoped<ICognitiveFrameworkService, CognitiveFrameworkService>();
 
