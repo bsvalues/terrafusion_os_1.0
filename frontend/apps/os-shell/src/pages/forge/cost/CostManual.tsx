@@ -13,12 +13,12 @@
  * - Source label reads 'Sample fallback' vs 'Live cost schedule API' accordingly.
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
-import { getCostSchedule } from '@/services/forge/propertyValuationClientService';
+import { apiFetch } from '@/lib/apiBase';
 import {
   Table,
   TableBody,
@@ -43,6 +43,16 @@ interface CostScheduleRow {
   effectiveDate: string;
 }
 
+// Shape returned by GET /costforge/schedule
+interface CostScheduleApiRow {
+  code?: string;
+  description?: string;
+  qualityClass?: string;
+  baseCost?: number;
+  unit?: string;
+  effectiveDate?: string;
+}
+
 const SAMPLE_COST_SCHEDULES: CostScheduleRow[] = [
   { buildingClass: 'Residential - Wood Frame', qualityGrade: 'Average', baseRate: 125.5, unit: '$/SF', effectiveDate: '2025-01-01' },
   { buildingClass: 'Residential - Wood Frame', qualityGrade: 'Good', baseRate: 168.75, unit: '$/SF', effectiveDate: '2025-01-01' },
@@ -59,30 +69,31 @@ export function CostManual() {
   const [isSampleData, setIsSampleData] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    let active = true;
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+    const { signal } = abortRef.current;
 
     const loadRows = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
-        const result = await getCostSchedule({
-          qualityClass: qualityFilter === 'all' ? undefined : qualityFilter,
-        });
-
-        if (!active) {
-          return;
-        }
+        const qs = qualityFilter !== 'all' ? `?qualityClass=${encodeURIComponent(qualityFilter)}` : '';
+        const result = await apiFetch<CostScheduleApiRow[]>(
+          `/costforge/schedule${qs}`,
+          { signal }
+        );
 
         if (Array.isArray(result) && result.length > 0) {
           const normalized: CostScheduleRow[] = result.map((entry) => ({
-            buildingClass: entry.description || entry.code || 'Unknown Class',
-            qualityGrade: entry.qualityClass || 'Unspecified',
+            buildingClass: entry.description ?? entry.code ?? 'Unknown Class',
+            qualityGrade: entry.qualityClass ?? 'Unspecified',
             baseRate: Number(entry.baseCost) || 0,
-            unit: entry.unit || '$/SF',
-            effectiveDate: entry.effectiveDate || 'Unknown',
+            unit: entry.unit ?? '$/SF',
+            effectiveDate: entry.effectiveDate ?? 'Unknown',
           }));
           setRows(normalized);
           setIsSampleData(false);
@@ -92,23 +103,19 @@ export function CostManual() {
           setError('Cost schedule endpoint returned no records. Showing sample reference data.');
         }
       } catch (cause) {
-        if (!active) {
-          return;
-        }
+        if (cause instanceof DOMException && cause.name === 'AbortError') return;
         setRows(SAMPLE_COST_SCHEDULES);
         setIsSampleData(true);
         setError(cause instanceof Error ? cause.message : 'Failed to load cost schedules.');
       } finally {
-        if (active) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
 
     void loadRows();
 
     return () => {
-      active = false;
+      abortRef.current?.abort();
     };
   }, [qualityFilter]);
 
