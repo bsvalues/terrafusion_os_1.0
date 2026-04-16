@@ -1,8 +1,8 @@
-// TerraFusion OS — CostApproach Runner (RCNLD)
+// TerraFusion OS — CostApproach Runner (RCNLD / Parcel Inspector)
 // Mined from terra-forge-rebuild src/components/costforge/CostApproachRunner.tsx
 // REST-adapted: calls POST /api/costforge/calculate via useCostForgeHooks
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,10 +10,14 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCalcRCNLD, useImprvTypeCodes, type CostForgeCalcInput, type QualityGrade } from "@/hooks/useCostForgeHooks";
 import { Calculator, RefreshCw } from "lucide-react";
+import { useCostForgeWorkspaceStore } from "./costForgeWorkspaceStore";
 
-const BENTON_COUNTY_ID = "842a6c54-c7c0-4b2d-aa43-0e3ba63fa57d";
+const BENTON_COUNTY_ID =
+  (import.meta.env as Record<string, string>).VITE_BENTON_COUNTY_ID ??
+  "842a6c54-c7c0-4b2d-aa43-0e3ba63fa57d";
 
 interface FormState {
+  parcelId: string;
   prop_type: "R" | "C";
   year_built: string;
   area: string;
@@ -33,7 +37,11 @@ export function CostApproachRunner() {
   const { result, isLoading, error, calculate, reset } = useCalcRCNLD();
   const { data: imprvTypeCodes = [] } = useImprvTypeCodes(BENTON_COUNTY_ID);
 
+  const selectedParcelId  = useCostForgeWorkspaceStore((s) => s.selectedParcelId);
+  const setSelectedParcel = useCostForgeWorkspaceStore((s) => s.setSelectedParcel);
+
   const [form, setForm] = useState<FormState>({
+    parcelId: "",
     prop_type: "R",
     year_built: "2000",
     area: "1800",
@@ -44,13 +52,20 @@ export function CostApproachRunner() {
     imprvTypeCode: "",
   });
 
+  // Pre-populate parcel ID from workspace store when navigated via drill-in
+  useEffect(() => {
+    if (selectedParcelId && !form.parcelId) {
+      setForm((p) => ({ ...p, parcelId: selectedParcelId }));
+    }
+  }, [selectedParcelId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const yearNow = new Date().getFullYear();
   const derivedAge = Math.max(0, yearNow - toNum(form.year_built));
 
   const run = async () => {
     const input: CostForgeCalcInput = {
       lrsn: null,
-      pin: null,
+      pin: form.parcelId || null,
       county_id: BENTON_COUNTY_ID,
       imprv_det_type_cd: form.imprvTypeCode || null,
       yr_built: toNum(form.year_built),
@@ -68,11 +83,21 @@ export function CostApproachRunner() {
       form.prop_type === "R" ? form.extWall || undefined : undefined,
       form.effLife ? toNum(form.effLife) : undefined
     );
+    // Sync parcel ID to workspace store so CalcTrace can follow
+    if (form.parcelId) {
+      setSelectedParcel(form.parcelId);
+    }
   };
 
   const canRun = useMemo(() => {
     return toNum(form.area) > 0 && toNum(form.year_built) > 0;
   }, [form.area, form.year_built]);
+
+  // BIV = sqft × base cost/sqft
+  const bivTotal =
+    result?.baseUnitCost != null && result.baseUnitCost > 0
+      ? toNum(form.area) * result.baseUnitCost
+      : null;
 
   return (
     <div className="p-6 space-y-6">
@@ -80,10 +105,21 @@ export function CostApproachRunner() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Calculator className="w-4 h-4" />
-            Cost Approach Runner (RCNLD)
+            Parcel Inspector — RCNLD
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Optional parcel ID */}
+          <div className="space-y-1">
+            <Label className="text-xs">Parcel ID (optional — syncs to Calc Trace)</Label>
+            <Input
+              className="h-9 text-sm font-mono"
+              value={form.parcelId}
+              onChange={(e) => setForm((p) => ({ ...p, parcelId: e.target.value }))}
+              placeholder="e.g. 123456789"
+            />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="space-y-1">
               <Label className="text-xs">Property Type</Label>
@@ -181,7 +217,7 @@ export function CostApproachRunner() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button onClick={run} disabled={isLoading || !canRun} className="h-9">
+            <Button onClick={() => void run()} disabled={isLoading || !canRun} className="h-9">
               {isLoading ? "Calculating..." : "Run RCNLD"}
             </Button>
             <Button variant="outline" onClick={reset} className="h-9 gap-1.5">
@@ -196,43 +232,129 @@ export function CostApproachRunner() {
       </Card>
 
       {result && (
-        <Card className="border-border/40">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm">RCNLD Result</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
-              <div className="rounded-md border border-border/40 p-3">
-                <div className="text-xs text-muted-foreground">Base Unit Cost</div>
-                <div className="font-medium tabular-nums">{result?.baseUnitCost?.toFixed(2) ?? "-"}</div>
+        <>
+          {/* RCNLD result cards */}
+          <Card className="border-border/40">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm">RCNLD Result</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+                <div className="rounded-md border border-border/40 p-3">
+                  <div className="text-xs text-muted-foreground">Base Unit Cost</div>
+                  <div className="font-medium tabular-nums">{result.baseUnitCost?.toFixed(2) ?? "—"}</div>
+                </div>
+                <div className="rounded-md border border-border/40 p-3">
+                  <div className="text-xs text-muted-foreground">Local Multiplier</div>
+                  <div className="font-medium tabular-nums">{result.localMultiplier?.toFixed(4) ?? "—"}</div>
+                </div>
+                <div className="rounded-md border border-border/40 p-3">
+                  <div className="text-xs text-muted-foreground">Current Cost Mult</div>
+                  <div className="font-medium tabular-nums">{result.currentCostMult?.toFixed(4) ?? "—"}</div>
+                </div>
+                <div className="rounded-md border border-border/40 p-3">
+                  <div className="text-xs text-muted-foreground">RCN</div>
+                  <div className="font-medium tabular-nums">
+                    {result.rcn?.toLocaleString(undefined, { maximumFractionDigits: 0 }) ?? "—"}
+                  </div>
+                </div>
+                <div className="rounded-md border border-border/40 p-3">
+                  <div className="text-xs text-muted-foreground">Age / Eff Life</div>
+                  <div className="font-medium tabular-nums">
+                    {result.ageYears ?? "—"} / {result.effectiveLifeYears ?? "—"}
+                  </div>
+                </div>
+                <div className="rounded-md border border-border/40 p-3">
+                  <div className="text-xs text-muted-foreground">Pct Good</div>
+                  <div className="font-medium tabular-nums">{result.pctGood?.toFixed(4) ?? "—"}</div>
+                </div>
+                <div className="rounded-md border border-primary/40 p-3 bg-primary/5 col-span-2">
+                  <div className="text-xs text-muted-foreground">RCNLD</div>
+                  <div className="font-semibold text-base tabular-nums">
+                    {result.rcnld?.toLocaleString(undefined, { maximumFractionDigits: 0 }) ?? "—"}
+                  </div>
+                </div>
               </div>
-              <div className="rounded-md border border-border/40 p-3">
-                <div className="text-xs text-muted-foreground">Local Multiplier</div>
-                <div className="font-medium tabular-nums">{result?.localMultiplier?.toFixed(4) ?? "-"}</div>
-              </div>
-              <div className="rounded-md border border-border/40 p-3">
-                <div className="text-xs text-muted-foreground">Current Cost Mult</div>
-                <div className="font-medium tabular-nums">{result?.currentCostMult?.toFixed(4) ?? "-"}</div>
-              </div>
-              <div className="rounded-md border border-border/40 p-3">
-                <div className="text-xs text-muted-foreground">RCN</div>
-                <div className="font-medium tabular-nums">{result?.rcn?.toLocaleString(undefined, { maximumFractionDigits: 0 }) ?? "-"}</div>
-              </div>
-              <div className="rounded-md border border-border/40 p-3">
-                <div className="text-xs text-muted-foreground">Age / Eff Life</div>
-                <div className="font-medium tabular-nums">{result?.ageYears ?? "-"} / {result?.effectiveLifeYears ?? "-"}</div>
-              </div>
-              <div className="rounded-md border border-border/40 p-3">
-                <div className="text-xs text-muted-foreground">Pct Good</div>
-                <div className="font-medium tabular-nums">{result?.pctGood?.toFixed(4) ?? "-"}</div>
-              </div>
-              <div className="rounded-md border border-primary/40 p-3 bg-primary/5 col-span-2">
-                <div className="text-xs text-muted-foreground">RCNLD</div>
-                <div className="font-semibold text-base tabular-nums">{result?.rcnld?.toLocaleString(undefined, { maximumFractionDigits: 0 }) ?? "-"}</div>
-              </div>
+            </CardContent>
+          </Card>
+
+          {/* BIV section — Benton Method */}
+          <div className="cf-biv-section">
+            <div className="cf-biv-section__heading">BIV Calculation — Benton Method</div>
+
+            <div className="cf-biv-row">
+              <span className="cf-biv-row__label">Main living area</span>
+              <span className="cf-biv-row__value">{toNum(form.area).toLocaleString()} sf</span>
             </div>
-          </CardContent>
-        </Card>
+            <div className="cf-biv-row">
+              <span className="cf-biv-row__label">× Base cost/sf</span>
+              <span className="cf-biv-row__value">
+                {result.baseUnitCost != null ? "$" + result.baseUnitCost.toFixed(2) + "/sf" : "—"}
+              </span>
+            </div>
+            <div className="cf-biv-row cf-biv-total">
+              <span className="cf-biv-row__label">= BIV</span>
+              <span className="cf-biv-row__value">
+                {bivTotal != null ? "$" + Math.round(bivTotal).toLocaleString() : "—"}
+              </span>
+            </div>
+
+            {/* Secondary features as %-of-BIV */}
+            {Array.isArray((result as Record<string, unknown>).secondaryFeatures) &&
+              ((result as Record<string, unknown>).secondaryFeatures as Array<{
+                code: string;
+                description: string;
+                value: number;
+              }>).length > 0 && (
+                <>
+                  <div className="cf-biv-section__heading" style={{ marginTop: 10 }}>
+                    Secondary Features (%-of-BIV)
+                  </div>
+                  {(
+                    (result as Record<string, unknown>).secondaryFeatures as Array<{
+                      code: string;
+                      description: string;
+                      value: number;
+                    }>
+                  ).map((feat) => (
+                    <div key={feat.code} className="cf-biv-row">
+                      <span className="cf-biv-row__label">{feat.description}</span>
+                      <span className="cf-biv-row__value">
+                        ${feat.value.toLocaleString()}
+                        {bivTotal != null && bivTotal > 0 && (
+                          <span className="cf-biv-row__pct">
+                            {((feat.value / bivTotal) * 100).toFixed(1)}%
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </>
+              )}
+
+            {/* Depreciation waterfall */}
+            <div className="cf-biv-section__heading" style={{ marginTop: 10 }}>
+              Depreciation (% good)
+            </div>
+            <div className="cf-deprec-bar">
+              <div
+                className="cf-deprec-bar__physical"
+                style={{
+                  width: `${result.pctGood != null ? Math.max(0, 100 - result.pctGood * 100) : 0}%`,
+                }}
+                title={`Physical depreciation: ${result.pctGood != null ? (100 - result.pctGood * 100).toFixed(1) : "—"}%`}
+              />
+            </div>
+            <div className="cf-biv-row cf-biv-total" style={{ marginTop: 6 }}>
+              <span className="cf-biv-row__label">
+                % good: {result.pctGood != null ? (result.pctGood * 100).toFixed(1) + "%" : "—"}
+              </span>
+              <span className="cf-biv-row__value">
+                RCNLD: {result.rcnld != null ? "$" + Math.round(result.rcnld).toLocaleString() : "—"}
+              </span>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
