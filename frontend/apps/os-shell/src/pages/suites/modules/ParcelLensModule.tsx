@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -68,6 +69,12 @@ interface ImprovementRecord {
   value: number;
 }
 
+interface SpatialParcelDiagnosis {
+  narrative: string;
+  hotspotCount: number;
+  recommendedAction: string;
+}
+
 const MOCK_DETAILS: Record<string, Omit<ParcelDetail, keyof ParcelResult>> = {
   '104841000002000': {
     yearBuilt: 2004, bedrooms: 4, bathrooms: 2.5, sqFootage: 2_145, stories: 2,
@@ -100,6 +107,7 @@ export default function ParcelLensModule() {
   const [parcels, setParcels] = useState<ParcelResult[]>([]);
   const [selected, setSelected] = useState<ParcelDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [parcelDiagnosis, setParcelDiagnosis] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: SpatialParcelDiagnosis; correlationId?: string; error?: string }>({ status: 'idle' });
 
   useEffect(() => {
     let cancelled = false;
@@ -131,12 +139,49 @@ export default function ParcelLensModule() {
   const selectParcel = useCallback(async (parcel: ParcelResult) => {
     const detail = await atlasService.getParcel(parcel.parcelId);
     const extras = MOCK_DETAILS[parcel.parcelId];
+    setParcelDiagnosis({ status: 'idle' });
     setSelected({
       ...(detail ?? parcel),
       improvements: extras?.improvements ?? [],
       ...extras,
     } as ParcelDetail);
   }, []);
+
+  const analyzeParcelSignal = useCallback(async () => {
+    if (!selected) return;
+
+    setParcelDiagnosis({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'explain_spatial_anomaly',
+        params: {
+          county: 'benton',
+          geographyType: 'parcel',
+          anomalyMetric: 'residuals',
+          parcelId: selected.parcelId,
+        },
+      });
+
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string'
+          ? JSON.parse(response.result.output) as SpatialParcelDiagnosis
+          : response.result.output as SpatialParcelDiagnosis;
+        setParcelDiagnosis({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setParcelDiagnosis({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: response.error?.message || 'Failed to analyze parcel signal.',
+        });
+      }
+    } catch (error) {
+      setParcelDiagnosis({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: error instanceof Error ? error.message : 'Failed to analyze parcel signal.',
+      });
+    }
+  }, [selected]);
 
   if (loading) {
     return (
@@ -212,6 +257,46 @@ export default function ParcelLensModule() {
             </Card>
           ) : (
             <>
+              <Card data-testid="parcel-lens-governed-brief" style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+                <CardHeader className='pb-2'>
+                  <CardTitle className='text-base' style={{ color: 'hsl(var(--tf-fg))' }}>
+                    Governed Parcel Diagnosis
+                  </CardTitle>
+                  <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Atlas explains why this parcel is suspicious. Parcel fixes still route to Workbench, and county-wide calibration still routes to TerraForge.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className='space-y-3'>
+                  <div className='flex items-center gap-3'>
+                    <Button type='button' onClick={analyzeParcelSignal}>
+                      {parcelDiagnosis.status === 'loading' ? 'Analyzing…' : 'Analyze Parcel Signal'}
+                    </Button>
+                    <span className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                      Parcel: {selected.parcelId}
+                    </span>
+                  </div>
+
+                  {parcelDiagnosis.status === 'success' && parcelDiagnosis.result && (
+                    <div className='rounded-lg border p-3 text-sm' style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg))' }}>
+                      <p style={{ color: 'hsl(var(--tf-fg))' }}>{parcelDiagnosis.result.narrative}</p>
+                      <p className='mt-2' style={{ color: 'hsl(var(--tf-muted))' }}>Hotspots: {parcelDiagnosis.result.hotspotCount}</p>
+                      <p className='mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>{parcelDiagnosis.result.recommendedAction}</p>
+                      {parcelDiagnosis.correlationId && (
+                        <p className='mt-2 font-mono text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                          Correlation: {parcelDiagnosis.correlationId}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {parcelDiagnosis.status === 'error' && (
+                    <div className='rounded-lg border p-3 text-sm' style={{ borderColor: 'hsl(var(--tf-suite-dossier) / 0.4)', color: 'hsl(var(--tf-suite-dossier))' }}>
+                      {parcelDiagnosis.error}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
               {/* Property Overview */}
               <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
                 <CardHeader className='pb-2'>
