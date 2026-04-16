@@ -12,6 +12,7 @@
  */
 
 import { useCallback, useMemo, useReducer, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -31,8 +32,10 @@ import {
   Calendar,
   Ruler,
   Home,
+  CheckCircle,
   CheckCircle2,
   DollarSign,
+  Lock,
   Search,
   ChevronLeft,
   ChevronRight,
@@ -226,6 +229,13 @@ async function fetchCompsPool(url: string): Promise<CompsPoolPage> {
   return res.json() as Promise<CompsPoolPage>;
 }
 
+interface CompsCommitResult {
+  caseId: string;
+  packetRef: string;
+  sections: string[];
+  payloadRef: string;
+}
+
 // ============================================================================
 // Component
 // ============================================================================
@@ -319,6 +329,49 @@ export default function CompsForgeModule() {
   }, [selectedComps, subject]);
 
   const totalPages = data ? Math.ceil(data.total / PAGE_SIZE) : 0;
+
+  // Human-gated comps value commit state
+  const [compsCommitConfirmed, setCompsCommitConfirmed] = useState(false);
+  const [compsCommitState, setCompsCommitState] = useState<{
+    status: 'idle' | 'loading' | 'success' | 'error';
+    result?: CompsCommitResult;
+    correlationId?: string;
+    error?: string;
+  }>({ status: 'idle' });
+
+  const handleCommitCompsValue = useCallback(async () => {
+    if (!reconciled || !compsCommitConfirmed) return;
+    const parcelId = activeParcel?.parcelId || activeParcel?.parcelNumber || 'unknown';
+    setCompsCommitState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'assemble_boe_packet',
+        params: {
+          county: 'benton',
+          caseId: parcelId,
+          include: ['evidence', 'valuation_history', 'comps'],
+        },
+      });
+      if (response.success && response.result) {
+        const raw = response.result.output;
+        const parsed: CompsCommitResult =
+          typeof raw === 'string' ? (JSON.parse(raw) as CompsCommitResult) : (raw as CompsCommitResult);
+        setCompsCommitState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setCompsCommitState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: response.error?.message || 'Failed to assemble BOE packet.',
+        });
+      }
+    } catch (err) {
+      setCompsCommitState({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: err instanceof Error ? err.message : 'Failed to assemble BOE packet.',
+      });
+    }
+  }, [reconciled, compsCommitConfirmed, activeParcel]);
 
   // ── Render ──────────────────────────────────────────────────────────────
 
@@ -679,6 +732,92 @@ export default function CompsForgeModule() {
               )}
             </CardContent>
           </Card>
+
+          {/* Governed Comps Value Commit Gate */}
+          {reconciled && (
+            <div
+              className='rounded-lg p-4 space-y-4'
+              style={{ background: 'hsl(var(--tf-card-bg))', border: '1px solid hsl(var(--tf-border))' }}
+              data-testid='comps-commit-gate'
+              data-material='bento'
+            >
+              <div className='flex items-center gap-2'>
+                <Lock size={14} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
+                <p className='text-xs font-medium uppercase tracking-wider' style={{ color: 'hsl(var(--tf-muted))' }}>Commit Sales Indication</p>
+              </div>
+              <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                Confirm the indicated value from {reconciled.count} comp{reconciled.count !== 1 ? 's' : ''} and assemble the BOE support packet. This records the sales comparison indication and cannot be undone without re-selecting comps.
+              </p>
+
+              {compsCommitState.status !== 'success' && (
+                <label className='flex items-start gap-2 cursor-pointer' data-testid='comps-commit-label'>
+                  <input
+                    type='checkbox'
+                    checked={compsCommitConfirmed}
+                    onChange={(e) => setCompsCommitConfirmed(e.target.checked)}
+                    className='mt-0.5'
+                    data-testid='comps-commit-checkbox'
+                  />
+                  <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    I have reviewed all {reconciled.count} adjusted comp{reconciled.count !== 1 ? 's' : ''} and confirm{' '}
+                    <strong style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciled.median)}</strong>{' '}
+                    (median adjusted) as the sales comparison indication.
+                  </span>
+                </label>
+              )}
+
+              {compsCommitState.status !== 'success' && (
+                <button
+                  onClick={handleCommitCompsValue}
+                  disabled={!compsCommitConfirmed || compsCommitState.status === 'loading'}
+                  className='w-full rounded-md px-3 py-2 text-sm font-medium transition-opacity disabled:opacity-40'
+                  style={{ background: 'hsl(var(--tf-suite-forge))', color: '#000' }}
+                  data-testid='comps-commit-btn'
+                >
+                  {compsCommitState.status === 'loading' ? 'Assembling BOE Packet…' : 'Commit Sales Indication + Assemble BOE Packet'}
+                </button>
+              )}
+
+              {compsCommitState.status === 'error' && (
+                <div
+                  className='rounded-md px-3 py-2 text-xs'
+                  style={{ background: 'hsl(var(--tf-error-hs, 0 70%) 55% / 0.12)', color: 'hsl(var(--tf-error-hs, 0 70%) 65%)' }}
+                  data-testid='comps-commit-error'
+                >
+                  <span className='font-semibold'>Commit failed:</span> {compsCommitState.error}
+                  {compsCommitState.correlationId && (
+                    <span className='ml-2 opacity-60 font-mono text-xs'>{compsCommitState.correlationId}</span>
+                  )}
+                </div>
+              )}
+
+              {compsCommitState.status === 'success' && compsCommitState.result && (
+                <div
+                  className='rounded-lg p-3 space-y-2'
+                  style={{ background: 'hsl(var(--tf-suite-forge) / 0.08)', border: '1px solid hsl(var(--tf-suite-forge) / 0.25)' }}
+                  data-testid='comps-commit-success'
+                >
+                  <div className='flex items-center gap-2'>
+                    <CheckCircle size={14} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
+                    <span className='text-xs font-semibold' style={{ color: 'hsl(var(--tf-suite-forge))' }}>BOE Packet Assembled</span>
+                    {compsCommitState.correlationId && (
+                      <span className='ml-auto font-mono text-xs opacity-50'>{compsCommitState.correlationId}</span>
+                    )}
+                  </div>
+                  <div className='grid grid-cols-1 gap-1 text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    <div>
+                      <span className='uppercase tracking-wider'>Packet Ref</span>
+                      <p className='font-mono mt-0.5' style={{ color: 'hsl(var(--tf-fg))' }}>{compsCommitState.result.packetRef}</p>
+                    </div>
+                    <div>
+                      <span className='uppercase tracking-wider'>Sections</span>
+                      <p className='mt-0.5' style={{ color: 'hsl(var(--tf-fg))' }}>{compsCommitState.result.sections.join(', ')}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Subject property summary */}
           <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
