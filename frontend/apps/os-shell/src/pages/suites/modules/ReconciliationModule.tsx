@@ -11,6 +11,7 @@
  */
 
 import { useCallback, useMemo, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
 import {
   Scale,
   Calculator,
@@ -21,6 +22,7 @@ import {
   Info,
   ChevronDown,
   ChevronUp,
+  Lock,
 } from 'lucide-react';
 import { TactileButton } from '@/ui/materials';
 import {
@@ -50,6 +52,13 @@ const METHODS: { id: ReconciliationMethod; label: string; description: string }[
 const fmt = (n: number) => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 const pct = (n: number) => (n * 100).toFixed(1) + '%';
 
+interface BoePacketResult {
+  caseId: string;
+  packetRef: string;
+  sections: string[];
+  payloadRef: string;
+}
+
 export default function ReconciliationModule() {
   const [propertyType, setPropertyType] = useState<PropertyCategory>('residential');
   const [method, setMethod] = useState<ReconciliationMethod>('weighted_average');
@@ -72,6 +81,15 @@ export default function ReconciliationModule() {
   const [incomeConfidence, setIncomeConfidence] = useState<'high' | 'medium' | 'low'>('medium');
   const [incomeWeight, setIncomeWeight] = useState(0.1);
   const [incomeEnabled, setIncomeEnabled] = useState(false);
+
+  // Human-gated reconciliation commit state
+  const [commitConfirmed, setCommitConfirmed] = useState(false);
+  const [commitState, setCommitState] = useState<{
+    status: 'idle' | 'loading' | 'success' | 'error';
+    result?: BoePacketResult;
+    correlationId?: string;
+    error?: string;
+  }>({ status: 'idle' });
 
   const approaches = useMemo(() => {
     const result: Record<string, ApproachValue> = {};
@@ -118,8 +136,43 @@ export default function ReconciliationModule() {
       },
       notes: `Reconciled ${Object.keys(approaches).length} approaches via ${method}`,
     });
-    alert('Reconciliation saved to audit trail');
   }, [result, subjectId, method, propertyType, approaches]);
+
+  const handleCommitReconciliation = useCallback(async () => {
+    if (!result || !commitConfirmed) return;
+    // Write to local audit trail first
+    handleSaveToAudit();
+    // Then assemble BOE packet via TerraPilot
+    setCommitState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'assemble_boe_packet',
+        params: {
+          county: 'benton',
+          caseId: subjectId,
+          include: ['evidence', 'valuation_history', 'comps'],
+        },
+      });
+      if (response.success && response.result) {
+        const raw = response.result.output;
+        const parsed: BoePacketResult =
+          typeof raw === 'string' ? (JSON.parse(raw) as BoePacketResult) : (raw as BoePacketResult);
+        setCommitState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setCommitState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: response.error?.message || 'Failed to assemble BOE packet.',
+        });
+      }
+    } catch (err) {
+      setCommitState({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: err instanceof Error ? err.message : 'Failed to assemble BOE packet.',
+      });
+    }
+  }, [result, commitConfirmed, subjectId, handleSaveToAudit]);
 
   const agreementColor = (a: string) => a === 'strong' ? 'hsl(var(--tf-success-hs) 45%)' : a === 'moderate' ? 'hsl(var(--tf-warning-hs) 50%)' : 'hsl(var(--tf-error-hs) 55%)';
   const confidenceColor = (c: string) => c === 'high' ? 'hsl(var(--tf-success-hs) 45%)' : c === 'medium' ? 'hsl(var(--tf-warning-hs) 50%)' : 'hsl(var(--tf-error-hs) 55%)';
@@ -446,12 +499,87 @@ export default function ReconciliationModule() {
                 ))}
               </div>
 
-              {/* Save Button */}
+              {/* Governed Reconciliation Commit Gate */}
+              <div
+                className='rounded-lg p-4 space-y-4'
+                style={{ background: 'hsl(var(--tf-card-bg))', border: '1px solid hsl(var(--tf-border))' }}
+                data-testid='reconciliation-commit-gate'
+                data-material='bento'
+              >
+                <div className='flex items-center gap-2'>
+                  <Lock size={14} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
+                  <p className='text-xs font-medium uppercase tracking-wider' style={{ color: 'hsl(var(--tf-muted))' }}>Commit Reconciliation</p>
+                </div>
+                <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Once confirmed, TerraPilot assembles the BOE packet including evidence, valuation history, and comps. This action records the final opinion of value and cannot be undone without a new reconciliation.
+                </p>
+
+                {commitState.status !== 'success' && (
+                  <label className='flex items-start gap-2 cursor-pointer' data-testid='reconciliation-commit-label'>
+                    <input
+                      type='checkbox'
+                      checked={commitConfirmed}
+                      onChange={(e) => setCommitConfirmed(e.target.checked)}
+                      className='mt-0.5'
+                      data-testid='reconciliation-commit-checkbox'
+                    />
+                    <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                      I have reviewed all three approach indications and confirm {fmt(result.finalOpinionOfValue)} as the final opinion of value for parcel {subjectId}.
+                    </span>
+                  </label>
+                )}
+
+                {commitState.status !== 'success' && (
+                  <TactileButton
+                    onClick={handleCommitReconciliation}
+                    fullWidth
+                    data-testid='reconciliation-commit-btn'
+                  >
+                    {commitState.status === 'loading' ? 'Assembling BOE Packet…' : 'Commit Reconciliation + Assemble BOE Packet'}
+                  </TactileButton>
+                )}
+
+                {commitState.status === 'error' && (
+                  <div
+                    className='rounded-md px-3 py-2 text-xs'
+                    style={{ background: 'hsl(var(--tf-error-hs) 55% / 0.12)', color: 'hsl(var(--tf-error-hs) 65%)' }}
+                    data-testid='reconciliation-commit-error'
+                  >
+                    <span className='font-semibold'>Commit failed:</span> {commitState.error}
+                    {commitState.correlationId && (
+                      <span className='ml-2 opacity-60 font-mono text-xs'>{commitState.correlationId}</span>
+                    )}
+                  </div>
+                )}
+
+                {commitState.status === 'success' && commitState.result && (
+                  <div
+                    className='rounded-lg p-3 space-y-2'
+                    style={{ background: 'hsl(var(--tf-suite-forge) / 0.08)', border: '1px solid hsl(var(--tf-suite-forge) / 0.25)' }}
+                    data-testid='reconciliation-commit-success'
+                  >
+                    <div className='flex items-center gap-2'>
+                      <CheckCircle size={14} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
+                      <span className='text-xs font-semibold' style={{ color: 'hsl(var(--tf-suite-forge))' }}>BOE Packet Assembled</span>
+                      {commitState.correlationId && (
+                        <span className='ml-auto font-mono text-xs opacity-50'>{commitState.correlationId}</span>
+                      )}
+                    </div>
+                    <div className='grid grid-cols-1 gap-1 text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                      <div><span className='uppercase tracking-wider'>Packet Ref</span><p className='font-mono mt-0.5' style={{ color: 'hsl(var(--tf-fg))' }}>{commitState.result.packetRef}</p></div>
+                      <div><span className='uppercase tracking-wider'>Sections</span><p className='mt-0.5' style={{ color: 'hsl(var(--tf-fg))' }}>{commitState.result.sections.join(', ')}</p></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Legacy audit-only save */}
               <TactileButton
                 onClick={handleSaveToAudit}
                 fullWidth
+                data-testid='reconciliation-audit-save'
               >
-                Save to Audit Trail
+                Save to Audit Trail Only
               </TactileButton>
             </>
           ) : (
