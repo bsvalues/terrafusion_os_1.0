@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
-import { apiFetch } from '@/lib/apiBase';
+import { apiFetchJson } from '@/lib/apiBase';
 import {
   Table,
   TableBody,
@@ -82,7 +82,7 @@ export function CostManual() {
 
       try {
         const qs = qualityFilter !== 'all' ? `?qualityClass=${encodeURIComponent(qualityFilter)}` : '';
-        const result = await apiFetch<CostScheduleApiRow[]>(
+        const result = await apiFetchJson<CostScheduleApiRow[]>(
           `/costforge/schedule${qs}`,
           { signal }
         );
@@ -121,7 +121,7 @@ export function CostManual() {
 
   const filtered = rows.filter((row) => {
     const matchesSearch = row.buildingClass.toLowerCase().includes(search.toLowerCase());
-    const matchesQuality = qualityFilter === 'all' || row.qualityGrade === qualityFilter;
+    const matchesQuality = qualityFilter === 'all' || row.qualityGrade.toLowerCase() === qualityFilter.toLowerCase();
     return matchesSearch && matchesQuality;
   });
 

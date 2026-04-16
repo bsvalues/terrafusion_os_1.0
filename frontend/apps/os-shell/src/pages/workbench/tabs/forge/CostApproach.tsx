@@ -322,7 +322,7 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
             <div className="flex items-center gap-3 text-sm">
               <span className="tf-text-tertiary">Confidence:</span>
               <span className="tf-suite-accent-text font-semibold">{formatConfidence(costAPI.data.confidence)}</span>
-              <span className="tf-text-dim text-xs ml-auto">Source: {costAPI.data.source}</span>
+              <span className="tf-text-dim text-xs ml-auto">Source: {costAPI.data.source === 'canonical' ? 'CAMA database' : costAPI.data.source}</span>
             </div>
           </div>
         )}
@@ -342,7 +342,7 @@ export const CostApproach: React.FC<ForgeSubTabProps> = ({
       {/* Model Inputs */}
       <BentoCard title="&#128269; Model Inputs" variant="default">
         <p className="tf-text-tertiary text-sm mb-4">
-          Valuation model factor breakdown with PII flagging for parcel {parcelId}
+          Valuation model factor breakdown for parcel {parcelId}
         </p>
 
         <div className="mb-4">

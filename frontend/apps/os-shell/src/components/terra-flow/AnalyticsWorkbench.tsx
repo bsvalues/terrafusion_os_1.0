@@ -162,10 +162,9 @@ Note: Phase 3 will integrate real Python/R/Julia kernels with:
       {/* Phase 1 Notice */}
       <Alert className="bg-blue-900/20 border-blue-800">
         <AlertCircle className="h-4 w-4 text-blue-400" />
-        <AlertTitle className="text-blue-400">Phase 1 Placeholder</AlertTitle>
+        <AlertTitle className="text-blue-400">Analytics Workbench — Preview</AlertTitle>
         <AlertDescription className="text-slate-300">
-          This is a simplified workbench. Phase 3 will implement full Jupyter notebook integration with
-          Python/R/Julia kernels, real-time execution, rich visualizations, and collaborative editing.
+          A simplified analytics environment is available now. Full notebook integration with Python/R/Julia kernels, real-time execution, and collaborative editing is scheduled for a future release.
         </AlertDescription>
       </Alert>
 

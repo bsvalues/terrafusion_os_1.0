@@ -4,7 +4,7 @@
  * Persists active tab, selected neighborhood, and selected parcel across renders.
  */
 import { create } from 'zustand';
-import { apiFetch } from '@/lib/apiBase';
+import { apiFetchJson } from '@/lib/apiBase';
 
 export type CostForgeTab =
   | 'triage'
@@ -65,7 +65,7 @@ export const useCostForgeWorkspaceStore = create<CostForgeWorkspaceState>((set, 
     const { taxYear } = get();
     set({ dashboardLoading: true, dashboardError: null });
     try {
-      const data = await apiFetch<DashboardStats>(
+      const data = await apiFetchJson<DashboardStats>(
         `/costforge/dashboard-stats?taxYear=${taxYear}`,
         { signal }
       );

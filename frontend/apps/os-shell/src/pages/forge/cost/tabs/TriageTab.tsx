@@ -10,7 +10,7 @@
  *   saleCount      — scales impact by parcel exposure
  */
 import { useEffect, useRef, useState } from 'react';
-import { apiFetch } from '@/lib/apiBase';
+import { apiFetchJson } from '@/lib/apiBase';
 import { useCostForgeWorkspaceStore } from '../costForgeWorkspaceStore';
 
 interface NeighborhoodRow {
@@ -70,7 +70,7 @@ export function TriageTab() {
     abortRef.current = new AbortController();
     setLoading(true);
     setError(null);
-    apiFetch<MatrixResponse>(
+    apiFetchJson<MatrixResponse>(
       `/costforge/calibration/neighborhood-matrix?taxYear=${taxYear}&minSales=3`,
       { signal: abortRef.current.signal }
     )

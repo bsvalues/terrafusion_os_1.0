@@ -107,7 +107,7 @@ const AISuperiorityLauncher: React.FC<AISuperiorityLauncherProps> = ({ onDemoLau
               🚀 AI Superiority Demonstration
             </h1>
             <p className='text-terra-blue'>
-              Launch championship-level comparison: TerraFusion's 1,008 AI agents vs Harris PACS
+              Launch championship-level comparison: TerraFusion AI vs the previous assessment system
             </p>
           </div>
         </CardHeader>

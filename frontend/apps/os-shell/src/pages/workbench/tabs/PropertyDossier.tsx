@@ -28,6 +28,7 @@ import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import {
   InvocationHistory,
   EvidenceSnapshotPanel,
+  WorkbenchSourceBadge,
   type InvocationRecord,
 } from '../../../components/workbench';
 import { useEvidenceSnapshot } from '../../../hooks/useEvidenceSnapshot';
@@ -95,6 +96,28 @@ interface DossierNoteResult {
   noteId: string;
   appended: true;
   payloadRef: string;
+}
+
+interface OpenAppealPacketResult {
+  appealId: string;
+  packetRef: string;
+  payloadRef: string;
+  sections: string[];
+  chainOfCustody: string[];
+}
+
+interface EqualizationPackageResult {
+  packageRef: string;
+  payloadRef: string;
+  artifactCount: number;
+  checklist: string[];
+}
+
+interface AuditBundleResult {
+  bundleRef: string;
+  payloadRef: string;
+  artifactCount: number;
+  traceRef: string;
 }
 
 type DossierToolState<T> = { status: 'idle' | 'loading' | 'success' | 'error'; result?: T; correlationId?: string; error?: ErrorInfo };
@@ -279,7 +302,7 @@ const NotesSection: React.FC<{ data: NonNullable<import('../../../contracts/doss
     <div className='tf-panel p-4'>
       <div className='flex justify-between mb-3'>
         <span className='tf-text-dim text-sm'>
-          Showing {data.noteCountReturned} of {data.noteCountTotal} notes (headers only)
+          Showing {data.noteCountReturned} of {data.noteCountTotal} notes
         </span>
       </div>
       <div className='space-y-2'>
@@ -309,6 +332,7 @@ const NotesSection: React.FC<{ data: NonNullable<import('../../../contracts/doss
 export const PropertyDossier: React.FC = () => {
   const { parcelId } = useWorkbenchTab();
   const documents = usePropertyStore((s) => s.documents);
+  const appeals = usePropertyStore((s) => s.appeals);
 
   // CX-25: Real dossier details from backend
   const dossierDetails = useDossierDetails(parcelId);
@@ -317,6 +341,12 @@ export const PropertyDossier: React.FC = () => {
   const [synthesizeState, setSynthesizeState] = useState<SynthesizeState>({ status: 'idle' });
   const [casefileState, setCasefileState] = useState<DossierToolState<CasefileResult>>({ status: 'idle' });
   const [noteState, setNoteState] = useState<DossierToolState<DossierNoteResult>>({ status: 'idle' });
+  const [appealPacketState, setAppealPacketState] = useState<DossierToolState<OpenAppealPacketResult>>({ status: 'idle' });
+  const [appealPacketId, setAppealPacketId] = useState<string>('');
+  const [equalizationState, setEqualizationState] = useState<DossierToolState<EqualizationPackageResult>>({ status: 'idle' });
+  const [auditBundleState, setAuditBundleState] = useState<DossierToolState<AuditBundleResult>>({ status: 'idle' });
+  const [draftVersion, setDraftVersion] = useState<string>('benton-2026-working');
+  const [exportTaxYear, setExportTaxYear] = useState<number>(new Date().getFullYear());
   const [noteText, setNoteText] = useState('');
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
   const [documentManagement, setDocumentManagement] = useState<DocumentManagementState>({
@@ -413,6 +443,77 @@ export const PropertyDossier: React.FC = () => {
       }));
     }
   }, []);
+
+  const handleOpenAppealPacket = useCallback(async () => {
+    if (!appealPacketId.trim()) {
+      setAppealPacketState({ status: 'error', error: { code: 'VALIDATION', message: 'Appeal ID is required', severity: 'error' } });
+      return;
+    }
+    setAppealPacketState({ status: 'loading' });
+    try {
+      const response = await invokeTool({ toolId: 'open_appeal_packet', params: { county: 'benton', appealId: appealPacketId.trim() }, parcelId });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setAppealPacketState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setInvocationHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'open_appeal_packet', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev]);
+      } else {
+        setAppealPacketState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'APPEAL_PACKET_FAILED', message: response.error?.message || 'Appeal packet lookup failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setAppealPacketState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [appealPacketId, parcelId]);
+
+  const handleExportEqualizationPackage = useCallback(async () => {
+    setEqualizationState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'export_equalization_package',
+        params: { county: 'benton', draftVersion, taxYear: exportTaxYear, reasonCode: 'annual_certification' },
+        confirmation: { confirmed: true, reasonCode: 'annual_certification' },
+        parcelId,
+      });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setEqualizationState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setInvocationHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'export_equalization_package', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev]);
+      } else {
+        setEqualizationState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'EQUALIZATION_EXPORT_FAILED', message: response.error?.message || 'Equalization package export failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setEqualizationState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [draftVersion, exportTaxYear, parcelId]);
+
+  const handleExportAuditBundle = useCallback(async () => {
+    setAuditBundleState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'export_audit_bundle',
+        params: {
+          county: 'benton',
+          taxYear: exportTaxYear,
+          bundleScope: 'county',
+          subjectId: appealPacketId.trim() || parcelId,
+          reasonCode: 'annual_certification',
+        },
+        confirmation: { confirmed: true, reasonCode: 'annual_certification' },
+        parcelId,
+      });
+      if (response.success && response.result) {
+        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
+        setAuditBundleState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        setInvocationHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'export_audit_bundle', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev]);
+      } else {
+        setAuditBundleState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'AUDIT_EXPORT_FAILED', message: response.error?.message || 'Audit bundle export failed', severity: 'error', correlationId: response.correlationId } });
+      }
+    } catch (err) {
+      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      setAuditBundleState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
+    }
+  }, [appealPacketId, exportTaxYear, parcelId]);
 
   /** Invoke summarize_dossier tool via pilotApi (retained for R2 document integration) */
   const handleSummarize = useCallback(async (dossierId: string) => {
@@ -620,12 +721,90 @@ export const PropertyDossier: React.FC = () => {
         </BentoGrid>
       )}
 
+      <BentoGrid columns='auto' gap={1} padding={0}>
+        <BentoCard title='Appeal Packet Access' actions={<span>📦</span>}>
+          <p className='tf-text-tertiary text-sm mb-3'>
+            Open a governed appeal packet and review its chain of custody before BOE work.
+          </p>
+          <input
+            value={appealPacketId}
+            onChange={(event) => setAppealPacketId(event.target.value)}
+            placeholder={appeals[0]?.appealId ? `Appeal ID (for example ${appeals[0].appealId})` : 'Appeal ID'}
+            className='w-full p-3 rounded-lg tf-input mb-3'
+          />
+          <button onClick={handleOpenAppealPacket} disabled={appealPacketState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta mb-3'>
+            {appealPacketState.status === 'loading' ? 'Opening...' : 'Open Appeal Packet'}
+          </button>
+          {appealPacketState.status === 'success' && appealPacketState.result && (
+            <div className='space-y-3'>
+              <div className='tf-panel p-4'>
+                <div className='tf-text font-semibold'>Packet Ref: {appealPacketState.result.packetRef}</div>
+                <div className='tf-text-dim text-xs mt-1'>Sections: {appealPacketState.result.sections.join(', ')}</div>
+              </div>
+              <div className='space-y-1'>
+                {appealPacketState.result.chainOfCustody.map((item, index) => (
+                  <div key={`${item}-${index}`} className='tf-panel rounded px-3 py-2 text-sm tf-text-secondary'>{item}</div>
+                ))}
+              </div>
+              {appealPacketState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>Ref: <code className='tf-suite-accent-text font-mono'>{appealPacketState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
+            </div>
+          )}
+          {appealPacketState.status === 'error' && appealPacketState.error && <ErrorDisplay error={{ message: appealPacketState.error.message, errorCode: appealPacketState.error.code, correlationId: appealPacketState.correlationId }} />}
+        </BentoCard>
+
+        <BentoCard title='County Exports' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
+          <p className='tf-text-tertiary text-sm mb-3'>
+            Export certification and audit artifacts from the governed dossier lane.
+          </p>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-3 mb-3'>
+            <input
+              value={draftVersion}
+              onChange={(event) => setDraftVersion(event.target.value)}
+              placeholder='Draft version'
+              className='w-full p-3 rounded-lg tf-input'
+            />
+            <input
+              type='number'
+              value={exportTaxYear}
+              onChange={(event) => setExportTaxYear(Number(event.target.value) || new Date().getFullYear())}
+              className='w-full p-3 rounded-lg tf-input'
+              min={2020}
+              max={2100}
+            />
+          </div>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-3 mb-3'>
+            <button onClick={handleExportEqualizationPackage} disabled={equalizationState.status === 'loading'} className='py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta'>
+              {equalizationState.status === 'loading' ? 'Exporting...' : 'Export Equalization Package'}
+            </button>
+            <button onClick={handleExportAuditBundle} disabled={auditBundleState.status === 'loading'} className='py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta'>
+              {auditBundleState.status === 'loading' ? 'Bundling...' : 'Export Audit Bundle'}
+            </button>
+          </div>
+          {equalizationState.status === 'success' && equalizationState.result && (
+            <div className='tf-panel p-3 mb-3'>
+              <div className='tf-text font-semibold'>Equalization Package: {equalizationState.result.packageRef}</div>
+              <div className='tf-text-dim text-xs mt-1'>Artifacts: {equalizationState.result.artifactCount} | Checklist: {equalizationState.result.checklist.join(', ')}</div>
+              {equalizationState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2 mt-2'>Ref: <code className='tf-suite-accent-text font-mono'>{equalizationState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
+            </div>
+          )}
+          {auditBundleState.status === 'success' && auditBundleState.result && (
+            <div className='tf-panel p-3 mb-3'>
+              <div className='tf-text font-semibold'>Audit Bundle: {auditBundleState.result.bundleRef}</div>
+              <div className='tf-text-dim text-xs mt-1'>Artifacts: {auditBundleState.result.artifactCount} | Trace: {auditBundleState.result.traceRef}</div>
+              {auditBundleState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2 mt-2'>Ref: <code className='tf-suite-accent-text font-mono'>{auditBundleState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
+            </div>
+          )}
+          {equalizationState.status === 'error' && equalizationState.error && <ErrorDisplay error={{ message: equalizationState.error.message, errorCode: equalizationState.error.code, correlationId: equalizationState.correlationId }} />}
+          {auditBundleState.status === 'error' && auditBundleState.error && <ErrorDisplay error={{ message: auditBundleState.error.message, errorCode: auditBundleState.error.code, correlationId: auditBundleState.correlationId }} />}
+        </BentoCard>
+      </BentoGrid>
+
       {/* ================================================================ */}
       {/* CX-25: Parcel Details — real backend data                        */}
       {/* ================================================================ */}
       <div data-testid='parcel-details-section'>
         {/* Correlation ID badge + resource links */}
-        {dossierDetails.correlationId && (
+        {import.meta.env.DEV && dossierDetails.correlationId && (
           <div className='flex items-center gap-3 mb-3 flex-wrap'>
             <div className='flex items-center gap-2'>
               <span className='tf-text-dim text-xs'>Correlation:</span>
@@ -664,7 +843,7 @@ export const PropertyDossier: React.FC = () => {
           dossierDetails.error.code === 'NOT_FOUND' ? (
             <div className='tf-status-error rounded-xl p-4 mb-4'>
               <p className='tf-text text-sm'>
-                Parcel details not available — Properties table has no row for this parcel in the current environment (dev data gap, not an application error).
+                Parcel details are not available for this parcel.
               </p>
             </div>
           ) : (
@@ -1018,7 +1197,7 @@ export const PropertyDossier: React.FC = () => {
       <BentoCard title="Evidence Synthesis" actions={<span>🔬</span>}>
         <div className='flex items-start justify-between gap-4 flex-wrap mb-3'>
           <p className='tf-text-dim text-sm'>
-            Request returned evidence totals and categories for this parcel
+            Review synthesized evidence totals and categories for this parcel.
           </p>
           <button
             onClick={handleSynthesizeEvidence}
@@ -1042,7 +1221,7 @@ export const PropertyDossier: React.FC = () => {
               )}
             </div>
 
-            <p className='tf-text-dim text-xs'>Shows the totals and categories returned by this synthesis request.</p>
+
 
             {synthesizeState.result.synthesisNarrative && (
               <>
@@ -1071,7 +1250,7 @@ export const PropertyDossier: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <p className='tf-text-dim text-sm italic'>No categorized evidence returned.</p>
+              <p className='tf-text-dim text-sm italic'>No categorized evidence available.</p>
             )}
           </div>
         )}
@@ -1083,14 +1262,14 @@ export const PropertyDossier: React.FC = () => {
 
       {/* Casefile Summary */}
       <BentoCard title='📋 Casefile Summary' actions={<span>📑</span>}>
-        <p className='tf-text-tertiary text-sm mb-4'>Request returned a casefile summary for notices, appeals, permits, and sales on {parcelId}</p>
+        <p className='tf-text-tertiary text-sm mb-4'>Casefile summary for notices, appeals, permits, and sales on {parcelId}</p>
         <button onClick={handleCasefileSummary} disabled={casefileState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta mb-4'>
           {casefileState.status === 'loading' ? 'Loading...' : 'Summarize Casefile'}
         </button>
         {casefileState.status === 'loading' && <div role='status' className='flex items-center justify-center py-6 gap-3'><div className='tf-spinner h-8 w-8' /><span className='tf-text-tertiary'>Loading casefile...</span></div>}
         {casefileState.status === 'success' && casefileState.result && (
           <div className='space-y-3'>
-            <p className='tf-text-dim text-xs'>Shows the summary and highlights returned for the requested casefile sections.</p>
+
             <div className='tf-panel p-4'><p className='tf-text-secondary'>{casefileState.result.summary}</p><p className='tf-text-dim text-xs italic mt-2'>AI-synthesized from available casefile data — verify against source records.</p></div>
             {casefileState.result.highlights.length > 0 && (
               <div className='space-y-1'>
@@ -1162,7 +1341,7 @@ export const PropertyDossier: React.FC = () => {
         records={invocationHistory}
         title="Dossier Tool History"
         icon="📜"
-        emptyMessage="No governed tool invocations yet."
+        emptyMessage="No tool invocations recorded yet."
       />
     </div>
   );

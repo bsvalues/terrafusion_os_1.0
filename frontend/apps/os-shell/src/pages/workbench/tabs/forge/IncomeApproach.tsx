@@ -119,7 +119,7 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
                 className="px-3 py-2 rounded text-xs"
                 style={{ background: 'hsl(var(--tf-warning) / 0.10)', color: 'hsl(var(--tf-warning))' }}
               >
-                Notice: Income approach may not be applicable — no income data found in canonical record. Residential properties typically use cost/sales approaches only.
+                Notice: Income approach may not be applicable — no income data on file. Residential properties typically use cost/sales approaches only.
               </div>
             )}
             <div className="grid grid-cols-3 gap-3">
@@ -162,7 +162,7 @@ export const IncomeApproach: React.FC<ForgeSubTabProps> = ({
                 className="px-3 py-2 rounded text-xs"
                 style={{ background: 'hsl(var(--tf-info) / 0.08)', color: 'hsl(var(--tf-info))' }}
               >
-                Methodology: {incomeAPI.data.methodologyNote}
+                Methodology: {incomeAPI.data.methodologyNote.replace(/canonical record/gi, 'assessment records')}
               </div>
             )}
             <div className="flex items-center gap-3 text-sm">

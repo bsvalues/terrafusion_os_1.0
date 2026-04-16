@@ -74,6 +74,10 @@ vi.mock('../../components/workbench/ParcelContextBanner', () => ({
   ParcelContextBanner: () => null,
 }));
 
+vi.mock('../../api/pilotApi', () => ({
+  invokeTool: vi.fn(),
+}));
+
 // Lucide icons mock
 vi.mock('lucide-react', () => {
   const Icon = (props: any) => <svg data-slot="icon" {...props} />;
@@ -86,6 +90,8 @@ vi.mock('lucide-react', () => {
     Printer: Icon,
     Download: Icon,
     Database: Icon,
+    BarChart2: Icon,
+    Globe: Icon,
   };
 });
 
@@ -258,5 +264,16 @@ describe('AtlasSuiteHome — contract', () => {
     expect(screen.getByTestId('atlas-stats')).toBeInTheDocument();
     expect(screen.getByTestId('atlas-modules')).toBeInTheDocument();
     expect(screen.getByTestId('atlas-queue')).toBeInTheDocument();
+  });
+
+  it('renders the county evidence plane without changing the module grid contract', () => {
+    render(
+      <MemoryRouter>
+        <AtlasSuiteHome />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByTestId('atlas-evidence-plane')).toBeInTheDocument();
+    expect(screen.getByText('County Spatial Audit Posture')).toBeInTheDocument();
   });
 });

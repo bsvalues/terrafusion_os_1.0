@@ -20,6 +20,8 @@
  *               Batch Cost Runs (batch execution)
  *               Regression Studio / TerraGAMA / Coefficient Preview (queued)
  */
+import { useCallback, useState } from 'react';
+import { invokeTool } from '../../api/pilotApi';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
 import { useCountyStats } from '../../hooks/useCountyStats';
@@ -42,6 +44,45 @@ interface ForgeModuleDef {
   truthState?: TruthState;
   workbenchTab?: WorkbenchTabSlug;
   moduleId?: string;
+}
+
+interface CountyFindingSummary {
+  findingType: string;
+  severity: string;
+  recommendedAction: string;
+  correlationId: string;
+}
+
+interface MorningBriefSummary {
+  role: string;
+  queueType: string;
+  priority: string;
+  dueWindow: string;
+  recommendedTool: string;
+  readyToAct: boolean;
+  blockingDependencies: string[];
+  findings: CountyFindingSummary[];
+}
+
+interface CountyImpactPreview {
+  prdBefore: number;
+  prdAfter: number;
+  codBefore: number;
+  codAfter: number;
+  avDelta: number;
+  fairnessDelta: number;
+}
+
+interface CountyDiagnosticsSummary {
+  metrics: CountyImpactPreview;
+  readyForSignoff: boolean;
+  narrative: string;
+}
+
+interface CalibrationMemoSummary {
+  payloadRef: string;
+  sections: string[];
+  summary: string;
 }
 
 const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
@@ -167,6 +208,9 @@ export default function ForgeSuiteHome() {
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const recentParcels = usePropertyStore((s) => s.recentParcels);
   const sourceDisclosure = getSourceDisclosure(source);
+  const [briefState, setBriefState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: MorningBriefSummary; correlationId?: string; error?: string }>({ status: 'idle' });
+  const [diagnosticsState, setDiagnosticsState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: CountyDiagnosticsSummary; correlationId?: string; error?: string }>({ status: 'idle' });
+  const [memoState, setMemoState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: CalibrationMemoSummary; correlationId?: string; error?: string }>({ status: 'idle' });
 
   // KPI values from live /api/terraforge/county-stats (PacsValuations, SupNum=0 working layer).
   // 95,811 is the correct PACS import count for Benton County working layer.
@@ -212,6 +256,98 @@ export default function ForgeSuiteHome() {
     });
   };
 
+  const parseToolOutput = <T,>(output: unknown, fallback: T): T => {
+    try {
+      return typeof output === 'string' ? JSON.parse(output) as T : output as T;
+    } catch {
+      return fallback;
+    }
+  };
+
+  const handleRefreshBrief = useCallback(async () => {
+    setBriefState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'generate_morning_brief',
+        params: { county: 'benton', taxYear: 2026, role: 'chief_appraiser' },
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<MorningBriefSummary>(response.result.output, {
+          role: 'chief_appraiser',
+          queueType: 'calibration_review',
+          priority: 'medium',
+          dueWindow: 'next business day',
+          recommendedTool: 'propose_rate_adjustment',
+          readyToAct: false,
+          blockingDependencies: [],
+          findings: [],
+        });
+        setBriefState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setBriefState({ status: 'error', correlationId: response.correlationId, error: response.error?.message || 'Failed to load county briefing.' });
+      }
+    } catch (toolError) {
+      setBriefState({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: toolError instanceof Error ? toolError.message : 'Failed to load county briefing.',
+      });
+    }
+  }, []);
+
+  const handleRunDiagnostics = useCallback(async () => {
+    setDiagnosticsState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'rerun_ratio_study',
+        params: { county: 'benton', taxYear: 2026, draftVersion: 'benton-2026-working', scope: 'county' },
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<CountyDiagnosticsSummary>(response.result.output, {
+          metrics: { prdBefore: 0, prdAfter: 0, codBefore: 0, codAfter: 0, avDelta: 0, fairnessDelta: 0 },
+          readyForSignoff: false,
+          narrative: 'No county diagnostics returned.',
+        });
+        setDiagnosticsState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setDiagnosticsState({ status: 'error', correlationId: response.correlationId, error: response.error?.message || 'Failed to run county diagnostics.' });
+      }
+    } catch (toolError) {
+      setDiagnosticsState({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: toolError instanceof Error ? toolError.message : 'Failed to run county diagnostics.',
+      });
+    }
+  }, []);
+
+  const handleDraftBoardMemo = useCallback(async () => {
+    setMemoState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'generate_calibration_memo',
+        params: { county: 'benton', draftVersion: 'benton-2026-working', audience: 'board', reasonCode: 'annual_certification' },
+        confirmation: { confirmed: true, reasonCode: 'annual_certification' },
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<CalibrationMemoSummary>(response.result.output, {
+          payloadRef: '',
+          sections: [],
+          summary: 'No calibration memo returned.',
+        });
+        setMemoState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setMemoState({ status: 'error', correlationId: response.correlationId, error: response.error?.message || 'Failed to draft board memo.' });
+      }
+    } catch (toolError) {
+      setMemoState({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: toolError instanceof Error ? toolError.message : 'Failed to draft board memo.',
+      });
+    }
+  }, []);
+
   return (
     <div data-testid="suite-forge-root" className="forge-workspace h-full flex flex-col">
       <ParcelContextBanner suiteTabId="forge" />
@@ -255,6 +391,132 @@ export default function ForgeSuiteHome() {
                 <div className={`forge-kpi-cell__value forge-kpi-cell__value--${tone}`}>{value}</div>
               </div>
             ))}
+          </section>
+
+          <section className="forge-panel" data-testid="forge-calibration-desk">
+            <div className="forge-panel__header">
+              <div>
+                <p className="forge-panel__eyebrow">County Calibration Desk</p>
+                <h2 className="forge-panel__title">Chief appraiser command posture</h2>
+              </div>
+            </div>
+
+            <div className="forge-ops-grid">
+              <div className="forge-ops-card">
+                <div className="forge-ops-card__head">
+                  <div>
+                    <div className="forge-ops-card__title">Morning Brief</div>
+                    <div className="forge-ops-card__sub">Ranked findings and recommended next tool for Benton County.</div>
+                  </div>
+                  <button type="button" className="forge-ops-btn" onClick={handleRefreshBrief} disabled={briefState.status === 'loading'}>
+                    {briefState.status === 'loading' ? 'Refreshing…' : 'Refresh Brief'}
+                  </button>
+                </div>
+                {briefState.status === 'success' && briefState.result && (
+                  <div className="forge-ops-body">
+                    <div className="forge-ops-metrics">
+                      <div className="forge-ops-metric">
+                        <span className="forge-ops-metric__label">Queue</span>
+                        <span className="forge-ops-metric__value">{briefState.result.queueType.replace(/_/g, ' ')}</span>
+                      </div>
+                      <div className="forge-ops-metric">
+                        <span className="forge-ops-metric__label">Priority</span>
+                        <span className="forge-ops-metric__value">{briefState.result.priority}</span>
+                      </div>
+                      <div className="forge-ops-metric">
+                        <span className="forge-ops-metric__label">Recommended Tool</span>
+                        <span className="forge-ops-metric__value">{briefState.result.recommendedTool.replace(/_/g, ' ')}</span>
+                      </div>
+                    </div>
+                    {briefState.result.findings.slice(0, 2).map((finding) => (
+                      <div key={finding.correlationId} className="forge-ops-finding">
+                        <div className="forge-ops-finding__top">
+                          <span>{finding.findingType}</span>
+                          <span className="forge-chip forge-chip--warn">{finding.severity}</span>
+                        </div>
+                        <p>{finding.recommendedAction}</p>
+                      </div>
+                    ))}
+                    <div className="forge-ops-foot">
+                      <span>{briefState.result.readyToAct ? 'Ready to act' : 'Awaiting dependencies'}</span>
+                      {briefState.correlationId && <code>{briefState.correlationId.slice(0, 16)}...</code>}
+                    </div>
+                  </div>
+                )}
+                {briefState.status === 'error' && <div className="forge-workspace__notice forge-workspace__notice--error">{briefState.error}</div>}
+              </div>
+
+              <div className="forge-ops-card">
+                <div className="forge-ops-card__head">
+                  <div>
+                    <div className="forge-ops-card__title">County Diagnostics Sweep</div>
+                    <div className="forge-ops-card__sub">Refresh PRD, COD, AV delta, and signoff posture for the working draft.</div>
+                  </div>
+                  <button type="button" className="forge-ops-btn" onClick={handleRunDiagnostics} disabled={diagnosticsState.status === 'loading'}>
+                    {diagnosticsState.status === 'loading' ? 'Running…' : 'Run Sweep'}
+                  </button>
+                </div>
+                {diagnosticsState.status === 'success' && diagnosticsState.result && (
+                  <div className="forge-ops-body">
+                    <div className="forge-ops-metrics forge-ops-metrics--compact">
+                      <div className="forge-ops-metric">
+                        <span className="forge-ops-metric__label">PRD</span>
+                        <span className="forge-ops-metric__value">{diagnosticsState.result.metrics.prdBefore.toFixed(3)} → {diagnosticsState.result.metrics.prdAfter.toFixed(3)}</span>
+                      </div>
+                      <div className="forge-ops-metric">
+                        <span className="forge-ops-metric__label">COD</span>
+                        <span className="forge-ops-metric__value">{diagnosticsState.result.metrics.codBefore.toFixed(2)} → {diagnosticsState.result.metrics.codAfter.toFixed(2)}</span>
+                      </div>
+                      <div className="forge-ops-metric">
+                        <span className="forge-ops-metric__label">AV Delta</span>
+                        <span className="forge-ops-metric__value">{fmtCurrency(diagnosticsState.result.metrics.avDelta)}</span>
+                      </div>
+                    </div>
+                    <p className="forge-ops-note">{diagnosticsState.result.narrative}</p>
+                    <div className="forge-ops-foot">
+                      <span>{diagnosticsState.result.readyForSignoff ? 'Signoff ready' : 'Further review needed'}</span>
+                      {diagnosticsState.correlationId && <code>{diagnosticsState.correlationId.slice(0, 16)}...</code>}
+                    </div>
+                  </div>
+                )}
+                {diagnosticsState.status === 'error' && <div className="forge-workspace__notice forge-workspace__notice--error">{diagnosticsState.error}</div>}
+              </div>
+
+              <div className="forge-ops-card forge-ops-card--wide">
+                <div className="forge-ops-card__head">
+                  <div>
+                    <div className="forge-ops-card__title">Board Memo Packet</div>
+                    <div className="forge-ops-card__sub">Draft the governed board-facing calibration memo and jump directly into the live Forge applications.</div>
+                  </div>
+                  <div className="forge-ops-actions">
+                    <button type="button" className="forge-ops-btn" onClick={handleDraftBoardMemo} disabled={memoState.status === 'loading'}>
+                      {memoState.status === 'loading' ? 'Drafting…' : 'Draft Memo'}
+                    </button>
+                    <button type="button" className="forge-ops-btn forge-ops-btn--ghost" onClick={() => handleModuleLaunch(PRIMARY_MODULES[0])}>
+                      Open CostForge
+                    </button>
+                    <button type="button" className="forge-ops-btn forge-ops-btn--ghost" onClick={() => handleModuleLaunch(SECONDARY_MODULES[0])}>
+                      Open Statistics Studio
+                    </button>
+                  </div>
+                </div>
+                {memoState.status === 'success' && memoState.result && (
+                  <div className="forge-ops-body">
+                    <p className="forge-ops-note">{memoState.result.summary}</p>
+                    <div className="forge-ops-tags">
+                      {memoState.result.sections.map((section) => (
+                        <span key={section} className="forge-chip forge-chip--neutral">{section}</span>
+                      ))}
+                    </div>
+                    <div className="forge-ops-foot">
+                      <span>{memoState.result.payloadRef || 'Payload pending'}</span>
+                      {memoState.correlationId && <code>{memoState.correlationId.slice(0, 16)}...</code>}
+                    </div>
+                  </div>
+                )}
+                {memoState.status === 'error' && <div className="forge-workspace__notice forge-workspace__notice--error">{memoState.error}</div>}
+              </div>
+            </div>
           </section>
 
           <section className="forge-panel" data-testid="forge-primary-applications">

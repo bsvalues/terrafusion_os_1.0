@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { apiFetch } from '@/lib/apiBase';
+import { apiFetchJson } from '@/lib/apiBase';
 
 interface BatchJob {
   jobId: string;
@@ -32,12 +32,12 @@ export function BatchCostApplyPanel() {
   const [startError, setStartError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  // Poll job status every 5 s while running
+  // Poll job status every 5 s until terminal (covers 'pending' → 'running' → 'completed'/'failed')
   useEffect(() => {
-    if (!job || job.status !== 'running') return;
+    if (!job || job.status === 'completed' || job.status === 'failed') return;
     const interval = setInterval(async () => {
       try {
-        const updated = await apiFetch<BatchJob>(`/costforge/batch/status/${job.jobId}`);
+        const updated = await apiFetchJson<BatchJob>(`/costforge/batch/status/${job.jobId}`);
         setJob(updated);
         if (updated.status === 'completed' || updated.status === 'failed') {
           clearInterval(interval);
@@ -58,7 +58,7 @@ export function BatchCostApplyPanel() {
       const params = new URLSearchParams();
       if (neighborhoodFilter) params.set('neighborhood', neighborhoodFilter);
       if (propertyType) params.set('propertyType', propertyType);
-      const data = await apiFetch<{ matchCount: number }>(
+      const data = await apiFetchJson<{ matchCount: number }>(
         `/costforge/batch/preview?${params.toString()}`,
         { signal: abortRef.current.signal }
       );
@@ -76,7 +76,7 @@ export function BatchCostApplyPanel() {
     setStartLoading(true);
     setStartError(null);
     try {
-      const newJob = await apiFetch<BatchJob>('/costforge/batch/apply', {
+      const newJob = await apiFetchJson<BatchJob>('/costforge/batch/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ neighborhoodFilter, propertyType, costScheduleId }),
@@ -92,7 +92,7 @@ export function BatchCostApplyPanel() {
   const cancelJob = async () => {
     if (!job) return;
     try {
-      await apiFetch(`/costforge/batch/cancel/${job.jobId}`, { method: 'POST' });
+      await apiFetchJson<unknown>(`/costforge/batch/cancel/${job.jobId}`, { method: 'POST' });
       setJob((prev) => prev ? { ...prev, status: 'failed' } : null);
     } catch {
       // ignore cancel errors — polling will pick up final state

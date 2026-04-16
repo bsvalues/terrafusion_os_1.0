@@ -233,7 +233,7 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
         borderWidth: 2,
       },
       {
-        label: 'Harris PACS v12.4.7',
+        label: 'Previous System',
         data: demoData
           ? [
               demoData.harrisPACSResults.responseTime,
@@ -489,7 +489,7 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
                 <tr className='border-b border-terra-slate'>
                   <th className='text-left p-2 text-terra-cyan'>Scenario</th>
                   <th className='text-left p-2 text-terra-cyan'>TerraFusion</th>
-                  <th className='text-left p-2 text-terra-cyan'>Harris PACS</th>
+                  <th className='text-left p-2 text-terra-cyan'>Previous System</th>
                   <th className='text-left p-2 text-terra-cyan'>Advantage</th>
                 </tr>
               </thead>

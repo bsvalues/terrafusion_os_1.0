@@ -22,7 +22,7 @@
  */
 
 import { cn } from '@/lib/utils';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Clock,
   ArrowRight,
@@ -34,6 +34,9 @@ import {
   Zap,
   Search,
   LayoutDashboard,
+  Shield,
+  Compass,
+  FolderOpen,
 } from 'lucide-react';
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useRecentParcels } from '../../context/parcelContext';
@@ -42,6 +45,7 @@ import { useTodaysWork, type TodaysWorkItem } from '../../hooks/useTodaysWork';
 import { useParcelCount } from '../../hooks/useParcelCount';
 import { DemoDataBanner } from '../../components/governance/DemoDataBanner';
 import { LiquidPanel } from '../../ui/materials';
+import { invokeTool } from '../../api/pilotApi';
 import { Z } from './zIndex';
 
 // ============================================================================
@@ -51,6 +55,34 @@ import { Z } from './zIndex';
 export interface StageZeroStateProps {
   id?: string;
   className?: string;
+}
+
+interface ExecutivePostureState {
+  dais: {
+    status: 'idle' | 'loading' | 'success' | 'error';
+    summary?: string;
+    queueType?: string;
+    recommendedTool?: string;
+    correlationId?: string;
+  };
+  forge: {
+    status: 'idle' | 'loading' | 'success' | 'error';
+    summary?: string;
+    readiness?: string;
+    correlationId?: string;
+  };
+  atlas: {
+    status: 'idle' | 'loading' | 'success' | 'error';
+    summary?: string;
+    hotspots?: number;
+    correlationId?: string;
+  };
+  dossier: {
+    status: 'idle' | 'loading' | 'success' | 'error';
+    summary?: string;
+    packetRef?: string;
+    correlationId?: string;
+  };
 }
 
 // ============================================================================
@@ -147,6 +179,14 @@ function TodaysWorkPanel({ tasks, onActivate }: { tasks: TodaysWorkItem[]; onAct
   );
 }
 
+function parseToolOutput<T>(output: unknown, fallback: T): T {
+  try {
+    return typeof output === 'string' ? JSON.parse(output) as T : output as T;
+  } catch {
+    return fallback;
+  }
+}
+
 // ============================================================================
 // County Map — Mapbox GL satellite map with parcel layer
 // ============================================================================
@@ -154,49 +194,16 @@ import BentonCountyMap from './BentonCountyMap';
 
 /**
  * Real Mapbox GL satellite map of Benton County WA.
- * Search bar floats above the map — opens the OS command palette.
  * Parcel click → opens PropertyWorkbench for that parcel.
  */
 const CountyMapOverview: React.FC<{
-  onOpenSearch: () => void;
   onParcelSelect: (parcelId: string) => void;
-}> = ({ onOpenSearch, onParcelSelect }) => (
+}> = ({ onParcelSelect }) => (
   <div
     className='relative w-full h-full rounded-xl overflow-hidden'
     aria-label='Benton County WA — satellite GIS map'
   >
-    {/* Floating search bar */}
-    <div
-      className='absolute top-3 left-1/2 -translate-x-1/2 z-[1000] w-[380px] max-w-[90%]'
-      style={{ pointerEvents: 'auto' }}
-    >
-      <button
-        onClick={onOpenSearch}
-        className='w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-left transition-all duration-150'
-        style={{
-          background: 'hsl(var(--glass-bg))',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid hsl(var(--tf-border) / 0.6)',
-          color: 'hsl(var(--tf-muted))',
-          boxShadow: '0 4px 16px hsl(var(--tf-tokens-black-hs) 0% / 0.12)',
-        }}
-      >
-        <Search
-          className='h-4 w-4 flex-shrink-0'
-          style={{ color: 'hsl(var(--tf-accent))' }}
-        />
-        <span className='text-sm flex-1'>Search parcels, addresses, owners…</span>
-        <kbd
-          className='text-[10px] font-medium px-1.5 py-0.5 rounded flex-shrink-0'
-          style={{
-            background: 'hsl(var(--tf-surface-2))',
-            color: 'hsl(var(--tf-text))',
-          }}
-        >
-          ⌘K
-        </kbd>
-      </button>
-    </div>
+    <span className='sr-only' role='img' aria-label='Open TerraAtlas for full county map' />
 
     {/* Mapbox GL satellite map */}
     <BentonCountyMap
@@ -216,6 +223,12 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
   const { tasks: todaysTasks, isSampleData } = useTodaysWork();
   const { data: statsData } = useParcelCount();
   const parcelCount = statsData?.totalParcels ?? 89_247;
+  const [executivePosture, setExecutivePosture] = useState<ExecutivePostureState>({
+    dais: { status: 'idle' },
+    forge: { status: 'idle' },
+    atlas: { status: 'idle' },
+    dossier: { status: 'idle' },
+  });
 
   const handleOpenAtlas = useCallback(() => {
     activateModule('suite-atlas', { source: 'desktop' });
@@ -228,7 +241,8 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
   }, []);
 
   const handleSelectParcel = useCallback((parcelId: string) => {
-    import('../../context/parcelContext').then(({ openWorkbenchWindow }) => {
+    import('../../context/parcelContext').then(({ selectRecentParcel, openWorkbenchWindow }) => {
+      selectRecentParcel(parcelId);
       openWorkbenchWindow(parcelId);
     });
   }, []);
@@ -239,6 +253,112 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
 
   const handleOpenDais = useCallback(() => {
     activateModule('suite-dais', { source: 'desktop' });
+  }, []);
+
+  const handleOpenDossier = useCallback(() => {
+    activateModule('suite-dossier', { source: 'desktop' });
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadExecutivePosture() {
+      setExecutivePosture({
+        dais: { status: 'loading' },
+        forge: { status: 'loading' },
+        atlas: { status: 'loading' },
+        dossier: { status: 'loading' },
+      });
+
+      const [daisResult, forgeResult, atlasResult, dossierResult] = await Promise.allSettled([
+        invokeTool({
+          toolId: 'generate_morning_brief',
+          params: { county: 'benton', role: 'assessor_leadership', taxYear: 2026 },
+        }),
+        invokeTool({
+          toolId: 'generate_morning_brief',
+          params: { county: 'benton', role: 'chief_appraiser', taxYear: 2026 },
+        }),
+        invokeTool({
+          toolId: 'explain_spatial_anomaly',
+          params: { county: 'benton', taxYear: 2026, metric: 'residual_cluster', geographyId: 'BENTON-COUNTY' },
+        }),
+        invokeTool({
+          toolId: 'open_appeal_packet',
+          params: { county: 'benton', appealId: 'BOE-2026-001' },
+        }),
+      ]);
+
+      if (cancelled) {
+        return;
+      }
+
+      setExecutivePosture({
+        dais: daisResult.status === 'fulfilled' && daisResult.value.success
+          ? (() => {
+              const parsed = parseToolOutput<{ queueType?: string; summary?: string; recommendedTool?: string }>(
+                daisResult.value.result?.output,
+                {}
+              );
+              return {
+                status: 'success',
+                summary: parsed.summary || 'County leadership queue posture loaded.',
+                queueType: parsed.queueType,
+                recommendedTool: parsed.recommendedTool,
+                correlationId: daisResult.value.correlationId,
+              };
+            })()
+          : { status: 'error', summary: 'County leadership briefing unavailable.' },
+        forge: forgeResult.status === 'fulfilled' && forgeResult.value.success
+          ? (() => {
+              const parsed = parseToolOutput<{ summary?: string; queueType?: string }>(
+                forgeResult.value.result?.output,
+                {}
+              );
+              return {
+                status: 'success',
+                summary: parsed.summary || 'Chief appraiser brief loaded.',
+                readiness: parsed.queueType,
+                correlationId: forgeResult.value.correlationId,
+              };
+            })()
+          : { status: 'error', summary: 'Chief appraiser brief unavailable.' },
+        atlas: atlasResult.status === 'fulfilled' && atlasResult.value.success
+          ? (() => {
+              const parsed = parseToolOutput<{ narrative?: string; hotspotCount?: number }>(
+                atlasResult.value.result?.output,
+                {}
+              );
+              return {
+                status: 'success',
+                summary: parsed.narrative || 'Spatial audit posture loaded.',
+                hotspots: parsed.hotspotCount,
+                correlationId: atlasResult.value.correlationId,
+              };
+            })()
+          : { status: 'error', summary: 'Spatial audit posture unavailable.' },
+        dossier: dossierResult.status === 'fulfilled' && dossierResult.value.success
+          ? (() => {
+              const parsed = parseToolOutput<{ packetRef?: string; payloadRef?: string }>(
+                dossierResult.value.result?.output,
+                {}
+              );
+              return {
+                status: 'success',
+                summary: parsed.payloadRef || 'Packet readiness loaded.',
+                packetRef: parsed.packetRef,
+                correlationId: dossierResult.value.correlationId,
+              };
+            })()
+          : { status: 'error', summary: 'Packet readiness unavailable.' },
+      });
+    }
+
+    void loadExecutivePosture();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -258,96 +378,188 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
         paddingRight: 24,
       }}
     >
-      <div className='pointer-events-auto h-full flex gap-3'>
+      <div className='pointer-events-auto h-full flex flex-col gap-3'>
+        <div className='flex-1 min-h-0 flex gap-3'>
+          {/* ═══ Left Panel: Recent Work ═══ */}
+          <div data-testid='recent-work-panel' className='w-[240px] shrink-0 flex flex-col gap-3'>
+            <GlassCard className='flex-1'>
+              <SectionHeader icon={<Clock className='h-3.5 w-3.5' />} title='Recent Work' />
+              <div className='flex flex-col gap-0.5 -mx-2.5 flex-1'>
+                {recentParcels.length === 0 ? (
+                  <div className='flex flex-col items-center justify-center flex-1 gap-2 opacity-40'>
+                    <Building2 className='h-6 w-6' />
+                    <p className='text-xs text-center'>No recent parcels.<br />Use ⌘K to search.</p>
+                  </div>
+                ) : (
+                  recentParcels.slice(0, 8).map((parcelId) => (
+                    <ActionRow
+                      key={parcelId}
+                      icon={<Building2 className='h-3.5 w-3.5' />}
+                      label={parcelId}
+                      onClick={() => handleSelectParcel(parcelId)}
+                    />
+                  ))
+                )}
+              </div>
+            </GlassCard>
+          </div>
 
-        {/* ═══ Left Panel: Recent Work ═══ */}
-        <div data-testid='recent-work-panel' className='w-[240px] shrink-0 flex flex-col gap-3'>
-          <GlassCard className='flex-1'>
-            <SectionHeader icon={<Clock className='h-3.5 w-3.5' />} title='Recent Work' />
-            <div className='flex flex-col gap-0.5 -mx-2.5 flex-1'>
-              {recentParcels.length === 0 ? (
-                <div className='flex flex-col items-center justify-center flex-1 gap-2 opacity-40'>
-                  <Building2 className='h-6 w-6' />
-                  <p className='text-xs text-center'>No recent parcels.<br />Use ⌘K to search.</p>
+          {/* ═══ Center: County Overview ═══ */}
+          <div data-testid='county-map-center' className='flex-1 min-w-0'>
+            <GlassCard className='h-full p-2'>
+              <CountyMapOverview onParcelSelect={handleSelectParcel} />
+            </GlassCard>
+          </div>
+
+          {/* ═══ Right Panel: Today's Work + Quick Actions ═══ */}
+          <div className='w-[240px] shrink-0 flex flex-col gap-3'>
+            <GlassCard className='flex-1'>
+              {isSampleData && <DemoDataBanner module="Today's Work" />}
+              <TodaysWorkPanel tasks={todaysTasks} onActivate={(route) => activateModule(route, { source: 'desktop' })} />
+            </GlassCard>
+            <GlassCard className='shrink-0'>
+              <SectionHeader icon={<Zap className='h-3.5 w-3.5' />} title='Quick Actions' />
+              <div className='flex flex-col gap-0.5 -mx-2.5'>
+                <ActionRow
+                  icon={<Search className='h-3.5 w-3.5' />}
+                  label='Search Parcels'
+                  onClick={openCommandPalette}
+                  shortcut='⌘K'
+                />
+                <ActionRow
+                  icon={<LayoutDashboard className='h-3.5 w-3.5' />}
+                  label='Open Workbench'
+                  onClick={handleOpenWorkbench}
+                />
+                <ActionRow
+                  icon={<Map className='h-3.5 w-3.5' />}
+                  label='Launch Atlas'
+                  onClick={handleOpenAtlas}
+                />
+                <ActionRow
+                  icon={<BarChart3 className='h-3.5 w-3.5' />}
+                  label='Open Ratio Study'
+                  onClick={handleOpenForge}
+                  subtle
+                />
+                <ActionRow
+                  icon={<FileSearch className='h-3.5 w-3.5' />}
+                  label='Review Appeals'
+                  onClick={handleOpenDais}
+                  subtle
+                />
+              </div>
+            </GlassCard>
+          </div>
+        </div>
+
+        <LiquidPanel variant='shell' radius='lg' className='px-4 py-4 shrink-0'>
+          <div data-testid='executive-command-surface' className='flex flex-col gap-3'>
+            <div className='flex items-center justify-between gap-3'>
+              <div>
+                <div className='text-[10px] font-semibold uppercase tracking-[0.14em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Executive Command Surface
                 </div>
-              ) : (
-                recentParcels.slice(0, 8).map((parcelId) => (
-                  <ActionRow
-                    key={parcelId}
-                    icon={<Building2 className='h-3.5 w-3.5' />}
-                    label={parcelId}
-                    onClick={() => handleSelectParcel(parcelId)}
-                  />
-                ))
-              )}
+                <div className='text-sm font-semibold mt-1' style={{ color: 'hsl(var(--tf-text))' }}>
+                  Cross-suite county posture
+                </div>
+              </div>
+              <div className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                Benton County • Governed summaries only
+              </div>
             </div>
-          </GlassCard>
-        </div>
 
-        {/* ═══ Center: County Overview ═══ */}
-        <div data-testid='county-map-center' className='flex-1 flex flex-col gap-3 min-w-0'>
-          <GlassCard className='flex-1 p-2'>
-            <CountyMapOverview onOpenSearch={openCommandPalette} onParcelSelect={handleSelectParcel} />
-          </GlassCard>
-
-          {/* Bottom strip: County status */}
-          <LiquidPanel variant='shell' radius='lg' className='px-4 py-2 shrink-0'>
-            <div data-testid='county-status-strip' className='flex items-center justify-between text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-              <span className='font-medium' style={{ color: 'hsl(var(--tf-text))' }}>
-                Benton County, WA
-              </span>
-              <span>{parcelCount.toLocaleString()} parcels</span>
-              <span>Last sync: –</span>
-              <span>Appeals: –</span>
-              <span className='flex items-center gap-1'>
-                <span className='inline-block w-1.5 h-1.5 rounded-full bg-green-400' />
-                Status: –
-              </span>
-            </div>
-          </LiquidPanel>
-        </div>
-
-        {/* ═══ Right Panel: Today's Work + Quick Actions ═══ */}
-        <div className='w-[240px] shrink-0 flex flex-col gap-3'>
-          <GlassCard className='flex-1'>
-            {isSampleData && <DemoDataBanner module="Today's Work" />}
-            <TodaysWorkPanel tasks={todaysTasks} onActivate={(route) => activateModule(route, { source: 'desktop' })} />
-          </GlassCard>
-          <GlassCard className='shrink-0'>
-            <SectionHeader icon={<Zap className='h-3.5 w-3.5' />} title='Quick Actions' />
-            <div className='flex flex-col gap-0.5 -mx-2.5'>
-              <ActionRow
-                icon={<Search className='h-3.5 w-3.5' />}
-                label='Search Parcels'
-                onClick={openCommandPalette}
-                shortcut='⌘K'
-              />
-              <ActionRow
-                icon={<LayoutDashboard className='h-3.5 w-3.5' />}
-                label='Open Workbench'
-                onClick={handleOpenWorkbench}
-              />
-              <ActionRow
-                icon={<Map className='h-3.5 w-3.5' />}
-                label='Launch Atlas'
-                onClick={handleOpenAtlas}
-              />
-              <ActionRow
-                icon={<BarChart3 className='h-3.5 w-3.5' />}
-                label='Open Ratio Study'
-                onClick={handleOpenForge}
-                subtle
-              />
-              <ActionRow
-                icon={<FileSearch className='h-3.5 w-3.5' />}
-                label='Review Appeals'
+            <div className='grid grid-cols-1 xl:grid-cols-4 gap-3'>
+              <button
+                type='button'
                 onClick={handleOpenDais}
-                subtle
-              />
-            </div>
-          </GlassCard>
-        </div>
+                className='rounded-xl p-3 text-left transition-all duration-150 hover:bg-[hsl(var(--tf-text)_/_0.04)]'
+                style={{ border: '1px solid hsl(var(--tf-border) / 0.7)' }}
+              >
+                <div className='flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  <LayoutDashboard className='h-3.5 w-3.5' />
+                  Dais
+                </div>
+                <div className='mt-2 text-sm font-semibold' style={{ color: 'hsl(var(--tf-text))' }}>
+                  {executivePosture.dais.queueType || 'Staff queues'}
+                </div>
+                <div className='mt-2 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  {executivePosture.dais.summary || 'Loading county leadership briefing…'}
+                </div>
+              </button>
 
+              <button
+                type='button'
+                onClick={handleOpenForge}
+                className='rounded-xl p-3 text-left transition-all duration-150 hover:bg-[hsl(var(--tf-text)_/_0.04)]'
+                style={{ border: '1px solid hsl(var(--tf-border) / 0.7)' }}
+              >
+                <div className='flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  <Shield className='h-3.5 w-3.5' />
+                  Forge
+                </div>
+                <div className='mt-2 text-sm font-semibold' style={{ color: 'hsl(var(--tf-text))' }}>
+                  {executivePosture.forge.readiness || 'Calibration posture'}
+                </div>
+                <div className='mt-2 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  {executivePosture.forge.summary || 'Loading chief appraiser brief…'}
+                </div>
+              </button>
+
+              <button
+                type='button'
+                onClick={handleOpenAtlas}
+                className='rounded-xl p-3 text-left transition-all duration-150 hover:bg-[hsl(var(--tf-text)_/_0.04)]'
+                style={{ border: '1px solid hsl(var(--tf-border) / 0.7)' }}
+              >
+                <div className='flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  <Compass className='h-3.5 w-3.5' />
+                  Atlas
+                </div>
+                <div className='mt-2 text-sm font-semibold' style={{ color: 'hsl(var(--tf-text))' }}>
+                  {executivePosture.atlas.hotspots != null ? `${executivePosture.atlas.hotspots} hotspots` : 'Spatial pulse'}
+                </div>
+                <div className='mt-2 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  {executivePosture.atlas.summary || 'Loading spatial anomaly posture…'}
+                </div>
+              </button>
+
+              <button
+                type='button'
+                onClick={handleOpenDossier}
+                className='rounded-xl p-3 text-left transition-all duration-150 hover:bg-[hsl(var(--tf-text)_/_0.04)]'
+                style={{ border: '1px solid hsl(var(--tf-border) / 0.7)' }}
+              >
+                <div className='flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  <FolderOpen className='h-3.5 w-3.5' />
+                  Dossier
+                </div>
+                <div className='mt-2 text-sm font-semibold' style={{ color: 'hsl(var(--tf-text))' }}>
+                  {executivePosture.dossier.packetRef || 'Packet readiness'}
+                </div>
+                <div className='mt-2 text-xs leading-5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  {executivePosture.dossier.summary || 'Loading evidence packet posture…'}
+                </div>
+              </button>
+            </div>
+          </div>
+        </LiquidPanel>
+
+        {/* Bottom strip: County status */}
+        <LiquidPanel variant='shell' radius='lg' className='px-4 py-2 shrink-0'>
+          <div data-testid='county-status-strip' className='flex items-center justify-between text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+            <span className='font-medium' style={{ color: 'hsl(var(--tf-text))' }}>
+              Benton County, WA
+            </span>
+            <span>{parcelCount.toLocaleString()} parcels</span>
+            <span>Last sync: –</span>
+            <span>Appeals: –</span>
+            <span className='flex items-center gap-1'>
+              <span className='inline-block w-1.5 h-1.5 rounded-full bg-green-400' />
+              Status: –
+            </span>
+          </div>
+        </LiquidPanel>
       </div>
     </div>
   );

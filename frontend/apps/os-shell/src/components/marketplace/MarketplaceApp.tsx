@@ -80,7 +80,7 @@ export const MarketplaceApp: React.FC = () => {
           description: 'Integration with county property assessment and records systems',
           author: 'Terrafusion',
           category: 'Data Integration',
-          tags: ['harris', 'pacs', 'integration', 'property'],
+          tags: ['data', 'integration', 'property', 'assessment'],
           downloads: 8930,
           rating: 4.6,
           ratingCount: 156,

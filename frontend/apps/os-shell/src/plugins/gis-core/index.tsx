@@ -81,7 +81,7 @@ function GisCorePlugin({ context }: { context: any }) {
           <div className={styles.mapPlaceholder}>
             📍 Interactive Map Placeholder
             <div className={styles.mapNote}>
-              Production: Leaflet/Cesium integration with Harris PACS overlay
+              Production: Leaflet/Cesium integration with county parcel overlay
             </div>
           </div>
           <pre className={styles.resultsData}>{JSON.stringify(parcelData, null, 2)}</pre>

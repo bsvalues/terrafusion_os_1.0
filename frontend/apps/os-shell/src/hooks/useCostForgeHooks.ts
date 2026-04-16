@@ -24,6 +24,12 @@ export interface CostForgeCalcInput {
   is_residential: boolean;
 }
 
+export interface CostForgeSecondaryFeature {
+  code: string;
+  description: string;
+  value: number;
+}
+
 export interface CostForgeResult {
   baseUnitCost: number | null;
   localMultiplier: number | null;
@@ -37,6 +43,8 @@ export interface CostForgeResult {
   rcnld: number | null;
   scheduleSource: string | null;
   calcMethod: string;
+  /** Benton Method secondary features (patio, basement, shop, etc.) as %-of-BIV */
+  secondaryFeatures?: CostForgeSecondaryFeature[];
 }
 
 export type ImprvTypeCode = string;

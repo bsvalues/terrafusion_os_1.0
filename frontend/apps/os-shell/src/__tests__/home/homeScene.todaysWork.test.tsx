@@ -58,6 +58,50 @@ vi.mock('../../orchestration/moduleActivation', () => ({
   activateModule: (...args: any[]) => mockActivateModule(...args),
 }));
 
+vi.mock('../../api/pilotApi', () => ({
+  __esModule: true,
+  invokeTool: vi.fn(async ({ toolId }: { toolId: string }) => {
+    if (toolId === 'generate_morning_brief') {
+      return {
+        success: true,
+        correlationId: 'corr-brief',
+        result: {
+          toolId,
+          output: JSON.stringify({
+            queueType: 'ranked_worklist',
+            summary: 'County queue posture loaded.',
+            recommendedTool: 'dais',
+          }),
+        },
+      };
+    }
+    if (toolId === 'explain_spatial_anomaly') {
+      return {
+        success: true,
+        correlationId: 'corr-atlas',
+        result: {
+          toolId,
+          output: JSON.stringify({
+            narrative: 'Spatial audit posture loaded.',
+            hotspotCount: 4,
+          }),
+        },
+      };
+    }
+    return {
+      success: true,
+      correlationId: 'corr-dossier',
+      result: {
+        toolId,
+        output: JSON.stringify({
+          packetRef: 'BOE-2026-001',
+          payloadRef: 'Packet readiness loaded.',
+        }),
+      },
+    };
+  }),
+}));
+
 // Mock LiquidPanel material (render a simple div)
 vi.mock('../../ui/materials', () => ({
   __esModule: true,
@@ -76,6 +120,24 @@ vi.mock('../../shell/desktop/zIndex', () => ({
 vi.mock('../../lib/utils', () => ({
   __esModule: true,
   cn: (...args: any[]) => args.filter(Boolean).join(' '),
+}));
+
+vi.mock('../../hooks/useTodaysWork', () => ({
+  __esModule: true,
+  useTodaysWork: () => ({
+    tasks: [
+      { id: 'task-1', title: 'Review 3 appeals', subtitle: 'TerraDais queue', route: 'terradais' },
+      { id: 'task-2', title: 'Inspect 12 parcels', subtitle: 'Field backlog', route: 'property-workbench' },
+      { id: 'task-3', title: 'Ratio study due Friday', subtitle: 'TerraForge calibration', route: 'suite-forge' },
+    ],
+    loading: false,
+    isSampleData: false,
+  }),
+}));
+
+vi.mock('../../hooks/useParcelCount', () => ({
+  __esModule: true,
+  useParcelCount: () => ({ data: undefined, isLoading: false, error: null }),
 }));
 
 // Import AFTER mocks are set up
@@ -129,6 +191,6 @@ describe('Phase 7: Today\'s Work Panel', () => {
     // Click the first task ("Review 3 appeals" -> route "terradais")
     const firstTask = screen.getByText(/Review 3 appeals/);
     fireEvent.click(firstTask.closest('button')!);
-    expect(mockActivateModule).toHaveBeenCalledWith('terradais');
+    expect(mockActivateModule).toHaveBeenCalledWith('terradais', { source: 'desktop' });
   });
 });

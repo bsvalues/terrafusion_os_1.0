@@ -10,7 +10,7 @@
  * compute median ratio per decade, flag the bucket furthest from 1.0.
  */
 import { useEffect, useRef, useState } from 'react';
-import { apiFetch } from '@/lib/apiBase';
+import { apiFetchJson } from '@/lib/apiBase';
 import { useCostForgeWorkspaceStore } from '../costForgeWorkspaceStore';
 
 interface CamaParcel {
@@ -88,7 +88,7 @@ export function NeighborhoodAuditTab() {
     setLoading(true);
     setError(null);
 
-    apiFetch<ParcelListResponse>(
+    apiFetchJson<ParcelListResponse>(
       `/costforge/neighborhoods/${selectedHoodCd}/parcels?taxYear=${taxYear}`,
       { signal: abortRef.current.signal }
     )

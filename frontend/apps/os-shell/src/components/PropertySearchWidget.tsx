@@ -121,7 +121,7 @@ export const PropertySearchWidget: React.FC<PropertySearchWidgetProps> = ({ onSe
       {/* Total count hint */}
       {totalCount !== null && (
         <span style={{ color: 'hsl(var(--tf-muted-foreground))', fontSize: '0.65rem' }}>
-          {totalCount.toLocaleString()} parcels in PACS
+          {totalCount.toLocaleString()} parcels
         </span>
       )}
 

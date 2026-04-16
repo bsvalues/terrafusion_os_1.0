@@ -171,7 +171,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
                 className="px-3 py-2 rounded text-xs"
                 style={{ background: 'hsl(var(--tf-warning) / 0.10)', color: 'hsl(var(--tf-warning))' }}
               >
-                Notice: Neighborhood filter not active. Comps are drawn from the full county — proximity scoring is a future AI layer.
+                Notice: Neighborhood filter not active. Comps are drawn from the full county — proximity-based scoring is not yet active.
               </div>
             )}
             {/* Summary stats */}

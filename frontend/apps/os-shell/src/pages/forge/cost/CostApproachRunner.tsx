@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useCalcRCNLD, useImprvTypeCodes, type CostForgeCalcInput, type QualityGrade } from "@/hooks/useCostForgeHooks";
+import { useCalcRCNLD, useImprvTypeCodes, type CostForgeCalcInput, type QualityGrade, type CostForgeSecondaryFeature } from "@/hooks/useCostForgeHooks";
 import { Calculator, RefreshCw } from "lucide-react";
 import { useCostForgeWorkspaceStore } from "./costForgeWorkspaceStore";
 
@@ -300,37 +300,26 @@ export function CostApproachRunner() {
             </div>
 
             {/* Secondary features as %-of-BIV */}
-            {Array.isArray((result as Record<string, unknown>).secondaryFeatures) &&
-              ((result as Record<string, unknown>).secondaryFeatures as Array<{
-                code: string;
-                description: string;
-                value: number;
-              }>).length > 0 && (
-                <>
-                  <div className="cf-biv-section__heading" style={{ marginTop: 10 }}>
-                    Secondary Features (%-of-BIV)
+            {result.secondaryFeatures && result.secondaryFeatures.length > 0 && (
+              <>
+                <div className="cf-biv-section__heading" style={{ marginTop: 10 }}>
+                  Secondary Features (%-of-BIV)
+                </div>
+                {result.secondaryFeatures.map((feat: CostForgeSecondaryFeature) => (
+                  <div key={feat.code} className="cf-biv-row">
+                    <span className="cf-biv-row__label">{feat.description}</span>
+                    <span className="cf-biv-row__value">
+                      ${feat.value.toLocaleString()}
+                      {bivTotal != null && bivTotal > 0 && (
+                        <span className="cf-biv-row__pct">
+                          {((feat.value / bivTotal) * 100).toFixed(1)}%
+                        </span>
+                      )}
+                    </span>
                   </div>
-                  {(
-                    (result as Record<string, unknown>).secondaryFeatures as Array<{
-                      code: string;
-                      description: string;
-                      value: number;
-                    }>
-                  ).map((feat) => (
-                    <div key={feat.code} className="cf-biv-row">
-                      <span className="cf-biv-row__label">{feat.description}</span>
-                      <span className="cf-biv-row__value">
-                        ${feat.value.toLocaleString()}
-                        {bivTotal != null && bivTotal > 0 && (
-                          <span className="cf-biv-row__pct">
-                            {((feat.value / bivTotal) * 100).toFixed(1)}%
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                  ))}
-                </>
-              )}
+                ))}
+              </>
+            )}
 
             {/* Depreciation waterfall */}
             <div className="cf-biv-section__heading" style={{ marginTop: 10 }}>

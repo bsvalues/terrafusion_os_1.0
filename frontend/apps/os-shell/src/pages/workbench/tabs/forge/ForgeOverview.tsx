@@ -30,8 +30,19 @@ import {
   useReconciliation,
 } from '../../../../hooks/forge/useForgeValuation';
 import {
+  CALIBRATION_MEMO_AUDIENCES,
+  CALIBRATION_SCOPES,
+  PARCEL_ISSUE_TYPES,
+  type ApplyRateAdjustmentResult,
+  type CalibrationMemoResult,
+  type CalibrationScope,
   type ForgeSubTabProps,
   type ExplainState,
+  type MatrixComparisonResult,
+  type ParcelDataIssueResult,
+  type ParcelIssueType,
+  type RateAdjustmentProposalResult,
+  type RatioStudyResult,
   type ValueChangeState,
   type ValueHistoryResult,
   type ValuationModelResult,
@@ -83,15 +94,65 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
   const [valueChangeState, setValueChangeState] = useState<ValueChangeState>({ status: 'idle' });
   const [historyState, setHistoryState] = useState<ToolState<ValueHistoryResult>>({ status: 'idle' });
   const [valuationState, setValuationState] = useState<ToolState<ValuationModelResult>>({ status: 'idle' });
+  const [proposalState, setProposalState] = useState<ToolState<RateAdjustmentProposalResult>>({ status: 'idle' });
+  const [applyAdjustmentState, setApplyAdjustmentState] = useState<ToolState<ApplyRateAdjustmentResult>>({ status: 'idle' });
+  const [ratioStudyState, setRatioStudyState] = useState<ToolState<RatioStudyResult>>({ status: 'idle' });
+  const [matrixCompareState, setMatrixCompareState] = useState<ToolState<MatrixComparisonResult>>({ status: 'idle' });
+  const [calibrationMemoState, setCalibrationMemoState] = useState<ToolState<CalibrationMemoResult>>({ status: 'idle' });
+  const [parcelIssueState, setParcelIssueState] = useState<ToolState<ParcelDataIssueResult>>({ status: 'idle' });
   const [valuationModelType, setValuationModelType] = useState<'cost' | 'income' | 'sales'>('cost');
   const [valuationReasonCode, setValuationReasonCode] = useState<string>('annual_certification');
   const [valuationConfirmed, setValuationConfirmed] = useState(false);
+  const [draftVersion, setDraftVersion] = useState(`benton-${taxYear}-working`);
+  const [calibrationScope, setCalibrationScope] = useState<CalibrationScope>('county');
+  const [scopeId, setScopeId] = useState('all-residential');
+  const [baseVersion, setBaseVersion] = useState(`benton-${taxYear - 1}-certified`);
+  const [compareVersion, setCompareVersion] = useState(`benton-${taxYear}-working`);
+  const [memoAudience, setMemoAudience] = useState<'internal' | 'board' | 'dor'>('internal');
+  const [calibrationReasonCode, setCalibrationReasonCode] = useState('market_adjustment');
+  const [adjustmentConfirmed, setAdjustmentConfirmed] = useState(false);
+  const [findingId, setFindingId] = useState(`finding-${parcelId.toLowerCase()}`);
+  const [parcelIssueType, setParcelIssueType] = useState<ParcelIssueType>('condition');
+  const [parcelFlagConfirmed, setParcelFlagConfirmed] = useState(false);
 
   const isDev = getEnv('MODE') === 'development';
 
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).catch(console.error);
   }, []);
+
+  const parseToolOutput = useCallback(<T,>(output: unknown, fallback: T): T => {
+    try {
+      return typeof output === 'string' ? JSON.parse(output) as T : output as T;
+    } catch {
+      return fallback;
+    }
+  }, []);
+
+  const toNetworkError = useCallback((err: unknown, correlationId: string): ErrorInfo => ({
+    code: 'NETWORK_ERROR',
+    message: err instanceof Error ? err.message : 'Network error occurred',
+    severity: 'error',
+    correlationId,
+  }), []);
+
+  const recordHistory = useCallback((
+    toolId: string,
+    status: 'success' | 'error',
+    correlationId: string,
+    meta: Record<string, unknown>,
+    errorCode?: string,
+  ) => {
+    onHistoryRecord({
+      id: crypto.randomUUID(),
+      toolId,
+      status,
+      correlationId,
+      timestamp: new Date(),
+      errorCode,
+      meta,
+    });
+  }, [onHistoryRecord]);
 
   /* ── explain_model_results ────────────────────────────── */
 
@@ -189,6 +250,292 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
     }
   }, [parcelId, taxYear, valuationModelType, valuationReasonCode, valuationConfirmed, onHistoryRecord, onValueIndicated]);
 
+  const handleProposeRateAdjustment = useCallback(async () => {
+    setProposalState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'propose_rate_adjustment',
+        params: {
+          county: 'benton',
+          taxYear,
+          draftVersion,
+          scope: calibrationScope,
+          scopeId,
+        },
+        parcelId,
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<RateAdjustmentProposalResult>(response.result.output, {
+          proposalId: draftVersion,
+          action: {
+            draftVersion,
+            reasonCode: calibrationReasonCode,
+            confirmation: false,
+            impactPreview: { prdBefore: 0, prdAfter: 0, codBefore: 0, codAfter: 0, avDelta: 0, fairnessDelta: 0 },
+            signoffRequired: false,
+            traceRef: '',
+            targetLane: 'forge',
+          },
+          findings: [],
+          recommendedAdjustments: [],
+          narrative: 'No proposal returned.',
+        });
+        setProposalState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        recordHistory('propose_rate_adjustment', 'success', response.correlationId || 'unknown', { draftVersion, scope: calibrationScope, scopeId });
+      } else {
+        setProposalState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: {
+            code: response.error?.code || 'PROPOSAL_FAILED',
+            message: response.error?.message || 'Failed to propose a rate adjustment',
+            severity: 'error',
+            correlationId: response.correlationId,
+          },
+        });
+        recordHistory('propose_rate_adjustment', 'error', response.correlationId || 'unknown', { draftVersion, scope: calibrationScope, scopeId }, response.error?.code || 'PROPOSAL_FAILED');
+      }
+    } catch (err) {
+      const correlationId = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setProposalState({ status: 'error', correlationId, error: toNetworkError(err, correlationId) });
+      recordHistory('propose_rate_adjustment', 'error', correlationId, { draftVersion, scope: calibrationScope, scopeId }, 'NETWORK_ERROR');
+    }
+  }, [calibrationReasonCode, calibrationScope, draftVersion, parcelId, parseToolOutput, recordHistory, scopeId, taxYear, toNetworkError]);
+
+  const handleApplyAdjustment = useCallback(async () => {
+    const selectedAdjustment = proposalState.result?.recommendedAdjustments[0];
+    const proposalId = proposalState.result?.proposalId;
+    if (!adjustmentConfirmed || !selectedAdjustment || !proposalId) return;
+
+    setApplyAdjustmentState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'apply_rate_adjustment_to_draft',
+        params: {
+          county: 'benton',
+          draftVersion,
+          adjustmentId: proposalId,
+          scopeId: selectedAdjustment.scopeId,
+          factor: selectedAdjustment.factor,
+          reasonCode: calibrationReasonCode,
+        },
+        confirmation: { confirmed: true, reasonCode: calibrationReasonCode },
+        parcelId,
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<ApplyRateAdjustmentResult>(response.result.output, {
+          action: {
+            draftVersion,
+            reasonCode: calibrationReasonCode,
+            confirmation: true,
+            impactPreview: { prdBefore: 0, prdAfter: 0, codBefore: 0, codAfter: 0, avDelta: 0, fairnessDelta: 0 },
+            signoffRequired: true,
+            traceRef: '',
+            targetLane: 'forge',
+          },
+          status: 'draft_updated',
+          payloadRef: '',
+          signoffPacketId: '',
+        });
+        setApplyAdjustmentState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        recordHistory('apply_rate_adjustment_to_draft', 'success', response.correlationId || 'unknown', { draftVersion, proposalId, factor: selectedAdjustment.factor });
+      } else {
+        setApplyAdjustmentState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: {
+            code: response.error?.code || 'APPLY_ADJUSTMENT_FAILED',
+            message: response.error?.message || 'Failed to apply the working draft adjustment',
+            severity: 'error',
+            correlationId: response.correlationId,
+          },
+        });
+        recordHistory('apply_rate_adjustment_to_draft', 'error', response.correlationId || 'unknown', { draftVersion, proposalId }, response.error?.code || 'APPLY_ADJUSTMENT_FAILED');
+      }
+    } catch (err) {
+      const correlationId = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setApplyAdjustmentState({ status: 'error', correlationId, error: toNetworkError(err, correlationId) });
+      recordHistory('apply_rate_adjustment_to_draft', 'error', correlationId, { draftVersion, proposalId }, 'NETWORK_ERROR');
+    } finally {
+      setAdjustmentConfirmed(false);
+    }
+  }, [adjustmentConfirmed, calibrationReasonCode, draftVersion, parcelId, parseToolOutput, proposalState.result, recordHistory, toNetworkError]);
+
+  const handleRerunRatioStudy = useCallback(async () => {
+    setRatioStudyState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'rerun_ratio_study',
+        params: { county: 'benton', taxYear, draftVersion, scope: calibrationScope },
+        parcelId,
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<RatioStudyResult>(response.result.output, {
+          metrics: { prdBefore: 0, prdAfter: 0, codBefore: 0, codAfter: 0, avDelta: 0, fairnessDelta: 0 },
+          readyForSignoff: false,
+          narrative: 'No ratio study returned.',
+        });
+        setRatioStudyState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        recordHistory('rerun_ratio_study', 'success', response.correlationId || 'unknown', { draftVersion, scope: calibrationScope });
+      } else {
+        setRatioStudyState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: {
+            code: response.error?.code || 'RATIO_STUDY_FAILED',
+            message: response.error?.message || 'Failed to rerun the ratio study',
+            severity: 'error',
+            correlationId: response.correlationId,
+          },
+        });
+        recordHistory('rerun_ratio_study', 'error', response.correlationId || 'unknown', { draftVersion, scope: calibrationScope }, response.error?.code || 'RATIO_STUDY_FAILED');
+      }
+    } catch (err) {
+      const correlationId = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setRatioStudyState({ status: 'error', correlationId, error: toNetworkError(err, correlationId) });
+      recordHistory('rerun_ratio_study', 'error', correlationId, { draftVersion, scope: calibrationScope }, 'NETWORK_ERROR');
+    }
+  }, [calibrationScope, draftVersion, parcelId, parseToolOutput, recordHistory, taxYear, toNetworkError]);
+
+  const handleCompareMatrixVersions = useCallback(async () => {
+    setMatrixCompareState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'compare_matrix_versions',
+        params: { county: 'benton', baseVersion, compareVersion },
+        parcelId,
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<MatrixComparisonResult>(response.result.output, {
+          baseVersion,
+          compareVersion,
+          changedCells: 0,
+          impactedScopes: [],
+          summary: 'No matrix comparison returned.',
+        });
+        setMatrixCompareState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        recordHistory('compare_matrix_versions', 'success', response.correlationId || 'unknown', { baseVersion, compareVersion });
+      } else {
+        setMatrixCompareState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: {
+            code: response.error?.code || 'MATRIX_COMPARE_FAILED',
+            message: response.error?.message || 'Failed to compare matrix versions',
+            severity: 'error',
+            correlationId: response.correlationId,
+          },
+        });
+        recordHistory('compare_matrix_versions', 'error', response.correlationId || 'unknown', { baseVersion, compareVersion }, response.error?.code || 'MATRIX_COMPARE_FAILED');
+      }
+    } catch (err) {
+      const correlationId = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setMatrixCompareState({ status: 'error', correlationId, error: toNetworkError(err, correlationId) });
+      recordHistory('compare_matrix_versions', 'error', correlationId, { baseVersion, compareVersion }, 'NETWORK_ERROR');
+    }
+  }, [baseVersion, compareVersion, parcelId, parseToolOutput, recordHistory, toNetworkError]);
+
+  const handleGenerateCalibrationMemo = useCallback(async () => {
+    setCalibrationMemoState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'generate_calibration_memo',
+        params: { county: 'benton', draftVersion, audience: memoAudience, reasonCode: calibrationReasonCode },
+        confirmation: { confirmed: true, reasonCode: calibrationReasonCode },
+        parcelId,
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<CalibrationMemoResult>(response.result.output, {
+          payloadRef: '',
+          sections: [],
+          summary: 'No calibration memo returned.',
+          action: {
+            draftVersion,
+            reasonCode: calibrationReasonCode,
+            confirmation: true,
+            impactPreview: { prdBefore: 0, prdAfter: 0, codBefore: 0, codAfter: 0, avDelta: 0, fairnessDelta: 0 },
+            signoffRequired: true,
+            traceRef: '',
+            targetLane: 'forge',
+          },
+        });
+        setCalibrationMemoState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        recordHistory('generate_calibration_memo', 'success', response.correlationId || 'unknown', { draftVersion, audience: memoAudience });
+      } else {
+        setCalibrationMemoState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: {
+            code: response.error?.code || 'CALIBRATION_MEMO_FAILED',
+            message: response.error?.message || 'Failed to generate the calibration memo',
+            severity: 'error',
+            correlationId: response.correlationId,
+          },
+        });
+        recordHistory('generate_calibration_memo', 'error', response.correlationId || 'unknown', { draftVersion, audience: memoAudience }, response.error?.code || 'CALIBRATION_MEMO_FAILED');
+      }
+    } catch (err) {
+      const correlationId = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setCalibrationMemoState({ status: 'error', correlationId, error: toNetworkError(err, correlationId) });
+      recordHistory('generate_calibration_memo', 'error', correlationId, { draftVersion, audience: memoAudience }, 'NETWORK_ERROR');
+    }
+  }, [calibrationReasonCode, draftVersion, memoAudience, parcelId, parseToolOutput, recordHistory, toNetworkError]);
+
+  const handleFlagParcelIssue = useCallback(async () => {
+    if (!parcelFlagConfirmed) return;
+    setParcelIssueState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'flag_parcel_data_issue',
+        params: {
+          county: 'benton',
+          parcelId,
+          findingId,
+          issueType: parcelIssueType,
+          reasonCode: 'operator_correction',
+        },
+        confirmation: { confirmed: true, reasonCode: 'operator_correction' },
+        parcelId,
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<ParcelDataIssueResult>(response.result.output, {
+          queueItemId: '',
+          payloadRef: '',
+          route: { parcelId, nextTool: 'route_to_parcel' },
+          action: {
+            draftVersion: 'parcel-correction',
+            reasonCode: 'operator_correction',
+            confirmation: true,
+            impactPreview: { prdBefore: 0, prdAfter: 0, codBefore: 0, codAfter: 0, avDelta: 0, fairnessDelta: 0 },
+            signoffRequired: true,
+            traceRef: '',
+            targetLane: 'forge',
+          },
+        });
+        setParcelIssueState({ status: 'success', result: parsed, correlationId: response.correlationId });
+        recordHistory('flag_parcel_data_issue', 'success', response.correlationId || 'unknown', { parcelId, findingId, issueType: parcelIssueType });
+      } else {
+        setParcelIssueState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: {
+            code: response.error?.code || 'FLAG_PARCEL_ISSUE_FAILED',
+            message: response.error?.message || 'Failed to route parcel issue into correction lane',
+            severity: 'error',
+            correlationId: response.correlationId,
+          },
+        });
+        recordHistory('flag_parcel_data_issue', 'error', response.correlationId || 'unknown', { parcelId, findingId, issueType: parcelIssueType }, response.error?.code || 'FLAG_PARCEL_ISSUE_FAILED');
+      }
+    } catch (err) {
+      const correlationId = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setParcelIssueState({ status: 'error', correlationId, error: toNetworkError(err, correlationId) });
+      recordHistory('flag_parcel_data_issue', 'error', correlationId, { parcelId, findingId, issueType: parcelIssueType }, 'NETWORK_ERROR');
+    } finally {
+      setParcelFlagConfirmed(false);
+    }
+  }, [findingId, parcelFlagConfirmed, parcelId, parcelIssueType, parseToolOutput, recordHistory, toNetworkError]);
+
   /* ── Render ───────────────────────────────────────────── */
 
   return (
@@ -237,7 +584,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
         )}
         {!costAPI.loading && !salesAPI.loading && !incomeAPI.loading && !reconAPI.loading && liveCount === 0 && (
           <p className="tf-text-tertiary text-sm py-2">
-            Forge API data not yet available. Use the tools below to generate valuations.
+            No valuation data on file. Use the tools below to generate valuations.
           </p>
         )}
       </BentoCard>
@@ -347,7 +694,7 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
                 </h4>
                 {explainState.correlationId && (
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="tf-text-muted">ID:</span>
+                    <span className="tf-text-muted">Ref:</span>
                     <code className="tf-suite-accent-text font-mono">{explainState.correlationId.slice(0, 16)}...</code>
                     <button onClick={() => copyToClipboard(explainState.correlationId!)} className="tf-text-tertiary hover:tf-text" aria-label="Copy correlation ID">📋</button>
                   </div>
@@ -539,6 +886,289 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
           </div>
         )}
         {historyState.status === 'error' && historyState.error && <ErrorDisplay error={{ message: historyState.error.message, errorCode: historyState.error.code, correlationId: historyState.correlationId }} />}
+      </BentoCard>
+
+      <BentoCard
+        title="🎯 Calibration Workbench"
+        variant="default"
+        actions={
+          <WorkbenchSourceBadge
+            source={
+              proposalState.status === 'success' ||
+              applyAdjustmentState.status === 'success' ||
+              ratioStudyState.status === 'success' ||
+              matrixCompareState.status === 'success' ||
+              calibrationMemoState.status === 'success' ||
+              parcelIssueState.status === 'success'
+                ? 'live'
+                : 'unavailable'
+            }
+            className="ml-2"
+          />
+        }
+      >
+        <div className="space-y-4">
+          <p className="tf-text-tertiary text-sm">
+            Governed Benton County calibration loop: propose a change, update the working draft, rerun metrics, publish narrative, and route parcel defects into correction.
+          </p>
+
+          <div className="grid gap-3 md:grid-cols-2">
+            <div>
+              <label htmlFor="forge-draft-version" className="block tf-text-secondary text-sm mb-1">Draft Version</label>
+              <input id="forge-draft-version" value={draftVersion} onChange={(e) => setDraftVersion(e.target.value)} className="w-full tf-input px-3 py-2" />
+            </div>
+            <div>
+              <label htmlFor="forge-calibration-reason" className="block tf-text-secondary text-sm mb-1">Reason Code</label>
+              <select id="forge-calibration-reason" value={calibrationReasonCode} onChange={(e) => setCalibrationReasonCode(e.target.value)} className="w-full tf-input px-3 py-2">
+                {VALUATION_REASON_CODES.map((reason) => (
+                  <option key={reason.value} value={reason.value}>{reason.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="forge-calibration-scope" className="block tf-text-secondary text-sm mb-1">Scope</label>
+              <select id="forge-calibration-scope" value={calibrationScope} onChange={(e) => setCalibrationScope(e.target.value as CalibrationScope)} className="w-full tf-input px-3 py-2">
+                {CALIBRATION_SCOPES.map((scope) => (
+                  <option key={scope.value} value={scope.value}>{scope.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="forge-scope-id" className="block tf-text-secondary text-sm mb-1">Scope ID</label>
+              <input id="forge-scope-id" value={scopeId} onChange={(e) => setScopeId(e.target.value)} className="w-full tf-input px-3 py-2" placeholder="all-residential" />
+            </div>
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-2">
+            <div className="tf-panel p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h5 className="tf-text font-medium">Propose + Apply</h5>
+                <span className="text-xs tf-badge px-2 py-0.5 rounded">Forge</span>
+              </div>
+              <button onClick={handleProposeRateAdjustment} disabled={proposalState.status === 'loading'} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta">
+                {proposalState.status === 'loading' ? 'Building Proposal...' : 'Propose Rate Adjustment'}
+              </button>
+              {proposalState.status === 'success' && proposalState.result && (
+                <div className="space-y-3">
+                  <div className="tf-overlay rounded-lg p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="tf-text-secondary text-sm">Proposal</div>
+                        <div className="font-semibold tf-text">{proposalState.result.proposalId}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="tf-text-secondary text-sm">Target Lane</div>
+                        <div className="font-semibold tf-suite-accent-text">{proposalState.result.action.targetLane}</div>
+                      </div>
+                    </div>
+                    <p className="tf-text-secondary text-sm mt-3">{proposalState.result.narrative}</p>
+                  </div>
+                  {proposalState.result.recommendedAdjustments.map((adjustment) => (
+                    <div key={`${adjustment.scopeId}-${adjustment.factor}`} className="tf-overlay rounded-lg p-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="tf-text font-medium">{adjustment.scopeId}</span>
+                        <span className="tf-suite-accent-text font-semibold">{adjustment.factor.toFixed(3)}x</span>
+                      </div>
+                      <p className="tf-text-secondary text-sm mt-2">{adjustment.rationale}</p>
+                    </div>
+                  ))}
+                  {proposalState.result.findings.length > 0 && (
+                    <div className="space-y-2">
+                      {proposalState.result.findings.map((finding) => (
+                        <div key={finding.correlationId} className="tf-overlay rounded-lg p-3">
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="font-medium tf-text">{finding.findingType}</span>
+                            <span className="text-xs tf-badge px-2 py-0.5 rounded">{finding.severity}</span>
+                          </div>
+                          <p className="tf-text-secondary text-sm mt-2">{finding.recommendedAction}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="tf-panel p-3 rounded-lg border-l-4" style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input type="checkbox" checked={adjustmentConfirmed} onChange={(e) => setAdjustmentConfirmed(e.target.checked)} className="h-4 w-4" />
+                      <span className="text-sm tf-text">I confirm the working draft adjustment for <strong>{draftVersion}</strong> using reason code <strong>{calibrationReasonCode}</strong>.</span>
+                    </label>
+                  </div>
+                  <button onClick={handleApplyAdjustment} disabled={applyAdjustmentState.status === 'loading' || !adjustmentConfirmed || proposalState.result.recommendedAdjustments.length === 0} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta disabled:opacity-50">
+                    {applyAdjustmentState.status === 'loading' ? 'Applying Draft Update...' : adjustmentConfirmed ? 'Apply Adjustment To Draft' : 'Confirm Proposal To Apply'}
+                  </button>
+                </div>
+              )}
+              {proposalState.correlationId && (
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="tf-text-muted">Proposal Ref:</span>
+                  <code className="tf-suite-accent-text font-mono">{proposalState.correlationId.slice(0, 16)}...</code>
+                  <button onClick={() => copyToClipboard(proposalState.correlationId!)} className="tf-text-tertiary hover:tf-text" aria-label="Copy proposal correlation ID">📋</button>
+                </div>
+              )}
+              {applyAdjustmentState.status === 'success' && applyAdjustmentState.result && (
+                <div className="tf-overlay rounded-lg p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-medium tf-text">Draft Updated</span>
+                    <span className="text-xs tf-badge px-2 py-0.5 rounded">{applyAdjustmentState.result.status}</span>
+                  </div>
+                  <p className="tf-text-secondary text-sm mt-2">Payload: <code>{applyAdjustmentState.result.payloadRef}</code></p>
+                  <p className="tf-text-secondary text-sm mt-1">Signoff packet: <code>{applyAdjustmentState.result.signoffPacketId}</code></p>
+                </div>
+              )}
+              {proposalState.status === 'error' && proposalState.error && (
+                <ErrorDisplay error={{ message: proposalState.error.message, errorCode: proposalState.error.code, correlationId: proposalState.correlationId }} />
+              )}
+              {applyAdjustmentState.status === 'error' && applyAdjustmentState.error && (
+                <ErrorDisplay error={{ message: applyAdjustmentState.error.message, errorCode: applyAdjustmentState.error.code, correlationId: applyAdjustmentState.correlationId }} />
+              )}
+            </div>
+
+            <div className="tf-panel p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h5 className="tf-text font-medium">Verify + Compare</h5>
+                <span className="text-xs tf-badge px-2 py-0.5 rounded">Read Only</span>
+              </div>
+              <button onClick={handleRerunRatioStudy} disabled={ratioStudyState.status === 'loading'} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta">
+                {ratioStudyState.status === 'loading' ? 'Rerunning Ratios...' : 'Rerun Ratio Study'}
+              </button>
+              {ratioStudyState.status === 'success' && ratioStudyState.result && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="tf-overlay rounded-lg p-3">
+                    <div className="tf-text-secondary text-xs">PRD</div>
+                    <div className="font-semibold tf-text">{ratioStudyState.result.metrics.prdBefore.toFixed(3)} → {ratioStudyState.result.metrics.prdAfter.toFixed(3)}</div>
+                  </div>
+                  <div className="tf-overlay rounded-lg p-3">
+                    <div className="tf-text-secondary text-xs">COD</div>
+                    <div className="font-semibold tf-text">{ratioStudyState.result.metrics.codBefore.toFixed(2)} → {ratioStudyState.result.metrics.codAfter.toFixed(2)}</div>
+                  </div>
+                  <div className="tf-overlay rounded-lg p-3">
+                    <div className="tf-text-secondary text-xs">AV Delta</div>
+                    <div className="font-semibold tf-text">{fmtCurrency(ratioStudyState.result.metrics.avDelta)}</div>
+                  </div>
+                  <div className="tf-overlay rounded-lg p-3">
+                    <div className="tf-text-secondary text-xs">Fairness Delta</div>
+                    <div className="font-semibold tf-text">{ratioStudyState.result.metrics.fairnessDelta.toFixed(3)}</div>
+                  </div>
+                  <div className="tf-overlay rounded-lg p-3 col-span-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="font-medium tf-text">Signoff Status</span>
+                      <span className={`text-xs px-2 py-0.5 rounded ${ratioStudyState.result.readyForSignoff ? 'tf-badge-success' : 'tf-badge-warning'}`}>
+                        {ratioStudyState.result.readyForSignoff ? 'Ready' : 'Needs More Work'}
+                      </span>
+                    </div>
+                    <p className="tf-text-secondary text-sm mt-2">{ratioStudyState.result.narrative}</p>
+                  </div>
+                </div>
+              )}
+              <div className="grid gap-3 md:grid-cols-2">
+                <div>
+                  <label htmlFor="forge-base-version" className="block tf-text-secondary text-sm mb-1">Base Version</label>
+                  <input id="forge-base-version" value={baseVersion} onChange={(e) => setBaseVersion(e.target.value)} className="w-full tf-input px-3 py-2" />
+                </div>
+                <div>
+                  <label htmlFor="forge-compare-version" className="block tf-text-secondary text-sm mb-1">Compare Version</label>
+                  <input id="forge-compare-version" value={compareVersion} onChange={(e) => setCompareVersion(e.target.value)} className="w-full tf-input px-3 py-2" />
+                </div>
+              </div>
+              <button onClick={handleCompareMatrixVersions} disabled={matrixCompareState.status === 'loading'} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta">
+                {matrixCompareState.status === 'loading' ? 'Comparing Matrices...' : 'Compare Matrix Versions'}
+              </button>
+              {matrixCompareState.status === 'success' && matrixCompareState.result && (
+                <div className="tf-overlay rounded-lg p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-medium tf-text">{matrixCompareState.result.baseVersion} vs {matrixCompareState.result.compareVersion}</span>
+                    <span className="text-xs tf-badge px-2 py-0.5 rounded">{matrixCompareState.result.changedCells} cells</span>
+                  </div>
+                  <p className="tf-text-secondary text-sm mt-2">{matrixCompareState.result.summary}</p>
+                  <div className="flex gap-2 flex-wrap mt-3">
+                    {matrixCompareState.result.impactedScopes.map((scope) => (
+                      <span key={scope} className="text-xs tf-panel px-2 py-1 rounded">{scope}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {ratioStudyState.status === 'error' && ratioStudyState.error && (
+                <ErrorDisplay error={{ message: ratioStudyState.error.message, errorCode: ratioStudyState.error.code, correlationId: ratioStudyState.correlationId }} />
+              )}
+              {matrixCompareState.status === 'error' && matrixCompareState.error && (
+                <ErrorDisplay error={{ message: matrixCompareState.error.message, errorCode: matrixCompareState.error.code, correlationId: matrixCompareState.correlationId }} />
+              )}
+            </div>
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-2">
+            <div className="tf-panel p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h5 className="tf-text font-medium">Narrative + Memo</h5>
+                <span className="text-xs tf-badge-error px-2 py-0.5 rounded">write_low</span>
+              </div>
+              <div>
+                <label htmlFor="forge-memo-audience" className="block tf-text-secondary text-sm mb-1">Memo Audience</label>
+                <select id="forge-memo-audience" value={memoAudience} onChange={(e) => setMemoAudience(e.target.value as 'internal' | 'board' | 'dor')} className="w-full tf-input px-3 py-2">
+                  {CALIBRATION_MEMO_AUDIENCES.map((item) => (
+                    <option key={item.value} value={item.value}>{item.label}</option>
+                  ))}
+                </select>
+              </div>
+              <button onClick={handleGenerateCalibrationMemo} disabled={calibrationMemoState.status === 'loading'} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta">
+                {calibrationMemoState.status === 'loading' ? 'Generating Memo...' : 'Generate Calibration Memo'}
+              </button>
+              {calibrationMemoState.status === 'success' && calibrationMemoState.result && (
+                <div className="tf-overlay rounded-lg p-3">
+                  <p className="tf-text-secondary text-sm">{calibrationMemoState.result.summary}</p>
+                  <div className="flex gap-2 flex-wrap mt-3">
+                    {calibrationMemoState.result.sections.map((section) => (
+                      <span key={section} className="text-xs tf-panel px-2 py-1 rounded">{section}</span>
+                    ))}
+                  </div>
+                  <p className="tf-text-secondary text-sm mt-3">Payload: <code>{calibrationMemoState.result.payloadRef}</code></p>
+                </div>
+              )}
+              {calibrationMemoState.status === 'error' && calibrationMemoState.error && (
+                <ErrorDisplay error={{ message: calibrationMemoState.error.message, errorCode: calibrationMemoState.error.code, correlationId: calibrationMemoState.correlationId }} />
+              )}
+            </div>
+
+            <div className="tf-panel p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h5 className="tf-text font-medium">Parcel Correction Routing</h5>
+                <span className="text-xs tf-badge-error px-2 py-0.5 rounded">write_low</span>
+              </div>
+              <div>
+                <label htmlFor="forge-finding-id" className="block tf-text-secondary text-sm mb-1">Finding ID</label>
+                <input id="forge-finding-id" value={findingId} onChange={(e) => setFindingId(e.target.value)} className="w-full tf-input px-3 py-2" />
+              </div>
+              <div>
+                <label htmlFor="forge-parcel-issue-type" className="block tf-text-secondary text-sm mb-1">Issue Type</label>
+                <select id="forge-parcel-issue-type" value={parcelIssueType} onChange={(e) => setParcelIssueType(e.target.value as ParcelIssueType)} className="w-full tf-input px-3 py-2">
+                  {PARCEL_ISSUE_TYPES.map((item) => (
+                    <option key={item.value} value={item.value}>{item.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="tf-panel p-3 rounded-lg border-l-4" style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" checked={parcelFlagConfirmed} onChange={(e) => setParcelFlagConfirmed(e.target.checked)} className="h-4 w-4" />
+                  <span className="text-sm tf-text">I confirm this parcel-level correction route for <strong>{parcelId}</strong>.</span>
+                </label>
+              </div>
+              <button onClick={handleFlagParcelIssue} disabled={parcelIssueState.status === 'loading' || !parcelFlagConfirmed} className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta disabled:opacity-50">
+                {parcelIssueState.status === 'loading' ? 'Routing Parcel Issue...' : parcelFlagConfirmed ? 'Flag Parcel Data Issue' : 'Confirm Parcel Routing'}
+              </button>
+              {parcelIssueState.status === 'success' && parcelIssueState.result && (
+                <div className="tf-overlay rounded-lg p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-medium tf-text">Correction Queue Item</span>
+                    <span className="text-xs tf-badge px-2 py-0.5 rounded">{parcelIssueState.result.queueItemId}</span>
+                  </div>
+                  <p className="tf-text-secondary text-sm mt-2">Payload: <code>{parcelIssueState.result.payloadRef}</code></p>
+                  <p className="tf-text-secondary text-sm mt-1">Next tool: <code>{parcelIssueState.result.route.nextTool}</code></p>
+                </div>
+              )}
+              {parcelIssueState.status === 'error' && parcelIssueState.error && (
+                <ErrorDisplay error={{ message: parcelIssueState.error.message, errorCode: parcelIssueState.error.code, correlationId: parcelIssueState.correlationId }} />
+              )}
+            </div>
+          </div>
+        </div>
       </BentoCard>
 
       {/* Run Valuation Model (write_high) */}

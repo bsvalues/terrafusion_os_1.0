@@ -131,7 +131,7 @@ const DATASETS: RagDataset[] = [
   {
     id: 'ds-market',
     name: 'Benton County Market Data',
-    description: 'Sales, permits, and market trends (auto-refreshed weekly from PACS)',
+    description: 'Sales, permits, and market trends (auto-refreshed weekly)',
     documentCount: 156,
     chunkCount: 8400,
     embeddingModel: 'text-embedding-3-small',

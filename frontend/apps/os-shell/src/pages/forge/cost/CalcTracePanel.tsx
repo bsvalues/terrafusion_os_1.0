@@ -23,7 +23,7 @@ function fmtPct(value: number | null | undefined): string {
 
 function fmtMultiplier(value: number | null | undefined): string {
   if (value == null) return "--";
-  return `${value}%`;
+  return value.toFixed(4) + "×";
 }
 
 function fmtDate(isoString: string): string {

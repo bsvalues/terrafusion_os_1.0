@@ -185,7 +185,7 @@ export const TerraFlowDashboard: React.FC = () => {
               { name: 'CAMA Core', status: 0.95, color: 'cyan' },
               { name: 'GIS Engine', status: 0.88, color: 'emerald' },
               { name: 'Tax Levy', status: 0.92, color: 'purple' },
-              { name: 'Harris PACS', status: 0.85, color: 'amber' },
+              { name: 'Assessment Sync', status: 0.85, color: 'amber' },
             ].map((module) => (
               <div key={module.name} className='flex items-center justify-between'>
                 <span className='text-sm text-slate-300'>{module.name}</span>

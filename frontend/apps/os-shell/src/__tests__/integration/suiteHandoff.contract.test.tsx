@@ -55,23 +55,15 @@ vi.mock('../../components/workbench/ParcelContextBanner', () => ({
   ParcelContextBanner: () => <div data-testid="mock-parcel-banner" />,
 }));
 
+vi.mock('../../api/pilotApi', () => ({
+  invokeTool: vi.fn(),
+}));
+
 vi.mock('lucide-react', () => {
   const Icon = (props: any) => <svg data-slot="icon" {...props} />;
-  // Explicit exports for all icons used across Forge, Atlas, and Dais suite homes
-  return {
-    // Shared
-    ArrowLeft: Icon, Search: Icon,
-    // Forge icons
-    Hammer: Icon, Calculator: Icon, BarChart3: Icon, Scale: Icon,
-    TrendingUp: Icon, FileSearch: Icon, Gavel: Icon, ShieldCheck: Icon,
-    LineChart: Icon, PieChart: Icon, MapPin: Icon, DollarSign: Icon,
-    // Atlas icons
-    Map: Icon, Layers: Icon, Crosshair: Icon, Printer: Icon,
-    Download: Icon, Database: Icon,
-    // Dais icons
-    Receipt: Icon, Landmark: Icon, CheckCircle2: Icon, HardHat: Icon,
-    Calendar: Icon, Bot: Icon, LayoutDashboard: Icon, ClipboardList: Icon, Mail: Icon, FileCheck: Icon,
-  };
+  return new Proxy({ __esModule: true }, {
+    get: (_target, prop) => (prop === '__esModule' ? true : Icon),
+  });
 });
 
 // ── Dynamic imports ────────────────────────────────────────────────────

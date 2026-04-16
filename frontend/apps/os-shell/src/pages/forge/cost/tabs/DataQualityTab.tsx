@@ -11,7 +11,7 @@
  * Each issue shown with count and actionable description.
  */
 import { useEffect, useRef, useState } from 'react';
-import { apiFetch } from '@/lib/apiBase';
+import { apiFetchJson } from '@/lib/apiBase';
 import { useCostForgeWorkspaceStore } from '../costForgeWorkspaceStore';
 
 interface DataQualityResult {
@@ -83,7 +83,7 @@ export function DataQualityTab() {
     abortRef.current = new AbortController();
     setLoading(true);
     setError(null);
-    apiFetch<DataQualityResult>('/costforge/analytics/data-quality/assess', {
+    apiFetchJson<DataQualityResult>('/costforge/analytics/data-quality/assess', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ taxYear }),

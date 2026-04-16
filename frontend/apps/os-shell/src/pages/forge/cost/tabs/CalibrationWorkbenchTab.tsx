@@ -12,7 +12,7 @@
  * e.g., medianRatio=0.92 → auto-suggest +8.7%
  */
 import { useEffect, useRef, useState } from 'react';
-import { apiFetch } from '@/lib/apiBase';
+import { apiFetchJson } from '@/lib/apiBase';
 import { useCostForgeWorkspaceStore } from '../costForgeWorkspaceStore';
 
 interface NeighborhoodRow {
@@ -61,16 +61,20 @@ export function CalibrationWorkbenchTab() {
   const [committed, setCommitted]           = useState(false);
   const [commitLoading, setCommitLoading]   = useState(false);
   const [commitError, setCommitError]       = useState<string | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
+  const abortRef    = useRef<AbortController | null>(null);
+  const hoodAbortRef = useRef<AbortController | null>(null);
 
   // Load current neighborhood status
   useEffect(() => {
     if (!selectedHoodCd) { setHood(null); return; }
+    hoodAbortRef.current?.abort();
+    hoodAbortRef.current = new AbortController();
     setHoodLoading(true);
     setPreview(null);
     setCommitted(false);
-    apiFetch<{ neighborhoods: NeighborhoodRow[] }>(
-      `/costforge/calibration/neighborhood-matrix?taxYear=${taxYear}&minSales=1`
+    apiFetchJson<{ neighborhoods: NeighborhoodRow[] }>(
+      `/costforge/calibration/neighborhood-matrix?taxYear=${taxYear}&minSales=1`,
+      { signal: hoodAbortRef.current.signal }
     )
       .then((d) => {
         const h = d.neighborhoods.find((n) => n.hoodCd === selectedHoodCd) ?? null;
@@ -82,7 +86,11 @@ export function CalibrationWorkbenchTab() {
         }
         setHoodLoading(false);
       })
-      .catch(() => setHoodLoading(false));
+      .catch((err: unknown) => {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        setHoodLoading(false);
+      });
+    return () => { hoodAbortRef.current?.abort(); };
   }, [selectedHoodCd, taxYear]);
 
   const runPreview = async () => {
@@ -94,7 +102,7 @@ export function CalibrationWorkbenchTab() {
     setPreview(null);
     setCommitted(false);
     try {
-      const data = await apiFetch<PreviewResponse>(
+      const data = await apiFetchJson<PreviewResponse>(
         '/costforge/calibration/mass-adjust-preview',
         {
           method: 'POST',
@@ -117,11 +125,11 @@ export function CalibrationWorkbenchTab() {
   };
 
   const commitAdjustment = async () => {
-    if (!preview || !selectedHoodCd) return;
+    if (committed || !preview || !selectedHoodCd) return;
     setCommitLoading(true);
     setCommitError(null);
     try {
-      await apiFetch('/costforge/calibration/mass-adjust-apply', {
+      await apiFetchJson<unknown>('/costforge/calibration/mass-adjust-apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

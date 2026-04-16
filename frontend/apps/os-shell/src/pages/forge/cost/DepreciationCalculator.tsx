@@ -11,7 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { apiFetch } from '@/lib/apiBase';
+import { useRef } from 'react';
+import { apiFetchJson } from '@/lib/apiBase';
 
 interface DepreciationResult {
   physicalDepreciation: number;
@@ -32,11 +33,13 @@ export function DepreciationCalculator() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DepreciationResult | null>(null);
+  const ctrlRef = useRef<AbortController | null>(null);
 
   const handleCalculate = async () => {
+    ctrlRef.current?.abort();
+    ctrlRef.current = new AbortController();
     setLoading(true);
     setError(null);
-    const ctrl = new AbortController();
     try {
       const params = new URLSearchParams({
         actualAge: age,
@@ -48,9 +51,9 @@ export function DepreciationCalculator() {
       if (functionalObsolescence) params.set('functionalObsolescence', functionalObsolescence);
       if (externalObsolescence)   params.set('externalObsolescence', externalObsolescence);
 
-      const data = await apiFetch<DepreciationResult>(
+      const data = await apiFetchJson<DepreciationResult>(
         `/costforge/depreciation/calculate?${params.toString()}`,
-        { signal: ctrl.signal }
+        { signal: ctrlRef.current.signal }
       );
       setResult(data);
     } catch (err) {

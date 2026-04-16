@@ -179,7 +179,7 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
       {/* ── Data Source Indicator ─────────────────────── */}
       <div className="flex items-center justify-between">
         <span className="tf-text-secondary text-sm">
-          Approach indications {seededFromAPI ? 'sourced from API' : 'using fallback data'}
+          Approach indications {seededFromAPI ? 'from live assessment data' : 'using estimated data'}
         </span>
         <WorkbenchSourceBadge source={reconAPI.source} />
       </div>

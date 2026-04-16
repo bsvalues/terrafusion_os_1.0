@@ -453,7 +453,7 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
   launchSurface,
 }) => {
   const statusConfig: Record<PlaceholderStatus, { color: string; label: string }> = {
-    placeholder: { color: 'hsl(var(--tf-warning))', label: 'Placeholder' },
+    placeholder: { color: 'hsl(var(--tf-warning))', label: 'Scheduled' },
     partial: { color: 'hsl(var(--tf-info))', label: 'Partial' },
     rehosting: { color: 'hsl(var(--tf-accent-2))', label: 'Rehosting' },
     live: { color: 'hsl(var(--tf-success) / 1)', label: 'Live' },

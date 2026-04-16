@@ -609,3 +609,8 @@ snyk-iac-report.json
 
 # Phase operation honesty reports (development artifacts)
 os-platform/core/pilot/ops/*-honesty-*.md
+os-platform/core/tests/assessor-superpowers.test.mjs
+os-platform/core/tests/tf-assessor-cli.test.mjs
+os-platform/core/types/assessorSuperpowers.ts
+tools/bin/commands/*.mjs
+tools/bin/lib/*.mjs

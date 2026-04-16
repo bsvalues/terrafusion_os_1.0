@@ -70,6 +70,50 @@ vi.mock('../../orchestration/moduleActivation', () => {
   };
 });
 
+vi.mock('../../api/pilotApi', () => ({
+  __esModule: true,
+  invokeTool: vi.fn(async ({ toolId }: { toolId: string }) => {
+    if (toolId === 'generate_morning_brief') {
+      return {
+        success: true,
+        correlationId: 'corr-brief',
+        result: {
+          toolId,
+          output: JSON.stringify({
+            queueType: 'ranked_worklist',
+            summary: 'County queue posture loaded.',
+            recommendedTool: 'dais',
+          }),
+        },
+      };
+    }
+    if (toolId === 'explain_spatial_anomaly') {
+      return {
+        success: true,
+        correlationId: 'corr-atlas',
+        result: {
+          toolId,
+          output: JSON.stringify({
+            narrative: 'Spatial audit posture loaded.',
+            hotspotCount: 4,
+          }),
+        },
+      };
+    }
+    return {
+      success: true,
+      correlationId: 'corr-dossier',
+      result: {
+        toolId,
+        output: JSON.stringify({
+          packetRef: 'BOE-2026-001',
+          payloadRef: 'Packet readiness loaded.',
+        }),
+      },
+    };
+  }),
+}));
+
 // Mock LiquidPanel material (render a simple div passing through children + props)
 vi.mock('../../ui/materials', () => ({
   __esModule: true,
@@ -145,12 +189,18 @@ describe('Phase 24: County Ops Scene — Rendering', () => {
 
   it('4. County status info renders', () => {
     render(<StageZeroState />);
+    expect(screen.getByTestId('executive-command-surface')).toBeInTheDocument();
+    expect(screen.getByText('Cross-suite county posture')).toBeInTheDocument();
+  });
+
+  it('5. County status info renders', () => {
+    render(<StageZeroState />);
     expect(screen.getByTestId('county-status-strip')).toBeInTheDocument();
     expect(screen.getByText('Benton County, WA')).toBeInTheDocument();
     expect(screen.getByText('89,247 parcels')).toBeInTheDocument();
   });
 
-  it('5. Search is NOT the hero surface — no prominent search bar', () => {
+  it('6. Search is NOT the hero surface — no prominent search bar', () => {
     render(<StageZeroState />);
     const stageZero = screen.getByTestId('stage-zero-state');
     // No search input elements on the home surface
@@ -173,7 +223,7 @@ describe('Phase 24: County Ops Scene — Orchestration', () => {
     useSceneStore.getState().clearScene();
   });
 
-  it('6. Quick Action buttons call activateModule(), not navigate()', () => {
+  it('7. Quick Action buttons call activateModule(), not navigate()', () => {
     render(<StageZeroState />);
 
     // Click "Launch Atlas" quick action
@@ -189,7 +239,7 @@ describe('Phase 24: County Ops Scene — Orchestration', () => {
     expect(mockActivateModule).toHaveBeenCalledWith('suite-dais', { source: 'desktop' });
   });
 
-  it('7. Recent parcel click opens workbench via selectRecentParcel', async () => {
+  it('8. Recent parcel click opens workbench via selectRecentParcel', async () => {
     render(<StageZeroState />);
 
     // The mock provides two parcels: '10-1234-001' and '10-5678-002'
@@ -202,7 +252,7 @@ describe('Phase 24: County Ops Scene — Orchestration', () => {
     });
   });
 
-  it('8. activateScene("daily-appraiser") sets activeSceneId with >=2 windows', () => {
+  it('9. activateScene("daily-appraiser") sets activeSceneId with >=2 windows', () => {
     // Verify the scene exists in the library
     const dailyAppraiser = SCENE_LIBRARY.find((s) => s.id === 'daily-appraiser');
     expect(dailyAppraiser).toBeDefined();

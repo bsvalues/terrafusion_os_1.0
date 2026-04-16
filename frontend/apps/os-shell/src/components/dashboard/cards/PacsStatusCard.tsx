@@ -50,8 +50,8 @@ export function PacsStatusCard({ pacs }: PacsStatusCardProps) {
             </span>
           </div>
           {data.contractValid
-            ? <p className="text-xs text-emerald-400">Contract valid</p>
-            : <p className="text-xs text-red-400">Contract invalid</p>}
+            ? <p className="text-xs text-emerald-400">Connection healthy</p>
+            : <p className="text-xs text-red-400">Connection error</p>}
           {data.latencyMs != null && (
             <p className="text-xs tf-text-dim">{data.latencyMs}ms</p>
           )}

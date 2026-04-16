@@ -80,3 +80,18 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
   const url = buildApiUrl(path);
   return fetch(url, init);
 }
+
+/**
+ * Typed JSON fetch — fetches, checks `.ok`, and parses JSON.
+ * Use this when you need parsed data directly (most CostForge / SalesForge panels).
+ *
+ * @throws Error with HTTP status on non-2xx response
+ * @throws DOMException with name 'AbortError' when signal is aborted (re-throw from caller)
+ */
+export async function apiFetchJson<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await apiFetch(path, init);
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}: ${path}`);
+  }
+  return res.json() as Promise<T>;
+}

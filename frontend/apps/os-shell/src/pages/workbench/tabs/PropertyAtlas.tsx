@@ -84,6 +84,25 @@ interface QueryState {
   error?: ErrorInfo;
 }
 
+interface SpatialAnomalyResult {
+  finding: {
+    findingType: string;
+    severity: string;
+    recommendedAction: string;
+    confidence: number;
+  };
+  hotspotCount: number;
+  narrative: string;
+  recommendedTool: string;
+}
+
+interface SpatialAnomalyState {
+  status: 'idle' | 'loading' | 'success' | 'error';
+  result?: SpatialAnomalyResult;
+  correlationId?: string;
+  error?: ErrorInfo;
+}
+
 function isLayerAvailabilityList(layers: QueryResult['layers']): layers is AvailableLayer[] {
   return Array.isArray(layers);
 }
@@ -211,7 +230,7 @@ function ParcelMapVisualization({
 
       {/* Preview disclaimer */}
       <p className="tf-text-dim text-xs mt-1 text-center italic">
-        Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches until full GIS geometry ships on this route
+        Parcel boundary shown is approximate. Full GIS geometry loads when a connected layer is available.
       </p>
 
       {/* Map info bar */}
@@ -227,7 +246,7 @@ function ParcelMapVisualization({
               className="ml-1 text-white/30"
               style={{ fontSize: 9 }}
             >
-              (preview centroid)
+              (approx.)
             </span>
           </span>
         )}
@@ -270,9 +289,12 @@ export const PropertyAtlas: React.FC = () => {
   const boundary = useParcelBoundary(parcelId);
   const layers = useParcelLayers(parcelId);
 
-  const [selectedLayers, setSelectedLayers] = useState<Set<LayerId>>(new Set());
+  const [selectedLayers, setSelectedLayers] = useState<Set<LayerId>>(new Set<LayerId>(['boundary']));
   const [queryState, setQueryState] = useState<QueryState>({ status: 'idle' });
   const [queryHistory, setQueryHistory] = useState<InvocationRecord[]>([]);
+  const [anomalyMetric, setAnomalyMetric] = useState<'residual_cluster' | 'prd' | 'prb' | 'cod'>('residual_cluster');
+  const [geographyId, setGeographyId] = useState<string>('');
+  const [spatialAnomalyState, setSpatialAnomalyState] = useState<SpatialAnomalyState>({ status: 'idle' });
 
   // ── Phase 0B: Mapbox GL JS satellite map ──────────────────────────────────
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -388,6 +410,7 @@ export const PropertyAtlas: React.FC = () => {
       const response = await invokeTool({
         toolId: 'query_parcel_layers',
         params: {
+          county: 'benton',
           parcelId,
           layers: Array.from(selectedLayers),
           format: 'summary',
@@ -486,6 +509,96 @@ export const PropertyAtlas: React.FC = () => {
       ]);
     }
   }, [selectedLayers, parcelId]);
+
+  const handleExplainSpatialAnomaly = useCallback(async () => {
+    setSpatialAnomalyState({ status: 'loading' });
+
+    try {
+      const response = await invokeTool({
+        toolId: 'explain_spatial_anomaly',
+        params: {
+          county: 'benton',
+          taxYear: new Date().getFullYear(),
+          metric: anomalyMetric,
+          geographyId: geographyId.trim() || undefined,
+        },
+        parcelId,
+      });
+
+      if (response.success && response.result) {
+        const parsed =
+          typeof response.result.output === 'string'
+            ? JSON.parse(response.result.output)
+            : response.result.output;
+
+        setSpatialAnomalyState({
+          status: 'success',
+          result: parsed,
+          correlationId: response.correlationId,
+        });
+        setQueryHistory((prev) => [
+          {
+            id: crypto.randomUUID(),
+            toolId: 'explain_spatial_anomaly',
+            status: 'success',
+            correlationId: response.correlationId || 'unknown',
+            timestamp: new Date(),
+            meta: { metric: anomalyMetric },
+          },
+          ...prev.slice(0, 9),
+        ]);
+      } else {
+        const errorInfo: ErrorInfo = {
+          code: response.error?.code || 'SPATIAL_ANOMALY_FAILED',
+          message: response.error?.message || 'Failed to explain spatial anomaly',
+          severity: 'error',
+          correlationId: response.correlationId,
+        };
+
+        setSpatialAnomalyState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: errorInfo,
+        });
+        setQueryHistory((prev) => [
+          {
+            id: crypto.randomUUID(),
+            toolId: 'explain_spatial_anomaly',
+            status: 'error',
+            correlationId: response.correlationId || 'unknown',
+            timestamp: new Date(),
+            errorCode: response.error?.code || 'SPATIAL_ANOMALY_FAILED',
+            meta: { metric: anomalyMetric },
+          },
+          ...prev.slice(0, 9),
+        ]);
+      }
+    } catch (err) {
+      const clientCorrelationId = `net-${crypto.randomUUID().slice(0, 8)}`;
+      setSpatialAnomalyState({
+        status: 'error',
+        correlationId: clientCorrelationId,
+        error: {
+          code: 'NETWORK_ERROR',
+          message: err instanceof Error ? err.message : 'Network error occurred',
+          severity: 'error',
+          correlationId: clientCorrelationId,
+        },
+      });
+      setQueryHistory((prev) => [
+        {
+          id: crypto.randomUUID(),
+          toolId: 'explain_spatial_anomaly',
+          status: 'error',
+          correlationId: clientCorrelationId,
+          timestamp: new Date(),
+          errorCode: 'NETWORK_ERROR',
+          meta: { metric: anomalyMetric },
+        },
+        ...prev.slice(0, 9),
+      ]);
+    }
+  }, [anomalyMetric, geographyId, parcelId]);
 
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).catch(console.error);
@@ -701,6 +814,131 @@ export const PropertyAtlas: React.FC = () => {
           Layers endpoint: {layers.error}
         </div>
       )}
+
+      <BentoGrid columns='auto' gap={1} padding={0}>
+        <BentoCard title='Layer Query' actions={<WorkbenchSourceBadge source={badgeSource} />}>
+          <p className='tf-text-tertiary text-sm mb-3'>
+            Query governed parcel layers with county-scoped Atlas tooling.
+          </p>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-2 mb-3'>
+            {MAP_LAYERS.map((layer) => (
+              <label key={layer.id} className='tf-panel rounded-lg px-3 py-2 flex items-start gap-3 cursor-pointer'>
+                <input
+                  type='checkbox'
+                  checked={selectedLayers.has(layer.id)}
+                  onChange={() => toggleLayer(layer.id)}
+                  className='mt-1'
+                />
+                <div>
+                  <div className='tf-text text-sm font-medium'>{layer.icon} {layer.label}</div>
+                  <div className='tf-text-dim text-xs'>{layer.description}</div>
+                </div>
+              </label>
+            ))}
+          </div>
+          <button
+            onClick={handleQueryLayers}
+            disabled={queryState.status === 'loading' || selectedLayers.size === 0}
+            className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-atlas-cta mb-3'
+          >
+            {queryState.status === 'loading' ? 'Querying Layers...' : 'Run Layer Query'}
+          </button>
+
+          {queryState.status === 'success' && queryState.result && (
+            <div className='space-y-3'>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
+                {liveLayerCards.length > 0 ? liveLayerCards.map((layer) => (
+                  <div key={layer.id} className='tf-panel rounded-lg px-3 py-2'>
+                    <div className='tf-text text-sm font-medium'>{layer.name}</div>
+                    <div className='tf-text-dim text-xs'>Available in governed response</div>
+                  </div>
+                )) : (
+                  <div className='tf-text-dim text-sm italic'>No layers returned by the governed query.</div>
+                )}
+              </div>
+              <div className='relative h-72 rounded-xl overflow-hidden tf-panel'>
+                <ParcelMapVisualization result={queryState.result} selectedLayers={selectedLayers} />
+              </div>
+              {queryState.correlationId && (
+                <div className='text-xs tf-text-dim flex items-center gap-2'>
+                  Ref: <code className='tf-suite-accent-text font-mono'>{queryState.correlationId.slice(0, 16)}...</code>
+                  <button onClick={() => copyToClipboard(queryState.correlationId!)} className='tf-text-tertiary' aria-label='Copy'>📋</button>
+                  <WorkbenchSourceBadge source='live' />
+                </div>
+              )}
+            </div>
+          )}
+
+          {queryState.status === 'error' && queryState.error && (
+            <ErrorDisplay error={{ message: queryState.error.message, errorCode: queryState.error.code, correlationId: queryState.correlationId }} />
+          )}
+        </BentoCard>
+
+        <BentoCard title='Spatial Audit' actions={<span>🧭</span>}>
+          <p className='tf-text-tertiary text-sm mb-3'>
+            Convert a residual or ratio anomaly into a governed handoff recommendation.
+          </p>
+          <div className='space-y-3 mb-3'>
+            <select
+              value={anomalyMetric}
+              onChange={(event) => setAnomalyMetric(event.target.value as 'residual_cluster' | 'prd' | 'prb' | 'cod')}
+              className='w-full p-3 rounded-lg tf-input'
+            >
+              <option value='residual_cluster'>Residual Cluster</option>
+              <option value='prd'>PRD</option>
+              <option value='prb'>PRB</option>
+              <option value='cod'>COD</option>
+            </select>
+            <input
+              value={geographyId}
+              onChange={(event) => setGeographyId(event.target.value)}
+              placeholder='Optional geography or cluster ID'
+              className='w-full p-3 rounded-lg tf-input'
+            />
+          </div>
+          <button
+            onClick={handleExplainSpatialAnomaly}
+            disabled={spatialAnomalyState.status === 'loading'}
+            className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-atlas-cta mb-3'
+          >
+            {spatialAnomalyState.status === 'loading' ? 'Auditing...' : 'Explain Spatial Anomaly'}
+          </button>
+
+          {spatialAnomalyState.status === 'success' && spatialAnomalyState.result && (
+            <div className='space-y-3'>
+              <div className='tf-panel p-4 rounded-xl'>
+                <div className='flex items-center justify-between gap-3'>
+                  <span className='tf-text font-semibold'>{spatialAnomalyState.result.finding.findingType}</span>
+                  <span className='text-xs tf-text-dim'>
+                    {spatialAnomalyState.result.hotspotCount} hotspot{spatialAnomalyState.result.hotspotCount !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <p className='tf-text-secondary text-sm mt-2'>{spatialAnomalyState.result.narrative}</p>
+                <p className='tf-text-dim text-xs mt-2'>
+                  Recommendation: {spatialAnomalyState.result.finding.recommendedAction}
+                </p>
+              </div>
+              {spatialAnomalyState.correlationId && (
+                <div className='text-xs tf-text-dim flex items-center gap-2'>
+                  Ref: <code className='tf-suite-accent-text font-mono'>{spatialAnomalyState.correlationId.slice(0, 16)}...</code>
+                  <button onClick={() => copyToClipboard(spatialAnomalyState.correlationId!)} className='tf-text-tertiary' aria-label='Copy'>📋</button>
+                  <WorkbenchSourceBadge source='live' />
+                </div>
+              )}
+            </div>
+          )}
+
+          {spatialAnomalyState.status === 'error' && spatialAnomalyState.error && (
+            <ErrorDisplay error={{ message: spatialAnomalyState.error.message, errorCode: spatialAnomalyState.error.code, correlationId: spatialAnomalyState.correlationId }} />
+          )}
+        </BentoCard>
+      </BentoGrid>
+
+      <InvocationHistory
+        records={queryHistory}
+        title='Atlas Tool History'
+        emptyMessage='No Atlas tool invocations recorded yet.'
+      />
     </div>
   );
 };
