@@ -1,0 +1,54 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/terra-sync-proto",
+    "crates/terra-sync-policy",
+    "crates/terra-sync-audit",
+    "crates/terra-sync-control",
+    "crates/terra-sync-shadow-diff",
+    "tests/integration",
+]
+
+[workspace.package]
+edition = "2021"
+version = "4.0.0"
+license = "MIT"
+authors = ["TerraFusion OS"]
+
+[workspace.dependencies]
+tokio = { version = "1.40", features = ["full"] }
+tonic = "0.12"
+tonic-build = "0.12"
+prost = "0.13"
+prost-types = "0.13"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+anyhow = "1"
+thiserror = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+opentelemetry = "0.27"
+opentelemetry-otlp = "0.27"
+opentelemetry_sdk = "0.27"
+tracing-opentelemetry = "0.28"
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid", "json"] }
+rdkafka = { version = "0.36", features = ["cmake-build", "ssl"] }
+aws-sdk-s3 = "1.60"
+aws-config = "1.5"
+sha2 = "0.10"
+uuid = { version = "1.10", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+rustls = "0.23"
+rustls-pemfile = "2"
+async-trait = "0.1"
+tower = "0.5"
+tower-http = { version = "0.6", features = ["trace"] }
+hyper = "1"
+axum = "0.7"
+prometheus = "0.13"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
