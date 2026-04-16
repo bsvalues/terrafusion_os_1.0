@@ -571,6 +571,10 @@ builder.Services.AddScoped<TerraFusion.Data.Canonicalizers.IPacsCanonicalizer,
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IEquityMetricService,
     TerraFusion.AI.Valuation.EquityMetricService>();
 
+// CostForge Benton Method v2 — Track 2 geographic + stratum rollups
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.IRollupService,
+    TerraFusion.AI.Valuation.RollupService>();
+
 // TIER 5+ Cognitive Framework - 3-6-9-12 Development Excellence
 builder.Services.AddScoped<ICognitiveFrameworkService, CognitiveFrameworkService>();
 

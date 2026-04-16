@@ -22,11 +22,16 @@ public class EquityController : ControllerBase
     };
 
     private readonly IEquityMetricService _equity;
+    private readonly IRollupService _rollup;
     private readonly ILogger<EquityController> _logger;
 
-    public EquityController(IEquityMetricService equity, ILogger<EquityController> logger)
+    public EquityController(
+        IEquityMetricService equity,
+        IRollupService rollup,
+        ILogger<EquityController> logger)
     {
         _equity = equity;
+        _rollup = rollup;
         _logger = logger;
     }
 
@@ -75,6 +80,39 @@ public class EquityController : ControllerBase
                 "EquityController.GetMetrics failed: countyId={CountyId} taxYear={TaxYear} by={By}",
                 countyId, taxYear, by);
             return StatusCode(500, new { error = "equity metrics computation failed", detail = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Rollup metrics by geographic/type/vintage/grade stratum.
+    /// </summary>
+    [HttpGet("rollup")]
+    public async Task<IActionResult> GetRollup(
+        [FromQuery] Guid countyId,
+        [FromQuery] int taxYear,
+        [FromQuery] string by = "city",
+        CancellationToken ct = default)
+    {
+        if (countyId == Guid.Empty)
+            return BadRequest(new { error = "countyId is required" });
+        if (taxYear < 2000 || taxYear > 2100)
+            return BadRequest(new { error = "taxYear must be between 2000 and 2100" });
+
+        try
+        {
+            var result = await _rollup.GetRollupAsync(countyId, taxYear, by, ct);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "EquityController.GetRollup failed: countyId={CountyId} taxYear={TaxYear} by={By}",
+                countyId, taxYear, by);
+            return StatusCode(500, new { error = "rollup computation failed", detail = ex.Message });
         }
     }
 }
