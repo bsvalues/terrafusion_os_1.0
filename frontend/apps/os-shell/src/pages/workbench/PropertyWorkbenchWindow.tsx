@@ -225,15 +225,22 @@ const WorkbenchStartScene: React.FC = () => {
   }, [recentParcels]);
 
   const handleSearchKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && results.length > 0) {
+    if (e.key === 'Enter') {
       e.preventDefault();
-      openWorkbenchWindow(results[0].parcelNumber);
+      const trimmed = searchQuery.trim();
+      if (results.length > 0) {
+        // Text search: navigate to first result
+        openWorkbenchWindow(results[0].parcelNumber);
+      } else if (/^\d+$/.test(trimmed) && trimmed.length >= 3) {
+        // All-digit input: direct parcel number navigation (no API search needed)
+        openWorkbenchWindow(trimmed);
+      }
     }
     if (e.key === 'Escape') {
       setSearchQuery('');
       setShowResults(false);
     }
-  }, [results]);
+  }, [results, searchQuery]);
 
   return (
     <div className="h-full flex gap-3 p-6" style={{ background: 'hsl(var(--tf-bg))' }}>
