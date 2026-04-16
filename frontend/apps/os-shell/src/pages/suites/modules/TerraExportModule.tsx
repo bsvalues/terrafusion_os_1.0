@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useState, useEffect } from 'react';
+import { invokeTool } from '@/api/pilotApi';
 import { useParcelCount } from '../../../hooks/useParcelCount';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,11 +21,24 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Download, FileDown, Globe, Database, FileText, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { Download, FileDown, Globe, Database, FileText, CheckCircle2, Clock, AlertCircle, Lock } from 'lucide-react';
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                       */
 /* -------------------------------------------------------------------------- */
+
+interface EqualizationExportResult {
+  payloadRef: string;
+  packageRef: string;
+  artifactCount: number;
+  checklist: string[];
+}
+
+type EqExportState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'success'; result: EqualizationExportResult; correlationId: string }
+  | { status: 'error'; error: string; correlationId: string };
 
 type ExportFormat = 'shapefile' | 'geojson' | 'kml' | 'csv' | 'geopackage';
 
@@ -94,6 +108,39 @@ export default function TerraExportModule() {
   const [exportName, setExportName] = useState('');
   const [coordSystem, setCoordSystem] = useState('epsg-4326');
   const [jobs, setJobs] = useState<ExportJob[]>(RECENT_EXPORTS);
+
+  // TerraPilot: export_equalization_package gate
+  const [eqExportConfirmed, setEqExportConfirmed] = useState(false);
+  const [eqTaxYear] = useState<number>(new Date().getFullYear());
+  const [eqExportState, setEqExportState] = useState<EqExportState>({ status: 'idle' });
+
+  const handleExportEqualizationPackage = useCallback(async () => {
+    if (!eqExportConfirmed) return;
+    setEqExportState({ status: 'loading' });
+    try {
+      const res = await invokeTool<EqualizationExportResult>({
+        toolId: 'export_equalization_package',
+        params: {
+          county: 'benton',
+          draftVersion: `v${eqTaxYear}-draft`,
+          taxYear: eqTaxYear,
+          reasonCode: 'annual_certification',
+        },
+      });
+      setEqExportState({
+        status: 'success',
+        result: res.result,
+        correlationId: res.correlationId,
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Export failed';
+      setEqExportState({
+        status: 'error',
+        error: msg,
+        correlationId: (err as { correlationId?: string })?.correlationId ?? 'unknown',
+      });
+    }
+  }, [eqExportConfirmed, eqTaxYear]);
 
   const { data: statsData } = useParcelCount();
 
@@ -304,6 +351,97 @@ export default function TerraExportModule() {
               >
                 Export Data
               </TactileButton>
+            </CardContent>
+          </Card>
+
+          {/* TerraPilot: Equalization Package Export Gate */}
+          <Card
+            data-testid='eq-export-gate'
+            style={{
+              background: 'hsl(var(--tf-card-bg))',
+              borderColor: 'hsl(var(--tf-suite-atlas) / 0.4)',
+            }}
+          >
+            <CardHeader>
+              <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
+                <Lock size={14} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+                TerraPilot: Equalization Package
+              </CardTitle>
+              <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+                Assemble and export the {eqTaxYear} annual equalization package for Benton County
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-3'>
+              <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                TerraPilot will assemble the ratio study, matrix diff, calibration memo, signoff log,
+                and atlas overlays into a governed equalization package. You review the checklist before
+                any certification submission.
+              </p>
+
+              <label className='flex items-center gap-2 cursor-pointer'>
+                <input
+                  type='checkbox'
+                  checked={eqExportConfirmed}
+                  onChange={(e) => setEqExportConfirmed(e.target.checked)}
+                  data-testid='eq-export-confirm-checkbox'
+                  style={{ accentColor: 'hsl(var(--tf-suite-atlas))' }}
+                />
+                <span className='text-xs' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  I confirm the {eqTaxYear} equalization data is ready and authorise TerraPilot to assemble the package.
+                </span>
+              </label>
+
+              <TactileButton
+                size='sm'
+                onClick={handleExportEqualizationPackage}
+                disabled={!eqExportConfirmed || eqExportState.status === 'loading'}
+                data-testid='eq-export-submit-btn'
+                fullWidth
+                leftIcon={<Lock size={14} />}
+              >
+                {eqExportState.status === 'loading' ? 'Assembling…' : 'Export Equalization Package'}
+              </TactileButton>
+
+              {/* Error */}
+              {eqExportState.status === 'error' && (
+                <div
+                  className='p-2 rounded text-xs space-y-1'
+                  style={{ background: 'hsl(var(--tf-error-hs) 60% / 0.1)', color: 'hsl(var(--tf-error-hs) 60%)' }}
+                >
+                  <p>{eqExportState.error}</p>
+                  <p className='font-mono text-[10px]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    ref: {eqExportState.correlationId}
+                  </p>
+                </div>
+              )}
+
+              {/* Success */}
+              {eqExportState.status === 'success' && (
+                <div
+                  className='p-3 rounded space-y-1'
+                  style={{
+                    background: 'hsl(var(--tf-success-hs) 45% / 0.1)',
+                    border: '1px solid hsl(var(--tf-success-hs) 45% / 0.3)',
+                  }}
+                  data-testid='eq-export-success'
+                >
+                  <div className='flex items-center gap-2'>
+                    <CheckCircle2 size={14} style={{ color: 'hsl(var(--tf-success-hs) 45%)' }} />
+                    <span className='text-xs font-medium' style={{ color: 'hsl(var(--tf-success-hs) 45%)' }}>
+                      Package assembled — {eqExportState.result.artifactCount} artifacts
+                    </span>
+                  </div>
+                  <p className='text-[10px]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    Checklist: {eqExportState.result.checklist?.join(', ')}
+                  </p>
+                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    ref: {eqExportState.result.packageRef}
+                  </p>
+                  <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
+                    correlationId: {eqExportState.correlationId}
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
