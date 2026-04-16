@@ -8,6 +8,9 @@ members = [
     "crates/terra-sync-shadow-diff",
     "tests/integration",
 ]
+exclude = [
+    "src-tauri",
+]
 
 [workspace.package]
 edition = "2021"
