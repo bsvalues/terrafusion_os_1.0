@@ -27,8 +27,8 @@
     },
     "terra-pilt": {
       "Name": "terra-pilt",
-      "Port": 5179,
-      "Url": "http://localhost:5179",
+      "Port": 5009,
+      "Url": "http://localhost:5009",
       "Status": "stopped",
       "Pid": null,
       "StartedAt": null
