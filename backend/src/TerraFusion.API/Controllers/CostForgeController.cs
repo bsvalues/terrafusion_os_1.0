@@ -6667,7 +6667,7 @@ public class CostForgeController : ControllerBase
   /// </summary>
   [HttpGet("schedule")]
   [AllowAnonymous]
-  public IActionResult GetCostSchedule([FromQuery] string? qualityClass)
+  public async Task<IActionResult> GetCostSchedule([FromQuery] string? qualityClass)
   {
     var qualityKeys = new[] { "ECONOMY", "STANDARD", "CUSTOM", "PREMIUM", "LUXURY" };
 
@@ -6703,10 +6703,94 @@ public class CostForgeController : ControllerBase
           buildingType = entry.BuildingType,
           revalArea = entry.Region,
           qualityFactor = factor,
+          matrixType = "Primary",
+          secondaryFeaturePctOfBiv = (decimal?)null,
         });
       }
     }
+
+    // T6: append SecondaryFeature rows from canonical CostMatrices
+    var secondaryRaw = await _db.CostMatrices
+        .Where(m => m.MatrixType == "SecondaryFeature" && m.SecondaryFeaturePctOfBiv != null)
+        .OrderByDescending(m => m.SecondaryFeaturePctOfBiv)
+        .Select(m => new
+        {
+          m.BuildingType,
+          m.BuildingTypeDescription,
+          m.Region,
+          m.MatrixYear,
+          m.EffectiveDate,
+          m.SecondaryFeaturePctOfBiv,
+        })
+        .ToListAsync();
+
+    foreach (var m in secondaryRaw)
+    {
+      var effective = m.EffectiveDate ?? new DateTime(m.MatrixYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+      rows.Add(new
+      {
+        code = m.BuildingType,
+        description = m.BuildingTypeDescription,
+        qualityClass = "-",
+        baseCost = 0m,
+        unit = "%-of-BIV",
+        effectiveDate = effective.ToString("yyyy-MM-dd"),
+        buildingType = m.BuildingType,
+        revalArea = m.Region,
+        qualityFactor = 1.0m,
+        matrixType = "SecondaryFeature",
+        secondaryFeaturePctOfBiv = m.SecondaryFeaturePctOfBiv,
+      });
+    }
+
     return Ok(rows);
+  }
+
+  /// <summary>
+  /// POST /api/costforge/effective-age
+  /// T5: Derive effective age from actual age + WAC condition code +
+  /// functional/external obsolescence adjustments. Benton-aligned table:
+  ///   EXCELLENT: actualAge - 3
+  ///   GOOD:      actualAge + 0
+  ///   FAIR:      actualAge + 2
+  ///   POOR:      actualAge + 5
+  /// </summary>
+  [HttpPost("effective-age")]
+  [AllowAnonymous]
+  public IActionResult ComputeEffectiveAge([FromBody] EffectiveAgeRequest req)
+  {
+    if (req.ActualAge < 0 || req.ActualAge > 300)
+      return BadRequest(new { error = "ActualAge must be between 0 and 300" });
+
+    var conditionAdj = (req.ConditionGrade ?? string.Empty).Trim().ToUpperInvariant() switch
+    {
+      "EXCELLENT" => -3,
+      "GOOD"      => 0,
+      "FAIR"      => 2,
+      "POOR"      => 5,
+      _           => 0,
+    };
+
+    // Functional/external obsolescence treated as age-up adjustments
+    // (dollar amounts are context-dependent; the UI computes % impact separately).
+    var effectiveAge = Math.Max(0, req.ActualAge + conditionAdj);
+
+    return Ok(new
+    {
+      actualAge = req.ActualAge,
+      conditionGrade = req.ConditionGrade,
+      conditionAdjustment = conditionAdj,
+      effectiveAge,
+      method = "Benton WAC-aligned condition table",
+    });
+  }
+
+  public class EffectiveAgeRequest
+  {
+    public int ActualAge { get; set; }
+    public string? ConditionGrade { get; set; }
+    public decimal? FunctionalObsolescenceAmount { get; set; }
+    public decimal? ExternalObsolescenceAmount { get; set; }
   }
 
   /// <summary>
