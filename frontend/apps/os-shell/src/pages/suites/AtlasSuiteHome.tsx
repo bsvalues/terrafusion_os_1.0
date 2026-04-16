@@ -38,7 +38,7 @@ const ATLAS_MODULES: SuiteModuleDef[] = [
   // Standalone-mode (county-wide, opens standalone window)
   { id: 'terra-gis-pro', label: 'TerraGIS Pro', icon: Map, description: 'Full county-wide GIS platform — advanced cartography & spatial analysis', launchMode: 'standalone', moduleId: 'terra-gis', truthState: 'queued' },
   { id: 'geo-equity-dashboard', label: 'Geo Equity', icon: BarChart2, description: 'Geographic equity analysis — market-value equity by area, district, and property class', launchMode: 'standalone', moduleId: 'geo-equity-dashboard', truthState: 'queued' },
-  { id: 'mass-appraisal-gis', label: 'Appraisal GIS', icon: Globe, description: 'Mass appraisal spatial visualization — value heat maps, sale ratio overlays, and cluster analysis', launchMode: 'standalone', moduleId: 'mass-appraisal-gis', truthState: 'queued' },
+  { id: 'mass-appraisal-gis', label: 'Appraisal GIS', icon: Globe, description: 'Mass appraisal spatial visualization — value heat maps, sale ratio overlays, and live Benton parcel geometry', launchMode: 'standalone', moduleId: 'mass-appraisal-gis', truthState: 'live' },
 ];
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
@@ -196,7 +196,7 @@ export default function AtlasSuiteHome() {
           borderBottom: '1px solid hsl(var(--tf-border) / 0.10)',
         }}
       >
-        TerraGIS Pro, Geo Equity, and Appraisal GIS are queued — these modules open placeholder surfaces and do not reflect live county data.
+        TerraGIS Pro and Geo Equity are queued breadth surfaces. Appraisal GIS is now a live Atlas application backed by Benton parcel geometry and county stats.
       </div>
 
       {/* Module Grid + Operational Queue */}
@@ -348,7 +348,7 @@ export default function AtlasSuiteHome() {
                   </div>
                   <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}>
                     <div className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'hsl(var(--tf-muted))' }}>Queued Breadth</div>
-                    <div className="mt-1 text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>TerraGIS Pro, Geo Equity, Appraisal GIS</div>
+                    <div className="mt-1 text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>TerraGIS Pro, Geo Equity</div>
                     <div className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
                       These county-wide breadth surfaces remain queued and should not be treated as live operational systems until they are backed by authoritative Benton evidence.
                     </div>

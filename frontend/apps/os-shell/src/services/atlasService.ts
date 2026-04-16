@@ -12,6 +12,8 @@ import { getViteEnv } from '@/env/getViteEnv';
 
 const API_BASE_URL = getViteEnv().VITE_API_URL || '';
 const ATLAS_API = `${API_BASE_URL}/api/atlas`;
+const BENTON_MASS_APPRAISAL_LAYER =
+  'https://services7.arcgis.com/NURlY7V8UHl6XumF/arcgis/rest/services/AssessorPropVal/FeatureServer/0';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -62,6 +64,36 @@ export interface ParcelSearchResponse {
   hasMore: boolean;
 }
 
+export interface MassAppraisalSearchRequest {
+  query?: string;
+  propertyType?: string;
+  limit?: number;
+}
+
+export interface MassAppraisalFeatureProperties {
+  Parcel_ID?: string;
+  situs_display?: string;
+  Property_Type?: string;
+  neighborhood?: string;
+  zoning?: string | null;
+  Current_Ratio?: number | null;
+  MV_PPSF?: number | null;
+  ASSESSED_VAL?: number | null;
+  TotalMarketValue?: number | null;
+  Shape__Area?: number | null;
+}
+
+export type MassAppraisalGeometry = GeoJSON.Polygon | GeoJSON.MultiPolygon;
+
+export interface MassAppraisalFeature
+  extends GeoJSON.Feature<MassAppraisalGeometry, MassAppraisalFeatureProperties> {}
+
+export interface MassAppraisalFeatureCollection extends GeoJSON.FeatureCollection<MassAppraisalGeometry, MassAppraisalFeatureProperties> {
+  properties?: {
+    exceededTransferLimit?: boolean;
+  };
+}
+
 export interface ZoningDistrict {
   id: string;
   code: string;
@@ -86,6 +118,15 @@ export interface SpatialStats {
   zoningDistrictCount: number;
   floodZoneCount: number;
   lastDataUpdate: string;
+  averageAssessedValue?: number;
+  averageMarketValue?: number;
+  totalAssessedValue?: number;
+  totalMarketValue?: number;
+  typeBreakdown?: Array<{
+    type: string;
+    count: number;
+  }>;
+  layers?: string[];
 }
 
 // ============================================================================
@@ -115,6 +156,111 @@ async function atlasPost<T>(path: string, body: unknown): Promise<T> {
   return response.json();
 }
 
+async function fetchArcGisQuery<T>(params: URLSearchParams): Promise<T> {
+  const response = await fetch(`${BENTON_MASS_APPRAISAL_LAYER}/query?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error(`ArcGIS query failed: ${response.statusText}`);
+  }
+  return response.json();
+}
+
+async function getArcGisMassAppraisalStats(): Promise<SpatialStats> {
+  const countParams = new URLSearchParams({
+    where: '1=1',
+    returnGeometry: 'false',
+    returnCountOnly: 'true',
+    f: 'json',
+  });
+
+  const valuationParams = new URLSearchParams({
+    where: '1=1',
+    returnGeometry: 'false',
+    outStatistics: JSON.stringify([
+      {
+        statisticType: 'sum',
+        onStatisticField: 'TotalMarketValue',
+        outStatisticFieldName: 'totalMarketValue',
+      },
+      {
+        statisticType: 'avg',
+        onStatisticField: 'TotalMarketValue',
+        outStatisticFieldName: 'averageMarketValue',
+      },
+    ]),
+    f: 'json',
+  });
+
+  const typeBreakdownParams = new URLSearchParams({
+    where: '1=1',
+    groupByFieldsForStatistics: 'Property_Type',
+    outStatistics: JSON.stringify([
+      {
+        statisticType: 'count',
+        onStatisticField: 'OBJECTID',
+        outStatisticFieldName: 'parcelCount',
+      },
+    ]),
+    returnGeometry: 'false',
+    f: 'json',
+  });
+
+  const [countResponse, valuationResponse, typeResponse] = await Promise.all([
+    fetchArcGisQuery<{ count?: number }>(countParams),
+    fetchArcGisQuery<{ features?: Array<{ attributes?: { totalMarketValue?: number; averageMarketValue?: number } }> }>(valuationParams),
+    fetchArcGisQuery<{ features?: Array<{ attributes?: { Property_Type?: string; parcelCount?: number } }> }>(typeBreakdownParams),
+  ]);
+
+  const valuationAttributes = valuationResponse.features?.[0]?.attributes;
+
+  return {
+    totalParcels: countResponse.count ?? 0,
+    totalAcreage: 0,
+    zoningDistrictCount: 0,
+    floodZoneCount: 0,
+    lastDataUpdate: new Date().toISOString(),
+    averageAssessedValue: valuationAttributes?.averageMarketValue ?? 0,
+    averageMarketValue: valuationAttributes?.averageMarketValue ?? 0,
+    totalAssessedValue: valuationAttributes?.totalMarketValue ?? 0,
+    totalMarketValue: valuationAttributes?.totalMarketValue ?? 0,
+    typeBreakdown:
+      typeResponse.features
+        ?.map((feature) => ({
+          type: feature.attributes?.Property_Type ?? 'Unknown',
+          count: feature.attributes?.parcelCount ?? 0,
+        }))
+        .filter((entry) => entry.count > 0) ?? [],
+    layers: ['benton-arcgis-mass-appraisal-fy2025'],
+  };
+}
+
+async function searchMassAppraisalParcelsFromArcGis(
+  request: MassAppraisalSearchRequest,
+): Promise<MassAppraisalFeatureCollection> {
+  const clauses: string[] = [];
+
+  if (request.query?.trim()) {
+    const escaped = request.query.trim().replace(/'/g, "''");
+    clauses.push(`(Parcel_ID LIKE '%${escaped}%' OR situs_display LIKE '%${escaped}%')`);
+  }
+
+  if (request.propertyType?.trim()) {
+    const escaped = request.propertyType.trim().replace(/'/g, "''");
+    clauses.push(`Property_Type = '${escaped}'`);
+  }
+
+  const params = new URLSearchParams({
+    where: clauses.length > 0 ? clauses.join(' AND ') : '1=1',
+    outFields:
+      'Parcel_ID,situs_display,Property_Type,neighborhood,zoning,Current_Ratio,MV_PPSF,TotalMarketValue,Shape__Area',
+    returnGeometry: 'true',
+    f: 'geojson',
+    outSR: '4326',
+    resultRecordCount: String(Math.min(Math.max(request.limit ?? 25, 5), 50)),
+  });
+
+  return fetchArcGisQuery<MassAppraisalFeatureCollection>(params);
+}
+
 // ============================================================================
 // NOTE: DEFAULT fallback data removed in CC-13 (R1 Week 3).
 // All service methods now propagate errors from the real backend.
@@ -137,6 +283,19 @@ export const atlasService = {
    */
   searchParcels: async (request: ParcelSearchRequest): Promise<ParcelSearchResponse> => {
     return atlasPost<ParcelSearchResponse>('/parcels/search', request);
+  },
+
+  /**
+   * Fetch a live Benton County mass-appraisal parcel slice with ArcGIS geometry.
+   */
+  searchMassAppraisalParcels: async (
+    request: MassAppraisalSearchRequest,
+  ): Promise<MassAppraisalFeatureCollection> => {
+    try {
+      return await atlasPost<MassAppraisalFeatureCollection>('/mass-appraisal/parcels', request);
+    } catch {
+      return searchMassAppraisalParcelsFromArcGis(request);
+    }
   },
 
   /**
@@ -170,6 +329,18 @@ export const atlasService = {
    */
   getStats: async (): Promise<SpatialStats> => {
     return atlasGet<SpatialStats>('/stats');
+  },
+
+  /**
+   * Get county posture for Mass Appraisal GIS, preferring the backend Atlas API
+   * and falling back to the live Benton ArcGIS layer when stats are unavailable.
+   */
+  getMassAppraisalStats: async (): Promise<SpatialStats> => {
+    try {
+      return await atlasGet<SpatialStats>('/stats');
+    } catch {
+      return getArcGisMassAppraisalStats();
+    }
   },
 };
 

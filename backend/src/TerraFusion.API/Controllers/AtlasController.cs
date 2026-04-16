@@ -297,26 +297,30 @@ public class AtlasController : ControllerBase
         .Select(g => new { type = g.Key, count = g.Count() })
         .ToListAsync();
 
-    var valuationStats = await _db.Properties
+    var valuationSlice = await _db.Properties
         .AsNoTracking()
         .Where(p => p.CountyId == countyId.Value)
-        .GroupBy(_ => 1)
-        .Select(g => new
+        .Select(p => new
         {
-          totalAssessedValue = g.Sum(p => p.AssessedValue),
-          avgAssessedValue = g.Average(p => p.AssessedValue),
-          totalMarketValue = g.Sum(p => p.MarketValue),
+          p.AssessedValue,
+          p.MarketValue,
         })
-        .FirstOrDefaultAsync();
+        .ToListAsync();
+
+    var totalAssessedValue = valuationSlice.Sum(p => p.AssessedValue);
+    var averageAssessedValue = valuationSlice.Count > 0
+        ? valuationSlice.Average(p => p.AssessedValue)
+        : 0m;
+    var totalMarketValue = valuationSlice.Sum(p => p.MarketValue);
 
     return Ok(new
     {
       countyId = countyId.Value,
       totalParcels,
       typeBreakdown = typeBreakdown.Select(t => new { t.type, t.count }),
-      totalAssessedValue = valuationStats?.totalAssessedValue ?? 0,
-      averageAssessedValue = valuationStats?.avgAssessedValue ?? 0,
-      totalMarketValue = valuationStats?.totalMarketValue ?? 0,
+      totalAssessedValue,
+      averageAssessedValue,
+      totalMarketValue,
       layers = DefaultLayers,
     });
   }
@@ -635,6 +639,83 @@ public class AtlasController : ControllerBase
       string? ParcelId, string? OwnerName, string? Address,
       decimal? MinValue, decimal? MaxValue, string? Zoning,
       int Limit = 50);
+
+  public record MassAppraisalParcelSearchRequest(
+      string? Query,
+      string? PropertyType,
+      int Limit = 25);
+
+  /// <summary>
+  /// Execute a live Benton County parcel polygon query for Mass Appraisal GIS.
+  /// Returns GeoJSON directly from the AssessorPropVal layer so Atlas can render
+  /// real parcel geometry without demo fallbacks.
+  /// </summary>
+  [HttpPost("mass-appraisal/parcels")]
+  [RequiresPermission("read:parcel")]
+  public async Task<IActionResult> GetMassAppraisalParcels([FromBody] MassAppraisalParcelSearchRequest? request)
+  {
+    var countyId = await ResolveCountyIdAsync();
+    if (countyId is null)
+      return Forbid();
+
+    var limit = Math.Clamp(request?.Limit ?? 25, 5, 50);
+    var clauses = new List<string>();
+
+    if (!string.IsNullOrWhiteSpace(request?.Query))
+    {
+      var escaped = Uri.EscapeDataString(request.Query.Trim());
+      clauses.Add($"(Parcel_ID LIKE '%25{escaped}%25' OR situs_display LIKE '%25{escaped}%25')");
+    }
+
+    if (!string.IsNullOrWhiteSpace(request?.PropertyType))
+    {
+      var escaped = Uri.EscapeDataString(request.PropertyType.Trim());
+      clauses.Add($"Property_Type = '{escaped}'");
+    }
+
+    var where = clauses.Count > 0 ? string.Join(" AND ", clauses) : "1%3D1";
+    var queryUrl = $"{BentonArcGisData.AssessorValServiceUrl}/query" +
+                   $"?where={where}" +
+                   "&outFields=Parcel_ID,situs_display,Property_Type,neighborhood,zoning,Current_Ratio,MV_PPSF,TotalMarketValue,Shape__Area" +
+                   $"&returnGeometry=true&f=geojson&outSR=4326&resultRecordCount={limit}";
+
+    try
+    {
+      using var httpClient = new HttpClient();
+      httpClient.Timeout = TimeSpan.FromSeconds(30);
+      httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("TerraFusionOS/1.0");
+
+      var response = await httpClient.GetAsync(queryUrl);
+      var content = await response.Content.ReadAsStringAsync();
+
+      if (!response.IsSuccessStatusCode)
+      {
+        _logger.LogWarning(
+            "Mass appraisal ArcGIS query failed with status {StatusCode}: {Body}",
+            response.StatusCode,
+            content);
+
+        return StatusCode((int)response.StatusCode, new
+        {
+          error = "ArcGIS mass appraisal query failed",
+          detail = content,
+          source = "Benton County ArcGIS AssessorPropVal",
+        });
+      }
+
+      Response.Headers["X-Atlas-Source"] = "benton-arcgis-mass-appraisal-fy2025";
+      return Content(content, "application/geo+json");
+    }
+    catch (Exception ex)
+    {
+      _logger.LogError(ex, "Mass appraisal ArcGIS query failed");
+      return StatusCode(StatusCodes.Status502BadGateway, new
+      {
+        error = "Atlas could not retrieve live mass appraisal parcels",
+        detail = ex.Message,
+      });
+    }
+  }
 
   [HttpPost("arcgis/query/search")]
   [RequiresPermission("read:parcel")]

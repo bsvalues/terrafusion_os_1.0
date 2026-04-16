@@ -10,6 +10,10 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(DotNetWatchBuild)' == 'true'">
+    <BaseOutputPath>bin\watch\</BaseOutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <InternalsVisibleTo Include="TerraFusion.Unit.Tests" />
   </ItemGroup>
@@ -72,6 +76,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="bin\**\*.cs;obj\**\*.cs" />
+    <EmbeddedResource Remove="bin\**\*;obj\**\*" />
+    <None Remove="bin\**\*;obj\**\*" />
     <Compile Remove="Controllers.disabled\**" />
     <EmbeddedResource Remove="Controllers.disabled\**" />
     <None Remove="Controllers.disabled\**" />

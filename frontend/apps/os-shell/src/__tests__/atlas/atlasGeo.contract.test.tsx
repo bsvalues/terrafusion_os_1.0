@@ -59,6 +59,99 @@ vi.mock('../../hooks/useParcelCount', () => ({
   }),
 }));
 
+const MASS_APPRAISAL_FIXTURE = {
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[
+          [-119.31, 46.24],
+          [-119.30, 46.24],
+          [-119.30, 46.25],
+          [-119.31, 46.25],
+          [-119.31, 46.24],
+        ]],
+      },
+      properties: {
+        Parcel_ID: '100100000000001',
+        situs_display: '123 Live Parcel Rd WA',
+        Property_Type: 'Residential',
+        neighborhood: '540100',
+        zoning: 'R-1',
+        Current_Ratio: 0.82,
+        TotalMarketValue: 325000,
+        Shape__Area: 7200,
+      },
+    },
+    {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[
+          [-119.295, 46.245],
+          [-119.285, 46.245],
+          [-119.285, 46.255],
+          [-119.295, 46.255],
+          [-119.295, 46.245],
+        ]],
+      },
+      properties: {
+        Parcel_ID: '100100000000002',
+        situs_display: '456 County Review Ave WA',
+        Property_Type: 'Commercial',
+        neighborhood: '540100',
+        zoning: 'C-1',
+        Current_Ratio: 1.18,
+        TotalMarketValue: 510000,
+        Shape__Area: 9100,
+      },
+    },
+  ],
+  properties: {
+    exceededTransferLimit: false,
+  },
+} as const;
+
+vi.mock('../../services/atlasService', () => ({
+  atlasService: {
+    getMassAppraisalStats: vi.fn(async () => ({
+      totalParcels: 89247,
+      totalAcreage: 123456,
+      zoningDistrictCount: 18,
+      floodZoneCount: 0,
+      lastDataUpdate: '2026-04-16T00:00:00Z',
+      typeBreakdown: [
+        { type: 'Residential', count: 60000 },
+        { type: 'Commercial', count: 12000 },
+      ],
+      averageAssessedValue: 418000,
+      averageMarketValue: 418000,
+      totalAssessedValue: 37300000000,
+      totalMarketValue: 40100000000,
+      layers: ['atlas-api'],
+    })),
+    getStats: vi.fn(async () => ({
+      totalParcels: 89247,
+      totalAcreage: 123456,
+      zoningDistrictCount: 18,
+      floodZoneCount: 0,
+      lastDataUpdate: '2026-04-16T00:00:00Z',
+      typeBreakdown: [
+        { type: 'Residential', count: 60000 },
+        { type: 'Commercial', count: 12000 },
+      ],
+      averageAssessedValue: 418000,
+      averageMarketValue: 418000,
+      totalAssessedValue: 37300000000,
+      totalMarketValue: 40100000000,
+      layers: ['atlas-api'],
+    })),
+    searchMassAppraisalParcels: vi.fn(async () => MASS_APPRAISAL_FIXTURE),
+  },
+}));
+
 vi.mock('../../api/pilotApi', () => ({
   invokeTool: vi.fn(async () => ({
     success: true,
@@ -249,18 +342,17 @@ describe('MassAppraisalGIS — contract', () => {
     expect(violations).toEqual([]);
   });
 
-  it('renders a governed spatial audit brief for county anomaly routing', async () => {
+  it('renders a live county audit brief for the Atlas parcel slice', async () => {
     render(<MassAppraisalGIS />);
 
     expect(screen.getByTestId('mass-appraisal-governed-brief')).toBeInTheDocument();
-    screen.getByRole('button', { name: /explain spatial anomaly/i }).click();
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Residual clustering is concentrated in the governed Benton audit area\./i)
+        screen.getByText(/2 parcels in the current live slice are outside the 0.90-1.10 ratio band\./i)
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Route neighborhood review to TerraForge and parcel defects to Workbench\./i)
+        screen.getByText(/Live Benton County ArcGIS geometry and Atlas county stats\./i)
       ).toBeInTheDocument();
     });
   });

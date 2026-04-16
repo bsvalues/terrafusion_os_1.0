@@ -374,7 +374,7 @@ public sealed class ArcGisSyncService : BackgroundService
     }
 
     /// <summary>
-    /// Attribute bag from ArcGIS — uses <see cref="JsonExtensionData"/> to capture
+    /// Attribute bag from ArcGIS — uses <c>[JsonExtensionData]</c> to capture
     /// any field the FeatureServer returns without enumerating every property in a DTO.
     /// </summary>
     private sealed class ArcGisAttributes
