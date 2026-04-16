@@ -580,6 +580,13 @@ builder.Services.AddScoped<TerraFusion.Core.Interfaces.IRollupService,
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IBentonCustomMetricService,
     TerraFusion.AI.Valuation.BentonCustomMetricService>();
 
+// CostForge Benton Method v2 — Track 4 Data Quality Engine
+// 8 canonical-entity checks: missing quality codes, stale CAMA, missing
+// improvement segments, missing sale pairs, IQR outliers, impossible
+// pairings, year-built anomalies, GLA/land conflicts.
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICamaDataQualityService,
+    TerraFusion.AI.DataQuality.CamaDataQualityService>();
+
 // TIER 5+ Cognitive Framework - 3-6-9-12 Development Excellence
 builder.Services.AddScoped<ICognitiveFrameworkService, CognitiveFrameworkService>();
 
