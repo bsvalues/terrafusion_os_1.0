@@ -29,7 +29,7 @@ const TABS: { id: CostForgeTab; label: string; title: string }[] = [
   { id: 'calibration',  label: 'Calibration',  title: 'Mass-adjust with impact simulation — commit the fix' },
   { id: 'parcel',       label: 'Parcel',        title: 'Single-parcel RCNLD with Benton Method BIV display' },
   { id: 'depreciation', label: 'Depreciation', title: 'Physical / functional / external with waterfall bar' },
-  { id: 'data-quality', label: 'Data Quality', title: 'PACS gap scanner — missing fields, outlier flags' },
+  { id: 'data-quality', label: 'Data Quality', title: 'Assessment record quality — missing fields, outlier flags' },
   { id: 'schedule',     label: 'Schedule',     title: 'Cost manual reference + batch apply' },
   { id: 'calc-trace',   label: 'Calc Trace',   title: 'RCNLD audit trail — full calculation lineage' },
 ];

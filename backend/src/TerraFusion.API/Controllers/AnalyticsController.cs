@@ -67,6 +67,9 @@ namespace TerraFusion.API.Controllers
         /// <param name="metric">Trend metric: MedianSalePrice, MedianAssessedValue, MedianRatio, SalesVolume.</param>
         /// <param name="granularity">Time granularity: Monthly, Quarterly, Annual (default Monthly).</param>
         /// <param name="periodMonths">Lookback period in months (default 24).</param>
+        /// <param name="timeRange">Optional shorthand lookback override such as 6m or 12m.</param>
+        /// <param name="region">Optional Benton region filter.</param>
+        /// <param name="buildingType">Optional building-type filter.</param>
         /// <returns>Time-series trend data points.</returns>
         [HttpGet("trends")]
         [ProducesResponseType(typeof(TrendAnalysisResult), StatusCodes.Status200OK)]
