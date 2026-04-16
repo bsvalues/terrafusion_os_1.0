@@ -53,14 +53,17 @@ export interface ImprvTypeCode {
   bivPct: number;
 }
 
-/** All active improvement type codes for the county with human-readable labels. */
+/** All active improvement type codes for the county with human-readable labels.
+ *  Backend returns { buildingTypes, featureCodes, qualityGrades, conditionGrades }.
+ *  We expose featureCodes which carry the bivPct factor used by the Parcel Inspector. */
 export function useImprvTypeCodes(countyId: string) {
   return useQuery<ImprvTypeCode[]>({
     queryKey: ['costforge-type-codes', countyId],
     queryFn: async () => {
       const res = await apiFetch(`/costforge/improvement-type-codes?countyId=${encodeURIComponent(countyId)}`);
       if (!res.ok) throw new Error(`Imprv type codes fetch failed: ${res.status}`);
-      return await res.json() as ImprvTypeCode[];
+      const data = await res.json() as { featureCodes?: ImprvTypeCode[] };
+      return data.featureCodes ?? [];
     },
     staleTime: 10 * 60 * 1000,
   });

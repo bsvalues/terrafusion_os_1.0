@@ -107,7 +107,7 @@ export function DataQualityTab() {
     <div>
       <div className="cf-action-bar">
         <span style={{ fontSize: '0.8125rem', color: 'var(--cf-muted)' }}>
-          PACS data quality — {taxYear} cost approach records
+          Record quality — {taxYear} cost approach
         </span>
         <div className="cf-action-bar__spacer" />
         <button type="button" className="cf-btn cf-btn--ghost" onClick={runAssessment} disabled={loading}>
@@ -116,7 +116,7 @@ export function DataQualityTab() {
       </div>
 
       {error && <div className="cf-state cf-state--error">{error}</div>}
-      {loading && <div className="cf-state">Scanning PACS data quality…</div>}
+      {loading && <div className="cf-state">Scanning assessment records…</div>}
 
       {result && (
         <>

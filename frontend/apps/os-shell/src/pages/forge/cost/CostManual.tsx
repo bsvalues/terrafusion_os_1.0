@@ -1,23 +1,16 @@
 /**
  * CostManual.tsx
  *
- * Forge Cost Schedule Manual Reference.
- * Displays cost schedule rows (building class, quality grade, base rate) with
- * search and quality filter. Uses `getCostSchedule` API with `SAMPLE_COST_SCHEDULES`
- * fixture fallback.
- *
- * DATA POSTURE:
- * - `isSampleData` starts `true` (conservative default).
- * - Cleared to `false` when `/api/forge/cost/schedule` returns live rows.
- * - DemoDataBanner shown while `isSampleData` is true.
- * - Source label reads 'Sample fallback' vs 'Live cost schedule API' accordingly.
+ * Forge Cost Schedule — Benton County Marshall & Swift base rates.
+ * Fetches live cost matrix rows from /costforge/schedule (all 66 building-type ×
+ * reval-area combinations × 5 quality tiers). Search and quality filter applied
+ * client-side after load.
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { apiFetchJson } from '@/lib/apiBase';
 import {
   Table,
@@ -51,22 +44,14 @@ interface CostScheduleApiRow {
   baseCost?: number;
   unit?: string;
   effectiveDate?: string;
+  buildingType?: string;
+  revalArea?: string;
 }
-
-const SAMPLE_COST_SCHEDULES: CostScheduleRow[] = [
-  { buildingClass: 'Residential - Wood Frame', qualityGrade: 'Average', baseRate: 125.5, unit: '$/SF', effectiveDate: '2025-01-01' },
-  { buildingClass: 'Residential - Wood Frame', qualityGrade: 'Good', baseRate: 168.75, unit: '$/SF', effectiveDate: '2025-01-01' },
-  { buildingClass: 'Residential - Masonry', qualityGrade: 'Average', baseRate: 142.0, unit: '$/SF', effectiveDate: '2025-01-01' },
-  { buildingClass: 'Commercial - Steel Frame', qualityGrade: 'Average', baseRate: 195.25, unit: '$/SF', effectiveDate: '2025-01-01' },
-  { buildingClass: 'Commercial - Steel Frame', qualityGrade: 'Good', baseRate: 248.0, unit: '$/SF', effectiveDate: '2025-01-01' },
-  { buildingClass: 'Industrial - Prefab Metal', qualityGrade: 'Low', baseRate: 62.0, unit: '$/SF', effectiveDate: '2025-01-01' },
-];
 
 export function CostManual() {
   const [search, setSearch] = useState('');
   const [qualityFilter, setQualityFilter] = useState<string>('all');
-  const [rows, setRows] = useState<CostScheduleRow[]>(SAMPLE_COST_SCHEDULES);
-  const [isSampleData, setIsSampleData] = useState(true);
+  const [rows, setRows] = useState<CostScheduleRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -87,25 +72,18 @@ export function CostManual() {
           { signal }
         );
 
-        if (Array.isArray(result) && result.length > 0) {
+        if (Array.isArray(result)) {
           const normalized: CostScheduleRow[] = result.map((entry) => ({
             buildingClass: entry.description ?? entry.code ?? 'Unknown Class',
             qualityGrade: entry.qualityClass ?? 'Unspecified',
             baseRate: Number(entry.baseCost) || 0,
             unit: entry.unit ?? '$/SF',
-            effectiveDate: entry.effectiveDate ?? 'Unknown',
+            effectiveDate: entry.effectiveDate ?? '—',
           }));
           setRows(normalized);
-          setIsSampleData(false);
-        } else {
-          setRows(SAMPLE_COST_SCHEDULES);
-          setIsSampleData(true);
-          setError('Cost schedule endpoint returned no records. Showing sample reference data.');
         }
       } catch (cause) {
         if (cause instanceof DOMException && cause.name === 'AbortError') return;
-        setRows(SAMPLE_COST_SCHEDULES);
-        setIsSampleData(true);
         setError(cause instanceof Error ? cause.message : 'Failed to load cost schedules.');
       } finally {
         setIsLoading(false);
@@ -119,25 +97,21 @@ export function CostManual() {
     };
   }, [qualityFilter]);
 
-  // Server already filters by qualityClass — only apply client-side search
+  // Server filters by qualityClass; apply client-side search on top
   const filtered = rows.filter((row) =>
     row.buildingClass.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="space-y-4 p-4">
-      {isSampleData && <DemoDataBanner module="Cost Manual" />}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Cost Manual Reference</h1>
+          <h1 className="text-2xl font-bold">Cost Schedule</h1>
           <p className="text-muted-foreground">
-            Marshall &amp; Swift style cost schedules (read-only)
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Source: {isSampleData ? 'Sample fallback' : 'Live cost schedule API'}
+            Benton County base rates — {rows.length > 0 ? `${rows.length} schedule rows` : 'loading…'}
           </p>
           {error && (
-            <p className="text-xs text-amber-600 mt-1">
+            <p className="text-xs text-amber-500 mt-1">
               {error}
             </p>
           )}
