@@ -6617,7 +6617,7 @@ public class CostForgeController : ControllerBase
         Quality            = quality,
         ReplacementCostNew = rcn,
     };
-    return Depreciation(req);
+    return await CalculateDepreciation(req);
   }
 
   /// <summary>

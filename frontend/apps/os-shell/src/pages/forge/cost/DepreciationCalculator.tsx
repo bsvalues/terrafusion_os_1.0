@@ -41,19 +41,21 @@ export function DepreciationCalculator() {
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams({
-        actualAge: age,
-        effectiveAge: effectiveAge,
-        condition,
-        quality,
-        rcn: replacementCost,
-      });
-      if (functionalObsolescence) params.set('functionalObsolescence', functionalObsolescence);
-      if (externalObsolescence)   params.set('externalObsolescence', externalObsolescence);
-
+      // Backend: POST /costforge/depreciation-calculate (Benton County bracket tables)
       const data = await apiFetchJson<DepreciationResult>(
-        `/costforge/depreciation/calculate?${params.toString()}`,
-        { signal: ctrlRef.current.signal }
+        '/costforge/depreciation-calculate',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            actualAge: parseInt(age, 10),
+            effectiveAge: parseInt(effectiveAge, 10),
+            condition,
+            quality,
+            replacementCostNew: parseFloat(replacementCost),
+          }),
+          signal: ctrlRef.current.signal,
+        }
       );
       setResult(data);
     } catch (err) {

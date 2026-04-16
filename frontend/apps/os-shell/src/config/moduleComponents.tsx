@@ -236,8 +236,10 @@ const FederationDashboard = lazy(
   () => import('../applications/federation-dashboard/FederationDashboard')
 );
 
-// CostForge — native app hosted via AppFrame (packages/terrabuild, port 5002)
-// The shell NEVER imports CostForge code directly — it loads the running service URL.
+// CostForge — PhD workflow workspace (8-tab audit-diagnose-fix-verify loop)
+// Upgraded from AppFrame / port-5002 pattern to OS-native React module.
+const CostForge = lazy(() => import('../pages/forge/cost/CostForge'));
+
 import { AppFrame } from '../components/app-frame/AppFrame';
 
 // TerraGaia - Natural Language AI Assistant
@@ -377,7 +379,7 @@ export type ModuleEntry = {
 
 const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   'federation-dashboard': { Component: FederationDashboard },
-  // costforge renders via AppFrame (native app, not a React component)
+  costforge: { Component: CostForge },
   'terra-gaia': { Component: TerraGaiaDashboard },
   reporting: { Component: AnalyticsDashboard },
   'atlas-ai': { Component: ATLAS },
@@ -651,24 +653,13 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         </Suspense>
       );
 
-    // CostForge — full-stack MVP app (packages/terrabuild), hosted via AppFrame
-    // Lineage: BCBSCOSTApp → TerraBuild → TerraFusionBuild → CostForge
-    // Autostarts via applications/costforge/terrafusion.app.json at port 5002
+    // CostForge — OS-native PhD workflow (8-tab audit-diagnose-fix-verify)
+    // Replaced AppFrame / port-5002 with inline React workspace module.
     case 'costforge':
       return (
-        <AppFrame
-          moduleId="costforge"
-          overrideUrl={import.meta.env.DEV ? 'http://localhost:5002' : undefined}
-          parcelContext={
-            metadata?.parcelId
-              ? {
-                  parcelId: String(metadata.parcelId),
-                  countyId: String(metadata.countyId ?? ''),
-                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
-                }
-              : undefined
-          }
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <CostForge />
+        </Suspense>
       );
 
     // CompsForge — Sales comparison approach (standalone window, demo data)
