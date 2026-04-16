@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Printer, FileText, Image, MapPin, Ruler, CheckCircle2, Clock, Download } from 'lucide-react';
+import { Printer, FileText, CheckCircle2, Clock, Download, Lock } from 'lucide-react';
 
 /* -------------------------------------------------------------------------- */
 /* Types                                                                       */
@@ -35,6 +36,13 @@ interface PrintTemplate {
   paperSize: PaperSize;
   orientation: Orientation;
   sections: string[];
+}
+
+interface PrintPacketResult {
+  payloadRef: string;
+  bundleRef: string;
+  artifactCount: number;
+  traceRef: string;
 }
 
 interface PrintJob {
@@ -86,6 +94,47 @@ export default function TerraPrintModule() {
   const [orientation, setOrientation] = useState<Orientation>('landscape');
   const [jobs, setJobs] = useState<PrintJob[]>(RECENT_JOBS);
   const [title, setTitle] = useState('');
+  const [taxYear] = useState<number>(new Date().getFullYear());
+  const [printPacketState, setPrintPacketState] = useState<
+    | { status: 'idle' }
+    | { status: 'loading' }
+    | { status: 'success'; result: PrintPacketResult; correlationId: string }
+    | { status: 'error'; error: string; correlationId: string }
+  >({ status: 'idle' });
+
+  const handleGeneratePrintPacket = useCallback(async () => {
+    if (printPacketState.status === 'loading') return;
+    setPrintPacketState({ status: 'loading' });
+    try {
+      const resp = await invokeTool<PrintPacketResult>({
+        toolId: 'export_audit_bundle',
+        params: {
+          county: 'benton',
+          taxYear,
+          bundleScope: parcelId ? 'parcel' : 'county',
+          parcelId: parcelId || undefined,
+          templateId: selectedTemplate?.id ?? 'parcel-report',
+          reasonCode: 'print_evidence_packet',
+        },
+        confirmation: {
+          confirmed: true,
+          reasonCode: 'print_evidence_packet',
+        },
+      });
+      setPrintPacketState({
+        status: 'success',
+        result: resp.result,
+        correlationId: resp.correlationId,
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Unknown error';
+      setPrintPacketState({
+        status: 'error',
+        error: msg,
+        correlationId: (e as { correlationId?: string })?.correlationId ?? 'unknown',
+      });
+    }
+  }, [parcelId, printPacketState.status, selectedTemplate, taxYear]);
 
   const handlePrint = useCallback(() => {
     if (!selectedTemplate) return;
@@ -301,6 +350,65 @@ export default function TerraPrintModule() {
           </Card>
         </div>
       </div>
+
+      {/* Governed Print Packet */}
+      <Card
+        data-testid='terraprint-governed-brief'
+        style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-suite-atlas) / 0.3)' }}
+      >
+        <CardHeader className='pb-2'>
+          <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
+            <Lock size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+            Governed Print Packet
+          </CardTitle>
+          <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+            Atlas print jobs that support county evidence must preserve audit lineage and trace refs.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className='space-y-3'>
+          <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+            Use this when a map, field sheet, or parcel report needs to become a governed evidence packet. Atlas assembles the printable bundle, then valuation decisions stay in TerraForge and parcel corrections stay in Workbench.
+          </p>
+          <Button
+            size='sm'
+            onClick={handleGeneratePrintPacket}
+            disabled={printPacketState.status === 'loading'}
+            style={{ background: 'hsl(var(--tf-suite-atlas) / 0.15)', color: 'hsl(var(--tf-suite-atlas))', border: '1px solid hsl(var(--tf-suite-atlas) / 0.3)' }}
+          >
+            {printPacketState.status === 'loading' ? 'Assembling…' : 'Generate Governed Print Packet'}
+          </Button>
+          {printPacketState.status === 'success' && (
+            <div className='space-y-2 text-sm'>
+              <p style={{ color: 'hsl(var(--tf-fg))' }}>
+                Print evidence packet assembled for {parcelId ? `parcel ${parcelId}` : 'county GIS review'}.
+              </p>
+              <p style={{ color: 'hsl(var(--tf-muted))' }}>
+                <strong>Artifacts:</strong> {printPacketState.result.artifactCount}
+              </p>
+              <p style={{ color: 'hsl(var(--tf-muted))' }}>
+                <strong>Bundle:</strong> {printPacketState.result.bundleRef}
+              </p>
+              <p style={{ color: 'hsl(var(--tf-muted))' }}>
+                <strong>Trace:</strong> {printPacketState.result.traceRef}
+              </p>
+              <p style={{ color: 'hsl(var(--tf-muted))' }}>
+                <strong>Routing:</strong> Print packet ready for county evidence review; any valuation action still routes to TerraForge after GIS verification.
+              </p>
+              <p className='text-xs font-mono' style={{ color: 'hsl(var(--tf-muted) / 0.5)' }}>
+                corr: {printPacketState.correlationId}
+              </p>
+            </div>
+          )}
+          {printPacketState.status === 'error' && (
+            <div className='space-y-1 text-sm' style={{ color: 'hsl(var(--tf-error-hs) 60%)' }}>
+              <p>{printPacketState.error}</p>
+              <p className='text-xs font-mono' style={{ color: 'hsl(var(--tf-muted) / 0.5)' }}>
+                corr: {printPacketState.correlationId}
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

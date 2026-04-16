@@ -94,6 +94,14 @@ export const MODULE_ALIASES: Record<string, string> = {
   terraquery: 'terra-query',
   'spatial-query': 'terra-query',
 
+  // Terra-Print + Terra-Sketch aliases
+  'terra-print': 'terra-print',
+  terraprint: 'terra-print',
+  print: 'terra-print',
+  'terra-sketch': 'terra-sketch',
+  terrasketch: 'terra-sketch',
+  sketch: 'terra-sketch',
+
   // Property Workbench (desktop window adapter)
   workbench: 'property-workbench',
   'property-workbench-window': 'property-workbench',
@@ -212,6 +220,8 @@ export const MODULE_REGISTRY = new Set<string>([
   // Atlas suite modules (Phase 36+)
   'layer-works',
   'terra-query',
+  'terra-print',
+  'terra-sketch',
 ]);
 
 /**
@@ -353,12 +363,18 @@ const CostForgeDashboard = lazy(
   () => import('../pages/forge/cost/CostForgeDashboard').then(m => ({ default: m.CostForgeDashboard }))
 );
 
-// Atlas suite modules — LayerWorks + TerraQuery
+// Atlas suite modules — LayerWorks + TerraQuery + TerraPrint + TerraSketch
 const LayerWorksModule = lazy(
   () => import('../pages/suites/modules/LayerWorksModule')
 );
 const TerraQueryModule = lazy(
   () => import('../pages/suites/modules/TerraQueryModule')
+);
+const TerraPrintModule = lazy(
+  () => import('../pages/suites/modules/TerraPrintModule')
+);
+const TerraSketchModule = lazy(
+  () => import('../pages/suites/modules/TerraSketchModule')
 );
 
 // NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
@@ -439,6 +455,8 @@ const MODULE_ENTRIES: Record<string, ModuleEntry> = {
   // Atlas suite modules
   'layer-works': { Component: LayerWorksModule },
   'terra-query': { Component: TerraQueryModule },
+  'terra-print': { Component: TerraPrintModule },
+  'terra-sketch': { Component: TerraSketchModule },
 };
 
 export function getModuleEntry(moduleId: string): ModuleEntry | undefined {
