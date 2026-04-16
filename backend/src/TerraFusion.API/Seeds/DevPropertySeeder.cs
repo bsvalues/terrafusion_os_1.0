@@ -29,11 +29,7 @@ public sealed class DevPropertySeeder
 
     public async SystemTask SeedAsync(CancellationToken ct = default)
     {
-        if (await _db.Properties.AnyAsync(ct))
-        {
-            _logger.LogInformation("[DevPropertySeeder] Properties table already populated — skipping.");
-            return;
-        }
+        var propertiesPopulated = await _db.Properties.AnyAsync(ct);
 
         // Ensure Benton County row exists.
         var bentonCounty = await _db.Counties
@@ -147,7 +143,10 @@ public sealed class DevPropertySeeder
             properties.Add(new Property
             {
                 Id = Guid.NewGuid(),
-                PropertyId = parcelNumber,
+                // PropertyId must hold the PACS integer prop_id (not geo_id) so the
+                // PropertiesController PacsPropertyProfile fallback join works correctly:
+                //   Properties.PropertyId → int.Parse → PacsPropertyProfiles.PacsPropId
+                PropertyId = parcel.PropId.ToString(),
                 ParcelId = parcelNumber,
                 ParcelNumber = parcelNumber,
                 Address = address,
@@ -169,6 +168,9 @@ public sealed class DevPropertySeeder
         // Batch insert in chunks to avoid SQLite parameter limits.
         const int chunkSize = 500;
         var total = 0;
+
+        if (!propertiesPopulated)
+        {
         foreach (var chunk in properties.Chunk(chunkSize))
         {
             _db.Properties.AddRange(chunk);
@@ -180,6 +182,111 @@ public sealed class DevPropertySeeder
 
         _logger.LogInformation("[DevPropertySeeder] Done. {Count} Properties projected from PacsParcel.",
             properties.Count);
+        }
+        else
+        {
+            _logger.LogInformation("[DevPropertySeeder] Properties already populated — skipping insert.");
+
+            // Fix-up: PropertyId was previously set to geo_id instead of PropId.
+            // Any row where PropertyId == ParcelNumber is wrong — correct it.
+            var geoIdToPropId = parcels.ToDictionary(
+                p => p.GeoId ?? p.SimpleGeoId ?? p.PropId.ToString(),
+                p => p.PropId.ToString());
+
+            var badRows = await _db.Properties
+                .Where(p => p.PropertyId == p.ParcelNumber)
+                .ToListAsync(ct);
+
+            if (badRows.Count > 0)
+            {
+                foreach (var row in badRows)
+                {
+                    if (geoIdToPropId.TryGetValue(row.ParcelNumber ?? "", out var correctPropId))
+                        row.PropertyId = correctPropId;
+                }
+                await _db.SaveChangesAsync(ct);
+                _logger.LogInformation("[DevPropertySeeder] Fixed PropertyId on {Count} rows (geo_id → PropId).", badRows.Count);
+            }
+        }
+
+        // ── CamaCharacteristics ─────────────────────────────────────────────
+        // Seed CamaCharacteristics from the local PACS mirror tables so the
+        // PropertiesController CamaCharacteristic path returns GLA, basement,
+        // and garage sqft without any live PACS SQL Server connection.
+        // Source priority: PacsPropertyProfile.LivingArea (above-grade only) →
+        //                  sum of above-grade PacsImprovementDetail segments.
+        if (!await _db.CamaCharacteristics.AnyAsync(ct))
+        {
+            // Load basement/garage detail segments for all parcels in one query.
+            // PacsImprovementDetail → PacsImprovement.ParcelId → PacsParcel.Id
+            var improvementIds = await _db.PacsImprovements
+                .AsNoTracking()
+                .Where(i => parcelIds.Contains(i.ParcelId))
+                .Select(i => new { i.Id, i.ParcelId, i.PacsPropId })
+                .ToListAsync(ct);
+
+            var imprvIdToParcelId = improvementIds.ToDictionary(i => i.Id, i => i.ParcelId);
+            var imprvGuids = imprvIdToParcelId.Keys.ToHashSet();
+
+            var detailsByParcel = (await _db.PacsImprovementDetails
+                .AsNoTracking()
+                .Where(d => imprvGuids.Contains(d.ImprovementId))
+                .ToListAsync(ct))
+                .GroupBy(d => imprvIdToParcelId.TryGetValue(d.ImprovementId, out var pid) ? pid : Guid.Empty)
+                .Where(g => g.Key != Guid.Empty)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var segsByParcel = detailsByParcel;
+
+            static bool IsBasement(string? cd) => cd is "BSMT" or "BSM" or "BSMT-FIN"
+                or "BSMT-UNFIN" or "BSMT-PART" or "BAS" or "BASEMENT" or "BSMT-GAR";
+            static bool IsGarage(string? cd) => cd is "GAR" or "GARATT" or "GARDET"
+                or "GARACE" or "GARAGE" or "GARATT-FIN" or "CARPORT" or "CAR";
+
+            var camaList = new List<CamaCharacteristic>(parcels.Count);
+            foreach (var parcel in parcels)
+            {
+                profileLookup.TryGetValue(parcel.Id, out var prof);
+                if (prof is null) continue;
+
+                var gla = prof.LivingArea is > 0 ? prof.LivingArea!.Value : 0m;
+                if (gla <= 0) continue;
+
+                segsByParcel.TryGetValue(parcel.Id, out var segs);
+                var basementSqft = segs?
+                    .Where(s => IsBasement(s.ImprvDetTypeCd))
+                    .Sum(s => s.ImprvDetArea ?? 0m) ?? 0m;
+                var garageSqft = segs?
+                    .Where(s => IsGarage(s.ImprvDetTypeCd))
+                    .Sum(s => s.ImprvDetArea ?? 0m) ?? 0m;
+
+                var parcelNumber = parcel.GeoId ?? parcel.SimpleGeoId ?? parcel.PropId.ToString();
+                camaList.Add(new CamaCharacteristic
+                {
+                    Id           = Guid.NewGuid(),
+                    ParcelId     = parcelNumber,
+                    TaxYear      = prof.PropValYear,
+                    BuildingType = "R",
+                    SquareFeet   = gla,
+                    YearBuilt    = prof.YearBuilt.HasValue ? (int?)((int)prof.YearBuilt.Value) : null,
+                    BasementSqft = basementSqft > 0 ? basementSqft : null,
+                    GarageSqft   = garageSqft > 0 ? garageSqft : null,
+                    CountyId     = countyId,
+                    UpdatedAt    = DateTime.UtcNow,
+                });
+            }
+
+            if (camaList.Count > 0)
+            {
+                foreach (var chunk in camaList.Chunk(chunkSize))
+                {
+                    _db.CamaCharacteristics.AddRange(chunk);
+                    await _db.SaveChangesAsync(ct);
+                }
+                _logger.LogInformation("[DevPropertySeeder] Seeded {Count} CamaCharacteristic rows from PacsPropertyProfile.",
+                    camaList.Count);
+            }
+        }
     }
 
     private static string? BuildAddressFromSitus(TerraFusion.Core.Entities.Pacs.PacsSitus? s)
