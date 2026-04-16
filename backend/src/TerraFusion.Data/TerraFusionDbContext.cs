@@ -555,6 +555,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new CollaborationUserConfiguration());
     modelBuilder.ApplyConfiguration(new TaskConfiguration());
 
+    // CostForge Benton Method v2 — stratum query indexes (Track 0)
+    modelBuilder.ApplyConfiguration(new CamaCharacteristicConfiguration());
+
     // Apply Codex 3-6-9 Framework configurations
     modelBuilder.ApplyConfiguration(new CodexMetricConfiguration());
     modelBuilder.ApplyConfiguration(new CodexScoreConfiguration());
