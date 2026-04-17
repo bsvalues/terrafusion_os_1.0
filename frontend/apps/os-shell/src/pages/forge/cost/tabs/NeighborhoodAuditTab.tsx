@@ -8,10 +8,45 @@
  *
  * Root cause: group parcels by (yearBuilt ÷ 10) decade bucket,
  * compute median ratio per decade, flag the bucket furthest from 1.0.
+ *
+ * BentonDiagnosticsPanel (Track 2-B):
+ *   - Stratified COD by vintage  — GET /equity/stratified-cod
+ *   - Condition bias             — GET /equity/condition-bias
+ *   - IQR outlier badges on ratio cells (Tukey fences: Q1 − 1.5×IQR, Q3 + 1.5×IQR)
  */
 import { useEffect, useRef, useState } from 'react';
 import { apiFetchJson } from '@/lib/apiBase';
 import { useCostForgeWorkspaceStore } from '../costForgeWorkspaceStore';
+
+const BENTON_COUNTY_ID =
+  (import.meta.env as Record<string, string>).VITE_BENTON_COUNTY_ID ??
+  '842a6c54-c7c0-4b2d-aa43-0e3ba63fa57d';
+
+// ── Benton custom metric DTO shapes ──
+
+interface SegmentCod { saleCount: number; medianRatio: number | null; cod: number | null; }
+interface StratifiedCodResponse {
+  splitBy: string;
+  segments: Record<string, SegmentCod>;
+}
+
+interface SegmentMedian { saleCount: number; medianRatio: number | null; }
+interface ConditionBiasResponse {
+  medianRatioByCondition: Record<string, SegmentMedian>;
+}
+
+/** Tukey IQR fences for outlier detection on ratio arrays */
+function computeIqrFences(ratios: number[]): { lower: number; upper: number } | null {
+  if (ratios.length < 4) return null;
+  const sorted = ratios.slice().sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  const q1Arr = sorted.slice(0, mid);
+  const q3Arr = sorted.length % 2 === 0 ? sorted.slice(mid) : sorted.slice(mid + 1);
+  const q1 = q1Arr[Math.floor(q1Arr.length / 2)];
+  const q3 = q3Arr[Math.floor(q3Arr.length / 2)];
+  const iqr = q3 - q1;
+  return { lower: q1 - 1.5 * iqr, upper: q3 + 1.5 * iqr };
+}
 
 interface CamaParcel {
   parcelId: string;
@@ -82,6 +117,11 @@ export function NeighborhoodAuditTab() {
   const [ratioFilter, setRatioFilter] = useState<'all' | 'low' | 'high' | 'nosale'>('all');
   const abortRef = useRef<AbortController | null>(null);
 
+  // BentonDiagnosticsPanel state
+  const [stratCod, setStratCod]   = useState<StratifiedCodResponse | null>(null);
+  const [condBias, setCondBias]   = useState<ConditionBiasResponse | null>(null);
+  const diagAbortRef = useRef<AbortController | null>(null);
+
   const load = () => {
     if (!selectedHoodCd) { setData(null); return; }
     abortRef.current?.abort();
@@ -105,6 +145,26 @@ export function NeighborhoodAuditTab() {
     load();
     return () => abortRef.current?.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedHoodCd, taxYear]);
+
+  // Fetch Benton diagnostics (stratified-cod + condition-bias) for selected neighborhood
+  useEffect(() => {
+    if (!selectedHoodCd) { setStratCod(null); setCondBias(null); return; }
+    diagAbortRef.current?.abort();
+    diagAbortRef.current = new AbortController();
+    const { signal } = diagAbortRef.current;
+    const base = `/equity`;
+    const qs = `countyId=${BENTON_COUNTY_ID}&taxYear=${taxYear}&by=neighborhood&segment=${encodeURIComponent(selectedHoodCd)}`;
+
+    Promise.allSettled([
+      apiFetchJson<StratifiedCodResponse>(`${base}/stratified-cod?${qs}&splitBy=vintage`, { signal }),
+      apiFetchJson<ConditionBiasResponse>(`${base}/condition-bias?${qs}`, { signal }),
+    ]).then(([codResult, biasResult]) => {
+      if (codResult.status === 'fulfilled') setStratCod(codResult.value);
+      if (biasResult.status === 'fulfilled') setCondBias(biasResult.value);
+    });
+
+    return () => { diagAbortRef.current?.abort(); };
   }, [selectedHoodCd, taxYear]);
 
   if (!selectedHoodCd) {
@@ -134,6 +194,10 @@ export function NeighborhoodAuditTab() {
 
   const decadeBuckets = computeDecadeBuckets(data.parcels);
   const worstDecade   = decadeBuckets[0];
+
+  // IQR fences for outlier detection
+  const parcelRatios = data.parcels.flatMap((p) => p.ratio != null ? [p.ratio] : []);
+  const iqrFences = computeIqrFences(parcelRatios);
 
   const filteredParcels = data.parcels.filter((p) => {
     if (ratioFilter === 'all') return true;
@@ -181,6 +245,62 @@ export function NeighborhoodAuditTab() {
             <> Other decades: {decadeBuckets.slice(1, 3).map(b =>
               `${b.decade} (${b.medianRatio?.toFixed(3) ?? '—'})`
             ).join(', ')}.</>
+          )}
+        </div>
+      )}
+
+      {/* BentonDiagnosticsPanel — stratified COD + condition bias */}
+      {(stratCod || condBias) && (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: stratCod && condBias ? '1fr 1fr' : '1fr',
+          gap: 8,
+          marginBottom: 12,
+          padding: '10px',
+          background: 'var(--cf-surface)',
+          border: '1px solid var(--cf-border)',
+          borderRadius: 6,
+        }}>
+          {stratCod && (
+            <div>
+              <div style={{ fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cf-muted)', marginBottom: 6 }}>
+                Vintage COD (stratified)
+              </div>
+              {Object.entries(stratCod.segments)
+                .sort(([, a], [, b]) => Math.abs((b.medianRatio ?? 1) - 1) - Math.abs((a.medianRatio ?? 1) - 1))
+                .slice(0, 4)
+                .map(([seg, v]) => (
+                  <div key={seg} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', padding: '2px 0' }}>
+                    <span style={{ color: 'var(--cf-muted)' }}>{seg}</span>
+                    <span style={{ fontVariantNumeric: 'tabular-nums', color: v.cod != null && v.cod > 15 ? 'var(--cf-warn)' : 'var(--cf-text)' }}>
+                      {v.medianRatio?.toFixed(3) ?? '—'}
+                      {v.cod != null && <span style={{ color: 'var(--cf-subtle)', marginLeft: 6 }}>COD {v.cod.toFixed(1)}</span>}
+                    </span>
+                  </div>
+                ))}
+            </div>
+          )}
+          {condBias && (
+            <div>
+              <div style={{ fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cf-muted)', marginBottom: 6 }}>
+                Condition Bias
+              </div>
+              {Object.entries(condBias.medianRatioByCondition)
+                .sort(([, a], [, b]) => (b.saleCount ?? 0) - (a.saleCount ?? 0))
+                .slice(0, 4)
+                .map(([cond, v]) => {
+                  const bias = Math.abs((v.medianRatio ?? 1) - 1);
+                  return (
+                    <div key={cond} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', padding: '2px 0' }}>
+                      <span style={{ color: 'var(--cf-muted)' }}>{cond}</span>
+                      <span style={{ fontVariantNumeric: 'tabular-nums', color: bias > 0.05 ? 'var(--cf-warn)' : 'var(--cf-text)' }}>
+                        {v.medianRatio?.toFixed(3) ?? '—'}
+                        <span style={{ color: 'var(--cf-subtle)', marginLeft: 6 }}>n={v.saleCount}</span>
+                      </span>
+                    </div>
+                  );
+                })}
+            </div>
           )}
         </div>
       )}
@@ -281,7 +401,24 @@ export function NeighborhoodAuditTab() {
               <span className="cf-cell cf-cell--num" role="cell">
                 {p.assessedValue != null ? '$' + p.assessedValue.toLocaleString() : '—'}
               </span>
-              <span className="cf-cell cf-cell--num" role="cell">
+              <span className="cf-cell cf-cell--num" role="cell" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+                {iqrFences && p.ratio != null && (p.ratio < iqrFences.lower || p.ratio > iqrFences.upper) && (
+                  <span
+                    title={`Tukey IQR outlier (fence: ${iqrFences.lower.toFixed(3)}–${iqrFences.upper.toFixed(3)})`}
+                    style={{
+                      fontSize: '0.625rem',
+                      fontWeight: 700,
+                      padding: '1px 4px',
+                      borderRadius: 3,
+                      background: 'hsl(38 60% 16%)',
+                      color: 'var(--cf-warn)',
+                      whiteSpace: 'nowrap',
+                      letterSpacing: '0.02em',
+                    }}
+                  >
+                    ⚠ IQR
+                  </span>
+                )}
                 <span className={`cf-ratio-badge ${ratioBadgeClass(p.ratio)}`}>
                   {p.ratio?.toFixed(3) ?? '—'}
                 </span>

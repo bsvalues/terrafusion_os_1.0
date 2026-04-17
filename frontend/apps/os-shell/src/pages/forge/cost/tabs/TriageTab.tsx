@@ -4,14 +4,30 @@
  * Fetches neighborhood-matrix, computes AI priority score client-side,
  * sorts neighborhoods by urgency, and lets the appraiser drill in with one click.
  *
- * AI Priority Score = (codDeviation × 2 + ratioDeviation × 100) × √saleCount
+ * AI Priority Score = (codDeviation × 2 + ratioDeviation × 100 + prbDeviation × 50) × √saleCount
  *   codDeviation   = max(0, cod - 15)          — above IAAO threshold
- *   ratioDeviation = |medianRatio - 1.0|        — distance from equity
+ *   ratioDeviation = |medianRatio - 1.0|        — distance from level equity
+ *   prbDeviation   = |prb|                      — vertical inequity (PRB ≈ 0 = neutral)
  *   saleCount      — scales impact by parcel exposure
+ *
+ * Decile indicator: fetches GET /equity/deciles for county-wide regression pattern
+ * (regressive / progressive / uniform) and displays in the AI callout.
  */
 import { useEffect, useRef, useState } from 'react';
 import { apiFetchJson } from '@/lib/apiBase';
 import { useCostForgeWorkspaceStore } from '../costForgeWorkspaceStore';
+
+const BENTON_COUNTY_ID =
+  (import.meta.env as Record<string, string>).VITE_BENTON_COUNTY_ID ??
+  '842a6c54-c7c0-4b2d-aa43-0e3ba63fa57d';
+
+// Shape of GET /api/equity/deciles response
+interface DecileResponse {
+  saleCount: number;
+  decileMedianRatios: (number | null)[];  // length 10
+  d1D10Spread: number | null;
+  pattern: 'regressive' | 'progressive' | 'uniform' | 'insufficient-data';
+}
 
 interface NeighborhoodRow {
   hoodCd: string;
@@ -35,10 +51,11 @@ interface MatrixResponse {
 }
 
 function computePriorityScore(hood: NeighborhoodRow): number {
-  const codDeviation  = Math.max(0, (hood.cod ?? 0) - 15);
+  const codDeviation   = Math.max(0, (hood.cod ?? 0) - 15);
   const ratioDeviation = Math.abs((hood.medianRatio ?? 1.0) - 1.0);
+  const prbDeviation   = Math.abs(hood.prb ?? 0); // PRB ≈ 0 is neutral; deviation signals vertical inequity
   const impact = Math.sqrt(Math.max(1, hood.saleCount));
-  return (codDeviation * 2 + ratioDeviation * 100) * impact;
+  return (codDeviation * 2 + ratioDeviation * 100 + prbDeviation * 50) * impact;
 }
 
 /** Tier thresholds: Critical ≥ 20, Watch ≥ 5, OK < 5 (based on priority formula scale) */
@@ -107,6 +124,22 @@ export function TriageTab() {
   const [showOnly, setShowOnly] = useState<'all' | 'noncompliant'>('noncompliant');
   const abortRef = useRef<AbortController | null>(null);
 
+  // Decile pattern from /equity/deciles — county-wide vertical-equity indicator
+  const [decileData, setDecileData] = useState<DecileResponse | null>(null);
+  const decileAbortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    decileAbortRef.current?.abort();
+    decileAbortRef.current = new AbortController();
+    apiFetchJson<DecileResponse>(
+      `/equity/deciles?countyId=${BENTON_COUNTY_ID}&taxYear=${taxYear}`,
+      { signal: decileAbortRef.current.signal }
+    )
+      .then((d) => { setDecileData(d); })
+      .catch(() => { /* non-fatal — decile badge stays hidden */ });
+    return () => { decileAbortRef.current?.abort(); };
+  }, [taxYear]);
+
   function load() {
     abortRef.current?.abort();
     abortRef.current = new AbortController();
@@ -140,11 +173,22 @@ export function TriageTab() {
   return (
     <div>
       <div className="cf-ai-callout">
-        <div className="cf-ai-callout__label">AI Triage</div>
+        <div className="cf-ai-callout__label" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          AI Triage
+          {decileData && decileData.pattern !== 'insufficient-data' && (
+            <span style={{
+              fontSize: '0.6875rem', fontWeight: 700, padding: '1px 6px', borderRadius: 3,
+              background: decileData.pattern === 'regressive' ? 'hsl(0 60% 22%)' : decileData.pattern === 'progressive' ? 'hsl(220 60% 22%)' : 'hsl(142 40% 12%)',
+              color: decileData.pattern === 'regressive' ? 'var(--cf-danger)' : decileData.pattern === 'progressive' ? 'var(--cf-info)' : 'var(--cf-success)',
+            }}>
+              {decileData.pattern === 'regressive' ? '▼ Regressive' : decileData.pattern === 'progressive' ? '▲ Progressive' : '= Uniform'}
+            </span>
+          )}
+        </div>
         {loading
           ? 'Computing neighborhood priorities…'
           : data
-          ? `${outCount} of ${data.neighborhoods.length} neighborhoods out of IAAO compliance. Priority score = (COD deviation × 2 + ratio deviation × 100) × √sales. Click any row to drill in.`
+          ? `${outCount} of ${data.neighborhoods.length} neighborhoods out of IAAO compliance. Priority score = (COD deviation × 2 + ratio deviation × 100 + PRB deviation × 50) × √sales.${decileData && decileData.pattern !== 'insufficient-data' ? ` County decile pattern: ${decileData.pattern} (D1−D10 spread: ${decileData.d1D10Spread?.toFixed(3) ?? '—'}).` : ''} Click any row to drill in.`
           : 'Load neighborhood matrix to see priority ranking.'}
       </div>
 
@@ -221,6 +265,7 @@ export function TriageTab() {
               <span role="columnheader" style={{ fontSize: '0.6875rem', color: 'var(--cf-muted)', fontWeight: 700, textAlign: 'right' }}>Median</span>
               <span role="columnheader" style={{ fontSize: '0.6875rem', color: 'var(--cf-muted)', fontWeight: 700, textAlign: 'right' }}>COD</span>
               <span role="columnheader" style={{ fontSize: '0.6875rem', color: 'var(--cf-muted)', fontWeight: 700, textAlign: 'right' }}>PRD</span>
+              <span role="columnheader" style={{ fontSize: '0.6875rem', color: 'var(--cf-muted)', fontWeight: 700, textAlign: 'right' }} title="Price-Related Bias: vertical equity. Near 0 = neutral.">PRB</span>
               <span role="columnheader" style={{ fontSize: '0.6875rem', color: 'var(--cf-muted)', fontWeight: 700 }}>IAAO</span>
             </div>
             {rows.length === 0 && data && (
@@ -275,6 +320,12 @@ export function TriageTab() {
                   </span>
                   <span style={{ textAlign: 'right', fontSize: '0.8125rem', fontVariantNumeric: 'tabular-nums' }}>
                     {hood.prd?.toFixed(3) ?? '—'}
+                  </span>
+                  <span style={{ textAlign: 'right', fontSize: '0.8125rem', fontVariantNumeric: 'tabular-nums',
+                    color: hood.prb == null ? 'var(--cf-subtle)' : Math.abs(hood.prb) > 0.05 ? 'var(--cf-warn)' : 'var(--cf-text)' }}
+                    title={hood.prb != null ? `PRB = ${hood.prb.toFixed(4)} (|x| > 0.05 flags vertical inequity)` : 'PRB not computed'}
+                  >
+                    {hood.prb != null ? hood.prb.toFixed(3) : '—'}
                   </span>
                   <span>
                     {hood.iaaoCompliant

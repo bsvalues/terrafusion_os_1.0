@@ -2,15 +2,31 @@
 // Mined from terra-forge-rebuild src/components/costforge/CostApproachRunner.tsx
 // REST-adapted: calls POST /api/costforge/calculate via useCostForgeHooks
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCalcRCNLD, useImprvTypeCodes, type CostForgeCalcInput, type QualityGrade, type CostForgeSecondaryFeature } from "@/hooks/useCostForgeHooks";
+import { apiFetchJson } from "@/lib/apiBase";
 import { Calculator, RefreshCw } from "lucide-react";
 import { useCostForgeWorkspaceStore } from "./costForgeWorkspaceStore";
+
+// SecondaryFeature row shape from GET /costforge/schedule (matrixType = "SecondaryFeature")
+interface SfRate {
+  code: string;
+  description: string;
+  pctOfBiv: number; // e.g. 0.03 = 3%
+}
+
+interface CostScheduleApiRow {
+  buildingType?: string;
+  description?: string;
+  matrixType?: string;
+  secondaryFeaturePctOfBiv?: number;
+}
 
 const BENTON_COUNTY_ID =
   (import.meta.env as Record<string, string>).VITE_BENTON_COUNTY_ID ??
@@ -39,6 +55,28 @@ export function CostApproachRunner() {
 
   const selectedParcelId  = useCostForgeWorkspaceStore((s) => s.selectedParcelId);
   const setSelectedParcel = useCostForgeWorkspaceStore((s) => s.setSelectedParcel);
+
+  // Fetch secondary-feature rates once on mount from /costforge/schedule
+  const [sfRates, setSfRates] = useState<SfRate[]>([]);
+  const sfAbortRef = useRef<AbortController | null>(null);
+  useEffect(() => {
+    sfAbortRef.current = new AbortController();
+    apiFetchJson<CostScheduleApiRow[]>('/costforge/schedule', { signal: sfAbortRef.current.signal })
+      .then((rows) => {
+        if (!Array.isArray(rows)) return;
+        setSfRates(
+          rows
+            .filter((r) => r.matrixType === 'SecondaryFeature' && r.secondaryFeaturePctOfBiv != null)
+            .map((r) => ({
+              code: r.buildingType ?? '—',
+              description: r.description ?? r.buildingType ?? '—',
+              pctOfBiv: Number(r.secondaryFeaturePctOfBiv),
+            }))
+        );
+      })
+      .catch(() => { /* non-fatal: rates panel stays hidden */ });
+    return () => { sfAbortRef.current?.abort(); };
+  }, []);
 
   const [form, setForm] = useState<FormState>({
     parcelId: "",
@@ -345,6 +383,50 @@ export function CostApproachRunner() {
               </span>
             </div>
           </div>
+
+          {/* Accessory Reference Rates — secondary features at current BIV */}
+          {sfRates.length > 0 && bivTotal != null && bivTotal > 0 && (
+            <Card className="border-border/40">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm">Accessory Reference Rates</CardTitle>
+                  <Badge variant="outline" className="text-xs">%-of-BIV · Benton Method</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  At BIV of{' '}
+                  <strong className="tabular-nums">${Math.round(bivTotal).toLocaleString()}</strong>,
+                  each accessory type would contribute:
+                </p>
+              </CardHeader>
+              <CardContent className="p-0">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border/30 text-xs text-muted-foreground">
+                      <th className="text-left py-2 px-4 font-medium">Feature</th>
+                      <th className="text-right py-2 px-4 font-medium">Rate</th>
+                      <th className="text-right py-2 px-4 font-medium">Value at BIV</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sfRates.map((sf) => (
+                      <tr key={sf.code} className="border-b border-border/20 last:border-0">
+                        <td className="py-2 px-4">
+                          <span className="font-mono text-xs text-muted-foreground mr-2">{sf.code}</span>
+                          {sf.description}
+                        </td>
+                        <td className="py-2 px-4 text-right tabular-nums font-medium">
+                          {(sf.pctOfBiv * 100).toFixed(0)}%
+                        </td>
+                        <td className="py-2 px-4 text-right tabular-nums font-semibold">
+                          ${Math.round(bivTotal * sf.pctOfBiv).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </CardContent>
+            </Card>
+          )}
         </>
       )}
     </div>
