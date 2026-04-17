@@ -2185,6 +2185,199 @@ public sealed class PacsToTerraFusionSyncService
         return added + updated;
     }
 
+    // ── ImportLevySummaryAsync ────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Aggregates PacsLevyRate rows for the given tax year into canonical TaxLevy district summaries.
+    /// Groups by TaxDistrictId, sums rates and voted levy amounts, then upserts into TaxLevies.
+    /// </summary>
+    private async Task<int> ImportLevySummaryAsync(
+        Guid countyId,
+        int taxYear,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        var pacsRates = await _db.PacsLevyRates
+            .AsNoTracking()
+            .Where(r => r.Year == taxYear)
+            .ToListAsync(cancellationToken);
+
+        // Group in-memory by TaxDistrictId and compute district aggregates
+        var districtAggregates = pacsRates
+            .GroupBy(r => r.TaxDistrictId)
+            .Select(g =>
+            {
+                var districtId = g.Key;
+
+                var rawDescription = g
+                    .FirstOrDefault(r => r.LevyDescription != null)
+                    ?.LevyDescription ?? $"District-{districtId}";
+                var taxingDistrict = rawDescription.Length > 100
+                    ? rawDescription.Substring(0, 100)
+                    : rawDescription;
+
+                var totalRate        = g.Sum(r => r.LevyRate);
+                var totalLevyAmount  = g.Sum(r => r.VotedLevyAmount ?? 0m);
+
+                var rawPurpose = g
+                    .OrderByDescending(r => r.LevyRate)
+                    .First()
+                    .LevyTypeCd;
+                var purpose = rawPurpose is null ? null
+                    : rawPurpose.Length > 50 ? rawPurpose.Substring(0, 50) : rawPurpose;
+
+                return new
+                {
+                    TaxingDistrict  = taxingDistrict,
+                    TaxRate         = totalRate,
+                    LevyAmount      = totalLevyAmount,
+                    Purpose         = purpose
+                };
+            })
+            .ToList();
+
+        // Load existing canonical TaxLevies for county+year
+        var existingLevies = await _db.TaxLevies
+            .Where(l => l.CountyId == countyId && l.TaxYear == taxYear)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        var existingByDistrict = existingLevies
+            .ToDictionary(l => (l.TaxingDistrict ?? string.Empty).ToLowerInvariant().Trim());
+
+        int added = 0, updated = 0;
+
+        foreach (var agg in districtAggregates)
+        {
+            var key = agg.TaxingDistrict.ToLowerInvariant().Trim();
+
+            if (existingByDistrict.TryGetValue(key, out var existing))
+            {
+                var changed = existing.TaxRate     != agg.TaxRate
+                    || existing.LevyAmount          != agg.LevyAmount
+                    || existing.Purpose             != agg.Purpose;
+
+                if (changed)
+                {
+                    existing.TaxRate    = agg.TaxRate;
+                    existing.LevyAmount = agg.LevyAmount;
+                    existing.Purpose    = agg.Purpose;
+
+                    _db.TaxLevies.Attach(existing);
+                    var entry = _db.Entry(existing);
+                    entry.Property(nameof(TaxLevy.TaxRate)).IsModified    = true;
+                    entry.Property(nameof(TaxLevy.LevyAmount)).IsModified = true;
+                    entry.Property(nameof(TaxLevy.Purpose)).IsModified    = true;
+                    updated++;
+                }
+            }
+            else
+            {
+                _db.TaxLevies.Add(new TaxLevy
+                {
+                    Id              = Guid.NewGuid(),
+                    CountyId        = countyId,
+                    TaxingDistrict  = agg.TaxingDistrict,
+                    TaxRate         = agg.TaxRate,
+                    LevyAmount      = agg.LevyAmount,
+                    TaxYear         = taxYear,
+                    Purpose         = agg.Purpose,
+                    IsActive        = true,
+                    EffectiveDate   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                });
+                added++;
+            }
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation(
+            "[Sync] ImportLevySummary county={CountyId} year={Year}: upserted={Count}",
+            countyId, taxYear, added + updated);
+
+        counters.LevyRatesImported += added + updated;
+        return added + updated;
+    }
+
+    // ── UpdateOwnerNamesFromPacsAsync ─────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Promotes FileAsName from PacsOwner (most recent tax year per parcel) into Property.OwnerName.
+    /// Only touches rows where the name has actually changed.
+    /// </summary>
+    private async Task<int> UpdateOwnerNamesFromPacsAsync(
+        Guid countyId,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        // Load owner rows for the county (via Parcel navigation), SupNum=0 only
+        var pacsOwnerRows = await _db.PacsOwners
+            .AsNoTracking()
+            .Where(o => o.SupNum == 0 && o.Parcel.CountyId == countyId)
+            .Select(o => new
+            {
+                o.ParcelId,
+                o.OwnerTaxYear,
+                o.FileAsName,
+                GeoId = o.Parcel.GeoId
+            })
+            .ToListAsync(cancellationToken);
+
+        // For each GeoId, keep the row with the highest OwnerTaxYear (most recent)
+        var ownerByGeoId = pacsOwnerRows
+            .Where(o => !string.IsNullOrWhiteSpace(o.GeoId))
+            .GroupBy(o => o.GeoId!)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(o => o.OwnerTaxYear).First().FileAsName);
+
+        var geoIds = ownerByGeoId.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // Load matching properties (tracked so we can update)
+        var properties = await _db.Properties
+            .AsNoTracking()
+            .Where(p => p.CountyId == countyId && geoIds.Contains(p.ParcelId))
+            .ToListAsync(cancellationToken);
+
+        int updated = 0, skipped = 0;
+        var now = DateTime.UtcNow;
+
+        foreach (var prop in properties)
+        {
+            if (!ownerByGeoId.TryGetValue(prop.ParcelId, out var fileAsName)
+                || string.IsNullOrWhiteSpace(fileAsName))
+            {
+                skipped++;
+                continue;
+            }
+
+            if (prop.OwnerName == fileAsName)
+            {
+                skipped++;
+                continue;
+            }
+
+            prop.OwnerName = fileAsName;
+            prop.UpdatedAt = now;
+
+            _db.Properties.Attach(prop);
+            var entry = _db.Entry(prop);
+            entry.Property(nameof(Property.OwnerName)).IsModified = true;
+            entry.Property(nameof(Property.UpdatedAt)).IsModified = true;
+            updated++;
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation(
+            "[Sync] UpdateOwnerNames county={CountyId}: updated={Updated} skipped={Skipped}",
+            countyId, updated, skipped);
+
+        counters.OwnerNamesUpdated += updated;
+        counters.OwnerNamesSkipped += skipped;
+        return updated;
+    }
+
     private sealed record MappedPropertyBatchItem(PacsPropertyCore Source, Property TargetProperty);
 
     private sealed class SyncCounters
@@ -2213,5 +2406,8 @@ public sealed class PacsToTerraFusionSyncService
         public int AppealsAdded { get; set; }
         public int AppealsUpdated { get; set; }
         public int AppealsSkipped { get; set; }
+        public int LevyRatesImported { get; set; }
+        public int OwnerNamesUpdated { get; set; }
+        public int OwnerNamesSkipped { get; set; }
     }
 }
