@@ -12,8 +12,8 @@
   "intent": "gen2",
   "runnable": true,
   "entry": {
-    "type": "url",
-    "url": "http://localhost:5179/"
+    "type": "route",
+    "route": "/pilt"
   },
   "tags": ["tax", "pilt", "federal", "gen2"],
   "permissions": ["county:read", "tax:read"]
