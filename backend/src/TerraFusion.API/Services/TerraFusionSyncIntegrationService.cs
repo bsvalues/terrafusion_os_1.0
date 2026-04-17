@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Interfaces;
+using TerraFusion.Data;
 using SyncResult = TerraFusion.Abstractions.DTOs.Responses.SyncResult;
 
 namespace TerraFusion.API.Services;
@@ -239,12 +241,48 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
         });
     }
 
+    private async Task EnsureSnapshotModeRegistrationAsync(CancellationToken cancellationToken = default)
+    {
+        // Only act if no systems registered yet
+        if (_runtimeState.GetRegisteredSystems().Any())
+            return;
+
+        // Use IServiceProvider to resolve scoped DbContext safely (service may be Singleton)
+        using var scope = _serviceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<TerraFusionDbContext>();
+
+        var bentonId = new Guid("19190019-1919-1919-1919-191919191919");
+        var hasData = await db.PacsParcel.AnyAsync(p => p.CountyId == bentonId, cancellationToken);
+
+        if (!hasData)
+            return;
+
+        // Register snapshot system so sync can proceed against local staging data
+        var config = new LegacySystemConfig
+        {
+            SystemId         = "benton-pacs-snapshot",
+            SystemName       = "benton-pacs-snapshot",
+            SystemType       = "harris_pacs",
+            ConnectionString = "snapshot://local-postgres", // sentinel — no real MSSQL connection
+            EnableAutoSync   = false,
+            SyncInterval     = TimeSpan.FromHours(24)
+        };
+
+        await RegisterLegacySystemAsync(config);
+
+        _logger.LogInformation(
+            "[Sync] Dev-mode: auto-registered 'benton-pacs-snapshot' — found Benton staging data in PacsParcel");
+    }
+
     public async Task<CountySyncResult> SyncCountyDataAsync(string countyName, SyncOptions? options = null)
     {
         _logger.LogInformation("🔄 Syncing data for {County} county", countyName);
 
         try
         {
+            // Dev-mode: auto-register if local staging has data and nothing is registered yet
+            await EnsureSnapshotModeRegistrationAsync();
+
             if (!_runtimeState.GetRegisteredSystems().Any())
             {
                 _logger.LogWarning(
