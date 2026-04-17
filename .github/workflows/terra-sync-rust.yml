@@ -1,0 +1,105 @@
+name: sync-v4-rust
+
+on:
+  push:
+    branches: [main, feat/sync-v4-**]
+    paths:
+      - 'packages/terra-sync/**'
+      - '.github/workflows/terra-sync-rust.yml'
+  pull_request:
+    paths:
+      - 'packages/terra-sync/**'
+      - '.github/workflows/terra-sync-rust.yml'
+
+concurrency:
+  group: sync-v4-rust-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Fast default-feature gate: fmt + clippy + build + test.
+  # Runs on every commit. Does NOT pull in rdkafka/cmake.
+  quick:
+    name: fmt + clippy + build + test (default features)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/terra-sync
+    steps:
+      - uses: actions/checkout@v4
+
+      # Workspace rust-toolchain.toml pins 1.85.0; the toolchain action
+      # respects it when no explicit version is given.
+      - name: Install rust toolchain (from rust-toolchain.toml)
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.85.0'
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: packages/terra-sync
+
+      - name: cargo fmt --check
+        run: cargo fmt --all -- --check
+
+      - name: cargo clippy (default features)
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: cargo build (default features)
+        run: cargo build --workspace
+
+      - name: cargo test (default features)
+        run: cargo test --workspace
+
+  # Full-feature gate: exercises the Kafka emitter / rdkafka path.
+  # Installs cmake because rdkafka-sys requires it. Slower; runs only on
+  # sync-v4 branches and main.
+  kafka-feature:
+    name: clippy + build (kafka feature, requires cmake)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/terra-sync
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install cmake + pkg-config
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake pkg-config libssl-dev
+
+      - name: Install rust toolchain (from rust-toolchain.toml)
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.85.0'
+          components: clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: packages/terra-sync
+          # Separate cache key so the kafka-feature build doesn't clobber
+          # the default-features cache.
+          key: kafka
+
+      - name: cargo clippy -p terra-sync-audit (kafka feature)
+        run: cargo clippy -p terra-sync-audit --features kafka --all-targets -- -D warnings
+
+      - name: cargo clippy -p terra-sync-control (kafka feature)
+        run: cargo clippy -p terra-sync-control --features kafka --all-targets -- -D warnings
+
+      - name: cargo build -p terra-sync-control (kafka feature)
+        run: cargo build -p terra-sync-control --features kafka
+
+      # Note: kafka-feature tests that require a broker are exercised in
+      # the integration smoke job (Task 15). This job only proves compile.
+
+  # Static validation of the dev topology compose file (Task 6).
+  compose-validate:
+    name: docker compose config validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: docker compose config
+        run: |
+          cd packages/terra-sync/deploy
+          docker compose -f docker-compose.dev.yml config > /dev/null
