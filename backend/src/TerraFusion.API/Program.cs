@@ -46,6 +46,10 @@ using System.Threading.RateLimiting;
 // Runs the seeder directly without HTTP server or background services.
 // Run as: dotnet run --project TerraFusion.API -- --canonicalize-only
 // Runs only Phase 7 (PacsCanonicalizer) without re-running the full ETL.
+// Run as: dotnet run --project TerraFusion.API -- --canonicalize-appeals-only
+// Runs only PACS appeal promotion into canonical Appeals.
+// Run as: dotnet run --project TerraFusion.API -- --seed-appeals-only
+// Mirrors _arb_protest into pacs_appeals, then promotes canonical Appeals.
 
 if (args.Contains("--canonicalize-only"))
 {
@@ -132,6 +136,47 @@ if (args.Contains("--canonicalize-cama-only"))
     }
 }
 
+if (args.Contains("--canonicalize-appeals-only"))
+{
+    var appealCanonEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                       ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                       ?? "Production";
+
+    var appealCanonHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(appealCanonEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{appealCanonEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{appealCanonEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+        })
+        .Build();
+
+    using var appealCanonScope = appealCanonHost.Services.CreateScope();
+    var appealCanonDb = appealCanonScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var appealCanonLogger = appealCanonScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsCanonicalizer>>();
+    try
+    {
+        appealCanonLogger.LogInformation("[Canonicalize] Standalone APPEALS-ONLY run...");
+        var canonicalizer = new TerraFusion.API.Seeds.PacsCanonicalizer(appealCanonDb, appealCanonLogger);
+        var count = await canonicalizer.CanonicalizeAppealsOnlyAsync();
+        appealCanonLogger.LogInformation("[Canonicalize] APPEALS-ONLY DONE: {Count} Appeals", count);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        appealCanonLogger.LogError(ex, "[Canonicalize] APPEALS-ONLY FAILED");
+        Environment.Exit(1);
+    }
+}
+
 if (args.Contains("--seed-pacs"))
 {
     // Determine environment from ASPNETCORE_ENVIRONMENT or DOTNET_ENVIRONMENT
@@ -153,6 +198,7 @@ if (args.Contains("--seed-pacs"))
                 svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
             else
                 svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.API.Services.ISaleQualificationService, TerraFusion.API.Services.SaleQualificationService>();
             svc.AddScoped<TerraFusion.API.Seeds.PacsDataSeeder>();
         })
         .Build();
@@ -170,6 +216,48 @@ if (args.Contains("--seed-pacs"))
     catch (Exception ex)
     {
         logger.LogError(ex, "[PacsSeeder] FAILED");
+        Environment.Exit(1);
+    }
+}
+
+if (args.Contains("--seed-appeals-only"))
+{
+    var appealSeedEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                      ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                      ?? "Production";
+
+    var appealSeedHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(appealSeedEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{appealSeedEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{appealSeedEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.API.Services.ISaleQualificationService, TerraFusion.API.Services.SaleQualificationService>();
+            svc.AddScoped<TerraFusion.API.Seeds.PacsDataSeeder>();
+        })
+        .Build();
+
+    using var appealSeedScope = appealSeedHost.Services.CreateScope();
+    var appealSeeder = appealSeedScope.ServiceProvider.GetRequiredService<TerraFusion.API.Seeds.PacsDataSeeder>();
+    var appealSeedLogger = appealSeedScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsDataSeeder>>();
+    try
+    {
+        appealSeedLogger.LogInformation("[PacsSeeder] Standalone APPEALS-ONLY mode: starting...");
+        var result = await appealSeeder.SeedAppealsOnlyAsync();
+        appealSeedLogger.LogInformation("[PacsSeeder] APPEALS-ONLY DONE: {Result}", result);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        appealSeedLogger.LogError(ex, "[PacsSeeder] APPEALS-ONLY FAILED");
         Environment.Exit(1);
     }
 }
@@ -558,12 +646,6 @@ builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceServi
 // RE-ENABLED: Changed from Singleton → Scoped to properly resolve TerraFusionContext (scoped DbContext) and IAuditLogger (scoped)
 // TerraGaiaService doesn't run background tasks, so Scoped lifetime is appropriate for on-demand AI consciousness queries
 builder.Services.AddScoped<ITerraGaiaService, TerraGaiaService>();
-
-// CostForge Benton Method v2 — Track 0 canonical data foundation
-// PacsCanonicalizer is the sole bridge from Pacs* staging entities to canonical
-// CamaCharacteristic.City and CamaCharacteristic.PropertyUseStratum.
-builder.Services.AddScoped<TerraFusion.Data.Canonicalizers.IPacsCanonicalizer,
-    TerraFusion.Data.Canonicalizers.PacsCanonicalizer>();
 
 // CostForge Benton Method v2 — Track 1 equity metric compute
 // EquityMetricService is the sole source of IAAO + Benton-method equity metrics.
