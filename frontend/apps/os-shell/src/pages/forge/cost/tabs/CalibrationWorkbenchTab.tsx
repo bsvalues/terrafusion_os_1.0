@@ -15,6 +15,10 @@ import { useEffect, useRef, useState } from 'react';
 import { apiFetchJson } from '@/lib/apiBase';
 import { useCostForgeWorkspaceStore } from '../costForgeWorkspaceStore';
 
+const BENTON_COUNTY_ID =
+  (import.meta.env as Record<string, string>).VITE_BENTON_COUNTY_ID ??
+  '842a6c54-c7c0-4b2d-aa43-0e3ba63fa57d';
+
 interface NeighborhoodRow {
   hoodCd: string;
   name: string | null;
@@ -22,7 +26,37 @@ interface NeighborhoodRow {
   medianRatio: number | null;
   cod: number | null;
   prd: number | null;
+  prb: number | null;
   iaaoCompliant: boolean;
+}
+
+// Shapes from /equity/metrics
+interface EquityMetricsDto {
+  saleCount: number;
+  medianRatio: number | null;
+  cod: number | null;
+  prd: number | null;
+  prb: number | null;
+  iaaoCompliant: boolean;
+  bentonCompliant: boolean;
+  provenance: 'real' | 'insufficient-sales' | 'no-data';
+}
+interface EquityMetricsResponse {
+  groupCount: number;
+  groups: Record<string, EquityMetricsDto>;
+}
+
+// Shapes from /equity/rollup
+interface StratumRollupRow {
+  key: string;
+  name: string;
+  parcelCount: number;
+  saleCount: number;
+  totalAv: number | null;
+  metrics: EquityMetricsDto;
+}
+interface RollupResponse {
+  strata: StratumRollupRow[];
 }
 
 interface PreviewResponse {
@@ -66,6 +100,11 @@ export function CalibrationWorkbenchTab() {
   const abortRef    = useRef<AbortController | null>(null);
   const hoodAbortRef = useRef<AbortController | null>(null);
 
+  // Equity metrics + rollup for PRB before/after context
+  const [equityMetrics, setEquityMetrics] = useState<EquityMetricsDto | null>(null);
+  const [rollupStrata, setRollupStrata]   = useState<StratumRollupRow[]>([]);
+  const equityAbortRef = useRef<AbortController | null>(null);
+
   // Load current neighborhood status
   useEffect(() => {
     if (!selectedHoodCd) { setHood(null); return; }
@@ -93,6 +132,36 @@ export function CalibrationWorkbenchTab() {
         setHoodLoading(false);
       });
     return () => { hoodAbortRef.current?.abort(); };
+  }, [selectedHoodCd, taxYear]);
+
+  // Fetch PRB + BentonCompliant from /equity/metrics + county-wide rollup for rank context
+  useEffect(() => {
+    if (!selectedHoodCd) { setEquityMetrics(null); setRollupStrata([]); return; }
+    equityAbortRef.current?.abort();
+    equityAbortRef.current = new AbortController();
+    const { signal } = equityAbortRef.current;
+
+    Promise.allSettled([
+      apiFetchJson<EquityMetricsResponse>(
+        `/equity/metrics?countyId=${BENTON_COUNTY_ID}&taxYear=${taxYear}&by=neighborhood&segment=${encodeURIComponent(selectedHoodCd)}`,
+        { signal }
+      ),
+      apiFetchJson<RollupResponse>(
+        `/equity/rollup?countyId=${BENTON_COUNTY_ID}&taxYear=${taxYear}&by=neighborhood`,
+        { signal }
+      ),
+    ]).then(([metricsResult, rollupResult]) => {
+      if (metricsResult.status === 'fulfilled') {
+        const groups = metricsResult.value.groups;
+        const dto = groups[selectedHoodCd] ?? Object.values(groups)[0] ?? null;
+        setEquityMetrics(dto);
+      }
+      if (rollupResult.status === 'fulfilled') {
+        setRollupStrata(rollupResult.value.strata ?? []);
+      }
+    });
+
+    return () => { equityAbortRef.current?.abort(); };
   }, [selectedHoodCd, taxYear]);
 
   const runPreview = async () => {
@@ -178,36 +247,74 @@ export function CalibrationWorkbenchTab() {
 
       {/* Current status */}
       {hoodLoading && <div className="cf-state">Loading neighborhood status…</div>}
-      {hood && (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: 8,
-          marginBottom: 16,
-        }}>
-          {[
-            { label: 'Sales', value: String(hood.saleCount) },
-            { label: 'Median Ratio', value: fmt(hood.medianRatio) },
-            { label: 'COD', value: fmt(hood.cod, 1) },
-            { label: 'IAAO', value: hood.iaaoCompliant ? '✓ OK' : '✗ Out' },
-          ].map(({ label, value }) => (
-            <div key={label} style={{
-              padding: '10px 12px',
-              background: 'var(--cf-surface)',
-              border: '1px solid var(--cf-border)',
-              borderRadius: 6,
+      {hood && (() => {
+        const prb = equityMetrics?.prb ?? hood.prb;
+        const prbAbs = prb != null ? Math.abs(prb) : null;
+        // County rank by |PRB| magnitude (most biased = rank 1)
+        const prbRanked = rollupStrata
+          .filter((s) => s.metrics.prb != null)
+          .sort((a, b) => Math.abs(b.metrics.prb!) - Math.abs(a.metrics.prb!));
+        const prbRank = prbRanked.findIndex((s) => s.key === selectedHoodCd) + 1;
+
+        return (
+          <>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(5, 1fr)',
+              gap: 8,
+              marginBottom: 8,
             }}>
-              <div style={{ fontSize: '0.6875rem', color: 'var(--cf-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
-                {label}
-              </div>
-              <div style={{ fontSize: '1rem', fontWeight: 700, fontVariantNumeric: 'tabular-nums',
-                color: label === 'IAAO' ? (hood.iaaoCompliant ? 'var(--cf-success)' : 'var(--cf-danger)') : 'var(--cf-text)' }}>
-                {value}
-              </div>
+              {[
+                { label: 'Sales',        value: String(hood.saleCount),          color: 'var(--cf-text)' },
+                { label: 'Median Ratio', value: fmt(hood.medianRatio),            color: 'var(--cf-text)' },
+                { label: 'COD',          value: fmt(hood.cod, 1),                 color: (hood.cod ?? 0) > 15 ? 'var(--cf-warn)' : 'var(--cf-text)' },
+                { label: 'PRB',          value: prb != null ? prb.toFixed(3) : '—',
+                                         color: prbAbs != null && prbAbs > 0.05 ? 'var(--cf-warn)' : 'var(--cf-text)' },
+                { label: 'IAAO',         value: hood.iaaoCompliant ? '✓ OK' : '✗ Out',
+                                         color: hood.iaaoCompliant ? 'var(--cf-success)' : 'var(--cf-danger)' },
+              ].map(({ label, value, color }) => (
+                <div key={label} style={{
+                  padding: '10px 12px',
+                  background: 'var(--cf-surface)',
+                  border: '1px solid var(--cf-border)',
+                  borderRadius: 6,
+                }}>
+                  <div style={{ fontSize: '0.6875rem', color: 'var(--cf-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+                    {label}
+                  </div>
+                  <div style={{ fontSize: '1rem', fontWeight: 700, fontVariantNumeric: 'tabular-nums', color }}>
+                    {value}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+
+            {/* BentonCompliant badge + county PRB rank */}
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
+              {equityMetrics && (
+                <span style={{
+                  fontSize: '0.6875rem', fontWeight: 700, padding: '2px 8px', borderRadius: 4,
+                  background: equityMetrics.bentonCompliant ? 'hsl(142 40% 12%)' : 'hsl(0 50% 14%)',
+                  color: equityMetrics.bentonCompliant ? 'var(--cf-success)' : 'var(--cf-danger)',
+                }}
+                  title="Benton compliant = IAAO standards + decile spread ≤ 0.10"
+                >
+                  {equityMetrics.bentonCompliant ? '✓ Benton compliant' : '✗ Benton non-compliant'}
+                </span>
+              )}
+              {prbRank > 0 && prbRanked.length > 0 && (
+                <span style={{
+                  fontSize: '0.6875rem', color: 'var(--cf-subtle)',
+                }}
+                  title={`Ranked by |PRB| across ${prbRanked.length} neighborhoods with qualified sales`}
+                >
+                  PRB rank #{prbRank} of {prbRanked.length} county hoods
+                </span>
+              )}
+            </div>
+          </>
+        );
+      })()}
 
       {/* AI auto-suggest */}
       {autoSuggest != null && (
@@ -284,28 +391,39 @@ export function CalibrationWorkbenchTab() {
               before: fmt(preview.medianRatioBefore),
               after: fmt(preview.medianRatioAfter),
               better: Math.abs(preview.medianRatioAfter - 1) < Math.abs(preview.medianRatioBefore - 1),
+              note: undefined,
             },
             {
               label: 'COD',
               before: fmt(preview.codBefore, 1),
               after: fmt(preview.codAfter, 1),
               better: preview.codAfter < preview.codBefore,
+              note: undefined,
+            },
+            {
+              label: 'PRB (vertical equity)',
+              before: equityMetrics?.prb != null ? equityMetrics.prb.toFixed(3) : (hood?.prb != null ? hood.prb.toFixed(3) : '—'),
+              after: '~unchanged',
+              better: true,
+              note: 'Uniform % adj. does not alter regression slope',
             },
             {
               label: 'Total AV change',
               before: fmtDollar(preview.totalAvBefore),
               after: fmtDollar(preview.totalAvAfter),
               better: true,
+              note: undefined,
             },
             {
               label: 'IAAO compliant after',
               before: '—',
               after: preview.iaaoCompliantAfter ? '✓ Yes' : '✗ No',
               better: preview.iaaoCompliantAfter,
+              note: undefined,
             },
-          ].map(({ label, before, after, better }) => (
+          ].map(({ label, before, after, better, note }) => (
             <div key={label} className="cf-impact-row">
-              <span className="cf-impact-row__label">{label}</span>
+              <span className="cf-impact-row__label" title={note}>{label}{note && <span style={{ marginLeft: 4, fontSize: '0.6875rem', color: 'var(--cf-subtle)' }}>ⓘ</span>}</span>
               <span className="cf-impact-row__before">{before}</span>
               <span className={`cf-impact-row__after cf-impact-row__after--${better ? 'better' : 'worse'}`}>
                 → {after}
