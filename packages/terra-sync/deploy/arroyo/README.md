@@ -9,8 +9,9 @@ Arroyo runs as a containerized service in `docker-compose.dev.yml` and exposes:
 | File | Source topics | Sink topic |
 | --- | --- | --- |
 | `pipelines/normalize-property.sql` | `sync.source.harris.benton.pacs_oltp.dbo.property` + `property_val` | `sync.canonical.property` |
-
-Additional pipelines for CAMA, comparable sales, and property assessments land in Task 12 (`pipelines/normalize-cama.sql`, `normalize-comparable-sales.sql`, `normalize-property-assessments.sql`).
+| `pipelines/normalize-cama.sql` | `sync.source.harris.benton.pacs_oltp.dbo.imprv` | `sync.canonical.cama` |
+| `pipelines/normalize-comparable-sales.sql` | `sync.source.harris.benton.pacs_oltp.dbo.sale` | `sync.canonical.comparable_sales` |
+| `pipelines/normalize-property-assessments.sql` | `sync.source.harris.benton.pacs_oltp.dbo.property_val` | `sync.canonical.property_assessments` |
 
 ## Deploy
 
