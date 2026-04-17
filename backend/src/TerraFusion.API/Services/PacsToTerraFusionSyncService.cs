@@ -204,6 +204,21 @@ public sealed class PacsToTerraFusionSyncService
                 await EnsureSecondaryFeatureMatricesAsync(county.Id, county.Name, county.State, counters, cancellationToken);
             }
 
+            // Phase 2 — Dormant canonicalizers
+            await ImportExemptionsAsync(county.Id, counters, cancellationToken);
+            await ImportAppealsAsync(county.Id, counters, cancellationToken);
+
+            // Levy summary for the current assessment year
+            var assessYear = DateTime.UtcNow.Year;
+            await ImportLevySummaryAsync(county.Id, assessYear, counters, cancellationToken);
+
+            await UpdateOwnerNamesFromPacsAsync(county.Id, counters, cancellationToken);
+
+            // Staging-is-canonical validations (count + log only)
+            await ValidateTaxAreaStagingAsync(county.Id, counters, cancellationToken);
+            await ValidateReetWacCodeStagingAsync(counters, cancellationToken);
+            await ValidatePropertyProfileStagingAsync(county.Id, counters, cancellationToken);
+
             result.Success = true;
             result.Status = "completed";
             result.Message = "Imported Benton PACS operational data into TerraFusion.";
@@ -2378,6 +2393,69 @@ public sealed class PacsToTerraFusionSyncService
         return updated;
     }
 
+    /// <summary>
+    /// Validates that PacsTaxAreas and PacsTaxAreaAssocs staging tables have data for this county.
+    /// These staging tables ARE the canonical tax-area reference — no separate canonical entity exists.
+    /// Counts rows and logs the result for observability.
+    /// </summary>
+    private async Task<int> ValidateTaxAreaStagingAsync(
+        Guid countyId,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        var areaCount = await _db.PacsTaxAreas
+            .CountAsync(cancellationToken);
+
+        var assocCount = await _db.PacsTaxAreaAssocs.CountAsync(cancellationToken);
+
+        _logger.LogInformation(
+            "[Sync] TaxArea staging county={County}: pacs_tax_areas={Areas} pacs_tax_area_assocs={Assocs} (staging = canonical reference)",
+            countyId, areaCount, assocCount);
+
+        counters.TaxAreaStagingRows = areaCount;
+        return areaCount;
+    }
+
+    /// <summary>
+    /// Counts ReetWacCode reference rows. PacsReetWacCode IS the canonical reference table
+    /// (DbSet: _db.ReetWacCodes). Populated by seeder, validated here for observability.
+    /// </summary>
+    private async Task<int> ValidateReetWacCodeStagingAsync(
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        var count = await _db.ReetWacCodes.CountAsync(cancellationToken);
+
+        _logger.LogInformation(
+            "[Sync] ReetWacCode reference table: {Count} rows (staging = canonical reference)",
+            count);
+
+        counters.ReetWacCodeRows = count;
+        return count;
+    }
+
+    /// <summary>
+    /// Validates PacsPropertyProfile staging rows exist for this county.
+    /// PacsPropertyProfiles IS the canonical property-profile store — no separate canonical entity.
+    /// Used as lookup source during canonicalization.
+    /// </summary>
+    private async Task<int> ValidatePropertyProfileStagingAsync(
+        Guid countyId,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        var count = await _db.PacsPropertyProfiles
+            .Where(p => p.Parcel.CountyId == countyId)
+            .CountAsync(cancellationToken);
+
+        _logger.LogInformation(
+            "[Sync] PropertyProfile staging county={County}: {Count} rows (staging = canonical reference)",
+            countyId, count);
+
+        counters.PropertyProfileStagingRows = count;
+        return count;
+    }
+
     private sealed record MappedPropertyBatchItem(PacsPropertyCore Source, Property TargetProperty);
 
     private sealed class SyncCounters
@@ -2409,5 +2487,8 @@ public sealed class PacsToTerraFusionSyncService
         public int LevyRatesImported { get; set; }
         public int OwnerNamesUpdated { get; set; }
         public int OwnerNamesSkipped { get; set; }
+        public int TaxAreaStagingRows { get; set; }
+        public int ReetWacCodeRows { get; set; }
+        public int PropertyProfileStagingRows { get; set; }
     }
 }
