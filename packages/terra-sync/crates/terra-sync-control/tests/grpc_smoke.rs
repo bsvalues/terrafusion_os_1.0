@@ -44,7 +44,7 @@ async fn get_status_end_to_end_reports_degraded_null_audit() {
     let probe = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
     let port = probe.local_addr().unwrap().port();
     drop(probe);
-    let addr: std::net::SocketAddr = format!("127.0.0.1:{}", port).parse().unwrap();
+    let addr: std::net::SocketAddr = format!("127.0.0.1:{port}").parse().unwrap();
 
     let manifest = ContractManifest::load_from_path(&manifest_path()).unwrap();
     let policy = Arc::new(PolicyEvaluator::new(manifest));
@@ -71,7 +71,7 @@ async fn get_status_end_to_end_reports_degraded_null_audit() {
     // Let the server reach accept loop.
     tokio::time::sleep(Duration::from_millis(200)).await;
 
-    let mut client = ControlPlaneClient::connect(format!("http://{}", addr))
+    let mut client = ControlPlaneClient::connect(format!("http://{addr}"))
         .await
         .expect("client connect");
 

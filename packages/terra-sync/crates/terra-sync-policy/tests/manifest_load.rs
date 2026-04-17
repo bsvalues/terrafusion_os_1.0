@@ -61,8 +61,7 @@ fn rejects_worm_disabled_manifest() {
     let err = ContractManifest::load_from_path(f.path()).unwrap_err();
     assert!(
         err.to_string().contains("worm_required"),
-        "error must mention worm_required, got: {}",
-        err
+        "error must mention worm_required, got: {err}"
     );
 }
 
@@ -82,8 +81,7 @@ fn rejects_amendment_permitting_non_forbidden_action() {
     let msg = err.to_string();
     assert!(
         msg.contains("globally-forbidden") || msg.contains("forbidden_actions"),
-        "error must mention the amendment/forbidden invariant, got: {}",
-        msg
+        "error must mention the amendment/forbidden invariant, got: {msg}"
     );
 }
 
@@ -98,7 +96,6 @@ fn rejects_retention_under_seven_years() {
     let err = ContractManifest::load_from_path(f.path()).unwrap_err();
     assert!(
         err.to_string().contains("retention_years"),
-        "error must mention retention_years, got: {}",
-        err
+        "error must mention retention_years, got: {err}"
     );
 }

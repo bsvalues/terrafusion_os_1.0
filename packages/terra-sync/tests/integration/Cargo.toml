@@ -5,7 +5,9 @@ edition.workspace = true
 license.workspace = true
 publish = false
 
-[lib]
-path = "src/lib.rs"
-
 [dependencies]
+tokio = { workspace = true }
+anyhow = { workspace = true }
+serde_json = { workspace = true }
+terra-sync-policy = { path = "../../crates/terra-sync-policy" }
+terra-sync-audit = { path = "../../crates/terra-sync-audit" }

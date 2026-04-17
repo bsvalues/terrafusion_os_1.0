@@ -33,7 +33,7 @@ impl PolicyEvaluator {
             if self.amendment_permits(&cp.active_amendments, &req.action) {
                 return EvaluateResponse {
                     allowed: true,
-                    rule_matched: format!("counties.{}.amendment_permits", county_key),
+                    rule_matched: format!("counties.{county_key}.amendment_permits"),
                     reason: String::new(),
                 };
             }
@@ -104,14 +104,14 @@ impl PolicyEvaluator {
             if cp.forbid_subscribe.iter().any(|p| glob_match(p, &topic)) {
                 return self.deny(
                     req,
-                    &format!("counties.{}.forbid_subscribe", county_key),
+                    &format!("counties.{county_key}.forbid_subscribe"),
                     format!("topic {} in county {} forbid list", topic, cp.name),
                 );
             }
             if cp.allow_subscribe.iter().any(|p| glob_match(p, &topic)) {
                 return EvaluateResponse {
                     allowed: true,
-                    rule_matched: format!("counties.{}.allow_subscribe", county_key),
+                    rule_matched: format!("counties.{county_key}.allow_subscribe"),
                     reason: String::new(),
                 };
             }
@@ -127,7 +127,7 @@ impl PolicyEvaluator {
         if READ_ONLY_ACTIONS.iter().any(|a| *a == req.action) {
             return EvaluateResponse {
                 allowed: true,
-                rule_matched: format!("counties.{}.read_only_default_allow", county_key),
+                rule_matched: format!("counties.{county_key}.read_only_default_allow"),
                 reason: String::new(),
             };
         }

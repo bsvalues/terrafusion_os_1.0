@@ -96,7 +96,7 @@ fn compute_hash(event: &AuditEvent) -> String {
     clone.hash.clear();
     let canonical = serde_json::to_string(&clone).expect("audit event serializes");
     let digest = Sha256::digest(canonical.as_bytes());
-    format!("sha256:{:x}", digest)
+    format!("sha256:{digest:x}")
 }
 
 /// Reason a chain-verification link was rejected. Lets forensics tell
