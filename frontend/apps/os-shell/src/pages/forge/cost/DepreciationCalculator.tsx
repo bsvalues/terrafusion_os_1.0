@@ -14,7 +14,7 @@
  * CommercialDepreciation in CostForgeController.cs (single source of truth
  * in backend; these are kept in sync).
  */
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -82,6 +82,13 @@ function Row({ label, value, bold, accent }: {
   );
 }
 
+// Response shape from POST /costforge/effective-age
+interface EffectiveAgeApiResult {
+  effectiveAge: number;
+  conditionAdjustment: number;
+  method: string;
+}
+
 export function DepreciationCalculator() {
   const [effectiveAge, setEffectiveAge] = useState('');
   const [propType, setPropType]         = useState<'residential' | 'commercial'>('residential');
@@ -94,6 +101,51 @@ export function DepreciationCalculator() {
   const [iaaoLoading, setIaaoLoading]   = useState(false);
   const [iaaoError, setIaaoError]       = useState<string | null>(null);
   const ctrlRef = useRef<AbortController | null>(null);
+
+  // ── Condition-grade effective-age derivation (POST /costforge/effective-age) ──
+  const [actualAgeStr, setActualAgeStr]         = useState('');
+  const [condGrade, setCondGrade]               = useState<string>('GOOD');
+  const [effAgeFromApi, setEffAgeFromApi]       = useState<EffectiveAgeApiResult | null>(null);
+  const [effAgeApiLoading, setEffAgeApiLoading] = useState(false);
+  const [effAgeApiError, setEffAgeApiError]     = useState<string | null>(null);
+  const effAgeCtrl = useRef<AbortController | null>(null);
+
+  // Auto-derive effective age whenever actualAge or conditionGrade changes (400ms debounce)
+  useEffect(() => {
+    const actualAgeNum = parseInt(actualAgeStr, 10);
+    if (!actualAgeStr || isNaN(actualAgeNum) || actualAgeNum < 0) {
+      setEffAgeFromApi(null);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      effAgeCtrl.current?.abort();
+      effAgeCtrl.current = new AbortController();
+      setEffAgeApiLoading(true);
+      setEffAgeApiError(null);
+
+      apiFetchJson<EffectiveAgeApiResult>(
+        '/costforge/effective-age',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ actualAge: actualAgeNum, conditionGrade: condGrade }),
+          signal: effAgeCtrl.current.signal,
+        }
+      )
+        .then((data) => { setEffAgeFromApi(data); })
+        .catch((err) => {
+          if (err instanceof DOMException && err.name === 'AbortError') return;
+          setEffAgeApiError(err instanceof Error ? err.message : 'Effective age call failed');
+        })
+        .finally(() => { setEffAgeApiLoading(false); });
+    }, 400);
+
+    return () => {
+      clearTimeout(timer);
+      effAgeCtrl.current?.abort();
+    };
+  }, [actualAgeStr, condGrade]);
 
   const effAge  = parseInt(effectiveAge, 10) || 0;
   const rcnVal  = parseFloat(rcn) || 0;
@@ -271,6 +323,82 @@ export function DepreciationCalculator() {
                 placeholder="e.g. 5000"
                 className="h-9"
               />
+            </div>
+          </div>
+
+          {/* ── Condition-grade effective-age derivation ── */}
+          <div className="mt-4 pt-4 border-t border-border/30">
+            <p className="text-xs font-medium text-muted-foreground mb-3">
+              Derive effective age from condition{' '}
+              <span className="text-xs font-normal opacity-70">
+                · POST /costforge/effective-age · Benton WAC-aligned table
+              </span>
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
+              <div className="space-y-1.5">
+                <Label htmlFor="actualAge" className="text-xs">Actual Age (yrs)</Label>
+                <Input
+                  id="actualAge"
+                  type="number"
+                  value={actualAgeStr}
+                  onChange={(e) => setActualAgeStr(e.target.value)}
+                  placeholder="e.g. 22"
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Condition Grade</Label>
+                <Select value={condGrade} onValueChange={setCondGrade}>
+                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="EXCELLENT">Excellent (−3 yrs)</SelectItem>
+                    <SelectItem value="GOOD">Good (±0 yrs)</SelectItem>
+                    <SelectItem value="FAIR">Fair (+2 yrs)</SelectItem>
+                    <SelectItem value="POOR">Poor (+5 yrs)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Result + Apply */}
+              <div className="md:col-span-2 space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Derived Effective Age</Label>
+                {effAgeApiLoading && (
+                  <div className="h-9 flex items-center px-3 rounded-md border border-border/40 bg-muted/30 text-xs text-muted-foreground">
+                    Computing…
+                  </div>
+                )}
+                {!effAgeApiLoading && effAgeApiError && (
+                  <div className="h-9 flex items-center px-3 rounded-md border border-destructive/30 bg-destructive/5 text-xs text-destructive">
+                    {effAgeApiError}
+                  </div>
+                )}
+                {!effAgeApiLoading && !effAgeApiError && effAgeFromApi && (
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-9 flex items-center px-3 rounded-md border border-border/40 bg-muted/30 text-sm font-semibold tabular-nums">
+                      {effAgeFromApi.effectiveAge} yrs
+                      <span className="ml-2 text-xs font-normal text-muted-foreground">
+                        ({effAgeFromApi.conditionAdjustment >= 0 ? '+' : ''}{effAgeFromApi.conditionAdjustment} from condition)
+                      </span>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="h-9 text-xs shrink-0"
+                      onClick={() => {
+                        setEffectiveAge(String(effAgeFromApi.effectiveAge));
+                        setIaaoResult(null);
+                      }}
+                    >
+                      Apply
+                    </Button>
+                  </div>
+                )}
+                {!effAgeApiLoading && !effAgeApiError && !effAgeFromApi && (
+                  <div className="h-9 flex items-center px-3 rounded-md border border-border/20 text-xs text-muted-foreground/50">
+                    Enter actual age above
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </CardContent>
