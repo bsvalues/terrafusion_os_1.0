@@ -3281,12 +3281,20 @@ public class CostForgeController : ControllerBase
     var taxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year;
     var factor = 1.0m + (decimal)req.AdjustmentPct / 100m;
 
-    // Sales in this neighborhood
-    var hoodParcels = await _db.CamaCharacteristics
+    // Build scoped CAMA query — neighborhood + optional segment filters
+    var camaQ = _db.CamaCharacteristics
       .AsNoTracking()
-      .Where(c => c.NeighborhoodCode == req.NeighborhoodCode)
-      .Select(c => c.ParcelId)
-      .ToListAsync();
+      .Where(c => c.NeighborhoodCode == req.NeighborhoodCode);
+
+    if (!string.IsNullOrWhiteSpace(req.VintageDecade)
+        && int.TryParse(req.VintageDecade.TrimEnd('s'), out var vintageStart))
+      camaQ = camaQ.Where(c => c.YearBuilt.HasValue && c.YearBuilt.Value / 10 * 10 == vintageStart);
+
+    if (!string.IsNullOrWhiteSpace(req.ConditionGrade))
+      camaQ = camaQ.Where(c => c.ConditionGrade == req.ConditionGrade);
+
+    // Sales in this neighborhood (scoped)
+    var hoodParcels = await camaQ.Select(c => c.ParcelId).ToListAsync();
 
     if (hoodParcels.Count == 0)
       return NotFound(new { error = $"No CAMA parcels found for neighborhood {req.NeighborhoodCode}" });
@@ -6832,12 +6840,19 @@ public class CostForgeController : ControllerBase
     var taxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year;
     var factor = 1.0m + (decimal)req.AdjustmentPct / 100m;
 
-    // Resolve parcel IDs in this neighborhood
-    var hoodParcelIds = await _db.CamaCharacteristics
+    // Resolve parcel IDs — neighborhood + optional segment filters (same as preview)
+    var camaQ = _db.CamaCharacteristics
         .AsNoTracking()
-        .Where(c => c.NeighborhoodCode == req.NeighborhoodCode)
-        .Select(c => c.ParcelId)
-        .ToListAsync();
+        .Where(c => c.NeighborhoodCode == req.NeighborhoodCode);
+
+    if (!string.IsNullOrWhiteSpace(req.VintageDecade)
+        && int.TryParse(req.VintageDecade.TrimEnd('s'), out var vintageStart))
+      camaQ = camaQ.Where(c => c.YearBuilt.HasValue && c.YearBuilt.Value / 10 * 10 == vintageStart);
+
+    if (!string.IsNullOrWhiteSpace(req.ConditionGrade))
+      camaQ = camaQ.Where(c => c.ConditionGrade == req.ConditionGrade);
+
+    var hoodParcelIds = await camaQ.Select(c => c.ParcelId).ToListAsync();
 
     if (hoodParcelIds.Count == 0)
       return NotFound(new { error = $"No parcels found for neighborhood {req.NeighborhoodCode}" });
@@ -6873,6 +6888,8 @@ public class CostForgeController : ControllerBase
       factor = Math.Round(factor, 4),
       parcelsUpdated = appliedCount,
       taxYear,
+      vintageDecade = req.VintageDecade,
+      conditionGrade = req.ConditionGrade,
       appliedAt = DateTime.UtcNow,
       status = "committed",
     });
@@ -7421,6 +7438,10 @@ public class MassAdjustPreviewRequest
   public string NeighborhoodCode { get; set; } = string.Empty;
   public double AdjustmentPct { get; set; }   // e.g. 5.0 = +5%, -3.0 = -3%
   public int TaxYear { get; set; }
+  /// <summary>Optional decade filter, e.g. "1970s". Restricts to YearBuilt in that decade.</summary>
+  public string? VintageDecade { get; set; }
+  /// <summary>Optional condition filter: POOR | FAIR | GOOD | EXCELLENT.</summary>
+  public string? ConditionGrade { get; set; }
 }
 
 /// <summary>Wave 36 — Batch cost schedule application request.</summary>

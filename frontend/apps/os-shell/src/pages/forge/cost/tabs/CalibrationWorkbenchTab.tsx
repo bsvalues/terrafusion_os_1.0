@@ -74,6 +74,23 @@ interface PreviewResponse {
   estimatedImpactOnFundingLevel: number | null;
 }
 
+/** Returned from POST /costforge/calibration/mass-adjust-apply */
+interface ApplyResult {
+  parcelsUpdated: number;
+  neighborhoodCode: string;
+  adjustmentPct: number;
+  taxYear: number;
+  vintageDecade: string | null;
+  conditionGrade: string | null;
+  appliedAt: string;
+  // Snapshot captured at commit time from preview + equityMetrics
+  snap_medianBefore: number | null;
+  snap_medianAfter: number | null;
+  snap_matchedSales: number;
+  snap_prbBefore: number | null;
+  snap_codBefore: number | null;
+}
+
 function fmt(n: number | null | undefined, dec = 3): string {
   return n == null ? '—' : n.toFixed(dec);
 }
@@ -93,17 +110,26 @@ export function CalibrationWorkbenchTab() {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError]     = useState<string | null>(null);
   const [confirmPending, setConfirmPending] = useState(false);
-  const [committed, setCommitted]           = useState(false);
-  const [committedAt, setCommittedAt]       = useState<string | null>(null);
+  const [applyResult, setApplyResult]       = useState<ApplyResult | null>(null);
   const [commitLoading, setCommitLoading]   = useState(false);
   const [commitError, setCommitError]       = useState<string | null>(null);
   const abortRef    = useRef<AbortController | null>(null);
   const hoodAbortRef = useRef<AbortController | null>(null);
 
+  // Segment filters (Track 3)
+  const [vintageDecade, setVintageDecade]     = useState('');
+  const [conditionFilter, setConditionFilter] = useState('');
+
   // Equity metrics + rollup for PRB before/after context
   const [equityMetrics, setEquityMetrics] = useState<EquityMetricsDto | null>(null);
   const [rollupStrata, setRollupStrata]   = useState<StratumRollupRow[]>([]);
   const equityAbortRef = useRef<AbortController | null>(null);
+
+  // Post-commit verification snapshot (re-fetched after commit)
+  const [verifyMetrics, setVerifyMetrics]   = useState<EquityMetricsDto | null>(null);
+  const [verifyLoading, setVerifyLoading]   = useState(false);
+  const [verifyError, setVerifyError]       = useState<string | null>(null);
+  const verifyAbortRef = useRef<AbortController | null>(null);
 
   // Load current neighborhood status
   useEffect(() => {
@@ -112,7 +138,8 @@ export function CalibrationWorkbenchTab() {
     hoodAbortRef.current = new AbortController();
     setHoodLoading(true);
     setPreview(null);
-    setCommitted(false);
+    setApplyResult(null);
+    setVerifyMetrics(null);
     apiFetchJson<{ neighborhoods: NeighborhoodRow[] }>(
       `/costforge/calibration/neighborhood-matrix?taxYear=${taxYear}&minSales=1`,
       { signal: hoodAbortRef.current.signal }
@@ -171,7 +198,8 @@ export function CalibrationWorkbenchTab() {
     setPreviewLoading(true);
     setPreviewError(null);
     setPreview(null);
-    setCommitted(false);
+    setApplyResult(null);
+    setVerifyMetrics(null);
     try {
       const data = await apiFetchJson<PreviewResponse>(
         '/costforge/calibration/mass-adjust-preview',
@@ -182,6 +210,8 @@ export function CalibrationWorkbenchTab() {
             neighborhoodCode: selectedHoodCd,
             adjustmentPct: parseFloat(adjustPct),
             taxYear,
+            vintageDecade: vintageDecade || null,
+            conditionGrade: conditionFilter || null,
           }),
           signal: abortRef.current.signal,
         }
@@ -196,27 +226,71 @@ export function CalibrationWorkbenchTab() {
   };
 
   const commitAdjustment = async () => {
-    if (committed || !preview || !selectedHoodCd) return;
+    if (applyResult || !preview || !selectedHoodCd) return;
     setCommitLoading(true);
     setCommitError(null);
+    // Snapshot pre-commit metrics before clearing
+    const prbSnap = equityMetrics?.prb ?? hood?.prb ?? null;
+    const codSnap = equityMetrics?.cod ?? hood?.cod ?? null;
     try {
-      await apiFetchJson<unknown>('/costforge/calibration/mass-adjust-apply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          neighborhoodCode: selectedHoodCd,
-          adjustmentPct: parseFloat(adjustPct),
-          taxYear,
-        }),
+      const raw = await apiFetchJson<{ parcelsUpdated: number; appliedAt: string; vintageDecade?: string | null; conditionGrade?: string | null }>(
+        '/costforge/calibration/mass-adjust-apply',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            neighborhoodCode: selectedHoodCd,
+            adjustmentPct: parseFloat(adjustPct),
+            taxYear,
+            vintageDecade: vintageDecade || null,
+            conditionGrade: conditionFilter || null,
+          }),
+        }
+      );
+      setApplyResult({
+        parcelsUpdated: raw.parcelsUpdated,
+        neighborhoodCode: selectedHoodCd,
+        adjustmentPct: parseFloat(adjustPct),
+        taxYear,
+        vintageDecade: raw.vintageDecade ?? null,
+        conditionGrade: raw.conditionGrade ?? null,
+        appliedAt: raw.appliedAt ?? new Date().toISOString(),
+        snap_medianBefore: preview.medianRatioBefore,
+        snap_medianAfter: preview.medianRatioAfter,
+        snap_matchedSales: preview.matchedSales,
+        snap_prbBefore: prbSnap,
+        snap_codBefore: codSnap,
       });
-      setCommitted(true);
-      setCommittedAt(new Date().toLocaleString());
+      setPreview(null);
       setConfirmPending(false);
     } catch (err) {
       setCommitError(err instanceof Error ? err.message : 'Commit failed');
     } finally {
       setCommitLoading(false);
     }
+  };
+
+  const runVerify = () => {
+    if (!selectedHoodCd) return;
+    verifyAbortRef.current?.abort();
+    verifyAbortRef.current = new AbortController();
+    setVerifyLoading(true);
+    setVerifyError(null);
+    apiFetchJson<EquityMetricsResponse>(
+      `/equity/metrics?countyId=${BENTON_COUNTY_ID}&taxYear=${taxYear}&by=neighborhood&segment=${encodeURIComponent(selectedHoodCd)}`,
+      { signal: verifyAbortRef.current.signal }
+    )
+      .then((resp) => {
+        const groups = resp.groups;
+        const dto = groups[selectedHoodCd] ?? Object.values(groups)[0] ?? null;
+        setVerifyMetrics(dto);
+        setVerifyLoading(false);
+      })
+      .catch((err: unknown) => {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        setVerifyError(err instanceof Error ? err.message : 'Verify failed');
+        setVerifyLoading(false);
+      });
   };
 
   if (!selectedHoodCd) {
@@ -345,11 +419,44 @@ export function CalibrationWorkbenchTab() {
               onChange={(e) => {
                 setAdjustPct(e.target.value);
                 setPreview(null);
-                setCommitted(false);
               }}
               placeholder="e.g. +8.7"
             />
           </div>
+          <div className="cf-filter-group">
+            <label className="cf-filter-label" htmlFor="vintageDecade">
+              Vintage (optional)
+            </label>
+            <select
+              id="vintageDecade"
+              className="cf-filter-input"
+              value={vintageDecade}
+              onChange={(e) => { setVintageDecade(e.target.value); setPreview(null); }}
+            >
+              <option value="">All decades</option>
+              {['1940s','1950s','1960s','1970s','1980s','1990s','2000s','2010s','2020s'].map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+          </div>
+          <div className="cf-filter-group">
+            <label className="cf-filter-label" htmlFor="conditionFilter">
+              Condition (optional)
+            </label>
+            <select
+              id="conditionFilter"
+              className="cf-filter-input"
+              value={conditionFilter}
+              onChange={(e) => { setConditionFilter(e.target.value); setPreview(null); }}
+            >
+              <option value="">All conditions</option>
+              <option value="POOR">Poor</option>
+              <option value="FAIR">Fair</option>
+              <option value="GOOD">Good</option>
+              <option value="EXCELLENT">Excellent</option>
+            </select>
+          </div>
+
           <div className="cf-filter-actions">
             <button
               type="button"
@@ -377,7 +484,7 @@ export function CalibrationWorkbenchTab() {
       )}
 
       {/* Impact simulation result */}
-      {preview && !committed && (
+      {preview && !applyResult && (
         <div
           className={`cf-impact-panel${preview.iaaoCompliantAfter ? '' : ' cf-impact-panel--warn'}`}
         >
@@ -468,6 +575,11 @@ export function CalibrationWorkbenchTab() {
                 {' · '}{parseFloat(adjustPct) >= 0 ? '+' : ''}{adjustPct}% assessed value adjustment
                 {' · '}{taxYear} tax year
                 {' · '}{preview?.matchedSales} qualified sales
+                {(vintageDecade || conditionFilter) && (
+                  <span style={{ color: 'var(--cf-warn)', marginLeft: 6 }}>
+                    · Segment: {[vintageDecade || 'all decades', conditionFilter || 'all conditions'].join(' / ')}
+                  </span>
+                )}
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button
@@ -497,40 +609,108 @@ export function CalibrationWorkbenchTab() {
         </div>
       )}
 
-      {/* Committed success */}
-      {committed && (
-        <div className="cf-impact-panel">
-          <div style={{ fontWeight: 700, color: 'var(--cf-success)', marginBottom: 4 }}>
-            ✓ Adjustment committed
-          </div>
-          <div style={{ fontSize: '0.8125rem', color: 'var(--cf-text)', marginBottom: 4 }}>
-            {parseFloat(adjustPct) >= 0 ? '+' : ''}{adjustPct}% applied to{' '}
-            <strong>{preview?.parcelCount.toLocaleString()}</strong> parcels in hood{' '}
-            <strong>{selectedHoodCd}</strong>
-          </div>
-          {committedAt && (
-            <div style={{ fontSize: '0.75rem', color: 'var(--cf-subtle)', marginBottom: 12 }}>
-              Committed at: {committedAt}
+      {/* ── Calibration Finding Card (post-commit audit record) ── */}
+      {applyResult && (
+        <div style={{
+          marginTop: 12,
+          padding: '14px 16px',
+          background: 'hsl(142 20% 9%)',
+          border: '1px solid hsl(142 35% 20%)',
+          borderLeft: '3px solid var(--cf-success)',
+          borderRadius: 8,
+        }}>
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+            <div>
+              <div style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--cf-success)', marginBottom: 2 }}>
+                Calibration Finding — Committed
+              </div>
+              <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--cf-text)' }}>
+                Hood {applyResult.neighborhoodCode} · {applyResult.taxYear} · {applyResult.adjustmentPct >= 0 ? '+' : ''}{applyResult.adjustmentPct}%
+              </div>
             </div>
-          )}
-          <p style={{ fontSize: '0.8125rem', color: 'var(--cf-muted)', marginBottom: 10 }}>
-            Return to Triage to verify the ratio moved toward 1.000, then review the Calc Trace for individual parcel lineage.
-          </p>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              type="button"
-              className="cf-btn cf-btn--ghost"
-              onClick={() => setActiveTab('triage')}
-            >
-              ← Back to Triage
-            </button>
-            <button
-              type="button"
-              className="cf-btn cf-btn--ghost"
-              onClick={() => setActiveTab('calc-trace')}
-            >
-              View Calc Trace →
-            </button>
+            <span style={{ fontSize: '0.6875rem', color: 'var(--cf-success)', fontWeight: 700, padding: '2px 8px', borderRadius: 4, background: 'hsl(142 40% 12%)' }}>
+              ✓ RESOLVED
+            </span>
+          </div>
+
+          {/* Finding detail rows */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 16px', fontSize: '0.8125rem', marginBottom: 12 }}>
+            {[
+              { label: 'Target', value: [applyResult.vintageDecade ?? 'All decades', applyResult.conditionGrade ? applyResult.conditionGrade[0] + applyResult.conditionGrade.slice(1).toLowerCase() + ' cond.' : 'All conditions'].join(' / ') },
+              { label: 'Parcels updated', value: applyResult.parcelsUpdated.toLocaleString() },
+              { label: 'Qualified sales', value: applyResult.snap_matchedSales.toString() },
+              { label: 'Median ratio before', value: fmt(applyResult.snap_medianBefore) },
+              { label: 'Median ratio after (sim.)', value: fmt(applyResult.snap_medianAfter) },
+              { label: 'PRB before', value: applyResult.snap_prbBefore != null ? applyResult.snap_prbBefore.toFixed(3) : '—' },
+              { label: 'COD before', value: applyResult.snap_codBefore != null ? applyResult.snap_codBefore.toFixed(1) : '—' },
+              { label: 'Applied', value: (() => { try { return new Date(applyResult.appliedAt).toLocaleString(); } catch { return applyResult.appliedAt; } })() },
+            ].map(({ label, value }) => (
+              <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid hsl(222 16% 17%)' }}>
+                <span style={{ color: 'var(--cf-muted)' }}>{label}</span>
+                <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--cf-text)', fontWeight: 600 }}>{value}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Auto-generated evidence narrative */}
+          <div style={{ fontSize: '0.75rem', color: 'var(--cf-muted)', fontStyle: 'italic', marginBottom: 12, padding: '8px 10px', background: 'hsl(222 16% 12%)', borderRadius: 4 }}>
+            {(() => {
+              const ratio = applyResult.snap_medianBefore;
+              const deviation = ratio != null ? Math.abs(ratio - 1.0) : null;
+              const prb = applyResult.snap_prbBefore;
+              const prbFlag = prb != null && Math.abs(prb) > 0.05;
+              const segNote = applyResult.vintageDecade ? ` Analysis isolated to ${applyResult.vintageDecade} construction.` : '';
+              const condNote = applyResult.conditionGrade ? ` Condition filter: ${applyResult.conditionGrade}.` : '';
+              return `Neighborhood ${applyResult.neighborhoodCode} exhibited median ratio ${fmt(ratio)} (deviation ${deviation != null ? deviation.toFixed(3) : '—'} from equity).${segNote}${condNote} PRB ${prb != null ? prb.toFixed(3) : '—'} ${prbFlag ? '— flags vertical inequity.' : '— neutral.'} Applied ${applyResult.adjustmentPct >= 0 ? '+' : ''}${applyResult.adjustmentPct}% to ${applyResult.parcelsUpdated.toLocaleString()} parcels targeting IAAO compliance. Simulated post-adjustment median: ${fmt(applyResult.snap_medianAfter)}.`;
+            })()}
+          </div>
+
+          {/* Verify Now — re-fetch live equity metrics post-commit */}
+          <div style={{ borderTop: '1px solid hsl(222 16% 20%)', paddingTop: 12 }}>
+            <div style={{ fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cf-muted)', marginBottom: 8 }}>
+              Verification Snapshot
+            </div>
+            {!verifyMetrics && !verifyLoading && !verifyError && (
+              <div style={{ fontSize: '0.8125rem', color: 'var(--cf-muted)', marginBottom: 8 }}>
+                Re-fetch live equity metrics to confirm the ratio moved as expected.
+              </div>
+            )}
+            {verifyError && (
+              <div style={{ color: 'var(--cf-danger)', fontSize: '0.8rem', marginBottom: 8 }}>{verifyError}</div>
+            )}
+            {verifyMetrics && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 10 }}>
+                {[
+                  { label: 'Live Median', before: fmt(applyResult.snap_medianBefore), after: fmt(verifyMetrics.medianRatio) },
+                  { label: 'Live COD',    before: fmt(applyResult.snap_codBefore, 1),  after: fmt(verifyMetrics.cod, 1) },
+                  { label: 'Live PRB',    before: fmt(applyResult.snap_prbBefore),       after: fmt(verifyMetrics.prb) },
+                  { label: 'IAAO',        before: '—',                                   after: verifyMetrics.iaaoCompliant ? '✓ OK' : '✗ Out' },
+                ].map(({ label, before, after }) => (
+                  <div key={label} style={{ padding: '8px 10px', background: 'var(--cf-surface)', border: '1px solid var(--cf-border)', borderRadius: 6 }}>
+                    <div style={{ fontSize: '0.625rem', color: 'var(--cf-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>{label}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--cf-subtle)' }}>{before}</div>
+                    <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--cf-success)' }}>→ {after}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="cf-btn cf-btn--ghost"
+                onClick={runVerify}
+                disabled={verifyLoading}
+              >
+                {verifyLoading ? 'Fetching live metrics…' : verifyMetrics ? '↻ Re-verify' : 'Verify Now'}
+              </button>
+              <button type="button" className="cf-btn cf-btn--ghost" onClick={() => setActiveTab('triage')}>
+                ← Back to Triage
+              </button>
+              <button type="button" className="cf-btn cf-btn--ghost" onClick={() => setActiveTab('calc-trace')}>
+                View Calc Trace →
+              </button>
+            </div>
           </div>
         </div>
       )}
