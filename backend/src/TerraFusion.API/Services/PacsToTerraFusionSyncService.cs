@@ -1981,9 +1981,12 @@ public sealed class PacsToTerraFusionSyncService
             })
             .ToListAsync(cancellationToken);
 
+        // Normalize keys to uppercase to guard against case mismatches between PACS source and canonical store
         var existing = await _db.Exemptions
             .Where(e => e.CountyId == countyId)
-            .ToDictionaryAsync(e => (e.ParcelId, e.ProgramCode), cancellationToken);
+            .ToDictionaryAsync(
+                e => (e.ParcelId.ToUpperInvariant(), e.ProgramCode.ToUpperInvariant()),
+                cancellationToken);
 
         int added = 0, updated = 0, skipped = 0;
         var now = DateTime.UtcNow;
@@ -2003,7 +2006,7 @@ public sealed class PacsToTerraFusionSyncService
                 ? "expired"
                 : "approved";
 
-            var key = (exemption.GeoId, programCode);
+            var key = (exemption.GeoId.ToUpperInvariant(), programCode.ToUpperInvariant());
 
             if (existing.TryGetValue(key, out var row))
             {
@@ -2099,17 +2102,16 @@ public sealed class PacsToTerraFusionSyncService
             })
             .ToListAsync(cancellationToken);
 
-        // For simplicity, first match wins for duplicate (parcel, year) keys
-        var existing = new Dictionary<(string ParcelId, int TaxYear), Appeal>();
-        await foreach (var a in _db.Appeals
+        // AsNoTracking is required — Attach() later on update path would throw if entities are already tracked
+        // First-match-wins for duplicate (parcel, year) keys (multiple appeals per year are rare)
+        var existingList = await _db.Appeals
             .Where(a => a.CountyId == countyId)
-            .AsAsyncEnumerable()
-            .WithCancellation(cancellationToken))
-        {
-            var k = (a.ParcelId, a.TaxYear);
-            if (!existing.ContainsKey(k))
-                existing[k] = a;
-        }
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        var existing = existingList
+            .GroupBy(a => (a.ParcelId, a.TaxYear))
+            .ToDictionary(g => g.Key, g => g.First());
 
         int added = 0, updated = 0, skipped = 0;
         var now = DateTime.UtcNow;
@@ -2129,9 +2131,9 @@ public sealed class PacsToTerraFusionSyncService
             var rawGround     = appeal.ProtType ?? "MARKET_VALUE";
             var appealGround  = rawGround.Length > 30 ? rawGround.Substring(0, 30) : rawGround;
             var status        = MapAppealStatus(appeal.ProtStatus);
-            var notes         = appeal.ProtComments is not null
-                ? $"[PACS:{appeal.PacsCaseId}] {appeal.ProtComments}"
-                : null;
+            var notes         = string.IsNullOrEmpty(appeal.ProtComments)
+                ? $"[PACS:{appeal.PacsCaseId}]"
+                : $"[PACS:{appeal.PacsCaseId}] {appeal.ProtComments}";
 
             var key = (appeal.GeoId, taxYear);
 
@@ -2212,6 +2214,9 @@ public sealed class PacsToTerraFusionSyncService
         SyncCounters counters,
         CancellationToken cancellationToken)
     {
+        // NOTE: PacsLevyRate has no CountyId column (county-neutral PACS mirror by design).
+        // All rows for the given year are loaded. Multi-county deployments MUST add a CountyId
+        // discriminator to this entity and filter here before enabling additional counties.
         var pacsRates = await _db.PacsLevyRates
             .AsNoTracking()
             .Where(r => r.Year == taxYear)
@@ -2277,6 +2282,8 @@ public sealed class PacsToTerraFusionSyncService
                     existing.TaxRate    = agg.TaxRate;
                     existing.LevyAmount = agg.LevyAmount;
                     existing.Purpose    = agg.Purpose;
+                    // NOTE: TaxLevy entity has no UpdatedAt audit field (CoreEntities.cs).
+                    // Add UpdatedAt to TaxLevy + migration before FISMA audit is required on levy rows.
 
                     _db.TaxLevies.Attach(existing);
                     var entry = _db.Entry(existing);
@@ -2325,23 +2332,16 @@ public sealed class PacsToTerraFusionSyncService
         SyncCounters counters,
         CancellationToken cancellationToken)
     {
-        // Load owner rows for the county (via Parcel navigation), SupNum=0 only
-        var pacsOwnerRows = await _db.PacsOwners
-            .AsNoTracking()
-            .Where(o => o.SupNum == 0 && o.Parcel.CountyId == countyId)
-            .Select(o => new
-            {
-                o.ParcelId,
-                o.OwnerTaxYear,
-                o.FileAsName,
-                GeoId = o.Parcel.GeoId
-            })
-            .ToListAsync(cancellationToken);
-
-        // For each GeoId, keep the row with the highest OwnerTaxYear (most recent)
-        var ownerByGeoId = pacsOwnerRows
-            .Where(o => !string.IsNullOrWhiteSpace(o.GeoId))
-            .GroupBy(o => o.GeoId!)
+        // Load owner rows for the county (SupNum=0, non-null GeoId filtered at DB to reduce payload).
+        // In-memory GroupBy picks the most-recent OwnerTaxYear per GeoId — safe for PACS owner history volume.
+        var ownerByGeoId = (await _db.PacsOwners
+                .AsNoTracking()
+                .Where(o => o.SupNum == 0
+                         && o.Parcel.CountyId == countyId
+                         && o.Parcel.GeoId != null)
+                .Select(o => new { GeoId = o.Parcel.GeoId!, o.OwnerTaxYear, o.FileAsName })
+                .ToListAsync(cancellationToken))
+            .GroupBy(o => o.GeoId)
             .ToDictionary(
                 g => g.Key,
                 g => g.OrderByDescending(o => o.OwnerTaxYear).First().FileAsName);
@@ -2403,7 +2403,10 @@ public sealed class PacsToTerraFusionSyncService
         SyncCounters counters,
         CancellationToken cancellationToken)
     {
+        // Filter via parcel navigation for county-scoped counts
+        // PacsTaxAreaAssoc has no direct Parcel FK — counted globally (county-neutral staging)
         var areaCount = await _db.PacsTaxAreas
+            .Where(t => t.Parcel.CountyId == countyId)
             .CountAsync(cancellationToken);
 
         var assocCount = await _db.PacsTaxAreaAssocs.CountAsync(cancellationToken);
