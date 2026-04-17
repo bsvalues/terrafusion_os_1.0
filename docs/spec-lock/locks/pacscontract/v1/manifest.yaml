@@ -27,6 +27,12 @@ forbidden_actions:
   - action: writeback.write
     reason: 'pacscontract.v1 base contract forbids PACS writes. Amendment required.'
 
+# Ratified amendments permitting specific actions beyond the base contract.
+# An amendment only unlocks capability X if it is listed here with
+# `ratified: true` and `permits: [X]` AND referenced by a county's
+# `active_amendments`. Base pacscontract.v1 ships with no amendments.
+amendments: {}
+
 audit:
   all_actions_logged: true
   retention_years: 7
