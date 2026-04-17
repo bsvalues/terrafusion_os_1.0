@@ -212,3 +212,19 @@ fn reordered_chain_is_detected() {
     // First break is at index 1 (e3's prev_hash doesn't match e1's hash).
     assert_eq!(result.unwrap_err().0, 1);
 }
+
+#[tokio::test]
+async fn null_audit_accepts_event_without_error() {
+    use terra_sync_audit::{Audit, NullAudit};
+    let e = AuditEventBuilder {
+        event_type: "null.test".into(),
+        actor: make_actor(),
+        county_id: "benton".into(),
+        subject: make_subject("x", "x"),
+        outcome: Outcome::Success,
+        policy_refs: vec![],
+        metadata: BTreeMap::new(),
+    }
+    .build("");
+    NullAudit.emit(&e).await.expect("null audit never errors");
+}
