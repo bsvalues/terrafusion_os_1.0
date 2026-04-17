@@ -181,6 +181,8 @@ public sealed class PacsToTerraFusionSyncService
             {
                 await ImportCamaCharacteristicsAsync(county.Id, syncOptions, counters, cancellationToken);
                 await RefreshComparableSalesFromCamaAsync(county.Id, counters, cancellationToken);
+                // Supplemental pass: populate City + PropertyUseStratum on all CAMA rows for this county
+                await RunCamaSupplementPassAsync(county.Id, counters, cancellationToken);
             }
 
             if (importSales)
@@ -191,6 +193,8 @@ public sealed class PacsToTerraFusionSyncService
             if (importCostMatrices)
             {
                 await ImportCostMatricesAsync(county.Id, county.Name, county.State, syncOptions, counters, cancellationToken);
+                // Ensure secondary-feature matrices are seeded by Sync (not raw SQL)
+                await EnsureSecondaryFeatureMatricesAsync(county.Id, county.Name, county.State, counters, cancellationToken);
             }
 
             result.Success = true;
@@ -226,6 +230,9 @@ public sealed class PacsToTerraFusionSyncService
             result.Metadata["salesImported"] = counters.SalesAdded + counters.SalesUpdated;
             result.Metadata["costMatricesAdded"] = counters.CostMatricesAdded;
             result.Metadata["costMatricesUpdated"] = counters.CostMatricesUpdated;
+            result.Metadata["camaSupplementTouched"]       = counters.CamaSupplementTouched;
+            result.Metadata["camaSupplementCityUpdated"]   = counters.CamaSupplementCityUpdated;
+            result.Metadata["camaSupplementStratumUpdated"]= counters.CamaSupplementStratumUpdated;
             result.Metadata["currentAssessmentMode"] = "vw_TerraFusion_Property_Core snapshot";
 
             await CompleteJobAsync(jobId, county.Id, result, stopwatch.Elapsed, cancellationToken);
@@ -1574,6 +1581,198 @@ public sealed class PacsToTerraFusionSyncService
         return exception.ToString().Contains($"no such table: {tableName}", StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <summary>
+    /// Normalize a raw PacsSitus.City string to one of the canonical Benton city labels.
+    /// </summary>
+    private static string NormalizeCity(string? raw)
+    {
+        var trimmed = (raw ?? string.Empty).Trim().ToUpperInvariant();
+        return trimmed switch
+        {
+            "KENNEWICK"     => "Kennewick",
+            "RICHLAND"      => "Richland",
+            "PASCO"         => "Pasco",
+            "PROSSER"       => "Prosser",
+            "BENTON CITY"   => "Benton City",
+            "WEST RICHLAND" => "West Richland",
+            _               => "Unincorporated"
+        };
+    }
+
+    /// <summary>
+    /// Derive PropertyUseStratum from the PACS building-type code prefix.
+    /// R* → residential, M* → manufactured, C*/I*/S* → commercial, A* → ag, V* → vacant, X* → exempt.
+    /// </summary>
+    private static string DeriveStratum(string? buildingType)
+    {
+        var bt = (buildingType ?? string.Empty).Trim().ToUpperInvariant();
+        if (string.IsNullOrEmpty(bt)) return "X";
+        if (bt.StartsWith("R")) return "R";
+        if (bt.StartsWith("M")) return "M";
+        if (bt.StartsWith("C")) return "C";
+        if (bt.StartsWith("I")) return "C";
+        if (bt.StartsWith("S")) return "C";
+        if (bt.StartsWith("A")) return "A";
+        if (bt.StartsWith("V")) return "V";
+        if (bt.StartsWith("X")) return "X";
+        return "X";
+    }
+
+    /// <summary>
+    /// Supplement pass: populates CamaCharacteristic.City (from PacsSitus.City via GeoId→ParcelId lookup)
+    /// and CamaCharacteristic.PropertyUseStratum (derived from BuildingType).
+    /// Runs for all tax years present in CamaCharacteristics for this county.
+    /// </summary>
+    private async Task<(int Touched, int CityUpdated, int StratumUpdated)> RunCamaSupplementPassAsync(
+        Guid countyId,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        // Step 1: Build GeoId → PacsParcel.Guid lookup (dedupe by most-recent SyncedAt)
+        var pacsRows = await _db.PacsParcel
+            .Where(p => p.CountyId == countyId && p.GeoId != null)
+            .Select(p => new { p.Id, p.GeoId, p.SyncedAt })
+            .ToListAsync(cancellationToken);
+
+        var geoToPacsId = pacsRows
+            .GroupBy(p => p.GeoId!)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(p => p.SyncedAt).First().Id);
+
+        // Step 2: Build PacsParcel.Guid → City from primary PacsSitus rows
+        var situsRows = await _db.PacsSituses
+            .Where(s => s.City != null)
+            .Select(s => new { s.ParcelId, s.City, s.PrimaryFlag })
+            .ToListAsync(cancellationToken);
+
+        var pacsIdSet = geoToPacsId.Values.ToHashSet();
+        var cityByPacsId = situsRows
+            .Where(s => pacsIdSet.Contains(s.ParcelId))
+            .GroupBy(s => s.ParcelId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(s => s.PrimaryFlag == "Y").First().City!);
+
+        // Step 3: Load all CamaCharacteristic rows for this county
+        var camaRows = await _db.CamaCharacteristics
+            .Where(c => c.CountyId == countyId)
+            .ToListAsync(cancellationToken);
+
+        int touched = 0, cityUpd = 0, stratUpd = 0;
+
+        foreach (var cama in camaRows)
+        {
+            touched++;
+
+            // City via GeoId → PacsGuid → City
+            string? rawCity = null;
+            if (geoToPacsId.TryGetValue(cama.ParcelId, out var pacsGuid))
+                cityByPacsId.TryGetValue(pacsGuid, out rawCity);
+
+            var normalizedCity = NormalizeCity(rawCity);
+            if (cama.City != normalizedCity)
+            {
+                cama.City = normalizedCity;
+                cityUpd++;
+            }
+
+            // Stratum from BuildingType
+            var stratum = DeriveStratum(cama.BuildingType);
+            if (cama.PropertyUseStratum != stratum)
+            {
+                cama.PropertyUseStratum = stratum;
+                stratUpd++;
+            }
+        }
+
+        if (touched > 0)
+            await _db.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation(
+            "[Sync] CamaSupplementPass county={County}: touched={Touched} cityUpd={City} stratUpd={Strat}",
+            countyId, touched, cityUpd, stratUpd);
+
+        counters.CamaSupplementTouched = touched;
+        counters.CamaSupplementCityUpdated = cityUpd;
+        counters.CamaSupplementStratumUpdated = stratUpd;
+
+        return (touched, cityUpd, stratUpd);
+    }
+
+    /// <summary>
+    /// Ensures the 6 Benton County secondary-feature cost matrices exist with correct %-of-BIV rates.
+    /// Idempotent: inserts if missing, updates rate if changed.
+    /// Source: Benton County Assessor – Cost Approach Feature Adjustments (FY 2025)
+    /// </summary>
+    private async Task<int> EnsureSecondaryFeatureMatricesAsync(
+        Guid countyId,
+        string countyName,
+        string? state,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        // Benton County secondary feature %-of-BIV rates (FY 2025)
+        var features = new[]
+        {
+            (Code: "CovPatio",  Desc: "Covered Patio",             PctOfBiv: 0.03m),
+            (Code: "ATTGAR",    Desc: "Attached Garage",           PctOfBiv: 0.06m),
+            (Code: "DETGAR",    Desc: "Detached Garage",           PctOfBiv: 0.05m),
+            (Code: "BSMT",      Desc: "Basement (unfinished)",     PctOfBiv: 0.13m),
+            (Code: "POLEBLDG",  Desc: "Pole Building / Shop",      PctOfBiv: 0.18m),
+            (Code: "POOL",      Desc: "Swimming Pool (in-ground)", PctOfBiv: 0.04m),
+        };
+
+        var existing = await _db.CostMatrices
+            .Where(m => m.CountyId == countyId && m.MatrixType == "SecondaryFeature")
+            .ToListAsync(cancellationToken);
+
+        int upserted = 0;
+
+        foreach (var f in features)
+        {
+            var row = existing.FirstOrDefault(m => m.BuildingType == f.Code);
+            if (row is null)
+            {
+                _db.CostMatrices.Add(new CostMatrix
+                {
+                    CountyId                 = countyId,
+                    MatrixType               = "SecondaryFeature",
+                    Region                   = countyName,
+                    BuildingType             = f.Code,
+                    BuildingTypeDescription  = f.Desc,
+                    County                   = countyName,
+                    State                    = state ?? "WA",
+                    SecondaryFeaturePctOfBiv = f.PctOfBiv,
+                    BaseRate                 = f.PctOfBiv,
+                    BaseCost                 = 0,
+                    MatrixYear               = DateTime.UtcNow.Year,
+                    Multiplier               = 1.0m,
+                    AdjustmentFactor         = 1.0m,
+                    CreatedAt                = DateTime.UtcNow,
+                    UpdatedAt                = DateTime.UtcNow,
+                });
+                upserted++;
+            }
+            else if (row.SecondaryFeaturePctOfBiv != f.PctOfBiv)
+            {
+                row.SecondaryFeaturePctOfBiv = f.PctOfBiv;
+                row.UpdatedAt = DateTime.UtcNow;
+                upserted++;
+            }
+        }
+
+        if (upserted > 0)
+            await _db.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation(
+            "[Sync] EnsureSecondaryFeatureMatrices county={County}: upserted={Upserted}",
+            countyName, upserted);
+
+        counters.CostMatricesAdded += upserted;
+        return upserted;
+    }
+
     private sealed record MappedPropertyBatchItem(PacsPropertyCore Source, Property TargetProperty);
 
     private sealed class SyncCounters
@@ -1593,5 +1792,8 @@ public sealed class PacsToTerraFusionSyncService
         public int SalesSkipped { get; set; }
         public int CostMatricesAdded { get; set; }
         public int CostMatricesUpdated { get; set; }
+        public int CamaSupplementTouched { get; set; }
+        public int CamaSupplementCityUpdated { get; set; }
+        public int CamaSupplementStratumUpdated { get; set; }
     }
 }
