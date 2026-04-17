@@ -1,0 +1,33 @@
+contract: pacscontract
+version: v1
+description: |
+  Governing read-only contract for Harris PACS access from TerraFusion.
+  All PACS read operations are permitted via authorized Debezium connectors.
+  All PACS writes are FORBIDDEN except under ratified amendment.
+
+defaults:
+  read_only: true
+  allow_subscribe_canonical: true
+  require_mtls: true
+
+counties:
+  benton:
+    id: '19190019-1919-1919-1919-191919191919'
+    name: 'Benton'
+    state: 'WA'
+    vendor: harris-pacs
+    read_only: true
+    allow_subscribe:
+      - sync.source.harris.benton.*
+      - sync.canonical.*
+    forbid_subscribe: []
+    active_amendments: []
+
+forbidden_actions:
+  - action: writeback.write
+    reason: 'pacscontract.v1 base contract forbids PACS writes. Amendment required.'
+
+audit:
+  all_actions_logged: true
+  retention_years: 7
+  worm_required: true
