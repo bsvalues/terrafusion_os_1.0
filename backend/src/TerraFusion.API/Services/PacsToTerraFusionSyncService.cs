@@ -177,6 +177,13 @@ public sealed class PacsToTerraFusionSyncService
                     string.Join(",", syncOptions.DataTypes));
             }
 
+            // If assessments were not populated by the property pass (e.g. snapshot mode),
+            // fall back to importing directly from PacsValuations staging.
+            if (importAssessments && counters.AssessmentsAdded == 0 && counters.AssessmentsUpdated == 0)
+            {
+                await ImportPropertyAssessmentsFromValuationsAsync(county.Id, syncOptions, counters, cancellationToken);
+            }
+
             if (importCama)
             {
                 await ImportCamaCharacteristicsAsync(county.Id, syncOptions, counters, cancellationToken);
@@ -221,6 +228,7 @@ public sealed class PacsToTerraFusionSyncService
             result.Metadata["propertiesSkipped"] = counters.PropertiesSkipped;
             result.Metadata["assessmentsAdded"] = counters.AssessmentsAdded;
             result.Metadata["assessmentsUpdated"] = counters.AssessmentsUpdated;
+            result.Metadata["assessmentsFromValuations"] = (counters.AssessmentsAdded + counters.AssessmentsUpdated);
             result.Metadata["ownersImported"] = counters.OwnersImported;
             result.Metadata["camaAdded"] = counters.CamaAdded;
             result.Metadata["camaUpdated"] = counters.CamaUpdated;
@@ -1771,6 +1779,135 @@ public sealed class PacsToTerraFusionSyncService
 
         counters.CostMatricesAdded += upserted;
         return upserted;
+    }
+
+    /// <summary>
+    /// Imports PropertyAssessments from PacsValuations staging (SupNum=0, current year).
+    /// Upserts: inserts missing rows, updates changed values for existing rows.
+    /// AssessmentMethod = "canonicalized-from-pacs-valuations" marks sync-owned rows.
+    /// </summary>
+    private async Task<int> ImportPropertyAssessmentsFromValuationsAsync(
+        Guid countyId,
+        SyncOptions options,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        // Load all SupNum=0 valuations for this county
+        var valuations = await _db.PacsValuations
+            .Where(v => v.Parcel.CountyId == countyId
+                     && v.SupNum == 0
+                     && v.AssessedVal > 0)
+            .Select(v => new
+            {
+                v.ParcelId,
+                v.PropValYear,
+                v.AssessedVal,
+                v.Market,
+                v.LandHstdVal,
+                v.LandNonHstdVal,
+                v.ImprvVal
+            })
+            .ToListAsync(cancellationToken);
+
+        if (valuations.Count == 0)
+        {
+            _logger.LogInformation("[Sync] ImportPropertyAssessments county={County}: no valuations found", countyId);
+            return 0;
+        }
+
+        // Build PacsParcel.Id → GeoId lookup
+        var pacsParcelIds = valuations.Select(v => v.ParcelId).ToHashSet();
+        var pacsGeoIds = await _db.PacsParcel
+            .Where(p => pacsParcelIds.Contains(p.Id) && p.GeoId != null)
+            .Select(p => new { p.Id, p.GeoId })
+            .ToListAsync(cancellationToken);
+
+        var pacsIdToGeoId = pacsGeoIds
+            .ToDictionary(p => p.Id, p => p.GeoId!);
+
+        // Build GeoId → canonical Property.Id lookup
+        var geoIds = pacsIdToGeoId.Values.ToHashSet();
+        var properties = await _db.Properties
+            .Where(p => p.CountyId == countyId && geoIds.Contains(p.ParcelId))
+            .Select(p => new { p.Id, p.ParcelId })
+            .ToListAsync(cancellationToken);
+
+        var geoIdToPropertyId = properties
+            .ToDictionary(p => p.ParcelId, p => p.Id);
+
+        // Load existing sync-owned assessments for this county (by PropertyId)
+        var propertyIds = geoIdToPropertyId.Values.ToHashSet();
+        var existing = await _db.PropertyAssessments
+            .Where(a => propertyIds.Contains(a.PropertyId)
+                     && a.AssessmentMethod == "canonicalized-from-pacs-valuations")
+            .ToDictionaryAsync(a => (a.PropertyId, a.AssessmentYear), cancellationToken);
+
+        int added = 0, updated = 0, skipped = 0;
+        var now = DateTime.UtcNow;
+
+        foreach (var v in valuations)
+        {
+            if (!pacsIdToGeoId.TryGetValue(v.ParcelId, out var geoId)) { skipped++; continue; }
+            if (!geoIdToPropertyId.TryGetValue(geoId, out var propertyId)) { skipped++; continue; }
+
+            var assessedValue    = v.AssessedVal ?? 0m;
+            var marketValue      = v.Market ?? assessedValue;
+            var landValue        = (v.LandHstdVal ?? 0m) + (v.LandNonHstdVal ?? 0m);
+            var improvementValue = v.ImprvVal ?? 0m;
+            var assessYear       = v.PropValYear;
+
+            var key = (propertyId, assessYear);
+            if (existing.TryGetValue(key, out var row))
+            {
+                // Update if values changed
+                if (row.AssessedValue    != assessedValue    ||
+                    row.MarketValue      != marketValue      ||
+                    row.LandValue        != landValue        ||
+                    row.ImprovementValue != improvementValue)
+                {
+                    row.AssessedValue    = assessedValue;
+                    row.MarketValue      = marketValue;
+                    row.LandValue        = landValue;
+                    row.ImprovementValue = improvementValue;
+                    row.AssessmentDate   = now;
+                    updated++;
+                }
+            }
+            else
+            {
+                _db.PropertyAssessments.Add(new PropertyAssessment
+                {
+                    Id               = Guid.NewGuid(),
+                    PropertyId       = propertyId,
+                    AssessmentYear   = assessYear,
+                    AssessedValue    = assessedValue,
+                    MarketValue      = marketValue,
+                    LandValue        = landValue,
+                    ImprovementValue = improvementValue,
+                    AssessmentMethod = "canonicalized-from-pacs-valuations",
+                    AssessorNotes    = null,
+                    AssessorId       = Guid.Empty,
+                    AssessmentDate   = now,
+                    IsActive         = true
+                });
+                added++;
+            }
+
+            // Save in batches of 500
+            if ((added + updated) % 500 == 0 && (added + updated) > 0)
+                await _db.SaveChangesAsync(cancellationToken);
+        }
+
+        if ((added + updated) % 500 != 0)
+            await _db.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation(
+            "[Sync] ImportPropertyAssessments county={County}: added={Added} updated={Updated} skipped={Skipped}",
+            countyId, added, updated, skipped);
+
+        counters.AssessmentsAdded   += added;
+        counters.AssessmentsUpdated += updated;
+        return added + updated;
     }
 
     private sealed record MappedPropertyBatchItem(PacsPropertyCore Source, Property TargetProperty);
