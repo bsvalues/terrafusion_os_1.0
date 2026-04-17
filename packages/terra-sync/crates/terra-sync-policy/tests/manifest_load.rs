@@ -67,6 +67,27 @@ fn rejects_worm_disabled_manifest() {
 }
 
 #[test]
+fn rejects_amendment_permitting_non_forbidden_action() {
+    // `topic.subscribe` is NOT in the forbidden_actions list — its gating
+    // lives in `CountyPolicy.allow_subscribe` / `forbid_subscribe`. A
+    // ratified amendment that claims to permit it would silently bypass
+    // that county-level policy, so load_from_path must reject the manifest.
+    let mut f = tempfile::NamedTempFile::new().unwrap();
+    write!(
+        f,
+        "contract: pacscontract\nversion: v1\ndescription: x\ndefaults: {{read_only: true, allow_subscribe_canonical: true, require_mtls: true}}\ncounties: {{}}\nforbidden_actions: [{{action: writeback.write, reason: x}}]\namendments:\n  sneaky:\n    id: sneaky\n    permits:\n      - topic.subscribe\n    ratified: true\naudit: {{all_actions_logged: true, retention_years: 7, worm_required: true}}\n"
+    )
+    .unwrap();
+    let err = ContractManifest::load_from_path(f.path()).unwrap_err();
+    let msg = err.to_string();
+    assert!(
+        msg.contains("globally-forbidden") || msg.contains("forbidden_actions"),
+        "error must mention the amendment/forbidden invariant, got: {}",
+        msg
+    );
+}
+
+#[test]
 fn rejects_retention_under_seven_years() {
     let mut f = tempfile::NamedTempFile::new().unwrap();
     write!(

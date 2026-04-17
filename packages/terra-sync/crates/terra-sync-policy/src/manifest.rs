@@ -63,6 +63,7 @@ pub struct AuditPolicy {
 /// in the target county's `active_amendments` AND the requested action appears
 /// in `permits`.
 #[derive(Debug, Clone, Deserialize)]
+#[non_exhaustive]
 pub struct Amendment {
     pub id: String,
     #[serde(default)]
@@ -116,6 +117,26 @@ impl ContractManifest {
             return Err(ManifestError::PolicyInvariant(
                 "base contract must forbid writeback.write",
             ));
+        }
+
+        // Amendments may only grant actions that are globally forbidden —
+        // they exist to lift the base-contract ban on an opt-in basis.
+        // Permitting an action subject to finer-grained county policy
+        // (e.g. `topic.subscribe`, gated by `allow_subscribe`/
+        // `forbid_subscribe`) would let a ratified amendment silently
+        // bypass that policy, which is not the intended semantics.
+        for amendment in manifest.amendments.values() {
+            for permit in &amendment.permits {
+                if !manifest
+                    .forbidden_actions
+                    .iter()
+                    .any(|f| &f.action == permit)
+                {
+                    return Err(ManifestError::PolicyInvariant(
+                        "amendment permits must only reference globally-forbidden actions",
+                    ));
+                }
+            }
         }
 
         tracing::info!(

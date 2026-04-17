@@ -100,6 +100,18 @@ fn subscribe_with_missing_topic_context_is_denied() {
 /// is appended verbatim so callers can add `amendments:` or override
 /// `counties.benton.*` fields.
 fn manifest_yaml(counties_body: &str, amendments_body: &str) -> String {
+    manifest_yaml_with_extra_forbidden(counties_body, amendments_body, "")
+}
+
+/// Like `manifest_yaml`, but additional `forbidden_actions` entries can be
+/// appended verbatim. Needed for amendment tests that reference non-default
+/// actions — the load-time invariant requires every amendment `permits` entry
+/// to also appear in `forbidden_actions`.
+fn manifest_yaml_with_extra_forbidden(
+    counties_body: &str,
+    amendments_body: &str,
+    extra_forbidden: &str,
+) -> String {
     format!(
         r#"contract: pacscontract
 version: v1
@@ -113,6 +125,7 @@ counties:
 forbidden_actions:
   - action: writeback.write
     reason: 'base contract forbids PACS writes. Amendment required.'
+{extra_forbidden}
 amendments:
 {amendments_body}
 audit:
@@ -197,6 +210,46 @@ fn writeback_permitted_by_ratified_amendment() {
         resp.rule_matched, resp.reason
     );
     assert!(resp.rule_matched.contains("amendment_permits"));
+}
+
+#[test]
+fn writeback_denied_when_amendment_permits_omits_action() {
+    // Ratified amendment exists and is active for the county, but its
+    // `permits` list does not include `writeback.write`. The action must
+    // still be denied — this covers the branch where the amendment lookup
+    // succeeds but the action-string comparison fails.
+    let counties = r#"  benton:
+    id: '19190019-1919-1919-1919-191919191919'
+    name: 'Benton'
+    state: 'WA'
+    vendor: harris-pacs
+    read_only: true
+    allow_subscribe: []
+    active_amendments:
+      - amend-partial
+"#;
+    let amendments = r#"  amend-partial:
+    id: amend-partial
+    permits:
+      - some.other.action
+    ratified: true
+"#;
+    // `some.other.action` must also appear in `forbidden_actions` to
+    // satisfy the load-time invariant that amendments may only grant
+    // globally-forbidden actions.
+    let extra_forbidden = "  - action: some.other.action\n    reason: test fixture\n";
+    let yaml = manifest_yaml_with_extra_forbidden(counties, amendments, extra_forbidden);
+    let f = write_manifest(&yaml);
+    let manifest = ContractManifest::load_from_path(f.path()).unwrap();
+    let evaluator = PolicyEvaluator::new(manifest);
+
+    let r = req("writeback.write", BENTON_ID, HashMap::new());
+    let resp = evaluator.evaluate(&r);
+    assert!(
+        !resp.allowed,
+        "amendment that doesn't permit writeback.write must not allow it; rule={}",
+        resp.rule_matched
+    );
 }
 
 #[test]

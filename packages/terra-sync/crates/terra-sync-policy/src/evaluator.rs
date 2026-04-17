@@ -132,13 +132,6 @@ impl PolicyEvaluator {
             };
         }
 
-        tracing::warn!(
-            target: "policy.deny",
-            action = %req.action,
-            county_id = %req.county_id,
-            actor = %req.actor_identity,
-            "action not in read-only allowlist; denied by default"
-        );
         self.deny(
             req,
             "default.deny_unknown_action",
