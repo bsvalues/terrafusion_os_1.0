@@ -1627,6 +1627,21 @@ public sealed class PacsToTerraFusionSyncService
     }
 
     /// <summary>
+    /// Maps PACS ProtStatus codes to canonical Appeal.Status values.
+    /// </summary>
+    private static string MapAppealStatus(string? protStatus) => (protStatus ?? string.Empty).ToUpperInvariant() switch
+    {
+        "A"  => "filed",
+        "AC" => "filed",
+        "P"  => "scheduled",
+        "H"  => "heard",
+        "D"  => "decided",
+        "W"  => "withdrawn",
+        "C"  => "decided",
+        _    => "filed"
+    };
+
+    /// <summary>
     /// Supplement pass: populates CamaCharacteristic.City (from PacsSitus.City via GeoId→ParcelId lookup)
     /// and CamaCharacteristic.PropertyUseStratum (derived from BuildingType).
     /// Runs for all tax years present in CamaCharacteristics for this county.
@@ -1923,6 +1938,253 @@ public sealed class PacsToTerraFusionSyncService
         return added + updated;
     }
 
+    // ── ImportExemptionsAsync ─────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Promotes PACS exemption rows (SupNum=0) into the canonical Exemption table.
+    /// Keyed by (ParcelId/GeoId, ProgramCode). Adds missing rows, updates changed rows.
+    /// </summary>
+    private async Task<int> ImportExemptionsAsync(
+        Guid countyId,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        var pacsRows = await _db.PacsExemptions
+            .AsNoTracking()
+            .Where(e => e.Parcel.CountyId == countyId && e.SupNum == 0)
+            .Select(e => new
+            {
+                e.ParcelId,
+                e.PacsPropId,
+                e.PacsOwnerId,
+                e.ExemptTaxYear,
+                e.ExemptTypeCode,
+                e.ApplicantName,
+                e.EffectiveDate,
+                e.TerminationDate,
+                GeoId = e.Parcel.GeoId
+            })
+            .ToListAsync(cancellationToken);
+
+        var existing = await _db.Exemptions
+            .Where(e => e.CountyId == countyId)
+            .ToDictionaryAsync(e => (e.ParcelId, e.ProgramCode), cancellationToken);
+
+        int added = 0, updated = 0, skipped = 0;
+        var now = DateTime.UtcNow;
+
+        foreach (var exemption in pacsRows)
+        {
+            if (string.IsNullOrWhiteSpace(exemption.GeoId) || exemption.ExemptTypeCode is null)
+            {
+                skipped++;
+                continue;
+            }
+
+            var rawCode = exemption.ExemptTypeCode ?? "UNKNOWN";
+            var programCode = rawCode.Length > 30 ? rawCode.Substring(0, 30) : rawCode;
+
+            var status = exemption.TerminationDate.HasValue && exemption.TerminationDate.Value < now
+                ? "expired"
+                : "approved";
+
+            var key = (exemption.GeoId, programCode);
+
+            if (existing.TryGetValue(key, out var row))
+            {
+                var changed = row.ApplicantName != exemption.ApplicantName
+                    || row.EffectiveDate  != exemption.EffectiveDate
+                    || row.ExpirationDate != exemption.TerminationDate
+                    || row.Status         != status;
+
+                if (changed)
+                {
+                    row.ApplicantName  = exemption.ApplicantName;
+                    row.EffectiveDate  = exemption.EffectiveDate;
+                    row.ExpirationDate = exemption.TerminationDate;
+                    row.Status         = status;
+                    row.UpdatedAt      = now;
+                    _db.Exemptions.Attach(row);
+                    _db.Entry(row).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    updated++;
+                }
+            }
+            else
+            {
+                _db.Exemptions.Add(new Exemption
+                {
+                    Id              = Guid.NewGuid(),
+                    ParcelId        = exemption.GeoId,
+                    ProgramCode     = programCode,
+                    Status          = status,
+                    ApplicantName   = exemption.ApplicantName,
+                    ApplicationDate = exemption.EffectiveDate ?? now,
+                    EffectiveDate   = exemption.EffectiveDate,
+                    ExpirationDate  = exemption.TerminationDate,
+                    ExemptionAmount = 0m,
+                    RcwReference    = null,
+                    DenialReason    = null,
+                    Notes           = null,
+                    CountyId        = countyId,
+                    CreatedAt       = now,
+                    UpdatedAt       = now
+                });
+                added++;
+            }
+
+            if ((added + updated) % 500 == 0 && (added + updated) > 0)
+                await _db.SaveChangesAsync(cancellationToken);
+        }
+
+        if ((added + updated) % 500 != 0)
+            await _db.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation(
+            "[Sync] ImportExemptions county={CountyId}: added={Added} updated={Updated} skipped={Skipped}",
+            countyId, added, updated, skipped);
+
+        counters.ExemptionsAdded   += added;
+        counters.ExemptionsUpdated += updated;
+        counters.ExemptionsSkipped += skipped;
+        return added + updated;
+    }
+
+    // ── ImportAppealsAsync ────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Promotes PACS appeal (protest) rows into the canonical Appeal table.
+    /// Keyed by (ParcelId/GeoId, TaxYear). Adds missing rows, updates changed rows.
+    /// </summary>
+    private async Task<int> ImportAppealsAsync(
+        Guid countyId,
+        SyncCounters counters,
+        CancellationToken cancellationToken)
+    {
+        var pacsRows = await _db.PacsAppeals
+            .AsNoTracking()
+            .Where(a => a.Parcel.CountyId == countyId)
+            .Select(a => new
+            {
+                a.ParcelId,
+                a.PacsPropId,
+                a.PropValYear,
+                a.PacsCaseId,
+                a.ProtType,
+                a.ProtStatus,
+                a.CreateDate,
+                a.HearingStartDate,
+                a.CompleteDate,
+                a.BeginAssessedVal,
+                a.BeginMarket,
+                a.ArbAssignedVal,
+                a.FinalAssessedVal,
+                a.FinalMarket,
+                a.ProtComments,
+                GeoId = a.Parcel.GeoId
+            })
+            .ToListAsync(cancellationToken);
+
+        // For simplicity, first match wins for duplicate (parcel, year) keys
+        var existing = new Dictionary<(string ParcelId, int TaxYear), Appeal>();
+        await foreach (var a in _db.Appeals
+            .Where(a => a.CountyId == countyId)
+            .AsAsyncEnumerable()
+            .WithCancellation(cancellationToken))
+        {
+            var k = (a.ParcelId, a.TaxYear);
+            if (!existing.ContainsKey(k))
+                existing[k] = a;
+        }
+
+        int added = 0, updated = 0, skipped = 0;
+        var now = DateTime.UtcNow;
+
+        foreach (var appeal in pacsRows)
+        {
+            if (string.IsNullOrWhiteSpace(appeal.GeoId))
+            {
+                skipped++;
+                continue;
+            }
+
+            var taxYear       = (int)appeal.PropValYear;
+            var currentValue  = appeal.BeginAssessedVal ?? appeal.BeginMarket ?? 0m;
+            var requestedValue = appeal.ArbAssignedVal ?? 0m;
+            var decidedValue  = appeal.FinalAssessedVal ?? appeal.FinalMarket;
+            var rawGround     = appeal.ProtType ?? "MARKET_VALUE";
+            var appealGround  = rawGround.Length > 30 ? rawGround.Substring(0, 30) : rawGround;
+            var status        = MapAppealStatus(appeal.ProtStatus);
+            var notes         = appeal.ProtComments is not null
+                ? $"[PACS:{appeal.PacsCaseId}] {appeal.ProtComments}"
+                : null;
+
+            var key = (appeal.GeoId, taxYear);
+
+            if (existing.TryGetValue(key, out var row))
+            {
+                var changed = row.CurrentValue  != currentValue
+                    || row.RequestedValue != requestedValue
+                    || row.DecidedValue   != decidedValue
+                    || row.Status         != status
+                    || row.HearingDate    != appeal.HearingStartDate
+                    || row.DecisionDate   != appeal.CompleteDate;
+
+                if (changed)
+                {
+                    row.CurrentValue   = currentValue;
+                    row.RequestedValue = requestedValue;
+                    row.DecidedValue   = decidedValue;
+                    row.Status         = status;
+                    row.HearingDate    = appeal.HearingStartDate;
+                    row.DecisionDate   = appeal.CompleteDate;
+                    row.DecisionNotes  = notes;
+                    row.UpdatedAt      = now;
+                    _db.Appeals.Attach(row);
+                    _db.Entry(row).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    updated++;
+                }
+            }
+            else
+            {
+                _db.Appeals.Add(new Appeal
+                {
+                    Id             = Guid.NewGuid(),
+                    ParcelId       = appeal.GeoId,
+                    AppealGround   = appealGround,
+                    Status         = status,
+                    PetitionerName = null,
+                    FiledDate      = appeal.CreateDate ?? now,
+                    HearingDate    = appeal.HearingStartDate,
+                    DecisionDate   = appeal.CompleteDate,
+                    CurrentValue   = currentValue,
+                    RequestedValue = requestedValue,
+                    DecidedValue   = decidedValue,
+                    DecisionNotes  = notes,
+                    TaxYear        = taxYear,
+                    CountyId       = countyId,
+                    CreatedAt      = now,
+                    UpdatedAt      = now
+                });
+                added++;
+            }
+
+            if ((added + updated) % 500 == 0 && (added + updated) > 0)
+                await _db.SaveChangesAsync(cancellationToken);
+        }
+
+        if ((added + updated) % 500 != 0)
+            await _db.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation(
+            "[Sync] ImportAppeals county={CountyId}: added={Added} updated={Updated} skipped={Skipped}",
+            countyId, added, updated, skipped);
+
+        counters.AppealsAdded   += added;
+        counters.AppealsUpdated += updated;
+        counters.AppealsSkipped += skipped;
+        return added + updated;
+    }
+
     private sealed record MappedPropertyBatchItem(PacsPropertyCore Source, Property TargetProperty);
 
     private sealed class SyncCounters
@@ -1945,5 +2207,11 @@ public sealed class PacsToTerraFusionSyncService
         public int CamaSupplementTouched { get; set; }
         public int CamaSupplementCityUpdated { get; set; }
         public int CamaSupplementStratumUpdated { get; set; }
+        public int ExemptionsAdded { get; set; }
+        public int ExemptionsUpdated { get; set; }
+        public int ExemptionsSkipped { get; set; }
+        public int AppealsAdded { get; set; }
+        public int AppealsUpdated { get; set; }
+        public int AppealsSkipped { get; set; }
     }
 }
