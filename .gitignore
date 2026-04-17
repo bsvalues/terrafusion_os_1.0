@@ -398,6 +398,8 @@ target/
 bin/
 # Force include TF CLI (not compiled binaries)
 !tools/bin/
+# Force include terra-sync deploy scripts (not compiled binaries)
+!packages/terra-sync/deploy/bin/
 obj/
 
 # CRITICAL: Never commit logs
