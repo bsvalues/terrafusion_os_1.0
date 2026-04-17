@@ -1,0 +1,29 @@
+{
+  "name": "benton-harris-pacs-v1",
+  "config": {
+    "connector.class": "io.debezium.connector.sqlserver.SqlServerConnector",
+    "tasks.max": "1",
+    "database.hostname": "mssql",
+    "database.port": "1433",
+    "database.user": "debezium",
+    "database.password": "TF_Deb2026!",
+    "database.names": "pacs_oltp",
+    "topic.prefix": "sync.source.harris.benton",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka:9092",
+    "schema.history.internal.kafka.topic": "sync.source.harris.benton.schema-history",
+    "table.include.list": "dbo.property,dbo.property_val,dbo.sale,dbo.imprv",
+    "snapshot.mode": "initial",
+    "include.schema.changes": "true",
+    "database.encrypt": "false",
+    "provide.transaction.metadata": "false",
+    "heartbeat.interval.ms": "5000",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter.schemas.enable": "false",
+    "transforms": "unwrap",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.drop.tombstones": "false",
+    "transforms.unwrap.delete.handling.mode": "rewrite"
+  }
+}
