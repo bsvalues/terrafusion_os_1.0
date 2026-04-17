@@ -4,7 +4,37 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 
-[lib]
-path = "src/lib.rs"
+[[bin]]
+name = "terra-sync-control"
+path = "src/main.rs"
+
+[features]
+default = []
+# Enable to link the Kafka-backed audit transport. Requires cmake at build time
+# (rdkafka-sys). CI and production builds turn this on.
+kafka = ["terra-sync-audit/kafka"]
 
 [dependencies]
+tokio = { workspace = true }
+tonic = { workspace = true }
+prost = { workspace = true }
+prost-types = { workspace = true }
+axum = { workspace = true }
+serde = { workspace = true }
+serde_yaml = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+tracing-opentelemetry = { workspace = true }
+opentelemetry = { workspace = true }
+opentelemetry-otlp = { workspace = true }
+opentelemetry_sdk = { workspace = true, features = ["rt-tokio"] }
+chrono = { workspace = true }
+prometheus = { workspace = true }
+terra-sync-proto = { path = "../terra-sync-proto" }
+terra-sync-policy = { path = "../terra-sync-policy" }
+terra-sync-audit = { path = "../terra-sync-audit" }
+
+[dev-dependencies]
+tokio = { workspace = true }

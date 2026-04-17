@@ -1,0 +1,23 @@
+# Dev-mode config for terra-sync-control. Points at the committed
+# pacscontract.v1 manifest and uses the NullAudit transport (no Kafka).
+# Production configs override these values and enable the `kafka` feature
+# at build time.
+
+grpc:
+  listen_addr: "127.0.0.1:9443"
+
+metrics:
+  listen_addr: "127.0.0.1:9090"
+
+kafka:
+  # Unused in dev (NullAudit). Still required by config schema so the
+  # kafka-feature build uses the same YAML shape.
+  bootstrap_servers: "localhost:9092"
+  audit_topic: "terra-sync.audit.v4"
+
+manifest_path: "../../../../docs/spec-lock/locks/pacscontract/v1/manifest.yaml"
+
+observability:
+  service_name: "terra-sync-control-dev"
+  # Set to e.g. "http://localhost:4317" to enable OTLP span export.
+  otlp_endpoint: null
