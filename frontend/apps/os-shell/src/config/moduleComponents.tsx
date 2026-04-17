@@ -231,6 +231,12 @@ const FederationDashboard = lazy(
 
 // CostForge — native app hosted via AppFrame (packages/terrabuild, port 5002)
 // The shell NEVER imports CostForge code directly — it loads the running service URL.
+
+// TerraPilt — PILT (Payment in Lieu of Taxes) surface.
+// OS-native React module, follows CostForge canon (no iframe, no external server).
+// Data: /api/pilt/* on the TerraFusion Kernel (PiltController).
+const TerraPilt = lazy(() => import('../pages/pilt/TerraPilt'));
+
 import { AppFrame } from '../components/app-frame/AppFrame';
 
 // TerraGaia - Natural Language AI Assistant
@@ -770,20 +776,13 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         />
       );
 
+    // TerraPilt — OS-native PILT module (no iframe, no external server).
+    // Replaced AppFrame / port-5009 with inline React page calling /api/pilt/*.
     case 'terra-pilt':
       return (
-        <AppFrame
-          moduleId="terra-pilt"
-          parcelContext={
-            metadata?.parcelId
-              ? {
-                  parcelId: String(metadata.parcelId),
-                  countyId: String(metadata.countyId ?? ''),
-                  assessmentYear: Number(metadata.assessmentYear ?? new Date().getFullYear()),
-                }
-              : undefined
-          }
-        />
+        <Suspense fallback={<ModuleLoadingFallback />}>
+          <TerraPilt />
+        </Suspense>
       );
 
     case 'property-tax-ai':
