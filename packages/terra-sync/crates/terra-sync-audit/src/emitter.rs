@@ -72,6 +72,10 @@ impl AuditEmitter {
 
 #[async_trait::async_trait]
 impl crate::transport::Audit for AuditEmitter {
+    fn name(&self) -> &'static str {
+        "kafka"
+    }
+
     async fn emit(&self, event: &AuditEvent) -> Result<(), crate::transport::AuditError> {
         AuditEmitter::emit(self, event).await.map_err(|e| match e {
             EmitError::Json(je) => crate::transport::AuditError::Serialization(je.to_string()),

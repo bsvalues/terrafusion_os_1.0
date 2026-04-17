@@ -35,6 +35,3 @@ prometheus = { workspace = true }
 terra-sync-proto = { path = "../terra-sync-proto" }
 terra-sync-policy = { path = "../terra-sync-policy" }
 terra-sync-audit = { path = "../terra-sync-audit" }
-
-[dev-dependencies]
-tokio = { workspace = true }

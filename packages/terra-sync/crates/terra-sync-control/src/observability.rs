@@ -38,3 +38,9 @@ pub fn init(cfg: &ObservabilityConfig) -> anyhow::Result<()> {
 
     Ok(())
 }
+
+/// Flush the OTLP batch exporter on graceful shutdown so in-flight spans
+/// are not lost. Safe to call even if no tracer provider was installed.
+pub fn shutdown() {
+    opentelemetry::global::shutdown_tracer_provider();
+}

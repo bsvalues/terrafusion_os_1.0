@@ -17,6 +17,7 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
 async-trait = { workspace = true }
+prometheus = { workspace = true }
 terra-sync-proto = { path = "../terra-sync-proto" }
 
 # Feature-gated transports. `cmake-build` on rdkafka requires cmake on the

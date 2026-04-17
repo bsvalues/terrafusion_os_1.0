@@ -2,6 +2,7 @@ mod config;
 mod observability;
 mod server;
 
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use terra_sync_audit::{Audit, NullAudit};
 use terra_sync_policy::{ContractManifest, PolicyEvaluator};
@@ -25,13 +26,20 @@ async fn main() -> anyhow::Result<()> {
 
     let audit: Arc<dyn Audit> = build_audit_transport(&cfg.kafka)?;
 
+    // Health flag for the metrics sidecar. Flipped to false if the axum
+    // server fails to bind or serve; read by `get_status` to report
+    // component health honestly.
+    let metrics_healthy = Arc::new(AtomicBool::new(true));
+
     let svc = server::ControlPlaneService {
         policy,
         audit,
         start_time: chrono::Utc::now(),
+        metrics_healthy: Arc::clone(&metrics_healthy),
     };
 
     let metrics_addr = cfg.metrics.listen_addr;
+    let metrics_healthy_for_task = Arc::clone(&metrics_healthy);
     tokio::spawn(async move {
         let app = axum::Router::new()
             .route("/health", axum::routing::get(|| async { "ok" }))
@@ -46,20 +54,45 @@ async fn main() -> anyhow::Result<()> {
                         .unwrap_or_default()
                 }),
             );
-        let listener = tokio::net::TcpListener::bind(metrics_addr)
-            .await
-            .expect("metrics bind");
-        axum::serve(listener, app).await.expect("metrics serve");
+        match tokio::net::TcpListener::bind(metrics_addr).await {
+            Err(e) => {
+                tracing::error!(addr = %metrics_addr, error = %e, "metrics bind failed");
+                metrics_healthy_for_task.store(false, Ordering::SeqCst);
+            }
+            Ok(listener) => {
+                if let Err(e) = axum::serve(listener, app).await {
+                    tracing::error!(error = %e, "metrics serve failed");
+                    metrics_healthy_for_task.store(false, Ordering::SeqCst);
+                }
+            }
+        }
     });
 
     tracing::info!(addr = %cfg.grpc.listen_addr, "gRPC server listening");
+
+    let shutdown = async {
+        let _ = tokio::signal::ctrl_c().await;
+        tracing::info!("shutdown signal received");
+    };
+
     Server::builder()
         .add_service(ControlPlaneServer::new(svc))
-        .serve(cfg.grpc.listen_addr)
+        .serve_with_shutdown(cfg.grpc.listen_addr, shutdown)
         .await?;
 
+    tracing::info!("gRPC server stopped");
+    observability::shutdown();
     Ok(())
 }
+
+// Compile-time guarantee: exactly one build_audit_transport definition.
+// If a future feature (e.g., "pulsar") is added, add a mutually-exclusive
+// cfg arm and update these assertions.
+#[cfg(all(feature = "kafka", not(feature = "kafka")))]
+compile_error!("build_audit_transport cfg branches are not exclusive");
+
+#[cfg(not(any(feature = "kafka", not(feature = "kafka"))))]
+compile_error!("build_audit_transport has no applicable cfg branch");
 
 #[cfg(feature = "kafka")]
 fn build_audit_transport(cfg: &config::KafkaConfig) -> anyhow::Result<Arc<dyn Audit>> {
@@ -76,5 +109,5 @@ fn build_audit_transport(cfg: &config::KafkaConfig) -> anyhow::Result<Arc<dyn Au
 #[cfg(not(feature = "kafka"))]
 fn build_audit_transport(_cfg: &config::KafkaConfig) -> anyhow::Result<Arc<dyn Audit>> {
     tracing::warn!("audit transport: NullAudit (kafka feature disabled; events are dropped)");
-    Ok(Arc::new(NullAudit))
+    Ok(Arc::new(NullAudit::new()))
 }
