@@ -229,9 +229,8 @@ const FederationDashboard = lazy(
   () => import('../applications/federation-dashboard/FederationDashboard')
 );
 
-// CostForge — PhD workflow workspace (8-tab audit-diagnose-fix-verify loop)
-// Upgraded from AppFrame / port-5002 pattern to OS-native React module.
-const CostForge = lazy(() => import('../pages/forge/cost/CostForge'));
+// CostForge — native app hosted via AppFrame (packages/terrabuild, port 5002)
+// The shell NEVER imports CostForge code directly — it loads the running service URL.
 
 // TerraPilt — PILT (Payment in Lieu of Taxes) surface.
 // OS-native React module, follows CostForge canon (no iframe, no external server).
