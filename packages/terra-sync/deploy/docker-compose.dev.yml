@@ -70,6 +70,15 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: admin
     ports: ["3001:3000"]
 
+  arroyo:
+    image: ghcr.io/arroyosystems/arroyo:0.14.0
+    depends_on: [kafka]
+    environment:
+      ARROYO__CONTROLLER__SCHEDULER: node
+    ports:
+      - "5115:5115"
+      - "8000:8000"
+
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
