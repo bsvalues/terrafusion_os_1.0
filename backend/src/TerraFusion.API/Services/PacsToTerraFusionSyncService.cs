@@ -1649,22 +1649,24 @@ public sealed class PacsToTerraFusionSyncService
                 g => g.OrderByDescending(p => p.SyncedAt).First().Id);
 
         // Step 2: Build PacsParcel.Guid → City from primary PacsSitus rows
+        // Filter pushed to DB via pacsIdSet (EF Core translates Contains to = ANY(...) in PostgreSQL)
+        var pacsIdSet = geoToPacsId.Values.ToHashSet();
         var situsRows = await _db.PacsSituses
-            .Where(s => s.City != null)
+            .Where(s => s.City != null && pacsIdSet.Contains(s.ParcelId))
             .Select(s => new { s.ParcelId, s.City, s.PrimaryFlag })
             .ToListAsync(cancellationToken);
 
-        var pacsIdSet = geoToPacsId.Values.ToHashSet();
         var cityByPacsId = situsRows
-            .Where(s => pacsIdSet.Contains(s.ParcelId))
             .GroupBy(s => s.ParcelId)
             .ToDictionary(
                 g => g.Key,
-                g => g.OrderByDescending(s => s.PrimaryFlag == "Y").First().City!);
+                g => g.OrderBy(s => s.PrimaryFlag == "Y" ? 0 : 1).First().City!);
 
-        // Step 3: Load all CamaCharacteristic rows for this county
+        // Step 3: Load all CamaCharacteristic rows for this county (AsNoTracking to avoid
+        // EF change-tracking overhead on 100k+ rows; attach explicitly only for changed entities)
         var camaRows = await _db.CamaCharacteristics
             .Where(c => c.CountyId == countyId)
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
         int touched = 0, cityUpd = 0, stratUpd = 0;
@@ -1672,6 +1674,7 @@ public sealed class PacsToTerraFusionSyncService
         foreach (var cama in camaRows)
         {
             touched++;
+            bool changed = false;
 
             // City via GeoId → PacsGuid → City
             string? rawCity = null;
@@ -1683,6 +1686,7 @@ public sealed class PacsToTerraFusionSyncService
             {
                 cama.City = normalizedCity;
                 cityUpd++;
+                changed = true;
             }
 
             // Stratum from BuildingType
@@ -1691,10 +1695,19 @@ public sealed class PacsToTerraFusionSyncService
             {
                 cama.PropertyUseStratum = stratum;
                 stratUpd++;
+                changed = true;
+            }
+
+            // Attach only rows that actually changed — keeps the EF change tracker lean
+            if (changed)
+            {
+                _db.CamaCharacteristics.Attach(cama);
+                _db.Entry(cama).Property(x => x.City).IsModified = true;
+                _db.Entry(cama).Property(x => x.PropertyUseStratum).IsModified = true;
             }
         }
 
-        if (touched > 0)
+        if (cityUpd > 0 || stratUpd > 0)
             await _db.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation(

@@ -314,14 +314,7 @@ public class TerraFusionSyncIntegrationService : ITerraFusionSyncService
                 configuredCounty?.State,
                 options);
 
-            if (configuredCounty is not null)
-            {
-                _runtimeState.RecordSyncCompletion(result);
-            }
-            else
-            {
-                _runtimeState.RecordSyncCompletion(result);
-            }
+            _runtimeState.RecordSyncCompletion(result);
 
             _logger.LogInformation("✅ County {County} sync completed. Records: {Records}, Duration: {Duration}",
                 countyName, result.RecordsProcessed, result.Duration);
