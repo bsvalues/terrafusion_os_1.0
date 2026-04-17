@@ -1,5 +1,7 @@
-use std::collections::HashMap;
-use terra_sync_audit::{verify_chain, Actor, AuditEventBuilder, Outcome, Subject};
+use std::collections::BTreeMap;
+use terra_sync_audit::{
+    verify_chain, Actor, AuditEvent, AuditEventBuilder, ChainBreak, Outcome, Subject,
+};
 
 fn make_actor() -> Actor {
     Actor {
@@ -13,7 +15,7 @@ fn make_subject(kind: &str, id: &str) -> Subject {
     Subject {
         kind: kind.into(),
         id: id.into(),
-        attrs: HashMap::new(),
+        attrs: BTreeMap::new(),
     }
 }
 
@@ -26,7 +28,7 @@ fn chain_of_three_events_verifies_clean() {
         subject: make_subject("connector", "benton-v1"),
         outcome: Outcome::Success,
         policy_refs: vec!["pacscontract.v1".into()],
-        metadata: HashMap::new(),
+        metadata: BTreeMap::new(),
     }
     .build("");
 
@@ -37,7 +39,7 @@ fn chain_of_three_events_verifies_clean() {
         subject: make_subject("connector", "benton-v1"),
         outcome: Outcome::Success,
         policy_refs: vec![],
-        metadata: HashMap::new(),
+        metadata: BTreeMap::new(),
     }
     .build(&e1.hash);
 
@@ -48,12 +50,12 @@ fn chain_of_three_events_verifies_clean() {
         subject: make_subject("connector", "benton-v1"),
         outcome: Outcome::Success,
         policy_refs: vec![],
-        metadata: HashMap::new(),
+        metadata: BTreeMap::new(),
     }
     .build(&e2.hash);
 
     assert!(
-        verify_chain(&[e1, e2, e3]).is_none(),
+        verify_chain(&[e1, e2, e3]).is_ok(),
         "clean chain should verify"
     );
 }
@@ -67,7 +69,7 @@ fn tampered_event_detected() {
         subject: make_subject("x", "x"),
         outcome: Outcome::Success,
         policy_refs: vec![],
-        metadata: HashMap::new(),
+        metadata: BTreeMap::new(),
     }
     .build("");
     let e2 = AuditEventBuilder {
@@ -77,17 +79,15 @@ fn tampered_event_detected() {
         subject: make_subject("y", "y"),
         outcome: Outcome::Success,
         policy_refs: vec![],
-        metadata: HashMap::new(),
+        metadata: BTreeMap::new(),
     }
     .build(&e1.hash);
 
     e1.event_type = "z".into();
 
-    let broken = verify_chain(&[e1, e2]);
     assert_eq!(
-        broken,
-        Some(0),
-        "tampered event at index 0 should be flagged"
+        verify_chain(&[e1, e2]),
+        Err((0, ChainBreak::SelfHashMismatch))
     );
 }
 
@@ -100,7 +100,7 @@ fn broken_prev_link_detected() {
         subject: make_subject("x", "x"),
         outcome: Outcome::Success,
         policy_refs: vec![],
-        metadata: HashMap::new(),
+        metadata: BTreeMap::new(),
     }
     .build("");
     let e2 = AuditEventBuilder {
@@ -110,10 +110,105 @@ fn broken_prev_link_detected() {
         subject: make_subject("x", "x"),
         outcome: Outcome::Success,
         policy_refs: vec![],
-        metadata: HashMap::new(),
+        metadata: BTreeMap::new(),
     }
     .build("sha256:wrong");
 
-    let broken = verify_chain(&[e1, e2]);
-    assert_eq!(broken, Some(1));
+    assert_eq!(
+        verify_chain(&[e1, e2]),
+        Err((1, ChainBreak::PrevHashMismatch))
+    );
+}
+
+#[test]
+fn metadata_ordering_is_stable_across_roundtrip() {
+    let mut meta = BTreeMap::new();
+    meta.insert("zebra".into(), "1".into());
+    meta.insert("alpha".into(), "2".into());
+    meta.insert("mango".into(), "3".into());
+
+    let e = AuditEventBuilder {
+        event_type: "x".into(),
+        actor: make_actor(),
+        county_id: "benton".into(),
+        subject: make_subject("x", "x"),
+        outcome: Outcome::Success,
+        policy_refs: vec![],
+        metadata: meta,
+    }
+    .build("");
+
+    // Round-trip through JSON and re-verify the chain of 1.
+    let json = serde_json::to_string(&e).expect("serialize");
+    let back: AuditEvent = serde_json::from_str(&json).expect("deserialize");
+    assert_eq!(back.hash, e.hash, "hash must survive JSON round-trip");
+    assert!(
+        verify_chain(&[back]).is_ok(),
+        "round-tripped event must still verify"
+    );
+}
+
+#[test]
+fn empty_chain_verifies_clean() {
+    assert!(verify_chain(&[]).is_ok());
+}
+
+#[test]
+fn outcome_variants_roundtrip() {
+    for outcome in [Outcome::Success, Outcome::Denied, Outcome::Failed] {
+        let e = AuditEventBuilder {
+            event_type: "test".into(),
+            actor: make_actor(),
+            county_id: "benton".into(),
+            subject: make_subject("x", "x"),
+            outcome,
+            policy_refs: vec![],
+            metadata: BTreeMap::new(),
+        }
+        .build("");
+        let json = serde_json::to_string(&e).expect("serialize");
+        let back: AuditEvent = serde_json::from_str(&json).expect("deserialize");
+        assert_eq!(back.outcome, outcome);
+        assert!(verify_chain(&[back]).is_ok());
+    }
+}
+
+#[test]
+fn reordered_chain_is_detected() {
+    let e1 = AuditEventBuilder {
+        event_type: "a".into(),
+        actor: make_actor(),
+        county_id: "benton".into(),
+        subject: make_subject("x", "x"),
+        outcome: Outcome::Success,
+        policy_refs: vec![],
+        metadata: BTreeMap::new(),
+    }
+    .build("");
+    let e2 = AuditEventBuilder {
+        event_type: "b".into(),
+        actor: make_actor(),
+        county_id: "benton".into(),
+        subject: make_subject("x", "x"),
+        outcome: Outcome::Success,
+        policy_refs: vec![],
+        metadata: BTreeMap::new(),
+    }
+    .build(&e1.hash);
+    let e3 = AuditEventBuilder {
+        event_type: "c".into(),
+        actor: make_actor(),
+        county_id: "benton".into(),
+        subject: make_subject("x", "x"),
+        outcome: Outcome::Success,
+        policy_refs: vec![],
+        metadata: BTreeMap::new(),
+    }
+    .build(&e2.hash);
+
+    // Reorder: e1, e3, e2. e3.prev_hash references e2 but e2 isn't there yet.
+    let result = verify_chain(&[e1, e3, e2]);
+    assert!(result.is_err(), "reordered chain must not verify clean");
+    // First break is at index 1 (e3's prev_hash doesn't match e1's hash).
+    assert_eq!(result.unwrap_err().0, 1);
 }
