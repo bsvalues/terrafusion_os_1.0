@@ -4,7 +4,23 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 
-[lib]
-path = "src/lib.rs"
+[features]
+default = []
+kafka = ["dep:rdkafka", "dep:tokio"]
 
 [dependencies]
+chrono = { workspace = true }
+uuid = { workspace = true }
+sha2 = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+terra-sync-proto = { path = "../terra-sync-proto" }
+
+# Feature-gated transports. `cmake-build` on rdkafka requires cmake on the
+# host, which is not universally available. The core event model (event.rs)
+# does not need them. Downstream crates that need the Kafka emitter must
+# opt in via the `kafka` feature.
+rdkafka = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
