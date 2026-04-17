@@ -1,3 +1,15 @@
+-- PHASE 2 SCOPE NOTE:
+--   Emits the subset of spec §6.2 required for shadow-parity:
+--   event_id, schema_version, event_type, county_id, entity,
+--   source_system, source_id, occurred_at_utc, ingested_at_utc,
+--   after_json.
+--   Deferred to Phase 3: `before` (prior values), `provenance`
+--   (debezium_offset, connector_name, transform_pipeline,
+--   transform_version), and `audit_chain` (prev_event_hash,
+--   this_event_hash). These are not required for row-existence
+--   shadow-parity; they are required for bidirectional writeback
+--   and forensics, both Phase 3 scope.
+
 -- normalize-property.sql
 -- Arroyo streaming SQL pipeline for TerraFusion Sync v4, Phase 2.
 --

@@ -29,9 +29,10 @@ cargo fmt --all -- --check
 cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 ```
-Expected: green on all three commands. Test count ≥ 26
-(9 policy unit + 5 policy integration + 8 audit + 1 control +
-3 control integration as of this commit).
+Expected: green on all three commands. Test count ≥ 32 as of the
+Phase 2 exit-gate codification commit (policy + audit + control +
+shadow-diff + integration combined). The per-crate breakdown can
+drift as crates grow; the workspace gate is the authoritative number.
 
 ### 2. Dev topology boots
 

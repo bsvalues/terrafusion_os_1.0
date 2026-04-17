@@ -11,7 +11,10 @@ use terra_sync_proto::control::{
 use tonic::{Request, Response, Status};
 
 pub struct ControlPlaneService {
-    #[allow(dead_code)] // TODO(phase-2/task-10): wire policy into pause/resume flows
+    #[allow(dead_code)]
+    // TODO(phase-3): wire policy into pause_connector / resume_connector
+    // so the control plane evaluates pacscontract.v1 before allowing
+    // operator actions. Phase 2 returns Status::unimplemented on both.
     pub policy: Arc<PolicyEvaluator>,
     pub audit: Arc<dyn Audit>,
     pub start_time: chrono::DateTime<chrono::Utc>,

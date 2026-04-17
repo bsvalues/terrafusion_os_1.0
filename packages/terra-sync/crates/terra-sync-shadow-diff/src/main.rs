@@ -10,6 +10,14 @@
 use sqlx::postgres::PgPoolOptions;
 use terra_sync_shadow_diff::delta_percent;
 
+/// Parity diff report for one shadow table.
+///
+/// `coverage_level` explicitly discriminates what was compared:
+/// - `"row-existence-only"` — Phase 2 baseline (this file); compares
+///   primary-key presence but not column values
+/// - `"row-and-values"` — Phase 2.1 enhancement (not yet implemented);
+///   will include sum/min/max/median over numeric columns per
+///   neighborhood
 #[derive(Debug)]
 struct DiffReport {
     table: String,
@@ -17,7 +25,7 @@ struct DiffReport {
     shadow_row_count: i64,
     missing_in_shadow: i64,
     extra_in_shadow: i64,
-    value_mismatches: i64,
+    coverage_level: &'static str,
     delta_percent: f64,
 }
 
@@ -29,7 +37,7 @@ impl DiffReport {
             "shadow_row_count": self.shadow_row_count,
             "missing_in_shadow": self.missing_in_shadow,
             "extra_in_shadow": self.extra_in_shadow,
-            "value_mismatches": self.value_mismatches,
+            "coverage_level": self.coverage_level,
             "delta_percent": self.delta_percent,
             "threshold_ok": self.delta_percent < 0.1,
         })
@@ -103,7 +111,7 @@ async fn main() -> anyhow::Result<()> {
             shadow_row_count: shadow_count.0,
             missing_in_shadow: missing.0,
             extra_in_shadow: extra.0,
-            value_mismatches: 0, // value-level diff lands in Phase 2.1
+            coverage_level: "row-existence-only",
             delta_percent: delta_percent(truth_count.0, mismatches),
         };
         tracing::info!(

@@ -41,10 +41,14 @@ pub struct KafkaConfig {
     // NullAudit and never touches these. Still required in the YAML shape
     // so dev and prod configs stay symmetrical.
     #[allow(dead_code)]
-    // TODO(phase-2/task-10): consumed by AuditEmitter::new under `kafka` feature
+    // TODO(phase-3): read by the AuditEmitter when --features kafka is
+    // active; dead-code on the default feature path. Phase 3 enables
+    // kafka by default once WORM S3 audit sink lands.
     pub bootstrap_servers: String,
     #[allow(dead_code)]
-    // TODO(phase-2/task-10): consumed by AuditEmitter::new under `kafka` feature
+    // TODO(phase-3): read by the AuditEmitter when --features kafka is
+    // active; dead-code on the default feature path. Phase 3 enables
+    // kafka by default once WORM S3 audit sink lands.
     pub audit_topic: String,
 }
 
