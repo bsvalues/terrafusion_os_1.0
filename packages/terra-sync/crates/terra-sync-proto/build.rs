@@ -16,7 +16,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "proto/audit.proto",
                 "proto/policy.proto",
             ],
-            &["proto", include_path.to_str().ok_or("include path not UTF-8")?],
+            &[
+                "proto",
+                include_path.to_str().ok_or("include path not UTF-8")?,
+            ],
         )?;
     Ok(())
 }

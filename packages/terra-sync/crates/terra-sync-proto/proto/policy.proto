@@ -1,31 +1,63 @@
 syntax = "proto3";
 package terrafusion.sync.v4.policy;
 
+// pacscontract.v1 policy engine. Enforces read-only / tenancy /
+// column-level restrictions on PACS data access. All evaluate calls
+// are auditable via terra-sync-audit.
 service PolicyEngine {
     rpc Evaluate(EvaluateRequest) returns (EvaluateResponse);
     rpc ValidateManifest(ValidateManifestRequest) returns (ValidateManifestResponse);
 }
 
 message EvaluateRequest {
+    // Identity making the request (e.g. mTLS principal or service name).
     string actor_identity = 1;
+
+    // Namespaced action, e.g. "topic.subscribe", "connector.deploy",
+    // "writeback.write". See policy.rego / policy.yaml for the catalog.
     string action = 2;
+
+    // "topic" | "connector" | "canonical-row" | ...
     string resource_kind = 3;
+
+    // Resource identifier being acted upon.
     string resource_id = 4;
+
+    // County this evaluation scopes to. Empty = control-plane-global.
     string county_id = 5;
+
+    // Extra attributes needed to decide (topic name, schema hash, ...).
+    //
+    // MUST-NOT-LOG: values MAY contain operator-specific detail. The
+    // evaluator's gRPC interceptor MUST redact `context` before any
+    // external logging / tracing. Callers MUST keep values under 4 KiB.
     map<string, string> context = 6;
 }
 
 message EvaluateResponse {
+    // True if the action is permitted under the current manifest.
     bool allowed = 1;
+
+    // The rule path that produced the decision, e.g.
+    // "counties.benton.allow_subscribe" or "default.deny_unknown_county".
     string rule_matched = 2;
+
+    // Human-readable reason for the decision (empty on allow).
     string reason = 3;
 }
 
 message ValidateManifestRequest {
+    // Full YAML manifest content.
+    //
+    // MUST-NOT-LOG: manifest may embed internal configuration. Server
+    // MUST validate size <= 1 MiB and reject larger payloads. Audit
+    // events referring to this request MUST NOT include the manifest
+    // body — only its SHA-256.
     string manifest_yaml = 1;
 }
 
 message ValidateManifestResponse {
+    // True if the manifest parses AND passes structural validation.
     bool valid = 1;
     repeated string errors = 2;
     repeated string warnings = 3;

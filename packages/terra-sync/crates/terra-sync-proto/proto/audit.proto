@@ -3,29 +3,76 @@ package terrafusion.sync.v4.audit;
 
 import "google/protobuf/timestamp.proto";
 
+// Structured, tamper-evident record of one sync-platform operation.
+// Events are hash-chained: each event's `hash` is a SHA-256 over the
+// canonical JSON of the event with `hash` blanked, and `prev_hash`
+// references the prior event's `hash`. Breaking the chain is detectable.
+//
+// MUST-NOT-LOG: `metadata` values may carry operational context that a
+// consumer decides is secret. Audit sinks MUST NOT forward `metadata`
+// to external loggers without explicit contract review.
 message AuditEvent {
+    // UUIDv4 string. Unique per event.
     string audit_id = 1;
+
+    // Namespaced event type, e.g. "connector.deploy", "policy.deny",
+    // "contract.amend".
     string event_type = 2;
+
+    // UTC event timestamp with microsecond precision.
     google.protobuf.Timestamp occurred_at = 3;
+
+    // Identity that triggered this event.
     Actor actor = 4;
+
+    // Sovereign-county isolation key. Empty for control-plane-global events.
     string county_id = 5;
+
+    // What was acted upon.
     Subject subject = 6;
+
+    // Outcome of the action (SUCCESS / DENIED / FAILED).
     Outcome outcome = 7;
+
+    // Policy references consulted (e.g. "pacscontract.v1", amendment IDs).
     repeated string policy_refs = 8;
+
+    // Hash of the prior event in the chain. Empty string for genesis.
+    // Format: "sha256:<64-hex-lowercase>".
     string prev_hash = 9;
+
+    // SHA-256 of canonical-JSON(this event with `hash` blanked).
+    // Format: "sha256:<64-hex-lowercase>". Tamper-evident.
     string hash = 10;
+
+    // Free-form operator/system metadata. MUST NOT contain secrets.
+    // See the MUST-NOT-LOG note on the message level.
     map<string, string> metadata = 11;
 }
 
 message Actor {
+    // Stable identity string. For mTLS principals, the cert's CN or URI SAN.
+    // For service accounts, the service principal name.
     string identity = 1;
+
+    // "mtls" | "service-account" | "system". Extensible.
     string auth_method = 2;
+
+    // Format: "sha256:<64-hex-lowercase>". Empty when not applicable
+    // (e.g. system-initiated events). No colons in the hex portion.
     string certificate_fingerprint = 3;
 }
 
 message Subject {
+    // "connector" | "topic" | "contract" | "canonical-row" | "amendment" | ...
     string kind = 1;
+
+    // Resource identifier. For connectors: connector name. For topics:
+    // fully-qualified topic name. For canonical rows: "<entity>/<id>".
     string id = 2;
+
+    // Additional attributes for the subject. Same MUST-NOT-LOG rules
+    // as AuditEvent.metadata.
     map<string, string> attrs = 3;
 }
 

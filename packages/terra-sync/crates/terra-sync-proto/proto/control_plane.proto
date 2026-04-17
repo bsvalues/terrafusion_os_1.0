@@ -1,6 +1,10 @@
 syntax = "proto3";
 package terrafusion.sync.v4.control;
 
+// Operator-facing control plane for TerraFusion Sync v4. All RPCs
+// must be mTLS-authenticated in production. Every state-changing RPC
+// (Pause*, Resume*) emits a terra-sync-audit event.
+
 import "google/protobuf/timestamp.proto";
 
 service ControlPlane {
