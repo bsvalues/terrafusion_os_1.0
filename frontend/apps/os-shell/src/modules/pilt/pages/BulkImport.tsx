@@ -213,7 +213,7 @@ export default function PiltBulkImport() {
           className="hidden"
           onChange={onFileChange}
         />
-        <div className="text-3xl text-white/30">{'\u2191'}</div>
+        <div className="text-3xl text-white/30">&#8593;</div>
         <p className="text-sm text-white/60">
           Drag and drop a CSV file here, or click to browse
         </p>
