@@ -3152,13 +3152,15 @@ public class CostForgeController : ControllerBase
     if (taxYear == 0) taxYear = DateTime.UtcNow.Year;
 
     // Pull qualified sales: 3-year rolling window (assessment year - 3 to year)
+    // 3-layer default-qualified filter: decision wins; recommendation is fallback; null = qualified.
     int salesYearMin = taxYear - 3;
     var sales = await _db.ComparableSales
       .AsNoTracking()
       .Where(s => s.SalePrice > 10_000
-               && s.SaleQualification == "qualified"
                && s.SalesYear >= salesYearMin
-               && s.SalesYear <= taxYear)
+               && s.SalesYear <= taxYear
+               && (s.QualificationDecision == "qualified"
+                   || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))))
       .Select(s => new { s.ParcelId, s.SalePrice })
       .ToListAsync();
 
@@ -3328,9 +3330,10 @@ public class CostForgeController : ControllerBase
       .Where(s => s.ParcelId != null
                && parcelSet.Contains(s.ParcelId!)
                && s.SalePrice > 10_000
-               && s.SaleQualification == "qualified"
                && s.SalesYear >= previewYearMin
-               && s.SalesYear <= taxYear)
+               && s.SalesYear <= taxYear
+               && (s.QualificationDecision == "qualified"
+                   || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))))
       .Select(s => new { s.ParcelId, s.SalePrice })
       .ToListAsync();
 
@@ -6433,9 +6436,10 @@ public class CostForgeController : ControllerBase
       var salesRaw = await _db.ComparableSales
           .AsNoTracking()
           .Where(s => s.SalePrice > 10_000
-                   && s.SaleQualification == "qualified"
                    && s.SalesYear >= salesYearMin
-                   && s.SalesYear <= taxYear)
+                   && s.SalesYear <= taxYear
+                   && (s.QualificationDecision == "qualified"
+                       || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))))
           .Select(s => new { s.ParcelId, s.SalePrice })
           .ToListAsync(ct);
       qualifiedSalesCount = salesRaw.Count;
@@ -6550,13 +6554,14 @@ public class CostForgeController : ControllerBase
         .Select(p => new { p.ParcelNumber, p.AssessedValue })
         .ToDictionaryAsync(p => p.ParcelNumber!, p => (decimal?)p.AssessedValue);
 
-    // Latest qualified sale per parcel
+    // Latest qualified sale per parcel — 3-layer default-qualified filter.
     var salesMap = await _db.ComparableSales
         .AsNoTracking()
         .Where(s => s.ParcelId != null
                  && parcelIds.Contains(s.ParcelId!)
                  && s.SalePrice > 10_000
-                 && s.SaleQualification == "qualified")
+                 && (s.QualificationDecision == "qualified"
+                     || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))))
         .GroupBy(s => s.ParcelId!)
         .Select(g => new { ParcelId = g.Key, SalePrice = g.OrderByDescending(s => s.SalesYear).First().SalePrice })
         .ToDictionaryAsync(s => s.ParcelId, s => (decimal?)s.SalePrice);
