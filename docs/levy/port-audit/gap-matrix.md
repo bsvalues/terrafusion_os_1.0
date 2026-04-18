@@ -19,7 +19,7 @@ Legend:
 | Flask file | Size | Routes | .NET counterpart | Status | Notes |
 |---|---:|---:|---|---|---|
 | `routes_admin.py` | 5.9 KB | 2 | LevyDashboardController | COVERED | admin dashboard + status |
-| `routes_advanced_mcp.py` | 33.2 KB | 7 | — | DECIDE | "Advanced MCP" subsystem — port or deprecate? |
+| `routes_advanced_mcp.py` | 33.2 KB | 7 | — | CANCEL_PARTIAL | D2 resolved 2026-04-18: 0/7 portable now (1 SKIP_UI = `/advanced-insights` HTML page; 6 OBSOLETE = built on retired `get_claude_service` + `check_api_key_status` + custom `advanced_ai_agent` vendor-locked Anthropic stack — same architectural objection as routes_mcp.py, sovereign hybrid uses `MuseLlmOptions` config-based provider) |
 | `routes_auth.py` | 3.6 KB | 5 | — | SKIP_OS | OS-level auth handles login/logout/register/profile |
 | `routes_budget_impact.py` | 28.1 KB | 5 | — | GAP | Budget simulation + AI simulation — needs new controller |
 | `routes_dashboard.py` | 6.8 KB | 3 | LevyDashboardController | PARTIAL | `/metrics` + `/stats` may need enhancement |
@@ -35,7 +35,7 @@ Legend:
 | `routes_levy_calculator.py` | TBD | TBD | LevyCalculator + LevyCalculation | COVERED | rate calc + bill impact + aggregate ported |
 | `routes_levy_exports.py` | TBD | TBD | LevyExportController | COVERED | upload/history/compare ported |
 | `routes_mcp.py` | 66.1 KB | 11 | — | CANCEL_PARTIAL | D3 resolved 2026-04-18: 0/11 portable now (3 OBSOLETE = anthropic key mgmt — `AnthropicMuseLlmClient` retired, .NET uses `MuseLlmOptions` config-based provider; 3 SKIP_UI = HTML templates; 5 DEFER = need `ApiCallLog` schema, same blocker as Task 2.5) |
-| `routes_mcp_army.py` | 18.7 KB | TBD | — | DECIDE | "MCP Army" — confirm concept alive |
+| `routes_mcp_army.py` | 18.7 KB | 16 | — | CANCEL_PARTIAL | D1 resolved 2026-04-18: 0/16 portable now (2 SKIP_UI = dashboard HTML pages; 14 DUPLICATE = custom Flask agent-coordination layer — Architect Prime / Integration Coordinator / Component Leads / Specialists / master-prompt / training — fully overlaps and conflicts with `EnterpriseAIAgentCoordinator` + `AISwarmOrchestrator` (10,008-agent OS swarm already running). Parallel coordination layer in .NET would fight the OS swarm) |
 | `routes_mcp_ui.py` | 1.1 KB | TBD | — | SKIP_UI | MCP UI glue |
 | `routes_property_assessment.py` | 16.4 KB | TBD | — | GAP | Property assessment endpoints |
 | `routes_public.py` | TBD | TBD | — | GAP | Public-facing read endpoints |
@@ -54,8 +54,8 @@ Plus local-only: `routes_tours.py` — keep (newer local feature).
 | COVERED | 5 |
 | PARTIAL | 5 |
 | GAP | 8 |
-| DECIDE | 2 |
-| CANCEL_PARTIAL | 1 |
+| DECIDE | 0 |
+| CANCEL_PARTIAL | 3 |
 | SKIP_UI | 4 |
 | SKIP_CLI | 1 |
 | SKIP_OS | 1 |
@@ -75,8 +75,8 @@ Plus local-only: `routes_tours.py` — keep (newer local feature).
 
 ## Founder Decisions Needed (Phase 2 blockers)
 
-- **D1:** Port MCP Army (`routes_mcp_army.py` + helpers) or deprecate?
-- **D2:** Port Advanced MCP (`routes_advanced_mcp.py`) or deprecate?
+- **D1 (RESOLVED 2026-04-18):** Decision was "audit before deciding". Outcome: CANCEL_PARTIAL. After source review of all 16 routes: 2 SKIP_UI (dashboard HTML), 14 architecturally DUPLICATE the OS-level `EnterpriseAIAgentCoordinator` + `AISwarmOrchestrator` (10,008-agent swarm already operational). Porting would create a competing/parallel agent-coordination plane in .NET that would conflict with the OS swarm. No controller created. Re-open only if MCP Army's specific concepts (Architect Prime / Component Leads / master-prompt directive broadcast) are determined to be missing from the OS swarm AND deemed required for TerraLevy.
+- **D2 (RESOLVED 2026-04-18):** Decision was "audit before deciding". Outcome: CANCEL_PARTIAL. After source review of all 7 routes: 1 SKIP_UI (`/advanced-insights` HTML), 6 OBSOLETE — all built on the same retired stack as routes_mcp.py (`get_claude_service` + `check_api_key_status` + custom `advanced_ai_agent` with vendor-locked Anthropic calls). Same sovereign-architecture objection: runtime API-key mutation + vendor lock-in violates `MuseLlmOptions` config-based provider selection. No controller created. Re-open only if a sovereign-architecture-compliant version of these capabilities (NL query / multi-step / cross-dataset / contextual recommendations) is needed for the OS Pilot surface — in which case it belongs on the Pilot/Muse OS layer, not Levy.
 - **D3 (RESOLVED 2026-04-18):** Decision was "port to .NET". Outcome: CANCEL_PARTIAL. After source review, 0/11 routes are portable today: 3 are architecturally obsolete (Anthropic env-var key mgmt — `AnthropicMuseLlmClient` retired, .NET uses `MuseLlmOptions` runtime config provider selection — runtime API key mutation violates sovereign hybrid architecture); 3 are SKIP_UI (server-rendered HTML); 5 are DEFER pending `ApiCallLog` schema (same blocker as Task 2.5). No controller created. Re-open if/when (a) `ApiCallLog` schema lands in `TerraFusionDbContext` to enable the 5 telemetry endpoints, or (b) a sovereign-architecture-compliant LLM provider config endpoint is needed for the OS Pilot surface.
 
 ## Schema Drift (`models.py`)
