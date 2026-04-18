@@ -126,6 +126,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   // dbo.tax_area_fund_assoc JOIN dbo.tax_area (which levies apply per tax area).
   public DbSet<PacsLevyRate> PacsLevyRates { get; set; } = null!;
   public DbSet<PacsLevyTaxAreaAssoc> PacsLevyTaxAreaAssocs { get; set; } = null!;
+  public DbSet<PacsLevyCertificationData> PacsLevyCertificationData { get; set; } = null!;
+  public DbSet<PacsLevyCertificationHighestLawful> PacsLevyCertificationHighestLawful { get; set; } = null!;
+  public DbSet<PacsLevyCertificationConstitutionalLimit> PacsLevyCertificationConstitutionalLimits { get; set; } = null!;
+  public DbSet<PacsLevyCertificationAggregateLimit> PacsLevyCertificationAggregateLimits { get; set; } = null!;
 
   // Forge Analytics (R2 Wave 26)
   public DbSet<RegressionAnalysis> RegressionAnalyses { get; set; }
@@ -257,7 +261,23 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.HasKey(e => e.Id);
       entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
       entity.Property(e => e.Address).IsRequired().HasMaxLength(500);
+      entity.Property(e => e.OwnerName).HasMaxLength(200);
+      entity.Property(e => e.PropertyType).HasMaxLength(100);
+      entity.Property(e => e.LegalDescription).HasMaxLength(2000);
+      entity.Property(e => e.Neighborhood).HasMaxLength(10);
+      entity.Property(e => e.PropertyUseCode).HasMaxLength(10);
+      entity.Property(e => e.TaxDistrictCode).HasMaxLength(23);
+      entity.Property(e => e.TaxDistrictName).HasMaxLength(255);
+      entity.Property(e => e.SitusCity).HasMaxLength(30);
+      entity.Property(e => e.SitusState).HasMaxLength(2);
+      entity.Property(e => e.SitusZip).HasMaxLength(10);
+      entity.Property(e => e.Zoning).HasMaxLength(50);
       entity.Property(e => e.AssessedValue).HasPrecision(18, 2);
+      entity.Property(e => e.LandValue).HasPrecision(18, 2);
+      entity.Property(e => e.ImprovementValue).HasPrecision(18, 2);
+      entity.Property(e => e.MarketValue).HasPrecision(18, 2);
+      entity.Property(e => e.LotWidthFront).HasPrecision(10, 2);
+      entity.Property(e => e.LotDepth).HasPrecision(10, 2);
       entity.HasIndex(e => e.ParcelId).IsUnique();
       entity.HasIndex(e => e.CountyId);
     });

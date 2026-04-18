@@ -40,7 +40,6 @@ public class PropertiesController : ControllerBase
             // Guid.Empty means no JWT claim — dev/OS-module anonymous mode: do not filter by county
             Guid? filterCountyId = effectiveCountyId == Guid.Empty ? null : effectiveCountyId;
             var properties = await _propertyService.GetPropertiesAsync(page, pageSize, search, filterCountyId);
-            await EnrichFromPacsAsync(properties.Items);
             return Ok(properties);
         }
         catch (Exception ex)
@@ -63,73 +62,12 @@ public class PropertiesController : ControllerBase
             if (property == null)
                 return NotFound();
 
-            await EnrichFromPacsAsync(new[] { property });
             return Ok(property);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving property {PropertyId}", id);
             return StatusCode(500, "Internal server error");
-        }
-    }
-
-    /// <summary>
-    /// Enriches PropertyDtos with real assessed/market/land/improvement values from
-    /// PacsValuations when the Properties table has zeros (import gap).
-    /// Joins: PropertyDto.ParcelNumber = PacsParcel.GeoId → PacsParcel.Id = PacsValuation.ParcelId
-    /// Uses SupNum=0 (working layer) and latest PropValYear per parcel.
-    /// </summary>
-    private async Task EnrichFromPacsAsync(IEnumerable<PropertyDto> items)
-    {
-        var list = items.Where(p => p.AssessedValue == 0 && !string.IsNullOrEmpty(p.ParcelNumber)).ToList();
-        if (list.Count == 0) return;
-
-        var parcelNumbers = list.Select(p => p.ParcelNumber!).Distinct().ToList();
-
-        // Step 1: resolve geo_id → parcel_id (in-memory join avoids GroupBy translation issues
-        //         that cause EF to materialize the full PacsValuation entity including hood_cd)
-        var parcels = await _db.PacsParcel
-            .AsNoTracking()
-            .Where(p => p.GeoId != null && parcelNumbers.Contains(p.GeoId))
-            .Select(p => new { p.Id, GeoId = p.GeoId! })
-            .ToListAsync();
-
-        if (parcels.Count == 0) return;
-
-        var parcelIdToGeoId = parcels.ToDictionary(p => p.Id, p => p.GeoId);
-        var parcelIds = parcelIdToGeoId.Keys.ToList();
-
-        // Step 2: fetch only the columns we need from pacs_valuations — no hood_cd
-        var rawVals = await _db.PacsValuations
-            .AsNoTracking()
-            .Where(v => v.SupNum == 0 && parcelIds.Contains(v.ParcelId))
-            .Select(v => new
-            {
-                v.ParcelId,
-                v.PropValYear,
-                v.AssessedVal,
-                v.Market,
-                LandVal = (v.LandHstdVal ?? 0m) + (v.LandNonHstdVal ?? 0m),
-                ImprvVal = v.ImprvVal ?? 0m,
-            })
-            .ToListAsync();
-
-        // Step 3: latest year per parcel, joined back to geo_id — all in memory
-        var pacsValues = rawVals
-            .GroupBy(v => v.ParcelId)
-            .Select(g => g.OrderByDescending(v => v.PropValYear).First())
-            .Where(v => parcelIdToGeoId.ContainsKey(v.ParcelId))
-            .ToDictionary(v => parcelIdToGeoId[v.ParcelId], v => v);
-
-        foreach (var item in list)
-        {
-            if (pacsValues.TryGetValue(item.ParcelNumber!, out var pacs))
-            {
-                item.AssessedValue = pacs.AssessedVal ?? 0m;
-                item.MarketValue = pacs.Market ?? 0m;
-                item.LandValue = pacs.LandVal;
-                item.ImprovementValue = pacs.ImprvVal;
-            }
         }
     }
 
@@ -159,8 +97,6 @@ public class PropertiesController : ControllerBase
             var property = await _propertyService.GetPropertyByParcelAsync(parcelNumber, countyId);
             if (property == null)
                 return NotFound();
-
-            await EnrichFromPacsAsync(new[] { property });
 
             // Enrich with CAMA data not available on the base Property entity
             var cama = await _db.CamaCharacteristics
@@ -210,88 +146,6 @@ public class PropertiesController : ControllerBase
                     .FirstOrDefaultAsync();
                 if (!string.IsNullOrEmpty(gisLegal))
                     property.LegalDescription = gisLegal;
-            }
-
-            // Enrich Neighborhood, UseCode, TaxDistrict from PACS tables
-            var pacsIdStr = await _db.Properties
-                .AsNoTracking()
-                .Where(p => p.ParcelNumber == parcelNumber)
-                .Select(p => p.PropertyId)
-                .FirstOrDefaultAsync();
-
-            if (int.TryParse(pacsIdStr, out var pacsPropId) && pacsPropId > 0)
-            {
-                var profile = await _db.PacsPropertyProfiles
-                    .AsNoTracking()
-                    .Where(p => p.PacsPropId == pacsPropId)
-                    .OrderByDescending(p => p.PropValYear)
-                    .Select(p => new { p.NeighborhoodCode, p.PropertyUseCd, p.LivingArea })
-                    .FirstOrDefaultAsync();
-
-                if (profile != null)
-                {
-                    if (string.IsNullOrEmpty(property.Neighborhood) && !string.IsNullOrEmpty(profile.NeighborhoodCode))
-                        property.Neighborhood = profile.NeighborhoodCode;
-                    if (string.IsNullOrEmpty(property.PropertyUseCode) && !string.IsNullOrEmpty(profile.PropertyUseCd))
-                        property.PropertyUseCode = profile.PropertyUseCd;
-                    // GLA fallback: if CamaCharacteristic was absent or zero, use property_profile.living_area
-                    if ((property.GrossLivingArea is null or 0) && profile.LivingArea is > 0)
-                    {
-                        property.GrossLivingArea = profile.LivingArea;
-                        if (property.SquareFeet is null or 0)
-                            property.SquareFeet = (int)profile.LivingArea.Value;
-                    }
-                }
-
-                var taxArea = await _db.PacsTaxAreas
-                    .AsNoTracking()
-                    .Where(t => t.PacsPropId == pacsPropId)
-                    .Select(t => new { t.TaxAreaNumber, t.TaxAreaDescription, t.TaxYear })
-                    .ToListAsync()
-                    .ContinueWith(r => r.Result.OrderByDescending(t => t.TaxYear).FirstOrDefault());
-
-                if (taxArea != null)
-                {
-                    if (string.IsNullOrEmpty(property.TaxDistrictCode) && !string.IsNullOrEmpty(taxArea.TaxAreaNumber))
-                        property.TaxDistrictCode = taxArea.TaxAreaNumber;
-                    if (string.IsNullOrEmpty(property.TaxDistrictName) && !string.IsNullOrEmpty(taxArea.TaxAreaDescription))
-                        property.TaxDistrictName = taxArea.TaxAreaDescription;
-                }
-
-                // Authoritative legal description from PACS property_val (varchar 2000, full metes & bounds)
-                // This overwrites the truncated GIS value if we got a longer/better string.
-                var pacsLegal = await _db.PacsValuations
-                    .AsNoTracking()
-                    .Where(v => v.PacsPropId == pacsPropId && v.SupNum == 0
-                           && !string.IsNullOrEmpty(v.LegalDesc))
-                    .OrderByDescending(v => v.PropValYear)
-                    .Select(v => new { v.LegalDesc, v.LegalDesc2 })
-                    .FirstOrDefaultAsync();
-                if (pacsLegal != null)
-                {
-                    var full = (pacsLegal.LegalDesc ?? "").TrimEnd();
-                    if (!string.IsNullOrEmpty(pacsLegal.LegalDesc2))
-                        full = full + " " + pacsLegal.LegalDesc2.Trim();
-                    if (!string.IsNullOrEmpty(full) &&
-                        full.Length > (property.LegalDescription?.Length ?? 0))
-                        property.LegalDescription = full;
-                }
-
-                // Lot dimensions from PACS land_detail (width_front, depth_right)
-                var landDims = await _db.PacsLandDetails
-                    .AsNoTracking()
-                    .Where(l => l.PacsPropId == pacsPropId && l.SupNum == 0)
-                    .OrderByDescending(l => l.PropValYear)
-                    .ThenByDescending(l => l.SizeSquareFeet)
-                    .Select(l => new { l.WidthFront, l.WidthBack, l.DepthRight, l.DepthLeft, l.EffectiveFront, l.EffectiveDepth })
-                    .FirstOrDefaultAsync();
-                if (landDims != null)
-                {
-                    if (property.LotWidthFront is null or 0)
-                        property.LotWidthFront = landDims.EffectiveFront ?? landDims.WidthFront;
-                    if (property.LotDepth is null or 0)
-                        property.LotDepth = landDims.EffectiveDepth ?? landDims.DepthRight ?? landDims.DepthLeft;
-                }
             }
 
             return Ok(property);

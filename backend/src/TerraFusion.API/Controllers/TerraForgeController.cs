@@ -7,7 +7,7 @@ namespace TerraFusion.API.Controllers;
 
 /// <summary>
 /// TerraForge Suite — county-wide assessment workflow endpoints.
-/// Owner: Suite-Forge layer. Read PACS data; write appraiser decisions only.
+/// Owner: Suite-Forge layer. Read TerraFusion canonical truth; write appraiser decisions only.
 /// </summary>
 [ApiController]
 [Route("api/terraforge")]
@@ -132,7 +132,7 @@ public class TerraForgeController : ControllerBase
             })
             .ToListAsync(ct);
 
-        // Join PacsValuations (canonical assessed values) via GeoId→PacsParcel→PacsValuation.
+        // Join canonical assessed values from TerraFusion Properties.
         var pageParcelIds = rawItems.Select(i => i.parcelId).Where(id => id != null).ToHashSet();
         var pageAssessed  = await GetAssessedValueMapAsync(pageParcelIds, taxYear, ct);
 
@@ -441,12 +441,13 @@ public class TerraForgeController : ControllerBase
             })
             .ToListAsync(ct);
 
-        // Build assessed value + neighborhood maps from PacsValuations (canonical source).
+        // Build assessed value + neighborhood maps from TerraFusion canonical tables.
         var allParcelIds = allSales.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
         var assessedMap  = await GetAssessedValueMapAsync(allParcelIds, taxYear, ct);
         var hoodMap      = await GetNeighborhoodMapAsync(allParcelIds, taxYear, ct);
 
-        // Group by neighborhood from PacsValuation.NeighborhoodCode (s.Neighborhood is null in PACS data).
+        // Group by canonical TerraFusion neighborhood, falling back to sale-side neighborhood only
+        // when a parcel has not yet been promoted into Properties.
         var hoods = allSales
             .GroupBy(s => s.ParcelId != null && hoodMap.TryGetValue(s.ParcelId!, out var hc) ? hc : s.Neighborhood ?? "(no neighborhood)")
             .Select(g =>
@@ -643,7 +644,7 @@ public class TerraForgeController : ControllerBase
             })
             .ToListAsync(ct);
 
-        // Look up canonical assessed values from PacsValuations via GeoId→Parcel→Valuation.
+        // Look up canonical assessed values from TerraFusion Properties.
         var allParcelIds      = salesData.Select(s => s.ParcelId).Distinct().ToHashSet();
         var assessedByParcel  = await GetAssessedValueMapAsync(allParcelIds, taxYear, ct);
 
@@ -770,7 +771,7 @@ public class TerraForgeController : ControllerBase
             })
             .ToListAsync(ct);
 
-        // Look up canonical assessed values for page items from PacsValuations.
+        // Look up canonical assessed values for page items from TerraFusion Properties.
         var pageParcelIds = rawItems.Select(i => i.parcelId).Distinct().ToHashSet();
         var pageAssessed  = await GetAssessedValueMapAsync(pageParcelIds, taxYear, ct);
 
@@ -3008,12 +3009,12 @@ public class TerraForgeController : ControllerBase
             .Select(p => new { p.ParcelNumber, p.AssessedValue })
             .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue, ct);
 
-        // Step 3: neighborhood from CamaCharacteristics
-        var hoodMap = await _db.CamaCharacteristics
+        // Step 3: neighborhood from TerraFusion canonical parcel master.
+        var hoodMap = await _db.Properties
             .AsNoTracking()
-            .Where(c => parcelIds.Contains(c.ParcelId) && c.NeighborhoodCode != null && c.NeighborhoodCode != "")
-            .Select(c => new { c.ParcelId, c.NeighborhoodCode })
-            .ToDictionaryAsync(c => c.ParcelId, c => c.NeighborhoodCode!, ct);
+            .Where(p => parcelIds.Contains(p.ParcelNumber) && p.Neighborhood != null && p.Neighborhood != "")
+            .Select(p => new { p.ParcelNumber, p.Neighborhood })
+            .ToDictionaryAsync(p => p.ParcelNumber, p => p.Neighborhood!, ct);
 
         // Step 4: group by neighborhood and compute IAAO stats
         var byHood = new Dictionary<string, List<(decimal AV, decimal SP)>>();
@@ -3074,13 +3075,21 @@ public class TerraForgeController : ControllerBase
     }
 
     /// <summary>
-    /// Returns ParcelNumber → neighborhood string.
-    /// Neighborhood data is not currently synced — returns empty map (UI shows data gap alert).
+    /// Returns ParcelNumber → neighborhood string from TerraFusion canonical parcel master.
     /// </summary>
-    private Task<Dictionary<string, string>> GetNeighborhoodMapAsync(
+    private async Task<Dictionary<string, string>> GetNeighborhoodMapAsync(
         IEnumerable<string?> parcelNumbers, int taxYear, CancellationToken ct)
     {
-        return Task.FromResult(new Dictionary<string, string>());
+        var ids = parcelNumbers.Where(id => id != null).Distinct().Cast<string>().ToHashSet();
+        if (ids.Count == 0) return new Dictionary<string, string>();
+
+        var rows = await _db.Properties
+            .AsNoTracking()
+            .Where(p => ids.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.Neighborhood != null && p.Neighborhood != "")
+            .Select(p => new { p.ParcelNumber, p.Neighborhood })
+            .ToListAsync(ct);
+
+        return rows.ToDictionary(p => p.ParcelNumber, p => p.Neighborhood!);
     }
 }
 

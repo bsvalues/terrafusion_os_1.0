@@ -58,6 +58,9 @@ public interface ITerraFusionDbContext
     // CAMA (Computer Assisted Mass Appraisal) characteristics — used for search
     DbSet<CamaCharacteristic> CamaCharacteristics { get; set; }
 
+    // Levy certification truth — canonical certification workflow source
+    DbSet<LevyCertification> LevyCertifications { get; set; }
+
     // Dais County Ops — Exemptions, Appeals, Certification, Notices, Queue (Phase 7)
     DbSet<Exemption> Exemptions { get; set; }
     DbSet<Appeal> Appeals { get; set; }

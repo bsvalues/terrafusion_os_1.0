@@ -31,7 +31,37 @@ public class Property
     [StringLength(100)]
     public string? PropertyType { get; set; }
 
+    [StringLength(2000)]
+    public string? LegalDescription { get; set; }
+
+    [StringLength(10)]
+    public string? Neighborhood { get; set; }
+
+    [StringLength(10)]
+    public string? PropertyUseCode { get; set; }
+
+    [StringLength(23)]
+    public string? TaxDistrictCode { get; set; }
+
+    [StringLength(255)]
+    public string? TaxDistrictName { get; set; }
+
+    [StringLength(30)]
+    public string? SitusCity { get; set; }
+
+    [StringLength(2)]
+    public string? SitusState { get; set; }
+
+    [StringLength(10)]
+    public string? SitusZip { get; set; }
+
+    [StringLength(50)]
+    public string? Zoning { get; set; }
+
     public int? YearBuilt { get; set; }
+
+    public decimal? LotWidthFront { get; set; }
+    public decimal? LotDepth { get; set; }
 
     public decimal AssessedValue { get; set; }
     public decimal LandValue { get; set; }

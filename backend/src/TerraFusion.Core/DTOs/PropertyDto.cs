@@ -68,6 +68,14 @@ public class PropertyDto
 
     public string? TaxDistrictName { get; set; }
 
+    public string? SitusCity { get; set; }
+
+    public string? SitusState { get; set; }
+
+    public string? SitusZip { get; set; }
+
+    public string? Zoning { get; set; }
+
     public int TaxYear { get; set; }
 
     public DateTime AssessmentDate { get; set; }

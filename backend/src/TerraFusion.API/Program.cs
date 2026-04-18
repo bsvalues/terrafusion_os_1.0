@@ -132,6 +132,560 @@ if (args.Contains("--canonicalize-cama-only"))
     }
 }
 
+// ── Levy rebuild from PACS oracle + canonical levy tables ──────────────────
+// Run as: dotnet run --project TerraFusion.API -- --seed-levy-only
+if (args.Contains("--seed-levy-only"))
+{
+    var levyEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                  ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                  ?? "Production";
+
+    var levyHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(levyEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{levyEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{levyEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.API.Seeds.PacsDataSeeder>();
+            svc.AddScoped<TerraFusion.API.Services.ISaleQualificationService, TerraFusion.API.Services.SaleQualificationService>();
+        })
+        .Build();
+
+    using var levyScope = levyHost.Services.CreateScope();
+    var seeder = levyScope.ServiceProvider.GetRequiredService<TerraFusion.API.Seeds.PacsDataSeeder>();
+    var logger = levyScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsDataSeeder>>();
+    try
+    {
+        logger.LogInformation("[PacsSeeder] Standalone levy-only mode...");
+        var result = await seeder.SeedLevyOnlyAsync();
+        logger.LogInformation("[PacsSeeder] LEVY-ONLY DONE: {Result}", result);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "[PacsSeeder] LEVY-ONLY FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --canonicalize-levy-only
+if (args.Contains("--canonicalize-levy-only"))
+{
+    var levyCanonEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                       ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                       ?? "Production";
+
+    var levyCanonHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(levyCanonEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{levyCanonEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{levyCanonEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+        })
+        .Build();
+
+    using var levyCanonScope = levyCanonHost.Services.CreateScope();
+    var levyCanonDb = levyCanonScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var levyCanonLogger = levyCanonScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsCanonicalizer>>();
+    try
+    {
+        levyCanonLogger.LogInformation("[Canonicalize] Standalone levy-only run...");
+        var canonicalizer = new TerraFusion.API.Seeds.PacsCanonicalizer(levyCanonDb, levyCanonLogger);
+        var count = await canonicalizer.CanonicalizeLevyOnlyAsync();
+        levyCanonLogger.LogInformation("[Canonicalize] LEVY-ONLY DONE: LevyCertifications={Count}", count);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        levyCanonLogger.LogError(ex, "[Canonicalize] LEVY-ONLY FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --sync-certification-steps-only
+if (args.Contains("--sync-certification-steps-only"))
+{
+    var certEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                  ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                  ?? "Production";
+
+    var certHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(certEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{certEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{certEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp => sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.ICertificationService, TerraFusion.Core.Services.CertificationService>();
+        })
+        .Build();
+
+    using var certScope = certHost.Services.CreateScope();
+    var certDb = certScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var certService = certScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.ICertificationService>();
+    var certLogger = certScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.Core.Services.CertificationService>>();
+
+    try
+    {
+        var countyIdRaw = Environment.GetEnvironmentVariable("TF_CERT_COUNTY_ID");
+        var countyId = Guid.TryParse(countyIdRaw, out var parsedCountyId)
+            ? parsedCountyId
+            : Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var taxYearRaw = Environment.GetEnvironmentVariable("TF_CERT_TAX_YEAR");
+        var taxYear = int.TryParse(taxYearRaw, out var parsedTaxYear)
+            ? parsedTaxYear
+            : await certDb.LevyCertifications
+                .Where(c => c.CountyId == countyId)
+                .OrderByDescending(c => c.TaxYear)
+                .Select(c => c.TaxYear)
+                .FirstOrDefaultAsync();
+
+        if (taxYear <= 0)
+            throw new InvalidOperationException($"No canonical levy certifications exist for county {countyId}.");
+
+        certLogger.LogInformation(
+            "[CertificationSync] Materializing county certification steps from canonical levy truth for county {CountyId}, tax year {TaxYear}...",
+            countyId,
+            taxYear);
+
+        var steps = await certService.GetByTaxYearAsync(taxYear, countyId);
+        certLogger.LogInformation(
+            "[CertificationSync] DONE: {Count} certification steps materialized for county {CountyId}, tax year {TaxYear}.",
+            steps.Count,
+            countyId,
+            taxYear);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        certLogger.LogError(ex, "[CertificationSync] FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --complete-certification-step
+if (args.Contains("--complete-certification-step"))
+{
+    var certActionEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                        ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                        ?? "Production";
+
+    var certActionHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(certActionEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{certActionEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{certActionEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp => sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.ICertificationService, TerraFusion.Core.Services.CertificationService>();
+        })
+        .Build();
+
+    using var certActionScope = certActionHost.Services.CreateScope();
+    var certActionDb = certActionScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var certActionService = certActionScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.ICertificationService>();
+    var certActionLogger = certActionScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.Core.Services.CertificationService>>();
+
+    try
+    {
+        var countyIdRaw = Environment.GetEnvironmentVariable("TF_CERT_COUNTY_ID");
+        var countyId = Guid.TryParse(countyIdRaw, out var parsedCountyId)
+            ? parsedCountyId
+            : Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var taxYearRaw = Environment.GetEnvironmentVariable("TF_CERT_TAX_YEAR");
+        var taxYear = int.TryParse(taxYearRaw, out var parsedTaxYear)
+            ? parsedTaxYear
+            : await certActionDb.LevyCertifications
+                .Where(c => c.CountyId == countyId)
+                .OrderByDescending(c => c.TaxYear)
+                .Select(c => c.TaxYear)
+                .FirstOrDefaultAsync();
+        var stepReference = Environment.GetEnvironmentVariable("TF_CERT_STEP_REF");
+        var signedBy = Environment.GetEnvironmentVariable("TF_CERT_SIGNED_BY");
+        var notes = Environment.GetEnvironmentVariable("TF_CERT_NOTES");
+
+        if (taxYear <= 0)
+            throw new InvalidOperationException($"No canonical levy certifications exist for county {countyId}.");
+        if (string.IsNullOrWhiteSpace(stepReference))
+            throw new InvalidOperationException("TF_CERT_STEP_REF is required.");
+        if (string.IsNullOrWhiteSpace(signedBy))
+            throw new InvalidOperationException("TF_CERT_SIGNED_BY is required.");
+
+        certActionLogger.LogInformation(
+            "[CertificationSync] Completing certification step {StepReference} for county {CountyId}, tax year {TaxYear}...",
+            stepReference,
+            countyId,
+            taxYear);
+
+        var step = await certActionService.CompleteStepAsync(stepReference, signedBy, notes, taxYear, countyId);
+        certActionLogger.LogInformation(
+            "[CertificationSync] DONE: {StepCode} completed at {CompletedAt:o}.",
+            step.StepCode,
+            step.CompletedAt);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        certActionLogger.LogError(ex, "[CertificationSync] COMPLETE-STEP FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --generate-levy-cert-notice
+if (args.Contains("--generate-levy-cert-notice"))
+{
+    var noticeEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                    ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                    ?? "Production";
+
+    var noticeHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(noticeEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{noticeEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{noticeEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp => sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.INoticeService, TerraFusion.Core.Services.NoticeService>();
+        })
+        .Build();
+
+    using var noticeScope = noticeHost.Services.CreateScope();
+    var noticeDb = noticeScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var noticeService = noticeScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.INoticeService>();
+    var noticeLogger = noticeScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.Core.Services.NoticeService>>();
+
+    try
+    {
+        var countyIdRaw = Environment.GetEnvironmentVariable("TF_CERT_COUNTY_ID");
+        var countyId = Guid.TryParse(countyIdRaw, out var parsedCountyId)
+            ? parsedCountyId
+            : Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var taxYearRaw = Environment.GetEnvironmentVariable("TF_CERT_TAX_YEAR");
+        var taxYear = int.TryParse(taxYearRaw, out var parsedTaxYear)
+            ? parsedTaxYear
+            : await noticeDb.LevyCertifications
+                .Where(c => c.CountyId == countyId)
+                .OrderByDescending(c => c.TaxYear)
+                .Select(c => c.TaxYear)
+                .FirstOrDefaultAsync();
+        var deliveryMethod = Environment.GetEnvironmentVariable("TF_NOTICE_DELIVERY_METHOD");
+        var createdBy = Environment.GetEnvironmentVariable("TF_CERT_SIGNED_BY");
+
+        noticeLogger.LogInformation(
+            "[CertificationSync] Generating levy certification notice for county {CountyId}, tax year {TaxYear}...",
+            countyId,
+            taxYear);
+
+        var notice = await noticeService.CreateLevyCertificationNoticeAsync(countyId, taxYear, deliveryMethod, null, createdBy);
+        noticeLogger.LogInformation(
+            "[CertificationSync] DONE: notice {NoticeId} generated for parcel lane {ParcelId}.",
+            notice.Id,
+            notice.ParcelId);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        noticeLogger.LogError(ex, "[CertificationSync] GENERATE-NOTICE FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --queue-levy-cert-notice
+if (args.Contains("--queue-levy-cert-notice"))
+{
+    var queueNoticeEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                         ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                         ?? "Production";
+
+    var queueNoticeHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(queueNoticeEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{queueNoticeEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{queueNoticeEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp => sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.INoticeService, TerraFusion.Core.Services.NoticeService>();
+            svc.AddScoped<TerraFusion.Core.Services.IQueueService, TerraFusion.Core.Services.QueueService>();
+        })
+        .Build();
+
+    using var queueNoticeScope = queueNoticeHost.Services.CreateScope();
+    var queueNoticeDb = queueNoticeScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var queueNoticeService = queueNoticeScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.INoticeService>();
+    var queueItemService = queueNoticeScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.IQueueService>();
+    var queueNoticeLogger = queueNoticeScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.Core.Services.NoticeService>>();
+
+    try
+    {
+        var countyIdRaw = Environment.GetEnvironmentVariable("TF_CERT_COUNTY_ID");
+        var countyId = Guid.TryParse(countyIdRaw, out var parsedCountyId)
+            ? parsedCountyId
+            : Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var taxYearRaw = Environment.GetEnvironmentVariable("TF_CERT_TAX_YEAR");
+        var taxYear = int.TryParse(taxYearRaw, out var parsedTaxYear)
+            ? parsedTaxYear
+            : await queueNoticeDb.LevyCertifications
+                .Where(c => c.CountyId == countyId)
+                .OrderByDescending(c => c.TaxYear)
+                .Select(c => c.TaxYear)
+                .FirstOrDefaultAsync();
+        var deliveryMethod = Environment.GetEnvironmentVariable("TF_NOTICE_DELIVERY_METHOD") ?? "usps_first_class";
+        var queuedBy = Environment.GetEnvironmentVariable("TF_CERT_SIGNED_BY") ?? "system";
+        var levyNotice = await queueNoticeService.GetLatestLevyCertificationNoticeAsync(countyId, taxYear);
+        if (levyNotice is null)
+            throw new InvalidOperationException($"LEVY_RATE notice must be generated before it can be queued for mailing for tax year {taxYear}.");
+
+        levyNotice = await queueNoticeService.UpdateStatusAsync(levyNotice.Id, "queued_for_mailing", countyId);
+        levyNotice.DeliveryMethod = deliveryMethod;
+        levyNotice.UpdatedAt = DateTime.UtcNow;
+        levyNotice.UpdatedBy = queuedBy;
+
+        var noteKey = $"NoticeId={levyNotice.Id}";
+        var existingQueueItem = await queueNoticeDb.QueueItems
+            .AsNoTracking()
+            .FirstOrDefaultAsync(q => q.CountyId == countyId &&
+                                      q.TaskType == "NOTICE_MAILING" &&
+                                      q.Status != "completed" &&
+                                      q.Status != "failed" &&
+                                      q.Notes != null &&
+                                      q.Notes.Contains(noteKey));
+
+        TerraFusion.Core.Entities.QueueItem? queueItem = null;
+        if (existingQueueItem is null)
+        {
+            var queueNotes = $"{noteKey}; TemplateId={levyNotice.TemplateId}; DeliveryMethod={deliveryMethod}; BatchId=CLI-{Guid.NewGuid():N}";
+            if (queueNotes.Length > 120)
+                queueNotes = queueNotes[..120];
+
+            queueItem = await queueItemService.CreateAsync(new TerraFusion.Core.Entities.QueueItem
+            {
+                ParcelId = levyNotice.ParcelId,
+                TaskType = "NOTICE_MAILING",
+                Priority = "high",
+                AssignedTo = "Mail Operations",
+                CountyId = countyId,
+                CreatedBy = queuedBy,
+                UpdatedBy = queuedBy,
+                Notes = queueNotes,
+            });
+        }
+
+        await queueNoticeDb.SaveChangesAsync();
+
+        queueNoticeLogger.LogInformation(
+            "[CertificationSync] DONE: levy notice {NoticeId} queued for mailing for county {CountyId}, tax year {TaxYear}, queue item {QueueItemId}.",
+            levyNotice.Id,
+            countyId,
+            taxYear,
+            queueItem?.Id ?? existingQueueItem?.Id);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        queueNoticeLogger.LogError(ex, "[CertificationSync] QUEUE-LEVY-NOTICE FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --submit-certification-to-dor
+if (args.Contains("--submit-certification-to-dor"))
+{
+    var dorSubmitEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                       ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                       ?? "Production";
+
+    var dorSubmitHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(dorSubmitEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{dorSubmitEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{dorSubmitEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp => sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.ICertificationService, TerraFusion.Core.Services.CertificationService>();
+            svc.AddScoped<TerraFusion.Core.Services.INoticeService, TerraFusion.Core.Services.NoticeService>();
+        })
+        .Build();
+
+    using var dorSubmitScope = dorSubmitHost.Services.CreateScope();
+    var dorSubmitDb = dorSubmitScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var dorSubmitService = dorSubmitScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.ICertificationService>();
+    var dorNoticeService = dorSubmitScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.INoticeService>();
+    var dorSubmitLogger = dorSubmitScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.Core.Services.CertificationService>>();
+
+    try
+    {
+        var countyIdRaw = Environment.GetEnvironmentVariable("TF_CERT_COUNTY_ID");
+        var countyId = Guid.TryParse(countyIdRaw, out var parsedCountyId)
+            ? parsedCountyId
+            : Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var taxYearRaw = Environment.GetEnvironmentVariable("TF_CERT_TAX_YEAR");
+        var taxYear = int.TryParse(taxYearRaw, out var parsedTaxYear)
+            ? parsedTaxYear
+            : await dorSubmitDb.LevyCertifications
+                .Where(c => c.CountyId == countyId)
+                .OrderByDescending(c => c.TaxYear)
+                .Select(c => c.TaxYear)
+                .FirstOrDefaultAsync();
+        var signedBy = Environment.GetEnvironmentVariable("TF_CERT_SIGNED_BY");
+        var notes = Environment.GetEnvironmentVariable("TF_CERT_NOTES");
+
+        var levyNotice = await dorNoticeService.GetLatestLevyCertificationNoticeAsync(countyId, taxYear);
+        if (levyNotice is null)
+            throw new InvalidOperationException($"LEVY_RATE notice must be generated before DOR submission for tax year {taxYear}.");
+        if (!string.Equals(levyNotice.Status, "queued_for_mailing", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(levyNotice.Status, "sent", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(levyNotice.Status, "sealed", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                $"LEVY_RATE notice {levyNotice.Id} must be queued for mailing or sent before DOR submission for tax year {taxYear}.");
+        }
+
+        var step = await dorSubmitService.CompleteStepAsync(
+            "DOR_SUBMISSION",
+            signedBy ?? "system",
+            notes ?? $"DOR submission anchored to levy notice {levyNotice.Id}.",
+            taxYear,
+            countyId);
+
+        dorSubmitLogger.LogInformation(
+            "[CertificationSync] DONE: DOR submission completed for county {CountyId}, tax year {TaxYear}, step {StepId}.",
+            countyId,
+            taxYear,
+            step.Id);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        dorSubmitLogger.LogError(ex, "[CertificationSync] DOR-SUBMISSION FAILED");
+        Environment.Exit(1);
+    }
+}
+
+// Run as: dotnet run --project TerraFusion.API -- --accept-certification-from-dor
+if (args.Contains("--accept-certification-from-dor"))
+{
+    var dorAcceptEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                       ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                       ?? "Production";
+
+    var dorAcceptHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(dorAcceptEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{dorAcceptEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{dorAcceptEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp => sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.ICertificationService, TerraFusion.Core.Services.CertificationService>();
+        })
+        .Build();
+
+    using var dorAcceptScope = dorAcceptHost.Services.CreateScope();
+    var dorAcceptDb = dorAcceptScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var dorAcceptService = dorAcceptScope.ServiceProvider.GetRequiredService<TerraFusion.Core.Services.ICertificationService>();
+    var dorAcceptLogger = dorAcceptScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.Core.Services.CertificationService>>();
+
+    try
+    {
+        var countyIdRaw = Environment.GetEnvironmentVariable("TF_CERT_COUNTY_ID");
+        var countyId = Guid.TryParse(countyIdRaw, out var parsedCountyId)
+            ? parsedCountyId
+            : Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var taxYearRaw = Environment.GetEnvironmentVariable("TF_CERT_TAX_YEAR");
+        var taxYear = int.TryParse(taxYearRaw, out var parsedTaxYear)
+            ? parsedTaxYear
+            : await dorAcceptDb.LevyCertifications
+                .Where(c => c.CountyId == countyId)
+                .OrderByDescending(c => c.TaxYear)
+                .Select(c => c.TaxYear)
+                .FirstOrDefaultAsync();
+        var signedBy = Environment.GetEnvironmentVariable("TF_CERT_SIGNED_BY");
+        var notes = Environment.GetEnvironmentVariable("TF_CERT_NOTES");
+
+        var step = await dorAcceptService.CompleteStepAsync(
+            "DOR_ACCEPTANCE",
+            signedBy ?? "system",
+            notes ?? "Department of Revenue acceptance recorded in TerraFusion.",
+            taxYear,
+            countyId);
+
+        dorAcceptLogger.LogInformation(
+            "[CertificationSync] DONE: DOR acceptance completed for county {CountyId}, tax year {TaxYear}, step {StepId}.",
+            countyId,
+            taxYear,
+            step.Id);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        dorAcceptLogger.LogError(ex, "[CertificationSync] DOR-ACCEPTANCE FAILED");
+        Environment.Exit(1);
+    }
+}
+
 if (args.Contains("--seed-pacs"))
 {
     // Determine environment from ASPNETCORE_ENVIRONMENT or DOTNET_ENVIRONMENT

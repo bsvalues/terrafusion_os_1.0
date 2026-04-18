@@ -309,6 +309,7 @@ public class QueueService : IQueueService
             "APPEAL_PREPARATION" => 120,
             "EXEMPTION_REVIEW" => 96,
             "DATA_CORRECTION" => 24,
+            "NOTICE_MAILING" => 24,
             "SUPERVISORY_REVIEW" => 48,
             _ => 72,
         };

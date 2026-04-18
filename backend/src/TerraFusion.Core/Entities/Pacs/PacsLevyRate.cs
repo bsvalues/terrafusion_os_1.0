@@ -72,6 +72,20 @@ public class PacsLevyRate
     /// <summary>Whether this levy is included in the DOR levy certification run.</summary>
     public bool IncludeInCertification { get; set; }
 
+    /// <summary>Last tax year this levy remains active, when PACS provides one.</summary>
+    public int? EndYear { get; set; }
+
+    /// <summary>Primary fund number used by the levy certification workbook.</summary>
+    public int? PrimaryFundNumber { get; set; }
+
+    /// <summary>Budget / voted levy amount when PACS stores it on the levy row.</summary>
+    [Column(TypeName = "numeric(18,2)")]
+    public decimal? VotedLevyAmount { get; set; }
+
+    /// <summary>Voted levy rate when PACS stores a separate voted rate.</summary>
+    [Column(TypeName = "numeric(14,10)")]
+    public decimal? VotedLevyRate { get; set; }
+
     // Audit
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

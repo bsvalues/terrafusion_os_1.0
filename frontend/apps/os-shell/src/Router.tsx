@@ -70,6 +70,7 @@ const NotificationPreferences = lazy(() => import('./components/codex/Notificati
 // Gen2 Module Routes
 const TerraForgeGen2 = lazy(() => import('./pages/gen2/TerraForgeGen2'));
 const TerraDossierGen2 = lazy(() => import('./pages/gen2/TerraDossierGen2'));
+const TerraLevyGen2 = lazy(() => import('./pages/gen2/TerraLevyGen2'));
 
 // Suite Wrappers (Phase 5: MWUX Slices)
 // TerraPrimeSuite — replaced by native PropertySearch page (legacy redirect active)
@@ -178,6 +179,7 @@ const Router: React.FC = () => {
                   {/* Gen2 Module Routes - Internal OS modules */}
                   <Route path='gen2/terraforge' element={<TerraForgeGen2 />} />
                   <Route path='gen2/dossier' element={<TerraDossierGen2 />} />
+                  <Route path='gen2/terralevy' element={<TerraLevyGen2 />} />
 
                   {/* Suite Routes (Phase 5: MWUX Slices) */}
                   {/* TerraPrime → migrated to native PropertySearch (legacy redirect with telemetry) */}

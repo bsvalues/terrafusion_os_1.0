@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TerraFusion.Levy.Data;
@@ -11,9 +12,11 @@ using TerraFusion.Levy.Data;
 namespace TerraFusion.Levy.Migrations
 {
     [DbContext(typeof(LevyDbContext))]
-    partial class LevyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260418050107_AddLevyCertificationAndBankedCapacity")]
+    partial class AddLevyCertificationAndBankedCapacity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
