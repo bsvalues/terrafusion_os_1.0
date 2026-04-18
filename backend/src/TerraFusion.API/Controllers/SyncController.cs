@@ -193,6 +193,131 @@ public class SyncController : ControllerBase
     // ── Ratio field backfill ────────────────────────────────────────────────
 
     /// <summary>
+    /// Backfills raw sale-qualification fields on ComparableSales from the PACS raw mirror.
+    ///
+    /// Ownership rule:
+    ///   - PACS/raw-mirror repair belongs in Sync.
+    ///   - TerraForge computes recommendations only from canonical ComparableSales raw fields.
+    ///
+    /// This endpoint repairs RawCountyRatioCd, RawWacCd, RawRatioTypeCd,
+    /// RawExcludeCalcCd, and RawSaleQualifier using the mirrored PACS sale facts
+    /// already loaded into TerraFusion. It never queries legacy PACS directly.
+    /// Safe to run multiple times — only fills null target columns.
+    /// </summary>
+    [HttpPost("backfill-qualification-fields/{countyId:guid}")]
+    public async Task<IActionResult> BackfillQualificationFields(Guid countyId, CancellationToken ct)
+    {
+        var started = DateTime.UtcNow;
+        _logger.LogInformation("[Sync] BackfillQualificationFields triggered for county {CountyId}", countyId);
+
+        const string sqlByOwnerId = """
+            UPDATE "ComparableSales" cs
+            SET "RawCountyRatioCd" = COALESCE(cs."RawCountyRatioCd", ps."SaleCountyRatioCd"),
+                "RawWacCd"         = COALESCE(cs."RawWacCd", ps."WacCd"),
+                "RawRatioTypeCd"   = COALESCE(cs."RawRatioTypeCd", ps."SaleRatioTypeCd"),
+                "RawExcludeCalcCd" = COALESCE(cs."RawExcludeCalcCd", ps."SalesExcludeCalcCd"),
+                "RawSaleQualifier" = COALESCE(cs."RawSaleQualifier", ps."SaleQualifier")
+            FROM pacs_sales ps
+            WHERE cs."CountyId" = {0}
+              AND cs."PacsChgOfOwnerId" IS NOT NULL
+              AND cs."PacsPropId" IS NOT NULL
+              AND cs."PacsChgOfOwnerId" = ps."PacsChgOfOwnerId"
+              AND cs."PacsPropId" = ps."PacsPropId"
+              AND (
+                    cs."RawCountyRatioCd" IS NULL
+                 OR cs."RawWacCd" IS NULL
+                 OR cs."RawRatioTypeCd" IS NULL
+                 OR cs."RawExcludeCalcCd" IS NULL
+                 OR cs."RawSaleQualifier" IS NULL
+              )
+            """;
+
+        const string sqlByParcelDatePrice = """
+            UPDATE "ComparableSales" cs
+            SET "RawCountyRatioCd" = COALESCE(cs."RawCountyRatioCd", ps."SaleCountyRatioCd"),
+                "RawWacCd"         = COALESCE(cs."RawWacCd", ps."WacCd"),
+                "RawRatioTypeCd"   = COALESCE(cs."RawRatioTypeCd", ps."SaleRatioTypeCd"),
+                "RawExcludeCalcCd" = COALESCE(cs."RawExcludeCalcCd", ps."SalesExcludeCalcCd"),
+                "RawSaleQualifier" = COALESCE(cs."RawSaleQualifier", ps."SaleQualifier")
+            FROM pacs_sales ps
+            JOIN "PacsParcel" pp ON ps."ParcelId" = pp."Id"
+            WHERE cs."CountyId" = {0}
+              AND (cs."PacsChgOfOwnerId" IS NULL OR cs."PacsPropId" IS NULL)
+              AND cs."ParcelId" = pp."GeoId"
+              AND cs."SaleDate"::date = ps."SaleDate"::date
+              AND ABS(cs."SalePrice" - COALESCE(ps."AdjustedSalePrice", ps."SalePrice", 0)) < 1
+              AND (
+                    cs."RawCountyRatioCd" IS NULL
+                 OR cs."RawWacCd" IS NULL
+                 OR cs."RawRatioTypeCd" IS NULL
+                 OR cs."RawExcludeCalcCd" IS NULL
+                 OR cs."RawSaleQualifier" IS NULL
+              )
+            """;
+
+        int updated;
+        var originalTimeout = _db.Database.GetCommandTimeout();
+        try
+        {
+            _db.Database.SetCommandTimeout(TimeSpan.FromMinutes(10));
+            await _db.Database.ExecuteSqlRawAsync("""
+                ALTER TABLE "ComparableSales"
+                ADD COLUMN IF NOT EXISTS "PacsPropId" integer NULL
+                """, ct);
+            var updatedByOwnerId = await _db.Database.ExecuteSqlRawAsync(sqlByOwnerId, [countyId], ct);
+            var updatedByFallback = await _db.Database.ExecuteSqlRawAsync(sqlByParcelDatePrice, [countyId], ct);
+            updated = updatedByOwnerId + updatedByFallback;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[Sync] BackfillQualificationFields SQL failed for county {CountyId}", countyId);
+            return StatusCode(500, new { error = "SQL backfill failed", detail = ex.Message });
+        }
+        finally
+        {
+            _db.Database.SetCommandTimeout(originalTimeout);
+        }
+
+        var remainingMissing = await _db.ComparableSales
+            .Where(s => s.CountyId == countyId)
+            .Where(s => s.RawCountyRatioCd == null && s.RawWacCd == null
+                     && s.RawRatioTypeCd == null && s.RawSaleQualifier == null)
+            .CountAsync(ct);
+
+        var countyRatioCoverageByEra = await _db.ComparableSales
+            .Where(s => s.CountyId == countyId)
+            .GroupBy(s => (s.SalesYear ?? s.SaleDate.Year) < 2018 ? "conversion-era" : "post-conversion")
+            .Select(g => new
+            {
+                era = g.Key,
+                total = g.Count(),
+                missingCountyRatio = g.Count(s => s.RawCountyRatioCd == null),
+                presentCountyRatio = g.Count(s => s.RawCountyRatioCd != null)
+            })
+            .ToListAsync(ct);
+
+        int requalified;
+        requalified = await _qualification.ComputeRecommendationsAsync(countyId, ct);
+
+        var elapsed = DateTime.UtcNow - started;
+
+        _logger.LogInformation(
+            "[Sync] BackfillQualificationFields complete: county={CountyId} updated={Updated} requalified={Requalified} remainingMissing={Remaining} elapsed={Elapsed}",
+            countyId, updated, requalified, remainingMissing, elapsed);
+
+        return Ok(new
+        {
+            countyId,
+            rowsUpdated = updated,
+            remainingMissingCanonicalRawCodes = remainingMissing,
+            countyRatioCoverageByEra,
+            requalified,
+            elapsedMs = (long)elapsed.TotalMilliseconds,
+            completedAt = DateTime.UtcNow
+        });
+    }
+
+    /// <summary>
     /// Backfills ratio fields on existing ComparableSales rows.
     ///
     /// Two-pass approach:

@@ -136,46 +136,7 @@ if (args.Contains("--canonicalize-cama-only"))
     }
 }
 
-if (args.Contains("--canonicalize-appeals-only"))
-{
-    var appealCanonEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
-                       ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
-                       ?? "Production";
-
-    var appealCanonHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(appealCanonEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{appealCanonEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{appealCanonEnv}.local.json", optional: true, reloadOnChange: false);
-        })
-        .ConfigureServices((ctx, svc) =>
-        {
-            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
-            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
-                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
-            else
-                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
-        })
-        .Build();
-
-    using var appealCanonScope = appealCanonHost.Services.CreateScope();
-    var appealCanonDb = appealCanonScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
-    var appealCanonLogger = appealCanonScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsCanonicalizer>>();
-    try
-    {
-        appealCanonLogger.LogInformation("[Canonicalize] Standalone APPEALS-ONLY run...");
-        var canonicalizer = new TerraFusion.API.Seeds.PacsCanonicalizer(appealCanonDb, appealCanonLogger);
-        var count = await canonicalizer.CanonicalizeAppealsOnlyAsync();
-        appealCanonLogger.LogInformation("[Canonicalize] APPEALS-ONLY DONE: {Count} Appeals", count);
-        Environment.Exit(0);
-    }
-    catch (Exception ex)
-    {
-        appealCanonLogger.LogError(ex, "[Canonicalize] APPEALS-ONLY FAILED");
-        Environment.Exit(1);
-    }
-}
+// --canonicalize-appeals-only: PacsCanonicalizer bypass removed; this arg is a no-op.
 
 if (args.Contains("--seed-pacs"))
 {
@@ -245,21 +206,9 @@ if (args.Contains("--seed-appeals-only"))
         })
         .Build();
 
-    using var appealSeedScope = appealSeedHost.Services.CreateScope();
-    var appealSeeder = appealSeedScope.ServiceProvider.GetRequiredService<TerraFusion.API.Seeds.PacsDataSeeder>();
-    var appealSeedLogger = appealSeedScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsDataSeeder>>();
-    try
-    {
-        appealSeedLogger.LogInformation("[PacsSeeder] Standalone APPEALS-ONLY mode: starting...");
-        var result = await appealSeeder.SeedAppealsOnlyAsync();
-        appealSeedLogger.LogInformation("[PacsSeeder] APPEALS-ONLY DONE: {Result}", result);
-        Environment.Exit(0);
-    }
-    catch (Exception ex)
-    {
-        appealSeedLogger.LogError(ex, "[PacsSeeder] APPEALS-ONLY FAILED");
-        Environment.Exit(1);
-    }
+    // SeedAppealsOnlyAsync bypass removed — use --seed-pacs for full ETL.
+    Console.Error.WriteLine("[PacsSeeder] --seed-appeals-only is no longer supported. Use --seed-pacs instead.");
+    Environment.Exit(1);
 }
 
 var builder = WebApplication.CreateBuilder(args);
@@ -1232,7 +1181,8 @@ using (var scope = app.Services.CreateScope())
     var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("GPTSeeder");
 
     var seeder = new TerraFusion.AI.Seeds.GPTConfigurationSeeder(dbContext,
-        scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.AI.Seeds.GPTConfigurationSeeder>>());
+        scope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.AI.Seeds.GPTConfigurationSeeder>>(),
+        app.Environment);
     await seeder.SeedAllGPTsAsync();
 
     logger.LogInformation("GPT configurations seeded successfully");

@@ -2237,7 +2237,7 @@ public sealed class PacsToTerraFusionSyncService
                     : rawDescription;
 
                 var totalRate        = g.Sum(r => r.LevyRate);
-                var totalLevyAmount  = g.Sum(r => r.VotedLevyAmount ?? 0m);
+                var totalLevyAmount  = 0m; // VotedLevyAmount not available on PacsLevyRate; rate-only entity
 
                 var rawPurpose = g
                     .OrderByDescending(r => r.LevyRate)
