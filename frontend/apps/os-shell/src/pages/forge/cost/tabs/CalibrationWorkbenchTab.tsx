@@ -30,6 +30,27 @@ interface NeighborhoodRow {
   iaaoCompliant: boolean;
 }
 
+// Shapes from GET /costforge/ratio-study/by-stratum
+interface StratumStatsRow {
+  stratum: string;
+  stratumLabel: string;
+  rawSaleCount: number;
+  saleCount: number;
+  medianRatio: number;
+  cod: number;
+  prd: number;
+  prb: number;
+  iaaoMeetsMedian: boolean;
+  iaaoMeetsCod: boolean;
+  iaaoMeetsPrd: boolean;
+}
+interface StratumResponse {
+  strata: StratumStatsRow[];
+  totalSales: number;
+  matchedSales: number;
+  taxYear: number;
+}
+
 // Shapes from /equity/metrics
 interface EquityMetricsDto {
   saleCount: number;
@@ -131,6 +152,12 @@ export function CalibrationWorkbenchTab() {
   const [verifyError, setVerifyError]       = useState<string | null>(null);
   const verifyAbortRef = useRef<AbortController | null>(null);
 
+  // County-wide IAAO by use stratum — GET /costforge/ratio-study/by-stratum
+  const [strataData, setStrataData]     = useState<StratumStatsRow[]>([]);
+  const [strataLoading, setStrataLoading] = useState(false);
+  const [strataError, setStrataError]   = useState<string | null>(null);
+  const strataAbortRef = useRef<AbortController | null>(null);
+
   // Load current neighborhood status
   useEffect(() => {
     if (!selectedHoodCd) { setHood(null); return; }
@@ -190,6 +217,28 @@ export function CalibrationWorkbenchTab() {
 
     return () => { equityAbortRef.current?.abort(); };
   }, [selectedHoodCd, taxYear]);
+
+  // Fetch county-wide IAAO by use stratum
+  useEffect(() => {
+    strataAbortRef.current?.abort();
+    strataAbortRef.current = new AbortController();
+    setStrataLoading(true);
+    setStrataError(null);
+    apiFetchJson<StratumResponse>(
+      `/costforge/ratio-study/by-stratum?taxYear=${taxYear}`,
+      { signal: strataAbortRef.current.signal }
+    )
+      .then((d) => {
+        setStrataData(d.strata ?? []);
+        setStrataLoading(false);
+      })
+      .catch((err: unknown) => {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        setStrataError(err instanceof Error ? err.message : 'Failed to load stratum data');
+        setStrataLoading(false);
+      });
+    return () => { strataAbortRef.current?.abort(); };
+  }, [taxYear]);
 
   const runPreview = async () => {
     if (!selectedHoodCd || !adjustPct) return;
@@ -295,8 +344,106 @@ export function CalibrationWorkbenchTab() {
 
   if (!selectedHoodCd) {
     return (
-      <div className="cf-state">
-        Select a neighborhood in the Triage tab to begin calibration.
+      <div style={{ maxWidth: 740 }}>
+        <div className="cf-ai-callout" style={{ marginBottom: 16 }}>
+          <div className="cf-ai-callout__label">Calibration Workbench</div>
+          Select a neighborhood from the{' '}
+          <button
+            type="button"
+            className="cf-btn cf-btn--ghost"
+            style={{ display: 'inline', padding: '0 4px', fontSize: '0.8125rem' }}
+            onClick={() => setActiveTab('triage')}
+          >
+            Triage tab
+          </button>{' '}
+          to begin mass adjustment. Below is the county-wide IAAO picture by use stratum.
+        </div>
+
+        <div style={{ fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cf-muted)', marginBottom: 8 }}>
+          County IAAO by Use Stratum — {taxYear}
+        </div>
+
+        {strataLoading && <div className="cf-state" style={{ padding: '10px 0' }}>Loading stratum stats…</div>}
+        {strataError && <div style={{ color: 'var(--cf-danger)', fontSize: '0.8rem', padding: '8px 0' }}>{strataError}</div>}
+        {!strataLoading && strataData.length === 0 && !strataError && (
+          <div style={{ fontSize: '0.8125rem', color: 'var(--cf-muted)', padding: '10px 0' }}>
+            No qualified sale pairs found for {taxYear}. Run a sync or adjust the tax year.
+          </div>
+        )}
+
+        {!strataLoading && strataData.length > 0 && (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8125rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid var(--cf-border)' }}>
+                  {['Stratum', 'Sales (IQR)', 'Median Ratio', 'COD', 'PRD', 'PRB', 'IAAO'].map((h) => (
+                    <th
+                      key={h}
+                      style={{
+                        textAlign: h === 'Stratum' ? 'left' : 'right',
+                        padding: '5px 10px',
+                        color: 'var(--cf-muted)',
+                        fontWeight: 700,
+                        fontSize: '0.6875rem',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.04em',
+                      }}
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {strataData.map((row) => {
+                  const allPass = row.iaaoMeetsMedian && row.iaaoMeetsCod && row.iaaoMeetsPrd;
+                  const prbHigh = Math.abs(row.prb) > 0.05;
+                  return (
+                    <tr key={row.stratum} style={{ borderBottom: '1px solid var(--cf-border)' }}>
+                      <td style={{ padding: '8px 10px', color: 'var(--cf-text)', fontWeight: 600 }}>
+                        <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', marginRight: 6, color: 'var(--cf-muted)' }}>{row.stratum}</span>
+                        {row.stratumLabel}
+                      </td>
+                      <td style={{ padding: '8px 10px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        {row.saleCount.toLocaleString()}
+                        {row.rawSaleCount !== row.saleCount && (
+                          <span style={{ fontSize: '0.6875rem', color: 'var(--cf-subtle)', marginLeft: 4 }}>/{row.rawSaleCount}</span>
+                        )}
+                      </td>
+                      <td style={{ padding: '8px 10px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: row.iaaoMeetsMedian ? 'var(--cf-text)' : 'var(--cf-warn)', fontWeight: row.iaaoMeetsMedian ? undefined : 700 }}>
+                        {row.medianRatio.toFixed(4)}
+                      </td>
+                      <td style={{ padding: '8px 10px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: row.iaaoMeetsCod ? 'var(--cf-text)' : 'var(--cf-warn)', fontWeight: row.iaaoMeetsCod ? undefined : 700 }}>
+                        {row.cod.toFixed(1)}
+                      </td>
+                      <td style={{ padding: '8px 10px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: row.iaaoMeetsPrd ? 'var(--cf-text)' : 'var(--cf-warn)', fontWeight: row.iaaoMeetsPrd ? undefined : 700 }}>
+                        {row.prd.toFixed(4)}
+                      </td>
+                      <td style={{ padding: '8px 10px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: prbHigh ? 'var(--cf-warn)' : 'var(--cf-text)', fontWeight: prbHigh ? 700 : undefined }}>
+                        {row.prb.toFixed(4)}
+                      </td>
+                      <td style={{ padding: '8px 10px', textAlign: 'right' }}>
+                        <span style={{
+                          fontSize: '0.6875rem',
+                          fontWeight: 700,
+                          padding: '2px 8px',
+                          borderRadius: 4,
+                          background: allPass ? 'hsl(142 40% 12%)' : 'hsl(0 50% 14%)',
+                          color: allPass ? 'var(--cf-success)' : 'var(--cf-danger)',
+                        }}>
+                          {allPass ? '✓ OK' : '✗ Out'}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <div style={{ fontSize: '0.6875rem', color: 'var(--cf-subtle)', padding: '6px 10px' }}>
+              Median ratio target: 0.90–1.10 · COD ≤ 15 · PRD 0.98–1.03 · PRB (±0.05 = vertical equity flag) · IQR-trimmed pairs only
+            </div>
+          </div>
+        )}
       </div>
     );
   }

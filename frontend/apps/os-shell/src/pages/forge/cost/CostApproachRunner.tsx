@@ -28,6 +28,18 @@ interface CostScheduleApiRow {
   secondaryFeaturePctOfBiv?: number;
 }
 
+/** Valuation record returned by GET /costforge/parcels/{parcelId}/valuations */
+interface ValuationRecord {
+  id: string;
+  parcelId: string;
+  taxYear: number;
+  status: 'draft' | 'reviewed' | 'sealed';
+  finalReconciledValue: number | null;
+  createdAt: string;
+  reviewedAt: string | null;
+  reviewedBy: string | null;
+}
+
 const BENTON_COUNTY_ID =
   (import.meta.env as Record<string, string>).VITE_BENTON_COUNTY_ID ??
   "19190019-1919-1919-1919-191919191919";
@@ -55,6 +67,16 @@ export function CostApproachRunner() {
 
   const selectedParcelId  = useCostForgeWorkspaceStore((s) => s.selectedParcelId);
   const setSelectedParcel = useCostForgeWorkspaceStore((s) => s.setSelectedParcel);
+  const taxYear           = useCostForgeWorkspaceStore((s) => s.taxYear);
+
+  // Tax roll certification — GET /costforge/parcels/{parcelId}/valuations
+  const [valuations, setValuations]         = useState<ValuationRecord[]>([]);
+  const [valuationsLoading, setValuationsLoading] = useState(false);
+  const [statusPending, setStatusPending]   = useState<Record<string, boolean>>({});
+  const [certifyPending, setCertifyPending] = useState<Record<string, boolean>>({});
+  const [certifyDone, setCertifyDone]       = useState<Record<string, boolean>>({});
+  const [certifyError, setCertifyError]     = useState<Record<string, string>>({});
+  const valuationsAbortRef = useRef<AbortController | null>(null);
 
   // Fetch secondary-feature rates once on mount from /costforge/schedule
   const [sfRates, setSfRates] = useState<SfRate[]>([]);
@@ -96,6 +118,61 @@ export function CostApproachRunner() {
       setForm((p) => ({ ...p, parcelId: selectedParcelId }));
     }
   }, [selectedParcelId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Fetch existing valuation records for the current parcel when a result is available
+  useEffect(() => {
+    if (!form.parcelId || !result) { setValuations([]); return; }
+    valuationsAbortRef.current?.abort();
+    valuationsAbortRef.current = new AbortController();
+    setValuationsLoading(true);
+    apiFetchJson<ValuationRecord[]>(
+      `/costforge/parcels/${encodeURIComponent(form.parcelId)}/valuations?taxYear=${taxYear}`,
+      { signal: valuationsAbortRef.current.signal }
+    )
+      .then((recs) => { setValuations(Array.isArray(recs) ? recs : []); setValuationsLoading(false); })
+      .catch((err: unknown) => {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        setValuations([]);
+        setValuationsLoading(false);
+      });
+    return () => { valuationsAbortRef.current?.abort(); };
+  }, [form.parcelId, result, taxYear]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /** Advance a draft valuation to "reviewed" so it can be certified. */
+  const advanceToReviewed = async (id: string) => {
+    setStatusPending((p) => ({ ...p, [id]: true }));
+    try {
+      await apiFetchJson<unknown>(`/costforge/valuations/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'reviewed' }),
+      });
+      setValuations((prev) => prev.map((v) => v.id === id ? { ...v, status: 'reviewed', reviewedAt: new Date().toISOString() } : v));
+    } catch (err) {
+      setCertifyError((p) => ({ ...p, [id]: err instanceof Error ? err.message : 'Status update failed' }));
+    } finally {
+      setStatusPending((p) => ({ ...p, [id]: false }));
+    }
+  };
+
+  /** Certify a reviewed valuation — promotes to PropertyAssessment on the tax roll. */
+  const certifyValuation = async (id: string) => {
+    setCertifyPending((p) => ({ ...p, [id]: true }));
+    setCertifyError((p) => ({ ...p, [id]: '' }));
+    try {
+      await apiFetchJson<unknown>(`/costforge/valuations/${id}/certify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes: null }),
+      });
+      setCertifyDone((p) => ({ ...p, [id]: true }));
+      setValuations((prev) => prev.map((v) => v.id === id ? { ...v, status: 'sealed' } : v));
+    } catch (err) {
+      setCertifyError((p) => ({ ...p, [id]: err instanceof Error ? err.message : 'Certify failed' }));
+    } finally {
+      setCertifyPending((p) => ({ ...p, [id]: false }));
+    }
+  };
 
   const yearNow = new Date().getFullYear();
   const derivedAge = Math.max(0, yearNow - toNum(form.year_built));
@@ -424,6 +501,107 @@ export function CostApproachRunner() {
                     ))}
                   </tbody>
                 </table>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Tax Roll Certification — POST /costforge/valuations/{id}/certify */}
+          {form.parcelId && (
+            <Card className="border-border/40">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm">Tax Roll Certification</CardTitle>
+                  <Badge variant="outline" className="text-xs">POST /valuations/{'{id}'}/certify</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Promote a reviewed valuation to a PropertyAssessment on the {taxYear} tax roll.
+                  Status progression: <span className="font-mono">draft → reviewed → sealed</span>
+                </p>
+              </CardHeader>
+              <CardContent>
+                {valuationsLoading && (
+                  <p className="text-xs text-muted-foreground">Loading valuations…</p>
+                )}
+                {!valuationsLoading && valuations.length === 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    No valuation records found for parcel <span className="font-mono">{form.parcelId}</span> in {taxYear}.
+                    Save a valuation record via the API or a future Save workflow to enable certification.
+                  </p>
+                )}
+                {!valuationsLoading && valuations.length > 0 && (
+                  <div className="space-y-3">
+                    {valuations.map((v) => (
+                      <div
+                        key={v.id}
+                        className="rounded-md border border-border/40 p-3 text-sm"
+                        style={{ background: v.status === 'sealed' ? 'hsl(142 20% 7%)' : undefined }}
+                      >
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="space-y-0.5">
+                            <div className="font-mono text-xs text-muted-foreground">{v.id.slice(0, 8)}…</div>
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="text-xs font-bold px-1.5 py-0.5 rounded"
+                                style={{
+                                  background: v.status === 'sealed' ? 'hsl(142 40% 12%)' : v.status === 'reviewed' ? 'hsl(210 50% 14%)' : 'hsl(222 16% 16%)',
+                                  color: v.status === 'sealed' ? 'var(--cf-success)' : v.status === 'reviewed' ? 'hsl(210 80% 60%)' : 'var(--cf-muted)',
+                                }}
+                              >
+                                {v.status}
+                              </span>
+                              {v.finalReconciledValue != null && (
+                                <span className="tabular-nums font-medium">
+                                  ${Math.round(v.finalReconciledValue).toLocaleString()} AV
+                                </span>
+                              )}
+                              <span className="text-xs text-muted-foreground">
+                                {(() => { try { return new Date(v.createdAt).toLocaleDateString(); } catch { return v.createdAt; } })()}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {/* Sealed — already on tax roll */}
+                            {v.status === 'sealed' && (
+                              <span className="text-xs font-bold" style={{ color: 'var(--cf-success)' }}>
+                                ✓ Certified to Tax Roll
+                              </span>
+                            )}
+
+                            {/* Draft → advance to reviewed */}
+                            {v.status === 'draft' && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 text-xs"
+                                disabled={!!statusPending[v.id]}
+                                onClick={() => void advanceToReviewed(v.id)}
+                              >
+                                {statusPending[v.id] ? 'Advancing…' : 'Mark Reviewed'}
+                              </Button>
+                            )}
+
+                            {/* Reviewed → certify */}
+                            {v.status === 'reviewed' && !certifyDone[v.id] && (
+                              <Button
+                                size="sm"
+                                className="h-7 text-xs bg-green-700 hover:bg-green-600"
+                                disabled={!!certifyPending[v.id]}
+                                onClick={() => void certifyValuation(v.id)}
+                              >
+                                {certifyPending[v.id] ? 'Certifying…' : '⬆ Certify to Tax Roll'}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+
+                        {certifyError[v.id] && (
+                          <p className="text-xs text-destructive mt-1">{certifyError[v.id]}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
