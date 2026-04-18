@@ -12,6 +12,7 @@ Legend:
 - **SKIP_CLI** — CLI-only, not an HTTP API
 - **SKIP_OS** — handled by OS-level service (auth, etc.)
 - **DECIDE** — founder decision required before porting
+- **CANCEL_PARTIAL** — DECIDE resolved, but post-review reveals 0 portable routes today (architectural obsolescence, schema-blocked, or pure UI). Documented; revisit only if listed unblock conditions are met.
 
 ## Matrix
 
@@ -33,7 +34,7 @@ Legend:
 | `routes_levy_audit.py` | TBD | TBD | LevyAuditController | COVERED | dashboard/guidance/optimization ported |
 | `routes_levy_calculator.py` | TBD | TBD | LevyCalculator + LevyCalculation | COVERED | rate calc + bill impact + aggregate ported |
 | `routes_levy_exports.py` | TBD | TBD | LevyExportController | COVERED | upload/history/compare ported |
-| `routes_mcp.py` | 66.1 KB | 11 | — | DECIDE | Core MCP surface. Same 11 routes in local+prod |
+| `routes_mcp.py` | 66.1 KB | 11 | — | CANCEL_PARTIAL | D3 resolved 2026-04-18: 0/11 portable now (3 OBSOLETE = anthropic key mgmt — `AnthropicMuseLlmClient` retired, .NET uses `MuseLlmOptions` config-based provider; 3 SKIP_UI = HTML templates; 5 DEFER = need `ApiCallLog` schema, same blocker as Task 2.5) |
 | `routes_mcp_army.py` | 18.7 KB | TBD | — | DECIDE | "MCP Army" — confirm concept alive |
 | `routes_mcp_ui.py` | 1.1 KB | TBD | — | SKIP_UI | MCP UI glue |
 | `routes_property_assessment.py` | 16.4 KB | TBD | — | GAP | Property assessment endpoints |
@@ -53,7 +54,8 @@ Plus local-only: `routes_tours.py` — keep (newer local feature).
 | COVERED | 5 |
 | PARTIAL | 5 |
 | GAP | 8 |
-| DECIDE | 3 |
+| DECIDE | 2 |
+| CANCEL_PARTIAL | 1 |
 | SKIP_UI | 4 |
 | SKIP_CLI | 1 |
 | SKIP_OS | 1 |
@@ -75,7 +77,7 @@ Plus local-only: `routes_tours.py` — keep (newer local feature).
 
 - **D1:** Port MCP Army (`routes_mcp_army.py` + helpers) or deprecate?
 - **D2:** Port Advanced MCP (`routes_advanced_mcp.py`) or deprecate?
-- **D3:** Port core MCP surface (`routes_mcp.py`, 11 routes, 66 KB) into .NET, or keep Flask service alongside .NET API?
+- **D3 (RESOLVED 2026-04-18):** Decision was "port to .NET". Outcome: CANCEL_PARTIAL. After source review, 0/11 routes are portable today: 3 are architecturally obsolete (Anthropic env-var key mgmt — `AnthropicMuseLlmClient` retired, .NET uses `MuseLlmOptions` runtime config provider selection — runtime API key mutation violates sovereign hybrid architecture); 3 are SKIP_UI (server-rendered HTML); 5 are DEFER pending `ApiCallLog` schema (same blocker as Task 2.5). No controller created. Re-open if/when (a) `ApiCallLog` schema lands in `TerraFusionDbContext` to enable the 5 telemetry endpoints, or (b) a sovereign-architecture-compliant LLM provider config endpoint is needed for the OS Pilot surface.
 
 ## Schema Drift (`models.py`)
 
