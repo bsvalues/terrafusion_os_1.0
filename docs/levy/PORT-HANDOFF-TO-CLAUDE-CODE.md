@@ -85,18 +85,18 @@ Status values: `TODO` · `IN_PROGRESS` · `BLOCKED` · `DONE` · `CANCELLED`
 
 | # | Task | Owner | Status | Evidence |
 |---|------|-------|--------|------|
-| 1.1 | [x] Copy `routes_data_quality.py` (44.8 KB) into `packages/terra-levy/backend/` | Copilot | DONE | Phase 1 commit |
-| 1.2 | [x] Copy `routes_property_assessment.py` (16.4 KB) | Copilot | DONE | Phase 1 commit |
-| 1.3 | [x] Copy `routes_mcp_army.py` (18.7 KB) | Copilot | DONE | Phase 1 commit |
-| 1.4 | [x] Copy `routes_db_fix.py` (7.0 KB) | Copilot | DONE | Phase 1 commit |
-| 1.5 | [x] Copy `routes_home.py` (3.0 KB) | Copilot | DONE | Phase 1 commit |
-| 1.6 | [x] Copy `routes_mcp_ui.py` (1.1 KB) | Copilot | DONE | Phase 1 commit |
-| 1.7 | [x] Copy `mcp_army_route.py` (2.7 KB) | Copilot | DONE | Phase 1 commit |
-| 1.8 | [x] Copy `app_mcp_army_integration.py` (3.7 KB) | Copilot | DONE | Phase 1 commit |
-| 1.9 | [x] Overwrite local `routes_mcp.py` with prod version (66,101 B) | Copilot | DONE | Phase 1 commit. Surface-identical, body-enhanced. |
-| 1.10 | [x] Also sync `models.py` (local 29,789 B → prod 39,727 B, schema drift). Added to Phase 1 per 0.5 finding | Copilot | DONE | Phase 1 commit. **Alerts Phase 3.1 migration audit.** |
+| 1.1 | [x] Copy `routes_data_quality.py` (44.8 KB) into `packages/terra-levy/backend/` | Copilot | DONE | commit 073a7ede5 |
+| 1.2 | [x] Copy `routes_property_assessment.py` (16.4 KB) | Copilot | DONE | commit 073a7ede5 |
+| 1.3 | [x] Copy `routes_mcp_army.py` (18.7 KB) | Copilot | DONE | commit 073a7ede5 |
+| 1.4 | [x] Copy `routes_db_fix.py` (7.0 KB) | Copilot | DONE | commit 073a7ede5 |
+| 1.5 | [x] Copy `routes_home.py` (3.0 KB) | Copilot | DONE | commit 073a7ede5 |
+| 1.6 | [x] Copy `routes_mcp_ui.py` (1.1 KB) | Copilot | DONE | commit 073a7ede5 |
+| 1.7 | [x] Copy `mcp_army_route.py` (2.7 KB) | Copilot | DONE | commit 073a7ede5 |
+| 1.8 | [x] Copy `app_mcp_army_integration.py` (3.7 KB) | Copilot | DONE | commit 073a7ede5 |
+| 1.9 | [x] Overwrite local `routes_mcp.py` with prod version (66,101 B) | Copilot | DONE | commit 073a7ede5. Surface-identical, body-enhanced. |
+| 1.10 | [x] Also sync `models.py` (local 29,789 B → prod 39,727 B, schema drift). Added to Phase 1 per 0.5 finding | Copilot | DONE | commit 073a7ede5. **Alerts Phase 3.1 migration audit.** |
 | 1.11 | [ ] Verify Flask app still imports cleanly (`python -c "from app import app"` or equivalent) | Claude Code | BLOCKED | No Python interpreter in session; Claude Code or founder must run |
-| 1.12 | [x] Commit as `chore(terra-levy): sync prod BCBSLevy snapshot for .NET port source-of-truth` | Copilot | DONE | branch `chore/terra-levy-parity-sync` |
+| 1.12 | [x] Commit as `chore(terra-levy): sync prod BCBSLevy snapshot for .NET port source-of-truth` | Copilot | DONE | commit `073a7ede5` on branch `chore/terra-levy-parity-sync` |
 
 **Exit gate:** One PR, one commit, Flask import smoke-test green.
 
