@@ -816,7 +816,7 @@ public sealed class R1Week5CxR1ClosureTests
     result.Should().NotBeNull();
     result!.BuildingType.Should().Be("R1");
     result.BaseCostPerSqft.Should().Be(127.50m);
-    result.RegionFactor.Should().Be(1.00m);
+    result.RevalAreaFactor.Should().Be(1.00m);
     result.QualityFactor.Should().Be(1.00m);
     result.ConditionFactor.Should().Be(1.00m);
     result.ComplexityFactor.Should().Be(1.00m);

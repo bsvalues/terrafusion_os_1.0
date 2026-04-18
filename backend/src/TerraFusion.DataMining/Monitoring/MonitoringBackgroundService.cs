@@ -17,14 +17,14 @@ namespace TerraFusion.DataMining.Monitoring
         private readonly ILogger<MonitoringBackgroundService> _logger;
         private readonly SystemMonitor _systemMonitor;
         private readonly DatabaseMetricsCollector _dbMetrics;
-        private readonly AlertManager _alertManager;
+        private readonly AlertService _alertManager;
         private readonly TimeSpan _interval;
 
         public MonitoringBackgroundService(
             ILogger<MonitoringBackgroundService> logger,
             SystemMonitor systemMonitor,
             DatabaseMetricsCollector dbMetrics,
-            AlertManager alertManager,
+            AlertService alertManager,
             IConfiguration configuration)
         {
             _logger = logger;

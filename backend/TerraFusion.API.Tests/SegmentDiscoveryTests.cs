@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Interfaces;
 using TerraFusion.API.Services;
+using TerraFusion.Data;
 using Xunit;
 
 using Task = System.Threading.Tasks.Task;
@@ -11,7 +15,17 @@ namespace TerraFusion.API.Tests;
 
 public sealed class SegmentDiscoveryTests
 {
-    private readonly IForgeStatisticsService _service = new ForgeStatisticsService();
+    private static TerraFusionDbContext BuildDb()
+    {
+        var opts = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+        var cfg = new ConfigurationBuilder().AddInMemoryCollection([]).Build();
+        return new TerraFusionDbContext(opts, cfg);
+    }
+
+    private readonly IForgeStatisticsService _service =
+        new ForgeStatisticsService(BuildDb(), NullLogger<ForgeStatisticsService>.Instance);
 
     private static readonly Guid CountyA = Guid.Parse("00000000-0000-0000-0000-000000000001");
     private static readonly Guid CountyB = Guid.Parse("00000000-0000-0000-0000-000000000002");

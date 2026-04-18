@@ -41,7 +41,7 @@ namespace TerraFusion.DataMining.ETL
     public class EtlPluginRunner
     {
         private readonly ILogger<EtlPluginRunner> _logger;
-        private readonly EtlJobManager _jobManager;
+        private readonly EtlJobService _jobManager;
         private readonly Dictionary<string, IEtlPlugin> _discoveredPlugins = new();
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace TerraFusion.DataMining.ETL
         /// </summary>
         /// <param name="jobManager">Job manager for registration and execution.</param>
         /// <param name="logger">Logger instance.</param>
-        public EtlPluginRunner(EtlJobManager jobManager, ILogger<EtlPluginRunner> logger)
+        public EtlPluginRunner(EtlJobService jobManager, ILogger<EtlPluginRunner> logger)
         {
             _jobManager = jobManager ?? throw new ArgumentNullException(nameof(jobManager));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

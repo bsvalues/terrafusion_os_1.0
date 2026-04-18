@@ -44,7 +44,7 @@ public sealed class CountyStatsTests : IDisposable
         _sut = new TerraForgeController(
             _db,
             NullLogger<TerraForgeController>.Instance,
-            Mock.Of<IOlsRegressionService>());
+            Mock.Of<IOlsRegressionService>(), Mock.Of<ISaleQualificationService>());
     }
 
     public void Dispose() => _db.Dispose();
