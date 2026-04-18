@@ -53,6 +53,22 @@ The port is **partial**, not green-field. Claude Code's job is to close the gap 
 
 ---
 
+## 2a. Founder Decisions (resolved 2026-04-18)
+
+**Single directive: follow the CostForge pattern.** TerraLevy is a TerraFusion **native app** (pure .NET 8 under `backend/src/TerraFusion.Levy/`, no Flask alongside). The Flask code synced in Phase 1 is **reference-only / source-of-truth to port FROM**, then delete post-cutover.
+
+This collapses D1/D2/D3 (MCP Army / Advanced MCP / core MCP) into a single answer:
+
+| Decision | Resolution | Rationale |
+|----------|------------|-----------|
+| **D1** — MCP Army (`routes_mcp_army.py`, `mcp_army_route.py`, `app_mcp_army_integration.py`) | **PORT to .NET** as native MCP controllers under `TerraFusion.Levy` | CostForge = pure .NET. No Flask lives on long-term. |
+| **D2** — Advanced MCP (`routes_mcp.py` 66 KB) | **PORT to .NET** | Same pattern. |
+| **D3** — Core MCP | **PORT to .NET** | No Flask-alongside model. Cutover-and-retire Flask. |
+
+**Implication for Phase 2:** every GAP row becomes a port row. No `CANCELLED` rows for MCP. The Python files remain in `packages/terra-levy/backend/` only until their .NET equivalents pass integration tests, then are deleted in Phase 6 (retirement).
+
+---
+
 ## 3. Risks & Assumptions
 
 - **R1:** `routes_mcp.py` hash-diverged (local 59,879 B vs prod 66,101 B). Assumption: prod is the truth. **Must diff before overwrite** and capture the semantic delta.
@@ -107,12 +123,14 @@ For each gap row from task 0.4, create one port row below. Seed with known candi
 
 | # | Flask route file | .NET target | Owner | Status | Evidence |
 |---|------------------|-------------|-------|--------|------|
-| 2.1 | [ ] `routes_data_quality.py` | `LevyDataQualityController.cs` + service | Claude Code | TODO | |
-| 2.2 | [ ] `routes_property_assessment.py` | existing PropertyAssessment surface — confirm or new | Claude Code | TODO | |
-| 2.3 | [ ] `routes_mcp_army.py` | **FOUNDER DECISION** — port or deprecate? | Founder | TODO | |
-| 2.4 | [ ] `routes_db_fix.py` | CLI tool only, do NOT expose as controller | Claude Code | TODO | |
-| 2.5 | [ ] `routes_home.py` | SKIP — UI concern, lives in React shell | Claude Code | CANCELLED | UI, not API |
-| 2.6 | [ ] `routes_mcp_ui.py` | SKIP — UI concern | Claude Code | CANCELLED | UI, not API |
+| 2.1 | [ ] `routes_data_quality.py` (44.8 KB) | `LevyDataQualityController.cs` + `ILevyDataQualityService` | Claude Code | TODO | Mirrors CostForge pattern |
+| 2.2 | [ ] `routes_property_assessment.py` (16.4 KB) | New `LevyPropertyAssessmentController.cs` (distinct from top-level PropertyAssessment — this is the levy-scoped projection) | Claude Code | TODO | |
+| 2.3 | [ ] `routes_mcp.py` (66 KB, 11 routes, 14 defs) | New `LevyMcpController.cs` + `ILevyMcpService` | Claude Code | TODO | **D2 resolved: PORT** |
+| 2.4 | [ ] `routes_mcp_army.py` + `mcp_army_route.py` + `app_mcp_army_integration.py` | New `LevyMcpArmyController.cs` + service | Claude Code | TODO | **D1 resolved: PORT** |
+| 2.5 | [ ] `routes_db_fix.py` (7.0 KB) | CLI mode in `TerraFusion.Levy.CLI` (follow existing 4-CLI-mode pattern in Program.cs); do NOT expose as HTTP controller | Claude Code | TODO | Ops-only utility |
+| 2.6 | [ ] `routes_home.py` | SKIP — UI concern, lives in React shell | Claude Code | CANCELLED | UI, not API |
+| 2.7 | [ ] `routes_mcp_ui.py` | SKIP — UI concern | Claude Code | CANCELLED | UI, not API |
+| 2.8 | [ ] Port remaining PARTIAL rows from `gap-matrix.md` (historical_analysis, user_audit, tax_strategy, public, glossary, budget_impact if any gap) | Claude Code | TODO | Per `docs/levy/port-audit/gap-matrix.md` |
 
 **Exit gate per row:** endpoint implemented, EF migration if needed, integration test added, route-contract doc updated in `docs/levy/api-documentation.md`.
 
@@ -143,6 +161,17 @@ For each gap row from task 0.4, create one port row below. Seed with known candi
 | 5.4 | [ ] SEAL Gate + governed-spine CI green on Levy PR | Either | TODO | After push |
 | 5.5 | [ ] Runtime verification: start API, hit `/api/levy/v1/*` endpoints with real data, founder visual confirmation | Founder | TODO | Deferred to post-Phase 2 |
 | 5.6 | [ ] Merge Levy port PR(s) | Founder | TODO | Parity PR is ready for review |
+
+### Phase 6 — Flask retirement (CostForge-pattern cutover)
+
+Per D1/D2/D3 resolution: TerraLevy is a **.NET-only native app**. Once Phase 2 + 3 + 4 + 5 all green and founder runtime-verifies, Python source-of-truth is deleted.
+
+| # | Task | Owner | Status | Evidence |
+|---|------|-------|--------|------|
+| 6.1 | [ ] Verify 100% of ported .NET controllers have equivalent integration test coverage to their Flask originals | Claude Code | TODO | |
+| 6.2 | [ ] Founder runtime-verification pass on `/api/levy/v1/*` with real Benton data | Founder | TODO | |
+| 6.3 | [ ] Delete `packages/terra-levy/backend/*.py` (keep only `docs/levy/port-audit/` as historical record) | Either | TODO | Post-cutover only |
+| 6.4 | [ ] Update `docs/levy/README.md` to document .NET-only posture | Either | TODO | |
 
 ---
 
