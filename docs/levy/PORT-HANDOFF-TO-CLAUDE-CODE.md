@@ -77,7 +77,7 @@ Status values: `TODO` · `IN_PROGRESS` · `BLOCKED` · `DONE` · `CANCELLED`
 | 0.2 | [x] Enumerate Flask route→endpoint table for all 27 prod files (route path, method, handler, model used) | Copilot | DONE | `docs/levy/port-audit/flask-route-inventory.md` (10.7 KB) |
 | 0.3 | [x] Map each existing .NET controller (11 files) to which Flask route file it ports | Copilot | DONE | `docs/levy/port-audit/dotnet-controller-map.md` (2.4 KB) |
 | 0.4 | [x] Produce gap table: Flask routes with **no** .NET counterpart | Copilot | DONE | `docs/levy/port-audit/gap-matrix.md`. 5 COVERED, 5 PARTIAL, 8 GAP, 3 DECIDE |
-| 0.5 | [x] Diff `models.py` (BCBSLevy) vs `TerraFusion.Levy/Entities/**` — schema drift report | Copilot | DONE | `models.py` hashes diverge; prod 39,727 B vs local 29,789 B (+10 KB). Synced in Phase 1. Full EF migration audit deferred to Phase 3.1 |
+| 0.5 | [x] Diff `models.py` (BCBSLevy) vs `TerraFusion.Levy/Entities/**` — schema drift report | Copilot | DONE | `models.py` hashes diverge; prod 39,727 B vs local 29,789 B (+10 KB). Synced in Phase 1. Full EF migration audit deferred to Phase 3.1dels.py` hashes diverge; prod 39,727 B vs local 29,789 B (+10 KB). Synced in Phase 1. Full EF migration audit deferred to Phase 3.1 |
 
 **Exit gate:** Phase 0 artifacts committed to `docs/levy/port-audit/` before any code writes.
 
@@ -85,17 +85,18 @@ Status values: `TODO` · `IN_PROGRESS` · `BLOCKED` · `DONE` · `CANCELLED`
 
 | # | Task | Owner | Status | Evidence |
 |---|------|-------|--------|------|
-| 1.1 | [x] Copy `routes_data_quality.py` (44.8 KB) into `packages/terra-levy/backend/` | Copilot | DONE | commit 073a7ede5 |
-| 1.2 | [x] Copy `routes_property_assessment.py` (16.4 KB) | Copilot | DONE | commit 073a7ede5 |
-| 1.3 | [x] Copy `routes_mcp_army.py` (18.7 KB) | Copilot | DONE | commit 073a7ede5 |
-| 1.4 | [x] Copy `routes_db_fix.py` (7.0 KB) | Copilot | DONE | commit 073a7ede5 |
-| 1.5 | [x] Copy `routes_home.py` (3.0 KB) | Copilot | DONE | commit 073a7ede5 |
-| 1.6 | [x] Copy `routes_mcp_ui.py` (1.1 KB) | Copilot | DONE | commit 073a7ede5 |
-| 1.7 | [x] Copy `mcp_army_route.py` (2.7 KB) | Copilot | DONE | commit 073a7ede5 |
-| 1.8 | [x] Copy `app_mcp_army_integration.py` (3.7 KB) | Copilot | DONE | commit 073a7ede5 |
-| 1.9 | [x] Overwrite local `routes_mcp.py` with prod version (66,101 B) | Copilot | DONE | commit 073a7ede5. Surface-identical, body-enhanced. |
-| 1.10 | [x] Also sync `models.py` (local 29,789 B → prod 39,727 B, schema drift). Added to Phase 1 per 0.5 finding | Copilot | DONE | commit 073a7ede5. **Alerts Phase 3.1 migration audit.** |
+| 1.1 | [x] Copy `routes_data_quality.py` (44.8 KB) into `packages/terra-levy/backend/` | Copilot | DONE | Phase 1 commit |
+| 1.2 | [x] Copy `routes_property_assessment.py` (16.4 KB) | Copilot | DONE | Phase 1 commit |
+| 1.3 | [x] Copy `routes_mcp_army.py` (18.7 KB) | Copilot | DONE | Phase 1 commit |
+| 1.4 | [x] Copy `routes_db_fix.py` (7.0 KB) | Copilot | DONE | Phase 1 commit |
+| 1.5 | [x] Copy `routes_home.py` (3.0 KB) | Copilot | DONE | Phase 1 commit |
+| 1.6 | [x] Copy `routes_mcp_ui.py` (1.1 KB) | Copilot | DONE | Phase 1 commit |
+| 1.7 | [x] Copy `mcp_army_route.py` (2.7 KB) | Copilot | DONE | Phase 1 commit |
+| 1.8 | [x] Copy `app_mcp_army_integration.py` (3.7 KB) | Copilot | DONE | Phase 1 commit |
+| 1.9 | [x] Overwrite local `routes_mcp.py` with prod version (66,101 B) | Copilot | DONE | Phase 1 commit. Surface-identical, body-enhanced. |
+| 1.10 | [x] Also sync `models.py` (local 29,789 B → prod 39,727 B, schema drift). Added to Phase 1 per 0.5 finding | Copilot | DONE | Phase 1 commit. **Alerts Phase 3.1 migration audit.** |
 | 1.11 | [ ] Verify Flask app still imports cleanly (`python -c "from app import app"` or equivalent) | Claude Code | BLOCKED | No Python interpreter in session; Claude Code or founder must run |
+| 1.12 | [x] Commit as `chore(terra-levy): sync prod BCBSLevy snapshot for .NET port source-of-truth` | Copilot | DONE | branch `chore/terra-levy-parity-sync`s compile clean. Full Flask app-import smoke remains as a Claude Code Phase 2 preflight. |
 | 1.12 | [x] Commit as `chore(terra-levy): sync prod BCBSLevy snapshot for .NET port source-of-truth` | Copilot | DONE | commit `073a7ede5` on branch `chore/terra-levy-parity-sync` |
 
 **Exit gate:** One PR, one commit, Flask import smoke-test green.
@@ -136,12 +137,12 @@ For each gap row from task 0.4, create one port row below. Seed with known candi
 
 | # | Task | Owner | Status | Evidence |
 |---|------|-------|--------|------|
-| 5.1 | [ ] `dotnet test` green (backend full suite) | Claude Code | TODO | |
-| 5.2 | [ ] `pnpm run type-check` green (OS boundary) | Copilot | TODO | |
-| 5.3 | [ ] `node --test os-platform/core/tests/phase83-tools.test.mjs` green | Copilot | TODO | |
-| 5.4 | [ ] SEAL Gate + governed-spine CI green on Levy PR | Either | TODO | |
-| 5.5 | [ ] Runtime verification: start API, hit `/api/levy/v1/*` endpoints with real data, founder visual confirmation | Founder | TODO | |
-| 5.6 | [ ] Merge Levy port PR(s) | Founder | TODO | |
+| 5.1 | [ ] `dotnet test` green (backend full suite) | Claude Code | TODO | Deferred to Phase 2 (no backend code changed in parity sync) |
+| 5.2 | [ ] `pnpm run type-check` green (OS boundary) | Claude Code / Founder | BLOCKED | **Pre-existing breakage on feat/native-app-integrations**, not caused by Levy sync. `os-platform/core/pilot/handlers.ts:25` imports `../types/assessorSuperpowers.js` which does not exist in repo. Same breakage present on `origin/main`. Must be fixed separately before any OS-core PR can merge. |
+| 5.3 | [x] `node --test os-platform/core/tests/phase83-tools.test.mjs` green | Copilot | DONE | 56/56 pass, 179ms |
+| 5.4 | [ ] SEAL Gate + governed-spine CI green on Levy PR | Either | TODO | After push |
+| 5.5 | [ ] Runtime verification: start API, hit `/api/levy/v1/*` endpoints with real data, founder visual confirmation | Founder | TODO | Deferred to post-Phase 2 |
+| 5.6 | [ ] Merge Levy port PR(s) | Founder | TODO | Parity PR is ready for review |
 
 ---
 
