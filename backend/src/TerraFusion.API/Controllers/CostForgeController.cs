@@ -6863,13 +6863,17 @@ public class CostForgeController : ControllerBase
     if (req.AdjustmentPct < -50 || req.AdjustmentPct > 100)
       return BadRequest(new { error = "AdjustmentPct must be between -50 and 100" });
 
+    // County isolation — sovereign county model: never touch another county's parcels.
+    var countyCtx = await ResolveCountyContextAsync();
+    if (countyCtx is null) return Forbid();
+
     var taxYear = req.TaxYear > 0 ? req.TaxYear : DateTime.UtcNow.Year;
     var factor = 1.0m + (decimal)req.AdjustmentPct / 100m;
 
-    // Resolve parcel IDs — neighborhood + optional segment filters (same as preview)
+    // Resolve parcel IDs — neighborhood + county scope + optional segment filters (same as preview)
     var camaQ = _db.CamaCharacteristics
         .AsNoTracking()
-        .Where(c => c.NeighborhoodCode == req.NeighborhoodCode);
+        .Where(c => c.CountyId == countyCtx.CountyId && c.NeighborhoodCode == req.NeighborhoodCode);
 
     if (!string.IsNullOrWhiteSpace(req.VintageDecade)
         && int.TryParse(req.VintageDecade.TrimEnd('s'), out var vintageStart))
@@ -6957,7 +6961,7 @@ public class CostForgeController : ControllerBase
 
     var parcelCount = await _db.CamaCharacteristics
         .AsNoTracking()
-        .Where(c =>
+        .Where(c => c.CountyId == countyId &&
             (string.IsNullOrEmpty(req.NeighborhoodFilter) || c.NeighborhoodCode == req.NeighborhoodFilter) &&
             (string.IsNullOrEmpty(req.PropertyType) || c.BuildingType == req.PropertyType))
         .CountAsync();
@@ -6980,7 +6984,8 @@ public class CostForgeController : ControllerBase
 
     // Capture IServiceScopeFactory (singleton) before the request scope is disposed
     var scopeFactory = HttpContext.RequestServices.GetRequiredService<IServiceScopeFactory>();
-    var pipelineId = pipeline.Id;
+    var pipelineId       = pipeline.Id;
+    var batchCountyId    = countyId;          // county isolation — captured from request context
     var neighborhoodFilter = req.NeighborhoodFilter;
     var propertyType = req.PropertyType;
     var logger = _logger;
@@ -6994,7 +6999,9 @@ public class CostForgeController : ControllerBase
         using var scope = scopeFactory.CreateScope();
         var db2 = scope.ServiceProvider.GetRequiredService<DataDbContext>();
 
-        var camaQ = db2.CamaCharacteristics.AsQueryable();
+        // County isolation: batch apply must never cross county boundary.
+        var camaQ = db2.CamaCharacteristics.AsQueryable()
+            .Where(c => c.CountyId == batchCountyId);
         if (!string.IsNullOrEmpty(neighborhoodFilter))
           camaQ = camaQ.Where(c => c.NeighborhoodCode == neighborhoodFilter);
         if (!string.IsNullOrEmpty(propertyType))
@@ -7006,7 +7013,12 @@ public class CostForgeController : ControllerBase
         {
           try
           {
+            // Must match both BuildingType AND Region (Reval Area) — 11 types × 6 areas.
+            // Without the Region filter, FirstOrDefault always returns the first row (Reval 1),
+            // applying Kennewick urban-core rates to every parcel regardless of reval area.
+            var revalArea = string.IsNullOrWhiteSpace(c.Region) ? "Reval 1" : c.Region;
             var entry = BentonCostData.CostMatrix.FirstOrDefault(e =>
+                e.Region.Equals(revalArea, StringComparison.OrdinalIgnoreCase) &&
                 e.BuildingType.Equals(c.BuildingType, StringComparison.OrdinalIgnoreCase));
             if (entry is null) { errors++; continue; }
             c.ImprvVal = entry.BaseCostPerSqft * c.SquareFeet;
