@@ -695,7 +695,9 @@ public class CostForgeController : ControllerBase
   // ════════════════════════════════════════════════════════════════════
   //  REAL BENTON COUNTY COST CALCULATOR — Extracted from costforge-ai-workspace
   //  Source: Cost Matrix 2025.xlsx (983 entries, Benton County Assessor)
-  //  Formula: Total = baseCost × sqft × revalArea(Cycle) × quality × condition × age × complexity
+  //  Formula: RCN   = baseCost × sqft × revalArea × quality × complexity
+  //           RCND  = RCN × depreciationFactor
+  //           RCNLD = RCND × conditionFactor  (condition post-depreciation — Benton Method)
   // ════════════════════════════════════════════════════════════════════
 
   /// <summary>

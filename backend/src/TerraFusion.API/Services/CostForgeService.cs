@@ -91,7 +91,7 @@ public class CostForgeService : ICostForgeService
         // Use pre-computed per-sqft intermediates from ComputeCostEstimate (Task 6 Benton Method fix)
         var rcn  = CostForgeController.BankersRound(result.RcnPerSqft  * result.SquareFeet);
         var rcnd = CostForgeController.BankersRound(result.RcndPerSqft * result.SquareFeet);
-        var physicalDepreciation = rcnd - rcn;          // negative (loss from age)
+        var physicalDepreciation = rcn - rcnd;           // positive loss (rcn > rcnd when deprFactor < 1)
         var conditionAdjustment  = result.AssessedValue - rcnd; // positive or negative
 
         var components = new List<CostComponentDto>
