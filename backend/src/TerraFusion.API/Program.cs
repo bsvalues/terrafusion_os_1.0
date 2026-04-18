@@ -1593,6 +1593,7 @@ builder.Services.AddDbContext<LevyDbContext>(options =>
 builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyCalculationService, TerraFusion.Levy.Services.LevyCalculationService>();
 builder.Services.AddScoped<TerraFusion.Levy.Services.IRevenueProjectionService, TerraFusion.Levy.Services.RevenueProjectionService>();
 builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyPropertyAssessmentService, TerraFusion.Levy.Services.LevyPropertyAssessmentService>();
+builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyDataQualityService, TerraFusion.Levy.Services.LevyDataQualityService>();
 // NOTE: Levy certification flow uses TerraFusion.Core.Services.ICertificationService
 // (registered above at the Dais CRUD block). A previous B5 DI line referenced
 // TerraFusion.Levy.Services.ILevyCertificationService but those types were
