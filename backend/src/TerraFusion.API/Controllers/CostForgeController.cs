@@ -6690,9 +6690,9 @@ public class CostForgeController : ControllerBase
         .Where(d => !string.IsNullOrWhiteSpace(d.SegmentType))
         .Select((d, i) =>
         {
-          var featPctGood = d.DepPct.HasValue
-              ? (double)Math.Max(0m, 100m - d.DepPct.Value)
-              : (d.PhysicalPct.HasValue ? (double)d.PhysicalPct.Value : 100.0);
+          double? featPctGood = d.DepPct.HasValue
+              ? (double?)Math.Max(0.0, (double)(100m - d.DepPct.Value))
+              : (d.PhysicalPct.HasValue ? (double?)d.PhysicalPct.Value : null);
 
           return (object)new
           {
@@ -6714,7 +6714,7 @@ public class CostForgeController : ControllerBase
             quality_grade      = d.ClassCode,
             age_years          = (int?)null,
             effective_life_years = 40,
-            pct_good           = Math.Round(featPctGood, 1),
+            pct_good           = featPctGood.HasValue ? Math.Round(featPctGood.Value, 1) : (double?)null,
             rcnld              = d.DepreciatedRCN.HasValue ? (long?)((long)d.DepreciatedRCN.Value) : null,
             calc_run_at        = d.UpdatedAt.ToString("O"),
             row_type           = "secondary-feature",
