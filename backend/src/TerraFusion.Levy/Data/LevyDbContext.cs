@@ -1,5 +1,12 @@
-// TEMPORARY STUB FOR BACKEND STRUCTURAL BUILD
-// TODO: Replace with real LevyDbContext implementation (see WIP branch).
+// TerraLevy DbContext — authoritative EF Core context for the Levy suite.
+// Backed by real migrations under ./Migrations (InitialLevy, SeedLevyData,
+// AddReferenceSourceTable, AddLevyCertificationAndBankedCapacity) and a
+// LevyDbContextModelSnapshot. Registered in TerraFusion.API/Program.cs via
+// AddDbContext<LevyDbContext> with LEVY_DATABASE_URL / ConnectionStrings:LevyDatabase.
+//
+// Historical note: this file was previously named LevyDbContextStub.cs and
+// carried a stale "TEMPORARY STUB" header. Renamed + de-stubbed 2026-04-18
+// once it was confirmed to be the real, migrated, DI-registered context.
 
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Levy.Models;
