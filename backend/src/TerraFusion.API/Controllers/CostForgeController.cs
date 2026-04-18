@@ -2071,10 +2071,16 @@ public class CostForgeController : ControllerBase
       .FirstOrDefaultAsync(r => r.Id == id && r.CountyId == ctx.CountyId);
 
     if (valuation is null)
+    {
+      _logger.LogWarning("CostForge certify: valuation {ValuationId} not found for county {CountyId} — possible cross-county access attempt or stale ID", id, ctx.CountyId);
       return NotFound(new { error = "Valuation record not found." });
+    }
 
     if (valuation.Status == "sealed")
       return Conflict(new { error = "Valuation record is already sealed and certified." });
+
+    if (valuation.Status != "reviewed")
+      return UnprocessableEntity(new { error = $"Only reviewed valuations can be certified for the tax roll. Current status: '{valuation.Status}'. Advance to 'reviewed' via PATCH /valuations/{{id}}/status first." });
 
     if (valuation.FinalReconciledValue is null or <= 0)
       return BadRequest(new { error = "ValuationRecord.FinalReconciledValue must be set and positive before certifying." });
@@ -2089,54 +2095,81 @@ public class CostForgeController : ControllerBase
     if (property is null)
       return UnprocessableEntity(new { error = $"Property record not found for parcel '{valuation.ParcelId}' in county {ctx.CountyId}. Cannot promote to tax roll." });
 
-    // Deactivate any prior active PropertyAssessment for this property + year
-    var priorAssessments = await _db.PropertyAssessments
-      .Where(a => a.PropertyId == property.Id && a.AssessmentYear == valuation.TaxYear && a.IsActive)
-      .ToListAsync();
-    foreach (var prior in priorAssessments)
-      prior.IsActive = false;
-
-    // Create the new canonical PropertyAssessment
-    var assessment = new PropertyAssessment
+    // Open serializable transaction to prevent TOCTOU: two concurrent certifies must not both succeed
+    await using var tx = await _db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+    try
     {
-      Id               = Guid.NewGuid(),
-      PropertyId       = property.Id,
-      AssessmentYear   = valuation.TaxYear,
-      AssessedValue    = valuation.FinalReconciledValue.Value,
-      MarketValue      = valuation.FinalReconciledValue.Value,
-      LandValue        = valuation.LandValue ?? 0m,
-      ImprovementValue = valuation.Rcnld ?? 0m,
-      AssessmentMethod = "CostForge",
-      AssessorNotes    = request?.Notes,
-      AssessorId       = Guid.Empty,   // TODO: wire to authenticated user Guid when auth scope added
-      AssessmentDate   = DateTime.UtcNow,
-      IsActive         = true,
-    };
-    _db.PropertyAssessments.Add(assessment);
+      // Re-read valuation inside transaction with tracking (already loaded above; re-check status to catch concurrent seal)
+      var freshStatus = await _db.ValuationRecords
+          .Where(r => r.Id == id && r.CountyId == ctx.CountyId)
+          .Select(r => r.Status)
+          .FirstOrDefaultAsync();
+      if (freshStatus == "sealed")
+        return Conflict(new { error = "Valuation record was sealed by a concurrent request." });
 
-    // Seal the ValuationRecord
-    valuation.Status     = "sealed";
-    valuation.ReviewedAt = DateTime.UtcNow;
-    valuation.ReviewedBy = User.Identity?.Name ?? "system";
+      // Deactivate any prior active PropertyAssessment for this property + year
+      var priorAssessments = await _db.PropertyAssessments
+          .Where(a => a.PropertyId == property.Id && a.AssessmentYear == valuation.TaxYear && a.IsActive)
+          .ToListAsync();
+      foreach (var prior in priorAssessments)
+        prior.IsActive = false;
 
-    await _db.SaveChangesAsync();
+      // Create the new canonical PropertyAssessment
+      var assessment = new PropertyAssessment
+      {
+        Id               = Guid.NewGuid(),
+        PropertyId       = property.Id,
+        AssessmentYear   = valuation.TaxYear,
+        AssessedValue    = valuation.FinalReconciledValue.Value,
+        MarketValue      = valuation.FinalReconciledValue.Value,
+        LandValue        = valuation.LandValue ?? 0m,
+        ImprovementValue = valuation.Rcnld ?? 0m,
+        AssessmentMethod = "CostForge",
+        AssessorNotes    = request?.Notes,
+        AssessorId       = Guid.Empty,   // TODO: wire to authenticated user Guid when auth scope added
+        AssessmentDate   = DateTime.UtcNow,
+        IsActive         = true,
+      };
+      _db.PropertyAssessments.Add(assessment);
 
-    _logger.LogInformation(
-      "CostForge certify: parcel={Parcel} taxYear={Year} assessedValue={Value:C} assessmentId={AssessmentId} deactivatedPrior={Deactivated}",
-      valuation.ParcelId, valuation.TaxYear, assessment.AssessedValue, assessment.Id, priorAssessments.Count);
+      // Seal the ValuationRecord
+      valuation.Status     = "sealed";
+      valuation.ReviewedAt = DateTime.UtcNow;
+      valuation.ReviewedBy = User.Identity?.Name ?? "system";
 
-    return Ok(new
+      // Component sum audit log (warns if FinalReconciledValue != LandValue + Rcnld)
+      var componentSum = assessment.LandValue + assessment.ImprovementValue;
+      if (componentSum != assessment.AssessedValue)
+        _logger.LogWarning(
+            "CostForge certify: component sum {ComponentSum:C} ≠ assessed value {AssessedValue:C} for parcel {Parcel} — may indicate a manual reconciliation override",
+            componentSum, assessment.AssessedValue, valuation.ParcelId);
+
+      await _db.SaveChangesAsync();
+      await tx.CommitAsync();
+
+      _logger.LogInformation(
+        "CostForge certify: parcel={Parcel} taxYear={Year} assessedValue={Value:C} assessmentId={AssessmentId} deactivatedPrior={Deactivated}",
+        valuation.ParcelId, valuation.TaxYear, assessment.AssessedValue, assessment.Id, priorAssessments.Count);
+
+      return Ok(new
+      {
+        valuationId                 = valuation.Id,
+        assessmentId                = assessment.Id,
+        parcelId                    = valuation.ParcelId,
+        taxYear                     = valuation.TaxYear,
+        assessedValue               = assessment.AssessedValue,
+        landValue                   = assessment.LandValue,
+        improvementValue            = assessment.ImprovementValue,
+        priorAssessmentsDeactivated = priorAssessments.Count,
+        sealedAt                    = valuation.ReviewedAt,
+      });
+    }
+    catch (Exception ex) when (ex is not OperationCanceledException)
     {
-      valuationId                  = valuation.Id,
-      assessmentId                 = assessment.Id,
-      parcelId                     = valuation.ParcelId,
-      taxYear                      = valuation.TaxYear,
-      assessedValue                = assessment.AssessedValue,
-      landValue                    = assessment.LandValue,
-      improvementValue             = assessment.ImprovementValue,
-      priorAssessmentsDeactivated  = priorAssessments.Count,
-      sealedAt                     = valuation.ReviewedAt,
-    });
+      await tx.RollbackAsync();
+      _logger.LogError(ex, "CostForge certify failed for valuation {ValuationId}, transaction rolled back", id);
+      throw;
+    }
   }
 
   /// <summary>Ingest a comparable sale record.</summary>
