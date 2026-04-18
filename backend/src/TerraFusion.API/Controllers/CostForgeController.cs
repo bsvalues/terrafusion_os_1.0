@@ -6606,7 +6606,9 @@ public class CostForgeController : ControllerBase
 
   /// <summary>
   /// GET /api/costforge/traces?parcelId=
-  /// RCNLD calculation audit trail for a parcel. Synthesized from CamaCharacteristics.
+  /// RCNLD calculation audit trail for a parcel. Synthesized from CamaCharacteristics,
+  /// CamaImprovementDetails (secondary features), and Properties.LandValue.
+  /// Returns three row types: row_type="main-structure", "secondary-feature", "land".
   /// Used by CalcTracePanel + useParcelCostTraces hook.
   /// </summary>
   [HttpGet("traces")]
@@ -6625,6 +6627,22 @@ public class CostForgeController : ControllerBase
     if (records.Count == 0)
       return Ok(Array.Empty<object>());
 
+    // Most recent tax year — determines which features and property record to use
+    var latestYear = records[0].TaxYear;
+
+    var featureDetails = await _db.CamaImprovementDetails
+        .AsNoTracking()
+        .Where(d => d.ParcelId == parcelId && d.TaxYear == latestYear)
+        .OrderBy(d => d.SegmentType)
+        .ToListAsync();
+
+    // Land value — join via ParcelNumber matching ParcelId
+    var landValue = await _db.Properties
+        .AsNoTracking()
+        .Where(p => p.ParcelNumber == parcelId)
+        .Select(p => p.LandValue)
+        .FirstOrDefaultAsync();
+
     // Synthesize CalcTraceRow shape from CAMA data + Benton cost matrix
     var traces = records.Select((c, i) =>
     {
@@ -6640,7 +6658,7 @@ public class CostForgeController : ControllerBase
       var pctGood = Math.Round(deprFactor * 100m, 1);
       var rcnld = rcn.HasValue ? Math.Round(rcn.Value * deprFactor, 0) : (decimal?)null;
 
-      return new
+      return (object)new
       {
         id = $"{c.ParcelId}-{c.TaxYear}-{i}",
         parcel_id = c.ParcelId,
@@ -6663,10 +6681,82 @@ public class CostForgeController : ControllerBase
         pct_good = (double)pctGood,
         rcnld = rcnld.HasValue ? (long?)((long)rcnld.Value) : null,
         calc_run_at = c.UpdatedAt.ToString("O"),
+        row_type = "main-structure",
       };
     }).ToList();
 
-    return Ok(traces);
+    // Secondary feature rows from CamaImprovementDetails (CovPatio, BSMT, ATTGAR, etc.)
+    var featureRows = featureDetails
+        .Where(d => !string.IsNullOrWhiteSpace(d.SegmentType))
+        .Select((d, i) =>
+        {
+          var featPctGood = d.DepPct.HasValue
+              ? (double)Math.Max(0m, 100m - d.DepPct.Value)
+              : (d.PhysicalPct.HasValue ? (double)d.PhysicalPct.Value : 100.0);
+
+          return (object)new
+          {
+            id              = $"{parcelId}-{d.TaxYear}-feat-{d.SegmentType}-{i}",
+            parcel_id       = parcelId,
+            schedule_source = $"Benton County Cost Matrix FY {d.TaxYear}",
+            calc_year       = d.TaxYear,
+            imprv_sequence  = i + 1,
+            imprv_type_cd   = d.SegmentType,
+            calc_method     = "Secondary Feature (CamaImprovementDetail)",
+            base_unit_cost  = d.UnitPrice.HasValue ? (double?)((double)d.UnitPrice.Value) : null,
+            area_sqft       = d.Area.HasValue ? (int)d.Area.Value : 0,
+            local_multiplier   = (double?)1.0,
+            current_cost_mult  = 1.0,
+            rcn_before_ref     = d.CalcValue.HasValue ? (long?)((long)d.CalcValue.Value) : null,
+            refinements_total  = (long?)0,
+            rcn                = d.CalcValue.HasValue ? (long?)((long)d.CalcValue.Value) : null,
+            construction_class = d.SegmentType,
+            quality_grade      = d.ClassCode,
+            age_years          = (int?)null,
+            effective_life_years = 40,
+            pct_good           = Math.Round(featPctGood, 1),
+            rcnld              = d.DepreciatedRCN.HasValue ? (long?)((long)d.DepreciatedRCN.Value) : null,
+            calc_run_at        = d.UpdatedAt.ToString("O"),
+            row_type           = "secondary-feature",
+          };
+        })
+        .ToList();
+
+    // Land value row from Properties.LandValue (no depreciation applied)
+    var landRows = landValue > 0
+        ? new List<object>
+        {
+          new
+          {
+            id              = $"{parcelId}-{latestYear}-land",
+            parcel_id       = parcelId,
+            schedule_source = $"Benton County Assessor FY {latestYear}",
+            calc_year       = latestYear,
+            imprv_sequence  = 0,
+            imprv_type_cd   = "LAND",
+            calc_method     = "Land Valuation",
+            base_unit_cost  = (double?)null,
+            area_sqft       = 0,
+            local_multiplier    = (double?)null,
+            current_cost_mult   = 1.0,
+            rcn_before_ref      = (long?)((long)landValue),
+            refinements_total   = (long?)0,
+            rcn                 = (long?)((long)landValue),
+            construction_class  = "LAND",
+            quality_grade       = (string?)null,
+            age_years           = (int?)null,
+            effective_life_years = 0,
+            pct_good            = 100.0,
+            rcnld               = (long?)((long)landValue),
+            calc_run_at         = DateTime.UtcNow.ToString("O"),
+            row_type            = "land",
+          }
+        }
+        : new List<object>();
+
+    var allRows = traces.Concat(featureRows).Concat(landRows).ToList();
+
+    return Ok(allRows);
   }
 
   /// <summary>
