@@ -180,7 +180,7 @@ public class TerraForgeController : ControllerBase
         if (s is null)
             return NotFound(new { error = $"Sale {saleId} not found for Benton County." });
 
-        // PacsValuation join for assessed value (canonical source).
+        // Properties join for assessed value (canonical TF table — no PACS read).
         decimal? assessedValue = null;
         if (s.ParcelId != null)
         {
@@ -293,10 +293,14 @@ public class TerraForgeController : ControllerBase
             .Select(g => new
             {
                 total            = g.Count(),
-                qualified        = g.Count(s => s.QualificationDecision == "qualified"
-                                             || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")),
-                nonQualified     = g.Count(s => s.QualificationDecision != null && s.QualificationDecision != "qualified"),
-                pending          = g.Count(s => s.QualificationDecision == null && s.QualificationRecommendation != "qualified"),
+                qualified    = g.Count(s => s.QualificationDecision == "qualified"
+                                         || (s.QualificationDecision == null
+                                             && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))),
+                nonQualified = g.Count(s => s.QualificationDecision != null && s.QualificationDecision != "qualified"
+                                         || (s.QualificationDecision == null
+                                             && s.QualificationRecommendation != null
+                                             && s.QualificationRecommendation != "qualified")),
+                pending      = g.Count(s => s.QualificationDecision == null && s.QualificationRecommendation == null),
             })
             .FirstOrDefaultAsync(ct);
 
@@ -305,8 +309,8 @@ public class TerraForgeController : ControllerBase
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.SalesYear == taxYear
                      || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd))
-            .Where(s => (s.QualificationDecision != null && s.QualificationDecision == "qualified")
-                     || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"))
+            .Where(s => s.QualificationDecision == "qualified"
+                     || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null)))
             .Where(s => s.SuppressOnRatioRptCd != "T")
             .Where(s => s.IncludeNoCalc != true);
 
@@ -434,10 +438,14 @@ public class TerraForgeController : ControllerBase
                 s.ParcelId,
                 s.Neighborhood,
                 SalePrice        = s.AdjustedSalePrice ?? s.SalePrice,
-                IsQualified      = s.QualificationDecision == "qualified"
-                                 || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"),
-                IsPending        = s.QualificationDecision == null,
-                IsNonQualified   = s.QualificationDecision != null && s.QualificationDecision != "qualified",
+                IsQualified    = s.QualificationDecision == "qualified"
+                               || (s.QualificationDecision == null
+                                   && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null)),
+                IsPending      = s.QualificationDecision == null && s.QualificationRecommendation == null,
+                IsNonQualified = (s.QualificationDecision != null && s.QualificationDecision != "qualified")
+                               || (s.QualificationDecision == null
+                                   && s.QualificationRecommendation != null
+                                   && s.QualificationRecommendation != "qualified"),
             })
             .ToListAsync(ct);
 
@@ -594,8 +602,14 @@ public class TerraForgeController : ControllerBase
 
     /// <summary>
     /// County-wide ratio study for a given tax year.
-    /// Population: effective qualified pool — QualificationDecision="qualified"
-    /// wins when set; QualificationRecommendation="qualified" is the fallback.
+    /// Population: county-qualified pool (county ratio code is sole authority).
+    ///   Included: QualificationDecision="qualified"
+    ///          OR (decision=null AND recommendation="qualified")
+    ///          OR (decision=null AND recommendation=null, i.e. engine not yet run).
+    ///   Excluded: any non-null recommendation other than "qualified"
+    ///             (non-arms-length, land-only, omitted, dark-sale, foreclosure, estate, exempt, excluded)
+    ///          OR assessor explicitly disqualified.
+    ///   Run POST /api/terraforge/compute-qualifications to populate recommendations from county ratio codes.
     /// Sales suppressed from the ratio report or flagged IncludeNoCalc are excluded.
     /// Returns IAAO stats (median ratio, mean ratio, COD, PRD) plus paginated detail.
     /// Ratio = Properties.AssessedValue / ComparableSales.SalePrice (TF-computed; PACS ratio column unused).
@@ -622,8 +636,8 @@ public class TerraForgeController : ControllerBase
             .Where(s => s.SalesYear == taxYear
                      || (s.SaleDate >= lookbackStart
                          && s.SaleDate < lookbackEnd))
-            .Where(s => (s.QualificationDecision != null && s.QualificationDecision == "qualified")
-                     || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"))
+            .Where(s => s.QualificationDecision == "qualified"
+                     || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null)))
             .Where(s => s.SuppressOnRatioRptCd != "T")
             .Where(s => s.IncludeNoCalc != true);
 
@@ -851,8 +865,8 @@ public class TerraForgeController : ControllerBase
             .Where(s => s.SalesYear == taxYear
                      || (s.SaleDate >= lookbackStart
                          && s.SaleDate < lookbackEnd))
-            .Where(s => (s.QualificationDecision != null && s.QualificationDecision == "qualified")
-                     || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"));
+            .Where(s => s.QualificationDecision == "qualified"
+                     || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null)));
 
         if (!string.IsNullOrWhiteSpace(hood))
             query = query.Where(s => s.Neighborhood == hood);
@@ -964,8 +978,8 @@ public class TerraForgeController : ControllerBase
             .Where(s => s.SalesYear == taxYear
                      || (s.SaleDate >= lookbackStart
                          && s.SaleDate < lookbackEnd))
-            .Where(s => (s.QualificationDecision != null && s.QualificationDecision == "qualified")
-                     || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"))
+            .Where(s => s.QualificationDecision == "qualified"
+                     || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null)))
             .Where(s => s.SuppressOnRatioRptCd != "T")
             .Where(s => s.IncludeNoCalc != true);
 
@@ -1101,44 +1115,44 @@ public class TerraForgeController : ControllerBase
 
     /// <summary>
     /// County-wide KPI summary for the TerraForge suite home dashboard.
-    /// Source: pacs_valuations WHERE PropValYear = taxYear AND SupNum = 0
-    /// (working layer only — SupNum > 0 are supplemental corrections, excluded from KPIs).
+    /// Source: TerraFusion canonical Properties for parcel/value coverage plus
+    /// TerraFusion ValuationRecords draft workflow for pending assessment volume.
     ///
     /// Fields returned:
-    ///   totalParcels              — row count in working layer
-    ///   averageAssessedValue      — AVG(Market) over rows with a non-null market value
-    ///   assessedThisYear          — proxy: same as totalParcels (all rows in working year)
-    ///   pendingAssessments        — COUNT WHERE NewVal > 0 (new-construction additions not yet certified)
-    ///   assessmentCompletionPercent — pct of rows with Market > 0
-    ///
-    /// Note: county isolation is implicit — pacs_valuations contains only Benton data
-    /// seeded from pacs_oltp. Multi-county filtering via ParcelId → PacsParcel.CountyId
-    /// join is deferred until a second county is onboarded.
+    ///   totalParcels                — canonical parcel rows for the tax year
+    ///   averageAssessedValue        — AVG(AssessedValue fallback MarketValue)
+    ///   assessedThisYear            — proxy: same as totalParcels (all working-year parcels)
+    ///   pendingAssessments          — distinct parcels with draft TerraFusion ValuationRecords
+    ///   assessmentCompletionPercent — pct of canonical parcel rows with assessed value assigned
     /// </summary>
     [HttpGet("county-stats")]
     public async Task<IActionResult> GetCountyStats(
         [FromQuery] int taxYear = 2026,
         CancellationToken ct = default)
     {
-        // SupNum=0 — the working (base supplement) layer only.
-        // Supplemental layers (SupNum > 0) represent corrections-in-progress
-        // and must not inflate the KPI parcel count.
-        var rows = await _db.PacsValuations
-            .Where(v => v.PropValYear == taxYear && v.SupNum == 0)
-            .Select(v => new { v.AssessedVal, v.Market, v.NewVal })
+        var rows = await _db.Properties
+            .AsNoTracking()
+            .Where(p => p.CountyId == BentonCountyId && p.TaxYear == taxYear)
+            .Select(p => new { p.AssessedValue, p.MarketValue })
             .ToListAsync(ct);
 
         var totalParcels = rows.Count;
 
-        // AssessedVal is the value that goes to the tax roll (may differ from Market for
-        // ag/timber current-use, partial exemptions, etc.).  Fall back to Market only when
-        // AssessedVal is absent so older/incomplete records don't drop to zero.
-        var rowsWithAssessed = rows.Where(r => (r.AssessedVal ?? r.Market) is > 0).ToList();
+        // AssessedValue is the TerraFusion-owned roll value. Fall back to MarketValue only
+        // when assessed value has not yet been promoted for the parcel-year.
+        var rowsWithAssessed = rows
+            .Where(r => (r.AssessedValue > 0 ? r.AssessedValue : r.MarketValue) > 0)
+            .ToList();
         var avgAssessed      = rowsWithAssessed.Count > 0
-            ? rowsWithAssessed.Average(r => (double)(r.AssessedVal ?? r.Market)!.Value)
+            ? rowsWithAssessed.Average(r => (double)(r.AssessedValue > 0 ? r.AssessedValue : r.MarketValue))
             : 0.0;
 
-        var pendingAssessments = rows.Count(r => r.NewVal is > 0);
+        var pendingAssessments = await _db.ValuationRecords
+            .AsNoTracking()
+            .Where(v => v.CountyId == BentonCountyId && v.TaxYear == taxYear && v.Status == "draft")
+            .Select(v => v.ParcelId)
+            .Distinct()
+            .CountAsync(ct);
 
         // assessmentCompletionPercent: percentage of parcels that have an assessed value assigned.
         var completionPct = totalParcels > 0
@@ -1162,10 +1176,57 @@ public class TerraForgeController : ControllerBase
     }
 
     /// <summary>
-    /// Apply WAC-code-based qualification recommendations to all pending ComparableSales.
-    /// Mimics the AI recommendation engine: sales with no disqualifying WAC code or
-    /// sale qualifier → recommended "qualified". This is the standard DOR workflow step
-    /// that normally runs after PACS import, before staff review.
+    /// Run the county/state ratio-code qualification engine against all ComparableSales.
+    /// Reads only TerraFusion canonical tables (ComparableSales, CountyRatioCodes,
+    /// SaleRatioTypes, ReetWacCodes). No PACS staging read. Safe to call anytime.
+    /// Sets QualificationRecommendation on every sale using the 4-layer hierarchy:
+    ///   1 - PACS SaleQualifier (already on ComparableSales.RawSaleQualifier)
+    ///   2 - County ratio code (sl_county_ratio_cd → TF CountyRatioCodes table)
+    ///   2b - DOR ratio type  (sl_ratio_type_cd  → TF SaleRatioTypes table)
+    ///   3 - Exclude-calc flag
+    ///   4 - WAC 458-61A      (wac_cd            → TF ReetWacCodes table)
+    ///   5 - Default: qualified
+    /// Benton code 100 → "qualified", code 200 → "non-arms-length", etc.
+    /// </summary>
+    [HttpPost("compute-qualifications")]
+    public async Task<IActionResult> ComputeQualifications(CancellationToken ct = default)
+    {
+        int processed;
+        try
+        {
+            processed = await _saleQual.ComputeRecommendationsAsync(BentonCountyId, ct);
+        }
+        catch (Exception ex) when (ex.Message.Contains("no such table") || ex.Message.Contains("Invalid object name"))
+        {
+            _logger.LogWarning("[TerraForge] Lookup tables not seeded — using hardcoded county code map (dev fallback)");
+            var allSales = await _db.ComparableSales
+                .Where(s => s.CountyId == BentonCountyId)
+                .ToListAsync(ct);
+            _saleQual.ComputeRecommendations(allSales);
+            await _db.SaveChangesAsync(ct);
+            processed = allSales.Count;
+        }
+
+        var summary = await _db.ComparableSales
+            .Where(s => s.CountyId == BentonCountyId)
+            .GroupBy(s => s.QualificationRecommendation)
+            .Select(g => new { recommendation = g.Key ?? "null", count = g.Count() })
+            .ToListAsync(ct);
+
+        _logger.LogInformation("[TerraForge] compute-qualifications: processed={Total}", processed);
+
+        return Ok(new { processed, summary });
+    }
+
+    /// <summary>
+    /// ONE-TIME MIGRATION — Admin only. Run once after initial PACS import to populate
+    /// QualificationRecommendation on all ComparableSales via the 4-layer county/WAC/DOR engine.
+    /// Step 1: backfills raw PACS codes (RawCountyRatioCd, RawWacCd, etc.) from pacs_sales staging
+    ///         where those columns are still NULL — idempotent, no-op if codes already present.
+    /// Step 2: runs the qualification engine purely from canonical ComparableSales raw codes.
+    /// After this runs once, all runtime ratio-study endpoints read purely canonical data.
+    /// Ratio studies function WITHOUT this having been run (default-qualified semantics);
+    /// this only adds system pre-recommendations to help staff review efficiency.
     /// </summary>
     [HttpPost("apply-recommendations")]
     public async Task<IActionResult> ApplyQualificationRecommendations(
@@ -1721,7 +1782,7 @@ public class TerraForgeController : ControllerBase
                 .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
                          && s.SalePrice > 0
                          && (s.QualificationDecision == "qualified"
-                             || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+                             || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
 
             if (!string.IsNullOrEmpty(propertyType))
                 salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
@@ -1820,7 +1881,7 @@ public class TerraForgeController : ControllerBase
                 .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
                          && s.SalePrice > 0
                          && (s.QualificationDecision == "qualified"
-                             || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+                             || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
 
             if (!string.IsNullOrEmpty(propertyType))
                 salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
@@ -1915,7 +1976,7 @@ public class TerraForgeController : ControllerBase
                          && s.SaleDate < periodEnd
                          && s.SalePrice > 0
                          && (s.QualificationDecision == "qualified"
-                             || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+                             || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
 
             if (!string.IsNullOrEmpty(propertyType))
                 salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
@@ -1995,7 +2056,7 @@ public class TerraForgeController : ControllerBase
                 .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
                          && s.SalePrice > 0
                          && (s.QualificationDecision == "qualified"
-                             || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+                             || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
 
             if (!string.IsNullOrEmpty(propertyType))
                 salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
@@ -2240,7 +2301,7 @@ public class TerraForgeController : ControllerBase
                 .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
                          && s.SalePrice > 0
                          && (s.QualificationDecision == "qualified"
-                             || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+                             || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
 
             if (!string.IsNullOrEmpty(propertyType))
                 salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
@@ -2348,7 +2409,7 @@ public class TerraForgeController : ControllerBase
             var salesQuery = _db.ComparableSales
                 .AsNoTracking()
                 .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear && s.SalePrice > 0
-                    && (s.QualificationDecision == "qualified" || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+                    && (s.QualificationDecision == "qualified" || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
 
             if (!string.IsNullOrEmpty(propertyType))
                 salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
@@ -2544,7 +2605,7 @@ public class TerraForgeController : ControllerBase
             .Where(s => s.CountyId == BentonCountyId && s.SalesYear == taxYear
                      && s.SalePrice > 10000
                      && (s.QualificationDecision == "qualified"
-                         || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+                         || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
 
         if (!string.IsNullOrEmpty(propertyType))
             salesQuery = salesQuery.Where(s => s.PropertyType == propertyType);
@@ -2773,7 +2834,7 @@ public class TerraForgeController : ControllerBase
                     .Where(s => s.CountyId == BentonCountyId && s.SalesYear == year
                              && s.SalePrice > 0
                              && (s.QualificationDecision == "qualified"
-                                 || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")));
+                                 || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))));
                 if (!string.IsNullOrEmpty(propertyType))
                     q = q.Where(s => s.PropertyType == propertyType);
                 var sd = await q
