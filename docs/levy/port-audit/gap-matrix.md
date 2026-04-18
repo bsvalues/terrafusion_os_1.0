@@ -8,6 +8,7 @@ Legend:
 - **COVERED** — .NET controller already ports this surface (may need enhancement to match prod bodies)
 - **COVERED_PLACEHOLDER** — .NET contract ported as deterministic placeholder; real persistence/AI wiring deferred behind stable interface
 - **PARTIAL** — some endpoints ported, some missing
+- **PARTIAL_BLOCKED** — controller stub exists but every endpoint is honestly `501 Not Implemented` because required schema/utility ports are missing. Lying "stub-200" responses removed. Documented unblock conditions per endpoint.
 - **GAP** — no .NET equivalent; needs full port
 - **SKIP_UI** — UI concern, lives in React OS shell, not a backend port
 - **SKIP_CLI** — CLI-only, not an HTTP API
@@ -24,7 +25,7 @@ Legend:
 | `routes_auth.py` | 3.6 KB | 5 | — | SKIP_OS | OS-level auth handles login/logout/register/profile |
 | `routes_budget_impact.py` | 28.1 KB | 5 | — | GAP | Budget simulation + AI simulation — needs new controller |
 | `routes_dashboard.py` | 6.8 KB | 3 | LevyDashboardController | PARTIAL | `/metrics` + `/stats` may need enhancement |
-| `routes_data_management.py` | 30.7 KB | 16 | LevyDataManagementController | PARTIAL | 16 Flask routes vs 5 .NET endpoints — big gap |
+| `routes_data_management.py` | 30.7 KB | 15 | LevyDataManagementController | PARTIAL_BLOCKED | Audit 2026-04-18: 15 Flask routes → 3 SKIP_UI (`/`, `/import` GET form, `/export` GET form), 4 PORTABLE-NOW (`/tax-districts` list+detail, `/properties` list+detail — entity schema exists), 8 SCHEMA_BLOCKED (`POST /import`, `POST /export`, `POST /import/district`, `/import-history`, `/export-history`, `POST /api/preview-district-import`, `/tax-codes` list+detail). Found existing controller had 4 lying `200 OK "status: stub"` returns. Replaced with honest `501 NotImplemented` returning structured `{success:false, blockedBy, tracker}`. Even Districts wiring blocked because `LevyDbContext` itself is marked TEMPORARY STUB. **Unblock prereq order**: (1) real `LevyDbContext` (un-stub) → unblocks 2 endpoints (Districts list+detail), (2) `TaxCode` entity + migration → unblocks 2 endpoints, (3) `ImportLog`/`ExportLog` entities + port of `utils/import_utils.py` + `utils/district_utils.py` → unblocks 6 endpoints. |
 | `routes_data_quality.py` | 44.8 KB | 12 | LevyDataQualityController + LevyDataQualityService | COVERED_PLACEHOLDER | Phase 2 Task 2.1 closed: 7/12 JSON routes ported as deterministic placeholder behind stable contract (`/analyze`, `/ai-recommendations`, `/monitoring-status`, `/monitoring/toggle`, `/realtime-metrics`, `/trends`, `/audit`); 5/12 SKIP_UI by design (`/`, `/rules`, `/rules/create`, `/errors`, `/activities` — listed explicitly in controller XML doc, render in React shell). Real persistence (`ValidationRule`/`DataQualityScore`/`ErrorPattern`/`DataQualityActivity`) and AI-swarm wiring deferred to later phase behind same interface (Service is honest about this in code comments). |
 | `routes_db_fix.py` | 7.0 KB | TBD | — | SKIP_CLI | DB repair — CLI tool only, do not expose |
 | `routes_examples.py` | TBD | TBD | — | SKIP_UI | Demo/examples page |
@@ -54,7 +55,8 @@ Plus local-only: `routes_tours.py` — keep (newer local feature).
 |---|---:|
 | COVERED | 5 |
 | COVERED_PLACEHOLDER | 1 |
-| PARTIAL | 5 |
+| PARTIAL | 4 |
+| PARTIAL_BLOCKED | 1 |
 | GAP | 7 |
 | DECIDE | 0 |
 | CANCEL_PARTIAL | 3 |
@@ -64,7 +66,7 @@ Plus local-only: `routes_tours.py` — keep (newer local feature).
 
 ## Priority Ports (real work for Phase 2)
 
-1. **`routes_data_management.py`** delta (30.7 KB, 11 missing endpoints)
+1. **Un-stub `LevyDbContext`** (currently marked TEMPORARY STUB) — prerequisite for Districts queries; cascades to data-management, calculator, certification surfaces
 2. **`routes_budget_impact.py`** (28.1 KB)
 3. **`routes_property_assessment.py`** (16.4 KB)
 4. **`routes_historical_analysis.py`**
@@ -73,7 +75,8 @@ Plus local-only: `routes_tours.py` — keep (newer local feature).
 7. **`routes_public.py`**
 8. **`routes_glossary.py`** (minor)
 9. **`routes_dashboard.py` / `routes_forecasting.py` / `routes_reports.py`** enhancements
-10. (deferred) **`routes_data_quality.py`** persistence wiring — contract already in place, needs `ValidationRule`/`DataQualityScore`/`ErrorPattern`/`DataQualityActivity` schema + service rewire
+10. (deferred) **`routes_data_management.py`** schema work — needs `TaxCode` + `ImportLog` + `ExportLog` entities + import/export utility ports
+11. (deferred) **`routes_data_quality.py`** persistence wiring — contract already in place, needs `ValidationRule`/`DataQualityScore`/`ErrorPattern`/`DataQualityActivity` schema + service rewire
 
 ## Founder Decisions Needed (Phase 2 blockers)
 
