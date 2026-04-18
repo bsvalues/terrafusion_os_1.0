@@ -55,20 +55,34 @@ const statusBadge = (status: string) => {
   return map[status] || 'secondary';
 };
 
-// Cost schedule status is editorial/admin — derived from actual cost matrix dates
-const SCHEDULE_STATUS = [
-  { type: 'Residential',  lastUpdated: '2026-03-01', entryCount: 24, status: 'current' },
-  { type: 'Commercial',   lastUpdated: '2026-02-15', entryCount: 18, status: 'current' },
-  { type: 'Industrial',   lastUpdated: '2025-12-10', entryCount: 12, status: 'needs-review' },
-  { type: 'Agricultural', lastUpdated: '2025-08-20', entryCount: 8,  status: 'outdated' },
-  { type: 'Multi-Family', lastUpdated: '2026-01-15', entryCount: 15, status: 'current' },
+// Cost schedule status labels — review status is a county admin concern; last-updated from schedule API
+const SCHEDULE_META: { type: string; status: 'current' | 'needs-review' | 'outdated' }[] = [
+  { type: 'Residential',  status: 'current' },
+  { type: 'Commercial',   status: 'current' },
+  { type: 'Industrial',   status: 'needs-review' },
+  { type: 'Agricultural', status: 'outdated' },
+  { type: 'Multi-Family', status: 'current' },
 ];
+
+interface ScheduleRow {
+  qualityClass?: string;
+  buildingType?: string;
+  unitCost?: number;
+  updatedAt?: string;
+}
 
 export function CostForgeDashboard() {
   const { data: stats, isLoading } = useQuery<DashboardStats>({
     queryKey: ['costforge-dashboard-stats'],
     queryFn: () => apiFetch('/costforge/dashboard-stats?taxYear=2026').then((r) => r.json()),
     staleTime: 10 * 60_000,
+  });
+
+  // Real schedule entry counts + last-updated from the cost schedule endpoint
+  const { data: scheduleRows } = useQuery<ScheduleRow[]>({
+    queryKey: ['costforge-schedule'],
+    queryFn: () => apiFetch('/costforge/schedule').then((r) => r.json()),
+    staleTime: 30 * 60_000,
   });
 
   const propertyTypeDist = (stats?.propertyTypeDistribution ?? []).map((d) => ({
@@ -79,14 +93,37 @@ export function CostForgeDashboard() {
   const depreciationSummary = stats?.depreciationSummary ?? [];
   const totalParcels = stats?.totalParcels ?? 0;
 
-  const avgPhysicalDep = depreciationSummary.find((d) => d.category === 'Physical')?.avg ?? 22.5;
+  const avgPhysDepRow = depreciationSummary.find((d) => d.category === 'Physical');
+  const avgPhysicalDep = avgPhysDepRow?.avg ?? null;
+
+  // Build schedule status table from real API data merged with editorial status flags
+  const scheduleStatus = SCHEDULE_META.map((meta) => {
+    const rows = (scheduleRows ?? []).filter((r) =>
+      r.buildingType?.toLowerCase().includes(meta.type.toLowerCase()) ||
+      meta.type.toLowerCase().includes((r.buildingType ?? '').toLowerCase())
+    );
+    const latestUpdated = rows
+      .map((r) => r.updatedAt)
+      .filter(Boolean)
+      .sort()
+      .reverse()[0] ?? null;
+    return {
+      ...meta,
+      entryCount: rows.length || null,
+      lastUpdated: latestUpdated
+        ? new Date(latestUpdated).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })
+        : null,
+    };
+  });
 
   return (
     <div data-testid="cost-forge-dashboard" className="space-y-4 p-4">
       <div className="flex items-center gap-3">
         <h1 className="text-2xl font-bold">CostForge Dashboard</h1>
-        {stats?.source === 'live' && (
-          <Badge variant="secondary">Live — {stats.taxYear}</Badge>
+        {stats && (
+          <Badge variant={stats.source === 'live' ? 'secondary' : 'outline'}>
+            {stats.source === 'live' ? 'Live' : 'Loaded'} — {stats.taxYear}
+          </Badge>
         )}
       </div>
 
@@ -106,7 +143,7 @@ export function CostForgeDashboard() {
             </Card>
             <Card data-material="bento">
               <CardContent className="pt-6 text-center">
-                <div className="text-3xl font-bold">{SCHEDULE_STATUS.length}</div>
+                <div className="text-3xl font-bold">{scheduleStatus.length}</div>
                 <div className="text-sm text-muted-foreground">Cost Schedules</div>
               </CardContent>
             </Card>
@@ -128,7 +165,9 @@ export function CostForgeDashboard() {
             <Card data-material="bento">
               <CardContent className="pt-6 text-center">
                 <div className="flex items-center justify-center gap-1">
-                  <div className="text-3xl font-bold">{avgPhysicalDep.toFixed(1)}%</div>
+                  <div className="text-3xl font-bold">
+                    {avgPhysicalDep != null ? `${avgPhysicalDep.toFixed(1)}%` : '—'}
+                  </div>
                   {stats?.dataIntegrityWarning && (
                     <span
                       title={stats.dataIntegrityWarning}
@@ -139,6 +178,9 @@ export function CostForgeDashboard() {
                   )}
                 </div>
                 <div className="text-sm text-muted-foreground">Avg Physical Dep.</div>
+                {avgPhysicalDep == null && !isLoading && (
+                  <div className="text-xs text-muted-foreground mt-1">No depreciation data</div>
+                )}
                 {stats?.dataIntegrityWarning && (
                   <div className="text-xs text-amber-500 mt-1 leading-tight">
                     Data flag — hover ⚠ for details
@@ -152,7 +194,7 @@ export function CostForgeDashboard() {
             {/* Physical Depreciation % — bar chart */}
             <Card>
               <CardHeader>
-                <CardTitle>Physical Depreciation {stats?.source === 'live' ? '(Live)' : ''}</CardTitle>
+                <CardTitle>Physical Depreciation {stats?.source === 'live' ? <span className="text-sm font-normal text-muted-foreground">(Live)</span> : null}</CardTitle>
               </CardHeader>
               <CardContent>
                 {(() => {
@@ -213,7 +255,7 @@ export function CostForgeDashboard() {
             {/* Property Type Distribution (Live) */}
             <Card>
               <CardHeader>
-                <CardTitle>Parcels by Property Type {stats?.source === 'live' ? '(Live)' : ''}</CardTitle>
+                <CardTitle>Parcels by Property Type {stats?.source === 'live' ? <span className="text-sm font-normal text-muted-foreground">(Live)</span> : null}</CardTitle>
               </CardHeader>
               <CardContent>
                 {propertyTypeDist.length > 0 ? (
@@ -266,13 +308,19 @@ export function CostForgeDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {SCHEDULE_STATUS.map((s) => (
-                    <tr key={s.type} className="border-b hover:bg-white/5 cursor-pointer" role="link">
+                  {scheduleStatus.map((s) => (
+                    <tr key={s.type} className="border-b hover:bg-white/5">
                       <td className="py-2 font-medium">{s.type}</td>
-                      <td className="py-2 text-right">{s.entryCount}</td>
-                      <td className="py-2 text-muted-foreground">{s.lastUpdated}</td>
+                      <td className="py-2 text-right tabular-nums">
+                        {s.entryCount != null ? s.entryCount : <span className="text-muted-foreground">—</span>}
+                      </td>
+                      <td className="py-2 text-muted-foreground">
+                        {s.lastUpdated ?? <span className="text-muted-foreground/50">—</span>}
+                      </td>
                       <td className="py-2 text-center">
-                        <Badge variant={statusBadge(s.status)}>{s.status}</Badge>
+                        <Badge variant={statusBadge(s.status)}>
+                          {s.status === 'needs-review' ? 'Review' : s.status === 'current' ? 'Current' : 'Outdated'}
+                        </Badge>
                       </td>
                     </tr>
                   ))}

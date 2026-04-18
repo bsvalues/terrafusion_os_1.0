@@ -91,7 +91,8 @@ function TraceCard({ trace }: { trace: CalcTraceRow }) {
             <div className="font-medium text-foreground tabular-nums">{fmtCurrency(trace.rcn)}</div>
           </div>
           <div>
-            <div className="text-muted-foreground">{clsQual || null}</div>
+            <div className="text-muted-foreground">Class / Grade</div>
+            <div className="font-medium text-foreground">{clsQual || '—'}</div>
           </div>
         </div>
         <div className="border-t border-border/30 pt-3 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2 text-[11px]">

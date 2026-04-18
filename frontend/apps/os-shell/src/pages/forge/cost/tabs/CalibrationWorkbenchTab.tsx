@@ -568,7 +568,7 @@ export function CalibrationWorkbenchTab() {
               }}
             >
               <div style={{ fontWeight: 700, color: 'var(--cf-danger)', marginBottom: 8, fontSize: '0.875rem' }}>
-                ⚠ Confirm mass adjustment — this will update {preview?.parcelCount.toLocaleString()} parcel records in the county PACS database.
+                ⚠ Confirm mass adjustment — this will update {preview?.parcelCount.toLocaleString()} parcel assessment records in the county database.
               </div>
               <div style={{ fontSize: '0.8125rem', color: 'var(--cf-muted)', marginBottom: 12 }}>
                 Hood <strong style={{ color: 'var(--cf-text)' }}>{selectedHoodCd}</strong>
@@ -588,7 +588,7 @@ export function CalibrationWorkbenchTab() {
                   onClick={() => void commitAdjustment()}
                   disabled={commitLoading}
                 >
-                  {commitLoading ? 'Writing to PACS…' : 'Yes — Apply Adjustment'}
+                  {commitLoading ? 'Applying…' : 'Yes — Apply Adjustment'}
                 </button>
                 <button
                   type="button"
@@ -661,7 +661,10 @@ export function CalibrationWorkbenchTab() {
               const prb = applyResult.snap_prbBefore;
               const prbFlag = prb != null && Math.abs(prb) > 0.05;
               const segNote = applyResult.vintageDecade ? ` Analysis isolated to ${applyResult.vintageDecade} construction.` : '';
-              const condNote = applyResult.conditionGrade ? ` Condition filter: ${applyResult.conditionGrade}.` : '';
+              const condLabel = applyResult.conditionGrade
+                ? applyResult.conditionGrade[0] + applyResult.conditionGrade.slice(1).toLowerCase()
+                : null;
+              const condNote = condLabel ? ` Condition filter: ${condLabel}.` : '';
               return `Neighborhood ${applyResult.neighborhoodCode} exhibited median ratio ${fmt(ratio)} (deviation ${deviation != null ? deviation.toFixed(3) : '—'} from equity).${segNote}${condNote} PRB ${prb != null ? prb.toFixed(3) : '—'} ${prbFlag ? '— flags vertical inequity.' : '— neutral.'} Applied ${applyResult.adjustmentPct >= 0 ? '+' : ''}${applyResult.adjustmentPct}% to ${applyResult.parcelsUpdated.toLocaleString()} parcels targeting IAAO compliance. Simulated post-adjustment median: ${fmt(applyResult.snap_medianAfter)}.`;
             })()}
           </div>

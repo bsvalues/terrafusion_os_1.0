@@ -197,12 +197,19 @@ export function BatchCostApplyPanel() {
               </span>
             </div>
 
-            {/* cf-* progress bar */}
-            <div className="cf-progress-track">
-              <div
-                className="cf-progress-fill"
-                style={{ width: `${progress}%` }}
-              />
+            {/* cf-* progress bar with % text */}
+            <div className="space-y-1">
+              <div className="cf-progress-track">
+                <div
+                  className="cf-progress-fill"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              {job.status === 'running' && job.totalParcels > 0 && (
+                <p className="text-xs text-muted-foreground tabular-nums text-right">
+                  {Math.round(progress)}% — {job.processedParcels.toLocaleString()} of {job.totalParcels.toLocaleString()} parcels
+                </p>
+              )}
             </div>
 
             {job.status === 'running' && (
@@ -217,24 +224,39 @@ export function BatchCostApplyPanel() {
             )}
 
             {job.status === 'completed' && (
-              <p className="text-sm text-green-600 dark:text-green-400">
-                ✓ Completed — {(job.totalParcels - job.errorCount).toLocaleString()} parcels updated
-                {job.errorCount > 0 && (
-                  <span className="text-destructive ml-2">({job.errorCount} errors)</span>
-                )}
-              </p>
+              <div className="space-y-2">
+                <p className="text-sm text-green-600 dark:text-green-400">
+                  ✓ Completed — {(job.totalParcels - job.errorCount).toLocaleString()} parcels updated
+                  {job.errorCount > 0 && (
+                    <span className="text-destructive ml-2">({job.errorCount} errors)</span>
+                  )}
+                </p>
+                <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => setJob(null)}>
+                  Start New Batch
+                </Button>
+              </div>
             )}
 
             {job.status === 'failed' && (
-              <p className="text-sm text-destructive">
-                Batch failed{job.errorCount > 0 ? ` — ${job.errorCount} errors` : ''}.
-              </p>
+              <div className="space-y-2">
+                <p className="text-sm text-destructive">
+                  Batch failed{job.errorCount > 0 ? ` — ${job.errorCount} errors` : ''}.
+                </p>
+                <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => setJob(null)}>
+                  Dismiss &amp; Reset
+                </Button>
+              </div>
             )}
 
             {job.status === 'cancelled' && (
-              <p className="text-sm text-muted-foreground">
-                Job cancelled by user — no changes were committed.
-              </p>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Job cancelled — no changes were committed.
+                </p>
+                <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => setJob(null)}>
+                  Start New Batch
+                </Button>
+              </div>
             )}
 
             {job.errorCount > 0 && job.status !== 'completed' && job.status !== 'failed' && (
