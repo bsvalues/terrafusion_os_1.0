@@ -127,7 +127,12 @@ public class DaisController : ControllerBase
   {
     var countyId = await ResolveCountyIdAsync();
     if (countyId is null)
+    {
+      // Unauthenticated callers (no identity) get 401; authenticated but missing county get 403.
+      if (User.Identity?.IsAuthenticated != true)
+        return (null, Unauthorized("County authentication required."));
       return (null, Forbid());
+    }
 
     if (string.IsNullOrWhiteSpace(requestedCounty))
       return (countyId.Value, null);
@@ -1207,9 +1212,8 @@ public class DaisController : ControllerBase
 
   /// <summary>
   /// GET api/dais/queue/all — Get all queue items with optional filters.
-  /// [AllowAnonymous] + empty fallback clears TerraQueue fixture banner in dev mode.
+  /// Returns an empty list when the caller has no county access (graceful degradation).
   /// </summary>
-  [AllowAnonymous]
   [HttpGet("queue/all")]
   public async Task<IActionResult> GetAllQueueItems([FromQuery] string? status, [FromQuery] string? assignedTo, [FromQuery] string? taskType)
   {
@@ -1225,10 +1229,8 @@ public class DaisController : ControllerBase
 
   /// <summary>
   /// GET api/dais/queue/metrics — Queue-wide aggregate metrics.
-  /// [AllowAnonymous] + dev-stub fallback enables ManagementDashboard to clear its
-  /// DEMO DATA banner in dev mode without a logged-in county user.
+  /// Returns stub metrics when the caller has no county access so dashboard banners clear gracefully.
   /// </summary>
-  [AllowAnonymous]
   [HttpGet("queue/metrics")]
   public async Task<IActionResult> GetQueueMetrics()
   {
@@ -1254,9 +1256,8 @@ public class DaisController : ControllerBase
 
   /// <summary>
   /// GET api/dais/queue/productivity — Per-appraiser productivity stats.
-  /// [AllowAnonymous] + empty fallback clears TerraQueue fixture banner in dev mode.
+  /// Returns an empty list when the caller has no county access (graceful degradation).
   /// </summary>
-  [AllowAnonymous]
   [HttpGet("queue/productivity")]
   public async Task<IActionResult> GetQueueProductivity()
   {

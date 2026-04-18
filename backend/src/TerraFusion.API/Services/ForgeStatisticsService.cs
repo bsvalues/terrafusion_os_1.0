@@ -25,6 +25,10 @@ public class ForgeStatisticsService : IForgeStatisticsService
     private static int ParseTaxYear(string modelId)
     {
         if (int.TryParse(modelId, out var y) && y >= 2000 && y <= 2100) return y;
+        // Extract embedded year from convention IDs like "model-2025-iqr"
+        var m = System.Text.RegularExpressions.Regex.Match(modelId, @"\b(20\d{2})\b");
+        if (m.Success && int.TryParse(m.Value, out var ey) && ey >= 2000 && ey <= 2100)
+            return ey;
         return DateTime.UtcNow.Year;
     }
 
@@ -357,9 +361,9 @@ public class ForgeStatisticsService : IForgeStatisticsService
         var taxYear = ParseTaxYear(modelId);
         _logger.LogInformation("DiscoverSegmentsAsync: taxYear={TaxYear}", taxYear);
 
-        // Get neighborhood summaries from CamaCharacteristics
+        // Get neighborhood summaries from CamaCharacteristics (county-scoped)
         var nbhdStats = await _db.CamaCharacteristics
-            .Where(c => c.TaxYear == taxYear && c.NeighborhoodCode != null && c.NeighborhoodCode != "")
+            .Where(c => c.CountyId == countyId && c.TaxYear == taxYear && c.NeighborhoodCode != null && c.NeighborhoodCode != "")
             .GroupBy(c => c.NeighborhoodCode!)
             .Select(g => new
             {

@@ -98,6 +98,24 @@ public sealed class RatioStudyTests : IDisposable
         _db.SaveChanges();
     }
 
+    /// <summary>
+    /// Seeds a canonical Property so TerraForgeController.GetAssessedValueMapAsync
+    /// can compute AssessedValue / SalePrice ratios for the given parcel.
+    /// </summary>
+    private void SeedProperty(string parcelNumber, int taxYear, decimal assessedValue)
+    {
+        _db.Properties.Add(new Property
+        {
+            Id            = Guid.NewGuid(),
+            ParcelNumber  = parcelNumber,
+            CountyId      = BentonId,
+            TaxYear       = taxYear,
+            AssessedValue = assessedValue,
+            MarketValue   = assessedValue,
+        });
+        _db.SaveChanges();
+    }
+
     private static JsonElement Body(IActionResult result)
     {
         var ok   = Assert.IsType<OkObjectResult>(result);
@@ -211,11 +229,13 @@ public sealed class RatioStudyTests : IDisposable
     [Fact]
     public async Task GetRatioStudy_CountWithRatio_OnlyPositiveRatios()
     {
-        Seed(
-            MakeSale(pacsComputedRatio: 95m),     // has ratio
-            MakeSale(pacsComputedRatio: null),    // no ratio
-            MakeSale(pacsComputedRatio: 0m)       // zero — excluded from countWithRatio
-        );
+        // TerraFusion computes ratios from canonical Properties (AssessedValue / SalePrice).
+        // Only the first sale has a matching Property → only it contributes to countWithRatio.
+        var saleWithProp = MakeSale();
+        var saleNoProp1  = MakeSale();
+        var saleNoProp2  = MakeSale();
+        Seed(saleWithProp, saleNoProp1, saleNoProp2);
+        SeedProperty(saleWithProp.ParcelId!, taxYear: 2026, assessedValue: 285_000m);
 
         var body = Body(await _sut.GetRatioStudy(taxYear: 2026));
 
@@ -226,11 +246,13 @@ public sealed class RatioStudyTests : IDisposable
     [Fact]
     public async Task GetRatioStudy_MedianRatio_NormalisedFrom0To1()
     {
-        // Two sales: PACS ratios 90 and 110 → normalised 0.90 and 1.10 → median = 1.00
-        Seed(
-            MakeSale(pacsComputedRatio: 90m),
-            MakeSale(pacsComputedRatio: 110m)
-        );
+        // TF computes ratio = AssessedValue / SalePrice.
+        // 270k / 300k = 0.90 and 330k / 300k = 1.10 → median = (0.90 + 1.10) / 2 = 1.00
+        var sale1 = MakeSale(salePrice: 300_000m);
+        var sale2 = MakeSale(salePrice: 300_000m);
+        Seed(sale1, sale2);
+        SeedProperty(sale1.ParcelId!, taxYear: 2026, assessedValue: 270_000m);
+        SeedProperty(sale2.ParcelId!, taxYear: 2026, assessedValue: 330_000m);
 
         var body   = Body(await _sut.GetRatioStudy(taxYear: 2026));
         var median = body.GetProperty("stats").GetProperty("medianRatio").GetDouble();

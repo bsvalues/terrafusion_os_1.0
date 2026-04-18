@@ -356,7 +356,7 @@ export function SketchModule({ parcelId }: SketchModuleProps) {
         </div>
       ) : sketch.segments.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 gap-2 text-muted-foreground">
-          <span className="text-sm">No PACS sketch data on record for this parcel.</span>
+          <span className="text-sm">No sketch data on record for this parcel.</span>
           <span className="text-xs">Use the Build tab to create a new sketch.</span>
         </div>
       ) : (

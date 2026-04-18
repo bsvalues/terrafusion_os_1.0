@@ -75,9 +75,8 @@ public class PropertiesController : ControllerBase
     {
         countyId = Guid.Empty;
         var claim = User.FindFirst("countyId")?.Value?.Trim();
-        // No auth claim present (OS module dev mode) — allow access with no county filter.
         if (string.IsNullOrWhiteSpace(claim) || !Guid.TryParse(claim, out countyId))
-            return null;
+            return BadRequest("County authentication required — include a valid countyId claim.");
 
         if (requestedCountyId.HasValue && requestedCountyId.Value != countyId)
             return Forbid();
