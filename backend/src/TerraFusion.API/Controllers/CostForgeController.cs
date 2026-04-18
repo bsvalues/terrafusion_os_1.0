@@ -3218,64 +3218,91 @@ public class CostForgeController : ControllerBase
       return med > 0 ? trimmed.Average(r => Math.Abs(r - med)) / med * 100.0 : 0;
     }
 
+    // Returns the IQR-trimmed subset of (AV, SP) pairs for consistent stats.
+    // Same fence: Q1 - 1.5*IQR to Q3 + 1.5*IQR on the ratio (AV/SP).
+    static List<(double AV, double SP)> IqrTrimPairs(List<(double AV, double SP)> pairs)
+    {
+      if (pairs.Count < 4) return pairs;
+      var ratios = pairs.Select(p => p.AV / p.SP).OrderBy(r => r).ToList();
+      var q1 = ratios[(int)Math.Floor(ratios.Count * 0.25)];
+      var q3 = ratios[(int)Math.Floor(ratios.Count * 0.75)];
+      var iqr = q3 - q1;
+      var lo = q1 - 1.5 * iqr;
+      var hi = q3 + 1.5 * iqr;
+      return pairs.Where(p => { var r = p.AV / p.SP; return r >= lo && r <= hi; }).ToList();
+    }
+
     var neighborhoods = pairsByHood
       .Where(kv => kv.Value.Count >= minSales)
       .Select(kv =>
       {
-        var ratios = kv.Value.Select(p => p.AV / p.SP).OrderBy(r => r).ToList();
-        var sorted = ratios;
-        var med = Median(sorted);
-        var cod = IqrCod(sorted);
-        var mean = sorted.Average();
-        // PRD = mean ratio / weighted mean ratio (IAAO standard)
-        // weighted mean = sum(AV) / sum(SP)
-        var sumAv = kv.Value.Sum(p => p.AV);
-        var sumSp = kv.Value.Sum(p => p.SP);
-        var weightedMean = sumSp > 0 ? sumAv / sumSp : mean;
-        var prd = weightedMean > 0 ? mean / weightedMean : 1.0;
-        // PRB (Price-Related Bias) — IAAO vertical equity statistic.
-        // OLS coefficient b1 of: (ratio_i − med) ~ b0 + b1 * x_i
-        // where x_i = 0.5*(AV_i/meanAV + SP_i/meanSP).  PRB ≈ 0 → neutral.
-        var n = kv.Value.Count;
-        var meanAv = sumAv / n;
-        var meanSp = sumSp / n;
-        var xs = kv.Value.Select(p => 0.5 * (p.AV / meanAv + p.SP / meanSp)).ToList();
-        var xMean = xs.Average();
-        var cov = 0.0;
-        var varX = 0.0;
-        for (var i = 0; i < n; i++)
+        // IQR-trim pairs first — all four IAAO statistics use the SAME population.
+        var trimmedPairs  = IqrTrimPairs(kv.Value);
+        var trimmedRatios = trimmedPairs.Select(p => p.AV / p.SP).OrderBy(r => r).ToList();
+        var trimN = trimmedRatios.Count;
+
+        double med = 0, mean = 0, cod = 0, prd = 1.0, prb = 0.0;
+
+        if (trimN >= 3)
         {
-          var dx = xs[i] - xMean;
-          cov += dx * (kv.Value[i].AV / kv.Value[i].SP - mean);
-          varX += dx * dx;
+          med  = Median(trimmedRatios);
+          mean = trimmedRatios.Average();
+          cod  = med > 0 ? trimmedRatios.Average(r => Math.Abs(r - med)) / med * 100.0 : 0;
+
+          // PRD = mean ratio / weighted mean ratio (IAAO standard) — on trimmed pairs
+          var sumAv        = trimmedPairs.Sum(p => p.AV);
+          var sumSp        = trimmedPairs.Sum(p => p.SP);
+          var weightedMean = sumSp > 0 ? sumAv / sumSp : mean;
+          prd = weightedMean > 0 ? mean / weightedMean : 1.0;
+
+          // PRB: x_i = 0.5*(AV_i/medianAV + SP_i/medianSP) — IAAO 2013 median denominator
+          var medianAv = Median(trimmedPairs.Select(p => p.AV).OrderBy(v => v).ToList());
+          var medianSp = Median(trimmedPairs.Select(p => p.SP).OrderBy(v => v).ToList());
+          var xs    = trimmedPairs.Select(p =>
+              0.5 * (p.AV / (medianAv > 0 ? medianAv : 1.0)
+                   + p.SP / (medianSp > 0 ? medianSp : 1.0))).ToList();
+          var xMean = xs.Average();
+          var cov   = 0.0;
+          var varX  = 0.0;
+          for (var i = 0; i < trimN; i++)
+          {
+            var dx = xs[i] - xMean;
+            cov  += dx * (trimmedPairs[i].AV / trimmedPairs[i].SP - mean);
+            varX += dx * dx;
+          }
+          prb = varX > 1e-10 ? cov / varX : 0.0;
         }
-        var prb = varX > 1e-10 ? cov / varX : 0.0;
+
         var revalDigit = kv.Key.Length >= 1 ? kv.Key[0].ToString() : "1";
-        var revalArea = int.TryParse(revalDigit, out var d) && d >= 1 && d <= 6
-                         ? $"Reval {d}" : "Reval 1";
+        var revalArea  = int.TryParse(revalDigit, out var d) && d >= 1 && d <= 6
+                          ? $"Reval {d}" : "Reval 1";
+
         // Compliance thresholds (IAAO residential)
         var ratioOk = med >= 0.90 && med <= 1.10;
-        var codOk = cod <= 15.0;
-        var p25Idx = Math.Min((int)(sorted.Count * 0.25), sorted.Count - 1);
-        var p75Idx = Math.Min((int)(sorted.Count * 0.75), sorted.Count - 1);
+        var codOk   = cod <= 15.0;
+        var p25Idx  = Math.Min((int)(trimN * 0.25), Math.Max(trimN - 1, 0));
+        var p75Idx  = Math.Min((int)(trimN * 0.75), Math.Max(trimN - 1, 0));
+
         return new
         {
-          hoodCd = kv.Key,
-          name = (string?)null,    // Benton uses codes only; populated by future hood-name lookup
+          hoodCd       = kv.Key,
+          name         = (string?)null,    // Benton uses codes only; populated by future hood-name lookup
           revalArea,
-          saleCount = sorted.Count,
-          medianRatio = Math.Round(med, 4),
-          cod = Math.Round(cod, 2),
-          prd = Math.Round(prd, 4),
-          prb = Math.Round(prb, 4),
+          saleCount    = trimN,
+          rawSaleCount = kv.Value.Count,
+          medianRatio  = Math.Round(med,  4),
+          cod          = Math.Round(cod,  2),
+          prd          = Math.Round(prd,  4),
+          prb          = Math.Round(prb,  4),
           ratioOk,
           codOk,
           iaaoCompliant = ratioOk && codOk,
-          p25 = Math.Round(sorted[p25Idx], 4),
-          p75 = Math.Round(sorted[p75Idx], 4),
+          p25 = trimN > 0 ? Math.Round(trimmedRatios[p25Idx], 4) : 0.0,
+          p75 = trimN > 0 ? Math.Round(trimmedRatios[p75Idx], 4) : 0.0,
         };
       })
-      .OrderByDescending(n => n.cod)   // worst COD first — most actionable
+      .Where(n => n.saleCount >= 3)             // drop neighborhoods with too few pairs after IQR trim
+      .OrderByDescending(n => n.cod)            // worst COD first — most actionable
       .ToList();
 
     return Ok(new
