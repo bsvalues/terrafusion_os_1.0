@@ -88,6 +88,50 @@ if (args.Contains("--canonicalize-only"))
     }
 }
 
+// ── Fast Properties-only refresh (Step 1 only) ────────────────────────────
+// Run as: dotnet run --project TerraFusion.API -- --canonicalize-properties-only
+// Re-runs only canonical Property upserts from the PACS mirror.
+if (args.Contains("--canonicalize-properties-only"))
+{
+    var propertiesEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                     ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                     ?? "Production";
+
+    var propertiesHost = Host.CreateDefaultBuilder(args)
+        .UseEnvironment(propertiesEnv)
+        .ConfigureAppConfiguration((ctx, cfg) =>
+        {
+            cfg.AddJsonFile($"appsettings.{propertiesEnv}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{propertiesEnv}.local.json", optional: true, reloadOnChange: false);
+        })
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+        })
+        .Build();
+
+    using var propertiesScope = propertiesHost.Services.CreateScope();
+    var propertiesDb = propertiesScope.ServiceProvider.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>();
+    var propertiesLogger = propertiesScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Seeds.PacsCanonicalizer>>();
+    try
+    {
+        propertiesLogger.LogInformation("[Canonicalize] Standalone properties-only run...");
+        var canonicalizer = new TerraFusion.API.Seeds.PacsCanonicalizer(propertiesDb, propertiesLogger);
+        var count = await canonicalizer.CanonicalizePropertiesOnlyAsync();
+        propertiesLogger.LogInformation("[Canonicalize] PROPERTIES-ONLY DONE: {Count} Properties", count);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        propertiesLogger.LogError(ex, "[Canonicalize] PROPERTIES-ONLY FAILED");
+        Environment.Exit(1);
+    }
+}
+
 // ── Fast CAMA-only refresh (Step 4 only) ──────────────────────────────────
 // Run as: dotnet run --project TerraFusion.API -- --canonicalize-cama-only
 // Re-runs only CamaCharacteristics from PacsImprovements. Use after cost-field schema updates.
@@ -1113,12 +1157,6 @@ builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceServi
 // TerraGaiaService doesn't run background tasks, so Scoped lifetime is appropriate for on-demand AI consciousness queries
 builder.Services.AddScoped<ITerraGaiaService, TerraGaiaService>();
 
-// CostForge Benton Method v2 — Track 0 canonical data foundation
-// PacsCanonicalizer is the sole bridge from Pacs* staging entities to canonical
-// CamaCharacteristic.City and CamaCharacteristic.PropertyUseStratum.
-builder.Services.AddScoped<TerraFusion.Data.Canonicalizers.IPacsCanonicalizer,
-    TerraFusion.Data.Canonicalizers.PacsCanonicalizer>();
-
 // CostForge Benton Method v2 — Track 1 equity metric compute
 // EquityMetricService is the sole source of IAAO + Benton-method equity metrics.
 // Every stratum view (Triage, Audit, Rollup, Calibration preview) goes through this.
@@ -1554,6 +1592,8 @@ builder.Services.AddDbContext<LevyDbContext>(options =>
 // Register TerraLevy services for championship-level tax assessment
 builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyCalculationService, TerraFusion.Levy.Services.LevyCalculationService>();
 builder.Services.AddScoped<TerraFusion.Levy.Services.IRevenueProjectionService, TerraFusion.Levy.Services.RevenueProjectionService>();
+// B5 — Certification wizard state machine (specialist-gated Draft→PendingReview→Certified).
+builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyCertificationService, TerraFusion.Levy.Services.LevyCertificationService>();
 
 // Add health checks for monitoring
 builder.Services.AddHealthChecks()
