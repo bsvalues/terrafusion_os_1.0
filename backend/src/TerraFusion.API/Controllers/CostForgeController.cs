@@ -3611,8 +3611,9 @@ public class CostForgeController : ControllerBase
       totalMatched++;
     }
 
-    // Compute IAAO stats per stratum from IQR-trimmed population
+    // Compute IAAO stats per stratum from IQR-trimmed population (honour minSales threshold)
     var strata = pairsByStratum
+      .Where(kv => kv.Value.Count >= minSales)
       .Select(kv =>
       {
         var trimmedPairs  = IqrTrimPairs(kv.Value);
@@ -3638,13 +3639,12 @@ public class CostForgeController : ControllerBase
           var xs = trimmedPairs.Select(p =>
             0.5 * (p.AV / (medianAv > 0 ? medianAv : 1.0)
                  + p.SP / (medianSp > 0 ? medianSp : 1.0))).ToList();
-          var ys   = trimmedPairs.Select(p => p.AV / p.SP).ToList();
           double xMean = xs.Average();
           double cov = 0, varX = 0;
           for (var i = 0; i < trimN; i++)
           {
             var dx = xs[i] - xMean;
-            cov  += dx * (ys[i] - mean);
+            cov  += dx * (trimmedPairs[i].AV / trimmedPairs[i].SP - mean);
             varX += dx * dx;
           }
           prb = varX > 1e-10 ? cov / varX : 0.0;
@@ -6775,14 +6775,13 @@ public class CostForgeController : ControllerBase
           pairsByHood2[hood2].Add(((double)av2, (double)s.SalePrice));
         }
 
-        static double Median2(List<double> s) => s.Count % 2 == 1 ? s[s.Count / 2] : (s[s.Count / 2 - 1] + s[s.Count / 2]) / 2.0;
         var allRatios = new List<double>();
         var codValues = new List<double>();
         foreach (var kv in pairsByHood2)
         {
           if (kv.Value.Count < 3) continue;
           var ratios2 = kv.Value.Select(p => p.AV / p.SP).OrderBy(r => r).ToList();
-          var med2 = Median2(ratios2);
+          var med2 = Median(ratios2);
           var cod2 = ratios2.Count >= 4
               ? (ratios2.Average(r => Math.Abs(r - med2)) / med2 * 100.0)
               : 0.0;
@@ -6793,7 +6792,7 @@ public class CostForgeController : ControllerBase
         if (allRatios.Count > 0)
         {
           allRatios.Sort();
-          weightedMedianRatio = Math.Round(Median2(allRatios), 4);
+          weightedMedianRatio = Math.Round(Median(allRatios), 4);
         }
         if (codValues.Count > 0)
           avgCod = Math.Round(codValues.Average(), 2);
