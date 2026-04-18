@@ -82,6 +82,11 @@
     <Compile Remove="Controllers.disabled\**" />
     <EmbeddedResource Remove="Controllers.disabled\**" />
     <None Remove="Controllers.disabled\**" />
+    <!-- Quarantined module scaffolds: manifests/code preserved for future
+         reactivation, but excluded from compile and discovery until rethink. -->
+    <Compile Remove="Modules-quarantine\**" />
+    <EmbeddedResource Remove="Modules-quarantine\**" />
+    <None Remove="Modules-quarantine\**" />
   </ItemGroup>
 
 </Project>
