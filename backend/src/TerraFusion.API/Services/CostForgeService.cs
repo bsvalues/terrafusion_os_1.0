@@ -52,9 +52,27 @@ public class CostForgeService : ICostForgeService
                 $"No CAMA characteristics found for parcel {property.ParcelNumber}. Run a sync to populate CAMA data.");
 
         var buildingType    = cama.BuildingType;
+        if (string.IsNullOrWhiteSpace(buildingType))
+            throw new InvalidOperationException(
+                $"CAMA record for parcel {property.ParcelNumber} (TaxYear {cama.TaxYear}) " +
+                $"has no BuildingType classification. Re-run PACS sync to populate.");
+
         var revalArea       = string.IsNullOrWhiteSpace(cama.Region) ? "Reval 1" : cama.Region;
         var squareFeet      = cama.SquareFeet > 0 ? cama.SquareFeet : 1m;
-        var yearBuilt       = cama.YearBuilt ?? property.YearBuilt ?? (DateTime.UtcNow.Year - 25);
+
+        int yearBuilt;
+        if (cama.YearBuilt.HasValue)
+            yearBuilt = cama.YearBuilt.Value;
+        else if (property.YearBuilt.HasValue)
+            yearBuilt = property.YearBuilt.Value;
+        else
+        {
+            yearBuilt = DateTime.UtcNow.Year - 25;
+            _logger.LogWarning(
+                "Parcel {Parcel}: neither CamaCharacteristic.YearBuilt nor Property.YearBuilt is set. " +
+                "Defaulting to {YearBuilt} (age 25) for depreciation — re-run PACS sync.",
+                property.ParcelNumber, yearBuilt);
+        }
         var qualityGrade    = cama.QualityGrade    ?? "STANDARD";
         var conditionGrade  = cama.ConditionGrade  ?? "GOOD";
         var complexityGrade = cama.ComplexityGrade ?? "STANDARD";
@@ -70,12 +88,16 @@ public class CostForgeService : ICostForgeService
         var landValue  = property.LandValue;
         var totalValue = CostForgeController.BankersRound(result.AssessedValue + landValue);
 
-        // Compute RCN (before depreciation) for the components breakdown
+        // Derive RCN (before depreciation) from the controller's canonical per-sqft rate.
+        // AdjustedCostPerSqft already has all multipliers applied including DepreciationFactor.
+        // Dividing it out gives the pre-depreciation rate, consistent with controller's rounding.
         var rcn = CostForgeController.BankersRound(
-            result.BaseCostPerSqft * squareFeet
-            * result.RevalAreaFactor * result.QualityFactor
-            * result.ConditionFactor * result.ComplexityFactor);
-        var depreciation = result.AssessedValue - rcn; // negative value
+            (result.DepreciationFactor > 0m
+                ? result.AdjustedCostPerSqft / result.DepreciationFactor
+                : result.BaseCostPerSqft * result.RevalAreaFactor * result.QualityFactor
+                                          * result.ConditionFactor * result.ComplexityFactor)
+            * result.SquareFeet);
+        var depreciation = result.AssessedValue - rcn; // negative value (depreciation loss)
 
         var components = new List<CostComponentDto>
         {
@@ -219,14 +241,18 @@ public class CostForgeService : ICostForgeService
                 {
                     Name = "Land Value",
                     Amount = analysis.LandValue,
-                    Percentage = (double)(analysis.LandValue / analysis.TotalCost * 100),
+                    Percentage = analysis.TotalCost != 0m
+                        ? (double)(analysis.LandValue / analysis.TotalCost * 100)
+                        : 0.0,
                     Components = analysis.Components.Where(c => c.Name.Contains("Land")).ToList()
                 },
                 new()
                 {
                     Name = "Improvements",
                     Amount = analysis.ImprovementValue,
-                    Percentage = (double)(analysis.ImprovementValue / analysis.TotalCost * 100),
+                    Percentage = analysis.TotalCost != 0m
+                        ? (double)(analysis.ImprovementValue / analysis.TotalCost * 100)
+                        : 0.0,
                     Components = analysis.Components.Where(c => !c.Name.Contains("Land")).ToList()
                 }
             };
