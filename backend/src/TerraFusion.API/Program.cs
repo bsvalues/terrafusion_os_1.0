@@ -1592,8 +1592,11 @@ builder.Services.AddDbContext<LevyDbContext>(options =>
 // Register TerraLevy services for championship-level tax assessment
 builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyCalculationService, TerraFusion.Levy.Services.LevyCalculationService>();
 builder.Services.AddScoped<TerraFusion.Levy.Services.IRevenueProjectionService, TerraFusion.Levy.Services.RevenueProjectionService>();
-// B5 — Certification wizard state machine (specialist-gated Draft→PendingReview→Certified).
-builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyCertificationService, TerraFusion.Levy.Services.LevyCertificationService>();
+builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyPropertyAssessmentService, TerraFusion.Levy.Services.LevyPropertyAssessmentService>();
+// NOTE: Levy certification flow uses TerraFusion.Core.Services.ICertificationService
+// (registered above at the Dais CRUD block). A previous B5 DI line referenced
+// TerraFusion.Levy.Services.ILevyCertificationService but those types were
+// never created; removed to unblock the API build.
 
 // Add health checks for monitoring
 builder.Services.AddHealthChecks()
