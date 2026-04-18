@@ -1182,8 +1182,7 @@ public class TerraForgeController : ControllerBase
     /// Sets QualificationRecommendation on every sale using the 4-layer hierarchy:
     ///   1 - PACS SaleQualifier (already on ComparableSales.RawSaleQualifier)
     ///   2 - County ratio code (sl_county_ratio_cd → TF CountyRatioCodes table)
-    ///   2b - DOR ratio type  (sl_ratio_type_cd  → TF SaleRatioTypes table)
-    ///   3 - Exclude-calc flag
+    ///   3 - Exclude-calc flag (sales_exclude_calc_cd)
     ///   4 - WAC 458-61A      (wac_cd            → TF ReetWacCodes table)
     ///   5 - Default: qualified
     /// Benton code 100 → "qualified", code 200 → "non-arms-length", etc.
@@ -1219,80 +1218,37 @@ public class TerraForgeController : ControllerBase
     }
 
     /// <summary>
-    /// ONE-TIME MIGRATION — Admin only. Run once after initial PACS import to populate
-    /// QualificationRecommendation on all ComparableSales via the 4-layer county/WAC/DOR engine.
-    /// Step 1: backfills raw PACS codes (RawCountyRatioCd, RawWacCd, etc.) from pacs_sales staging
-    ///         where those columns are still NULL — idempotent, no-op if codes already present.
-    /// Step 2: runs the qualification engine purely from canonical ComparableSales raw codes.
-    /// After this runs once, all runtime ratio-study endpoints read purely canonical data.
-    /// Ratio studies function WITHOUT this having been run (default-qualified semantics);
-    /// this only adds system pre-recommendations to help staff review efficiency.
+    /// Admin endpoint to recompute QualificationRecommendation on ComparableSales from
+    /// TerraFusion canonical raw-code truth only.
+    ///
+    /// Ownership rule:
+    ///   - SyncController owns PACS/raw-mirror backfill into ComparableSales.Raw* fields.
+    ///   - TerraForgeController owns recommendation computation and appraiser decisions.
+    ///
+    /// If canonical raw-code columns are still missing, this endpoint reports that gap but
+    /// does not reach back into PACS staging. Missing raw-code repair must happen in Sync.
     /// </summary>
     [HttpPost("apply-recommendations")]
     public async Task<IActionResult> ApplyQualificationRecommendations(
         CancellationToken ct = default)
     {
-        // Step 1: Backfill raw PACS qualification codes that were null at import time.
-        // Join ComparableSales → pacs_sales via PacsParcel (GeoId = county parcel number).
-        // Benton's primary qualification source is sl_county_ratio_cd (Layer 2 in the
-        // 4-layer hierarchy). WAC codes are preserved for DOR analytics — they are NOT
-        // the primary disqualification trigger (Benton has its own codes for that).
-        var pacsLookup = await (
-            from ps in _db.PacsSales
-            join pp in _db.PacsParcel on ps.ParcelId equals pp.Id
-            where pp.GeoId != null
-            select new
-            {
-                GeoId            = pp.GeoId!,
-                SaleDate         = ps.SaleDate,
-                SalePrice        = ps.SalePrice,
-                CountyRatioCd    = ps.SaleCountyRatioCd,
-                WacCd            = ps.WacCd,
-                RatioTypeCd      = ps.SaleRatioTypeCd,
-                ExcludeCalcCd    = ps.SalesExcludeCalcCd,
-                SaleQualifier    = ps.SaleQualifier,
-            })
-            .ToListAsync(ct);
-
-        // Build a lookup keyed by (parcelGeoId, saleDate, salePrice) for fast match.
-        // Use first match per key — sale dates are generally unique per parcel.
-        var pacsByKey = new Dictionary<(string, DateTime?, decimal?), (string? county, string? wac, string? ratioType, string? exclude, string? qualifier)>();
-        foreach (var row in pacsLookup)
-        {
-            var key = (row.GeoId, row.SaleDate, row.SalePrice);
-            if (!pacsByKey.ContainsKey(key))
-                pacsByKey[key] = (row.CountyRatioCd, row.WacCd, row.RatioTypeCd, row.ExcludeCalcCd, row.SaleQualifier);
-        }
-
-        // Backfill any ComparableSale that still has all null raw qualification fields.
-        var toBackfill = await _db.ComparableSales
+        var missingCanonicalRawCodes = await _db.ComparableSales
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.RawCountyRatioCd == null && s.RawWacCd == null
                      && s.RawRatioTypeCd == null && s.RawSaleQualifier == null)
-            .ToListAsync(ct);
+            .CountAsync(ct);
 
-        int backfilled = 0;
-        foreach (var sale in toBackfill)
+        if (missingCanonicalRawCodes > 0)
         {
-            var key = (sale.ParcelId, (DateTime?)sale.SaleDate, (decimal?)sale.SalePrice);
-            if (pacsByKey.TryGetValue(key, out var pacs))
-            {
-                sale.RawCountyRatioCd = pacs.county;
-                sale.RawWacCd         = pacs.wac;
-                sale.RawRatioTypeCd   = pacs.ratioType;
-                sale.RawExcludeCalcCd = pacs.exclude;
-                sale.RawSaleQualifier = pacs.qualifier;
-                backfilled++;
-            }
+            _logger.LogWarning(
+                "[TerraForge] apply-recommendations: {Missing} ComparableSales rows still lack canonical raw qualification codes. " +
+                "Run SyncController backfill before treating recommendations as fully source-complete.",
+                missingCanonicalRawCodes);
         }
 
-        if (backfilled > 0)
-            await _db.SaveChangesAsync(ct);
-
-        _logger.LogInformation("[TerraForge] apply-recommendations backfill: {Backfilled} sales got raw PACS codes", backfilled);
-
-        // Step 2: Run the proper 4-layer qualification engine (county code → DOR code → WAC → default).
-        // Try FK-aware async version first (needs SaleRatioTypes, CountyRatioCodes, ReetWacCodes seeded).
+        // Run the 5-layer county qualification engine (SaleQualifier → county code → ExcludeCalc → WAC → default)
+        // purely from canonical ComparableSales raw-code truth. DOR ratio type is NOT a qualification gate.
+        // Try FK-aware async version first (needs CountyRatioCodes, ReetWacCodes seeded).
         // Falls back to sync version with hardcoded county code map when lookup tables aren't in dev DB.
         int processed;
         try
@@ -1318,15 +1274,21 @@ public class TerraForgeController : ControllerBase
             .ToListAsync(ct);
 
         _logger.LogInformation(
-            "[TerraForge] apply-recommendations: processed={Total} backfilled={Backfilled}",
-            processed, backfilled);
+            "[TerraForge] apply-recommendations: processed={Total} missingCanonicalRawCodes={Missing}",
+            processed, missingCanonicalRawCodes);
 
         return Ok(new
         {
             processed,
-            backfilled,
+            canonicalOnly = true,
+            missingCanonicalRawCodes,
+            syncRepairEndpoint = missingCanonicalRawCodes > 0
+                ? $"/api/sync/backfill-qualification-fields/{BentonCountyId}"
+                : null,
             summary,
-            message = $"Applied 4-layer qualification to {processed} sales. Benton county codes used as primary source."
+            message = missingCanonicalRawCodes > 0
+                ? $"Applied 4-layer qualification to {processed} sales from TerraFusion canonical truth. {missingCanonicalRawCodes} sales still lack canonical raw qualification codes; repair them through Sync, not Forge."
+                : $"Applied 4-layer qualification to {processed} sales from TerraFusion canonical truth."
         });
     }
 
@@ -1424,21 +1386,35 @@ public class TerraForgeController : ControllerBase
         _logger.LogInformation("GetRatioStudyTrends: taxYear={TaxYear}", taxYear);
 
         var cutoff = taxYear - 2;
-        var rawSales = await (
-            from s in _db.ComparableSales
-            where s.SaleQualification == "qualified"
-               && s.SaleDate >= new DateTime(cutoff, 1, 1)
-               && s.SaleDate <= new DateTime(taxYear, 12, 31)
-            join p in _db.Properties on s.ParcelId equals p.ParcelId into pj
-            from p in pj.DefaultIfEmpty()
-            where p == null || p.AssessedValue > 0
-            select new
+        // Use GetAssessedValueMapAsync (same pattern as all other ratio-study endpoints).
+        // Replace stale SaleQualification column with 3-layer default-qualified filter.
+        var rawSalesBase = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.SaleDate >= new DateTime(cutoff, 1, 1)
+                     && s.SaleDate <= new DateTime(taxYear, 12, 31)
+                     && s.SalePrice > 0
+                     && (s.QualificationDecision == "qualified"
+                         || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))))
+            .Select(s => new
             {
+                s.ParcelId,
                 s.SaleDate,
                 SalePrice = s.AdjustedSalePrice > 0 ? s.AdjustedSalePrice!.Value : s.SalePrice,
-                AssessedValue = p != null ? p.AssessedValue : 0m,
-            }
-        ).Where(x => x.AssessedValue > 0 && x.SalePrice > 0).ToListAsync(ct);
+            })
+            .ToListAsync(ct);
+
+        var trendParcelIds   = rawSalesBase.Select(s => s.ParcelId).Where(id => id != null).Distinct();
+        var trendAssessedMap = await GetAssessedValueMapAsync(trendParcelIds, taxYear, ct);
+
+        var rawSales = rawSalesBase
+            .Where(s => s.ParcelId != null && trendAssessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+            .Select(s => new
+            {
+                s.SaleDate,
+                SalePrice    = s.SalePrice,
+                AssessedValue = trendAssessedMap[s.ParcelId!],
+            })
+            .ToList();
 
         // Build quarter → ratio list map
         var byQuarter = rawSales
@@ -1493,8 +1469,9 @@ public class TerraForgeController : ControllerBase
             var salesQuery = _db.ComparableSales
                 .AsNoTracking()
                 .Where(cs => cs.SalesYear == taxYear
-                    && cs.SaleQualification == "qualified"
-                    && cs.SalePrice > 0);
+                    && cs.SalePrice > 0
+                    && (cs.QualificationDecision == "qualified"
+                        || (cs.QualificationDecision == null && (cs.QualificationRecommendation == "qualified" || cs.QualificationRecommendation == null))));
 
             if (!string.IsNullOrEmpty(propertyType))
                 salesQuery = salesQuery.Where(cs => cs.PropertyType == propertyType);
@@ -1652,8 +1629,9 @@ public class TerraForgeController : ControllerBase
         {
             var salesQuery = _db.ComparableSales
                 .Where(cs => cs.SalesYear == taxYear
-                    && cs.SaleQualification == "qualified"
-                    && cs.SalePrice > 0);
+                    && cs.SalePrice > 0
+                    && (cs.QualificationDecision == "qualified"
+                        || (cs.QualificationDecision == null && (cs.QualificationRecommendation == "qualified" || cs.QualificationRecommendation == null))));
             if (!string.IsNullOrEmpty(propertyType))
                 salesQuery = salesQuery.Where(cs => cs.PropertyType == propertyType);
             if (!string.IsNullOrEmpty(qualityClass))
@@ -2934,8 +2912,9 @@ public class TerraForgeController : ControllerBase
             // County-wide qualified sale population (same population rule as ratio-study)
             var salesQuery = _db.ComparableSales
                 .Where(cs => cs.SalesYear == taxYear
-                    && cs.SaleQualification == "qualified"
-                    && cs.SalePrice > 0);
+                    && cs.SalePrice > 0
+                    && (cs.QualificationDecision == "qualified"
+                        || (cs.QualificationDecision == null && (cs.QualificationRecommendation == "qualified" || cs.QualificationRecommendation == null))));
             if (!string.IsNullOrEmpty(propertyType))
                 salesQuery = salesQuery.Where(cs => cs.PropertyType == propertyType);
 
@@ -3049,13 +3028,14 @@ public class TerraForgeController : ControllerBase
 
         var cutoff = taxYear - 2;
 
-        // Step 1: pull qualified sales (SP + ParcelId)
+        // Step 1: pull qualified sales (SP + ParcelId) — 3-layer default-qualified filter.
         var sales = await _db.ComparableSales
             .AsNoTracking()
-            .Where(s => s.SaleQualification == "qualified"
-                     && s.SalesYear >= cutoff
+            .Where(s => s.SalesYear >= cutoff
                      && s.SalesYear <= taxYear
-                     && s.SalePrice > 10_000)
+                     && s.SalePrice > 10_000
+                     && (s.QualificationDecision == "qualified"
+                         || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null))))
             .Select(s => new { s.ParcelId, SalePrice = s.AdjustedSalePrice > 0 ? s.AdjustedSalePrice!.Value : s.SalePrice })
             .ToListAsync(ct);
 
