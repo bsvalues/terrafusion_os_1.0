@@ -88,21 +88,20 @@ public class CostForgeService : ICostForgeService
         var landValue  = property.LandValue;
         var totalValue = CostForgeController.BankersRound(result.AssessedValue + landValue);
 
-        // Derive RCN (before depreciation) from the controller's canonical per-sqft rate.
-        // AdjustedCostPerSqft already has all multipliers applied including DepreciationFactor.
-        // Dividing it out gives the pre-depreciation rate, consistent with controller's rounding.
-        var rcn = CostForgeController.BankersRound(
-            (result.DepreciationFactor > 0m
-                ? result.AdjustedCostPerSqft / result.DepreciationFactor
-                : result.BaseCostPerSqft * result.RevalAreaFactor * result.QualityFactor
-                                          * result.ConditionFactor * result.ComplexityFactor)
-            * result.SquareFeet);
-        var depreciation = result.AssessedValue - rcn; // negative value (depreciation loss)
+        // Use pre-computed per-sqft intermediates from ComputeCostEstimate (Task 6 Benton Method fix)
+        var rcn  = CostForgeController.BankersRound(result.RcnPerSqft  * result.SquareFeet);
+        var rcnd = CostForgeController.BankersRound(result.RcndPerSqft * result.SquareFeet);
+        var physicalDepreciation = rcnd - rcn;          // negative (loss from age)
+        var conditionAdjustment  = result.AssessedValue - rcnd; // positive or negative
 
         var components = new List<CostComponentDto>
         {
-            new() { Name = $"RCN — {result.BuildingTypeLabel} ({result.RevalArea})", Amount = rcn, Unit = "sqft", Quantity = (double)squareFeet, UnitCost = result.BaseCostPerSqft },
-            new() { Name = $"Physical Depreciation (age {result.Age} yrs, factor {result.DepreciationFactor:P0})", Amount = depreciation, Unit = "factor", Quantity = (double)result.DepreciationFactor, UnitCost = 0m },
+            new() { Name = $"RCN — {result.BuildingTypeLabel} ({result.RevalArea})",
+                    Amount = rcn, Unit = "sqft", Quantity = (double)squareFeet, UnitCost = result.BaseCostPerSqft },
+            new() { Name = $"Physical Depreciation (age {result.Age} yrs, factor {result.DepreciationFactor:P0})",
+                    Amount = physicalDepreciation, Unit = "factor", Quantity = (double)result.DepreciationFactor, UnitCost = 0m },
+            new() { Name = $"Condition Adjustment ({result.ConditionGrade}, ×{result.ConditionFactor})",
+                    Amount = conditionAdjustment, Unit = "factor", Quantity = (double)result.ConditionFactor, UnitCost = 0m },
             new() { Name = "RCNLD (Depreciated Improvement)", Amount = result.AssessedValue, Unit = "$", Quantity = 1.0, UnitCost = result.AssessedValue },
             new() { Name = "Land Value", Amount = landValue, Unit = "$", Quantity = 1.0, UnitCost = landValue },
         };

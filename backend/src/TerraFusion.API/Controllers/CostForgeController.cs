@@ -3001,12 +3001,16 @@ public class CostForgeController : ControllerBase
                       || buildingType.StartsWith("A", StringComparison.OrdinalIgnoreCase);
     var depreciationFactor = GetDepreciationFactor(age, isResidential);
 
-    var adjustedCostPerSqft = entry.BaseCostPerSqft
-      * revalAreaFactor * qualityFactor * conditionFactor
-      * complexityFactor * depreciationFactor;
+    // Step 1: RCN per sqft — base rate adjusted for reval area, quality, complexity
+    // (Condition is NOT included here; it applies only after depreciation per Benton Method)
+    var rcnPerSqft = BankersRound(
+        entry.BaseCostPerSqft * revalAreaFactor * qualityFactor * complexityFactor);
 
-    // Banker's rounding to cents
-    adjustedCostPerSqft = BankersRound(adjustedCostPerSqft);
+    // Step 2: RCND per sqft — physical depreciation applied
+    var rcndPerSqft = BankersRound(rcnPerSqft * depreciationFactor);
+
+    // Step 3: RCNLD per sqft — condition applied post-depreciation (IAAO / Benton Method)
+    var adjustedCostPerSqft = BankersRound(rcndPerSqft * conditionFactor);
 
     var totalCost = BankersRound(adjustedCostPerSqft * squareFeet);
 
@@ -3031,6 +3035,8 @@ public class CostForgeController : ControllerBase
       ComplexityGrade = complexityGrade.ToUpperInvariant(),
       ComplexityFactor = complexityFactor,
       DepreciationFactor = depreciationFactor,
+      RcnPerSqft = rcnPerSqft,
+      RcndPerSqft = rcndPerSqft,
       AdjustedCostPerSqft = adjustedCostPerSqft,
       TotalCost = totalCost,
       AssessmentRatio = assessmentRatio,
@@ -3455,12 +3461,12 @@ public class CostForgeController : ControllerBase
     var features = new[]
     {
       new { code = "CovPatio",    label = "Covered Patio",              pctOfBiv = 0.03m, typicalSqft = 200,  perSqft = 38.50m,  note = "Open-sided, attached to main structure" },
-      new { code = "ATTGAR",      label = "Attached Garage",            pctOfBiv = 0.06m, typicalSqft = 440,  perSqft = 52.00m,  note = "Per stall; standard 2-car = 440 sqft" },
-      new { code = "DETGAR",      label = "Detached Garage",            pctOfBiv = 0.05m, typicalSqft = 440,  perSqft = 46.00m,  note = "Separate structure, unheated" },
+      new { code = "ATTGAR",      label = "Attached Garage",            pctOfBiv = 0.12m, typicalSqft = 440,  perSqft = 52.00m,  note = "Per stall; standard 2-car = 440 sqft" },
+      new { code = "DETGAR",      label = "Detached Garage",            pctOfBiv = 0.10m, typicalSqft = 440,  perSqft = 46.00m,  note = "Separate structure, unheated" },
       new { code = "BSMT",        label = "Basement (unfinished)",       pctOfBiv = 0.13m, typicalSqft = 1000, perSqft = 35.00m,  note = "Full foundation, concrete walls, unfinished" },
       new { code = "BSMT_FIN",    label = "Basement (finished)",         pctOfBiv = 0.18m, typicalSqft = 1000, perSqft = 62.00m,  note = "Finished to living area standard" },
       new { code = "POLEBLDG",    label = "Pole Building / Shop",        pctOfBiv = 0.18m, typicalSqft = 1200, perSqft = 28.00m,  note = "Agricultural/utility structure; metal frame" },
-      new { code = "POOL",        label = "Swimming Pool (in-ground)",   pctOfBiv = 0.04m, typicalSqft = 400,  perSqft = 0m,      note = "Concrete/gunite; includes decking. Fixed value: ~$55k avg" },
+      new { code = "POOL",        label = "Swimming Pool (in-ground)",   pctOfBiv = 0.05m, typicalSqft = 400,  perSqft = 0m,      note = "Concrete/gunite; includes decking. Fixed value: ~$55k avg" },
       new { code = "DECK",        label = "Wood Deck",                   pctOfBiv = 0.02m, typicalSqft = 300,  perSqft = 22.00m,  note = "Pressure-treated; attached to main structure" },
       new { code = "PORCH",       label = "Covered Porch / Entry",       pctOfBiv = 0.01m, typicalSqft = 100,  perSqft = 42.00m,  note = "Enclosed or roofed entry feature" },
       new { code = "SHOP_FINISH", label = "Shop (heated/insulated)",     pctOfBiv = 0.22m, typicalSqft = 1200, perSqft = 38.00m,  note = "Insulated, heated utility building" },
@@ -3983,6 +3989,8 @@ public class CostForgeController : ControllerBase
     public string ComplexityGrade { get; init; } = "";
     public decimal ComplexityFactor { get; init; }
     public decimal DepreciationFactor { get; init; }
+    public decimal RcnPerSqft { get; init; }    // Per-sqft RCN before depreciation and condition
+    public decimal RcndPerSqft { get; init; }   // Per-sqft RCND after depreciation, before condition
     public decimal AdjustedCostPerSqft { get; init; }
     public decimal TotalCost { get; init; }
     public decimal AssessmentRatio { get; init; }
