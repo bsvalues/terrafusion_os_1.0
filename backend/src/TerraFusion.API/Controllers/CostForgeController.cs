@@ -3189,6 +3189,31 @@ public class CostForgeController : ControllerBase
   internal static decimal BankersRound(decimal value)
     => Math.Round(value, 2, MidpointRounding.ToEven);
 
+  /// <summary>
+  /// Compute the median of a sorted list. Caller must sort before passing.
+  /// </summary>
+  private static double Median(List<double> sorted) =>
+    sorted.Count % 2 == 1
+      ? sorted[sorted.Count / 2]
+      : (sorted[sorted.Count / 2 - 1] + sorted[sorted.Count / 2]) / 2.0;
+
+  /// <summary>
+  /// IQR-trim (AV, SP) pairs by ratio (AV/SP). Excludes SP==0 pairs first.
+  /// Fence: Q1 − 1.5×IQR to Q3 + 1.5×IQR. Returns all pairs if fewer than 4.
+  /// </summary>
+  private static List<(double AV, double SP)> IqrTrimPairs(List<(double AV, double SP)> pairs)
+  {
+    var validPairs = pairs.Where(p => p.SP > 0).ToList();
+    if (validPairs.Count < 4) return validPairs;
+    var ratios = validPairs.Select(p => p.AV / p.SP).OrderBy(r => r).ToList();
+    var q1 = ratios[(int)Math.Floor(ratios.Count * 0.25)];
+    var q3 = ratios[(int)Math.Floor(ratios.Count * 0.75)];
+    var iqr = q3 - q1;
+    var lo = q1 - 1.5 * iqr;
+    var hi = q3 + 1.5 * iqr;
+    return validPairs.Where(p => { var r = p.AV / p.SP; return r >= lo && r <= hi; }).ToList();
+  }
+
   // ──────────────────────────────────────────────────────────────────────────────────
   // Reference data endpoints — building types, regions (for calculator dropdowns)
   // ──────────────────────────────────────────────────────────────────────────────────
@@ -3327,27 +3352,6 @@ public class CostForgeController : ControllerBase
       if (!pairsByHood.ContainsKey(hood)) pairsByHood[hood] = new();
       pairsByHood[hood].Add(((double)av, (double)s.SalePrice));
       matchedSales++;
-    }
-
-    static double Median(List<double> sorted) =>
-      sorted.Count % 2 == 1
-        ? sorted[sorted.Count / 2]
-        : (sorted[sorted.Count / 2 - 1] + sorted[sorted.Count / 2]) / 2.0;
-
-    // Returns the IQR-trimmed subset of (AV, SP) pairs for consistent stats.
-    // Same fence: Q1 - 1.5*IQR to Q3 + 1.5*IQR on the ratio (AV/SP).
-    // SP==0 pairs are excluded first to prevent Infinity/NaN in the ratio.
-    static List<(double AV, double SP)> IqrTrimPairs(List<(double AV, double SP)> pairs)
-    {
-      var validPairs = pairs.Where(p => p.SP > 0).ToList();
-      if (validPairs.Count < 4) return validPairs;
-      var ratios = validPairs.Select(p => p.AV / p.SP).OrderBy(r => r).ToList();
-      var q1 = ratios[(int)Math.Floor(ratios.Count * 0.25)];
-      var q3 = ratios[(int)Math.Floor(ratios.Count * 0.75)];
-      var iqr = q3 - q1;
-      var lo = q1 - 1.5 * iqr;
-      var hi = q3 + 1.5 * iqr;
-      return validPairs.Where(p => { var r = p.AV / p.SP; return r >= lo && r <= hi; }).ToList();
     }
 
     var neighborhoods = pairsByHood
@@ -3529,6 +3533,161 @@ public class CostForgeController : ControllerBase
       medianRatioAfter = Math.Round(medAfter, 4),
       ratioDelta = Math.Round(medAfter - medBefore, 4),
       iaaoCompliantAfter = medAfter >= 0.90 && medAfter <= 1.10,
+    });
+  }
+
+  /// <summary>
+  /// GET /api/costforge/ratio-study/by-stratum
+  /// Computes IAAO ratio study statistics (median ratio, COD, PRD, PRB) independently for
+  /// each PropertyUseStratum (R = Residential, C = Commercial, A = Agricultural).
+  /// Uses the same IQR-trimmed population as the neighborhood calibration matrix.
+  /// Only "qualified" sales (Layer 3 → Layer 2 → default) are included.
+  /// </summary>
+  [HttpGet("ratio-study/by-stratum")]
+  [AllowAnonymous]
+  public async Task<IActionResult> GetRatioStudyByStratum(
+    [FromQuery] int taxYear = 0,
+    [FromQuery] int minSales = 3)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+    if (taxYear <= 0) taxYear = DateTime.UtcNow.Year;
+
+    // Load qualified sales — same qualification filter as neighborhood calibration.
+    // Layer 3 (QualificationDecision) takes precedence; Layer 2 (QualificationRecommendation)
+    // is used when no explicit decision exists; default to qualified when both are null.
+    var sales = await _db.ComparableSales
+      .AsNoTracking()
+      .Where(s => s.CountyId == ctx.CountyId
+               && s.SalesYear == taxYear
+               && (s.QualificationDecision == "qualified"
+                   || (s.QualificationDecision == null
+                       && (s.QualificationRecommendation == "qualified"
+                           || s.QualificationRecommendation == null))))
+      .Select(s => new { s.ParcelId, s.SalePrice })
+      .ToListAsync();
+
+    if (sales.Count == 0)
+      return Ok(new { strata = Array.Empty<object>(), totalSales = 0, taxYear });
+
+    var parcelIds = sales
+      .Where(s => s.ParcelId != null)
+      .Select(s => s.ParcelId!)
+      .Distinct()
+      .ToHashSet();
+
+    // Assessed values from Properties table (same source as neighborhood calibration)
+    var avMap = await _db.Properties
+      .AsNoTracking()
+      .Where(p => parcelIds.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+      .Select(p => new { p.ParcelNumber, p.AssessedValue })
+      .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue);
+
+    // PropertyUseStratum from CamaCharacteristics (R / C / A)
+    var stratumMap = await _db.CamaCharacteristics
+      .AsNoTracking()
+      .Where(c => parcelIds.Contains(c.ParcelId) && c.TaxYear == taxYear && c.CountyId == ctx.CountyId)
+      .Select(c => new { c.ParcelId, c.PropertyUseStratum })
+      .ToDictionaryAsync(c => c.ParcelId!, c => c.PropertyUseStratum ?? "U");
+
+    // Build (AV, SP) pairs grouped by stratum
+    var pairsByStratum = new Dictionary<string, List<(double AV, double SP)>>();
+    int totalMatched = 0;
+
+    foreach (var s in sales)
+    {
+      if (s.ParcelId == null) continue;
+      if (!avMap.TryGetValue(s.ParcelId, out var av)) continue;
+
+      var stratum = stratumMap.TryGetValue(s.ParcelId, out var st) ? (st ?? "U") : "U";
+
+      var ratio = (double)(av / s.SalePrice);
+      if (ratio < 0.5 || ratio > 2.0) continue;  // IAAO extraordinary-outlier clamp
+
+      if (!pairsByStratum.ContainsKey(stratum))
+        pairsByStratum[stratum] = new();
+      pairsByStratum[stratum].Add(((double)av, (double)s.SalePrice));
+      totalMatched++;
+    }
+
+    // Compute IAAO stats per stratum from IQR-trimmed population
+    var strata = pairsByStratum
+      .Select(kv =>
+      {
+        var trimmedPairs  = IqrTrimPairs(kv.Value);
+        var trimmedRatios = trimmedPairs.Select(p => p.AV / p.SP).OrderBy(r => r).ToList();
+        var trimN = trimmedRatios.Count;
+
+        double med = 0, mean = 0, cod = 0, prd = 1.0, prb = 0.0;
+
+        if (trimN >= 3)
+        {
+          med  = Median(trimmedRatios);
+          mean = trimmedRatios.Average();
+          cod  = med > 0 ? trimmedRatios.Average(r => Math.Abs(r - med)) / med * 100.0 : 0;
+
+          var sumAv        = trimmedPairs.Sum(p => p.AV);
+          var sumSp        = trimmedPairs.Sum(p => p.SP);
+          var weightedMean = sumSp > 0 ? sumAv / sumSp : mean;
+          prd = weightedMean > 0 ? mean / weightedMean : 1.0;
+
+          // PRB — IAAO 2013: x_i = 0.5*(AV_i/medianAV + SP_i/medianSP)
+          var medianAv = Median(trimmedPairs.Select(p => p.AV).OrderBy(v => v).ToList());
+          var medianSp = Median(trimmedPairs.Select(p => p.SP).OrderBy(v => v).ToList());
+          var xs = trimmedPairs.Select(p =>
+            0.5 * (p.AV / (medianAv > 0 ? medianAv : 1.0)
+                 + p.SP / (medianSp > 0 ? medianSp : 1.0))).ToList();
+          var ys   = trimmedPairs.Select(p => p.AV / p.SP).ToList();
+          double xMean = xs.Average();
+          double cov = 0, varX = 0;
+          for (var i = 0; i < trimN; i++)
+          {
+            var dx = xs[i] - xMean;
+            cov  += dx * (ys[i] - mean);
+            varX += dx * dx;
+          }
+          prb = varX > 1e-10 ? cov / varX : 0.0;
+        }
+
+        var stratumLabel = kv.Key switch
+        {
+          "R" => "Residential",
+          "C" => "Commercial",
+          "A" => "Agricultural",
+          "U" => "Unclassified",
+          _   => kv.Key,
+        };
+
+        return new
+        {
+          stratum      = kv.Key,
+          stratumLabel,
+          rawSaleCount = kv.Value.Count,
+          saleCount    = trimN,
+          medianRatio  = Math.Round(med,  4),
+          cod          = Math.Round(cod,  2),
+          prd          = Math.Round(prd,  4),
+          prb          = Math.Round(prb,  4),
+          iaaoMeetsMedian = med >= 0.90 && med <= 1.10,
+          iaaoMeetsCod    = cod <= 15.0,
+          iaaoMeetsPrd    = prd >= 0.98 && prd <= 1.03,
+        };
+      })
+      .OrderBy(s => s.stratum)
+      .ToList();
+
+    return Ok(new
+    {
+      strata,
+      strataCount  = strata.Count,
+      totalSales   = sales.Count,
+      matchedSales = totalMatched,
+      taxYear,
+      countyId     = ctx.CountyId,
+      countyName   = ctx.CountyName,
+      minSales,
+      generatedAt  = DateTime.UtcNow,
     });
   }
 
