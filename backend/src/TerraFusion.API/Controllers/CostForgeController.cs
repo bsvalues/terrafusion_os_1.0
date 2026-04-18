@@ -3231,25 +3231,46 @@ public class CostForgeController : ControllerBase
         var sumSp = kv.Value.Sum(p => p.SP);
         var weightedMean = sumSp > 0 ? sumAv / sumSp : mean;
         var prd = weightedMean > 0 ? mean / weightedMean : 1.0;
+        // PRB (Price-Related Bias) — IAAO vertical equity statistic.
+        // OLS coefficient b1 of: (ratio_i − med) ~ b0 + b1 * x_i
+        // where x_i = 0.5*(AV_i/meanAV + SP_i/meanSP).  PRB ≈ 0 → neutral.
+        var n = kv.Value.Count;
+        var meanAv = sumAv / n;
+        var meanSp = sumSp / n;
+        var xs = kv.Value.Select(p => 0.5 * (p.AV / meanAv + p.SP / meanSp)).ToList();
+        var xMean = xs.Average();
+        var cov = 0.0;
+        var varX = 0.0;
+        for (var i = 0; i < n; i++)
+        {
+          var dx = xs[i] - xMean;
+          cov += dx * (kv.Value[i].AV / kv.Value[i].SP - mean);
+          varX += dx * dx;
+        }
+        var prb = varX > 1e-10 ? cov / varX : 0.0;
         var revalDigit = kv.Key.Length >= 1 ? kv.Key[0].ToString() : "1";
         var revalArea = int.TryParse(revalDigit, out var d) && d >= 1 && d <= 6
                          ? $"Reval {d}" : "Reval 1";
         // Compliance thresholds (IAAO residential)
         var ratioOk = med >= 0.90 && med <= 1.10;
         var codOk = cod <= 15.0;
+        var p25Idx = Math.Min((int)(sorted.Count * 0.25), sorted.Count - 1);
+        var p75Idx = Math.Min((int)(sorted.Count * 0.75), sorted.Count - 1);
         return new
         {
           hoodCd = kv.Key,
+          name = (string?)null,    // Benton uses codes only; populated by future hood-name lookup
           revalArea,
           saleCount = sorted.Count,
           medianRatio = Math.Round(med, 4),
           cod = Math.Round(cod, 2),
           prd = Math.Round(prd, 4),
+          prb = Math.Round(prb, 4),
           ratioOk,
           codOk,
           iaaoCompliant = ratioOk && codOk,
-          p25 = Math.Round(sorted[(int)(sorted.Count * 0.25)], 4),
-          p75 = Math.Round(sorted[(int)(sorted.Count * 0.75)], 4),
+          p25 = Math.Round(sorted[p25Idx], 4),
+          p75 = Math.Round(sorted[p75Idx], 4),
         };
       })
       .OrderByDescending(n => n.cod)   // worst COD first — most actionable

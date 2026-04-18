@@ -16,7 +16,7 @@ import { Brain, Play, CheckCircle, Clock, AlertCircle, Loader2 } from "lucide-re
 import { useAvmRuns, useLaunchAvmRun, type AvmRun } from "@/hooks/useAvmPipeline";
 import { useCountyConfig } from "@/hooks/useCountyConfig";
 
-const BENTON_COUNTY_ID = "842a6c54-c7c0-4b2d-aa43-0e3ba63fa57d";
+const BENTON_COUNTY_ID = "19190019-1919-1919-1919-191919191919";
 
 const MODEL_TYPES = [
   { value: "linear_regression", label: "Linear Regression" },
