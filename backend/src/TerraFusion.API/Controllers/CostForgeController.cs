@@ -2054,6 +2054,91 @@ public class CostForgeController : ControllerBase
     return Ok(new { record.Id, record.Status, record.ReviewedAt });
   }
 
+  /// <summary>
+  /// POST /api/costforge/valuations/{id}/certify
+  /// Promotes a completed ValuationRecord to a PropertyAssessment on the tax roll.
+  /// Deactivates any prior active assessment for the same parcel + tax year.
+  /// Seals the ValuationRecord (status → "sealed").
+  /// </summary>
+  [HttpPost("valuations/{id:guid}/certify")]
+  public async Task<ActionResult> CertifyValuation(Guid id, [FromBody] CertifyValuationRequest? request = null)
+  {
+    var ctx = await ResolveCountyContextAsync();
+    if (ctx is null) return Unauthorized(new { error = "County context required." });
+
+    // Load and validate the valuation record
+    var valuation = await _db.ValuationRecords
+      .FirstOrDefaultAsync(r => r.Id == id && r.CountyId == ctx.CountyId);
+
+    if (valuation is null)
+      return NotFound(new { error = "Valuation record not found." });
+
+    if (valuation.Status == "sealed")
+      return Conflict(new { error = "Valuation record is already sealed and certified." });
+
+    if (valuation.FinalReconciledValue is null or <= 0)
+      return BadRequest(new { error = "ValuationRecord.FinalReconciledValue must be set and positive before certifying." });
+
+    // Resolve Property.Id from ParcelId (ParcelNumber) + CountyId
+    var property = await _db.Properties
+      .AsNoTracking()
+      .Where(p => p.ParcelNumber == valuation.ParcelId && p.CountyId == ctx.CountyId)
+      .Select(p => new { p.Id })
+      .FirstOrDefaultAsync();
+
+    if (property is null)
+      return UnprocessableEntity(new { error = $"Property record not found for parcel '{valuation.ParcelId}' in county {ctx.CountyId}. Cannot promote to tax roll." });
+
+    // Deactivate any prior active PropertyAssessment for this property + year
+    var priorAssessments = await _db.PropertyAssessments
+      .Where(a => a.PropertyId == property.Id && a.AssessmentYear == valuation.TaxYear && a.IsActive)
+      .ToListAsync();
+    foreach (var prior in priorAssessments)
+      prior.IsActive = false;
+
+    // Create the new canonical PropertyAssessment
+    var assessment = new PropertyAssessment
+    {
+      Id               = Guid.NewGuid(),
+      PropertyId       = property.Id,
+      AssessmentYear   = valuation.TaxYear,
+      AssessedValue    = valuation.FinalReconciledValue.Value,
+      MarketValue      = valuation.FinalReconciledValue.Value,
+      LandValue        = valuation.LandValue ?? 0m,
+      ImprovementValue = valuation.Rcnld ?? 0m,
+      AssessmentMethod = "CostForge",
+      AssessorNotes    = request?.Notes,
+      AssessorId       = Guid.Empty,   // TODO: wire to authenticated user Guid when auth scope added
+      AssessmentDate   = DateTime.UtcNow,
+      IsActive         = true,
+    };
+    _db.PropertyAssessments.Add(assessment);
+
+    // Seal the ValuationRecord
+    valuation.Status     = "sealed";
+    valuation.ReviewedAt = DateTime.UtcNow;
+    valuation.ReviewedBy = User.Identity?.Name ?? "system";
+
+    await _db.SaveChangesAsync();
+
+    _logger.LogInformation(
+      "CostForge certify: parcel={Parcel} taxYear={Year} assessedValue={Value:C} assessmentId={AssessmentId} deactivatedPrior={Deactivated}",
+      valuation.ParcelId, valuation.TaxYear, assessment.AssessedValue, assessment.Id, priorAssessments.Count);
+
+    return Ok(new
+    {
+      valuationId                  = valuation.Id,
+      assessmentId                 = assessment.Id,
+      parcelId                     = valuation.ParcelId,
+      taxYear                      = valuation.TaxYear,
+      assessedValue                = assessment.AssessedValue,
+      landValue                    = assessment.LandValue,
+      improvementValue             = assessment.ImprovementValue,
+      priorAssessmentsDeactivated  = priorAssessments.Count,
+      sealedAt                     = valuation.ReviewedAt,
+    });
+  }
+
   /// <summary>Ingest a comparable sale record.</summary>
   [HttpPost("comparables")]
   public async Task<ActionResult> IngestComparableSale([FromBody] IngestComparableRequest request)
@@ -2782,6 +2867,10 @@ public class CostForgeController : ControllerBase
   {
     [Required] public string Status { get; init; } = "";
   }
+
+  public sealed record CertifyValuationRequest(
+    [StringLength(500)] string? Notes
+  );
 
   public sealed record IngestComparableRequest
   {
