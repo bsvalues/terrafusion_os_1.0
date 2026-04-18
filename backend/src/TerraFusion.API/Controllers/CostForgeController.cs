@@ -3204,32 +3204,20 @@ public class CostForgeController : ControllerBase
         ? sorted[sorted.Count / 2]
         : (sorted[sorted.Count / 2 - 1] + sorted[sorted.Count / 2]) / 2.0;
 
-    static double IqrCod(List<double> sorted)
-    {
-      if (sorted.Count < 4) return 0;
-      var q1 = sorted[(int)Math.Floor(sorted.Count * 0.25)];
-      var q3 = sorted[(int)Math.Floor(sorted.Count * 0.75)];
-      var iqr = q3 - q1;
-      var lo = q1 - 1.5 * iqr;
-      var hi = q3 + 1.5 * iqr;
-      var trimmed = sorted.Where(r => r >= lo && r <= hi).ToList();
-      if (trimmed.Count < 3) return 0;
-      var med = Median(trimmed);
-      return med > 0 ? trimmed.Average(r => Math.Abs(r - med)) / med * 100.0 : 0;
-    }
-
     // Returns the IQR-trimmed subset of (AV, SP) pairs for consistent stats.
     // Same fence: Q1 - 1.5*IQR to Q3 + 1.5*IQR on the ratio (AV/SP).
+    // SP==0 pairs are excluded first to prevent Infinity/NaN in the ratio.
     static List<(double AV, double SP)> IqrTrimPairs(List<(double AV, double SP)> pairs)
     {
-      if (pairs.Count < 4) return pairs;
-      var ratios = pairs.Select(p => p.AV / p.SP).OrderBy(r => r).ToList();
+      var validPairs = pairs.Where(p => p.SP > 0).ToList();
+      if (validPairs.Count < 4) return validPairs;
+      var ratios = validPairs.Select(p => p.AV / p.SP).OrderBy(r => r).ToList();
       var q1 = ratios[(int)Math.Floor(ratios.Count * 0.25)];
       var q3 = ratios[(int)Math.Floor(ratios.Count * 0.75)];
       var iqr = q3 - q1;
       var lo = q1 - 1.5 * iqr;
       var hi = q3 + 1.5 * iqr;
-      return pairs.Where(p => { var r = p.AV / p.SP; return r >= lo && r <= hi; }).ToList();
+      return validPairs.Where(p => { var r = p.AV / p.SP; return r >= lo && r <= hi; }).ToList();
     }
 
     var neighborhoods = pairsByHood
