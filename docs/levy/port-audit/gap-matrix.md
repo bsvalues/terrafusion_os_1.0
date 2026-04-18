@@ -6,6 +6,7 @@ Target: `backend/src/TerraFusion.API/Controllers/Levy*Controller.cs` + `backend/
 
 Legend:
 - **COVERED** — .NET controller already ports this surface (may need enhancement to match prod bodies)
+- **COVERED_PLACEHOLDER** — .NET contract ported as deterministic placeholder; real persistence/AI wiring deferred behind stable interface
 - **PARTIAL** — some endpoints ported, some missing
 - **GAP** — no .NET equivalent; needs full port
 - **SKIP_UI** — UI concern, lives in React OS shell, not a backend port
@@ -24,7 +25,7 @@ Legend:
 | `routes_budget_impact.py` | 28.1 KB | 5 | — | GAP | Budget simulation + AI simulation — needs new controller |
 | `routes_dashboard.py` | 6.8 KB | 3 | LevyDashboardController | PARTIAL | `/metrics` + `/stats` may need enhancement |
 | `routes_data_management.py` | 30.7 KB | 16 | LevyDataManagementController | PARTIAL | 16 Flask routes vs 5 .NET endpoints — big gap |
-| `routes_data_quality.py` | 44.8 KB | TBD | — | GAP | **Largest gap.** Data quality workflows |
+| `routes_data_quality.py` | 44.8 KB | 12 | LevyDataQualityController + LevyDataQualityService | COVERED_PLACEHOLDER | Phase 2 Task 2.1 closed: 7/12 JSON routes ported as deterministic placeholder behind stable contract (`/analyze`, `/ai-recommendations`, `/monitoring-status`, `/monitoring/toggle`, `/realtime-metrics`, `/trends`, `/audit`); 5/12 SKIP_UI by design (`/`, `/rules`, `/rules/create`, `/errors`, `/activities` — listed explicitly in controller XML doc, render in React shell). Real persistence (`ValidationRule`/`DataQualityScore`/`ErrorPattern`/`DataQualityActivity`) and AI-swarm wiring deferred to later phase behind same interface (Service is honest about this in code comments). |
 | `routes_db_fix.py` | 7.0 KB | TBD | — | SKIP_CLI | DB repair — CLI tool only, do not expose |
 | `routes_examples.py` | TBD | TBD | — | SKIP_UI | Demo/examples page |
 | `routes_forecasting.py` | TBD | TBD | LevyForecastController | PARTIAL | Compare specifics |
@@ -52,8 +53,9 @@ Plus local-only: `routes_tours.py` — keep (newer local feature).
 | Status | Count |
 |---|---:|
 | COVERED | 5 |
+| COVERED_PLACEHOLDER | 1 |
 | PARTIAL | 5 |
-| GAP | 8 |
+| GAP | 7 |
 | DECIDE | 0 |
 | CANCEL_PARTIAL | 3 |
 | SKIP_UI | 4 |
@@ -62,16 +64,16 @@ Plus local-only: `routes_tours.py` — keep (newer local feature).
 
 ## Priority Ports (real work for Phase 2)
 
-1. **`routes_data_quality.py`** (44.8 KB) — biggest gap, business-critical
-2. **`routes_data_management.py`** delta (30.7 KB, 11 missing endpoints)
-3. **`routes_budget_impact.py`** (28.1 KB)
-4. **`routes_property_assessment.py`** (16.4 KB)
-5. **`routes_historical_analysis.py`**
-6. **`routes_user_audit.py`**
-7. **`routes_tax_strategy.py`**
-8. **`routes_public.py`**
-9. **`routes_glossary.py`** (minor)
-10. **`routes_dashboard.py` / `routes_forecasting.py` / `routes_reports.py` enhancements**
+1. **`routes_data_management.py`** delta (30.7 KB, 11 missing endpoints)
+2. **`routes_budget_impact.py`** (28.1 KB)
+3. **`routes_property_assessment.py`** (16.4 KB)
+4. **`routes_historical_analysis.py`**
+5. **`routes_user_audit.py`**
+6. **`routes_tax_strategy.py`**
+7. **`routes_public.py`**
+8. **`routes_glossary.py`** (minor)
+9. **`routes_dashboard.py` / `routes_forecasting.py` / `routes_reports.py`** enhancements
+10. (deferred) **`routes_data_quality.py`** persistence wiring — contract already in place, needs `ValidationRule`/`DataQualityScore`/`ErrorPattern`/`DataQualityActivity` schema + service rewire
 
 ## Founder Decisions Needed (Phase 2 blockers)
 
