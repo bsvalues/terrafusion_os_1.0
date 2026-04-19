@@ -4,7 +4,7 @@ import {
   ScatterChart, Scatter, XAxis, YAxis, Tooltip,
   ReferenceLine, ResponsiveContainer, Cell,
 } from 'recharts';
-import type { StratumSale } from '../../../services/forge/salesAuditApi';
+import type { StratumSale } from '../../../../services/forge/salesAuditApi';
 
 interface Props {
   sales: StratumSale[];

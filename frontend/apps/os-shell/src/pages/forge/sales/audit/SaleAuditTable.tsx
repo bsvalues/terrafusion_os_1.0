@@ -1,6 +1,6 @@
 // frontend/apps/os-shell/src/pages/forge/sales/audit/SaleAuditTable.tsx
 import React, { useState, useMemo } from 'react';
-import type { StratumSale } from '../../../services/forge/salesAuditApi';
+import type { StratumSale } from '../../../../services/forge/salesAuditApi';
 import { SaleScatterPlot } from './SaleScatterPlot';
 import { SaleRow } from './SaleRow';
 

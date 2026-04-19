@@ -1,6 +1,6 @@
 // frontend/apps/os-shell/src/pages/forge/sales/audit/SaleRow.tsx
 import React from 'react';
-import type { StratumSale } from '../../../services/forge/salesAuditApi';
+import type { StratumSale } from '../../../../services/forge/salesAuditApi';
 
 interface Props {
   sale: StratumSale;

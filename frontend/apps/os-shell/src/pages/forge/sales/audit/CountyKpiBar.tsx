@@ -1,5 +1,5 @@
 import React from 'react';
-import type { StratumDiagnosisSummary } from '../../../services/forge/salesAuditApi';
+import type { StratumDiagnosisSummary } from '../../../../services/forge/salesAuditApi';
 
 interface KpiTileProps {
   label: string;

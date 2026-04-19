@@ -1,5 +1,5 @@
 import React from 'react';
-import type { StratumDiagnosisSummary } from '../../../services/forge/salesAuditApi';
+import type { StratumDiagnosisSummary } from '../../../../services/forge/salesAuditApi';
 
 const DIAGNOSIS_STYLE: Record<string, { bg: string; text: string; label: string }> = {
   DATA_PROBLEM:    { bg: 'bg-red-950',     text: 'text-red-400',    label: 'DATA'       },
