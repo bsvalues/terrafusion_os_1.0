@@ -546,32 +546,31 @@ export default function ForgeSuiteHome() {
             </div>
           </section>
 
-          <section className="forge-panel" data-testid="forge-secondary-applications">
+          {/* GeoForge — GIS-first mass appraisal analytics */}
+          <section className="forge-panel" data-testid="forge-gis-applications">
             <div className="forge-panel__header">
               <div>
-                <p className="forge-panel__eyebrow">Specialist Applications</p>
-                <h2 className="forge-panel__title">Supporting analytics and batch operations</h2>
+                <p className="forge-panel__eyebrow">GIS Valuation Intelligence</p>
+                <h2 className="forge-panel__title">GeoForge · Spatial Mass Appraisal</h2>
               </div>
             </div>
-            <div className="forge-secondary-grid">
-              {SECONDARY_MODULES.map((mod) => (
-                <button
-                  key={mod.id}
-                  type="button"
-                  className="forge-card forge-card--secondary"
-                  onClick={() => handleModuleLaunch(mod)}
-                  disabled={mod.truthState === 'queued'}
-                >
-                  <div className="forge-card__rail">
-                    {mod.chipLabel && <span className="forge-chip forge-chip--neutral">{mod.chipLabel}</span>}
-                    {mod.truthState === 'queued' && <span className="forge-chip forge-chip--warn">Queued</span>}
-                  </div>
-                  <div className="forge-card__title">{mod.label}</div>
-                  <p className="forge-card__description">{mod.description}</p>
-                  <div className="forge-card__foot">{getLaunchLabel(mod)}</div>
-                </button>
-              ))}
-            </div>
+            <button
+              type="button"
+              className="forge-card forge-card--primary"
+              style={{ width: '100%', textAlign: 'left' }}
+              onClick={() => handleModuleLaunch({ id: 'geo-forge', label: 'GeoForge', description: '', priority: 'primary', launchMode: 'standalone', moduleId: 'geo-forge' })}
+            >
+              <div className="forge-card__rail">
+                <span className="forge-chip forge-chip--neutral">GIS · Benton Method</span>
+                <span className="forge-card__foot">Launches in window</span>
+              </div>
+              <div className="forge-card__title">GeoForge</div>
+              <p className="forge-card__description">
+                Full-canvas GIS valuation — Mapbox choropleth, 31 analyst panels, live Benton Method ratio
+                study (COD · PRD · PRB), DOR certification workflow, adjustment workbench, Moran&apos;s I
+                spatial analysis, levy parity, and one-click WAC 458-53A narrative memo.
+              </p>
+            </button>
           </section>
 
           {/* Slice 1.4 — county-wide sale qualification queue */}

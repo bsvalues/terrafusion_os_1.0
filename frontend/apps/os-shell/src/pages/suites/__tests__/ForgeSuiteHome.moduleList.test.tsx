@@ -2,15 +2,17 @@
  * ForgeSuiteHome — Module List Contract Test
  *
  * These tests are a FREEZE GUARD. They will FAIL if anyone edits the
- * PRIMARY_MODULES or SECONDARY_MODULES arrays to the wrong apps.
+ * PRIMARY_MODULES array to the wrong apps.
  *
  * If this test fails: restore the file, don't edit the test.
  *   git checkout 8da26658a -- frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx
  *
- * Verified correct layout (2026-04-09 screenshot):
- *   PRIMARY   : costforge, comps-forge, income-forge (queued)
- *   SPECIALIST: statistics-studio, batch-cost-run,
- *               regression-studio (queued), terra-gama (queued), coefficient-preview (queued)
+ * Verified correct layout (2026-04-19 update):
+ *   PRIMARY   : costforge, comps-forge, income-forge (queued), sales-forge
+ *   GIS       : geo-forge (GeoForge — replaces queued specialist apps)
+ *
+ * NOTE: Secondary/specialist section removed 2026-04-19. GeoForge covers
+ *       the analytics previously listed as queued specialist apps.
  */
 
 import { render, screen } from '@testing-library/react';
@@ -76,17 +78,18 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(screen.getByText('SalesForge')).toBeInTheDocument();
   });
 
-  it('renders Statistics Studio and Batch Cost Runs as specialist apps', () => {
+  it('renders GeoForge in the GIS section', () => {
     renderForge();
-    expect(screen.getByText('Statistics Studio')).toBeInTheDocument();
-    expect(screen.getByText('Batch Cost Runs')).toBeInTheDocument();
+    expect(screen.getByText('GeoForge')).toBeInTheDocument();
+    const gisSection = screen.getByTestId('forge-gis-applications');
+    expect(gisSection).toBeInTheDocument();
   });
 
-  it('renders the three queued specialist apps', () => {
+  it('does NOT render removed specialist apps', () => {
     renderForge();
-    expect(screen.getByText('Regression Studio')).toBeInTheDocument();
-    expect(screen.getByText('TerraGAMA')).toBeInTheDocument();
-    expect(screen.getByText('Coefficient Preview')).toBeInTheDocument();
+    expect(screen.queryByText('Regression Studio')).not.toBeInTheDocument();
+    expect(screen.queryByText('TerraGAMA')).not.toBeInTheDocument();
+    expect(screen.queryByText('Coefficient Preview')).not.toBeInTheDocument();
   });
 
   it('does NOT render fabricated apps that were never in v1 scope', () => {
@@ -132,10 +135,10 @@ describe('ForgeSuiteHome — frozen module list', () => {
     expect(cards).toHaveLength(4);
   });
 
-  it('specialist section has exactly 5 cards', () => {
+  it('GIS section has exactly 1 card (GeoForge)', () => {
     renderForge();
-    const secondarySection = screen.getByTestId('forge-secondary-applications');
-    const cards = secondarySection.querySelectorAll('button.forge-card');
-    expect(cards).toHaveLength(5);
+    const gisSection = screen.getByTestId('forge-gis-applications');
+    const cards = gisSection.querySelectorAll('button.forge-card');
+    expect(cards).toHaveLength(1);
   });
 });
