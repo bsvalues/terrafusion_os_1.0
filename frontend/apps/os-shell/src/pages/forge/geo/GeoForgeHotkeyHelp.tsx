@@ -14,6 +14,7 @@ const SHORTCUTS = [
   { key: 'e', description: 'Export data · CSV for DOR, Excel, peer review' },
   { key: 'i', description: 'Sale influence analysis · LOO impact per sale on compliance' },
   { key: 'p', description: 'DOR pre-flight checklist · certification readiness' },
+  { key: 'k', description: 'Neighborhood clustering · k-means compliance profile grouping' },
   { key: '?', description: 'Toggle this panel' },
 ];
 

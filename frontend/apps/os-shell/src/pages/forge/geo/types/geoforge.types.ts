@@ -160,7 +160,8 @@ export type RightDrawerPanel =
   | 'scorecard'
   | 'export'
   | 'sale-influence'
-  | 'cert-checklist';
+  | 'cert-checklist'
+  | 'clustering';
 
 export interface CompSale {
   parcelId: string;
