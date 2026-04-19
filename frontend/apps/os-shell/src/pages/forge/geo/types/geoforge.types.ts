@@ -164,7 +164,8 @@ export type RightDrawerPanel =
   | 'clustering'
   | 'ratio-cliffs'
   | 'time-adjust'
-  | 'qual-decisions';
+  | 'qual-decisions'
+  | 'comp-grid';
 
 export interface CompSale {
   parcelId: string;

@@ -18,6 +18,7 @@ const SHORTCUTS = [
   { key: 'b', description: 'Ratio cliff detection · boundary discontinuity analysis' },
   { key: 't', description: 'Time adjustment calculator · monthly market rate + adjusted ratios' },
   { key: 'u', description: 'Qualification decision log · undocumented exclusion audit' },
+  { key: 'j', description: 'Comp adjustment grid · sales comparison appraisal worksheet' },
   { key: '?', description: 'Toggle this panel' },
 ];
 
