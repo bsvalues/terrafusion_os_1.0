@@ -1,12 +1,16 @@
 const SHORTCUTS = [
   { key: 'Esc', description: 'Close panel' },
   { key: 'r', description: 'Equity ranking — all neighborhoods by worst deviation' },
-  { key: 'c', description: 'County health dashboard' },
+  { key: 'c', description: 'County health dashboard · EQI score' },
   { key: 's', description: 'IAAO stratification analysis' },
   { key: 'o', description: 'Outlier review queue' },
   { key: 'w', description: 'Adjustment workbench' },
   { key: 'y', description: 'DOR certification summary (WAC 458-53A)' },
   { key: 'q', description: 'Certification remedy queue — prioritized fix list' },
+  { key: 'l', description: 'Levy parity · tax burden distribution by neighborhood' },
+  { key: 'm', description: 'DOR narrative memo generator — one-click draft' },
+  { key: 'v', description: 'Value strata equity · PRB decile analysis' },
+  { key: 'g', description: 'Neighborhood scorecard · grade card for selected neighborhood' },
   { key: '?', description: 'Toggle this panel' },
 ];
 

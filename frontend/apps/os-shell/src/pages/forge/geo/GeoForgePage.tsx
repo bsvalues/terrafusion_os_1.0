@@ -21,6 +21,7 @@ import { RemedyQueuePanel } from './panels/RemedyQueuePanel';
 import { LevyParityPanel } from './panels/LevyParityPanel';
 import { DorMemoPanel } from './panels/DorMemoPanel';
 import { ValueStrataPanel } from './panels/ValueStrataPanel';
+import { NeighborhoodScorecardPanel } from './panels/NeighborhoodScorecardPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
 import { GeoForgeStatusTicker } from './GeoForgeStatusTicker';
@@ -44,6 +45,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   'levy-parity': 'Levy Parity · Tax Burden Distribution',
   'dor-memo': 'DOR Narrative Memo · WAC 458-53A Draft',
   'value-strata': 'Value Strata Equity · PRB Decile Analysis',
+  'scorecard': 'Neighborhood Scorecard · WAC 458-53A',
 };
 
 export function GeoForgePage() {
@@ -85,6 +87,7 @@ export function GeoForgePage() {
         case 'l': openDrawer('levy-parity'); break;
         case 'm': openDrawer('dor-memo'); break;
         case 'v': openDrawer('value-strata'); break;
+        case 'g': openDrawer('scorecard'); break;
       }
     }
     window.addEventListener('keydown', onKey);
@@ -199,6 +202,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'levy-parity' && <LevyParityPanel />}
               {rightDrawerPanel === 'dor-memo' && <DorMemoPanel />}
               {rightDrawerPanel === 'value-strata' && <ValueStrataPanel />}
+              {rightDrawerPanel === 'scorecard' && <NeighborhoodScorecardPanel />}
             </div>
           </>
         )}
