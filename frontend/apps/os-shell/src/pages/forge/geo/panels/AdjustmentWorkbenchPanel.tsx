@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type {
@@ -39,6 +40,7 @@ interface Props {
 
 export function AdjustmentWorkbenchPanel({ taxYear, selectedNeighborhoodCode }: Props) {
   const qc = useQueryClient();
+  const { setSimulationDeltaMap } = useGeoForgeStore();
   const [activeSetId, setActiveSetId] = useState<string | null>(null);
   const [showNewProposal, setShowNewProposal] = useState(false);
 
@@ -49,6 +51,20 @@ export function AdjustmentWorkbenchPanel({ taxYear, selectedNeighborhoodCode }: 
   });
 
   const activeSet = sets.find(s => s.id === activeSetId) ?? sets[0] ?? null;
+
+  // Push simulation delta map to Mapbox whenever simulated proposals change
+  useEffect(() => {
+    if (!activeSet) { setSimulationDeltaMap(null); return; }
+    const simulated = activeSet.proposals.filter(
+      p => p.scope === 'Neighborhood' && p.targetNeighborhoodCode && p.simulatedParcelsAffected != null
+    );
+    if (simulated.length === 0) { setSimulationDeltaMap(null); return; }
+    const deltaMap = Object.fromEntries(
+      simulated.map(p => [p.targetNeighborhoodCode!, p.magnitude])
+    );
+    setSimulationDeltaMap(deltaMap);
+    return () => setSimulationDeltaMap(null);
+  }, [activeSet, setSimulationDeltaMap]);
 
   const { data: recommend } = useQuery<RecommendResult>({
     queryKey: ['adjustment-recommend', taxYear, selectedNeighborhoodCode],

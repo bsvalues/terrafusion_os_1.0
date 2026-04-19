@@ -13,6 +13,7 @@ const LAYER_TOGGLES: { layer: MapLayer; label: string }[] = [
   { layer: 'choropleth', label: 'Nbhd' },
   { layer: 'sale-scatter', label: 'Sales' },
   { layer: 'kde', label: 'KDE' },
+  { layer: 'gwr', label: 'GWR' },
   { layer: 'ai-cluster', label: 'Clusters' },
 ];
 

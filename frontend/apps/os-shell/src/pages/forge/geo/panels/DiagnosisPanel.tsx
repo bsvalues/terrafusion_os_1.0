@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiFetchJson } from '@/lib/apiBase';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
+import { Button } from '@/components/ui/button';
 import type { DiagnosisResult } from '../types/geoforge.types';
 
 const SEV_STYLES: Record<string, { border: string; badge: string; dot: string }> = {
@@ -30,7 +31,7 @@ const CAT_LABELS: Record<string, string> = {
 };
 
 export function DiagnosisPanel() {
-  const { selectedNeighborhoodCode, filter, setDiagnosis, diagnosis } = useGeoForgeStore();
+  const { selectedNeighborhoodCode, filter, setDiagnosis, diagnosis, openDrawer } = useGeoForgeStore();
 
   const { data, isLoading } = useQuery<DiagnosisResult>({
     queryKey: ['geoforge-diagnosis', filter.taxYear, selectedNeighborhoodCode],
@@ -155,6 +156,17 @@ export function DiagnosisPanel() {
           </div>
         </div>
       )}
+
+      {/* Workbench CTA */}
+      <div className="sticky bottom-0 -mx-4 -mb-4 px-4 py-3 bg-slate-950/95 backdrop-blur border-t border-slate-800">
+        <Button
+          className="w-full h-8 text-xs bg-amber-700/30 hover:bg-amber-700/50 text-amber-200 border border-amber-700/50"
+          variant="outline"
+          onClick={() => openDrawer('workbench')}
+        >
+          Open Adjustment Workbench →
+        </Button>
+      </div>
     </div>
   );
 }

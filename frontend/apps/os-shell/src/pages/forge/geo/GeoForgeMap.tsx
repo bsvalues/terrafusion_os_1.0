@@ -17,7 +17,7 @@ interface Props {
 export function GeoForgeMap({ onNeighborhoodClick }: Props) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { neighborhoodStats, salePoints, activeLayers } = useGeoForgeStore();
+  const { neighborhoodStats, salePoints, activeLayers, gwrSurface, simulationDeltaMap } = useGeoForgeStore();
 
   // Initialize map once
   useEffect(() => {
@@ -37,9 +37,11 @@ export function GeoForgeMap({ onNeighborhoodClick }: Props) {
 
     map.on('load', () => {
       addNeighborhoodLayer(map);
+      addSimulationOverlayLayer(map);
       addSaleScatterLayer(map);
       addKdeLayer(map);
       addAiClusterLayer(map);
+      addGwrLayer(map);
 
       map.on('click', 'neighborhood-fill', (e) => {
         const code = e.features?.[0]?.properties?.neighborhoodCode as string | undefined;
@@ -61,7 +63,7 @@ export function GeoForgeMap({ onNeighborhoodClick }: Props) {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Update neighborhood choropleth data
+  // Update neighborhood choropleth + simulation overlay data
   useEffect(() => {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
@@ -70,25 +72,30 @@ export function GeoForgeMap({ onNeighborhoodClick }: Props) {
       type: 'FeatureCollection',
       features: neighborhoodStats
         .filter((ns) => ns.centroidLat !== 0 && ns.centroidLng !== 0)
-        .map((ns) => ({
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [ns.centroidLng, ns.centroidLat],
-          },
-          properties: {
-            neighborhoodCode: ns.neighborhoodCode,
-            medianRatio: ns.stats.medianRatio,
-            cod: ns.stats.cod,
-            saleCount: ns.saleCount,
-            color: medianRatioColor(ns.stats.medianRatio),
-          },
-        })),
+        .map((ns) => {
+          const delta = simulationDeltaMap?.[ns.neighborhoodCode] ?? null;
+          return {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [ns.centroidLng, ns.centroidLat],
+            },
+            properties: {
+              neighborhoodCode: ns.neighborhoodCode,
+              medianRatio: ns.stats.medianRatio,
+              cod: ns.stats.cod,
+              saleCount: ns.saleCount,
+              color: medianRatioColor(ns.stats.medianRatio),
+              simulationDelta: delta,
+              hasSimulation: delta !== null,
+            },
+          };
+        }),
     };
 
     const src = map.getSource('neighborhoods') as mapboxgl.GeoJSONSource | undefined;
     src?.setData(geojson);
-  }, [neighborhoodStats]);
+  }, [neighborhoodStats, simulationDeltaMap]);
 
   // Update sale scatter data
   useEffect(() => {
@@ -120,6 +127,30 @@ export function GeoForgeMap({ onNeighborhoodClick }: Props) {
     kdeSrc?.setData(geojson);
   }, [salePoints]);
 
+  // Update GWR heatmap data
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded() || !gwrSurface) return;
+
+    const geojson: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: gwrSurface.cells
+        .filter((c) => c.localMedianRatio > 0)
+        .map((c) => ({
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [c.lng, c.lat] },
+          properties: {
+            localMedianRatio: c.localMedianRatio,
+            localCod: c.localCod,
+            deviation: Math.abs(c.localMedianRatio - 1),
+          },
+        })),
+    };
+
+    const src = map.getSource('gwr-cells') as mapboxgl.GeoJSONSource | undefined;
+    src?.setData(geojson);
+  }, [gwrSurface]);
+
   // Toggle layer visibility
   useEffect(() => {
     const map = mapRef.current;
@@ -130,6 +161,7 @@ export function GeoForgeMap({ onNeighborhoodClick }: Props) {
       'sale-scatter': ['sale-circles', 'sale-outlier-ring'],
       kde: ['kde-heat'],
       'ai-cluster': ['ai-cluster-circles'],
+      gwr: ['gwr-heat'],
     };
 
     for (const [key, layers] of Object.entries(layerMap) as [MapLayer, string[]][]) {
@@ -282,4 +314,81 @@ function addAiClusterLayer(map: mapboxgl.Map) {
       'circle-stroke-opacity': 0.7,
     },
   });
+}
+
+function addSimulationOverlayLayer(map: mapboxgl.Map) {
+  // Reuses the 'neighborhoods' source — draws amber rings on features with hasSimulation=true
+  map.addLayer({
+    id: 'simulation-ring',
+    type: 'circle',
+    source: 'neighborhoods',
+    filter: ['==', ['get', 'hasSimulation'], true],
+    paint: {
+      'circle-color': 'transparent',
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 22, 14, 56],
+      'circle-stroke-width': 3,
+      'circle-stroke-color': '#f59e0b',
+      'circle-stroke-opacity': 0.95,
+      'circle-opacity': 0,
+    },
+  });
+
+  // Inner amber tint: positive delta = warm green, negative = warm red
+  map.addLayer({
+    id: 'simulation-fill',
+    type: 'circle',
+    source: 'neighborhoods',
+    filter: ['==', ['get', 'hasSimulation'], true],
+    paint: {
+      'circle-color': [
+        'case',
+        ['>', ['get', 'simulationDelta'], 0], '#f59e0b',
+        '#ef4444',
+      ],
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 18, 14, 50],
+      'circle-opacity': 0.18,
+      'circle-stroke-width': 0,
+    },
+  });
+}
+
+function addGwrLayer(map: mapboxgl.Map) {
+  map.addSource('gwr-cells', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  });
+
+  map.addLayer(
+    {
+      id: 'gwr-heat',
+      type: 'heatmap',
+      source: 'gwr-cells',
+      maxzoom: 14,
+      layout: { visibility: 'none' },
+      paint: {
+        // weight by deviation from 1.0 — neighborhoods far from parity glow brighter
+        'heatmap-weight': [
+          'interpolate', ['linear'], ['get', 'deviation'],
+          0, 0,
+          0.05, 0.3,
+          0.15, 0.7,
+          0.30, 1,
+        ],
+        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 8, 1, 14, 4],
+        'heatmap-color': [
+          'interpolate', ['linear'], ['heatmap-density'],
+          0, 'rgba(0,0,0,0)',
+          0.1, '#1d4ed8',
+          0.3, '#06b6d4',
+          0.5, '#22c55e',
+          0.7, '#eab308',
+          0.9, '#f97316',
+          1, '#dc2626',
+        ],
+        'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 8, 35, 14, 65],
+        'heatmap-opacity': 0.70,
+      },
+    },
+    'neighborhood-fill'
+  );
 }

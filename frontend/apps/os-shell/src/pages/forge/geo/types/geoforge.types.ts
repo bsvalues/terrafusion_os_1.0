@@ -182,6 +182,8 @@ export interface GeoForgeState {
   salePoints: SalePoint[];
   diagnosis: DiagnosisResult | null;
   gwrSurface: GwrSurface | null;
+  /** neighborhoodCode → % adjustment magnitude — drives amber simulation overlay on map */
+  simulationDeltaMap: Record<string, number> | null;
   loadingStats: boolean;
   loadingSales: boolean;
   loadingDiagnosis: boolean;
@@ -195,6 +197,7 @@ export interface GeoForgeState {
   setSalePoints: (sales: SalePoint[]) => void;
   setDiagnosis: (d: DiagnosisResult | null) => void;
   setGwrSurface: (gwr: GwrSurface | null) => void;
+  setSimulationDeltaMap: (m: Record<string, number> | null) => void;
   setLoadingStats: (v: boolean) => void;
   setLoadingSales: (v: boolean) => void;
   setLoadingDiagnosis: (v: boolean) => void;

@@ -11,7 +11,7 @@ import { DiagnosisPanel } from './panels/DiagnosisPanel';
 import { YearTrendPanel } from './panels/YearTrendPanel';
 import { AdjustmentWorkbenchPanel } from './panels/AdjustmentWorkbenchPanel';
 import { Button } from '@/components/ui/button';
-import type { NeighborhoodStat, SalePoint, RightDrawerPanel } from './types/geoforge.types';
+import type { NeighborhoodStat, SalePoint, RightDrawerPanel, GwrSurface } from './types/geoforge.types';
 
 const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   none: '',
@@ -31,8 +31,11 @@ export function GeoForgePage() {
     setSalePoints,
     setLoadingStats,
     setLoadingSales,
+    setGwrSurface,
     selectNeighborhood,
     selectedNeighborhoodCode,
+    activeLayers,
+    simulationDeltaMap,
   } = useGeoForgeStore();
 
   const { data: statsData, isLoading: statsLoading } = useQuery<NeighborhoodStat[]>({
@@ -64,10 +67,21 @@ export function GeoForgePage() {
     staleTime: 1000 * 60 * 10,
   });
 
+  const gwrEnabled = activeLayers.has('gwr');
+
+  const { data: gwrData } = useQuery<GwrSurface>({
+    queryKey: ['geoforge-gwr', filter.taxYear],
+    queryFn: () =>
+      apiFetchJson<GwrSurface>(`/api/geoforge/ratio-study/gwr?taxYear=${filter.taxYear}`),
+    enabled: gwrEnabled,
+    staleTime: 1000 * 60 * 30,
+  });
+
   useEffect(() => { setLoadingStats(statsLoading); }, [statsLoading, setLoadingStats]);
   useEffect(() => { setLoadingSales(salesLoading); }, [salesLoading, setLoadingSales]);
   useEffect(() => { if (statsData) setNeighborhoodStats(statsData); }, [statsData, setNeighborhoodStats]);
   useEffect(() => { if (salesData) setSalePoints(salesData); }, [salesData, setSalePoints]);
+  useEffect(() => { if (gwrData) setGwrSurface(gwrData); }, [gwrData, setGwrSurface]);
 
   const drawerOpen = rightDrawerPanel !== 'none';
 
@@ -122,6 +136,14 @@ export function GeoForgePage() {
           </>
         )}
       </div>
+
+      {/* Simulation mode badge — floats below command bar on the left */}
+      {simulationDeltaMap && Object.keys(simulationDeltaMap).length > 0 && (
+        <div className="absolute top-[37px] left-2 z-30 flex items-center gap-1.5 bg-amber-950/90 backdrop-blur rounded px-2.5 py-1 text-xs text-amber-200 border border-amber-700/70">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+          SIMULATION · {Object.keys(simulationDeltaMap).length} nbhd{Object.keys(simulationDeltaMap).length !== 1 ? 's' : ''}
+        </div>
+      )}
 
       {/* Loading indicator — bottom left, floats over map */}
       {(statsLoading || salesLoading) && (
