@@ -541,6 +541,76 @@ public class GeoForgeController : ControllerBase
         return new JsonResult(geojson);
     }
 
+    // ── 5b. CSV export of neighborhood ratio study ─────────────────────────────
+    [HttpGet("ratio-study/csv")]
+    public async Task<IActionResult> ExportCsv(
+        [FromQuery] int taxYear,
+        CancellationToken ct = default)
+    {
+        if (taxYear < 2000) taxYear = DateTime.UtcNow.Year;
+
+        var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var sales = await _db.ComparableSales
+            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.SalesYear == taxYear
+                     || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd))
+            .Where(s => s.QualificationDecision == "qualified"
+                     || (s.QualificationDecision == null
+                         && s.QualificationRecommendation == "qualified"))
+            .Select(s => new
+            {
+                s.ParcelId,
+                s.Neighborhood,
+                SalePrice = s.AdjustedSalePrice ?? s.SalePrice,
+            })
+            .Where(s => s.SalePrice > 10_000m)
+            .ToListAsync(ct);
+
+        var parcelIds = sales.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
+        var assessedMap = await GetAssessedValueMapAsync(parcelIds!, taxYear, ct);
+        var hoodMap     = await GetNeighborhoodMapAsync(parcelIds!, taxYear, ct);
+
+        var rows = sales
+            .Where(s => s.ParcelId != null
+                     && assessedMap.TryGetValue(s.ParcelId!, out var av) && av > 0
+                     && s.SalePrice > 0)
+            .Select(s =>
+            {
+                var hood = s.ParcelId != null && hoodMap.TryGetValue(s.ParcelId!, out var hc)
+                    ? hc : s.Neighborhood ?? "UNKNOWN";
+                return new { Hood = hood, Ratio = assessedMap[s.ParcelId!] / s.SalePrice, Av = assessedMap[s.ParcelId!] };
+            })
+            .GroupBy(r => r.Hood)
+            .Select(g =>
+            {
+                var ratios = g.Select(r => r.Ratio).ToList();
+                var avs    = g.Select(r => r.Av).ToList();
+                var med    = TrendStats.Median(ratios);
+                return (
+                    hood:        g.Key,
+                    n:           ratios.Count,
+                    medianRatio: Math.Round((double)med, 4),
+                    cod:         Math.Round((double)TrendStats.ComputeCod(ratios), 2),
+                    prd:         Math.Round((double)TrendStats.ComputePrd(ratios, avs), 4),
+                    prb:         Math.Round((double)TrendStats.ComputePrb(ratios, avs), 4),
+                    vei:         Math.Round((double)TrendStats.ComputeVei(ratios), 4),
+                    deviation:   Math.Round(Math.Abs((double)med - 1.0), 4)
+                );
+            })
+            .OrderByDescending(r => r.deviation)
+            .ToList();
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("NeighborhoodCode,SaleCount,MedianRatio,COD,PRD,PRB,VEI,DeviationFrom1");
+        foreach (var r in rows)
+            sb.AppendLine($"{r.hood},{r.n},{r.medianRatio},{r.cod},{r.prd},{r.prb},{r.vei},{r.deviation}");
+
+        Response.Headers["Content-Disposition"] = $"attachment; filename=\"geoforge-ratio-study-{taxYear}.csv\"";
+        return Content(sb.ToString(), "text/csv");
+    }
+
     // ── 6. Monthly ratio trend (time-adjustment evidence) ────────────────────
     [HttpGet("ratio-study/monthly-trend")]
     public async Task<IActionResult> GetMonthlyTrend(

@@ -15,6 +15,7 @@ import { CertificationPanel } from './panels/CertificationPanel';
 import { OutlierReviewPanel } from './panels/OutlierReviewPanel';
 import { StratificationPanel } from './panels/StratificationPanel';
 import { CompsPanel } from './panels/CompsPanel';
+import { NeighborhoodRankingPanel } from './panels/NeighborhoodRankingPanel';
 import { Button } from '@/components/ui/button';
 import type { NeighborhoodStat, SalePoint, RightDrawerPanel, GwrSurface } from './types/geoforge.types';
 
@@ -29,6 +30,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   'outlier-review': 'Outlier Review',
   stratification: 'IAAO Stratification',
   comps: 'Auto-Comparables',
+  ranking: 'Equity Ranking',
 };
 
 export function GeoForgePage() {
@@ -147,6 +149,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'outlier-review' && <OutlierReviewPanel />}
               {rightDrawerPanel === 'stratification' && <StratificationPanel />}
               {rightDrawerPanel === 'comps' && <CompsPanel />}
+              {rightDrawerPanel === 'ranking' && <NeighborhoodRankingPanel />}
             </div>
           </>
         )}

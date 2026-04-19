@@ -162,12 +162,27 @@ export function CertificationPanel() {
         </div>
       )}
 
-      {/* Generated timestamp */}
+      {/* Generated timestamp + print action */}
       <div className="mt-auto pt-2 border-t border-slate-800">
-        <p className="text-[9px] text-slate-600">{data.certificationNote}</p>
-        <p className="text-[9px] text-slate-700 mt-1">
-          Generated {new Date(data.generatedAt).toLocaleString()}
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[9px] text-slate-600">{data.certificationNote}</p>
+            <p className="text-[9px] text-slate-700 mt-1">
+              Generated {new Date(data.generatedAt).toLocaleString()}
+            </p>
+          </div>
+          <button
+            onClick={() =>
+              window.open(
+                `/api/geoforge/certification/print?taxYear=${filter.taxYear}`,
+                '_blank',
+              )
+            }
+            className="text-[10px] px-2.5 py-1 rounded bg-sky-900/40 text-sky-300 hover:bg-sky-800/60 border border-sky-800/40 shrink-0"
+          >
+            Print DOR Report ↗
+          </button>
+        </div>
       </div>
     </div>
   );

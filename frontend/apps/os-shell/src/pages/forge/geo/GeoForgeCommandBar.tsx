@@ -289,6 +289,28 @@ export function GeoForgeCommandBar() {
         </Button>
         <Button
           size="sm"
+          variant={rightDrawerPanel === 'ranking' ? 'default' : 'outline'}
+          className={`h-7 text-[11px] px-2 ${
+            rightDrawerPanel === 'ranking'
+              ? 'bg-fuchsia-800/40 text-fuchsia-300 border-fuchsia-700/60 hover:bg-fuchsia-800/60'
+              : 'text-slate-400 border-slate-700 hover:text-white'
+          }`}
+          onClick={() => openDrawer('ranking')}
+          title="Equity ranking — all neighborhoods sorted by worst deviation"
+        >
+          Rank
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-7 text-[11px] px-2 text-slate-400 border-slate-700 hover:text-white"
+          onClick={() => window.open(`/api/geoforge/ratio-study/csv?taxYear=${filter.taxYear}`, '_blank')}
+          title="Download ratio study as CSV"
+        >
+          CSV ↗
+        </Button>
+        <Button
+          size="sm"
           variant="outline"
           className="h-7 text-[11px] px-2 text-slate-400 border-slate-700 hover:text-white"
           onClick={() => window.open(`/api/geoforge/ratio-study/export?taxYear=${filter.taxYear}`, '_blank')}

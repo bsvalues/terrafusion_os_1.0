@@ -114,7 +114,8 @@ export type RightDrawerPanel =
   | 'certification'
   | 'outlier-review'
   | 'stratification'
-  | 'comps';
+  | 'comps'
+  | 'ranking';
 
 export interface CompSale {
   parcelId: string;

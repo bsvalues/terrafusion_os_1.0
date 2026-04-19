@@ -44,6 +44,7 @@ export function ParcelBloomCard() {
   const {
     bloomParcelId, setBloomParcelId, filter, openDrawer,
     setBloomLatlng, setSelectedRadiusMi, selectedRadiusMi, salePoints,
+    neighborhoodStats,
   } = useGeoForgeStore();
 
   const { data, isLoading } = useQuery<BloomParcel>({
@@ -260,6 +261,27 @@ export function ParcelBloomCard() {
                 <span className="text-[10px] text-slate-300 font-mono">{value}</span>
               </div>
             ))}
+            {/* Appeal risk — computed from latest sale vs neighborhood median */}
+            {(() => {
+              const latestQualified = data.salesHistory
+                .filter(s => s.qualificationDecision === 'qualified' && s.ratio != null)
+                .sort((a, b) => b.saleDate.localeCompare(a.saleDate))[0];
+              if (!latestQualified?.ratio) return null;
+              const nbhd = neighborhoodStats.find(n => n.neighborhoodCode === data.neighborhood);
+              if (!nbhd) return null;
+              const delta = latestQualified.ratio - nbhd.stats.medianRatio;
+              const riskLabel = delta > 0.10 ? 'HIGH' : delta > 0.05 ? 'MOD' : 'LOW';
+              const riskColor = delta > 0.10 ? 'text-red-400' : delta > 0.05 ? 'text-amber-300' : 'text-emerald-400';
+              return (
+                <div className="mt-2 pt-2 border-t border-slate-800">
+                  <span className="text-[8px] text-slate-600 uppercase">Appeal Risk </span>
+                  <span className={`text-[10px] font-bold font-mono ${riskColor}`}>{riskLabel}</span>
+                  <div className="text-[8px] text-slate-700 font-mono">
+                    {delta >= 0 ? '+' : ''}{delta.toFixed(3)} vs nbhd
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
