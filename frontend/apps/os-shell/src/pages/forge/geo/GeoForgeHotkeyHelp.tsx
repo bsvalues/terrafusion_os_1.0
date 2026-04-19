@@ -23,6 +23,7 @@ const SHORTCUTS = [
   { key: 'n', description: "Moran's I decomposition · LISA scatterplot + spatial outlier ranking" },
   { key: 'h', description: 'Weighted mean analysis · AV-weighted mean vs median, vertical equity' },
   { key: 'z', description: 'Monthly ratio timeline · month-by-month median trend + time adj signal' },
+  { key: 'a', description: 'Dispersion statistics · COD/CV/SD/MAD/AAD uniformity deep dive' },
   { key: '?', description: 'Toggle this panel' },
 ];
 

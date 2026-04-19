@@ -34,6 +34,7 @@ import { AssessmentRollPanel } from './panels/AssessmentRollPanel';
 import { MoranPanel } from './panels/MoranPanel';
 import { WeightedMeanPanel } from './panels/WeightedMeanPanel';
 import { MonthlyRatioPanel } from './panels/MonthlyRatioPanel';
+import { DispersionPanel } from './panels/DispersionPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
 import { GeoForgeStatusTicker } from './GeoForgeStatusTicker';
@@ -70,6 +71,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   'moran': "Moran's I Decomposition · LISA Scatterplot & Spatial Outliers",
   'weighted-mean': 'Weighted Mean Analysis · AV-Weighted vs Median Ratio Vertical Equity',
   'monthly-ratio': 'Monthly Ratio Timeline · Market Trend & Time Adjustment Signal',
+  'dispersion': 'Dispersion Statistics · COD / CV / SD / MAD / AAD Uniformity Analysis',
 };
 
 export function GeoForgePage() {
@@ -124,6 +126,7 @@ export function GeoForgePage() {
         case 'n': openDrawer('moran'); break;
         case 'h': openDrawer('weighted-mean'); break;
         case 'z': openDrawer('monthly-ratio'); break;
+        case 'a': openDrawer('dispersion'); break;
       }
     }
     window.addEventListener('keydown', onKey);
@@ -251,6 +254,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'moran' && <MoranPanel />}
               {rightDrawerPanel === 'weighted-mean' && <WeightedMeanPanel />}
               {rightDrawerPanel === 'monthly-ratio' && <MonthlyRatioPanel />}
+              {rightDrawerPanel === 'dispersion' && <DispersionPanel />}
             </div>
           </>
         )}

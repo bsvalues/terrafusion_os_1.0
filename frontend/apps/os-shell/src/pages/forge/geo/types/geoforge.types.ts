@@ -169,7 +169,8 @@ export type RightDrawerPanel =
   | 'roll-summary'
   | 'moran'
   | 'weighted-mean'
-  | 'monthly-ratio';
+  | 'monthly-ratio'
+  | 'dispersion';
 
 export interface CompSale {
   parcelId: string;
