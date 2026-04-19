@@ -26,6 +26,7 @@ export function GeoForgeMap({ onNeighborhoodClick }: Props) {
     gwrSurface,
     simulationDeltaMap,
     selectedNeighborhoodCode,
+    selectedMonth,
   } = useGeoForgeStore();
 
   // Initialize map once
@@ -234,6 +235,32 @@ export function GeoForgeMap({ onNeighborhoodClick }: Props) {
     const src = map.getSource('gwr-cells') as mapboxgl.GeoJSONSource | undefined;
     src?.setData(geojson);
   }, [gwrSurface]);
+
+  // Month filter — narrows sale-circles and outlier-ring to a single YYYY-MM
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded()) return;
+
+    const monthFilter = selectedMonth
+      ? ['==', ['slice', ['get', 'saleDate'], 0, 7], selectedMonth]
+      : true;
+
+    if (map.getLayer('sale-circles')) {
+      map.setFilter('sale-circles', [
+        'all',
+        ['!', ['has', 'point_count']],
+        monthFilter,
+      ] as mapboxgl.FilterSpecification);
+    }
+    if (map.getLayer('sale-outlier-ring')) {
+      map.setFilter('sale-outlier-ring', [
+        'all',
+        ['!', ['has', 'point_count']],
+        ['==', ['get', 'isOutlier'], true],
+        monthFilter,
+      ] as mapboxgl.FilterSpecification);
+    }
+  }, [selectedMonth]);
 
   // Toggle layer visibility
   useEffect(() => {

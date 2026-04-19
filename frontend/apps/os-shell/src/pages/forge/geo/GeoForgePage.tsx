@@ -10,6 +10,7 @@ import { SalesDrillDownPanel } from './panels/SalesDrillDownPanel';
 import { DiagnosisPanel } from './panels/DiagnosisPanel';
 import { YearTrendPanel } from './panels/YearTrendPanel';
 import { AdjustmentWorkbenchPanel } from './panels/AdjustmentWorkbenchPanel';
+import { CertificationPanel } from './panels/CertificationPanel';
 import { Button } from '@/components/ui/button';
 import type { NeighborhoodStat, SalePoint, RightDrawerPanel, GwrSurface } from './types/geoforge.types';
 
@@ -20,6 +21,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   diagnosis: 'AI Diagnosis',
   'year-trend': '5-Year Trend',
   workbench: 'Adjustment Workbench',
+  certification: 'DOR Certification · WAC 458-53A',
 };
 
 export function GeoForgePage() {
@@ -132,6 +134,7 @@ export function GeoForgePage() {
                   selectedNeighborhoodCode={selectedNeighborhoodCode}
                 />
               )}
+              {rightDrawerPanel === 'certification' && <CertificationPanel />}
             </div>
           </>
         )}

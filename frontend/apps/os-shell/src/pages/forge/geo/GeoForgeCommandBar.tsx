@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,8 +19,20 @@ const LAYER_TOGGLES: { layer: MapLayer; label: string }[] = [
 ];
 
 export function GeoForgeCommandBar() {
-  const { filter, setFilter, activeLayers, toggleLayer, openDrawer, rightDrawerPanel } = useGeoForgeStore();
+  const {
+    filter, setFilter, activeLayers, toggleLayer, openDrawer, rightDrawerPanel,
+    salePoints, selectedMonth, setSelectedMonth,
+  } = useGeoForgeStore();
   const years = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i);
+
+  const saleMonths = useMemo(() => {
+    const months = new Set<string>();
+    for (const sp of salePoints) {
+      const m = sp.saleDate?.slice(0, 7);
+      if (m) months.add(m);
+    }
+    return Array.from(months).sort().reverse();
+  }, [salePoints]);
 
   return (
     <div className="absolute top-0 left-0 right-[72px] z-10 flex items-center gap-2 px-3 py-2 bg-slate-950/90 backdrop-blur border-b border-slate-800">
@@ -61,7 +74,25 @@ export function GeoForgeCommandBar() {
         ))}
       </div>
 
-      <div className="ml-auto flex gap-1">
+      <div className="ml-auto flex items-center gap-1">
+        {/* Month filter — only shown when sale points are loaded */}
+        {saleMonths.length > 0 && (
+          <Select
+            value={selectedMonth ?? '__all__'}
+            onValueChange={(v) => setSelectedMonth(v === '__all__' ? null : v)}
+          >
+            <SelectTrigger className="w-[100px] h-7 text-xs bg-slate-900 border-slate-700 text-white">
+              <SelectValue placeholder="All months" />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-900 border-slate-700 max-h-48">
+              <SelectItem value="__all__" className="text-xs text-slate-400">All months</SelectItem>
+              {saleMonths.map((m) => (
+                <SelectItem key={m} value={m} className="text-xs text-white font-mono">{m}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
         <Button
           size="sm"
           variant={rightDrawerPanel === 'workbench' ? 'default' : 'outline'}
@@ -73,6 +104,18 @@ export function GeoForgeCommandBar() {
           onClick={() => openDrawer('workbench')}
         >
           Workbench
+        </Button>
+        <Button
+          size="sm"
+          variant={rightDrawerPanel === 'certification' ? 'default' : 'outline'}
+          className={`h-7 text-[11px] px-2 ${
+            rightDrawerPanel === 'certification'
+              ? 'bg-emerald-800/40 text-emerald-300 border-emerald-700/60 hover:bg-emerald-800/60'
+              : 'text-slate-400 border-slate-700 hover:text-white'
+          }`}
+          onClick={() => openDrawer('certification')}
+        >
+          Certify
         </Button>
         <Button
           size="sm"
