@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useQueries } from '@tanstack/react-query';
 import {
   ScatterChart,
   Scatter,
@@ -11,11 +12,13 @@ import {
   Line,
   ComposedChart,
 } from 'recharts';
+import { apiFetchJson } from '@/lib/apiBase';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { EquitySignatureRadar } from './EquitySignatureRadar';
 import { codBand, prdBand, prbBand } from '../utils/bentonMethodCalcs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import type { NeighborhoodStat } from '../types/geoforge.types';
 
 function olsLine(pts: { x: number; y: number }[]) {
   const n = pts.length;
@@ -30,6 +33,92 @@ function olsLine(pts: { x: number; y: number }[]) {
   for (const p of pts) { ssTot += (p.y - my) ** 2; ssRes += (p.y - (slope * p.x + intercept)) ** 2; }
   const r2 = ssTot > 0 ? Math.max(0, 1 - ssRes / ssTot) : 0;
   return { slope, intercept, r2 };
+}
+
+function NeighborhoodYearSparkline({ neighborhoodCode }: { neighborhoodCode: string }) {
+  const { filter } = useGeoForgeStore();
+  const currentYear = filter.taxYear;
+  const years = Array.from({ length: 5 }, (_, i) => currentYear - 4 + i);
+
+  const results = useQueries({
+    queries: years.map((yr) => ({
+      queryKey: ['geoforge-nbhd-stats', yr, 'all'],
+      queryFn: () => apiFetchJson<NeighborhoodStat[]>(
+        `/api/geoforge/ratio-study/neighborhood-stats?taxYear=${yr}`
+      ),
+      staleTime: 1000 * 60 * 10,
+    })),
+  });
+
+  const points = years
+    .map((yr, i) => {
+      const ns = results[i].data?.find((n) => n.neighborhoodCode === neighborhoodCode);
+      return { taxYear: yr, medianRatio: ns?.stats.medianRatio ?? null, saleCount: ns?.saleCount ?? 0 };
+    })
+    .filter((p): p is { taxYear: number; medianRatio: number; saleCount: number } => p.medianRatio !== null);
+
+  const isLoading = results.some((r) => r.isLoading);
+
+  if (isLoading && points.length === 0) {
+    return <div className="text-[8px] text-slate-600 animate-pulse text-center py-2">Loading 5-yr trend…</div>;
+  }
+  if (points.length < 2) return null;
+
+  const first = points[0].medianRatio;
+  const last = points[points.length - 1].medianRatio;
+  const delta = last - first;
+  // Rising ratio = assessments growing relative to market = potential over-assessment
+  const trendIcon = Math.abs(delta) < 0.02 ? '→' : delta > 0 ? '↑' : '↓';
+  const trendColor = Math.abs(delta) < 0.02 ? '#94a3b8' : delta > 0.05 ? '#f87171' : delta < -0.05 ? '#4ade80' : '#eab308';
+  const trendLabel = Math.abs(delta) < 0.02 ? 'Stable'
+    : delta > 0 ? `+${(delta * 100).toFixed(1)}pp rising`
+    : `${(delta * 100).toFixed(1)}pp falling`;
+
+  return (
+    <div className="bg-slate-900/60 border border-slate-700/60 rounded-md px-3 py-2">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-[8px] text-slate-500 uppercase tracking-wider">
+          {currentYear - 4}–{currentYear} Ratio Trend
+        </span>
+        <span className="text-[9px] font-mono" style={{ color: trendColor }}>
+          {trendIcon} {trendLabel}
+        </span>
+      </div>
+      <ResponsiveContainer width="100%" height={70}>
+        <ComposedChart data={points} margin={{ top: 2, right: 4, bottom: 0, left: -22 }}>
+          <XAxis dataKey="taxYear" tick={{ fontSize: 7, fill: '#64748b' }} />
+          <YAxis
+            domain={[0.80, 1.20]}
+            tick={{ fontSize: 7, fill: '#64748b' }}
+            tickFormatter={(v: number) => v.toFixed(2)}
+          />
+          <Tooltip
+            contentStyle={{ background: '#0f172a', border: '1px solid #334155', fontSize: 9, borderRadius: 4 }}
+            formatter={(v: number, name: string) => [v.toFixed(3), name === 'medianRatio' ? 'Median Ratio' : name]}
+            labelFormatter={(v: number) => {
+              const pt = points.find((p) => p.taxYear === v);
+              return `${v}${pt ? ` · n=${pt.saleCount}` : ''}`;
+            }}
+          />
+          <ReferenceArea y1={0.95} y2={1.05} fill="#22c55e" fillOpacity={0.08} />
+          <ReferenceArea y1={0.90} y2={0.95} fill="#eab308" fillOpacity={0.04} />
+          <ReferenceArea y1={1.05} y2={1.10} fill="#eab308" fillOpacity={0.04} />
+          <ReferenceLine y={1.0} stroke="#334155" strokeDasharray="3 3" />
+          <Line
+            type="monotone"
+            dataKey="medianRatio"
+            stroke="#00FFFF"
+            strokeWidth={2}
+            dot={{ fill: '#00FFFF', r: 2.5 }}
+            connectNulls
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
+      <p className="text-[7px] text-slate-700 mt-0.5 text-right">
+        WAC 458-53A · IAAO parity band 0.95–1.05
+      </p>
+    </div>
+  );
 }
 
 function RegressivityScatter({ neighborhoodCode }: { neighborhoodCode: string }) {
@@ -596,6 +685,8 @@ export function NeighborhoodDetailPanel() {
       </div>
 
       <EquityNarrative ns={ns} />
+
+      <NeighborhoodYearSparkline neighborhoodCode={ns.neighborhoodCode} />
 
       <EquitySignatureRadar stats={stats} label="Equity Signature" />
 
