@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import {
   ScatterChart,
@@ -16,6 +16,7 @@ import { apiFetchJson } from '@/lib/apiBase';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { EquitySignatureRadar } from './EquitySignatureRadar';
 import { codBand, prdBand, prbBand } from '../utils/bentonMethodCalcs';
+import { bootstrapMedianCI } from '../utils/bootstrap';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { NeighborhoodStat } from '../types/geoforge.types';
@@ -227,7 +228,16 @@ function RegressivityScatter({ neighborhoodCode }: { neighborhoodCode: string })
 
 function EquityNarrative({ ns }: { ns: import('../types/geoforge.types').NeighborhoodStat }) {
   const { stats, neighborhoodCode, saleCount } = ns;
-  const { medianRatio, cod, prd, prb } = stats;
+  const { medianRatio, cod, prd } = stats;
+  const { salePoints } = useGeoForgeStore();
+
+  // Bootstrap 95% CI on median ratio using actual sale ratios for this neighborhood
+  const ci = useMemo(() => {
+    const ratios = salePoints
+      .filter((s) => s.neighborhoodCode === neighborhoodCode && !s.isOutlier && s.ratio > 0)
+      .map((s) => s.ratio);
+    return bootstrapMedianCI(ratios);
+  }, [salePoints, neighborhoodCode]);
 
   const ratioStatus = medianRatio >= 0.95 && medianRatio <= 1.05 ? 'within IAAO parity (0.95–1.05)'
     : medianRatio > 1.05 ? `above parity at ${medianRatio.toFixed(3)} — properties appear over-assessed`
@@ -247,9 +257,21 @@ function EquityNarrative({ ns }: { ns: import('../types/geoforge.types').Neighbo
     : saleCount < 10 ? ' Sample size is small; conclusions may not be statistically reliable.'
     : '';
 
+  const ciColor = ci
+    ? ci.definitelyNonCompliant ? '#ef4444'
+    : ci.uncertain ? '#fbbf24'
+    : '#4ade80'
+    : null;
+
+  const ciLabel = ci
+    ? ci.definitelyNonCompliant ? 'Definitely non-compliant'
+    : ci.uncertain ? 'Uncertain — straddles IAAO boundary'
+    : 'Statistically compliant'
+    : null;
+
   return (
-    <div className="bg-slate-900/60 border border-slate-700/60 rounded-md px-3 py-2.5">
-      <h4 className="text-[8px] text-slate-500 uppercase tracking-wider mb-1.5">Equity Assessment</h4>
+    <div className="bg-slate-900/60 border border-slate-700/60 rounded-md px-3 py-2.5 space-y-2">
+      <h4 className="text-[8px] text-slate-500 uppercase tracking-wider">Equity Assessment</h4>
       <p className="text-[10px] text-slate-300 leading-relaxed">
         Median ratio is <span className={
           medianRatio >= 0.95 && medianRatio <= 1.05 ? 'text-emerald-400 font-semibold' :
@@ -263,6 +285,52 @@ function EquityNarrative({ ns }: { ns: import('../types/geoforge.types').Neighbo
         }>{verticalStatus}</span>.
         {sampleNote && <span className="text-slate-500">{sampleNote}</span>}
       </p>
+
+      {ci && (
+        <div className="bg-slate-800/50 rounded px-2 py-1.5">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[9px] text-slate-500 uppercase tracking-wider">
+              Bootstrap 95% CI · n={ci.n}
+            </span>
+            <span className="text-[9px] font-semibold" style={{ color: ciColor ?? undefined }}>
+              {ciLabel}
+            </span>
+          </div>
+          {/* Visual CI bar */}
+          <div className="relative h-3 bg-slate-700 rounded-full overflow-hidden">
+            {/* IAAO compliant band 0.90–1.10 mapped to 0.70–1.30 range */}
+            {(() => {
+              const rMin = 0.70, rMax = 1.30, span = rMax - rMin;
+              const toX = (v: number) => `${Math.max(0, Math.min(100, ((v - rMin) / span) * 100))}%`;
+              const loX = toX(ci.lo);
+              const hiX = toX(ci.hi);
+              const midX = toX(ci.median);
+              const ciW = `${Math.max(0, Math.min(100, ((ci.hi - ci.lo) / span) * 100))}%`;
+              return (
+                <>
+                  {/* IAAO band */}
+                  <div className="absolute h-full bg-emerald-900/40" style={{ left: toX(0.90), width: `${((1.10 - 0.90) / span) * 100}%` }} />
+                  {/* CI span */}
+                  <div
+                    className="absolute h-full opacity-60"
+                    style={{ left: loX, width: ciW, backgroundColor: ciColor ?? '#64748b' }}
+                  />
+                  {/* Median tick */}
+                  <div className="absolute top-0 h-full w-px bg-white/80" style={{ left: midX }} />
+                </>
+              );
+            })()}
+          </div>
+          <div className="flex justify-between text-[8px] font-mono text-slate-400 mt-0.5">
+            <span>{ci.lo.toFixed(3)}</span>
+            <span className="text-white/60">{ci.median.toFixed(3)}</span>
+            <span>{ci.hi.toFixed(3)}</span>
+          </div>
+          <div className="text-[8px] text-slate-600 mt-0.5">
+            Green band = IAAO compliant range (0.90–1.10) · 599 iterations
+          </div>
+        </div>
+      )}
     </div>
   );
 }
