@@ -166,7 +166,8 @@ export type RightDrawerPanel =
   | 'time-adjust'
   | 'qual-decisions'
   | 'comp-grid'
-  | 'roll-summary';
+  | 'roll-summary'
+  | 'moran';
 
 export interface CompSale {
   parcelId: string;

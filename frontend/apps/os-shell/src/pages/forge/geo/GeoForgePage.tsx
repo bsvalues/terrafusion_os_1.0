@@ -31,6 +31,7 @@ import { TimeAdjustPanel } from './panels/TimeAdjustPanel';
 import { QualDecisionPanel } from './panels/QualDecisionPanel';
 import { CompAdjGridPanel } from './panels/CompAdjGridPanel';
 import { AssessmentRollPanel } from './panels/AssessmentRollPanel';
+import { MoranPanel } from './panels/MoranPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
 import { GeoForgeStatusTicker } from './GeoForgeStatusTicker';
@@ -64,6 +65,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   'qual-decisions': 'Qualification Decision Log · Exclusion Documentation Audit',
   'comp-grid': 'Comp Adjustment Grid · Sales Comparison Appraisal Worksheet',
   'roll-summary': 'Assessment Roll Summary · County-Wide Equity Executive Report',
+  'moran': "Moran's I Decomposition · LISA Scatterplot & Spatial Outliers",
 };
 
 export function GeoForgePage() {
@@ -115,6 +117,7 @@ export function GeoForgePage() {
         case 'u': openDrawer('qual-decisions'); break;
         case 'j': openDrawer('comp-grid'); break;
         case 'x': openDrawer('roll-summary'); break;
+        case 'n': openDrawer('moran'); break;
       }
     }
     window.addEventListener('keydown', onKey);
@@ -239,6 +242,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'qual-decisions' && <QualDecisionPanel />}
               {rightDrawerPanel === 'comp-grid' && <CompAdjGridPanel />}
               {rightDrawerPanel === 'roll-summary' && <AssessmentRollPanel />}
+              {rightDrawerPanel === 'moran' && <MoranPanel />}
             </div>
           </>
         )}
