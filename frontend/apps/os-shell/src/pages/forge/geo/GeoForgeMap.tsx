@@ -111,8 +111,41 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         if (parcelId) onSaleClick(parcelId);
       });
 
-      map.on('mouseenter', 'sale-circles', () => { map.getCanvas().style.cursor = 'crosshair'; });
-      map.on('mouseleave', 'sale-circles', () => { map.getCanvas().style.cursor = ''; });
+      // Sale dot hover tooltip
+      map.on('mouseenter', 'sale-circles', (e) => {
+        map.getCanvas().style.cursor = 'crosshair';
+        const props = e.features?.[0]?.properties;
+        if (!props || !e.lngLat) return;
+        const ratio = Number(props.ratio);
+        const ratioColor = ratio > 1.15 ? '#f87171' : ratio > 1.05 ? '#fb923c'
+          : ratio < 0.85 ? '#60a5fa' : ratio < 0.95 ? '#93c5fd' : '#4ade80';
+        const dq = props.qualificationDecision === 'qualified' ? '' : `<div style="color:#fbbf24;font-size:9px">${props.qualificationDecision?.toUpperCase()}</div>`;
+        hoverPopup
+          .setLngLat(e.lngLat)
+          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:130px"><div style="color:#00FFFF;font-weight:700;font-family:monospace;margin-bottom:3px">${props.parcelId}</div><div>Ratio <span style="color:${ratioColor};font-weight:700;font-family:monospace">${ratio.toFixed(3)}</span></div><div>Sale <span style="color:#fff;font-family:monospace">$${(Number(props.salePrice)/1000).toFixed(0)}k</span></div><div style="color:#64748b;font-size:9px">${props.saleDate ?? ''}${dq}</div></div>`)
+          .addTo(map);
+      });
+      map.on('mouseleave', 'sale-circles', () => {
+        map.getCanvas().style.cursor = '';
+        hoverPopup.remove();
+      });
+
+      // YoY bubble hover tooltip
+      map.on('mouseenter', 'yoy-change-circles', (e) => {
+        map.getCanvas().style.cursor = 'help';
+        const props = e.features?.[0]?.properties;
+        if (!props || !e.lngLat) return;
+        const pct = Number(props.pctChange);
+        const pctColor = pct > 5 ? '#4ade80' : pct > 0 ? '#86efac' : pct > -5 ? '#93c5fd' : '#60a5fa';
+        hoverPopup
+          .setLngLat(e.lngLat)
+          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:140px"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px">${props.neighborhoodCode}</div><div>ΔAV <span style="color:${pctColor};font-weight:700;font-family:monospace">${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%</span></div><div style="color:#64748b;font-size:9px">n = ${props.parcelCount} parcels</div></div>`)
+          .addTo(map);
+      });
+      map.on('mouseleave', 'yoy-change-circles', () => {
+        map.getCanvas().style.cursor = '';
+        hoverPopup.remove();
+      });
     });
 
     mapRef.current = map;

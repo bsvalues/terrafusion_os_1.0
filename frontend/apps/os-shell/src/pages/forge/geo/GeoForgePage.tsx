@@ -16,6 +16,7 @@ import { OutlierReviewPanel } from './panels/OutlierReviewPanel';
 import { StratificationPanel } from './panels/StratificationPanel';
 import { CompsPanel } from './panels/CompsPanel';
 import { NeighborhoodRankingPanel } from './panels/NeighborhoodRankingPanel';
+import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { Button } from '@/components/ui/button';
 import type { NeighborhoodStat, SalePoint, RightDrawerPanel, GwrSurface } from './types/geoforge.types';
 
@@ -162,6 +163,9 @@ export function GeoForgePage() {
           SIMULATION · {Object.keys(simulationDeltaMap).length} nbhd{Object.keys(simulationDeltaMap).length !== 1 ? 's' : ''}
         </div>
       )}
+
+      {/* Map legend — floating color key, bottom-right */}
+      <GeoForgeMapLegend />
 
       {/* Parcel bloom card — slides up from bottom */}
       <ParcelBloomCard />
