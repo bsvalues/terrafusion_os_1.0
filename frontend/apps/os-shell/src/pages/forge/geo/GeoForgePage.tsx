@@ -170,7 +170,7 @@ export function GeoForgePage() {
   const { data: gwrData } = useQuery<GwrSurface>({
     queryKey: ['geoforge-gwr', filter.taxYear],
     queryFn: () =>
-      apiFetchJson<GwrSurface>(`/api/geoforge/ratio-study/gwr?taxYear=${filter.taxYear}`),
+      apiFetchJson<GwrSurface>(`/api/geoforge/ratio-study/gwr?taxYear=${filter.taxYear}`, { method: 'POST' }),
     enabled: gwrEnabled,
     staleTime: 1000 * 60 * 30,
   });
