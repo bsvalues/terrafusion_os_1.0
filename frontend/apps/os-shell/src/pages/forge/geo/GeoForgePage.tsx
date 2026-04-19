@@ -26,6 +26,7 @@ import { ExportPanel } from './panels/ExportPanel';
 import { SaleInfluencePanel } from './panels/SaleInfluencePanel';
 import { CertificationChecklistPanel } from './panels/CertificationChecklistPanel';
 import { ClusteringPanel } from './panels/ClusteringPanel';
+import { RatioCliffPanel } from './panels/RatioCliffPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
 import { GeoForgeStatusTicker } from './GeoForgeStatusTicker';
@@ -54,6 +55,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   'sale-influence': 'Sale Influence Analysis · LOO Impact',
   'cert-checklist': 'DOR Pre-flight · Certification Checklist',
   'clustering': 'Neighborhood Clustering · K-means Compliance Profiles',
+  'ratio-cliffs': 'Ratio Cliff Detection · Boundary Discontinuity Analysis',
 };
 
 export function GeoForgePage() {
@@ -100,6 +102,7 @@ export function GeoForgePage() {
         case 'i': openDrawer('sale-influence'); break;
         case 'p': openDrawer('cert-checklist'); break;
         case 'k': openDrawer('clustering'); break;
+        case 'b': openDrawer('ratio-cliffs'); break;
       }
     }
     window.addEventListener('keydown', onKey);
@@ -219,6 +222,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'sale-influence' && <SaleInfluencePanel />}
               {rightDrawerPanel === 'cert-checklist' && <CertificationChecklistPanel />}
               {rightDrawerPanel === 'clustering' && <ClusteringPanel />}
+              {rightDrawerPanel === 'ratio-cliffs' && <RatioCliffPanel />}
             </div>
           </>
         )}

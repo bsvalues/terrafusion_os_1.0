@@ -15,6 +15,7 @@ const SHORTCUTS = [
   { key: 'i', description: 'Sale influence analysis · LOO impact per sale on compliance' },
   { key: 'p', description: 'DOR pre-flight checklist · certification readiness' },
   { key: 'k', description: 'Neighborhood clustering · k-means compliance profile grouping' },
+  { key: 'b', description: 'Ratio cliff detection · boundary discontinuity analysis' },
   { key: '?', description: 'Toggle this panel' },
 ];
 

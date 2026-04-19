@@ -161,7 +161,8 @@ export type RightDrawerPanel =
   | 'export'
   | 'sale-influence'
   | 'cert-checklist'
-  | 'clustering';
+  | 'clustering'
+  | 'ratio-cliffs';
 
 export interface CompSale {
   parcelId: string;
