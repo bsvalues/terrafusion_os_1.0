@@ -215,6 +215,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<SaleAuditDiagnosis> SaleAuditDiagnoses { get; set; } = null!;
   public DbSet<SalesAuditAdjustmentProposal> SalesAuditAdjustmentProposals { get; set; } = null!;
 
+  // GeoForge Adjustment Workbench — staged mass adjustment workflow with two-person integrity
+  public DbSet<AdjustmentProposal> AdjustmentProposals { get; set; } = null!;
+  public DbSet<AdjustmentSet> AdjustmentSets { get; set; } = null!;
+  public DbSet<AdjustmentRun> AdjustmentRuns { get; set; } = null!;
+  public DbSet<ParcelAdjustmentRecord> ParcelAdjustmentRecords { get; set; } = null!;
+
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
     if (!optionsBuilder.IsConfigured)

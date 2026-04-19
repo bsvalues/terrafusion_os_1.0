@@ -108,7 +108,69 @@ export type RightDrawerPanel =
   | 'neighborhood-detail'
   | 'sales-drilldown'
   | 'diagnosis'
-  | 'year-trend';
+  | 'year-trend'
+  | 'workbench';
+
+// ─── Adjustment Workbench types ────────────────────────────────────────────
+
+export type AdjustmentScope =
+  | 'Neighborhood'
+  | 'NeighborhoodQuintile'
+  | 'CityRollup'
+  | 'FeatureCode'
+  | 'ParcelList';
+
+export type AdjustmentKind =
+  | 'PercentOfAV'
+  | 'FlatDelta'
+  | 'FeatureUnitRate'
+  | 'TimeAdjustment'
+  | 'RemoveSale'
+  | 'ReassignNeighborhood'
+  | 'SplitNeighborhood';
+
+export type ProposalStatus = 'Draft' | 'UnderReview' | 'Approved' | 'Rejected' | 'Applied' | 'Reverted';
+export type SetStatus = 'Draft' | 'Simulating' | 'PendingApproval' | 'Approved' | 'Applied' | 'Reverted' | 'Discarded';
+
+export interface AdjustmentProposal {
+  id: string;
+  taxYear: number;
+  scope: AdjustmentScope;
+  kind: AdjustmentKind;
+  magnitude: number;
+  targetNeighborhoodCode?: string;
+  targetFeatureCode?: string;
+  targetCityCode?: string;
+  targetQuintile?: number;
+  rationale: string;
+  status: ProposalStatus;
+  adjustmentSetId?: string;
+  simulatedParcelsAffected?: number;
+  simulatedTotalDeltaAV?: number;
+  proposedAt: string;
+}
+
+export interface AdjustmentSet {
+  id: string;
+  taxYear: number;
+  name: string;
+  description?: string;
+  status: SetStatus;
+  ownerUserId: string;
+  approvedByUserId?: string;
+  approvedAt?: string;
+  proposals: AdjustmentProposal[];
+  createdAt: string;
+}
+
+export interface RecommendResult {
+  neighborhoodCode: string;
+  taxYear: number;
+  medianRatio: number;
+  recommendedAdjustmentPct: number;
+  direction: 'increase' | 'decrease' | 'none';
+  sampleSize: number;
+}
 
 export interface GeoForgeState {
   filter: GeoForgeFilter;

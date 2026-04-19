@@ -17,7 +17,7 @@ const LAYER_TOGGLES: { layer: MapLayer; label: string }[] = [
 ];
 
 export function GeoForgeCommandBar() {
-  const { filter, setFilter, activeLayers, toggleLayer } = useGeoForgeStore();
+  const { filter, setFilter, activeLayers, toggleLayer, openDrawer, rightDrawerPanel } = useGeoForgeStore();
   const years = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i);
 
   return (
@@ -61,6 +61,18 @@ export function GeoForgeCommandBar() {
       </div>
 
       <div className="ml-auto flex gap-1">
+        <Button
+          size="sm"
+          variant={rightDrawerPanel === 'workbench' ? 'default' : 'outline'}
+          className={`h-7 text-[11px] px-2 ${
+            rightDrawerPanel === 'workbench'
+              ? 'bg-amber-700/40 text-amber-300 border-amber-700/60 hover:bg-amber-700/60'
+              : 'text-slate-400 border-slate-700 hover:text-white'
+          }`}
+          onClick={() => openDrawer('workbench')}
+        >
+          Workbench
+        </Button>
         <Button
           size="sm"
           variant="outline"

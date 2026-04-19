@@ -9,6 +9,7 @@ import { NeighborhoodDetailPanel } from './panels/NeighborhoodDetailPanel';
 import { SalesDrillDownPanel } from './panels/SalesDrillDownPanel';
 import { DiagnosisPanel } from './panels/DiagnosisPanel';
 import { YearTrendPanel } from './panels/YearTrendPanel';
+import { AdjustmentWorkbenchPanel } from './panels/AdjustmentWorkbenchPanel';
 import { Button } from '@/components/ui/button';
 import type { NeighborhoodStat, SalePoint, RightDrawerPanel } from './types/geoforge.types';
 
@@ -18,6 +19,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   'sales-drilldown': 'Sales Drill-Down',
   diagnosis: 'AI Diagnosis',
   'year-trend': '5-Year Trend',
+  workbench: 'Adjustment Workbench',
 };
 
 export function GeoForgePage() {
@@ -30,6 +32,7 @@ export function GeoForgePage() {
     setLoadingStats,
     setLoadingSales,
     selectNeighborhood,
+    selectedNeighborhoodCode,
   } = useGeoForgeStore();
 
   const { data: statsData, isLoading: statsLoading } = useQuery<NeighborhoodStat[]>({
@@ -109,6 +112,12 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'sales-drilldown' && <SalesDrillDownPanel />}
               {rightDrawerPanel === 'diagnosis' && <DiagnosisPanel />}
               {rightDrawerPanel === 'year-trend' && <YearTrendPanel />}
+              {rightDrawerPanel === 'workbench' && (
+                <AdjustmentWorkbenchPanel
+                  taxYear={filter.taxYear}
+                  selectedNeighborhoodCode={selectedNeighborhoodCode}
+                />
+              )}
             </div>
           </>
         )}
