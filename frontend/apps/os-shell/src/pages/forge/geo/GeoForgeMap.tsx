@@ -8,7 +8,8 @@ import { makeCircleGeoJson, haversineDistanceMi } from './utils/geoMath';
 import { computeLISA, type LISAResult } from './utils/spatialStats';
 import type { MapLayer, ChoroMode } from './types/geoforge.types';
 
-mapboxgl.accessToken = (import.meta.env.VITE_MAPBOX_TOKEN as string) ?? '';
+const MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_TOKEN as string | undefined) ?? '';
+mapboxgl.accessToken = MAPBOX_TOKEN;
 
 const BENTON_CENTER: [number, number] = [-119.3, 46.2];
 const BENTON_ZOOM = 10;
@@ -43,6 +44,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
 
   // Initialize map once
   useEffect(() => {
+    if (!MAPBOX_TOKEN) return;
     if (!containerRef.current || mapRef.current) return;
 
     const map = new mapboxgl.Map({
@@ -737,6 +739,25 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       }
     }
   }, [activeLayers]);
+
+  if (!MAPBOX_TOKEN) {
+    return (
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 gap-2 text-center px-8">
+        <div className="text-slate-400 text-[10px] font-mono uppercase tracking-widest">GeoForge Map Canvas</div>
+        <div className="text-slate-300 text-sm font-semibold mt-1">Mapbox token required</div>
+        <div className="text-slate-500 text-xs mt-1 max-w-xs leading-relaxed">
+          Add{' '}
+          <code className="text-cyan-500/80 font-mono">VITE_MAPBOX_TOKEN=pk.your_token</code>
+          {' '}to{' '}
+          <code className="text-slate-400 font-mono">frontend/apps/os-shell/.env.development</code>
+          {' '}and restart the dev server.
+        </div>
+        <div className="text-slate-600 text-[9px] mt-4">
+          All 31 analysis panels are available via the equity rail →
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

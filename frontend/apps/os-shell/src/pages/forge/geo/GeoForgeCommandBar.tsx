@@ -13,7 +13,7 @@ import type { MapLayer, ParcelSearchResult, PriceBand, ChoroMode } from './types
 
 
 const PROPERTY_CLASSES = [
-  { label: 'All classes', value: '' },
+  { label: 'All classes', value: '__all__' },
   { label: 'Residential', value: 'RES' },
   { label: 'Commercial', value: 'COM' },
   { label: 'Agricultural', value: 'AG' },
@@ -169,15 +169,15 @@ export function GeoForgeCommandBar() {
       </Select>
 
       <Select
-        value={filter.propertyClass ?? ''}
-        onValueChange={(v) => setFilter({ propertyClass: v || undefined })}
+        value={filter.propertyClass ?? '__all__'}
+        onValueChange={(v) => setFilter({ propertyClass: v === '__all__' ? undefined : v })}
       >
         <SelectTrigger className="w-[100px] h-7 text-xs bg-slate-900 border-slate-700 text-white shrink-0">
           <SelectValue placeholder="All classes" />
         </SelectTrigger>
         <SelectContent className="bg-slate-900 border-slate-700">
           {PROPERTY_CLASSES.map(({ label, value }) => (
-            <SelectItem key={value} value={value} className="text-xs text-white">{label}</SelectItem>
+            <SelectItem key={value} value={value} className={`text-xs ${value === '__all__' ? 'text-slate-400' : 'text-white'}`}>{label}</SelectItem>
           ))}
         </SelectContent>
       </Select>
