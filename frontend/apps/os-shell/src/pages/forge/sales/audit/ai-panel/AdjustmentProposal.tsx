@@ -1,6 +1,6 @@
 // .../audit/ai-panel/AdjustmentProposal.tsx
 import React, { useState } from 'react';
-import type { SimulationResult } from '../../../../services/forge/salesAuditApi';
+import type { SimulationResult } from '../../../../../services/forge/salesAuditApi';
 import { SimulationSection } from './SimulationSection';
 
 interface Props {

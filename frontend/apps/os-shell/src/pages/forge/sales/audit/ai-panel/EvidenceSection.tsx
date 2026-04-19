@@ -1,6 +1,6 @@
 // .../audit/ai-panel/EvidenceSection.tsx
 import React from 'react';
-import type { DiagnosisFinding } from '../../../../services/forge/salesAuditApi';
+import type { DiagnosisFinding } from '../../../../../services/forge/salesAuditApi';
 
 interface Props { findings: DiagnosisFinding[]; }
 

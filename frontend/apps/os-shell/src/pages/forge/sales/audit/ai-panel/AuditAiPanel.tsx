@@ -1,13 +1,13 @@
 // .../audit/ai-panel/AuditAiPanel.tsx
 import React, { useState, useEffect } from 'react';
-import type { SaleAuditDiagnosis, SimulationResult } from '../../../../services/forge/salesAuditApi';
-import { salesAuditApi } from '../../../../services/forge/salesAuditApi';
+import type { SaleAuditDiagnosis, SimulationResult } from '../../../../../services/forge/salesAuditApi';
+import { salesAuditApi } from '../../../../../services/forge/salesAuditApi';
 import { DiagnosisSection } from './DiagnosisSection';
 import { EvidenceSection } from './EvidenceSection';
 import { SimulationSection } from './SimulationSection';
 import { DataActionSection } from './DataActionSection';
 import { AdjustmentProposal } from './AdjustmentProposal';
-import type { DiagnosisFinding } from '../../../../services/forge/salesAuditApi';
+import type { DiagnosisFinding } from '../../../../../services/forge/salesAuditApi';
 
 interface Props {
   stratumKey: string;

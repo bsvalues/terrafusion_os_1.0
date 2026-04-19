@@ -1,6 +1,6 @@
 // .../audit/ai-panel/SimulationSection.tsx
 import React from 'react';
-import type { SimulationResult } from '../../../../services/forge/salesAuditApi';
+import type { SimulationResult } from '../../../../../services/forge/salesAuditApi';
 
 interface StatRowProps { label: string; current?: number; projected?: number }
 

@@ -27,8 +27,12 @@ const CodeAuditPanel = lazy(() =>
 const DorExportPanel = lazy(() =>
   import('./panels/DorExportPanel').then((m) => ({ default: m.DorExportPanel }))
 );
+const AuditCommandCenter = lazy(() =>
+  import('./audit/AuditCommandCenter').then((m) => ({ default: m.AuditCommandCenter }))
+);
 
 const TABS: { id: SalesForgeTab; label: string; title: string }[] = [
+  { id: 'ai-audit',      label: 'AI Audit',       title: 'AI-powered audit — diagnose, qualify, propose adjustments' },
   { id: 'queue',         label: 'Queue',          title: 'Sale qualification queue — make decisions' },
   { id: 'ratio-audit',  label: 'Ratio Audit',     title: 'All qualified sales sorted by ratio, outlier flags' },
   { id: 'neighborhoods', label: 'Neighborhoods',  title: 'Hood-level COD/PRD equity view' },
@@ -82,6 +86,7 @@ export default function SalesForge() {
       <div className="sf-layout">
         {/* Left: panel content */}
         <Suspense fallback={<TabSpinner />}>
+          {activeTab === 'ai-audit'      && <AuditCommandCenter taxYear={taxYear} />}
           {activeTab === 'queue'         && <QualificationQueuePanel />}
           {activeTab === 'ratio-audit'   && <RatioAuditPanel />}
           {activeTab === 'neighborhoods' && <NeighborhoodViewPanel />}
