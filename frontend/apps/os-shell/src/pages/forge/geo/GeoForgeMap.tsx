@@ -255,6 +255,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
             saleDate: sp.saleDate,
             isOutlier: sp.isOutlier,
             qualificationDecision: sp.qualificationDecision,
+            propertyClass: sp.propertyClass,
             color: ratioPointColor(sp.ratio),
             radius: salePointRadius(sp.salePrice),
           },
@@ -442,24 +443,22 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       : priceBand === '700+' ? ['>=', ['get', 'salePrice'], 700000]
       : true;
 
+    const classFilter = filter.propertyClass
+      ? ['==', ['get', 'propertyClass'], filter.propertyClass]
+      : true;
+
+    const saleBase = ['all', ['!', ['has', 'point_count']], monthFilter, priceFilter, classFilter];
+
     if (map.getLayer('sale-circles')) {
-      map.setFilter('sale-circles', [
-        'all',
-        ['!', ['has', 'point_count']],
-        monthFilter,
-        priceFilter,
-      ] as mapboxgl.FilterSpecification);
+      map.setFilter('sale-circles', saleBase as mapboxgl.FilterSpecification);
     }
     if (map.getLayer('sale-outlier-ring')) {
       map.setFilter('sale-outlier-ring', [
-        'all',
-        ['!', ['has', 'point_count']],
+        ...saleBase,
         ['==', ['get', 'isOutlier'], true],
-        monthFilter,
-        priceFilter,
       ] as mapboxgl.FilterSpecification);
     }
-  }, [selectedMonth, priceBand]);
+  }, [selectedMonth, priceBand, filter.propertyClass]);
 
   // Toggle layer visibility
   useEffect(() => {

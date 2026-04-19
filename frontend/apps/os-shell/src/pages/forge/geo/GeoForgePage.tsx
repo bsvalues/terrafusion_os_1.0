@@ -16,6 +16,7 @@ import { OutlierReviewPanel } from './panels/OutlierReviewPanel';
 import { StratificationPanel } from './panels/StratificationPanel';
 import { CompsPanel } from './panels/CompsPanel';
 import { NeighborhoodRankingPanel } from './panels/NeighborhoodRankingPanel';
+import { CountyHealthPanel } from './panels/CountyHealthPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { Button } from '@/components/ui/button';
 import type { NeighborhoodStat, SalePoint, RightDrawerPanel, GwrSurface } from './types/geoforge.types';
@@ -32,6 +33,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   stratification: 'IAAO Stratification',
   comps: 'Auto-Comparables',
   ranking: 'Equity Ranking',
+  'county-health': 'County Health Dashboard',
 };
 
 export function GeoForgePage() {
@@ -151,6 +153,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'stratification' && <StratificationPanel />}
               {rightDrawerPanel === 'comps' && <CompsPanel />}
               {rightDrawerPanel === 'ranking' && <NeighborhoodRankingPanel />}
+              {rightDrawerPanel === 'county-health' && <CountyHealthPanel />}
             </div>
           </>
         )}

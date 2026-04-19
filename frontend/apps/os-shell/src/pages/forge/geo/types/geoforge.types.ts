@@ -126,7 +126,8 @@ export type RightDrawerPanel =
   | 'outlier-review'
   | 'stratification'
   | 'comps'
-  | 'ranking';
+  | 'ranking'
+  | 'county-health';
 
 export interface CompSale {
   parcelId: string;

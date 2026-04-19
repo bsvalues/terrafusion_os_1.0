@@ -11,6 +11,15 @@ import {
 import { apiFetchJson } from '@/lib/apiBase';
 import type { MapLayer, ParcelSearchResult, PriceBand } from './types/geoforge.types';
 
+const PROPERTY_CLASSES = [
+  { label: 'All classes', value: '' },
+  { label: 'Residential', value: 'RES' },
+  { label: 'Commercial', value: 'COM' },
+  { label: 'Agricultural', value: 'AG' },
+  { label: 'Industrial', value: 'IND' },
+  { label: 'Timber', value: 'TIM' },
+];
+
 const PRICE_BANDS: { label: string; value: PriceBand }[] = [
   { label: 'All prices', value: null },
   { label: '< $200k', value: '0-200' },
@@ -141,6 +150,20 @@ export function GeoForgeCommandBar() {
         <SelectContent className="bg-slate-900 border-slate-700">
           {years.map((y) => (
             <SelectItem key={y} value={String(y)} className="text-xs text-white">{y}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select
+        value={filter.propertyClass ?? ''}
+        onValueChange={(v) => setFilter({ propertyClass: v || undefined })}
+      >
+        <SelectTrigger className="w-[100px] h-7 text-xs bg-slate-900 border-slate-700 text-white shrink-0">
+          <SelectValue placeholder="All classes" />
+        </SelectTrigger>
+        <SelectContent className="bg-slate-900 border-slate-700">
+          {PROPERTY_CLASSES.map(({ label, value }) => (
+            <SelectItem key={value} value={value} className="text-xs text-white">{label}</SelectItem>
           ))}
         </SelectContent>
       </Select>
@@ -329,6 +352,19 @@ export function GeoForgeCommandBar() {
           title="Equity ranking — all neighborhoods sorted by worst deviation"
         >
           Rank
+        </Button>
+        <Button
+          size="sm"
+          variant={rightDrawerPanel === 'county-health' ? 'default' : 'outline'}
+          className={`h-7 text-[11px] px-2 ${
+            rightDrawerPanel === 'county-health'
+              ? 'bg-sky-800/40 text-sky-300 border-sky-700/60 hover:bg-sky-700/60'
+              : 'text-slate-400 border-slate-700 hover:text-white'
+          }`}
+          onClick={() => openDrawer('county-health')}
+          title="County health dashboard"
+        >
+          County
         </Button>
         <Button
           size="sm"
