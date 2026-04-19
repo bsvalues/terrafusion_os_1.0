@@ -415,14 +415,47 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     });
   }, [comparableSalePoints]);
 
-  // Neighborhood polygon boundaries — reload when taxYear or poly layer visibility changes
+  // Neighborhood polygon boundaries — choro-colored; updates on mode, LISA, or year changes
   useEffect(() => {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
     if (!activeLayers.has('neighborhood-poly')) return;
     const src = map.getSource('neighborhoods-poly') as mapboxgl.GeoJSONSource | undefined;
-    src?.setData(`/api/geoforge/neighborhoods/boundaries?taxYear=${filter.taxYear}`);
-  }, [filter.taxYear, activeLayers]);
+    if (!src) return;
+
+    // Build lookup from neighborhoodStats for color enrichment
+    const statsMap: Record<string, (typeof neighborhoodStats)[0]> = {};
+    for (const ns of neighborhoodStats) statsMap[ns.neighborhoodCode] = ns;
+
+    // Build LISA map if needed
+    const lisaMap: Record<string, LISAResult> = {};
+    if (lisaMode) {
+      for (const r of computeLISA(neighborhoodStats)) lisaMap[r.neighborhoodCode] = r;
+    }
+
+    fetch(`/api/geoforge/neighborhoods/boundaries?taxYear=${filter.taxYear}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((fc: GeoJSON.FeatureCollection) => {
+        const enriched: GeoJSON.FeatureCollection = {
+          type: 'FeatureCollection',
+          features: fc.features.map((feat) => {
+            const code = feat.properties?.neighborhoodCode as string | undefined;
+            const ns = code ? statsMap[code] : undefined;
+            let color = feat.properties?.color as string ?? '#334155';
+            if (ns) {
+              color = lisaMode
+                ? (lisaMap[code!]?.color ?? '#334155')
+                : choroColorForMode(choroMode, ns.stats.medianRatio, ns.stats.cod, ns.stats.prd, ns.stats.prb);
+            }
+            return { ...feat, properties: { ...feat.properties, color } };
+          }),
+        };
+        src.setData(enriched);
+      })
+      .catch(() => {
+        src.setData(`/api/geoforge/neighborhoods/boundaries?taxYear=${filter.taxYear}`);
+      });
+  }, [filter.taxYear, activeLayers, neighborhoodStats, choroMode, lisaMode]);
 
   // YoY AV change bubbles — fetch when layer toggled on
   useEffect(() => {
