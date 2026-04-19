@@ -11,6 +11,7 @@ const SHORTCUTS = [
   { key: 'm', description: 'DOR narrative memo generator — one-click draft' },
   { key: 'v', description: 'Value strata equity · PRB decile analysis' },
   { key: 'g', description: 'Neighborhood scorecard · grade card for selected neighborhood' },
+  { key: 'e', description: 'Export data · CSV for DOR, Excel, peer review' },
   { key: '?', description: 'Toggle this panel' },
 ];
 

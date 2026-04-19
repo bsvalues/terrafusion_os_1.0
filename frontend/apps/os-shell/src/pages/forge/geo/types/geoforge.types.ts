@@ -157,7 +157,8 @@ export type RightDrawerPanel =
   | 'levy-parity'
   | 'dor-memo'
   | 'value-strata'
-  | 'scorecard';
+  | 'scorecard'
+  | 'export';
 
 export interface CompSale {
   parcelId: string;
