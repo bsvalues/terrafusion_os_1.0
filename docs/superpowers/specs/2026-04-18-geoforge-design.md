@@ -89,15 +89,33 @@ GeoForge has one surface with four zones. No tabs. No mode switching.
 ### Zone 2: Left Toolbar (40px)
 
 Icon buttons selecting secondary map modes:
-- Choropleth metric selector (mirrors metric pills)
-- Outlier flag overlay (highlights neighborhoods with flagged sales)
-- Time animation (plays 2021→2025 year scrubber as animation)
-- Layer selector (toggle neighborhood boundaries, parcel polygons, city boundaries)
-- Side-by-side compare mode (splits map for year-over-year)
 
-### Zone 3: Map (choropleth + bloom)
+| Button | What it does |
+|---|---|
+| **Metric** | Cycles through COD / PRD / PRB / VEI / Median Ratio as the active choropleth metric — mirrors command bar pills |
+| **Sales** | Toggles the sale-point scatter layer on/off over the choropleth |
+| **Parcels** | Toggles the parcel-polygon layer (pulled from TerraAtlas AssessorPropVal FeatureServer) for the selected neighborhood |
+| **Layers** | Opens a layer-management drawer — full layer stack with toggles, opacity sliders, and source labels (see GIS Layer Stack section below) |
+| **Time** | Plays 2021→2025 year animation at 1.5s/year, repaint-morphing the choropleth. Pre-fetches all 5 years before playing |
+| **Compare** | Activates side-by-side split: two choropleth panels, independent year selectors |
+| **Draw** | (v2 reserved, disabled in v1) Boundary draw tool for neighborhood split / reassign operations |
 
-**Choropleth layer:** Neighborhood polygon GeoJSON from TerraAtlas Layer 3, colored by the active metric using a 6-stop scale:
+### Zone 3: Map — GIS Layer Stack
+
+**The map is a live GIS layer stack, not a single choropleth.** Layers render from bottom to top. Each layer is independently toggleable. The assessor composes the view they need by toggling layers — the typical diagnostic view starts with choropleth + scatter to immediately see whether ratio failures are spatially clustered.
+
+---
+
+#### Layer 1 (base): Satellite / Basemap
+Mapbox Satellite Streets basemap. Shows physical geography — Columbia River, irrigation canals, highway network, terrain — which is often the explanatory variable for spatial ratio clustering.
+
+---
+
+#### Layer 2: Neighborhood Polygons (choropleth)
+**Source:** TerraAtlas ArcGIS Layer 3 — `GET /api/atlas/gis/spatial-query?layer=Neighborhoods`
+**Fields used:** `NEIGHBORHOOD_CODE`, `NEIGHBORHOOD_NAME`, `MARKET_AREA`, `LAND_CLASS`
+
+Fill color driven by active metric using 6-stop scale. Always on by default.
 
 | COD range | Color | Label |
 |---|---|---|
@@ -108,9 +126,96 @@ Icon buttons selecting secondary map modes:
 | 15–18 | `#7f1d1d` | Fail IAAO |
 | > 18 | `#991b1b` | Critical |
 
-PRD, VEI, Median Ratio each have their own 6-stop scale keyed to Benton Method thresholds.
+PRD, VEI, Median Ratio, PRB each have their own 6-stop scale keyed to Benton Method thresholds. Polygon stroke is dim by default; brightens on hover and selection.
 
-**Neighborhood Bloom Card:** Clicking any polygon triggers a floating card that appears over the map at the click location. The card shows:
+---
+
+#### Layer 3: Sale-Point Scatter *(the critical GIS layer)*
+
+**Source:** `GET /api/terraforge/ratio-study/sales?neighborhood=all&taxYear=Y&includeCoordinates=true`
+Individual qualifying sales plotted as circle markers at their **parcel centroid** (lat/lng resolved via parcel ID → AssessorPropVal FeatureServer join). The sale-point scatter is the primary tool for within-neighborhood spatial diagnosis — it answers *"where in this neighborhood are the bad sales?"* in a way no aggregate stat can.
+
+**Point color by ratio flag:**
+
+| Flag | Color | Ratio range |
+|---|---|---|
+| OUTLIER | `#dc2626` red | < 0.75 or > 1.25 |
+| HI | `#f97316` orange | 1.15–1.25 |
+| OK | `#22c55e` green | 0.90–1.10 |
+| LO | `#facc15` yellow | 0.75–0.85 |
+
+Point radius encodes sale price (larger = higher sale price) — immediately visualizes whether high-value sales cluster geographically (stratification evidence).
+
+**Interaction:**
+- Hover: tooltip showing address, sale price, AV, ratio, date
+- Click: opens a parcel mini-card with address, ratio, flag, date, quintile — plus "Open in TerraAtlas" link
+- Drag-select: lasso a region, filter the stats table to only the lassoed sales, update all visible stats for the selection
+
+**Toggle behavior:** When scatter is on, choropleth opacity drops to 0.4 so points are visible against neighborhood context. When scatter is off, choropleth returns to full opacity.
+
+**Why this layer matters:** If KW-302 has COD 14.5 and the outlier sales all cluster in the northwest quadrant near the canal, that's an external-factor pattern — different from outliers scattered uniformly (noise) or concentrated in the high-price tier (stratification). This is the GIS insight that no stat table can provide.
+
+---
+
+#### Layer 4: Parcel Polygons (selected neighborhood only)
+**Source:** TerraAtlas AssessorPropVal FeatureServer — existing `atlasService.searchMassAppraisalParcels()`
+**Performance:** Only fetched and rendered for the currently-selected neighborhood — not county-wide. Loads on demand when user clicks a neighborhood polygon or selects from the table.
+
+Parcel polygons can be colored by:
+- **Ratio** (of most recent qualifying sale on that parcel) — if sold
+- **AV** — assessed value heat
+- **Land class** — from parcel feature data
+- **"Not sold"** — gray, for parcels with no qualifying sale in the study period
+
+This layer answers "which specific parcels drove the ratio failure?" It's the zoom level below neighborhood aggregates.
+
+---
+
+#### Layer 5: Context / Reference Layers (toggleable)
+All toggled via the Layers drawer. Sources from TerraAtlas existing endpoints or static GeoJSON.
+
+| Layer | Source | Value |
+|---|---|---|
+| **City boundaries** | TerraAtlas political boundary layer | Visualizes city rollup groupings |
+| **Market areas** | `MARKET_AREA` field from Layer 3 — rendered as bold boundary strokes | Shows super-neighborhood groupings; equity issues sometimes follow market areas, not neighborhoods |
+| **Land class** | `LAND_CLASS` from Layer 3 — color-coded fill | Reveals if ratio failures stratify along land-class lines |
+| **FEMA flood zones** | FEMA NFHL public WMS | Flood-zone parcels often have differential ratio patterns |
+| **New construction** (2022–2025) | Filter on `YearBuilt` from AssessorPropVal | Recent construction skews ratios; spatial cluster of new construction = likely ratio distortion |
+| **Permit activity** | (future) county permit layer | |
+
+---
+
+#### Layer 6: Geographic Clustering Overlay (AI-generated)
+Rendered only when DiagnosisPanel is open for a neighborhood. The AI root-cause classifier computes spatial concentration of outlier/LO/HI sales using a simple convex hull or Moran's I spatial autocorrelation over the sale points. The result is rendered as:
+
+- A **heat zone polygon** (translucent red) showing where outlier/failing sales cluster
+- An **annotation pin** citing the clustering score: *"81% of outlier sales within 0.3 mi radius — NW quadrant near irrigation canal"*
+- A **line annotation** if correlation with a linear feature (highway, canal, railway) is detected
+
+This is the GIS layer that turns "COD is 14.5" into "the problem is spatially concentrated here, likely this external feature." It surfaces automatically when Diagnose is invoked; can be dismissed.
+
+---
+
+#### Parcel Coordinates in API responses
+
+Sales endpoints must return `parcelLat`, `parcelLng` (parcel centroid from AssessorPropVal join) so the scatter layer can plot without a second client-side lookup:
+
+```
+// Extended sale record (add to both /sales and /diagnosis endpoints)
+{
+  "parcelId": "...",
+  "parcelLat": 46.2112,
+  "parcelLng": -119.1372,
+  "address": "1104 W 4th Ave, Kennewick WA",
+  ...
+}
+```
+
+Backend resolves centroid once at query time from the spatial index — not per-client-request. Cached per parcel.
+
+---
+
+**Neighborhood Bloom Card:** Clicking any neighborhood polygon triggers a floating card that appears over the map at the click location. The card shows:
 - Neighborhood code + name (header, cyan)
 - Meta: n sales · tax year
 - Equity Signature radar (54×54px hexagonal, 6-axis)
@@ -294,9 +399,14 @@ All numbers are live — pulled from the currently selected tax year's data. The
 | Concern | Technology |
 |---|---|
 | Map rendering | Mapbox GL JS 3.20.0 (already installed) |
-| Neighborhood polygons | TerraAtlas ArcGIS Layer 3 → `/api/atlas/gis/spatial-query?layer=Neighborhoods` |
+| Neighborhood polygons (Layer 2) | TerraAtlas ArcGIS Layer 3 → `/api/atlas/gis/spatial-query?layer=Neighborhoods` (NEIGHBORHOOD_CODE, MARKET_AREA, LAND_CLASS) |
+| Sale-point scatter (Layer 3) | New endpoint: sales with `parcelLat`/`parcelLng` from AssessorPropVal centroid join |
+| Parcel polygons (Layer 4) | TerraAtlas AssessorPropVal FeatureServer — existing `atlasService.searchMassAppraisalParcels()`, on-demand per selected neighborhood |
+| Context layers (Layer 5) | City boundaries: TerraAtlas political layer · FEMA NFHL: public WMS tile · Land class / Market area: fields from Layer 3 |
+| Clustering overlay (Layer 6) | Computed in DiagnosisPanel from sale coordinates — Moran's I + convex hull, rendered as Mapbox GeoJSON fill layer |
+| Spatial autocorrelation | Moran's I computed server-side in `/diagnosis` endpoint from sale lat/lng |
 | Ratio statistics | TerraForge `/api/terraforge/ratio-study/*` endpoints (existing) |
-| Individual sales | New endpoint: `GET /api/terraforge/ratio-study/sales?neighborhood=X&taxYear=Y` |
+| Individual sales | New endpoint: `GET /api/terraforge/ratio-study/sales?neighborhood=X&taxYear=Y` (includes parcel coordinates) |
 | State management | Zustand store: `useGeoForgeStore` (active metric, active year, selected neighborhood, filter state) |
 | Data fetching | TanStack Query (existing pattern) |
 | Charting (radar, histogram) | Recharts (existing) or SVG-native for radar |
@@ -378,6 +488,8 @@ Response:
     {
       "parcelId": "...",
       "address": "1104 W 4th Ave, Kennewick WA",
+      "parcelLat": 46.2112,       // parcel centroid from AssessorPropVal spatial index
+      "parcelLng": -119.1372,     // required for sale-point scatter layer
       "saleDate": "2024-04-15",
       "salePrice": 412000,
       "assessedValue": 401300,
@@ -466,12 +578,17 @@ frontend/apps/os-shell/src/pages/forge/geoforge/
     EquitySignatureRadar.tsx          — hexagonal radar (mini + full, overlay-capable)
   hooks/
     useGeoForgeData.ts                — TanStack Query fetcher for all ratio data
-    useNeighborhoodGeoJSON.ts         — fetches + caches TerraAtlas polygon layer
+    useNeighborhoodGeoJSON.ts         — fetches + caches TerraAtlas Layer 3 neighborhood polygons + MARKET_AREA + LAND_CLASS fields
+    useSaleScatter.ts                 — fetches + caches sale points with parcelLat/Lng for scatter layer; handles county-wide pre-fetch on load
+    useParcelLayer.ts                 — on-demand parcel polygon fetch from AssessorPropVal for selected neighborhood
+    useContextLayers.ts               — FEMA flood zones, city boundaries, new-construction filter
     useGeoForgeCommands.ts            — ⌘K command dispatch
-    useDiagnosis.ts                   — fetches root-cause classification + peers
+    useDiagnosis.ts                   — fetches root-cause classification + peers + spatial clustering
     useDataQualityScan.ts             — runs integrity sweep for a neighborhood
   store/
     geoForgeStore.ts                  — Zustand: metric, year, selection, filters,
+                                         activeLayers (Set<LayerId>), layerOpacities (Map<LayerId, number>),
+                                         scatterVisible, clusteringOverlayActive,
                                          + adjustmentProposals (v2-reserved, always []),
                                          + activeAdjustmentSetId (v2-reserved, always null)
   utils/
@@ -524,9 +641,13 @@ The classifier assigns weights across four root-cause categories:
 | Category | Trigger signals | Evidence shown |
 |---|---|---|
 | **Data quality** | AVs without improvement records, sketch-area mismatches, parcel-area mismatches between CAMA and GIS, year-built vs permit-record drift, sale price outside ±3σ | List of suspect parcel IDs, suspect fields, confidence per row |
-| **Stratification / submarket** | Bimodal or multimodal ratio distribution, quintile mean ratios diverging monotonically, geographic clustering of high-ratio sales in sub-region | Histogram with detected modes, quintile chart, sub-region polygon suggestion |
-| **True outliers** | One or two sales in extreme tails with verified arms-length status, COD driven by <5% of sales | Ranked outlier list, impact delta (COD/PRD if removed) |
-| **External factor / temporal** | Recent ratio trend differs significantly from county trend, sales cluster near new infrastructure/zoning change, value tier diverging over time | 5-year trend overlay, geographic correlation map (nearby polygons with same pattern), suggested external event |
+| **Stratification / submarket** | Bimodal or multimodal ratio distribution, quintile mean ratios diverging monotonically, **geographic clustering of high/low-ratio sales in a sub-region of the neighborhood** | Histogram with detected modes, quintile chart, **sub-region convex hull polygon highlighted on map**, split-neighborhood suggestion |
+| **True outliers** | One or two sales in extreme tails with verified arms-length status, COD driven by <5% of sales | Ranked outlier list, impact delta (COD/PRD if removed), **outlier sale dots pulsing on map** |
+| **External factor / temporal** | Recent ratio trend differs significantly from county trend, **spatial autocorrelation of failing sales (Moran's I > 0.4)**, sales cluster near new infrastructure/zoning change, value tier diverging over time | 5-year trend overlay, **geographic heat zone polygon over the clustered area**, distance-to-feature correlation if detectable, suggested external event |
+
+**Spatial clustering is computed for every category** using sale-point coordinates (`parcelLat`, `parcelLng`). The classifier checks: are the failing/flagged sales geographically concentrated (Moran's I, convex hull area / neighborhood area ratio) or uniformly distributed? Concentrated = likely external factor or submarket. Uniform = model calibration or data quality. This is the GIS signal that no stat table can provide.
+
+When the DiagnosisPanel is open, Layer 6 (Geographic Clustering Overlay) activates automatically on the map — heat zone polygon + clustering annotation, no toggle needed.
 
 For each category, the panel shows a confidence bar, one-paragraph plain-language explanation, and an evidence drawer. The assessor is always the decision-maker — the panel never auto-applies anything.
 
@@ -605,8 +726,11 @@ No other v1 work is gated on v2. v2 is additive.
 
 ## Success Criteria
 
-1. Benton County neighborhood polygons render on the Mapbox choropleth from real ArcGIS Layer 3 data
-2. All 12 Benton Method stats compute correctly per neighborhood from real `ComparableSales` data
+1. Benton County neighborhood polygons render on the Mapbox choropleth from real ArcGIS Layer 3 data, colored by active metric
+2. Sale-point scatter layer plots individual qualifying sales as color-coded dots at real parcel centroids — toggleable over the choropleth
+3. Parcel polygon layer loads on demand for the selected neighborhood, colored by sale ratio (sold parcels) or gray (unsold)
+4. Context layers toggle correctly: city boundaries, market areas, land class, FEMA flood zones, new construction filter
+5. All 12 Benton Method stats compute correctly per neighborhood from real `ComparableSales` data
 3. VEI computed per Moore's exact formula (`|max(QMR) − min(QMR)| / mean(QMRs) × 100`)
 4. PRB computed via regression on qualifying sales
 5. Clicking a polygon opens bloom card with correct stats + equity signature
@@ -617,8 +741,11 @@ No other v1 work is gated on v2. v2 is additive.
 10. Individual sales drill-down shows real Benton County sale addresses, prices, ratios, and outlier flags
 11. Draft Report generates correct narrative with all live statistics interpolated
 12. Statistics Studio and TerraGAMA modules are retired (no broken imports, no dead routes)
-13. DiagnosisPanel returns ranked root-cause classification for a failing neighborhood, with evidence for each category
-14. Peer comparator returns top-5 structurally similar neighborhoods with overlaid radar + delta summary
+13. Lasso selection on sale-point scatter filters the stats table and updates visible stats for the selected sub-region
+14. DiagnosisPanel returns ranked root-cause classification for a failing neighborhood, with evidence for each category
+15. DiagnosisPanel activates geographic clustering overlay (Layer 6) on the map automatically — heat zone polygon shows where failing sales concentrate spatially
+16. Spatial clustering score (Moran's I) is computed server-side and returned in the `/diagnosis` response
+17. Peer comparator returns top-5 structurally similar neighborhoods with overlaid radar + delta summary
 15. Data Quality Scanner surfaces real GIS/CAMA mismatches from Benton County data (not synthetic)
 16. Time-trend attribution decomposes year-over-year COD/PRD/VEI deltas into contributing factors from the adjustment run log
 17. All AI-layer copy passes `ui-honesty-pass` — verbs are *suggests / flags / ranks / surfaces*, never *diagnoses / fixes / decides*
