@@ -574,6 +574,119 @@ function McaTimeTrend({ neighborhoodCode }: { neighborhoodCode: string }) {
   );
 }
 
+function TimeAdjustmentTable({ neighborhoodCode }: { neighborhoodCode: string }) {
+  const { salePoints, filter } = useGeoForgeStore();
+
+  const { pctPerMonth, table, r2 } = useMemo(() => {
+    const hood = salePoints.filter(
+      (s) =>
+        s.neighborhoodCode === neighborhoodCode &&
+        s.salePrice > 0 &&
+        s.saleDate &&
+        !s.isOutlier &&
+        s.qualificationDecision === 'qualified',
+    );
+    if (hood.length < 5) return { pctPerMonth: null, table: [], r2: 0 };
+
+    const byMonth: Record<string, number[]> = {};
+    for (const s of hood) {
+      const m = s.saleDate.slice(0, 7);
+      if (!byMonth[m]) byMonth[m] = [];
+      byMonth[m].push(s.salePrice);
+    }
+
+    const sorted = Object.keys(byMonth).sort();
+    const pts = sorted
+      .filter((m) => byMonth[m].length >= 2)
+      .map((m, i) => ({ month: m, x: i, y: localMedian(byMonth[m]) }));
+
+    if (pts.length < 3) return { pctPerMonth: null, table: [], r2: 0 };
+
+    const fit = olsLine(pts);
+    if (!fit) return { pctPerMonth: null, table: [], r2: 0 };
+
+    const baseline = pts[0].y;
+    if (baseline === 0) return { pctPerMonth: null, table: [], r2: 0 };
+    const rate = fit.slope / baseline;
+
+    // Assessment date = Jan 1 of tax year (YYYY-01)
+    const refYYYYMM = `${filter.taxYear}-01`;
+    const [refYr, refMo] = refYYYYMM.split('-').map(Number);
+
+    const rows = pts.map((pt) => {
+      const [yr, mo] = pt.month.split('-').map(Number);
+      const monthsAgo = (refYr - yr) * 12 + (refMo - mo);
+      const factor = 1 + rate * monthsAgo;
+      return {
+        month: pt.month,
+        n: byMonth[pt.month].length,
+        medPrice: pt.y,
+        monthsAgo,
+        factor,
+      };
+    }).filter((r) => r.monthsAgo >= 0).reverse();
+
+    return { pctPerMonth: rate * 100, table: rows, r2: fit.r2 };
+  }, [salePoints, neighborhoodCode, filter.taxYear]);
+
+  if (pctPerMonth === null || table.length < 2) return null;
+
+  const dirColor = pctPerMonth >= 0 ? 'text-sky-400' : 'text-amber-400';
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <h4 className="text-xs text-slate-500 uppercase tracking-wide">Time Adjustment Factors</h4>
+        <div className="text-right leading-tight">
+          <span className={`text-[10px] font-bold font-mono ${dirColor}`}>
+            {pctPerMonth >= 0 ? '+' : ''}{pctPerMonth.toFixed(3)}%/mo
+          </span>
+          <div className={`text-[7px] ${r2 >= 0.5 ? 'text-slate-500' : 'text-slate-700'}`}>
+            R²={r2.toFixed(2)}{r2 < 0.30 ? ' (weak)' : ''}
+          </div>
+        </div>
+      </div>
+      <p className="text-[8px] text-slate-600 mb-1.5">
+        Median sale price trend · factors to {filter.taxYear}-01-01 assessment date
+      </p>
+      <table className="w-full text-[9px]">
+        <thead>
+          <tr className="border-b border-slate-800">
+            <th className="text-left text-slate-600 py-0.5 font-normal">Month</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">n</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">Med $</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">Mo</th>
+            <th className="text-right text-slate-600 py-0.5 font-semibold">Factor</th>
+          </tr>
+        </thead>
+        <tbody>
+          {table.map((row) => {
+            const fc = row.factor;
+            const factorColor = Math.abs(fc - 1) < 0.015 ? 'text-slate-400'
+              : fc > 1 ? 'text-sky-400' : 'text-amber-400';
+            return (
+              <tr key={row.month} className="border-b border-slate-800/40">
+                <td className="py-0.5 text-slate-400 font-mono">{row.month}</td>
+                <td className="py-0.5 text-right text-slate-600">{row.n}</td>
+                <td className="py-0.5 text-right font-mono text-slate-500">
+                  ${(row.medPrice / 1000).toFixed(0)}k
+                </td>
+                <td className="py-0.5 text-right font-mono text-slate-600">{row.monthsAgo}</td>
+                <td className={`py-0.5 text-right font-mono font-bold ${factorColor}`}>
+                  {fc.toFixed(4)}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <p className="text-[7px] text-slate-700 mt-1">
+        Adjusted SP = Sale Price × factor · OLS on monthly medians (n≥2/mo)
+      </p>
+    </div>
+  );
+}
+
 function PeerComparison({ ns }: { ns: import('../types/geoforge.types').NeighborhoodStat }) {
   const { neighborhoodStats, selectNeighborhood } = useGeoForgeStore();
 
@@ -697,6 +810,8 @@ export function NeighborhoodDetailPanel() {
       <RegressivityScatter neighborhoodCode={ns.neighborhoodCode} />
 
       <McaTimeTrend neighborhoodCode={ns.neighborhoodCode} />
+
+      <TimeAdjustmentTable neighborhoodCode={ns.neighborhoodCode} />
 
       <table className="w-full text-xs">
         <tbody>
