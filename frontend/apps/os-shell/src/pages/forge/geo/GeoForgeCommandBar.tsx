@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,7 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { MapLayer } from './types/geoforge.types';
+import { apiFetchJson } from '@/lib/apiBase';
+import type { MapLayer, ParcelSearchResult } from './types/geoforge.types';
 
 const LAYER_TOGGLES: { layer: MapLayer; label: string }[] = [
   { layer: 'choropleth', label: 'Nbhd' },
@@ -22,9 +23,12 @@ export function GeoForgeCommandBar() {
   const {
     filter, setFilter, activeLayers, toggleLayer, openDrawer, rightDrawerPanel,
     salePoints, selectedMonth, setSelectedMonth,
+    setBloomParcelId, setFlyTarget,
   } = useGeoForgeStore();
+
   const years = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i);
 
+  // Month options — sorted chronologically (oldest first) for the dropdown display, desc for UX
   const saleMonths = useMemo(() => {
     const months = new Set<string>();
     for (const sp of salePoints) {
@@ -34,9 +38,84 @@ export function GeoForgeCommandBar() {
     return Array.from(months).sort().reverse();
   }, [salePoints]);
 
+  // Time-lapse animation
+  const [isPlaying, setIsPlaying] = useState(false);
+  const playIdxRef = useRef(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+
+  function startPlay() {
+    const chrono = [...saleMonths].reverse();
+    if (!chrono.length) return;
+    playIdxRef.current = 0;
+    setSelectedMonth(chrono[0]);
+    setIsPlaying(true);
+  }
+
+  function stopPlay() {
+    clearInterval(intervalRef.current);
+    setIsPlaying(false);
+  }
+
+  useEffect(() => {
+    if (!isPlaying) { clearInterval(intervalRef.current); return; }
+    const chrono = [...saleMonths].reverse();
+    intervalRef.current = setInterval(() => {
+      playIdxRef.current += 1;
+      if (playIdxRef.current >= chrono.length) {
+        clearInterval(intervalRef.current);
+        setIsPlaying(false);
+        return;
+      }
+      setSelectedMonth(chrono[playIdxRef.current]);
+    }, 900);
+    return () => clearInterval(intervalRef.current);
+  }, [isPlaying]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Also stop if user manually clears selectedMonth while playing
+  useEffect(() => {
+    if (!selectedMonth && isPlaying) stopPlay();
+  }, [selectedMonth]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Parcel search
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<ParcelSearchResult[]>([]);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (searchQuery.length < 3) { setSearchResults([]); return; }
+    const timer = setTimeout(async () => {
+      try {
+        const results = await apiFetchJson<ParcelSearchResult[]>(
+          `/api/geoforge/parcel/search?q=${encodeURIComponent(searchQuery)}&taxYear=${filter.taxYear}`
+        );
+        setSearchResults(results);
+      } catch { setSearchResults([]); }
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchQuery, filter.taxYear]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchResults([]);
+      }
+    }
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  function selectParcel(r: ParcelSearchResult) {
+    setSearchQuery('');
+    setSearchResults([]);
+    setBloomParcelId(r.parcelNumber);
+    if (r.lat && r.lng) setFlyTarget({ lat: r.lat, lng: r.lng });
+  }
+
   return (
     <div className="absolute top-0 left-0 right-[72px] z-10 flex items-center gap-2 px-3 py-2 bg-slate-950/90 backdrop-blur border-b border-slate-800">
-      <span className="text-terra-cyan font-bold text-sm tracking-widest mr-1">
+      <span className="text-terra-cyan font-bold text-sm tracking-widest shrink-0">
         GEOFORGE
       </span>
 
@@ -44,19 +123,17 @@ export function GeoForgeCommandBar() {
         value={String(filter.taxYear)}
         onValueChange={(v) => setFilter({ taxYear: Number(v) })}
       >
-        <SelectTrigger className="w-24 h-7 text-xs bg-slate-900 border-slate-700 text-white">
+        <SelectTrigger className="w-24 h-7 text-xs bg-slate-900 border-slate-700 text-white shrink-0">
           <SelectValue />
         </SelectTrigger>
         <SelectContent className="bg-slate-900 border-slate-700">
           {years.map((y) => (
-            <SelectItem key={y} value={String(y)} className="text-xs text-white">
-              {y}
-            </SelectItem>
+            <SelectItem key={y} value={String(y)} className="text-xs text-white">{y}</SelectItem>
           ))}
         </SelectContent>
       </Select>
 
-      <div className="flex gap-1 ml-1">
+      <div className="flex gap-1">
         {LAYER_TOGGLES.map(({ layer, label }) => (
           <Button
             key={layer}
@@ -74,12 +151,63 @@ export function GeoForgeCommandBar() {
         ))}
       </div>
 
+      {/* Parcel search */}
+      <div ref={searchRef} className="relative">
+        {searchOpen ? (
+          <div className="flex items-center gap-1">
+            <input
+              autoFocus
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Escape' && (setSearchOpen(false), setSearchQuery(''), setSearchResults([]))}
+              placeholder="Parcel # or address…"
+              className="h-7 w-48 text-xs bg-slate-900 border border-slate-600 text-white rounded px-2 outline-none focus:border-terra-cyan/60"
+            />
+            <button
+              onClick={() => { setSearchOpen(false); setSearchQuery(''); setSearchResults([]); }}
+              className="text-slate-500 hover:text-white text-xs"
+            >
+              ✕
+            </button>
+          </div>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-[11px] px-2 text-slate-400 border-slate-700 hover:text-white"
+            onClick={() => setSearchOpen(true)}
+            title="Search parcel"
+          >
+            ⌕
+          </Button>
+        )}
+
+        {/* Results dropdown */}
+        {searchResults.length > 0 && (
+          <div className="absolute top-8 left-0 z-50 w-72 bg-slate-900 border border-slate-700 rounded shadow-xl overflow-hidden">
+            {searchResults.map((r) => (
+              <button
+                key={r.parcelNumber}
+                className="w-full text-left px-3 py-2 hover:bg-slate-800 border-b border-slate-800 last:border-0"
+                onClick={() => selectParcel(r)}
+              >
+                <div className="text-terra-cyan font-mono text-[11px]">{r.parcelNumber}</div>
+                <div className="text-slate-400 text-[10px] truncate">{r.address}</div>
+                <div className="text-slate-600 text-[9px]">
+                  {r.neighborhood} · AV ${(r.assessedValue / 1000).toFixed(0)}k
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div className="ml-auto flex items-center gap-1">
-        {/* Month filter — only shown when sale points are loaded */}
+        {/* Month filter */}
         {saleMonths.length > 0 && (
           <Select
             value={selectedMonth ?? '__all__'}
-            onValueChange={(v) => setSelectedMonth(v === '__all__' ? null : v)}
+            onValueChange={(v) => { stopPlay(); setSelectedMonth(v === '__all__' ? null : v); }}
           >
             <SelectTrigger className="w-[100px] h-7 text-xs bg-slate-900 border-slate-700 text-white">
               <SelectValue placeholder="All months" />
@@ -91,6 +219,23 @@ export function GeoForgeCommandBar() {
               ))}
             </SelectContent>
           </Select>
+        )}
+
+        {/* Time-lapse play/stop */}
+        {saleMonths.length > 1 && (
+          <Button
+            size="sm"
+            variant="outline"
+            className={`h-7 text-[11px] px-2 ${
+              isPlaying
+                ? 'bg-sky-900/40 text-sky-300 border-sky-700/60 hover:bg-sky-800/60'
+                : 'text-slate-400 border-slate-700 hover:text-white'
+            }`}
+            onClick={isPlaying ? stopPlay : startPlay}
+            title={isPlaying ? 'Stop time-lapse' : 'Play time-lapse (oldest → newest)'}
+          >
+            {isPlaying ? '⬛' : '▶'}
+          </Button>
         )}
 
         <Button
@@ -133,12 +278,7 @@ export function GeoForgeCommandBar() {
           size="sm"
           variant="outline"
           className="h-7 text-[11px] px-2 text-slate-400 border-slate-700 hover:text-white"
-          onClick={() =>
-            window.open(
-              `/api/geoforge/ratio-study/export?taxYear=${filter.taxYear}`,
-              '_blank'
-            )
-          }
+          onClick={() => window.open(`/api/geoforge/ratio-study/export?taxYear=${filter.taxYear}`, '_blank')}
         >
           GeoJSON ↗
         </Button>

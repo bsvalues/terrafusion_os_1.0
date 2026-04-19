@@ -23,16 +23,20 @@ export const useGeoForgeStore = create<GeoForgeState>((set) => ({
   selectedNeighborhoodCode: null,
   rightDrawerPanel: 'none',
   bloomParcelId: null,
+  flyTarget: null,
   neighborhoodStats: [],
   salePoints: [],
   diagnosis: null,
   gwrSurface: null,
   simulationDeltaMap: null,
+  selectedMonth: null,
   loadingStats: false,
   loadingSales: false,
   loadingDiagnosis: false,
   loadingGwr: false,
 
+  setBloomParcelId: (bloomParcelId) => set({ bloomParcelId }),
+  setFlyTarget: (flyTarget) => set({ flyTarget }),
   setFilter: (patch) => set((s) => ({ filter: { ...s.filter, ...patch } })),
 
   toggleLayer: (layer) =>
@@ -53,6 +57,7 @@ export const useGeoForgeStore = create<GeoForgeState>((set) => ({
   setDiagnosis: (diagnosis) => set({ diagnosis }),
   setGwrSurface: (gwrSurface) => set({ gwrSurface }),
   setSimulationDeltaMap: (simulationDeltaMap) => set({ simulationDeltaMap }),
+  setSelectedMonth: (selectedMonth) => set({ selectedMonth }),
   setLoadingStats: (loadingStats) => set({ loadingStats }),
   setLoadingSales: (loadingSales) => set({ loadingSales }),
   setLoadingDiagnosis: (loadingDiagnosis) => set({ loadingDiagnosis }),

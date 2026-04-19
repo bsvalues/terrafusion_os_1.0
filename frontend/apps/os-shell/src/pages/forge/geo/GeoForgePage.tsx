@@ -10,6 +10,7 @@ import { SalesDrillDownPanel } from './panels/SalesDrillDownPanel';
 import { DiagnosisPanel } from './panels/DiagnosisPanel';
 import { YearTrendPanel } from './panels/YearTrendPanel';
 import { AdjustmentWorkbenchPanel } from './panels/AdjustmentWorkbenchPanel';
+import { ParcelBloomCard } from './ParcelBloomCard';
 import { CertificationPanel } from './panels/CertificationPanel';
 import { OutlierReviewPanel } from './panels/OutlierReviewPanel';
 import { Button } from '@/components/ui/button';
@@ -40,6 +41,7 @@ export function GeoForgePage() {
     selectedNeighborhoodCode,
     activeLayers,
     simulationDeltaMap,
+    setBloomParcelId,
   } = useGeoForgeStore();
 
   const { data: statsData, isLoading: statsLoading } = useQuery<NeighborhoodStat[]>({
@@ -94,6 +96,7 @@ export function GeoForgePage() {
       {/* Full-canvas map — always fills entire container */}
       <GeoForgeMap
         onNeighborhoodClick={(code) => selectNeighborhood(code)}
+        onSaleClick={(parcelId) => setBloomParcelId(parcelId)}
       />
 
       {/* Command bar overlays the top of the map */}
@@ -150,6 +153,9 @@ export function GeoForgePage() {
           SIMULATION · {Object.keys(simulationDeltaMap).length} nbhd{Object.keys(simulationDeltaMap).length !== 1 ? 's' : ''}
         </div>
       )}
+
+      {/* Parcel bloom card — slides up from bottom */}
+      <ParcelBloomCard />
 
       {/* Loading indicator — bottom left, floats over map */}
       {(statsLoading || salesLoading) && (

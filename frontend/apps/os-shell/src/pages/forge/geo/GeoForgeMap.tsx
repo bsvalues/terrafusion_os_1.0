@@ -13,9 +13,10 @@ const BENTON_ZOOM = 10;
 
 interface Props {
   onNeighborhoodClick: (code: string) => void;
+  onSaleClick: (parcelId: string) => void;
 }
 
-export function GeoForgeMap({ onNeighborhoodClick }: Props) {
+export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const hoverPopupRef = useRef<mapboxgl.Popup | null>(null);
@@ -27,6 +28,8 @@ export function GeoForgeMap({ onNeighborhoodClick }: Props) {
     simulationDeltaMap,
     selectedNeighborhoodCode,
     selectedMonth,
+    flyTarget,
+    setFlyTarget,
   } = useGeoForgeStore();
 
   // Initialize map once
@@ -90,22 +93,13 @@ export function GeoForgeMap({ onNeighborhoodClick }: Props) {
         hoverPopup.remove();
       });
 
-      // Sale dot click — inline bloom popup
+      // Sale dot click — opens parcel bloom card
       map.on('click', 'sale-circles', (e) => {
         e.preventDefault();
         const feat = e.features?.[0];
         if (!feat) return;
-        const p = feat.properties!;
-        const coords = (feat.geometry as GeoJSON.Point).coordinates as [number, number];
-        const ratio = Number(p.ratio);
-        const ratioColor = ratio > 1.10 ? '#f87171' : ratio > 1.05 ? '#fb923c'
-          : ratio < 0.90 ? '#60a5fa' : ratio < 0.95 ? '#93c5fd' : '#4ade80';
-        const outlierRow = p.isOutlier
-          ? '<div style="margin-top:4px;color:#f59e0b;font-weight:600;">⚠ Outlier</div>' : '';
-        new mapboxgl.Popup({ closeButton: true, maxWidth: '220px', className: 'geoforge-sale-popup' })
-          .setLngLat(coords)
-          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.7;border:1px solid #334155"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px">Sale</div><div>Price: <b>$${Number(p.salePrice).toLocaleString()}</b></div><div>Ratio: <b style="color:${ratioColor}">${ratio.toFixed(3)}</b>${outlierRow}</div></div>`)
-          .addTo(map);
+        const parcelId = feat.properties?.parcelId as string | undefined;
+        if (parcelId) onSaleClick(parcelId);
       });
 
       map.on('mouseenter', 'sale-circles', () => { map.getCanvas().style.cursor = 'crosshair'; });
@@ -195,8 +189,10 @@ export function GeoForgeMap({ onNeighborhoodClick }: Props) {
           type: 'Feature',
           geometry: { type: 'Point', coordinates: [sp.lng, sp.lat] },
           properties: {
+            parcelId: sp.parcelId,
             ratio: sp.ratio,
             salePrice: sp.salePrice,
+            saleDate: sp.saleDate,
             isOutlier: sp.isOutlier,
             color: ratioPointColor(sp.ratio),
             radius: salePointRadius(sp.salePrice),
@@ -235,6 +231,14 @@ export function GeoForgeMap({ onNeighborhoodClick }: Props) {
     const src = map.getSource('gwr-cells') as mapboxgl.GeoJSONSource | undefined;
     src?.setData(geojson);
   }, [gwrSurface]);
+
+  // Fly to parcel when search result selected
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!flyTarget || !map?.isStyleLoaded()) return;
+    map.flyTo({ center: [flyTarget.lng, flyTarget.lat], zoom: 16, duration: 1400, essential: true });
+    setFlyTarget(null);
+  }, [flyTarget, setFlyTarget]);
 
   // Month filter — narrows sale-circles and outlier-ring to a single YYYY-MM
   useEffect(() => {

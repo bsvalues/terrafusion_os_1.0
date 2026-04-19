@@ -681,7 +681,116 @@ public class GeoForgeController : ControllerBase
         });
     }
 
-    // ── 8. Outlier / flagged sale review list ──────────────────────────────
+    // ── 8. Parcel bloom card (assessment + sale history) ───────────────────
+    [HttpGet("parcel/search")]
+    public async Task<IActionResult> SearchParcels(
+        [FromQuery] string q,
+        [FromQuery] int taxYear,
+        CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(q) || q.Length < 3)
+            return Ok(Array.Empty<object>());
+
+        var matches = await _db.Properties
+            .AsNoTracking()
+            .Where(p => p.CountyId == BentonCountyId && p.TaxYear == taxYear
+                     && (p.ParcelNumber.StartsWith(q) || p.Address.Contains(q)))
+            .OrderBy(p => p.ParcelNumber)
+            .Take(10)
+            .Select(p => new { p.ParcelNumber, p.Address, p.Neighborhood, p.AssessedValue })
+            .ToListAsync(ct);
+
+        var parcelIds = matches.Select(m => m.ParcelNumber).Distinct().ToHashSet();
+        var geoMap    = await GetGeoMapAsync(parcelIds, ct);
+
+        return Ok(matches.Select(m =>
+        {
+            var geo = geoMap.TryGetValue(m.ParcelNumber, out var g) ? g : (lat: 0.0, lng: 0.0);
+            return new
+            {
+                parcelNumber  = m.ParcelNumber,
+                address       = m.Address,
+                neighborhood  = m.Neighborhood ?? "",
+                assessedValue = (double)m.AssessedValue,
+                lat           = geo.lat,
+                lng           = geo.lng,
+            };
+        }));
+    }
+
+    [HttpGet("parcel/{parcelNumber}/bloom")]
+    public async Task<IActionResult> GetParcelBloom(
+        string parcelNumber,
+        [FromQuery] int taxYear,
+        CancellationToken ct = default)
+    {
+        var prop = await _db.Properties
+            .AsNoTracking()
+            .Where(p => p.ParcelNumber == parcelNumber && p.TaxYear == taxYear && p.CountyId == BentonCountyId)
+            .FirstOrDefaultAsync(ct);
+
+        var avHistory = await _db.Properties
+            .AsNoTracking()
+            .Where(p => p.ParcelNumber == parcelNumber && p.CountyId == BentonCountyId
+                     && p.TaxYear >= taxYear - 4 && p.TaxYear <= taxYear)
+            .OrderBy(p => p.TaxYear)
+            .Select(p => new { p.TaxYear, p.AssessedValue, p.LandValue, p.ImprovementValue })
+            .ToListAsync(ct);
+
+        var sales = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.ParcelId == parcelNumber)
+            .OrderByDescending(s => s.SaleDate)
+            .Take(8)
+            .Select(s => new
+            {
+                saleId  = s.Id.ToString(),
+                saleDate = s.SaleDate.ToString("yyyy-MM-dd"),
+                salePrice = (double)(s.AdjustedSalePrice ?? s.SalePrice),
+                qualificationDecision = s.QualificationDecision ?? s.QualificationRecommendation ?? "unreviewed",
+            })
+            .ToListAsync(ct);
+
+        var currentAv = prop?.AssessedValue ?? 0m;
+        var salesWithRatio = sales.Select(s => new
+        {
+            s.saleId,
+            s.saleDate,
+            s.salePrice,
+            s.qualificationDecision,
+            ratio = currentAv > 0 && s.salePrice > 0
+                ? (double?)Math.Round((double)currentAv / s.salePrice, 4) : null,
+        }).ToList();
+
+        var geoMap = await GetGeoMapAsync(new[] { parcelNumber }, ct);
+        var geo    = geoMap.TryGetValue(parcelNumber, out var g) ? g : (lat: 0.0, lng: 0.0);
+
+        return Ok(new
+        {
+            parcelNumber,
+            address      = prop?.Address ?? "",
+            ownerName    = prop?.OwnerName ?? "",
+            propertyType = prop?.PropertyType ?? "residential",
+            neighborhood = prop?.Neighborhood ?? "",
+            situsCity    = prop?.SitusCity ?? "",
+            yearBuilt    = prop?.YearBuilt,
+            currentAv    = (double)currentAv,
+            landValue    = prop != null ? (double)prop.LandValue : 0.0,
+            improvValue  = prop != null ? (double)prop.ImprovementValue : 0.0,
+            avHistory    = avHistory.Select(h => new
+            {
+                taxYear          = h.TaxYear,
+                assessedValue    = (double)h.AssessedValue,
+                landValue        = (double)h.LandValue,
+                improvementValue = (double)h.ImprovementValue,
+            }),
+            salesHistory = salesWithRatio,
+            centroidLat  = geo.lat,
+            centroidLng  = geo.lng,
+        });
+    }
+
+    // ── 9. Outlier / flagged sale review list ──────────────────────────────
     [HttpGet("sales/outliers")]
     public async Task<IActionResult> GetFlaggedSales(
         [FromQuery] int taxYear,

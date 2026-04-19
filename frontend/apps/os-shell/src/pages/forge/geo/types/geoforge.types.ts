@@ -209,6 +209,47 @@ export interface StratumResult {
   rcwPass: boolean;
 }
 
+export interface BloomAvYear {
+  taxYear: number;
+  assessedValue: number;
+  landValue: number;
+  improvementValue: number;
+}
+
+export interface BloomSale {
+  saleId: string;
+  saleDate: string;
+  salePrice: number;
+  qualificationDecision: string;
+  ratio: number | null;
+}
+
+export interface BloomParcel {
+  parcelNumber: string;
+  address: string;
+  ownerName: string;
+  propertyType: string;
+  neighborhood: string;
+  situsCity: string;
+  yearBuilt: number | null;
+  currentAv: number;
+  landValue: number;
+  improvValue: number;
+  avHistory: BloomAvYear[];
+  salesHistory: BloomSale[];
+  centroidLat: number;
+  centroidLng: number;
+}
+
+export interface ParcelSearchResult {
+  parcelNumber: string;
+  address: string;
+  neighborhood: string;
+  assessedValue: number;
+  lat: number;
+  lng: number;
+}
+
 export interface CertificationSummary {
   taxYear: number;
   generatedAt: string;
@@ -224,13 +265,12 @@ export interface GeoForgeState {
   selectedNeighborhoodCode: string | null;
   rightDrawerPanel: RightDrawerPanel;
   bloomParcelId: string | null;
+  flyTarget: { lat: number; lng: number } | null;
   neighborhoodStats: NeighborhoodStat[];
   salePoints: SalePoint[];
   diagnosis: DiagnosisResult | null;
   gwrSurface: GwrSurface | null;
-  /** neighborhoodCode → % adjustment magnitude — drives amber simulation overlay on map */
   simulationDeltaMap: Record<string, number> | null;
-  /** "YYYY-MM" — when set, map sale-circles filter to this month only */
   selectedMonth: string | null;
   loadingStats: boolean;
   loadingSales: boolean;
@@ -241,6 +281,8 @@ export interface GeoForgeState {
   selectNeighborhood: (code: string | null, panel?: RightDrawerPanel) => void;
   openDrawer: (panel: RightDrawerPanel) => void;
   closeDrawer: () => void;
+  setBloomParcelId: (id: string | null) => void;
+  setFlyTarget: (target: { lat: number; lng: number } | null) => void;
   setNeighborhoodStats: (stats: NeighborhoodStat[]) => void;
   setSalePoints: (sales: SalePoint[]) => void;
   setDiagnosis: (d: DiagnosisResult | null) => void;
