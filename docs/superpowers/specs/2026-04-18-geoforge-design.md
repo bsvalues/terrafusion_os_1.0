@@ -115,10 +115,11 @@ PRD, VEI, Median Ratio each have their own 6-stop scale keyed to Benton Method t
 - Meta: n sales · tax year
 - Equity Signature radar (54×54px hexagonal, 6-axis)
 - 5 key stats with threshold bar and IAAO badge: Median Ratio, COD, PRD, PRB, VEI
-- "+ 7 more →" link expands to full 12-stat panel
-- Footer: sale count · date range · "View all sales →" link
+- "Details →" link opens the full Neighborhood Detail Panel (same panel reached by expanding the stats-table row, described in Zone 4)
+- "Diagnose →" link opens the AI Diagnosis Panel for this neighborhood (see AI Superpower Layer section)
+- Footer: sale count · date range · "View sales →" link opens the Sales Drill-Down Panel
 
-Clicking outside the card or another polygon closes current bloom and opens new one.
+Clicking outside the card or another polygon closes current bloom and opens new one. The bloom card itself is a **peek** — the three deep links (Details / Diagnose / View sales) all transition into the right panel, which pins (replacing the stats table when open), allowing the map to remain interactive underneath.
 
 **Map decorations:** Legend (bottom-left), Scale bar (bottom-right), N arrow (top-right), Columbia River and city boundary labels as static SVG overlays.
 
@@ -133,7 +134,18 @@ Always-visible sortable table of all neighborhoods. Structure:
 - **Columns**: Neighborhood name · COD · PRD · VEI · n. Clicking any column header sorts ascending/descending; the map repaints to match sorted order.
 - **Highlighted row**: currently selected neighborhood shown with cyan left border and background tint.
 - **Sync**: clicking any row pans + highlights the corresponding polygon on the map.
-- **Expand row**: clicking a neighborhood row expands an inline drawer showing the full 12-stat breakdown + individual sales table.
+- **Expand row**: clicking a neighborhood row opens the **Neighborhood Detail Panel** — the single canonical deep-dive surface (same panel opened by bloom-card "Details →"). The detail panel pins as a right drawer over the stats table; stats table re-appears when detail panel is dismissed.
+
+**Panel hierarchy (one source of truth per content type):**
+
+| Content | Panel component | Opened by |
+|---|---|---|
+| Full 12-stat + quintile breakdown + radar (full size) | `NeighborhoodDetailPanel` | Bloom "Details →" OR table row expand |
+| Ratio histogram + sales list with flags | `SalesDrillDownPanel` | Bloom "View sales →" OR inside NeighborhoodDetailPanel tab |
+| AI root-cause diagnosis + recommended actions | `DiagnosisPanel` | Bloom "Diagnose →" OR ⌘K "diagnose \[neighborhood]" |
+| Report narrative | `ReportPanel` | Command bar "✦ Draft Report" |
+
+All panels are mutually exclusive within the right-panel slot. Only one is mounted at a time to keep the interaction surface legible.
 
 ### Zone 5: Equity Rail (44px bottom)
 
@@ -193,7 +205,7 @@ A neighborhood can pass IAAO but fail Benton. Both are shown. The choropleth col
 
 ## Equity Signature Radar
 
-Every neighborhood has a hexagonal radar chart with 6 axes — the 6 **equity indicators** from the 12-stat set. The remaining 6 (Lo Range, Hi Range, Mean, Aggregate Mean, Variance, SD, CV) are descriptive/distributional stats shown in the stat block grid, but are not equity indicators and would clutter the radar without adding signal.
+Every neighborhood has a hexagonal radar chart with 6 axes — the 6 **equity indicators** most diagnostic of assessment fairness. Of these 6 axes, 4 are drawn from the core 12-stat set (Median Ratio, AAD, COD, PRD) and 2 are from the beyond-IAAO Benton Method set (PRB, VEI). The other 8 stats in the full panel (Lo Range, Hi Range, Mean, Aggregate Mean, Variance, SD, CV, Count) are descriptive / distributional and shown in the stat block grid, but are not equity indicators and would clutter the radar without adding signal.
 
 **6 radar axes:**
 - Median Ratio (12 o'clock)
@@ -297,6 +309,13 @@ All numbers are live — pulled from the currently selected tax year's data. The
 
 Two endpoints not yet in the backend are needed. The existing `comparison-snapshots` endpoint only returns `{neighborhood_code, parcel_count, median_ratio, cod, prd, sale_count}` — insufficient for the Benton Method.
 
+**All new endpoints follow existing Kernel security contract:**
+- `[Authorize]` attribute (JWT required)
+- `CountyId` resolved from authenticated user's claims — never accepted as a query parameter or body field
+- All LINQ queries filter by `.Where(x => x.CountyId == currentUser.CountyId)` before any neighborhood or year filter
+- Responses echo `countyId` for client-side verification but server discards any client-supplied value
+- Per FISMA-HIGH audit requirements, every request is logged with user ID, neighborhood scope, tax year, and response row count via existing `AuditableEntityInterceptor`
+
 ### Endpoint 1: Neighborhood Stats (all 12 Benton Method stats per neighborhood)
 
 ```
@@ -371,6 +390,56 @@ Response:
 }
 ```
 
+### Endpoint 3: Neighborhood Diagnosis (AI root-cause classifier + peer match)
+
+```
+GET /api/terraforge/ratio-study/diagnosis
+  ?neighborhood=KW-302
+  &taxYear=2025
+  &includePeers=true           // top 5 structural peers, default true
+  &includeDataQuality=true     // integrity flags, default true
+
+Response:
+{
+  "neighborhood": "KW-302",
+  "taxYear": 2025,
+  "rootCauses": [
+    {
+      "category": "stratification",         // data_quality | stratification | outliers | external
+      "confidence": 0.62,
+      "summary": "Ratio distribution is bimodal; quintile 1 mean ratio 0.94 vs quintile 5 mean ratio 1.08 indicates differential treatment by value tier.",
+      "evidence": { "modes": [0.94, 1.08], "quintileMeans": [0.94, 0.98, 0.99, 1.02, 1.08] }
+    },
+    {
+      "category": "data_quality",
+      "confidence": 0.23,
+      "summary": "6 sales flagged with missing improvement records.",
+      "evidence": { "suspectParcelIds": ["...","..."] }
+    }
+  ],
+  "peers": [
+    {
+      "neighborhoodCode": "RP-401",
+      "similarity": 0.87,
+      "delta": "COD 8.4 (vs your 14.5); 73% more basement-finish coded; mean sale $42k higher",
+      "stats": { /* full NeighborhoodStats */ }
+    }
+  ],
+  "dataQualityFlags": [
+    {
+      "parcelId": "...",
+      "flagType": "lot_area_mismatch",       // lot_area_mismatch | missing_improvement | sketch_living_area_delta | qualification_inconsistent
+      "cama": 8712,
+      "gis": 9840,
+      "deltaPct": 11.5,
+      "severity": "medium"                    // low | medium | high
+    }
+  ]
+}
+```
+
+Implementation: root-cause scoring uses rule-based classifiers over the `ComparableSales` distribution and `PropertyAssessments` feature fields — no LLM in v1. Peer similarity is cosine over a fixed feature vector (stock age distribution, value range, count, improvement class mix). Data quality flags use existing GIS+CAMA cross-checks already present in `terra-forge-rebuild` module.
+
 All other required endpoints already exist in `TerraForgeController.cs` and `TerraFusionSyncController.cs`.
 
 ---
@@ -390,22 +459,31 @@ frontend/apps/os-shell/src/pages/forge/geoforge/
   GeoForgeReportPanel.tsx             — draft report side panel
   GeoForgeYearScrubber.tsx            — year pill strip
   panels/
-    NeighborhoodDetailPanel.tsx       — expanded 12-stat + quintile + sales
+    NeighborhoodDetailPanel.tsx       — expanded 12-stat + quintile + radar (canonical)
     SalesDrillDownPanel.tsx           — individual sales table + histogram
-    YearTrendPanel.tsx                — 5-year comparison table
-    EquitySignatureRadar.tsx          — hexagonal radar (mini + full sizes)
+    YearTrendPanel.tsx                — 5-year comparison table + attribution tab
+    DiagnosisPanel.tsx                — AI root-cause, peers, data-quality scanner
+    EquitySignatureRadar.tsx          — hexagonal radar (mini + full, overlay-capable)
   hooks/
     useGeoForgeData.ts                — TanStack Query fetcher for all ratio data
     useNeighborhoodGeoJSON.ts         — fetches + caches TerraAtlas polygon layer
     useGeoForgeCommands.ts            — ⌘K command dispatch
+    useDiagnosis.ts                   — fetches root-cause classification + peers
+    useDataQualityScan.ts             — runs integrity sweep for a neighborhood
   store/
-    geoForgeStore.ts                  — Zustand: active metric, year, selection, filters
+    geoForgeStore.ts                  — Zustand: metric, year, selection, filters,
+                                         + adjustmentProposals (v2-reserved, always []),
+                                         + activeAdjustmentSetId (v2-reserved, always null)
   utils/
     bentonMethodCalcs.ts              — VEI, PRB, equity signature normalization
     choropleths.ts                    — metric → color scale mappings
     reportTemplates.ts                — ratio study narrative template strings
+    rootCauseClassifier.ts            — client-side ranking logic over endpoint output
+    peerSimilarity.ts                 — cosine similarity over feature vectors
+    attributionDecomposer.ts          — year-over-year delta decomposition
   types/
-    geoforge.types.ts                 — NeighborhoodStats, SaleRecord, GeoForgeMetric, etc.
+    geoforge.types.ts                 — NeighborhoodStats, SaleRecord, GeoForgeMetric,
+                                         DiagnosisResult, PeerMatch, DataQualityFlag, etc.
 
 backend/src/TerraFusion.API/Controllers/
   (extend TerraForgeController.cs)    — add /ratio-study/sales endpoint
@@ -433,6 +511,88 @@ frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx
 
 ---
 
+## AI Superpower Layer (v1 — read-only sensing)
+
+The elite assessor's workflow is a loop: **See → Diagnose → Adjust → Verify → Certify**. The v1 map, stats table, bloom card, radar, and draft report serve *See* and *Certify*. The AI layer in v1 closes the gap between them — it answers *"why is this failing?"* without yet answering *"what do I change?"*. All v1 AI features are read-only explainers. No write-back. No model mutation. The assessor remains the decision-maker; AI amplifies sensing.
+
+### The Diagnosis Panel (`DiagnosisPanel`)
+
+Opened from the bloom card's "Diagnose →" link or ⌘K `diagnose [neighborhood]`. For the selected neighborhood and tax year, the panel runs a **root-cause classifier** that inspects the ratio distribution shape, the sales composition, the per-parcel feature coding, and the geographic/temporal distribution of sales, then returns a ranked diagnosis with evidence.
+
+The classifier assigns weights across four root-cause categories:
+
+| Category | Trigger signals | Evidence shown |
+|---|---|---|
+| **Data quality** | AVs without improvement records, sketch-area mismatches, parcel-area mismatches between CAMA and GIS, year-built vs permit-record drift, sale price outside ±3σ | List of suspect parcel IDs, suspect fields, confidence per row |
+| **Stratification / submarket** | Bimodal or multimodal ratio distribution, quintile mean ratios diverging monotonically, geographic clustering of high-ratio sales in sub-region | Histogram with detected modes, quintile chart, sub-region polygon suggestion |
+| **True outliers** | One or two sales in extreme tails with verified arms-length status, COD driven by <5% of sales | Ranked outlier list, impact delta (COD/PRD if removed) |
+| **External factor / temporal** | Recent ratio trend differs significantly from county trend, sales cluster near new infrastructure/zoning change, value tier diverging over time | 5-year trend overlay, geographic correlation map (nearby polygons with same pattern), suggested external event |
+
+For each category, the panel shows a confidence bar, one-paragraph plain-language explanation, and an evidence drawer. The assessor is always the decision-maker — the panel never auto-applies anything.
+
+**AI framing discipline:** All v1 copy uses honest verbs — *suggests*, *flags*, *classifies*, *surfaces*, *ranks*. No copy claims the AI *diagnoses*, *fixes*, or *decides*. Subject to `ui-honesty-pass` review.
+
+### The Peer Comparator
+
+Inside the Diagnosis Panel, a **"Similar neighborhoods"** strip shows 3–5 peer neighborhoods ranked by structural similarity (housing stock age distribution, value range, sale count, improvement class mix). For each peer:
+
+- Peer equity signature radar, overlaid on subject's radar (subject in cyan, peer in amber)
+- 1-line delta summary: *"RP-401 is structurally similar but has COD 8.4 (vs. your 14.5). Biggest differences: 73% more basement-finish coded, mean sale price $42k higher, 2.3× more view-coded parcels."*
+- Click-through pans the map to the peer and opens its Diagnosis Panel
+
+Peer similarity is computed from feature vectors already in `ComparableSales` and `PropertyAssessments` — no new data required. The similarity model (cosine over normalized feature vector) runs server-side as part of the stats endpoint response when `?includePeers=true`.
+
+### The Data Quality Scanner
+
+⌘K `scan data quality [neighborhood]` runs a lightweight integrity sweep across the neighborhood's parcels and sales:
+
+- **Geometric cross-check**: parcel polygon area (GIS) vs. recorded lot size (CAMA) — flag >5% delta
+- **Improvement sanity**: AV < land value only (missing improvement record)
+- **Sketch-vs-record**: sketch SF vs living area SF — flag >3% delta
+- **Sale qualification audit**: arms-length flag consistency vs sale-price-to-AV ratio outside 0.6–1.6
+
+Result is a sortable table of suspect records with a **"Confirm/Dismiss"** toggle (local state only in v1 — v2 will persist). Scanner runs via existing `ComparableSales` + `PropertyAssessments` queries; no new data.
+
+### Time-Trend Attribution
+
+In the YearTrendPanel, a new **"What changed"** section surfaces the top three factors that moved the equity metrics year-over-year. E.g.:
+
+*"COD improved from 14.2 → 11.8 between 2023 and 2024. Largest contributors: 18 sales in East Kennewick with corrected basement-finish coding (−1.6 COD), time-trend adjustment +3.2% applied in Q3 2023 (−0.5 COD), 4 sales now disqualified (−0.3 COD)."*
+
+Attribution is rule-based (no ML) — it replays the delta decomposition against known adjustment runs and data-correction log entries. Requires that adjustment runs are logged (this is where v1 touches v2 infrastructure — see Forward Compatibility).
+
+### ⌘K AI commands (extends the earlier command table)
+
+| Command | Panel opened |
+|---|---|
+| `diagnose [neighborhood]` | DiagnosisPanel |
+| `compare to peers [neighborhood]` | DiagnosisPanel → Peer strip focused |
+| `scan data quality [neighborhood]` | DiagnosisPanel → Data Quality tab |
+| `what changed [neighborhood] [year] vs [year]` | YearTrendPanel → Attribution tab |
+| `explain report [section]` | ReportPanel → AI rationale overlay |
+
+---
+
+## Forward Compatibility — v2 Adjustment Workbench
+
+GeoForge v2 closes the loop: **Adjust → Verify** with actual write-back to assessed values under audit. Full v2 design lives in a companion spec (`docs/superpowers/specs/2026-04-18-geoforge-v2-adjustment-workbench.md`) to keep v1 scope tight. v1 must not paint us into a corner. Two v1 choices make v2 cheap to add later:
+
+1. **Stats endpoint takes an optional `proposedAdjustmentSetId`.** In v1 this is always null. In v2 it layers staged adjustments into recomputed stats for live simulation without touching base data.
+
+   ```
+   GET /api/terraforge/ratio-study/neighborhood-stats
+     ?taxYear=2025
+     &proposedAdjustmentSetId=<uuid>   // v1: ignored/null, v2: applies overlay
+   ```
+
+2. **Zustand store reserves `adjustmentProposals` and `activeAdjustmentSetId` slots from day one.** v1 never writes to them; v2 populates them. This prevents a cross-cutting refactor later.
+
+3. **All stat-display components accept a `mode: 'live' | 'simulated'` prop.** In v1 the prop is always `'live'`; in v2 it drives the ghost-overlay rendering.
+
+No other v1 work is gated on v2. v2 is additive.
+
+---
+
 ## What GeoForge Does NOT Replace
 
 - **TerraAtlas suite** — parcel browsing, sketch viewer, GIS layers, parcel search. GeoForge consumes TerraAtlas data but does not replace TerraAtlas.
@@ -457,3 +617,11 @@ frontend/apps/os-shell/src/pages/forge/statistics/StatisticsStudio.tsx
 10. Individual sales drill-down shows real Benton County sale addresses, prices, ratios, and outlier flags
 11. Draft Report generates correct narrative with all live statistics interpolated
 12. Statistics Studio and TerraGAMA modules are retired (no broken imports, no dead routes)
+13. DiagnosisPanel returns ranked root-cause classification for a failing neighborhood, with evidence for each category
+14. Peer comparator returns top-5 structurally similar neighborhoods with overlaid radar + delta summary
+15. Data Quality Scanner surfaces real GIS/CAMA mismatches from Benton County data (not synthetic)
+16. Time-trend attribution decomposes year-over-year COD/PRD/VEI deltas into contributing factors from the adjustment run log
+17. All AI-layer copy passes `ui-honesty-pass` — verbs are *suggests / flags / ranks / surfaces*, never *diagnoses / fixes / decides*
+18. Every new endpoint filters by `CountyId` from JWT claims before any other filter; query-param county values are rejected
+19. Initial choropleth paints within 2500ms (LCP gate); metric pill switch repaints within 300ms
+20. Zustand store reserves `adjustmentProposals` and `activeAdjustmentSetId` slots; stat endpoints accept optional `proposedAdjustmentSetId` param (v2 forward-compat, v1 always null/ignored)
