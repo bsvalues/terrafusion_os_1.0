@@ -101,7 +101,8 @@ export type MapLayer =
   | 'context'
   | 'ai-cluster'
   | 'kde'
-  | 'gwr';
+  | 'gwr'
+  | 'neighborhood-poly';
 
 export type RightDrawerPanel =
   | 'none'

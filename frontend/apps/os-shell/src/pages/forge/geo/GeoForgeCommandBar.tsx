@@ -13,6 +13,7 @@ import type { MapLayer, ParcelSearchResult } from './types/geoforge.types';
 
 const LAYER_TOGGLES: { layer: MapLayer; label: string }[] = [
   { layer: 'choropleth', label: 'Nbhd' },
+  { layer: 'neighborhood-poly', label: 'Poly' },
   { layer: 'sale-scatter', label: 'Sales' },
   { layer: 'kde', label: 'KDE' },
   { layer: 'gwr', label: 'GWR' },

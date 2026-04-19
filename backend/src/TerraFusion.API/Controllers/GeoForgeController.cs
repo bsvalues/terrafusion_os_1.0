@@ -903,7 +903,90 @@ public class GeoForgeController : ControllerBase
         return Ok(new { saleId, decision = req.Decision, updatedAt = DateTime.UtcNow.ToString("o") });
     }
 
-    // ── 10. IAAO Property Class Stratification ────────────────────────────────
+    // ── 10. Neighborhood polygon boundaries (convex hull of parcel centroids) ─
+    [HttpGet("neighborhoods/boundaries")]
+    public async Task<IActionResult> GetNeighborhoodBoundaries(
+        [FromQuery] int taxYear = 0,
+        CancellationToken ct = default)
+    {
+        if (taxYear == 0) taxYear = DateTime.Now.Year;
+
+        // Join parcel centroids with neighborhood codes
+        var parcelPoints = await (
+            from geo in _db.GisParcelGeometries
+            join prop in _db.Properties
+                .Where(p => p.CountyId == BentonCountyId && p.TaxYear == taxYear
+                         && p.Neighborhood != null && p.Neighborhood != "")
+                on geo.ParcelId equals prop.ParcelNumber
+            where geo.CentroidLat.HasValue && geo.CentroidLng.HasValue
+            select new
+            {
+                Neighborhood = prop.Neighborhood!,
+                Lat = geo.CentroidLat!.Value,
+                Lng = geo.CentroidLng!.Value,
+            }
+        ).ToListAsync(ct);
+
+        // Qualified sale stats for choropleth coloring
+        var salePtIds = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.CountyId == BentonCountyId
+                     && s.SalesYear == taxYear
+                     && s.QualificationDecision != "disqualified"
+                     && s.Neighborhood != null)
+            .Select(s => new { Nbhd = s.Neighborhood!, s.ParcelId, SalePrice = s.AdjustedSalePrice ?? s.SalePrice })
+            .Where(s => s.ParcelId != null && s.SalePrice > 10_000m)
+            .ToListAsync(ct);
+
+        var avMap = await GetAssessedValueMapAsync(salePtIds.Select(s => s.ParcelId!), taxYear, ct);
+
+        var hoodStats = salePtIds
+            .Where(s => s.ParcelId != null && avMap.ContainsKey(s.ParcelId!))
+            .Select(s => (Nbhd: s.Nbhd, Ratio: avMap[s.ParcelId!] / s.SalePrice))
+            .GroupBy(r => r.Nbhd)
+            .ToDictionary(g => g.Key, g =>
+            {
+                var ratios = g.Select(r => r.Ratio).OrderBy(r => r).ToList();
+                return (median: TrendStats.Median(ratios), n: ratios.Count);
+            });
+
+        // Build GeoJSON features (one polygon per neighborhood)
+        var features = parcelPoints
+            .GroupBy(p => p.Neighborhood)
+            .Select(g =>
+            {
+                var pts = g.Select(p => (p.Lat, p.Lng)).ToList();
+                if (pts.Count < 3) return (object?)null;
+
+                var hull = GeoHull.Compute(pts);
+                if (hull.Count < 3) return (object?)null;
+                hull.Add(hull[0]); // close ring
+
+                var coords = hull.Select(p => new[] { p.lng, p.lat }).ToArray();
+                var nbhd = g.Key;
+                var stats = hoodStats.TryGetValue(nbhd, out var st) ? st : (median: 1.0m, n: 0);
+
+                return (object?)new
+                {
+                    type = "Feature",
+                    geometry = new { type = "Polygon", coordinates = new[] { coords } },
+                    properties = new
+                    {
+                        neighborhoodCode = nbhd,
+                        medianRatio = (double)Math.Round(stats.median, 3),
+                        saleCount = stats.n,
+                        color = RatioColorHex((double)stats.median),
+                    },
+                };
+            })
+            .Where(f => f != null)
+            .ToList();
+
+        Response.ContentType = "application/geo+json";
+        return Ok(new { type = "FeatureCollection", features });
+    }
+
+    // ── 11. IAAO Property Class Stratification ────────────────────────────────
     [HttpGet("stratification")]
     public async Task<IActionResult> GetStratification(
         [FromQuery] int taxYear = 0,
@@ -958,6 +1041,15 @@ public class GeoForgeController : ControllerBase
 
     // ── Private helpers ──────────────────────────────────────────────────────
 
+    private static string RatioColorHex(double ratio) => ratio switch
+    {
+        > 1.15 => "#ef4444",
+        > 1.05 => "#f97316",
+        < 0.85 => "#3b82f6",
+        < 0.95 => "#60a5fa",
+        _       => "#4ade80",
+    };
+
     private async Task<Dictionary<string, decimal>> GetAssessedValueMapAsync(
         IEnumerable<string> parcelNumbers, int taxYear, CancellationToken ct)
     {
@@ -1008,6 +1100,39 @@ public class GeoForgeController : ControllerBase
 public record PatchQualificationRequest(string Decision);
 
 internal record StrataRowDto(string code, string label, int n, double medianRatio, double cod, double prd, bool iaaoOk);
+
+internal static class GeoHull
+{
+    // Andrew's monotone chain — O(n log n) convex hull
+    public static List<(double lat, double lng)> Compute(List<(double lat, double lng)> pts)
+    {
+        var n = pts.Count;
+        if (n < 3) return pts;
+
+        var sorted = pts.OrderBy(p => p.lng).ThenBy(p => p.lat).ToList();
+        var hull = new (double lat, double lng)[2 * n];
+        var k = 0;
+
+        for (int i = 0; i < n; i++)
+        {
+            while (k >= 2 && Cross(hull[k - 2], hull[k - 1], sorted[i]) <= 0) k--;
+            hull[k++] = sorted[i];
+        }
+        for (int i = n - 2, t = k + 1; i >= 0; i--)
+        {
+            while (k >= t && Cross(hull[k - 2], hull[k - 1], sorted[i]) <= 0) k--;
+            hull[k++] = sorted[i];
+        }
+
+        return hull.Take(k - 1).ToList();
+    }
+
+    private static double Cross(
+        (double lat, double lng) O,
+        (double lat, double lng) A,
+        (double lat, double lng) B)
+        => (A.lng - O.lng) * (B.lat - O.lat) - (A.lat - O.lat) * (B.lng - O.lng);
+}
 
 internal static class GeoStrataMeta
 {

@@ -33,6 +33,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     setFlyTarget,
     bloomLatlng,
     selectedRadiusMi,
+    filter,
   } = useGeoForgeStore();
 
   // Initialize map once
@@ -60,6 +61,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     hoverPopupRef.current = hoverPopup;
 
     map.on('load', () => {
+      addNeighborhoodPolyLayer(map);
       addNeighborhoodLayer(map);
       addSimulationOverlayLayer(map);
       addSaleScatterLayer(map);
@@ -244,6 +246,15 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     setFlyTarget(null);
   }, [flyTarget, setFlyTarget]);
 
+  // Neighborhood polygon boundaries — reload when taxYear or poly layer visibility changes
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded()) return;
+    if (!activeLayers.has('neighborhood-poly')) return;
+    const src = map.getSource('neighborhoods-poly') as mapboxgl.GeoJSONSource | undefined;
+    src?.setData(`/api/geoforge/neighborhoods/boundaries?taxYear=${filter.taxYear}`);
+  }, [filter.taxYear, activeLayers]);
+
   // Comp radius ring — amber dashed polygon + cyan highlight on in-radius sales
   useEffect(() => {
     const map = mapRef.current;
@@ -310,6 +321,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
 
     const layerMap: Partial<Record<MapLayer, string[]>> = {
       choropleth: ['neighborhood-fill', 'neighborhood-label'],
+      'neighborhood-poly': ['neighborhood-poly-fill', 'neighborhood-poly-outline', 'neighborhood-poly-label'],
       'sale-scatter': ['sale-circles', 'sale-outlier-ring'],
       kde: ['kde-heat'],
       'ai-cluster': ['ai-cluster-circles'],
@@ -330,6 +342,55 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       className="absolute inset-0 w-full h-full"
     />
   );
+}
+
+function addNeighborhoodPolyLayer(map: mapboxgl.Map) {
+  map.addSource('neighborhoods-poly', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  });
+
+  map.addLayer({
+    id: 'neighborhood-poly-fill',
+    type: 'fill',
+    source: 'neighborhoods-poly',
+    layout: { visibility: 'none' },
+    paint: {
+      'fill-color': ['get', 'color'],
+      'fill-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.20, 13, 0.12],
+    },
+  });
+
+  map.addLayer({
+    id: 'neighborhood-poly-outline',
+    type: 'line',
+    source: 'neighborhoods-poly',
+    layout: { visibility: 'none' },
+    paint: {
+      'line-color': ['get', 'color'],
+      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 13, 2.5],
+      'line-opacity': 0.85,
+    },
+  });
+
+  map.addLayer({
+    id: 'neighborhood-poly-label',
+    type: 'symbol',
+    source: 'neighborhoods-poly',
+    minzoom: 9,
+    layout: {
+      visibility: 'none',
+      'text-field': ['get', 'neighborhoodCode'],
+      'text-size': 10,
+      'text-anchor': 'center',
+      'text-allow-overlap': false,
+    },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': '#000000',
+      'text-halo-width': 1.5,
+    },
+  });
 }
 
 function addNeighborhoodLayer(map: mapboxgl.Map) {
