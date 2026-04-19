@@ -1,4 +1,5 @@
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
+import { BIVARIATE_GRID } from './utils/choropleths';
 
 const RATIO_LEGEND = [
   { label: '> 1.15', color: '#ef4444', sub: 'Over-assessed' },
@@ -68,6 +69,7 @@ export function GeoForgeMapLegend() {
 
   const showRatio = activeLayers.has('choropleth') || activeLayers.has('sale-scatter') || activeLayers.has('neighborhood-poly');
 
+  const isBivariate = choroMode === 'bivariate';
   const choroLegend = choroMode === 'cod' ? COD_LEGEND
     : choroMode === 'prd' ? PRD_LEGEND
     : choroMode === 'prb' ? PRB_LEGEND
@@ -75,6 +77,7 @@ export function GeoForgeMapLegend() {
   const choroTitle = choroMode === 'cod' ? 'COD'
     : choroMode === 'prd' ? 'PRD'
     : choroMode === 'prb' ? 'PRB'
+    : choroMode === 'bivariate' ? 'Ratio × COD'
     : 'Ratio';
   const showYoy   = activeLayers.has('yoy-change');
   const showMkt   = activeLayers.has('market-trend');
@@ -85,7 +88,7 @@ export function GeoForgeMapLegend() {
 
   return (
     <div className="absolute bottom-8 right-[80px] z-20 flex flex-col gap-1.5">
-      {showRatio && (
+      {showRatio && !isBivariate && (
         <div className="bg-slate-950/90 backdrop-blur border border-slate-800 rounded-md px-2.5 py-2 min-w-[130px]">
           <p className="text-[8px] text-slate-500 uppercase tracking-wider mb-1.5">{choroTitle}</p>
           {choroLegend.map(({ label, color, sub }) => (
@@ -95,6 +98,44 @@ export function GeoForgeMapLegend() {
               {sub && <span className="text-[8px] text-slate-600">{sub}</span>}
             </div>
           ))}
+        </div>
+      )}
+
+      {showRatio && isBivariate && (
+        <div className="bg-slate-950/90 backdrop-blur border border-slate-800 rounded-md px-2.5 py-2">
+          <p className="text-[8px] text-slate-500 uppercase tracking-wider mb-1.5">Ratio × COD</p>
+          {/* 3×3 bivariate grid */}
+          <div className="flex gap-0.5 mb-0.5">
+            {['≤12', '12-20', '>20'].map(label => (
+              <span key={label} className="flex-1 text-center text-[6px] text-slate-600 font-mono">{label}</span>
+            ))}
+          </div>
+          {BIVARIATE_GRID.map((row, ri) => {
+            const rowLabel = ri === 0 ? '<0.90' : ri === 1 ? '0.90–1.10' : '>1.10';
+            const rowSub   = ri === 0 ? 'Under' : ri === 1 ? 'Parity' : 'Over';
+            return (
+              <div key={ri} className="flex items-center gap-0.5 mb-0.5">
+                <span className="w-[38px] text-right text-[6px] text-slate-600 font-mono shrink-0">{rowLabel}</span>
+                {row.map((color, ci) => (
+                  <span
+                    key={ci}
+                    className="flex-1 h-3 rounded-[2px]"
+                    style={{ backgroundColor: color }}
+                    title={`${rowSub} ratio, ${ci === 0 ? 'uniform' : ci === 1 ? 'moderate' : 'scattered'} COD`}
+                  />
+                ))}
+                <span className="text-[6px] text-slate-600 ml-0.5 w-8 shrink-0">{rowSub}</span>
+              </div>
+            );
+          })}
+          <div className="flex justify-end mt-0.5">
+            <span className="text-[6px] text-slate-700">← COD →</span>
+          </div>
+          <div className="mt-1 space-y-0.5 text-[7px] text-slate-600">
+            <div className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-[1px]" style={{ backgroundColor: '#4a148c' }} />Purple = under + scattered (worst)</div>
+            <div className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-[1px]" style={{ backgroundColor: '#880e4f' }} />Maroon = over + scattered</div>
+            <div className="flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-[1px]" style={{ backgroundColor: '#4caf50' }} />Green = parity + uniform (best)</div>
+          </div>
         </div>
       )}
 

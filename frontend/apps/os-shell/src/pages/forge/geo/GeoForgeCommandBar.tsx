@@ -29,10 +29,11 @@ const PRICE_BANDS: { label: string; value: PriceBand }[] = [
 ];
 
 const CHORO_MODES: { mode: ChoroMode; label: string; title: string }[] = [
-  { mode: 'ratio', label: 'MED', title: 'Color neighborhoods by median assessment ratio' },
-  { mode: 'cod',   label: 'COD', title: 'Color neighborhoods by Coefficient of Dispersion' },
-  { mode: 'prd',   label: 'PRD', title: 'Color neighborhoods by Price-Related Differential' },
-  { mode: 'prb',   label: 'PRB', title: 'Color neighborhoods by Price-Related Bias' },
+  { mode: 'ratio',     label: 'MED', title: 'Color neighborhoods by median assessment ratio' },
+  { mode: 'cod',       label: 'COD', title: 'Color neighborhoods by Coefficient of Dispersion' },
+  { mode: 'prd',       label: 'PRD', title: 'Color neighborhoods by Price-Related Differential' },
+  { mode: 'prb',       label: 'PRB', title: 'Color neighborhoods by Price-Related Bias' },
+  { mode: 'bivariate', label: 'BV',  title: 'Bivariate — Ratio × COD (dual-crisis view)' },
 ];
 
 const LAYER_TOGGLES: { layer: MapLayer; label: string }[] = [

@@ -333,7 +333,7 @@ export interface CertificationSummary {
 
 export type PriceBand = '0-200' | '200-400' | '400-700' | '700+' | null;
 
-export type ChoroMode = 'ratio' | 'cod' | 'prd' | 'prb';
+export type ChoroMode = 'ratio' | 'cod' | 'prd' | 'prb' | 'bivariate';
 
 export interface GeoForgeState {
   filter: GeoForgeFilter;

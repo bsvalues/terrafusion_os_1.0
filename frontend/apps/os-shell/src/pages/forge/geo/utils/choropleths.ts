@@ -24,6 +24,21 @@ export function ratioPointColor(ratio: number): string {
   return '#ef4444';
 }
 
+// Bivariate: ratio bands (0=under, 1=parity, 2=over) × COD bands (0=uniform, 1=moderate, 2=scattered)
+const BIVARIATE_MATRIX: string[][] = [
+  ['#90caf9', '#1976d2', '#4a148c'],  // under-assessed: light blue → dark blue → purple
+  ['#4caf50', '#f9a825', '#e65100'],  // parity: green → amber → orange
+  ['#ffcc80', '#e53935', '#880e4f'],  // over-assessed: peach → red → dark maroon
+];
+
+export function bivariateColor(ratio: number, cod: number): string {
+  const ri = ratio < 0.90 ? 0 : ratio <= 1.10 ? 1 : 2;
+  const ci = cod <= 12 ? 0 : cod <= 20 ? 1 : 2;
+  return BIVARIATE_MATRIX[ri][ci];
+}
+
+export const BIVARIATE_GRID = BIVARIATE_MATRIX;
+
 export function prdColor(prd: number): string {
   if (prd >= 0.98 && prd <= 1.03) return '#22c55e';
   if (prd >= 0.95 && prd <= 1.06) return '#eab308';

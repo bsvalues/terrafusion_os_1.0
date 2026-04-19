@@ -3,7 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './geoforge.css';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
-import { medianRatioColor, ratioPointColor, salePointRadius, codColor, prdColor, prbColor } from './utils/choropleths';
+import { medianRatioColor, ratioPointColor, salePointRadius, codColor, prdColor, prbColor, bivariateColor } from './utils/choropleths';
 import { makeCircleGeoJson, haversineDistanceMi } from './utils/geoMath';
 import type { MapLayer, ChoroMode } from './types/geoforge.types';
 
@@ -286,6 +286,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
           const modeValue = choroMode === 'cod' ? ns.stats.cod.toFixed(1)
             : choroMode === 'prd' ? ns.stats.prd.toFixed(3)
             : choroMode === 'prb' ? (ns.stats.prb >= 0 ? '+' : '') + ns.stats.prb.toFixed(3)
+            : choroMode === 'bivariate' ? `${effectiveRatio.toFixed(3)}·COD${ns.stats.cod.toFixed(0)}`
             : effectiveRatio.toFixed(3);
           return {
             type: 'Feature',
@@ -706,10 +707,11 @@ function choroColorForMode(
   prb: number,
 ): string {
   switch (mode) {
-    case 'cod': return codColor(cod);
-    case 'prd': return prdColor(prd);
-    case 'prb': return prbColor(prb);
-    default:    return medianRatioColor(effectiveRatio);
+    case 'cod':       return codColor(cod);
+    case 'prd':       return prdColor(prd);
+    case 'prb':       return prbColor(prb);
+    case 'bivariate': return bivariateColor(effectiveRatio, cod);
+    default:          return medianRatioColor(effectiveRatio);
   }
 }
 
