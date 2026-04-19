@@ -1,5 +1,5 @@
 // frontend/apps/os-shell/src/pages/forge/sales/audit/SaleScatterPlot.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   ScatterChart, Scatter, XAxis, YAxis, Tooltip,
   ReferenceLine, ResponsiveContainer, Cell,
@@ -20,6 +20,11 @@ function pointColor(sale: StratumSale, highlighted: string | null | undefined): 
 }
 
 export function SaleScatterPlot({ sales, highlightedId, onPointClick }: Props) {
+  const salesById = useMemo(
+    () => new Map(sales.map(s => [s.id, s])),
+    [sales]
+  );
+
   const data = sales
     .filter(s => s.salePrice > 0 && s.ratio != null)
     .map(s => ({ id: s.id, x: s.salePrice / 1000, y: s.ratio! }));
@@ -50,12 +55,15 @@ export function SaleScatterPlot({ sales, highlightedId, onPointClick }: Props) {
           onClick={(point: { id: string }) => onPointClick?.(point.id)}
           cursor="pointer"
         >
-          {data.map(entry => (
-            <Cell
-              key={entry.id}
-              fill={pointColor(sales.find(s => s.id === entry.id)!, highlightedId)}
-            />
-          ))}
+          {data.map(entry => {
+            const sale = salesById.get(entry.id);
+            return (
+              <Cell
+                key={entry.id}
+                fill={sale ? pointColor(sale, highlightedId) : '#38bdf8'}
+              />
+            );
+          })}
         </Scatter>
       </ScatterChart>
     </ResponsiveContainer>

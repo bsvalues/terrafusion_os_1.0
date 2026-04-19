@@ -41,6 +41,13 @@ export function AuditAiPanel({
   try { findings = JSON.parse(diagnosis.findingsJson ?? '[]'); } catch { /* ignore */ }
   try { recommendedIds = JSON.parse(diagnosis.recommendedSaleIdsJson ?? '[]'); } catch { /* ignore */ }
 
+  let precomputedSimulation: SimulationResult | null = null;
+  try {
+    if (diagnosis.simulationResultJson) {
+      precomputedSimulation = JSON.parse(diagnosis.simulationResultJson) as SimulationResult;
+    }
+  } catch { /* ignore */ }
+
   async function handleSimulate(factor: number): Promise<SimulationResult> {
     return salesAuditApi.simulate(stratumKey, taxYear, factor);
   }
@@ -60,7 +67,7 @@ export function AuditAiPanel({
     <div className="flex flex-col h-full overflow-y-auto p-3">
       <DiagnosisSection diagnosis={diagnosis.primaryDiagnosis} confidence={diagnosis.confidence} />
       <EvidenceSection findings={findings} />
-      <SimulationSection current={currentSimulation} projected={null} />
+      <SimulationSection current={currentSimulation} projected={precomputedSimulation} />
 
       {diagnosis.primaryDiagnosis === 'DATA_PROBLEM' && !showProposal && (
         <DataActionSection

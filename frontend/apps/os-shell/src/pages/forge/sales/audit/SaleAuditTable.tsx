@@ -1,5 +1,5 @@
 // frontend/apps/os-shell/src/pages/forge/sales/audit/SaleAuditTable.tsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type { StratumSale } from '../../../../services/forge/salesAuditApi';
 import { SaleScatterPlot } from './SaleScatterPlot';
 import { SaleRow } from './SaleRow';
@@ -11,6 +11,7 @@ interface Props {
   onBulkDecision: (saleIds: string[], decision: string) => void;
   onDecisionChange: (saleId: string, decision: string) => void;
   loading?: boolean;
+  filterOverride?: Filter;
 }
 
 const FILTERS: { id: Filter; label: string }[] = [
@@ -21,10 +22,14 @@ const FILTERS: { id: Filter; label: string }[] = [
   { id: 'pending',      label: 'Pending'      },
 ];
 
-export function SaleAuditTable({ sales, onBulkDecision, onDecisionChange, loading }: Props) {
+export function SaleAuditTable({ sales, onBulkDecision, onDecisionChange, loading, filterOverride }: Props) {
   const [filter, setFilter] = useState<Filter>('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [highlighted, setHighlighted] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (filterOverride) setFilter(filterOverride);
+  }, [filterOverride]);
 
   const filtered = useMemo(() => {
     switch (filter) {
@@ -111,6 +116,8 @@ export function SaleAuditTable({ sales, onBulkDecision, onDecisionChange, loadin
               <th className="px-2 py-2 w-8">
                 <input
                   type="checkbox"
+                  checked={filtered.length > 0 && selected.size === filtered.length}
+                  ref={el => { if (el) el.indeterminate = selected.size > 0 && selected.size < filtered.length; }}
                   onChange={e => toggleAll(e.target.checked)}
                   className="accent-cyan-500"
                 />

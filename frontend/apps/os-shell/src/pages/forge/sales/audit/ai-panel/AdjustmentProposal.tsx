@@ -1,5 +1,5 @@
 // .../audit/ai-panel/AdjustmentProposal.tsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import type { SimulationResult } from '../../../../../services/forge/salesAuditApi';
 import { SimulationSection } from './SimulationSection';
 
@@ -20,16 +20,20 @@ export function AdjustmentProposal({
   const [projected, setProjected] = useState<SimulationResult | null>(null);
   const [simulating, setSimulating] = useState(false);
   const [proposing, setProposing] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  async function handleFactorChange(val: number) {
+  function handleFactorChange(val: number) {
     setFactor(val);
-    setSimulating(true);
-    try {
-      const result = await onSimulate(val);
-      setProjected(result);
-    } finally {
-      setSimulating(false);
-    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      setSimulating(true);
+      try {
+        const result = await onSimulate(val);
+        setProjected(result);
+      } finally {
+        setSimulating(false);
+      }
+    }, 400);
   }
 
   async function handlePropose() {
@@ -55,7 +59,7 @@ export function AdjustmentProposal({
           min="0.5"
           max="2.0"
           value={factor}
-          onChange={e => { void handleFactorChange(Number(e.target.value)); }}
+          onChange={e => handleFactorChange(Number(e.target.value))}
           className="w-20 text-right bg-slate-900 border border-purple-700 rounded px-2 py-1 text-sm font-mono text-purple-300 focus:outline-none focus:border-purple-500"
         />
         <span className="text-xs text-slate-500">×</span>

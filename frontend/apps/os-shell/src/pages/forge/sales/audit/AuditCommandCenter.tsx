@@ -15,6 +15,7 @@ export function AuditCommandCenter({ taxYear }: Props) {
   const qc = useQueryClient();
   const { selectedStratumKey, setSelectedStratumKey } = useSalesForgeStore();
   const [localSales, setLocalSales] = useState<Record<string, string>>({}); // id → decision override
+  const [filterOverride, setFilterOverride] = useState<'ai-flagged' | undefined>(undefined);
 
   const { data: strata = [], isLoading: strataLoading } = useQuery({
     queryKey: ['sales-audit-strata', taxYear],
@@ -39,6 +40,14 @@ export function AuditCommandCenter({ taxYear }: Props) {
     enabled: !!selectedStratumKey,
   });
 
+  const { data: runningStats } = useQuery({
+    queryKey: ['sales-forge-running-stats', taxYear],
+    queryFn: () => fetch(`/api/terraforge/sale-qualification/running-stats?taxYear=${taxYear}`)
+      .then(r => r.ok ? r.json() : null)
+      .catch(() => null),
+    staleTime: 60_000,
+  });
+
   const bulkDecision = useMutation({
     mutationFn: ({ ids, decision }: { ids: string[]; decision: string }) =>
       salesAuditApi.bulkDecision(ids, decision),
@@ -49,9 +58,7 @@ export function AuditCommandCenter({ taxYear }: Props) {
 
   function handleDecisionChange(saleId: string, decision: string) {
     setLocalSales(prev => ({ ...prev, [saleId]: decision }));
-    salesAuditApi.bulkDecision([saleId], decision).then(() =>
-      qc.invalidateQueries({ queryKey: ['sales-audit-sales', selectedStratumKey, taxYear] })
-    );
+    bulkDecision.mutate({ ids: [saleId], decision });
   }
 
   const enrichedSales = sales.map(s => ({
@@ -61,7 +68,13 @@ export function AuditCommandCenter({ taxYear }: Props) {
 
   return (
     <div className="flex flex-col h-full bg-slate-950">
-      <CountyKpiBar strata={strata} />
+      <CountyKpiBar
+        strata={strata}
+        cod={runningStats?.cod ?? 0}
+        medianRatio={runningStats?.medianRatio ?? 0}
+        prd={runningStats?.prd ?? 0}
+        qualifiedSales={runningStats?.qualifiedSaleCount ?? 0}
+      />
 
       <div className="flex flex-1 min-h-0">
         {/* Left: strata list */}
@@ -80,6 +93,7 @@ export function AuditCommandCenter({ taxYear }: Props) {
             <SaleAuditTable
               sales={enrichedSales}
               loading={salesLoading}
+              filterOverride={filterOverride}
               onBulkDecision={(ids, decision) => bulkDecision.mutate({ ids, decision })}
               onDecisionChange={handleDecisionChange}
             />
@@ -99,7 +113,7 @@ export function AuditCommandCenter({ taxYear }: Props) {
               diagnosis={diagnosis}
               currentSimulation={null}
               onAcceptDisqualify={ids => bulkDecision.mutate({ ids, decision: 'disqualified' })}
-              onModify={() => {/* filter to AI flagged sales */}}
+              onModify={() => setFilterOverride('ai-flagged')}
               onDraftCreated={() =>
                 qc.invalidateQueries({ queryKey: ['sales-audit-strata', taxYear] })
               }

@@ -45,7 +45,7 @@ export function SaleRow({ sale, selected, highlighted, onCheck, onDecisionChange
       </td>
       <td className="px-3 py-1.5 text-xs text-slate-300 font-mono">{sale.parcelId}</td>
       <td className="px-3 py-1.5 text-xs text-slate-400">
-        {new Date(sale.saleDate).toLocaleDateString()}
+        {sale.saleDate ? new Date(sale.saleDate).toLocaleDateString() : '—'}
       </td>
       <td className="px-3 py-1.5 text-xs text-slate-300 text-right">
         ${(sale.salePrice / 1000).toFixed(0)}k
