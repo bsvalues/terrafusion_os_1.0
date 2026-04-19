@@ -158,7 +158,8 @@ export type RightDrawerPanel =
   | 'dor-memo'
   | 'value-strata'
   | 'scorecard'
-  | 'export';
+  | 'export'
+  | 'sale-influence';
 
 export interface CompSale {
   parcelId: string;

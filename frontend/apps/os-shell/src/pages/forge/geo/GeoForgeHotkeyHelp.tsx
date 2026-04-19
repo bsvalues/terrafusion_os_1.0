@@ -12,6 +12,7 @@ const SHORTCUTS = [
   { key: 'v', description: 'Value strata equity · PRB decile analysis' },
   { key: 'g', description: 'Neighborhood scorecard · grade card for selected neighborhood' },
   { key: 'e', description: 'Export data · CSV for DOR, Excel, peer review' },
+  { key: 'i', description: 'Sale influence analysis · LOO impact per sale on compliance' },
   { key: '?', description: 'Toggle this panel' },
 ];
 
