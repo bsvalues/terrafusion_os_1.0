@@ -44,7 +44,7 @@ function buildFlags(sales: SalePoint[]): DataFlag[] {
       headline: 'High rate of round-number sale prices',
       detail: `${roundPrices.length} sales (${(roundRate * 100).toFixed(1)}%) have prices divisible by $5,000 or $10,000.`,
       count: roundPrices.length,
-      action: 'Review for non-arm\'s-length transfers. Verify through Tyler Vision or PACS transaction records.',
+      action: 'Review for non-arm\'s-length transfers. Verify through Tyler Vision or source system transaction records.',
       saleIds: roundPrices.slice(0, 20).map((s) => s.saleId),
     });
   }
@@ -76,7 +76,7 @@ function buildFlags(sales: SalePoint[]): DataFlag[] {
       headline: 'Unusually high sale prices (possible data entry errors)',
       detail: `${extremeHigh.length} sales exceed 3× the county median sale price of $${(countyMedianSP / 1000).toFixed(0)}K.`,
       count: extremeHigh.length,
-      action: 'Verify sale prices in PACS source system. Check for misplaced decimal points or duplicate recording.',
+      action: 'Verify sale prices in the source assessment system. Check for misplaced decimal points or duplicate recording.',
       saleIds: extremeHigh.map((s) => s.saleId),
     });
   }
@@ -131,7 +131,7 @@ function buildFlags(sales: SalePoint[]): DataFlag[] {
       headline: 'Sales with zero or negative sale price',
       detail: `${zeroPrice.length} sale record${zeroPrice.length !== 1 ? 's' : ''} have salePrice ≤ 0 — should never appear in ratio study.`,
       count: zeroPrice.length,
-      action: 'Exclude these records immediately. Investigate PACS data extract for ETL issues.',
+      action: 'Exclude these records immediately. Investigate the data extract pipeline for ETL issues.',
       saleIds: zeroPrice.map((s) => s.saleId),
     });
   }
@@ -146,7 +146,7 @@ function buildFlags(sales: SalePoint[]): DataFlag[] {
       headline: 'Sales with missing property class',
       detail: `${missingClass.length} sale${missingClass.length !== 1 ? 's' : ''} have no property class code — required for stratification analysis.`,
       count: missingClass.length,
-      action: 'Reclassify via PACS or Tyler Vision. Missing class codes prevent valid stratification per WAC 458-53A.',
+      action: 'Reclassify via Tyler Vision or the source assessment system. Missing class codes prevent valid stratification per WAC 458-53A.',
     });
   }
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
+import { useAuthContext } from '@/auth/useAuthContext';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type {
@@ -10,8 +11,6 @@ import type {
   AdjustmentScope,
   RecommendResult,
 } from '../types/geoforge.types';
-
-const MOCK_USER_ID = '00000000-0000-0000-0000-000000000001';
 
 function SimRatioPreview({ proposals }: { proposals: AdjustmentProposal[] }) {
   const { neighborhoodStats } = useGeoForgeStore();
@@ -114,6 +113,7 @@ interface Props {
 
 export function AdjustmentWorkbenchPanel({ taxYear, selectedNeighborhoodCode }: Props) {
   const qc = useQueryClient();
+  const { userId } = useAuthContext();
   const { setSimulationDeltaMap } = useGeoForgeStore();
   const [activeSetId, setActiveSetId] = useState<string | null>(null);
   const [showNewProposal, setShowNewProposal] = useState(false);
@@ -157,7 +157,7 @@ export function AdjustmentWorkbenchPanel({ taxYear, selectedNeighborhoodCode }: 
         body: JSON.stringify({
           taxYear,
           name: `${taxYear} Adjustment Set`,
-          ownerUserId: MOCK_USER_ID,
+          ownerUserId: userId ?? '',
         }),
       }).then(r => r.json()),
     onSuccess: (s: AdjustmentSet) => {
@@ -191,7 +191,7 @@ export function AdjustmentWorkbenchPanel({ taxYear, selectedNeighborhoodCode }: 
           magnitude: recommend.recommendedAdjustmentPct,
           targetNeighborhoodCode: selectedNeighborhoodCode,
           rationale: `AI-recommended ${recommend.direction} of ${Math.abs(recommend.recommendedAdjustmentPct).toFixed(1)}% to reach parity (median ratio ${recommend.medianRatio.toFixed(3)})`,
-          proposedByUserId: MOCK_USER_ID,
+          proposedByUserId: userId ?? '',
           adjustmentSetId: activeSet.id,
         }),
       }).then(r => r.json());
