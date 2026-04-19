@@ -148,6 +148,7 @@ public sealed class SalesAuditController : ControllerBase
     {
         var countyId = GetCountyId();
         if (countyId is null) return Unauthorized();
+        if (taxYear <= 0) taxYear = DateTime.UtcNow.Year;
 
         var userId = GetUserId();
 
@@ -216,6 +217,11 @@ public sealed class SalesAuditController : ControllerBase
         }
 
         await _db.SaveChangesAsync(ct);
+
+        _logger.LogInformation(
+            "QualificationDecision bulk update: county={CountyId} count={Count} decision={Decision} by={UserId}",
+            countyId, sales.Count, decision, userId);
+
         return Ok();
     }
 }
