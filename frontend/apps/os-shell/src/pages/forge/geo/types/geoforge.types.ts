@@ -153,7 +153,8 @@ export type RightDrawerPanel =
   | 'comps'
   | 'ranking'
   | 'county-health'
-  | 'remedy-queue';
+  | 'remedy-queue'
+  | 'levy-parity';
 
 export interface CompSale {
   parcelId: string;

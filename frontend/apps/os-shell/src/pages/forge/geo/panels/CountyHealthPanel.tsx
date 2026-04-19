@@ -380,6 +380,24 @@ export function CountyHealthPanel() {
           })}
         </div>
       </div>
+
+      {/* Levy Parity shortcut */}
+      <div className="px-4 pb-4 pt-2 border-t border-slate-800/50 flex-shrink-0">
+        <button
+          className="w-full flex items-center justify-between px-3 py-2 rounded bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 transition-colors text-left group"
+          onClick={() => openDrawer('levy-parity')}
+        >
+          <div>
+            <div className="text-[11px] font-semibold text-slate-200 group-hover:text-white">
+              Levy Parity Impact Calculator
+            </div>
+            <div className="text-[9px] text-slate-500">
+              Tax burden distribution by neighborhood · WAC 458-53A
+            </div>
+          </div>
+          <span className="text-slate-500 group-hover:text-terra-cyan text-lg">→</span>
+        </button>
+      </div>
     </div>
   );
 }
