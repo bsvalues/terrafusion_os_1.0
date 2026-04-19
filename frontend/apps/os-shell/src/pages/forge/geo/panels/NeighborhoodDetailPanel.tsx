@@ -1,8 +1,132 @@
+import { useMemo } from 'react';
+import {
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine,
+  ReferenceArea,
+  Line,
+  ComposedChart,
+} from 'recharts';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { EquitySignatureRadar } from './EquitySignatureRadar';
 import { codBand, prdBand, prbBand } from '../utils/bentonMethodCalcs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+
+function olsLine(pts: { x: number; y: number }[]) {
+  const n = pts.length;
+  if (n < 4) return null;
+  const mx = pts.reduce((s, p) => s + p.x, 0) / n;
+  const my = pts.reduce((s, p) => s + p.y, 0) / n;
+  let num = 0, den = 0;
+  for (const p of pts) { num += (p.x - mx) * (p.y - my); den += (p.x - mx) ** 2; }
+  const slope = den > 0 ? num / den : 0;
+  const intercept = my - slope * mx;
+  return { slope, intercept };
+}
+
+function RegressivityScatter({ neighborhoodCode }: { neighborhoodCode: string }) {
+  const { salePoints } = useGeoForgeStore();
+
+  const { qualified, outliers, ols } = useMemo(() => {
+    const hood = salePoints.filter(s => s.neighborhoodCode === neighborhoodCode && s.ratio > 0 && s.salePrice > 0);
+    const q = hood.filter(s => s.qualificationDecision === 'qualified' && !s.isOutlier)
+      .map(s => ({ x: s.salePrice / 1000, y: s.ratio, parcelId: s.parcelId }));
+    const o = hood.filter(s => s.isOutlier)
+      .map(s => ({ x: s.salePrice / 1000, y: s.ratio, parcelId: s.parcelId }));
+    const ols = olsLine(q);
+    return { qualified: q, outliers: o, ols };
+  }, [salePoints, neighborhoodCode]);
+
+  if (qualified.length < 3) return null;
+
+  const allX = qualified.map(p => p.x);
+  const xMin = Math.min(...allX);
+  const xMax = Math.max(...allX);
+
+  const regLine = ols
+    ? [
+        { x: xMin, y: ols.slope * xMin + ols.intercept },
+        { x: xMax, y: ols.slope * xMax + ols.intercept },
+      ]
+    : [];
+
+  const interpretation = ols
+    ? ols.slope < -0.0005
+      ? { label: 'Regressive', sub: 'High-value under-assessed', color: 'text-amber-300' }
+      : ols.slope > 0.0005
+        ? { label: 'Progressive', sub: 'High-value over-assessed', color: 'text-blue-300' }
+        : { label: 'Uniform', sub: 'No systematic bias', color: 'text-emerald-400' }
+    : null;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <h4 className="text-xs text-slate-500 uppercase tracking-wide">Price vs Ratio</h4>
+        {interpretation && (
+          <div className="text-right">
+            <span className={`text-[10px] font-bold ${interpretation.color}`}>{interpretation.label}</span>
+            <div className="text-[8px] text-slate-600">{interpretation.sub}</div>
+          </div>
+        )}
+      </div>
+      <ResponsiveContainer width="100%" height={140}>
+        <ComposedChart margin={{ top: 4, right: 8, bottom: 4, left: -14 }}>
+          <XAxis
+            dataKey="x"
+            type="number"
+            domain={[xMin * 0.95, xMax * 1.05]}
+            tick={{ fontSize: 8, fill: '#64748b' }}
+            tickFormatter={(v: number) => `$${v.toFixed(0)}k`}
+          />
+          <YAxis
+            dataKey="y"
+            type="number"
+            domain={[0.75, 1.25]}
+            tick={{ fontSize: 8, fill: '#64748b' }}
+            tickFormatter={(v: number) => v.toFixed(2)}
+          />
+          <Tooltip
+            contentStyle={{ background: '#0A0E1A', border: '1px solid #334155', fontSize: 10, borderRadius: 6 }}
+            formatter={(v: number, name: string) =>
+              name === 'y' ? [v.toFixed(3), 'Ratio'] : [`$${v.toFixed(0)}k`, 'Sale Price']
+            }
+          />
+          {/* IAAO target band */}
+          <ReferenceArea y1={0.95} y2={1.05} fill="#22c55e" fillOpacity={0.06} />
+          <ReferenceLine y={1.0} stroke="#334155" strokeDasharray="4 4" />
+          {/* Regression line */}
+          {ols && (
+            <Line
+              data={regLine}
+              dataKey="y"
+              stroke="#f59e0b"
+              strokeWidth={1.5}
+              dot={false}
+              activeDot={false}
+              strokeDasharray="6 3"
+            />
+          )}
+          {/* Outlier sales */}
+          {outliers.length > 0 && (
+            <Scatter data={outliers} fill="#ef4444" opacity={0.7} r={3} />
+          )}
+          {/* Qualified sales */}
+          <Scatter data={qualified} fill="#00FFFF" opacity={0.6} r={2.5} />
+        </ComposedChart>
+      </ResponsiveContainer>
+      <div className="flex gap-3 text-[8px] text-slate-600 mt-0.5">
+        <span><span className="inline-block w-1.5 h-1.5 rounded-full bg-terra-cyan/60 mr-0.5 -mb-px" />Qualified</span>
+        {outliers.length > 0 && <span><span className="inline-block w-1.5 h-1.5 rounded-full bg-red-500/60 mr-0.5 -mb-px" />Outlier</span>}
+        <span><span className="inline-block w-3 h-px bg-amber-400 mr-0.5 mb-0.5" />OLS trend</span>
+      </div>
+    </div>
+  );
+}
 
 const BAND_COLORS: Record<'ok' | 'watch' | 'critical', string> = {
   ok: 'bg-green-900 text-green-300 border-green-700',
@@ -125,6 +249,8 @@ export function NeighborhoodDetailPanel() {
       <EquitySignatureRadar stats={stats} label="Equity Signature" />
 
       <QuintileChart stats={stats} />
+
+      <RegressivityScatter neighborhoodCode={ns.neighborhoodCode} />
 
       <table className="w-full text-xs">
         <tbody>
