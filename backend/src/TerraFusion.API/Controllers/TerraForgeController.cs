@@ -3176,6 +3176,41 @@ internal static class TrendStats
         var weightedMean = totalAv / totalSp;
         return weightedMean == 0 ? 1m : mean / weightedMean;
     }
+
+    internal static decimal ComputePrb(List<decimal> ratios, List<decimal> avs)
+    {
+        if (ratios.Count < 5) return 0m;
+        var medR = Median(ratios);
+        if (medR == 0m) return 0m;
+        var medAv = Median(avs);
+        if (medAv == 0m) return 0m;
+        var xs = avs.Select(av => (double)(av / medAv - 1m)).ToList();
+        var ys = ratios.Select(r => (double)(r - medR)).ToList();
+        var xMean = xs.Average();
+        var yMean = ys.Average();
+        var num = xs.Zip(ys, (x, y) => (x - xMean) * (y - yMean)).Sum();
+        var den = xs.Sum(x => (x - xMean) * (x - xMean));
+        if (den == 0) return 0m;
+        return (decimal)(num / den);
+    }
+
+    internal static decimal ComputeVei(List<decimal> ratios)
+    {
+        if (ratios.Count < 5) return 0m;
+        var sorted = ratios.Order().ToList();
+        var n = sorted.Count;
+        double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+        for (int i = 0; i < n; i++)
+        {
+            double x = (double)i / (n - 1);
+            double y = (double)sorted[i];
+            sumX += x; sumY += y; sumXY += x * y; sumX2 += x * x;
+        }
+        var denom = n * sumX2 - sumX * sumX;
+        if (denom == 0) return 0m;
+        var slope = (n * sumXY - sumX * sumY) / denom;
+        return (decimal)slope;
+    }
 }
 
 /// <summary>

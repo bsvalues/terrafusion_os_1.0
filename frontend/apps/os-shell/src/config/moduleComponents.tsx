@@ -222,6 +222,8 @@ export const MODULE_REGISTRY = new Set<string>([
   'terra-query',
   'terra-print',
   'terra-sketch',
+  // GeoForge — GIS-first mass appraisal analytics
+  'geo-forge',
 ]);
 
 /**
@@ -375,6 +377,11 @@ const TerraPrintModule = lazy(
 );
 const TerraSketchModule = lazy(
   () => import('../pages/suites/modules/TerraSketchModule')
+);
+
+// GeoForge — GIS-first mass appraisal analytics (full-canvas Mapbox + Benton Method)
+const GeoForgePage = lazy(
+  () => import('../pages/forge/geo/GeoForgePage').then((m) => ({ default: m.GeoForgePage }))
 );
 
 // NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
@@ -1299,6 +1306,23 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
           <div className="p-6 overflow-y-auto h-full">
             <CostForgeDashboard />
           </div>
+        </Suspense>
+      );
+
+    // ========================================================================
+    // GEOFORGE — GIS-first mass appraisal analytics
+    // ========================================================================
+
+    case 'geo-forge':
+      return (
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-full">
+              <span className="text-muted-foreground">Loading GeoForge…</span>
+            </div>
+          }
+        >
+          <GeoForgePage />
         </Suspense>
       );
 

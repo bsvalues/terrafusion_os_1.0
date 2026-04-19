@@ -1,0 +1,126 @@
+import { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { apiFetchJson } from '@/lib/apiBase';
+import { useGeoForgeStore } from '@/stores/geoForgeStore';
+import { GeoForgeMap } from './GeoForgeMap';
+import { GeoForgeCommandBar } from './GeoForgeCommandBar';
+import { GeoForgeEquityRail } from './GeoForgeEquityRail';
+import { NeighborhoodDetailPanel } from './panels/NeighborhoodDetailPanel';
+import { SalesDrillDownPanel } from './panels/SalesDrillDownPanel';
+import { DiagnosisPanel } from './panels/DiagnosisPanel';
+import { YearTrendPanel } from './panels/YearTrendPanel';
+import { Button } from '@/components/ui/button';
+import type { NeighborhoodStat, SalePoint, RightDrawerPanel } from './types/geoforge.types';
+
+const PANEL_TITLES: Record<RightDrawerPanel, string> = {
+  none: '',
+  'neighborhood-detail': 'Neighborhood Detail',
+  'sales-drilldown': 'Sales Drill-Down',
+  diagnosis: 'AI Diagnosis',
+  'year-trend': '5-Year Trend',
+};
+
+export function GeoForgePage() {
+  const {
+    filter,
+    rightDrawerPanel,
+    closeDrawer,
+    setNeighborhoodStats,
+    setSalePoints,
+    setLoadingStats,
+    setLoadingSales,
+    selectNeighborhood,
+  } = useGeoForgeStore();
+
+  const { data: statsData, isLoading: statsLoading } = useQuery<NeighborhoodStat[]>({
+    queryKey: [
+      'geoforge-nbhd-stats',
+      filter.taxYear,
+      filter.propertyClass,
+      filter.saleDateStart,
+      filter.saleDateEnd,
+    ],
+    queryFn: () => {
+      const params = new URLSearchParams({ taxYear: String(filter.taxYear) });
+      if (filter.propertyClass) params.set('propertyType', filter.propertyClass);
+      if (filter.saleDateStart) params.set('saleDateStart', filter.saleDateStart);
+      if (filter.saleDateEnd) params.set('saleDateEnd', filter.saleDateEnd);
+      return apiFetchJson<NeighborhoodStat[]>(
+        `/api/geoforge/ratio-study/neighborhood-stats?${params}`
+      );
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const { data: salesData, isLoading: salesLoading } = useQuery<SalePoint[]>({
+    queryKey: ['geoforge-sales', filter.taxYear],
+    queryFn: () =>
+      apiFetchJson<SalePoint[]>(
+        `/api/geoforge/ratio-study/sales?taxYear=${filter.taxYear}`
+      ),
+    staleTime: 1000 * 60 * 10,
+  });
+
+  useEffect(() => { setLoadingStats(statsLoading); }, [statsLoading, setLoadingStats]);
+  useEffect(() => { setLoadingSales(salesLoading); }, [salesLoading, setLoadingSales]);
+  useEffect(() => { if (statsData) setNeighborhoodStats(statsData); }, [statsData, setNeighborhoodStats]);
+  useEffect(() => { if (salesData) setSalePoints(salesData); }, [salesData, setSalePoints]);
+
+  const drawerOpen = rightDrawerPanel !== 'none';
+
+  return (
+    <div className="relative w-full h-full overflow-hidden bg-slate-950">
+      {/* Full-canvas map — always fills entire container */}
+      <GeoForgeMap
+        onNeighborhoodClick={(code) => selectNeighborhood(code)}
+      />
+
+      {/* Command bar overlays the top of the map */}
+      <GeoForgeCommandBar />
+
+      {/* Right equity rail — always visible, 72px wide */}
+      <GeoForgeEquityRail />
+
+      {/* Right drawer — 480px, slides over map from right (left of the 72px rail) */}
+      <div
+        className={`absolute top-0 right-[72px] h-full w-[480px] z-20 flex flex-col
+          bg-slate-950/95 backdrop-blur border-l border-slate-700
+          transition-transform duration-300 ease-in-out
+          ${drawerOpen ? 'translate-x-0' : 'translate-x-full'}`}
+      >
+        {drawerOpen && (
+          <>
+            <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-700 bg-slate-900/50 flex-shrink-0">
+              <span className="text-sm font-semibold text-terra-cyan">
+                {PANEL_TITLES[rightDrawerPanel]}
+              </span>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-white"
+                onClick={closeDrawer}
+              >
+                ×
+              </Button>
+            </div>
+
+            <div className="flex-1 overflow-hidden">
+              {rightDrawerPanel === 'neighborhood-detail' && <NeighborhoodDetailPanel />}
+              {rightDrawerPanel === 'sales-drilldown' && <SalesDrillDownPanel />}
+              {rightDrawerPanel === 'diagnosis' && <DiagnosisPanel />}
+              {rightDrawerPanel === 'year-trend' && <YearTrendPanel />}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Loading indicator — bottom left, floats over map */}
+      {(statsLoading || salesLoading) && (
+        <div className="absolute bottom-8 left-4 z-30 flex items-center gap-2 bg-slate-900/90 backdrop-blur rounded-md px-3 py-1.5 text-xs text-muted-foreground border border-slate-700">
+          <span className="animate-spin inline-block text-terra-cyan">⟳</span>
+          {statsLoading && !salesLoading ? 'Loading neighborhood stats…' : 'Loading sales…'}
+        </div>
+      )}
+    </div>
+  );
+}
