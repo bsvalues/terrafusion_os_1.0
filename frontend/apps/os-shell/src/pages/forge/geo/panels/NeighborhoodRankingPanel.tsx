@@ -3,9 +3,12 @@ import {
   ScatterChart, Scatter, XAxis, YAxis, Tooltip,
   ResponsiveContainer, ReferenceLine, ReferenceArea,
 } from 'recharts';
+import { useQueries } from '@tanstack/react-query';
+import { apiFetchJson } from '@/lib/apiBase';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
+import type { NeighborhoodStat } from '../types/geoforge.types';
 
-type SortKey = 'deviation' | 'cod' | 'n';
+type SortKey = 'deviation' | 'cod' | 'n' | 'trend';
 type ViewMode = 'list' | 'matrix';
 
 function deviationBand(dev: number): 'ok' | 'watch' | 'critical' {
@@ -30,16 +33,97 @@ function prdBandColor(prd: number) {
   return prd >= 0.98 && prd <= 1.03 ? '#4ade80' : prd >= 0.95 && prd <= 1.06 ? '#fbbf24' : '#f87171';
 }
 
+// Tiny inline SVG sparkline — no Recharts overhead per row
+function RatioSparkline({ points, width = 44, height = 16 }: { points: (number | null)[]; width?: number; height?: number }) {
+  const yMin = 0.80, yMax = 1.20;
+  const toX = (i: number) => (i / (points.length - 1)) * width;
+  const toY = (v: number) => height - ((v - yMin) / (yMax - yMin)) * height;
+  const parity = toY(1.0);
+
+  const valid = points.map((v, i) => v !== null ? { x: toX(i), y: toY(v!), v: v! } : null);
+  const segments: { x1: number; y1: number; x2: number; y2: number }[] = [];
+  for (let i = 0; i < valid.length - 1; i++) {
+    const a = valid[i], b = valid[i + 1];
+    if (a && b) segments.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y });
+  }
+
+  const lastValid = [...valid].reverse().find((v) => v !== null);
+  const firstValid = valid.find((v) => v !== null);
+  const trend = lastValid && firstValid ? lastValid.v - firstValid.v : 0;
+  const improving = trend !== 0 && Math.abs(lastValid?.v ?? 1) < Math.abs(firstValid?.v ?? 1) - 0.002;
+  const strokeColor = improving ? '#4ade80' : trend < -0.005 ? '#ef4444' : '#94a3b8';
+
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="shrink-0">
+      {/* Parity reference line */}
+      <line x1={0} y1={parity} x2={width} y2={parity} stroke="#334155" strokeWidth={0.5} strokeDasharray="2 2" />
+      {/* Trend segments */}
+      {segments.map((s, i) => (
+        <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} stroke={strokeColor} strokeWidth={1.2} />
+      ))}
+      {/* Dots */}
+      {valid.map((pt, i) => pt ? (
+        <circle key={i} cx={pt.x} cy={pt.y} r={1.5} fill={strokeColor} />
+      ) : null)}
+    </svg>
+  );
+}
+
 export function NeighborhoodRankingPanel() {
-  const { neighborhoodStats, selectNeighborhood } = useGeoForgeStore();
+  const { neighborhoodStats, selectNeighborhood, filter } = useGeoForgeStore();
   const [sortKey, setSortKey] = useState<SortKey>('deviation');
   const [minSales, setMinSales] = useState(5);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
+
+  // Fetch prior 4 years for sparklines
+  const priorYears = useMemo(
+    () => [filter.taxYear - 4, filter.taxYear - 3, filter.taxYear - 2, filter.taxYear - 1],
+    [filter.taxYear],
+  );
+  const priorQueries = useQueries({
+    queries: priorYears.map((yr) => ({
+      queryKey: ['geoforge-nbhd-stats', yr],
+      queryFn: () => apiFetchJson<NeighborhoodStat[]>(
+        `/api/geoforge/ratio-study/neighborhood-stats?taxYear=${yr}`
+      ),
+      staleTime: 1000 * 60 * 30,
+    })),
+  });
+  const priorDataByYear = useMemo(() => {
+    const m: Record<number, Record<string, number>> = {};
+    priorYears.forEach((yr, i) => {
+      const data = priorQueries[i]?.data ?? [];
+      m[yr] = {};
+      for (const ns of data) m[yr][ns.neighborhoodCode] = ns.stats.medianRatio;
+    });
+    return m;
+  }, [priorYears, priorQueries]);
 
   const filtered = useMemo(() =>
     neighborhoodStats.filter(ns => ns.saleCount >= minSales),
     [neighborhoodStats, minSales],
   );
+
+  const sparklineMap = useMemo(() => {
+    const m: Record<string, (number | null)[]> = {};
+    for (const ns of filtered) {
+      const code = ns.neighborhoodCode;
+      m[code] = [
+        ...priorYears.map((yr) => priorDataByYear[yr]?.[code] ?? null),
+        ns.stats.medianRatio,
+      ];
+    }
+    return m;
+  }, [filtered, priorYears, priorDataByYear]);
+
+  const trendDelta = (code: string): number => {
+    const pts = sparklineMap[code];
+    if (!pts) return 0;
+    const first = pts.find((v) => v !== null);
+    const last = [...pts].reverse().find((v) => v !== null);
+    if (first == null || last == null) return 0;
+    return Math.abs(last - 1) - Math.abs(first - 1);
+  };
 
   const sorted = useMemo(() => {
     const copy = [...filtered];
@@ -47,10 +131,12 @@ export function NeighborhoodRankingPanel() {
       copy.sort((a, b) => Math.abs(b.stats.medianRatio - 1) - Math.abs(a.stats.medianRatio - 1));
     else if (sortKey === 'cod')
       copy.sort((a, b) => b.stats.cod - a.stats.cod);
+    else if (sortKey === 'trend')
+      copy.sort((a, b) => trendDelta(b.neighborhoodCode) - trendDelta(a.neighborhoodCode));
     else
       copy.sort((a, b) => b.saleCount - a.saleCount);
     return copy;
-  }, [filtered, sortKey]);
+  }, [filtered, sortKey, sparklineMap]);
 
   const maxDev = useMemo(
     () => Math.max(...sorted.map(ns => Math.abs(ns.stats.medianRatio - 1)), 0.01),
@@ -87,7 +173,7 @@ export function NeighborhoodRankingPanel() {
       <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-800 bg-slate-900/40 flex-shrink-0">
         {viewMode === 'list' && (
           <div className="flex gap-1">
-            {(['deviation', 'cod', 'n'] as SortKey[]).map(k => (
+            {(['deviation', 'cod', 'n', 'trend'] as SortKey[]).map(k => (
               <button
                 key={k}
                 onClick={() => setSortKey(k)}
@@ -97,7 +183,7 @@ export function NeighborhoodRankingPanel() {
                     : 'bg-slate-900 text-slate-500 border-slate-700 hover:text-white'
                 }`}
               >
-                {k === 'deviation' ? 'Worst First' : k === 'cod' ? 'High COD' : 'Most Sales'}
+                {k === 'deviation' ? 'Worst' : k === 'cod' ? 'COD' : k === 'n' ? 'Sales' : 'Drifting'}
               </button>
             ))}
           </div>
@@ -257,7 +343,7 @@ export function NeighborhoodRankingPanel() {
                   </span>
                 </div>
 
-                {/* Deviation bar */}
+                {/* Deviation bar + sparkline */}
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
                     <div
@@ -265,14 +351,12 @@ export function NeighborhoodRankingPanel() {
                       style={{ width: `${barPct}%` }}
                     />
                   </div>
-                  <div className="flex gap-2 shrink-0">
-                    <span className={`text-[8px] font-mono ${ns.stats.cod > 20 ? 'text-red-400' : ns.stats.cod > 15 ? 'text-amber-300' : 'text-slate-500'}`}>
-                      COD {ns.stats.cod.toFixed(1)}
-                    </span>
-                    <span className={`text-[8px] font-mono ${Math.abs(dev) < 0.05 ? 'text-slate-600' : BAND_TEXT[band]}`}>
-                      Δ {dev.toFixed(3)}
-                    </span>
-                  </div>
+                  <span className={`text-[8px] font-mono shrink-0 ${ns.stats.cod > 20 ? 'text-red-400' : ns.stats.cod > 15 ? 'text-amber-300' : 'text-slate-500'}`}>
+                    COD {ns.stats.cod.toFixed(1)}
+                  </span>
+                  {sparklineMap[ns.neighborhoodCode] && (
+                    <RatioSparkline points={sparklineMap[ns.neighborhoodCode]} />
+                  )}
                 </div>
               </button>
             );
