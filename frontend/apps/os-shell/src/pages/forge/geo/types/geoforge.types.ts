@@ -102,7 +102,18 @@ export type MapLayer =
   | 'ai-cluster'
   | 'kde'
   | 'gwr'
-  | 'neighborhood-poly';
+  | 'neighborhood-poly'
+  | 'yoy-change';
+
+export interface YoyChangePoint {
+  neighborhoodCode: string;
+  centroidLat: number;
+  centroidLng: number;
+  currAvgAv: number;
+  prevAvgAv: number;
+  pctChange: number;
+  parcelCount: number;
+}
 
 export type RightDrawerPanel =
   | 'none'

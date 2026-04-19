@@ -63,6 +63,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
 
     map.on('load', () => {
       addNeighborhoodPolyLayer(map);
+      addYoyChangeLayer(map);
       addNeighborhoodLayer(map);
       addCompsHighlightLayer(map);
       addSimulationOverlayLayer(map);
@@ -276,6 +277,41 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     src?.setData(`/api/geoforge/neighborhoods/boundaries?taxYear=${filter.taxYear}`);
   }, [filter.taxYear, activeLayers]);
 
+  // YoY AV change bubbles — fetch when layer toggled on
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded()) return;
+    const src = map.getSource('yoy-change') as mapboxgl.GeoJSONSource | undefined;
+    if (!src) return;
+
+    if (!activeLayers.has('yoy-change')) {
+      src.setData({ type: 'FeatureCollection', features: [] });
+      return;
+    }
+
+    fetch(`/api/geoforge/neighborhoods/av-change?taxYear=${filter.taxYear}`)
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then((rows: import('./types/geoforge.types').YoyChangePoint[]) => {
+        const fc: GeoJSON.FeatureCollection = {
+          type: 'FeatureCollection',
+          features: rows
+            .filter(r => r.centroidLat !== 0)
+            .map(r => ({
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [r.centroidLng, r.centroidLat] },
+              properties: {
+                neighborhoodCode: r.neighborhoodCode,
+                pctChange: r.pctChange,
+                pctLabel: (r.pctChange >= 0 ? '+' : '') + r.pctChange.toFixed(1) + '%',
+                parcelCount: r.parcelCount,
+              },
+            })),
+        };
+        src.setData(fc);
+      })
+      .catch(() => { /* data not available */ });
+  }, [filter.taxYear, activeLayers]);
+
   // Comp radius ring — amber dashed polygon + cyan highlight on in-radius sales
   useEffect(() => {
     const map = mapRef.current;
@@ -344,6 +380,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       choropleth: ['neighborhood-fill', 'neighborhood-label'],
       'neighborhood-poly': ['neighborhood-poly-fill', 'neighborhood-poly-outline', 'neighborhood-poly-label'],
       'sale-scatter': ['sale-circles', 'sale-outlier-ring'],
+      'yoy-change': ['yoy-change-circles', 'yoy-change-labels'],
       kde: ['kde-heat'],
       'ai-cluster': ['ai-cluster-circles'],
       gwr: ['gwr-heat'],
@@ -363,6 +400,54 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       className="absolute inset-0 w-full h-full"
     />
   );
+}
+
+function addYoyChangeLayer(map: mapboxgl.Map) {
+  map.addSource('yoy-change', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  });
+
+  map.addLayer({
+    id: 'yoy-change-circles',
+    type: 'circle',
+    source: 'yoy-change',
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 10, 13, 20],
+      'circle-color': [
+        'step', ['get', 'pctChange'],
+        '#3b82f6',  // < -5: blue (declining)
+        -5, '#93c5fd',
+        0,  '#86efac',
+        5,  '#22c55e',
+        10, '#15803d',
+      ],
+      'circle-opacity': 0.82,
+      'circle-stroke-width': 1.5,
+      'circle-stroke-color': '#0f172a',
+      'circle-stroke-opacity': 0.6,
+    },
+  });
+
+  map.addLayer({
+    id: 'yoy-change-labels',
+    type: 'symbol',
+    source: 'yoy-change',
+    layout: {
+      visibility: 'none',
+      'text-field': ['get', 'pctLabel'],
+      'text-size': 10,
+      'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
+      'text-anchor': 'center',
+      'text-allow-overlap': false,
+    },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': '#0f172a',
+      'text-halo-width': 1.5,
+    },
+  });
 }
 
 function addNeighborhoodPolyLayer(map: mapboxgl.Map) {

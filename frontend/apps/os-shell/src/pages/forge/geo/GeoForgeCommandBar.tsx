@@ -15,6 +15,7 @@ const LAYER_TOGGLES: { layer: MapLayer; label: string }[] = [
   { layer: 'choropleth', label: 'Nbhd' },
   { layer: 'neighborhood-poly', label: 'Poly' },
   { layer: 'sale-scatter', label: 'Sales' },
+  { layer: 'yoy-change', label: 'YoY ΔAV' },
   { layer: 'kde', label: 'KDE' },
   { layer: 'gwr', label: 'GWR' },
   { layer: 'ai-cluster', label: 'Clusters' },

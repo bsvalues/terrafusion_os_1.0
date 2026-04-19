@@ -1337,6 +1337,67 @@ public class GeoForgeController : ControllerBase
         return Ok(new { taxYear, strata, overall });
     }
 
+    // ── YoY. Neighborhood assessed-value change ───────────────────────────────
+    [HttpGet("neighborhoods/av-change")]
+    public async Task<IActionResult> GetNeighborhoodAvChange(
+        [FromQuery] int taxYear = 0,
+        CancellationToken ct = default)
+    {
+        if (taxYear < 2001) taxYear = DateTime.UtcNow.Year;
+        var prevYear = taxYear - 1;
+
+        var currRows = await _db.Properties
+            .AsNoTracking()
+            .Where(p => p.CountyId == BentonCountyId
+                     && p.TaxYear == taxYear
+                     && p.AssessedValue > 0
+                     && p.Neighborhood != null)
+            .Select(p => new { p.ParcelNumber, p.AssessedValue, p.Neighborhood })
+            .ToListAsync(ct);
+
+        var parcelIds = currRows.Select(r => r.ParcelNumber).Distinct().ToHashSet();
+
+        var prevList = await _db.Properties
+            .AsNoTracking()
+            .Where(p => parcelIds.Contains(p.ParcelNumber)
+                     && p.TaxYear == prevYear
+                     && p.AssessedValue > 0)
+            .Select(p => new { p.ParcelNumber, p.AssessedValue })
+            .ToListAsync(ct);
+        var prevMap = prevList.ToDictionary(p => p.ParcelNumber, p => p.AssessedValue);
+
+        var geoMap = await GetGeoMapAsync(parcelIds!, ct);
+
+        var result = currRows
+            .Where(r => r.ParcelNumber != null && prevMap.ContainsKey(r.ParcelNumber!))
+            .GroupBy(r => r.Neighborhood!)
+            .Select(g =>
+            {
+                var inGeo = g.Where(r => r.ParcelNumber != null && geoMap.ContainsKey(r.ParcelNumber!)).ToList();
+                var centLat = inGeo.Count > 0 ? inGeo.Average(r => geoMap[r.ParcelNumber!].lat) : 0.0;
+                var centLng = inGeo.Count > 0 ? inGeo.Average(r => geoMap[r.ParcelNumber!].lng) : 0.0;
+                var currAvg = (double)g.Average(r => r.AssessedValue);
+                var prevAvg = (double)g.Where(r => r.ParcelNumber != null && prevMap.ContainsKey(r.ParcelNumber!))
+                                        .Average(r => prevMap[r.ParcelNumber!]);
+                var pct = prevAvg > 0 ? (currAvg - prevAvg) / prevAvg * 100.0 : 0.0;
+                return new
+                {
+                    neighborhoodCode = g.Key,
+                    centroidLat      = centLat,
+                    centroidLng      = centLng,
+                    currAvgAv        = Math.Round(currAvg),
+                    prevAvgAv        = Math.Round(prevAvg),
+                    pctChange        = Math.Round(pct, 2),
+                    parcelCount      = g.Count(),
+                };
+            })
+            .Where(r => r.centroidLat != 0)
+            .OrderByDescending(r => r.pctChange)
+            .ToList();
+
+        return Ok(result);
+    }
+
     // ── Private helpers ──────────────────────────────────────────────────────
 
     private static double HaversineDistanceMiles(double lat1, double lng1, double lat2, double lng2)
