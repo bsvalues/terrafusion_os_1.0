@@ -81,6 +81,7 @@ export default defineConfig(({ mode }) => {
     plugins,
 
     root: appRoot,
+    envDir: __dirname,
 
     publicDir: path.resolve(appRoot, 'public'),
 
@@ -148,6 +149,13 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
           ws: true, // WebSocket support for SignalR
+        },
+        // Minimal-API levy routes (TerraLevy Cycle Cockpit reaches these for
+        // district AV / measure target amounts). Served by Program.cs at /levy/*.
+        '/levy': {
+          target: backendUrl,
+          changeOrigin: true,
+          secure: false,
         },
         '/health': {
           target: backendUrl,
