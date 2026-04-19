@@ -150,7 +150,7 @@ export function GeoForgePage() {
       if (filter.saleDateStart) params.set('saleDateStart', filter.saleDateStart);
       if (filter.saleDateEnd) params.set('saleDateEnd', filter.saleDateEnd);
       return apiFetchJson<NeighborhoodStat[]>(
-        `/api/geoforge/ratio-study/neighborhood-stats?${params}`
+        `/geoforge/ratio-study/neighborhood-stats?${params}`
       );
     },
     staleTime: 1000 * 60 * 5,
@@ -160,7 +160,7 @@ export function GeoForgePage() {
     queryKey: ['geoforge-sales', filter.taxYear],
     queryFn: () =>
       apiFetchJson<SalePoint[]>(
-        `/api/geoforge/ratio-study/sales?taxYear=${filter.taxYear}`
+        `/geoforge/ratio-study/sales?taxYear=${filter.taxYear}`
       ),
     staleTime: 1000 * 60 * 10,
   });
@@ -170,7 +170,7 @@ export function GeoForgePage() {
   const { data: gwrData } = useQuery<GwrSurface>({
     queryKey: ['geoforge-gwr', filter.taxYear],
     queryFn: () =>
-      apiFetchJson<GwrSurface>(`/api/geoforge/ratio-study/gwr?taxYear=${filter.taxYear}`, { method: 'POST' }),
+      apiFetchJson<GwrSurface>(`/geoforge/ratio-study/gwr?taxYear=${filter.taxYear}`, { method: 'POST' }),
     enabled: gwrEnabled,
     staleTime: 1000 * 60 * 30,
   });

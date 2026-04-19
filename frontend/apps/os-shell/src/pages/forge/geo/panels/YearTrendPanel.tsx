@@ -101,7 +101,7 @@ export function YearTrendPanel() {
     queryFn: () => {
       const params = new URLSearchParams({ taxYear: String(filter.taxYear) });
       if (selectedNeighborhoodCode) params.set('neighborhoodCode', selectedNeighborhoodCode);
-      return apiFetchJson<MonthlyTrendPoint[]>(`/api/geoforge/ratio-study/monthly-trend?${params}`);
+      return apiFetchJson<MonthlyTrendPoint[]>(`/geoforge/ratio-study/monthly-trend?${params}`);
     },
     enabled: !!selectedNeighborhoodCode && view === 'monthly',
     staleTime: 1000 * 60 * 5,

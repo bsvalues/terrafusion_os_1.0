@@ -34,7 +34,7 @@ export function OutlierReviewPanel() {
     queryFn: () => {
       const params = new URLSearchParams({ taxYear: String(filter.taxYear) });
       if (selectedNeighborhoodCode) params.set('neighborhoodCode', selectedNeighborhoodCode);
-      return apiFetchJson<FlaggedSale[]>(`/api/geoforge/sales/outliers?${params}`);
+      return apiFetchJson<FlaggedSale[]>(`/geoforge/sales/outliers?${params}`);
     },
     staleTime: 1000 * 60 * 2,
   });
