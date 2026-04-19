@@ -103,7 +103,18 @@ export type MapLayer =
   | 'kde'
   | 'gwr'
   | 'neighborhood-poly'
-  | 'yoy-change';
+  | 'yoy-change'
+  | 'market-trend';
+
+export interface MarketTrendPoint {
+  neighborhoodCode: string;
+  centroidLat: number;
+  centroidLng: number;
+  currMedianPrice: number;
+  prevMedianPrice: number;
+  pctChange: number;
+  saleCount: number;
+}
 
 export interface YoyChangePoint {
   neighborhoodCode: string;

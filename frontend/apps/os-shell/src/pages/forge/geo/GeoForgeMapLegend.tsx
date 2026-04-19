@@ -16,6 +16,14 @@ const YOY_LEGEND = [
   { label: '< -5%', color: '#3b82f6' },
 ];
 
+const MKT_LEGEND = [
+  { label: '> +10% sale price', color: '#15803d' },
+  { label: '+5–10%', color: '#22c55e' },
+  { label: '0–5%', color: '#86efac' },
+  { label: '-5–0%', color: '#fca5a5' },
+  { label: '< -5%', color: '#f87171' },
+];
+
 function Swatch({ color, shape = 'square' }: { color: string; shape?: 'square' | 'circle' }) {
   return (
     <span
@@ -30,8 +38,9 @@ export function GeoForgeMapLegend() {
 
   const showRatio = activeLayers.has('choropleth') || activeLayers.has('sale-scatter') || activeLayers.has('neighborhood-poly');
   const showYoy   = activeLayers.has('yoy-change');
+  const showMkt   = activeLayers.has('market-trend');
 
-  if (!showRatio && !showYoy) return null;
+  if (!showRatio && !showYoy && !showMkt) return null;
 
   return (
     <div className="absolute bottom-8 right-[80px] z-20 flex flex-col gap-1.5">
@@ -52,6 +61,18 @@ export function GeoForgeMapLegend() {
         <div className="bg-slate-950/90 backdrop-blur border border-slate-800 rounded-md px-2.5 py-2 min-w-[130px]">
           <p className="text-[8px] text-slate-500 uppercase tracking-wider mb-1.5">YoY ΔAV</p>
           {YOY_LEGEND.map(({ label, color }) => (
+            <div key={label} className="flex items-center gap-1.5 mb-0.5">
+              <Swatch color={color} shape="circle" />
+              <span className="text-[9px] text-slate-300 font-mono">{label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showMkt && (
+        <div className="bg-slate-950/90 backdrop-blur border border-slate-800 rounded-md px-2.5 py-2 min-w-[140px]">
+          <p className="text-[8px] text-slate-500 uppercase tracking-wider mb-1.5">Market Trend (Sale Price)</p>
+          {MKT_LEGEND.map(({ label, color }) => (
             <div key={label} className="flex items-center gap-1.5 mb-0.5">
               <Swatch color={color} shape="circle" />
               <span className="text-[9px] text-slate-300 font-mono">{label}</span>

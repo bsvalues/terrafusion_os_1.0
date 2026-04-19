@@ -74,6 +74,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       addGwrLayer(map);
       addCompsRadiusLayer(map);
       addParcelPointsLayer(map);
+      addMarketTrendLayer(map);
 
       // Neighborhood click
       map.on('click', 'neighborhood-fill', (e) => {
@@ -161,6 +162,25 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
           .addTo(map);
       });
       map.on('mouseleave', 'yoy-change-circles', () => {
+        map.getCanvas().style.cursor = '';
+        hoverPopup.remove();
+      });
+
+      // Market-trend hover tooltip
+      map.on('mouseenter', 'market-trend-circles', (e) => {
+        map.getCanvas().style.cursor = 'help';
+        const props = e.features?.[0]?.properties;
+        if (!props || !e.lngLat) return;
+        const pct = Number(props.pctChange);
+        const pctColor = pct > 5 ? '#4ade80' : pct > 0 ? '#86efac' : pct > -5 ? '#fca5a5' : '#f87171';
+        const curr = Number(props.currMedianPrice);
+        const prev = Number(props.prevMedianPrice);
+        hoverPopup
+          .setLngLat(e.lngLat)
+          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:160px"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px">${props.neighborhoodCode}</div><div>Mkt Δ <span style="color:${pctColor};font-weight:700;font-family:monospace">${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%</span></div><div style="color:#94a3b8;font-size:9px">${prev > 0 ? `$${(prev/1000).toFixed(0)}k → ` : ''}$${(curr/1000).toFixed(0)}k median</div><div style="color:#64748b;font-size:9px">n=${props.saleCount} sales</div></div>`)
+          .addTo(map);
+      });
+      map.on('mouseleave', 'market-trend-circles', () => {
         map.getCanvas().style.cursor = '';
         hoverPopup.remove();
       });
@@ -365,6 +385,42 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       .catch(() => { /* data not available */ });
   }, [filter.taxYear, activeLayers]);
 
+  // Market sale-price trend — fetch when layer toggled on
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded()) return;
+    const src = map.getSource('market-trend') as mapboxgl.GeoJSONSource | undefined;
+    if (!src) return;
+
+    if (!activeLayers.has('market-trend')) {
+      src.setData({ type: 'FeatureCollection', features: [] });
+      return;
+    }
+
+    fetch(`/api/geoforge/neighborhoods/sale-price-trend?taxYear=${filter.taxYear}`)
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then((rows: import('./types/geoforge.types').MarketTrendPoint[]) => {
+        src.setData({
+          type: 'FeatureCollection',
+          features: rows
+            .filter(r => r.centroidLat !== 0)
+            .map(r => ({
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [r.centroidLng, r.centroidLat] },
+              properties: {
+                neighborhoodCode: r.neighborhoodCode,
+                pctChange: r.pctChange,
+                pctLabel: (r.pctChange >= 0 ? '+' : '') + r.pctChange.toFixed(1) + '%',
+                currMedianPrice: r.currMedianPrice,
+                prevMedianPrice: r.prevMedianPrice,
+                saleCount: r.saleCount,
+              },
+            })),
+        });
+      })
+      .catch(() => { /* unavailable */ });
+  }, [filter.taxYear, activeLayers]);
+
   // Parcel points — loads when layer toggled on + a neighborhood is selected
   useEffect(() => {
     const map = mapRef.current;
@@ -470,6 +526,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       'neighborhood-poly': ['neighborhood-poly-fill', 'neighborhood-poly-outline', 'neighborhood-poly-label'],
       'sale-scatter': ['sale-cluster-bubble', 'sale-cluster-count', 'sale-circles', 'sale-outlier-ring'],
       'yoy-change': ['yoy-change-circles', 'yoy-change-labels'],
+      'market-trend': ['market-trend-circles', 'market-trend-labels'],
       'parcel-polygons': ['parcel-pts-dots'],
       kde: ['kde-heat'],
       'ai-cluster': ['ai-cluster-circles'],
@@ -875,6 +932,54 @@ function addCompsRadiusLayer(map: mapboxgl.Map) {
       'circle-stroke-width': 2.5,
       'circle-stroke-color': '#00FFFF',
       'circle-stroke-opacity': 0.9,
+    },
+  });
+}
+
+function addMarketTrendLayer(map: mapboxgl.Map) {
+  map.addSource('market-trend', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  });
+
+  map.addLayer({
+    id: 'market-trend-circles',
+    type: 'circle',
+    source: 'market-trend',
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 11, 13, 22],
+      'circle-color': [
+        'step', ['get', 'pctChange'],
+        '#f87171',   // < -5%: red (declining market)
+        -5, '#fca5a5',
+        0,  '#86efac',
+        5,  '#22c55e',
+        10, '#15803d',
+      ],
+      'circle-opacity': 0.80,
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#0f172a',
+      'circle-stroke-opacity': 0.5,
+    },
+  });
+
+  map.addLayer({
+    id: 'market-trend-labels',
+    type: 'symbol',
+    source: 'market-trend',
+    layout: {
+      visibility: 'none',
+      'text-field': ['get', 'pctLabel'],
+      'text-size': 10,
+      'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
+      'text-anchor': 'center',
+      'text-allow-overlap': false,
+    },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': '#0f172a',
+      'text-halo-width': 1.5,
     },
   });
 }

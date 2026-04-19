@@ -1398,6 +1398,87 @@ public class GeoForgeController : ControllerBase
         return Ok(result);
     }
 
+    // ── Market sale-price trend — YoY median sale price per neighborhood ─────
+
+    [HttpGet("neighborhoods/sale-price-trend")]
+    public async Task<IActionResult> GetNeighborhoodSalePriceTrend(
+        [FromQuery] int taxYear = 0,
+        CancellationToken ct = default)
+    {
+        if (taxYear == 0) taxYear = DateTime.UtcNow.Year;
+        var prevYear = taxYear - 1;
+
+        var currSales = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.CountyId == BentonCountyId
+                     && s.SalesYear == taxYear
+                     && s.Neighborhood != null
+                     && s.SalePrice > 10_000m)
+            .Select(s => new { s.ParcelId, s.Neighborhood, Price = s.AdjustedSalePrice ?? s.SalePrice })
+            .ToListAsync(ct);
+
+        var prevSales = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.CountyId == BentonCountyId
+                     && s.SalesYear == prevYear
+                     && s.Neighborhood != null
+                     && s.SalePrice > 10_000m)
+            .Select(s => new { s.ParcelId, s.Neighborhood, Price = s.AdjustedSalePrice ?? s.SalePrice })
+            .ToListAsync(ct);
+
+        if (!currSales.Any()) return Ok(Array.Empty<object>());
+
+        var allParcelIds = currSales.Concat(prevSales)
+            .Where(s => s.ParcelId != null)
+            .Select(s => s.ParcelId!)
+            .Distinct();
+        var geoMap = await GetGeoMapAsync(allParcelIds, ct);
+
+        static double Median(IEnumerable<decimal> values)
+        {
+            var sorted = values.OrderBy(v => v).ToList();
+            var n = sorted.Count;
+            if (n == 0) return 0;
+            return n % 2 == 1 ? (double)sorted[n / 2] : (double)(sorted[n / 2 - 1] + sorted[n / 2]) / 2.0;
+        }
+
+        var prevMap = prevSales
+            .Where(s => s.Neighborhood != null)
+            .GroupBy(s => s.Neighborhood!)
+            .ToDictionary(g => g.Key, g => Median(g.Select(s => s.Price)));
+
+        var result = currSales
+            .Where(s => s.Neighborhood != null)
+            .GroupBy(s => s.Neighborhood!)
+            .Where(g => prevMap.ContainsKey(g.Key) && g.Count() >= 2)
+            .Select(g =>
+            {
+                var currMedian = Median(g.Select(s => s.Price));
+                var prevMedian = prevMap[g.Key];
+                var pct = prevMedian > 0 ? (currMedian - prevMedian) / prevMedian * 100.0 : 0.0;
+
+                var inGeo = g.Where(s => s.ParcelId != null && geoMap.ContainsKey(s.ParcelId!)).ToList();
+                var centLat = inGeo.Count > 0 ? inGeo.Average(s => geoMap[s.ParcelId!].lat) : 0.0;
+                var centLng = inGeo.Count > 0 ? inGeo.Average(s => geoMap[s.ParcelId!].lng) : 0.0;
+
+                return new
+                {
+                    neighborhoodCode = g.Key,
+                    centroidLat      = centLat,
+                    centroidLng      = centLng,
+                    currMedianPrice  = Math.Round(currMedian),
+                    prevMedianPrice  = Math.Round(prevMedian),
+                    pctChange        = Math.Round(pct, 2),
+                    saleCount        = g.Count(),
+                };
+            })
+            .Where(r => r.centroidLat != 0)
+            .OrderByDescending(r => r.pctChange)
+            .ToList();
+
+        return Ok(result);
+    }
+
     // ── Parcel points — all parcels in a neighborhood with lat/lng + AV ─────
 
     [HttpGet("parcels/points")]
