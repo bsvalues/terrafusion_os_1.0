@@ -36,7 +36,11 @@ public sealed class SalesAuditEntityTests : IDisposable
             FindingsJson = "[]",
             RecommendedAction = "DISQUALIFY_SALES",
             DiagnosedAt = DateTime.UtcNow,
-            IsStale = false
+            IsStale = false,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            CreatedBy = "test-user",
+            UpdatedBy = "test-user"
         };
         _db.Set<SaleAuditDiagnosis>().Add(entity);
         await _db.SaveChangesAsync();
@@ -62,7 +66,9 @@ public sealed class SalesAuditEntityTests : IDisposable
             ProjectedPrd = 1.009m,
             Status = "draft",
             CreatedBy = "test-user",
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            UpdatedBy = "test-user"
         };
         _db.Set<SalesAuditAdjustmentProposal>().Add(proposal);
         await _db.SaveChangesAsync();

@@ -34,6 +34,8 @@ public static class SalesAuditEntityConfigurations
             builder.HasIndex(e => new { e.CountyId, e.TaxYear, e.StratumKey })
                    .HasDatabaseName("IX_SaleAuditDiagnoses_CountyYearStrat");
             builder.HasIndex(e => e.IsStale).HasDatabaseName("IX_SaleAuditDiagnoses_IsStale");
+            builder.Property(e => e.CreatedBy).IsRequired().HasMaxLength(450);
+            builder.Property(e => e.UpdatedBy).IsRequired().HasMaxLength(450);
         }
     }
 
@@ -51,6 +53,7 @@ public static class SalesAuditEntityConfigurations
             builder.Property(e => e.ProjectedPrd).HasColumnType("decimal(6,4)");
             builder.Property(e => e.Status).IsRequired().HasMaxLength(20);
             builder.Property(e => e.CreatedBy).IsRequired().HasMaxLength(450);
+            builder.Property(e => e.UpdatedBy).IsRequired().HasMaxLength(450);
             builder.HasIndex(e => new { e.CountyId, e.TaxYear, e.Status })
                    .HasDatabaseName("IX_SalesAuditAdjProposals_CountyYearStatus");
         }

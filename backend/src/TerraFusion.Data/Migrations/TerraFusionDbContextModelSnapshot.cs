@@ -8747,6 +8747,82 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("RevalAreaEvidenceAges");
                 });
 
+            modelBuilder.Entity("TerraFusion.Core.Entities.SaleAuditDiagnosis", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Confidence")
+                        .HasColumnType("decimal(3,2)");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<DateTime>("DiagnosedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FindingsJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsStale")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("PrimaryDiagnosis")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("RecommendedAction")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<decimal?>("RecommendedFactor")
+                        .HasColumnType("decimal(6,4)");
+
+                    b.Property<string>("RecommendedSaleIdsJson")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SimulationResultJson")
+                        .HasColumnType("text");
+
+                    b.Property<string>("StratumKey")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("TaxYear")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsStale")
+                        .HasDatabaseName("IX_SaleAuditDiagnoses_IsStale");
+
+                    b.HasIndex("CountyId", "TaxYear", "StratumKey")
+                        .HasDatabaseName("IX_SaleAuditDiagnoses_CountyYearStrat");
+
+                    b.ToTable("SaleAuditDiagnoses", (string)null);
+                });
+
             modelBuilder.Entity("TerraFusion.Core.Entities.SaleComparableRecord", b =>
                 {
                     b.Property<int>("Id")
@@ -8846,113 +8922,6 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("SaleRatioTypes", (string)null);
                 });
 
-            modelBuilder.Entity("TerraFusion.Core.Entities.SaleAuditDiagnosis", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CountyId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("TaxYear")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("StratumKey")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("PrimaryDiagnosis")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<decimal>("Confidence")
-                        .HasColumnType("decimal(3,2)");
-
-                    b.Property<string>("FindingsJson")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("SimulationResultJson")
-                        .HasColumnType("text");
-
-                    b.Property<string>("RecommendedAction")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("RecommendedSaleIdsJson")
-                        .HasColumnType("text");
-
-                    b.Property<decimal?>("RecommendedFactor")
-                        .HasColumnType("decimal(6,4)");
-
-                    b.Property<DateTime>("DiagnosedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsStale")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex(new[] { "CountyId", "TaxYear", "StratumKey" }, "IX_SaleAuditDiagnoses_CountyYearStrat");
-
-                    b.HasIndex(new[] { "IsStale" }, "IX_SaleAuditDiagnoses_IsStale");
-
-                    b.ToTable("SaleAuditDiagnoses");
-                });
-
-            modelBuilder.Entity("TerraFusion.Core.Entities.SalesAuditAdjustmentProposal", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CountyId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("TaxYear")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("StratumKey")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<decimal>("ProposedFactor")
-                        .HasColumnType("decimal(6,4)");
-
-                    b.Property<decimal>("ProjectedCod")
-                        .HasColumnType("decimal(8,4)");
-
-                    b.Property<decimal>("ProjectedMedianRatio")
-                        .HasColumnType("decimal(6,4)");
-
-                    b.Property<decimal>("ProjectedPrd")
-                        .HasColumnType("decimal(6,4)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex(new[] { "CountyId", "TaxYear", "Status" }, "IX_SalesAuditAdjProposals_CountyYearStatus");
-
-                    b.ToTable("SalesAuditAdjustmentProposals");
-                });
-
             modelBuilder.Entity("TerraFusion.Core.Entities.SaleRecord", b =>
                 {
                     b.Property<int>("Id")
@@ -9029,6 +8998,64 @@ namespace TerraFusion.Data.Migrations
                     b.HasIndex("MatrixVersionId");
 
                     b.ToTable("SaleRecords");
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.SalesAuditAdjustmentProposal", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<decimal>("ProjectedCod")
+                        .HasColumnType("decimal(8,4)");
+
+                    b.Property<decimal>("ProjectedMedianRatio")
+                        .HasColumnType("decimal(6,4)");
+
+                    b.Property<decimal>("ProjectedPrd")
+                        .HasColumnType("decimal(6,4)");
+
+                    b.Property<decimal>("ProposedFactor")
+                        .HasColumnType("decimal(6,4)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("StratumKey")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("TaxYear")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountyId", "TaxYear", "Status")
+                        .HasDatabaseName("IX_SalesAuditAdjProposals_CountyYearStatus");
+
+                    b.ToTable("SalesAuditAdjustmentProposals", (string)null);
                 });
 
             modelBuilder.Entity("TerraFusion.Core.Entities.SecurityEvent", b =>

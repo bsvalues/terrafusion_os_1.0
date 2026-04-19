@@ -15,4 +15,8 @@ public class SalesAuditAdjustmentProposal
     public string Status { get; set; } = "draft";
     public string CreatedBy { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+
+    // FISMA-required audit fields — auto-populated by AuditableEntityInterceptor
+    public DateTime UpdatedAt { get; set; }
+    public string UpdatedBy { get; set; } = string.Empty;
 }

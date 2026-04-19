@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -11,10 +11,6 @@ namespace TerraFusion.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "PacsPropId",
-                table: "ComparableSales");
-
             migrationBuilder.CreateTable(
                 name: "SaleAuditDiagnoses",
                 columns: table => new
@@ -24,14 +20,18 @@ namespace TerraFusion.Data.Migrations
                     TaxYear = table.Column<int>(type: "integer", nullable: false),
                     StratumKey = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     PrimaryDiagnosis = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Confidence = table.Column<decimal>(type: "decimal(3,2)", nullable: false),
+                    Confidence = table.Column<decimal>(type: "numeric(3,2)", nullable: false),
                     FindingsJson = table.Column<string>(type: "text", nullable: false),
                     SimulationResultJson = table.Column<string>(type: "text", nullable: true),
                     RecommendedAction = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     RecommendedSaleIdsJson = table.Column<string>(type: "text", nullable: true),
-                    RecommendedFactor = table.Column<decimal>(type: "decimal(6,4)", nullable: true),
+                    RecommendedFactor = table.Column<decimal>(type: "numeric(6,4)", nullable: true),
                     DiagnosedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsStale = table.Column<bool>(type: "boolean", nullable: false)
+                    IsStale = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
+                    UpdatedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,13 +46,15 @@ namespace TerraFusion.Data.Migrations
                     CountyId = table.Column<Guid>(type: "uuid", nullable: false),
                     TaxYear = table.Column<int>(type: "integer", nullable: false),
                     StratumKey = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    ProposedFactor = table.Column<decimal>(type: "decimal(6,4)", nullable: false),
-                    ProjectedCod = table.Column<decimal>(type: "decimal(8,4)", nullable: false),
-                    ProjectedMedianRatio = table.Column<decimal>(type: "decimal(6,4)", nullable: false),
-                    ProjectedPrd = table.Column<decimal>(type: "decimal(6,4)", nullable: false),
+                    ProposedFactor = table.Column<decimal>(type: "numeric(6,4)", nullable: false),
+                    ProjectedCod = table.Column<decimal>(type: "numeric(8,4)", nullable: false),
+                    ProjectedMedianRatio = table.Column<decimal>(type: "numeric(6,4)", nullable: false),
+                    ProjectedPrd = table.Column<decimal>(type: "numeric(6,4)", nullable: false),
                     Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     CreatedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -79,16 +81,10 @@ namespace TerraFusion.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "SalesAuditAdjustmentProposals");
-
-            migrationBuilder.DropTable(
                 name: "SaleAuditDiagnoses");
 
-            migrationBuilder.AddColumn<int>(
-                name: "PacsPropId",
-                table: "ComparableSales",
-                type: "integer",
-                nullable: true);
+            migrationBuilder.DropTable(
+                name: "SalesAuditAdjustmentProposals");
         }
     }
 }

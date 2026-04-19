@@ -25,4 +25,10 @@ public class SaleAuditDiagnosis
     public DateTime DiagnosedAt { get; set; }
     /// <summary>Marked stale on each sync completion; re-run clears it</summary>
     public bool IsStale { get; set; }
+
+    // FISMA-required audit fields — auto-populated by AuditableEntityInterceptor
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public string CreatedBy { get; set; } = string.Empty;
+    public string UpdatedBy { get; set; } = string.Empty;
 }
