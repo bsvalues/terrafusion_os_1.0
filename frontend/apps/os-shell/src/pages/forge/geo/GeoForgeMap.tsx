@@ -33,6 +33,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     setFlyTarget,
     bloomLatlng,
     selectedRadiusMi,
+    comparableSalePoints,
     filter,
   } = useGeoForgeStore();
 
@@ -63,6 +64,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     map.on('load', () => {
       addNeighborhoodPolyLayer(map);
       addNeighborhoodLayer(map);
+      addCompsHighlightLayer(map);
       addSimulationOverlayLayer(map);
       addSaleScatterLayer(map);
       addKdeLayer(map);
@@ -245,6 +247,25 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     map.flyTo({ center: [flyTarget.lng, flyTarget.lat], zoom: 16, duration: 1400, essential: true });
     setFlyTarget(null);
   }, [flyTarget, setFlyTarget]);
+
+  // Comparable sale highlights — yellow rings on top-scored comp dots
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded()) return;
+    const src = map.getSource('comps-highlight') as mapboxgl.GeoJSONSource | undefined;
+    if (!comparableSalePoints || comparableSalePoints.length === 0) {
+      src?.setData({ type: 'FeatureCollection', features: [] });
+      return;
+    }
+    src?.setData({
+      type: 'FeatureCollection',
+      features: comparableSalePoints.map((pt, i) => ({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [pt.lng, pt.lat] },
+        properties: { score: pt.score, rank: i + 1 },
+      })),
+    });
+  }, [comparableSalePoints]);
 
   // Neighborhood polygon boundaries — reload when taxYear or poly layer visibility changes
   useEffect(() => {
@@ -561,6 +582,40 @@ function addSimulationOverlayLayer(map: mapboxgl.Map) {
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 18, 14, 50],
       'circle-opacity': 0.18,
       'circle-stroke-width': 0,
+    },
+  });
+}
+
+function addCompsHighlightLayer(map: mapboxgl.Map) {
+  map.addSource('comps-highlight', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  });
+  map.addLayer({
+    id: 'comps-highlight-ring',
+    type: 'circle',
+    source: 'comps-highlight',
+    paint: {
+      'circle-color': 'transparent',
+      'circle-radius': 13,
+      'circle-stroke-width': 3,
+      'circle-stroke-color': '#facc15',
+      'circle-stroke-opacity': 0.95,
+    },
+  });
+  map.addLayer({
+    id: 'comps-highlight-rank',
+    type: 'symbol',
+    source: 'comps-highlight',
+    layout: {
+      'text-field': ['get', 'rank'],
+      'text-size': 9,
+      'text-anchor': 'center',
+    },
+    paint: {
+      'text-color': '#facc15',
+      'text-halo-color': '#000',
+      'text-halo-width': 1.5,
     },
   });
 }

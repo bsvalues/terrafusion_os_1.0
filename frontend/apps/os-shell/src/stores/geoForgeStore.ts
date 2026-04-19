@@ -25,6 +25,7 @@ export const useGeoForgeStore = create<GeoForgeState>((set) => ({
   bloomParcelId: null,
   bloomLatlng: null,
   selectedRadiusMi: null,
+  comparableSalePoints: null,
   flyTarget: null,
   neighborhoodStats: [],
   salePoints: [],
@@ -40,6 +41,7 @@ export const useGeoForgeStore = create<GeoForgeState>((set) => ({
   setBloomParcelId: (bloomParcelId) => set({ bloomParcelId }),
   setBloomLatlng: (bloomLatlng) => set({ bloomLatlng }),
   setSelectedRadiusMi: (selectedRadiusMi) => set({ selectedRadiusMi }),
+  setComparableSalePoints: (comparableSalePoints) => set({ comparableSalePoints }),
   setFlyTarget: (flyTarget) => set({ flyTarget }),
   setFilter: (patch) => set((s) => ({ filter: { ...s.filter, ...patch } })),
 

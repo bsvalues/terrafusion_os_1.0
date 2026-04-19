@@ -790,6 +790,234 @@ public class GeoForgeController : ControllerBase
         });
     }
 
+    // ── 9a. Auto-comparable scoring ───────────────────────────────────────────
+    [HttpGet("parcel/{parcelNumber}/comps")]
+    public async Task<IActionResult> GetComparables(
+        string parcelNumber,
+        [FromQuery] int taxYear = 0,
+        [FromQuery] int count   = 8,
+        CancellationToken ct    = default)
+    {
+        if (taxYear == 0) taxYear = DateTime.Now.Year;
+        if (count is < 1 or > 20) count = 8;
+
+        // Subject parcel
+        var subject = await _db.Properties
+            .AsNoTracking()
+            .Where(p => p.ParcelNumber == parcelNumber && p.TaxYear == taxYear)
+            .Select(p => new { p.PropertyType, p.YearBuilt, p.AssessedValue, p.Neighborhood })
+            .FirstOrDefaultAsync(ct);
+        if (subject == null) return NotFound(new { error = "Parcel not found for tax year." });
+
+        var subjectGeoMap = await GetGeoMapAsync(new[] { parcelNumber }, ct);
+        var subjectGeo = subjectGeoMap.TryGetValue(parcelNumber, out var sg) ? sg : (lat: 0.0, lng: 0.0);
+        if (subjectGeo.lat == 0) return Ok(new object[] { }); // No geometry — no comps
+
+        // Recent qualified sales within ~2 years, exclude self
+        var lookback = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var salePtIds = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.CountyId == BentonCountyId
+                     && s.SaleDate >= lookback
+                     && s.QualificationDecision != "disqualified"
+                     && s.ParcelId != parcelNumber
+                     && s.ParcelId != null)
+            .Select(s => new
+            {
+                s.Id, s.ParcelId, s.Address, s.SaleDate, s.Neighborhood,
+                SalePrice = s.AdjustedSalePrice ?? s.SalePrice,
+                s.PropertyType,
+            })
+            .Where(s => s.SalePrice > 10_000m)
+            .ToListAsync(ct);
+
+        var parcelIds = salePtIds.Select(s => s.ParcelId!).Distinct();
+        var avMap  = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+        var geoMap = await GetGeoMapAsync(parcelIds, ct);
+
+        // Score each sale
+        var subjectAv       = (double)subject.AssessedValue;
+        var subjectType     = (subject.PropertyType ?? "R").ToUpperInvariant().TrimStart()[..1];
+        var today           = DateTime.UtcNow;
+
+        var scored = salePtIds
+            .Where(s => s.ParcelId != null && geoMap.ContainsKey(s.ParcelId!))
+            .Select(s =>
+            {
+                var geo     = geoMap[s.ParcelId!];
+                var distMi  = HaversineDistanceMiles(subjectGeo.lat, subjectGeo.lng, geo.lat, geo.lng);
+                if (distMi > 2.5) return (score: -1.0, data: (object?)null);
+
+                var av          = avMap.TryGetValue(s.ParcelId!, out var a) ? a : 0m;
+                var ratio       = av > 0 && s.SalePrice > 0 ? (double)av / (double)s.SalePrice : 0.0;
+                var avDiffPct   = subjectAv > 0 ? Math.Abs((double)av - subjectAv) / subjectAv * 100.0 : 50.0;
+                var saleTypePfx = (s.PropertyType ?? "R").ToUpperInvariant().TrimStart()[..1];
+                var daysSince   = (today - s.SaleDate).TotalDays;
+
+                var distScore   = Math.Max(0, 40.0 * (1.0 - distMi / 2.5));
+                var typeScore   = saleTypePfx == subjectType ? 20.0 : 0.0;
+                var avScore     = Math.Max(0, 30.0 * (1.0 - avDiffPct / 50.0));
+                var recScore    = Math.Max(0, 10.0 * (1.0 - daysSince / 730.0));
+                var score       = distScore + typeScore + avScore + recScore;
+
+                return (score, data: (object?)new
+                {
+                    parcelId         = s.ParcelId,
+                    address          = s.Address ?? s.ParcelId ?? "",
+                    neighborhoodCode = s.Neighborhood ?? "",
+                    saleDate         = s.SaleDate.ToString("yyyy-MM-dd"),
+                    salePrice        = (double)s.SalePrice,
+                    assessedValue    = (double)av,
+                    ratio            = ratio > 0 ? Math.Round(ratio, 4) : (double?)null,
+                    score            = Math.Round(score, 1),
+                    distanceMi       = Math.Round(distMi, 2),
+                    lat              = geo.lat,
+                    lng              = geo.lng,
+                });
+            })
+            .Where(x => x.score >= 0)
+            .OrderByDescending(x => x.score)
+            .Take(count)
+            .Select(x => x.data!)
+            .ToList();
+
+        return Ok(scored);
+    }
+
+    // ── 9b. DOR-formatted certification print report ───────────────────────
+    [HttpGet("certification/print")]
+    public async Task<IActionResult> PrintCertification(
+        [FromQuery] int taxYear = 0,
+        CancellationToken ct = default)
+    {
+        if (taxYear == 0) taxYear = DateTime.Now.Year;
+
+        // Compute the same data as GetCertificationSummary
+        var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var sales = await _db.ComparableSales
+            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.SalesYear == taxYear || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd))
+            .Where(s => s.QualificationDecision == "qualified"
+                     || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"))
+            .Select(s => new { s.ParcelId, s.PropertyType, SalePrice = s.AdjustedSalePrice ?? s.SalePrice })
+            .Where(s => s.SalePrice > 10_000m)
+            .ToListAsync(ct);
+
+        var parcelIds  = sales.Select(s => s.ParcelId).Where(id => id != null).Distinct();
+        var assessedMap = await GetAssessedValueMapAsync(parcelIds!, taxYear, ct);
+
+        static string Stratum(string? t) => t switch
+        {
+            "residential" or "R1" or "SFR" => "Residential",
+            "commercial"  or "C1" or "C2" or "C3" or "C4" => "Commercial",
+            "industrial"  or "I1" => "Industrial",
+            "multi-family" or "MFR" or "A1" => "Multi-Family",
+            _ => "Other",
+        };
+
+        var rows = sales
+            .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+            .Select(s => (Stratum: Stratum(s.PropertyType), Ratio: assessedMap[s.ParcelId!] / s.SalePrice, Av: assessedMap[s.ParcelId!]))
+            .ToList();
+
+        static (double med, double cod, double prd, double prb, int n) Stats(IEnumerable<(decimal Ratio, decimal Av)> items)
+        {
+            var r = items.Select(x => x.Ratio).ToList();
+            var a = items.Select(x => x.Av).ToList();
+            if (r.Count == 0) return (0, 0, 0, 0, 0);
+            return (
+                (double)TrendStats.Median(r),
+                (double)TrendStats.ComputeCod(r),
+                (double)TrendStats.ComputePrd(r, a),
+                (double)TrendStats.ComputePrb(r, a),
+                r.Count);
+        }
+
+        var cwStats = Stats(rows.Select(r => (r.Ratio, r.Av)));
+        var strataStats = rows.GroupBy(r => r.Stratum)
+            .OrderBy(g => g.Key)
+            .Select(g => (Name: g.Key, Stats: Stats(g.Select(r => (r.Ratio, r.Av)))))
+            .ToList();
+
+        static string PassFail(bool pass) => pass ? "PASS" : "FAIL";
+        static string PassCss(bool pass) => pass ? "color:#166534;font-weight:bold" : "color:#991b1b;font-weight:bold";
+        static string Fmt3(double v) => v.ToString("F3");
+        static string Fmt1(double v) => v.ToString("F1");
+
+        var cwMedianPass = cwStats.med is >= 0.90 and <= 1.10;
+        var cwCodPass    = cwStats.cod <= 20.0;
+        var cwPrdPass    = cwStats.prd is >= 0.98 and <= 1.03;
+
+        static string StrataRow((string Name, (double med, double cod, double prd, double prb, int n) Stats) s)
+        {
+            var mPass = s.Stats.med is >= 0.90 and <= 1.10;
+            var cPass = s.Stats.cod <= 20.0;
+            var mCss = mPass ? "color:#166534" : "color:#991b1b";
+            var cCss = cPass ? "color:#166534" : "color:#991b1b";
+            var rcw = mPass && cPass;
+            return $@"<tr>
+              <td>{s.Name}</td><td>{s.Stats.n}</td>
+              <td style=""{mCss}"">{Fmt3(s.Stats.med)}</td>
+              <td style=""{cCss}"">{Fmt1(s.Stats.cod)}</td>
+              <td>{Fmt3(s.Stats.prd)}</td>
+              <td>{Fmt3(s.Stats.prb)}</td>
+              <td style=""{PassCss(rcw)}"">{PassFail(rcw)}</td>
+            </tr>";
+        }
+
+        var html = $@"<!DOCTYPE html><html lang=""en""><head>
+<meta charset=""utf-8"">
+<title>Ratio Study — Benton County — {taxYear}</title>
+<style>
+  @page{{size:letter;margin:1in}}
+  body{{font-family:'Georgia',serif;font-size:12pt;line-height:1.5;color:#000;max-width:7.5in;margin:auto}}
+  h1{{font-size:15pt;text-align:center;margin-bottom:2pt}}
+  h2{{font-size:12pt;margin-top:20pt;border-bottom:1px solid #666;padding-bottom:2pt}}
+  table{{width:100%;border-collapse:collapse;margin-top:8pt;font-size:11pt}}
+  th{{background:#e8e8e8;border:1px solid #888;padding:4pt 8pt;text-align:left}}
+  td{{border:1px solid #aaa;padding:4pt 8pt}}
+  .cert{{margin-top:28pt;border:2px solid #000;padding:14pt}}
+  .sig{{margin-top:32pt;border-top:1px solid #000;width:3in;display:inline-block}}
+  @media print{{button{{display:none}}}}
+</style>
+</head><body>
+<button onclick=""window.print()"" style=""position:fixed;top:10px;right:10px;padding:6px 14px;background:#1e3a5f;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11pt"">⎙ Print</button>
+
+<h1>RATIO STUDY CERTIFICATION</h1>
+<h1>BENTON COUNTY ASSESSOR'S OFFICE</h1>
+<p style=""text-align:center;font-size:11pt"">Tax Year {taxYear} &nbsp;·&nbsp; WAC 458-53A-050 &nbsp;·&nbsp; Generated {DateTime.UtcNow:yyyy-MM-dd HH:mm} UTC</p>
+
+<h2>County-Wide Summary</h2>
+<table>
+  <tr><th>Measure</th><th>Value</th><th>IAAO Standard</th><th>Status</th></tr>
+  <tr><td>Qualified Sales</td><td>{cwStats.n}</td><td>—</td><td>—</td></tr>
+  <tr><td>Median Ratio</td><td>{Fmt3(cwStats.med)}</td><td>0.900 – 1.100</td><td style=""{PassCss(cwMedianPass)}"">{PassFail(cwMedianPass)}</td></tr>
+  <tr><td>COD</td><td>{Fmt1(cwStats.cod)}</td><td>≤ 20.0</td><td style=""{PassCss(cwCodPass)}"">{PassFail(cwCodPass)}</td></tr>
+  <tr><td>PRD</td><td>{Fmt3(cwStats.prd)}</td><td>0.980 – 1.030</td><td style=""{PassCss(cwPrdPass)}"">{PassFail(cwPrdPass)}</td></tr>
+  <tr><td>PRB</td><td>{Fmt3(Math.Abs(cwStats.prb))}</td><td>|PRB| ≤ 0.100</td><td>—</td></tr>
+</table>
+
+<h2>By Stratum</h2>
+<table>
+  <tr><th>Stratum</th><th>n</th><th>Median</th><th>COD</th><th>PRD</th><th>PRB</th><th>RCW Pass</th></tr>
+  {string.Join("\n  ", strataStats.Select(StrataRow))}
+</table>
+
+<div class=""cert"">
+  <p>I hereby certify that the assessment ratio study for Benton County, Washington for tax year <strong>{taxYear}</strong> was conducted in accordance with the requirements of WAC 458-53A-050 and the International Association of Assessing Officers (IAAO) <em>Standard on Ratio Studies</em>.</p>
+  <p>All qualified arm's-length sales from the study period were included. Statistical measures comply with standards set by the Washington State Department of Revenue.</p>
+  <br>
+  <span class=""sig""></span>
+  <p style=""margin-top:4pt""><strong>Benton County Assessor</strong></p>
+  <p>Date: ___________________</p>
+</div>
+</body></html>";
+
+        return Content(html, "text/html; charset=utf-8");
+    }
+
     // ── 9. Outlier / flagged sale review list ──────────────────────────────
     [HttpGet("sales/outliers")]
     public async Task<IActionResult> GetFlaggedSales(
@@ -1040,6 +1268,17 @@ public class GeoForgeController : ControllerBase
     }
 
     // ── Private helpers ──────────────────────────────────────────────────────
+
+    private static double HaversineDistanceMiles(double lat1, double lng1, double lat2, double lng2)
+    {
+        const double R = 3958.8;
+        var dLat = (lat2 - lat1) * Math.PI / 180.0;
+        var dLng = (lng2 - lng1) * Math.PI / 180.0;
+        var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2)
+              + Math.Cos(lat1 * Math.PI / 180.0) * Math.Cos(lat2 * Math.PI / 180.0)
+              * Math.Sin(dLng / 2) * Math.Sin(dLng / 2);
+        return R * 2.0 * Math.Asin(Math.Sqrt(a));
+    }
 
     private static string RatioColorHex(double ratio) => ratio switch
     {

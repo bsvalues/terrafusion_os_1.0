@@ -113,7 +113,22 @@ export type RightDrawerPanel =
   | 'workbench'
   | 'certification'
   | 'outlier-review'
-  | 'stratification';
+  | 'stratification'
+  | 'comps';
+
+export interface CompSale {
+  parcelId: string;
+  address: string;
+  neighborhoodCode: string;
+  saleDate: string;
+  salePrice: number;
+  assessedValue: number;
+  ratio: number | null;
+  score: number;
+  distanceMi: number;
+  lat: number;
+  lng: number;
+}
 
 export interface StrataRow {
   code: string;
@@ -285,6 +300,7 @@ export interface GeoForgeState {
   bloomParcelId: string | null;
   bloomLatlng: { lat: number; lng: number } | null;
   selectedRadiusMi: 0.25 | 0.5 | 1.0 | null;
+  comparableSalePoints: { lat: number; lng: number; score: number }[] | null;
   flyTarget: { lat: number; lng: number } | null;
   neighborhoodStats: NeighborhoodStat[];
   salePoints: SalePoint[];
@@ -304,6 +320,7 @@ export interface GeoForgeState {
   setBloomParcelId: (id: string | null) => void;
   setBloomLatlng: (latlng: { lat: number; lng: number } | null) => void;
   setSelectedRadiusMi: (radius: 0.25 | 0.5 | 1.0 | null) => void;
+  setComparableSalePoints: (pts: { lat: number; lng: number; score: number }[] | null) => void;
   setFlyTarget: (target: { lat: number; lng: number } | null) => void;
   setNeighborhoodStats: (stats: NeighborhoodStat[]) => void;
   setSalePoints: (sales: SalePoint[]) => void;

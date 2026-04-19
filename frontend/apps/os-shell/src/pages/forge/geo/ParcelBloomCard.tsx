@@ -128,12 +128,20 @@ export function ParcelBloomCard() {
             </div>
           ) : null}
           {data && (
-            <button
-              onClick={() => openDrawer('workbench')}
-              className="text-[9px] px-2 py-0.5 rounded bg-amber-900/40 text-amber-300 hover:bg-amber-800/60 border border-amber-800/40"
-            >
-              Workbench ↗
-            </button>
+            <>
+              <button
+                onClick={() => openDrawer('comps')}
+                className="text-[9px] px-2 py-0.5 rounded bg-sky-900/40 text-sky-300 hover:bg-sky-800/60 border border-sky-800/40"
+              >
+                Comps ↗
+              </button>
+              <button
+                onClick={() => openDrawer('workbench')}
+                className="text-[9px] px-2 py-0.5 rounded bg-amber-900/40 text-amber-300 hover:bg-amber-800/60 border border-amber-800/40"
+              >
+                Workbench ↗
+              </button>
+            </>
           )}
           <button
             onClick={() => setBloomParcelId(null)}
