@@ -9,6 +9,7 @@ import type {
   DiagnosisResult,
   GwrSurface,
   PriceBand,
+  ChoroMode,
 } from '../pages/forge/geo/types/geoforge.types';
 
 const DEFAULT_FILTER: GeoForgeFilter = {
@@ -35,6 +36,7 @@ export const useGeoForgeStore = create<GeoForgeState>((set, get) => ({
   simulationDeltaMap: null,
   selectedMonth: null,
   priceBand: null,
+  choroMode: 'ratio' as ChoroMode,
   loadingStats: false,
   loadingSales: false,
   loadingDiagnosis: false,
@@ -73,6 +75,7 @@ export const useGeoForgeStore = create<GeoForgeState>((set, get) => ({
   setSimulationDeltaMap: (simulationDeltaMap) => set({ simulationDeltaMap }),
   setSelectedMonth: (selectedMonth) => set({ selectedMonth }),
   setPriceBand: (priceBand: PriceBand) => set({ priceBand }),
+  setChoroMode: (choroMode: ChoroMode) => set({ choroMode }),
   setLoadingStats: (loadingStats) => set({ loadingStats }),
   setLoadingSales: (loadingSales) => set({ loadingSales }),
   setLoadingDiagnosis: (loadingDiagnosis) => set({ loadingDiagnosis }),

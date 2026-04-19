@@ -3,9 +3,9 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './geoforge.css';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
-import { medianRatioColor, ratioPointColor, salePointRadius } from './utils/choropleths';
+import { medianRatioColor, ratioPointColor, salePointRadius, codColor, prdColor, prbColor } from './utils/choropleths';
 import { makeCircleGeoJson, haversineDistanceMi } from './utils/geoMath';
-import type { MapLayer } from './types/geoforge.types';
+import type { MapLayer, ChoroMode } from './types/geoforge.types';
 
 mapboxgl.accessToken = (import.meta.env.VITE_MAPBOX_TOKEN as string) ?? '';
 
@@ -36,6 +36,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     selectedRadiusMi,
     comparableSalePoints,
     filter,
+    choroMode,
   } = useGeoForgeStore();
 
   // Initialize map once
@@ -97,9 +98,13 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         const simRow = simDelta != null && simRatio != null
           ? `<div style="margin-top:4px;color:#f59e0b;font-size:9px">⬡ Sim: ${Number(med).toFixed ? med : '?'} → <span style="font-family:monospace;font-weight:700;color:#fbbf24">${Number(simRatio).toFixed(3)}</span> (${Number(simDelta) >= 0 ? '+' : ''}${Number(simDelta).toFixed(1)}%)</div>`
           : '';
+        const mLabel = props.modeLabel as string | undefined;
+        const modeRow = mLabel && mLabel !== 'RATIO'
+          ? `<div style="margin-top:2px;color:#7dd3fc;font-size:9px">▣ ${mLabel} <span style="font-family:monospace;font-weight:700">${props.modeValue}</span></div>`
+          : '';
         hoverPopup
           .setLngLat(e.lngLat)
-          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:130px"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px;letter-spacing:.05em">${props.neighborhoodCode}</div><div>MED <span style="color:#fff;font-weight:600">${med}</span></div><div>COD <span style="color:#fff">${cod}</span></div><div style="color:#94a3b8">n = ${n}${simRow}</div></div>`)
+          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:130px"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px;letter-spacing:.05em">${props.neighborhoodCode}</div><div>MED <span style="color:#fff;font-weight:600">${med}</span></div><div>COD <span style="color:#fff">${cod}</span></div>${modeRow}<div style="color:#94a3b8">n = ${n}${simRow}</div></div>`)
           .addTo(map);
       });
 
@@ -274,6 +279,14 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         .filter((ns) => ns.centroidLat !== 0 && ns.centroidLng !== 0)
         .map((ns) => {
           const delta = simulationDeltaMap?.[ns.neighborhoodCode] ?? null;
+          const effectiveRatio = delta !== null
+            ? ns.stats.medianRatio * (1 + delta / 100)
+            : ns.stats.medianRatio;
+          const color = choroColorForMode(choroMode, effectiveRatio, ns.stats.cod, ns.stats.prd, ns.stats.prb);
+          const modeValue = choroMode === 'cod' ? ns.stats.cod.toFixed(1)
+            : choroMode === 'prd' ? ns.stats.prd.toFixed(3)
+            : choroMode === 'prb' ? (ns.stats.prb >= 0 ? '+' : '') + ns.stats.prb.toFixed(3)
+            : effectiveRatio.toFixed(3);
           return {
             type: 'Feature',
             geometry: {
@@ -285,13 +298,11 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
               medianRatio: ns.stats.medianRatio,
               cod: ns.stats.cod,
               saleCount: ns.saleCount,
-              // When a simulation is active, shift the displayed ratio so the choropleth
-              // color updates live as workbench proposals are drafted.
-              color: delta !== null
-                ? medianRatioColor(ns.stats.medianRatio * (1 + delta / 100))
-                : medianRatioColor(ns.stats.medianRatio),
+              color,
+              modeLabel: choroMode.toUpperCase(),
+              modeValue,
               simulatedRatio: delta !== null
-                ? Math.round(ns.stats.medianRatio * (1 + delta / 100) * 10000) / 10000
+                ? Math.round(effectiveRatio * 10000) / 10000
                 : null,
               simulationDelta: delta,
               hasSimulation: delta !== null,
@@ -302,7 +313,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
 
     const src = map.getSource('neighborhoods') as mapboxgl.GeoJSONSource | undefined;
     src?.setData(geojson);
-  }, [neighborhoodStats, simulationDeltaMap]);
+  }, [neighborhoodStats, simulationDeltaMap, choroMode]);
 
   // Update sale scatter data
   useEffect(() => {
@@ -685,6 +696,21 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       className="absolute inset-0 w-full h-full"
     />
   );
+}
+
+function choroColorForMode(
+  mode: ChoroMode,
+  effectiveRatio: number,
+  cod: number,
+  prd: number,
+  prb: number,
+): string {
+  switch (mode) {
+    case 'cod': return codColor(cod);
+    case 'prd': return prdColor(prd);
+    case 'prb': return prbColor(prb);
+    default:    return medianRatioColor(effectiveRatio);
+  }
 }
 
 function addYoyChangeLayer(map: mapboxgl.Map) {

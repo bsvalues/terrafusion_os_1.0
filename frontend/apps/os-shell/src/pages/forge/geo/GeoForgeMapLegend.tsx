@@ -24,6 +24,28 @@ const MKT_LEGEND = [
   { label: '< -5%', color: '#f87171' },
 ];
 
+const COD_LEGEND = [
+  { label: '≤ 10',  color: '#22c55e', sub: 'Excellent' },
+  { label: '10–15', color: '#84cc16', sub: '' },
+  { label: '15–20', color: '#eab308', sub: 'IAAO max' },
+  { label: '20–25', color: '#f97316', sub: '' },
+  { label: '> 25',  color: '#ef4444', sub: 'Critical' },
+];
+
+const PRD_LEGEND = [
+  { label: '0.98–1.03',     color: '#22c55e', sub: 'IAAO pass' },
+  { label: '0.95–0.98',     color: '#eab308', sub: '' },
+  { label: '1.03–1.06',     color: '#eab308', sub: '' },
+  { label: '< 0.95 / > 1.06', color: '#ef4444', sub: 'Fail' },
+];
+
+const PRB_LEGEND = [
+  { label: '|PRB| ≤ 0.05', color: '#22c55e', sub: 'Pass' },
+  { label: '0.05–0.10',    color: '#eab308', sub: '' },
+  { label: '0.10–0.15',    color: '#f97316', sub: '' },
+  { label: '> 0.15',       color: '#ef4444', sub: 'Regressivity' },
+];
+
 const DRIFT_LEGEND = [
   { label: '> +0.04 (rising)', color: '#00FFFF', sub: 'Assessments catching up' },
   { label: '+0.01–+0.04', color: '#38bdf8', sub: '' },
@@ -42,9 +64,18 @@ function Swatch({ color, shape = 'square' }: { color: string; shape?: 'square' |
 }
 
 export function GeoForgeMapLegend() {
-  const { activeLayers } = useGeoForgeStore();
+  const { activeLayers, choroMode } = useGeoForgeStore();
 
   const showRatio = activeLayers.has('choropleth') || activeLayers.has('sale-scatter') || activeLayers.has('neighborhood-poly');
+
+  const choroLegend = choroMode === 'cod' ? COD_LEGEND
+    : choroMode === 'prd' ? PRD_LEGEND
+    : choroMode === 'prb' ? PRB_LEGEND
+    : RATIO_LEGEND;
+  const choroTitle = choroMode === 'cod' ? 'COD'
+    : choroMode === 'prd' ? 'PRD'
+    : choroMode === 'prb' ? 'PRB'
+    : 'Ratio';
   const showYoy   = activeLayers.has('yoy-change');
   const showMkt   = activeLayers.has('market-trend');
   const showDrift  = activeLayers.has('ratio-drift');
@@ -56,8 +87,8 @@ export function GeoForgeMapLegend() {
     <div className="absolute bottom-8 right-[80px] z-20 flex flex-col gap-1.5">
       {showRatio && (
         <div className="bg-slate-950/90 backdrop-blur border border-slate-800 rounded-md px-2.5 py-2 min-w-[130px]">
-          <p className="text-[8px] text-slate-500 uppercase tracking-wider mb-1.5">Ratio</p>
-          {RATIO_LEGEND.map(({ label, color, sub }) => (
+          <p className="text-[8px] text-slate-500 uppercase tracking-wider mb-1.5">{choroTitle}</p>
+          {choroLegend.map(({ label, color, sub }) => (
             <div key={label} className="flex items-center gap-1.5 mb-0.5">
               <Swatch color={color} />
               <span className="text-[9px] text-slate-300 font-mono">{label}</span>

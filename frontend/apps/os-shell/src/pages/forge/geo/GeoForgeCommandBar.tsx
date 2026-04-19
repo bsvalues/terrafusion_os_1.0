@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { apiFetchJson } from '@/lib/apiBase';
-import type { MapLayer, ParcelSearchResult, PriceBand } from './types/geoforge.types';
+import type { MapLayer, ParcelSearchResult, PriceBand, ChoroMode } from './types/geoforge.types';
 
 const PROPERTY_CLASSES = [
   { label: 'All classes', value: '' },
@@ -26,6 +26,13 @@ const PRICE_BANDS: { label: string; value: PriceBand }[] = [
   { label: '$200k–$400k', value: '200-400' },
   { label: '$400k–$700k', value: '400-700' },
   { label: '> $700k', value: '700+' },
+];
+
+const CHORO_MODES: { mode: ChoroMode; label: string; title: string }[] = [
+  { mode: 'ratio', label: 'MED', title: 'Color neighborhoods by median assessment ratio' },
+  { mode: 'cod',   label: 'COD', title: 'Color neighborhoods by Coefficient of Dispersion' },
+  { mode: 'prd',   label: 'PRD', title: 'Color neighborhoods by Price-Related Differential' },
+  { mode: 'prb',   label: 'PRB', title: 'Color neighborhoods by Price-Related Bias' },
 ];
 
 const LAYER_TOGGLES: { layer: MapLayer; label: string }[] = [
@@ -47,6 +54,7 @@ export function GeoForgeCommandBar() {
     filter, setFilter, activeLayers, toggleLayer, openDrawer, rightDrawerPanel,
     salePoints, selectedMonth, setSelectedMonth,
     priceBand, setPriceBand,
+    choroMode, setChoroMode,
     setBloomParcelId, setFlyTarget,
   } = useGeoForgeStore();
 
@@ -170,6 +178,26 @@ export function GeoForgeCommandBar() {
           ))}
         </SelectContent>
       </Select>
+
+      {/* Choropleth metric mode */}
+      {activeLayers.has('choropleth') && (
+        <div className="flex rounded border border-slate-700 overflow-hidden shrink-0">
+          {CHORO_MODES.map(({ mode, label, title }) => (
+            <button
+              key={mode}
+              title={title}
+              onClick={() => setChoroMode(mode)}
+              className={`h-7 text-[10px] px-2 transition-colors border-r border-slate-700 last:border-r-0 ${
+                choroMode === mode
+                  ? 'bg-terra-cyan/20 text-terra-cyan font-semibold'
+                  : 'text-slate-500 hover:text-white bg-transparent'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="flex gap-1">
         {LAYER_TOGGLES.map(({ layer, label }) => (

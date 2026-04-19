@@ -24,6 +24,20 @@ export function ratioPointColor(ratio: number): string {
   return '#ef4444';
 }
 
+export function prdColor(prd: number): string {
+  if (prd >= 0.98 && prd <= 1.03) return '#22c55e';
+  if (prd >= 0.95 && prd <= 1.06) return '#eab308';
+  return '#ef4444';
+}
+
+export function prbColor(prb: number): string {
+  const abs = Math.abs(prb);
+  if (abs <= 0.05) return '#22c55e';
+  if (abs <= 0.10) return '#eab308';
+  if (abs <= 0.15) return '#f97316';
+  return '#ef4444';
+}
+
 export function salePointRadius(price: number): number {
   const mn = 50_000, mx = 1_000_000;
   const clamped = Math.max(mn, Math.min(mx, price));

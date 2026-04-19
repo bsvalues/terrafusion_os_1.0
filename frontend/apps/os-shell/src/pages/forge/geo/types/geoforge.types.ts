@@ -333,6 +333,8 @@ export interface CertificationSummary {
 
 export type PriceBand = '0-200' | '200-400' | '400-700' | '700+' | null;
 
+export type ChoroMode = 'ratio' | 'cod' | 'prd' | 'prb';
+
 export interface GeoForgeState {
   filter: GeoForgeFilter;
   activeLayers: Set<MapLayer>;
@@ -350,6 +352,7 @@ export interface GeoForgeState {
   simulationDeltaMap: Record<string, number> | null;
   selectedMonth: string | null;
   priceBand: PriceBand;
+  choroMode: ChoroMode;
   loadingStats: boolean;
   loadingSales: boolean;
   loadingDiagnosis: boolean;
@@ -371,6 +374,7 @@ export interface GeoForgeState {
   setSimulationDeltaMap: (m: Record<string, number> | null) => void;
   setSelectedMonth: (month: string | null) => void;
   setPriceBand: (band: PriceBand) => void;
+  setChoroMode: (mode: ChoroMode) => void;
   setLoadingStats: (v: boolean) => void;
   setLoadingSales: (v: boolean) => void;
   setLoadingDiagnosis: (v: boolean) => void;
