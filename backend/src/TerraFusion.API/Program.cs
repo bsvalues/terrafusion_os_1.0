@@ -41,6 +41,59 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using System.Threading.RateLimiting;
 
+static IEnumerable<string> EnumerateSelfAndAncestors(string startPath)
+{
+    var current = new DirectoryInfo(Path.GetFullPath(startPath));
+    while (current is not null)
+    {
+        yield return current.FullName;
+        current = current.Parent;
+    }
+}
+
+static string ResolveApiContentRoot()
+{
+    var candidateStarts = new[]
+    {
+        Directory.GetCurrentDirectory(),
+        AppContext.BaseDirectory
+    }
+    .Where(path => !string.IsNullOrWhiteSpace(path))
+    .Select(Path.GetFullPath)
+    .Distinct(StringComparer.OrdinalIgnoreCase);
+
+    foreach (var candidate in candidateStarts)
+    {
+        foreach (var probe in EnumerateSelfAndAncestors(candidate))
+        {
+            if (File.Exists(Path.Combine(probe, "TerraFusion.API.csproj")) &&
+                File.Exists(Path.Combine(probe, "appsettings.json")))
+            {
+                return probe;
+            }
+        }
+    }
+
+    throw new InvalidOperationException(
+        $"Unable to resolve TerraFusion.API content root from '{Directory.GetCurrentDirectory()}' and '{AppContext.BaseDirectory}'.");
+}
+
+static IHostBuilder CreateCanonicalHostBuilder(string[] args, string environmentName)
+{
+    var apiContentRoot = ResolveApiContentRoot();
+
+    return Host.CreateDefaultBuilder(args)
+        .UseContentRoot(apiContentRoot)
+        .UseEnvironment(environmentName)
+        .ConfigureAppConfiguration((_, cfg) =>
+        {
+            cfg.SetBasePath(apiContentRoot);
+            cfg.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: false);
+            cfg.AddJsonFile($"appsettings.{environmentName}.local.json", optional: true, reloadOnChange: false);
+        });
+}
+
 // ── Standalone PACS seed mode ──────────────────────────────────────────────
 // Run as: dotnet run --project TerraFusion.API -- --seed-pacs
 // Runs the seeder directly without HTTP server or background services.
@@ -53,13 +106,7 @@ if (args.Contains("--canonicalize-only"))
                   ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                   ?? "Production";
 
-    var canonHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(canonEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{canonEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{canonEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var canonHost = CreateCanonicalHostBuilder(args, canonEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -97,13 +144,7 @@ if (args.Contains("--canonicalize-properties-only"))
                      ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                      ?? "Production";
 
-    var propertiesHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(propertiesEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{propertiesEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{propertiesEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var propertiesHost = CreateCanonicalHostBuilder(args, propertiesEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -141,13 +182,7 @@ if (args.Contains("--canonicalize-cama-only"))
                   ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                   ?? "Production";
 
-    var camaHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(camaEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{camaEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{camaEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var camaHost = CreateCanonicalHostBuilder(args, camaEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -184,13 +219,7 @@ if (args.Contains("--seed-levy-only"))
                   ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                   ?? "Production";
 
-    var levyHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(levyEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{levyEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{levyEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var levyHost = CreateCanonicalHostBuilder(args, levyEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -227,13 +256,7 @@ if (args.Contains("--canonicalize-levy-only"))
                        ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                        ?? "Production";
 
-    var levyCanonHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(levyCanonEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{levyCanonEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{levyCanonEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var levyCanonHost = CreateCanonicalHostBuilder(args, levyCanonEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -269,13 +292,7 @@ if (args.Contains("--sync-certification-steps-only"))
                   ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                   ?? "Production";
 
-    var certHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(certEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{certEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{certEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var certHost = CreateCanonicalHostBuilder(args, certEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -338,13 +355,7 @@ if (args.Contains("--complete-certification-step"))
                         ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                         ?? "Production";
 
-    var certActionHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(certActionEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{certActionEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{certActionEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var certActionHost = CreateCanonicalHostBuilder(args, certActionEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -414,13 +425,7 @@ if (args.Contains("--generate-levy-cert-notice"))
                     ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                     ?? "Production";
 
-    var noticeHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(noticeEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{noticeEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{noticeEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var noticeHost = CreateCanonicalHostBuilder(args, noticeEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -481,13 +486,7 @@ if (args.Contains("--queue-levy-cert-notice"))
                          ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                          ?? "Production";
 
-    var queueNoticeHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(queueNoticeEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{queueNoticeEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{queueNoticeEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var queueNoticeHost = CreateCanonicalHostBuilder(args, queueNoticeEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -586,13 +585,7 @@ if (args.Contains("--submit-certification-to-dor"))
                        ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                        ?? "Production";
 
-    var dorSubmitHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(dorSubmitEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{dorSubmitEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{dorSubmitEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var dorSubmitHost = CreateCanonicalHostBuilder(args, dorSubmitEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -668,13 +661,7 @@ if (args.Contains("--accept-certification-from-dor"))
                        ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                        ?? "Production";
 
-    var dorAcceptHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(dorAcceptEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{dorAcceptEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{dorAcceptEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var dorAcceptHost = CreateCanonicalHostBuilder(args, dorAcceptEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -730,6 +717,76 @@ if (args.Contains("--accept-certification-from-dor"))
     }
 }
 
+// Run as: dotnet run --project TerraFusion.API -- --sync-cost-matrices-only
+if (args.Contains("--sync-cost-matrices-only"))
+{
+    var matrixSyncEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                        ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                        ?? "Production";
+
+    var matrixSyncHost = CreateCanonicalHostBuilder(args, matrixSyncEnv)
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("--sync-cost-matrices-only requires the PostgreSQL canonical runtime, not SQLite.");
+            }
+
+            svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.PACS.IPacsAdapter, TerraFusion.Core.PACS.PacsSqlAdapter>();
+            svc.AddScoped<TerraFusion.API.Services.PacsToTerraFusionSyncService>();
+        })
+        .Build();
+
+    using var matrixSyncScope = matrixSyncHost.Services.CreateScope();
+    var matrixSyncService = matrixSyncScope.ServiceProvider.GetRequiredService<TerraFusion.API.Services.PacsToTerraFusionSyncService>();
+    var matrixSyncLogger = matrixSyncScope.ServiceProvider.GetRequiredService<ILogger<TerraFusion.API.Services.PacsToTerraFusionSyncService>>();
+
+    try
+    {
+        var countyName = Environment.GetEnvironmentVariable("TF_SYNC_COUNTY_NAME") ?? "Benton";
+        var countyState = Environment.GetEnvironmentVariable("TF_SYNC_COUNTY_STATE") ?? "WA";
+
+        matrixSyncLogger.LogInformation(
+            "[TerraFusionSync] Standalone cost-matrix-only sync for county {CountyName}, state {State}...",
+            countyName,
+            countyState);
+
+        var result = await matrixSyncService.SyncCountyDataAsync(
+            countyName,
+            countyState,
+            new TerraFusion.Core.Interfaces.SyncOptions
+            {
+                FullSync = true,
+                ValidateData = true,
+                BatchSize = 500,
+                DataTypes = new List<string> { "CostMatrices" }
+            });
+
+        if (!result.Success)
+        {
+            var joinedErrors = result.Errors.Count > 0
+                ? string.Join("; ", result.Errors)
+                : result.Message;
+
+            throw new InvalidOperationException($"Cost-matrix sync failed: {joinedErrors}");
+        }
+
+        matrixSyncLogger.LogInformation(
+            "[TerraFusionSync] COST-MATRICES-ONLY DONE: added={Added}, updated={Updated}, message={Message}",
+            result.Metadata.TryGetValue("costMatricesAdded", out var added) ? added : 0,
+            result.Metadata.TryGetValue("costMatricesUpdated", out var updated) ? updated : 0,
+            result.Message);
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        matrixSyncLogger.LogError(ex, "[TerraFusionSync] COST-MATRICES-ONLY FAILED");
+        Environment.Exit(1);
+    }
+}
+
 if (args.Contains("--seed-pacs"))
 {
     // Determine environment from ASPNETCORE_ENVIRONMENT or DOTNET_ENVIRONMENT
@@ -737,13 +794,7 @@ if (args.Contains("--seed-pacs"))
                   ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                   ?? "Production";
 
-    var seedHost = Host.CreateDefaultBuilder(args)
-        .UseEnvironment(seedEnv)
-        .ConfigureAppConfiguration((ctx, cfg) =>
-        {
-            cfg.AddJsonFile($"appsettings.{seedEnv}.json", optional: true, reloadOnChange: false);
-            cfg.AddJsonFile($"appsettings.{seedEnv}.local.json", optional: true, reloadOnChange: false);
-        })
+    var seedHost = CreateCanonicalHostBuilder(args, seedEnv)
         .ConfigureServices((ctx, svc) =>
         {
             var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
@@ -772,7 +823,18 @@ if (args.Contains("--seed-pacs"))
     }
 }
 
-var builder = WebApplication.CreateBuilder(args);
+var apiContentRoot = ResolveApiContentRoot();
+var runtimeEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+    ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+    ?? Environments.Production;
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    ContentRootPath = apiContentRoot,
+    EnvironmentName = runtimeEnvironment
+});
+builder.Host.UseContentRoot(apiContentRoot);
+builder.Configuration.SetBasePath(apiContentRoot);
 
 // Background services that fail (e.g. ArcGIS sync, AI swarm) must not kill the API host.
 // StopHost is dangerous in development where external integrations may be unavailable.
@@ -1194,6 +1256,7 @@ builder.Services.AddScoped<IResearchAnalyticsService, ResearchAnalyticsService>(
 builder.Services.AddScoped<ICrossWorkspaceSyncService, CrossWorkspaceSyncService>();
 builder.Services.AddScoped<IStatisticalAnalysisService, StatisticalAnalysisService>();
 builder.Services.AddScoped<IForgeStatisticsService, ForgeStatisticsService>();
+builder.Services.AddScoped<ISalesAiDiagnosticService, SalesAiDiagnosticService>();
 // Dev stub: returns empty until a real CAMA service is registered
 builder.Services.AddScoped<TerraFusion.API.Controllers.IMassAppraisalService, TerraFusion.API.Controllers.MassAppraisalServiceStub>();
 builder.Services.AddScoped<IPredictiveModelingService, PredictiveModelingService>();
@@ -1562,6 +1625,7 @@ builder.Services.AddDbContext<LevyDbContext>(options =>
 {
   var levyConn = Environment.GetEnvironmentVariable("LEVY_DATABASE_URL")
                 ?? builder.Configuration.GetConnectionString("LevyDatabase")
+                ?? builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? Environment.GetEnvironmentVariable("DATABASE_URL");
   var provider = builder.Configuration["DatabaseProvider"];
 
@@ -1791,7 +1855,7 @@ app.UseHttpMetrics();
 
 // Authentication & Authorization
 // Serve static files from native-shell/ui/dist BEFORE other middleware
-var uiPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "native-shell", "ui", "dist"));
+var uiPath = Path.GetFullPath(Path.Combine(apiContentRoot, "..", "..", "..", "native-shell", "ui", "dist"));
 Console.WriteLine($"[STARTUP] Looking for UI at: {uiPath}");
 Console.WriteLine($"[STARTUP] UI path exists: {Directory.Exists(uiPath)}");
 
@@ -2566,7 +2630,15 @@ Console.WriteLine("   • WS   /hubs/oscore               - SignalR hub for modu
 Console.WriteLine("📋 Server configuration: Using ASPNETCORE_URLS environment variable");
 // Console.WriteLine("🧩 Module System: 15 production modules configured");
 // Console.WriteLine("🤖 AI Swarm: 1,008 agents with 87 MCP tools");
-Console.WriteLine("💾 Database: SQLite fallback with background initialization");
+if (startupConnectionString.Contains("Host=", StringComparison.OrdinalIgnoreCase) ||
+    string.Equals(builder.Configuration["DatabaseProvider"], "Postgres", StringComparison.OrdinalIgnoreCase))
+{
+  Console.WriteLine("💾 Database: PostgreSQL canonical runtime");
+}
+else
+{
+  Console.WriteLine("💾 Database: SQLite fallback with background initialization");
+}
 
 try
 {
