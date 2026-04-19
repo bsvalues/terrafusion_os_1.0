@@ -35,6 +35,7 @@ import { MoranPanel } from './panels/MoranPanel';
 import { WeightedMeanPanel } from './panels/WeightedMeanPanel';
 import { MonthlyRatioPanel } from './panels/MonthlyRatioPanel';
 import { DispersionPanel } from './panels/DispersionPanel';
+import { DataQualityPanel } from './panels/DataQualityPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
 import { GeoForgeStatusTicker } from './GeoForgeStatusTicker';
@@ -72,6 +73,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   'weighted-mean': 'Weighted Mean Analysis · AV-Weighted vs Median Ratio Vertical Equity',
   'monthly-ratio': 'Monthly Ratio Timeline · Market Trend & Time Adjustment Signal',
   'dispersion': 'Dispersion Statistics · COD / CV / SD / MAD / AAD Uniformity Analysis',
+  'data-quality': 'Data Quality Dashboard · Sale Data Integrity & Documentation Audit',
 };
 
 export function GeoForgePage() {
@@ -127,6 +129,7 @@ export function GeoForgePage() {
         case 'h': openDrawer('weighted-mean'); break;
         case 'z': openDrawer('monthly-ratio'); break;
         case 'a': openDrawer('dispersion'); break;
+        case 'd': openDrawer('data-quality'); break;
       }
     }
     window.addEventListener('keydown', onKey);
@@ -255,6 +258,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'weighted-mean' && <WeightedMeanPanel />}
               {rightDrawerPanel === 'monthly-ratio' && <MonthlyRatioPanel />}
               {rightDrawerPanel === 'dispersion' && <DispersionPanel />}
+              {rightDrawerPanel === 'data-quality' && <DataQualityPanel />}
             </div>
           </>
         )}

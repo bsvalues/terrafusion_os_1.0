@@ -170,7 +170,8 @@ export type RightDrawerPanel =
   | 'moran'
   | 'weighted-mean'
   | 'monthly-ratio'
-  | 'dispersion';
+  | 'dispersion'
+  | 'data-quality';
 
 export interface CompSale {
   parcelId: string;
