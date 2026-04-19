@@ -468,7 +468,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     const layerMap: Partial<Record<MapLayer, string[]>> = {
       choropleth: ['neighborhood-fill', 'neighborhood-label'],
       'neighborhood-poly': ['neighborhood-poly-fill', 'neighborhood-poly-outline', 'neighborhood-poly-label'],
-      'sale-scatter': ['sale-circles', 'sale-outlier-ring'],
+      'sale-scatter': ['sale-cluster-bubble', 'sale-cluster-count', 'sale-circles', 'sale-outlier-ring'],
       'yoy-change': ['yoy-change-circles', 'yoy-change-labels'],
       'parcel-polygons': ['parcel-pts-dots'],
       kde: ['kde-heat'],
@@ -634,6 +634,49 @@ function addSaleScatterLayer(map: mapboxgl.Map) {
     cluster: true,
     clusterMaxZoom: 12,
     clusterRadius: 40,
+  });
+
+  // Cluster bubble — visible at zoom < 12 before dots appear
+  map.addLayer({
+    id: 'sale-cluster-bubble',
+    type: 'circle',
+    source: 'sales',
+    filter: ['has', 'point_count'],
+    maxzoom: 12,
+    paint: {
+      'circle-color': [
+        'step', ['get', 'point_count'],
+        '#22d3ee', 10,
+        '#06b6d4', 50,
+        '#0891b2',
+      ],
+      'circle-radius': [
+        'step', ['get', 'point_count'],
+        14, 10, 20, 50, 26,
+      ],
+      'circle-opacity': 0.75,
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#00FFFF',
+      'circle-stroke-opacity': 0.5,
+    },
+  });
+
+  map.addLayer({
+    id: 'sale-cluster-count',
+    type: 'symbol',
+    source: 'sales',
+    filter: ['has', 'point_count'],
+    maxzoom: 12,
+    layout: {
+      'text-field': ['get', 'point_count_abbreviated'],
+      'text-size': 10,
+      'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
+    },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': '#0f172a',
+      'text-halo-width': 1,
+    },
   });
 
   map.addLayer({

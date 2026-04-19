@@ -41,6 +41,7 @@ export function GeoForgePage() {
     filter,
     rightDrawerPanel,
     closeDrawer,
+    openDrawer,
     setNeighborhoodStats,
     setSalePoints,
     setLoadingStats,
@@ -52,6 +53,26 @@ export function GeoForgePage() {
     simulationDeltaMap,
     setBloomParcelId,
   } = useGeoForgeStore();
+
+  // Global keyboard shortcuts (skip when an input/select/textarea is focused)
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      switch (e.key) {
+        case 'Escape': closeDrawer(); break;
+        case 'r': openDrawer('ranking'); break;
+        case 'c': openDrawer('county-health'); break;
+        case 's': openDrawer('stratification'); break;
+        case 'o': openDrawer('outlier-review'); break;
+        case 'w': openDrawer('workbench'); break;
+        case 'y': openDrawer('certification'); break;
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [closeDrawer, openDrawer]);
 
   const { data: statsData, isLoading: statsLoading } = useQuery<NeighborhoodStat[]>({
     queryKey: [
