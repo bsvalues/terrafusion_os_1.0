@@ -30,6 +30,7 @@ import { RatioCliffPanel } from './panels/RatioCliffPanel';
 import { TimeAdjustPanel } from './panels/TimeAdjustPanel';
 import { QualDecisionPanel } from './panels/QualDecisionPanel';
 import { CompAdjGridPanel } from './panels/CompAdjGridPanel';
+import { AssessmentRollPanel } from './panels/AssessmentRollPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
 import { GeoForgeStatusTicker } from './GeoForgeStatusTicker';
@@ -62,6 +63,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   'time-adjust': 'Time Adjustment · Monthly Market Rate & Adjusted Ratios',
   'qual-decisions': 'Qualification Decision Log · Exclusion Documentation Audit',
   'comp-grid': 'Comp Adjustment Grid · Sales Comparison Appraisal Worksheet',
+  'roll-summary': 'Assessment Roll Summary · County-Wide Equity Executive Report',
 };
 
 export function GeoForgePage() {
@@ -112,6 +114,7 @@ export function GeoForgePage() {
         case 't': openDrawer('time-adjust'); break;
         case 'u': openDrawer('qual-decisions'); break;
         case 'j': openDrawer('comp-grid'); break;
+        case 'x': openDrawer('roll-summary'); break;
       }
     }
     window.addEventListener('keydown', onKey);
@@ -235,6 +238,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'time-adjust' && <TimeAdjustPanel />}
               {rightDrawerPanel === 'qual-decisions' && <QualDecisionPanel />}
               {rightDrawerPanel === 'comp-grid' && <CompAdjGridPanel />}
+              {rightDrawerPanel === 'roll-summary' && <AssessmentRollPanel />}
             </div>
           </>
         )}

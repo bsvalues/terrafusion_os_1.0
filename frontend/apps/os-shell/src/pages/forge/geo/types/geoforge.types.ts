@@ -165,7 +165,8 @@ export type RightDrawerPanel =
   | 'ratio-cliffs'
   | 'time-adjust'
   | 'qual-decisions'
-  | 'comp-grid';
+  | 'comp-grid'
+  | 'roll-summary';
 
 export interface CompSale {
   parcelId: string;

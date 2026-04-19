@@ -19,6 +19,7 @@ const SHORTCUTS = [
   { key: 't', description: 'Time adjustment calculator · monthly market rate + adjusted ratios' },
   { key: 'u', description: 'Qualification decision log · undocumented exclusion audit' },
   { key: 'j', description: 'Comp adjustment grid · sales comparison appraisal worksheet' },
+  { key: 'x', description: 'Assessment roll summary · county-wide AV, MV estimate, ratio bands' },
   { key: '?', description: 'Toggle this panel' },
 ];
 
