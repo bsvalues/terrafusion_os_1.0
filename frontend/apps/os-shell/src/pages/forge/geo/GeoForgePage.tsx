@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiFetchJson } from '@/lib/apiBase';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
@@ -18,6 +18,7 @@ import { CompsPanel } from './panels/CompsPanel';
 import { NeighborhoodRankingPanel } from './panels/NeighborhoodRankingPanel';
 import { CountyHealthPanel } from './panels/CountyHealthPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
+import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
 import { Button } from '@/components/ui/button';
 import type { NeighborhoodStat, SalePoint, RightDrawerPanel, GwrSurface } from './types/geoforge.types';
 
@@ -37,6 +38,8 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
 };
 
 export function GeoForgePage() {
+  const [showHelp, setShowHelp] = useState(false);
+
   const {
     filter,
     rightDrawerPanel,
@@ -61,7 +64,8 @@ export function GeoForgePage() {
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       switch (e.key) {
-        case 'Escape': closeDrawer(); break;
+        case 'Escape': closeDrawer(); setShowHelp(false); break;
+        case '?': setShowHelp((v) => !v); break;
         case 'r': openDrawer('ranking'); break;
         case 'c': openDrawer('county-health'); break;
         case 's': openDrawer('stratification'); break;
@@ -190,6 +194,9 @@ export function GeoForgePage() {
 
       {/* Map legend — floating color key, bottom-right */}
       <GeoForgeMapLegend />
+
+      {/* Hotkey help overlay */}
+      {showHelp && <GeoForgeHotkeyHelp onClose={() => setShowHelp(false)} />}
 
       {/* Parcel bloom card — slides up from bottom */}
       <ParcelBloomCard />

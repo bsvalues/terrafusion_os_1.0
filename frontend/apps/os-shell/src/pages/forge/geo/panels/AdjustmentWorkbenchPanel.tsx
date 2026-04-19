@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +12,80 @@ import type {
 } from '../types/geoforge.types';
 
 const MOCK_USER_ID = '00000000-0000-0000-0000-000000000001';
+
+function SimRatioPreview({ proposals }: { proposals: AdjustmentProposal[] }) {
+  const { neighborhoodStats } = useGeoForgeStore();
+
+  const rows = useMemo(() => {
+    const pctProps = proposals.filter(
+      (p) => p.kind === 'PercentOfAV' && p.scope === 'Neighborhood' && p.targetNeighborhoodCode,
+    );
+    if (pctProps.length === 0) return [];
+
+    const byCode: Record<string, number> = {};
+    for (const p of pctProps) {
+      byCode[p.targetNeighborhoodCode!] = (byCode[p.targetNeighborhoodCode!] ?? 0) + p.magnitude;
+    }
+
+    return Object.entries(byCode)
+      .map(([code, totalMag]) => {
+        const ns = neighborhoodStats.find((n) => n.neighborhoodCode === code);
+        if (!ns) return null;
+        const origMedian = ns.stats.medianRatio;
+        const adjMedian = origMedian * (1 + totalMag / 100);
+        return { code, totalMag, origMedian, adjMedian, cod: ns.stats.cod };
+      })
+      .filter(Boolean) as { code: string; totalMag: number; origMedian: number; adjMedian: number; cod: number }[];
+  }, [proposals, neighborhoodStats]);
+
+  if (rows.length === 0) return null;
+
+  return (
+    <div className="shrink-0 px-3 py-2 border-b border-slate-800 bg-slate-950/50">
+      <h4 className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">
+        Post-Adjustment Ratio Preview
+      </h4>
+      <table className="w-full text-[9px]">
+        <thead>
+          <tr className="border-b border-slate-800">
+            <th className="text-left text-slate-600 py-0.5 font-normal">Nbhd</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">Adj %</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">Before</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">After</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">COD</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => {
+            const inParity = r.adjMedian >= 0.95 && r.adjMedian <= 1.05;
+            const origColor = r.origMedian >= 0.95 && r.origMedian <= 1.05
+              ? 'text-emerald-400' : r.origMedian >= 0.90 && r.origMedian <= 1.10
+              ? 'text-amber-400' : 'text-red-400';
+            return (
+              <tr key={r.code} className="border-b border-slate-800/40">
+                <td className="py-0.5 text-terra-cyan font-mono">{r.code}</td>
+                <td className={`py-0.5 text-right font-mono font-bold ${r.totalMag >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {r.totalMag >= 0 ? '+' : ''}{r.totalMag.toFixed(1)}
+                </td>
+                <td className={`py-0.5 text-right font-mono ${origColor}`}>
+                  {r.origMedian.toFixed(3)}
+                </td>
+                <td className={`py-0.5 text-right font-mono font-semibold ${inParity ? 'text-emerald-400' : 'text-amber-300'}`}>
+                  {r.adjMedian.toFixed(3)}
+                  {inParity && <span className="ml-1 text-[8px]">✓</span>}
+                </td>
+                <td className="py-0.5 text-right font-mono text-slate-500">{r.cod.toFixed(1)}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <p className="text-[8px] text-slate-600 mt-1.5">
+        COD/PRD invariant to uniform % · adjust non-uniformity via stratified or quintile proposals
+      </p>
+    </div>
+  );
+}
 
 const STATUS_BADGE: Record<string, string> = {
   Draft: 'bg-slate-700 text-slate-200',
@@ -221,6 +295,9 @@ export function AdjustmentWorkbenchPanel({ taxYear, selectedNeighborhoodCode }: 
           </div>
         </div>
       )}
+
+      {/* Post-adjustment ratio preview */}
+      {activeSet && <SimRatioPreview proposals={activeSet.proposals} />}
 
       {/* Proposals List */}
       <div className="flex-1 overflow-y-auto">
