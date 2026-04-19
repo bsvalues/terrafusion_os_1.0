@@ -1479,6 +1479,67 @@ public class GeoForgeController : ControllerBase
         return Ok(result);
     }
 
+    // ── County-wide metric trend — multi-year summary for DOR reporting ───────
+    [HttpGet("ratio-study/county-trend")]
+    public async Task<IActionResult> GetCountyTrend(
+        [FromQuery] int fromYear = 0,
+        [FromQuery] int toYear   = 0,
+        CancellationToken ct     = default)
+    {
+        if (toYear   < 2001) toYear   = DateTime.UtcNow.Year;
+        if (fromYear < 2001) fromYear = toYear - 4;
+        if (fromYear > toYear) fromYear = toYear;
+
+        var results = new List<object>();
+
+        for (var yr = fromYear; yr <= toYear; yr++)
+        {
+            var lookbackStart = new DateTime(yr - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var lookbackEnd   = new DateTime(yr,     1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+            var sales = await _db.ComparableSales
+                .AsNoTracking()
+                .Where(s => s.CountyId == BentonCountyId
+                         && (s.SalesYear == yr || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd))
+                         && (s.QualificationDecision == "qualified"
+                             || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")))
+                .Select(s => new { s.ParcelId, SalePrice = s.AdjustedSalePrice ?? s.SalePrice })
+                .Where(s => s.ParcelId != null && s.SalePrice > 10_000m)
+                .ToListAsync(ct);
+
+            if (sales.Count < 3) { results.Add(new { taxYear = yr, noData = true }); continue; }
+
+            var parcelIds  = sales.Select(s => s.ParcelId!).Distinct();
+            var assessedMap = await GetAssessedValueMapAsync(parcelIds, yr, ct);
+
+            var ratioRows = sales
+                .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+                .Select(s => (Ratio: assessedMap[s.ParcelId!] / s.SalePrice, Av: assessedMap[s.ParcelId!]))
+                .ToList();
+
+            if (ratioRows.Count == 0) { results.Add(new { taxYear = yr, noData = true }); continue; }
+
+            var ratios = ratioRows.Select(r => r.Ratio).ToList();
+            var avs    = ratioRows.Select(r => r.Av).ToList();
+            var med    = TrendStats.Median(ratios);
+            var cod    = TrendStats.ComputeCod(ratios);
+            var prd    = TrendStats.ComputePrd(ratios, avs);
+
+            results.Add(new
+            {
+                taxYear     = yr,
+                noData      = false,
+                medianRatio = Math.Round((double)med, 4),
+                cod         = Math.Round((double)cod, 2),
+                prd         = Math.Round((double)prd, 4),
+                saleCount   = ratioRows.Count,
+                iaaoPass    = cod <= 20m && med >= 0.90m && med <= 1.10m,
+            });
+        }
+
+        return Ok(results);
+    }
+
     // ── Ratio drift — YoY change in neighborhood median assessment ratio ──────
     [HttpGet("neighborhoods/ratio-drift")]
     public async Task<IActionResult> GetNeighborhoodRatioDrift(

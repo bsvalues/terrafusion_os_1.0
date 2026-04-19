@@ -92,12 +92,13 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         const cod = Number(props.cod).toFixed(1);
         const n = props.saleCount;
         const simDelta = props.simulationDelta;
-        const simRow = simDelta != null
-          ? `<div style="margin-top:4px;color:#f59e0b;">⬡ Sim: ${Number(simDelta) >= 0 ? '+' : ''}${Number(simDelta).toFixed(1)}%</div>`
+        const simRatio = props.simulatedRatio;
+        const simRow = simDelta != null && simRatio != null
+          ? `<div style="margin-top:4px;color:#f59e0b;font-size:9px">⬡ Sim: ${Number(med).toFixed ? med : '?'} → <span style="font-family:monospace;font-weight:700;color:#fbbf24">${Number(simRatio).toFixed(3)}</span> (${Number(simDelta) >= 0 ? '+' : ''}${Number(simDelta).toFixed(1)}%)</div>`
           : '';
         hoverPopup
           .setLngLat(e.lngLat)
-          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:120px"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px;letter-spacing:.05em">${props.neighborhoodCode}</div><div>MED <span style="color:#fff;font-weight:600">${med}</span></div><div>COD <span style="color:#fff">${cod}</span></div><div style="color:#94a3b8">n = ${n}${simRow}</div></div>`)
+          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:130px"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px;letter-spacing:.05em">${props.neighborhoodCode}</div><div>MED <span style="color:#fff;font-weight:600">${med}</span></div><div>COD <span style="color:#fff">${cod}</span></div><div style="color:#94a3b8">n = ${n}${simRow}</div></div>`)
           .addTo(map);
       });
 
@@ -266,7 +267,14 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
               medianRatio: ns.stats.medianRatio,
               cod: ns.stats.cod,
               saleCount: ns.saleCount,
-              color: medianRatioColor(ns.stats.medianRatio),
+              // When a simulation is active, shift the displayed ratio so the choropleth
+              // color updates live as workbench proposals are drafted.
+              color: delta !== null
+                ? medianRatioColor(ns.stats.medianRatio * (1 + delta / 100))
+                : medianRatioColor(ns.stats.medianRatio),
+              simulatedRatio: delta !== null
+                ? Math.round(ns.stats.medianRatio * (1 + delta / 100) * 10000) / 10000
+                : null,
               simulationDelta: delta,
               hasSimulation: delta !== null,
             },

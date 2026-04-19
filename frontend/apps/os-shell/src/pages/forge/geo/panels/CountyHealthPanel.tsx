@@ -1,8 +1,21 @@
 import { useMemo } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine,
+  ComposedChart, Line, Area,
 } from 'recharts';
+import { useQuery } from '@tanstack/react-query';
+import { apiFetchJson } from '@/lib/apiBase';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
+
+interface TrendYear {
+  taxYear: number;
+  noData?: boolean;
+  medianRatio?: number;
+  cod?: number;
+  prd?: number;
+  saleCount?: number;
+  iaaoPass?: boolean;
+}
 
 function GaugeBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
   const pct = Math.min(100, (value / max) * 100);
@@ -20,7 +33,21 @@ function GaugeBar({ label, value, max, color }: { label: string; value: number; 
 }
 
 export function CountyHealthPanel() {
-  const { neighborhoodStats, selectNeighborhood, openDrawer } = useGeoForgeStore();
+  const { neighborhoodStats, selectNeighborhood, openDrawer, filter } = useGeoForgeStore();
+
+  const { data: trendData } = useQuery<TrendYear[]>({
+    queryKey: ['geoforge-county-trend', filter.taxYear],
+    queryFn: () =>
+      apiFetchJson<TrendYear[]>(
+        `/api/geoforge/ratio-study/county-trend?fromYear=${filter.taxYear - 4}&toYear=${filter.taxYear}`
+      ),
+    staleTime: 1000 * 60 * 10,
+  });
+
+  const trendRows = useMemo(() => {
+    if (!trendData) return [];
+    return trendData.filter((r) => !r.noData && r.medianRatio != null);
+  }, [trendData]);
 
   const county = useMemo(() => {
     if (neighborhoodStats.length === 0) return null;
@@ -144,6 +171,65 @@ export function CountyHealthPanel() {
           </BarChart>
         </ResponsiveContainer>
       </div>
+
+      {/* 5-Year County Trend */}
+      {trendRows.length >= 2 && (
+        <div>
+          <h4 className="text-[8px] text-slate-500 uppercase tracking-wider mb-2">
+            5-Year County Trend ({trendRows[0].taxYear}–{trendRows[trendRows.length - 1].taxYear})
+          </h4>
+          <ResponsiveContainer width="100%" height={100}>
+            <ComposedChart data={trendRows} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
+              <XAxis dataKey="taxYear" tick={{ fontSize: 7, fill: '#64748b' }} />
+              <YAxis
+                domain={[0.80, 1.20]}
+                tick={{ fontSize: 7, fill: '#64748b' }}
+                tickFormatter={(v) => v.toFixed(2)}
+              />
+              <Tooltip
+                contentStyle={{ background: '#0f172a', border: '1px solid #334155', fontSize: 9 }}
+                formatter={(v: number, name: string) => [
+                  name === 'medianRatio' ? v.toFixed(3) : name === 'cod' ? v.toFixed(1) : v.toFixed(3),
+                  name === 'medianRatio' ? 'Median Ratio' : name === 'cod' ? 'COD/20 (scaled)' : 'PRD',
+                ]}
+              />
+              {/* IAAO parity band */}
+              <Area
+                type="monotone"
+                dataKey={() => 1.05}
+                stroke="none"
+                fill="#4ade80"
+                fillOpacity={0.06}
+              />
+              <ReferenceLine y={1.0} stroke="#4ade80" strokeOpacity={0.5} strokeDasharray="4 2" />
+              <ReferenceLine y={0.95} stroke="#4ade80" strokeOpacity={0.25} strokeDasharray="2 4" />
+              <ReferenceLine y={1.05} stroke="#4ade80" strokeOpacity={0.25} strokeDasharray="2 4" />
+              <Line
+                type="monotone"
+                dataKey="medianRatio"
+                stroke="#00FFFF"
+                strokeWidth={2}
+                dot={{ fill: '#00FFFF', r: 2.5 }}
+                connectNulls
+              />
+              <Line
+                type="monotone"
+                dataKey={(row: TrendYear) => row.cod != null ? row.cod / 20 : null}
+                stroke="#a855f7"
+                strokeWidth={1.5}
+                strokeDasharray="4 2"
+                dot={false}
+                connectNulls
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+          <div className="flex gap-3 mt-1 text-[8px] text-slate-600">
+            <span><span className="text-terra-cyan">─</span> Median Ratio</span>
+            <span><span className="text-purple-400">- -</span> COD/20 (scaled)</span>
+            <span><span className="text-emerald-700">─</span> IAAO band 0.95–1.05</span>
+          </div>
+        </div>
+      )}
 
       {/* Worst 5 neighborhoods */}
       <div>
