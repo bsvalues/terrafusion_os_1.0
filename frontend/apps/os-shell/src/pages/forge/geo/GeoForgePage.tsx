@@ -32,6 +32,7 @@ import { QualDecisionPanel } from './panels/QualDecisionPanel';
 import { CompAdjGridPanel } from './panels/CompAdjGridPanel';
 import { AssessmentRollPanel } from './panels/AssessmentRollPanel';
 import { MoranPanel } from './panels/MoranPanel';
+import { WeightedMeanPanel } from './panels/WeightedMeanPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
 import { GeoForgeStatusTicker } from './GeoForgeStatusTicker';
@@ -66,6 +67,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   'comp-grid': 'Comp Adjustment Grid · Sales Comparison Appraisal Worksheet',
   'roll-summary': 'Assessment Roll Summary · County-Wide Equity Executive Report',
   'moran': "Moran's I Decomposition · LISA Scatterplot & Spatial Outliers",
+  'weighted-mean': 'Weighted Mean Analysis · AV-Weighted vs Median Ratio Vertical Equity',
 };
 
 export function GeoForgePage() {
@@ -118,6 +120,7 @@ export function GeoForgePage() {
         case 'j': openDrawer('comp-grid'); break;
         case 'x': openDrawer('roll-summary'); break;
         case 'n': openDrawer('moran'); break;
+        case 'h': openDrawer('weighted-mean'); break;
       }
     }
     window.addEventListener('keydown', onKey);
@@ -243,6 +246,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'comp-grid' && <CompAdjGridPanel />}
               {rightDrawerPanel === 'roll-summary' && <AssessmentRollPanel />}
               {rightDrawerPanel === 'moran' && <MoranPanel />}
+              {rightDrawerPanel === 'weighted-mean' && <WeightedMeanPanel />}
             </div>
           </>
         )}

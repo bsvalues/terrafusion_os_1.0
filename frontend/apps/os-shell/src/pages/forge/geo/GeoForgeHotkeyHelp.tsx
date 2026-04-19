@@ -21,6 +21,7 @@ const SHORTCUTS = [
   { key: 'j', description: 'Comp adjustment grid · sales comparison appraisal worksheet' },
   { key: 'x', description: 'Assessment roll summary · county-wide AV, MV estimate, ratio bands' },
   { key: 'n', description: "Moran's I decomposition · LISA scatterplot + spatial outlier ranking" },
+  { key: 'h', description: 'Weighted mean analysis · AV-weighted mean vs median, vertical equity' },
   { key: '?', description: 'Toggle this panel' },
 ];
 

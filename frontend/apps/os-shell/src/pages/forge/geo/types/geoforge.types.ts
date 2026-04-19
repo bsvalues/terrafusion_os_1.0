@@ -167,7 +167,8 @@ export type RightDrawerPanel =
   | 'qual-decisions'
   | 'comp-grid'
   | 'roll-summary'
-  | 'moran';
+  | 'moran'
+  | 'weighted-mean';
 
 export interface CompSale {
   parcelId: string;
