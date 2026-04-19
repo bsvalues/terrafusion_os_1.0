@@ -109,7 +109,25 @@ export type RightDrawerPanel =
   | 'sales-drilldown'
   | 'diagnosis'
   | 'year-trend'
-  | 'workbench';
+  | 'workbench'
+  | 'certification'
+  | 'outlier-review';
+
+export interface FlaggedSale {
+  saleId: string;
+  parcelId: string;
+  address: string;
+  neighborhoodCode: string;
+  saleDate: string;
+  salePrice: number;
+  assessedValue: number;
+  ratio: number;
+  hoodMedianRatio: number;
+  ratioDeviation: number;
+  isOutlier: boolean;
+  currentDecision: string;
+  propertyType: string;
+}
 
 // ─── Adjustment Workbench types ────────────────────────────────────────────
 
@@ -172,6 +190,34 @@ export interface RecommendResult {
   sampleSize: number;
 }
 
+export interface MonthlyTrendPoint {
+  yearMonth: string;
+  medianRatio: number;
+  cod: number | null;
+  prd: number | null;
+  n: number;
+}
+
+export interface StratumResult {
+  stratum: string;
+  n: number;
+  medianRatio: number | null;
+  cod: number | null;
+  prd: number | null;
+  prb: number | null;
+  iaaoPass: boolean;
+  rcwPass: boolean;
+}
+
+export interface CertificationSummary {
+  taxYear: number;
+  generatedAt: string;
+  totalQualifiedSales: number;
+  strata: StratumResult[];
+  countywide: StratumResult;
+  certificationNote: string;
+}
+
 export interface GeoForgeState {
   filter: GeoForgeFilter;
   activeLayers: Set<MapLayer>;
@@ -184,6 +230,8 @@ export interface GeoForgeState {
   gwrSurface: GwrSurface | null;
   /** neighborhoodCode → % adjustment magnitude — drives amber simulation overlay on map */
   simulationDeltaMap: Record<string, number> | null;
+  /** "YYYY-MM" — when set, map sale-circles filter to this month only */
+  selectedMonth: string | null;
   loadingStats: boolean;
   loadingSales: boolean;
   loadingDiagnosis: boolean;
@@ -198,6 +246,7 @@ export interface GeoForgeState {
   setDiagnosis: (d: DiagnosisResult | null) => void;
   setGwrSurface: (gwr: GwrSurface | null) => void;
   setSimulationDeltaMap: (m: Record<string, number> | null) => void;
+  setSelectedMonth: (month: string | null) => void;
   setLoadingStats: (v: boolean) => void;
   setLoadingSales: (v: boolean) => void;
   setLoadingDiagnosis: (v: boolean) => void;

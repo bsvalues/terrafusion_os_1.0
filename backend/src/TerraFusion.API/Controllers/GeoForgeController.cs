@@ -541,6 +541,259 @@ public class GeoForgeController : ControllerBase
         return new JsonResult(geojson);
     }
 
+    // ── 6. Monthly ratio trend (time-adjustment evidence) ────────────────────
+    [HttpGet("ratio-study/monthly-trend")]
+    public async Task<IActionResult> GetMonthlyTrend(
+        [FromQuery] int taxYear,
+        [FromQuery] string? neighborhoodCode = null,
+        CancellationToken ct = default)
+    {
+        var start = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var end   = new DateTime(taxYear, 7, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var q = _db.ComparableSales
+            .Where(s => s.CountyId == BentonCountyId
+                     && s.SaleDate >= start && s.SaleDate < end
+                     && (s.QualificationDecision == "qualified"
+                         || (s.QualificationDecision == null
+                             && s.QualificationRecommendation == "qualified")));
+
+        if (!string.IsNullOrWhiteSpace(neighborhoodCode))
+            q = q.Where(s => s.Neighborhood == neighborhoodCode);
+
+        var sales = await q
+            .Select(s => new { s.ParcelId, s.SaleDate, SalePrice = s.AdjustedSalePrice ?? s.SalePrice })
+            .Where(s => s.SalePrice > 10_000m)
+            .ToListAsync(ct);
+
+        var parcelIds = sales.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
+        var assessedMap = await GetAssessedValueMapAsync(parcelIds!, taxYear, ct);
+
+        var rows = sales
+            .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+            .Select(s => new
+            {
+                YearMonth = s.SaleDate.ToString("yyyy-MM"),
+                Ratio = assessedMap[s.ParcelId!] / s.SalePrice,
+                Av = assessedMap[s.ParcelId!],
+            }).ToList();
+
+        var result = rows.GroupBy(r => r.YearMonth)
+            .OrderBy(g => g.Key)
+            .Select(g =>
+            {
+                var ratios = g.Select(r => r.Ratio).ToList();
+                var avs    = g.Select(r => r.Av).ToList();
+                return new
+                {
+                    yearMonth = g.Key,
+                    medianRatio = Math.Round((double)TrendStats.Median(ratios), 4),
+                    cod = ratios.Count >= 3 ? (double?)Math.Round((double)TrendStats.ComputeCod(ratios), 2) : null,
+                    prd = ratios.Count >= 5 ? (double?)Math.Round((double)TrendStats.ComputePrd(ratios, avs), 4) : null,
+                    n = ratios.Count,
+                };
+            }).ToList();
+
+        return Ok(result);
+    }
+
+    // ── 7. DOR Certification Summary (WAC 458-53A) ────────────────────────────
+    [HttpGet("certification/summary")]
+    public async Task<IActionResult> GetCertificationSummary(
+        [FromQuery] int taxYear,
+        CancellationToken ct = default)
+    {
+        var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var sales = await _db.ComparableSales
+            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.SalesYear == taxYear || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd))
+            .Where(s => s.QualificationDecision == "qualified"
+                     || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"))
+            .Select(s => new { s.ParcelId, s.PropertyType, SalePrice = s.AdjustedSalePrice ?? s.SalePrice })
+            .Where(s => s.SalePrice > 10_000m)
+            .ToListAsync(ct);
+
+        var parcelIds = sales.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
+        var assessedMap = await GetAssessedValueMapAsync(parcelIds!, taxYear, ct);
+
+        static string Stratum(string? t) => t switch
+        {
+            "residential" or "R1" or "SFR" => "Residential",
+            "commercial"  or "C1" or "C2" or "C3" or "C4" => "Commercial",
+            "industrial"  or "I1" => "Industrial",
+            "multi-family" or "MFR" or "A1" => "Multi-Family",
+            _ => "Other",
+        };
+
+        var rows = sales
+            .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+            .Select(s => new
+            {
+                Stratum = Stratum(s.PropertyType),
+                Ratio = assessedMap[s.ParcelId!] / s.SalePrice,
+                Av    = assessedMap[s.ParcelId!],
+            }).ToList();
+
+        object BuildStrata(string name, IEnumerable<(decimal Ratio, decimal Av)> items)
+        {
+            var ratios = items.Select(x => x.Ratio).ToList();
+            var avs    = items.Select(x => x.Av).ToList();
+            if (ratios.Count == 0)
+                return new { stratum = name, n = 0, medianRatio = (double?)null, cod = (double?)null,
+                             prd = (double?)null, prb = (double?)null, iaaoPass = false, rcwPass = false };
+            var med = TrendStats.Median(ratios);
+            var cod = TrendStats.ComputeCod(ratios);
+            var prd = TrendStats.ComputePrd(ratios, avs);
+            var prb = TrendStats.ComputePrb(ratios, avs);
+            bool iaao = cod <= 20m && med >= 0.90m && med <= 1.10m;
+            bool rcw  = cod <= 20m && med >= 0.90m && med <= 1.10m; // RCW 84.40.0301
+            return new
+            {
+                stratum = name,
+                n = ratios.Count,
+                medianRatio = (double?)Math.Round((double)med, 4),
+                cod = (double?)Math.Round((double)cod, 2),
+                prd = (double?)Math.Round((double)prd, 4),
+                prb = (double?)Math.Round((double)prb, 4),
+                iaaoPass = iaao,
+                rcwPass  = rcw,
+            };
+        }
+
+        var strata = rows.GroupBy(r => r.Stratum)
+            .OrderBy(g => g.Key)
+            .Select(g => BuildStrata(g.Key, g.Select(r => (r.Ratio, r.Av))))
+            .ToList();
+
+        var countywide = BuildStrata("County-Wide", rows.Select(r => (r.Ratio, r.Av)));
+
+        return Ok(new
+        {
+            taxYear,
+            countyId = BentonCountyId,
+            generatedAt = DateTime.UtcNow.ToString("o"),
+            totalQualifiedSales = rows.Count,
+            strata,
+            countywide,
+            certificationNote = "WAC 458-53A-050 annual ratio study. IAAO standards apply.",
+        });
+    }
+
+    // ── 8. Outlier / flagged sale review list ──────────────────────────────
+    [HttpGet("sales/outliers")]
+    public async Task<IActionResult> GetFlaggedSales(
+        [FromQuery] int taxYear,
+        [FromQuery] string? neighborhoodCode = null,
+        CancellationToken ct = default)
+    {
+        var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var q = _db.ComparableSales
+            .Where(s => s.CountyId == BentonCountyId)
+            .Where(s => s.SalesYear == taxYear || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd));
+
+        if (!string.IsNullOrWhiteSpace(neighborhoodCode))
+            q = q.Where(s => s.Neighborhood == neighborhoodCode);
+
+        var sales = await q
+            .Select(s => new
+            {
+                s.Id,
+                s.ParcelId,
+                s.Neighborhood,
+                s.Address,
+                SalePrice = s.AdjustedSalePrice ?? s.SalePrice,
+                s.SaleDate,
+                s.PropertyType,
+                s.QualificationDecision,
+                s.QualificationRecommendation,
+            })
+            .Where(s => s.SalePrice > 10_000m)
+            .ToListAsync(ct);
+
+        var parcelIds = sales.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
+        var assessedMap = await GetAssessedValueMapAsync(parcelIds!, taxYear, ct);
+        var hoodMap     = await GetNeighborhoodMapAsync(parcelIds!, taxYear, ct);
+
+        // Compute per-neighborhood MAD cutoffs using only auto-qualified / qualified sales
+        var qualRows = sales
+            .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0
+                     && (s.QualificationDecision == "qualified"
+                         || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified")))
+            .Select(s =>
+            {
+                var hood = hoodMap.TryGetValue(s.ParcelId!, out var hc) ? hc : s.Neighborhood ?? "UNKNOWN";
+                return new { Hood = hood, Ratio = assessedMap[s.ParcelId!] / s.SalePrice };
+            }).ToList();
+
+        var hoodCuts = qualRows.GroupBy(r => r.Hood).ToDictionary(g => g.Key, g =>
+        {
+            var ratios = g.Select(r => r.Ratio).Order().ToList();
+            var med = TrendStats.Median(ratios);
+            var mad = ratios.Count > 0 ? ratios.Average(r => Math.Abs(r - med)) : 0m;
+            return (med, lo: med - 3 * mad, hi: med + 3 * mad);
+        });
+
+        var result = sales
+            .Where(s => s.ParcelId != null && assessedMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+            .Select(s =>
+            {
+                var av    = assessedMap[s.ParcelId!];
+                var ratio = av / s.SalePrice;
+                var hood  = hoodMap.TryGetValue(s.ParcelId!, out var hc) ? hc : s.Neighborhood ?? "UNKNOWN";
+                var cut   = hoodCuts.TryGetValue(hood, out var c) ? c : (med: 1m, lo: 0m, hi: 2m);
+                var isOut = ratio < cut.lo || ratio > cut.hi;
+                var isDq  = s.QualificationDecision == "disqualified";
+                if (!isOut && !isDq) return (object?)null;
+                return (object?)new
+                {
+                    saleId           = s.Id.ToString(),
+                    parcelId         = s.ParcelId,
+                    address          = s.Address ?? s.ParcelId ?? "",
+                    neighborhoodCode = hood,
+                    saleDate         = s.SaleDate.ToString("yyyy-MM-dd"),
+                    salePrice        = (double)s.SalePrice,
+                    assessedValue    = (double)av,
+                    ratio            = Math.Round((double)ratio, 4),
+                    hoodMedianRatio  = Math.Round((double)cut.med, 4),
+                    ratioDeviation   = Math.Round((double)(ratio - cut.med), 4),
+                    isOutlier        = isOut,
+                    currentDecision  = s.QualificationDecision ?? "auto-qualified",
+                    propertyType     = s.PropertyType ?? "residential",
+                };
+            })
+            .Where(x => x != null)
+            .ToList();
+
+        return Ok(result);
+    }
+
+    // ── 9. Update sale qualification decision ──────────────────────────────
+    [HttpPatch("sales/{saleId}/qualification")]
+    public async Task<IActionResult> PatchQualification(
+        string saleId,
+        [FromBody] PatchQualificationRequest req,
+        CancellationToken ct = default)
+    {
+        if (!Guid.TryParse(saleId, out var id))
+            return BadRequest(new { error = "Invalid saleId format." });
+
+        var sale = await _db.ComparableSales.FindAsync(new object[] { id }, ct);
+        if (sale == null) return NotFound(new { error = "Sale not found." });
+
+        var valid = new[] { "qualified", "disqualified", "outlier" };
+        if (!valid.Contains(req.Decision))
+            return BadRequest(new { error = $"Decision must be one of: {string.Join(", ", valid)}" });
+
+        sale.QualificationDecision = req.Decision;
+        await _db.SaveChangesAsync(ct);
+
+        return Ok(new { saleId, decision = req.Decision, updatedAt = DateTime.UtcNow.ToString("o") });
+    }
+
     // ── Private helpers ──────────────────────────────────────────────────────
 
     private async Task<Dictionary<string, decimal>> GetAssessedValueMapAsync(
@@ -589,3 +842,5 @@ public class GeoForgeController : ControllerBase
         return rows.ToDictionary(g => g.ParcelId, g => (g.Lat, g.Lng));
     }
 }
+
+public record PatchQualificationRequest(string Decision);

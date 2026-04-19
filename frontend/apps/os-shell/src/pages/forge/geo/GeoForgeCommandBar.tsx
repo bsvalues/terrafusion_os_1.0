@@ -95,6 +95,18 @@ export function GeoForgeCommandBar() {
 
         <Button
           size="sm"
+          variant={rightDrawerPanel === 'outlier-review' ? 'default' : 'outline'}
+          className={`h-7 text-[11px] px-2 ${
+            rightDrawerPanel === 'outlier-review'
+              ? 'bg-orange-800/40 text-orange-300 border-orange-700/60 hover:bg-orange-800/60'
+              : 'text-slate-400 border-slate-700 hover:text-white'
+          }`}
+          onClick={() => openDrawer('outlier-review')}
+        >
+          Outliers
+        </Button>
+        <Button
+          size="sm"
           variant={rightDrawerPanel === 'workbench' ? 'default' : 'outline'}
           className={`h-7 text-[11px] px-2 ${
             rightDrawerPanel === 'workbench'

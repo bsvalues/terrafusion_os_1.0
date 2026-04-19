@@ -23,6 +23,13 @@ export function prbBand(prb: number): 'ok' | 'watch' | 'critical' {
   return 'critical';
 }
 
+export function veiBand(vei: number): 'ok' | 'watch' | 'critical' {
+  const abs = Math.abs(vei);
+  if (abs < 0.03) return 'ok';
+  if (abs < 0.07) return 'watch';
+  return 'critical';
+}
+
 export function radarNormalize(stats: BentonMethodStats) {
   const codScore = Math.max(0, 1 - stats.cod / 30);
   const prdScore = 1 - Math.abs(stats.prd - 1.0) / 0.10;
