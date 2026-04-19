@@ -111,6 +111,56 @@ export function StratificationPanel() {
         </table>
       </div>
 
+      {/* Vertical equity gauge — PRD per strata */}
+      <div>
+        <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">
+          Vertical Equity (PRD) · 0.98–1.03 corridor
+        </p>
+        <div className="space-y-2">
+          {[...data.strata, { ...data.overall, label: 'Overall', code: 'ALL' }].map((row) => {
+            if (row.n === 0) return null;
+            // Map PRD 0.93–1.08 to 0–100%, corridor is 0.98–1.03
+            const clampedPrd = Math.min(1.08, Math.max(0.93, row.prd));
+            const pct = ((clampedPrd - 0.93) / 0.15) * 100;
+            const corridorLeft = ((0.98 - 0.93) / 0.15) * 100;  // ~33%
+            const corridorRight = ((1.03 - 0.93) / 0.15) * 100; // ~67%
+            const inCorridor = row.prd >= 0.98 && row.prd <= 1.03;
+            const label = row.prd > 1.03 ? 'Progressive (high-value under-assessed)'
+              : row.prd < 0.98 ? 'Regressive (high-value over-assessed)' : 'Uniform';
+            const dotColor = inCorridor ? 'bg-emerald-400' : row.prd > 1.03 ? 'bg-amber-400' : 'bg-red-400';
+            return (
+              <div key={row.code}>
+                <div className="flex items-center justify-between text-[9px] mb-1">
+                  <span className="text-slate-400">{row.label}</span>
+                  <span className={`font-mono ${inCorridor ? 'text-emerald-400' : 'text-amber-300'}`}>
+                    PRD {row.prd.toFixed(3)}
+                  </span>
+                </div>
+                <div className="relative h-2 bg-slate-800 rounded-full overflow-visible">
+                  {/* IAAO corridor highlight */}
+                  <div
+                    className="absolute top-0 h-full bg-emerald-900/40 rounded-sm"
+                    style={{ left: `${corridorLeft}%`, width: `${corridorRight - corridorLeft}%` }}
+                  />
+                  {/* PRD dot */}
+                  <div
+                    className={`absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full -translate-x-1/2 ${dotColor} border border-slate-950`}
+                    style={{ left: `${pct}%` }}
+                    title={`PRD ${row.prd.toFixed(3)} · ${label}`}
+                  />
+                </div>
+                <p className="text-[8px] text-slate-700 mt-0.5">{label}</p>
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex justify-between text-[7px] text-slate-700 mt-1 px-0.5">
+          <span>0.93</span>
+          <span className="text-emerald-900">← 0.98 – 1.03 →</span>
+          <span>1.08</span>
+        </div>
+      </div>
+
       {/* IAAO thresholds reminder */}
       <div className="bg-slate-900/40 rounded border border-slate-800 p-3 space-y-1 text-[9px] text-slate-600">
         <p className="text-slate-500 font-semibold uppercase tracking-wider mb-1.5">Standards</p>

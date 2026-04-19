@@ -16,6 +16,53 @@ import { apiFetchJson } from '@/lib/apiBase';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import type { NeighborhoodStat, MonthlyTrendPoint } from '../types/geoforge.types';
 
+interface McaResult {
+  monthlyRatioSlope: number;
+  monthlyApprecPct: number;
+  annualApprecPct: number;
+  r2: number;
+  factors: { months: number; factor: number }[];
+}
+
+function computeMCA(pts: MonthlyTrendPoint[]): McaResult | null {
+  const valid = pts.filter(p => p.medianRatio > 0 && p.n >= 3);
+  if (valid.length < 6) return null;
+
+  const n = valid.length;
+  const meanX = (n - 1) / 2;
+  const meanY = valid.reduce((s, p) => s + p.medianRatio, 0) / n;
+
+  let numr = 0, denr = 0, ssTot = 0;
+  for (let i = 0; i < n; i++) {
+    numr += (i - meanX) * (valid[i].medianRatio - meanY);
+    denr += (i - meanX) ** 2;
+    ssTot += (valid[i].medianRatio - meanY) ** 2;
+  }
+
+  const slope = denr > 0 ? numr / denr : 0;
+  const intercept = meanY - slope * meanX;
+
+  let ssRes = 0;
+  for (let i = 0; i < n; i++) {
+    ssRes += (valid[i].medianRatio - (intercept + slope * i)) ** 2;
+  }
+  const r2 = ssTot > 0 ? Math.max(0, 1 - ssRes / ssTot) : 0;
+
+  // slope < 0 → ratio falling → market appreciating
+  const monthlyApprecPct = -slope * 100;
+
+  return {
+    monthlyRatioSlope: slope,
+    monthlyApprecPct,
+    annualApprecPct: monthlyApprecPct * 12,
+    r2,
+    factors: [3, 6, 12, 18, 24].map(months => ({
+      months,
+      factor: parseFloat((1 + (-slope) * months).toFixed(4)),
+    })),
+  };
+}
+
 interface YearPoint {
   taxYear: number;
   medianRatio: number;
@@ -234,6 +281,73 @@ export function YearTrendPanel() {
               })}
             </div>
           </div>
+
+          {/* Market Condition Adjustment Calculator */}
+          {(() => {
+            const mca = computeMCA(monthlyData);
+            if (!mca) return null;
+            const trending = mca.monthlyApprecPct > 0.1 ? 'appreciating'
+              : mca.monthlyApprecPct < -0.1 ? 'declining' : 'stable';
+            const trendColor = trending === 'appreciating' ? 'text-emerald-400'
+              : trending === 'declining' ? 'text-red-400' : 'text-slate-400';
+            return (
+              <div className="mt-1 rounded border border-slate-800 bg-slate-900/60 p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                    Market Condition Adjustment
+                  </p>
+                  <span className={`text-[9px] font-bold uppercase ${trendColor}`}>
+                    {trending}
+                  </span>
+                </div>
+
+                <div className="flex gap-3 mb-2.5 text-[9px]">
+                  <div>
+                    <span className="text-slate-600">Monthly</span>
+                    <div className={`font-mono font-bold text-[11px] ${trendColor}`}>
+                      {mca.monthlyApprecPct >= 0 ? '+' : ''}{mca.monthlyApprecPct.toFixed(2)}%
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-slate-600">Annual</span>
+                    <div className={`font-mono font-bold text-[11px] ${trendColor}`}>
+                      {mca.annualApprecPct >= 0 ? '+' : ''}{mca.annualApprecPct.toFixed(1)}%
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-slate-600">R²</span>
+                    <div className={`font-mono text-[11px] ${mca.r2 >= 0.5 ? 'text-slate-300' : 'text-slate-600'}`}>
+                      {mca.r2.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-[8px] text-slate-600 mb-1.5">
+                  Time-adjustment factors — multiply old sale price by:
+                </p>
+                <div className="grid grid-cols-5 gap-1">
+                  {mca.factors.map(({ months, factor }) => {
+                    const devFromParity = Math.abs(factor - 1);
+                    const fColor = devFromParity < 0.02 ? 'text-slate-400'
+                      : factor > 1 ? 'text-emerald-400' : 'text-red-400';
+                    return (
+                      <div key={months} className="text-center bg-slate-800/60 rounded py-1 px-0.5">
+                        <div className="text-[7px] text-slate-600">{months}mo</div>
+                        <div className={`text-[10px] font-mono font-bold ${fColor}`}>
+                          {factor.toFixed(3)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                {mca.r2 < 0.25 && (
+                  <p className="text-[8px] text-slate-700 mt-1.5">
+                    ⚠ Low R² — trend not reliable with current data
+                  </p>
+                )}
+              </div>
+            );
+          })()}
         </>
       ) : (
         /* Annual view */
