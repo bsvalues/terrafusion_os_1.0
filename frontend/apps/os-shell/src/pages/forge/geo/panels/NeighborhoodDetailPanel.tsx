@@ -26,7 +26,10 @@ function olsLine(pts: { x: number; y: number }[]) {
   for (const p of pts) { num += (p.x - mx) * (p.y - my); den += (p.x - mx) ** 2; }
   const slope = den > 0 ? num / den : 0;
   const intercept = my - slope * mx;
-  return { slope, intercept };
+  let ssTot = 0, ssRes = 0;
+  for (const p of pts) { ssTot += (p.y - my) ** 2; ssRes += (p.y - (slope * p.x + intercept)) ** 2; }
+  const r2 = ssTot > 0 ? Math.max(0, 1 - ssRes / ssTot) : 0;
+  return { slope, intercept, r2 };
 }
 
 function RegressivityScatter({ neighborhoodCode }: { neighborhoodCode: string }) {
@@ -68,9 +71,14 @@ function RegressivityScatter({ neighborhoodCode }: { neighborhoodCode: string })
       <div className="flex items-center justify-between mb-1.5">
         <h4 className="text-xs text-slate-500 uppercase tracking-wide">Price vs Ratio</h4>
         {interpretation && (
-          <div className="text-right">
+          <div className="text-right leading-tight">
             <span className={`text-[10px] font-bold ${interpretation.color}`}>{interpretation.label}</span>
             <div className="text-[8px] text-slate-600">{interpretation.sub}</div>
+            {ols && (
+              <div className={`text-[8px] font-mono ${ols.r2 >= 0.5 ? 'text-slate-400' : 'text-slate-700'}`}>
+                R²={ols.r2.toFixed(2)}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -243,6 +251,84 @@ function QuintileChart({ stats }: { stats: import('../types/geoforge.types').Ben
       <p className="text-[9px] text-slate-600 mt-1.5 text-right">
         center = 1.00 parity · Q5/Q1 = {spread ? spread.toFixed(3) : '—'}
       </p>
+    </div>
+  );
+}
+
+const PRICE_BANDS = [
+  { label: '< $200k', min: 0, max: 200_000 },
+  { label: '$200–$400k', min: 200_000, max: 400_000 },
+  { label: '$400–$700k', min: 400_000, max: 700_000 },
+  { label: '> $700k', min: 700_000, max: Infinity },
+] as const;
+
+function localCod(ratios: number[], med: number): number {
+  if (ratios.length < 2 || med === 0) return 0;
+  return (ratios.reduce((s, r) => s + Math.abs(r - med) / med, 0) / ratios.length) * 100;
+}
+
+function IntraStrataTable({ neighborhoodCode }: { neighborhoodCode: string }) {
+  const { salePoints } = useGeoForgeStore();
+
+  const bands = useMemo(() => {
+    const hood = salePoints.filter(
+      (s) =>
+        s.neighborhoodCode === neighborhoodCode &&
+        s.ratio > 0 &&
+        s.salePrice > 0 &&
+        s.qualificationDecision === 'qualified' &&
+        !s.isOutlier,
+    );
+    return PRICE_BANDS.map(({ label, min, max }) => {
+      const sales = hood.filter((s) => s.salePrice >= min && s.salePrice < max);
+      if (sales.length === 0) return null;
+      const ratios = sales.map((s) => s.ratio).sort((a, b) => a - b);
+      const med = localMedian(ratios);
+      return { label, n: sales.length, median: med, cod: localCod(ratios, med) };
+    }).filter(Boolean) as { label: string; n: number; median: number; cod: number }[];
+  }, [salePoints, neighborhoodCode]);
+
+  const activeBands = bands.filter((b) => b.n >= 3);
+  if (activeBands.length < 2) return null;
+
+  return (
+    <div>
+      <h4 className="text-xs text-slate-500 uppercase tracking-wide mb-1.5">Price Band Strata</h4>
+      <table className="w-full text-[9px]">
+        <thead>
+          <tr className="border-b border-slate-800">
+            <th className="text-left text-slate-600 py-0.5 font-normal">Band</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">n</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">Median</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">COD</th>
+          </tr>
+        </thead>
+        <tbody>
+          {bands.map((b) => {
+            const lowN = b.n < 3;
+            const medColor = lowN ? 'text-slate-600'
+              : b.median >= 0.95 && b.median <= 1.05 ? 'text-emerald-400'
+              : b.median >= 0.90 && b.median <= 1.10 ? 'text-amber-400' : 'text-red-400';
+            const codColor = lowN || b.cod === 0 ? 'text-slate-600'
+              : b.cod > 20 ? 'text-red-400' : b.cod > 15 ? 'text-amber-300' : 'text-slate-400';
+            return (
+              <tr key={b.label} className="border-b border-slate-800/40">
+                <td className="py-0.5 text-slate-400 whitespace-nowrap">{b.label}</td>
+                <td className={`py-0.5 text-right font-mono ${lowN ? 'text-slate-700' : 'text-slate-500'}`}>
+                  {b.n}
+                </td>
+                <td className={`py-0.5 text-right font-mono font-semibold ${medColor}`}>
+                  {lowN ? <span className="text-slate-700">low n</span> : b.median.toFixed(3)}
+                </td>
+                <td className={`py-0.5 text-right font-mono ${codColor}`}>
+                  {lowN ? '—' : b.cod.toFixed(1)}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <p className="text-[8px] text-slate-700 mt-0.5">qualified non-outlier · n &lt; 3 = low confidence</p>
     </div>
   );
 }
@@ -514,6 +600,8 @@ export function NeighborhoodDetailPanel() {
       <EquitySignatureRadar stats={stats} label="Equity Signature" />
 
       <QuintileChart stats={stats} />
+
+      <IntraStrataTable neighborhoodCode={ns.neighborhoodCode} />
 
       <RegressivityScatter neighborhoodCode={ns.neighborhoodCode} />
 
