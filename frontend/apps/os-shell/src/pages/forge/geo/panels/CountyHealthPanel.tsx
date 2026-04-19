@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { apiFetchJson } from '@/lib/apiBase';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { computeMoransI } from '../utils/spatialStats';
+import { computeEquityIndex } from '../utils/equityIndex';
 
 interface TrendYear {
   taxYear: number;
@@ -51,6 +52,19 @@ export function CountyHealthPanel() {
   }, [trendData]);
 
   const moransI = useMemo(() => computeMoransI(neighborhoodStats), [neighborhoodStats]);
+
+  const eqi = useMemo(() => {
+    if (!county) return null;
+    return computeEquityIndex({
+      cwMed: county.medianRatio,
+      cwCod: county.cod,
+      cwPrd: county.prd,
+      passRate: county.passRate / 100,
+      moransI: moransI?.I ?? 0,
+      totalSales: county.totalSales,
+      totalNbhds: county.total,
+    });
+  }, [county, moransI]);
 
   const county = useMemo(() => {
     if (neighborhoodStats.length === 0) return null;
@@ -110,6 +124,65 @@ export function CountyHealthPanel() {
 
   return (
     <div className="flex flex-col gap-4 p-4 overflow-y-auto h-full">
+
+      {/* County Equity Index headline */}
+      {eqi && (
+        <div className="bg-slate-900/60 border rounded-md px-4 py-3" style={{ borderColor: eqi.color + '66' }}>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[8px] text-slate-500 uppercase tracking-wider">County Equity Index</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-slate-500 font-mono">WAC 458-53A</span>
+              <span
+                className="text-xs font-bold px-1.5 py-0.5 rounded border"
+                style={{ color: eqi.color, borderColor: eqi.color + '60', background: eqi.color + '18' }}
+              >
+                {eqi.grade}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-end gap-3 mb-2">
+            <span className="text-4xl font-mono font-bold leading-none" style={{ color: eqi.color }}>
+              {eqi.score}
+            </span>
+            <span className="text-slate-500 text-sm mb-1">/ 100</span>
+          </div>
+          <div className="h-2 bg-slate-800 rounded-full overflow-hidden mb-3">
+            <div
+              className="h-full rounded-full transition-all"
+              style={{ width: `${eqi.score}%`, backgroundColor: eqi.color }}
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-1">
+            {([
+              { label: 'Ratio', score: eqi.components.ratio, weight: 25 },
+              { label: 'COD', score: eqi.components.cod, weight: 20 },
+              { label: 'PRD', score: eqi.components.prd, weight: 15 },
+              { label: 'Pass%', score: eqi.components.passRate, weight: 25 },
+              { label: 'Spatial', score: eqi.components.spatial, weight: 10 },
+              { label: 'Adequacy', score: eqi.components.adequacy, weight: 5 },
+            ] as { label: string; score: number; weight: number }[]).map(({ label, score: s, weight }) => {
+              const pts = Math.round(s * weight);
+              const cmpColor = pts >= weight * 0.85 ? '#4ade80' : pts >= weight * 0.60 ? '#fbbf24' : '#f87171';
+              return (
+                <div key={label} className="bg-slate-950/60 rounded px-1.5 py-1">
+                  <div className="flex justify-between items-baseline mb-0.5">
+                    <span className="text-[7px] text-slate-600">{label}</span>
+                    <span className="text-[8px] font-mono font-bold" style={{ color: cmpColor }}>
+                      {pts}/{weight}
+                    </span>
+                  </div>
+                  <div className="h-0.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full"
+                      style={{ width: `${Math.round(s * 100)}%`, backgroundColor: cmpColor }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Pass rate gauge */}
       <div className="bg-slate-900/60 border border-slate-700/60 rounded-md px-4 py-3">

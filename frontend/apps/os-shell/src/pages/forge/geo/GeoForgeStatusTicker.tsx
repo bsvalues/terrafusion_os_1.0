@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { computeMoransI, computeLISA } from './utils/spatialStats';
+import { computeEquityIndex } from './utils/equityIndex';
 
 function iaaoPass(medianRatio: number, cod: number, prd: number): boolean {
   return medianRatio >= 0.90 && medianRatio <= 1.10 && cod <= 20 && prd >= 0.98 && prd <= 1.03;
@@ -40,6 +41,20 @@ export function GeoForgeStatusTicker() {
   }, [neighborhoodStats]);
 
   const moransI = useMemo(() => computeMoransI(neighborhoodStats), [neighborhoodStats]);
+
+  const eqi = useMemo(() => {
+    if (!stats) return null;
+    const totalSales = neighborhoodStats.reduce((s, n) => s + n.saleCount, 0);
+    return computeEquityIndex({
+      cwMed: stats.cwMed,
+      cwCod: stats.cwCod,
+      cwPrd: stats.cwPrd,
+      passRate: stats.passRate / 100,
+      moransI: moransI?.I ?? 0,
+      totalSales,
+      totalNbhds: stats.total,
+    });
+  }, [stats, moransI, neighborhoodStats]);
 
   const lisaCounts = useMemo(() => {
     if (!lisaMode) return null;
@@ -149,7 +164,21 @@ export function GeoForgeStatusTicker() {
         </>
       )}
 
-      <span className="text-slate-700 ml-auto text-[8px]">press ? for shortcuts</span>
+      {eqi && (
+        <>
+          <span className="text-slate-600 mr-1 ml-auto">EQI</span>
+          <span
+            className="font-mono font-bold text-[10px] mr-1"
+            style={{ color: eqi.color }}
+            title={`County Equity Index: ${eqi.score}/100 (Grade ${eqi.grade}) — composite DOR-readiness score`}
+          >
+            {eqi.score}
+          </span>
+          <span className="font-bold mr-2 text-[9px]" style={{ color: eqi.color }}>{eqi.grade}</span>
+        </>
+      )}
+
+      <span className="text-slate-700 text-[8px]">press ? for shortcuts</span>
     </div>
   );
 }
