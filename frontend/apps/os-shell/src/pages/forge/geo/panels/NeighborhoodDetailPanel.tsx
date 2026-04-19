@@ -247,6 +247,158 @@ function QuintileChart({ stats }: { stats: import('../types/geoforge.types').Ben
   );
 }
 
+function localMedian(arr: number[]): number {
+  const s = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(s.length / 2);
+  return s.length % 2 !== 0 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+}
+
+function McaTimeTrend({ neighborhoodCode }: { neighborhoodCode: string }) {
+  const { salePoints } = useGeoForgeStore();
+
+  const { points, olsResult } = useMemo(() => {
+    const hood = salePoints.filter(
+      (s) =>
+        s.neighborhoodCode === neighborhoodCode &&
+        s.ratio > 0 &&
+        s.saleDate &&
+        !s.isOutlier &&
+        s.qualificationDecision === 'qualified',
+    );
+
+    const byMonth: Record<string, number[]> = {};
+    for (const s of hood) {
+      const m = s.saleDate.slice(0, 7);
+      if (!byMonth[m]) byMonth[m] = [];
+      byMonth[m].push(s.ratio);
+    }
+
+    const sorted = Object.keys(byMonth).sort();
+    const pts = sorted
+      .filter((m) => byMonth[m].length >= 3)
+      .map((m, i) => ({
+        month: m,
+        x: i,
+        y: localMedian(byMonth[m]),
+        n: byMonth[m].length,
+      }));
+
+    return { points: pts, olsResult: olsLine(pts) };
+  }, [salePoints, neighborhoodCode]);
+
+  if (points.length < 4) return null;
+
+  const regLine =
+    olsResult && points.length >= 2
+      ? [
+          { x: points[0].x, y: olsResult.slope * points[0].x + olsResult.intercept },
+          {
+            x: points[points.length - 1].x,
+            y: olsResult.slope * points[points.length - 1].x + olsResult.intercept,
+          },
+        ]
+      : [];
+
+  const monthlyRate = olsResult ? olsResult.slope : null;
+  const annualRate = monthlyRate !== null ? monthlyRate * 12 : null;
+
+  const rateColor =
+    monthlyRate === null
+      ? 'text-slate-400'
+      : Math.abs(monthlyRate) < 0.0008
+        ? 'text-emerald-400'
+        : monthlyRate < 0
+          ? 'text-amber-400'
+          : 'text-sky-400';
+
+  const interpretation =
+    monthlyRate !== null && Math.abs(monthlyRate) >= 0.0008
+      ? monthlyRate < 0
+        ? `Market rising ${(Math.abs(monthlyRate) * 100).toFixed(2)}%/mo faster than assessments — older sales need upward time adj`
+        : `Assessments outpacing market — downward time adj indicated`
+      : null;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <h4 className="text-xs text-slate-500 uppercase tracking-wide">MCA Time Trend</h4>
+        {monthlyRate !== null && (
+          <div className="text-right leading-tight">
+            <span className={`text-[10px] font-bold font-mono ${rateColor}`}>
+              {monthlyRate >= 0 ? '+' : ''}
+              {(monthlyRate * 100).toFixed(3)}%/mo
+            </span>
+            {annualRate !== null && (
+              <div className={`text-[8px] font-mono ${rateColor}`}>
+                {annualRate >= 0 ? '+' : ''}
+                {(annualRate * 100).toFixed(1)}%/yr
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      <ResponsiveContainer width="100%" height={110}>
+        <ComposedChart margin={{ top: 4, right: 8, bottom: 4, left: -14 }}>
+          <XAxis
+            dataKey="x"
+            type="number"
+            domain={[points[0].x - 0.5, points[points.length - 1].x + 0.5]}
+            tick={{ fontSize: 7, fill: '#64748b' }}
+            tickFormatter={(v: number) => {
+              const pt = points[Math.round(v)];
+              return pt ? pt.month.slice(2) : '';
+            }}
+          />
+          <YAxis
+            dataKey="y"
+            type="number"
+            domain={[0.80, 1.20]}
+            tick={{ fontSize: 8, fill: '#64748b' }}
+            tickFormatter={(v: number) => v.toFixed(2)}
+          />
+          <Tooltip
+            contentStyle={{ background: '#0A0E1A', border: '1px solid #334155', fontSize: 10, borderRadius: 6 }}
+            formatter={(v: number, name: string) =>
+              name === 'y' ? [v.toFixed(3), 'Median Ratio'] : [String(v), name]
+            }
+            labelFormatter={(v: number) => {
+              const pt = points[Math.round(v as number)];
+              return pt ? `${pt.month} (n=${pt.n})` : '';
+            }}
+          />
+          <ReferenceArea y1={0.95} y2={1.05} fill="#22c55e" fillOpacity={0.06} />
+          <ReferenceLine y={1.0} stroke="#334155" strokeDasharray="4 4" />
+          {olsResult && (
+            <Line
+              data={regLine}
+              dataKey="y"
+              stroke="#f59e0b"
+              strokeWidth={1.5}
+              dot={false}
+              activeDot={false}
+              strokeDasharray="6 3"
+            />
+          )}
+          <Scatter data={points} fill="#00FFFF" opacity={0.85} r={3} />
+        </ComposedChart>
+      </ResponsiveContainer>
+      <div className="flex gap-3 text-[8px] text-slate-600 mt-0.5">
+        <span>
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-terra-cyan/70 mr-0.5 -mb-px" />
+          Monthly median ratio
+        </span>
+        <span>
+          <span className="inline-block w-3 h-px bg-amber-400 mr-0.5 mb-0.5" />
+          OLS trend
+        </span>
+      </div>
+      {interpretation && (
+        <p className="text-[9px] text-slate-500 mt-1 leading-snug">{interpretation}</p>
+      )}
+    </div>
+  );
+}
+
 function PeerComparison({ ns }: { ns: import('../types/geoforge.types').NeighborhoodStat }) {
   const { neighborhoodStats, selectNeighborhood } = useGeoForgeStore();
 
@@ -364,6 +516,8 @@ export function NeighborhoodDetailPanel() {
       <QuintileChart stats={stats} />
 
       <RegressivityScatter neighborhoodCode={ns.neighborhoodCode} />
+
+      <McaTimeTrend neighborhoodCode={ns.neighborhoodCode} />
 
       <table className="w-full text-xs">
         <tbody>
