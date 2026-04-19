@@ -24,6 +24,7 @@ import { ValueStrataPanel } from './panels/ValueStrataPanel';
 import { NeighborhoodScorecardPanel } from './panels/NeighborhoodScorecardPanel';
 import { ExportPanel } from './panels/ExportPanel';
 import { SaleInfluencePanel } from './panels/SaleInfluencePanel';
+import { CertificationChecklistPanel } from './panels/CertificationChecklistPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
 import { GeoForgeStatusTicker } from './GeoForgeStatusTicker';
@@ -50,6 +51,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   'scorecard': 'Neighborhood Scorecard · WAC 458-53A',
   'export': 'Export Data · CSV for DOR & Excel',
   'sale-influence': 'Sale Influence Analysis · LOO Impact',
+  'cert-checklist': 'DOR Pre-flight · Certification Checklist',
 };
 
 export function GeoForgePage() {
@@ -94,6 +96,7 @@ export function GeoForgePage() {
         case 'g': openDrawer('scorecard'); break;
         case 'e': openDrawer('export'); break;
         case 'i': openDrawer('sale-influence'); break;
+        case 'p': openDrawer('cert-checklist'); break;
       }
     }
     window.addEventListener('keydown', onKey);
@@ -211,6 +214,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'scorecard' && <NeighborhoodScorecardPanel />}
               {rightDrawerPanel === 'export' && <ExportPanel />}
               {rightDrawerPanel === 'sale-influence' && <SaleInfluencePanel />}
+              {rightDrawerPanel === 'cert-checklist' && <CertificationChecklistPanel />}
             </div>
           </>
         )}

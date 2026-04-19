@@ -13,6 +13,7 @@ const SHORTCUTS = [
   { key: 'g', description: 'Neighborhood scorecard · grade card for selected neighborhood' },
   { key: 'e', description: 'Export data · CSV for DOR, Excel, peer review' },
   { key: 'i', description: 'Sale influence analysis · LOO impact per sale on compliance' },
+  { key: 'p', description: 'DOR pre-flight checklist · certification readiness' },
   { key: '?', description: 'Toggle this panel' },
 ];
 

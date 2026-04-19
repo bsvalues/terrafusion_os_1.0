@@ -159,7 +159,8 @@ export type RightDrawerPanel =
   | 'value-strata'
   | 'scorecard'
   | 'export'
-  | 'sale-influence';
+  | 'sale-influence'
+  | 'cert-checklist';
 
 export interface CompSale {
   parcelId: string;
