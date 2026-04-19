@@ -17,6 +17,7 @@ const SHORTCUTS = [
   { key: 'k', description: 'Neighborhood clustering · k-means compliance profile grouping' },
   { key: 'b', description: 'Ratio cliff detection · boundary discontinuity analysis' },
   { key: 't', description: 'Time adjustment calculator · monthly market rate + adjusted ratios' },
+  { key: 'u', description: 'Qualification decision log · undocumented exclusion audit' },
   { key: '?', description: 'Toggle this panel' },
 ];
 

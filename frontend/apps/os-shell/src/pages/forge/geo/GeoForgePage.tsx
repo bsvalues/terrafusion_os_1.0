@@ -28,6 +28,7 @@ import { CertificationChecklistPanel } from './panels/CertificationChecklistPane
 import { ClusteringPanel } from './panels/ClusteringPanel';
 import { RatioCliffPanel } from './panels/RatioCliffPanel';
 import { TimeAdjustPanel } from './panels/TimeAdjustPanel';
+import { QualDecisionPanel } from './panels/QualDecisionPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
 import { GeoForgeStatusTicker } from './GeoForgeStatusTicker';
@@ -58,6 +59,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   'clustering': 'Neighborhood Clustering · K-means Compliance Profiles',
   'ratio-cliffs': 'Ratio Cliff Detection · Boundary Discontinuity Analysis',
   'time-adjust': 'Time Adjustment · Monthly Market Rate & Adjusted Ratios',
+  'qual-decisions': 'Qualification Decision Log · Exclusion Documentation Audit',
 };
 
 export function GeoForgePage() {
@@ -106,6 +108,7 @@ export function GeoForgePage() {
         case 'k': openDrawer('clustering'); break;
         case 'b': openDrawer('ratio-cliffs'); break;
         case 't': openDrawer('time-adjust'); break;
+        case 'u': openDrawer('qual-decisions'); break;
       }
     }
     window.addEventListener('keydown', onKey);
@@ -227,6 +230,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'clustering' && <ClusteringPanel />}
               {rightDrawerPanel === 'ratio-cliffs' && <RatioCliffPanel />}
               {rightDrawerPanel === 'time-adjust' && <TimeAdjustPanel />}
+              {rightDrawerPanel === 'qual-decisions' && <QualDecisionPanel />}
             </div>
           </>
         )}

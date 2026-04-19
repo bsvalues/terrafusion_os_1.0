@@ -163,7 +163,8 @@ export type RightDrawerPanel =
   | 'cert-checklist'
   | 'clustering'
   | 'ratio-cliffs'
-  | 'time-adjust';
+  | 'time-adjust'
+  | 'qual-decisions';
 
 export interface CompSale {
   parcelId: string;
