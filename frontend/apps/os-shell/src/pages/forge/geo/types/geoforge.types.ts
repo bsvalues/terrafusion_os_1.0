@@ -155,7 +155,8 @@ export type RightDrawerPanel =
   | 'county-health'
   | 'remedy-queue'
   | 'levy-parity'
-  | 'dor-memo';
+  | 'dor-memo'
+  | 'value-strata';
 
 export interface CompSale {
   parcelId: string;
