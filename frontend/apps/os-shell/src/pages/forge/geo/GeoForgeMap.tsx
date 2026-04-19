@@ -66,6 +66,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       addNeighborhoodPolyLayer(map);
       addYoyChangeLayer(map);
       addRatioDriftLayer(map);
+      addRatioCliffLayer(map);
       addNeighborhoodLayer(map);
       addCompsHighlightLayer(map);
       addSimulationOverlayLayer(map);
@@ -204,6 +205,23 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
           .addTo(map);
       });
       map.on('mouseleave', 'ratio-drift-circles', () => {
+        map.getCanvas().style.cursor = '';
+        hoverPopup.remove();
+      });
+
+      // Ratio cliff hover tooltip
+      map.on('mouseenter', 'ratio-cliff-lines', (e) => {
+        map.getCanvas().style.cursor = 'help';
+        const props = e.features?.[0]?.properties;
+        if (!props || !e.lngLat) return;
+        const diff = Number(props.ratioDiff);
+        const cliffColor = diff > 0.15 ? '#f87171' : '#fb923c';
+        hoverPopup
+          .setLngLat(e.lngLat)
+          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:170px"><div style="color:${cliffColor};font-weight:700;margin-bottom:3px">⚡ Ratio Cliff</div><div style="font-family:monospace;font-size:10px"><span style="color:#00FFFF">${props.codeA}</span> <span style="color:#64748b">${Number(props.ratioA).toFixed(3)}</span></div><div style="font-family:monospace;font-size:10px"><span style="color:#00FFFF">${props.codeB}</span> <span style="color:#64748b">${Number(props.ratioB).toFixed(3)}</span></div><div style="margin-top:4px;color:${cliffColor};font-weight:700;font-family:monospace">Δ ${diff.toFixed(3)}</div><div style="color:#475569;font-size:9px">Abrupt equity transition — review boundary</div></div>`)
+          .addTo(map);
+      });
+      map.on('mouseleave', 'ratio-cliff-lines', () => {
         map.getCanvas().style.cursor = '';
         hoverPopup.remove();
       });
@@ -489,6 +507,56 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       .catch(() => { /* unavailable */ });
   }, [filter.taxYear, activeLayers]);
 
+  // Ratio cliff lines — client-side O(n²) over neighborhood centroids
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded()) return;
+    const src = map.getSource('ratio-cliffs') as mapboxgl.GeoJSONSource | undefined;
+    if (!src) return;
+
+    if (!activeLayers.has('ratio-cliffs') || neighborhoodStats.length === 0) {
+      src.setData({ type: 'FeatureCollection', features: [] });
+      return;
+    }
+
+    const PROXIMITY_MI = 3.0;
+    const CLIFF_THRESHOLD = 0.08;
+    const features: GeoJSON.Feature[] = [];
+
+    for (let i = 0; i < neighborhoodStats.length; i++) {
+      const a = neighborhoodStats[i];
+      if (!a.centroidLat || !a.centroidLng || a.saleCount < 3) continue;
+      for (let j = i + 1; j < neighborhoodStats.length; j++) {
+        const b = neighborhoodStats[j];
+        if (!b.centroidLat || !b.centroidLng || b.saleCount < 3) continue;
+        const distMi = haversineDistanceMi(a.centroidLat, a.centroidLng, b.centroidLat, b.centroidLng);
+        if (distMi > PROXIMITY_MI) continue;
+        const ratioDiff = Math.abs(a.stats.medianRatio - b.stats.medianRatio);
+        if (ratioDiff < CLIFF_THRESHOLD) continue;
+        features.push({
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [a.centroidLng, a.centroidLat],
+              [b.centroidLng, b.centroidLat],
+            ],
+          },
+          properties: {
+            codeA: a.neighborhoodCode,
+            codeB: b.neighborhoodCode,
+            ratioA: a.stats.medianRatio,
+            ratioB: b.stats.medianRatio,
+            ratioDiff,
+            distMi: Math.round(distMi * 10) / 10,
+          },
+        });
+      }
+    }
+
+    src.setData({ type: 'FeatureCollection', features });
+  }, [neighborhoodStats, activeLayers]);
+
   // Parcel points — loads when layer toggled on + a neighborhood is selected
   useEffect(() => {
     const map = mapRef.current;
@@ -596,6 +664,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       'yoy-change': ['yoy-change-circles', 'yoy-change-labels'],
       'market-trend': ['market-trend-circles', 'market-trend-labels'],
       'ratio-drift': ['ratio-drift-circles', 'ratio-drift-labels'],
+      'ratio-cliffs': ['ratio-cliff-lines'],
       'parcel-polygons': ['parcel-pts-dots'],
       kde: ['kde-heat'],
       'ai-cluster': ['ai-cluster-circles'],
@@ -1079,6 +1148,39 @@ function addParcelPointsLayer(map: mapboxgl.Map) {
       'circle-stroke-width': 0.5,
       'circle-stroke-color': '#0f172a',
       'circle-stroke-opacity': 0.6,
+    },
+  });
+}
+
+function addRatioCliffLayer(map: mapboxgl.Map) {
+  map.addSource('ratio-cliffs', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  });
+
+  map.addLayer({
+    id: 'ratio-cliff-lines',
+    type: 'line',
+    source: 'ratio-cliffs',
+    layout: {
+      visibility: 'none',
+      'line-join': 'round',
+      'line-cap': 'round',
+    },
+    paint: {
+      'line-color': [
+        'case',
+        ['>', ['get', 'ratioDiff'], 0.15], '#ef4444',
+        '#fb923c',
+      ],
+      'line-width': [
+        'interpolate', ['linear'], ['get', 'ratioDiff'],
+        0.08, 2,
+        0.15, 4,
+        0.25, 7,
+      ],
+      'line-opacity': 0.80,
+      'line-dasharray': [3, 2],
     },
   });
 }

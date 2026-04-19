@@ -105,7 +105,8 @@ export type MapLayer =
   | 'neighborhood-poly'
   | 'yoy-change'
   | 'market-trend'
-  | 'ratio-drift';
+  | 'ratio-drift'
+  | 'ratio-cliffs';
 
 export interface RatioDriftPoint {
   neighborhoodCode: string;

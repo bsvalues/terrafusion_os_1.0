@@ -47,9 +47,10 @@ export function GeoForgeMapLegend() {
   const showRatio = activeLayers.has('choropleth') || activeLayers.has('sale-scatter') || activeLayers.has('neighborhood-poly');
   const showYoy   = activeLayers.has('yoy-change');
   const showMkt   = activeLayers.has('market-trend');
-  const showDrift = activeLayers.has('ratio-drift');
+  const showDrift  = activeLayers.has('ratio-drift');
+  const showCliffs = activeLayers.has('ratio-cliffs');
 
-  if (!showRatio && !showYoy && !showMkt && !showDrift) return null;
+  if (!showRatio && !showYoy && !showMkt && !showDrift && !showCliffs) return null;
 
   return (
     <div className="absolute bottom-8 right-[80px] z-20 flex flex-col gap-1.5">
@@ -87,6 +88,21 @@ export function GeoForgeMapLegend() {
               <span className="text-[9px] text-slate-300 font-mono">{label}</span>
             </div>
           ))}
+        </div>
+      )}
+
+      {showCliffs && (
+        <div className="bg-slate-950/90 backdrop-blur border border-slate-800 rounded-md px-2.5 py-2 min-w-[150px]">
+          <p className="text-[8px] text-slate-500 uppercase tracking-wider mb-1.5">Ratio Cliff (Δ between adjacent nbhds)</p>
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <span className="inline-block w-5 h-0.5 bg-red-400 shrink-0" />
+            <span className="text-[9px] text-slate-300 font-mono">&gt; 0.15 critical</span>
+          </div>
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <span className="inline-block w-5 h-0.5 bg-orange-400 shrink-0" />
+            <span className="text-[9px] text-slate-300 font-mono">0.08–0.15 warning</span>
+          </div>
+          <p className="text-[8px] text-slate-600 mt-1">Only nbhds within 3 mi shown · line width = Δ magnitude</p>
         </div>
       )}
 
