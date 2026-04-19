@@ -247,6 +247,68 @@ function QuintileChart({ stats }: { stats: import('../types/geoforge.types').Ben
   );
 }
 
+function PeerComparison({ ns }: { ns: import('../types/geoforge.types').NeighborhoodStat }) {
+  const { neighborhoodStats, selectNeighborhood } = useGeoForgeStore();
+
+  const peers = useMemo(() => {
+    const { medianRatio, cod, prd } = ns.stats;
+    return neighborhoodStats
+      .filter(n => n.neighborhoodCode !== ns.neighborhoodCode && n.saleCount >= 3)
+      .map(n => ({
+        ns: n,
+        score:
+          Math.abs(n.stats.medianRatio - medianRatio) * 6
+          + Math.abs(n.stats.cod - cod) * 0.25
+          + Math.abs(n.stats.prd - prd) * 8,
+      }))
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 3);
+  }, [ns, neighborhoodStats]);
+
+  if (peers.length === 0) return null;
+
+  return (
+    <div>
+      <h4 className="text-[8px] text-slate-500 uppercase tracking-wider mb-1.5">Peer Comparison</h4>
+      <table className="w-full text-[9px]">
+        <thead>
+          <tr className="border-b border-slate-800">
+            <th className="text-left text-slate-600 py-0.5 font-normal">Nbhd</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">MED</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">COD</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">Δ</th>
+            <th className="text-right text-slate-600 py-0.5 font-normal">n</th>
+          </tr>
+        </thead>
+        <tbody>
+          {peers.map(({ ns: p }) => {
+            const delta = p.stats.medianRatio - ns.stats.medianRatio;
+            const medColor = p.stats.medianRatio >= 0.95 && p.stats.medianRatio <= 1.05 ? 'text-emerald-400'
+              : p.stats.medianRatio >= 0.90 && p.stats.medianRatio <= 1.10 ? 'text-amber-400' : 'text-red-400';
+            return (
+              <tr
+                key={p.neighborhoodCode}
+                className="border-b border-slate-800/60 cursor-pointer hover:bg-slate-800/40 transition-colors"
+                onClick={() => selectNeighborhood(p.neighborhoodCode)}
+              >
+                <td className="py-1 text-terra-cyan font-mono">{p.neighborhoodCode}</td>
+                <td className={`py-1 text-right font-mono ${medColor}`}>{p.stats.medianRatio.toFixed(3)}</td>
+                <td className={`py-1 text-right font-mono ${p.stats.cod > 20 ? 'text-red-400' : p.stats.cod > 15 ? 'text-amber-300' : 'text-slate-400'}`}>
+                  {p.stats.cod.toFixed(1)}
+                </td>
+                <td className={`py-1 text-right font-mono ${delta >= 0 ? 'text-amber-400' : 'text-sky-400'}`}>
+                  {delta >= 0 ? '+' : ''}{delta.toFixed(3)}
+                </td>
+                <td className="py-1 text-right text-slate-500">{p.saleCount}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export function NeighborhoodDetailPanel() {
   const { selectedNeighborhoodCode, neighborhoodStats, openDrawer } = useGeoForgeStore();
   const ns = neighborhoodStats.find((n) => n.neighborhoodCode === selectedNeighborhoodCode);
@@ -321,6 +383,8 @@ export function NeighborhoodDetailPanel() {
           ))}
         </tbody>
       </table>
+
+      <PeerComparison ns={ns} />
 
       <div className="flex gap-2 flex-wrap pt-1">
         <Button
