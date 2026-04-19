@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
+import { computeMoransI } from './utils/spatialStats';
 
 function iaaoPass(medianRatio: number, cod: number, prd: number): boolean {
   return medianRatio >= 0.90 && medianRatio <= 1.10 && cod <= 20 && prd >= 0.98 && prd <= 1.03;
@@ -37,6 +38,8 @@ export function GeoForgeStatusTicker() {
       )[0] ?? null,
     };
   }, [neighborhoodStats]);
+
+  const moransI = useMemo(() => computeMoransI(neighborhoodStats), [neighborhoodStats]);
 
   const selectedNs = selectedNeighborhoodCode
     ? neighborhoodStats.find((n) => n.neighborhoodCode === selectedNeighborhoodCode)
@@ -76,6 +79,23 @@ export function GeoForgeStatusTicker() {
       <span className={`font-mono font-bold mr-2 ${codColor}`}>{stats.cwCod.toFixed(1)}</span>
 
       <span className="text-slate-800 mr-2">|</span>
+
+      {moransI && (
+        <>
+          <span className="text-slate-600 mr-1">Moran's I</span>
+          <span
+            className="font-mono font-bold mr-1"
+            style={{ color: moransI.color }}
+            title={`Spatial autocorrelation: ${moransI.label} (n=${moransI.n} nbhds within 5 mi)`}
+          >
+            {moransI.I.toFixed(3)}
+          </span>
+          <span className="text-slate-600 mr-2 text-[8px]">
+            ({moransI.interpretation === 'strong-clustering' ? 'clustering ⚠' : moransI.interpretation === 'moderate-clustering' ? 'clustering' : moransI.interpretation})
+          </span>
+          <span className="text-slate-800 mr-2">|</span>
+        </>
+      )}
 
       {stats.criticalCount > 0 && (
         <>

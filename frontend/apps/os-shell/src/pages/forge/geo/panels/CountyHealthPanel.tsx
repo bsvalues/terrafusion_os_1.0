@@ -6,6 +6,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { apiFetchJson } from '@/lib/apiBase';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
+import { computeMoransI } from '../utils/spatialStats';
 
 interface TrendYear {
   taxYear: number;
@@ -48,6 +49,8 @@ export function CountyHealthPanel() {
     if (!trendData) return [];
     return trendData.filter((r) => !r.noData && r.medianRatio != null);
   }, [trendData]);
+
+  const moransI = useMemo(() => computeMoransI(neighborhoodStats), [neighborhoodStats]);
 
   const county = useMemo(() => {
     if (neighborhoodStats.length === 0) return null;
@@ -228,6 +231,45 @@ export function CountyHealthPanel() {
             <span><span className="text-purple-400">- -</span> COD/20 (scaled)</span>
             <span><span className="text-emerald-700">─</span> IAAO band 0.95–1.05</span>
           </div>
+        </div>
+      )}
+
+      {/* Spatial Autocorrelation (Moran's I) */}
+      {moransI && (
+        <div className="bg-slate-900/60 border border-slate-700/60 rounded-md px-4 py-3">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[8px] text-slate-500 uppercase tracking-wider">Spatial Autocorrelation</span>
+            <span className="font-mono text-xs font-bold" style={{ color: moransI.color }}>
+              I = {moransI.I.toFixed(3)}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 mb-2">
+            <span
+              className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
+              style={{ color: moransI.color, backgroundColor: moransI.color + '22' }}
+            >
+              {moransI.label}
+            </span>
+            <span className="text-[8px] text-slate-600">n={moransI.n} nbhds</span>
+          </div>
+          <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden mb-2">
+            <div
+              className="h-full rounded-full transition-all"
+              style={{
+                width: `${Math.max(2, Math.min(100, ((moransI.I + 1) / 2) * 100))}%`,
+                backgroundColor: moransI.color,
+              }}
+            />
+          </div>
+          {moransI.warning ? (
+            <p className="text-[8px] text-red-400">
+              ⚠ Geographic clustering detected — assessment ratios are spatially correlated. DOR review required per WAC 458-53A.
+            </p>
+          ) : (
+            <p className="text-[8px] text-slate-600">
+              I &gt; 0.30 = geographic bias warranting DOR review. Scale: −1 (dispersed) → 0 (random) → +1 (clustered).
+            </p>
+          )}
         </div>
       )}
 
