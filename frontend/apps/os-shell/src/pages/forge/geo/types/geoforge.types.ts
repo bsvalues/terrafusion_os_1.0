@@ -104,7 +104,20 @@ export type MapLayer =
   | 'gwr'
   | 'neighborhood-poly'
   | 'yoy-change'
-  | 'market-trend';
+  | 'market-trend'
+  | 'ratio-drift';
+
+export interface RatioDriftPoint {
+  neighborhoodCode: string;
+  centroidLat: number;
+  centroidLng: number;
+  currMedianRatio: number;
+  prevMedianRatio: number;
+  delta: number;
+  currCod: number;
+  currN: number;
+  prevN: number;
+}
 
 export interface MarketTrendPoint {
   neighborhoodCode: string;

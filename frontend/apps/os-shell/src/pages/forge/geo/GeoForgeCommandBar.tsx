@@ -35,6 +35,7 @@ const LAYER_TOGGLES: { layer: MapLayer; label: string }[] = [
   { layer: 'parcel-polygons', label: 'Parcels' },
   { layer: 'yoy-change', label: 'YoY ΔAV' },
   { layer: 'market-trend', label: 'Mkt Trend' },
+  { layer: 'ratio-drift', label: 'Drift' },
   { layer: 'kde', label: 'KDE' },
   { layer: 'gwr', label: 'GWR' },
   { layer: 'ai-cluster', label: 'Clusters' },

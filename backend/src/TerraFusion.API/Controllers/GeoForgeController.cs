@@ -1479,6 +1479,103 @@ public class GeoForgeController : ControllerBase
         return Ok(result);
     }
 
+    // ── Ratio drift — YoY change in neighborhood median assessment ratio ──────
+    [HttpGet("neighborhoods/ratio-drift")]
+    public async Task<IActionResult> GetNeighborhoodRatioDrift(
+        [FromQuery] int taxYear = 0,
+        CancellationToken ct = default)
+    {
+        if (taxYear < 2001) taxYear = DateTime.UtcNow.Year;
+        var prevYear = taxYear - 1;
+
+        var currStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var currEnd   = new DateTime(taxYear,     1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var prevStart = new DateTime(prevYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var prevEnd   = new DateTime(prevYear,     1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var currSales = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.CountyId == BentonCountyId
+                     && (s.SalesYear == taxYear || (s.SaleDate >= currStart && s.SaleDate < currEnd))
+                     && (s.QualificationDecision == "qualified"
+                         || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"))
+                     && s.Neighborhood != null)
+            .Select(s => new { s.ParcelId, s.Neighborhood, SalePrice = s.AdjustedSalePrice ?? s.SalePrice })
+            .Where(s => s.ParcelId != null && s.SalePrice > 10_000m)
+            .ToListAsync(ct);
+
+        var prevSales = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.CountyId == BentonCountyId
+                     && (s.SalesYear == prevYear || (s.SaleDate >= prevStart && s.SaleDate < prevEnd))
+                     && (s.QualificationDecision == "qualified"
+                         || (s.QualificationDecision == null && s.QualificationRecommendation == "qualified"))
+                     && s.Neighborhood != null)
+            .Select(s => new { s.ParcelId, s.Neighborhood, SalePrice = s.AdjustedSalePrice ?? s.SalePrice })
+            .Where(s => s.ParcelId != null && s.SalePrice > 10_000m)
+            .ToListAsync(ct);
+
+        if (!currSales.Any()) return Ok(Array.Empty<object>());
+
+        var allParcelIds = currSales.Concat(prevSales)
+            .Where(s => s.ParcelId != null)
+            .Select(s => s.ParcelId!)
+            .Distinct()
+            .ToHashSet();
+
+        var currAvMap = await GetAssessedValueMapAsync(allParcelIds, taxYear,  ct);
+        var prevAvMap = await GetAssessedValueMapAsync(allParcelIds, prevYear, ct);
+        var geoMap    = await GetGeoMapAsync(allParcelIds, ct);
+
+        var currRatiosByHood = currSales
+            .Where(s => s.ParcelId != null && currAvMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+            .GroupBy(s => s.Neighborhood!)
+            .ToDictionary(g => g.Key, g => g.Select(s => currAvMap[s.ParcelId!] / s.SalePrice).ToList());
+
+        var prevRatiosByHood = prevSales
+            .Where(s => s.ParcelId != null && prevAvMap.ContainsKey(s.ParcelId!) && s.SalePrice > 0)
+            .GroupBy(s => s.Neighborhood!)
+            .ToDictionary(g => g.Key, g => g.Select(s => prevAvMap[s.ParcelId!] / s.SalePrice).ToList());
+
+        var result = currRatiosByHood
+            .Where(kv => prevRatiosByHood.ContainsKey(kv.Key)
+                      && kv.Value.Count >= 3
+                      && prevRatiosByHood[kv.Key].Count >= 3)
+            .Select(kv =>
+            {
+                var currRatios = kv.Value;
+                var prevRatios = prevRatiosByHood[kv.Key];
+                var currMedian = TrendStats.Median(currRatios);
+                var prevMedian = TrendStats.Median(prevRatios);
+                var delta      = currMedian - prevMedian;
+                var currCod    = TrendStats.ComputeCod(currRatios);
+
+                var inGeo = currSales
+                    .Where(s => s.Neighborhood == kv.Key && s.ParcelId != null && geoMap.ContainsKey(s.ParcelId!))
+                    .ToList();
+                var centLat = inGeo.Count > 0 ? inGeo.Average(s => geoMap[s.ParcelId!].lat) : 0.0;
+                var centLng = inGeo.Count > 0 ? inGeo.Average(s => geoMap[s.ParcelId!].lng) : 0.0;
+
+                return new
+                {
+                    neighborhoodCode = kv.Key,
+                    centroidLat      = centLat,
+                    centroidLng      = centLng,
+                    currMedianRatio  = Math.Round((double)currMedian, 4),
+                    prevMedianRatio  = Math.Round((double)prevMedian, 4),
+                    delta            = Math.Round((double)delta,      4),
+                    currCod          = Math.Round((double)currCod,    2),
+                    currN            = currRatios.Count,
+                    prevN            = prevRatios.Count,
+                };
+            })
+            .Where(r => r.centroidLat != 0)
+            .OrderByDescending(r => Math.Abs(r.delta))
+            .ToList();
+
+        return Ok(result);
+    }
+
     // ── Parcel points — all parcels in a neighborhood with lat/lng + AV ─────
 
     [HttpGet("parcels/points")]

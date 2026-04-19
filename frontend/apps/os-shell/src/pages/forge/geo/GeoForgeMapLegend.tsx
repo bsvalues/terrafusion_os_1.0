@@ -24,6 +24,14 @@ const MKT_LEGEND = [
   { label: '< -5%', color: '#f87171' },
 ];
 
+const DRIFT_LEGEND = [
+  { label: '> +0.04 (rising)', color: '#00FFFF', sub: 'Assessments catching up' },
+  { label: '+0.01–+0.04', color: '#38bdf8', sub: '' },
+  { label: '±0.01 (stable)', color: '#64748b', sub: '' },
+  { label: '-0.04–-0.01', color: '#fb923c', sub: '' },
+  { label: '< -0.04 (falling)', color: '#f87171', sub: 'Market outpacing' },
+];
+
 function Swatch({ color, shape = 'square' }: { color: string; shape?: 'square' | 'circle' }) {
   return (
     <span
@@ -39,8 +47,9 @@ export function GeoForgeMapLegend() {
   const showRatio = activeLayers.has('choropleth') || activeLayers.has('sale-scatter') || activeLayers.has('neighborhood-poly');
   const showYoy   = activeLayers.has('yoy-change');
   const showMkt   = activeLayers.has('market-trend');
+  const showDrift = activeLayers.has('ratio-drift');
 
-  if (!showRatio && !showYoy && !showMkt) return null;
+  if (!showRatio && !showYoy && !showMkt && !showDrift) return null;
 
   return (
     <div className="absolute bottom-8 right-[80px] z-20 flex flex-col gap-1.5">
@@ -76,6 +85,21 @@ export function GeoForgeMapLegend() {
             <div key={label} className="flex items-center gap-1.5 mb-0.5">
               <Swatch color={color} shape="circle" />
               <span className="text-[9px] text-slate-300 font-mono">{label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showDrift && (
+        <div className="bg-slate-950/90 backdrop-blur border border-slate-800 rounded-md px-2.5 py-2 min-w-[160px]">
+          <p className="text-[8px] text-slate-500 uppercase tracking-wider mb-1.5">Ratio Drift (YoY Δ)</p>
+          {DRIFT_LEGEND.map(({ label, color, sub }) => (
+            <div key={label} className="flex items-center gap-1.5 mb-0.5">
+              <Swatch color={color} shape="circle" />
+              <div>
+                <span className="text-[9px] text-slate-300 font-mono">{label}</span>
+                {sub && <span className="ml-1 text-[8px] text-slate-600">{sub}</span>}
+              </div>
             </div>
           ))}
         </div>

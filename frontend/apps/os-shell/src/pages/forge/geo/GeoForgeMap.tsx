@@ -65,6 +65,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     map.on('load', () => {
       addNeighborhoodPolyLayer(map);
       addYoyChangeLayer(map);
+      addRatioDriftLayer(map);
       addNeighborhoodLayer(map);
       addCompsHighlightLayer(map);
       addSimulationOverlayLayer(map);
@@ -181,6 +182,27 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
           .addTo(map);
       });
       map.on('mouseleave', 'market-trend-circles', () => {
+        map.getCanvas().style.cursor = '';
+        hoverPopup.remove();
+      });
+
+      // Ratio drift hover tooltip
+      map.on('mouseenter', 'ratio-drift-circles', (e) => {
+        map.getCanvas().style.cursor = 'help';
+        const props = e.features?.[0]?.properties;
+        if (!props || !e.lngLat) return;
+        const delta = Number(props.delta);
+        const curr = Number(props.currMedianRatio);
+        const prev = Number(props.prevMedianRatio);
+        const dColor = delta > 0.04 ? '#00FFFF' : delta > 0.01 ? '#38bdf8'
+          : delta < -0.04 ? '#f87171' : delta < -0.01 ? '#fb923c' : '#94a3b8';
+        const dir = delta > 0.01 ? 'rising ↑' : delta < -0.01 ? 'falling ↓' : 'stable →';
+        hoverPopup
+          .setLngLat(e.lngLat)
+          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:170px"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px">${props.neighborhoodCode}</div><div>Drift <span style="color:${dColor};font-weight:700;font-family:monospace">${delta >= 0 ? '+' : ''}${delta.toFixed(4)}</span> <span style="color:${dColor};font-size:9px">${dir}</span></div><div style="color:#94a3b8;font-size:9px">${prev.toFixed(3)} → ${curr.toFixed(3)} ratio</div><div style="color:#64748b;font-size:9px">n=${props.currN} / ${props.prevN} · COD ${Number(props.currCod).toFixed(1)}</div></div>`)
+          .addTo(map);
+      });
+      map.on('mouseleave', 'ratio-drift-circles', () => {
         map.getCanvas().style.cursor = '';
         hoverPopup.remove();
       });
@@ -421,6 +443,44 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       .catch(() => { /* unavailable */ });
   }, [filter.taxYear, activeLayers]);
 
+  // Ratio drift — YoY median ratio change per neighborhood
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded()) return;
+    const src = map.getSource('ratio-drift') as mapboxgl.GeoJSONSource | undefined;
+    if (!src) return;
+
+    if (!activeLayers.has('ratio-drift')) {
+      src.setData({ type: 'FeatureCollection', features: [] });
+      return;
+    }
+
+    fetch(`/api/geoforge/neighborhoods/ratio-drift?taxYear=${filter.taxYear}`)
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then((rows: import('./types/geoforge.types').RatioDriftPoint[]) => {
+        src.setData({
+          type: 'FeatureCollection',
+          features: rows
+            .filter(r => r.centroidLat !== 0)
+            .map(r => ({
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [r.centroidLng, r.centroidLat] },
+              properties: {
+                neighborhoodCode: r.neighborhoodCode,
+                delta: r.delta,
+                currMedianRatio: r.currMedianRatio,
+                prevMedianRatio: r.prevMedianRatio,
+                currCod: r.currCod,
+                currN: r.currN,
+                prevN: r.prevN,
+                deltaLabel: (r.delta >= 0 ? '+' : '') + r.delta.toFixed(3),
+              },
+            })),
+        });
+      })
+      .catch(() => { /* unavailable */ });
+  }, [filter.taxYear, activeLayers]);
+
   // Parcel points — loads when layer toggled on + a neighborhood is selected
   useEffect(() => {
     const map = mapRef.current;
@@ -527,6 +587,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       'sale-scatter': ['sale-cluster-bubble', 'sale-cluster-count', 'sale-circles', 'sale-outlier-ring'],
       'yoy-change': ['yoy-change-circles', 'yoy-change-labels'],
       'market-trend': ['market-trend-circles', 'market-trend-labels'],
+      'ratio-drift': ['ratio-drift-circles', 'ratio-drift-labels'],
       'parcel-polygons': ['parcel-pts-dots'],
       kde: ['kde-heat'],
       'ai-cluster': ['ai-cluster-circles'],
@@ -1010,6 +1071,54 @@ function addParcelPointsLayer(map: mapboxgl.Map) {
       'circle-stroke-width': 0.5,
       'circle-stroke-color': '#0f172a',
       'circle-stroke-opacity': 0.6,
+    },
+  });
+}
+
+function addRatioDriftLayer(map: mapboxgl.Map) {
+  map.addSource('ratio-drift', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  });
+
+  map.addLayer({
+    id: 'ratio-drift-circles',
+    type: 'circle',
+    source: 'ratio-drift',
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 12, 13, 24],
+      'circle-color': [
+        'step', ['get', 'delta'],
+        '#f87171',    // < -0.04: red — market outpacing, under-assessment risk
+        -0.04, '#fb923c',
+        -0.01, '#64748b',
+        0.01, '#38bdf8',
+        0.04, '#00FFFF', // > +0.04: cyan — assessments catching up
+      ],
+      'circle-opacity': 0.83,
+      'circle-stroke-width': 1.5,
+      'circle-stroke-color': '#0f172a',
+      'circle-stroke-opacity': 0.5,
+    },
+  });
+
+  map.addLayer({
+    id: 'ratio-drift-labels',
+    type: 'symbol',
+    source: 'ratio-drift',
+    layout: {
+      visibility: 'none',
+      'text-field': ['get', 'deltaLabel'],
+      'text-size': 10,
+      'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
+      'text-anchor': 'center',
+      'text-allow-overlap': false,
+    },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': '#0f172a',
+      'text-halo-width': 1.5,
     },
   });
 }
