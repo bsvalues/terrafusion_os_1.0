@@ -33,6 +33,7 @@ import { CompAdjGridPanel } from './panels/CompAdjGridPanel';
 import { AssessmentRollPanel } from './panels/AssessmentRollPanel';
 import { MoranPanel } from './panels/MoranPanel';
 import { WeightedMeanPanel } from './panels/WeightedMeanPanel';
+import { MonthlyRatioPanel } from './panels/MonthlyRatioPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
 import { GeoForgeStatusTicker } from './GeoForgeStatusTicker';
@@ -68,6 +69,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   'roll-summary': 'Assessment Roll Summary · County-Wide Equity Executive Report',
   'moran': "Moran's I Decomposition · LISA Scatterplot & Spatial Outliers",
   'weighted-mean': 'Weighted Mean Analysis · AV-Weighted vs Median Ratio Vertical Equity',
+  'monthly-ratio': 'Monthly Ratio Timeline · Market Trend & Time Adjustment Signal',
 };
 
 export function GeoForgePage() {
@@ -121,6 +123,7 @@ export function GeoForgePage() {
         case 'x': openDrawer('roll-summary'); break;
         case 'n': openDrawer('moran'); break;
         case 'h': openDrawer('weighted-mean'); break;
+        case 'z': openDrawer('monthly-ratio'); break;
       }
     }
     window.addEventListener('keydown', onKey);
@@ -247,6 +250,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'roll-summary' && <AssessmentRollPanel />}
               {rightDrawerPanel === 'moran' && <MoranPanel />}
               {rightDrawerPanel === 'weighted-mean' && <WeightedMeanPanel />}
+              {rightDrawerPanel === 'monthly-ratio' && <MonthlyRatioPanel />}
             </div>
           </>
         )}

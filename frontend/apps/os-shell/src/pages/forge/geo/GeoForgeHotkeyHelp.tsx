@@ -22,6 +22,7 @@ const SHORTCUTS = [
   { key: 'x', description: 'Assessment roll summary · county-wide AV, MV estimate, ratio bands' },
   { key: 'n', description: "Moran's I decomposition · LISA scatterplot + spatial outlier ranking" },
   { key: 'h', description: 'Weighted mean analysis · AV-weighted mean vs median, vertical equity' },
+  { key: 'z', description: 'Monthly ratio timeline · month-by-month median trend + time adj signal' },
   { key: '?', description: 'Toggle this panel' },
 ];
 
