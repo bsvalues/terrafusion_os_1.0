@@ -10,12 +10,16 @@ using Pgvector;
 //   TerraFusionDbContext.OnModelCreatingExtensions = GptAiEntityConfigurations.Apply;
 //
 // The hook is called at the end of OnModelCreating, before ConfigureEncryption.
+//
+// NOTE: SaleAuditDiagnosis and SalesAuditAdjustmentProposal are TerraFusion.Core entities,
+// not TerraFusion.AI entities.  Their configurations live in
+// TerraFusion.Data.Configurations.SalesAuditEntityConfigurations and are applied
+// directly in TerraFusionDbContext.OnModelCreating — no hook needed.
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TerraFusion.AI.Entities;
-using TerraFusion.Core.Entities;
 
 namespace TerraFusion.AI.Data;
 
@@ -40,8 +44,9 @@ public static class GptAiEntityConfigurations
         mb.ApplyConfiguration(new GPTUsageMetricConfiguration());
         mb.ApplyConfiguration(new GPTAuditConfiguration());
         mb.ApplyConfiguration(new GPTMarketplaceInstallConfiguration());
-        mb.ApplyConfiguration(new SaleAuditDiagnosisConfiguration());
-        mb.ApplyConfiguration(new SalesAuditAdjustmentProposalConfiguration());
+        // SaleAuditDiagnosis and SalesAuditAdjustmentProposal are TerraFusion.Core entities.
+        // Their configurations are registered directly in TerraFusionDbContext.OnModelCreating
+        // via SalesAuditEntityConfigurations — no hook needed.
     }
 
     private sealed class GPTMessageConfiguration : IEntityTypeConfiguration<GPTMessage>
@@ -294,43 +299,4 @@ public static class GptAiEntityConfigurations
         }
     }
 
-    private sealed class SaleAuditDiagnosisConfiguration
-        : IEntityTypeConfiguration<SaleAuditDiagnosis>
-    {
-        public void Configure(EntityTypeBuilder<SaleAuditDiagnosis> builder)
-        {
-            builder.HasKey(e => e.Id);
-            builder.ToTable("SaleAuditDiagnoses");
-            builder.Property(e => e.StratumKey).IsRequired().HasMaxLength(200);
-            builder.Property(e => e.PrimaryDiagnosis).IsRequired().HasMaxLength(50);
-            builder.Property(e => e.Confidence).HasColumnType("decimal(3,2)");
-            builder.Property(e => e.FindingsJson).HasColumnType("text");
-            builder.Property(e => e.SimulationResultJson).HasColumnType("text");
-            builder.Property(e => e.RecommendedAction).HasMaxLength(50);
-            builder.Property(e => e.RecommendedSaleIdsJson).HasColumnType("text");
-            builder.Property(e => e.RecommendedFactor).HasColumnType("decimal(6,4)");
-            builder.HasIndex(e => new { e.CountyId, e.TaxYear, e.StratumKey })
-                   .HasDatabaseName("IX_SaleAuditDiagnoses_CountyYearStrat");
-            builder.HasIndex(e => e.IsStale).HasDatabaseName("IX_SaleAuditDiagnoses_IsStale");
-        }
-    }
-
-    private sealed class SalesAuditAdjustmentProposalConfiguration
-        : IEntityTypeConfiguration<SalesAuditAdjustmentProposal>
-    {
-        public void Configure(EntityTypeBuilder<SalesAuditAdjustmentProposal> builder)
-        {
-            builder.HasKey(e => e.Id);
-            builder.ToTable("SalesAuditAdjustmentProposals");
-            builder.Property(e => e.StratumKey).IsRequired().HasMaxLength(200);
-            builder.Property(e => e.ProposedFactor).HasColumnType("decimal(6,4)");
-            builder.Property(e => e.ProjectedCod).HasColumnType("decimal(8,4)");
-            builder.Property(e => e.ProjectedMedianRatio).HasColumnType("decimal(6,4)");
-            builder.Property(e => e.ProjectedPrd).HasColumnType("decimal(6,4)");
-            builder.Property(e => e.Status).IsRequired().HasMaxLength(20);
-            builder.Property(e => e.CreatedBy).IsRequired().HasMaxLength(450);
-            builder.HasIndex(e => new { e.CountyId, e.TaxYear, e.Status })
-                   .HasDatabaseName("IX_SalesAuditAdjProposals_CountyYearStatus");
-        }
-    }
 }

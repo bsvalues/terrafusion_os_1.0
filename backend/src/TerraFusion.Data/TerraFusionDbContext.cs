@@ -209,6 +209,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   // Sync engine is the only writer; populated by ArcGisSyncService (IHostedService).
   public DbSet<GisParcelGeometry> GisParcelGeometries { get; set; } = null!;
 
+  // Sales Audit — AI-driven ratio study diagnostics and adjustment proposals (R2 Wave 40)
+  // These are TerraFusion.Core entities: no circular dep with TerraFusion.Data.
+  // Configurations are registered directly in OnModelCreating via SalesAuditEntityConfigurations.
+  public DbSet<SaleAuditDiagnosis> SaleAuditDiagnoses { get; set; } = null!;
+  public DbSet<SalesAuditAdjustmentProposal> SalesAuditAdjustmentProposals { get; set; } = null!;
+
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
     if (!optionsBuilder.IsConfigured)
@@ -763,6 +769,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // GPT Core Entities (Wave 4 — entities are in TerraFusion.Core, no circular dep)
     modelBuilder.ApplyConfiguration(new GptCoreEntityConfigurations.GPTConfigurationConfiguration());
     modelBuilder.ApplyConfiguration(new GptCoreEntityConfigurations.GPTConversationConfiguration());
+
+    // Sales Audit Entities (R2 Wave 40 — TerraFusion.Core entities, no circular dep)
+    // Registered here so EF design-time migrations pick them up without Program.cs hook.
+    modelBuilder.ApplyConfiguration(new SalesAuditEntityConfigurations.SaleAuditDiagnosisConfiguration());
+    modelBuilder.ApplyConfiguration(new SalesAuditEntityConfigurations.SalesAuditAdjustmentProposalConfiguration());
 
     // GPT/RAG AI Entities (Wave 4 — entities in TerraFusion.AI, registered via hook)
     // Wire in Program.cs: TerraFusionDbContext.OnModelCreatingExtensions = GptAiEntityConfigurations.Apply;
