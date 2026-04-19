@@ -70,7 +70,7 @@ function RatioSparkline({ points, width = 44, height = 16 }: { points: (number |
 }
 
 export function NeighborhoodRankingPanel() {
-  const { neighborhoodStats, selectNeighborhood, filter } = useGeoForgeStore();
+  const { neighborhoodStats, selectNeighborhood, filter, loadingStats } = useGeoForgeStore();
   const [sortKey, setSortKey] = useState<SortKey>('deviation');
   const [minSales, setMinSales] = useState(5);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -161,8 +161,8 @@ export function NeighborhoodRankingPanel() {
 
   if (neighborhoodStats.length === 0) {
     return (
-      <div className="flex items-center justify-center h-40 text-slate-500 text-sm">
-        No neighborhood data loaded.
+      <div className="flex items-center justify-center h-40 text-slate-500 text-sm gap-2">
+        {loadingStats ? <><span className="animate-spin inline-block text-terra-cyan">⟳</span> Loading neighborhoods…</> : 'No neighborhood data loaded.'}
       </div>
     );
   }

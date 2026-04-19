@@ -35,7 +35,7 @@ function GaugeBar({ label, value, max, color }: { label: string; value: number; 
 }
 
 export function CountyHealthPanel() {
-  const { neighborhoodStats, selectNeighborhood, openDrawer, filter } = useGeoForgeStore();
+  const { neighborhoodStats, selectNeighborhood, openDrawer, filter, loadingStats } = useGeoForgeStore();
 
   const { data: trendData } = useQuery<TrendYear[]>({
     queryKey: ['geoforge-county-trend', filter.taxYear],
@@ -52,19 +52,6 @@ export function CountyHealthPanel() {
   }, [trendData]);
 
   const moransI = useMemo(() => computeMoransI(neighborhoodStats), [neighborhoodStats]);
-
-  const eqi = useMemo(() => {
-    if (!county) return null;
-    return computeEquityIndex({
-      cwMed: county.medianRatio,
-      cwCod: county.cod,
-      cwPrd: county.prd,
-      passRate: county.passRate / 100,
-      moransI: moransI?.I ?? 0,
-      totalSales: county.totalSales,
-      totalNbhds: county.total,
-    });
-  }, [county, moransI]);
 
   const county = useMemo(() => {
     if (neighborhoodStats.length === 0) return null;
@@ -109,10 +96,27 @@ export function CountyHealthPanel() {
     return { medianRatio, cod, prd, prb, passRate, compliant: compliant.length, total: withSales.length, totalSales, worst5, codDistrib, ratioDistrib };
   }, [neighborhoodStats]);
 
+  const eqi = useMemo(() => {
+    if (!county) return null;
+    return computeEquityIndex({
+      cwMed: county.medianRatio,
+      cwCod: county.cod,
+      cwPrd: county.prd,
+      passRate: county.passRate / 100,
+      moransI: moransI?.I ?? 0,
+      totalSales: county.totalSales,
+      totalNbhds: county.total,
+    });
+  }, [county, moransI]);
+
   if (!county) {
     return (
-      <div className="flex items-center justify-center h-40 text-slate-500 text-sm">
-        No data loaded.
+      <div className="flex items-center justify-center h-40 text-slate-500 text-sm gap-2">
+        {loadingStats ? (
+          <><span className="animate-spin inline-block text-terra-cyan">⟳</span> Loading county stats…</>
+        ) : (
+          'No data loaded.'
+        )}
       </div>
     );
   }

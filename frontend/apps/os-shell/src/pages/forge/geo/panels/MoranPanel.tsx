@@ -127,7 +127,7 @@ function OutlierRow({ p }: { p: MoranPoint }) {
 const FOCUS_QUADRANTS: LisaQuadrant[] = ['HL', 'LH', 'HH', 'LL'];
 
 export function MoranPanel() {
-  const { neighborhoodStats, filter } = useGeoForgeStore();
+  const { neighborhoodStats, filter, loadingStats } = useGeoForgeStore();
   const [maxDist, setMaxDist] = useState<5 | 8 | 12>(5);
   const [focusQ, setFocusQ] = useState<LisaQuadrant | 'all'>('all');
 
@@ -152,7 +152,11 @@ export function MoranPanel() {
   }, [points, focusQ]);
 
   if (neighborhoodStats.length === 0) {
-    return <div className="p-4 text-slate-600 text-xs text-center">Load neighborhood stats to compute spatial decomposition.</div>;
+    return (
+      <div className="p-4 text-slate-600 text-xs text-center flex items-center justify-center gap-2">
+        {loadingStats ? <><span className="animate-spin inline-block text-terra-cyan">⟳</span> Loading…</> : 'Load neighborhood stats to compute spatial decomposition.'}
+      </div>
+    );
   }
 
   if (points.length < 5) {

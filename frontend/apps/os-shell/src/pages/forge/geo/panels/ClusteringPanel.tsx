@@ -145,7 +145,7 @@ function ClusterCard({ cluster, rank }: { cluster: ClusterProfile; rank: number 
 }
 
 export function ClusteringPanel() {
-  const { neighborhoodStats } = useGeoForgeStore();
+  const { neighborhoodStats, loadingStats } = useGeoForgeStore();
 
   const result = useMemo(
     () => kMeansCluster(neighborhoodStats.filter((ns) => ns.saleCount >= 3), 3, 50),
@@ -154,8 +154,8 @@ export function ClusteringPanel() {
 
   if (neighborhoodStats.length === 0) {
     return (
-      <div className="p-4 text-slate-600 text-xs text-center">
-        Load neighborhood stats to run clustering.
+      <div className="p-4 text-slate-600 text-xs text-center flex items-center justify-center gap-2">
+        {loadingStats ? <><span className="animate-spin inline-block text-terra-cyan">⟳</span> Loading…</> : 'Load neighborhood stats to run clustering.'}
       </div>
     );
   }

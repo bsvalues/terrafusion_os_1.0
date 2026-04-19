@@ -44,7 +44,7 @@ interface ScoredNeighborhood {
 }
 
 export function RemedyQueuePanel() {
-  const { neighborhoodStats, selectNeighborhood, openDrawer, filter } = useGeoForgeStore();
+  const { neighborhoodStats, selectNeighborhood, openDrawer, filter, loadingStats } = useGeoForgeStore();
 
   const scored: ScoredNeighborhood[] = useMemo(() => {
     return neighborhoodStats
@@ -70,8 +70,10 @@ export function RemedyQueuePanel() {
 
   if (neighborhoodStats.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-xs text-muted-foreground">No neighborhood data loaded.</p>
+      <div className="flex items-center justify-center h-full gap-2">
+        {loadingStats
+          ? <><span className="animate-spin inline-block text-terra-cyan">⟳</span><p className="text-xs text-muted-foreground">Loading…</p></>
+          : <p className="text-xs text-muted-foreground">No neighborhood data loaded.</p>}
       </div>
     );
   }
