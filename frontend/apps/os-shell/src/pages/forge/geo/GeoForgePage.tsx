@@ -17,6 +17,7 @@ import { StratificationPanel } from './panels/StratificationPanel';
 import { CompsPanel } from './panels/CompsPanel';
 import { NeighborhoodRankingPanel } from './panels/NeighborhoodRankingPanel';
 import { CountyHealthPanel } from './panels/CountyHealthPanel';
+import { RemedyQueuePanel } from './panels/RemedyQueuePanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
 import { GeoForgeStatusTicker } from './GeoForgeStatusTicker';
@@ -36,6 +37,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   comps: 'Auto-Comparables',
   ranking: 'Equity Ranking',
   'county-health': 'County Health Dashboard',
+  'remedy-queue': 'Certification Remedy Queue',
 };
 
 export function GeoForgePage() {
@@ -73,6 +75,7 @@ export function GeoForgePage() {
         case 'o': openDrawer('outlier-review'); break;
         case 'w': openDrawer('workbench'); break;
         case 'y': openDrawer('certification'); break;
+        case 'q': openDrawer('remedy-queue'); break;
       }
     }
     window.addEventListener('keydown', onKey);
@@ -183,6 +186,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'comps' && <CompsPanel />}
               {rightDrawerPanel === 'ranking' && <NeighborhoodRankingPanel />}
               {rightDrawerPanel === 'county-health' && <CountyHealthPanel />}
+              {rightDrawerPanel === 'remedy-queue' && <RemedyQueuePanel />}
             </div>
           </>
         )}

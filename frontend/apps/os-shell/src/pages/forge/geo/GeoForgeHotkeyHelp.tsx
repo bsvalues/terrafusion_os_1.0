@@ -6,6 +6,7 @@ const SHORTCUTS = [
   { key: 'o', description: 'Outlier review queue' },
   { key: 'w', description: 'Adjustment workbench' },
   { key: 'y', description: 'DOR certification summary (WAC 458-53A)' },
+  { key: 'q', description: 'Certification remedy queue — prioritized fix list' },
   { key: '?', description: 'Toggle this panel' },
 ];
 

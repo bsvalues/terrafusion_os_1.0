@@ -357,6 +357,19 @@ export function GeoForgeCommandBar() {
         </Button>
         <Button
           size="sm"
+          variant={rightDrawerPanel === 'remedy-queue' ? 'default' : 'outline'}
+          className={`h-7 text-[11px] px-2 ${
+            rightDrawerPanel === 'remedy-queue'
+              ? 'bg-red-800/40 text-red-300 border-red-700/60 hover:bg-red-800/60'
+              : 'text-slate-400 border-slate-700 hover:text-white'
+          }`}
+          onClick={() => openDrawer('remedy-queue')}
+          title="Certification remedy queue — prioritized fix list (q)"
+        >
+          Remedy
+        </Button>
+        <Button
+          size="sm"
           variant={rightDrawerPanel === 'county-health' ? 'default' : 'outline'}
           className={`h-7 text-[11px] px-2 ${
             rightDrawerPanel === 'county-health'

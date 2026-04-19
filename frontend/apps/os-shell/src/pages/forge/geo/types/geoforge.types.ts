@@ -151,7 +151,8 @@ export type RightDrawerPanel =
   | 'stratification'
   | 'comps'
   | 'ranking'
-  | 'county-health';
+  | 'county-health'
+  | 'remedy-queue';
 
 export interface CompSale {
   parcelId: string;
