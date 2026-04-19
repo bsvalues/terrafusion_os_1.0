@@ -19,6 +19,7 @@ import { NeighborhoodRankingPanel } from './panels/NeighborhoodRankingPanel';
 import { CountyHealthPanel } from './panels/CountyHealthPanel';
 import { RemedyQueuePanel } from './panels/RemedyQueuePanel';
 import { LevyParityPanel } from './panels/LevyParityPanel';
+import { DorMemoPanel } from './panels/DorMemoPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
 import { GeoForgeStatusTicker } from './GeoForgeStatusTicker';
@@ -40,6 +41,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   'county-health': 'County Health Dashboard',
   'remedy-queue': 'Certification Remedy Queue',
   'levy-parity': 'Levy Parity · Tax Burden Distribution',
+  'dor-memo': 'DOR Narrative Memo · WAC 458-53A Draft',
 };
 
 export function GeoForgePage() {
@@ -79,6 +81,7 @@ export function GeoForgePage() {
         case 'y': openDrawer('certification'); break;
         case 'q': openDrawer('remedy-queue'); break;
         case 'l': openDrawer('levy-parity'); break;
+        case 'm': openDrawer('dor-memo'); break;
       }
     }
     window.addEventListener('keydown', onKey);
@@ -191,6 +194,7 @@ export function GeoForgePage() {
               {rightDrawerPanel === 'county-health' && <CountyHealthPanel />}
               {rightDrawerPanel === 'remedy-queue' && <RemedyQueuePanel />}
               {rightDrawerPanel === 'levy-parity' && <LevyParityPanel />}
+              {rightDrawerPanel === 'dor-memo' && <DorMemoPanel />}
             </div>
           </>
         )}

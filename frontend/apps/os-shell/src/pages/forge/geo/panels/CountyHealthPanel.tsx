@@ -381,8 +381,8 @@ export function CountyHealthPanel() {
         </div>
       </div>
 
-      {/* Levy Parity shortcut */}
-      <div className="px-4 pb-4 pt-2 border-t border-slate-800/50 flex-shrink-0">
+      {/* Quick-launch row */}
+      <div className="px-4 pb-4 pt-2 border-t border-slate-800/50 flex-shrink-0 space-y-1.5">
         <button
           className="w-full flex items-center justify-between px-3 py-2 rounded bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 transition-colors text-left group"
           onClick={() => openDrawer('levy-parity')}
@@ -393,6 +393,20 @@ export function CountyHealthPanel() {
             </div>
             <div className="text-[9px] text-slate-500">
               Tax burden distribution by neighborhood · WAC 458-53A
+            </div>
+          </div>
+          <span className="text-slate-500 group-hover:text-terra-cyan text-lg">→</span>
+        </button>
+        <button
+          className="w-full flex items-center justify-between px-3 py-2 rounded bg-slate-800/50 hover:bg-slate-700/50 border border-terra-cyan/20 transition-colors text-left group"
+          onClick={() => openDrawer('dor-memo')}
+        >
+          <div>
+            <div className="text-[11px] font-semibold text-terra-cyan/80 group-hover:text-terra-cyan">
+              Generate DOR Narrative Memo
+            </div>
+            <div className="text-[9px] text-slate-500">
+              Draft WAC 458-53A certification narrative · one click
             </div>
           </div>
           <span className="text-slate-500 group-hover:text-terra-cyan text-lg">→</span>
