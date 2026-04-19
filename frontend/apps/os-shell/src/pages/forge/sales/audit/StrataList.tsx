@@ -53,8 +53,9 @@ interface StrataListProps {
 }
 
 export function StrataList({ strata, selectedKey, onSelect, loading }: StrataListProps) {
-  const failing = strata.filter((s) => s.primaryDiagnosis && s.primaryDiagnosis !== 'PASSING');
-  const passing = strata.filter((s) => !s.primaryDiagnosis || s.primaryDiagnosis === 'PASSING');
+  const failing      = strata.filter((s) => s.primaryDiagnosis && s.primaryDiagnosis !== 'PASSING');
+  const passing      = strata.filter((s) => s.primaryDiagnosis === 'PASSING');
+  const undiagnosed  = strata.filter((s) => s.primaryDiagnosis === null);
 
   if (loading) {
     return (
@@ -64,8 +65,16 @@ export function StrataList({ strata, selectedKey, onSelect, loading }: StrataLis
     );
   }
 
+  if (strata.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-32 text-slate-700 text-xs text-center px-4">
+        No sales data found for this year.
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col h-full overflow-y-auto">
+    <div className="flex flex-col overflow-y-auto">
       {failing.length > 0 && (
         <>
           <div className="px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase text-red-500 bg-slate-950 border-b border-slate-800 sticky top-0">
@@ -76,10 +85,18 @@ export function StrataList({ strata, selectedKey, onSelect, loading }: StrataLis
       )}
       {passing.length > 0 && (
         <>
-          <div className="px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase text-slate-500 bg-slate-950 border-b border-slate-800 sticky top-0">
+          <div className="px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase text-emerald-700 bg-slate-950 border-b border-slate-800 sticky top-0">
             Passing ({passing.length})
           </div>
           {passing.map(s => <StrataRow key={s.stratumKey} s={s} selectedKey={selectedKey} onSelect={onSelect} />)}
+        </>
+      )}
+      {undiagnosed.length > 0 && (
+        <>
+          <div className="px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase text-slate-600 bg-slate-950 border-b border-slate-800 sticky top-0">
+            Undiagnosed ({undiagnosed.length})
+          </div>
+          {undiagnosed.map(s => <StrataRow key={s.stratumKey} s={s} selectedKey={selectedKey} onSelect={onSelect} />)}
         </>
       )}
     </div>

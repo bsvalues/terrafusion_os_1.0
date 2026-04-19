@@ -11,11 +11,16 @@ import type { StratumSale } from '../../../../services/forge/salesAuditApi';
 
 interface Props { taxYear: number; }
 
-export function AuditCommandCenter({ taxYear }: Props) {
+// Range of study years available in the year picker
+const STUDY_YEARS = [2023, 2024, 2025, 2026];
+
+export function AuditCommandCenter({ taxYear: propTaxYear }: Props) {
   const qc = useQueryClient();
   const { selectedStratumKey, setSelectedStratumKey } = useSalesForgeStore();
   const [localSales, setLocalSales] = useState<Record<string, string>>({}); // id → decision override
   const [filterOverride, setFilterOverride] = useState<'ai-flagged' | undefined>(undefined);
+  // Local year override so the assessor can explore any study year without touching the global store
+  const [taxYear, setTaxYear] = useState(propTaxYear);
 
   const { data: strata = [], isLoading: strataLoading } = useQuery({
     queryKey: ['sales-audit-strata', taxYear],
@@ -35,16 +40,17 @@ export function AuditCommandCenter({ taxYear }: Props) {
     queryKey: ['sales-audit-diagnosis', selectedStratumKey, taxYear],
     queryFn: () =>
       selectedStratumKey
-        ? salesAuditApi.getDiagnosis(selectedStratumKey, taxYear)
+        ? salesAuditApi.getDiagnosis(selectedStratumKey, taxYear).catch(() => null)
         : Promise.resolve(null),
     enabled: !!selectedStratumKey,
   });
 
   const { data: runningStats } = useQuery({
     queryKey: ['sales-forge-running-stats', taxYear],
-    queryFn: () => fetch(`/api/terraforge/sale-qualification/running-stats?taxYear=${taxYear}`)
-      .then(r => r.ok ? r.json() : null)
-      .catch(() => null),
+    queryFn: () =>
+      fetch(`/api/terraforge/sale-qualification/running-stats?taxYear=${taxYear}`)
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null),
     staleTime: 60_000,
   });
 
@@ -56,6 +62,25 @@ export function AuditCommandCenter({ taxYear }: Props) {
     },
   });
 
+  // County-wide AI diagnosis trigger — runs all strata in one shot
+  const [diagRunning, setDiagRunning] = useState(false);
+  const [diagMessage, setDiagMessage] = useState<string | null>(null);
+
+  async function handleRunDiagnosis() {
+    setDiagRunning(true);
+    setDiagMessage(null);
+    try {
+      const result = await salesAuditApi.diagnoseCounty(taxYear);
+      setDiagMessage(`Diagnosed ${result.diagnosedCount} strata.`);
+      await qc.invalidateQueries({ queryKey: ['sales-audit-strata', taxYear] });
+      await qc.invalidateQueries({ queryKey: ['sales-audit-diagnosis', selectedStratumKey, taxYear] });
+    } catch {
+      setDiagMessage('Diagnosis failed — check connection.');
+    } finally {
+      setDiagRunning(false);
+    }
+  }
+
   function handleDecisionChange(saleId: string, decision: string) {
     setLocalSales(prev => ({ ...prev, [saleId]: decision }));
     bulkDecision.mutate({ ids: [saleId], decision });
@@ -66,8 +91,49 @@ export function AuditCommandCenter({ taxYear }: Props) {
     qualificationDecision: localSales[s.id] ?? s.qualificationDecision,
   }));
 
+  const diagnosedCount = strata.filter(s => s.primaryDiagnosis !== null).length;
+  const noneHaveDiagnosis = strata.length > 0 && diagnosedCount === 0;
+
   return (
     <div className="flex flex-col h-full bg-slate-950">
+
+      {/* Top action bar: year picker + run-diagnosis button */}
+      <div className="flex items-center gap-3 px-4 py-2 border-b border-slate-800 bg-slate-900 shrink-0">
+        <span className="text-[10px] font-bold tracking-widest uppercase text-slate-500">Study Year</span>
+        <select
+          value={taxYear}
+          onChange={e => {
+            setTaxYear(Number(e.target.value));
+            setSelectedStratumKey(null);
+            setLocalSales({});
+            setDiagMessage(null);
+          }}
+          className="bg-slate-800 border border-slate-700 rounded text-xs text-slate-200 px-2 py-1"
+        >
+          {STUDY_YEARS.map(y => (
+            <option key={y} value={y}>{y}</option>
+          ))}
+        </select>
+
+        <div className="ml-auto flex items-center gap-3">
+          {diagMessage && (
+            <span className="text-[11px] text-slate-400">{diagMessage}</span>
+          )}
+          {strata.length > 0 && (
+            <span className="text-[10px] text-slate-600">
+              {diagnosedCount}/{strata.length} diagnosed
+            </span>
+          )}
+          <button
+            onClick={handleRunDiagnosis}
+            disabled={diagRunning || strataLoading}
+            className="text-[11px] font-semibold px-3 py-1.5 rounded border border-cyan-700 text-cyan-300 bg-cyan-950 hover:bg-cyan-900 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            {diagRunning ? 'Running…' : 'Run AI Diagnosis'}
+          </button>
+        </div>
+      </div>
+
       <CountyKpiBar
         strata={strata}
         cod={runningStats?.cod ?? 0}
@@ -78,13 +144,32 @@ export function AuditCommandCenter({ taxYear }: Props) {
 
       <div className="flex flex-1 min-h-0">
         {/* Left: strata list */}
-        <div className="w-64 shrink-0 border-r border-slate-800 overflow-y-auto">
-          <StrataList
-            strata={strata}
-            selectedKey={selectedStratumKey}
-            onSelect={key => { setSelectedStratumKey(key); setLocalSales({}); }}
-            loading={strataLoading}
-          />
+        <div className="w-64 shrink-0 border-r border-slate-800 flex flex-col">
+          {/* Empty-state prompt when we have strata but none diagnosed yet */}
+          {noneHaveDiagnosis && !strataLoading && (
+            <div className="px-3 py-3 bg-amber-950/40 border-b border-amber-900/50">
+              <p className="text-[11px] text-amber-300 font-medium mb-1">No diagnoses yet</p>
+              <p className="text-[10px] text-amber-500 mb-2">
+                {strata.length} neighborhoods have {taxYear} sales but haven&apos;t been analyzed.
+                Click <strong>Run AI Diagnosis</strong> to detect data problems, outlier clusters, and market shifts.
+              </p>
+              <button
+                onClick={handleRunDiagnosis}
+                disabled={diagRunning}
+                className="w-full text-[11px] font-semibold px-2 py-1 rounded bg-amber-700 text-amber-100 hover:bg-amber-600 disabled:opacity-40 transition-colors"
+              >
+                {diagRunning ? 'Running…' : `Diagnose All ${strata.length} Strata`}
+              </button>
+            </div>
+          )}
+          <div className="flex-1 overflow-y-auto">
+            <StrataList
+              strata={strata}
+              selectedKey={selectedStratumKey}
+              onSelect={key => { setSelectedStratumKey(key); setLocalSales({}); }}
+              loading={strataLoading}
+            />
+          </div>
         </div>
 
         {/* Center: sale table */}
@@ -98,8 +183,9 @@ export function AuditCommandCenter({ taxYear }: Props) {
               onDecisionChange={handleDecisionChange}
             />
           ) : (
-            <div className="flex items-center justify-center h-full text-slate-600 text-sm">
-              Select a stratum to begin
+            <div className="flex flex-col items-center justify-center h-full gap-3 text-slate-600">
+              <span className="text-4xl">⊙</span>
+              <span className="text-sm">Select a stratum to review its sales</span>
             </div>
           )}
         </div>

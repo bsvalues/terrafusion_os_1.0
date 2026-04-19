@@ -83,16 +83,33 @@ public sealed class SalesAiDiagnosticService : ISalesAiDiagnosticService
     public async System.Threading.Tasks.Task<List<StratumDiagnosisSummaryDto>> GetDiagnoseSummariesAsync(
         Guid countyId, int taxYear, CancellationToken ct = default)
     {
-        return await _db.Set<TerraFusion.Core.Entities.SaleAuditDiagnosis>()
-            .Where(d => d.CountyId == countyId && d.TaxYear == taxYear)
-            .Select(d => new StratumDiagnosisSummaryDto(
-                d.StratumKey,
-                d.PrimaryDiagnosis,
-                d.Confidence,
-                d.RecommendedAction,
-                d.IsStale,
-                d.DiagnosedAt))
+        // Return every neighborhood that has sales — whether or not diagnosis has run yet.
+        // Undiagnosed strata surface with null PrimaryDiagnosis so the UI can prompt the user
+        // to run AI diagnosis rather than displaying an empty list.
+        var neighborhoods = await _db.ComparableSales
+            .Where(s => s.CountyId == countyId && s.SaleDate.Year == taxYear)
+            .Select(s => s.Neighborhood)
+            .Where(n => n != null)
+            .Distinct()
             .ToListAsync(ct);
+
+        var diagnoses = await _db.Set<TerraFusion.Core.Entities.SaleAuditDiagnosis>()
+            .Where(d => d.CountyId == countyId && d.TaxYear == taxYear)
+            .ToDictionaryAsync(d => d.StratumKey, ct);
+
+        return neighborhoods
+            .Select(n =>
+            {
+                if (diagnoses.TryGetValue(n!, out var d))
+                    return new StratumDiagnosisSummaryDto(
+                        d.StratumKey, d.PrimaryDiagnosis, d.Confidence,
+                        d.RecommendedAction, d.IsStale, d.DiagnosedAt);
+                // Not yet diagnosed — include so the user sees all strata
+                return new StratumDiagnosisSummaryDto(n!, null, null, null, false, null);
+            })
+            .OrderBy(s => s.PrimaryDiagnosis is null ? 1 : 0)   // diagnosed (failing/passing) first
+            .ThenBy(s => s.StratumKey)
+            .ToList();
     }
 
     public async System.Threading.Tasks.Task<List<StratumSaleDto>> GetStratumSalesAsync(

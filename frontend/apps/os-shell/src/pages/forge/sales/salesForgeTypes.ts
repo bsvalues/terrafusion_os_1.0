@@ -185,5 +185,7 @@ export type QueueTab = 'all' | 'pending' | 'staff' | 'final';
 
 export type SalesForgeTab = 'ai-audit' | 'queue' | 'ratio-audit' | 'neighborhoods' | 'code-audit' | 'dor-export';
 
-export const SALESFORGE_TAX_YEAR = new Date().getFullYear();
+// Default to the most recently completed study year (prior calendar year), which is
+// where the bulk of qualified sales data lives. Current year sales accumulate slowly.
+export const SALESFORGE_TAX_YEAR = new Date().getFullYear() - 1;
 export const QUEUE_PAGE_SIZE = 50;
