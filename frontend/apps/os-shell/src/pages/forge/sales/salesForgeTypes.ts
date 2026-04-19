@@ -183,7 +183,7 @@ export type PatchStatus = 'working' | 'done' | 'error';
 
 export type QueueTab = 'all' | 'pending' | 'staff' | 'final';
 
-export type SalesForgeTab = 'queue' | 'ratio-audit' | 'neighborhoods' | 'code-audit' | 'dor-export';
+export type SalesForgeTab = 'ai-audit' | 'queue' | 'ratio-audit' | 'neighborhoods' | 'code-audit' | 'dor-export';
 
 export const SALESFORGE_TAX_YEAR = new Date().getFullYear();
 export const QUEUE_PAGE_SIZE = 50;

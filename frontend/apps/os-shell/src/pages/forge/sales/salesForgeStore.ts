@@ -67,9 +67,13 @@ interface SalesForgeState {
   codeAuditLoading: boolean;
   codeAuditError: string | null;
 
+  // AI audit (Tab 0)
+  selectedStratumKey: string | null;
+
   // ── Actions ───────────────────────────────────────────────────────────────
 
   setActiveTab: (tab: SalesForgeTab) => void;
+  setSelectedStratumKey: (key: string | null) => void;
   setQueueTab: (tab: QueueTab) => void;
   setQueuePage: (page: number) => void;
   setFilterForm: (form: Partial<FilterForm>) => void;
@@ -137,9 +141,13 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
   codeAuditLoading: false,
   codeAuditError: null,
 
+  selectedStratumKey: null,
+
   // ── Tab/page/filter actions ────────────────────────────────────────────────
 
   setActiveTab: (tab) => set({ activeTab: tab }),
+
+  setSelectedStratumKey: (key) => set({ selectedStratumKey: key }),
 
   setQueueTab: (tab) =>
     set({ queueTab: tab, queuePage: 1, queueData: null, queueError: null }),
