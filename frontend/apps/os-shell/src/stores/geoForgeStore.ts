@@ -18,7 +18,7 @@ const DEFAULT_FILTER: GeoForgeFilter = {
 
 const DEFAULT_LAYERS: Set<MapLayer> = new Set<MapLayer>(['satellite', 'choropleth', 'sale-scatter']);
 
-export const useGeoForgeStore = create<GeoForgeState>((set) => ({
+export const useGeoForgeStore = create<GeoForgeState>((set, get) => ({
   filter: DEFAULT_FILTER,
   activeLayers: DEFAULT_LAYERS,
   selectedNeighborhoodCode: null,
@@ -54,8 +54,14 @@ export const useGeoForgeStore = create<GeoForgeState>((set) => ({
       return { activeLayers: next };
     }),
 
-  selectNeighborhood: (code, panel = 'neighborhood-detail') =>
-    set({ selectedNeighborhoodCode: code, rightDrawerPanel: code ? panel : 'none' }),
+  selectNeighborhood: (code, panel = 'neighborhood-detail') => {
+    const ns = code ? get().neighborhoodStats.find((n) => n.neighborhoodCode === code) : null;
+    set({
+      selectedNeighborhoodCode: code,
+      rightDrawerPanel: code ? panel : 'none',
+      ...(ns ? { flyTarget: { lat: ns.centroidLat, lng: ns.centroidLng } } : {}),
+    });
+  },
 
   openDrawer: (panel) => set({ rightDrawerPanel: panel }),
   closeDrawer: () => set({ rightDrawerPanel: 'none', selectedNeighborhoodCode: null }),

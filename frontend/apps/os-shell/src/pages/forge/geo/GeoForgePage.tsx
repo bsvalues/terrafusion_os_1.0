@@ -19,6 +19,7 @@ import { NeighborhoodRankingPanel } from './panels/NeighborhoodRankingPanel';
 import { CountyHealthPanel } from './panels/CountyHealthPanel';
 import { GeoForgeMapLegend } from './GeoForgeMapLegend';
 import { GeoForgeHotkeyHelp } from './GeoForgeHotkeyHelp';
+import { GeoForgeStatusTicker } from './GeoForgeStatusTicker';
 import { Button } from '@/components/ui/button';
 import type { NeighborhoodStat, SalePoint, RightDrawerPanel, GwrSurface } from './types/geoforge.types';
 
@@ -135,6 +136,9 @@ export function GeoForgePage() {
 
       {/* Command bar overlays the top of the map */}
       <GeoForgeCommandBar />
+
+      {/* Status ticker — county-wide IAAO metrics, always visible below command bar */}
+      <GeoForgeStatusTicker />
 
       {/* Right equity rail — always visible, 72px wide */}
       <GeoForgeEquityRail />
