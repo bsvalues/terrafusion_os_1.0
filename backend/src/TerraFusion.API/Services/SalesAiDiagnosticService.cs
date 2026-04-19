@@ -29,6 +29,26 @@ public sealed class SalesAiDiagnosticService : ISalesAiDiagnosticService
         var sales = await LoadStratumSalesAsync(countyId, stratumKey, taxYear, ct);
         var findings = RunRules(sales);
         var diagnosis = BuildDiagnosis(countyId, taxYear, stratumKey, sales, findings);
+
+        // Pre-compute projected stats so the UI can show immediate impact
+        if (diagnosis.RecommendedSaleIdsJson is { } saleIdsJson)
+        {
+            try
+            {
+                var excludeIds = JsonSerializer.Deserialize<List<Guid>>(saleIdsJson) ?? [];
+                if (excludeIds.Count > 0)
+                {
+                    var projected = await SimulateAsync(countyId, stratumKey, taxYear,
+                        excludeSaleIds: excludeIds, ct: ct);
+                    diagnosis.SimulationResultJson = JsonSerializer.Serialize(projected);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to pre-compute simulation for stratum {Key}", stratumKey);
+            }
+        }
+
         await UpsertDiagnosisAsync(diagnosis, ct);
         return diagnosis;
     }
@@ -52,6 +72,8 @@ public sealed class SalesAiDiagnosticService : ISalesAiDiagnosticService
             }
             catch (Exception ex)
             {
+                if (ex is OperationCanceledException)
+                    throw;
                 _logger.LogWarning(ex, "Diagnosis failed for stratum {Key}", key);
             }
         }
@@ -86,15 +108,29 @@ public sealed class SalesAiDiagnosticService : ISalesAiDiagnosticService
         var flagReasons = new Dictionary<Guid, string>();
         if (diagnosis?.RecommendedSaleIdsJson is { } json)
         {
-            var ids = JsonSerializer.Deserialize<List<Guid>>(json) ?? [];
-            flaggedIds.UnionWith(ids);
+            try
+            {
+                var ids = JsonSerializer.Deserialize<List<Guid>>(json) ?? [];
+                flaggedIds.UnionWith(ids);
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogWarning(ex, "Failed to deserialize recommended sale IDs JSON for diagnosis in stratum {Key}", stratumKey);
+            }
         }
         if (diagnosis?.FindingsJson is { } fj)
         {
-            var findings = JsonSerializer.Deserialize<List<DiagnosisFinding>>(fj) ?? [];
-            foreach (var f in findings)
-                foreach (var id in f.AffectedSaleIds)
-                    flagReasons[id] = f.Rule;
+            try
+            {
+                var findings = JsonSerializer.Deserialize<List<DiagnosisFinding>>(fj) ?? [];
+                foreach (var f in findings)
+                    foreach (var id in f.AffectedSaleIds)
+                        flagReasons[id] = f.Rule;
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogWarning(ex, "Failed to deserialize findings JSON for diagnosis in stratum {Key}", stratumKey);
+            }
         }
 
         var parcelIds = sales.Select(s => s.ParcelId).Distinct().ToList();
@@ -209,6 +245,7 @@ public sealed class SalesAiDiagnosticService : ISalesAiDiagnosticService
             if (sorted[i].SalePrice == 0) continue;
             var diff = Math.Abs(sorted[i + 1].SalePrice - sorted[i].SalePrice)
                        / sorted[i].SalePrice;
+            // Flag pairs priced within 2% of each other — common indicator of non-arm's-length transactions
             if (diff < 0.02m)
                 clusters.AddRange(new[] { sorted[i].Id, sorted[i + 1].Id });
         }
@@ -233,6 +270,7 @@ public sealed class SalesAiDiagnosticService : ISalesAiDiagnosticService
         {
             diagnosis = "DATA_PROBLEM";
             action = "DISQUALIFY_SALES";
+            // Scale flagged-sale proportion (0–1) by 3× — ensures even moderate clusters produce high confidence
             confidence = Math.Min(1.0m, allFlaggedIds.Count / Math.Max(1m, sales.Count) * 3m);
         }
         else
