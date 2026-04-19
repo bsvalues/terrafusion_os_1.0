@@ -73,6 +73,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       addAiClusterLayer(map);
       addGwrLayer(map);
       addCompsRadiusLayer(map);
+      addParcelPointsLayer(map);
 
       // Neighborhood click
       map.on('click', 'neighborhood-fill', (e) => {
@@ -127,6 +128,22 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
           .addTo(map);
       });
       map.on('mouseleave', 'sale-circles', () => {
+        map.getCanvas().style.cursor = '';
+        hoverPopup.remove();
+      });
+
+      // Parcel dot hover tooltip
+      map.on('mouseenter', 'parcel-pts-dots', (e) => {
+        map.getCanvas().style.cursor = 'crosshair';
+        const props = e.features?.[0]?.properties;
+        if (!props || !e.lngLat) return;
+        const av = Number(props.assessedValue);
+        hoverPopup
+          .setLngLat(e.lngLat)
+          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:130px"><div style="color:#00FFFF;font-weight:700;font-family:monospace;margin-bottom:3px">${props.parcelId}</div><div>AV <span style="color:#fff;font-family:monospace">$${(av/1000).toFixed(0)}k</span></div></div>`)
+          .addTo(map);
+      });
+      map.on('mouseleave', 'parcel-pts-dots', () => {
         map.getCanvas().style.cursor = '';
         hoverPopup.remove();
       });
@@ -347,6 +364,36 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       .catch(() => { /* data not available */ });
   }, [filter.taxYear, activeLayers]);
 
+  // Parcel points — loads when layer toggled on + a neighborhood is selected
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded()) return;
+    const src = map.getSource('parcel-pts') as mapboxgl.GeoJSONSource | undefined;
+    if (!src) return;
+
+    if (!activeLayers.has('parcel-polygons') || !selectedNeighborhoodCode) {
+      src.setData({ type: 'FeatureCollection', features: [] });
+      return;
+    }
+
+    const url = `/api/geoforge/parcels/points?taxYear=${filter.taxYear}&neighborhoodCode=${encodeURIComponent(selectedNeighborhoodCode)}`;
+    fetch(url)
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then((rows: { parcelId: string; lat: number; lng: number; assessedValue: number }[]) => {
+        src.setData({
+          type: 'FeatureCollection',
+          features: rows
+            .filter(r => r.lat !== 0)
+            .map(r => ({
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [r.lng, r.lat] },
+              properties: { parcelId: r.parcelId, assessedValue: r.assessedValue },
+            })),
+        });
+      })
+      .catch(() => { /* unavailable */ });
+  }, [activeLayers, selectedNeighborhoodCode, filter.taxYear]);
+
   // Comp radius ring — amber dashed polygon + cyan highlight on in-radius sales
   useEffect(() => {
     const map = mapRef.current;
@@ -424,6 +471,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       'neighborhood-poly': ['neighborhood-poly-fill', 'neighborhood-poly-outline', 'neighborhood-poly-label'],
       'sale-scatter': ['sale-circles', 'sale-outlier-ring'],
       'yoy-change': ['yoy-change-circles', 'yoy-change-labels'],
+      'parcel-polygons': ['parcel-pts-dots'],
       kde: ['kde-heat'],
       'ai-cluster': ['ai-cluster-circles'],
       gwr: ['gwr-heat'],
@@ -785,6 +833,36 @@ function addCompsRadiusLayer(map: mapboxgl.Map) {
       'circle-stroke-width': 2.5,
       'circle-stroke-color': '#00FFFF',
       'circle-stroke-opacity': 0.9,
+    },
+  });
+}
+
+function addParcelPointsLayer(map: mapboxgl.Map) {
+  map.addSource('parcel-pts', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  });
+
+  map.addLayer({
+    id: 'parcel-pts-dots',
+    type: 'circle',
+    source: 'parcel-pts',
+    minzoom: 13,
+    layout: { visibility: 'none' },
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 13, 2.5, 17, 5],
+      'circle-color': [
+        'step', ['get', 'assessedValue'],
+        '#60a5fa',    // < $150k: blue
+        150000, '#4ade80',  // $150k-$300k: green
+        300000, '#a3e635',  // $300k-$500k: lime
+        500000, '#fb923c',  // $500k-$800k: orange
+        800000, '#f87171',  // > $800k: red
+      ],
+      'circle-opacity': 0.72,
+      'circle-stroke-width': 0.5,
+      'circle-stroke-color': '#0f172a',
+      'circle-stroke-opacity': 0.6,
     },
   });
 }

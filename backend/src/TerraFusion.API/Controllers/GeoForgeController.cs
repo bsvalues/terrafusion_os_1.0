@@ -1398,6 +1398,52 @@ public class GeoForgeController : ControllerBase
         return Ok(result);
     }
 
+    // ── Parcel points — all parcels in a neighborhood with lat/lng + AV ─────
+
+    [HttpGet("parcels/points")]
+    public async Task<IActionResult> GetParcelPoints(
+        [FromQuery] int taxYear = 0,
+        [FromQuery] string? neighborhoodCode = null,
+        CancellationToken ct = default)
+    {
+        if (taxYear == 0) taxYear = DateTime.UtcNow.Year;
+
+        var query = _db.Properties
+            .AsNoTracking()
+            .Where(p => p.CountyId == BentonCountyId && p.TaxYear == taxYear && p.AssessedValue > 0);
+
+        if (!string.IsNullOrWhiteSpace(neighborhoodCode))
+            query = query.Where(p => p.Neighborhood == neighborhoodCode);
+
+        var props = await query
+            .Select(p => new { p.ParcelNumber, p.AssessedValue })
+            .Take(5000)
+            .ToListAsync(ct);
+
+        if (props.Count == 0) return Ok(Array.Empty<object>());
+
+        var parcelIds = props.Select(p => p.ParcelNumber).Distinct().ToHashSet();
+        var geoMap = await GetGeoMapAsync(parcelIds, ct);
+
+        var result = props
+            .Where(p => p.ParcelNumber != null && geoMap.ContainsKey(p.ParcelNumber!))
+            .Select(p =>
+            {
+                var geo = geoMap[p.ParcelNumber!];
+                var av = (double)p.AssessedValue;
+                return new
+                {
+                    parcelId      = p.ParcelNumber,
+                    lat           = geo.lat,
+                    lng           = geo.lng,
+                    assessedValue = (long)av,
+                };
+            })
+            .ToList();
+
+        return Ok(result);
+    }
+
     // ── Private helpers ──────────────────────────────────────────────────────
 
     private static double HaversineDistanceMiles(double lat1, double lng1, double lat2, double lng2)

@@ -128,6 +128,48 @@ function RegressivityScatter({ neighborhoodCode }: { neighborhoodCode: string })
   );
 }
 
+function EquityNarrative({ ns }: { ns: import('../types/geoforge.types').NeighborhoodStat }) {
+  const { stats, neighborhoodCode, saleCount } = ns;
+  const { medianRatio, cod, prd, prb } = stats;
+
+  const ratioStatus = medianRatio >= 0.95 && medianRatio <= 1.05 ? 'within IAAO parity (0.95–1.05)'
+    : medianRatio > 1.05 ? `above parity at ${medianRatio.toFixed(3)} — properties appear over-assessed`
+    : `below parity at ${medianRatio.toFixed(3)} — properties appear under-assessed`;
+
+  const uniformityStatus = cod <= 15 ? `uniform (COD ${cod.toFixed(1)})`
+    : cod <= 20 ? `borderline (COD ${cod.toFixed(1)}, IAAO max is 20)`
+    : `non-uniform (COD ${cod.toFixed(1)}, exceeds IAAO 20 threshold)`;
+
+  const verticalStatus = prd >= 0.98 && prd <= 1.03
+    ? 'no vertical inequity detected'
+    : prd > 1.03
+      ? `regressive vertical inequity (PRD ${prd.toFixed(3)}) — lower-value properties over-assessed relative to higher-value`
+      : `progressive vertical inequity (PRD ${prd.toFixed(3)}) — higher-value properties over-assessed relative to lower-value`;
+
+  const sampleNote = saleCount < 5 ? ' Sample size is critically low — interpret results with caution.'
+    : saleCount < 10 ? ' Sample size is small; conclusions may not be statistically reliable.'
+    : '';
+
+  return (
+    <div className="bg-slate-900/60 border border-slate-700/60 rounded-md px-3 py-2.5">
+      <h4 className="text-[8px] text-slate-500 uppercase tracking-wider mb-1.5">Equity Assessment</h4>
+      <p className="text-[10px] text-slate-300 leading-relaxed">
+        Median ratio is <span className={
+          medianRatio >= 0.95 && medianRatio <= 1.05 ? 'text-emerald-400 font-semibold' :
+          medianRatio >= 0.90 && medianRatio <= 1.10 ? 'text-amber-400 font-semibold' : 'text-red-400 font-semibold'
+        }>{ratioStatus}</span> based on {saleCount} qualified sales.
+        Assessment uniformity is <span className={
+          cod <= 15 ? 'text-emerald-400' : cod <= 20 ? 'text-amber-400' : 'text-red-400'
+        }>{uniformityStatus}</span>.
+        Vertical equity shows <span className={
+          prd >= 0.98 && prd <= 1.03 ? 'text-emerald-400' : 'text-amber-400'
+        }>{verticalStatus}</span>.
+        {sampleNote && <span className="text-slate-500">{sampleNote}</span>}
+      </p>
+    </div>
+  );
+}
+
 const BAND_COLORS: Record<'ok' | 'watch' | 'critical', string> = {
   ok: 'bg-green-900 text-green-300 border-green-700',
   watch: 'bg-yellow-900 text-yellow-300 border-yellow-700',
@@ -252,6 +294,8 @@ export function NeighborhoodDetailPanel() {
           {ns.saleCount} qualified sales
         </p>
       </div>
+
+      <EquityNarrative ns={ns} />
 
       <EquitySignatureRadar stats={stats} label="Equity Signature" />
 
