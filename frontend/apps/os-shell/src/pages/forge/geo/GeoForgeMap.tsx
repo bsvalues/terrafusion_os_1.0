@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import './geoforge.css';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { medianRatioColor, ratioPointColor, salePointRadius } from './utils/choropleths';
 import type { MapLayer } from './types/geoforge.types';
@@ -17,7 +18,15 @@ interface Props {
 export function GeoForgeMap({ onNeighborhoodClick }: Props) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { neighborhoodStats, salePoints, activeLayers, gwrSurface, simulationDeltaMap } = useGeoForgeStore();
+  const hoverPopupRef = useRef<mapboxgl.Popup | null>(null);
+  const {
+    neighborhoodStats,
+    salePoints,
+    activeLayers,
+    gwrSurface,
+    simulationDeltaMap,
+    selectedNeighborhoodCode,
+  } = useGeoForgeStore();
 
   // Initialize map once
   useEffect(() => {
@@ -35,6 +44,14 @@ export function GeoForgeMap({ onNeighborhoodClick }: Props) {
     map.addControl(new mapboxgl.NavigationControl(), 'top-right');
     map.addControl(new mapboxgl.ScaleControl({ unit: 'imperial' }), 'bottom-left');
 
+    const hoverPopup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+      offset: 12,
+      className: 'geoforge-hover-popup',
+    });
+    hoverPopupRef.current = hoverPopup;
+
     map.on('load', () => {
       addNeighborhoodLayer(map);
       addSimulationOverlayLayer(map);
@@ -43,25 +60,92 @@ export function GeoForgeMap({ onNeighborhoodClick }: Props) {
       addAiClusterLayer(map);
       addGwrLayer(map);
 
+      // Neighborhood click
       map.on('click', 'neighborhood-fill', (e) => {
         const code = e.features?.[0]?.properties?.neighborhoodCode as string | undefined;
         if (code) onNeighborhoodClick(code);
       });
 
-      map.on('mouseenter', 'neighborhood-fill', () => {
+      // Neighborhood hover tooltip
+      map.on('mouseenter', 'neighborhood-fill', (e) => {
         map.getCanvas().style.cursor = 'pointer';
+        const props = e.features?.[0]?.properties;
+        if (!props || !e.lngLat) return;
+        const med = Number(props.medianRatio).toFixed(3);
+        const cod = Number(props.cod).toFixed(1);
+        const n = props.saleCount;
+        const simDelta = props.simulationDelta;
+        const simRow = simDelta != null
+          ? `<div style="margin-top:4px;color:#f59e0b;">⬡ Sim: ${Number(simDelta) >= 0 ? '+' : ''}${Number(simDelta).toFixed(1)}%</div>`
+          : '';
+        hoverPopup
+          .setLngLat(e.lngLat)
+          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.6;border:1px solid #334155;min-width:120px"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px;letter-spacing:.05em">${props.neighborhoodCode}</div><div>MED <span style="color:#fff;font-weight:600">${med}</span></div><div>COD <span style="color:#fff">${cod}</span></div><div style="color:#94a3b8">n = ${n}${simRow}</div></div>`)
+          .addTo(map);
       });
+
       map.on('mouseleave', 'neighborhood-fill', () => {
         map.getCanvas().style.cursor = '';
+        hoverPopup.remove();
       });
+
+      // Sale dot click — inline bloom popup
+      map.on('click', 'sale-circles', (e) => {
+        e.preventDefault();
+        const feat = e.features?.[0];
+        if (!feat) return;
+        const p = feat.properties!;
+        const coords = (feat.geometry as GeoJSON.Point).coordinates as [number, number];
+        const ratio = Number(p.ratio);
+        const ratioColor = ratio > 1.10 ? '#f87171' : ratio > 1.05 ? '#fb923c'
+          : ratio < 0.90 ? '#60a5fa' : ratio < 0.95 ? '#93c5fd' : '#4ade80';
+        const outlierRow = p.isOutlier
+          ? '<div style="margin-top:4px;color:#f59e0b;font-weight:600;">⚠ Outlier</div>' : '';
+        new mapboxgl.Popup({ closeButton: true, maxWidth: '220px', className: 'geoforge-sale-popup' })
+          .setLngLat(coords)
+          .setHTML(`<div style="background:#0f172a;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:11px;line-height:1.7;border:1px solid #334155"><div style="color:#00FFFF;font-weight:700;margin-bottom:3px">Sale</div><div>Price: <b>$${Number(p.salePrice).toLocaleString()}</b></div><div>Ratio: <b style="color:${ratioColor}">${ratio.toFixed(3)}</b>${outlierRow}</div></div>`)
+          .addTo(map);
+      });
+
+      map.on('mouseenter', 'sale-circles', () => { map.getCanvas().style.cursor = 'crosshair'; });
+      map.on('mouseleave', 'sale-circles', () => { map.getCanvas().style.cursor = ''; });
     });
 
     mapRef.current = map;
     return () => {
+      hoverPopup.remove();
       map.remove();
       mapRef.current = null;
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Selection dim — non-selected neighborhoods fade to 25% opacity
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded()) return;
+
+    if (selectedNeighborhoodCode) {
+      map.setPaintProperty('neighborhood-fill', 'circle-opacity', [
+        'case',
+        ['==', ['get', 'neighborhoodCode'], selectedNeighborhoodCode], 0.90,
+        0.22,
+      ]);
+      map.setPaintProperty('neighborhood-label', 'text-opacity', [
+        'case',
+        ['==', ['get', 'neighborhoodCode'], selectedNeighborhoodCode], 1.0,
+        0.35,
+      ]);
+      map.setPaintProperty('neighborhood-fill', 'circle-stroke-opacity', [
+        'case',
+        ['==', ['get', 'neighborhoodCode'], selectedNeighborhoodCode], 0.95,
+        0.15,
+      ]);
+    } else {
+      map.setPaintProperty('neighborhood-fill', 'circle-opacity', 0.70);
+      map.setPaintProperty('neighborhood-label', 'text-opacity', 1.0);
+      map.setPaintProperty('neighborhood-fill', 'circle-stroke-opacity', 0.4);
+    }
+  }, [selectedNeighborhoodCode]);
 
   // Update neighborhood choropleth + simulation overlay data
   useEffect(() => {

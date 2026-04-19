@@ -1,0 +1,29 @@
+/* GeoForge — Mapbox popup overrides */
+/* Applied to .geoforge-hover-popup and .geoforge-sale-popup */
+
+.geoforge-hover-popup .mapboxgl-popup-content,
+.geoforge-sale-popup .mapboxgl-popup-content {
+  background: transparent;
+  padding: 0;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+
+.geoforge-hover-popup .mapboxgl-popup-tip,
+.geoforge-sale-popup .mapboxgl-popup-tip {
+  border-top-color: #1e293b;
+  border-bottom-color: #1e293b;
+}
+
+.geoforge-sale-popup .mapboxgl-popup-close-button {
+  color: #94a3b8;
+  font-size: 14px;
+  padding: 2px 6px;
+  top: 4px;
+  right: 4px;
+}
+
+.geoforge-sale-popup .mapboxgl-popup-close-button:hover {
+  color: #fff;
+  background: transparent;
+}

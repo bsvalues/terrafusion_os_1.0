@@ -10,6 +10,77 @@ const BAND_COLORS: Record<'ok' | 'watch' | 'critical', string> = {
   critical: 'bg-red-900 text-red-300 border-red-700',
 };
 
+function QuintileChart({ stats }: { stats: import('../types/geoforge.types').BentonMethodStats }) {
+  const quintiles = [
+    { label: 'Q1 Low', ratio: stats.q1Ratio },
+    { label: 'Q2', ratio: stats.q2Ratio },
+    { label: 'Q3 Mid', ratio: stats.q3Ratio },
+    { label: 'Q4', ratio: stats.q4Ratio },
+    { label: 'Q5 High', ratio: stats.q5Ratio },
+  ];
+
+  const hasData = quintiles.some(q => q.ratio > 0);
+  if (!hasData) return null;
+
+  const pct = (r: number) => Math.min(50, Math.abs(r - 1.0) * 200);
+  const barColor = (r: number) =>
+    r >= 0.95 && r <= 1.05 ? '#22c55e' : r >= 0.90 && r <= 1.10 ? '#eab308' : '#ef4444';
+
+  // Regressivity: high-value under-assessed = Q5 ratio < Q1 ratio
+  const spread = stats.q5Ratio > 0 && stats.q1Ratio > 0
+    ? stats.q5Ratio / stats.q1Ratio : null;
+  const regressivity =
+    spread === null ? null :
+    spread < 0.95 ? { label: 'Regressive', color: 'text-red-400' } :
+    spread > 1.05 ? { label: 'Progressive', color: 'text-blue-400' } :
+    { label: 'Uniform', color: 'text-green-400' };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="text-xs text-muted-foreground uppercase tracking-wide">
+          Value Stratification
+        </h4>
+        {regressivity && (
+          <span className={`text-[10px] font-bold uppercase ${regressivity.color}`}>
+            {regressivity.label}
+          </span>
+        )}
+      </div>
+      <div className="space-y-1.5">
+        {quintiles.map(({ label, ratio }) => (
+          <div key={label} className="flex items-center gap-2">
+            <span className="w-[52px] text-right text-[9px] text-slate-500 shrink-0">{label}</span>
+            <div className="flex-1 relative h-3.5 bg-slate-800 rounded overflow-hidden">
+              <div className="absolute left-1/2 top-0 bottom-0 w-px bg-slate-600 z-10" />
+              {ratio > 0 && (
+                <div
+                  className="absolute top-0.5 bottom-0.5 rounded-[2px]"
+                  style={{
+                    backgroundColor: barColor(ratio),
+                    opacity: 0.80,
+                    left: ratio < 1.0 ? `${50 - pct(ratio)}%` : '50%',
+                    width: `${pct(ratio)}%`,
+                  }}
+                />
+              )}
+            </div>
+            <span
+              className="w-11 text-right font-mono text-[10px] shrink-0"
+              style={{ color: barColor(ratio) }}
+            >
+              {ratio > 0 ? ratio.toFixed(3) : '—'}
+            </span>
+          </div>
+        ))}
+      </div>
+      <p className="text-[9px] text-slate-600 mt-1.5 text-right">
+        center = 1.00 parity · Q5/Q1 = {spread ? spread.toFixed(3) : '—'}
+      </p>
+    </div>
+  );
+}
+
 export function NeighborhoodDetailPanel() {
   const { selectedNeighborhoodCode, neighborhoodStats, openDrawer } = useGeoForgeStore();
   const ns = neighborhoodStats.find((n) => n.neighborhoodCode === selectedNeighborhoodCode);
@@ -52,6 +123,8 @@ export function NeighborhoodDetailPanel() {
       </div>
 
       <EquitySignatureRadar stats={stats} label="Equity Signature" />
+
+      <QuintileChart stats={stats} />
 
       <table className="w-full text-xs">
         <tbody>
@@ -96,6 +169,14 @@ export function NeighborhoodDetailPanel() {
           onClick={() => openDrawer('year-trend')}
         >
           5-Yr Trend
+        </Button>
+        <Button
+          size="sm"
+          className="h-7 text-xs bg-amber-700/30 hover:bg-amber-700/50 text-amber-200 border border-amber-700/50 ml-auto"
+          variant="outline"
+          onClick={() => openDrawer('workbench')}
+        >
+          Adjust →
         </Button>
       </div>
     </div>
