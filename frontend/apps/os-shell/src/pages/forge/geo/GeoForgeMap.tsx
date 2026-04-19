@@ -5,6 +5,7 @@ import './geoforge.css';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { medianRatioColor, ratioPointColor, salePointRadius, codColor, prdColor, prbColor, bivariateColor } from './utils/choropleths';
 import { makeCircleGeoJson, haversineDistanceMi } from './utils/geoMath';
+import { computeLISA, type LISAResult } from './utils/spatialStats';
 import type { MapLayer, ChoroMode } from './types/geoforge.types';
 
 mapboxgl.accessToken = (import.meta.env.VITE_MAPBOX_TOKEN as string) ?? '';
@@ -37,6 +38,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     comparableSalePoints,
     filter,
     choroMode,
+    lisaMode,
   } = useGeoForgeStore();
 
   // Initialize map once
@@ -273,6 +275,14 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
 
+    // Build LISA map when active
+    const lisaMap: Record<string, LISAResult> = {};
+    if (lisaMode) {
+      for (const r of computeLISA(neighborhoodStats)) {
+        lisaMap[r.neighborhoodCode] = r;
+      }
+    }
+
     const geojson: GeoJSON.FeatureCollection = {
       type: 'FeatureCollection',
       features: neighborhoodStats
@@ -282,8 +292,12 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
           const effectiveRatio = delta !== null
             ? ns.stats.medianRatio * (1 + delta / 100)
             : ns.stats.medianRatio;
-          const color = choroColorForMode(choroMode, effectiveRatio, ns.stats.cod, ns.stats.prd, ns.stats.prb);
-          const modeValue = choroMode === 'cod' ? ns.stats.cod.toFixed(1)
+          const color = lisaMode
+            ? (lisaMap[ns.neighborhoodCode]?.color ?? '#334155')
+            : choroColorForMode(choroMode, effectiveRatio, ns.stats.cod, ns.stats.prd, ns.stats.prb);
+          const lisaQ = lisaMap[ns.neighborhoodCode]?.quadrant ?? null;
+          const modeValue = lisaMode ? (lisaQ ?? 'ns')
+            : choroMode === 'cod' ? ns.stats.cod.toFixed(1)
             : choroMode === 'prd' ? ns.stats.prd.toFixed(3)
             : choroMode === 'prb' ? (ns.stats.prb >= 0 ? '+' : '') + ns.stats.prb.toFixed(3)
             : choroMode === 'bivariate' ? `${effectiveRatio.toFixed(3)}·COD${ns.stats.cod.toFixed(0)}`
@@ -300,7 +314,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
               cod: ns.stats.cod,
               saleCount: ns.saleCount,
               color,
-              modeLabel: choroMode.toUpperCase(),
+              modeLabel: lisaMode ? 'LISA' : choroMode.toUpperCase(),
               modeValue,
               simulatedRatio: delta !== null
                 ? Math.round(effectiveRatio * 10000) / 10000
@@ -314,7 +328,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
 
     const src = map.getSource('neighborhoods') as mapboxgl.GeoJSONSource | undefined;
     src?.setData(geojson);
-  }, [neighborhoodStats, simulationDeltaMap, choroMode]);
+  }, [neighborhoodStats, simulationDeltaMap, choroMode, lisaMode]);
 
   // Update sale scatter data
   useEffect(() => {

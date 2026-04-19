@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
-import { computeMoransI } from './utils/spatialStats';
+import { computeMoransI, computeLISA } from './utils/spatialStats';
 
 function iaaoPass(medianRatio: number, cod: number, prd: number): boolean {
   return medianRatio >= 0.90 && medianRatio <= 1.10 && cod <= 20 && prd >= 0.98 && prd <= 1.03;
 }
 
 export function GeoForgeStatusTicker() {
-  const { neighborhoodStats, selectedNeighborhoodCode, filter } = useGeoForgeStore();
+  const { neighborhoodStats, selectedNeighborhoodCode, filter, lisaMode } = useGeoForgeStore();
 
   const stats = useMemo(() => {
     if (neighborhoodStats.length === 0) return null;
@@ -40,6 +40,14 @@ export function GeoForgeStatusTicker() {
   }, [neighborhoodStats]);
 
   const moransI = useMemo(() => computeMoransI(neighborhoodStats), [neighborhoodStats]);
+
+  const lisaCounts = useMemo(() => {
+    if (!lisaMode) return null;
+    const results = computeLISA(neighborhoodStats);
+    const counts = { HH: 0, LL: 0, HL: 0, LH: 0, ns: 0 };
+    for (const r of results) counts[r.quadrant]++;
+    return counts;
+  }, [neighborhoodStats, lisaMode]);
 
   const selectedNs = selectedNeighborhoodCode
     ? neighborhoodStats.find((n) => n.neighborhoodCode === selectedNeighborhoodCode)
@@ -79,6 +87,18 @@ export function GeoForgeStatusTicker() {
       <span className={`font-mono font-bold mr-2 ${codColor}`}>{stats.cwCod.toFixed(1)}</span>
 
       <span className="text-slate-800 mr-2">|</span>
+
+      {lisaCounts && (
+        <>
+          <span className="text-slate-600 mr-1">LISA</span>
+          {lisaCounts.HH > 0 && <span className="font-mono font-bold mr-1 text-red-500">HH:{lisaCounts.HH}</span>}
+          {lisaCounts.LL > 0 && <span className="font-mono font-bold mr-1 text-blue-500">LL:{lisaCounts.LL}</span>}
+          {lisaCounts.HL > 0 && <span className="font-mono font-bold mr-1 text-orange-400">HL:{lisaCounts.HL}</span>}
+          {lisaCounts.LH > 0 && <span className="font-mono font-bold mr-1 text-sky-400">LH:{lisaCounts.LH}</span>}
+          <span className="font-mono text-slate-600 mr-2">ns:{lisaCounts.ns}</span>
+          <span className="text-slate-800 mr-2">|</span>
+        </>
+      )}
 
       {moransI && (
         <>

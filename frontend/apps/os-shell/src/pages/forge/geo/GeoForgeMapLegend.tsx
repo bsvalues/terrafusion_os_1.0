@@ -1,5 +1,6 @@
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { BIVARIATE_GRID } from './utils/choropleths';
+import { LISA_LEGEND } from './utils/spatialStats';
 
 const RATIO_LEGEND = [
   { label: '> 1.15', color: '#ef4444', sub: 'Over-assessed' },
@@ -65,7 +66,7 @@ function Swatch({ color, shape = 'square' }: { color: string; shape?: 'square' |
 }
 
 export function GeoForgeMapLegend() {
-  const { activeLayers, choroMode } = useGeoForgeStore();
+  const { activeLayers, choroMode, lisaMode } = useGeoForgeStore();
 
   const showRatio = activeLayers.has('choropleth') || activeLayers.has('sale-scatter') || activeLayers.has('neighborhood-poly');
 
@@ -84,11 +85,27 @@ export function GeoForgeMapLegend() {
   const showDrift  = activeLayers.has('ratio-drift');
   const showCliffs = activeLayers.has('ratio-cliffs');
 
-  if (!showRatio && !showYoy && !showMkt && !showDrift && !showCliffs) return null;
+  if (!showRatio && !showYoy && !showMkt && !showDrift && !showCliffs && !lisaMode) return null;
 
   return (
     <div className="absolute bottom-8 right-[80px] z-20 flex flex-col gap-1.5">
-      {showRatio && !isBivariate && (
+      {showRatio && lisaMode && (
+        <div className="bg-slate-950/90 backdrop-blur border border-rose-800/60 rounded-md px-2.5 py-2 min-w-[160px]">
+          <p className="text-[8px] text-rose-400 uppercase tracking-wider mb-1.5">LISA Spatial Clusters</p>
+          {LISA_LEGEND.map(({ quadrant, color, label, sub }) => (
+            <div key={quadrant} className="flex items-center gap-1.5 mb-0.5">
+              <Swatch color={color} />
+              <div>
+                <span className="text-[9px] text-slate-300 font-mono">{label}</span>
+                {sub && <span className="ml-1 text-[8px] text-slate-600">{sub}</span>}
+              </div>
+            </div>
+          ))}
+          <p className="text-[7px] text-slate-700 mt-1.5">p ≈ 0.32 significance threshold</p>
+        </div>
+      )}
+
+      {showRatio && !isBivariate && !lisaMode && (
         <div className="bg-slate-950/90 backdrop-blur border border-slate-800 rounded-md px-2.5 py-2 min-w-[130px]">
           <p className="text-[8px] text-slate-500 uppercase tracking-wider mb-1.5">{choroTitle}</p>
           {choroLegend.map(({ label, color, sub }) => (
@@ -101,7 +118,7 @@ export function GeoForgeMapLegend() {
         </div>
       )}
 
-      {showRatio && isBivariate && (
+      {showRatio && isBivariate && !lisaMode && (
         <div className="bg-slate-950/90 backdrop-blur border border-slate-800 rounded-md px-2.5 py-2">
           <p className="text-[8px] text-slate-500 uppercase tracking-wider mb-1.5">Ratio × COD</p>
           {/* 3×3 bivariate grid */}

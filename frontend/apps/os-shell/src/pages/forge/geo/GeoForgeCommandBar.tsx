@@ -11,6 +11,7 @@ import {
 import { apiFetchJson } from '@/lib/apiBase';
 import type { MapLayer, ParcelSearchResult, PriceBand, ChoroMode } from './types/geoforge.types';
 
+
 const PROPERTY_CLASSES = [
   { label: 'All classes', value: '' },
   { label: 'Residential', value: 'RES' },
@@ -56,6 +57,7 @@ export function GeoForgeCommandBar() {
     salePoints, selectedMonth, setSelectedMonth,
     priceBand, setPriceBand,
     choroMode, setChoroMode,
+    lisaMode, setLisaMode,
     setBloomParcelId, setFlyTarget,
   } = useGeoForgeStore();
 
@@ -187,9 +189,9 @@ export function GeoForgeCommandBar() {
             <button
               key={mode}
               title={title}
-              onClick={() => setChoroMode(mode)}
+              onClick={() => { setChoroMode(mode); setLisaMode(false); }}
               className={`h-7 text-[10px] px-2 transition-colors border-r border-slate-700 last:border-r-0 ${
-                choroMode === mode
+                !lisaMode && choroMode === mode
                   ? 'bg-terra-cyan/20 text-terra-cyan font-semibold'
                   : 'text-slate-500 hover:text-white bg-transparent'
               }`}
@@ -197,6 +199,17 @@ export function GeoForgeCommandBar() {
               {label}
             </button>
           ))}
+          <button
+            title="LISA — Local Indicators of Spatial Association (hot/cold spot detection)"
+            onClick={() => setLisaMode(!lisaMode)}
+            className={`h-7 text-[10px] px-2 transition-colors ${
+              lisaMode
+                ? 'bg-rose-800/40 text-rose-300 font-semibold'
+                : 'text-slate-500 hover:text-white bg-transparent'
+            }`}
+          >
+            LISA
+          </button>
         </div>
       )}
 

@@ -375,6 +375,8 @@ export interface GeoForgeState {
   setSelectedMonth: (month: string | null) => void;
   setPriceBand: (band: PriceBand) => void;
   setChoroMode: (mode: ChoroMode) => void;
+  lisaMode: boolean;
+  setLisaMode: (v: boolean) => void;
   setLoadingStats: (v: boolean) => void;
   setLoadingSales: (v: boolean) => void;
   setLoadingDiagnosis: (v: boolean) => void;
