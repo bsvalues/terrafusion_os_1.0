@@ -1,6 +1,8 @@
+import { useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiFetchJson } from '@/lib/apiBase';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
+import { haversineDistanceMi, computeMedian, computeCod } from './utils/geoMath';
 import type { BloomParcel } from './types/geoforge.types';
 
 const RATIO_COLOR = (r: number) =>
@@ -32,8 +34,17 @@ function AvBar({ year, av, maxAv, land, impr }: { year: number; av: number; maxA
   );
 }
 
+const RADIUS_OPTIONS: { label: string; value: 0.25 | 0.5 | 1.0 }[] = [
+  { label: '¼mi', value: 0.25 },
+  { label: '½mi', value: 0.5 },
+  { label: '1mi', value: 1.0 },
+];
+
 export function ParcelBloomCard() {
-  const { bloomParcelId, setBloomParcelId, filter, openDrawer } = useGeoForgeStore();
+  const {
+    bloomParcelId, setBloomParcelId, filter, openDrawer,
+    setBloomLatlng, setSelectedRadiusMi, selectedRadiusMi, salePoints,
+  } = useGeoForgeStore();
 
   const { data, isLoading } = useQuery<BloomParcel>({
     queryKey: ['geoforge-bloom', bloomParcelId, filter.taxYear],
@@ -43,6 +54,35 @@ export function ParcelBloomCard() {
     enabled: !!bloomParcelId,
     staleTime: 1000 * 60 * 30,
   });
+
+  // Sync bloom lat/lng into store for the map ring
+  useEffect(() => {
+    if (data?.centroidLat) {
+      setBloomLatlng({ lat: data.centroidLat, lng: data.centroidLng });
+    }
+  }, [data, setBloomLatlng]);
+
+  // Clear ring when card closes
+  useEffect(() => {
+    if (!bloomParcelId) {
+      setBloomLatlng(null);
+      setSelectedRadiusMi(null);
+    }
+  }, [bloomParcelId, setBloomLatlng, setSelectedRadiusMi]);
+
+  // Compute in-radius sale stats client-side
+  const radiusStats = useMemo(() => {
+    if (!selectedRadiusMi || !data?.centroidLat) return null;
+    const inR = salePoints.filter(
+      (sp) =>
+        sp.lat !== 0 &&
+        sp.lng !== 0 &&
+        haversineDistanceMi(data.centroidLat, data.centroidLng, sp.lat, sp.lng) <= selectedRadiusMi,
+    );
+    const ratios = inR.map((s) => s.ratio).filter((r) => r > 0).sort((a, b) => a - b);
+    if (ratios.length === 0) return { n: inR.length, median: 0, cod: 0 };
+    return { n: inR.length, median: computeMedian(ratios), cod: computeCod(ratios) };
+  }, [selectedRadiusMi, data, salePoints]);
 
   if (!bloomParcelId) return null;
 
@@ -68,6 +108,25 @@ export function ParcelBloomCard() {
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0 ml-2">
+          {/* Comp radius selector */}
+          {data?.centroidLat ? (
+            <div className="flex items-center gap-0.5">
+              <span className="text-[8px] text-slate-600 mr-0.5">Comps</span>
+              {RADIUS_OPTIONS.map(({ label, value }) => (
+                <button
+                  key={value}
+                  onClick={() => setSelectedRadiusMi(selectedRadiusMi === value ? null : value)}
+                  className={`text-[9px] px-1.5 py-0.5 rounded border transition-colors ${
+                    selectedRadiusMi === value
+                      ? 'bg-amber-900/60 text-amber-200 border-amber-600/60'
+                      : 'bg-slate-900 text-slate-500 border-slate-700 hover:text-white'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          ) : null}
           {data && (
             <button
               onClick={() => openDrawer('workbench')}
@@ -84,6 +143,26 @@ export function ParcelBloomCard() {
           </button>
         </div>
       </div>
+
+      {/* Comp radius stat bar */}
+      {radiusStats && (
+        <div className="flex items-center gap-3 px-4 py-1 bg-amber-950/40 border-b border-amber-900/30 text-[10px]">
+          <span className="text-amber-400 font-semibold">{selectedRadiusMi}mi radius</span>
+          <span className="text-slate-400">
+            <span className="text-white font-mono">{radiusStats.n}</span> sales
+          </span>
+          <span className="text-slate-400">
+            MED <span className={`font-mono font-bold ${radiusStats.median > 1.1 || radiusStats.median < 0.9 ? 'text-red-400' : radiusStats.median > 1.05 || radiusStats.median < 0.95 ? 'text-amber-300' : 'text-emerald-400'}`}>
+              {radiusStats.median.toFixed(3)}
+            </span>
+          </span>
+          <span className="text-slate-400">
+            COD <span className={`font-mono ${radiusStats.cod > 20 ? 'text-red-400' : radiusStats.cod > 15 ? 'text-amber-300' : 'text-slate-200'}`}>
+              {radiusStats.cod.toFixed(1)}
+            </span>
+          </span>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="flex items-center justify-center h-[188px] text-slate-500 text-sm animate-pulse">

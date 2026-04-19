@@ -13,6 +13,7 @@ import { AdjustmentWorkbenchPanel } from './panels/AdjustmentWorkbenchPanel';
 import { ParcelBloomCard } from './ParcelBloomCard';
 import { CertificationPanel } from './panels/CertificationPanel';
 import { OutlierReviewPanel } from './panels/OutlierReviewPanel';
+import { StratificationPanel } from './panels/StratificationPanel';
 import { Button } from '@/components/ui/button';
 import type { NeighborhoodStat, SalePoint, RightDrawerPanel, GwrSurface } from './types/geoforge.types';
 
@@ -25,6 +26,7 @@ const PANEL_TITLES: Record<RightDrawerPanel, string> = {
   workbench: 'Adjustment Workbench',
   certification: 'DOR Certification · WAC 458-53A',
   'outlier-review': 'Outlier Review',
+  stratification: 'IAAO Stratification',
 };
 
 export function GeoForgePage() {
@@ -141,6 +143,7 @@ export function GeoForgePage() {
               )}
               {rightDrawerPanel === 'certification' && <CertificationPanel />}
               {rightDrawerPanel === 'outlier-review' && <OutlierReviewPanel />}
+              {rightDrawerPanel === 'stratification' && <StratificationPanel />}
             </div>
           </>
         )}

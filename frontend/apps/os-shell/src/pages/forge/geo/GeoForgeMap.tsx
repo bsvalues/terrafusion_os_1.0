@@ -4,6 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import './geoforge.css';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { medianRatioColor, ratioPointColor, salePointRadius } from './utils/choropleths';
+import { makeCircleGeoJson, haversineDistanceMi } from './utils/geoMath';
 import type { MapLayer } from './types/geoforge.types';
 
 mapboxgl.accessToken = (import.meta.env.VITE_MAPBOX_TOKEN as string) ?? '';
@@ -30,6 +31,8 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     selectedMonth,
     flyTarget,
     setFlyTarget,
+    bloomLatlng,
+    selectedRadiusMi,
   } = useGeoForgeStore();
 
   // Initialize map once
@@ -63,6 +66,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       addKdeLayer(map);
       addAiClusterLayer(map);
       addGwrLayer(map);
+      addCompsRadiusLayer(map);
 
       // Neighborhood click
       map.on('click', 'neighborhood-fill', (e) => {
@@ -239,6 +243,39 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     map.flyTo({ center: [flyTarget.lng, flyTarget.lat], zoom: 16, duration: 1400, essential: true });
     setFlyTarget(null);
   }, [flyTarget, setFlyTarget]);
+
+  // Comp radius ring — amber dashed polygon + cyan highlight on in-radius sales
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded()) return;
+
+    const ringSrc = map.getSource('comps-radius-ring') as mapboxgl.GeoJSONSource | undefined;
+    const inSrc = map.getSource('comps-radius-sales') as mapboxgl.GeoJSONSource | undefined;
+    const empty: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
+
+    if (!bloomLatlng || !selectedRadiusMi) {
+      ringSrc?.setData(empty);
+      inSrc?.setData(empty);
+      return;
+    }
+
+    ringSrc?.setData(makeCircleGeoJson(bloomLatlng.lat, bloomLatlng.lng, selectedRadiusMi));
+
+    const inRadius = salePoints.filter(
+      (sp) =>
+        sp.lat !== 0 &&
+        sp.lng !== 0 &&
+        haversineDistanceMi(bloomLatlng.lat, bloomLatlng.lng, sp.lat, sp.lng) <= selectedRadiusMi,
+    );
+    inSrc?.setData({
+      type: 'FeatureCollection',
+      features: inRadius.map((sp) => ({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [sp.lng, sp.lat] },
+        properties: { ratio: sp.ratio },
+      })),
+    });
+  }, [bloomLatlng, selectedRadiusMi, salePoints]);
 
   // Month filter — narrows sale-circles and outlier-ring to a single YYYY-MM
   useEffect(() => {
@@ -463,6 +500,47 @@ function addSimulationOverlayLayer(map: mapboxgl.Map) {
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 18, 14, 50],
       'circle-opacity': 0.18,
       'circle-stroke-width': 0,
+    },
+  });
+}
+
+function addCompsRadiusLayer(map: mapboxgl.Map) {
+  map.addSource('comps-radius-ring', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  });
+  map.addLayer({
+    id: 'comps-radius-fill',
+    type: 'fill',
+    source: 'comps-radius-ring',
+    paint: { 'fill-color': '#f59e0b', 'fill-opacity': 0.07 },
+  });
+  map.addLayer({
+    id: 'comps-radius-outline',
+    type: 'line',
+    source: 'comps-radius-ring',
+    paint: {
+      'line-color': '#f59e0b',
+      'line-width': 2,
+      'line-dasharray': [4, 3],
+      'line-opacity': 0.85,
+    },
+  });
+
+  map.addSource('comps-radius-sales', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  });
+  map.addLayer({
+    id: 'comps-radius-dots',
+    type: 'circle',
+    source: 'comps-radius-sales',
+    paint: {
+      'circle-color': 'transparent',
+      'circle-radius': 11,
+      'circle-stroke-width': 2.5,
+      'circle-stroke-color': '#00FFFF',
+      'circle-stroke-opacity': 0.9,
     },
   });
 }

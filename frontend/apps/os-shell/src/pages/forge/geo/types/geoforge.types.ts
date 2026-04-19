@@ -111,7 +111,24 @@ export type RightDrawerPanel =
   | 'year-trend'
   | 'workbench'
   | 'certification'
-  | 'outlier-review';
+  | 'outlier-review'
+  | 'stratification';
+
+export interface StrataRow {
+  code: string;
+  label: string;
+  n: number;
+  medianRatio: number;
+  cod: number;
+  prd: number;
+  iaaoOk: boolean;
+}
+
+export interface StratificationResult {
+  taxYear: number;
+  strata: StrataRow[];
+  overall: StrataRow;
+}
 
 export interface FlaggedSale {
   saleId: string;
@@ -265,6 +282,8 @@ export interface GeoForgeState {
   selectedNeighborhoodCode: string | null;
   rightDrawerPanel: RightDrawerPanel;
   bloomParcelId: string | null;
+  bloomLatlng: { lat: number; lng: number } | null;
+  selectedRadiusMi: 0.25 | 0.5 | 1.0 | null;
   flyTarget: { lat: number; lng: number } | null;
   neighborhoodStats: NeighborhoodStat[];
   salePoints: SalePoint[];
@@ -282,6 +301,8 @@ export interface GeoForgeState {
   openDrawer: (panel: RightDrawerPanel) => void;
   closeDrawer: () => void;
   setBloomParcelId: (id: string | null) => void;
+  setBloomLatlng: (latlng: { lat: number; lng: number } | null) => void;
+  setSelectedRadiusMi: (radius: 0.25 | 0.5 | 1.0 | null) => void;
   setFlyTarget: (target: { lat: number; lng: number } | null) => void;
   setNeighborhoodStats: (stats: NeighborhoodStat[]) => void;
   setSalePoints: (sales: SalePoint[]) => void;

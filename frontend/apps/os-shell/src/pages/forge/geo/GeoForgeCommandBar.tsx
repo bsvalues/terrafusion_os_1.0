@@ -240,6 +240,18 @@ export function GeoForgeCommandBar() {
 
         <Button
           size="sm"
+          variant={rightDrawerPanel === 'stratification' ? 'default' : 'outline'}
+          className={`h-7 text-[11px] px-2 ${
+            rightDrawerPanel === 'stratification'
+              ? 'bg-violet-800/40 text-violet-300 border-violet-700/60 hover:bg-violet-800/60'
+              : 'text-slate-400 border-slate-700 hover:text-white'
+          }`}
+          onClick={() => openDrawer('stratification')}
+        >
+          Strata
+        </Button>
+        <Button
+          size="sm"
           variant={rightDrawerPanel === 'outlier-review' ? 'default' : 'outline'}
           className={`h-7 text-[11px] px-2 ${
             rightDrawerPanel === 'outlier-review'

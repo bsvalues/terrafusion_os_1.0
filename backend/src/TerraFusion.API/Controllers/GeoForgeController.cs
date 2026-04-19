@@ -903,6 +903,59 @@ public class GeoForgeController : ControllerBase
         return Ok(new { saleId, decision = req.Decision, updatedAt = DateTime.UtcNow.ToString("o") });
     }
 
+    // ── 10. IAAO Property Class Stratification ────────────────────────────────
+    [HttpGet("stratification")]
+    public async Task<IActionResult> GetStratification(
+        [FromQuery] int taxYear = 0,
+        CancellationToken ct = default)
+    {
+        if (taxYear == 0) taxYear = DateTime.Now.Year;
+
+        var rawSales = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.CountyId == BentonCountyId
+                     && s.SalesYear == taxYear
+                     && s.QualificationDecision != "disqualified")
+            .Select(s => new
+            {
+                s.ParcelId,
+                PropertyType = (s.PropertyType ?? "R").ToUpper(),
+                SalePrice = s.AdjustedSalePrice ?? s.SalePrice,
+            })
+            .Where(s => s.ParcelId != null && s.SalePrice > 10_000m)
+            .ToListAsync(ct);
+
+        var avMap = await GetAssessedValueMapAsync(rawSales.Select(s => s.ParcelId!), taxYear, ct);
+
+        var rows = rawSales
+            .Where(s => s.ParcelId != null && avMap.ContainsKey(s.ParcelId!))
+            .Select(s => new
+            {
+                Code  = GeoStrataMeta.GetCode(s.PropertyType),
+                Ratio = avMap[s.ParcelId!] / s.SalePrice,
+                Av    = avMap[s.ParcelId!],
+                Sp    = s.SalePrice,
+            })
+            .Where(r => r.Ratio is > 0 and < 10)
+            .ToList();
+
+        var strata = new[] { "R", "C", "I", "F" }
+            .Select(code =>
+            {
+                var g = rows.Where(r => r.Code == code).ToList();
+                return GeoStrataBuilder.Build(code, GeoStrataMeta.GetLabel(code),
+                    g.Select(r => r.Ratio).ToList(), g.Sum(r => r.Av), g.Sum(r => r.Sp));
+            })
+            .Where(s => s.n > 0)
+            .OrderByDescending(s => s.n)
+            .ToList();
+
+        var overall = GeoStrataBuilder.Build("ALL", "All Properties",
+            rows.Select(r => r.Ratio).ToList(), rows.Sum(r => r.Av), rows.Sum(r => r.Sp));
+
+        return Ok(new { taxYear, strata, overall });
+    }
+
     // ── Private helpers ──────────────────────────────────────────────────────
 
     private async Task<Dictionary<string, decimal>> GetAssessedValueMapAsync(
@@ -953,3 +1006,45 @@ public class GeoForgeController : ControllerBase
 }
 
 public record PatchQualificationRequest(string Decision);
+
+internal record StrataRowDto(string code, string label, int n, double medianRatio, double cod, double prd, bool iaaoOk);
+
+internal static class GeoStrataMeta
+{
+    public static string GetCode(string pt)
+    {
+        if (string.IsNullOrEmpty(pt)) return "R";
+        if (pt.StartsWith('C')) return "C";
+        if (pt.StartsWith('I')) return "I";
+        if (pt.StartsWith('F') || pt.StartsWith('A')) return "F";
+        return "R";
+    }
+
+    public static string GetLabel(string code) => code switch
+    {
+        "C"   => "Commercial",
+        "I"   => "Industrial",
+        "F"   => "Farm / Land",
+        "ALL" => "All Properties",
+        _     => "Residential",
+    };
+}
+
+internal static class GeoStrataBuilder
+{
+    public static StrataRowDto Build(string code, string label, List<decimal> ratios, decimal sumAv, decimal sumSp)
+    {
+        var n = ratios.Count;
+        if (n == 0) return new StrataRowDto(code, label, 0, 0, 0, 0, false);
+        var sorted = ratios.OrderBy(r => r).ToList();
+        var median = TrendStats.Median(sorted);
+        var mean   = sorted.Average();
+        var mad    = (decimal)sorted.Average(r => Math.Abs((double)(r - median)));
+        var cod    = median > 0 ? Math.Round(mad / median * 100m, 1) : 0m;
+        var wgtMean = sumSp > 0 ? sumAv / sumSp : mean;
+        var prd    = wgtMean > 0 ? Math.Round(mean / wgtMean, 3) : 1.000m;
+        var iaaoOk = median is >= 0.90m and <= 1.10m && cod <= 20m && prd is >= 0.98m and <= 1.03m;
+        return new StrataRowDto(code, label, n,
+            (double)Math.Round(median, 3), (double)cod, (double)prd, iaaoOk);
+    }
+}
