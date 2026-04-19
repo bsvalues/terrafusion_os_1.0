@@ -304,6 +304,8 @@ export interface CertificationSummary {
   certificationNote: string;
 }
 
+export type PriceBand = '0-200' | '200-400' | '400-700' | '700+' | null;
+
 export interface GeoForgeState {
   filter: GeoForgeFilter;
   activeLayers: Set<MapLayer>;
@@ -320,6 +322,7 @@ export interface GeoForgeState {
   gwrSurface: GwrSurface | null;
   simulationDeltaMap: Record<string, number> | null;
   selectedMonth: string | null;
+  priceBand: PriceBand;
   loadingStats: boolean;
   loadingSales: boolean;
   loadingDiagnosis: boolean;
@@ -340,6 +343,7 @@ export interface GeoForgeState {
   setGwrSurface: (gwr: GwrSurface | null) => void;
   setSimulationDeltaMap: (m: Record<string, number> | null) => void;
   setSelectedMonth: (month: string | null) => void;
+  setPriceBand: (band: PriceBand) => void;
   setLoadingStats: (v: boolean) => void;
   setLoadingSales: (v: boolean) => void;
   setLoadingDiagnosis: (v: boolean) => void;

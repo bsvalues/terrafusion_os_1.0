@@ -29,6 +29,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     simulationDeltaMap,
     selectedNeighborhoodCode,
     selectedMonth,
+    priceBand,
     flyTarget,
     setFlyTarget,
     bloomLatlng,
@@ -236,6 +237,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
             salePrice: sp.salePrice,
             saleDate: sp.saleDate,
             isOutlier: sp.isOutlier,
+            qualificationDecision: sp.qualificationDecision,
             color: ratioPointColor(sp.ratio),
             radius: salePointRadius(sp.salePrice),
           },
@@ -378,7 +380,7 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
     });
   }, [bloomLatlng, selectedRadiusMi, salePoints]);
 
-  // Month filter — narrows sale-circles and outlier-ring to a single YYYY-MM
+  // Sale filter — month + price band
   useEffect(() => {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
@@ -387,11 +389,18 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
       ? ['==', ['slice', ['get', 'saleDate'], 0, 7], selectedMonth]
       : true;
 
+    const priceFilter = priceBand === '0-200' ? ['<', ['get', 'salePrice'], 200000]
+      : priceBand === '200-400' ? ['all', ['>=', ['get', 'salePrice'], 200000], ['<', ['get', 'salePrice'], 400000]]
+      : priceBand === '400-700' ? ['all', ['>=', ['get', 'salePrice'], 400000], ['<', ['get', 'salePrice'], 700000]]
+      : priceBand === '700+' ? ['>=', ['get', 'salePrice'], 700000]
+      : true;
+
     if (map.getLayer('sale-circles')) {
       map.setFilter('sale-circles', [
         'all',
         ['!', ['has', 'point_count']],
         monthFilter,
+        priceFilter,
       ] as mapboxgl.FilterSpecification);
     }
     if (map.getLayer('sale-outlier-ring')) {
@@ -400,9 +409,10 @@ export function GeoForgeMap({ onNeighborhoodClick, onSaleClick }: Props) {
         ['!', ['has', 'point_count']],
         ['==', ['get', 'isOutlier'], true],
         monthFilter,
+        priceFilter,
       ] as mapboxgl.FilterSpecification);
     }
-  }, [selectedMonth]);
+  }, [selectedMonth, priceBand]);
 
   // Toggle layer visibility
   useEffect(() => {

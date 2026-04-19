@@ -219,6 +219,12 @@ export function NeighborhoodDetailPanel() {
 
   const { stats } = ns;
 
+  const srtIndex = stats.q1Ratio > 0 && stats.q5Ratio > 0 ? stats.q1Ratio / stats.q5Ratio : null;
+  const srtBandVal: 'ok' | 'watch' | 'critical' | undefined = srtIndex === null ? undefined
+    : srtIndex >= 0.95 && srtIndex <= 1.05 ? 'ok'
+    : srtIndex >= 0.90 && srtIndex <= 1.10 ? 'watch'
+    : 'critical';
+
   type StatRow = { label: string; value: string; band?: 'ok' | 'watch' | 'critical' };
   const rows: StatRow[] = [
     { label: 'Qualified Sales', value: String(stats.count) },
@@ -233,6 +239,7 @@ export function NeighborhoodDetailPanel() {
     { label: 'Max', value: stats.max.toFixed(3) },
     { label: 'Std Dev', value: stats.stdDev.toFixed(3) },
     { label: 'CV', value: (stats.cv * 100).toFixed(1) + '%' },
+    ...(srtIndex !== null ? [{ label: 'SRT (Q1/Q5)', value: srtIndex.toFixed(3), band: srtBandVal }] : []),
   ];
 
   return (

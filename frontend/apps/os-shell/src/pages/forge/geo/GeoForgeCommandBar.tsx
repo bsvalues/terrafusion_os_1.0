@@ -9,7 +9,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { apiFetchJson } from '@/lib/apiBase';
-import type { MapLayer, ParcelSearchResult } from './types/geoforge.types';
+import type { MapLayer, ParcelSearchResult, PriceBand } from './types/geoforge.types';
+
+const PRICE_BANDS: { label: string; value: PriceBand }[] = [
+  { label: 'All prices', value: null },
+  { label: '< $200k', value: '0-200' },
+  { label: '$200k–$400k', value: '200-400' },
+  { label: '$400k–$700k', value: '400-700' },
+  { label: '> $700k', value: '700+' },
+];
 
 const LAYER_TOGGLES: { layer: MapLayer; label: string }[] = [
   { layer: 'choropleth', label: 'Nbhd' },
@@ -25,6 +33,7 @@ export function GeoForgeCommandBar() {
   const {
     filter, setFilter, activeLayers, toggleLayer, openDrawer, rightDrawerPanel,
     salePoints, selectedMonth, setSelectedMonth,
+    priceBand, setPriceBand,
     setBloomParcelId, setFlyTarget,
   } = useGeoForgeStore();
 
@@ -205,6 +214,25 @@ export function GeoForgeCommandBar() {
       </div>
 
       <div className="ml-auto flex items-center gap-1">
+        {/* Price band filter */}
+        {activeLayers.has('sale-scatter') && (
+          <Select
+            value={priceBand ?? '__all__'}
+            onValueChange={(v) => setPriceBand(v === '__all__' ? null : v as PriceBand)}
+          >
+            <SelectTrigger className="w-[110px] h-7 text-xs bg-slate-900 border-slate-700 text-white">
+              <SelectValue placeholder="All prices" />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-900 border-slate-700">
+              {PRICE_BANDS.map(({ label, value }) => (
+                <SelectItem key={value ?? '__all__'} value={value ?? '__all__'} className="text-xs text-white">
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
         {/* Month filter */}
         {saleMonths.length > 0 && (
           <Select
