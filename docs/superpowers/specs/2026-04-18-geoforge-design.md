@@ -26,7 +26,10 @@ GeoForge implements the **Benton Method** — a ratio study framework that excee
 | **TerraAtlas ArcGIS Layer 3** | Neighborhood polygon GeoJSON (NEIGHBORHOOD_CODE, NEIGHBORHOOD_NAME, MARKET_AREA, LAND_CLASS) | `GET /api/atlas/gis/spatial-query?layer=Neighborhoods` |
 | **TerraForge neighborhood stats** | All 12 Benton Method stats + PRB + VEI per neighborhood | `GET /api/terraforge/ratio-study/neighborhood-stats?taxYear=Y` (**new endpoint — see below**) |
 | **TerraForge existing endpoints** | County-wide COD/PRD/trends/diagnostics/calibration | `GET /api/terraforge/ratio-study/*` (existing — preserved from Statistics Studio) |
-| **ComparableSales table** | Individual qualifying sale records (address, sale price, AV, ratio, date, quintile) | `GET /api/terraforge/ratio-study/sales?neighborhood=KW-302&taxYear=2025` (**new endpoint**) |
+| **ComparableSales table** | Individual qualifying sale records with parcel coordinates — county-wide | `GET /api/terraforge/ratio-study/sales?taxYear=2025&scope=county` (**new endpoint, county-wide**) |
+| **Spatial query engine** | Buffer, transect, polygon, adjacency queries returning ad-hoc sale sets | `GET /api/terraforge/ratio-study/sales?scope=spatial&lat=&lng=&radiusMiles=` (**new**) |
+| **GWR endpoint** | Geographically Weighted Regression surface (PRD/COD at every interpolated point) | `POST /api/terraforge/ratio-study/gwr` (**new, cached per year**) |
+| **GIS export** | GeoJSON / Shapefile of neighborhoods + stats | `GET /api/terraforge/ratio-study/export?format=geojson|shapefile&taxYear=Y` (**new**) |
 | **TerraAtlas AssessorPropVal FeatureServer** | Parcel polygon GeoJSON for individual sale drill-down | Existing `atlasService.searchMassAppraisalParcels()` |
 
 ### What GeoForge retires
@@ -61,23 +64,38 @@ GeoForge implements the **Benton Method** — a ratio study framework that excee
 
 ## The Canvas — Primary Surface
 
-GeoForge has one surface with four zones. No tabs. No mode switching.
+GeoForge has one surface. **The map is the workspace.** Stats are contextual surfaces that float over the map or anchor to the right edge — they do not permanently partition the canvas. No fixed side panels. No tabs. No mode switching.
 
 ```
-┌─ titlebar (36px) ──────────────────────────────────────────────┐
-├─ command bar (44px) ───────────────────────────────────────────┤
-│  ⌘K input │ metric pills │ year scrubber │ ✦ Draft Report     │
-├──┬─────────────────────────────────────┬──────────────────────┤
-│  │                                     │                      │
-│tb│         MAP  (choropleth)           │   STATS TABLE        │
-│  │         neighborhood polygons       │   sortable · synced  │
-│  │         bloom card on click         │   city rollups       │
-│  │         legend · scale · N arrow   │   (320px fixed)      │
-│  │                                     │                      │
-├──┴─────────────────────────────────────┴──────────────────────┤
-│  EQUITY RAIL (44px) — all neighborhoods as bars · IAAO line   │
-└────────────────────────────────────────────────────────────────┘
+┌─ titlebar (36px) ──────────────────────────────────────────────────┐
+├─ command bar (44px) ───────────────────────────────────────────────┤
+│  ⌘K input │ metric pills │ year scrubber │ ✦ Draft Report         │
+├──┬─────────────────────────────────────────────────────────────────┤
+│  │                                                                  │
+│tb│    MAP  — full canvas, edge to edge                             │
+│  │    neighborhood choropleth · sale-point scatter                 │
+│  │    parcel polygons · context layers · clustering overlay        │
+│  │                                                                  │
+│  │   ┌──────────────────────┐   floating bloom card on click      │
+│  │   │ KW-302 · Bloom Card  │   dismisses on click-away           │
+│  │   │ radar · 5 stats      │                                      │
+│  │   │ Details / Diagnose / │                                      │
+│  │   │ View sales →         │                                      │
+│  │   └──────────────────────┘                                      │
+│  │                                                                  │
+│  │                        ┌─ right drawer (480px, slides in) ────┐ │
+│  │                        │ NeighborhoodDetailPanel              │ │
+│  │                        │ OR SalesDrillDownPanel               │ │
+│  │                        │ OR DiagnosisPanel                    │ │
+│  │                        │ OR StatsTablePanel (default)         │ │
+│  │                        │ OR ReportPanel                       │ │
+│  │                        └──────────────────────────────────────┘ │
+├──┴─────────────────────────────────────────────────────────────────┤
+│  EQUITY RAIL (44px) — all neighborhoods as bars · IAAO/Benton line│
+└────────────────────────────────────────────────────────────────────┘
 ```
+
+**Right drawer** (480px) slides in from the right edge and overlays the map — it does not shrink the map canvas. The map remains fully interactive underneath. Default content is the stats table. Switching panels slides new content in; closing the drawer returns to full-canvas map view. This is what "the map IS the navigation" actually means.
 
 ### Zone 1: Command Bar
 
@@ -130,10 +148,11 @@ PRD, VEI, Median Ratio, PRB each have their own 6-stop scale keyed to Benton Met
 
 ---
 
-#### Layer 3: Sale-Point Scatter *(the critical GIS layer)*
+#### Layer 3: Sale-Point Scatter *(the critical GIS layer — county-wide)*
 
-**Source:** `GET /api/terraforge/ratio-study/sales?neighborhood=all&taxYear=Y&includeCoordinates=true`
-Individual qualifying sales plotted as circle markers at their **parcel centroid** (lat/lng resolved via parcel ID → AssessorPropVal FeatureServer join). The sale-point scatter is the primary tool for within-neighborhood spatial diagnosis — it answers *"where in this neighborhood are the bad sales?"* in a way no aggregate stat can.
+**Source:** `GET /api/terraforge/ratio-study/sales?taxYear=Y&scope=county&includeCoordinates=true`
+
+**County-wide, not neighborhood-scoped.** All ~2,000 qualifying sales in the county are loaded on mount. At low zoom (county view), Mapbox cluster circles show sale count + dominant flag color per cluster. At street zoom, individual points render. This is essential — the assessor must be able to see cross-neighborhood patterns (e.g., outliers clustering along the I-82 corridor across KW-302, KW-303, and RP-205 simultaneously).
 
 **Point color by ratio flag:**
 
@@ -147,13 +166,22 @@ Individual qualifying sales plotted as circle markers at their **parcel centroid
 Point radius encodes sale price (larger = higher sale price) — immediately visualizes whether high-value sales cluster geographically (stratification evidence).
 
 **Interaction:**
-- Hover: tooltip showing address, sale price, AV, ratio, date
-- Click: opens a parcel mini-card with address, ratio, flag, date, quintile — plus "Open in TerraAtlas" link
-- Drag-select: lasso a region, filter the stats table to only the lassoed sales, update all visible stats for the selection
+- Hover: tooltip showing address, sale price, AV, ratio, date, neighborhood
+- Click: opens a parcel mini-card with full sale record + "Open in TerraAtlas" link
+- **Lasso across neighborhood boundaries**: drag-select any region, even one that spans multiple neighborhoods — the stats drawer updates to show computed stats for only the lassoed sales (ad-hoc submarket analysis without pre-defined boundaries)
+- **Right-click any map location**: context menu shows "What's here?" — neighborhood code, market area, land class, nearest sale within 500ft with its ratio
 
-**Toggle behavior:** When scatter is on, choropleth opacity drops to 0.4 so points are visible against neighborhood context. When scatter is off, choropleth returns to full opacity.
+**Toggle behavior:** When scatter is on, choropleth opacity drops to 0.4. When a single neighborhood is selected, non-selected neighborhood sales dim to 20% opacity, selected neighborhood sales stay full opacity.
 
-**Why this layer matters:** If KW-302 has COD 14.5 and the outlier sales all cluster in the northwest quadrant near the canal, that's an external-factor pattern — different from outliers scattered uniformly (noise) or concentrated in the high-price tier (stratification). This is the GIS insight that no stat table can provide.
+---
+
+#### Layer 3.5: KDE Ratio Surface (continuous heat map)
+
+**Mode selector:** In the scatter toggle button, a sub-option switches between "Points" and "Heat." Heat mode replaces individual dots with a **Kernel Density Estimation surface** — a continuous color gradient showing ratio density across the county, not bounded by neighborhood polygons.
+
+The KDE surface reveals what the choropleth cannot: ratio gradients that cross neighborhood lines, smooth transition zones vs. sharp discontinuities (sharp = likely boundary artifact; smooth = real market gradient), and areas of high sale density vs. sparse coverage.
+
+KDE computed client-side from the loaded sale coordinates using Mapbox's built-in heatmap layer type — no additional backend call. Color scale: green (ratios near 1.0) → amber → red (ratios diverging from 1.0 in either direction), weighted by ratio deviation from 1.0.
 
 ---
 
@@ -182,6 +210,12 @@ All toggled via the Layers drawer. Sources from TerraAtlas existing endpoints or
 | **FEMA flood zones** | FEMA NFHL public WMS | Flood-zone parcels often have differential ratio patterns |
 | **New construction** (2022–2025) | Filter on `YearBuilt` from AssessorPropVal | Recent construction skews ratios; spatial cluster of new construction = likely ratio distortion |
 | **Permit activity** | (future) county permit layer | |
+
+---
+
+#### Layer 5.5: Spatial Query Results (on-demand)
+
+Activated by spatial query tools (see Spatial Query section below) or ⌘K spatial commands. Renders the results of a spatial query — buffer polygons, selected parcel sets, transect lines — as a temporary overlay. Cleared by pressing Escape or running a new query.
 
 ---
 
@@ -263,6 +297,86 @@ A horizontal strip showing every neighborhood as a proportional colored bar, sor
 
 ---
 
+## Spatial Query Tools
+
+The map accepts direct spatial input — not just clicks on pre-defined polygons. These tools are in the left toolbar below the layer buttons.
+
+### Buffer Query
+Click the buffer tool, then click any point on the map. A radius slider appears (0.1 mi → 5 mi). GeoForge selects all sales within that radius and computes Benton Method stats for that ad-hoc spatial sample. The buffer circle renders on the map as Layer 5.5. Stats appear in the right drawer.
+
+Use case: *"Show me all sales within 0.5 miles of the new I-82 interchange — are their ratios systematically different from the rest of the neighborhood?"*
+
+```
+GET /api/terraforge/ratio-study/sales
+  ?taxYear=2025&scope=spatial
+  &lat=46.2112&lng=-119.1372&radiusMiles=0.5
+```
+
+### Transect / Cross-Section
+Click the transect tool, draw a line across the map (two-point click). GeoForge plots ratio values along that transect — a small line chart showing ratio on Y-axis and distance along transect on X-axis, with sale dots plotted at their projected positions. Shows how ratio changes spatially along any axis (e.g., downtown → suburban fringe).
+
+Reveals: abrupt ratio discontinuities (sharp = likely neighborhood boundary artifact, may need boundary revision), smooth gradients (real market gradient, neighborhood boundary is arbitrary), convergence or divergence toward corridor endpoints.
+
+### Adjacency Highlight
+Right-click any neighborhood polygon → "Show adjacent neighborhoods." Highlights all neighborhoods sharing a boundary edge with the selected one, expands their stats in the right drawer for comparison. Checks whether equity problems respect or cross neighborhood boundaries — a key test for whether the boundary is correctly drawn.
+
+### Free-Polygon Lasso
+Draw any polygon on the map — not constrained to existing neighborhood boundaries. GeoForge computes Benton Method stats for all sales inside the polygon. This is the core tool for submarket hypothesis testing: *"What if I drew the boundary like this instead?"*
+
+⌘K spatial commands (extends earlier table):
+
+| Command | Action |
+|---|---|
+| `buffer [address or intersection] [distance]` | Buffer query at location |
+| `transect [start address] to [end address]` | Cross-section between two points |
+| `select sales near [feature type]` | Proximity query (e.g., "near flood zone", "near I-82") |
+| `adjacent to [neighborhood]` | Adjacency highlight |
+| `compare east vs west [neighborhood]` | Split polygon in half on east-west axis, compute stats per half |
+
+---
+
+## GIS Exports
+
+The assessor presents spatial evidence to county commissioners, the Washington DOR, and IAAO peer review. GeoForge produces cartographic-quality exports — not just data tables.
+
+### Map Export (PDF / PNG)
+"Export Map" button in command bar (or ⌘K `export map`). Opens an export dialog:
+- **Format**: PDF (print) or PNG (presentation)
+- **Paper size**: 8.5×11, 11×17, custom
+- **Content options**: include/exclude legend, scale bar, north arrow, title block with county name + tax year + "Prepared by Benton County Assessor's Office"
+- **Which layers**: current layer state, or predefined presets (Ratio Study Overview, Equity Failures, Outlier Sales)
+
+The exported map is a print-quality rasterization of the current Mapbox canvas at 300 DPI. Uses Mapbox's static image API with the current viewport and style.
+
+### GeoJSON Export
+"Export GeoJSON" — downloads the neighborhood polygon layer with the full Benton Method stats for the current tax year attached as feature properties. Assessors and other agencies can open this in ArcGIS, QGIS, or any GIS tool that speaks GeoJSON.
+
+```json
+// Example exported feature
+{
+  "type": "Feature",
+  "geometry": { "type": "Polygon", "coordinates": [...] },
+  "properties": {
+    "neighborhoodCode": "KW-302",
+    "neighborhoodName": "Kennewick Central",
+    "taxYear": 2025,
+    "cod": 14.5,
+    "prd": 1.043,
+    "prb": -0.041,
+    "vei": 12.8,
+    "medianRatio": 0.973,
+    "count": 124,
+    "bentonPassAll": false,
+    "iaaoPassAll": false
+  }
+}
+```
+
+### Shapefile Export
+Same as GeoJSON but packaged as `.zip` containing `.shp`, `.dbf`, `.prj`, `.shx` — the standard format for state agency reporting. Washington DOR ratio study submission requires spatial data in this format.
+
+---
+
 ## The Benton Method Analytics
 
 ### 12 Core Statistics (computed per neighborhood, city rollup, county-wide)
@@ -297,6 +411,29 @@ VEI = |max(QMR) − min(QMR)| / mean(5 QMRs) × 100
 Pass: VEI < 10. Lower = better vertical equity (no differential treatment by value tier).
 
 The quintile breakdown table is shown in the full neighborhood detail panel: 5 QMR values with bar visualization, trend direction (low-value vs high-value slope), and VEI result box with formula.
+
+### GWR — Geographically Weighted Regression *(the PhD-level differentiator)*
+
+Standard ratio study analysis computes one PRD per neighborhood — a single number that masks internal spatial variation. **Geographically Weighted Regression (GWR)** computes a PRD-equivalent (and COD-equivalent) at every point in the county, producing a continuous spatial surface rather than discrete neighborhood buckets. The result reveals:
+
+- Where exactly PRD transitions from passing to failing — the "equity fault line"
+- Whether the neighborhood boundary is in the right place or is cutting across a real market gradient
+- Which parcels are driving a neighborhood's failure (those in the high-PRD zone vs. well-priced ones pulling it toward passing)
+
+**v1 implementation:** GWR results surface as a new optional layer (Layer 2.5, between choropleth and scatter). Toggled from the Layers drawer. The layer renders as a continuous color ramp (same scale as the choropleth) but without polygon boundaries — a smooth gradient.
+
+The GWR computation runs server-side on demand (not on every load — it's expensive):
+```
+POST /api/terraforge/ratio-study/gwr
+  body: { taxYear: 2025, metric: "prd", bandwidth: "adaptive" }
+  returns: GeoJSON FeatureCollection of interpolated grid points with metric value
+```
+
+Bandwidth is adaptive (bisquare kernel, k=50 nearest sales per estimation point). Results are cached by tax year — one computation per year covers all sessions.
+
+**Why this matters:** No CAMA software, no IAAO-standard tool, and no commercial mass appraisal software computes GWR for ratio study analysis. This is the PhD-level capability that makes GeoForge not just better than competitors — it makes them irrelevant.
+
+---
 
 ### IAAO vs Benton pass/fail display
 
