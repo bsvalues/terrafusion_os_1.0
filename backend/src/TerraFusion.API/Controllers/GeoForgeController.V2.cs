@@ -551,6 +551,8 @@ public partial class GeoForgeController
         CancellationToken ct = default)
     {
         var taxYear = req.TaxYear == 0 ? DateTime.UtcNow.Year : req.TaxYear;
+        if (req.Scope is not ("neighborhood" or "class" or "county"))
+            return BadRequest(new { error = "Scope must be 'neighborhood', 'class', or 'county'." });
         if (Math.Abs(req.AdjustmentPct) > 50)
             return BadRequest(new { error = "Adjustment must be between −50% and +50%." });
 
@@ -580,7 +582,7 @@ public partial class GeoForgeController
         var parcelIds = sales.Select(s => s.ParcelId).Distinct().ToHashSet();
         var avMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
 
-        var multiplier = (decimal)(1.0 + req.AdjustmentPct / 100.0);
+        var multiplier = 1m + (decimal)req.AdjustmentPct / 100m;
 
         var records = sales
             .Where(s => s.SalePrice > 10_000m && avMap.ContainsKey(s.ParcelId))
@@ -602,7 +604,8 @@ public partial class GeoForgeController
         {
             var sorted = ratios.OrderBy(r => r).ToList();
             var n = sorted.Count;
-            var med = sorted[n / 2];
+            var mid = n / 2;
+            var med = n % 2 == 1 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2.0;
             var cod = med > 0 ? sorted.Select(r => Math.Abs(r - med)).Average() / med * 100 : 0;
             var mean = sorted.Average();
             return (Math.Round(med, 4), Math.Round(cod, 2), Math.Round(mean, 4));
