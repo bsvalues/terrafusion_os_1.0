@@ -89,6 +89,7 @@ function NeighborhoodAdvisory({ row, onSimulate }: { row: AuditRankedRow; onSimu
 
       {neededPct !== 0 && (
         <button
+          type="button"
           className="gf2-copilot__sim-cta"
           onClick={() => onSimulate(neededPct)}
           title={`Pre-fill simulation with recommended ${neededPct > 0 ? '+' : ''}${neededPct}% adjustment`}
@@ -113,7 +114,7 @@ function CountySummary({ medianRatio, cod }: { medianRatio: number | null; cod: 
       </div>
       <div className="gf2-copilot__county-stat">
         <span className="gf2-copilot__county-label">Weighted COD</span>
-        <span className={`gf2-copilot__county-val ${cod !== null && cod <= 20 ? 'gf2-copilot__county-val--pass' : 'gf2-copilot__county-val--fail'}`}>
+        <span className={`gf2-copilot__county-val ${cod === null ? '' : cod <= 20 ? 'gf2-copilot__county-val--pass' : 'gf2-copilot__county-val--fail'}`}>
           {cod !== null ? cod.toFixed(1) : '—'}
         </span>
       </div>
