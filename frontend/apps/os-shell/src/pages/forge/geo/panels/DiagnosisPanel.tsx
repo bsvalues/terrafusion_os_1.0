@@ -37,7 +37,7 @@ export function DiagnosisPanel() {
     queryKey: ['geoforge-diagnosis', filter.taxYear, selectedNeighborhoodCode],
     queryFn: () =>
       apiFetchJson<DiagnosisResult>(
-        `/api/geoforge/ratio-study/diagnosis?taxYear=${filter.taxYear}&neighborhoodCode=${selectedNeighborhoodCode}`
+        `/geoforge/ratio-study/diagnosis?taxYear=${filter.taxYear}&neighborhoodCode=${selectedNeighborhoodCode}`
       ),
     enabled: !!selectedNeighborhoodCode,
     staleTime: 1000 * 60 * 5,

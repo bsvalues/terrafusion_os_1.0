@@ -31,7 +31,7 @@ export function CompsPanel() {
     queryKey: ['geoforge-comps', bloomParcelId, filter.taxYear],
     queryFn: () =>
       apiFetchJson<CompSale[]>(
-        `/api/geoforge/parcel/${bloomParcelId}/comps?taxYear=${filter.taxYear}&count=8`,
+        `/geoforge/parcel/${bloomParcelId}/comps?taxYear=${filter.taxYear}&count=8`,
       ),
     enabled: !!bloomParcelId,
     staleTime: 1000 * 60 * 10,

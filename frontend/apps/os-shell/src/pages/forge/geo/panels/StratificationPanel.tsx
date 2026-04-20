@@ -58,7 +58,7 @@ export function StratificationPanel() {
     queryKey: ['geoforge-stratification', filter.taxYear],
     queryFn: () =>
       apiFetchJson<StratificationResult>(
-        `/api/geoforge/stratification?taxYear=${filter.taxYear}`,
+        `/geoforge/stratification?taxYear=${filter.taxYear}`,
       ),
     staleTime: 1000 * 60 * 10,
   });

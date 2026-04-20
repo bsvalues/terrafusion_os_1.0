@@ -88,7 +88,7 @@ export function YearTrendPanel() {
     queries: years.map((yr) => ({
       queryKey: ['geoforge-nbhd-stats', yr, 'all'],
       queryFn: () => apiFetchJson<NeighborhoodStat[]>(
-        `/api/geoforge/ratio-study/neighborhood-stats?taxYear=${yr}`
+        `/geoforge/ratio-study/neighborhood-stats?taxYear=${yr}`
       ),
       enabled: !!selectedNeighborhoodCode && view === 'annual',
       staleTime: 1000 * 60 * 10,

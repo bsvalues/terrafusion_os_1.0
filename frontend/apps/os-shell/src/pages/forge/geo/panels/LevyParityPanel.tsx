@@ -60,7 +60,7 @@ export function LevyParityPanel() {
     queryKey: ['geoforge-av-change', filter.taxYear],
     queryFn: () =>
       apiFetchJson<YoyChangePoint[]>(
-        `/api/geoforge/neighborhoods/av-change?taxYear=${filter.taxYear}`
+        `/geoforge/neighborhoods/av-change?taxYear=${filter.taxYear}`
       ),
     staleTime: 1000 * 60 * 10,
   });

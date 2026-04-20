@@ -41,7 +41,7 @@ export function CountyHealthPanel() {
     queryKey: ['geoforge-county-trend', filter.taxYear],
     queryFn: () =>
       apiFetchJson<TrendYear[]>(
-        `/api/geoforge/ratio-study/county-trend?fromYear=${filter.taxYear - 4}&toYear=${filter.taxYear}`
+        `/geoforge/ratio-study/county-trend?fromYear=${filter.taxYear - 4}&toYear=${filter.taxYear}`
       ),
     staleTime: 1000 * 60 * 10,
   });

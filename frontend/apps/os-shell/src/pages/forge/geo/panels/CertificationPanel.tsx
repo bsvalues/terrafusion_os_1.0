@@ -53,7 +53,7 @@ export function CertificationPanel() {
   const { data, isLoading, error } = useQuery<CertificationSummary>({
     queryKey: ['geoforge-certification', filter.taxYear],
     queryFn: () => apiFetchJson<CertificationSummary>(
-      `/api/geoforge/certification/summary?taxYear=${filter.taxYear}`
+      `/geoforge/certification/summary?taxYear=${filter.taxYear}`
     ),
     staleTime: 1000 * 60 * 10,
   });

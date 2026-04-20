@@ -84,7 +84,7 @@ export function NeighborhoodRankingPanel() {
     queries: priorYears.map((yr) => ({
       queryKey: ['geoforge-nbhd-stats', yr],
       queryFn: () => apiFetchJson<NeighborhoodStat[]>(
-        `/api/geoforge/ratio-study/neighborhood-stats?taxYear=${yr}`
+        `/geoforge/ratio-study/neighborhood-stats?taxYear=${yr}`
       ),
       staleTime: 1000 * 60 * 30,
     })),

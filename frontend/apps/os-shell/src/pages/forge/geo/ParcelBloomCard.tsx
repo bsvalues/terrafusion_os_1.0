@@ -50,7 +50,7 @@ export function ParcelBloomCard() {
   const { data, isLoading } = useQuery<BloomParcel>({
     queryKey: ['geoforge-bloom', bloomParcelId, filter.taxYear],
     queryFn: () => apiFetchJson<BloomParcel>(
-      `/api/geoforge/parcel/${bloomParcelId}/bloom?taxYear=${filter.taxYear}`
+      `/geoforge/parcel/${bloomParcelId}/bloom?taxYear=${filter.taxYear}`
     ),
     enabled: !!bloomParcelId,
     staleTime: 1000 * 60 * 30,

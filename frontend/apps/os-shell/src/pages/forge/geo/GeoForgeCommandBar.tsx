@@ -122,7 +122,7 @@ export function GeoForgeCommandBar() {
     const timer = setTimeout(async () => {
       try {
         const results = await apiFetchJson<ParcelSearchResult[]>(
-          `/api/geoforge/parcel/search?q=${encodeURIComponent(searchQuery)}&taxYear=${filter.taxYear}`
+          `/geoforge/parcel/search?q=${encodeURIComponent(searchQuery)}&taxYear=${filter.taxYear}`
         );
         setSearchResults(results);
       } catch { setSearchResults([]); }
