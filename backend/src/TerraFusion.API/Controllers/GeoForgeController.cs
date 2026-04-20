@@ -6,7 +6,7 @@ namespace TerraFusion.API.Controllers;
 
 [ApiController]
 [Route("api/geoforge")]
-public class GeoForgeController : ControllerBase
+public partial class GeoForgeController : ControllerBase
 {
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<GeoForgeController> _logger;
