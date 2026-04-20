@@ -304,21 +304,35 @@ export function GeoForgeV2Map({
   // ── Sync layer visibility ─────────────────────────────────
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !map.isStyleLoaded()) return;
-    const setVis = (layerId: string, visible: boolean) => {
-      if (map.getLayer(layerId)) map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
+    if (!map) return;
+    const apply = () => {
+      const setVis = (layerId: string, visible: boolean) => {
+        if (map.getLayer(layerId)) map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
+      };
+      setVis('nbhd-fill', visibleLayers.has('nbhd'));
+      setVis('nbhd-line', visibleLayers.has('nbhd'));
+      setVis('nbhd-halo', visibleLayers.has('nbhd'));
+      setVis('parcel-fill', visibleLayers.has('parcels'));
+      setVis('parcel-outlier', visibleLayers.has('outliers'));
     };
-    setVis('nbhd-fill', visibleLayers.has('nbhd'));
-    setVis('nbhd-line', visibleLayers.has('nbhd'));
-    setVis('nbhd-halo', visibleLayers.has('nbhd'));
-    setVis('parcel-fill', visibleLayers.has('parcels'));
-    setVis('parcel-outlier', visibleLayers.has('outliers'));
+    if (map.isStyleLoaded()) { apply(); } else { map.once('styledata', apply); }
   }, [visibleLayers]);
 
   // ── Apply map context render mode ─────────────────────────
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !map.isStyleLoaded()) return;
+    if (!map) return;
+    const apply = () => {
+    // Reset to original defaults before applying mode override
+    if (map.getLayer('nbhd-fill'))
+      map.setPaintProperty('nbhd-fill', 'fill-opacity', [
+        'case',
+        ['==', ['get', 'neighborhoodCode'], ['literal', '']],
+        0.08,
+        0.18,
+      ]);
+    if (map.getLayer('parcel-fill'))
+      map.setLayoutProperty('parcel-fill', 'visibility', 'visible');
 
     switch (mapCtx.mode) {
       case 'county-grade':
@@ -338,7 +352,7 @@ export function GeoForgeV2Map({
           map.setPaintProperty('parcel-fill', 'fill-color', [
             'case',
             ['==', ['get', 'isOutlier'], true], 'hsl(32, 90%, 50%)',
-            'hsl(42, 18%, 88% / 0.2)',
+            'hsla(42, 18%, 88%, 0.2)',
           ]);
           map.setPaintProperty('parcel-fill', 'fill-opacity', 0.75);
         }
@@ -395,6 +409,8 @@ export function GeoForgeV2Map({
           map.setPaintProperty('parcel-fill', 'fill-opacity', 0.55);
         }
     }
+    };
+    if (map.isStyleLoaded()) { apply(); } else { map.once('styledata', apply); }
   }, [mapCtx]);
 
   if (!MAPBOX_TOKEN) {
