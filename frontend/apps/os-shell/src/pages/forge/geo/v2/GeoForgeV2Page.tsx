@@ -64,7 +64,7 @@ type SectionKey = 'county' | 'ratio' | 'spatial' | 'neighborhood' | 'adjust' | '
 interface PanelDef {
   id: string;
   label: string;
-  component: React.ComponentType;
+  component?: React.ComponentType;
   requiresNbhd?: boolean;
 }
 
@@ -114,7 +114,7 @@ const SECTIONS: Record<SectionKey, { label: string; panels: PanelDef[] }> = {
   adjust: {
     label: 'Adjustments',
     panels: [
-      { id: 'simulate',       label: 'Simulate',         component: SimulatePanel as React.ComponentType },
+      { id: 'simulate',       label: 'Simulate' },   // no component — rendered specially below
       { id: 'adj-workbench',  label: 'Workbench',        component: AdjustmentWorkbenchPanel, requiresNbhd: true },
       { id: 'qual-decisions', label: 'Qual Decisions',   component: QualDecisionPanel },
       { id: 'comp-adj-grid',  label: 'Comp Grid',        component: CompAdjGridPanel },
@@ -265,11 +265,6 @@ export function GeoForgeV2Page() {
     return SECTIONS.county.panels[0];
   }, [wbPanel]);
 
-  // SimulatePanel needs onResult prop — wrap it
-  const ActivePanel: React.ComponentType =
-    currentPanelDef.id === 'simulate'
-      ? () => <SimulatePanel onResult={setSimResult} />
-      : currentPanelDef.component;
 
   // ── Render ────────────────────────────────────────────────────
   return (
@@ -378,9 +373,14 @@ export function GeoForgeV2Page() {
             <div className="flex items-center justify-center h-32 text-sm text-slate-600 text-center px-4">
               Select a neighborhood from the queue to open this panel.
             </div>
-          ) : (
-            <ActivePanel />
-          )}
+          ) : currentPanelDef.id === 'simulate' ? (
+            <SimulatePanel onResult={setSimResult} />
+          ) : currentPanelDef.component ? (
+            (() => {
+              const PanelComponent = currentPanelDef.component!;
+              return <PanelComponent />;
+            })()
+          ) : null}
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 // frontend/apps/os-shell/src/pages/forge/geo/v2/SimulatePanel.tsx
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useGeoForgeStore } from '@/stores/geoForgeStore';
 import { simulateMassAdjust, type SimulateResult } from './v2Api';
@@ -24,6 +24,10 @@ export function SimulatePanel({ onResult }: Props) {
   const [scope, setScope] = useState<Scope>(selectedNbhd ? 'neighborhood' : 'county');
   const [pct, setPct]     = useState(0);
 
+  const ctrlRef = useRef<AbortController | null>(null);
+
+  useEffect(() => () => { ctrlRef.current?.abort(); }, []);
+
   // Reset scope to county when nbhd deselected
   useEffect(() => {
     if (!selectedNbhd && scope === 'neighborhood') setScope('county');
@@ -47,8 +51,9 @@ export function SimulatePanel({ onResult }: Props) {
   });
 
   function handleRun() {
-    const ctrl = new AbortController();
-    mutation.mutate(ctrl.signal);
+    ctrlRef.current?.abort();
+    ctrlRef.current = new AbortController();
+    mutation.mutate(ctrlRef.current.signal);
   }
 
   function handleClear() {

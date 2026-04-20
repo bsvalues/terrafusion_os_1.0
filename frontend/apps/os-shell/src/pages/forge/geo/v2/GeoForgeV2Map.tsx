@@ -164,7 +164,7 @@ export function GeoForgeV2Map({
             'hsl(16, 62%, 48%)',
           ],
           'fill-opacity': 0.55,
-          'fill-outline-color': 'hsl(30, 20%, 25% / 0.25)',
+          'fill-outline-color': 'hsla(30, 20%, 25%, 0.25)',
         },
       });
 
@@ -323,17 +323,6 @@ export function GeoForgeV2Map({
     const map = mapRef.current;
     if (!map) return;
     const apply = () => {
-    // Reset to original defaults before applying mode override
-    if (map.getLayer('nbhd-fill'))
-      map.setPaintProperty('nbhd-fill', 'fill-opacity', [
-        'case',
-        ['==', ['get', 'neighborhoodCode'], ['literal', '']],
-        0.08,
-        0.18,
-      ]);
-    if (map.getLayer('parcel-fill'))
-      map.setLayoutProperty('parcel-fill', 'visibility', 'visible');
-
     switch (mapCtx.mode) {
       case 'county-grade':
         // Boost nbhd opacity, hide parcels
@@ -409,9 +398,20 @@ export function GeoForgeV2Map({
           map.setPaintProperty('parcel-fill', 'fill-opacity', 0.55);
         }
     }
+
+    // visibleLayers takes precedence over mapCtx for layer visibility
+    if (!visibleLayers.has('parcels') && map.getLayer('parcel-fill'))
+      map.setLayoutProperty('parcel-fill', 'visibility', 'none');
+    if (!visibleLayers.has('outliers') && map.getLayer('parcel-outlier'))
+      map.setLayoutProperty('parcel-outlier', 'visibility', 'none');
+    if (!visibleLayers.has('nbhd')) {
+      ['nbhd-fill', 'nbhd-line', 'nbhd-halo'].forEach((id) => {
+        if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
+      });
+    }
     };
     if (map.isStyleLoaded()) { apply(); } else { map.once('styledata', apply); }
-  }, [mapCtx]);
+  }, [mapCtx, visibleLayers]);
 
   if (!MAPBOX_TOKEN) {
     return (
