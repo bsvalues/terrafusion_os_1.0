@@ -223,33 +223,56 @@ public partial class GeoForgeController
 
     // ──────────────────────────────────────────────────────────────────────
     //  v2/neighborhoods/outline — tight concave-hull (alpha-shape) boundaries
-    //  from real parcel centroids. Replaces the convex-hull blob approach.
+    //  from real parcel ring VERTICES (actual property corners), not centroids.
     // ──────────────────────────────────────────────────────────────────────
     [HttpGet("v2/neighborhoods/outline")]
     public async Task<IActionResult> GetNeighborhoodOutlineV2(
         [FromQuery] int taxYear = 0,
-        [FromQuery] int kNearest = 6,   // alpha-shape param
+        [FromQuery] int kNearest = 8,
         CancellationToken ct = default)
     {
         if (taxYear == 0) taxYear = DateTime.UtcNow.Year;
 
-        var parcelPoints = await (
+        // Load RingJson per parcel joined to neighborhood from Properties.
+        // We use ring VERTICES (actual parcel corners) — not centroids.
+        var parcelRings = await (
             from geo in _db.GisParcelGeometries
             join prop in _db.Properties
                 .Where(p => p.CountyId == BentonCountyId
                          && p.TaxYear == taxYear
                          && p.Neighborhood != null && p.Neighborhood != "")
                 on geo.ParcelId equals prop.ParcelNumber
-            where geo.CentroidLat.HasValue && geo.CentroidLng.HasValue
-            select new
-            {
-                Neighborhood = prop.Neighborhood!,
-                Lat = geo.CentroidLat!.Value,
-                Lng = geo.CentroidLng!.Value,
-            }
+            where geo.RingJson != null
+            select new { Neighborhood = prop.Neighborhood!, geo.RingJson }
         ).ToListAsync(ct);
 
-        // ── Qualified sales → stats for coloring ─────────────────────────
+        // Extract all ring vertices per neighborhood.
+        // RingJson format: [[lng, lat], [lng, lat], ...]
+        // Round to 4 decimal places (~11 m) to deduplicate shared edge vertices.
+        var nbhdVertices = new Dictionary<string, HashSet<(double Lat, double Lng)>>();
+        foreach (var row in parcelRings)
+        {
+            if (string.IsNullOrEmpty(row.RingJson)) continue;
+            List<List<double>>? ring;
+            try { ring = JsonSerializer.Deserialize<List<List<double>>>(row.RingJson); }
+            catch { continue; }
+            if (ring is null || ring.Count < 3) continue;
+
+            if (!nbhdVertices.ContainsKey(row.Neighborhood))
+                nbhdVertices[row.Neighborhood] = new();
+
+            foreach (var pt in ring)
+            {
+                if (pt.Count >= 2)
+                {
+                    nbhdVertices[row.Neighborhood].Add((
+                        Lat: Math.Round(pt[1], 4),
+                        Lng: Math.Round(pt[0], 4)));
+                }
+            }
+        }
+
+        // Qualified sales stats for coloring (unchanged logic).
         var salePtIds = await _db.ComparableSales
             .AsNoTracking()
             .Where(s => s.CountyId == BentonCountyId
@@ -272,22 +295,19 @@ public partial class GeoForgeController
                 return (median: ratios[ratios.Count / 2], n: ratios.Count);
             });
 
-        // ── Concave hull per neighborhood ────────────────────────────────
-        var features = parcelPoints
-            .GroupBy(p => p.Neighborhood)
-            .Select(g =>
+        // Build GeoJSON features — one per neighborhood.
+        var features = nbhdVertices
+            .Select(kvp =>
             {
-                var pts = g.Select(p => (p.Lat, p.Lng)).ToList();
+                var nbhd = kvp.Key;
+                var pts = kvp.Value.ToList();
                 if (pts.Count < 3) return (object?)null;
 
                 var hull = GeoConcaveHull.Compute(pts, kNearest);
                 if (hull.Count < 3) return (object?)null;
-
-                // close ring
                 if (hull[0] != hull[^1]) hull.Add(hull[0]);
 
                 var coords = hull.Select(p => new[] { p.lng, p.lat }).ToArray();
-                var nbhd = g.Key;
                 var stats = hoodStats.TryGetValue(nbhd, out var st) ? st : (median: 1.0, n: 0);
                 var grade = GradeFromStats(stats.median, n: stats.n);
 
@@ -319,7 +339,7 @@ public partial class GeoForgeController
     [HttpGet("v2/audit/ranked")]
     public async Task<IActionResult> GetAuditRankedV2(
         [FromQuery] int taxYear = 0,
-        [FromQuery] int limit = 50,
+        [FromQuery] int limit = 500,
         CancellationToken ct = default)
     {
         if (taxYear == 0) taxYear = DateTime.UtcNow.Year;
@@ -365,17 +385,33 @@ public partial class GeoForgeController
                     AgeMonths: (now - s.SaleDate).TotalDays / 30.0
                 ))
                 .ToList();
-            if (records.Count < 3) continue;
+            var n = records.Count;
+
+            // Neighborhoods with <3 sales: grade N, no statistical hypothesis
+            if (n < 3)
+            {
+                ranked.Add(new
+                {
+                    neighborhoodCode = group.Key,
+                    medianRatio      = n > 0 ? Math.Round(records.Select(r => r.Ratio).OrderBy(r => r).ElementAt(n / 2), 4) : 1.0,
+                    cod              = 0.0,
+                    saleCount        = n,
+                    deviation        = 0.0,
+                    impact           = 0.0,
+                    grade            = "N",
+                    hypotheses       = new List<RootCauseHypothesis>(),
+                    primaryCause     = "insufficient_sales",
+                    actionLine       = $"Only {n} qualified sale{(n == 1 ? "" : "s")} — expand study window or pool adjacent neighborhoods.",
+                });
+                continue;
+            }
 
             var ratios = records.Select(r => r.Ratio).OrderBy(r => r).ToList();
-            var n = ratios.Count;
             var median = ratios[n / 2];
-            var mean = ratios.Average();
             // COD
             var absDev = ratios.Select(r => Math.Abs(r - median)).Sum() / n;
             var cod = median > 0 ? absDev / median * 100.0 : 0;
 
-            // PRD proxy (skipped — need AV weighting; stub with 1.0 for ranking)
             var deviation = median - 1.0;
             var magnitude = Math.Abs(deviation);
             var impact = magnitude * n;
@@ -397,8 +433,10 @@ public partial class GeoForgeController
             });
         }
 
+        // Actionable (impact > 0) first, insufficient-sales last, both sorted by impact desc
         var sorted = ranked
-            .OrderByDescending(r => (double)r.GetType().GetProperty("impact")!.GetValue(r)!)
+            .OrderByDescending(r => (double)r.GetType().GetProperty("impact")!.GetValue(r)! > 0 ? 1 : 0)
+            .ThenByDescending(r => (double)r.GetType().GetProperty("impact")!.GetValue(r)!)
             .Take(limit)
             .ToList();
 
