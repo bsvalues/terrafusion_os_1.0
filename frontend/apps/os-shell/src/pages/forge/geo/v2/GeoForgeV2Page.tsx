@@ -1,11 +1,6 @@
-// GeoForge v2 — Statistical Studio.
-//
-// Studio surface: audit queue left rail (260px) + full-width analytics studio (right).
-// Map is a toggled position:absolute overlay. AI Copilot is an active advisory panel.
-//
-// The Studio exposes all 30 analytics panels via indexed section navigation.
-// Sections: COUNTY | RATIO | SPATIAL | NEIGHBORHOOD | ADJUSTMENTS | COMPLIANCE
-// Panels pull live Benton data via useGeoForgeStore (same store as v1).
+// GeoForge v2 — Statistical Studio
+// 3-column desktop layout: LeftPanel | Map | Analysis Panel
+// No embedded copilot. No floating overlays. Map is the substrate.
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -18,14 +13,15 @@ import {
   type ParcelTileProps,
   type SimulateResult,
 } from './v2Api';
-import { ActionBar }        from './ActionBar';
-import { AICopilotPanel }   from './AICopilotPanel';
-import { SimulationDrawer } from './SimulationDrawer';
-import { apiFetchJson } from '@/lib/apiBase';
-import { useGeoForgeStore } from '@/stores/geoForgeStore';
+import { LeftPanel, type V2LayerId }   from './LeftPanel';
+import { StatusBar }                    from './StatusBar';
+import { SimulatePanel }               from './SimulatePanel';
+import { useMapCtx }                   from './mapContext';
+import { apiFetchJson }                from '@/lib/apiBase';
+import { useGeoForgeStore }            from '@/stores/geoForgeStore';
 import type { NeighborhoodStat, SalePoint } from '../types/geoforge.types';
 
-// ── All 30 analytics panels ───────────────────────────────────────────────
+// ── All analytics panels ──────────────────────────────────────────────────
 import { CountyHealthPanel }           from '../panels/CountyHealthPanel';
 import { NeighborhoodRankingPanel }    from '../panels/NeighborhoodRankingPanel';
 import { AssessmentRollPanel }         from '../panels/AssessmentRollPanel';
@@ -59,16 +55,15 @@ import { ExportPanel }                 from '../panels/ExportPanel';
 
 import './geoforge-v2.css';
 
-// ═══════════════════════════════════════════════════════════════════════════
-// Workbench panel registry
-// ═══════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// Section + panel registry
+// ═══════════════════════════════════════════════════════════════
 
 type SectionKey = 'county' | 'ratio' | 'spatial' | 'neighborhood' | 'adjust' | 'comply';
 
 interface PanelDef {
   id: string;
   label: string;
-  abbr: string;
   component: React.ComponentType;
   requiresNbhd?: boolean;
 }
@@ -77,86 +72,90 @@ const SECTIONS: Record<SectionKey, { label: string; panels: PanelDef[] }> = {
   county: {
     label: 'County',
     panels: [
-      { id: 'county-health',  label: 'County Health',        abbr: 'CH',  component: CountyHealthPanel },
-      { id: 'nbhd-ranking',   label: 'Neighborhood Ranking', abbr: 'NR',  component: NeighborhoodRankingPanel },
-      { id: 'assess-roll',    label: 'Assessment Roll',      abbr: 'AR',  component: AssessmentRollPanel },
-      { id: 'levy-parity',    label: 'Levy Parity',          abbr: 'LP',  component: LevyParityPanel },
+      { id: 'county-health',  label: 'County Health',    component: CountyHealthPanel },
+      { id: 'nbhd-ranking',   label: 'Nbhd Ranking',     component: NeighborhoodRankingPanel },
+      { id: 'assess-roll',    label: 'Assessment Roll',  component: AssessmentRollPanel },
+      { id: 'levy-parity',    label: 'Levy Parity',      component: LevyParityPanel },
     ],
   },
   ratio: {
     label: 'Ratio Study',
     panels: [
-      { id: 'year-trend',     label: 'Year Trend · MCA',     abbr: 'YT',  component: YearTrendPanel },
-      { id: 'stratification', label: 'Stratification · IAAO',abbr: 'ST',  component: StratificationPanel },
-      { id: 'dispersion',     label: 'Dispersion · COD/CV',  abbr: 'DS',  component: DispersionPanel },
-      { id: 'weighted-mean',  label: 'Weighted Mean · AV',   abbr: 'WM',  component: WeightedMeanPanel },
-      { id: 'monthly-ratio',  label: 'Monthly Ratio',        abbr: 'MR',  component: MonthlyRatioPanel },
-      { id: 'time-adjust',    label: 'Time Adjustment',      abbr: 'TA',  component: TimeAdjustPanel },
-      { id: 'sales-drill',    label: 'Sales Drilldown',      abbr: 'SD',  component: SalesDrillDownPanel },
+      { id: 'year-trend',     label: '5-Year Trend',     component: YearTrendPanel },
+      { id: 'stratification', label: 'Stratification',   component: StratificationPanel },
+      { id: 'dispersion',     label: 'Dispersion',       component: DispersionPanel },
+      { id: 'weighted-mean',  label: 'Weighted Mean',    component: WeightedMeanPanel },
+      { id: 'monthly-ratio',  label: 'Monthly Ratio',    component: MonthlyRatioPanel },
+      { id: 'time-adjust',    label: 'Time Adjustment',  component: TimeAdjustPanel },
+      { id: 'sales-drill',    label: 'Sales Drilldown',  component: SalesDrillDownPanel },
     ],
   },
   spatial: {
     label: 'Spatial',
     panels: [
-      { id: 'moran',          label: "Moran's I · LISA",     abbr: 'MI',  component: MoranPanel },
-      { id: 'clustering',     label: 'K-means Clustering',   abbr: 'KM',  component: ClusteringPanel },
-      { id: 'ratio-cliff',    label: 'Ratio Cliff Detection', abbr:'RC',  component: RatioCliffPanel },
-      { id: 'value-strata',   label: 'Value Strata · PRB',   abbr: 'VS',  component: ValueStrataPanel },
+      { id: 'moran',          label: "Moran's I",        component: MoranPanel },
+      { id: 'clustering',     label: 'Clustering',       component: ClusteringPanel },
+      { id: 'ratio-cliff',    label: 'Ratio Cliffs',     component: RatioCliffPanel },
+      { id: 'value-strata',   label: 'Value Strata',     component: ValueStrataPanel },
     ],
   },
   neighborhood: {
     label: 'Neighborhood',
     panels: [
-      { id: 'nbhd-detail',    label: 'Neighborhood Detail',  abbr: 'ND',  component: NeighborhoodDetailPanel,    requiresNbhd: true },
-      { id: 'scorecard',      label: 'Scorecard · WAC',      abbr: 'SC',  component: NeighborhoodScorecardPanel, requiresNbhd: true },
-      { id: 'outlier-review', label: 'Outlier Review',       abbr: 'OR',  component: OutlierReviewPanel,         requiresNbhd: true },
-      { id: 'diagnosis',      label: 'AI Diagnosis',         abbr: 'DX',  component: DiagnosisPanel,             requiresNbhd: true },
-      { id: 'sale-influence', label: 'Sale Influence · LOO', abbr: 'SI',  component: SaleInfluencePanel,         requiresNbhd: true },
-      { id: 'data-quality',   label: 'Data Quality',         abbr: 'DQ',  component: DataQualityPanel },
-      { id: 'comps',          label: 'Comps Grid',           abbr: 'CG',  component: CompsPanel },
+      { id: 'nbhd-detail',    label: 'Detail',           component: NeighborhoodDetailPanel,    requiresNbhd: true },
+      { id: 'scorecard',      label: 'Scorecard',        component: NeighborhoodScorecardPanel, requiresNbhd: true },
+      { id: 'outlier-review', label: 'Outlier Review',   component: OutlierReviewPanel,         requiresNbhd: true },
+      { id: 'diagnosis',      label: 'AI Diagnosis',     component: DiagnosisPanel,             requiresNbhd: true },
+      { id: 'sale-influence', label: 'Sale Influence',   component: SaleInfluencePanel,         requiresNbhd: true },
+      { id: 'data-quality',   label: 'Data Quality',     component: DataQualityPanel },
+      { id: 'comps',          label: 'Comps Grid',       component: CompsPanel },
     ],
   },
   adjust: {
     label: 'Adjustments',
     panels: [
-      { id: 'adj-workbench',  label: 'Adjustment Workbench', abbr: 'AW',  component: AdjustmentWorkbenchPanel, requiresNbhd: true },
-      { id: 'qual-decisions', label: 'Qual Decisions',       abbr: 'QD',  component: QualDecisionPanel },
-      { id: 'comp-adj-grid',  label: 'Comp Adj Grid',        abbr: 'CA',  component: CompAdjGridPanel },
-      { id: 'remedy-queue',   label: 'Remedy Queue',         abbr: 'RQ',  component: RemedyQueuePanel },
+      { id: 'simulate',       label: 'Simulate',         component: SimulatePanel as React.ComponentType },
+      { id: 'adj-workbench',  label: 'Workbench',        component: AdjustmentWorkbenchPanel, requiresNbhd: true },
+      { id: 'qual-decisions', label: 'Qual Decisions',   component: QualDecisionPanel },
+      { id: 'comp-adj-grid',  label: 'Comp Grid',        component: CompAdjGridPanel },
+      { id: 'remedy-queue',   label: 'Remedy Queue',     component: RemedyQueuePanel },
     ],
   },
   comply: {
     label: 'Compliance',
     panels: [
-      { id: 'cert-checklist', label: 'Cert Checklist · DOR', abbr: 'CC',  component: CertificationChecklistPanel },
-      { id: 'certification',  label: 'Certification',        abbr: 'CF',  component: CertificationPanel },
-      { id: 'dor-memo',       label: 'DOR Memo · WAC 458',   abbr: 'DM',  component: DorMemoPanel },
-      { id: 'export',         label: 'Export · CSV/DOR',     abbr: 'EX',  component: ExportPanel },
+      { id: 'cert-checklist', label: 'DOR Checklist',    component: CertificationChecklistPanel },
+      { id: 'certification',  label: 'Certification',    component: CertificationPanel },
+      { id: 'dor-memo',       label: 'DOR Memo',         component: DorMemoPanel },
+      { id: 'export',         label: 'Export',           component: ExportPanel },
     ],
   },
 };
 
 const SECTION_KEYS = Object.keys(SECTIONS) as SectionKey[];
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // Page
-// ═══════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 
 export function GeoForgeV2Page() {
   const currentYear = useMemo(() => new Date().getFullYear(), []);
-  const [taxYear] = useState(currentYear);
+  const [taxYear]              = useState(currentYear);
   const [selectedNbhd, setSelectedNbhd] = useState<string | null>(null);
   const [selectedParcel, setSelectedParcel] = useState<ParcelTileProps | null>(null);
-  const [bbox, setBbox] = useState<[number, number, number, number] | null>(null);
-  const [zoom, setZoom] = useState<number>(10);
+  const [bbox, setBbox]        = useState<[number, number, number, number] | null>(null);
+  const [zoom, setZoom]        = useState<number>(10);
   const [wbSection, setWbSection] = useState<SectionKey>('county');
-  const [wbPanel, setWbPanel] = useState<string>('county-health');
-  const [mapVisible, setMapVisible]     = useState(false);
-  const [simOpen, setSimOpen]           = useState(false);
-  const [simResult, setSimResult]       = useState<SimulateResult | null>(null);
-  const [simInitPct, setSimInitPct]     = useState(0);
+  const [wbPanel, setWbPanel]  = useState<string>('county-health');
+  const [simResult, setSimResult] = useState<SimulateResult | null>(null);
+  const [visibleLayers, setVisibleLayers] = useState<Set<V2LayerId>>(
+    new Set(['nbhd', 'parcels', 'outliers']),
+  );
 
-  // ── geoForgeStore bridge — v1 panels read from here ─────────────
+  const mapCtxPayload = useMapCtx((s) => s.payload);
+  const resetMapCtx   = useMapCtx((s) => s.reset);
+
+  // ── geoForgeStore bridge — v1 panels read from here ──────────
   const {
     setFilter,
     setNeighborhoodStats,
@@ -166,7 +165,7 @@ export function GeoForgeV2Page() {
     selectNeighborhood,
   } = useGeoForgeStore();
 
-  // ── Data queries (v2 audit surface) ─────────────────────────────
+  // ── Data queries ──────────────────────────────────────────────
   const outlinesQ = useQuery({
     queryKey: ['gf2-outlines', taxYear],
     queryFn: ({ signal }) => fetchNbhdOutlines(taxYear, signal),
@@ -187,7 +186,6 @@ export function GeoForgeV2Page() {
     staleTime: 1000 * 30,
   });
 
-  // ── Data queries (v1 panel store feed) ─────────────────────────
   const { data: statsData, isLoading: statsLoading } = useQuery<NeighborhoodStat[]>({
     queryKey: ['gf2-nbhd-stats', taxYear],
     queryFn: () => apiFetchJson<NeighborhoodStat[]>(`/geoforge/ratio-study/neighborhood-stats?taxYear=${taxYear}`),
@@ -200,46 +198,54 @@ export function GeoForgeV2Page() {
     staleTime: 1000 * 60 * 10,
   });
 
-  // ── Sync store ──────────────────────────────────────────────────
+  // ── Sync store ────────────────────────────────────────────────
   useEffect(() => { setFilter({ taxYear }); }, [taxYear, setFilter]);
   useEffect(() => { setLoadingStats(statsLoading); }, [statsLoading, setLoadingStats]);
   useEffect(() => { setLoadingSales(salesLoading); }, [salesLoading, setLoadingSales]);
   useEffect(() => { if (statsData) setNeighborhoodStats(statsData); }, [statsData, setNeighborhoodStats]);
   useEffect(() => { if (salesData) setSalePoints(salesData); }, [salesData, setSalePoints]);
+  useEffect(() => { selectNeighborhood(selectedNbhd, 'neighborhood-detail'); }, [selectedNbhd, selectNeighborhood]);
 
-  useEffect(() => {
-    selectNeighborhood(selectedNbhd, 'neighborhood-detail');
-  }, [selectedNbhd, selectNeighborhood]);
-
-  // ── Derived county mission metrics ──────────────────────────────
-  // Nbhd count + total sales from neighborhood-stats (all 400+ nbhds).
-  // Ratio/COD/grade from audit ranked (only rankable nbhds, n>=3 sales).
-  const countyMission = useMemo(() => {
-    const auditRows = auditQ.data?.filter(r => r.grade !== 'N') ?? [];
-    const totalNbhds = statsData?.length ?? auditQ.data?.length ?? 0;
-    const totalSales = statsData?.reduce((s, r) => s + (r.saleCount ?? 0), 0)
-      ?? auditQ.data?.reduce((s, r) => s + r.saleCount, 0) ?? 0;
-    if (totalNbhds === 0) return null;
-    const rankableSales = auditRows.reduce((s, r) => s + r.saleCount, 0);
-    const wMedRatio = rankableSales > 0 ? auditRows.reduce((s, r) => s + r.medianRatio * r.saleCount, 0) / rankableSales : 0;
-    const wCod = rankableSales > 0 ? auditRows.reduce((s, r) => s + r.cod * r.saleCount, 0) / rankableSales : 0;
-    const rows = auditRows;
-    const passing = rows.filter(r => ['A','B','C'].includes(r.grade)).length;
-    const failing = rows.filter(r => ['D','F'].includes(r.grade)).length;
-    return { totalSales, wMedRatio, wCod, passing, failing, total: totalNbhds };
-  }, [auditQ.data, statsData]);
-
-  const selectedAudit: AuditRankedRow | null = useMemo(() =>
-    selectedNbhd ? (auditQ.data?.find(r => r.neighborhoodCode === selectedNbhd) ?? null) : null,
-    [selectedNbhd, auditQ.data]);
-
-  // Auto-switch workbench section when neighborhood selected
+  // Auto-advance to neighborhood section when a neighborhood is selected
   useEffect(() => {
     if (selectedNbhd && wbSection === 'county') {
       setWbSection('neighborhood');
       setWbPanel('nbhd-detail');
     }
   }, [selectedNbhd]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Derived metrics ───────────────────────────────────────────
+  const countyMission = useMemo(() => {
+    const auditRows = auditQ.data?.filter((r) => r.grade !== 'N') ?? [];
+    const totalSales = statsData?.reduce((s, r) => s + (r.saleCount ?? 0), 0)
+      ?? auditQ.data?.reduce((s, r) => s + r.saleCount, 0) ?? 0;
+    if (auditRows.length === 0) return { totalSales, wMedRatio: 0, wCod: 0, failing: 0 };
+    const wt = auditRows.reduce((s, r) => s + r.saleCount, 0);
+    const wMedRatio = wt > 0 ? auditRows.reduce((s, r) => s + r.medianRatio * r.saleCount, 0) / wt : 0;
+    const wCod      = wt > 0 ? auditRows.reduce((s, r) => s + r.cod * r.saleCount, 0) / wt : 0;
+    const failing   = auditRows.filter((r) => ['D', 'F'].includes(r.grade)).length;
+    return { totalSales, wMedRatio, wCod, failing };
+  }, [auditQ.data, statsData]);
+
+  const selectedAudit: AuditRankedRow | null = useMemo(() =>
+    selectedNbhd ? (auditQ.data?.find((r) => r.neighborhoodCode === selectedNbhd) ?? null) : null,
+    [selectedNbhd, auditQ.data],
+  );
+
+  // ── Handlers ──────────────────────────────────────────────────
+  const handleNbhdSelect = useCallback((code: string) => {
+    setSelectedNbhd(code);
+    setSimResult(null);
+    resetMapCtx();
+  }, [resetMapCtx]);
+
+  const handleLayerToggle = useCallback((id: V2LayerId) => {
+    setVisibleLayers((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }, []);
 
   const handleViewport = useCallback((b: [number, number, number, number], z: number) => {
     setBbox(b); setZoom(z);
@@ -250,154 +256,127 @@ export function GeoForgeV2Page() {
     setWbPanel(SECTIONS[s].panels[0].id);
   };
 
-  const handleSimulateRecommended = useCallback((pct: number) => {
-    setSimInitPct(pct);
-    setSimOpen(true);
-  }, []);
-
-  const handleCommit = useCallback(() => {
-    setWbSection('comply');
-    setWbPanel('dor-memo');
-  }, []);
-
-  const handleFlagOutlier = useCallback(() => {
-    setWbSection('neighborhood');
-    setWbPanel('outlier-review');
-  }, []);
-
-  const handleDraftMemo = useCallback(() => {
-    setWbSection('comply');
-    setWbPanel('dor-memo');
-  }, []);
-
+  // ── Active panel resolution ───────────────────────────────────
   const currentPanelDef = useMemo(() => {
     for (const s of SECTION_KEYS) {
-      const found = SECTIONS[s].panels.find(p => p.id === wbPanel);
+      const found = SECTIONS[s].panels.find((p) => p.id === wbPanel);
       if (found) return found;
     }
     return SECTIONS.county.panels[0];
   }, [wbPanel]);
 
-  const ActivePanel = currentPanelDef.component;
+  // SimulatePanel needs onResult prop — wrap it
+  const ActivePanel: React.ComponentType =
+    currentPanelDef.id === 'simulate'
+      ? () => <SimulatePanel onResult={setSimResult} />
+      : currentPanelDef.component;
 
+  // ── Render ────────────────────────────────────────────────────
   return (
-    <div className="geoforge-v2">
+    <div className="gf2-root bg-slate-950 text-slate-200">
 
-      {/* ── Top mission-control bar ─── */}
-      <div className="gf2-topbar">
-        <div className="gf2-topbar__brand">
-          <span>GeoForge</span>
-          <span className="gf2-topbar__brand-sub">Statistical Studio · Benton {taxYear}</span>
-        </div>
-        <div className="gf2-topbar__metrics">
-          <Metric label="Neighborhoods" value={countyMission ? String(countyMission.total) : '—'} />
-          <Metric label="Sales" value={countyMission ? countyMission.totalSales.toLocaleString() : '—'} />
-          <Metric
-            label="Median Ratio"
-            value={countyMission ? countyMission.wMedRatio.toFixed(4) : '—'}
-            tone={countyMission && countyMission.wMedRatio >= 0.90 && countyMission.wMedRatio <= 1.10 ? 'pass' : 'fail'}
-          />
-          <Metric
-            label="COD"
-            value={countyMission ? countyMission.wCod.toFixed(2) : '—'}
-            tone={countyMission && countyMission.wCod <= 20 ? 'pass' : 'risk'}
-          />
-          <Metric
-            label="Failing Nbhds"
-            value={countyMission ? String(countyMission.failing) : '—'}
-            tone={countyMission && countyMission.failing > 0 ? 'fail' : 'pass'}
-          />
-        </div>
-      </div>
-
-      {/* ── Left rail: Audit Queue ─── */}
-      <div className="gf2-queue">
-        <div className="gf2-queue__header">
-          <div className="gf2-queue__eyebrow">Audit Queue</div>
-          <div className="gf2-queue__title">AI-ranked</div>
-          <div className="gf2-queue__hint">Impact × severity · click to audit</div>
-        </div>
-        <div className="gf2-queue__list">
-          {auditQ.isLoading && <div className="gf2-loading">Scoring {taxYear} neighborhoods…</div>}
-          {auditQ.data?.map((row) => (
-            <AuditQueueRow
-              key={row.neighborhoodCode}
-              row={row}
-              selected={row.neighborhoodCode === selectedNbhd}
-              onClick={() => {
-                setSelectedNbhd(row.neighborhoodCode);
-                setSimResult(null);
-              }}
-            />
-          ))}
-          {auditQ.data?.length === 0 && <div className="gf2-empty">No audit findings.</div>}
-        </div>
-      </div>
-
-      {/* ── Main studio surface ─── */}
-      <div className="gf2-studio">
-
-        {/* Studio header */}
-        <div className="gf2-wb__header">
-          <div className="gf2-wb__eyebrow">Statistical Studio</div>
-          <div className="gf2-wb__title">
-            {selectedNbhd
-              ? `Nbhd ${selectedNbhd} · ${selectedAudit ? `Grade ${selectedAudit.grade}` : '…'}`
-              : 'Benton County · All Neighborhoods'}
-          </div>
-          {selectedNbhd && (
-            <button type="button" className="gf2-wb__clear" onClick={() => { setSelectedNbhd(null); setSimResult(null); }}>
-              ✕ clear
-            </button>
-          )}
+      {/* Section tab bar — 40px, spans full width */}
+      <nav className="gf2-tabs flex items-center gap-1 px-3 bg-slate-950 border-b border-slate-700/60">
+        {SECTION_KEYS.map((s) => (
           <button
-            className={`gf2-wb__map-toggle ${mapVisible ? 'gf2-wb__map-toggle--active' : ''}`}
-            onClick={() => setMapVisible(v => !v)}
-            title={mapVisible ? 'Hide map' : 'Show spatial map overlay'}
+            key={s}
             type="button"
+            onClick={() => handleSectionChange(s)}
+            className={`px-3 py-1 text-xs font-semibold rounded transition-colors
+              ${wbSection === s
+                ? 'bg-slate-700/80 text-cyan-400'
+                : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'}`}
           >
-            {mapVisible ? '⊡ Hide Map' : '⊞ Map'}
+            {SECTIONS[s].label}
           </button>
-        </div>
+        ))}
+        <span className="ml-auto text-[10px] font-mono text-slate-600">{taxYear} · Benton County</span>
+      </nav>
 
-        {/* Section tabs */}
-        <div className="gf2-wb__sections">
-          {SECTION_KEYS.map((s) => (
+      {/* Left panel — layers + queue */}
+      <div className="gf2-left overflow-hidden">
+        <LeftPanel
+          auditRows={auditQ.data ?? []}
+          auditLoading={auditQ.isLoading}
+          selectedNbhd={selectedNbhd}
+          onNbhdSelect={handleNbhdSelect}
+          visibleLayers={visibleLayers}
+          onLayerToggle={handleLayerToggle}
+        />
+      </div>
+
+      {/* Map — always the substrate */}
+      <div className="gf2-map">
+        <GeoForgeV2Map
+          outlines={outlinesQ.data ?? null}
+          parcels={zoom >= 12 ? parcelsQ.data ?? null : null}
+          selectedNeighborhoodCode={selectedNbhd}
+          mapCtx={mapCtxPayload}
+          visibleLayers={visibleLayers}
+          onNeighborhoodClick={handleNbhdSelect}
+          onParcelClick={(p) => setSelectedParcel(p)}
+          onViewportChange={handleViewport}
+        />
+        {selectedParcel && (
+          <ParcelCard parcel={selectedParcel} onClose={() => setSelectedParcel(null)} />
+        )}
+        {zoom < 13 && (
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 bg-slate-900/80 backdrop-blur rounded px-3 py-1 text-[11px] text-slate-500 pointer-events-none">
+            Zoom in to reveal parcels
+          </div>
+        )}
+      </div>
+
+      {/* Right analysis panel */}
+      <div className="gf2-panel flex flex-col bg-slate-950 border-l border-slate-700/60 overflow-hidden">
+        {/* Neighborhood context strip */}
+        {selectedNbhd && (
+          <div className="flex items-center justify-between px-3 py-1.5 bg-slate-900/60 border-b border-slate-700/40 flex-shrink-0">
+            <span className="text-xs font-semibold text-slate-300">
+              NBH-{selectedNbhd}
+              {selectedAudit && (
+                <span className={`ml-2 text-[10px] font-bold
+                  ${['A','B'].includes(selectedAudit.grade) ? 'text-emerald-400'
+                    : selectedAudit.grade === 'C' ? 'text-amber-400' : 'text-red-400'}`}>
+                  Grade {selectedAudit.grade}
+                </span>
+              )}
+            </span>
             <button
-              key={s}
               type="button"
-              className={`gf2-wb__section-tab ${wbSection === s ? 'gf2-wb__section-tab--active' : ''}`}
-              onClick={() => handleSectionChange(s)}
+              onClick={() => { setSelectedNbhd(null); setSimResult(null); resetMapCtx(); }}
+              className="text-[11px] text-slate-500 hover:text-slate-300 transition-colors"
             >
-              {SECTIONS[s].label}
+              clear ✕
             </button>
-          ))}
-        </div>
+          </div>
+        )}
 
         {/* Panel nav within section */}
-        <div className="gf2-wb__nav">
+        <div className="flex flex-wrap gap-1 px-2 py-1.5 border-b border-slate-700/40 bg-slate-900/30 flex-shrink-0">
           {SECTIONS[wbSection].panels.map((p) => {
-            const disabled = p.requiresNbhd && !selectedNbhd;
+            const disabled = !!p.requiresNbhd && !selectedNbhd;
             return (
               <button
                 key={p.id}
                 type="button"
-                className={`gf2-wb__nav-btn ${wbPanel === p.id ? 'gf2-wb__nav-btn--active' : ''} ${disabled ? 'gf2-wb__nav-btn--dim' : ''}`}
                 onClick={() => !disabled && setWbPanel(p.id)}
                 title={disabled ? 'Select a neighborhood first' : p.label}
+                className={`px-2 py-0.5 text-[11px] rounded transition-colors
+                  ${wbPanel === p.id ? 'bg-slate-700 text-cyan-400' : 'text-slate-500 hover:text-slate-300'}
+                  ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
               >
-                <span className="gf2-wb__nav-abbr">{p.abbr}</span>
-                <span className="gf2-wb__nav-label">{p.label}</span>
+                {p.label}
               </button>
             );
           })}
         </div>
 
-        {/* Panel body — full width, full height */}
-        <div className="gf2-wb__body">
+        {/* Panel body */}
+        <div className="flex-1 overflow-auto">
           {currentPanelDef.requiresNbhd && !selectedNbhd ? (
-            <div className="gf2-wb__select-prompt">
-              Select a neighborhood from the audit queue to open this panel.
+            <div className="flex items-center justify-center h-32 text-sm text-slate-600 text-center px-4">
+              Select a neighborhood from the queue to open this panel.
             </div>
           ) : (
             <ActivePanel />
@@ -405,165 +384,78 @@ export function GeoForgeV2Page() {
         </div>
       </div>
 
-      {/* ── Map overlay (toggled) ─── */}
-      <div className={`gf2-map-overlay ${mapVisible ? 'gf2-map-overlay--visible' : ''}`}>
-        <GeoForgeV2Map
-          outlines={outlinesQ.data ?? null}
-          parcels={zoom >= 12 ? parcelsQ.data ?? null : null}
-          selectedNeighborhoodCode={selectedNbhd}
-          onNeighborhoodClick={(code) => {
-            setSelectedNbhd(code);
-            setSimResult(null);
-            setMapVisible(false);
-          }}
-          onParcelClick={(p) => setSelectedParcel(p)}
-          onViewportChange={handleViewport}
-        />
-        {zoom < 13 && <div className="gf2-map__zoomhint">Zoom in to reveal parcels</div>}
-        <MapLegend />
-        {selectedParcel && (
-          <ParcelAuditCard parcel={selectedParcel} onClose={() => setSelectedParcel(null)} />
-        )}
-      </div>
-
-      {/* ── Simulation drawer (slides in from right) ─── */}
-      <SimulationDrawer
-        open={simOpen}
-        taxYear={taxYear}
+      {/* Status bar — 28px bottom strip */}
+      <StatusBar
+        totalSales={countyMission.totalSales}
         selectedNbhd={selectedNbhd}
-        initialPct={simInitPct}
-        onClose={() => setSimOpen(false)}
-        onResult={(r) => { setSimResult(r); setSimOpen(false); }}
+        selectedGrade={selectedAudit?.grade ?? null}
+        medianRatio={selectedAudit?.medianRatio ?? (countyMission.wMedRatio || null)}
+        cod={selectedAudit?.cod ?? (countyMission.wCod || null)}
+        simActive={!!simResult}
+        failingNbhds={countyMission.failing}
       />
-
-      {/* ── Action bar ─── */}
-      <ActionBar
-        selectedNbhd={selectedNbhd}
-        simResult={simResult}
-        onSimulate={() => setSimOpen(true)}
-        onCommit={handleCommit}
-        onFlagOutlier={handleFlagOutlier}
-        onDraftMemo={handleDraftMemo}
-      />
-
-      {/* ── AI Copilot — active advisory panel ─── */}
-      <AICopilotPanel
-        selectedNbhd={selectedNbhd}
-        auditRow={selectedAudit}
-        countyMedianRatio={countyMission?.wMedRatio ?? null}
-        countyCod={countyMission?.wCod ?? null}
-        onSimulate={handleSimulateRecommended}
-      />
-
     </div>
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// Sub-components
-// ═══════════════════════════════════════════════════════════════════════════
+// ── Parcel audit card (floating on map) ───────────────────────────────────
 
-function Metric({ label, value, tone }: { label: string; value: string; tone?: 'pass' | 'risk' | 'fail' }) {
-  const cls = tone === 'pass' ? 'gf2-metric__value--pass'
-    : tone === 'risk' ? 'gf2-metric__value--risk'
-    : tone === 'fail' ? 'gf2-metric__value--fail' : '';
+function StatLine({ label, value, tone }: { label: string; value: string; tone?: 'pass' | 'risk' | 'fail' }) {
+  const cls = tone === 'pass' ? 'text-cyan-400' : tone === 'risk' ? 'text-amber-400' : tone === 'fail' ? 'text-red-400' : 'text-slate-300';
   return (
-    <div className="gf2-metric">
-      <span className="gf2-metric__label">{label}</span>
-      <span className={`gf2-metric__value ${cls}`}>{value}</span>
+    <div className="flex justify-between items-baseline gap-3">
+      <span className="text-[11px] text-slate-500">{label}</span>
+      <span className={`text-[12px] font-mono font-semibold ${cls}`}>{value}</span>
     </div>
   );
 }
 
-function AuditQueueRow({ row, selected, onClick }:
-  { row: AuditRankedRow; selected: boolean; onClick: () => void }) {
-  return (
-    <div
-      className={`gf2-queue__row ${selected ? 'gf2-queue__row--selected' : ''}`}
-      onClick={onClick}
-    >
-      <div className={`gf2-grade-chip gf2-grade-chip--${row.grade}`}>{row.grade}</div>
-      <div>
-        <div className="gf2-queue__row-code">{row.neighborhoodCode}</div>
-        <div className="gf2-queue__row-stats">
-          <span>med {row.medianRatio.toFixed(3)}</span>
-          <span>cod {row.cod.toFixed(1)}</span>
-          <span>n={row.saleCount}</span>
-        </div>
-        <div className="gf2-queue__row-cause">{row.primaryCause.replace(/_/g, ' ')}</div>
-        <div className="gf2-queue__row-diag">{row.actionLine}</div>
-      </div>
-    </div>
-  );
-}
-
-function MapLegend() {
-  return (
-    <div className="gf2-map__legend">
-      <div className="gf2-legend__title">Parcel ratio</div>
-      {[
-        { sw: 'hsl(140, 22%, 42%)', label: 'deep under < −10%' },
-        { sw: 'hsl(140, 28%, 58%)', label: 'under −5 to −10%' },
-        { sw: 'hsl(44, 16%, 92%)',  label: 'parity ±5%' },
-        { sw: 'hsl(16, 55%, 66%)',  label: 'over +5 to +10%' },
-        { sw: 'hsl(16, 62%, 48%)',  label: 'deep over > +10%' },
-        { sw: 'hsl(42, 18%, 88%)',  label: 'no sale' },
-      ].map((r) => (
-        <div key={r.label} className="gf2-legend__row">
-          <span className="gf2-legend__sw" style={{ background: r.sw }} />
-          <span>{r.label}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function Stat({ label, value, tone }: { label: string; value: string; tone?: 'pass' | 'risk' | 'fail' }) {
-  const cls = tone === 'pass' ? 'gf2-stat__value--pass'
-    : tone === 'risk' ? 'gf2-stat__value--risk'
-    : tone === 'fail' ? 'gf2-stat__value--fail' : '';
-  return (
-    <div className="gf2-stat">
-      <div className="gf2-stat__label">{label}</div>
-      <div className={`gf2-stat__value ${cls}`}>{value}</div>
-    </div>
-  );
-}
-
-function ParcelAuditCard({ parcel, onClose }: { parcel: ParcelTileProps; onClose: () => void }) {
+function ParcelCard({ parcel, onClose }: { parcel: ParcelTileProps; onClose: () => void }) {
   const ratioTone: 'pass' | 'risk' | 'fail' | undefined =
     parcel.ratio == null ? undefined
     : parcel.ratio >= 0.95 && parcel.ratio <= 1.05 ? 'pass'
-    : parcel.ratio >= 0.90 && parcel.ratio <= 1.10 ? 'risk' : 'fail';
+    : parcel.ratio >= 0.90 && parcel.ratio <= 1.10 ? 'risk'
+    : 'fail';
 
   return (
-    <div className="gf2-parcel-card">
-      <button className="gf2-parcel-card__close" onClick={onClose} aria-label="close">×</button>
-      <div className="gf2-parcel-card__eyebrow">Parcel Audit</div>
-      <div className="gf2-parcel-card__id">{parcel.parcelId}</div>
-      {parcel.situsAddress && <div className="gf2-parcel-card__addr">{parcel.situsAddress}</div>}
-
-      <div className="gf2-stat-row">
-        <Stat label="AV" value={`$${Math.round(parcel.assessedValue).toLocaleString()}`} />
-        <Stat label="Class" value={parcel.propertyClass ?? '—'} />
-        <Stat label="Nbhd" value={parcel.neighborhoodCode ?? '—'} />
+    <div className="absolute top-3 right-3 z-20 w-64 bg-slate-900/95 backdrop-blur rounded-lg border border-slate-700/60 p-3 shadow-xl space-y-2">
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <div className="text-[10px] font-bold tracking-widest uppercase text-slate-500">Parcel Audit</div>
+          <div className="text-xs font-mono text-slate-200 mt-0.5">{parcel.parcelId}</div>
+          {parcel.situsAddress && <div className="text-[11px] text-slate-400 mt-0.5">{parcel.situsAddress}</div>}
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close parcel card"
+          className="text-slate-500 hover:text-slate-300 flex-shrink-0 mt-0.5"
+        >
+          ×
+        </button>
       </div>
 
-      <div className="gf2-kv"><span className="gf2-kv__label">Year built</span><span className="gf2-kv__value">{parcel.yearBuilt ?? '—'}</span></div>
-      <div className="gf2-kv"><span className="gf2-kv__label">Area (ac)</span><span className="gf2-kv__value">{parcel.areaAcres ? parcel.areaAcres.toFixed(2) : '—'}</span></div>
-      <div className="gf2-kv"><span className="gf2-kv__label">Last sale</span><span className="gf2-kv__value">{parcel.saleDate ? new Date(parcel.saleDate).toLocaleDateString() : '—'}</span></div>
-      <div className="gf2-kv"><span className="gf2-kv__label">Price</span><span className="gf2-kv__value">{parcel.salePrice > 0 ? `$${Math.round(parcel.salePrice).toLocaleString()}` : '—'}</span></div>
+      <div className="border-t border-slate-700/40 pt-2 space-y-1">
+        <StatLine label="Assessed Value" value={`$${Math.round(parcel.assessedValue).toLocaleString()}`} />
+        <StatLine label="Class" value={parcel.propertyClass ?? '—'} />
+        <StatLine label="Nbhd" value={parcel.neighborhoodCode ?? '—'} />
+        <StatLine label="Year Built" value={String(parcel.yearBuilt ?? '—')} />
+        {parcel.saleDate && <StatLine label="Last Sale" value={new Date(parcel.saleDate).toLocaleDateString()} />}
+        {parcel.salePrice > 0 && <StatLine label="Sale Price" value={`$${Math.round(parcel.salePrice).toLocaleString()}`} />}
+      </div>
 
       {parcel.ratio != null && (
-        <div className="gf2-ai">
-          <div className="gf2-ai__eyebrow">Ratio vs Nbhd</div>
-          <div className={`gf2-stat__value ${ratioTone === 'pass' ? 'gf2-stat__value--pass' : ratioTone === 'fail' ? 'gf2-stat__value--fail' : 'gf2-stat__value--risk'}`}>
-            {parcel.ratio.toFixed(4)}
-          </div>
-          <div className="gf2-ai__evidence">
-            nbhd median {parcel.nbhdMedianRatio?.toFixed(4) ?? '—'} · dev {parcel.ratioDeviation ? (parcel.ratioDeviation >= 0 ? '+' : '') + parcel.ratioDeviation.toFixed(4) : '—'}
-          </div>
-          {parcel.isOutlier && <div className="gf2-ai__action">⚑ Flagged outlier — review candidate.</div>}
+        <div className="border-t border-slate-700/40 pt-2 space-y-1">
+          <StatLine label="Ratio" value={parcel.ratio.toFixed(4)} tone={ratioTone} />
+          <StatLine label="Nbhd Median" value={parcel.nbhdMedianRatio?.toFixed(4) ?? '—'} />
+          <StatLine
+            label="Deviation"
+            value={parcel.ratioDeviation ? (parcel.ratioDeviation >= 0 ? '+' : '') + parcel.ratioDeviation.toFixed(4) : '—'}
+            tone={parcel.isOutlier ? 'fail' : undefined}
+          />
+          {parcel.isOutlier && (
+            <div className="text-[10px] text-amber-400 font-semibold">⚑ Flagged outlier</div>
+          )}
         </div>
       )}
     </div>
