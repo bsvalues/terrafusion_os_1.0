@@ -154,6 +154,7 @@ export function GeoForgeV2Page() {
   const [mapVisible, setMapVisible]     = useState(false);
   const [simOpen, setSimOpen]           = useState(false);
   const [simResult, setSimResult]       = useState<SimulateResult | null>(null);
+  const [simInitPct, setSimInitPct]     = useState(0);
 
   // ── geoForgeStore bridge — v1 panels read from here ─────────────
   const {
@@ -249,7 +250,8 @@ export function GeoForgeV2Page() {
     setWbPanel(SECTIONS[s].panels[0].id);
   };
 
-  const handleSimulateRecommended = useCallback((_pct: number) => {
+  const handleSimulateRecommended = useCallback((pct: number) => {
+    setSimInitPct(pct);
     setSimOpen(true);
   }, []);
 
@@ -344,7 +346,7 @@ export function GeoForgeV2Page() {
               : 'Benton County · All Neighborhoods'}
           </div>
           {selectedNbhd && (
-            <button className="gf2-wb__clear" onClick={() => { setSelectedNbhd(null); setSimResult(null); }}>
+            <button type="button" className="gf2-wb__clear" onClick={() => { setSelectedNbhd(null); setSimResult(null); }}>
               ✕ clear
             </button>
           )}
@@ -363,6 +365,7 @@ export function GeoForgeV2Page() {
           {SECTION_KEYS.map((s) => (
             <button
               key={s}
+              type="button"
               className={`gf2-wb__section-tab ${wbSection === s ? 'gf2-wb__section-tab--active' : ''}`}
               onClick={() => handleSectionChange(s)}
             >
@@ -378,6 +381,7 @@ export function GeoForgeV2Page() {
             return (
               <button
                 key={p.id}
+                type="button"
                 className={`gf2-wb__nav-btn ${wbPanel === p.id ? 'gf2-wb__nav-btn--active' : ''} ${disabled ? 'gf2-wb__nav-btn--dim' : ''}`}
                 onClick={() => !disabled && setWbPanel(p.id)}
                 title={disabled ? 'Select a neighborhood first' : p.label}
@@ -427,6 +431,7 @@ export function GeoForgeV2Page() {
         open={simOpen}
         taxYear={taxYear}
         selectedNbhd={selectedNbhd}
+        initialPct={simInitPct}
         onClose={() => setSimOpen(false)}
         onResult={(r) => { setSimResult(r); setSimOpen(false); }}
       />

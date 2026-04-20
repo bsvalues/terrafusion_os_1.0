@@ -6,12 +6,14 @@ interface SimulationDrawerProps {
   open: boolean;
   taxYear: number;
   selectedNbhd: string | null;
+  initialPct?: number;
   onClose: () => void;
   onResult: (result: SimulateResult) => void;
 }
 
-export function SimulationDrawer({ open, taxYear, selectedNbhd, onClose, onResult }: SimulationDrawerProps) {
-  const [pct, setPct] = useState(0);
+export function SimulationDrawer({ open, taxYear, selectedNbhd, initialPct = 0, onClose, onResult }: SimulationDrawerProps) {
+  const [pct, setPct] = useState(initialPct);
+  useEffect(() => { setPct(initialPct); }, [initialPct]);
   const [scope, setScope] = useState<'neighborhood' | 'class' | 'county'>(
     selectedNbhd ? 'neighborhood' : 'county'
   );
