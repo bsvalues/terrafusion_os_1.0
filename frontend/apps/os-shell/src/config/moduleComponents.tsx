@@ -102,6 +102,11 @@ export const MODULE_ALIASES: Record<string, string> = {
   terrasketch: 'terra-sketch',
   sketch: 'terra-sketch',
 
+  // GeoForge aliases
+  geoforge: 'geo-forge',
+  'geo-forge-gis': 'geo-forge',
+  'gis-analytics': 'geo-forge',
+
   // Property Workbench (desktop window adapter)
   workbench: 'property-workbench',
   'property-workbench-window': 'property-workbench',
@@ -382,6 +387,11 @@ const TerraSketchModule = lazy(
 // GeoForge — GIS-first mass appraisal analytics (full-canvas Mapbox + Benton Method)
 const GeoForgePage = lazy(
   () => import('../pages/forge/geo/GeoForgePage').then((m) => ({ default: m.GeoForgePage }))
+);
+
+// GeoForge v2 — Assessor Audit Command Center (Lumin Bridge / Liquid Glass)
+const GeoForgeV2Page = lazy(
+  () => import('../pages/forge/geo/v2/GeoForgeV2Page').then((m) => ({ default: m.GeoForgeV2Page }))
 );
 
 // NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
@@ -1319,6 +1329,19 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
           fallback={
             <div className="flex items-center justify-center h-full">
               <span className="text-muted-foreground">Loading GeoForge…</span>
+            </div>
+          }
+        >
+          <GeoForgeV2Page />
+        </Suspense>
+      );
+
+    case 'geo-forge-v1':
+      return (
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-full">
+              <span className="text-muted-foreground">Loading GeoForge v1…</span>
             </div>
           }
         >
