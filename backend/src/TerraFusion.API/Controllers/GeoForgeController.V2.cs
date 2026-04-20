@@ -236,8 +236,9 @@ public partial class GeoForgeController
         // Load RingJson per parcel joined to neighborhood from Properties.
         // We use ring VERTICES (actual parcel corners) — not centroids.
         var parcelRings = await (
-            from geo in _db.GisParcelGeometries
+            from geo in _db.GisParcelGeometries.AsNoTracking()
             join prop in _db.Properties
+                .AsNoTracking()
                 .Where(p => p.CountyId == BentonCountyId
                          && p.TaxYear == taxYear
                          && p.Neighborhood != null && p.Neighborhood != "")
