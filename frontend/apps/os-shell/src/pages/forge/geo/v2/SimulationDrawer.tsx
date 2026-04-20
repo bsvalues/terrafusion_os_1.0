@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { simulateMassAdjust, type SimulateResult } from './v2Api';
 
@@ -12,9 +12,15 @@ interface SimulationDrawerProps {
 
 export function SimulationDrawer({ open, taxYear, selectedNbhd, onClose, onResult }: SimulationDrawerProps) {
   const [pct, setPct] = useState(0);
-  const [scope, setScope] = useState<'neighborhood' | 'class' | 'county'>('neighborhood');
+  const [scope, setScope] = useState<'neighborhood' | 'class' | 'county'>(
+    selectedNbhd ? 'neighborhood' : 'county'
+  );
 
-  const { mutate, isPending, data, error } = useMutation({
+  useEffect(() => {
+    if (!selectedNbhd && scope === 'neighborhood') setScope('county');
+  }, [selectedNbhd]);
+
+  const { mutate, isPending, data, error } = useMutation<SimulateResult, Error>({
     mutationFn: () =>
       simulateMassAdjust({
         taxYear,
@@ -34,7 +40,7 @@ export function SimulationDrawer({ open, taxYear, selectedNbhd, onClose, onResul
     <div className="gf2-sim-drawer">
       <div className="gf2-sim-drawer__header">
         <span className="gf2-sim-drawer__title">Adjustment Simulation</span>
-        <button className="gf2-sim-drawer__close" onClick={onClose}>×</button>
+        <button className="gf2-sim-drawer__close" onClick={onClose} aria-label="Close simulation drawer">×</button>
       </div>
 
       <div className="gf2-sim-drawer__body">
@@ -76,7 +82,7 @@ export function SimulationDrawer({ open, taxYear, selectedNbhd, onClose, onResul
               max={50}
               step={0.1}
               value={pct}
-              onChange={(e) => setPct(Number(e.target.value))}
+              onChange={(e) => setPct(Math.min(30, Math.max(-30, Number(e.target.value))))}
               className="gf2-sim-number"
             />
             <span>+30%</span>
@@ -99,7 +105,7 @@ export function SimulationDrawer({ open, taxYear, selectedNbhd, onClose, onResul
 
         {error && (
           <div className="gf2-sim-error">
-            {(error as Error).message}
+            {error.message}
           </div>
         )}
 
