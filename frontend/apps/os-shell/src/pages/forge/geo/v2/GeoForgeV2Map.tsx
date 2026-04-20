@@ -12,6 +12,8 @@ import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import type { NbhdOutlineCollection, ParcelTileCollection, ParcelTileProps } from './v2Api';
+import type { V2LayerId } from './LeftPanel';
+import type { MapContextPayload } from './mapContext';
 
 const MAPBOX_TOKEN = (import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined) ?? '';
 mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -27,6 +29,8 @@ interface Props {
   onNeighborhoodClick: (code: string) => void;
   onParcelClick: (parcel: ParcelTileProps) => void;
   onViewportChange: (bbox: [number, number, number, number], zoom: number) => void;
+  visibleLayers: Set<V2LayerId>;
+  mapCtx: MapContextPayload;
 }
 
 export function GeoForgeV2Map({
@@ -36,6 +40,8 @@ export function GeoForgeV2Map({
   onNeighborhoodClick,
   onParcelClick,
   onViewportChange,
+  visibleLayers,
+  mapCtx,
 }: Props) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -295,13 +301,118 @@ export function GeoForgeV2Map({
     }
   }, [selectedNeighborhoodCode, outlines]);
 
+  // ── Sync layer visibility ─────────────────────────────────
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !map.isStyleLoaded()) return;
+    const setVis = (layerId: string, visible: boolean) => {
+      if (map.getLayer(layerId)) map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
+    };
+    setVis('nbhd-fill', visibleLayers.has('nbhd'));
+    setVis('nbhd-line', visibleLayers.has('nbhd'));
+    setVis('nbhd-halo', visibleLayers.has('nbhd'));
+    setVis('parcel-fill', visibleLayers.has('parcels'));
+    setVis('parcel-outlier', visibleLayers.has('outliers'));
+  }, [visibleLayers]);
+
+  // ── Apply map context render mode ─────────────────────────
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !map.isStyleLoaded()) return;
+
+    switch (mapCtx.mode) {
+      case 'county-grade':
+        // Boost nbhd opacity, hide parcels
+        if (map.getLayer('nbhd-fill'))
+          map.setPaintProperty('nbhd-fill', 'fill-opacity', 0.45);
+        if (map.getLayer('parcel-fill'))
+          map.setLayoutProperty('parcel-fill', 'visibility', 'none');
+        break;
+
+      case 'outliers':
+        // Dim nbhd fill, two-color parcels: amber for outliers, near-invisible for rest
+        if (map.getLayer('nbhd-fill'))
+          map.setPaintProperty('nbhd-fill', 'fill-opacity', 0.08);
+        if (map.getLayer('parcel-fill')) {
+          map.setLayoutProperty('parcel-fill', 'visibility', 'visible');
+          map.setPaintProperty('parcel-fill', 'fill-color', [
+            'case',
+            ['==', ['get', 'isOutlier'], true], 'hsl(32, 90%, 50%)',
+            'hsl(42, 18%, 88% / 0.2)',
+          ]);
+          map.setPaintProperty('parcel-fill', 'fill-opacity', 0.75);
+        }
+        break;
+
+      case 'vintage-split': {
+        const cut = mapCtx.vintageCut ?? 2015;
+        if (map.getLayer('parcel-fill')) {
+          map.setLayoutProperty('parcel-fill', 'visibility', 'visible');
+          map.setPaintProperty('parcel-fill', 'fill-color', [
+            'case',
+            ['<', ['to-number', ['slice', ['get', 'saleDate'], 0, 4]], cut],
+            'hsl(210, 70%, 55%)',   // pre-cut: blue
+            'hsl(16, 62%, 52%)',    // post-cut: terracotta
+          ]);
+          map.setPaintProperty('parcel-fill', 'fill-opacity', 0.65);
+        }
+        break;
+      }
+
+      case 'sim-delta':
+        // Color by whether ratio deviation is positive or negative
+        if (map.getLayer('parcel-fill')) {
+          map.setLayoutProperty('parcel-fill', 'visibility', 'visible');
+          map.setPaintProperty('parcel-fill', 'fill-color', [
+            'case',
+            ['==', ['get', 'ratio'], null], 'hsl(42, 18%, 88%)',
+            ['>', ['get', 'ratioDeviation'], 0], 'hsl(16, 62%, 52%)',
+            'hsl(140, 22%, 42%)',
+          ]);
+          map.setPaintProperty('parcel-fill', 'fill-opacity', 0.7);
+        }
+        break;
+
+      default: // 'default' — restore original ratio-deviation heat paint
+        if (map.getLayer('nbhd-fill'))
+          map.setPaintProperty('nbhd-fill', 'fill-opacity', [
+            'case',
+            ['==', ['get', 'neighborhoodCode'], ['literal', '']],
+            0.08,
+            0.18,
+          ]);
+        if (map.getLayer('parcel-fill')) {
+          map.setLayoutProperty('parcel-fill', 'visibility', 'visible');
+          map.setPaintProperty('parcel-fill', 'fill-color', [
+            'case',
+            ['==', ['get', 'ratio'], null], 'hsl(42, 18%, 88%)',
+            ['<=', ['get', 'ratioDeviation'], -0.10], 'hsl(140, 22%, 42%)',
+            ['<=', ['get', 'ratioDeviation'], -0.05], 'hsl(140, 28%, 58%)',
+            ['<=', ['get', 'ratioDeviation'],  0.05], 'hsl(44, 16%, 92%)',
+            ['<=', ['get', 'ratioDeviation'],  0.10], 'hsl(16, 55%, 66%)',
+            'hsl(16, 62%, 48%)',
+          ]);
+          map.setPaintProperty('parcel-fill', 'fill-opacity', 0.55);
+        }
+    }
+  }, [mapCtx]);
+
   if (!MAPBOX_TOKEN) {
     return (
-      <div className="gf2-empty">
+      <div className="flex items-center justify-center h-full text-slate-400 text-xs">
         Mapbox token missing (VITE_MAPBOX_ACCESS_TOKEN).
       </div>
     );
   }
 
-  return <div ref={containerRef} className="gf2-map__canvas" />;
+  return (
+    <div className="relative w-full h-full">
+      <div ref={containerRef} className="w-full h-full" />
+      {mapCtx.mode !== 'default' && (
+        <div className="absolute top-2 left-2 z-10 bg-slate-900/90 border border-slate-600/60 text-cyan-400 text-[10px] font-mono px-2 py-0.5 rounded pointer-events-none">
+          {mapCtx.label}
+        </div>
+      )}
+    </div>
+  );
 }
