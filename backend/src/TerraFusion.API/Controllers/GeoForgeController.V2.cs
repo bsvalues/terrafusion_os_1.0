@@ -539,9 +539,106 @@ public partial class GeoForgeController
 
         return list;
     }
+
+    // ──────────────────────────────────────────────────────────────────────
+    //  v2/mass-adjust/simulate — project stats after hypothetical AV change.
+    //  Reads current AVs and qualified sale prices, applies pct in memory,
+    //  returns before/after stats. Does NOT write anything to the database.
+    // ──────────────────────────────────────────────────────────────────────
+    [HttpPost("v2/mass-adjust/simulate")]
+    public async Task<IActionResult> SimulateMassAdjustment(
+        [FromBody] MassAdjustSimulateRequest req,
+        CancellationToken ct = default)
+    {
+        var taxYear = req.TaxYear == 0 ? DateTime.UtcNow.Year : req.TaxYear;
+        if (Math.Abs(req.AdjustmentPct) > 50)
+            return BadRequest(new { error = "Adjustment must be between −50% and +50%." });
+
+        var salesQ = _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.CountyId == BentonCountyId
+                     && s.SalesYear == taxYear
+                     && (s.QualificationDecision == "qualified"
+                         || (s.QualificationDecision == null
+                             && s.QualificationRecommendation == "qualified"))
+                     && s.ParcelId != null);
+
+        if (req.Scope == "neighborhood" && !string.IsNullOrWhiteSpace(req.NeighborhoodCode))
+            salesQ = salesQ.Where(s => s.Neighborhood == req.NeighborhoodCode);
+
+        if (!string.IsNullOrWhiteSpace(req.PropertyClass))
+            salesQ = salesQ.Where(s => s.PropertyType == req.PropertyClass);
+
+        var sales = await salesQ
+            .Select(s => new
+            {
+                ParcelId = s.ParcelId!,
+                SalePrice = s.AdjustedSalePrice ?? s.SalePrice,
+            })
+            .ToListAsync(ct);
+
+        var parcelIds = sales.Select(s => s.ParcelId).Distinct().ToHashSet();
+        var avMap = await GetAssessedValueMapAsync(parcelIds, taxYear, ct);
+
+        var multiplier = (decimal)(1.0 + req.AdjustmentPct / 100.0);
+
+        var records = sales
+            .Where(s => s.SalePrice > 10_000m && avMap.ContainsKey(s.ParcelId))
+            .Select(s =>
+            {
+                var av = avMap[s.ParcelId];
+                var price = s.SalePrice;
+                return (
+                    Current:    (double)(av / price),
+                    Projected:  (double)(av * multiplier / price)
+                );
+            })
+            .ToList();
+
+        if (records.Count == 0)
+            return BadRequest(new { error = "No qualified sales found for the specified scope." });
+
+        static (double median, double cod, double mean) CalcStats(IEnumerable<double> ratios)
+        {
+            var sorted = ratios.OrderBy(r => r).ToList();
+            var n = sorted.Count;
+            var med = sorted[n / 2];
+            var cod = med > 0 ? sorted.Select(r => Math.Abs(r - med)).Average() / med * 100 : 0;
+            var mean = sorted.Average();
+            return (Math.Round(med, 4), Math.Round(cod, 2), Math.Round(mean, 4));
+        }
+
+        var (curMed, curCod, curMean) = CalcStats(records.Select(r => r.Current));
+        var (prjMed, prjCod, prjMean) = CalcStats(records.Select(r => r.Projected));
+
+        var neededPct = curMed > 0
+            ? Math.Round((1.0 - curMed) / curMed * 100.0, 1)
+            : 0.0;
+
+        return Ok(new
+        {
+            scope            = req.Scope,
+            neighborhoodCode = req.NeighborhoodCode,
+            propertyClass    = req.PropertyClass,
+            parcelCount      = records.Count,
+            adjustmentPct    = req.AdjustmentPct,
+            neededPct        = neededPct,
+            current          = new { medianRatio = curMed, cod = curCod, mean = curMean },
+            projected        = new { medianRatio = prjMed, cod = prjCod, mean = prjMean },
+            deltaMedianRatio = Math.Round(prjMed - curMed, 4),
+            iaaoPass         = prjMed >= 0.90 && prjMed <= 1.10 && prjCod <= 20,
+        });
+    }
 }
 
 public record RootCauseHypothesis(string cause, string evidence, string action);
+
+public record MassAdjustSimulateRequest(
+    int TaxYear,
+    string Scope,               // "neighborhood" | "class" | "county"
+    string? NeighborhoodCode,
+    string? PropertyClass,
+    double AdjustmentPct);      // e.g. -5.2 means reduce AVs by 5.2%
 
 // ──────────────────────────────────────────────────────────────────────────
 //  Concave-hull (alpha-shape) via k-nearest-neighbors method
