@@ -100,9 +100,47 @@ export function fetchParcelTiles(params: {
   );
 }
 
-export function fetchAuditRanked(taxYear: number, limit = 50, signal?: AbortSignal) {
+export function fetchAuditRanked(taxYear: number, limit = 500, signal?: AbortSignal) {
   return apiFetchJson<AuditRankedRow[]>(
     `/geoforge/v2/audit/ranked?taxYear=${taxYear}&limit=${limit}`,
     { signal },
   );
+}
+
+// ── Mass Adjustment Simulation ────────────────────────────────────────────
+
+export interface SimulatePayload {
+  taxYear: number;
+  scope: 'neighborhood' | 'class' | 'county';
+  neighborhoodCode?: string | null;
+  propertyClass?: string | null;
+  adjustmentPct: number;
+}
+
+export interface RatioStats {
+  medianRatio: number;
+  cod: number;
+  mean: number;
+}
+
+export interface SimulateResult {
+  scope: string;
+  neighborhoodCode: string | null;
+  propertyClass: string | null;
+  parcelCount: number;
+  adjustmentPct: number;
+  neededPct: number;
+  current: RatioStats;
+  projected: RatioStats;
+  deltaMedianRatio: number;
+  iaaoPass: boolean;
+}
+
+export function simulateMassAdjust(payload: SimulatePayload, signal?: AbortSignal) {
+  return apiFetchJson<SimulateResult>('/geoforge/v2/mass-adjust/simulate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    signal,
+  });
 }
