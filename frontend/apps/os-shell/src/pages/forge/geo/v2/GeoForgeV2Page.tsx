@@ -385,15 +385,17 @@ export function GeoForgeV2Page() {
       </div>
 
       {/* Status bar — 28px bottom strip */}
-      <StatusBar
-        totalSales={countyMission.totalSales}
-        selectedNbhd={selectedNbhd}
-        selectedGrade={selectedAudit?.grade ?? null}
-        medianRatio={selectedAudit?.medianRatio ?? (countyMission.wMedRatio || null)}
-        cod={selectedAudit?.cod ?? (countyMission.wCod || null)}
-        simActive={!!simResult}
-        failingNbhds={countyMission.failing}
-      />
+      <div className="gf2-status">
+        <StatusBar
+          totalSales={countyMission.totalSales}
+          selectedNbhd={selectedNbhd}
+          selectedGrade={selectedAudit?.grade ?? null}
+          medianRatio={selectedAudit?.medianRatio ?? (countyMission.wMedRatio || null)}
+          cod={selectedAudit?.cod ?? (countyMission.wCod || null)}
+          simActive={!!simResult}
+          failingNbhds={countyMission.failing}
+        />
+      </div>
     </div>
   );
 }
