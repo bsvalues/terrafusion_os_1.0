@@ -1,0 +1,15 @@
+{
+  "name": "atlas-live-view",
+  "version": "1.0.0",
+  "description": "Study-aware spatial surface — live projection overlays from County Studio on monitor 2",
+  "author": "Terrafusion Systems",
+  "permissions": ["load:atlas-live-view", "data:spatial", "data:segments"],
+  "targetCounties": ["benton"],
+  "legacySystems": ["PACS_9.0"],
+  "dependencies": ["county-studio"],
+  "entryPoint": "index.tsx",
+  "launchPath": "/forge/atlas-live",
+  "createdAt": "2026-04-21T00:00:00Z",
+  "hash": "sha256:atlas-live-view-v1-placeholder",
+  "signature": "HMAC-SHA256:benton:atlas_live_view_v1_signature"
+}
