@@ -117,10 +117,53 @@ public class CountyStudyControllerTests
 
         var result = await controller.CreateCohort(req);
 
-        Assert.Equal(201, (result as ObjectResult)?.StatusCode);
-        var dto = Assert.IsType<CountyCohortDto>((result as ObjectResult)!.Value);
+        var created = Assert.IsType<CreatedAtActionResult>(result);
+        Assert.Equal(201, created.StatusCode);
+        var dto = Assert.IsType<CountyCohortDto>(created.Value);
         Assert.Equal(cohortId, dto.CohortId);
         Assert.Equal(studyId, dto.StudyId);
         Assert.Equal(842, dto.ParcelCount);
+    }
+
+    // ── Study Status ──────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task UpdateStudyStatus_Returns200_WithUpdatedDto()
+    {
+        var studyId  = Guid.NewGuid();
+        var countyId = Guid.NewGuid();
+
+        var expected = new CountyStudySessionDto(
+            studyId, countyId, 2026,
+            nameof(StudyType.RatioStudy), nameof(StudyStatus.Active),
+            null, null,
+            DateTime.UtcNow, "system");
+
+        var svcMock = new Mock<ICountyStudyService>();
+        svcMock.Setup(s => s.UpdateStudyStatusAsync(studyId, "Active", It.IsAny<string>()))
+               .ReturnsAsync(expected);
+
+        var controller = BuildController(svcMock.Object);
+
+        var result = await controller.UpdateStudyStatus(studyId, new UpdateStudyStatusRequest("Active"));
+
+        var ok  = Assert.IsType<OkObjectResult>(result);
+        var dto = Assert.IsType<CountyStudySessionDto>(ok.Value);
+        Assert.Equal(studyId, dto.StudyId);
+        Assert.Equal(nameof(StudyStatus.Active), dto.Status);
+    }
+
+    [Fact]
+    public async Task UpdateStudyStatus_Returns404_WhenStudyNotFound()
+    {
+        var svcMock = new Mock<ICountyStudyService>();
+        svcMock.Setup(s => s.UpdateStudyStatusAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()))
+               .ReturnsAsync((CountyStudySessionDto?)null);
+
+        var controller = BuildController(svcMock.Object);
+
+        var result = await controller.UpdateStudyStatus(Guid.NewGuid(), new UpdateStudyStatusRequest("Archived"));
+
+        Assert.IsType<NotFoundObjectResult>(result);
     }
 }

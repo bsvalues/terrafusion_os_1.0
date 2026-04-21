@@ -55,7 +55,7 @@ public class CountyStudyController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "[CountyStudy] CreateStudy failed");
+            _logger.LogError(ex, "[CountyStudy] CreateStudy failed for county {CountyId}", req.CountyId);
             return StatusCode(500, new { error = "Internal error" });
         }
     }
@@ -109,11 +109,11 @@ public class CountyStudyController : ControllerBase
     /// Returns the updated DTO or 404 if the study does not exist.
     /// </summary>
     [HttpPatch("studies/{studyId:guid}/status")]
-    public async Task<IActionResult> UpdateStudyStatus(Guid studyId, [FromQuery] string status)
+    public async Task<IActionResult> UpdateStudyStatus(Guid studyId, [FromBody] UpdateStudyStatusRequest req)
     {
         try
         {
-            var dto = await _svc.UpdateStudyStatusAsync(studyId, status, CurrentUserId);
+            var dto = await _svc.UpdateStudyStatusAsync(studyId, req.Status, CurrentUserId);
             return dto is null ? NotFound(new { error = $"Study {studyId} not found" }) : Ok(dto);
         }
         catch (InvalidOperationException ex)
@@ -208,7 +208,7 @@ public class CountyStudyController : ControllerBase
         try
         {
             var dto = await _svc.CreateCohortAsync(req, CurrentUserId);
-            return StatusCode(201, dto);
+            return CreatedAtAction(nameof(GetCohort), new { cohortId = dto.CohortId }, dto);
         }
         catch (InvalidOperationException ex)
         {
@@ -216,7 +216,7 @@ public class CountyStudyController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "[CountyStudy] CreateCohort failed");
+            _logger.LogError(ex, "[CountyStudy] CreateCohort failed for study {StudyId}", req.StudyId);
             return StatusCode(500, new { error = "Internal error" });
         }
     }
@@ -277,7 +277,7 @@ public class CountyStudyController : ControllerBase
         try
         {
             var dto = await _svc.CreateScenarioAsync(req, CurrentUserId);
-            return StatusCode(201, dto);
+            return CreatedAtAction(nameof(GetScenario), new { scenarioId = dto.ScenarioId }, dto);
         }
         catch (InvalidOperationException ex)
         {
@@ -285,7 +285,7 @@ public class CountyStudyController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "[CountyStudy] CreateScenario failed");
+            _logger.LogError(ex, "[CountyStudy] CreateScenario failed for study {StudyId}", req.StudyId);
             return StatusCode(500, new { error = "Internal error" });
         }
     }
@@ -393,7 +393,7 @@ public class CountyStudyController : ControllerBase
         try
         {
             var dto = await _svc.PromoteScenarioAsync(req, CurrentUserId);
-            return Ok(dto);
+            return StatusCode(201, dto);
         }
         catch (InvalidOperationException ex)
         {
@@ -448,7 +448,7 @@ public class CountyStudyController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "[CountyStudy] CreateExceptionSet failed");
+            _logger.LogError(ex, "[CountyStudy] CreateExceptionSet failed for study {StudyId}", req.StudyId);
             return StatusCode(500, new { error = "Internal error" });
         }
     }

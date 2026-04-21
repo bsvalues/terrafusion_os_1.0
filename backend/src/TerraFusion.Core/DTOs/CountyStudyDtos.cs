@@ -158,6 +158,9 @@ public record CountyExceptionSetDto(
     string Status
 );
 
+/// <summary>Body for PATCH api/county-study/studies/{studyId}/status.</summary>
+public record UpdateStudyStatusRequest(string Status);
+
 // ParcelIds: service is responsible for JSON-serializing this list into CountyExceptionSet.ParcelIdsJson
 public record CreateCountyExceptionSetRequest(
     Guid StudyId,
