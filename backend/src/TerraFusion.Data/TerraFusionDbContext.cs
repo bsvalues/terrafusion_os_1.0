@@ -221,6 +221,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<AdjustmentRun> AdjustmentRuns { get; set; } = null!;
   public DbSet<ParcelAdjustmentRecord> ParcelAdjustmentRecords { get; set; } = null!;
 
+  // County Studio Entities — TerraForge countywide valuation workspace
+  public DbSet<CountyStudySession> CountyStudySessions { get; set; } = null!;
+  public DbSet<CountySegmentSet> CountySegmentSets { get; set; } = null!;
+  public DbSet<CountySegment> CountySegments { get; set; } = null!;
+  public DbSet<CountyCohort> CountyCohorts { get; set; } = null!;
+  public DbSet<CountyScenario> CountyScenarios { get; set; } = null!;
+  public DbSet<CountyAdjustmentSet> CountyAdjustmentSets { get; set; } = null!;
+  public DbSet<CountyExceptionSet> CountyExceptionSets { get; set; } = null!;
+  public DbSet<CountySpatialArtifact> CountySpatialArtifacts { get; set; } = null!;
+
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
     if (!optionsBuilder.IsConfigured)
@@ -780,6 +790,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // Registered here so EF design-time migrations pick them up without Program.cs hook.
     modelBuilder.ApplyConfiguration(new SalesAuditEntityConfigurations.SaleAuditDiagnosisConfiguration());
     modelBuilder.ApplyConfiguration(new SalesAuditEntityConfigurations.SalesAuditAdjustmentProposalConfiguration());
+
+    // County Studio Entities (TerraForge countywide valuation workspace)
+    modelBuilder.ApplyConfiguration(new CountyStudySessionConfiguration());
+    modelBuilder.ApplyConfiguration(new CountySegmentSetConfiguration());
+    modelBuilder.ApplyConfiguration(new CountySegmentConfiguration());
+    modelBuilder.ApplyConfiguration(new CountyCohortConfiguration());
+    modelBuilder.ApplyConfiguration(new CountyScenarioConfiguration());
+    modelBuilder.ApplyConfiguration(new CountyAdjustmentSetConfiguration());
+    modelBuilder.ApplyConfiguration(new CountyExceptionSetConfiguration());
+    modelBuilder.ApplyConfiguration(new CountySpatialArtifactConfiguration());
 
     // GPT/RAG AI Entities (Wave 4 — entities in TerraFusion.AI, registered via hook)
     // Wire in Program.cs: TerraFusionDbContext.OnModelCreatingExtensions = GptAiEntityConfigurations.Apply;
