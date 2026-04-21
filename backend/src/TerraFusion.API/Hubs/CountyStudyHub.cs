@@ -18,18 +18,16 @@ namespace TerraFusion.API.Hubs;
 /// </summary>
 public class CountyStudyHub : Hub
 {
-    // In-memory session state: studyId → set of connectionIds
-    private static readonly ConcurrentDictionary<string, HashSet<string>> _studySessions = new();
+    // In-memory session state: studyId → concurrent set of connectionIds (byte value is unused sentinel)
+    private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, byte>> _studySessions = new();
 
     // ── Session Management ──────────────────────────────────────────────────────
 
     public async Task JoinStudy(string studyId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, $"Study_{studyId}");
-        _studySessions.AddOrUpdate(
-            studyId,
-            _ => new HashSet<string> { Context.ConnectionId },
-            (_, existing) => { existing.Add(Context.ConnectionId); return existing; });
+        var conns = _studySessions.GetOrAdd(studyId, _ => new ConcurrentDictionary<string, byte>());
+        conns.TryAdd(Context.ConnectionId, 0);
 
         await Clients.OthersInGroup($"Study_{studyId}")
             .SendAsync("SurfaceConnected", new { connectionId = Context.ConnectionId, studyId });
@@ -39,7 +37,12 @@ public class CountyStudyHub : Hub
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"Study_{studyId}");
         if (_studySessions.TryGetValue(studyId, out var conns))
-            conns.Remove(Context.ConnectionId);
+        {
+            conns.TryRemove(Context.ConnectionId, out _);
+            // Evict empty study key to prevent unbounded memory growth
+            if (conns.IsEmpty)
+                _studySessions.TryRemove(studyId, out _);
+        }
 
         await Clients.OthersInGroup($"Study_{studyId}")
             .SendAsync("SurfaceDisconnected", new { connectionId = Context.ConnectionId, studyId });
@@ -93,9 +96,15 @@ public class CountyStudyHub : Hub
     {
         foreach (var (studyId, conns) in _studySessions)
         {
-            if (conns.Remove(Context.ConnectionId))
+            if (conns.TryRemove(Context.ConnectionId, out _))
             {
-                await Clients.Group($"Study_{studyId}")
+                // Evict empty study key to prevent unbounded memory growth
+                if (conns.IsEmpty)
+                    _studySessions.TryRemove(studyId, out _);
+
+                // Use OthersInGroup (not Group) to match LeaveStudy semantics —
+                // the disconnecting client cannot receive messages anyway.
+                await Clients.OthersInGroup($"Study_{studyId}")
                     .SendAsync("SurfaceDisconnected", new { connectionId = Context.ConnectionId, studyId });
             }
         }
