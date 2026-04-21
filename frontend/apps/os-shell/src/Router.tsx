@@ -67,6 +67,14 @@ const ExperimentsList = lazy(() => import('./pages/experiments/ExperimentsList')
 const CreateExperiment = lazy(() => import('./pages/experiments/CreateExperiment'));
 const NotificationPreferences = lazy(() => import('./components/codex/NotificationPreferences'));
 
+// TerraForge County Studio (Plan 2) + Atlas Live View (Plan 3)
+const CountyStudyPage = lazy(() =>
+  import('./pages/forge/county-studio/CountyStudyPage').then((m) => ({ default: m.CountyStudyPage }))
+);
+const AtlasLivePage = lazy(() =>
+  import('./pages/forge/atlas-live/AtlasLivePage').then((m) => ({ default: m.AtlasLivePage }))
+);
+
 // Gen2 Module Routes
 const TerraForgeGen2 = lazy(() => import('./pages/gen2/TerraForgeGen2'));
 const TerraDossierGen2 = lazy(() => import('./pages/gen2/TerraDossierGen2'));
@@ -187,6 +195,10 @@ const Router: React.FC = () => {
 
                   {/* Constitutional Suite Home Routes (Phase 9) */}
                   <Route path='forge' element={<ForgeHome />} />
+                  {/* TerraForge County Studio */}
+                  <Route path='forge/county-studio' element={<CountyStudyPage />} />
+                  {/* Atlas Live View */}
+                  <Route path='forge/atlas-live' element={<AtlasLivePage />} />
                   <Route path='atlas' element={<AtlasHome />} />
                   <Route path='dais' element={<DaisHome />} />
                   <Route path='dossier' element={<DossierHome />} />
