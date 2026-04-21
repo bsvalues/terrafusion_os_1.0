@@ -134,15 +134,11 @@ public class CountyStudyController : ControllerBase
     /// Returns 201 Created with the segment set DTO.
     /// </summary>
     [HttpPost("studies/{studyId:guid}/segment-sets")]
-    public async Task<IActionResult> CreateSegmentSet(
-        Guid studyId,
-        [FromQuery] string name,
-        [FromQuery] string sourceType,
-        [FromQuery] bool isBaseline = false)
+    public async Task<IActionResult> CreateSegmentSet(Guid studyId, [FromBody] CreateSegmentSetRequest req)
     {
         try
         {
-            var dto = await _svc.CreateSegmentSetAsync(studyId, name, sourceType, isBaseline, CurrentUserId);
+            var dto = await _svc.CreateSegmentSetAsync(studyId, req.Name, req.SourceType, req.IsBaseline, CurrentUserId);
             return StatusCode(201, dto);
         }
         catch (InvalidOperationException ex)

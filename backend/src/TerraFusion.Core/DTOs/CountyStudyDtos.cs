@@ -68,6 +68,13 @@ public record CountyCohortDto(
     DateTime CreatedAt
 );
 
+public record CreateSegmentSetRequest(
+    Guid StudyId,
+    string Name,
+    string SourceType,
+    bool IsBaseline = false
+);
+
 public record CreateCohortRequest(
     Guid StudyId,
     string Name,
@@ -152,7 +159,7 @@ public record CountyExceptionSetDto(
 );
 
 // ParcelIds: service is responsible for JSON-serializing this list into CountyExceptionSet.ParcelIdsJson
-public record CreateExceptionSetRequest(
+public record CreateCountyExceptionSetRequest(
     Guid StudyId,
     Guid SourceScenarioId,
     ExceptionReasonCode ReasonCode,
