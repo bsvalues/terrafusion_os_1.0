@@ -68,6 +68,15 @@ public interface ITerraFusionDbContext
     DbSet<Notice> Notices { get; set; }
     DbSet<QueueItem> QueueItems { get; set; }
 
+    // County Studio — Study sessions, segments, cohorts, scenarios, adjustments, exceptions
+    DbSet<CountyStudySession> CountyStudySessions { get; set; }
+    DbSet<CountySegmentSet> CountySegmentSets { get; set; }
+    DbSet<CountySegment> CountySegments { get; set; }
+    DbSet<CountyCohort> CountyCohorts { get; set; }
+    DbSet<CountyScenario> CountyScenarios { get; set; }
+    DbSet<CountyAdjustmentSet> CountyAdjustmentSets { get; set; }
+    DbSet<CountyExceptionSet> CountyExceptionSets { get; set; }
+
     System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     DbSet<TEntity> Set<TEntity>() where TEntity : class;
     EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
