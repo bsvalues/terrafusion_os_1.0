@@ -1056,7 +1056,6 @@ builder.Services.AddHostedService<StartupOrchestrationService>();
 builder.Services.AddScoped<TerraFusion.Abstractions.Interfaces.IAuditLogger, TerraFusion.API.Services.AuditLogger>();
 
 // Phase 4 Playground services
-builder.Services.AddSingleton<PrototypeTestingEngine>();
 builder.Services.AddSingleton<ScenarioRunRegistry>();
 
 // 🏛️ Sale Qualification — TerraFusion owns the IAAO ratio-study qualification decision
@@ -1209,10 +1208,8 @@ builder.Services.AddSingleton<ISurfaceContractService, TerraFusion.AI.Services.S
 // Muse router status — probes each lane for live/offline observability
 builder.Services.AddSingleton<IMuseRouterStatusService, TerraFusion.AI.Services.MuseRouterStatusService>();
 // ✅ STUB: Consciousness Engine stub for DI resolution
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 // ✅ MISSING SERVICES: Registered missing dependencies for Workflow/AI Services
 builder.Services.AddScoped<TerraFusion.AI.Services.IPropertyValuationService, TerraFusion.AI.Services.PropertyValuationService>();
-builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IComplianceService, TerraFusion.Consciousness.Services.ComplianceServiceStub>();
 
 // TIER 5+ Services - TerraGaia Ultimate AI Consciousness
 // RE-ENABLED: Changed from Singleton → Scoped to properly resolve TerraFusionContext (scoped DbContext) and IAuditLogger (scoped)
@@ -1248,17 +1245,20 @@ builder.Services.AddScoped<ICognitiveFrameworkService, CognitiveFrameworkService
 // "If you only knew the magnificence of the 3, 6 and 9, then you would have a key to the universe." - Nikola Tesla
 builder.Services.AddScoped<TerraFusion.AI.Services.Framework369MetricsEngine>();
 builder.Services.AddScoped<TerraFusion.AI.Services.ICodex369FrameworkService, TerraFusion.AI.Services.Codex369FrameworkService>();
+builder.Services.AddScoped<TerraFusion.AI.Services.ICodexEmailNotificationService, TerraFusion.AI.Services.CodexEmailNotificationService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.IPerformanceOptimizationService, TerraFusion.Core.Services.PerformanceOptimizationService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.ISecurityComplianceService, TerraFusion.Core.Services.SecurityComplianceService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.IScalingOptimizationService, TerraFusion.Core.Services.ScalingOptimizationService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.IPredictiveMaintenanceService, TerraFusion.Core.Services.PredictiveMaintenanceService>();
 
 // 🧠 GOVERNMENT-GRADE RESEARCH ANALYTICS SERVICES - PhD-Level Excellence
 // Elite research coordination and quantum-enhanced analytics services
 builder.Services.AddScoped<IQuantumConsciousnessService, QuantumConsciousnessService>();
 builder.Services.AddScoped<IResearchAnalyticsService, ResearchAnalyticsService>();
-builder.Services.AddScoped<ICrossWorkspaceSyncService, CrossWorkspaceSyncService>();
 builder.Services.AddScoped<IStatisticalAnalysisService, StatisticalAnalysisService>();
 builder.Services.AddScoped<IForgeStatisticsService, ForgeStatisticsService>();
 builder.Services.AddScoped<ISalesAiDiagnosticService, SalesAiDiagnosticService>();
 // Dev stub: returns empty until a real CAMA service is registered
-builder.Services.AddScoped<TerraFusion.API.Controllers.IMassAppraisalService, TerraFusion.API.Controllers.MassAppraisalServiceStub>();
 builder.Services.AddScoped<IPredictiveModelingService, PredictiveModelingService>();
 builder.Services.AddScoped<TerraFusion.API.Interfaces.IPerformanceMonitor, TerraFusion.API.Services.PerformanceMonitorService>();
 
@@ -1338,15 +1338,20 @@ else
 if (redisAvailable)
 {
   builder.Services.AddScoped<TerraFusion.Core.Services.IRedisCacheService, TerraFusion.Core.Services.RedisCacheService>();
+  builder.Services.AddScoped<TerraFusion.Core.Services.Caching.IAdvancedCacheService, TerraFusion.Core.Services.Caching.AdvancedRedisCacheService>();
 }
 else
 {
   builder.Services.AddSingleton<TerraFusion.Core.Services.IRedisCacheService, TerraFusion.Core.Services.NoOpRedisCacheService>();
+  builder.Services.AddSingleton<TerraFusion.Core.Services.Caching.IAdvancedCacheService, TerraFusion.Core.Services.Caching.NoOpAdvancedCacheService>();
 }
+
+builder.Services.AddScoped<TerraFusion.Core.Services.Performance.IPerformanceMonitoringService, TerraFusion.Core.Services.Performance.PerformanceMonitoringService>();
 
 // 🔍 Register Property Data Validation Service - Championship-level data integrity verification
 // Detects discrepancies between Harris PACS and TerraFusion, auto-corrects data issues, maintains 99.9% accuracy
 builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyDataValidationService, TerraFusion.Core.Services.PropertyDataValidationService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.IComplianceAutomationService, TerraFusion.Core.Services.ComplianceAutomationService>();
 
 // ====================================================================
 // 🔐 Phase 4 Sprint 1: NIST 800-63B Storage Infrastructure
@@ -1387,6 +1392,7 @@ builder.Services.AddSingleton<IModuleRegistry, ModuleRegistry>();
 builder.Services.AddScoped<IHarrisPACSEnhancementBridge, HarrisPACSEnhancementBridge>();
 builder.Services.AddScoped<ITerraFusionMarketplace, TerraFusionMarketplace>();
 builder.Services.AddScoped<ICountyDeploymentService, CountyDeploymentService>();
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICountyStudyService, TerraFusion.Core.Services.CountyStudyService>();
 
 // Register unified orchestration service
 builder.Services.AddSingleton<IUnifiedOrchestrationService, UnifiedOrchestrationService>();
@@ -1508,6 +1514,11 @@ builder.Services.AddScoped<IWorkflowExecutionRepository, TerraFusion.Data.Reposi
 // 📊 TerraFlow Quantum Command Center Service (Phase 1 Week 4)
 builder.Services.AddScoped<TerraFusion.AI.Services.IQuantumAnalyticsService, TerraFusion.AI.Services.QuantumAnalyticsService>();
 
+// Consciousness controller compatibility registrations.
+// The API host truth-gates these routes, but explicit concrete registrations
+// prevent request-time DI activation failures on legacy controller shapes.
+builder.Services.AddScoped<TerraFusion.Consciousness.Services.QuantumConsciousnessOrchestrator>();
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // 🌈 ARC CONSTELLATION - GPT/RAG Subsystem (Phase 9: Operational Hardening)
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1524,27 +1535,15 @@ gptRagOptions.LogConfiguration(heraldLogger);
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IGPTConfigurationService, TerraFusion.AI.Services.GPTConfigurationService>();
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IGPTOrchestrationService, TerraFusion.AI.Services.GPTOrchestrationService>();
 
-// RAG infrastructure: Embedding service (simulated for dev, OpenAI for prod) + Vector storage + RAG orchestration
+// RAG infrastructure: Embedding service (fails closed when provider config is absent) + Vector storage + RAG orchestration
 builder.Services.AddHttpClient<TerraFusion.AI.Services.OpenAIEmbeddingService>();
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
 {
-  var options = sp.GetRequiredService<TerraFusion.AI.Configuration.GptRagOptions>();
-
-  if (options.UseRealEmbeddings)
-  {
-    // 🟢 OpenAI embeddings - production mode
-    var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
-    var httpClient = httpClientFactory.CreateClient();
-    var configuration = sp.GetRequiredService<IConfiguration>();
-    var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.OpenAIEmbeddingService>>();
-    return new TerraFusion.AI.Services.OpenAIEmbeddingService(httpClient, configuration, logger);
-  }
-  else
-  {
-    // 🟡 Simulated embeddings - dev/CI safe mode
-    var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.SimulatedEmbeddingService>>();
-    return new TerraFusion.AI.Services.SimulatedEmbeddingService(logger);
-  }
+  var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+  var httpClient = httpClientFactory.CreateClient();
+  var configuration = sp.GetRequiredService<IConfiguration>();
+  var logger = sp.GetRequiredService<ILogger<TerraFusion.AI.Services.OpenAIEmbeddingService>>();
+  return new TerraFusion.AI.Services.OpenAIEmbeddingService(httpClient, configuration, logger);
 });
 // Register RAG Embedding Repository — pgvector for Postgres, in-memory for SQLite/dev
 {
@@ -1659,9 +1658,9 @@ builder.Services.AddScoped<TerraFusion.Levy.Services.IRevenueProjectionService, 
 builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyPropertyAssessmentService, TerraFusion.Levy.Services.LevyPropertyAssessmentService>();
 builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyDataQualityService, TerraFusion.Levy.Services.LevyDataQualityService>();
 // NOTE: Levy certification flow uses TerraFusion.Core.Services.ICertificationService
-// (registered above at the Dais CRUD block). A previous B5 DI line referenced
-// TerraFusion.Levy.Services.ILevyCertificationService but those types were
-// never created; removed to unblock the API build.
+// (registered above at the Dais CRUD block). The old TerraFusion.Levy B5
+// certification stub surface has been removed so the runtime no longer carries
+// a dead parallel certification path.
 
 // Add health checks for monitoring
 builder.Services.AddHealthChecks()
@@ -2084,6 +2083,7 @@ app.MapHub<TerraFusion.AI.Hubs.AnalyticsHub>("/hubs/analytics");
 app.MapHub<TerraFusion.AI.Hubs.WorkflowHub>("/hubs/workflow");
 app.MapHub<TerraFusion.AI.Hubs.CollaborationHub>("/hubs/collaboration");
 app.MapHub<TerraFusion.AI.Hubs.Codex369Hub>("/hubs/codex369");
+app.MapHub<CountyStudyHub>("/hubs/county-study");
 app.MapHealthChecks("/health/codex369", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
 {
   Predicate = check => check.Name.Contains("codex-369", StringComparison.OrdinalIgnoreCase)
