@@ -76,6 +76,7 @@ public interface ITerraFusionDbContext
     DbSet<CountyScenario> CountyScenarios { get; set; }
     DbSet<CountyAdjustmentSet> CountyAdjustmentSets { get; set; }
     DbSet<CountyExceptionSet> CountyExceptionSets { get; set; }
+    DbSet<CountySpatialArtifact> CountySpatialArtifacts { get; set; }
 
     System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     DbSet<TEntity> Set<TEntity>() where TEntity : class;

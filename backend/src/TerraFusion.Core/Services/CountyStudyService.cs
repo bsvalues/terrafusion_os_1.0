@@ -237,6 +237,14 @@ public class CountyStudyService : ICountyStudyService
     {
         var scenario = await _db.CountyScenarios.FindAsync(req.ScenarioId)
             ?? throw new InvalidOperationException($"Scenario {req.ScenarioId} not found");
+
+        // Enforce workflow: only Saved or Reviewed scenarios may be promoted.
+        // Draft scenarios must go through SaveScenarioAsync first.
+        if (scenario.Status != ScenarioStatus.Saved && scenario.Status != ScenarioStatus.Reviewed)
+            throw new InvalidOperationException(
+                $"Scenario {req.ScenarioId} cannot be promoted from status '{scenario.Status}'. " +
+                "Only Saved or Reviewed scenarios may be promoted.");
+
         scenario.Status = ScenarioStatus.Promoted;
         scenario.UpdatedAt = DateTime.UtcNow;
         scenario.UpdatedBy = userId;
