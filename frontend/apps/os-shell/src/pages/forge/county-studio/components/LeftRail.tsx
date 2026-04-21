@@ -1,2 +1,102 @@
+// apps/os-shell/src/pages/forge/county-studio/components/LeftRail.tsx
 import React from 'react';
-export function LeftRail() { return <div data-testid="left-rail-stub" />; }
+import { useCountyStudioStore } from '@/stores/countyStudioStore';
+
+const SectionHeader = ({ label }: { label: string }) => (
+  <div
+    style={{
+      fontSize: 10,
+      fontWeight: 700,
+      letterSpacing: 1.2,
+      color: 'hsl(var(--tf-muted))',
+      padding: '12px 12px 4px',
+      textTransform: 'uppercase',
+    }}
+  >
+    {label}
+  </div>
+);
+
+const NavItem = ({
+  label,
+  sub,
+  active,
+  onClick,
+}: {
+  label: string;
+  sub?: string;
+  active?: boolean;
+  onClick?: () => void;
+}) => (
+  <button
+    onClick={onClick}
+    style={{
+      display: 'block',
+      width: '100%',
+      textAlign: 'left',
+      padding: '6px 12px',
+      border: 'none',
+      background: active ? 'hsl(var(--tf-surface))' : 'transparent',
+      color: active ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
+      fontSize: 12,
+      cursor: 'pointer',
+      borderRadius: 0,
+    }}
+  >
+    <div style={{ fontWeight: active ? 600 : 400 }}>{label}</div>
+    {sub && <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>{sub}</div>}
+  </button>
+);
+
+export function LeftRail() {
+  const { activeStudy, cohorts, scenarios } = useCountyStudioStore();
+
+  return (
+    <div style={{ padding: '8px 0' }}>
+      <SectionHeader label="Studies" />
+      {activeStudy ? (
+        <NavItem
+          label={`${activeStudy.taxYear} ${activeStudy.studyType}`}
+          sub={activeStudy.status}
+          active
+        />
+      ) : (
+        <div style={{ padding: '4px 12px', fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
+          No study open
+        </div>
+      )}
+
+      <SectionHeader label="Cohorts" />
+      {cohorts.length === 0 ? (
+        <div style={{ padding: '4px 12px', fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
+          None yet
+        </div>
+      ) : (
+        cohorts.map((c) => (
+          <NavItem key={c.cohortId} label={c.name} sub={`${c.parcelCount} parcels · ${c.selectionType}`} />
+        ))
+      )}
+
+      <SectionHeader label="Scenarios" />
+      {scenarios.length === 0 ? (
+        <div style={{ padding: '4px 12px', fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
+          None yet
+        </div>
+      ) : (
+        scenarios.map((s) => (
+          <NavItem
+            key={s.scenarioId}
+            label={s.adjustmentType}
+            sub={s.status}
+            active={false}
+          />
+        ))
+      )}
+
+      <SectionHeader label="Snapshots" />
+      <div style={{ padding: '4px 12px', fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
+        None saved
+      </div>
+    </div>
+  );
+}
