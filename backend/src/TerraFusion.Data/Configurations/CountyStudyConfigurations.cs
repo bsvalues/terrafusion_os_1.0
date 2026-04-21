@@ -88,8 +88,7 @@ public sealed class CountyScenarioConfiguration : IEntityTypeConfiguration<Count
         // Explicit one-to-one: CountyScenario <-> CountyAdjustmentSet (no ambiguity for EF)
         builder.HasOne(s => s.AdjustmentSet)
                .WithOne(a => a.Scenario)
-               .HasForeignKey<CountyAdjustmentSet>(a => a.ScenarioId)
-               .IsRequired(false);
+               .HasForeignKey<CountyAdjustmentSet>(a => a.ScenarioId);
     }
 }
 
@@ -107,6 +106,8 @@ public sealed class CountyAdjustmentSetConfiguration : IEntityTypeConfiguration<
         builder.Property(e => e.UpdatedBy).IsRequired().HasMaxLength(450);
         builder.HasIndex(e => new { e.StudyId, e.ApprovalState })
                .HasDatabaseName("IX_CountyAdjustmentSets_StudyState");
+        builder.HasIndex(e => e.ScenarioId).IsUnique()
+               .HasDatabaseName("IX_CountyAdjustmentSets_ScenarioId");
     }
 }
 
