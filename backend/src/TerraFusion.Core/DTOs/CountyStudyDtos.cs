@@ -1,6 +1,9 @@
 // backend/src/TerraFusion.Core/DTOs/CountyStudyDtos.cs
 using TerraFusion.Core.Entities;
 
+// Design note: Response DTOs use string for enum fields (serialization-safe, stable API contract).
+// Request DTOs use enum types directly for compile-time validation at the API boundary.
+
 namespace TerraFusion.Core.DTOs;
 
 // ── Study ──────────────────────────────────────────────────────────────
@@ -26,6 +29,7 @@ public record CreateStudyRequest(
 
 // ── Segment ──────────────────────────────────────────────────────────────
 
+// DerivedFrom deliberately excluded from response — internal lineage tracking
 public record CountySegmentSetDto(
     Guid SegmentSetId,
     Guid StudyId,
@@ -119,6 +123,7 @@ public record ScenarioDeltaItem(
 
 // ── AdjustmentSet ──────────────────────────────────────────────────────────────
 
+// RollbackToken deliberately excluded from response — internal audit use only
 public record CountyAdjustmentSetDto(
     Guid AdjustmentSetId,
     Guid StudyId,
@@ -146,6 +151,7 @@ public record CountyExceptionSetDto(
     string Status
 );
 
+// ParcelIds: service is responsible for JSON-serializing this list into CountyExceptionSet.ParcelIdsJson
 public record CreateExceptionSetRequest(
     Guid StudyId,
     Guid SourceScenarioId,
