@@ -195,9 +195,14 @@ public class CountyStudyService : ICountyStudyService
             .FirstOrDefaultAsync(s => s.ScenarioId == scenarioId)
             ?? throw new InvalidOperationException($"Scenario {scenarioId} not found");
 
+        if (scenario.Cohort is null)
+            throw new InvalidOperationException($"Cohort for scenario {scenarioId} could not be loaded.");
+
         var parameters = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(scenario.Parameters)
             ?? new Dictionary<string, JsonElement>();
-        var magnitude = parameters.TryGetValue("magnitude", out var mag) ? mag.GetDecimal() : 0m;
+        var magnitude = parameters.TryGetValue("magnitude", out var mag) && mag.ValueKind == JsonValueKind.Number
+            ? mag.GetDecimal()
+            : 0m;
 
         var segmentSetId = await _db.CountyStudySessions
             .Where(s => s.StudyId == scenario.StudyId)
@@ -267,6 +272,9 @@ public class CountyStudyService : ICountyStudyService
     {
         var scenario = await _db.CountyScenarios.FindAsync(req.SourceScenarioId)
             ?? throw new InvalidOperationException($"Scenario {req.SourceScenarioId} not found");
+        if (scenario.StudyId != req.StudyId)
+            throw new InvalidOperationException(
+                $"Scenario {req.SourceScenarioId} does not belong to study {req.StudyId}.");
         var exc = new CountyExceptionSet
         {
             StudyId = req.StudyId,
