@@ -21,4 +21,9 @@
     <ProjectReference Include="..\src\TerraFusion.API\TerraFusion.API.csproj" />
     <ProjectReference Include="..\src\TerraFusion.AI\TerraFusion.AI.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Services\Valuation\Fixtures\Kernels\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

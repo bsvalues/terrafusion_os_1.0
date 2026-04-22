@@ -1,0 +1,16 @@
+{
+  "success": true,
+  "data": {
+    "totalValue": 351708.06,
+    "components": { "land": 65000.0, "building": 286708.06 }
+  },
+  "auditEvent": {
+    "eventId": "660e8400-e29b-41d4-a716-446655440001",
+    "timestamp": "2026-04-22T10:00:01Z",
+    "actor": "system",
+    "action": "valuate",
+    "resourceId": "PARCEL-0001",
+    "module": "terraforge.kernel.valuation",
+    "hash": "git:abc123def456"
+  }
+}
