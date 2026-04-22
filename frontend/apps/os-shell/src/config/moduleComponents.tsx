@@ -107,6 +107,11 @@ export const MODULE_ALIASES: Record<string, string> = {
   'geo-forge-gis': 'geo-forge',
   'gis-analytics': 'geo-forge',
 
+  // County Studio + Atlas Live View
+  'county-studio': 'county-studio',
+  'atlas-live-view': 'atlas-live-view',
+  'atlas-live': 'atlas-live-view',
+
   // Property Workbench (desktop window adapter)
   workbench: 'property-workbench',
   'property-workbench-window': 'property-workbench',
@@ -229,6 +234,10 @@ export const MODULE_REGISTRY = new Set<string>([
   'terra-sketch',
   // GeoForge — GIS-first mass appraisal analytics
   'geo-forge',
+  // County Studio — segment-first countywide valuation workspace
+  'county-studio',
+  // Atlas Live View — study-aware spatial surface (session subscriber)
+  'atlas-live-view',
 ]);
 
 /**
@@ -392,6 +401,16 @@ const GeoForgePage = lazy(
 // GeoForge v2 — Assessor Audit Command Center (Lumin Bridge / Liquid Glass)
 const GeoForgeV2Page = lazy(
   () => import('../pages/forge/geo/v2/GeoForgeV2Page').then((m) => ({ default: m.GeoForgeV2Page }))
+);
+
+// County Studio — segment-first countywide valuation workspace
+const CountyStudyPage = lazy(() =>
+  import('../pages/forge/county-studio/CountyStudyPage').then((m) => ({ default: m.CountyStudyPage }))
+);
+
+// Atlas Live View — study-aware spatial surface (session subscriber)
+const AtlasLivePage = lazy(() =>
+  import('../pages/forge/atlas-live/AtlasLivePage').then((m) => ({ default: m.AtlasLivePage }))
 );
 
 // NOTE: ComparableSalesPanel is used inside Forge → Sales sub-tab (not standalone)
@@ -1346,6 +1365,40 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
           }
         >
           <GeoForgePage />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // COUNTY STUDIO — segment-first countywide valuation workspace
+    // ========================================================================
+
+    case 'county-studio':
+      return (
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-full">
+              <span className="text-muted-foreground">Loading County Studio…</span>
+            </div>
+          }
+        >
+          <CountyStudyPage />
+        </Suspense>
+      );
+
+    // ========================================================================
+    // ATLAS LIVE VIEW — study-aware spatial surface (session subscriber)
+    // ========================================================================
+
+    case 'atlas-live-view':
+      return (
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-full">
+              <span className="text-muted-foreground">Loading Atlas Live View…</span>
+            </div>
+          }
+        >
+          <AtlasLivePage />
         </Suspense>
       );
 
