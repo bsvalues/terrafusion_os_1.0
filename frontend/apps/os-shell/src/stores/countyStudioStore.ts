@@ -18,6 +18,7 @@ export interface CountyStudioState {
   cohorts: CountyCohortDto[];
   scenarios: CountyScenarioDto[];
   selectedSegmentId: string | null;
+  activeCohortId: string | null;
   activeScenario: CountyScenarioDto | null;
   scenarioPreview: ScenarioImpactPreviewDto | null;
   syncState: SyncState;
@@ -29,6 +30,7 @@ export interface CountyStudioState {
   setCohorts: (cohorts: CountyCohortDto[]) => void;
   setScenarios: (scenarios: CountyScenarioDto[]) => void;
   selectSegment: (segmentId: string | null) => void;
+  setActiveCohort: (cohortId: string | null) => void;
   setActiveScenario: (scenario: CountyScenarioDto | null) => void;
   setScenarioPreview: (preview: ScenarioImpactPreviewDto | null) => void;
   setSyncState: (state: SyncState) => void;
@@ -44,6 +46,7 @@ export const useCountyStudioStore = create<CountyStudioState>()(
       cohorts: [],
       scenarios: [],
       selectedSegmentId: null,
+      activeCohortId: null,
       activeScenario: null,
       scenarioPreview: null,
       syncState: 'DISCONNECTED',
@@ -55,6 +58,7 @@ export const useCountyStudioStore = create<CountyStudioState>()(
       setCohorts: (cohorts) => set({ cohorts }, false, 'setCohorts'),
       setScenarios: (scenarios) => set({ scenarios }, false, 'setScenarios'),
       selectSegment: (selectedSegmentId) => set({ selectedSegmentId }, false, 'selectSegment'),
+      setActiveCohort: (activeCohortId) => set({ activeCohortId }, false, 'setActiveCohort'),
       setActiveScenario: (activeScenario) => set({ activeScenario }, false, 'setActiveScenario'),
       setScenarioPreview: (scenarioPreview) => set({ scenarioPreview }, false, 'setScenarioPreview'),
       setSyncState: (syncState) => set({ syncState }, false, 'setSyncState'),
