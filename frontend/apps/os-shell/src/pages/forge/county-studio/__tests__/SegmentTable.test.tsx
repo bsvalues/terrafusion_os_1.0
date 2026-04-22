@@ -80,4 +80,17 @@ describe('SegmentTable', () => {
     render(<SegmentTable />);
     expect(screen.getByText(/no segments loaded/i)).toBeInTheDocument();
   });
+
+  it('filter prop hides non-matching segments', () => {
+    render(<SegmentTable filter={(s) => s.riskScore > 50} />);
+    // s2 (Kennewick C1) has riskScore 78, s1 (West Richland R1) has 35
+    expect(screen.queryByText('West Richland R1')).not.toBeInTheDocument();
+    expect(screen.getByText('Kennewick C1')).toBeInTheDocument();
+  });
+
+  it('shows all segments when no filter is provided', () => {
+    render(<SegmentTable />);
+    expect(screen.getByText('West Richland R1')).toBeInTheDocument();
+    expect(screen.getByText('Kennewick C1')).toBeInTheDocument();
+  });
 });

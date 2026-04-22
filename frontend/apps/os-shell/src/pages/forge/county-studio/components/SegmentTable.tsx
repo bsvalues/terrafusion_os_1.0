@@ -61,7 +61,7 @@ const Th = ({
   </th>
 );
 
-export function SegmentTable() {
+export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => boolean } = {}) {
   const { segments, selectedSegmentId, selectSegment } = useCountyStudioStore();
   const [sortKey, setSortKey] = useState<SortKey>('name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
@@ -92,12 +92,14 @@ export function SegmentTable() {
     }
   };
 
-  const sorted = [...segments].sort((a, b) => {
-    const av = a[sortKey];
-    const bv = b[sortKey];
-    const cmp = typeof av === 'string' ? av.localeCompare(bv as string) : (av as number) - (bv as number);
-    return sortDir === 'asc' ? cmp : -cmp;
-  });
+  const sorted = [...segments]
+    .filter(filter ?? (() => true))
+    .sort((a, b) => {
+      const av = a[sortKey];
+      const bv = b[sortKey];
+      const cmp = typeof av === 'string' ? av.localeCompare(bv as string) : (av as number) - (bv as number);
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
 
   const cols: { label: string; key: SortKey }[] = [
     { label: 'Segment', key: 'name' },
