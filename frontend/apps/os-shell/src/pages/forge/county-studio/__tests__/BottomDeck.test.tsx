@@ -58,4 +58,34 @@ describe('BottomDeck', () => {
     render(<BottomDeck />);
     expect(screen.getByText(/no data/i)).toBeInTheDocument();
   });
+
+  it('flags PRD out-of-bounds as critical (PRD > 1.03)', () => {
+    act(() => {
+      useCountyStudioStore.getState().setSegments([{
+        segmentId: 'sx', segmentSetId: 'ss1', name: 'High PRD Seg',
+        segmentType: 'Residential', parcelCount: 200, medianRatio: 0.99,
+        cod: 12.0, prd: 1.08,   // prd > 1.03
+        stabilityScore: 80, riskScore: 30, exceptionCount: 0, geographyRef: null,
+      }]);
+    });
+    render(<BottomDeck />);
+    fireEvent.click(screen.getByText('Warnings'));
+    expect(screen.getByText(/PRD/)).toBeInTheDocument();
+    expect(screen.getByText(/High PRD Seg/)).toBeInTheDocument();
+  });
+
+  it('flags high exception rate as warning (exceptions > 10% of parcels)', () => {
+    act(() => {
+      useCountyStudioStore.getState().setSegments([{
+        segmentId: 'sy', segmentSetId: 'ss1', name: 'Exc Rate Seg',
+        segmentType: 'Residential', parcelCount: 100, medianRatio: 0.99,
+        cod: 12.0, prd: 1.01, stabilityScore: 75, riskScore: 30,
+        exceptionCount: 15,  // 15% — above 10% threshold
+        geographyRef: null,
+      }]);
+    });
+    render(<BottomDeck />);
+    fireEvent.click(screen.getByText('Warnings'));
+    expect(screen.getByText(/exception rate/i)).toBeInTheDocument();
+  });
 });

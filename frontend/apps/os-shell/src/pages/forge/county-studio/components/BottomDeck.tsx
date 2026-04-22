@@ -31,22 +31,26 @@ function DistributionTab() {
     if (bucket in bands) bands[bucket] = (bands[bucket] ?? 0) + 1;
   });
 
-  const data = Object.entries(bands).map(([ratio, count]) => ({
-    ratio,
-    count,
-  }));
+  const data = Object.entries(bands).map(([ratio, count]) => ({ ratio, count }));
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-        <XAxis dataKey="ratio" tick={{ fontSize: 9 }} />
-        <YAxis tick={{ fontSize: 9 }} />
-        <Tooltip
-          contentStyle={{ background: 'hsl(var(--tf-surface))', border: '1px solid hsl(var(--tf-border))', fontSize: 11 }}
-        />
-        <Bar dataKey="count" fill="#3b82f6" radius={[2, 2, 0, 0]} />
-      </BarChart>
-    </ResponsiveContainer>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', padding: '4px 8px', flexShrink: 0 }}>
+        Segment median ratios (one bar = one segment)
+      </div>
+      <div style={{ flex: 1 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+            <XAxis dataKey="ratio" tick={{ fontSize: 9 }} />
+            <YAxis tick={{ fontSize: 9 }} label={{ value: 'Segments', angle: -90, position: 'insideLeft', style: { fontSize: 9 } }} />
+            <Tooltip
+              contentStyle={{ background: 'hsl(var(--tf-surface))', border: '1px solid hsl(var(--tf-border))', fontSize: 11 }}
+            />
+            <Bar dataKey="count" fill="#3b82f6" radius={[2, 2, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 }
 
@@ -86,15 +90,31 @@ function WarningsTab() {
   const { segments } = useCountyStudioStore();
 
   const warnings: { text: string; severity: 'critical' | 'warning' }[] = [];
+
   segments.forEach((seg) => {
     if (seg.stabilityScore < 60) {
       warnings.push({ text: `${seg.name}: stability score ${seg.stabilityScore} (below 60)`, severity: 'critical' });
     }
-    if (seg.parcelCount < 30) {
+    if (seg.parcelCount < 10) {
+      warnings.push({ text: `${seg.name}: very low sample (n=${seg.parcelCount})`, severity: 'critical' });
+    } else if (seg.parcelCount < 30) {
       warnings.push({ text: `${seg.name}: low sample (n=${seg.parcelCount})`, severity: 'warning' });
     }
     if (seg.cod > 20) {
       warnings.push({ text: `${seg.name}: COD ${seg.cod.toFixed(1)} exceeds 20`, severity: 'critical' });
+    }
+    if (seg.prd < 0.98 || seg.prd > 1.03) {
+      warnings.push({
+        text: `${seg.name}: PRD ${seg.prd.toFixed(3)} outside IAAO range (0.98–1.03)`,
+        severity: 'critical',
+      });
+    }
+    const excRate = seg.parcelCount > 0 ? seg.exceptionCount / seg.parcelCount : 0;
+    if (excRate > 0.10) {
+      warnings.push({
+        text: `${seg.name}: high exception rate ${(excRate * 100).toFixed(0)}% of parcels`,
+        severity: 'warning',
+      });
     }
   });
 
@@ -106,17 +126,12 @@ function WarningsTab() {
         </div>
       ) : (
         warnings.map((w, i) => (
-          <div
-            key={i}
-            style={{
-              padding: '4px 8px',
-              marginBottom: 4,
-              borderRadius: 4,
-              background: w.severity === 'critical' ? '#ef444422' : '#f59e0b22',
-              color: w.severity === 'critical' ? '#ef4444' : '#f59e0b',
-              fontSize: 11,
-            }}
-          >
+          <div key={i} style={{
+            padding: '4px 8px', marginBottom: 4, borderRadius: 4,
+            background: w.severity === 'critical' ? '#ef444422' : '#f59e0b22',
+            color: w.severity === 'critical' ? '#ef4444' : '#f59e0b',
+            fontSize: 11,
+          }}>
             {w.severity === 'critical' ? '⛔' : '⚠'} {w.text}
           </div>
         ))
