@@ -6710,11 +6710,11 @@ public class CostForgeController : ControllerBase
     }
 
     // Physical depreciation integrity check
-    // If avg > 95%, flag as potentially mis-scaled in PACS
+    // If avg > 95%, flag as potentially mis-scaled or uninitialized in source data
     var physicalAvg = deprStats?.AvgPhysical ?? 0.0;
     if (physicalAvg > 95.0)
     {
-      dataIntegrityWarning = "PhysicalDepreciationPct avg exceeds 95% — verify PACS source column scale before relying on this figure.";
+      dataIntegrityWarning = "PhysicalDepreciationPct avg exceeds 95% — verify source column scale before relying on this figure.";
     }
 
     // ── Additional KPI stats the workspace store expects ──────────────────────
