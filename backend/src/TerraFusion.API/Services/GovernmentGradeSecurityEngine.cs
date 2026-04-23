@@ -21,7 +21,7 @@ using TerraFusion.API.Models;
 using TerraFusion.API.Models.Configuration;
 using TerraFusion.API.Models.Services;
 using TerraFusion.API.Models.Metrics;
-using Configuration = TerraFusion.API.Models.Configuration;
+using ModelsConfiguration = TerraFusion.API.Models.Configuration;
 using ApiSecurityEvent = TerraFusion.API.Models.SecurityEvent;
 
 namespace TerraFusion.API.Services;
@@ -75,9 +75,9 @@ public class GovernmentGradeSecurityEngine : BackgroundService, IGovernmentGrade
     private readonly ConcurrentDictionary<string, AuditLogEntry> _auditLogs;
 
     // Security Configuration
-    private readonly Configuration.GovernmentSecurityConfiguration _securityConfig;
-    private readonly Configuration.FISMAHighRequirements _fismaRequirements;
-    private readonly Configuration.QuantumEncryptionConfiguration _quantumConfig;
+    private readonly ModelsConfiguration.GovernmentSecurityConfiguration _securityConfig;
+    private readonly ModelsConfiguration.FISMAHighRequirements _fismaRequirements;
+    private readonly ModelsConfiguration.QuantumEncryptionConfiguration _quantumConfig;
 
     // Monitoring Timers
     private readonly Timer _complianceMonitoringTimer;
@@ -1024,9 +1024,9 @@ public class GovernmentGradeSecurityEngine : BackgroundService, IGovernmentGrade
     }
 
     // Missing initialization methods
-    private Configuration.GovernmentSecurityConfiguration InitializeGovernmentSecurityConfiguration()
+    private ModelsConfiguration.GovernmentSecurityConfiguration InitializeGovernmentSecurityConfiguration()
     {
-        return new Configuration.GovernmentSecurityConfiguration
+        return new ModelsConfiguration.GovernmentSecurityConfiguration
         {
             FISMALevel = "High",
             EncryptionStandard = "AES-256",
@@ -1039,9 +1039,9 @@ public class GovernmentGradeSecurityEngine : BackgroundService, IGovernmentGrade
         };
     }
 
-    private Configuration.FISMAHighRequirements InitializeFISMAHighRequirements()
+    private ModelsConfiguration.FISMAHighRequirements InitializeFISMAHighRequirements()
     {
-        return new Configuration.FISMAHighRequirements
+        return new ModelsConfiguration.FISMAHighRequirements
         {
             RequiredSecurityControls = new List<string>
             {
@@ -1061,9 +1061,9 @@ public class GovernmentGradeSecurityEngine : BackgroundService, IGovernmentGrade
         };
     }
 
-    private Configuration.QuantumEncryptionConfiguration InitializeQuantumEncryptionConfiguration()
+    private ModelsConfiguration.QuantumEncryptionConfiguration InitializeQuantumEncryptionConfiguration()
     {
-        return new Configuration.QuantumEncryptionConfiguration
+        return new ModelsConfiguration.QuantumEncryptionConfiguration
         {
             Enabled = true,
             EncryptionAlgorithm = "CRYSTALS-Kyber",
