@@ -51,6 +51,21 @@ export interface CountyStudioState {
   /** Per-resource error message (null unless the matching loadStatus === 'error'). */
   loadErrors: CountyStudioLoadErrors;
 
+  /**
+   * Presence events received from peers on the same study.
+   * Bounded ring buffer — oldest entries drop when size exceeds PEER_HISTORY_MAX.
+   * Consumers: peer-count badge, "3 others viewing" indicator, LeftRail segment
+   * hover highlights from remote actors.
+   */
+  peerPresence: PeerPresenceEvent[];
+
+  /**
+   * Projection overlays received from peers (metric-overlay / scenario-delta /
+   * cohort-shade / edge-warnings / clear). Atlas Live View is typically the
+   * broadcaster; Studio subscribes to reflect the same map state. Bounded.
+   */
+  incomingProjections: ProjectionEvent[];
+
   setStudy: (study: CountyStudySessionDto | null) => void;
   setSegments: (segments: CountySegmentDto[]) => void;
   setCohorts: (cohorts: CountyCohortDto[]) => void;
@@ -69,7 +84,30 @@ export interface CountyStudioState {
     status: LoadStatus,
     errorMessage?: string
   ) => void;
+
+  /** Append a peer presence event. Ring-buffered (keeps last PEER_HISTORY_MAX). */
+  pushPeerPresence: (event: PeerPresenceEvent) => void;
+  /** Append a projection event received from a peer. Ring-buffered. */
+  pushIncomingProjection: (event: ProjectionEvent) => void;
+  /** Clear all incoming projections (e.g. on 'projection:clear'). */
+  clearIncomingProjections: () => void;
 }
+
+export interface PeerPresenceEvent {
+  type: 'presence:segment-hover' | 'presence:segment-select' | string;
+  segmentId?: string;
+  actorId?: string;
+  at: number;  // epoch ms, assigned by receiver
+}
+
+export interface ProjectionEvent {
+  type: string;  // 'metric-overlay' | 'scenario-delta' | 'cohort-shade' | 'edge-warnings' | 'clear' | ...
+  payload: unknown;
+  at: number;  // epoch ms, assigned by receiver
+}
+
+/** Upper bound on peer-event ring buffers. Keeps memory predictable during long sessions. */
+export const PEER_HISTORY_MAX = 20;
 
 export const useCountyStudioStore = create<CountyStudioState>()(
   devtools(
@@ -88,6 +126,9 @@ export const useCountyStudioStore = create<CountyStudioState>()(
 
       loadStatus: { segments: 'idle', cohorts: 'idle', scenarios: 'idle' },
       loadErrors: { segments: null, cohorts: null, scenarios: null },
+
+      peerPresence: [],
+      incomingProjections: [],
 
       setStudy: (study) => set({ activeStudy: study }, false, 'setStudy'),
       setSegments: (segments) => set({ segments }, false, 'setSegments'),
@@ -113,6 +154,38 @@ export const useCountyStudioStore = create<CountyStudioState>()(
           false,
           `setLoadStatus/${resource}/${status}`
         ),
+
+      pushPeerPresence: (event) =>
+        set(
+          (s) => {
+            const next = [...s.peerPresence, event];
+            // Ring-buffer: drop oldest when size exceeds max.
+            return {
+              peerPresence: next.length > PEER_HISTORY_MAX ? next.slice(-PEER_HISTORY_MAX) : next,
+            };
+          },
+          false,
+          `pushPeerPresence/${event.type}`
+        ),
+
+      pushIncomingProjection: (event) =>
+        set(
+          (s) => {
+            // Handle the 'clear' semantic from the Rust atlas kernel (projection:clear).
+            if (event.type === 'clear' || event.type === 'projection:clear') {
+              return { incomingProjections: [] };
+            }
+            const next = [...s.incomingProjections, event];
+            return {
+              incomingProjections: next.length > PEER_HISTORY_MAX ? next.slice(-PEER_HISTORY_MAX) : next,
+            };
+          },
+          false,
+          `pushIncomingProjection/${event.type}`
+        ),
+
+      clearIncomingProjections: () =>
+        set({ incomingProjections: [] }, false, 'clearIncomingProjections'),
     }),
     { name: 'CountyStudioStore' }
   )

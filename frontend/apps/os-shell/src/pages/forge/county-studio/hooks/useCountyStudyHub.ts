@@ -5,7 +5,8 @@ import { useCountyStudioStore } from '@/stores/countyStudioStore';
 const HUB_URL = '/api/hubs/county-study';
 
 export function useCountyStudyHub(studyId: string | null) {
-  const { setSyncState, setPendingSelection } = useCountyStudioStore.getState();
+  const { setSyncState, setPendingSelection, pushPeerPresence, pushIncomingProjection } =
+    useCountyStudioStore.getState();
   const connectionRef = useRef<signalR.HubConnection | null>(null);
 
   useEffect(() => {
@@ -18,9 +19,40 @@ export function useCountyStudyHub(studyId: string | null) {
 
     connectionRef.current = connection;
 
-    connection.on('ReceivePresence', (_event: unknown) => {});
+    // Presence events from other clients on the same study (hub broadcasts to
+    // OthersInGroup). Append to the store's bounded ring buffer so LeftRail
+    // and the peer-count badge can reflect remote activity.
+    connection.on('ReceivePresence', (event: { type: string; payload?: unknown } | unknown) => {
+      try {
+        const e = event as { type?: string; payload?: { segmentId?: string; actorId?: string } };
+        pushPeerPresence({
+          type: e.type ?? 'presence:unknown',
+          segmentId: e.payload?.segmentId,
+          actorId: e.payload?.actorId,
+          at: Date.now(),
+        });
+      } catch {
+        // Malformed presence payloads are discarded silently — they never
+        // affect valuation, only UI-state hints.
+      }
+    });
 
-    connection.on('ReceiveProjection', (_event: unknown) => {});
+    // Projection events from peers (typically Atlas Live View broadcasts
+    // metric-overlay / scenario-delta / cohort-shade / edge-warnings / clear).
+    // The 'clear' type flushes the ring buffer rather than appending.
+    connection.on('ReceiveProjection', (event: { type: string; payload?: unknown } | unknown) => {
+      try {
+        const e = event as { type?: string; payload?: unknown };
+        pushIncomingProjection({
+          type: e.type ?? 'projection:unknown',
+          payload: e.payload ?? null,
+          at: Date.now(),
+        });
+      } catch {
+        // As with presence, malformed projections are dropped — Atlas will
+        // broadcast again on the next user action.
+      }
+    });
 
     connection.on('ReceiveSelection', (event: { type: string; payload: unknown }) => {
       if (event.type === 'selection:parcel-ids') {
