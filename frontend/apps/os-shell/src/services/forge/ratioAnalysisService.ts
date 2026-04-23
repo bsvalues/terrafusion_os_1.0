@@ -131,7 +131,12 @@ export async function computeRatioStudy(params: RatioStudyParams): Promise<Ratio
     throw new Error(`Failed to compute ratio study: ${response.statusText}`);
   }
 
-  // Map TerraForge response shape → RatioStudyResult
+  // Map TerraForge response shape → RatioStudyResult.
+  // tierSlope and tierMedians are returned by the backend when the trimmed sample
+  // has ≥ 5 rows (slope) and ≥ 8 rows (quartile medians). Below those thresholds
+  // the backend returns null for those fields — the frontend treats null as
+  // "insufficient data" and renders zeros with a tooltip, never as if the data
+  // were real zeros.
   const raw = await response.json() as {
     taxYear:          number;
     total:            number;
@@ -147,6 +152,13 @@ export async function computeRatioStudy(params: RatioStudyParams): Promise<Ratio
       prd?:               number | null;
       prb?:               number | null;
       cov?:               number | null;
+      tierSlope?:         number | null;
+      tierMedians?: {
+        q1: number;
+        q2: number;
+        q3: number;
+        q4: number;
+      } | null;
     };
   };
 
@@ -163,10 +175,11 @@ export async function computeRatioStudy(params: RatioStudyParams): Promise<Ratio
     cov:               s.cov               ?? 0,
     sampleSize:        raw.countWithRatio,
     outlierCount:      raw.outliersExcluded,
-    // Tier medians require stratified data not in this endpoint — computed as zeros
-    // until a dedicated tier-stratification endpoint is added.
-    tierMedians: { q1: 0, q2: 0, q3: 0, q4: 0 },
-    tierSlope: 0,
+    // Live from the backend. Null when sample was too small for stratification;
+    // fall back to zero so downstream math stays defined, but consumers should
+    // read `sampleSize` to know whether the zeros are real or insufficient-data.
+    tierMedians: s.tierMedians ?? { q1: 0, q2: 0, q3: 0, q4: 0 },
+    tierSlope:   s.tierSlope   ?? 0,
     iaaoCompliant:    raw.iaaoCompliant,
     complianceNotes:  raw.complianceNotes ?? [],
     computedAt:       now,

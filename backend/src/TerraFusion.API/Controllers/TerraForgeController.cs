@@ -683,6 +683,8 @@ public class TerraForgeController : ControllerBase
         // in the paginated detail so staff can review and act on anomalous ratios.
         double? medianRatio = null, meanRatio = null, cod = null, prd = null;
         double? weightedMeanRatio = null, prb = null, cov = null;
+        double? tierSlope = null;
+        double[]? tierMedians = null; // [q1, q2, q3, q4]
         int trimmedCount = 0;
 
         if (countWithRatio > 0)
@@ -747,7 +749,37 @@ public class TerraForgeController : ControllerBase
                         denominator += dLog * dLog;
                     }
                     if (denominator > 0)
+                    {
                         prb = numerator / denominator;
+                        // tierSlope is the PRB slope rendered with IAAO tier-regression framing —
+                        // same OLS β₁ of ratio on ln(salePrice). Exposed as a distinct field because
+                        // Statistics Studio labels the concept as "tier slope" and the UI consumes it
+                        // alongside tier medians for the regressivity trend panel.
+                        tierSlope = prb;
+                    }
+                }
+
+                // Tier medians — median ratio per value quartile (sorted by sale price).
+                // IAAO Standard on Ratio Studies §6.1: vertical equity is assessed by comparing
+                // medians across value strata. Non-zero differences between q1..q4 indicate
+                // regressivity (q1 > q4) or progressivity (q1 < q4) that PRB alone can miss.
+                if (nt >= 8)
+                {
+                    var priceSortedRatios = trimmedRatioRows
+                        .OrderBy(r => r.salePrice)
+                        .Select(r => (double)r.ratio)
+                        .ToArray();
+                    var nq = priceSortedRatios.Length;
+                    var q1End = nq / 4;
+                    var q2End = nq / 2;
+                    var q3End = nq * 3 / 4;
+                    tierMedians = new[]
+                    {
+                        MedianOfSlice(priceSortedRatios, 0,     q1End),
+                        MedianOfSlice(priceSortedRatios, q1End, q2End),
+                        MedianOfSlice(priceSortedRatios, q2End, q3End),
+                        MedianOfSlice(priceSortedRatios, q3End, nq),
+                    };
                 }
             }
         }
@@ -825,6 +857,16 @@ public class TerraForgeController : ControllerBase
                 prd               = prd.HasValue               ? Math.Round(prd.Value,               4) : (double?)null,
                 prb               = prb.HasValue               ? Math.Round(prb.Value,               4) : (double?)null,
                 cov               = cov.HasValue               ? Math.Round(cov.Value,               2) : (double?)null,
+                // Tier stratification — median ratio by sale-price quartile + regression slope.
+                // Null when sample size too small (< 8 for tier medians, < 5 for slope).
+                tierSlope         = tierSlope.HasValue          ? Math.Round(tierSlope.Value,         4) : (double?)null,
+                tierMedians = tierMedians == null ? null : new
+                {
+                    q1 = Math.Round(tierMedians[0], 4),
+                    q2 = Math.Round(tierMedians[1], 4),
+                    q3 = Math.Round(tierMedians[2], 4),
+                    q4 = Math.Round(tierMedians[3], 4),
+                },
             },
             filters = new { taxYear, hood, propertyType },
             page,
@@ -3132,6 +3174,23 @@ public class TerraForgeController : ControllerBase
 
         return rows.ToDictionary(p => p.ParcelNumber, p => p.Neighborhood!);
     }
+
+    /// <summary>
+    /// Median of the slice values[start..end). Caller supplies the array already
+    /// ordered by the stratification key (e.g. sale price); we sort the ratio
+    /// slice locally for the median calculation. Returns 0.0 on empty range.
+    /// </summary>
+    private static double MedianOfSlice(double[] values, int start, int end)
+    {
+        if (end <= start) return 0.0;
+        var slice = new double[end - start];
+        Array.Copy(values, start, slice, 0, slice.Length);
+        Array.Sort(slice);
+        var n = slice.Length;
+        return n % 2 == 0
+            ? (slice[n / 2 - 1] + slice[n / 2]) / 2.0
+            : slice[n / 2];
+    }
 }
 
 /// <summary>
@@ -3211,6 +3270,7 @@ internal static class TrendStats
         var slope = (n * sumXY - sumX * sumY) / denom;
         return (decimal)slope;
     }
+
 }
 
 /// <summary>
