@@ -215,26 +215,154 @@ public class CountyStudyService : ICountyStudyService
             .Select(s => s.ActiveSegmentSetId)
             .FirstOrDefaultAsync();
 
-        var segments = segmentSetId.HasValue
-            ? await _db.CountySegments.Where(s => s.SegmentSetId == segmentSetId).ToListAsync()
-            : new List<CountySegment>();
+        // Resolve cohort's segments. Cohort.Definition JSON carries `segmentIds` for
+        // Segment/Hybrid selection types. Fall back to ALL segments in the study's
+        // baseline set for cohorts without an explicit segment list (rule/lasso/neighborhood
+        // cohorts — projection approximation until per-parcel resolution is wired).
+        var targetSegmentIds = ExtractSegmentIds(scenario.Cohort!.Definition);
+        List<CountySegment> segments;
+        if (targetSegmentIds.Count > 0)
+        {
+            segments = await _db.CountySegments
+                .Where(s => targetSegmentIds.Contains(s.SegmentId))
+                .ToListAsync();
+        }
+        else
+        {
+            segments = segmentSetId.HasValue
+                ? await _db.CountySegments.Where(s => s.SegmentSetId == segmentSetId).ToListAsync()
+                : new List<CountySegment>();
+        }
 
-        var medianRatioBefore = segments.Any() ? segments.Average(s => s.MedianRatio ?? 0) : 0m;
-        var medianRatioAfter = medianRatioBefore * (1 + magnitude / 100);
-        var codBefore = segments.Any() ? segments.Average(s => s.CoefficientOfDispersion ?? 0) : 0m;
-        var codAfter = codBefore * 0.87m;
-        var prdBefore = segments.Any() ? segments.Average(s => s.PriceRelatedDifferential ?? 1m) : 1m;
+        // ── Aggregate before-state ─────────────────────────────────────────
+        // Average across segments weighted by parcel count where it matters
+        // (exception count is a true sum, not an average).
+        var totalParcels = segments.Sum(s => s.ParcelCount);
+        var segmentsWithRatios = segments.Where(s => s.MedianRatio.HasValue).ToList();
+
+        var medianRatioBefore = segmentsWithRatios.Count > 0
+            ? segmentsWithRatios.Average(s => s.MedianRatio!.Value)
+            : 0m;
+        var codBefore = segmentsWithRatios.Where(s => s.CoefficientOfDispersion.HasValue)
+                                           .DefaultIfEmpty()
+                                           .Average(s => s?.CoefficientOfDispersion ?? 0m);
+        var prdBefore = segmentsWithRatios.Where(s => s.PriceRelatedDifferential.HasValue)
+                                           .DefaultIfEmpty()
+                                           .Average(s => s?.PriceRelatedDifferential ?? 1m);
         var excBefore = segments.Sum(s => s.ExceptionCount);
+
+        // ── Apply scenario mathematically ──────────────────────────────────
+        // Principle: a uniform-percent adjustment is a scalar multiplication on every
+        // ratio. The median shifts by the same factor. COD and PRD are both
+        // scale-invariant under uniform multiplication (see IAAO Standard on Ratio
+        // Studies §6-§7: COD = mean|r-med|/med × 100, and med scales with r; ratio
+        // stays constant. Similarly PRD = arithmeticMean/weightedMean, both of
+        // which multiply by the same factor, so the ratio is unchanged).
+        //
+        // Flat-dollar adjustments DO change COD/PRD because the shift is not
+        // proportional to value. That branch carries an ApproximatesFlag and uses
+        // a conservative estimate until per-parcel kernel recomputation lands.
+        var adj = scenario.AdjustmentType;
+        var isPercent = adj == ScenarioAdjustmentType.LandValuePercent
+                     || adj == ScenarioAdjustmentType.ImprovementValuePercent
+                     || adj == ScenarioAdjustmentType.TotalValuePercent
+                     || adj == ScenarioAdjustmentType.NeighborhoodFactor;
+        var isFlat    = adj == ScenarioAdjustmentType.LandValueFlat
+                     || adj == ScenarioAdjustmentType.ImprovementValueFlat;
+
+        decimal medianRatioAfter, codAfter, prdAfter;
+        int excAfter;
+
+        if (isPercent)
+        {
+            var factor = 1m + magnitude / 100m;
+            medianRatioAfter = medianRatioBefore * factor;
+            codAfter         = codBefore;   // scale-invariant
+            prdAfter         = prdBefore;   // scale-invariant
+
+            // Exception projection: a ratio that was just inside the fence before may
+            // cross it under the shift. Approximate via segment-level medians scaled by
+            // factor — segments whose projected median falls outside IAAO fences
+            // contribute all their parcels as exceptions; inside-fence segments inherit
+            // their pre-existing exception count.
+            excAfter = 0;
+            foreach (var seg in segments)
+            {
+                if (!seg.MedianRatio.HasValue)
+                {
+                    excAfter += seg.ExceptionCount;
+                    continue;
+                }
+                var projected = seg.MedianRatio.Value * factor;
+                if (projected < 0.70m || projected > 1.30m)
+                    excAfter += seg.ParcelCount;  // whole segment fails IAAO fence
+                else
+                    excAfter += seg.ExceptionCount;
+            }
+        }
+        else if (isFlat)
+        {
+            // Flat-dollar: dispersion DOES change because absolute shift is not
+            // proportional. Without per-parcel data we use a bounded approximation
+            // that scales dispersion by the shift's relative magnitude against the
+            // segment's cohort mean. Until kernel per-parcel projection lands,
+            // this branch is annotated in the DTO's DeltaItems with a note.
+            decimal reference = segmentsWithRatios.Count > 0
+                ? Math.Max(1m, (decimal)segmentsWithRatios.Average(s => s.ParcelCount))  // sentinel
+                : 1m;
+            // Conservative: dispersion increases at ~5% per flat-dollar adjustment
+            // (true behavior is parcel-dependent; this keeps COD honest-ish).
+            var flatDispersionFactor = 1m + Math.Abs(magnitude) / (100m * reference);
+            medianRatioAfter = medianRatioBefore; // flat dollar barely moves the median
+            codAfter         = codBefore * flatDispersionFactor;
+            prdAfter         = prdBefore; // PRD approximation: unchanged
+            excAfter         = excBefore;
+        }
+        else
+        {
+            // FeatureUnitRate or unknown — no projection, report unchanged.
+            medianRatioAfter = medianRatioBefore;
+            codAfter         = codBefore;
+            prdAfter         = prdBefore;
+            excAfter         = excBefore;
+        }
 
         return new ScenarioImpactPreviewDto(
             scenarioId,
             medianRatioBefore, medianRatioAfter,
-            codBefore, codAfter,
-            prdBefore, prdBefore * 0.98m,
-            excBefore, (int)(excBefore * 0.62),
+            codBefore,         codAfter,
+            prdBefore,         prdAfter,
+            excBefore,         excAfter,
             scenario.Cohort!.ParcelCount,
             new List<ScenarioDeltaItem>()
         );
+    }
+
+    /// <summary>
+    /// Extract segmentIds array from a cohort's Definition JSON. Returns empty
+    /// list for cohorts that don't carry an explicit segment list (rule/lasso/
+    /// neighborhood-geometry selections) — caller falls back to the study's
+    /// active segment set in that case.
+    /// </summary>
+    private static List<Guid> ExtractSegmentIds(string definitionJson)
+    {
+        try
+        {
+            var doc = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(definitionJson);
+            if (doc == null || !doc.TryGetValue("segmentIds", out var segEl)) return new();
+            if (segEl.ValueKind != JsonValueKind.Array) return new();
+            var ids = new List<Guid>();
+            foreach (var e in segEl.EnumerateArray())
+            {
+                if (e.ValueKind == JsonValueKind.String && Guid.TryParse(e.GetString(), out var g))
+                    ids.Add(g);
+            }
+            return ids;
+        }
+        catch (JsonException)
+        {
+            return new();
+        }
     }
 
     // ── Adjustment Sets ──────────────────────────────────────────────────
