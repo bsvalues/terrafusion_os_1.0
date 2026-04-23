@@ -101,14 +101,40 @@ export function CountyStudyPage() {
         </div>
 
         <div data-testid="cs-center" style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          {/* Tab Bar */}
-          <div style={{
-            height: 36, display: 'flex', alignItems: 'center', gap: 2, padding: '0 12px',
-            borderBottom: '1px solid hsl(var(--tf-border, 220 13% 20%))', flexShrink: 0,
-          }}>
+          {/* Tab Bar — WAI-ARIA tablist pattern */}
+          <div
+            role="tablist"
+            aria-label="Center panel views"
+            onKeyDown={(e) => {
+              const tabs: CenterTab[] = ['Overview', 'Ratio Study', 'Neighborhoods', 'Adjustments', 'Exceptions', 'Compliance'];
+              const idx = tabs.indexOf(activeTab);
+              if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                setActiveTab(tabs[(idx + 1) % tabs.length]);
+              } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                setActiveTab(tabs[(idx - 1 + tabs.length) % tabs.length]);
+              } else if (e.key === 'Home') {
+                e.preventDefault();
+                setActiveTab(tabs[0]);
+              } else if (e.key === 'End') {
+                e.preventDefault();
+                setActiveTab(tabs[tabs.length - 1]);
+              }
+            }}
+            style={{
+              height: 36, display: 'flex', alignItems: 'center', gap: 2, padding: '0 12px',
+              borderBottom: '1px solid hsl(var(--tf-border, 220 13% 20%))', flexShrink: 0,
+            }}
+          >
             {(['Overview', 'Ratio Study', 'Neighborhoods', 'Adjustments', 'Exceptions', 'Compliance'] as CenterTab[]).map((tab) => (
               <button
                 key={tab}
+                role="tab"
+                aria-selected={activeTab === tab}
+                aria-controls="cs-center-panel"
+                id={`cs-tab-${tab.replace(/\s+/g, '-').toLowerCase()}`}
+                tabIndex={activeTab === tab ? 0 : -1}
                 onClick={() => setActiveTab(tab)}
                 style={{
                   fontSize: 11, padding: '4px 10px', borderRadius: 4, border: 'none',
@@ -122,7 +148,12 @@ export function CountyStudyPage() {
               </button>
             ))}
           </div>
-          <div style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
+          <div
+            id="cs-center-panel"
+            role="tabpanel"
+            aria-labelledby={`cs-tab-${activeTab.replace(/\s+/g, '-').toLowerCase()}`}
+            style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}
+          >
             <SegmentTable filter={tabFilter} />
           </div>
           <div style={{ height: 200, borderTop: '1px solid hsl(var(--tf-border, 220 13% 20%))', flexShrink: 0 }}>

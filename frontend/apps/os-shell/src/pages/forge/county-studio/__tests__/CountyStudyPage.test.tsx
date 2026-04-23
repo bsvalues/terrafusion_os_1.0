@@ -9,7 +9,7 @@ import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import type { CountySegmentDto } from '../types/countyStudio.types';
 
 vi.mock('../hooks/useCountyStudyHub', () => ({ useCountyStudyHub: () => ({}) }));
-vi.mock('../hooks/useStudyData', () => ({ useStudyData: () => {} }));
+vi.mock('../hooks/useStudyData', () => ({ useStudyData: () => ({ retryAll: vi.fn() }) }));
 vi.mock('../components/CohortCreationDialog', () => ({ CohortCreationDialog: () => null }));
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -74,7 +74,7 @@ describe('CountyStudyPage', () => {
       useCountyStudioStore.getState().setSegments([MOCK_SEG, noExc]);
     });
     render(<CountyStudyPage />, { wrapper: Wrapper });
-    fireEvent.click(screen.getByRole('button', { name: /^Exceptions$/i }));
+    fireEvent.click(screen.getByRole('tab', { name: /^Exceptions$/i }));
     expect(screen.getByText('West Richland R1')).toBeInTheDocument();
     expect(screen.queryByText('NoExcSeg')).not.toBeInTheDocument();
   });
@@ -84,10 +84,42 @@ describe('CountyStudyPage', () => {
       useCountyStudioStore.getState().setSegments([MOCK_SEG, FAILING_SEG]);
     });
     render(<CountyStudyPage />, { wrapper: Wrapper });
-    fireEvent.click(screen.getByRole('button', { name: /^Compliance$/i }));
+    fireEvent.click(screen.getByRole('tab', { name: /^Compliance$/i }));
     // FAILING_SEG: cod=22.8 (>20) → fails compliance
     expect(screen.getByText('Bad Segment')).toBeInTheDocument();
     // MOCK_SEG: cod=14.2, prd=1.01 → passes
     expect(screen.queryByText('West Richland R1')).not.toBeInTheDocument();
+  });
+
+  // ── Chunk 6: tab bar a11y ────────────────────────────────────────────
+
+  it('renders a tablist with six tabs and correct aria-selected state', () => {
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+    const tablist = screen.getByRole('tablist', { name: /center panel views/i });
+    expect(tablist).toBeInTheDocument();
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs).toHaveLength(6);
+    // Overview is the default active tab
+    const overview = screen.getByRole('tab', { name: /^Overview$/i });
+    expect(overview).toHaveAttribute('aria-selected', 'true');
+    const exceptionsTab = screen.getByRole('tab', { name: /^Exceptions$/i });
+    expect(exceptionsTab).toHaveAttribute('aria-selected', 'false');
+  });
+
+  it('ArrowRight on tab bar moves focus/selection to the next tab', () => {
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+    const tablist = screen.getByRole('tablist');
+    fireEvent.keyDown(tablist, { key: 'ArrowRight' });
+    const ratioStudyTab = screen.getByRole('tab', { name: /^Ratio Study$/i });
+    expect(ratioStudyTab).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('Home key jumps to the first tab', () => {
+    render(<CountyStudyPage />, { wrapper: Wrapper });
+    fireEvent.click(screen.getByRole('tab', { name: /^Compliance$/i }));
+    const tablist = screen.getByRole('tablist');
+    fireEvent.keyDown(tablist, { key: 'Home' });
+    const overview = screen.getByRole('tab', { name: /^Overview$/i });
+    expect(overview).toHaveAttribute('aria-selected', 'true');
   });
 });

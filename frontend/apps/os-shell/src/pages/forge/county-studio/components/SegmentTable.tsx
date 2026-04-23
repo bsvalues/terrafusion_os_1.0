@@ -62,9 +62,58 @@ const Th = ({
 );
 
 export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => boolean } = {}) {
-  const { segments, selectedSegmentId, selectSegment } = useCountyStudioStore();
+  const { segments, selectedSegmentId, selectSegment, loadStatus, loadErrors } = useCountyStudioStore();
   const [sortKey, setSortKey] = useState<SortKey>('name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
+
+  // Loading skeleton — 6 shimmer rows while the segments request is in flight.
+  // Distinguishes "still fetching" from "no data" so the user doesn't read
+  // an empty state as a negative answer.
+  if (loadStatus.segments === 'loading') {
+    return (
+      <div
+        data-testid="segment-table-loading"
+        role="status"
+        aria-live="polite"
+        aria-label="Loading segments"
+        style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 6 }}
+      >
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div
+            key={i}
+            style={{
+              height: 22,
+              borderRadius: 4,
+              background: 'linear-gradient(90deg, hsl(var(--tf-surface)) 0%, hsl(var(--tf-border)) 50%, hsl(var(--tf-surface)) 100%)',
+              backgroundSize: '200% 100%',
+              animation: 'tf-shimmer 1.4s ease-in-out infinite',
+              opacity: 1 - i * 0.1,
+            }}
+          />
+        ))}
+        <style>{`@keyframes tf-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+      </div>
+    );
+  }
+
+  // Error state — show the captured error + let the user know how to recover.
+  if (loadStatus.segments === 'error') {
+    return (
+      <div
+        data-testid="segment-table-error"
+        role="alert"
+        style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          height: '100%', color: '#ef4444', fontSize: 13, padding: 16, textAlign: 'center', gap: 8,
+        }}
+      >
+        <div>Couldn't load segments.</div>
+        <div style={{ fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
+          {loadErrors.segments ?? 'Unknown error'}
+        </div>
+      </div>
+    );
+  }
 
   if (segments.length === 0) {
     return (

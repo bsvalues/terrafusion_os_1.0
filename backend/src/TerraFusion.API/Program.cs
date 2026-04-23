@@ -211,6 +211,79 @@ if (args.Contains("--canonicalize-cama-only"))
     }
 }
 
+// ── CountyStudy segment derivation (Chunk 3 service, CLI entry) ─────────────
+// Run as: dotnet run --project TerraFusion.API -- --derive-segments --study-id=<guid>
+// Reads Properties + CamaCharacteristics + ComparableSales for the study's
+// (county × tax year) and writes a new baseline CountySegmentSet.
+if (args.Contains("--derive-segments"))
+{
+    var studyIdArg = args
+        .FirstOrDefault(a => a.StartsWith("--study-id=", StringComparison.Ordinal))
+        ?.Substring("--study-id=".Length);
+    Guid studyIdFlag = Guid.Empty;
+    if (string.IsNullOrWhiteSpace(studyIdArg) || !Guid.TryParse(studyIdArg, out studyIdFlag))
+    {
+        Console.Error.WriteLine("[DeriveSegments] Required: --study-id=<guid>. Example:");
+        Console.Error.WriteLine("  dotnet run --project TerraFusion.API -- \\");
+        Console.Error.WriteLine("    --derive-segments --study-id=1a2b3c4d-0000-0000-0000-000000000000");
+        Environment.Exit(2);
+        return;  // unreachable after Environment.Exit but keeps compiler happy
+    }
+
+    var deriveEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                    ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                    ?? "Production";
+
+    var deriveHost = CreateCanonicalHostBuilder(args, deriveEnv)
+        .ConfigureServices((ctx, svc) =>
+        {
+            var cs = ctx.Configuration.GetConnectionString("DefaultConnection") ?? "";
+            if (cs.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseSqlite(cs));
+            else
+                svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
+            svc.AddScoped<TerraFusion.Core.Interfaces.ITerraFusionDbContext>(sp =>
+                sp.GetRequiredService<TerraFusion.Data.TerraFusionDbContext>());
+            svc.AddScoped<TerraFusion.Core.Services.ICountyStudySegmentDerivationService,
+                          TerraFusion.Core.Services.CountyStudySegmentDerivationService>();
+        })
+        .Build();
+
+    using var deriveScope = deriveHost.Services.CreateScope();
+    var deriveSvc = deriveScope.ServiceProvider
+        .GetRequiredService<TerraFusion.Core.Services.ICountyStudySegmentDerivationService>();
+    var deriveLogger = deriveScope.ServiceProvider
+        .GetRequiredService<ILogger<TerraFusion.Core.Services.CountyStudySegmentDerivationService>>();
+
+    try
+    {
+        deriveLogger.LogInformation("[DeriveSegments] Starting derivation for study {StudyId}", studyIdFlag);
+        var result = await deriveSvc.DeriveAsync(studyIdFlag, userId: "cli:derive-segments");
+        deriveLogger.LogInformation(
+            "[DeriveSegments] DONE. segmentSetId={SegmentSetId} segments={SegmentCount} " +
+            "parcels={Parcels} withRatios={WithRatios} iaaoExceptions={ExceptionSegments}",
+            result.SegmentSetId, result.SegmentCount, result.TotalParcels,
+            result.SegmentsWithRatios, result.SegmentsWithIaaoExceptions);
+        Console.WriteLine($"{result.SegmentCount} segments created from {result.TotalParcels} parcels " +
+                          $"({result.SegmentsWithRatios} with ratio stats, " +
+                          $"{result.SegmentsWithIaaoExceptions} with IAAO exceptions). " +
+                          $"segmentSetId={result.SegmentSetId}");
+        Environment.Exit(0);
+    }
+    catch (InvalidOperationException ex)
+    {
+        deriveLogger.LogError(ex, "[DeriveSegments] FAILED — study not found or invalid");
+        Console.Error.WriteLine($"[DeriveSegments] {ex.Message}");
+        Environment.Exit(1);
+    }
+    catch (Exception ex)
+    {
+        deriveLogger.LogError(ex, "[DeriveSegments] UNEXPECTED FAILURE");
+        Console.Error.WriteLine($"[DeriveSegments] Unexpected: {ex.Message}");
+        Environment.Exit(1);
+    }
+}
+
 // ── Levy rebuild from PACS oracle + canonical levy tables ──────────────────
 // Run as: dotnet run --project TerraFusion.API -- --seed-levy-only
 if (args.Contains("--seed-levy-only"))
