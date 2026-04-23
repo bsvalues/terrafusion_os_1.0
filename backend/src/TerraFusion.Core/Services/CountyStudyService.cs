@@ -302,21 +302,92 @@ public class CountyStudyService : ICountyStudyService
         }
         else if (isFlat)
         {
-            // Flat-dollar: dispersion DOES change because absolute shift is not
-            // proportional. Without per-parcel data we use a bounded approximation
-            // that scales dispersion by the shift's relative magnitude against the
-            // segment's cohort mean. Until kernel per-parcel projection lands,
-            // this branch is annotated in the DTO's DeltaItems with a note.
-            decimal reference = segmentsWithRatios.Count > 0
-                ? Math.Max(1m, (decimal)segmentsWithRatios.Average(s => s.ParcelCount))  // sentinel
-                : 1m;
-            // Conservative: dispersion increases at ~5% per flat-dollar adjustment
-            // (true behavior is parcel-dependent; this keeps COD honest-ish).
-            var flatDispersionFactor = 1m + Math.Abs(magnitude) / (100m * reference);
-            medianRatioAfter = medianRatioBefore; // flat dollar barely moves the median
-            codAfter         = codBefore * flatDispersionFactor;
-            prdAfter         = prdBefore; // PRD approximation: unchanged
-            excAfter         = excBefore;
+            // Flat-dollar: dispersion is not scale-invariant — smaller parcels
+            // move more in relative terms. Compute exact projected metrics by
+            // walking the underlying parcels for the segments in scope.
+            //
+            // Strategy: for each segment, parse the stored RuleDefinition JSON
+            // (neighborhood × buildingType × qualityGrade) to re-resolve the
+            // parcel set from canonical Properties + CamaCharacteristics, then
+            // join qualified ComparableSales for the two-year window. Shift each
+            // parcel's AssessedValue by `magnitude` (signed for Flat vs FlatDown
+            // per adjustment type) and recompute median/COD/PRD/exception count
+            // from the shifted ratios. Pure C# math against already-computed
+            // data — no kernel round-trip needed here (the kernel is for cost
+            // computation from first principles, not ratio projection).
+            var signedMag = adj == ScenarioAdjustmentType.LandValueFlat
+                              || adj == ScenarioAdjustmentType.ImprovementValueFlat
+                ? magnitude    // user sent a signed magnitude; negatives decrease
+                : magnitude;
+
+            var perParcel = await ResolveCohortParcelsAsync(scenario.CountyId, scenario.StudyId, segments);
+            if (perParcel.Count >= MinRatiosForFlat)
+            {
+                var shiftedRatios = new List<(decimal ratio, decimal price, decimal assessed)>(perParcel.Count);
+                foreach (var (assessed, price) in perParcel)
+                {
+                    if (price <= 0) continue;
+                    var shiftedAssessed = Math.Max(0m, assessed + signedMag);
+                    shiftedRatios.Add((shiftedAssessed / price, price, shiftedAssessed));
+                }
+
+                if (shiftedRatios.Count > 0)
+                {
+                    var ratios = shiftedRatios.Select(r => r.ratio).OrderBy(r => r).ToList();
+                    medianRatioAfter = ratios.Count % 2 == 0
+                        ? (ratios[ratios.Count / 2 - 1] + ratios[ratios.Count / 2]) / 2m
+                        : ratios[ratios.Count / 2];
+
+                    if (medianRatioAfter > 0m)
+                    {
+                        var meanAbsDev = ratios.Average(r => Math.Abs(r - medianRatioAfter));
+                        codAfter = meanAbsDev / medianRatioAfter * 100m;
+                    }
+                    else
+                    {
+                        codAfter = codBefore;
+                    }
+
+                    if (shiftedRatios.Count >= 2)
+                    {
+                        var arithmetic = ratios.Average();
+                        var sumAssessed = shiftedRatios.Sum(r => r.assessed);
+                        var sumPrice    = shiftedRatios.Sum(r => r.price);
+                        if (sumPrice > 0m)
+                        {
+                            var weightedMean = sumAssessed / sumPrice;
+                            prdAfter = weightedMean > 0m ? arithmetic / weightedMean : prdBefore;
+                        }
+                        else
+                        {
+                            prdAfter = prdBefore;
+                        }
+                    }
+                    else
+                    {
+                        prdAfter = prdBefore;
+                    }
+
+                    excAfter = ratios.Count(r => r < 0.70m || r > 1.30m);
+                }
+                else
+                {
+                    // No parcels had a usable sale price — fall back to unchanged.
+                    medianRatioAfter = medianRatioBefore;
+                    codAfter         = codBefore;
+                    prdAfter         = prdBefore;
+                    excAfter         = excBefore;
+                }
+            }
+            else
+            {
+                // Sample too small for meaningful recomputation — preserve
+                // current metrics rather than fabricate a shift.
+                medianRatioAfter = medianRatioBefore;
+                codAfter         = codBefore;
+                prdAfter         = prdBefore;
+                excAfter         = excBefore;
+            }
         }
         else
         {
@@ -336,6 +407,109 @@ public class CountyStudyService : ICountyStudyService
             scenario.Cohort!.ParcelCount,
             new List<ScenarioDeltaItem>()
         );
+    }
+
+    /// <summary>
+    /// Minimum sample size before per-parcel flat-dollar recomputation is attempted.
+    /// Below this, the preview preserves before-state metrics rather than fabricate
+    /// a projection from insufficient data.
+    /// </summary>
+    private const int MinRatiosForFlat = 5;
+
+    /// <summary>
+    /// Resolve the parcel set for a collection of CountySegments by re-running
+    /// the derivation grouping key (Neighborhood × BuildingType × QualityGrade)
+    /// against canonical Properties + CamaCharacteristics, then joining qualified
+    /// ComparableSales for the study's tax-year window to attach a representative
+    /// sale price per parcel (averaged if multiple qualifying sales exist).
+    ///
+    /// Returns tuples of (AssessedValue, SalePrice) for every parcel that has a
+    /// qualifying sale — parcels without a sale are omitted (they contribute no
+    /// ratio data and therefore don't influence the projection).
+    /// </summary>
+    private async Task<List<(decimal Assessed, decimal Price)>> ResolveCohortParcelsAsync(
+        Guid countyId,
+        Guid studyId,
+        List<CountySegment> segmentsInCohort)
+    {
+        if (segmentsInCohort.Count == 0) return new();
+
+        // Parse each segment's RuleDefinition JSON to recover (hood, type, quality).
+        var groupKeys = new HashSet<(string Hood, string BldgType, string Quality)>();
+        foreach (var seg in segmentsInCohort)
+        {
+            if (string.IsNullOrWhiteSpace(seg.RuleDefinition)) continue;
+            try
+            {
+                var rule = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(seg.RuleDefinition);
+                if (rule == null) continue;
+                var hood    = rule.TryGetValue("neighborhood", out var h) && h.ValueKind == JsonValueKind.String ? (h.GetString() ?? "UNKNOWN") : "UNKNOWN";
+                var bldg    = rule.TryGetValue("buildingType", out var b) && b.ValueKind == JsonValueKind.String ? (b.GetString() ?? "UNKNOWN") : "UNKNOWN";
+                var quality = rule.TryGetValue("qualityGrade", out var q) && q.ValueKind == JsonValueKind.String ? (q.GetString() ?? "UNKNOWN") : "UNKNOWN";
+                groupKeys.Add((hood, bldg, quality));
+            }
+            catch (JsonException) { /* skip malformed — segment will contribute no parcels */ }
+        }
+        if (groupKeys.Count == 0) return new();
+
+        // Determine the study's tax year once so sales-window math is deterministic.
+        var taxYear = await _db.CountyStudySessions
+            .Where(s => s.StudyId == studyId)
+            .Select(s => s.TaxYear)
+            .FirstOrDefaultAsync();
+        if (taxYear == 0) return new();
+
+        // Load parcels + CAMA + sales for the county/year — in-memory filter by
+        // the reconstructed grouping keys afterwards. Simpler than a generated
+        // IN-clause on a 3-tuple composite key.
+        var parcelsWithCama = await (
+            from p in _db.Properties.AsNoTracking()
+            where p.CountyId == countyId && p.TaxYear == taxYear && p.AssessedValue > 0
+            join c in _db.CamaCharacteristics.AsNoTracking()
+                on new { p.ParcelId, p.TaxYear } equals new { c.ParcelId, c.TaxYear } into cj
+            from c in cj.DefaultIfEmpty()
+            select new
+            {
+                p.ParcelId,
+                p.AssessedValue,
+                Neighborhood = p.Neighborhood,
+                BuildingType = c != null ? c.BuildingType : null,
+                QualityGrade = c != null ? c.QualityGrade : null,
+            }).ToListAsync();
+
+        var matched = parcelsWithCama.Where(pc =>
+        {
+            var key = (
+                Hood: string.IsNullOrWhiteSpace(pc.Neighborhood) ? "UNKNOWN" : pc.Neighborhood!,
+                BldgType: string.IsNullOrWhiteSpace(pc.BuildingType) ? "UNKNOWN" : pc.BuildingType!,
+                Quality: string.IsNullOrWhiteSpace(pc.QualityGrade) ? "UNKNOWN" : pc.QualityGrade!
+            );
+            return groupKeys.Contains(key);
+        }).ToList();
+
+        if (matched.Count == 0) return new();
+
+        var matchedIds = matched.Select(m => m.ParcelId).ToHashSet();
+
+        var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lookbackEnd   = new DateTime(taxYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
+        var salesRows = await _db.ComparableSales.AsNoTracking()
+            .Where(s => s.CountyId == countyId)
+            .Where(s => s.SaleDate >= lookbackStart && s.SaleDate <= lookbackEnd)
+            .Where(s => s.SalePrice > 0)
+            .Where(s => (s.QualificationDecision ?? s.QualificationRecommendation ?? s.SaleQualification) == "qualified")
+            .Where(s => matchedIds.Contains(s.ParcelId))
+            .Select(s => new { s.ParcelId, Price = s.AdjustedSalePrice ?? s.SalePrice })
+            .ToListAsync();
+
+        var priceByParcel = salesRows
+            .GroupBy(s => s.ParcelId)
+            .ToDictionary(g => g.Key, g => g.Select(x => x.Price).Average());
+
+        return matched
+            .Where(m => priceByParcel.ContainsKey(m.ParcelId))
+            .Select(m => (Assessed: m.AssessedValue, Price: priceByParcel[m.ParcelId]))
+            .ToList();
     }
 
     /// <summary>

@@ -228,9 +228,11 @@ public class CountyStudyServiceTests
     }
 
     [Fact]
-    public async Task PreviewScenarioImpact_FlatDollarAdjustment_CodChangesConservatively()
+    public async Task PreviewScenarioImpact_FlatDollarAdjustment_WithoutParcels_PreservesBeforeMetrics()
     {
-        // Flat-dollar branch — COD scales up (not scale-invariant). Median barely moves.
+        // When no parcel data backs the segments (no RuleDefinition tuples resolve
+        // to actual Properties/Sales), the per-parcel recompute cannot run. The
+        // preview must preserve the before-state rather than fabricate a shift.
         var (svc, _, studyId, cohortId) = await SeedStudyWithSegments(
             "{}",
             (median: 0.95m, cod: 12.0m, prd: 1.01m, parcels: 100, excCount: 5));
@@ -241,11 +243,101 @@ public class CountyStudyServiceTests
 
         var preview = await svc.PreviewScenarioImpactAsync(scenario.ScenarioId);
 
-        // Flat-dollar branch: median unchanged (flat dollar barely moves proportion).
+        // No parcels → no recompute → all after-metrics mirror before.
         Assert.Equal(preview.MedianRatioBefore, preview.MedianRatioAfter);
-        // COD increased (not scale-invariant for flat-dollar).
-        Assert.True(preview.CodAfter > preview.CodBefore,
-            $"expected COD to increase under flat-dollar; got before={preview.CodBefore} after={preview.CodAfter}");
+        Assert.Equal(preview.CodBefore,         preview.CodAfter);
+        Assert.Equal(preview.PrdBefore,         preview.PrdAfter);
+        Assert.Equal(preview.ExceptionsBefore,  preview.ExceptionsAfter);
+    }
+
+    [Fact]
+    public async Task PreviewScenarioImpact_FlatDollarAdjustment_WithParcels_RecomputesFromShiftedRatios()
+    {
+        // Seed real Properties + Sales + CAMA so the derivation-style grouping
+        // can resolve segments → parcels. 6 parcels, uniform AssessedValue=300k,
+        // varying sale prices → varying pre-shift ratios. +$30,000 flat shift
+        // moves every ratio up by (30_000 / price).
+        var (ctx, svc) = CreateSut();
+        var study = await svc.CreateStudyAsync(
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2026, StudyType.RatioStudy, null), "u1");
+
+        var countyId = study.CountyId;
+        decimal[] prices = { 280_000m, 290_000m, 300_000m, 310_000m, 320_000m, 330_000m };
+        for (var i = 0; i < prices.Length; i++)
+        {
+            var pid = $"P{i}";
+            ctx.Properties.Add(new Property
+            {
+                Id = Guid.NewGuid(), ParcelId = pid, ParcelNumber = pid,
+                CountyId = countyId, TaxYear = 2026,
+                AssessedValue = 300_000m, MarketValue = 300_000m,
+                Neighborhood = "NBHD-A",
+            });
+            ctx.CamaCharacteristics.Add(new CamaCharacteristic
+            {
+                Id = Guid.NewGuid(), ParcelId = pid, TaxYear = 2026,
+                BuildingType = "R1", QualityGrade = "STANDARD",
+                SquareFeet = 1800m, CountyId = countyId,
+                UpdatedAt = DateTime.UtcNow, UpdatedBy = "test",
+            });
+            ctx.ComparableSales.Add(new ComparableSale
+            {
+                Id = Guid.NewGuid(), CountyId = countyId, ParcelId = pid,
+                SaleDate = new DateTime(2025, 6, 15, 0, 0, 0, DateTimeKind.Utc),
+                SalePrice = prices[i], SalesYear = 2025,
+                QualificationRecommendation = "qualified",
+            });
+        }
+
+        // Segment with a RuleDefinition matching the seeded parcels.
+        var segSet = new CountySegmentSet
+        {
+            SegmentSetId = Guid.NewGuid(), StudyId = study.StudyId, CountyId = countyId,
+            Name = "Derived", SourceType = SegmentSetSourceType.Hybrid,
+            Version = 1, IsBaseline = true, CreatedBy = "u1", UpdatedBy = "u1",
+        };
+        ctx.CountySegmentSets.Add(segSet);
+        ctx.CountySegments.Add(new CountySegment
+        {
+            SegmentId = Guid.NewGuid(), SegmentSetId = segSet.SegmentSetId, CountyId = countyId,
+            Name = "NBHD-A · R1 · STANDARD",
+            SegmentType = SegmentType.Residential,
+            RuleDefinition = JsonSerializer.Serialize(new
+            {
+                neighborhood = "NBHD-A", buildingType = "R1", qualityGrade = "STANDARD",
+            }),
+            ParcelCount = 6,
+            MedianRatio = 1.00m, CoefficientOfDispersion = 5m,
+            PriceRelatedDifferential = 1.00m, ExceptionCount = 0,
+            StabilityScore = 95m, RiskScore = 20m,
+        });
+
+        var studyEntity = ctx.CountyStudySessions.First(s => s.StudyId == study.StudyId);
+        studyEntity.ActiveSegmentSetId = segSet.SegmentSetId;
+        await ctx.SaveChangesAsync();
+
+        var cohort = await svc.CreateCohortAsync(
+            new CreateCohortRequest(study.StudyId, "FlatDollar-Test",
+                CohortSelectionType.Segment, "{}", 6, false), "u1");
+
+        var scenario = await svc.CreateScenarioAsync(
+            new CreateScenarioRequest(study.StudyId, cohort.CohortId,
+                ScenarioAdjustmentType.LandValueFlat, "{\"magnitude\":30000.0}", "real flat"), "u1");
+
+        var preview = await svc.PreviewScenarioImpactAsync(scenario.ScenarioId);
+
+        // Every parcel shifts from 300k → 330k. Ratios move up proportional to
+        // 30k / price — smaller sales price = bigger ratio bump.
+        // Pre-shift median ratio ≈ 300k/305k ≈ 0.984; post-shift ≈ 330k/305k ≈ 1.082.
+        Assert.True(preview.MedianRatioAfter > preview.MedianRatioBefore,
+            $"median should rise after +$30k shift; got before={preview.MedianRatioBefore} after={preview.MedianRatioAfter}");
+        Assert.InRange(preview.MedianRatioAfter, 1.05m, 1.15m);
+
+        // Flat-dollar is NOT scale-invariant — COD changes. With identical
+        // assessed values and spread prices, shifting by a constant compresses
+        // dispersion (larger denominator on each ratio → tighter spread).
+        // Exact direction depends on the sample; just verify it differs.
+        Assert.NotEqual(preview.CodBefore, preview.CodAfter);
     }
 
     [Fact]
