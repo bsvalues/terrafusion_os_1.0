@@ -47,4 +47,42 @@ describe('LeftRail', () => {
     fireEvent.click(screen.getByText('PercentageIncrease'));
     expect(useCountyStudioStore.getState().activeScenario?.scenarioId).toBe('sc1');
   });
+
+  // ── Follow-up: loading + error states ───────────────────────────────
+
+  it('renders cohorts skeleton while loadStatus.cohorts is loading', () => {
+    act(() => {
+      useCountyStudioStore.setState({
+        loadStatus: { segments: 'idle', cohorts: 'loading', scenarios: 'idle' },
+      });
+    });
+    render(<LeftRail />);
+    expect(screen.getByTestId('left-rail-cohorts-loading')).toBeInTheDocument();
+    // Real cohort item is NOT rendered during loading.
+    expect(screen.queryByText('West Side')).not.toBeInTheDocument();
+  });
+
+  it('renders scenarios skeleton while loadStatus.scenarios is loading', () => {
+    act(() => {
+      useCountyStudioStore.setState({
+        loadStatus: { segments: 'idle', cohorts: 'idle', scenarios: 'loading' },
+      });
+    });
+    render(<LeftRail />);
+    expect(screen.getByTestId('left-rail-scenarios-loading')).toBeInTheDocument();
+    expect(screen.queryByText('PercentageIncrease')).not.toBeInTheDocument();
+  });
+
+  it('renders inline error when cohorts load fails', () => {
+    act(() => {
+      useCountyStudioStore.setState({
+        loadStatus: { segments: 'idle', cohorts: 'error', scenarios: 'idle' },
+        loadErrors: { segments: null, cohorts: 'backend 500', scenarios: null },
+      });
+    });
+    render(<LeftRail />);
+    const alerts = screen.getAllByRole('alert');
+    expect(alerts.length).toBeGreaterThan(0);
+    expect(alerts[0]).toHaveAttribute('title', 'backend 500');
+  });
 });

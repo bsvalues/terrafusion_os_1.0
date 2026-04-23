@@ -88,4 +88,31 @@ describe('BottomDeck', () => {
     fireEvent.click(screen.getByText('Warnings'));
     expect(screen.getByText(/exception rate/i)).toBeInTheDocument();
   });
+
+  // ── Follow-up: loading + error states ───────────────────────────────
+
+  it('renders skeleton while loadStatus.segments is loading', () => {
+    act(() => {
+      useCountyStudioStore.setState({
+        loadStatus: { segments: 'loading', cohorts: 'idle', scenarios: 'idle' },
+      });
+    });
+    render(<BottomDeck />);
+    expect(screen.getByTestId('bottom-deck-loading')).toBeInTheDocument();
+    // The distribution chart's testid is NOT present during loading.
+    expect(screen.queryByTestId('bar-chart')).not.toBeInTheDocument();
+  });
+
+  it('renders error panel when loadStatus.segments is error', () => {
+    act(() => {
+      useCountyStudioStore.setState({
+        loadStatus: { segments: 'error', cohorts: 'idle', scenarios: 'idle' },
+        loadErrors: { segments: 'backend 503', cohorts: null, scenarios: null },
+      });
+    });
+    render(<BottomDeck />);
+    const errorPanel = screen.getByTestId('bottom-deck-error');
+    expect(errorPanel).toBeInTheDocument();
+    expect(errorPanel).toHaveTextContent('backend 503');
+  });
 });

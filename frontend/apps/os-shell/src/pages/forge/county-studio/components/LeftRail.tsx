@@ -32,14 +32,43 @@ const NavItem = ({
   </button>
 );
 
+/** Shimmer row for loading state — matches NavItem height (~30px). */
+const SkeletonRow = ({ width = '80%' }: { width?: string }) => (
+  <div
+    aria-hidden="true"
+    style={{
+      margin: '4px 12px',
+      height: 20,
+      width,
+      borderRadius: 3,
+      background: 'linear-gradient(90deg, hsl(var(--tf-surface)) 0%, hsl(var(--tf-border)) 50%, hsl(var(--tf-surface)) 100%)',
+      backgroundSize: '200% 100%',
+      animation: 'tf-shimmer 1.4s ease-in-out infinite',
+    }}
+  />
+);
+
+const InlineError = ({ message }: { message: string }) => (
+  <div
+    role="alert"
+    style={{ padding: '4px 12px', fontSize: 11, color: '#ef4444', lineHeight: 1.4 }}
+    title={message}
+  >
+    ⚠ Couldn't load
+  </div>
+);
+
 export function LeftRail() {
   const {
     activeStudy, cohorts, scenarios, activeCohortId, activeScenario,
     setActiveCohort, setActiveScenario,
+    loadStatus, loadErrors,
   } = useCountyStudioStore();
 
   return (
     <div style={{ padding: '8px 0' }}>
+      <style>{`@keyframes tf-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+
       <SectionHeader label="Studies" />
       {activeStudy ? (
         <NavItem
@@ -54,7 +83,20 @@ export function LeftRail() {
       )}
 
       <SectionHeader label="Cohorts" />
-      {cohorts.length === 0 ? (
+      {loadStatus.cohorts === 'loading' ? (
+        <div
+          data-testid="left-rail-cohorts-loading"
+          role="status"
+          aria-live="polite"
+          aria-label="Loading cohorts"
+        >
+          <SkeletonRow width="70%" />
+          <SkeletonRow width="85%" />
+          <SkeletonRow width="60%" />
+        </div>
+      ) : loadStatus.cohorts === 'error' ? (
+        <InlineError message={loadErrors.cohorts ?? 'Unknown error'} />
+      ) : cohorts.length === 0 ? (
         <div style={{ padding: '4px 12px', fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
           None yet
         </div>
@@ -71,7 +113,19 @@ export function LeftRail() {
       )}
 
       <SectionHeader label="Scenarios" />
-      {scenarios.length === 0 ? (
+      {loadStatus.scenarios === 'loading' ? (
+        <div
+          data-testid="left-rail-scenarios-loading"
+          role="status"
+          aria-live="polite"
+          aria-label="Loading scenarios"
+        >
+          <SkeletonRow width="75%" />
+          <SkeletonRow width="65%" />
+        </div>
+      ) : loadStatus.scenarios === 'error' ? (
+        <InlineError message={loadErrors.scenarios ?? 'Unknown error'} />
+      ) : scenarios.length === 0 ? (
         <div style={{ padding: '4px 12px', fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
           None yet
         </div>

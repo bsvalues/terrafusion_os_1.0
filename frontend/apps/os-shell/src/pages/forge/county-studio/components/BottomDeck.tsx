@@ -140,8 +140,65 @@ function WarningsTab() {
   );
 }
 
+function BottomDeckSkeleton() {
+  // Mimics the three-tab chart panel at rest — one title bar + four shimmer
+  // bars laid out to roughly match the DistributionTab bar chart.
+  return (
+    <div
+      data-testid="bottom-deck-loading"
+      role="status"
+      aria-live="polite"
+      aria-label="Loading segment metrics"
+      style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8, height: '100%' }}
+    >
+      <style>{`@keyframes tf-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+      <div
+        style={{
+          height: 10, width: '40%', borderRadius: 3,
+          background: 'linear-gradient(90deg, hsl(var(--tf-surface)) 0%, hsl(var(--tf-border)) 50%, hsl(var(--tf-surface)) 100%)',
+          backgroundSize: '200% 100%',
+          animation: 'tf-shimmer 1.4s ease-in-out infinite',
+        }}
+      />
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, flex: 1 }}>
+        {[60, 90, 120, 80, 55, 110].map((h, i) => (
+          <div
+            key={i}
+            style={{
+              flex: 1,
+              height: h,
+              borderRadius: 3,
+              background: 'linear-gradient(180deg, hsl(var(--tf-surface)) 0%, hsl(var(--tf-border)) 100%)',
+              opacity: 1 - i * 0.08,
+              animation: 'tf-shimmer 1.4s ease-in-out infinite',
+              animationDelay: `${i * 0.1}s`,
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BottomDeckError({ message }: { message: string }) {
+  return (
+    <div
+      data-testid="bottom-deck-error"
+      role="alert"
+      style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        height: '100%', color: '#ef4444', fontSize: 12, padding: 12, textAlign: 'center', gap: 6,
+      }}
+    >
+      <div>Couldn't load segment metrics.</div>
+      <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>{message}</div>
+    </div>
+  );
+}
+
 export function BottomDeck() {
   const [activeTab, setActiveTab] = useState<DeckTab>('distribution');
+  const { loadStatus, loadErrors } = useCountyStudioStore();
 
   const tab = (label: string, key: DeckTab) => (
     <button
@@ -170,9 +227,17 @@ export function BottomDeck() {
         {tab('Warnings', 'warnings')}
       </div>
       <div style={{ flex: 1, minHeight: 0 }}>
-        {activeTab === 'distribution' && <DistributionTab />}
-        {activeTab === 'compare' && <CompareTab />}
-        {activeTab === 'warnings' && <WarningsTab />}
+        {loadStatus.segments === 'loading' ? (
+          <BottomDeckSkeleton />
+        ) : loadStatus.segments === 'error' ? (
+          <BottomDeckError message={loadErrors.segments ?? 'Unknown error'} />
+        ) : (
+          <>
+            {activeTab === 'distribution' && <DistributionTab />}
+            {activeTab === 'compare' && <CompareTab />}
+            {activeTab === 'warnings' && <WarningsTab />}
+          </>
+        )}
       </div>
     </div>
   );
