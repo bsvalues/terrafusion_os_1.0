@@ -58,6 +58,10 @@ public interface ITerraFusionDbContext
     // CAMA (Computer Assisted Mass Appraisal) characteristics — used for search
     DbSet<CamaCharacteristic> CamaCharacteristics { get; set; }
 
+    // ComparableSales — qualified sales pool for ratio studies + segment derivation.
+    // Canonical ratio: Properties.AssessedValue / ComparableSales.AdjustedSalePrice.
+    DbSet<ComparableSale> ComparableSales { get; set; }
+
     // Levy certification truth — canonical certification workflow source
     DbSet<LevyCertification> LevyCertifications { get; set; }
 

@@ -28,13 +28,17 @@ public class CountyStudyController : ControllerBase
     // userId sourced from claim in production; hardened default for gateway-auth environments.
     private const string FallbackUserId = "system";
 
+    private readonly ICountyStudySegmentDerivationService _deriveSvc;
+
     public CountyStudyController(
         ICountyStudyService svc,
         ICountyResolver countyResolver,
+        ICountyStudySegmentDerivationService deriveSvc,
         ILogger<CountyStudyController> logger)
     {
         _svc            = svc;
         _countyResolver = countyResolver;
+        _deriveSvc      = deriveSvc;
         _logger         = logger;
     }
 
@@ -94,6 +98,34 @@ public class CountyStudyController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "[CountyStudy] GetStudies failed for county {CountyId}", countyId);
+            return StatusCode(500, new { error = "Internal error" });
+        }
+    }
+
+    /// <summary>
+    /// Derives a baseline CountySegmentSet from canonical TerraFusion data for the given study.
+    /// Reads Properties + CamaCharacteristics + qualified ComparableSales, groups by
+    /// (neighborhood × building type × quality grade), computes per-segment IAAO metrics
+    /// (median ratio, COD, PRD, stability, risk, exception count), persists the result,
+    /// and sets the new set as the study's ActiveSegmentSetId.
+    ///
+    /// Idempotent-per-study: each invocation creates a new set with incremented Version.
+    /// </summary>
+    [HttpPost("studies/{studyId:guid}/derive-segments")]
+    public async Task<IActionResult> DeriveSegments(Guid studyId, CancellationToken ct)
+    {
+        try
+        {
+            var result = await _deriveSvc.DeriveAsync(studyId, CurrentUserId, ct);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] DeriveSegments failed for study {StudyId}", studyId);
             return StatusCode(500, new { error = "Internal error" });
         }
     }

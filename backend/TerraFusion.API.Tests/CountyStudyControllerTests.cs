@@ -29,7 +29,8 @@ public class CountyStudyControllerTests
                 Guid.TryParse(s, out var g)
                     ? Task.FromResult(g)
                     : throw new CountyNotFoundException(s));
-        return new(svc, resolver.Object, NullLogger<CountyStudyController>.Instance);
+        var derive = new Mock<ICountyStudySegmentDerivationService>();
+        return new(svc, resolver.Object, derive.Object, NullLogger<CountyStudyController>.Instance);
     }
 
     // ── Studies ───────────────────────────────────────────────────────────────
