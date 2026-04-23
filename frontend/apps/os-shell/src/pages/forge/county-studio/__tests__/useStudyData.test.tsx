@@ -87,4 +87,54 @@ describe('useStudyData', () => {
       expect(vi.mocked(segmentSetApi.segments)).toHaveBeenCalledWith('ss-1');
     });
   });
+
+  it('sets loadStatus=success after happy-path loads complete', async () => {
+    renderHook(() => useStudyData());
+    act(() => { useCountyStudioStore.getState().setStudy(MOCK_STUDY); });
+    await waitFor(() => {
+      const { loadStatus } = useCountyStudioStore.getState();
+      expect(loadStatus.segments).toBe('success');
+      expect(loadStatus.cohorts).toBe('success');
+      expect(loadStatus.scenarios).toBe('success');
+    });
+  });
+
+  it('surfaces API errors via loadStatus="error" + loadErrors message', async () => {
+    vi.mocked(cohortApi.list).mockRejectedValueOnce(new Error('HTTP 500: /county-study/studies/study-1/cohorts'));
+    renderHook(() => useStudyData());
+    act(() => { useCountyStudioStore.getState().setStudy(MOCK_STUDY); });
+    await waitFor(() => {
+      const { loadStatus, loadErrors, cohorts } = useCountyStudioStore.getState();
+      expect(loadStatus.cohorts).toBe('error');
+      expect(loadErrors.cohorts).toMatch(/HTTP 500/);
+      expect(cohorts).toEqual([]); // cleared on error — distinguishable via loadStatus
+    });
+  });
+
+  it('retry function re-fetches the failed resource', async () => {
+    vi.mocked(cohortApi.list).mockRejectedValueOnce(new Error('transient fail'));
+    const { result } = renderHook(() => useStudyData());
+    act(() => { useCountyStudioStore.getState().setStudy(MOCK_STUDY); });
+    await waitFor(() => {
+      expect(useCountyStudioStore.getState().loadStatus.cohorts).toBe('error');
+    });
+    // Retry now — mock is back to resolving MOCK_COHORTS after the 1 failed attempt.
+    await act(async () => { await result.current.retryCohorts(); });
+    expect(useCountyStudioStore.getState().loadStatus.cohorts).toBe('success');
+    expect(useCountyStudioStore.getState().cohorts).toHaveLength(1);
+  });
+
+  it('resets loadStatus to idle when study is set to null', async () => {
+    act(() => { useCountyStudioStore.getState().setStudy(MOCK_STUDY); });
+    renderHook(() => useStudyData());
+    await waitFor(() => {
+      expect(useCountyStudioStore.getState().loadStatus.segments).toBe('success');
+    });
+    act(() => { useCountyStudioStore.getState().setStudy(null); });
+    await waitFor(() => {
+      const { loadStatus, loadErrors } = useCountyStudioStore.getState();
+      expect(loadStatus).toEqual({ segments: 'idle', cohorts: 'idle', scenarios: 'idle' });
+      expect(loadErrors).toEqual({ segments: null, cohorts: null, scenarios: null });
+    });
+  });
 });

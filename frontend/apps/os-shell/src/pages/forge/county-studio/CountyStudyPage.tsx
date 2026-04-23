@@ -7,6 +7,7 @@ import { RightRail } from './components/RightRail';
 import { BottomDeck } from './components/BottomDeck';
 import { CohortCreationDialog } from './components/CohortCreationDialog';
 import { OpenStudyDialog } from './components/OpenStudyDialog';
+import { LoadErrorBanner } from './components/LoadErrorBanner';
 import { useCountyStudyHub } from './hooks/useCountyStudyHub';
 import { useStudyData } from './hooks/useStudyData';
 import type { CountySegmentDto } from './types/countyStudio.types';
@@ -33,7 +34,7 @@ export function CountyStudyPage() {
   const navigate = useNavigate();
 
   useCountyStudyHub(activeStudy?.studyId ?? null);
-  useStudyData();
+  const { retryAll } = useStudyData();
 
   const color = syncColor[syncState] ?? '#6b7280';
   const tabFilter = TAB_FILTERS[activeTab];
@@ -89,6 +90,9 @@ export function CountyStudyPage() {
           </span>
         </div>
       </div>
+
+      {/* Load Error Banner — surfaces failed segments/cohorts/scenarios fetches with a retry */}
+      <LoadErrorBanner onRetry={retryAll} />
 
       {/* Body Grid — 3 columns */}
       <div style={{ display: 'grid', gridTemplateColumns: '210px 1fr 360px', flex: 1, minHeight: 0 }}>
