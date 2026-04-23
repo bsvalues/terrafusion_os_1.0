@@ -2,7 +2,7 @@
 
 **Branch:** `chunk-1-integration` (pushed to `origin` at github.com/bsvalues/terrafusion_os_1.0)
 **Base:** `chore/terra-levy-parity-sync` @ `732728a6c`
-**Tip:** `12a17a553` (post-delivery follow-ups: Atlas map data + LeftRail/BottomDeck skeletons)
+**Tip:** `c23ee4b08` (post-delivery follow-ups: Atlas map data + skeletons + flat-dollar per-parcel recompute)
 **Chunk-7 doc commit:** `8c814325a`
 **Working session:** 2026-04-22 → 2026-04-23
 
@@ -101,22 +101,27 @@ BottomDeck renders a title-bar + six-bar shimmer matching the Distribution
 chart layout; full-panel role=alert for errors. +5 vitest; 73/73 county-
 studio tests pass.
 
-### Still open
+**✅ 2. Flat-dollar scenario per-parcel recomputation** — `c23ee4b08`. Replaced
+the conservative approximation with exact per-parcel recompute against
+canonical TerraFusion data. New `ResolveCohortParcelsAsync` helper parses
+segment RuleDefinition JSON to recover the grouping key, re-resolves
+parcels from Properties + CamaCharacteristics, joins qualified
+ComparableSales, shifts each AssessedValue by `magnitude`, and recomputes
+median/COD/PRD/exception count from the shifted sample. No kernel
+round-trip needed — the kernels compute values from first principles;
+scenario preview just shifts already-computed values, which is C# math.
+MinRatiosForFlat=5 threshold preserves before-state when sample is too
+small to fabricate a shift. +1 test (revised old conservative-multiplier
+test); 15 CountyStudyService tests pass.
 
-**2. Flat-dollar scenario preview needs per-parcel kernel recomputation.**
-Current flat-dollar branch uses a bounded conservative approximation. The
-Rust cost + valuation kernels are integrated via `IKernelValuationService`
-— wiring them into `PreviewScenarioImpactAsync` for per-parcel adjustment
-is the natural next step. This needs its own design phase (concurrency,
-caching, UX affordance for the extra latency) so it was deferred rather
-than rushed.
+### Still open
 
 **3. Playwright E2E screenshot capture.** Requires a running backend +
 frontend stack; deferred to avoid the infra risk in-session. The
 ingredients are in place — Atlas hub is bidirectional, CountyStudy data
-flows end-to-end from canonical tables, `useAtlasMapData` now populates
-the map — so a happy-path Playwright script is straightforward when the
-stack is up.
+flows end-to-end from canonical tables, `useAtlasMapData` populates the
+map, flat-dollar preview uses real parcels — so a happy-path Playwright
+script is straightforward when the stack is up.
 
 ## Merge-up path
 
