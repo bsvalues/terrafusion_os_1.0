@@ -8,6 +8,12 @@ import { AtlasSyncBadge } from './components/AtlasSyncBadge';
 import { AtlasToolbar } from './components/AtlasToolbar';
 import { AtlasOverlayManager } from './components/AtlasOverlayManager';
 import { useAtlasLiveHub } from './hooks/useAtlasLiveHub';
+import { useAtlasMapData } from './hooks/useAtlasMapData';
+import type {
+  NbhdOutlineCollection,
+  ParcelTileCollection,
+  ParcelTileProps,
+} from '../geo/v2/v2Api';
 
 function useStudyIdFromUrl(): string | null {
   return useMemo(() => {
@@ -16,8 +22,18 @@ function useStudyIdFromUrl(): string | null {
   }, []);
 }
 
+function useTaxYearFromUrl(): number {
+  return useMemo(() => {
+    if (typeof window === 'undefined') return 2026;
+    const q = new URLSearchParams(window.location.search).get('taxYear');
+    const parsed = q ? Number(q) : NaN;
+    return Number.isFinite(parsed) && parsed > 2000 ? parsed : 2026;
+  }, []);
+}
+
 export function AtlasLivePage() {
   const studyId = useStudyIdFromUrl();
+  const taxYear = useTaxYearFromUrl();
   const { studyId: storeStudyId, setStudyId, activeTool } = useAtlasLiveStore();
   const mapRef = useRef<unknown>(null);
 
@@ -28,6 +44,7 @@ export function AtlasLivePage() {
   }, [studyId, storeStudyId, setStudyId]);
 
   const { sendSelection } = useAtlasLiveHub(storeStudyId ?? studyId);
+  const { outlines, parcels, loading: mapDataLoading, error: mapDataError } = useAtlasMapData(taxYear);
 
   const handleParcelClick = async (parcelId: string) => {
     if (!storeStudyId) return;
@@ -85,9 +102,56 @@ export function AtlasLivePage() {
         <AtlasMapSurface
           mapRef={mapRef}
           activeTool={activeTool}
+          outlines={outlines}
+          parcels={parcels}
           onParcelClick={handleParcelClick}
         />
       </div>
+
+      {/* Map data status — subtle inline loading/error indicator in the top bar area */}
+      {mapDataLoading && (
+        <div
+          data-testid="atlas-map-loading"
+          role="status"
+          aria-live="polite"
+          style={{
+            position: 'absolute',
+            top: 52,
+            right: 16,
+            padding: '4px 10px',
+            borderRadius: 4,
+            background: 'rgba(0,153,255,0.18)',
+            color: '#8fd4ff',
+            fontSize: 11,
+            fontWeight: 600,
+            zIndex: 9,
+            pointerEvents: 'none',
+          }}
+        >
+          Loading map data…
+        </div>
+      )}
+      {mapDataError && (
+        <div
+          data-testid="atlas-map-error"
+          role="alert"
+          style={{
+            position: 'absolute',
+            top: 52,
+            right: 16,
+            padding: '4px 10px',
+            borderRadius: 4,
+            background: 'rgba(239,68,68,0.18)',
+            color: '#ffb3b3',
+            fontSize: 11,
+            fontWeight: 600,
+            zIndex: 9,
+          }}
+          title={mapDataError}
+        >
+          Map data unavailable
+        </div>
+      )}
 
       {/* Overlay Manager */}
       <AtlasOverlayManager map={mapRef.current} />
@@ -108,22 +172,28 @@ export function AtlasLivePage() {
   );
 }
 
-// Internal Map Surface — lazy-loads GeoForgeV2Map to isolate Mapbox GL JS from tests
+// Internal Map Surface — lazy-loads GeoForgeV2Map to isolate Mapbox GL JS from tests.
+// When outlines/parcels are null, the map still renders its basemap; the shared
+// loading/error indicators on AtlasLivePage communicate data status to the user.
 function AtlasMapSurface({
   mapRef,
   activeTool,
+  outlines,
+  parcels,
   onParcelClick,
 }: {
   mapRef: React.RefObject<unknown>;
   activeTool: string;
+  outlines: NbhdOutlineCollection | null;
+  parcels: ParcelTileCollection | null;
   onParcelClick: (id: string) => void;
 }) {
   let GeoForgeV2Map: React.ComponentType<{
-    outlines: null;
-    parcels: null;
-    selectedNeighborhoodCode: null;
+    outlines: NbhdOutlineCollection | null;
+    parcels: ParcelTileCollection | null;
+    selectedNeighborhoodCode: string | null;
     onNeighborhoodClick: (code: string) => void;
-    onParcelClick: (parcel: { parcelId: string }) => void;
+    onParcelClick: (parcel: ParcelTileProps) => void;
     onViewportChange: () => void;
     visibleLayers: Set<string>;
     mapCtx: Record<string, unknown>;
@@ -138,8 +208,8 @@ function AtlasMapSurface({
 
   return (
     <GeoForgeV2Map
-      outlines={null}
-      parcels={null}
+      outlines={outlines}
+      parcels={parcels}
       selectedNeighborhoodCode={null}
       onNeighborhoodClick={() => {}}
       onParcelClick={(parcel) => onParcelClick(parcel.parcelId)}
