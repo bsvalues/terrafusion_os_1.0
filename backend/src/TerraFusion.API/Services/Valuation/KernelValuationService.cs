@@ -5,7 +5,12 @@ using TerraFusion.Core.DTOs.Kernel;
 
 namespace TerraFusion.API.Services.Valuation;
 
-public class KernelValuationException : Exception
+/// <summary>
+/// Thrown when a kernel subprocess fails during a Forge valuation compute chain.
+/// Carries the typed <see cref="FailureMode"/> so callers can distinguish timeout,
+/// missing-executable, kernel-reported-error, etc. and respond appropriately.
+/// </summary>
+public sealed class KernelValuationException : Exception
 {
     public KernelFailureMode? FailureMode { get; }
     public KernelValuationException(string message, KernelFailureMode? mode, Exception? inner = null)
@@ -44,6 +49,9 @@ public class KernelValuationService : IKernelValuationService
 
         if (!costResult.Success || costResult.Data == null)
         {
+            _logger.LogError(
+                "Cost kernel failed for {ParcelId}: mode={FailureMode} msg={ErrorMessage}",
+                request.ParcelId, costResult.FailureMode, costResult.ErrorMessage);
             throw new KernelValuationException(
                 $"Cost kernel failed for {request.ParcelId}: {costResult.ErrorMessage}",
                 costResult.FailureMode);
@@ -66,10 +74,18 @@ public class KernelValuationService : IKernelValuationService
 
         if (!valResult.Success || valResult.Data == null)
         {
+            _logger.LogError(
+                "Valuation kernel failed for {ParcelId}: mode={FailureMode} msg={ErrorMessage}",
+                request.ParcelId, valResult.FailureMode, valResult.ErrorMessage);
             throw new KernelValuationException(
                 $"Valuation kernel failed for {request.ParcelId}: {valResult.ErrorMessage}",
                 valResult.FailureMode);
         }
+
+        _logger.LogDebug(
+            "Kernel compute succeeded for {ParcelId}: rcnld={Rcnld} total={TotalValue} costMs={CostMs} valMs={ValMs}",
+            request.ParcelId, costResult.Data.Rcnld, valResult.Data.TotalValue,
+            costResult.DurationMs, valResult.DurationMs);
 
         // 3. Compose domain response
         return new KernelCostApproachResponse(
