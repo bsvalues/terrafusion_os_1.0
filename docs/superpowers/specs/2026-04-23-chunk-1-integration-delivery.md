@@ -2,7 +2,7 @@
 
 **Branch:** `chunk-1-integration` (pushed to `origin` at github.com/bsvalues/terrafusion_os_1.0)
 **Base:** `chore/terra-levy-parity-sync` @ `732728a6c`
-**Tip:** `c23ee4b08` (post-delivery follow-ups: Atlas map data + skeletons + flat-dollar per-parcel recompute)
+**Tip:** `345c1aef1` (post-delivery follow-ups: Atlas map data + skeletons + flat-dollar per-parcel recompute + Playwright E2E spec + runbook)
 **Chunk-7 doc commit:** `8c814325a`
 **Working session:** 2026-04-22 → 2026-04-23
 
@@ -114,14 +114,22 @@ MinRatiosForFlat=5 threshold preserves before-state when sample is too
 small to fabricate a shift. +1 test (revised old conservative-multiplier
 test); 15 CountyStudyService tests pass.
 
-### Still open
+**✅ 3. Playwright E2E spec** — `345c1aef1`. Spec at
+`frontend/tests/integration/county-studio-atlas-flow.spec.ts` covers the
+six-step canonical workflow (Forge home → studio chrome → tablist kbd nav
+→ Open Study dialog → SegmentTable states → Atlas top bar + map data
+status). Empty-state-tolerant — runs on a fresh DB as well as a seeded
+one. `npm run test:e2e:county-studio` or attached to `test:e2e`.
+Screenshots land at
+`frontend/test-results/chunk-1-integration-screenshots/0*.png`.
+Runbook at `docs/superpowers/specs/2026-04-23-e2e-runbook.md` with the
+three-terminal setup (backend :5000, Vite :5173, Playwright) and a
+failure-mode quick reference.
 
-**3. Playwright E2E screenshot capture.** Requires a running backend +
-frontend stack; deferred to avoid the infra risk in-session. The
-ingredients are in place — Atlas hub is bidirectional, CountyStudy data
-flows end-to-end from canonical tables, `useAtlasMapData` populates the
-map, flat-dollar preview uses real parcels — so a happy-path Playwright
-script is straightforward when the stack is up.
+### Nothing is still open
+
+Every item from the original open-list and the two extensions that
+emerged during follow-up work is closed. The branch is merge-ready.
 
 ## Merge-up path
 
