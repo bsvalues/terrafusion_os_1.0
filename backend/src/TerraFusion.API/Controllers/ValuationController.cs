@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TerraFusion.API.Services.Valuation;
+using TerraFusion.Core.DTOs.Kernel;
 
 namespace TerraFusion.API.Controllers;
 
@@ -15,10 +17,14 @@ namespace TerraFusion.API.Controllers;
 public class ValuationController : ControllerBase
 {
     private readonly ILogger<ValuationController> _logger;
+    private readonly IKernelValuationService _kernelValuation;
 
-    public ValuationController(ILogger<ValuationController> logger)
+    public ValuationController(
+        ILogger<ValuationController> logger,
+        IKernelValuationService kernelValuation)
     {
         _logger = logger;
+        _kernelValuation = kernelValuation;
     }
 
     /// <summary>
@@ -101,5 +107,30 @@ public class ValuationController : ControllerBase
         public string Appraiser { get; init; } = string.Empty;
         public DateTime? CertificationDate { get; init; }
         public string Status { get; init; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Kernel-backed cost + valuation compute path. Additive to CalculateCostApproach;
+    /// does not replace canonical DB-driven path.
+    /// </summary>
+    [HttpPost("kernel-cost-approach")]
+    public async Task<ActionResult<KernelCostApproachResponse>> KernelCostApproach(
+        [FromBody] KernelCostApproachRequest request,
+        CancellationToken ct)
+    {
+        try
+        {
+            var result = await _kernelValuation.ComputeCostWithKernelAsync(request, ct);
+            return Ok(result);
+        }
+        catch (KernelValuationException ex)
+        {
+            return StatusCode(502, new
+            {
+                error = ex.Message,
+                failureMode = ex.FailureMode?.ToString(),
+                kernel = true,
+            });
+        }
     }
 }
