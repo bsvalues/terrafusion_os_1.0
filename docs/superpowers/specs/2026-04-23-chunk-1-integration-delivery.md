@@ -2,7 +2,8 @@
 
 **Branch:** `chunk-1-integration` (pushed to `origin` at github.com/bsvalues/terrafusion_os_1.0)
 **Base:** `chore/terra-levy-parity-sync` @ `732728a6c`
-**Tip:** `f5e0f1066` (Chunk 6)
+**Tip:** `12a17a553` (post-delivery follow-ups: Atlas map data + LeftRail/BottomDeck skeletons)
+**Chunk-7 doc commit:** `8c814325a`
 **Working session:** 2026-04-22 → 2026-04-23
 
 ## What this branch contains
@@ -78,30 +79,44 @@ County Studio + Statistics Studio surfaces. Everything merges cleanly from
 
 ## What's explicitly still open
 
-These were noted as future work during the chunk execution — none block the
-current shippable slice, but they belong in the next session's queue:
+These were noted as future work during the chunk execution. Two have since
+been closed in-session; the other two remain for the next working day.
 
-1. **Atlas map data feed.** `AtlasLivePage` still passes `outlines={null}` and
-   `parcels={null}` to `GeoForgeV2Map`. The hub bridge is complete; the map
-   surface needs canonical GIS data wired into it. Small follow-up.
+### ✅ Closed (post-delivery-doc follow-ups)
 
-2. **Flat-dollar scenario preview needs per-parcel kernel recomputation.**
-   Current flat-dollar branch uses a bounded approximation. The Rust cost +
-   valuation kernels are integrated via `IKernelValuationService` — wiring
-   them into `PreviewScenarioImpactAsync` for per-parcel adjustment is the
-   natural next step and will make flat-dollar projections as accurate as
-   percent projections.
+**1. Atlas map data feed** — `d21fa9f30`. `useAtlasMapData(taxYear)` hook
+reads `/geoforge/v2/neighborhoods/outline` + `/v2/parcels/tiles` via
+Promise.allSettled (partial failure still renders useful data),
+AbortController on lifecycle, 5K parcel cap for first-load performance,
+URL-driven taxYear with 2026 default. Loading + error indicators in
+top-right. 5 hook tests cover parallel invocation, partial-failure
+resilience, both-endpoints-fail error path, taxYear refetch, and
+neighborhood filter passthrough.
 
-3. **Playwright E2E screenshot capture.** Requires a running backend + frontend
-   stack; deferred to avoid the infra risk in this session. The ingredients
-   are in place — Atlas hub is bidirectional, CountyStudy data flows end-to-end
-   from canonical tables — so a happy-path Playwright script is straightforward
-   when the stack is up.
+**4. LeftRail + BottomDeck loading skeletons** — `12a17a553`. Extended
+the SegmentTable pattern to both remaining panels. LeftRail renders
+per-section shimmer (role=status/aria-live/aria-label) for cohorts and
+scenarios; inline role=alert with error message for the error path.
+BottomDeck renders a title-bar + six-bar shimmer matching the Distribution
+chart layout; full-panel role=alert for errors. +5 vitest; 73/73 county-
+studio tests pass.
 
-4. **LeftRail + BottomDeck loading skeletons.** Only `SegmentTable` got the
-   skeleton treatment in Chunk 6. Same pattern extends trivially to the other
-   two panels using the same `loadStatus.cohorts` / `loadStatus.scenarios`
-   fields already on the store.
+### Still open
+
+**2. Flat-dollar scenario preview needs per-parcel kernel recomputation.**
+Current flat-dollar branch uses a bounded conservative approximation. The
+Rust cost + valuation kernels are integrated via `IKernelValuationService`
+— wiring them into `PreviewScenarioImpactAsync` for per-parcel adjustment
+is the natural next step. This needs its own design phase (concurrency,
+caching, UX affordance for the extra latency) so it was deferred rather
+than rushed.
+
+**3. Playwright E2E screenshot capture.** Requires a running backend +
+frontend stack; deferred to avoid the infra risk in-session. The
+ingredients are in place — Atlas hub is bidirectional, CountyStudy data
+flows end-to-end from canonical tables, `useAtlasMapData` now populates
+the map — so a happy-path Playwright script is straightforward when the
+stack is up.
 
 ## Merge-up path
 
