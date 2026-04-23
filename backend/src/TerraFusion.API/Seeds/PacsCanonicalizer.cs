@@ -76,6 +76,15 @@ public sealed class PacsCanonicalizer
         return cama;
     }
 
+    /// <summary>Re-run only Step 1 (Properties). Fast path for GeoId/parcel-key schema updates.</summary>
+    public async Task<int> CanonicalizePropertiesOnlyAsync(CancellationToken ct = default)
+    {
+        _logger.LogInformation("[PacsCanonicalizer] PROPERTIES-ONLY pass (Step 1 only).");
+        var count = await CanonicalizePropertiesAsync(ct);
+        _logger.LogInformation("[PacsCanonicalizer] PROPERTIES-ONLY complete. Properties={Count}", count);
+        return count;
+    }
+
     public async Task<int> CanonicalizeLevyOnlyAsync(CancellationToken ct = default)
     {
         _logger.LogInformation("[PacsCanonicalizer] LEVY-ONLY pass.");

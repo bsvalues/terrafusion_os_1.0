@@ -573,6 +573,32 @@ export default function ForgeSuiteHome() {
             </button>
           </section>
 
+          {/* County Studio — segment-first countywide valuation workspace */}
+          <section className="forge-panel" data-testid="forge-county-applications">
+            <div className="forge-panel__header">
+              <div>
+                <p className="forge-panel__eyebrow">County Operations</p>
+                <h2 className="forge-panel__title">County Studio · Valuation Command Center</h2>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="forge-card forge-card--primary"
+              style={{ width: '100%', textAlign: 'left' }}
+              onClick={() => handleModuleLaunch({ id: 'county-studio', label: 'County Studio', description: '', priority: 'primary', launchMode: 'standalone', moduleId: 'county-studio' })}
+            >
+              <div className="forge-card__rail">
+                <span className="forge-chip forge-chip--neutral">Ratio Study · Scenarios · Segments</span>
+                <span className="forge-card__foot">Launches in window</span>
+              </div>
+              <div className="forge-card__title">County Studio</div>
+              <p className="forge-card__description">
+                Segment-first countywide valuation workspace — load segment sets, define cohorts, model
+                adjustment scenarios with live preview, review IAAO compliance, and publish to Atlas Live View.
+              </p>
+            </button>
+          </section>
+
           {/* Slice 1.4 — county-wide sale qualification queue */}
           <SaleQualificationQueue />
 

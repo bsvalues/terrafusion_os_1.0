@@ -153,6 +153,9 @@ function getModuleDisplayName(moduleId: string): string {
     'gpt-builder': 'GPT Builder',
     'gpt-analytics': 'GPT Analytics',
     'gpt-rag': 'GPT RAG',
+    // County Studio + Atlas Live View
+    'county-studio': 'County Studio',
+    'atlas-live-view': 'Atlas Live View',
   };
 
   return displayNames[moduleId] ?? moduleId;
@@ -227,6 +230,9 @@ function getModuleIcon(moduleId: string): string {
     'gpt-builder': '🔨',
     'gpt-analytics': '📊',
     'gpt-rag': '📚',
+    // County Studio + Atlas Live View
+    'county-studio': '🏛',
+    'atlas-live-view': '🗺',
   };
 
   return icons[moduleId] ?? '📦';

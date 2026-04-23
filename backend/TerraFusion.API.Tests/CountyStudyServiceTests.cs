@@ -14,15 +14,31 @@ public class CountyStudyServiceTests
     private (TerraFusion.Data.TerraFusionDbContext ctx, CountyStudyService svc) CreateSut()
     {
         var ctx = TestDbContextFactory.CreateInMemoryContext();
-        var svc = new CountyStudyService(ctx);
+        var resolver = new PassThroughCountyResolver();
+        var svc = new CountyStudyService(ctx, resolver);
         return (ctx, svc);
+    }
+
+    /// <summary>
+    /// Test-only resolver: treats every input as a Guid string. Tests that pass
+    /// Guids to CreateStudyRequest.CountyId will round-trip cleanly.
+    /// </summary>
+    private sealed class PassThroughCountyResolver : ICountyResolver
+    {
+        public Task<Guid> ResolveAsync(string input, CancellationToken ct = default)
+            => Guid.TryParse(input, out var g)
+                ? Task.FromResult(g)
+                : throw new CountyNotFoundException(input);
+
+        public Task<Guid?> TryResolveAsync(string input, CancellationToken ct = default)
+            => Task.FromResult<Guid?>(Guid.TryParse(input, out var g) ? g : null);
     }
 
     [Fact]
     public async Task CreateStudy_ReturnsStudyWithNewId()
     {
         var (_, svc) = CreateSut();
-        var req = new CreateStudyRequest(Guid.NewGuid(), 2026, StudyType.RatioStudy, "March");
+        var req = new CreateStudyRequest(Guid.NewGuid().ToString(), 2026, StudyType.RatioStudy, "March");
         var result = await svc.CreateStudyAsync(req, "testuser");
         Assert.NotEqual(Guid.Empty, result.StudyId);
         Assert.Equal(2026, result.TaxYear);
@@ -34,8 +50,8 @@ public class CountyStudyServiceTests
         var (_, svc) = CreateSut();
         var countyId = Guid.NewGuid();
         var otherCountyId = Guid.NewGuid();
-        await svc.CreateStudyAsync(new CreateStudyRequest(countyId, 2026, StudyType.RatioStudy, null), "u1");
-        await svc.CreateStudyAsync(new CreateStudyRequest(otherCountyId, 2026, StudyType.RatioStudy, null), "u2");
+        await svc.CreateStudyAsync(new CreateStudyRequest(countyId.ToString(), 2026, StudyType.RatioStudy, null), "u1");
+        await svc.CreateStudyAsync(new CreateStudyRequest(otherCountyId.ToString(), 2026, StudyType.RatioStudy, null), "u2");
 
         var results = await svc.GetStudiesAsync(countyId);
         Assert.Single(results);
@@ -46,7 +62,7 @@ public class CountyStudyServiceTests
     {
         var (_, svc) = CreateSut();
         var study = await svc.CreateStudyAsync(
-            new CreateStudyRequest(Guid.NewGuid(), 2026, StudyType.RatioStudy, null), "u1");
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2026, StudyType.RatioStudy, null), "u1");
         var req = new CreateCohortRequest(
             study.StudyId, "West Richland R1", CohortSelectionType.Segment,
             "{\"segmentIds\":[\"abc\"]}", 842, false);
@@ -60,7 +76,7 @@ public class CountyStudyServiceTests
     {
         var (_, svc) = CreateSut();
         var study = await svc.CreateStudyAsync(
-            new CreateStudyRequest(Guid.NewGuid(), 2026, StudyType.RatioStudy, null), "u1");
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2026, StudyType.RatioStudy, null), "u1");
         var cohort = await svc.CreateCohortAsync(
             new CreateCohortRequest(study.StudyId, "TestCohort", CohortSelectionType.Segment,
                 "{}", 100, false), "u1");
@@ -79,7 +95,7 @@ public class CountyStudyServiceTests
     {
         var (_, svc) = CreateSut();
         var study = await svc.CreateStudyAsync(
-            new CreateStudyRequest(Guid.NewGuid(), 2026, StudyType.RatioStudy, null), "u1");
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2026, StudyType.RatioStudy, null), "u1");
         var cohort = await svc.CreateCohortAsync(
             new CreateCohortRequest(study.StudyId, "PreviewCohort", CohortSelectionType.Segment,
                 "{}", 50, false), "u1");
@@ -101,7 +117,7 @@ public class CountyStudyServiceTests
     {
         var (_, svc) = CreateSut();
         var study = await svc.CreateStudyAsync(
-            new CreateStudyRequest(Guid.NewGuid(), 2026, StudyType.RatioStudy, null), "u1");
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2026, StudyType.RatioStudy, null), "u1");
         var cohort = await svc.CreateCohortAsync(
             new CreateCohortRequest(study.StudyId, "PromoteCohort", CohortSelectionType.Segment,
                 "{}", 100, false), "u1");
@@ -121,7 +137,7 @@ public class CountyStudyServiceTests
     {
         var (_, svc) = CreateSut();
         var study = await svc.CreateStudyAsync(
-            new CreateStudyRequest(Guid.NewGuid(), 2026, StudyType.RatioStudy, null), "u1");
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2026, StudyType.RatioStudy, null), "u1");
         var cohort = await svc.CreateCohortAsync(
             new CreateCohortRequest(study.StudyId, "PromoteCohort", CohortSelectionType.Segment,
                 "{}", 100, false), "u1");
@@ -146,7 +162,7 @@ public class CountyStudyServiceTests
     {
         var (_, svc) = CreateSut();
         var study = await svc.CreateStudyAsync(
-            new CreateStudyRequest(Guid.NewGuid(), 2026, StudyType.RatioStudy, null), "u1");
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2026, StudyType.RatioStudy, null), "u1");
         var cohort = await svc.CreateCohortAsync(
             new CreateCohortRequest(study.StudyId, "ExcCohort", CohortSelectionType.Segment,
                 "{}", 10, false), "u1");
@@ -174,7 +190,7 @@ public class CountyStudyServiceTests
 
         // Study A: the scenario lives here
         var studyA = await svc.CreateStudyAsync(
-            new CreateStudyRequest(Guid.NewGuid(), 2026, StudyType.RatioStudy, null), "u1");
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2026, StudyType.RatioStudy, null), "u1");
         var cohort = await svc.CreateCohortAsync(
             new CreateCohortRequest(studyA.StudyId, "CrossStudyCohort", CohortSelectionType.Segment,
                 "{}", 5, false), "u1");
@@ -184,7 +200,7 @@ public class CountyStudyServiceTests
 
         // Study B: the exception set claims to belong here (cross-study injection)
         var studyB = await svc.CreateStudyAsync(
-            new CreateStudyRequest(Guid.NewGuid(), 2026, StudyType.RatioStudy, null), "u2");
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2026, StudyType.RatioStudy, null), "u2");
 
         var req = new CreateCountyExceptionSetRequest(
             studyB.StudyId, scenario.ScenarioId, // mismatch!

@@ -141,4 +141,11 @@ describe('ForgeSuiteHome — frozen module list', () => {
     const cards = gisSection.querySelectorAll('button.forge-card');
     expect(cards).toHaveLength(1);
   });
+
+  it('renders County Studio in the county-operations section', () => {
+    renderForge();
+    const countySection = screen.getByTestId('forge-county-applications');
+    expect(countySection).toBeInTheDocument();
+    expect(screen.getByText('County Studio')).toBeInTheDocument();
+  });
 });
