@@ -1265,6 +1265,18 @@ builder.Services.AddScoped<TerraFusion.API.Interfaces.IPerformanceMonitor, Terra
 // Phase 10: PropertyForge valuation service (cost/sales/income/reconciliation)
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.IValuationService, TerraFusion.API.Services.ValuationService>();
 
+// RustKernels — options + clients + composite service
+builder.Services.Configure<TerraFusion.API.Configuration.RustKernelsOptions>(
+    builder.Configuration.GetSection(TerraFusion.API.Configuration.RustKernelsOptions.SectionName));
+builder.Services.AddSingleton<TerraFusion.API.Services.Valuation.IRustKernelProcessHost,
+                              TerraFusion.API.Services.Valuation.RustKernelProcessHost>();
+builder.Services.AddScoped<TerraFusion.API.Services.Valuation.ICostKernelClient,
+                           TerraFusion.API.Services.Valuation.CostKernelClient>();
+builder.Services.AddScoped<TerraFusion.API.Services.Valuation.IValuationKernelClient,
+                           TerraFusion.API.Services.Valuation.ValuationKernelClient>();
+builder.Services.AddScoped<TerraFusion.API.Services.Valuation.IKernelValuationService,
+                           TerraFusion.API.Services.Valuation.KernelValuationService>();
+
 // Calibration Workbench services
 builder.Services.AddScoped<TerraFusion.Core.Services.IMatrixDiagnosticService, TerraFusion.API.Services.MatrixDiagnosticService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICalibrationMemoService, TerraFusion.Data.Services.CalibrationMemoService>();
