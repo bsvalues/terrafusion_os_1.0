@@ -13,6 +13,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Interfaces;
+using TerraFusion.Core.Services;
 
 namespace TerraFusion.API.Controllers;
 
@@ -21,15 +22,20 @@ namespace TerraFusion.API.Controllers;
 public class CountyStudyController : ControllerBase
 {
     private readonly ICountyStudyService _svc;
+    private readonly ICountyResolver _countyResolver;
     private readonly ILogger<CountyStudyController> _logger;
 
     // userId sourced from claim in production; hardened default for gateway-auth environments.
     private const string FallbackUserId = "system";
 
-    public CountyStudyController(ICountyStudyService svc, ILogger<CountyStudyController> logger)
+    public CountyStudyController(
+        ICountyStudyService svc,
+        ICountyResolver countyResolver,
+        ILogger<CountyStudyController> logger)
     {
-        _svc    = svc;
-        _logger = logger;
+        _svc            = svc;
+        _countyResolver = countyResolver;
+        _logger         = logger;
     }
 
     private string CurrentUserId =>
@@ -49,6 +55,10 @@ public class CountyStudyController : ControllerBase
             var dto = await _svc.CreateStudyAsync(req, CurrentUserId);
             return CreatedAtAction(nameof(GetStudyById), new { studyId = dto.StudyId }, dto);
         }
+        catch (CountyNotFoundException ex)
+        {
+            return BadRequest(new { error = ex.Message, field = "countyId" });
+        }
         catch (InvalidOperationException ex)
         {
             return BadRequest(new { error = ex.Message });
@@ -62,14 +72,20 @@ public class CountyStudyController : ControllerBase
 
     /// <summary>
     /// Returns all studies for a county, ordered by creation date descending.
+    /// CountyId accepts either a Guid or a county name ("benton", case-insensitive).
     /// </summary>
     [HttpGet("studies")]
-    public async Task<IActionResult> GetStudies([FromQuery] Guid countyId)
+    public async Task<IActionResult> GetStudies([FromQuery] string countyId, CancellationToken ct)
     {
         try
         {
-            var list = await _svc.GetStudiesAsync(countyId);
+            var resolvedId = await _countyResolver.ResolveAsync(countyId, ct);
+            var list = await _svc.GetStudiesAsync(resolvedId);
             return Ok(list);
+        }
+        catch (CountyNotFoundException ex)
+        {
+            return BadRequest(new { error = ex.Message, field = "countyId" });
         }
         catch (InvalidOperationException ex)
         {

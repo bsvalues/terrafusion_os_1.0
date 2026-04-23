@@ -1392,6 +1392,7 @@ builder.Services.AddSingleton<IModuleRegistry, ModuleRegistry>();
 builder.Services.AddScoped<IHarrisPACSEnhancementBridge, HarrisPACSEnhancementBridge>();
 builder.Services.AddScoped<ITerraFusionMarketplace, TerraFusionMarketplace>();
 builder.Services.AddScoped<ICountyDeploymentService, CountyDeploymentService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.ICountyResolver, TerraFusion.API.Services.CountyResolver>();
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICountyStudyService, TerraFusion.Core.Services.CountyStudyService>();
 
 // Register unified orchestration service

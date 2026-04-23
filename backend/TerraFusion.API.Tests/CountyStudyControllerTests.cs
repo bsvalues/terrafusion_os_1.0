@@ -11,6 +11,7 @@ using TerraFusion.API.Controllers;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
+using TerraFusion.Core.Services;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
 
@@ -18,8 +19,18 @@ namespace TerraFusion.API.Tests;
 
 public class CountyStudyControllerTests
 {
-    private static CountyStudyController BuildController(ICountyStudyService svc) =>
-        new(svc, NullLogger<CountyStudyController>.Instance);
+    private static CountyStudyController BuildController(ICountyStudyService svc)
+    {
+        var resolver = new Mock<ICountyResolver>();
+        // Default behavior: parse any Guid-string input back to that Guid.
+        resolver
+            .Setup(r => r.ResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns<string, CancellationToken>((s, _) =>
+                Guid.TryParse(s, out var g)
+                    ? Task.FromResult(g)
+                    : throw new CountyNotFoundException(s));
+        return new(svc, resolver.Object, NullLogger<CountyStudyController>.Instance);
+    }
 
     // ── Studies ───────────────────────────────────────────────────────────────
 
@@ -40,7 +51,7 @@ public class CountyStudyControllerTests
                .ReturnsAsync(expected);
 
         var controller = BuildController(svcMock.Object);
-        var req        = new CreateStudyRequest(countyId, 2026, StudyType.RatioStudy, null);
+        var req        = new CreateStudyRequest(countyId.ToString(), 2026, StudyType.RatioStudy, null);
 
         var result = await controller.CreateStudy(req);
 
@@ -83,7 +94,7 @@ public class CountyStudyControllerTests
 
         var controller = BuildController(svcMock.Object);
 
-        var result = await controller.GetStudies(countyId);
+        var result = await controller.GetStudies(countyId.ToString(), CancellationToken.None);
 
         var ok   = Assert.IsType<OkObjectResult>(result);
         var list = Assert.IsAssignableFrom<List<CountyStudySessionDto>>(ok.Value);

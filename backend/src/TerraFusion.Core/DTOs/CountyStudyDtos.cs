@@ -20,8 +20,13 @@ public record CountyStudySessionDto(
     string CreatedBy
 );
 
+/// <summary>
+/// Request to create a new county study session. CountyId is the canonical county
+/// identifier and may be sent as either a Guid string or a human-readable county
+/// name ("benton", case-insensitive). The server resolves via ICountyResolver.
+/// </summary>
 public record CreateStudyRequest(
-    Guid CountyId,
+    string CountyId,
     int TaxYear,
     StudyType StudyType,
     string? BaselineVersion

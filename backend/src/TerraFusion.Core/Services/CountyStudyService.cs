@@ -10,16 +10,22 @@ namespace TerraFusion.Core.Services;
 public class CountyStudyService : ICountyStudyService
 {
     private readonly ITerraFusionDbContext _db;
+    private readonly ICountyResolver _countyResolver;
 
-    public CountyStudyService(ITerraFusionDbContext db) => _db = db;
+    public CountyStudyService(ITerraFusionDbContext db, ICountyResolver countyResolver)
+    {
+        _db = db;
+        _countyResolver = countyResolver;
+    }
 
     // ── Study ──────────────────────────────────────────────────────────────
 
     public async Task<CountyStudySessionDto> CreateStudyAsync(CreateStudyRequest req, string userId)
     {
+        var countyId = await _countyResolver.ResolveAsync(req.CountyId);
         var study = new CountyStudySession
         {
-            CountyId = req.CountyId,
+            CountyId = countyId,
             TaxYear = req.TaxYear,
             StudyType = req.StudyType,
             BaselineVersion = req.BaselineVersion,
