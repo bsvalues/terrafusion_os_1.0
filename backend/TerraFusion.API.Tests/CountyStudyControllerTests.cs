@@ -30,7 +30,8 @@ public class CountyStudyControllerTests
                     ? Task.FromResult(g)
                     : throw new CountyNotFoundException(s));
         var derive = new Mock<ICountyStudySegmentDerivationService>();
-        return new(svc, resolver.Object, derive.Object, NullLogger<CountyStudyController>.Instance);
+        var health = new Mock<ICountyStudyHealthService>();
+        return new(svc, resolver.Object, derive.Object, health.Object, NullLogger<CountyStudyController>.Instance);
     }
 
     // ── Studies ───────────────────────────────────────────────────────────────
@@ -193,10 +194,12 @@ public class CountyStudyControllerTests
 
         var resolver = new Mock<ICountyResolver>();
         var svcMock  = new Mock<ICountyStudyService>();
+        var healthMock = new Mock<ICountyStudyHealthService>();
         var controller = new CountyStudyController(
             svcMock.Object,
             resolver.Object,
             deriveMock.Object,
+            healthMock.Object,
             NullLogger<CountyStudyController>.Instance);
 
         var result = await controller.DeriveSegments(studyId, CancellationToken.None);
@@ -223,10 +226,12 @@ public class CountyStudyControllerTests
 
         var resolver = new Mock<ICountyResolver>();
         var svcMock  = new Mock<ICountyStudyService>();
+        var healthMock = new Mock<ICountyStudyHealthService>();
         var controller = new CountyStudyController(
             svcMock.Object,
             resolver.Object,
             deriveMock.Object,
+            healthMock.Object,
             NullLogger<CountyStudyController>.Instance);
 
         var result = await controller.DeriveSegments(studyId, CancellationToken.None);
