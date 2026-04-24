@@ -286,12 +286,12 @@ public sealed class CountyStudyInspectorServiceTests : IDisposable
     [Fact]
     public async Task GetActionContextAsync_SupportFlags_GateDeeplinkQueryNullability()
     {
-        // Task D2 wave 1: SalesForge is wired (switch = true) — its deeplink
-        // must be populated. The other four targets remain honest-disabled
+        // Task D2 wave 1: SalesForge + CostForge are wired (switch = true).
+        // The other three targets remain honest-disabled
         // (switch = false → DeeplinkQuery null).
         var support = CountyStudyInspectorService.ResolveDeeplinkSupport();
         Assert.True(support.SalesForge);
-        Assert.False(support.CostForge);
+        Assert.True(support.CostForge);
         Assert.False(support.CompsForge);
         Assert.False(support.Dais);
         Assert.False(support.Dossier);
@@ -301,14 +301,18 @@ public sealed class CountyStudyInspectorServiceTests : IDisposable
             .First(s => s.SegmentSetId == study.ActiveSegmentSetId!.Value);
         var ctx = await _svc.GetActionContextAsync(segment.SegmentId);
 
-        // SalesForge is wired: query must be present and carry stratum/year.
+        // Wired targets: deeplink present and carries stratum/year/segmentId.
         Assert.NotNull(ctx.SalesForge.DeeplinkQuery);
         Assert.Contains("stratum=", ctx.SalesForge.DeeplinkQuery);
         Assert.Contains($"year={study.TaxYear}", ctx.SalesForge.DeeplinkQuery);
         Assert.Contains($"segmentId={segment.SegmentId}", ctx.SalesForge.DeeplinkQuery);
 
+        Assert.NotNull(ctx.CostForge.DeeplinkQuery);
+        Assert.Contains("stratum=", ctx.CostForge.DeeplinkQuery);
+        Assert.Contains($"year={study.TaxYear}", ctx.CostForge.DeeplinkQuery);
+        Assert.Contains($"segmentId={segment.SegmentId}", ctx.CostForge.DeeplinkQuery);
+
         // Unwired targets stay null so the UI button renders honest-disabled.
-        Assert.Null(ctx.CostForge.DeeplinkQuery);
         Assert.Null(ctx.CompsForge.DeeplinkQuery);
         Assert.Null(ctx.Dais.DeeplinkQuery);
         Assert.Null(ctx.Dossier.DeeplinkQuery);
