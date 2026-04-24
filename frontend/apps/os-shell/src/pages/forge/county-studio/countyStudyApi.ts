@@ -123,6 +123,9 @@ export const scenarioApi = {
   save: (scenarioId: string): Promise<CountyScenarioDto> =>
     apiFetchJson(`${BASE}/scenarios/${scenarioId}/save`, { method: 'POST' }),
 
+  compare: (scenarioIdA: string, compareWithId: string): Promise<ScenarioCompareDto> =>
+    apiFetchJson(`${BASE}/scenarios/${scenarioIdA}/compare?compareWithId=${compareWithId}`),
+
   promote: (body: {
     studyId: string;
     countyId: string;
@@ -131,6 +134,23 @@ export const scenarioApi = {
   }): Promise<void> =>
     apiFetchJson(`${BASE}/scenarios/promote`, { method: 'POST', body: JSON.stringify(body) }),
 };
+
+// ── Scenario Compare ──────────────────────────────────────────────────────────
+
+export interface ScenarioCompareRowDto {
+  metricLabel: string;
+  baseline: number;
+  afterA: number;
+  afterB: number;
+  deltaAMinusB: number;
+  winner: 'A' | 'B' | 'Tie';
+}
+
+export interface ScenarioCompareDto {
+  scenarioA: CountyScenarioDto;
+  scenarioB: CountyScenarioDto;
+  rows: ScenarioCompareRowDto[];
+}
 
 // ── Exception Sets ────────────────────────────────────────────────────────────
 

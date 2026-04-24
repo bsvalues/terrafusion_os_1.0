@@ -409,6 +409,61 @@ public class CountyStudyService : ICountyStudyService
         );
     }
 
+    // ── Compare Scenario Impact ───────────────────────────────────────────────
+
+    public async Task<ScenarioCompareDto> CompareScenarioImpactAsync(Guid scenarioIdA, Guid scenarioIdB)
+    {
+        var scenA = await _db.CountyScenarios.FindAsync(scenarioIdA)
+            ?? throw new InvalidOperationException($"Scenario {scenarioIdA} not found");
+        var scenB = await _db.CountyScenarios.FindAsync(scenarioIdB)
+            ?? throw new InvalidOperationException($"Scenario {scenarioIdB} not found");
+        if (scenA.StudyId != scenB.StudyId)
+            throw new InvalidOperationException("Cannot compare scenarios from different studies.");
+
+        var previewA = await PreviewScenarioImpactAsync(scenarioIdA);
+        var previewB = await PreviewScenarioImpactAsync(scenarioIdB);
+
+        // For MEDIAN RATIO, closer to 1.0 wins. For COD and PRD, lower wins.
+        static string WinnerCloserToOne(decimal a, decimal b)
+        {
+            var dA = Math.Abs(a - 1m);
+            var dB = Math.Abs(b - 1m);
+            return dA < dB ? "A" : dB < dA ? "B" : "Tie";
+        }
+        static string WinnerLower(decimal a, decimal b) =>
+            a < b ? "A" : b < a ? "B" : "Tie";
+
+        var rows = new List<ScenarioCompareRowDto>
+        {
+            new("Median Ratio",
+                previewA.MedianRatioBefore,
+                previewA.MedianRatioAfter,
+                previewB.MedianRatioAfter,
+                previewA.MedianRatioAfter - previewB.MedianRatioAfter,
+                WinnerCloserToOne(previewA.MedianRatioAfter, previewB.MedianRatioAfter)),
+            new("COD",
+                previewA.CodBefore,
+                previewA.CodAfter,
+                previewB.CodAfter,
+                previewA.CodAfter - previewB.CodAfter,
+                WinnerLower(previewA.CodAfter, previewB.CodAfter)),
+            new("PRD",
+                previewA.PrdBefore,
+                previewA.PrdAfter,
+                previewB.PrdAfter,
+                previewA.PrdAfter - previewB.PrdAfter,
+                WinnerCloserToOne(previewA.PrdAfter, previewB.PrdAfter)),
+            new("Exceptions",
+                previewA.ExceptionsBefore,
+                previewA.ExceptionsAfter,
+                previewB.ExceptionsAfter,
+                previewA.ExceptionsAfter - previewB.ExceptionsAfter,
+                WinnerLower(previewA.ExceptionsAfter, previewB.ExceptionsAfter)),
+        };
+
+        return new ScenarioCompareDto(MapScenario(scenA), MapScenario(scenB), rows);
+    }
+
     /// <summary>
     /// Minimum sample size before per-parcel flat-dollar recomputation is attempted.
     /// Below this, the preview preserves before-state metrics rather than fabricate

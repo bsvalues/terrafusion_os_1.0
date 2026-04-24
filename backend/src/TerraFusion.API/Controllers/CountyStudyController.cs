@@ -670,6 +670,30 @@ public class CountyStudyController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Returns a side-by-side projected impact comparison for two scenarios in the same study.
+    /// </summary>
+    [HttpGet("scenarios/{scenarioIdA:guid}/compare")]
+    public async Task<IActionResult> CompareScenarios(Guid scenarioIdA, [FromQuery] Guid compareWithId)
+    {
+        if (compareWithId == Guid.Empty)
+            return BadRequest(new { error = "compareWithId is required." });
+        try
+        {
+            var dto = await _svc.CompareScenarioImpactAsync(scenarioIdA, compareWithId);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] CompareScenarios failed {A} vs {B}", scenarioIdA, compareWithId);
+            return StatusCode(500, new { error = "Failed to compare scenarios." });
+        }
+    }
+
     // ── Adjustment Sets ───────────────────────────────────────────────────────
 
     /// <summary>

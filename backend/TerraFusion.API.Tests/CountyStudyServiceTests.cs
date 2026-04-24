@@ -499,6 +499,62 @@ public class CountyStudyServiceTests
             () => svc.CreateExceptionSetAsync(req, "u1"));
     }
 
+    // ── Task G: CompareScenarioImpact ─────────────────────────────────────
+
+    [Fact]
+    public async Task CompareScenarioImpact_ReturnsFourRows()
+    {
+        // Arrange: two saved scenarios in same study
+        var (_, svc) = CreateSut();
+        var study = await svc.CreateStudyAsync(
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2025, StudyType.RatioStudy, "v1"), "test");
+        var cohort = await svc.CreateCohortAsync(
+            new CreateCohortRequest(study.StudyId, "All Residential", CohortSelectionType.ManualList,
+                "[]", 100, false), "test");
+
+        var scenA = await svc.CreateScenarioAsync(
+            new CreateScenarioRequest(study.StudyId, cohort.CohortId,
+                ScenarioAdjustmentType.TotalValuePercent, "{\"magnitude\":3.0}", "A"), "test");
+        var scenB = await svc.CreateScenarioAsync(
+            new CreateScenarioRequest(study.StudyId, cohort.CohortId,
+                ScenarioAdjustmentType.TotalValuePercent, "{\"magnitude\":5.0}", "B"), "test");
+
+        // Act
+        var result = await svc.CompareScenarioImpactAsync(scenA.ScenarioId, scenB.ScenarioId);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(4, result.Rows.Count); // Median Ratio, COD, PRD, Exceptions
+        Assert.Equal("Median Ratio", result.Rows[0].MetricLabel);
+        Assert.True(result.Rows.All(r => r.Winner is "A" or "B" or "Tie"));
+    }
+
+    [Fact]
+    public async Task CompareScenarioImpact_ThrowsWhenDifferentStudies()
+    {
+        var (_, svc) = CreateSut();
+
+        var studyA = await svc.CreateStudyAsync(
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2025, StudyType.RatioStudy, null), "test");
+        var studyB = await svc.CreateStudyAsync(
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2025, StudyType.RatioStudy, null), "test");
+
+        var cohortA = await svc.CreateCohortAsync(
+            new CreateCohortRequest(studyA.StudyId, "CA", CohortSelectionType.Segment, "{}", 10, false), "test");
+        var cohortB = await svc.CreateCohortAsync(
+            new CreateCohortRequest(studyB.StudyId, "CB", CohortSelectionType.Segment, "{}", 10, false), "test");
+
+        var scenA = await svc.CreateScenarioAsync(
+            new CreateScenarioRequest(studyA.StudyId, cohortA.CohortId,
+                ScenarioAdjustmentType.TotalValuePercent, "{}", "A"), "test");
+        var scenB = await svc.CreateScenarioAsync(
+            new CreateScenarioRequest(studyB.StudyId, cohortB.CohortId,
+                ScenarioAdjustmentType.TotalValuePercent, "{}", "B"), "test");
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => svc.CompareScenarioImpactAsync(scenA.ScenarioId, scenB.ScenarioId));
+    }
+
     // ── Task F: Exception lifecycle ───────────────────────────────────────
 
     private async Task<(CountyStudyService svc, TerraFusion.Data.TerraFusionDbContext ctx, CountyExceptionSet exc)>

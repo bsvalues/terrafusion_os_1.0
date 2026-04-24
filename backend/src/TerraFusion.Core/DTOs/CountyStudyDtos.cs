@@ -133,6 +133,23 @@ public record ScenarioDeltaItem(
     decimal Delta
 );
 
+// ── Scenario Compare ──────────────────────────────────────────────────────────
+
+public record ScenarioCompareRowDto(
+    string MetricLabel,
+    decimal Baseline,     // The "before" value (same for both)
+    decimal AfterA,       // Scenario A projected result
+    decimal AfterB,       // Scenario B projected result
+    decimal DeltaAMinusB, // AfterA - AfterB (positive = A has higher value)
+    string Winner         // "A" | "B" | "Tie"
+);
+
+public record ScenarioCompareDto(
+    CountyScenarioDto ScenarioA,
+    CountyScenarioDto ScenarioB,
+    List<ScenarioCompareRowDto> Rows // one row per metric
+);
+
 // ── AdjustmentSet ──────────────────────────────────────────────────────────────
 
 // RollbackToken deliberately excluded from response — internal audit use only

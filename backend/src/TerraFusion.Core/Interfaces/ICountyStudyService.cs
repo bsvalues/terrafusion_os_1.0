@@ -28,6 +28,7 @@ public interface ICountyStudyService
     Task<CountyScenarioDto?> GetScenarioAsync(Guid scenarioId);
     Task<CountyScenarioDto?> SaveScenarioAsync(Guid scenarioId, string userId);
     Task<ScenarioImpactPreviewDto> PreviewScenarioImpactAsync(Guid scenarioId);
+    Task<ScenarioCompareDto> CompareScenarioImpactAsync(Guid scenarioIdA, Guid scenarioIdB);
 
     // Adjustment Sets
     Task<CountyAdjustmentSetDto> PromoteScenarioAsync(PromoteScenarioRequest req, string userId);
