@@ -27,9 +27,10 @@ public sealed class CountyStudyHealthControllerTests
             .Returns<string, CancellationToken>((s, _) => Task.FromResult(Guid.Parse(s)));
         var derive    = new Mock<ICountyStudySegmentDerivationService>();
         var inspector = new Mock<ICountyStudyInspectorService>();
+        var ai        = new Mock<ICountyStudioAiService>();
 
         return new(svc.Object, resolver.Object, derive.Object, healthSvc,
-            inspector.Object, NullLogger<CountyStudyController>.Instance);
+            inspector.Object, ai.Object, NullLogger<CountyStudyController>.Instance);
     }
 
     private static CountyHealthSummaryDto BuildSampleDto() => new(

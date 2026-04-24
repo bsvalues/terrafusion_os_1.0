@@ -300,8 +300,9 @@ public sealed class CountyStudyRollupTests : IDisposable
         var derive    = new Mock<ICountyStudySegmentDerivationService>();
         var health    = new Mock<ICountyStudyHealthService>();
         var inspector = new Mock<ICountyStudyInspectorService>();
+        var ai        = new Mock<ICountyStudioAiService>();
         return new(svc, resolver.Object, derive.Object, health.Object, inspector.Object,
-            NullLogger<CountyStudyController>.Instance);
+            ai.Object, NullLogger<CountyStudyController>.Instance);
     }
 
     [Fact]

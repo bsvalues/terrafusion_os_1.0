@@ -32,8 +32,9 @@ public class CountyStudyControllerTests
         var derive    = new Mock<ICountyStudySegmentDerivationService>();
         var health    = new Mock<ICountyStudyHealthService>();
         var inspector = new Mock<ICountyStudyInspectorService>();
+        var ai        = new Mock<ICountyStudioAiService>();
         return new(svc, resolver.Object, derive.Object, health.Object, inspector.Object,
-            NullLogger<CountyStudyController>.Instance);
+            ai.Object, NullLogger<CountyStudyController>.Instance);
     }
 
     // ── Studies ───────────────────────────────────────────────────────────────
@@ -198,12 +199,14 @@ public class CountyStudyControllerTests
         var svcMock       = new Mock<ICountyStudyService>();
         var healthMock    = new Mock<ICountyStudyHealthService>();
         var inspectorMock = new Mock<ICountyStudyInspectorService>();
+        var aiMock        = new Mock<ICountyStudioAiService>();
         var controller = new CountyStudyController(
             svcMock.Object,
             resolver.Object,
             deriveMock.Object,
             healthMock.Object,
             inspectorMock.Object,
+            aiMock.Object,
             NullLogger<CountyStudyController>.Instance);
 
         var result = await controller.DeriveSegments(studyId, CancellationToken.None);
@@ -232,12 +235,14 @@ public class CountyStudyControllerTests
         var svcMock       = new Mock<ICountyStudyService>();
         var healthMock    = new Mock<ICountyStudyHealthService>();
         var inspectorMock = new Mock<ICountyStudyInspectorService>();
+        var aiMock        = new Mock<ICountyStudioAiService>();
         var controller = new CountyStudyController(
             svcMock.Object,
             resolver.Object,
             deriveMock.Object,
             healthMock.Object,
             inspectorMock.Object,
+            aiMock.Object,
             NullLogger<CountyStudyController>.Instance);
 
         var result = await controller.DeriveSegments(studyId, CancellationToken.None);
