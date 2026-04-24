@@ -194,3 +194,102 @@ export interface CountyHealthSummaryDto {
   /** ISO timestamp of the most-recent derivation. null when not yet derived. */
   derivedAt: string | null;
 }
+
+// ── Inspector (Task D — Fix #4 #5 #8 — segment detail + action-context) ──
+
+/** Benton Method vertical-equity classification for a segment. */
+export type EquityClassification =
+  | 'Fair'
+  | 'Progressive'
+  | 'Regressive'
+  | 'InsufficientData';
+
+export interface SegmentYearPoint {
+  taxYear: number;
+  parcelCount: number;
+  medianRatio: number | null;
+  cod: number | null;
+  prd: number | null;
+  prb: number | null;
+  exceptionCount: number;
+  /** Exactly one point in the history carries true — the segment being shown. */
+  isCurrentYear: boolean;
+}
+
+export interface CountySegmentDetailDto {
+  segmentId: string;
+  segmentSetId: string;
+  studyId: string;
+  countyId: string;
+  taxYear: number;
+  name: string;
+  segmentType: string;
+  city: string | null;
+  neighborhoodCode: string | null;
+  parcelCount: number;
+  medianRatio: number | null;
+  cod: number | null;
+  prd: number | null;
+  stabilityScore: number | null;
+  riskScore: number | null;
+  exceptionCount: number;
+  prb: number | null;
+  vei: number | null;
+  equityClassification: EquityClassification;
+  bentonEquityScore: number | null;
+  /** Ascending by taxYear. Empty when no history yet. Never null. */
+  yearHistory: SegmentYearPoint[];
+  complianceStatus: CountyHealthComplianceStatus;
+  warnings: string[];
+  derivedAt: string | null;
+}
+
+// ── Action-context DTOs (Fix #5 handoff buttons) ──
+
+export interface SalesForgeHandoffDto {
+  stratumKey: string;
+  taxYear: number;
+  qualifiedSaleCount: number;
+  /** null = downstream does not consume params yet → button is honest-disabled. */
+  deeplinkQuery: string | null;
+}
+
+export interface CostForgeHandoffDto {
+  stratumKey: string;
+  taxYear: number;
+  deeplinkQuery: string | null;
+}
+
+export interface CompsForgeHandoffDto {
+  sampleParcelIds: string[];
+  deeplinkQuery: string | null;
+}
+
+export interface DaisHandoffDto {
+  workflowTemplate: string;
+  deeplinkQuery: string | null;
+}
+
+export interface DossierHandoffDto {
+  packetTemplate: string;
+  deeplinkQuery: string | null;
+}
+
+export interface SegmentActionContextDto {
+  segmentId: string;
+  studyId: string;
+  countyId: string;
+  taxYear: number;
+  segmentType: string;
+  city: string | null;
+  neighborhoodCode: string | null;
+  /** Capped at 1000; when truncated TotalParcels carries the true count. */
+  parcelIds: string[];
+  totalParcels: number;
+  truncated: boolean;
+  salesForge: SalesForgeHandoffDto;
+  costForge: CostForgeHandoffDto;
+  compsForge: CompsForgeHandoffDto;
+  dais: DaisHandoffDto;
+  dossier: DossierHandoffDto;
+}

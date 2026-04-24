@@ -12,6 +12,8 @@ import type {
   CityRollupRowDto,
   NeighborhoodRollupRowDto,
   CountyHealthSummaryDto,
+  CountySegmentDetailDto,
+  SegmentActionContextDto,
 } from './types/countyStudio.types';
 
 const BASE = '/county-study';
@@ -168,4 +170,26 @@ export const healthApi = {
    */
   summary: (studyId: string): Promise<CountyHealthSummaryDto> =>
     apiFetchJson(`${BASE}/studies/${studyId}/health-summary`),
+};
+
+// ── Inspector (Task D — segment detail + action-context for ObjectInspector) ──
+
+export const inspectorApi = {
+  /**
+   * GET /county-study/segments/:segmentId/detail
+   * Returns IAAO core + Benton Method extras (PRB / VEI / classification /
+   * equity score) + YoY history + warnings for a single segment. Throws on
+   * 404 when the segment does not exist.
+   */
+  detail: (segmentId: string): Promise<CountySegmentDetailDto> =>
+    apiFetchJson(`${BASE}/segments/${segmentId}/detail`),
+
+  /**
+   * GET /county-study/segments/:segmentId/action-context
+   * Returns the pre-scoped handoff bundle for the 5 correction surfaces.
+   * DeeplinkQuery is null on any handoff target that does not yet consume
+   * URL parameters — the Inspector renders those buttons as honest-disabled.
+   */
+  actionContext: (segmentId: string): Promise<SegmentActionContextDto> =>
+    apiFetchJson(`${BASE}/segments/${segmentId}/action-context`),
 };

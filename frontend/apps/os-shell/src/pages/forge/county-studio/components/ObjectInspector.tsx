@@ -1,29 +1,692 @@
+// frontend/apps/os-shell/src/pages/forge/county-studio/components/ObjectInspector.tsx
+//
+// Task D — three-tab Inspector (Fix #4, #5, #8).
+//
+//   Metrics tab — IAAO core + Benton Method row (PRB band / VEI bar /
+//                 classification pill / Benton Equity Score big number) +
+//                 warnings list (same vocabulary as CountyHealthPanel).
+//   Trend tab   — 3 sparklines (median / COD / exception rate) from the
+//                 backend-supplied 5-year history. Empty-state copy when
+//                 history has fewer than 2 points.
+//   Action tab  — 5 handoff buttons (SalesForge / CostForge / CompsForge /
+//                 Dais / Dossier) + the preserved Atlas + Workbench links
+//                 in a "Spatial" group above. Any button whose backend
+//                 DeeplinkQuery is null renders disabled with an honest
+//                 tooltip — ui-honesty-pass.
+//
+// Data comes from two independent calls via the ../hooks/useInspectorData
+// hook; each tab handles its own loading / error state so one failing
+// endpoint does not black out the entire panel.
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import activateModule from '@/orchestration/moduleActivation';
+import { useInspectorData } from '../hooks/useInspectorData';
+import type {
+  CountySegmentDetailDto,
+  EquityClassification,
+  SegmentActionContextDto,
+  SegmentYearPoint,
+} from '../types/countyStudio.types';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
-const MetricRow = ({ label, value, color }: { label: string; value: string; color?: string }) => (
-  <div style={{
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    padding: '5px 0', borderBottom: '1px solid hsl(var(--tf-border))',
-  }}>
+// ── Presentation atoms ────────────────────────────────────────────────────
+
+const MetricRow = ({
+  label, value, color,
+}: { label: string; value: string; color?: string }) => (
+  <div
+    style={{
+      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      padding: '5px 0', borderBottom: '1px solid hsl(var(--tf-border))',
+    }}
+  >
     <span style={{ fontSize: 11, color: 'hsl(var(--tf-muted))' }}>{label}</span>
     <span style={{ fontSize: 12, fontWeight: 600, color: color ?? 'hsl(var(--tf-fg))' }}>{value}</span>
   </div>
 );
 
-const handoffBtnStyle: React.CSSProperties = {
-  display: 'block', width: '100%', padding: '6px 10px', borderRadius: 4,
+const handoffBtnBaseStyle: React.CSSProperties = {
+  display: 'block', width: '100%', padding: '8px 10px', borderRadius: 4,
   border: '1px solid hsl(var(--tf-border))', background: 'transparent',
   color: 'hsl(var(--tf-fg))', fontSize: 11, fontWeight: 600, cursor: 'pointer',
   textAlign: 'left', marginBottom: 6,
 };
 
+const disabledBtnStyle: React.CSSProperties = {
+  ...handoffBtnBaseStyle,
+  opacity: 0.5, cursor: 'not-allowed',
+};
+
+// ── Colour helpers (shared scale with CountyHealthPanel) ─────────────────
+
+function codColor(cod: number | null): string {
+  if (cod === null) return 'hsl(var(--tf-muted))';
+  if (cod > 20) return '#ef4444';
+  if (cod > 15) return '#f59e0b';
+  return '#22c55e';
+}
+
+function prdColor(prd: number | null): string {
+  if (prd === null) return 'hsl(var(--tf-muted))';
+  if (prd < 0.98 || prd > 1.03) return '#ef4444';
+  if (prd < 0.99 || prd > 1.02) return '#f59e0b';
+  return '#22c55e';
+}
+
+function ratioColor(r: number | null): string {
+  if (r === null) return 'hsl(var(--tf-muted))';
+  const d = Math.abs(r - 1.0);
+  if (d > 0.1) return '#ef4444';
+  if (d > 0.05) return '#f59e0b';
+  return '#22c55e';
+}
+
+/**
+ * PRB colour bands: |PRB| ≤ 0.05 green; ≤ 0.10 amber; else red.
+ * Null / insufficient → muted. Matches BentonEquityMath.PrbFairAbs.
+ */
+function prbColor(prb: number | null): string {
+  if (prb === null) return 'hsl(var(--tf-muted))';
+  const abs = Math.abs(prb);
+  if (abs <= 0.05) return '#22c55e';
+  if (abs <= 0.10) return '#f59e0b';
+  return '#ef4444';
+}
+
+/** Classification pill colour bucket. InsufficientData stays neutral. */
+function classificationStyle(c: EquityClassification): { bg: string; color: string } {
+  switch (c) {
+    case 'Fair':             return { bg: '#22c55e22', color: '#22c55e' };
+    case 'Progressive':      return { bg: '#f59e0b22', color: '#f59e0b' };
+    case 'Regressive':       return { bg: '#ef444422', color: '#ef4444' };
+    case 'InsufficientData': return { bg: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-muted))' };
+  }
+}
+
+// ── Benton Method row ─────────────────────────────────────────────────────
+
+const BentonRow = ({ detail }: { detail: CountySegmentDetailDto }) => {
+  const pill = classificationStyle(detail.equityClassification);
+  // VEI bar min=0 max=100; clamp for sane rendering.
+  const veiPct = detail.vei === null ? 0 : Math.max(0, Math.min(100, detail.vei));
+  return (
+    <div
+      data-testid="inspector-benton-row"
+      style={{
+        marginTop: 12, padding: 10,
+        border: '1px solid hsl(var(--tf-border))',
+        background: 'hsl(var(--tf-surface))',
+        borderRadius: 4,
+      }}
+    >
+      <div
+        style={{
+          fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
+          color: 'hsl(var(--tf-muted))', marginBottom: 6,
+        }}
+      >
+        Benton Method
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div>
+          <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>PRB</div>
+          <div
+            data-testid="inspector-prb-value"
+            data-band={detail.prb === null ? 'none' : (Math.abs(detail.prb) <= 0.05 ? 'fair' : Math.abs(detail.prb) <= 0.10 ? 'marginal' : 'breach')}
+            style={{
+              fontSize: 16, fontWeight: 700, fontFeatureSettings: '"tnum"',
+              color: prbColor(detail.prb),
+            }}
+          >
+            {detail.prb === null ? '—' : detail.prb.toFixed(3)}
+          </div>
+          <div style={{ fontSize: 9, color: 'hsl(var(--tf-muted))' }}>|PRB| ≤ 0.05 fair</div>
+        </div>
+
+        <div>
+          <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>Benton Equity Score</div>
+          <div
+            data-testid="inspector-benton-score"
+            style={{
+              fontSize: 22, fontWeight: 700, fontFeatureSettings: '"tnum"',
+              color: 'hsl(var(--tf-fg))',
+            }}
+          >
+            {detail.bentonEquityScore === null ? '—' : detail.bentonEquityScore.toFixed(0)}
+          </div>
+          <div style={{ fontSize: 9, color: 'hsl(var(--tf-muted))' }}>0-100, higher = fairer</div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>VEI (vertical equity, 0-100)</div>
+        <div
+          role="presentation"
+          style={{
+            position: 'relative', height: 8, marginTop: 4,
+            background: 'hsl(var(--tf-bg))',
+            border: '1px solid hsl(var(--tf-border))', borderRadius: 3,
+          }}
+        >
+          <div
+            data-testid="inspector-vei-bar"
+            data-value={detail.vei ?? ''}
+            style={{
+              height: '100%', width: `${veiPct}%`,
+              background: veiPct >= 80 ? '#22c55e' : veiPct >= 60 ? '#f59e0b' : '#ef4444',
+              transition: 'width 120ms',
+            }}
+          />
+        </div>
+        <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
+          {detail.vei === null ? 'insufficient data' : detail.vei.toFixed(1)}
+        </div>
+      </div>
+
+      <div style={{ marginTop: 10 }}>
+        <span
+          data-testid="inspector-classification-pill"
+          data-classification={detail.equityClassification}
+          style={{
+            display: 'inline-block', padding: '3px 10px', borderRadius: 12,
+            background: pill.bg, color: pill.color,
+            fontWeight: 700, fontSize: 11,
+          }}
+        >
+          {detail.equityClassification}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+// ── Sparkline ─────────────────────────────────────────────────────────────
+
+/** Single inline SVG sparkline for one metric across the YoY history. */
+const Sparkline = ({
+  points, selector, label, format, currentYear,
+}: {
+  points: SegmentYearPoint[];
+  selector: (p: SegmentYearPoint) => number | null;
+  label: string;
+  format: (v: number) => string;
+  currentYear: number;
+}) => {
+  const width = 240;
+  const height = 40;
+  const vals = points.map(selector);
+  const present = vals.filter((v): v is number => v !== null);
+  if (present.length < 2) {
+    return (
+      <div
+        data-testid={`inspector-sparkline-${label.toLowerCase().replace(/\s/g, '-')}-empty`}
+        style={{
+          fontSize: 11, color: 'hsl(var(--tf-muted))', padding: '8px 0',
+          borderBottom: '1px solid hsl(var(--tf-border))',
+        }}
+      >
+        <strong style={{ color: 'hsl(var(--tf-fg))' }}>{label}</strong>: not enough history
+      </div>
+    );
+  }
+  const min = Math.min(...present);
+  const max = Math.max(...present);
+  const range = max - min || 1;
+  const step = width / Math.max(points.length - 1, 1);
+
+  const poly = points
+    .map((p, i) => {
+      const v = selector(p);
+      if (v === null) return null;
+      const x = i * step;
+      const y = height - ((v - min) / range) * height;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .filter((s): s is string => s !== null)
+    .join(' ');
+
+  return (
+    <div
+      data-testid={`inspector-sparkline-${label.toLowerCase().replace(/\s/g, '-')}`}
+      style={{
+        display: 'flex', gap: 10, alignItems: 'center', padding: '6px 0',
+        borderBottom: '1px solid hsl(var(--tf-border))',
+      }}
+    >
+      <span style={{ fontSize: 11, color: 'hsl(var(--tf-muted))', width: 72, flexShrink: 0 }}>
+        {label}
+      </span>
+      <svg
+        width={width} height={height} viewBox={`0 0 ${width} ${height}`}
+        style={{ flexShrink: 0 }}
+        role="img"
+        aria-label={`${label} trend across ${points.length} years`}
+      >
+        <polyline
+          fill="none"
+          stroke="hsl(var(--tf-fg))"
+          strokeWidth={1.3}
+          points={poly}
+        />
+        {points.map((p, i) => {
+          const v = selector(p);
+          if (v === null) return null;
+          const x = i * step;
+          const y = height - ((v - min) / range) * height;
+          const current = p.taxYear === currentYear || p.isCurrentYear;
+          return (
+            <circle
+              key={p.taxYear}
+              cx={x}
+              cy={y}
+              r={current ? 3 : 2}
+              fill={current ? '#22c55e' : 'hsl(var(--tf-fg))'}
+              data-year={p.taxYear}
+              data-current={current ? 'true' : 'false'}
+            >
+              <title>{`${p.taxYear}: ${format(v)}`}</title>
+            </circle>
+          );
+        })}
+      </svg>
+      <span
+        style={{
+          fontSize: 11, fontWeight: 600, fontFeatureSettings: '"tnum"',
+          color: 'hsl(var(--tf-fg))', width: 52, textAlign: 'right',
+        }}
+      >
+        {format(present[present.length - 1])}
+      </span>
+    </div>
+  );
+};
+
+// ── Handoff button ────────────────────────────────────────────────────────
+
+const HandoffButton = ({
+  label, subtitle, deeplinkQuery, disabledTooltip, onClick, testId,
+}: {
+  label: string;
+  subtitle: string;
+  deeplinkQuery: string | null;
+  disabledTooltip: string;
+  onClick: () => void;
+  testId: string;
+}) => {
+  const enabled = deeplinkQuery !== null;
+  return (
+    <button
+      type="button"
+      data-testid={testId}
+      data-enabled={enabled ? 'true' : 'false'}
+      aria-label={label}
+      aria-disabled={!enabled}
+      disabled={!enabled}
+      title={enabled ? subtitle : disabledTooltip}
+      onClick={() => { if (enabled) onClick(); }}
+      style={enabled ? handoffBtnBaseStyle : disabledBtnStyle}
+    >
+      <div style={{ fontSize: 12, fontWeight: 700, color: 'hsl(var(--tf-fg))' }}>{label}</div>
+      <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
+        {enabled ? subtitle : disabledTooltip}
+      </div>
+    </button>
+  );
+};
+
+// ── Tab panels ────────────────────────────────────────────────────────────
+
+const MetricsPanel = ({
+  detail, loading, error, onRetry,
+}: {
+  detail: CountySegmentDetailDto | null;
+  loading: boolean; error: string | null; onRetry: () => void;
+}) => {
+  if (loading && !detail) {
+    return (
+      <div data-testid="inspector-metrics-loading"
+        style={{ padding: 16, fontSize: 12, color: 'hsl(var(--tf-muted))' }}>
+        Loading Benton Method metrics…
+      </div>
+    );
+  }
+  if (error && !detail) {
+    return (
+      <div data-testid="inspector-metrics-error" role="alert"
+        style={{ padding: 16, fontSize: 12, color: '#ef4444' }}>
+        Unable to load segment detail. <button
+          data-testid="inspector-metrics-retry"
+          onClick={onRetry}
+          style={{
+            marginLeft: 8, padding: '3px 10px', borderRadius: 3,
+            border: '1px solid hsl(var(--tf-border))',
+            background: 'transparent', color: 'hsl(var(--tf-fg))',
+            fontSize: 11, fontWeight: 600, cursor: 'pointer',
+          }}
+        >Retry</button>
+      </div>
+    );
+  }
+  if (!detail) return null;
+
+  return (
+    <div>
+      <MetricRow label="Median Ratio" value={detail.medianRatio === null ? '—' : detail.medianRatio.toFixed(3)} color={ratioColor(detail.medianRatio)} />
+      <MetricRow label="COD" value={detail.cod === null ? '—' : detail.cod.toFixed(1)} color={codColor(detail.cod)} />
+      <MetricRow label="PRD" value={detail.prd === null ? '—' : detail.prd.toFixed(3)} color={prdColor(detail.prd)} />
+      <MetricRow label="Stability" value={detail.stabilityScore === null ? '—' : detail.stabilityScore.toFixed(0)} />
+      <MetricRow label="Risk" value={detail.riskScore === null ? '—' : detail.riskScore.toFixed(0)} />
+      <MetricRow label="Exceptions" value={String(detail.exceptionCount)} />
+      <MetricRow label="Parcels" value={detail.parcelCount.toLocaleString()} />
+
+      <BentonRow detail={detail} />
+
+      <div style={{ marginTop: 12 }}>
+        <div
+          style={{
+            fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
+            color: 'hsl(var(--tf-muted))', marginBottom: 6,
+          }}
+        >
+          Warnings
+        </div>
+        {detail.warnings.length === 0 ? (
+          <div
+            data-testid="inspector-no-warnings"
+            style={{ fontSize: 11, color: 'hsl(var(--tf-muted))' }}
+          >
+            No warnings — this segment meets IAAO and Benton fairness bands.
+          </div>
+        ) : (
+          <ul
+            data-testid="inspector-warnings"
+            style={{
+              listStyle: 'none', padding: 0, margin: 0,
+              display: 'flex', flexDirection: 'column', gap: 4,
+            }}
+          >
+            {detail.warnings.map((w, idx) => (
+              <li
+                key={idx}
+                style={{
+                  padding: '6px 8px', borderRadius: 4,
+                  background: '#f59e0b22', color: '#f59e0b',
+                  fontSize: 11,
+                }}
+              >
+                {w}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const TrendPanel = ({
+  detail, loading, error, onRetry,
+}: {
+  detail: CountySegmentDetailDto | null;
+  loading: boolean; error: string | null; onRetry: () => void;
+}) => {
+  if (loading && !detail) {
+    return (
+      <div data-testid="inspector-trend-loading"
+        style={{ padding: 16, fontSize: 12, color: 'hsl(var(--tf-muted))' }}>
+        Loading history…
+      </div>
+    );
+  }
+  if (error && !detail) {
+    return (
+      <div data-testid="inspector-trend-error" role="alert"
+        style={{ padding: 16, fontSize: 12, color: '#ef4444' }}>
+        Unable to load trend data.{' '}
+        <button data-testid="inspector-trend-retry" onClick={onRetry}
+          style={{
+            marginLeft: 8, padding: '3px 10px', borderRadius: 3,
+            border: '1px solid hsl(var(--tf-border))',
+            background: 'transparent', color: 'hsl(var(--tf-fg))',
+            fontSize: 11, fontWeight: 600, cursor: 'pointer',
+          }}
+        >Retry</button>
+      </div>
+    );
+  }
+  if (!detail) return null;
+
+  const history = detail.yearHistory;
+  if (history.length < 2) {
+    return (
+      <div
+        data-testid="inspector-trend-empty"
+        style={{ padding: 16, fontSize: 12, color: 'hsl(var(--tf-muted))' }}
+      >
+        Not enough historical data yet — trend requires at least 2 tax years.
+      </div>
+    );
+  }
+
+  const currentYear = detail.taxYear;
+  return (
+    <div data-testid="inspector-trend-populated">
+      <div
+        style={{
+          fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
+          color: 'hsl(var(--tf-muted))', marginBottom: 4,
+        }}
+      >
+        {history[0].taxYear} → {history[history.length - 1].taxYear}
+      </div>
+      <Sparkline
+        points={history}
+        selector={(p) => p.medianRatio}
+        label="Median"
+        format={(v) => v.toFixed(3)}
+        currentYear={currentYear}
+      />
+      <Sparkline
+        points={history}
+        selector={(p) => p.cod}
+        label="COD"
+        format={(v) => v.toFixed(1)}
+        currentYear={currentYear}
+      />
+      <Sparkline
+        points={history}
+        selector={(p) => (p.parcelCount > 0 ? (p.exceptionCount / p.parcelCount) * 100 : null)}
+        label="Exc. rate"
+        format={(v) => `${v.toFixed(1)}%`}
+        currentYear={currentYear}
+      />
+    </div>
+  );
+};
+
+const ActionPanel = ({
+  context, loading, error, onRetry, onAtlas, onWorkbench,
+}: {
+  context: SegmentActionContextDto | null;
+  loading: boolean; error: string | null; onRetry: () => void;
+  onAtlas: () => void; onWorkbench: () => void;
+}) => {
+  // Spatial handoffs — preserved from the original Inspector, always active.
+  const spatial = (
+    <div data-testid="inspector-action-spatial" style={{ marginBottom: 10 }}>
+      <div
+        style={{
+          fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
+          color: 'hsl(var(--tf-muted))', marginBottom: 4,
+        }}
+      >
+        Spatial
+      </div>
+      <button
+        type="button"
+        data-testid="inspector-handoff-atlas"
+        aria-label="Open in Atlas Live View"
+        onClick={onAtlas}
+        style={handoffBtnBaseStyle}
+      >
+        <div style={{ fontSize: 12, fontWeight: 700 }}>Open in Atlas Live View</div>
+        <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
+          Show segment geometry on the live map
+        </div>
+      </button>
+      <button
+        type="button"
+        data-testid="inspector-handoff-workbench"
+        aria-label="Find Parcels in Workbench"
+        onClick={onWorkbench}
+        style={handoffBtnBaseStyle}
+      >
+        <div style={{ fontSize: 12, fontWeight: 700 }}>Find Parcels in Workbench</div>
+        <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))', marginTop: 2 }}>
+          Open parcel-level table in Property Workbench
+        </div>
+      </button>
+    </div>
+  );
+
+  if (loading && !context) {
+    return (
+      <>
+        {spatial}
+        <div data-testid="inspector-action-loading"
+          style={{ padding: 16, fontSize: 12, color: 'hsl(var(--tf-muted))' }}>
+          Loading handoff context…
+        </div>
+      </>
+    );
+  }
+  if (error && !context) {
+    return (
+      <>
+        {spatial}
+        <div data-testid="inspector-action-error" role="alert"
+          style={{ padding: 16, fontSize: 12, color: '#ef4444' }}>
+          Unable to load handoff context.{' '}
+          <button data-testid="inspector-action-retry" onClick={onRetry}
+            style={{
+              marginLeft: 8, padding: '3px 10px', borderRadius: 3,
+              border: '1px solid hsl(var(--tf-border))',
+              background: 'transparent', color: 'hsl(var(--tf-fg))',
+              fontSize: 11, fontWeight: 600, cursor: 'pointer',
+            }}
+          >Retry</button>
+        </div>
+      </>
+    );
+  }
+  if (!context) return spatial;
+
+  const fireModule = (moduleId: string, metadata: Record<string, unknown>) => {
+    void activateModule(moduleId, { source: 'system', metadata });
+  };
+
+  return (
+    <>
+      {spatial}
+      <div
+        data-testid="inspector-action-corrective"
+        style={{
+          fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
+          color: 'hsl(var(--tf-muted))', marginBottom: 4,
+        }}
+      >
+        Corrective
+      </div>
+      <HandoffButton
+        testId="inspector-handoff-salesforge"
+        label="Reconcile sales in SalesForge"
+        subtitle={`Open the ${context.salesForge.qualifiedSaleCount} qualified sales for stratum ${context.salesForge.stratumKey} in ${context.salesForge.taxYear}`}
+        disabledTooltip="SalesForge integration not yet active."
+        deeplinkQuery={context.salesForge.deeplinkQuery}
+        onClick={() => fireModule('sales-forge', {
+          deeplinkQuery: context.salesForge.deeplinkQuery,
+          stratumKey:    context.salesForge.stratumKey,
+          taxYear:       context.salesForge.taxYear,
+          segmentId:     context.segmentId,
+        })}
+      />
+      <HandoffButton
+        testId="inspector-handoff-costforge"
+        label="Calibrate cost in CostForge"
+        subtitle={`Open stratum ${context.costForge.stratumKey}, ${context.costForge.taxYear} cost review`}
+        disabledTooltip="CostForge integration not yet active."
+        deeplinkQuery={context.costForge.deeplinkQuery}
+        onClick={() => fireModule('costforge', {
+          deeplinkQuery: context.costForge.deeplinkQuery,
+          stratumKey:    context.costForge.stratumKey,
+          taxYear:       context.costForge.taxYear,
+          segmentId:     context.segmentId,
+        })}
+      />
+      <HandoffButton
+        testId="inspector-handoff-compsforge"
+        label="Review comps in CompsForge"
+        subtitle={`Open ${context.compsForge.sampleParcelIds.length} sample parcels for comparison`}
+        disabledTooltip="CompsForge integration not yet active."
+        deeplinkQuery={context.compsForge.deeplinkQuery}
+        onClick={() => fireModule('comps-forge', {
+          deeplinkQuery:   context.compsForge.deeplinkQuery,
+          sampleParcelIds: context.compsForge.sampleParcelIds,
+          segmentId:       context.segmentId,
+        })}
+      />
+      <HandoffButton
+        testId="inspector-handoff-dais"
+        label="Create Dais review packet"
+        subtitle={`Dispatch ${context.dais.workflowTemplate} workflow with ${context.totalParcels.toLocaleString()} parcels`}
+        disabledTooltip="Dais integration not yet active."
+        deeplinkQuery={context.dais.deeplinkQuery}
+        onClick={() => fireModule('suite-dais', {
+          deeplinkQuery:     context.dais.deeplinkQuery,
+          workflowTemplate:  context.dais.workflowTemplate,
+          segmentId:         context.segmentId,
+          studyId:           context.studyId,
+        })}
+      />
+      <HandoffButton
+        testId="inspector-handoff-dossier"
+        label="Generate Dossier evidence packet"
+        subtitle={`Prepare ${context.dossier.packetTemplate} packet for this segment`}
+        disabledTooltip="Dossier integration not yet active."
+        deeplinkQuery={context.dossier.deeplinkQuery}
+        onClick={() => fireModule('suite-dossier', {
+          deeplinkQuery:   context.dossier.deeplinkQuery,
+          packetTemplate:  context.dossier.packetTemplate,
+          segmentId:       context.segmentId,
+          studyId:         context.studyId,
+        })}
+      />
+      {context.truncated && (
+        <div
+          data-testid="inspector-action-truncated"
+          style={{ marginTop: 6, fontSize: 10, color: 'hsl(var(--tf-muted))' }}
+        >
+          Parcel list truncated to first {context.parcelIds.length} of {context.totalParcels.toLocaleString()}.
+        </div>
+      )}
+    </>
+  );
+};
+
+// ── Main component ────────────────────────────────────────────────────────
+
 export function ObjectInspector() {
   const { segments, selectedSegmentId, activeStudy } = useCountyStudioStore();
   const navigate = useNavigate();
   const seg = segments.find((s) => s.segmentId === selectedSegmentId);
+
+  const {
+    detail, detailLoading, detailError, retryDetail,
+    context, contextLoading, contextError, retryContext,
+  } = useInspectorData(selectedSegmentId);
 
   if (!seg) {
     return (
@@ -33,68 +696,67 @@ export function ObjectInspector() {
     );
   }
 
-  const codOk = seg.cod <= 15;
-  const prdOk = seg.prd >= 0.98 && seg.prd <= 1.03;
-
   const handleOpenAtlas = () => {
     if (!activeStudy) return;
     navigate(`/forge/atlas-live?studyId=${activeStudy.studyId}&segmentId=${seg.segmentId}`);
   };
-
   const handleFindParcels = () => {
-    void activateModule('property-workbench', { source: 'system', metadata: { segmentId: seg.segmentId } });
+    void activateModule('property-workbench', {
+      source: 'system',
+      metadata: { segmentId: seg.segmentId },
+    });
   };
 
   return (
-    <div style={{ padding: '12px 16px' }}>
+    <div style={{ padding: '12px 16px' }} data-testid="object-inspector">
       <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{seg.name}</div>
       <div style={{ fontSize: 11, color: 'hsl(var(--tf-muted))', marginBottom: 12 }}>
         {seg.segmentType} · {seg.parcelCount.toLocaleString()} parcels
       </div>
 
-      <MetricRow label="Median Ratio" value={seg.medianRatio.toFixed(3)} />
-      <MetricRow label="COD" value={seg.cod.toFixed(1)} color={codOk ? '#22c55e' : '#ef4444'} />
-      <MetricRow label="PRD" value={seg.prd.toFixed(3)} color={prdOk ? '#22c55e' : '#f59e0b'} />
-      <MetricRow
-        label="Stability Score"
-        value={String(seg.stabilityScore)}
-        color={seg.stabilityScore < 60 ? '#ef4444' : seg.stabilityScore < 80 ? '#f59e0b' : '#22c55e'}
-      />
-      <MetricRow label="Risk Score" value={String(seg.riskScore)} />
-      <MetricRow label="Exceptions" value={String(seg.exceptionCount)} />
+      <Tabs defaultValue="metrics">
+        <TabsList
+          style={{
+            display: 'flex', gap: 0, width: '100%',
+            background: 'hsl(var(--tf-surface))',
+            border: '1px solid hsl(var(--tf-border))',
+            borderRadius: 4, padding: 2, marginBottom: 8, height: 'auto',
+          }}
+        >
+          <TabsTrigger value="metrics" data-testid="inspector-tab-metrics" style={{ flex: 1, fontSize: 11 }}>Metrics</TabsTrigger>
+          <TabsTrigger value="trend" data-testid="inspector-tab-trend" style={{ flex: 1, fontSize: 11 }}>Trend</TabsTrigger>
+          <TabsTrigger value="action" data-testid="inspector-tab-action" style={{ flex: 1, fontSize: 11 }}>Action</TabsTrigger>
+        </TabsList>
 
-      <div style={{ marginTop: 12 }}>
-        {seg.stabilityScore < 60 && (
-          <div style={{ padding: '6px 8px', background: '#ef444422', borderRadius: 4, fontSize: 11, color: '#ef4444', marginBottom: 4 }}>
-            ⚠ Segment instability — stability score below 60
-          </div>
-        )}
-        {seg.parcelCount < 30 && (
-          <div style={{ padding: '6px 8px', background: '#f59e0b22', borderRadius: 4, fontSize: 11, color: '#f59e0b', marginBottom: 4 }}>
-            ⚠ Low sample warning — n &lt; 30
-          </div>
-        )}
-        {seg.cod > 20 && (
-          <div style={{ padding: '6px 8px', background: '#ef444422', borderRadius: 4, fontSize: 11, color: '#ef4444', marginBottom: 4 }}>
-            ⚠ COD exceeds 20 — review before publishing
-          </div>
-        )}
-      </div>
+        <TabsContent value="metrics" data-testid="inspector-panel-metrics">
+          <MetricsPanel
+            detail={detail}
+            loading={detailLoading}
+            error={detailError}
+            onRetry={retryDetail}
+          />
+        </TabsContent>
 
-      {/* Handoff Actions */}
-      {activeStudy && (
-        <div style={{ marginTop: 16, borderTop: '1px solid hsl(var(--tf-border))', paddingTop: 12 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: 'hsl(var(--tf-muted))', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>
-            Actions
-          </div>
-          <button aria-label="Open in Atlas" onClick={handleOpenAtlas} style={handoffBtnStyle}>
-            ↗ Open in Atlas Live View
-          </button>
-          <button aria-label="Find Parcels in Workbench" onClick={handleFindParcels} style={handoffBtnStyle}>
-            🔍 Find Parcels in Workbench
-          </button>
-        </div>
-      )}
+        <TabsContent value="trend" data-testid="inspector-panel-trend">
+          <TrendPanel
+            detail={detail}
+            loading={detailLoading}
+            error={detailError}
+            onRetry={retryDetail}
+          />
+        </TabsContent>
+
+        <TabsContent value="action" data-testid="inspector-panel-action">
+          <ActionPanel
+            context={context}
+            loading={contextLoading}
+            error={contextError}
+            onRetry={retryContext}
+            onAtlas={handleOpenAtlas}
+            onWorkbench={handleFindParcels}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
