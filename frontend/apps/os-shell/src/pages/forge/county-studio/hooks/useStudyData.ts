@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
-import { segmentSetApi, cohortApi, scenarioApi, rollupApi } from '../countyStudyApi';
+import { segmentSetApi, cohortApi, scenarioApi, rollupApi, healthApi } from '../countyStudyApi';
 
 /**
  * Watches activeStudy in the store. When it changes, loads:
@@ -23,6 +23,7 @@ export function useStudyData() {
     setLoadStatus,
     setCityRollup,
     setNeighborhoodRollup,
+    setHealthSummary,
   } = useCountyStudioStore();
 
   const studyId = activeStudy?.studyId ?? null;
@@ -108,13 +109,29 @@ export function useStudyData() {
     }
   }, [studyId, setNeighborhoodRollup, setLoadStatus]);
 
+  const loadHealthSummary = useCallback(async () => {
+    if (!studyId) return;
+    setLoadStatus('healthSummary', 'loading');
+    try {
+      const summary = await healthApi.summary(studyId);
+      setHealthSummary(summary);
+      setLoadStatus('healthSummary', 'success');
+    } catch (err) {
+      // 409 (no active segment set) maps to "empty state — derive first" in UI.
+      // Other errors surface via loadErrors.healthSummary.
+      setHealthSummary(null);
+      setLoadStatus('healthSummary', 'error', describeError(err, 'healthSummary'));
+    }
+  }, [studyId, setHealthSummary, setLoadStatus]);
+
   const retryAll = useCallback(() => {
     void loadSegments();
     void loadCohorts();
     void loadScenarios();
     void loadCityRollup();
     void loadNeighborhoodRollup();
-  }, [loadSegments, loadCohorts, loadScenarios, loadCityRollup, loadNeighborhoodRollup]);
+    void loadHealthSummary();
+  }, [loadSegments, loadCohorts, loadScenarios, loadCityRollup, loadNeighborhoodRollup, loadHealthSummary]);
 
   useEffect(() => {
     if (!studyId) {
@@ -124,15 +141,22 @@ export function useStudyData() {
       setScenarios([]);
       setCityRollup([]);
       setNeighborhoodRollup([]);
+      setHealthSummary(null);
       setLoadStatus('segments', 'idle');
       setLoadStatus('cohorts', 'idle');
       setLoadStatus('scenarios', 'idle');
       setLoadStatus('cityRollup', 'idle');
       setLoadStatus('neighborhoodRollup', 'idle');
+      setLoadStatus('healthSummary', 'idle');
       return;
     }
     retryAll();
-  }, [studyId, retryAll, setSegments, setCohorts, setScenarios, setCityRollup, setNeighborhoodRollup, setLoadStatus]);
+  }, [
+    studyId, retryAll,
+    setSegments, setCohorts, setScenarios,
+    setCityRollup, setNeighborhoodRollup, setHealthSummary,
+    setLoadStatus,
+  ]);
 
   return {
     retryAll,
@@ -141,6 +165,7 @@ export function useStudyData() {
     retryScenarios: loadScenarios,
     retryCityRollup: loadCityRollup,
     retryNeighborhoodRollup: loadNeighborhoodRollup,
+    retryHealthSummary: loadHealthSummary,
   };
 }
 

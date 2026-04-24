@@ -15,17 +15,25 @@ function stabilityColor(score: number): { bg: string; severity: string } {
   return { bg: '#22c55e', severity: 'ok' };
 }
 
-function codColor(cod: number): string {
+function codColor(cod: number | null): string {
+  if (cod === null) return 'hsl(var(--tf-muted))';
   if (cod > 20) return '#ef4444';
   if (cod > 15) return '#f59e0b';
   return '#22c55e';
 }
 
-function ratioColor(ratio: number): string {
+function ratioColor(ratio: number | null): string {
+  if (ratio === null) return 'hsl(var(--tf-muted))';
   const delta = Math.abs(ratio - 1.0);
   if (delta > 0.1) return '#ef4444';
   if (delta > 0.05) return '#f59e0b';
   return 'hsl(var(--tf-fg))';
+}
+
+/** Safe numeric formatter — renders em-dash for null/undefined. */
+function fmt(value: number | null | undefined, digits: number): string {
+  if (value === null || value === undefined) return '—';
+  return value.toFixed(digits);
 }
 
 const Th = ({
@@ -146,6 +154,11 @@ export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => b
     .sort((a, b) => {
       const av = a[sortKey];
       const bv = b[sortKey];
+      // Null/undefined sort to the end regardless of direction so sparse-sample
+      // segments don't collide with real values at the top of the column.
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
       const cmp = typeof av === 'string' ? av.localeCompare(bv as string) : (av as number) - (bv as number);
       return sortDir === 'asc' ? cmp : -cmp;
     });
@@ -200,13 +213,13 @@ export function SegmentTable({ filter }: { filter?: (seg: CountySegmentDto) => b
                   {seg.parcelCount.toLocaleString()}
                 </td>
                 <td style={{ padding: '7px 8px', color: ratioColor(seg.medianRatio) }}>
-                  {seg.medianRatio.toFixed(3)}
+                  {fmt(seg.medianRatio, 3)}
                 </td>
                 <td style={{ padding: '7px 8px', color: codColor(seg.cod) }}>
-                  {seg.cod.toFixed(1)}
+                  {fmt(seg.cod, 1)}
                 </td>
                 <td style={{ padding: '7px 8px', color: 'hsl(var(--tf-muted))' }}>
-                  {seg.prd.toFixed(3)}
+                  {fmt(seg.prd, 3)}
                 </td>
                 <td style={{ padding: '7px 8px' }}>
                   <span

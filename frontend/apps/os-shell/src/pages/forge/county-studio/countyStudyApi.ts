@@ -11,6 +11,7 @@ import type {
   ScenarioImpactPreviewDto,
   CityRollupRowDto,
   NeighborhoodRollupRowDto,
+  CountyHealthSummaryDto,
 } from './types/countyStudio.types';
 
 const BASE = '/county-study';
@@ -153,4 +154,18 @@ export const rollupApi = {
     const qs = city ? `?city=${encodeURIComponent(city)}` : '';
     return apiFetchJson(`${BASE}/studies/${studyId}/neighborhood-rollup${qs}`);
   },
+};
+
+// ── Health Summary (Task C — chief appraiser's Monday-morning screen) ────────
+
+export const healthApi = {
+  /**
+   * GET /county-study/studies/:id/health-summary
+   * Returns the county health summary: overall parcel-weighted IAAO metrics,
+   * compliance tier, severity counts, and the top 5 segments by composite
+   * risk. Returns 409 when the study has no active segment set (callers
+   * should surface the "derive first" CTA, not a red error).
+   */
+  summary: (studyId: string): Promise<CountyHealthSummaryDto> =>
+    apiFetchJson(`${BASE}/studies/${studyId}/health-summary`),
 };

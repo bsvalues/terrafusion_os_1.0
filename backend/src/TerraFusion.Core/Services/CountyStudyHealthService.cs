@@ -158,7 +158,7 @@ public class CountyStudyHealthService : ICountyStudyHealthService
     /// Returns the clamped composite risk plus an ordered list of human-readable
     /// reason strings (largest contributor first). Both are surfaced in the DTO.
     /// </summary>
-    internal static (decimal Risk, List<string> Reasons) ComputeCompositeRisk(
+    public static (decimal Risk, List<string> Reasons) ComputeCompositeRisk(
         decimal? cod,
         decimal? median,
         decimal? prd,
@@ -249,7 +249,7 @@ public class CountyStudyHealthService : ICountyStudyHealthService
     /// A null metric in the strict case is treated as non-compliance; in the
     /// marginal case null means "cannot affirm marginal", which falls through.
     /// </summary>
-    internal static CountyHealthComplianceStatus ClassifyCompliance(
+    public static CountyHealthComplianceStatus ClassifyCompliance(
         decimal? median, decimal? cod, decimal? prd, int ratioCount)
     {
         if (ratioCount < MinRatiosForCompliance)

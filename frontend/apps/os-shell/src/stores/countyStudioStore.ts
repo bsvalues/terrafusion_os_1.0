@@ -13,6 +13,7 @@ import type {
   CityRollupRowDto,
   NeighborhoodRollupRowDto,
   DrillLevel,
+  CountyHealthSummaryDto,
 } from '../pages/forge/county-studio/types/countyStudio.types';
 
 /**
@@ -30,6 +31,7 @@ export interface CountyStudioLoadState {
   scenarios: LoadStatus;
   cityRollup: LoadStatus;
   neighborhoodRollup: LoadStatus;
+  healthSummary: LoadStatus;
 }
 
 export interface CountyStudioLoadErrors {
@@ -38,6 +40,7 @@ export interface CountyStudioLoadErrors {
   scenarios: string | null;
   cityRollup: string | null;
   neighborhoodRollup: string | null;
+  healthSummary: string | null;
 }
 
 export interface CountyStudioState {
@@ -89,6 +92,12 @@ export interface CountyStudioState {
   cityRollup: CityRollupRowDto[];
   neighborhoodRollup: NeighborhoodRollupRowDto[];
 
+  /**
+   * County health summary for the current study — null until the first
+   * successful fetch, or null again after a 409 (no active segment set yet).
+   */
+  healthSummary: CountyHealthSummaryDto | null;
+
   setStudy: (study: CountyStudySessionDto | null) => void;
   setSegments: (segments: CountySegmentDto[]) => void;
   setCohorts: (cohorts: CountyCohortDto[]) => void;
@@ -118,6 +127,8 @@ export interface CountyStudioState {
   // ── Drill-lattice setters / transitions ────────────────────────────────
   setCityRollup: (rows: CityRollupRowDto[]) => void;
   setNeighborhoodRollup: (rows: NeighborhoodRollupRowDto[]) => void;
+  /** Store the most recent health summary response. null = never-loaded or 409. */
+  setHealthSummary: (summary: CountyHealthSummaryDto | null) => void;
   /**
    * Collapse drill back to the county view (CityRollupTable). Clears both
    * selectedCity and selectedNeighborhood so the "stale selection" class of
@@ -138,6 +149,15 @@ export interface CountyStudioState {
    * drillLevel='neighborhood' without a parent city.
    */
   drillToNeighborhood: (city: string, neighborhoodCode: string) => void;
+  /**
+   * Jump straight to a specific segment — parent city + neighborhood are both
+   * required so the drill state stays consistent. Used by CountyHealthPanel
+   * top-5 alerts to navigate directly from the county-landing to a segment
+   * that lives in a different city/neighborhood than the current selection.
+   * Sets drillLevel='neighborhood' (so the SegmentTable renders) and pre-selects
+   * the segment via selectedSegmentId (so RightRail shows its detail).
+   */
+  drillToSegment: (city: string, neighborhoodCode: string, segmentId: string) => void;
 }
 
 export interface PeerPresenceEvent {
@@ -171,8 +191,14 @@ export const useCountyStudioStore = create<CountyStudioState>()(
       activeMetric: 'ratio',
       pendingSelection: null,
 
-      loadStatus: { segments: 'idle', cohorts: 'idle', scenarios: 'idle', cityRollup: 'idle', neighborhoodRollup: 'idle' },
-      loadErrors: { segments: null, cohorts: null, scenarios: null, cityRollup: null, neighborhoodRollup: null },
+      loadStatus: {
+        segments: 'idle', cohorts: 'idle', scenarios: 'idle',
+        cityRollup: 'idle', neighborhoodRollup: 'idle', healthSummary: 'idle',
+      },
+      loadErrors: {
+        segments: null, cohorts: null, scenarios: null,
+        cityRollup: null, neighborhoodRollup: null, healthSummary: null,
+      },
 
       peerPresence: [],
       incomingProjections: [],
@@ -182,6 +208,7 @@ export const useCountyStudioStore = create<CountyStudioState>()(
       selectedNeighborhood: null,
       cityRollup: [],
       neighborhoodRollup: [],
+      healthSummary: null,
 
       setStudy: (study) => set({ activeStudy: study }, false, 'setStudy'),
       setSegments: (segments) => set({ segments }, false, 'setSegments'),
@@ -243,6 +270,8 @@ export const useCountyStudioStore = create<CountyStudioState>()(
       setCityRollup: (cityRollup) => set({ cityRollup }, false, 'setCityRollup'),
       setNeighborhoodRollup: (neighborhoodRollup) =>
         set({ neighborhoodRollup }, false, 'setNeighborhoodRollup'),
+      setHealthSummary: (healthSummary) =>
+        set({ healthSummary }, false, 'setHealthSummary'),
 
       drillToCounty: () =>
         set(
@@ -276,6 +305,17 @@ export const useCountyStudioStore = create<CountyStudioState>()(
           },
           false,
           `drillToNeighborhood/${city}/${neighborhoodCode}`
+        ),
+      drillToSegment: (city, neighborhoodCode, segmentId) =>
+        set(
+          {
+            drillLevel: 'neighborhood',
+            selectedCity: city,
+            selectedNeighborhood: neighborhoodCode,
+            selectedSegmentId: segmentId,
+          },
+          false,
+          `drillToSegment/${city}/${neighborhoodCode}/${segmentId}`
         ),
     }),
     { name: 'CountyStudioStore' }

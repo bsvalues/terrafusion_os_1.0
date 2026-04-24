@@ -39,9 +39,12 @@ export interface CountySegmentDto {
   name: string;
   segmentType: string;
   parcelCount: number;
-  medianRatio: number;
-  cod: number;
-  prd: number;
+  /** Nullable on server for sparse-sample segments — UI must null-guard. */
+  medianRatio: number | null;
+  /** Nullable when the sample is below the MinRatiosForStats threshold. */
+  cod: number | null;
+  /** Nullable when PRD cannot be computed (insufficient paired prices). */
+  prd: number | null;
   stabilityScore: number;
   riskScore: number;
   exceptionCount: number;
@@ -142,3 +145,52 @@ export interface NeighborhoodRollupRowDto {
  * remains visible beneath it.
  */
 export type DrillLevel = 'county' | 'city' | 'neighborhood';
+
+// ── Health Summary (Task C — chief appraiser's Monday-morning screen) ──
+
+/**
+ * Composite IAAO compliance status for the county health summary.
+ * Unions the Task B rollup tiers with InsufficientData for low-sample counties.
+ */
+export type CountyHealthComplianceStatus =
+  | 'IaaoCompliant'
+  | 'MarginalCompliance'
+  | 'NonCompliant'
+  | 'InsufficientData';
+
+export interface HealthAlertDto {
+  segmentId: string;
+  segmentName: string;
+  neighborhoodCode: string | null;
+  city: string | null;
+  parcelCount: number;
+  medianRatio: number | null;
+  cod: number | null;
+  prd: number | null;
+  exceptionCount: number;
+  /** 0-100 composite, higher = more risk. Formula lives server-side — do not re-implement. */
+  compositeRisk: number;
+  /** Human-readable triggers, ordered by contribution size (largest first). */
+  reasons: string[];
+}
+
+export interface CountyHealthSummaryDto {
+  studyId: string;
+  countyId: string;
+  taxYear: number;
+  parcelCount: number;
+  ratioCount: number;
+  medianRatio: number | null;
+  cod: number | null;
+  prd: number | null;
+  stabilityScore: number | null;
+  riskScore: number | null;
+  exceptionCount: number;
+  complianceStatus: CountyHealthComplianceStatus;
+  topAlerts: HealthAlertDto[];
+  criticalCount: number;
+  warningCount: number;
+  healthyCount: number;
+  /** ISO timestamp of the most-recent derivation. null when not yet derived. */
+  derivedAt: string | null;
+}
