@@ -4,6 +4,56 @@ import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { scenarioApi } from '../countyStudyApi';
 import type { AdjustmentType, CountyScenarioDto, ScenarioImpactPreviewDto } from '../types/countyStudio.types';
 
+// ── Saved-scenario row with Promote CTA ──────────────────────────────────────
+
+function SavedScenarioRow({
+  scenario,
+  onPromote,
+  busy,
+}: {
+  scenario: CountyScenarioDto;
+  onPromote: (s: CountyScenarioDto) => void;
+  busy: boolean;
+}) {
+  const canPromote = scenario.status === 'Saved' || scenario.status === 'Reviewed';
+  return (
+    <div
+      data-testid={`saved-scenario-row-${scenario.scenarioId}`}
+      style={{
+        padding: '6px 8px',
+        borderBottom: '1px solid hsl(var(--tf-border))',
+        display: 'flex', alignItems: 'center', gap: 8,
+      }}
+    >
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {scenario.adjustmentType}
+        </div>
+        <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>
+          {scenario.status} · {new Date(scenario.createdAt).toLocaleDateString()}
+        </div>
+      </div>
+      {canPromote && (
+        <button
+          data-testid={`promote-btn-${scenario.scenarioId}`}
+          disabled={busy}
+          onClick={() => onPromote(scenario)}
+          style={{
+            fontSize: 10, padding: '3px 9px', borderRadius: 4,
+            border: '1px solid hsl(var(--tf-border))',
+            background: '#22c55e22', color: '#22c55e',
+            cursor: busy ? 'not-allowed' : 'pointer',
+            opacity: busy ? 0.5 : 1, flexShrink: 0,
+            fontWeight: 600,
+          }}
+        >
+          {busy ? '…' : 'Promote →'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 const ADJUSTMENT_TYPES: AdjustmentType[] = [
   'PercentageIncrease', 'PercentageDecrease',
   'FlatDollarIncrease', 'FlatDollarDecrease', 'CustomFormula',
@@ -32,6 +82,8 @@ export function ScenarioWorksheet() {
   const [preview, setPreview] = useState<ScenarioImpactPreviewDto | null>(null);
   const [previewing, setPreviewing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [promoting, setPromoting] = useState<string | null>(null); // scenarioId in-flight
+  const [promoteSuccess, setPromoteSuccess] = useState<string | null>(null); // confirmation msg
   const [error, setError] = useState<string | null>(null);
 
   const canPreview = !!activeStudy && !!selectedCohortId && magnitude !== '' && rationale.length > 0;
@@ -86,6 +138,25 @@ export function ScenarioWorksheet() {
     setDraftScenario(null);
     setPreview(null);
     setError(null);
+  };
+
+  const handlePromote = async (scenario: CountyScenarioDto) => {
+    if (!activeStudy) return;
+    setPromoting(scenario.scenarioId);
+    setPromoteSuccess(null);
+    setError(null);
+    try {
+      await scenarioApi.promote({
+        studyId:    activeStudy.studyId,
+        countyId:   activeStudy.countyId,
+        scenarioId: scenario.scenarioId,
+      });
+      setPromoteSuccess('Promoted — see Govnc tab for approval workflow.');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Promote failed.');
+    } finally {
+      setPromoting(null);
+    }
   };
 
   return (
@@ -156,7 +227,12 @@ export function ScenarioWorksheet() {
         </div>
       )}
 
-      {error && <div style={{ color: '#ef4444', fontSize: 11 }}>{error}</div>}
+      {error && <div style={{ color: '#ef4444', fontSize: 11 }} data-testid="sw-error">{error}</div>}
+      {promoteSuccess && (
+        <div data-testid="sw-promote-success" style={{ color: '#22c55e', fontSize: 11 }}>
+          ✓ {promoteSuccess}
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: 8 }}>
         <button onClick={handleDiscard} style={{
@@ -199,6 +275,23 @@ export function ScenarioWorksheet() {
           {saving ? 'Saving…' : 'Save Scenario'}
         </button>
       </div>
+
+      {/* Saved scenarios list — promote eligible ones to governance workflow */}
+      {scenarios.length > 0 && (
+        <div style={{ marginTop: 8 }}>
+          <div style={{ ...labelStyle, marginBottom: 6 }}>Saved Scenarios</div>
+          <div style={{ border: '1px solid hsl(var(--tf-border))', borderRadius: 4, overflow: 'hidden' }}>
+            {scenarios.map((s) => (
+              <SavedScenarioRow
+                key={s.scenarioId}
+                scenario={s}
+                onPromote={handlePromote}
+                busy={promoting === s.scenarioId}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

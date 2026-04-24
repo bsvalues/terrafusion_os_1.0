@@ -7,9 +7,10 @@ import { useCountyStudioStore } from '@/stores/countyStudioStore';
 
 vi.mock('../countyStudyApi', () => ({
   scenarioApi: {
-    create: vi.fn(),
+    create:  vi.fn(),
     preview: vi.fn(),
-    save: vi.fn(),
+    save:    vi.fn(),
+    promote: vi.fn(),
   },
 }));
 
@@ -112,5 +113,50 @@ describe('ScenarioWorksheet', () => {
     fillForm();
     const saveBtn = screen.getByRole('button', { name: /save scenario/i });
     expect(saveBtn).toBeDisabled();
+  });
+
+  it('does not render Saved Scenarios section when store has no scenarios', () => {
+    render(<ScenarioWorksheet />);
+    expect(screen.queryByText(/saved scenarios/i)).toBeNull();
+  });
+
+  it('renders Saved Scenarios section with promote button when store has Saved scenarios', () => {
+    act(() => {
+      useCountyStudioStore.getState().setScenarios([
+        { ...MOCK_DRAFT, scenarioId: 'sc-saved', status: 'Saved' },
+      ]);
+    });
+    render(<ScenarioWorksheet />);
+    expect(screen.getByText(/saved scenarios/i)).toBeInTheDocument();
+    expect(screen.getByTestId('promote-btn-sc-saved')).toBeInTheDocument();
+  });
+
+  it('Promote button calls scenarioApi.promote with correct payload', async () => {
+    vi.mocked(scenarioApi.promote).mockResolvedValueOnce(undefined);
+    act(() => {
+      useCountyStudioStore.getState().setScenarios([
+        { ...MOCK_DRAFT, scenarioId: 'sc-saved', status: 'Saved' },
+      ]);
+    });
+    render(<ScenarioWorksheet />);
+    fireEvent.click(screen.getByTestId('promote-btn-sc-saved'));
+    await waitFor(() => {
+      expect(vi.mocked(scenarioApi.promote)).toHaveBeenCalledWith({
+        studyId:    'study-1',
+        countyId:   'benton',
+        scenarioId: 'sc-saved',
+      });
+      expect(screen.getByTestId('sw-promote-success')).toBeInTheDocument();
+    });
+  });
+
+  it('does not show Promote button on Draft scenarios', () => {
+    act(() => {
+      useCountyStudioStore.getState().setScenarios([
+        { ...MOCK_DRAFT, scenarioId: 'sc-draft-2', status: 'Draft' },
+      ]);
+    });
+    render(<ScenarioWorksheet />);
+    expect(screen.queryByTestId('promote-btn-sc-draft-2')).toBeNull();
   });
 });
