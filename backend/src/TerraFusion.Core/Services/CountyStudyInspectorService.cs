@@ -248,14 +248,17 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
     ///                consumes parcelIds (sample) + segmentId and renders a
     ///                "Preloaded from County Studio" section above the filters
     ///                plus a Scoped From chip.
-    ///   Dais, Dossier — blocked on receiver code in their respective
-    ///                modules; left false until wired.
+    ///   Dais       — wired at DaisSuiteHome.tsx useEffect mount hook, consumes
+    ///                workflowTemplate + segmentId and creates a session-scoped
+    ///                SegmentWorkflowDraft rendered in DaisWorkflowDraftPanel
+    ///                above the module launcher grid.
+    ///   Dossier    — blocked on receiver code; left false until wired.
     /// </summary>
     public static DeeplinkSupport ResolveDeeplinkSupport() => new(
         SalesForge: true,
         CostForge:  true,
         CompsForge: true,
-        Dais:       false,
+        Dais:       true,
         Dossier:    false);
 
     public record DeeplinkSupport(
