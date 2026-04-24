@@ -259,4 +259,92 @@ public sealed class CountyStudySegmentDerivationServiceTests : IDisposable
         Assert.Equal("UNKNOWN", rule.GetProperty("neighborhood").GetString());
         Assert.Equal("UNKNOWN", rule.GetProperty("qualityGrade").GetString());
     }
+
+    /// <summary>
+    /// Idempotency contract: running Derive twice on the same seeded data yields
+    /// two segment sets (v1 + v2) with identical per-segment metrics. The study's
+    /// ActiveSegmentSetId points at the latest. No duplicates within a set.
+    /// </summary>
+    [Fact]
+    public async Task DeriveAsync_Idempotent_SecondRunProducesEquivalentMetrics()
+    {
+        var study = SeedStudy();
+        // Benton-shaped fixture: residential R1 in WestHills, with 5 qualified sales.
+        decimal[] prices = { 316_667m, 306_452m, 300_000m, 293_814m, 285_000m };
+        for (var i = 0; i < 5; i++)
+        {
+            var id = $"P{i}";
+            SeedParcel(id, "WestHills", "R1", "STANDARD", assessedValue: 285_000m);
+            SeedSale(id, prices[i]);
+        }
+
+        var r1 = await _sut.DeriveAsync(study.StudyId, "tester");
+        var r2 = await _sut.DeriveAsync(study.StudyId, "tester");
+
+        // Two separate, versioned sets.
+        Assert.NotEqual(r1.SegmentSetId, r2.SegmentSetId);
+        Assert.Equal(r1.SegmentCount,    r2.SegmentCount);
+        Assert.Equal(r1.TotalParcels,    r2.TotalParcels);
+        Assert.Equal(r1.SegmentsWithRatios, r2.SegmentsWithRatios);
+
+        var sets = _db.CountySegmentSets.OrderBy(s => s.Version).ToList();
+        Assert.Equal(2, sets.Count);
+        Assert.Equal(1, sets[0].Version);
+        Assert.Equal(2, sets[1].Version);
+
+        // One segment per set (same grouping key), no duplicates within a set.
+        var segsV1 = _db.CountySegments.Where(s => s.SegmentSetId == sets[0].SegmentSetId).ToList();
+        var segsV2 = _db.CountySegments.Where(s => s.SegmentSetId == sets[1].SegmentSetId).ToList();
+        Assert.Single(segsV1);
+        Assert.Single(segsV2);
+
+        // Metrics are deterministic — same inputs produce same numbers.
+        Assert.Equal(segsV1[0].MedianRatio,             segsV2[0].MedianRatio);
+        Assert.Equal(segsV1[0].CoefficientOfDispersion, segsV2[0].CoefficientOfDispersion);
+        Assert.Equal(segsV1[0].PriceRelatedDifferential, segsV2[0].PriceRelatedDifferential);
+        Assert.Equal(segsV1[0].ExceptionCount,          segsV2[0].ExceptionCount);
+
+        // Study points at the latest version.
+        var reloaded = _db.CountyStudySessions.Single(s => s.StudyId == study.StudyId);
+        Assert.Equal(r2.SegmentSetId, reloaded.ActiveSegmentSetId);
+    }
+
+    /// <summary>
+    /// Hand-computed fixture: with ratios {0.90, 0.93, 0.95, 0.97, 1.00}
+    ///   median = 0.95
+    ///   mean   = 0.95
+    ///   mean |r - median| = (0.05 + 0.02 + 0 + 0.02 + 0.05) / 5 = 0.028
+    ///   COD   = 0.028 / 0.95 * 100 ≈ 2.947
+    /// Weighted mean = ΣAV / ΣPrice = (5 * 285,000) / Σprices
+    ///   Σprices = 316_667 + 306_452 + 300_000 + 293_814 + 285_000 = 1_501_933
+    ///   weighted = 1_425_000 / 1_501_933 ≈ 0.9488
+    ///   PRD = 0.95 / 0.9488 ≈ 1.0013
+    /// </summary>
+    [Fact]
+    public async Task DeriveAsync_ProducesHandComputedCodAndPrd()
+    {
+        var study = SeedStudy();
+        decimal[] prices = { 316_667m, 306_452m, 300_000m, 293_814m, 285_000m };
+        for (var i = 0; i < 5; i++)
+        {
+            var id = $"P{i}";
+            SeedParcel(id, "WestHills", "R1", "STANDARD", assessedValue: 285_000m);
+            SeedSale(id, prices[i]);
+        }
+
+        await _sut.DeriveAsync(study.StudyId, "tester");
+
+        var seg = _db.CountySegments.Single();
+        // Median bracket.
+        Assert.NotNull(seg.MedianRatio);
+        Assert.InRange((decimal)seg.MedianRatio!, 0.94m, 0.96m);
+        // COD ≈ 2.95 (percent). Bracket 2.5 – 3.5 to absorb rounding across the avg/division steps.
+        Assert.NotNull(seg.CoefficientOfDispersion);
+        Assert.InRange((decimal)seg.CoefficientOfDispersion!, 2.5m, 3.5m);
+        // PRD ≈ 1.001. Bracket 0.99 – 1.02.
+        Assert.NotNull(seg.PriceRelatedDifferential);
+        Assert.InRange((decimal)seg.PriceRelatedDifferential!, 0.99m, 1.02m);
+        // No IAAO-fence exceptions with ratios in [0.90, 1.00].
+        Assert.Equal(0, seg.ExceptionCount);
+    }
 }

@@ -178,4 +178,63 @@ public class CountyStudyControllerTests
 
         Assert.IsType<NotFoundObjectResult>(result);
     }
+
+    // ── DeriveSegments ────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task DeriveSegments_Returns400_WhenServiceThrowsInvalidOperation()
+    {
+        var studyId = Guid.NewGuid();
+
+        var deriveMock = new Mock<ICountyStudySegmentDerivationService>();
+        deriveMock
+            .Setup(d => d.DeriveAsync(studyId, It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException($"Study {studyId} not found"));
+
+        var resolver = new Mock<ICountyResolver>();
+        var svcMock  = new Mock<ICountyStudyService>();
+        var controller = new CountyStudyController(
+            svcMock.Object,
+            resolver.Object,
+            deriveMock.Object,
+            NullLogger<CountyStudyController>.Instance);
+
+        var result = await controller.DeriveSegments(studyId, CancellationToken.None);
+
+        var bad = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal(400, bad.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeriveSegments_Returns200_WithDerivationResult()
+    {
+        var studyId = Guid.NewGuid();
+        var expected = new SegmentDerivationResult(
+            SegmentSetId:              Guid.NewGuid(),
+            SegmentCount:              4,
+            TotalParcels:              100,
+            SegmentsWithRatios:        3,
+            SegmentsWithIaaoExceptions: 1);
+
+        var deriveMock = new Mock<ICountyStudySegmentDerivationService>();
+        deriveMock
+            .Setup(d => d.DeriveAsync(studyId, It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expected);
+
+        var resolver = new Mock<ICountyResolver>();
+        var svcMock  = new Mock<ICountyStudyService>();
+        var controller = new CountyStudyController(
+            svcMock.Object,
+            resolver.Object,
+            deriveMock.Object,
+            NullLogger<CountyStudyController>.Instance);
+
+        var result = await controller.DeriveSegments(studyId, CancellationToken.None);
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var dto = Assert.IsType<SegmentDerivationResult>(ok.Value);
+        Assert.Equal(expected.SegmentSetId,              dto.SegmentSetId);
+        Assert.Equal(expected.SegmentCount,              dto.SegmentCount);
+        Assert.Equal(expected.SegmentsWithIaaoExceptions, dto.SegmentsWithIaaoExceptions);
+    }
 }
