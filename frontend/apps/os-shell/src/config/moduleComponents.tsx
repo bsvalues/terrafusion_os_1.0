@@ -1308,7 +1308,7 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
     case 'sales-forge':
       return (
         <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading SalesForge...</span></div>}>
-          <SalesForge />
+          <SalesForge metadata={metadata as Record<string, unknown> | undefined} />
         </Suspense>
       );
 

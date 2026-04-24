@@ -70,10 +70,18 @@ interface SalesForgeState {
   // AI audit (Tab 0)
   selectedStratumKey: string | null;
 
+  // County Studio handoff context (null when opened standalone).
+  // Populated on mount when SalesForge receives a deeplink from the
+  // Inspector's "Reconcile sales" button; drives the "Scoped From" chip.
+  contextSegmentId: string | null;
+  contextSegmentLabel: string | null;
+
   // ── Actions ───────────────────────────────────────────────────────────────
 
   setActiveTab: (tab: SalesForgeTab) => void;
   setSelectedStratumKey: (key: string | null) => void;
+  setTaxYear: (year: number) => void;
+  setContextSegment: (segmentId: string | null, label?: string | null) => void;
   setQueueTab: (tab: QueueTab) => void;
   setQueuePage: (page: number) => void;
   setFilterForm: (form: Partial<FilterForm>) => void;
@@ -143,11 +151,26 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
 
   selectedStratumKey: null,
 
+  contextSegmentId: null,
+  contextSegmentLabel: null,
+
   // ── Tab/page/filter actions ────────────────────────────────────────────────
 
   setActiveTab: (tab) => set({ activeTab: tab }),
 
   setSelectedStratumKey: (key) => set({ selectedStratumKey: key }),
+
+  setTaxYear: (year) =>
+    set({
+      taxYear: year,
+      // reset dependent state so a deeplinked year doesn't show stale queue.
+      queuePage: 1,
+      queueData: null,
+      queueError: null,
+    }),
+
+  setContextSegment: (segmentId, label = null) =>
+    set({ contextSegmentId: segmentId, contextSegmentLabel: label }),
 
   setQueueTab: (tab) =>
     set({ queueTab: tab, queuePage: 1, queueData: null, queueError: null }),

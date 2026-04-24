@@ -4,9 +4,22 @@
  *
  * Architecture: Statistics Studio pattern (React module, not AppFrame iframe).
  * Data: All real PACS via .NET API — no fixtures, no mock data.
+ *
+ * Task D2 — receives County Studio Inspector deeplinks via window metadata.
+ * Supported metadata keys (all optional):
+ *   deeplinkQuery: '?stratum=R&year=2026&segmentId=s1'  — raw query from the
+ *                  backend action-context endpoint; parsed for redundancy with
+ *                  the already-split values below.
+ *   stratumKey:    string  — pre-split stratum; selects AI AUDIT stratum list row.
+ *   taxYear:       number  — pre-split tax year; swaps the study year filter.
+ *   segmentId:     string  — drives the "Scoped From · Segment X" chip.
+ *   segmentLabel:  string  — human label for the chip (optional).
+ * When stratumKey is present we also switch the active tab to "ai-audit"
+ * (that panel is where stratum selection becomes visible).
  */
 
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
+import activateModule from '@/orchestration/moduleActivation';
 import { useSalesForgeStore } from './salesForgeStore';
 import { RunningStatsPanel } from './components/RunningStatsPanel';
 import type { SalesForgeTab } from './salesForgeTypes';
@@ -44,10 +57,94 @@ function TabSpinner() {
   return <div className="sf-state" role="status">Loading…</div>;
 }
 
-export default function SalesForge() {
-  const activeTab  = useSalesForgeStore((s) => s.activeTab);
-  const setActiveTab = useSalesForgeStore((s) => s.setActiveTab);
-  const taxYear    = useSalesForgeStore((s) => s.taxYear);
+export interface SalesForgeProps {
+  /**
+   * Optional metadata from the shell's window system. Carries the County
+   * Studio Inspector handoff payload (stratum / year / segmentId / label).
+   */
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Best-effort parse of the backend deeplinkQuery when pre-split metadata is
+ * missing. Tolerates the leading '?' and missing keys. Only returns fields
+ * we actually understand — everything else is dropped.
+ */
+function parseDeeplinkQuery(raw: unknown): {
+  stratum?: string;
+  year?: number;
+  segmentId?: string;
+} {
+  if (typeof raw !== 'string' || raw.length === 0) return {};
+  try {
+    const trimmed = raw.startsWith('?') ? raw.slice(1) : raw;
+    const params = new URLSearchParams(trimmed);
+    const out: { stratum?: string; year?: number; segmentId?: string } = {};
+    const stratum = params.get('stratum');
+    if (stratum) out.stratum = stratum;
+    const yearStr = params.get('year');
+    if (yearStr) {
+      const n = Number(yearStr);
+      if (Number.isFinite(n)) out.year = n;
+    }
+    const segmentId = params.get('segmentId');
+    if (segmentId) out.segmentId = segmentId;
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+export default function SalesForge({ metadata }: SalesForgeProps = {}) {
+  const activeTab         = useSalesForgeStore((s) => s.activeTab);
+  const setActiveTab      = useSalesForgeStore((s) => s.setActiveTab);
+  const taxYear           = useSalesForgeStore((s) => s.taxYear);
+  const setTaxYear        = useSalesForgeStore((s) => s.setTaxYear);
+  const setSelectedStratum = useSalesForgeStore((s) => s.setSelectedStratumKey);
+  const setContextSegment = useSalesForgeStore((s) => s.setContextSegment);
+  const contextSegmentId    = useSalesForgeStore((s) => s.contextSegmentId);
+  const contextSegmentLabel = useSalesForgeStore((s) => s.contextSegmentLabel);
+
+  // ── Consume County Studio handoff metadata on mount ────────────────────
+  // Runs exactly once per mount so store state isn't re-clobbered on rerender.
+  useEffect(() => {
+    if (!metadata) return;
+    const parsed = parseDeeplinkQuery(metadata.deeplinkQuery);
+
+    const stratumFromMeta = typeof metadata.stratumKey === 'string' ? metadata.stratumKey : null;
+    const stratum = stratumFromMeta ?? parsed.stratum ?? null;
+
+    const yearFromMeta = typeof metadata.taxYear === 'number' ? metadata.taxYear : null;
+    const year = yearFromMeta ?? parsed.year ?? null;
+
+    const segmentFromMeta = typeof metadata.segmentId === 'string' ? metadata.segmentId : null;
+    const segmentId = segmentFromMeta ?? parsed.segmentId ?? null;
+
+    const label = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
+
+    if (stratum) {
+      setSelectedStratum(stratum);
+      // Land on AI AUDIT so stratum selection becomes visible — that's where
+      // the Inspector's "reconcile sales" reader goes next.
+      setActiveTab('ai-audit');
+    }
+    if (year !== null) {
+      setTaxYear(year);
+    }
+    if (segmentId) {
+      setContextSegment(segmentId, label);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleBackToCountyStudio = () => {
+    // Re-open County Studio via the canonical activation pipeline so the
+    // chip lands on the existing window (focus) or opens a fresh one.
+    void activateModule('county-studio', {
+      source: 'system',
+      metadata: contextSegmentId ? { segmentId: contextSegmentId } : undefined,
+    });
+  };
 
   return (
     <div className="sf-workspace">
@@ -59,6 +156,27 @@ export default function SalesForge() {
             <h1 className="sf-header__title">SalesForge</h1>
           </div>
           <div className="sf-header__badges">
+            {contextSegmentId && (
+              <button
+                type="button"
+                data-testid="sf-scoped-from-chip"
+                data-segment-id={contextSegmentId}
+                onClick={handleBackToCountyStudio}
+                title="Back to County Studio"
+                style={{
+                  background: 'hsl(var(--tf-suite-forge) / 0.12)',
+                  border: '1px solid hsl(var(--tf-suite-forge) / 0.4)',
+                  color: 'hsl(var(--tf-suite-forge))',
+                  padding: '4px 10px',
+                  borderRadius: 999,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                ← From County Studio · Segment {contextSegmentLabel ?? contextSegmentId}
+              </button>
+            )}
             <span className="forge-chip forge-chip--neutral">{taxYear} study year</span>
             <span className="forge-chip forge-chip--success">Live county data</span>
           </div>
