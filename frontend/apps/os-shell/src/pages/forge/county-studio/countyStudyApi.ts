@@ -40,12 +40,35 @@ export const studyApi = {
 
 // ── Segment Sets ──────────────────────────────────────────────────────────────
 
+/**
+ * Result payload from POST /county-study/studies/:id/derive-segments.
+ * Matches the backend record SegmentDerivationResult in
+ * TerraFusion.Core.Services.ICountyStudySegmentDerivationService.
+ */
+export interface SegmentDerivationResult {
+  segmentSetId: string;
+  segmentCount: number;
+  totalParcels: number;
+  segmentsWithRatios: number;
+  segmentsWithIaaoExceptions: number;
+}
+
 export const segmentSetApi = {
   list: (studyId: string): Promise<CountySegmentSetDto[]> =>
     apiFetchJson(`${BASE}/studies/${studyId}/segment-sets`),
 
   segments: (segmentSetId: string): Promise<CountySegmentDto[]> =>
     apiFetchJson(`${BASE}/segment-sets/${segmentSetId}/segments`),
+
+  /**
+   * Triggers the backend derivation pipeline: reads canonical TerraFusion data
+   * (Properties + CamaCharacteristics + qualified ComparableSales), groups by
+   * (neighborhood × building type × quality grade), writes a new baseline
+   * CountySegmentSet with per-segment IAAO metrics, and points the study's
+   * ActiveSegmentSetId at it. Each invocation creates a new versioned set.
+   */
+  derive: (studyId: string): Promise<SegmentDerivationResult> =>
+    apiFetchJson(`${BASE}/studies/${studyId}/derive-segments`, { method: 'POST' }),
 };
 
 // ── Cohorts ───────────────────────────────────────────────────────────────────
