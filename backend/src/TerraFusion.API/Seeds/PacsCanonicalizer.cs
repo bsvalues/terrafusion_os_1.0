@@ -1229,6 +1229,59 @@ public sealed class PacsCanonicalizer
         return t.StartsWith("GAR", StringComparison.Ordinal) ||
                t is "ATG" or "GARD" or "GARA";
     }
+
+    /// <summary>
+    /// Maps raw city/address text to canonical Benton County city names.
+    /// Cities not in the lookup are mapped to "Unincorporated".
+    /// </summary>
+    public static string NormalizeCity(string? rawCity)
+    {
+        if (string.IsNullOrWhiteSpace(rawCity)) return "Unincorporated";
+
+        var normalized = rawCity.Trim().ToUpperInvariant();
+        return normalized switch
+        {
+            "KENNEWICK"      => "Kennewick",
+            "RICHLAND"       => "Richland",
+            "PASCO"          => "Pasco",
+            "PROSSER"        => "Prosser",
+            "BENTON CITY"    => "Benton City",
+            "WEST RICHLAND"  => "West Richland",
+            "FINLEY"         => "Finley",
+            "BASIN CITY"     => "Basin City",
+            "BURBANK"        => "Burbank",
+            "PATERSON"       => "Paterson",
+            _                => "Unincorporated",
+        };
+    }
+
+    /// <summary>
+    /// Derives Benton Method property use stratum from PACS building type code.
+    /// R = Residential, M = Manufactured, C = Commercial/Industrial, A = Agricultural, V = Vacant, X = Unknown.
+    /// </summary>
+    public static string DeriveStratum(string? buildingType)
+    {
+        if (string.IsNullOrWhiteSpace(buildingType)) return "X";
+
+        var bt = buildingType.Trim().ToUpperInvariant();
+
+        // Residential
+        if (bt.StartsWith("R")) return "R";
+
+        // Manufactured
+        if (bt.StartsWith("M")) return "M";
+
+        // Agricultural
+        if (bt.StartsWith("A")) return "A";
+
+        // Vacant
+        if (bt == "V") return "V";
+
+        // Commercial, Industrial (I), Special-use (S) all map to C
+        if (bt.StartsWith("C") || bt.StartsWith("I") || bt.StartsWith("S")) return "C";
+
+        return "X";
+    }
 }
 
 // ── Result DTO ────────────────────────────────────────────────────────────────
