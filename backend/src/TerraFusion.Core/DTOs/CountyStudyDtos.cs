@@ -168,6 +168,8 @@ public record PromoteScenarioRequest(
     string EffectiveScope  // JSON: { cohortId, segmentIds[], parcelCount }
 );
 
+public record UpdateAdjustmentApprovalStateRequest(string NewState);
+
 // ── ExceptionSet ──────────────────────────────────────────────────────────────
 
 public record CountyExceptionSetDto(

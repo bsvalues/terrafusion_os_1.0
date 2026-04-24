@@ -12,6 +12,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.Core.DTOs;
+using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Services;
 
@@ -738,6 +739,34 @@ public class CountyStudyController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "[CountyStudy] GetAdjustmentSets failed for study {StudyId}", studyId);
+            return StatusCode(500, new { error = "Internal error" });
+        }
+    }
+
+    /// <summary>
+    /// Advances (or rolls back) the approval state of an adjustment set.
+    /// Valid transitions: Proposed → ReadyForApproval → Approved → Published → RolledBack
+    /// Also supports ReadyForApproval → Proposed (send-back).
+    /// Returns 200 with the updated adjustment set DTO.
+    /// </summary>
+    [HttpPatch("adjustment-sets/{id:guid}/approval-state")]
+    public async Task<IActionResult> UpdateAdjustmentApprovalState(
+        Guid id, [FromBody] UpdateAdjustmentApprovalStateRequest req)
+    {
+        if (!Enum.TryParse<AdjustmentSetApprovalState>(req.NewState, ignoreCase: true, out var parsed))
+            return BadRequest(new { error = $"Unknown approval state '{req.NewState}'." });
+        try
+        {
+            var dto = await _svc.UpdateApprovalStateAsync(id, parsed, CurrentUserId);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] UpdateApprovalState failed for {Id}", id);
             return StatusCode(500, new { error = "Internal error" });
         }
     }

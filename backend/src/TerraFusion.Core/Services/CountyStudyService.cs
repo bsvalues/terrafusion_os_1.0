@@ -637,6 +637,40 @@ public class CountyStudyService : ICountyStudyService
             .ToListAsync();
     }
 
+    public async Task<CountyAdjustmentSetDto> UpdateApprovalStateAsync(
+        Guid adjustmentSetId, AdjustmentSetApprovalState newState, string userId)
+    {
+        var adj = await _db.CountyAdjustmentSets.FindAsync(adjustmentSetId)
+            ?? throw new InvalidOperationException($"AdjustmentSet {adjustmentSetId} not found");
+
+        // Enforce legal transitions
+        var legal = (adj.ApprovalState, newState) switch
+        {
+            (AdjustmentSetApprovalState.Proposed,         AdjustmentSetApprovalState.ReadyForApproval) => true,
+            (AdjustmentSetApprovalState.ReadyForApproval, AdjustmentSetApprovalState.Approved)         => true,
+            (AdjustmentSetApprovalState.Approved,         AdjustmentSetApprovalState.Published)        => true,
+            (AdjustmentSetApprovalState.Published,        AdjustmentSetApprovalState.RolledBack)       => true,
+            (AdjustmentSetApprovalState.ReadyForApproval, AdjustmentSetApprovalState.Proposed)         => true, // send back
+            _ => false,
+        };
+        if (!legal)
+            throw new InvalidOperationException(
+                $"Cannot transition AdjustmentSet from {adj.ApprovalState} to {newState}.");
+
+        adj.ApprovalState = newState;
+        adj.UpdatedAt     = DateTime.UtcNow;
+        adj.UpdatedBy     = userId;
+
+        if (newState == AdjustmentSetApprovalState.Approved)
+            adj.ApprovedBy = userId;
+
+        if (newState == AdjustmentSetApprovalState.Published)
+            adj.PublishedAt = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync();
+        return MapAdjustmentSet(adj);
+    }
+
     // ── Exception Sets ────────────────────────────────────────────────────
 
     public async Task<CountyExceptionSetDto> CreateExceptionSetAsync(CreateCountyExceptionSetRequest req, string userId)

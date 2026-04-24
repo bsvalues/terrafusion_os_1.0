@@ -7,6 +7,22 @@ export type StudyStatus = 'Draft' | 'Active' | 'Reviewing' | 'Approved' | 'Archi
 export type ScenarioStatus = 'Draft' | 'Saved' | 'Reviewed' | 'Approved' | 'Promoted' | 'Rejected' | 'Archived';
 export type AdjustmentType = 'PercentageIncrease' | 'PercentageDecrease' | 'FlatDollarIncrease' | 'FlatDollarDecrease' | 'CustomFormula';
 export type SelectionType = 'Visual' | 'RuleBased' | 'Hybrid' | 'Manual';
+export type AdjustmentSetApprovalState =
+  | 'Proposed'
+  | 'ReadyForApproval'
+  | 'Approved'
+  | 'Published'
+  | 'RolledBack';
+
+export interface CountyAdjustmentSetDto {
+  adjustmentSetId: string;
+  studyId: string;
+  scenarioId: string;
+  effectiveScope: string;
+  approvalState: AdjustmentSetApprovalState;
+  approvedBy: string | null;
+  publishedAt: string | null;
+}
 
 export interface CountyStudySessionDto {
   studyId: string;

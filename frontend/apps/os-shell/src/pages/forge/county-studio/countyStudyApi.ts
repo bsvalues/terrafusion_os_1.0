@@ -16,6 +16,8 @@ import type {
   SegmentActionContextDto,
   SegmentDiagnosisDto,
   CountyDiagnosisDto,
+  CountyAdjustmentSetDto,
+  AdjustmentSetApprovalState,
 } from './types/countyStudio.types';
 
 const BASE = '/county-study';
@@ -133,6 +135,22 @@ export const scenarioApi = {
     notes?: string;
   }): Promise<void> =>
     apiFetchJson(`${BASE}/scenarios/promote`, { method: 'POST', body: JSON.stringify(body) }),
+};
+
+// ── Adjustment Sets ───────────────────────────────────────────────────────────
+
+export const adjustmentSetApi = {
+  list: (studyId: string): Promise<CountyAdjustmentSetDto[]> =>
+    apiFetchJson(`${BASE}/studies/${studyId}/adjustment-sets`),
+
+  updateApprovalState: (
+    adjustmentSetId: string,
+    newState: AdjustmentSetApprovalState,
+  ): Promise<CountyAdjustmentSetDto> =>
+    apiFetchJson(`${BASE}/adjustment-sets/${adjustmentSetId}/approval-state`, {
+      method: 'PATCH',
+      body: JSON.stringify({ newState }),
+    }),
 };
 
 // ── Scenario Compare ──────────────────────────────────────────────────────────

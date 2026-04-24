@@ -4,9 +4,10 @@ import { CityInspector } from './CityInspector';
 import { NeighborhoodInspector } from './NeighborhoodInspector';
 import { ScenarioWorksheet } from './ScenarioWorksheet';
 import { ScenarioCompareGrid } from './ScenarioCompareGrid';
+import { AdjustmentSetPanel } from './AdjustmentSetPanel';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 
-type RightPanel = 'inspector' | 'scenario' | 'compare';
+type RightPanel = 'inspector' | 'scenario' | 'compare' | 'governance';
 
 /**
  * Picks the inspector surface based on the store's drill state.
@@ -59,10 +60,14 @@ export function RightRail() {
         {tab('Inspector', 'inspector')}
         {tab('Scenario', 'scenario')}
         {tab('Compare', 'compare')}
+        {tab('Govnc', 'governance')}
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto' }}>
-        {activePanel === 'inspector' ? <InspectorForScope /> : activePanel === 'scenario' ? <ScenarioWorksheet /> : <ScenarioCompareGrid />}
+        {activePanel === 'inspector'   ? <InspectorForScope />  :
+         activePanel === 'scenario'    ? <ScenarioWorksheet />   :
+         activePanel === 'compare'     ? <ScenarioCompareGrid /> :
+                                         <AdjustmentSetPanel />}
       </div>
     </div>
   );
