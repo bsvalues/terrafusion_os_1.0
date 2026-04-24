@@ -228,3 +228,68 @@ public record NeighborhoodRollupRowDto(
     decimal ExceptionRate,
     string ComplianceStatus
 );
+
+// ── Health Summary (Task C — chief appraiser's Monday-morning screen) ───────
+
+/// <summary>
+/// IAAO compliance classification for the county-level health summary. Reported
+/// as a string on the DTO for API stability.
+///   IaaoCompliant     — median ∈ [0.90,1.10] AND cod ≤ 20 AND prd ∈ [0.98,1.03]
+///   MarginalCompliance — median ∈ [0.85,1.15] AND cod ≤ 25 AND prd ∈ [0.95,1.05]
+///   NonCompliant       — anything else (metrics present but outside marginal bands)
+///   InsufficientData   — ratioCount &lt; 30
+/// </summary>
+public enum CountyHealthComplianceStatus
+{
+    IaaoCompliant,
+    MarginalCompliance,
+    NonCompliant,
+    InsufficientData,
+}
+
+/// <summary>
+/// One segment selected for the top-5 action-item list. Ordered DESC by
+/// CompositeRisk with ties broken by ParcelCount DESC. Reasons is a human-
+/// readable list of every trigger that contributed to the risk, ordered by
+/// contribution size.
+/// </summary>
+public record HealthAlertDto(
+    Guid SegmentId,
+    string SegmentName,
+    string? NeighborhoodCode,
+    string? City,
+    int ParcelCount,
+    decimal? MedianRatio,
+    decimal? Cod,
+    decimal? Prd,
+    int ExceptionCount,
+    decimal CompositeRisk,
+    List<string> Reasons
+);
+
+/// <summary>
+/// County-level health summary built from the study's active CountySegmentSet.
+/// Overall metrics are computed from all parcel-level ratios across the active
+/// set (parcel-weighted, not segment-weighted). TopAlerts are the 5 segments
+/// with the highest composite risk. DerivedAt surfaces the active segment
+/// set's UpdatedAt so the UI can say "derived N hours ago".
+/// </summary>
+public record CountyHealthSummaryDto(
+    Guid StudyId,
+    Guid CountyId,
+    int TaxYear,
+    int ParcelCount,
+    int RatioCount,
+    decimal? MedianRatio,
+    decimal? Cod,
+    decimal? Prd,
+    decimal? StabilityScore,
+    decimal? RiskScore,
+    int ExceptionCount,
+    string ComplianceStatus,
+    List<HealthAlertDto> TopAlerts,
+    int CriticalCount,
+    int WarningCount,
+    int HealthyCount,
+    DateTime? DerivedAt
+);

@@ -29,16 +29,19 @@ public class CountyStudyController : ControllerBase
     private const string FallbackUserId = "system";
 
     private readonly ICountyStudySegmentDerivationService _deriveSvc;
+    private readonly ICountyStudyHealthService _healthSvc;
 
     public CountyStudyController(
         ICountyStudyService svc,
         ICountyResolver countyResolver,
         ICountyStudySegmentDerivationService deriveSvc,
+        ICountyStudyHealthService healthSvc,
         ILogger<CountyStudyController> logger)
     {
         _svc            = svc;
         _countyResolver = countyResolver;
         _deriveSvc      = deriveSvc;
+        _healthSvc      = healthSvc;
         _logger         = logger;
     }
 
@@ -238,6 +241,40 @@ public class CountyStudyController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "[CountyStudy] GetNeighborhoodRollup failed for study {StudyId} city {City}", studyId, city);
+            return StatusCode(500, new { error = "Internal error" });
+        }
+    }
+
+    // ── Health Summary (Task C — chief appraiser's Monday-morning screen) ──
+
+    /// <summary>
+    /// Returns a single-screen health summary for a study. Overall IAAO metrics
+    /// across the study's active segment set (parcel-weighted), IAAO compliance
+    /// classification, severity counts, and the top 5 segments by composite
+    /// risk.
+    ///
+    /// Returns 409 Conflict if the study has no active segment set yet —
+    /// caller should prompt the user to run "Derive Segment Metrics" first.
+    /// </summary>
+    [HttpGet("studies/{studyId:guid}/health-summary")]
+    public async Task<IActionResult> GetHealthSummary(Guid studyId, CancellationToken ct)
+    {
+        try
+        {
+            var dto = await _healthSvc.GetHealthSummaryAsync(studyId, ct);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("active segment set"))
+        {
+            return Conflict(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] GetHealthSummary failed for study {StudyId}", studyId);
             return StatusCode(500, new { error = "Internal error" });
         }
     }
