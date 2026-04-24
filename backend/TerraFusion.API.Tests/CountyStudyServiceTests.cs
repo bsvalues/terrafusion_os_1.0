@@ -509,7 +509,7 @@ public class CountyStudyServiceTests
         var study = await svc.CreateStudyAsync(
             new CreateStudyRequest(Guid.NewGuid().ToString(), 2025, StudyType.RatioStudy, "v1"), "test");
         var cohort = await svc.CreateCohortAsync(
-            new CreateCohortRequest(study.StudyId, "All Residential", CohortSelectionType.ManualList,
+            new CreateCohortRequest(study.StudyId, "All Residential", CohortSelectionType.Rule,
                 "[]", 100, false), "test");
 
         var scenA = await svc.CreateScenarioAsync(
