@@ -343,6 +343,11 @@ public record CountySegmentDetailDto(
     decimal? Vei,
     string EquityClassification,            // Fair | Progressive | Regressive | InsufficientData
     decimal? BentonEquityScore,             // 0-100
+    // Count of qualified sale-ratio observations the PRB/VEI/classification
+    // were computed from. Different from ParcelCount (which is the segment's
+    // full parcel count). Used by Task E diagnosis detectors to distinguish
+    // "low-sample" from "zero-sales" from "healthy".
+    int RatioCount,
     // 5-year history (ascending). Empty list is valid.
     List<SegmentYearPoint> YearHistory,
     // Compliance

@@ -136,6 +136,7 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
             Vei:                  vei,
             EquityClassification: classification,
             BentonEquityScore:    equityScore,
+            RatioCount:           ratios.Count,
             YearHistory:          yearHistory,
             ComplianceStatus:     compliance.ToString(),
             Warnings:             warnings,
