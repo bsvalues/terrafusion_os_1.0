@@ -107,3 +107,110 @@ describe('countyStudioStore — incomingProjections', () => {
     expect(useCountyStudioStore.getState().incomingProjections).toEqual([]);
   });
 });
+
+// ── Task B: drill lattice state machine ───────────────────────────────────
+
+describe('countyStudioStore — drill lattice', () => {
+  beforeEach(() => {
+    act(() => {
+      // Reset drill state + selections between tests.
+      useCountyStudioStore.getState().drillToCounty();
+      useCountyStudioStore.getState().selectSegment(null);
+    });
+  });
+
+  it('starts at county level with no selection', () => {
+    const s = useCountyStudioStore.getState();
+    expect(s.drillLevel).toBe('county');
+    expect(s.selectedCity).toBeNull();
+    expect(s.selectedNeighborhood).toBeNull();
+  });
+
+  it('drillToCity advances level and sets selectedCity', () => {
+    act(() => {
+      useCountyStudioStore.getState().drillToCity('Kennewick');
+    });
+    const s = useCountyStudioStore.getState();
+    expect(s.drillLevel).toBe('city');
+    expect(s.selectedCity).toBe('Kennewick');
+    expect(s.selectedNeighborhood).toBeNull();
+  });
+
+  it('drillToNeighborhood requires both city and code and sets both', () => {
+    act(() => {
+      useCountyStudioStore.getState().drillToNeighborhood('Richland', 'NBHD-R1');
+    });
+    const s = useCountyStudioStore.getState();
+    expect(s.drillLevel).toBe('neighborhood');
+    expect(s.selectedCity).toBe('Richland');
+    expect(s.selectedNeighborhood).toBe('NBHD-R1');
+  });
+
+  it('drillToCounty collapses all drill state (from neighborhood)', () => {
+    act(() => {
+      useCountyStudioStore.getState().drillToNeighborhood('Richland', 'NBHD-R1');
+      useCountyStudioStore.getState().selectSegment('seg-1');
+      useCountyStudioStore.getState().drillToCounty();
+    });
+    const s = useCountyStudioStore.getState();
+    expect(s.drillLevel).toBe('county');
+    expect(s.selectedCity).toBeNull();
+    expect(s.selectedNeighborhood).toBeNull();
+    expect(s.selectedSegmentId).toBeNull();
+  });
+
+  it('drilling up (city -> county) clears the stale neighborhood', () => {
+    act(() => {
+      useCountyStudioStore.getState().drillToNeighborhood('Kennewick', 'NBHD-K1');
+      useCountyStudioStore.getState().drillToCity('Kennewick');
+    });
+    const s = useCountyStudioStore.getState();
+    expect(s.drillLevel).toBe('city');
+    expect(s.selectedCity).toBe('Kennewick');
+    expect(s.selectedNeighborhood).toBeNull();
+  });
+
+  it('drilling to a different city resets the selection chain', () => {
+    act(() => {
+      useCountyStudioStore.getState().drillToNeighborhood('Kennewick', 'NBHD-K1');
+      useCountyStudioStore.getState().drillToCity('Richland');
+    });
+    const s = useCountyStudioStore.getState();
+    expect(s.selectedCity).toBe('Richland');
+    expect(s.selectedNeighborhood).toBeNull();
+  });
+
+  it('drilling clears selectedSegmentId to prevent stale Inspector content', () => {
+    act(() => {
+      useCountyStudioStore.getState().selectSegment('seg-42');
+      useCountyStudioStore.getState().drillToCity('Pasco');
+    });
+    expect(useCountyStudioStore.getState().selectedSegmentId).toBeNull();
+  });
+
+  it('setCityRollup / setNeighborhoodRollup replace the arrays', () => {
+    act(() => {
+      useCountyStudioStore.getState().setCityRollup([
+        {
+          city: 'Pasco', segmentCount: 3, parcelCount: 15,
+          medianRatio: 0.95, cod: 4.2, prd: 1.01,
+          exceptionCount: 0, exceptionRate: 0,
+          worstSegmentName: null, worstSegmentMedianRatio: null,
+          complianceStatus: 'IaaoCompliant',
+        },
+      ]);
+      useCountyStudioStore.getState().setNeighborhoodRollup([
+        {
+          neighborhoodCode: 'NBHD-P1', neighborhoodName: 'NBHD-P1', city: 'Pasco',
+          segmentCount: 2, parcelCount: 10, medianRatio: 0.95, cod: 4.2, prd: 1.01,
+          stabilityScore: 85, riskScore: 22, exceptionCount: 0, exceptionRate: 0,
+          complianceStatus: 'IaaoCompliant',
+        },
+      ]);
+    });
+    const s = useCountyStudioStore.getState();
+    expect(s.cityRollup).toHaveLength(1);
+    expect(s.neighborhoodRollup).toHaveLength(1);
+    expect(s.cityRollup[0].city).toBe('Pasco');
+  });
+});

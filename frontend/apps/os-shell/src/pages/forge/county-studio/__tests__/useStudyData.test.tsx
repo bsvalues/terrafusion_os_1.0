@@ -133,8 +133,15 @@ describe('useStudyData', () => {
     act(() => { useCountyStudioStore.getState().setStudy(null); });
     await waitFor(() => {
       const { loadStatus, loadErrors } = useCountyStudioStore.getState();
-      expect(loadStatus).toEqual({ segments: 'idle', cohorts: 'idle', scenarios: 'idle' });
-      expect(loadErrors).toEqual({ segments: null, cohorts: null, scenarios: null });
+      // Task B extended loadStatus to include city + neighborhood rollups.
+      expect(loadStatus).toEqual({
+        segments: 'idle', cohorts: 'idle', scenarios: 'idle',
+        cityRollup: 'idle', neighborhoodRollup: 'idle',
+      });
+      expect(loadErrors).toEqual({
+        segments: null, cohorts: null, scenarios: null,
+        cityRollup: null, neighborhoodRollup: null,
+      });
     });
   });
 });
