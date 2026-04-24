@@ -256,5 +256,48 @@ public class CountyStudioSmokeTests
         // Confirm scenario rationale is preserved (evidence packet includes it verbatim)
         var packetScen = scenList.First(s => s.ScenarioId == scenA.ScenarioId);
         Assert.Equal("Market trend correction +5%", packetScen.Rationale);
+
+        // ── 12. Save scenario A + promote to AdjustmentSet ───────────────────
+        var savedA = await svc.SaveScenarioAsync(scenA.ScenarioId, "bsvalues");
+        Assert.Equal("Saved", savedA.Status);
+
+        var effectiveScope = System.Text.Json.JsonSerializer.Serialize(new
+        {
+            cohortId    = cohort.CohortId,
+            segmentIds  = segIds,
+            parcelCount = 942,
+        });
+
+        var adjSet = await svc.PromoteScenarioAsync(
+            new PromoteScenarioRequest(scenA.ScenarioId, effectiveScope), "bsvalues");
+
+        Assert.Equal("Proposed", adjSet.ApprovalState);
+        Assert.Equal(scenA.ScenarioId, adjSet.ScenarioId);
+        Assert.Equal(study.StudyId, adjSet.StudyId);
+
+        // GetAdjustmentSetsAsync returns it
+        var adjList = await svc.GetAdjustmentSetsAsync(study.StudyId);
+        Assert.Single(adjList);
+        Assert.Equal(adjSet.AdjustmentSetId, adjList[0].AdjustmentSetId);
+
+        // ── 13. Approval state machine: Proposed → ReadyForApproval → Approved → Published ──
+        var rfa = await svc.UpdateApprovalStateAsync(
+            adjSet.AdjustmentSetId, AdjustmentSetApprovalState.ReadyForApproval, "bsvalues");
+        Assert.Equal("ReadyForApproval", rfa.ApprovalState);
+
+        var approved = await svc.UpdateApprovalStateAsync(
+            adjSet.AdjustmentSetId, AdjustmentSetApprovalState.Approved, "bsvalues");
+        Assert.Equal("Approved", approved.ApprovalState);
+        Assert.Equal("bsvalues", approved.ApprovedBy);
+
+        var published = await svc.UpdateApprovalStateAsync(
+            adjSet.AdjustmentSetId, AdjustmentSetApprovalState.Published, "bsvalues");
+        Assert.Equal("Published", published.ApprovalState);
+        Assert.NotNull(published.PublishedAt);
+
+        // Illegal transition (Published → Approved) must throw
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            svc.UpdateApprovalStateAsync(
+                adjSet.AdjustmentSetId, AdjustmentSetApprovalState.Approved, "bsvalues"));
     }
 }
