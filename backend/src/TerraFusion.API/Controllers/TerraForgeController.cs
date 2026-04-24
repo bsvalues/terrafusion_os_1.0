@@ -64,7 +64,8 @@ public class TerraForgeController : ControllerBase
         var query = _db.ComparableSales
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.SalesYear == taxYear
-                     || (s.SaleDate >= lookbackStart
+                     || (s.SalesYear == null
+                         && s.SaleDate >= lookbackStart
                          && s.SaleDate < lookbackEnd));
 
         query = status.ToLowerInvariant() switch
@@ -281,7 +282,9 @@ public class TerraForgeController : ControllerBase
         var allQuery = _db.ComparableSales
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.SalesYear == taxYear
-                     || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd));
+                     || (s.SalesYear == null
+                         && s.SaleDate >= lookbackStart
+                         && s.SaleDate < lookbackEnd));
 
         if (!string.IsNullOrWhiteSpace(hood))
             allQuery = allQuery.Where(s => s.Neighborhood == hood);
@@ -308,7 +311,9 @@ public class TerraForgeController : ControllerBase
         var qualQuery = _db.ComparableSales
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.SalesYear == taxYear
-                     || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd))
+                     || (s.SalesYear == null
+                         && s.SaleDate >= lookbackStart
+                         && s.SaleDate < lookbackEnd))
             .Where(s => s.QualificationDecision == "qualified"
                      || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null)))
             .Where(s => s.SuppressOnRatioRptCd != "T")
@@ -426,7 +431,9 @@ public class TerraForgeController : ControllerBase
         var query = _db.ComparableSales
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.SalesYear == taxYear
-                     || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd));
+                     || (s.SalesYear == null
+                         && s.SaleDate >= lookbackStart
+                         && s.SaleDate < lookbackEnd));
 
         if (!string.IsNullOrWhiteSpace(propertyType))
             query = query.Where(s => s.PropertyType == propertyType);
@@ -530,7 +537,9 @@ public class TerraForgeController : ControllerBase
         var sales = await _db.ComparableSales
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.SalesYear == taxYear
-                     || (s.SaleDate >= lookbackStart && s.SaleDate < lookbackEnd))
+                     || (s.SalesYear == null
+                         && s.SaleDate >= lookbackStart
+                         && s.SaleDate < lookbackEnd))
             .Select(s => new
             {
                 s.RawWacCd,
@@ -634,7 +643,8 @@ public class TerraForgeController : ControllerBase
         var baseQuery = _db.ComparableSales
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.SalesYear == taxYear
-                     || (s.SaleDate >= lookbackStart
+                     || (s.SalesYear == null
+                         && s.SaleDate >= lookbackStart
                          && s.SaleDate < lookbackEnd))
             .Where(s => s.QualificationDecision == "qualified"
                      || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null)))
@@ -905,7 +915,8 @@ public class TerraForgeController : ControllerBase
         var query = _db.ComparableSales
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.SalesYear == taxYear
-                     || (s.SaleDate >= lookbackStart
+                     || (s.SalesYear == null
+                         && s.SaleDate >= lookbackStart
                          && s.SaleDate < lookbackEnd))
             .Where(s => s.QualificationDecision == "qualified"
                      || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null)));
@@ -1018,7 +1029,8 @@ public class TerraForgeController : ControllerBase
         var baseQuery = _db.ComparableSales
             .Where(s => s.CountyId == BentonCountyId)
             .Where(s => s.SalesYear == taxYear
-                     || (s.SaleDate >= lookbackStart
+                     || (s.SalesYear == null
+                         && s.SaleDate >= lookbackStart
                          && s.SaleDate < lookbackEnd))
             .Where(s => s.QualificationDecision == "qualified"
                      || (s.QualificationDecision == null && (s.QualificationRecommendation == "qualified" || s.QualificationRecommendation == null)))

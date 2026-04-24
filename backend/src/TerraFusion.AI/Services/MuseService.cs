@@ -138,6 +138,76 @@ public sealed class MuseService : IMuseService
         if (contract is not null)
             enrichedLines.Add($"Contract [{contract.Surface}]: {contract.Summary}");
 
+        // --- ParcelSummary injection (county mode parcel facts) ---
+        // When the caller provides a ParcelSummary dictionary, surface its fields
+        // as structured context lines so the LLM has the parcel facts in its
+        // system prompt. Lines are emitted only when their underlying values
+        // exist so the prompt stays clean for sparse summaries.
+        if (request.ParcelSummary is { Count: > 0 } summary)
+        {
+            string? GetStr(string key) =>
+                summary.TryGetValue(key, out var v) && v is not null
+                    ? v.ToString()
+                    : null;
+
+            // Identity line — requires address at minimum. Without an address,
+            // a "Parcel: , City | Type: ..." fragment is more noise than signal.
+            var address  = GetStr("address");
+            if (!string.IsNullOrWhiteSpace(address))
+            {
+                var city     = GetStr("city");
+                var propType = GetStr("propertyType");
+                var identity = $"Parcel: {address}"
+                    + (!string.IsNullOrWhiteSpace(city)     ? $", {city}"       : string.Empty)
+                    + (!string.IsNullOrWhiteSpace(propType) ? $" | Type: {propType}" : string.Empty);
+                enrichedLines.Add(identity);
+            }
+
+            static void AppendGroup(
+                List<string> lines,
+                string label,
+                Func<string, string?> get,
+                params string[] keys)
+            {
+                var parts = new List<string>();
+                foreach (var key in keys)
+                {
+                    var val = get(key);
+                    if (!string.IsNullOrWhiteSpace(val))
+                        parts.Add($"{key}={val}");
+                }
+                if (parts.Count > 0)
+                    lines.Add($"{label}: {string.Join(", ", parts)}");
+            }
+
+            AppendGroup(enrichedLines, "Values",    GetStr,
+                "totalAssessedValue", "landValue", "improvementValue",
+                "marketValue", "taxableValue");
+
+            AppendGroup(enrichedLines, "Structure", GetStr,
+                "yearBuilt", "buildingSquareFeet", "landAcreage");
+
+            AppendGroup(enrichedLines, "Last sale", GetStr,
+                "lastSaleDate", "lastSalePrice");
+
+            AppendGroup(enrichedLines, "Local",     GetStr,
+                "neighborhood", "zoning", "taxDistrictName",
+                "assessmentYear", "assessmentStatus");
+
+            // Geo fields — only emitted when present so tests that assert their
+            // absence for geo-less summaries pass.
+            AppendGroup(enrichedLines, "Geo",       GetStr,
+                "latitude", "longitude");
+
+            var coords = GetStr("coordinates");
+            if (!string.IsNullOrWhiteSpace(coords))
+                enrichedLines.Add($"Coordinates: {coords}");
+
+            var sdistricts = GetStr("specialDistricts");
+            if (!string.IsNullOrWhiteSpace(sdistricts))
+                enrichedLines.Add($"Special districts: {sdistricts}");
+        }
+
         var enrichedPreamble = enrichedLines.Count > 0
             ? contextPreamble + string.Join("\n", enrichedLines) + "\n"
             : contextPreamble;
