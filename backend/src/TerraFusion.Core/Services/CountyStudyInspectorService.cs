@@ -237,14 +237,14 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
     /// Flipping any of these to true after wiring a target's param reader
     /// is the only change required to enable its deeplink.
     /// </summary>
-    internal static DeeplinkSupport ResolveDeeplinkSupport() => new(
+    public static DeeplinkSupport ResolveDeeplinkSupport() => new(
         SalesForge: false,
         CostForge:  false,
         CompsForge: false,
         Dais:       false,
         Dossier:    false);
 
-    internal record DeeplinkSupport(
+    public record DeeplinkSupport(
         bool SalesForge,
         bool CostForge,
         bool CompsForge,
