@@ -31,6 +31,7 @@ public class CountyStudyController : ControllerBase
     private readonly ICountyStudySegmentDerivationService _deriveSvc;
     private readonly ICountyStudyHealthService _healthSvc;
     private readonly ICountyStudyInspectorService _inspectorSvc;
+    private readonly ICountyStudioAiService _aiSvc;
 
     public CountyStudyController(
         ICountyStudyService svc,
@@ -38,6 +39,7 @@ public class CountyStudyController : ControllerBase
         ICountyStudySegmentDerivationService deriveSvc,
         ICountyStudyHealthService healthSvc,
         ICountyStudyInspectorService inspectorSvc,
+        ICountyStudioAiService aiSvc,
         ILogger<CountyStudyController> logger)
     {
         _svc            = svc;
@@ -45,6 +47,7 @@ public class CountyStudyController : ControllerBase
         _deriveSvc      = deriveSvc;
         _healthSvc      = healthSvc;
         _inspectorSvc   = inspectorSvc;
+        _aiSvc          = aiSvc;
         _logger         = logger;
     }
 
@@ -338,6 +341,78 @@ public class CountyStudyController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "[CountyStudy] GetSegmentActionContext failed for segment {SegmentId}", segmentId);
+            return StatusCode(500, new { error = "Internal error" });
+        }
+    }
+
+    // ── AI Diagnosis (Task E — Fix #6 — deterministic finding / classification / action) ──
+
+    /// <summary>
+    /// Returns the deterministic diagnosis for a segment: classification (Data /
+    /// Model / Workflow / Market / Healthy), confidence, ordered findings with
+    /// structured evidence, prioritized recommended actions, and a 2–4 sentence
+    /// narrative whose every sentence cites a real number.
+    ///
+    /// 404 when the segment does not exist.
+    /// 409 when the segment has no derived metrics (derive first).
+    /// </summary>
+    [HttpGet("segments/{segmentId:guid}/diagnosis")]
+    public async Task<IActionResult> GetSegmentDiagnosis(Guid segmentId, CancellationToken ct)
+    {
+        try
+        {
+            var dto = await _aiSvc.DiagnoseSegmentAsync(segmentId, ct);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("not found"))
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("no derived metrics"))
+        {
+            return Conflict(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] GetSegmentDiagnosis failed for segment {SegmentId}", segmentId);
+            return StatusCode(500, new { error = "Internal error" });
+        }
+    }
+
+    /// <summary>
+    /// Returns the county-level deterministic diagnosis for a study: aggregate
+    /// classification, healthy/problem segment counts, the 5 worst-diagnosed
+    /// segments (pre-diagnosed), and cross-segment patterns.
+    ///
+    /// 409 when the study has no active segment set.
+    /// </summary>
+    [HttpGet("studies/{studyId:guid}/diagnosis")]
+    public async Task<IActionResult> GetCountyDiagnosis(Guid studyId, CancellationToken ct)
+    {
+        try
+        {
+            var dto = await _aiSvc.DiagnoseCountyAsync(studyId, ct);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("active segment set"))
+        {
+            return Conflict(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("not found"))
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] GetCountyDiagnosis failed for study {StudyId}", studyId);
             return StatusCode(500, new { error = "Internal error" });
         }
     }
