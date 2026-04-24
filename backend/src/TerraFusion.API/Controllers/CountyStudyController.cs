@@ -30,18 +30,21 @@ public class CountyStudyController : ControllerBase
 
     private readonly ICountyStudySegmentDerivationService _deriveSvc;
     private readonly ICountyStudyHealthService _healthSvc;
+    private readonly ICountyStudyInspectorService _inspectorSvc;
 
     public CountyStudyController(
         ICountyStudyService svc,
         ICountyResolver countyResolver,
         ICountyStudySegmentDerivationService deriveSvc,
         ICountyStudyHealthService healthSvc,
+        ICountyStudyInspectorService inspectorSvc,
         ILogger<CountyStudyController> logger)
     {
         _svc            = svc;
         _countyResolver = countyResolver;
         _deriveSvc      = deriveSvc;
         _healthSvc      = healthSvc;
+        _inspectorSvc   = inspectorSvc;
         _logger         = logger;
     }
 
@@ -275,6 +278,66 @@ public class CountyStudyController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "[CountyStudy] GetHealthSummary failed for study {StudyId}", studyId);
+            return StatusCode(500, new { error = "Internal error" });
+        }
+    }
+
+    // ── Inspector (Task D — ObjectInspector detail + action-context) ──
+
+    /// <summary>
+    /// Returns the full Inspector detail bundle for a segment: IAAO core +
+    /// Benton Method additions (PRB / VEI / classification / equity score)
+    /// + 5-year YoY history + compliance + human-readable warnings.
+    /// 404 when the segment does not exist.
+    /// </summary>
+    [HttpGet("segments/{segmentId:guid}/detail")]
+    public async Task<IActionResult> GetSegmentDetail(Guid segmentId, CancellationToken ct)
+    {
+        try
+        {
+            var dto = await _inspectorSvc.GetSegmentDetailAsync(segmentId, ct);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("not found"))
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] GetSegmentDetail failed for segment {SegmentId}", segmentId);
+            return StatusCode(500, new { error = "Internal error" });
+        }
+    }
+
+    /// <summary>
+    /// Returns the pre-scoped handoff context for a segment: parcel list
+    /// (capped), qualified sales count, and five per-target handoff DTOs
+    /// whose DeeplinkQuery is populated only when the downstream module
+    /// consumes URL parameters. 404 when the segment does not exist.
+    /// </summary>
+    [HttpGet("segments/{segmentId:guid}/action-context")]
+    public async Task<IActionResult> GetSegmentActionContext(Guid segmentId, CancellationToken ct)
+    {
+        try
+        {
+            var dto = await _inspectorSvc.GetActionContextAsync(segmentId, ct);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("not found"))
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] GetSegmentActionContext failed for segment {SegmentId}", segmentId);
             return StatusCode(500, new { error = "Internal error" });
         }
     }

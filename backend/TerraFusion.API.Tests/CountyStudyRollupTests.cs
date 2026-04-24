@@ -297,9 +297,11 @@ public sealed class CountyStudyRollupTests : IDisposable
         resolver
             .Setup(r => r.ResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .Returns<string, CancellationToken>((s, _) => Task.FromResult(Guid.Parse(s)));
-        var derive = new Mock<ICountyStudySegmentDerivationService>();
-        var health = new Mock<ICountyStudyHealthService>();
-        return new(svc, resolver.Object, derive.Object, health.Object, NullLogger<CountyStudyController>.Instance);
+        var derive    = new Mock<ICountyStudySegmentDerivationService>();
+        var health    = new Mock<ICountyStudyHealthService>();
+        var inspector = new Mock<ICountyStudyInspectorService>();
+        return new(svc, resolver.Object, derive.Object, health.Object, inspector.Object,
+            NullLogger<CountyStudyController>.Instance);
     }
 
     [Fact]

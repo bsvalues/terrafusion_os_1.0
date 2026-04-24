@@ -1512,6 +1512,7 @@ builder.Services.AddScoped<TerraFusion.Core.Services.ICountyResolver, TerraFusio
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICountyStudyService, TerraFusion.Core.Services.CountyStudyService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICountyStudySegmentDerivationService, TerraFusion.Core.Services.CountyStudySegmentDerivationService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICountyStudyHealthService, TerraFusion.Core.Services.CountyStudyHealthService>();
+builder.Services.AddScoped<TerraFusion.Core.Services.ICountyStudyInspectorService, TerraFusion.Core.Services.CountyStudyInspectorService>();
 
 // Register unified orchestration service
 builder.Services.AddSingleton<IUnifiedOrchestrationService, UnifiedOrchestrationService>();

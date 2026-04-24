@@ -293,3 +293,119 @@ public record CountyHealthSummaryDto(
     int HealthyCount,
     DateTime? DerivedAt
 );
+
+// ── Inspector (Task D — segment detail + action-context for ObjectInspector) ──
+
+/// <summary>
+/// One historical observation for the 5-year sparkline. Years without a matching
+/// segment are simply omitted from the list — the frontend must not fabricate
+/// filler rows. IsCurrentYear marks the row that corresponds to the segment the
+/// Inspector is showing (the other rows are peer segments in prior tax years).
+/// </summary>
+public record SegmentYearPoint(
+    int TaxYear,
+    int ParcelCount,
+    decimal? MedianRatio,
+    decimal? Cod,
+    decimal? Prd,
+    decimal? Prb,
+    int ExceptionCount,
+    bool IsCurrentYear
+);
+
+/// <summary>
+/// Everything the ObjectInspector needs to render the Metrics + Trend tabs in a
+/// single round-trip: the segment's persisted IAAO metrics, Benton Method
+/// additions (PRB / VEI / classification / composite equity score), a per-year
+/// history series, and the same compliance-status / warnings vocabulary as
+/// CountyHealthSummaryDto.
+/// </summary>
+public record CountySegmentDetailDto(
+    Guid SegmentId,
+    Guid SegmentSetId,
+    Guid StudyId,
+    Guid CountyId,
+    int TaxYear,
+    string Name,
+    string SegmentType,
+    string? City,
+    string? NeighborhoodCode,
+    int ParcelCount,
+    // IAAO core
+    decimal? MedianRatio,
+    decimal? Cod,
+    decimal? Prd,
+    decimal? StabilityScore,
+    decimal? RiskScore,
+    int ExceptionCount,
+    // Benton Method
+    decimal? Prb,
+    decimal? Vei,
+    string EquityClassification,            // Fair | Progressive | Regressive | InsufficientData
+    decimal? BentonEquityScore,             // 0-100
+    // 5-year history (ascending). Empty list is valid.
+    List<SegmentYearPoint> YearHistory,
+    // Compliance
+    string ComplianceStatus,                // IaaoCompliant | MarginalCompliance | NonCompliant | InsufficientData
+    List<string> Warnings,                  // same vocabulary as HealthAlertDto.Reasons
+    DateTime? DerivedAt
+);
+
+/// <summary>
+/// Pre-scoped handoff context for the five correction surfaces. The frontend
+/// uses these to render deeplink-capable buttons in the Inspector's Action tab.
+/// DeeplinkQuery is null when the target surface does not yet consume URL
+/// parameters — the frontend disables that button with an honest tooltip
+/// instead of silently opening a page that won't be filtered.
+/// </summary>
+public record SalesForgeHandoffDto(
+    string StratumKey,
+    int TaxYear,
+    int QualifiedSaleCount,
+    string? DeeplinkQuery
+);
+
+public record CostForgeHandoffDto(
+    string StratumKey,
+    int TaxYear,
+    string? DeeplinkQuery
+);
+
+public record CompsForgeHandoffDto(
+    List<string> SampleParcelIds,       // capped at 10
+    string? DeeplinkQuery
+);
+
+public record DaisHandoffDto(
+    string WorkflowTemplate,            // "SegmentReview"
+    string? DeeplinkQuery
+);
+
+public record DossierHandoffDto(
+    string PacketTemplate,              // "SegmentEvidence"
+    string? DeeplinkQuery
+);
+
+/// <summary>
+/// Full handoff bundle for a segment. ParcelIds is capped at 1000 and
+/// Truncated is set to true when the cap was hit (TotalParcels carries the
+/// true count in that case). Every handoff sub-DTO is always present — UI
+/// always renders all five buttons; absence of a deeplink is the disable signal.
+/// </summary>
+public record SegmentActionContextDto(
+    Guid SegmentId,
+    Guid StudyId,
+    Guid CountyId,
+    int TaxYear,
+    string SegmentType,
+    string? City,
+    string? NeighborhoodCode,
+    List<string> ParcelIds,
+    int TotalParcels,
+    bool Truncated,
+    SalesForgeHandoffDto SalesForge,
+    CostForgeHandoffDto CostForge,
+    CompsForgeHandoffDto CompsForge,
+    DaisHandoffDto Dais,
+    DossierHandoffDto Dossier
+);

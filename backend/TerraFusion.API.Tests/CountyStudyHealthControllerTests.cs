@@ -25,10 +25,11 @@ public sealed class CountyStudyHealthControllerTests
         resolver
             .Setup(r => r.ResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .Returns<string, CancellationToken>((s, _) => Task.FromResult(Guid.Parse(s)));
-        var derive = new Mock<ICountyStudySegmentDerivationService>();
+        var derive    = new Mock<ICountyStudySegmentDerivationService>();
+        var inspector = new Mock<ICountyStudyInspectorService>();
 
         return new(svc.Object, resolver.Object, derive.Object, healthSvc,
-            NullLogger<CountyStudyController>.Instance);
+            inspector.Object, NullLogger<CountyStudyController>.Instance);
     }
 
     private static CountyHealthSummaryDto BuildSampleDto() => new(

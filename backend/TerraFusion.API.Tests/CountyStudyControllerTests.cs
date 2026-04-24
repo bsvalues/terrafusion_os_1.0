@@ -29,9 +29,11 @@ public class CountyStudyControllerTests
                 Guid.TryParse(s, out var g)
                     ? Task.FromResult(g)
                     : throw new CountyNotFoundException(s));
-        var derive = new Mock<ICountyStudySegmentDerivationService>();
-        var health = new Mock<ICountyStudyHealthService>();
-        return new(svc, resolver.Object, derive.Object, health.Object, NullLogger<CountyStudyController>.Instance);
+        var derive    = new Mock<ICountyStudySegmentDerivationService>();
+        var health    = new Mock<ICountyStudyHealthService>();
+        var inspector = new Mock<ICountyStudyInspectorService>();
+        return new(svc, resolver.Object, derive.Object, health.Object, inspector.Object,
+            NullLogger<CountyStudyController>.Instance);
     }
 
     // ── Studies ───────────────────────────────────────────────────────────────
@@ -192,14 +194,16 @@ public class CountyStudyControllerTests
             .Setup(d => d.DeriveAsync(studyId, It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException($"Study {studyId} not found"));
 
-        var resolver = new Mock<ICountyResolver>();
-        var svcMock  = new Mock<ICountyStudyService>();
-        var healthMock = new Mock<ICountyStudyHealthService>();
+        var resolver      = new Mock<ICountyResolver>();
+        var svcMock       = new Mock<ICountyStudyService>();
+        var healthMock    = new Mock<ICountyStudyHealthService>();
+        var inspectorMock = new Mock<ICountyStudyInspectorService>();
         var controller = new CountyStudyController(
             svcMock.Object,
             resolver.Object,
             deriveMock.Object,
             healthMock.Object,
+            inspectorMock.Object,
             NullLogger<CountyStudyController>.Instance);
 
         var result = await controller.DeriveSegments(studyId, CancellationToken.None);
@@ -224,14 +228,16 @@ public class CountyStudyControllerTests
             .Setup(d => d.DeriveAsync(studyId, It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expected);
 
-        var resolver = new Mock<ICountyResolver>();
-        var svcMock  = new Mock<ICountyStudyService>();
-        var healthMock = new Mock<ICountyStudyHealthService>();
+        var resolver      = new Mock<ICountyResolver>();
+        var svcMock       = new Mock<ICountyStudyService>();
+        var healthMock    = new Mock<ICountyStudyHealthService>();
+        var inspectorMock = new Mock<ICountyStudyInspectorService>();
         var controller = new CountyStudyController(
             svcMock.Object,
             resolver.Object,
             deriveMock.Object,
             healthMock.Object,
+            inspectorMock.Object,
             NullLogger<CountyStudyController>.Instance);
 
         var result = await controller.DeriveSegments(studyId, CancellationToken.None);
