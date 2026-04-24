@@ -734,7 +734,7 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
     case 'costforge':
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
-          <CostForge />
+          <CostForge metadata={metadata as Record<string, unknown> | undefined} />
         </Suspense>
       );
 

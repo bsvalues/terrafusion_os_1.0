@@ -3,8 +3,19 @@
  * Main workspace container — IAAO cost approach module.
  * 8-tab workflow: Triage → Audit → Calibration → Parcel → Depreciation → Data Quality → Schedule → Calc Trace
  * Right stats rail fetches dashboard-stats on mount.
+ *
+ * Task D2 — receives County Studio Inspector handoff metadata on mount.
+ * Supported metadata keys (all optional):
+ *   deeplinkQuery: '?stratum=R1&year=2026&segmentId=s1' — raw query; parsed
+ *                  as a fallback if pre-split fields are missing.
+ *   stratumKey:    string — stored as contextStratumKey for the chip, does
+ *                  not auto-apply as a hood filter (stratum != hood code).
+ *   taxYear:       number — swaps the tax year selector.
+ *   segmentId:     string — drives the "Scoped From" chip.
+ *   segmentLabel:  string — human label for the chip.
  */
 import React, { Suspense, useEffect, useRef } from 'react';
+import activateModule from '@/orchestration/moduleActivation';
 import './CostForge.css';
 import {
   useCostForgeWorkspaceStore,
@@ -123,13 +134,74 @@ function CostForgeStatsRail() {
 
 const TAX_YEARS = [2024, 2025, 2026];
 
-export default function CostForge() {
+export interface CostForgeProps {
+  /**
+   * Optional metadata from the shell's window system. Carries County Studio
+   * Inspector handoff payload (stratum / year / segmentId / label).
+   */
+  metadata?: Record<string, unknown>;
+}
+
+/** Best-effort parser for the raw backend deeplink query string. */
+function parseDeeplinkQuery(raw: unknown): {
+  stratum?: string;
+  year?: number;
+  segmentId?: string;
+} {
+  if (typeof raw !== 'string' || raw.length === 0) return {};
+  try {
+    const trimmed = raw.startsWith('?') ? raw.slice(1) : raw;
+    const params = new URLSearchParams(trimmed);
+    const out: { stratum?: string; year?: number; segmentId?: string } = {};
+    const stratum = params.get('stratum');
+    if (stratum) out.stratum = stratum;
+    const yearStr = params.get('year');
+    if (yearStr) {
+      const n = Number(yearStr);
+      if (Number.isFinite(n)) out.year = n;
+    }
+    const segmentId = params.get('segmentId');
+    if (segmentId) out.segmentId = segmentId;
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+export default function CostForge({ metadata }: CostForgeProps = {}) {
   const activeTab    = useCostForgeWorkspaceStore((s) => s.activeTab);
   const setActiveTab = useCostForgeWorkspaceStore((s) => s.setActiveTab);
   const fetchStats   = useCostForgeWorkspaceStore((s) => s.fetchDashboardStats);
   const taxYear      = useCostForgeWorkspaceStore((s) => s.taxYear);
   const setTaxYear   = useCostForgeWorkspaceStore((s) => s.setTaxYear);
+  const setHandoffContext    = useCostForgeWorkspaceStore((s) => s.setHandoffContext);
+  const contextStratumKey    = useCostForgeWorkspaceStore((s) => s.contextStratumKey);
+  const contextSegmentId     = useCostForgeWorkspaceStore((s) => s.contextSegmentId);
+  const contextSegmentLabel  = useCostForgeWorkspaceStore((s) => s.contextSegmentLabel);
   const abortRef     = useRef<AbortController | null>(null);
+
+  // ── Consume County Studio handoff metadata on mount ─────────────────────
+  useEffect(() => {
+    if (!metadata) return;
+    const parsed = parseDeeplinkQuery(metadata.deeplinkQuery);
+
+    const stratumFromMeta = typeof metadata.stratumKey === 'string' ? metadata.stratumKey : null;
+    const stratum = stratumFromMeta ?? parsed.stratum ?? null;
+
+    const yearFromMeta = typeof metadata.taxYear === 'number' ? metadata.taxYear : null;
+    const year = yearFromMeta ?? parsed.year ?? null;
+
+    const segmentFromMeta = typeof metadata.segmentId === 'string' ? metadata.segmentId : null;
+    const segmentId = segmentFromMeta ?? parsed.segmentId ?? null;
+
+    const label = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
+
+    if (year !== null) setTaxYear(year);
+    if (stratum || segmentId) {
+      setHandoffContext(stratum, segmentId, label);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     abortRef.current = new AbortController();
@@ -137,6 +209,13 @@ export default function CostForge() {
     return () => { abortRef.current?.abort(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taxYear]);  // re-fetch when year changes
+
+  const handleBackToCountyStudio = () => {
+    void activateModule('county-studio', {
+      source: 'system',
+      metadata: contextSegmentId ? { segmentId: contextSegmentId } : undefined,
+    });
+  };
 
   return (
     <div className="cf-workspace" data-testid="cf-workspace">
@@ -147,6 +226,29 @@ export default function CostForge() {
             <h1 className="cf-header__title">CostForge</h1>
           </div>
           <div className="cf-header__badges">
+            {contextSegmentId && (
+              <button
+                type="button"
+                data-testid="cf-scoped-from-chip"
+                data-segment-id={contextSegmentId}
+                data-stratum={contextStratumKey ?? ''}
+                onClick={handleBackToCountyStudio}
+                title="Back to County Studio"
+                style={{
+                  background: 'hsl(var(--cf-accent, 199 89% 48%) / 0.12)',
+                  border: '1px solid hsl(var(--cf-accent, 199 89% 48%) / 0.4)',
+                  color: 'var(--cf-accent, hsl(199 89% 48%))',
+                  padding: '3px 10px',
+                  borderRadius: 999,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                ← From County Studio · Segment {contextSegmentLabel ?? contextSegmentId}
+                {contextStratumKey ? ` · Stratum ${contextStratumKey}` : ''}
+              </button>
+            )}
             {/* Tax year selector */}
             <select
               value={taxYear}

@@ -31,6 +31,17 @@ interface CostForgeWorkspaceState {
   selectedHoodCd: string | null;
   selectedParcelId: string | null;
   taxYear: number;
+  /**
+   * Stratum key from the County Studio Inspector handoff (e.g. "R1", "C2").
+   * Drives a "Scoped From" chip in the workspace header. Null when CostForge
+   * was opened standalone. Separate from selectedHoodCd so we don't confuse
+   * a neighborhood drill with a stratum-scope entry point.
+   */
+  contextStratumKey: string | null;
+  /** County Studio segment id for the Scoped From chip round-trip link. */
+  contextSegmentId: string | null;
+  /** Human label for the chip (optional; falls back to segmentId). */
+  contextSegmentLabel: string | null;
   dashboardStats: DashboardStats | null;
   dashboardLoading: boolean;
   dashboardError: string | null;
@@ -39,6 +50,12 @@ interface CostForgeWorkspaceState {
   setSelectedHood(hoodCd: string | null): void;
   setSelectedParcel(parcelId: string | null): void;
   setTaxYear(year: number): void;
+  /** Set Inspector handoff context; pass (null, null) to clear. */
+  setHandoffContext(
+    stratumKey: string | null,
+    segmentId: string | null,
+    segmentLabel?: string | null
+  ): void;
   /** Navigate to hood-audit tab for the given neighborhood */
   drillIntoHood(hoodCd: string): void;
   /** Navigate to parcel tab for the given parcel */
@@ -51,6 +68,9 @@ export const useCostForgeWorkspaceStore = create<CostForgeWorkspaceState>((set, 
   selectedHoodCd: null,
   selectedParcelId: null,
   taxYear: 2026,
+  contextStratumKey: null,
+  contextSegmentId: null,
+  contextSegmentLabel: null,
   dashboardStats: null,
   dashboardLoading: false,
   dashboardError: null,
@@ -59,6 +79,13 @@ export const useCostForgeWorkspaceStore = create<CostForgeWorkspaceState>((set, 
   setSelectedHood: (hoodCd) => set({ selectedHoodCd: hoodCd }),
   setSelectedParcel: (parcelId) => set({ selectedParcelId: parcelId }),
   setTaxYear: (year) => set({ taxYear: year, dashboardStats: null }),
+
+  setHandoffContext: (stratumKey, segmentId, segmentLabel = null) =>
+    set({
+      contextStratumKey:   stratumKey,
+      contextSegmentId:    segmentId,
+      contextSegmentLabel: segmentLabel,
+    }),
 
   drillIntoHood: (hoodCd) => set({ selectedHoodCd: hoodCd, activeTab: 'hood-audit' }),
   drillIntoParcel: (parcelId) => set({ selectedParcelId: parcelId, activeTab: 'parcel' }),
