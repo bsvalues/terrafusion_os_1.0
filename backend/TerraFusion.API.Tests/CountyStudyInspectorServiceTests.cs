@@ -286,26 +286,26 @@ public sealed class CountyStudyInspectorServiceTests : IDisposable
     [Fact]
     public async Task GetActionContextAsync_SupportFlags_GateDeeplinkQueryNullability()
     {
-        // Task D3 wave 3: SalesForge + CostForge + CompsForge + Dais are wired.
-        // Dossier remains honest-disabled (switch = false → DeeplinkQuery null).
+        // Task D3 wave 4 (final): all five handoff targets are wired end-to-end.
         var support = CountyStudyInspectorService.ResolveDeeplinkSupport();
         Assert.True(support.SalesForge);
         Assert.True(support.CostForge);
         Assert.True(support.CompsForge);
         Assert.True(support.Dais);
-        Assert.False(support.Dossier);
+        Assert.True(support.Dossier);
 
         var study = await SeedBentonFixture();
         var segment = _db.CountySegments
             .First(s => s.SegmentSetId == study.ActiveSegmentSetId!.Value);
         var ctx = await _svc.GetActionContextAsync(segment.SegmentId);
 
-        // Wired targets: deeplink present and carries stratum/year/segmentId.
+        // SalesForge deeplink: carries stratum + year + segmentId.
         Assert.NotNull(ctx.SalesForge.DeeplinkQuery);
         Assert.Contains("stratum=", ctx.SalesForge.DeeplinkQuery);
         Assert.Contains($"year={study.TaxYear}", ctx.SalesForge.DeeplinkQuery);
         Assert.Contains($"segmentId={segment.SegmentId}", ctx.SalesForge.DeeplinkQuery);
 
+        // CostForge deeplink: carries stratum + year + segmentId.
         Assert.NotNull(ctx.CostForge.DeeplinkQuery);
         Assert.Contains("stratum=", ctx.CostForge.DeeplinkQuery);
         Assert.Contains($"year={study.TaxYear}", ctx.CostForge.DeeplinkQuery);
@@ -321,8 +321,10 @@ public sealed class CountyStudyInspectorServiceTests : IDisposable
         Assert.Contains("template=SegmentReview", ctx.Dais.DeeplinkQuery);
         Assert.Contains($"segmentId={segment.SegmentId}", ctx.Dais.DeeplinkQuery);
 
-        // Unwired target stays null so the UI button renders honest-disabled.
-        Assert.Null(ctx.Dossier.DeeplinkQuery);
+        // Dossier deeplink: carries template=SegmentEvidence + segmentId + studyId.
+        Assert.NotNull(ctx.Dossier.DeeplinkQuery);
+        Assert.Contains("template=SegmentEvidence", ctx.Dossier.DeeplinkQuery);
+        Assert.Contains($"segmentId={segment.SegmentId}", ctx.Dossier.DeeplinkQuery);
     }
 
     [Fact]

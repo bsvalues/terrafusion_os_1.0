@@ -252,14 +252,18 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
     ///                workflowTemplate + segmentId and creates a session-scoped
     ///                SegmentWorkflowDraft rendered in DaisWorkflowDraftPanel
     ///                above the module launcher grid.
-    ///   Dossier    — blocked on receiver code; left false until wired.
+    ///   Dossier    — wired at DossierSuiteHome.tsx useEffect mount hook,
+    ///                consumes packetTemplate + segmentId and creates a
+    ///                session-scoped SegmentEvidenceDraft rendered in
+    ///                DossierEvidenceDraftPanel above the module grid.
+    /// All five targets are now wired end-to-end.
     /// </summary>
     public static DeeplinkSupport ResolveDeeplinkSupport() => new(
         SalesForge: true,
         CostForge:  true,
         CompsForge: true,
         Dais:       true,
-        Dossier:    false);
+        Dossier:    true);
 
     public record DeeplinkSupport(
         bool SalesForge,
