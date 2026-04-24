@@ -73,7 +73,15 @@ public class CountyResolver : ICountyResolver
                 StringComparer.OrdinalIgnoreCase),
         };
 
-        _cache.Set(CacheKey, lookup, CacheTtl);
+        // The shared IMemoryCache is configured with a SizeLimit in Program.cs,
+        // so every entry MUST declare a Size. We use 1 — the county lookup is a
+        // single logical entry regardless of row count, and the limit is used
+        // purely to bound total cached entries, not byte cost.
+        _cache.Set(CacheKey, lookup, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = CacheTtl,
+            Size = 1,
+        });
         _logger.LogDebug("[CountyResolver] Cached lookup for {Count} counties", rows.Count);
         return lookup;
     }

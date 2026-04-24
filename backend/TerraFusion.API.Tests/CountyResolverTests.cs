@@ -116,4 +116,30 @@ public class CountyResolverTests
         Assert.Equal(KingId,   king);
         Assert.NotEqual(benton, king);
     }
+
+    // Regression: the shared IMemoryCache in Program.cs is configured with a
+    // SizeLimit, so any cache Set() without a Size throws
+    // "Cache entry must specify a value for Size when SizeLimit is set."
+    // A live smoke test of /api/county-study/studies?countyId=benton surfaced
+    // this; the CreateSut() tests above use a no-limit MemoryCache so they
+    // missed it. This test locks the fix against the production-shaped cache.
+    [Fact]
+    public async Task ResolveAsync_WorksWith_SizeLimited_MemoryCache()
+    {
+        var ctx = TestDbContextFactory.CreateInMemoryContext();
+        ctx.Counties.Add(new County { Id = BentonId, Name = "Benton", State = "WA", FipsCode = "53005" });
+        ctx.SaveChanges();
+
+        // Production-shaped cache: SizeLimit forces every entry to specify Size.
+        var cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 10 });
+        var sut = new CountyResolver(ctx, cache, NullLogger<CountyResolver>.Instance);
+
+        // First call populates the cache — the bug threw here before the fix.
+        var first = await sut.ResolveAsync("benton");
+        Assert.Equal(BentonId, first);
+
+        // Second call hits the cache without re-querying, still returning the right Guid.
+        var second = await sut.ResolveAsync(BentonId.ToString());
+        Assert.Equal(BentonId, second);
+    }
 }
