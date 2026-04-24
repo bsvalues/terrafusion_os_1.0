@@ -6,13 +6,23 @@
  *
  * Shows: county stats, module launcher grid, shared recent parcel queue.
  * Does NOT host parcel execution — that lives in the Property Workbench.
+ *
+ * Task D3 — receives County Studio Inspector handoff metadata on mount.
+ * Supported metadata keys (all optional):
+ *   deeplinkQuery:  '?template=SegmentEvidence&segmentId=s1' — raw query;
+ *                   parsed as a fallback if pre-split fields are missing.
+ *   packetTemplate: string (currently always 'SegmentEvidence').
+ *   segmentId:      string — seeds the draft + back-chip.
+ *   segmentLabel:   string — human label for the draft.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { invokeTool } from '../../api/pilotApi';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
+import DossierEvidenceDraftPanel from '../../components/dossier/DossierEvidenceDraftPanel';
+import { useSegmentEvidenceDraftStore } from './segmentEvidenceDraftStore';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
   FolderOpen,
@@ -74,9 +84,51 @@ function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): s
   return null;
 }
 
-export default function DossierSuiteHome() {
+/** Best-effort parser for the raw backend deeplink query string (Task D3). */
+function parseDossierDeeplinkQuery(raw: unknown): { template?: string; segmentId?: string } {
+  if (typeof raw !== 'string' || raw.length === 0) return {};
+  try {
+    const trimmed = raw.startsWith('?') ? raw.slice(1) : raw;
+    const params  = new URLSearchParams(trimmed);
+    const out: { template?: string; segmentId?: string } = {};
+    const template = params.get('template');
+    if (template) out.template = template;
+    const segmentId = params.get('segmentId');
+    if (segmentId) out.segmentId = segmentId;
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+export interface DossierSuiteHomeProps {
+  /** Optional metadata from the shell's window system (County Studio handoff). */
+  metadata?: Record<string, unknown>;
+}
+
+export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {}) {
   const { stats, loading, error, source } = useCountyStats();
   const sourceDisclosure = getSourceDisclosure(source);
+  const createDraft = useSegmentEvidenceDraftStore((s) => s.createDraft);
+
+  // ── Consume County Studio handoff metadata on mount (Task D3) ───────────
+  useEffect(() => {
+    if (!metadata) return;
+    const parsed = parseDossierDeeplinkQuery(metadata.deeplinkQuery);
+
+    const templateFromMeta = typeof metadata.packetTemplate === 'string' ? metadata.packetTemplate : null;
+    const template = templateFromMeta ?? parsed.template ?? null;
+
+    const segmentFromMeta = typeof metadata.segmentId === 'string' ? metadata.segmentId : null;
+    const segmentId = segmentFromMeta ?? parsed.segmentId ?? null;
+
+    const labelFromMeta = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
+
+    if (template === 'SegmentEvidence' && segmentId) {
+      createDraft(template, segmentId, labelFromMeta ?? segmentId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [appealId, setAppealId] = useState('BOE-2026-001');
   const [draftVersion, setDraftVersion] = useState('benton-2026-working');
   const [packetState, setPacketState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: OpenAppealPacketSummary; correlationId?: string; error?: string }>({ status: 'idle' });
@@ -178,6 +230,9 @@ export default function DossierSuiteHome() {
   return (
     <div data-testid="suite-dossier-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="dossier" />
+
+      {/* Task D3 — County Studio handoff: segment evidence draft */}
+      <DossierEvidenceDraftPanel />
 
       {/* Source disclosure — only when not live */}
       {stats && sourceDisclosure && (
