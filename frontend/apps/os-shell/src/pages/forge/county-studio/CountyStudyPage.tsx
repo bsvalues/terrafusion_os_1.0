@@ -1,8 +1,22 @@
-import React, { useState } from 'react';
+// frontend/apps/os-shell/src/pages/forge/county-studio/CountyStudyPage.tsx
+//
+// Task B — drill-lattice rewrite. The previous flat tab strip
+// (Overview / Ratio Study / Neighborhoods / Adjustments / Exceptions /
+// Compliance) has been replaced with a County → City → Neighborhood →
+// Segment drill driven by countyStudioStore.drillLevel.
+//
+// The tab-filter concept is preserved as compact compliance/severity pills
+// that live ABOVE whichever rollup or segment table is active (inside the
+// rollup table components, not here).
+
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { LeftRail } from './components/LeftRail';
 import { SegmentTable } from './components/SegmentTable';
+import { CityRollupTable } from './components/CityRollupTable';
+import { NeighborhoodRollupTable } from './components/NeighborhoodRollupTable';
+import { DrillBreadcrumb } from './components/DrillBreadcrumb';
 import { RightRail } from './components/RightRail';
 import { BottomDeck } from './components/BottomDeck';
 import { CohortCreationDialog } from './components/CohortCreationDialog';
@@ -12,37 +26,56 @@ import { useCountyStudyHub } from './hooks/useCountyStudyHub';
 import { useStudyData } from './hooks/useStudyData';
 import type { CountySegmentDto } from './types/countyStudio.types';
 
-type CenterTab = 'Overview' | 'Ratio Study' | 'Neighborhoods' | 'Adjustments' | 'Exceptions' | 'Compliance';
+type SegmentSeverityFilter = 'all' | 'critical' | 'warnings' | 'healthy';
 
-const TAB_FILTERS: Record<CenterTab, ((seg: CountySegmentDto) => boolean) | undefined> = {
-  'Overview': undefined,
-  'Ratio Study': undefined,
-  'Neighborhoods': (seg) => seg.segmentType.toLowerCase().includes('neighborhood') || seg.segmentType.toLowerCase().includes('nbhd'),
-  'Adjustments': undefined,
-  'Exceptions': (seg) => seg.exceptionCount > 0,
-  'Compliance': (seg) => seg.cod > 20 || seg.prd < 0.98 || seg.prd > 1.03,
+const SEGMENT_FILTERS: Record<SegmentSeverityFilter, ((seg: CountySegmentDto) => boolean) | undefined> = {
+  all:      undefined,
+  critical: (s) => s.stabilityScore < 60 || s.cod > 20,
+  warnings: (s) => (s.stabilityScore >= 60 && s.stabilityScore < 80) || (s.cod > 15 && s.cod <= 20) || s.exceptionCount > 0,
+  healthy:  (s) => s.stabilityScore >= 80 && s.cod <= 15,
 };
+
+const SEGMENT_FILTER_PILLS: { key: SegmentSeverityFilter; label: string }[] = [
+  { key: 'all',      label: 'All' },
+  { key: 'critical', label: 'Critical' },
+  { key: 'warnings', label: 'Warnings' },
+  { key: 'healthy',  label: 'Healthy' },
+];
 
 const syncColor: Record<string, string> = {
   LIVE: '#22c55e', STAGED: '#f59e0b', SNAPSHOT: '#3b82f6', DISCONNECTED: '#6b7280',
 };
 
 export function CountyStudyPage() {
-  const { activeStudy, syncState } = useCountyStudioStore();
-  const [activeTab, setActiveTab] = useState<CenterTab>('Overview');
+  const {
+    activeStudy, syncState, drillLevel, selectedNeighborhood,
+  } = useCountyStudioStore();
   const [showOpenStudy, setShowOpenStudy] = useState(false);
+  const [segmentFilter, setSegmentFilter] = useState<SegmentSeverityFilter>('all');
   const navigate = useNavigate();
 
   useCountyStudyHub(activeStudy?.studyId ?? null);
   const { retryAll } = useStudyData();
 
   const color = syncColor[syncState] ?? '#6b7280';
-  const tabFilter = TAB_FILTERS[activeTab];
 
   const handleOpenAtlas = () => {
     if (!activeStudy) return;
     navigate(`/forge/atlas-live?studyId=${activeStudy.studyId}`);
   };
+
+  // Compose segment filter: severity pill AND selectedNeighborhood (when at the
+  // neighborhood drill level). Memoized so the SegmentTable doesn't re-sort on
+  // every parent re-render.
+  const segmentFilterFn = useMemo(() => {
+    const severity = SEGMENT_FILTERS[segmentFilter];
+    const hood = drillLevel === 'neighborhood' ? selectedNeighborhood : null;
+    return (seg: CountySegmentDto) => {
+      if (severity && !severity(seg)) return false;
+      if (hood && seg.geographyRef !== hood) return false;
+      return true;
+    };
+  }, [segmentFilter, drillLevel, selectedNeighborhood]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -101,60 +134,52 @@ export function CountyStudyPage() {
         </div>
 
         <div data-testid="cs-center" style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          {/* Tab Bar — WAI-ARIA tablist pattern */}
-          <div
-            role="tablist"
-            aria-label="Center panel views"
-            onKeyDown={(e) => {
-              const tabs: CenterTab[] = ['Overview', 'Ratio Study', 'Neighborhoods', 'Adjustments', 'Exceptions', 'Compliance'];
-              const idx = tabs.indexOf(activeTab);
-              if (e.key === 'ArrowRight') {
-                e.preventDefault();
-                setActiveTab(tabs[(idx + 1) % tabs.length]);
-              } else if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                setActiveTab(tabs[(idx - 1 + tabs.length) % tabs.length]);
-              } else if (e.key === 'Home') {
-                e.preventDefault();
-                setActiveTab(tabs[0]);
-              } else if (e.key === 'End') {
-                e.preventDefault();
-                setActiveTab(tabs[tabs.length - 1]);
-              }
-            }}
-            style={{
-              height: 36, display: 'flex', alignItems: 'center', gap: 2, padding: '0 12px',
-              borderBottom: '1px solid hsl(var(--tf-border, 220 13% 20%))', flexShrink: 0,
-            }}
-          >
-            {(['Overview', 'Ratio Study', 'Neighborhoods', 'Adjustments', 'Exceptions', 'Compliance'] as CenterTab[]).map((tab) => (
-              <button
-                key={tab}
-                role="tab"
-                aria-selected={activeTab === tab}
-                aria-controls="cs-center-panel"
-                id={`cs-tab-${tab.replace(/\s+/g, '-').toLowerCase()}`}
-                tabIndex={activeTab === tab ? 0 : -1}
-                onClick={() => setActiveTab(tab)}
-                style={{
-                  fontSize: 11, padding: '4px 10px', borderRadius: 4, border: 'none',
-                  background: activeTab === tab ? 'hsl(var(--tf-surface))' : 'transparent',
-                  color: activeTab === tab ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
-                  fontWeight: activeTab === tab ? 700 : 400,
-                  cursor: 'pointer',
-                }}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
+          {/* Breadcrumb — collapses drill on click */}
+          <DrillBreadcrumb />
+
           <div
             id="cs-center-panel"
-            role="tabpanel"
-            aria-labelledby={`cs-tab-${activeTab.replace(/\s+/g, '-').toLowerCase()}`}
-            style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}
+            data-testid="cs-drill-panel"
+            data-drill-level={drillLevel}
+            style={{ flex: 1, overflow: 'hidden', minHeight: 0, display: 'flex', flexDirection: 'column' }}
           >
-            <SegmentTable filter={tabFilter} />
+            {drillLevel === 'county' && <CityRollupTable />}
+            {drillLevel === 'city'   && <NeighborhoodRollupTable />}
+            {drillLevel === 'neighborhood' && (
+              <>
+                {/* Severity filter pills above the segment table at the neighborhood level */}
+                <div
+                  role="toolbar"
+                  aria-label="Segment severity filter"
+                  style={{
+                    display: 'flex', gap: 6, padding: '8px 12px', flexShrink: 0,
+                    borderBottom: '1px solid hsl(var(--tf-border))',
+                  }}
+                >
+                  {SEGMENT_FILTER_PILLS.map((p) => (
+                    <button
+                      key={p.key}
+                      onClick={() => setSegmentFilter(p.key)}
+                      data-testid={`segment-filter-${p.key}`}
+                      aria-pressed={segmentFilter === p.key}
+                      style={{
+                        fontSize: 11, padding: '3px 9px', borderRadius: 10,
+                        border: '1px solid hsl(var(--tf-border))',
+                        background: segmentFilter === p.key ? 'hsl(var(--tf-surface))' : 'transparent',
+                        color: segmentFilter === p.key ? 'hsl(var(--tf-fg))' : 'hsl(var(--tf-muted))',
+                        fontWeight: segmentFilter === p.key ? 700 : 400,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{ flex: 1, minHeight: 0 }}>
+                  <SegmentTable filter={segmentFilterFn} />
+                </div>
+              </>
+            )}
           </div>
           <div style={{ height: 200, borderTop: '1px solid hsl(var(--tf-border, 220 13% 20%))', flexShrink: 0 }}>
             <BottomDeck />
