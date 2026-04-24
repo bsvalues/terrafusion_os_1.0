@@ -2,7 +2,7 @@
 
 **Branch:** `chunk-1-integration` (pushed to `origin` at github.com/bsvalues/terrafusion_os_1.0)
 **Base:** `chore/terra-levy-parity-sync` @ `732728a6c`
-**Tip:** `345c1aef1` (post-delivery follow-ups: Atlas map data + skeletons + flat-dollar per-parcel recompute + Playwright E2E spec + runbook)
+**Tip:** `eb197206f` (post-delivery + smoke-test bug fixes: SizeLimit cache bug, JsonStringEnumConverter)
 **Chunk-7 doc commit:** `8c814325a`
 **Working session:** 2026-04-22 → 2026-04-23
 
@@ -130,6 +130,71 @@ failure-mode quick reference.
 
 Every item from the original open-list and the two extensions that
 emerged during follow-up work is closed. The branch is merge-ready.
+
+## Post-follow-up smoke pass (2026-04-23 evening)
+
+Ran the full stack — backend + frontend — after user pushback on shipping
+"runnable artifacts" without actually running them. The pushback was
+correct. Two real bugs surfaced and were fixed:
+
+**Bug 1 (`8ba550522`) — CountyResolver cache entries need a Size.** The
+production `IMemoryCache` registered in `Program.cs` has a `SizeLimit`
+configured. Every `IMemoryCache.Set()` against a size-limited cache MUST
+declare the entry's Size. `CountyResolver.GetLookupAsync` was calling
+`_cache.Set(key, value, CacheTtl)` without Size, which threw at runtime:
+`"Cache entry must specify a value for Size when SizeLimit is set."`
+Every call to `/api/county-study/studies?countyId=<anything>` returned
+HTTP 400 with that message. 11 unit tests missed this because they all
+used a no-limit `new MemoryCache(new MemoryCacheOptions())`. Fix: pass
+`MemoryCacheEntryOptions { Size = 1 }`. Regression test
+`ResolveAsync_WorksWith_SizeLimited_MemoryCache` locks it against a
+production-shaped cache.
+
+**Bug 2 (`eb197206f`) — JsonStringEnumConverter missing.** The
+`AddJsonOptions` configuration in `Program.cs` set camelCase, reference
+handling, and null-ignore behavior, but did NOT register a
+`JsonStringEnumConverter`. System.Text.Json defaults to numeric enum
+serialization. Frontend sends enum NAMES (`"RatioStudy"`, `"Segment"`,
+`"LandValuePercent"`) and every POST with an enum-carrying body returned
+HTTP 400 with the JSON deserialization error. Fix: one-line
+`Converters.Add(new JsonStringEnumConverter())`. Unblocks all enum-carrying
+request bodies across the entire API, not just the ones I added.
+
+### Smoke pass scorecard
+
+| Layer | Status |
+|---|---|
+| Backend `dotnet build TerraFusion.sln` | ✅ 0 errors |
+| Backend boot (SQLite override) | ✅ listens on :5000 |
+| `GET /api/county-study/studies?countyId=benton` | ✅ 200 `[]` (empty) then `[{study}]` after create |
+| `POST /api/county-study/studies` with `"studyType":"RatioStudy"` | ✅ 200 `{study}` with resolved Guid |
+| `POST /api/county-study/studies/{id}/derive-segments` | ✅ 200 `{segmentSetId}` |
+| `POST /api/county-study/cohorts` with `"selectionType":"Segment"` | ✅ 200 `{cohort}` |
+| `POST /api/county-study/scenarios` with `"adjustmentType":"LandValuePercent"` | ✅ 200 `{scenario}` |
+| `GET /api/county-study/scenarios/{id}/preview` | ✅ 200 with honest zeros (empty DB) |
+| `GET /api/terraforge/ratio-study` | ✅ 200 with `tierSlope`, `tierMedians` (Chunk 2 A1) |
+| `GET /api/costforge/dashboard-stats` | ✅ 200 with `dataIntegrityWarning: null` (Chunk 2 A2) |
+| `GET /api/geoforge/v2/neighborhoods/outline` | ✅ 200 empty FeatureCollection |
+| Frontend `tsc --noEmit` | ✅ exit 0 |
+| Frontend `vite build` | ✅ built in 4m 6s, exit 0 |
+| Rust kernels `cargo build --release` | ✅ finished in 1m 26s |
+| My 78 new tests (76 unit + 2 kernel integration) | ✅ 78/78 pass |
+
+### Pre-existing test failures (NOT mine)
+
+56 failures on the branch, all pre-existing on the trunk:
+- 9 × `ValuationServiceYearLayerTests.GetAvailableYears` — noted as
+  pre-existing baseline in earlier reviewer notes
+- ~30 × `SystemIntegrationTests.*` — WebApplicationFactory content-root
+  resolution issue in worktree layout
+- 6 × `AgentTelemetryContractTests.GetEvents` — same content-root issue
+- 2 × `Phase12.OrphanInterfaceGuardTests` — interface guard checks
+- 3 × `Phase15.NamingDriftSentinelTests` — naming convention sentinels
+- A few misc TerraForge tests with similar setup issues
+
+None of these failing test files are touched by this branch
+(`git log 732728a6c..HEAD -- <path>` returns empty for every one). They
+fail identically on the trunk.
 
 ## Merge-up path
 
