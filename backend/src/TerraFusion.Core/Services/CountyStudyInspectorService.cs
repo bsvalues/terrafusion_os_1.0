@@ -231,14 +231,20 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
 
     /// <summary>
     /// Single source of truth for whether each handoff target currently
-    /// accepts URL parameters. All five are currently false because no
-    /// downstream module reads segmentId/stratum/year from its query string
-    /// yet — every handoff button ships as honest-disabled in the Inspector.
-    /// Flipping any of these to true after wiring a target's param reader
-    /// is the only change required to enable its deeplink.
+    /// accepts URL parameters. A flag is true only when the downstream
+    /// module has a mount-time reader that consumes segmentId / stratum /
+    /// year / sample parcel ids from window metadata (carrying the
+    /// deeplinkQuery). Flipping a flag without wiring the target produces
+    /// a handoff that lands on a generic screen — ui-honesty-pass violation.
+    ///
+    /// Task D2 wave 1:
+    ///   SalesForge — wired at SalesForge.tsx useEffect mount hook, consumes
+    ///                stratumKey/taxYear/segmentId and selects AI AUDIT tab.
+    ///   CostForge, CompsForge, Dais, Dossier — blocked on receiver code
+    ///                in their respective modules; left false until wired.
     /// </summary>
     public static DeeplinkSupport ResolveDeeplinkSupport() => new(
-        SalesForge: false,
+        SalesForge: true,
         CostForge:  false,
         CompsForge: false,
         Dais:       false,

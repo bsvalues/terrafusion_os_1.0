@@ -284,14 +284,13 @@ public sealed class CountyStudyInspectorServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task GetActionContextAsync_AllDeeplinksNull_WhenSupportDisabled()
+    public async Task GetActionContextAsync_SupportFlags_GateDeeplinkQueryNullability()
     {
-        // ResolveDeeplinkSupport returns all-false in current state — verify
-        // the response carries null DeeplinkQuery everywhere. When a target is
-        // wired in the future, this test's ResolveDeeplinkSupport flag flips
-        // and the assertion below will remind us to update the frontend map.
+        // Task D2 wave 1: SalesForge is wired (switch = true) — its deeplink
+        // must be populated. The other four targets remain honest-disabled
+        // (switch = false → DeeplinkQuery null).
         var support = CountyStudyInspectorService.ResolveDeeplinkSupport();
-        Assert.False(support.SalesForge);
+        Assert.True(support.SalesForge);
         Assert.False(support.CostForge);
         Assert.False(support.CompsForge);
         Assert.False(support.Dais);
@@ -302,7 +301,13 @@ public sealed class CountyStudyInspectorServiceTests : IDisposable
             .First(s => s.SegmentSetId == study.ActiveSegmentSetId!.Value);
         var ctx = await _svc.GetActionContextAsync(segment.SegmentId);
 
-        Assert.Null(ctx.SalesForge.DeeplinkQuery);
+        // SalesForge is wired: query must be present and carry stratum/year.
+        Assert.NotNull(ctx.SalesForge.DeeplinkQuery);
+        Assert.Contains("stratum=", ctx.SalesForge.DeeplinkQuery);
+        Assert.Contains($"year={study.TaxYear}", ctx.SalesForge.DeeplinkQuery);
+        Assert.Contains($"segmentId={segment.SegmentId}", ctx.SalesForge.DeeplinkQuery);
+
+        // Unwired targets stay null so the UI button renders honest-disabled.
         Assert.Null(ctx.CostForge.DeeplinkQuery);
         Assert.Null(ctx.CompsForge.DeeplinkQuery);
         Assert.Null(ctx.Dais.DeeplinkQuery);
