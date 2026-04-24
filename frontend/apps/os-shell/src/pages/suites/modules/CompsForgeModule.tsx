@@ -9,9 +9,20 @@
  *
  * Adjustment engine uses paired-sales methodology with PACS physical
  * characteristics: GLA, lot size, age, quality grade, condition.
+ *
+ * Task D3 — receives County Studio Inspector handoff metadata on mount.
+ * Supported metadata keys (all optional):
+ *   deeplinkQuery: '?segmentId=s1&sample=HP-0,HP-1,HP-2' — raw query;
+ *                  parsed as a fallback if pre-split fields are missing.
+ *   parcelIds:     string[] | string — preloaded sample parcel ids (up to 10).
+ *   segmentId:     string — drives the "Scoped From" chip.
+ *   segmentLabel:  string — human label for the chip.
+ * When preloadedSampleIds is present a top-of-main "Preloaded from County
+ * Studio" section renders listing those parcels as initial comp candidates.
  */
 
-import { useCallback, useMemo, useReducer, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import activateModule from '@/orchestration/moduleActivation';
 import { invokeTool } from '@/api/pilotApi';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,6 +54,7 @@ import {
 } from 'lucide-react';
 import { apiFetch } from '@/lib/apiBase';
 import { usePropertyStore } from '@/stores/propertyStore';
+import { useCompsForgeHandoffStore } from './compsForgeHandoffStore';
 
 // ============================================================================
 // Types
@@ -237,11 +249,97 @@ interface CompsCommitResult {
 }
 
 // ============================================================================
+// Deeplink parsing (Task D3)
+// ============================================================================
+
+/** Best-effort parser for the raw backend deeplink query string. */
+function parseDeeplinkQuery(raw: unknown): {
+  parcelIds?: string[];
+  segmentId?: string;
+} {
+  if (typeof raw !== 'string' || raw.length === 0) return {};
+  try {
+    const trimmed = raw.startsWith('?') ? raw.slice(1) : raw;
+    const params = new URLSearchParams(trimmed);
+    const out: { parcelIds?: string[]; segmentId?: string } = {};
+    const sample = params.get('sample');
+    if (sample) {
+      const ids = sample
+        .split(',')
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+      if (ids.length > 0) out.parcelIds = ids;
+    }
+    const segmentId = params.get('segmentId');
+    if (segmentId) out.segmentId = segmentId;
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+/** Normalize parcelIds metadata field (accepts string[] or comma-separated string). */
+function normalizeParcelIds(raw: unknown): string[] | null {
+  if (Array.isArray(raw)) {
+    const ids = raw.filter((x): x is string => typeof x === 'string' && x.length > 0);
+    return ids.length > 0 ? ids : null;
+  }
+  if (typeof raw === 'string' && raw.length > 0) {
+    const ids = raw
+      .split(',')
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+    return ids.length > 0 ? ids : null;
+  }
+  return null;
+}
+
+export interface CompsForgeModuleProps {
+  /**
+   * Optional metadata from the shell's window system. Carries County Studio
+   * Inspector handoff payload (parcelIds / segmentId / label).
+   */
+  metadata?: Record<string, unknown>;
+}
+
+// ============================================================================
 // Component
 // ============================================================================
 
-export default function CompsForgeModule() {
+export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {}) {
   const activeParcel = usePropertyStore((s) => s.activeParcel);
+  const preloadedSampleIds  = useCompsForgeHandoffStore((s) => s.preloadedSampleIds);
+  const contextSegmentId    = useCompsForgeHandoffStore((s) => s.contextSegmentId);
+  const contextSegmentLabel = useCompsForgeHandoffStore((s) => s.contextSegmentLabel);
+  const setHandoffContext   = useCompsForgeHandoffStore((s) => s.setHandoffContext);
+
+  // ── Consume County Studio handoff metadata on mount ─────────────────────
+  useEffect(() => {
+    if (!metadata) return;
+    const parsed = parseDeeplinkQuery(metadata.deeplinkQuery);
+
+    const idsFromMeta = normalizeParcelIds(metadata.parcelIds);
+    const ids = idsFromMeta ?? parsed.parcelIds ?? null;
+
+    const segmentFromMeta = typeof metadata.segmentId === 'string' ? metadata.segmentId : null;
+    const segmentId = segmentFromMeta ?? parsed.segmentId ?? null;
+
+    const label = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
+
+    if (ids && ids.length > 0) {
+      setHandoffContext(ids, segmentId, label);
+    } else if (segmentId) {
+      setHandoffContext([], segmentId, label);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleBackToCountyStudio = useCallback(() => {
+    void activateModule('county-studio', {
+      source: 'system',
+      metadata: contextSegmentId ? { segmentId: contextSegmentId } : undefined,
+    });
+  }, [contextSegmentId]);
 
   // Subject property — prefer active parcel characteristics, fallback to defaults
   const subject = useMemo<SubjectCharacteristics>(() => {
@@ -393,12 +491,79 @@ export default function CompsForgeModule() {
             )}
           </p>
         </div>
-        {data && (
-          <Badge variant='outline' style={{ color: 'hsl(var(--tf-fg))' }}>
-            {data.total.toLocaleString()} qualified sales
-          </Badge>
-        )}
+        <div className='flex items-center gap-2'>
+          {contextSegmentId && (
+            <button
+              type='button'
+              data-testid='cf-scoped-from-chip'
+              data-segment-id={contextSegmentId}
+              onClick={handleBackToCountyStudio}
+              title='Back to County Studio'
+              style={{
+                background: 'hsl(var(--tf-suite-forge) / 0.12)',
+                border: '1px solid hsl(var(--tf-suite-forge) / 0.4)',
+                color: 'hsl(var(--tf-suite-forge))',
+                padding: '3px 10px',
+                borderRadius: 999,
+                fontSize: 11,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              ← From County Studio · Segment {contextSegmentLabel ?? contextSegmentId}
+            </button>
+          )}
+          {data && (
+            <Badge variant='outline' style={{ color: 'hsl(var(--tf-fg))' }}>
+              {data.total.toLocaleString()} qualified sales
+            </Badge>
+          )}
+        </div>
       </div>
+
+      {/* Task D3 — Preloaded from County Studio */}
+      {preloadedSampleIds && preloadedSampleIds.length > 0 && (
+        <div
+          data-testid='cf-preloaded-section'
+          style={{
+            padding: '12px 16px',
+            borderRadius: 8,
+            background: 'hsl(var(--tf-suite-forge) / 0.06)',
+            border: '1px solid hsl(var(--tf-suite-forge) / 0.25)',
+          }}
+        >
+          <div className='flex items-center justify-between mb-2'>
+            <div>
+              <div className='text-xs uppercase tracking-wider font-semibold' style={{ color: 'hsl(var(--tf-suite-forge))' }}>
+                Preloaded from County Studio
+              </div>
+              <div className='text-xs mt-0.5' style={{ color: 'hsl(var(--tf-muted))' }}>
+                {preloadedSampleIds.length} sample parcel{preloadedSampleIds.length !== 1 ? 's' : ''} from segment {contextSegmentLabel ?? contextSegmentId ?? ''}
+              </div>
+            </div>
+          </div>
+          <ul data-testid='cf-preloaded-list' className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-2'>
+            {preloadedSampleIds.map((pid) => (
+              <li
+                key={pid}
+                data-testid='cf-preloaded-parcel'
+                data-parcel-id={pid}
+                className='flex items-center justify-between rounded-md px-3 py-2 text-xs'
+                style={{
+                  background: 'hsl(var(--tf-card-bg))',
+                  border: '1px solid hsl(var(--tf-border))',
+                  color: 'hsl(var(--tf-fg))',
+                }}
+              >
+                <span className='font-mono'>{pid}</span>
+              </li>
+            ))}
+          </ul>
+          <div className='text-xs mt-2' style={{ color: 'hsl(var(--tf-muted) / 0.8)' }}>
+            Use the filters below to pull these parcels into the qualified comps pool, or select comps from the full pool as usual.
+          </div>
+        </div>
+      )}
 
       {/* Filters */}
       <div
