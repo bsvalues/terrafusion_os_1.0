@@ -378,7 +378,12 @@ public record CountySegmentDetailDto(
     // Compliance
     string ComplianceStatus,                // IaaoCompliant | MarginalCompliance | NonCompliant | InsufficientData
     List<string> Warnings,                  // same vocabulary as HealthAlertDto.Reasons
-    DateTime? DerivedAt
+    DateTime? DerivedAt,
+    // Top-10 parcel IDs most responsible for this segment's findings.
+    // Sorted by |ratio − median| descending (greatest dispersion first).
+    // Empty when fewer than 2 qualified sales exist.
+    // Populated by CountyStudyInspectorService; used by AiDiagnosisPanel hints.
+    List<string> OutlierParcelIds
 );
 
 /// <summary>

@@ -262,7 +262,8 @@ public class CountyStudioAiService : ICountyStudioAiService
             Summary:          $"Only {d.RatioCount} qualified sales — insufficient for IAAO statistics (minimum {LowRatioCount}).",
             EvidenceStrength: 0.8m,
             Evidence:         Ev(("ratioCount", d.RatioCount), ("minimumRequired", LowRatioCount), ("parcelCount", d.ParcelCount)),
-            ParcelIdHints:    new List<string>());
+            // All parcels that have a qualified sale ARE the sample — show them all (capped at 10).
+            ParcelIdHints:    d.OutlierParcelIds.Take(10).ToList());
     }
 
     // ── Model detectors ───────────────────────────────────────────────────
@@ -279,7 +280,8 @@ public class CountyStudioAiService : ICountyStudioAiService
             Summary:          $"COD {codF1} exceeds IAAO ceiling of {CodIaaoCeiling:F0} — dispersion too high for compliant valuation.",
             EvidenceStrength: 0.75m,
             Evidence:         Ev(("cod", d.Cod.Value), ("iaaoCeiling", CodIaaoCeiling), ("ratioCount", d.RatioCount)),
-            ParcelIdHints:    new List<string>());
+            // Most extreme ratios drive COD — these are the parcels pulling dispersion up.
+            ParcelIdHints:    d.OutlierParcelIds.Take(10).ToList());
     }
 
     public static SegmentDiagnosisFinding? DetectIaaoCodExtreme(CountySegmentDetailDto d)
@@ -293,7 +295,7 @@ public class CountyStudioAiService : ICountyStudioAiService
             Summary:          $"COD {codF1} is extreme — more than 50% above IAAO ceiling of {CodIaaoCeiling:F0}; valuation dispersion is severe.",
             EvidenceStrength: 0.95m,
             Evidence:         Ev(("cod", d.Cod.Value), ("iaaoCeiling", CodIaaoCeiling), ("extremeThreshold", CodIaaoExtreme)),
-            ParcelIdHints:    new List<string>());
+            ParcelIdHints:    d.OutlierParcelIds.Take(10).ToList());
     }
 
     public static SegmentDiagnosisFinding? DetectMedianLowUnfair(CountySegmentDetailDto d)
@@ -307,7 +309,8 @@ public class CountyStudioAiService : ICountyStudioAiService
             Summary:          $"Median ratio {medF2} below IAAO fair range {MedianFairLow:F2}–{MedianFairHigh:F2} — parcels may be under-assessed.",
             EvidenceStrength: 0.7m,
             Evidence:         Ev(("median", d.MedianRatio.Value), ("fairLow", MedianFairLow), ("fairHigh", MedianFairHigh)),
-            ParcelIdHints:    new List<string>());
+            // Most extreme ratios from median — likely the under-assessed parcels.
+            ParcelIdHints:    d.OutlierParcelIds.Take(10).ToList());
     }
 
     public static SegmentDiagnosisFinding? DetectMedianHighUnfair(CountySegmentDetailDto d)
@@ -321,7 +324,7 @@ public class CountyStudioAiService : ICountyStudioAiService
             Summary:          $"Median ratio {medF2} above IAAO fair range {MedianFairLow:F2}–{MedianFairHigh:F2} — parcels may be over-assessed.",
             EvidenceStrength: 0.7m,
             Evidence:         Ev(("median", d.MedianRatio.Value), ("fairLow", MedianFairLow), ("fairHigh", MedianFairHigh)),
-            ParcelIdHints:    new List<string>());
+            ParcelIdHints:    d.OutlierParcelIds.Take(10).ToList());
     }
 
     public static SegmentDiagnosisFinding? DetectPrdRegressive(CountySegmentDetailDto d)
@@ -335,7 +338,7 @@ public class CountyStudioAiService : ICountyStudioAiService
             Summary:          $"PRD {prdF3} indicates assessment regressivity — higher-value parcels relatively under-assessed (IAAO fair {PrdFairLow:F2}–{PrdFairHigh:F2}).",
             EvidenceStrength: 0.65m,
             Evidence:         Ev(("prd", d.Prd.Value), ("fairLow", PrdFairLow), ("fairHigh", PrdFairHigh)),
-            ParcelIdHints:    new List<string>());
+            ParcelIdHints:    d.OutlierParcelIds.Take(10).ToList());
     }
 
     public static SegmentDiagnosisFinding? DetectPrdProgressive(CountySegmentDetailDto d)
@@ -349,7 +352,7 @@ public class CountyStudioAiService : ICountyStudioAiService
             Summary:          $"PRD {prdF3} indicates assessment progressivity — lower-value parcels relatively under-assessed (IAAO fair {PrdFairLow:F2}–{PrdFairHigh:F2}).",
             EvidenceStrength: 0.65m,
             Evidence:         Ev(("prd", d.Prd.Value), ("fairLow", PrdFairLow), ("fairHigh", PrdFairHigh)),
-            ParcelIdHints:    new List<string>());
+            ParcelIdHints:    d.OutlierParcelIds.Take(10).ToList());
     }
 
     public static SegmentDiagnosisFinding? DetectPrbRegressive(CountySegmentDetailDto d)
@@ -363,7 +366,7 @@ public class CountyStudioAiService : ICountyStudioAiService
             Summary:          $"PRB {prbF3} below fair band (|PRB| ≤ {PrbFairAbs:F2}) — regressivity confirmed by price-related-bias regression.",
             EvidenceStrength: 0.6m,
             Evidence:         Ev(("prb", d.Prb.Value), ("fairAbs", PrbFairAbs)),
-            ParcelIdHints:    new List<string>());
+            ParcelIdHints:    d.OutlierParcelIds.Take(10).ToList());
     }
 
     public static SegmentDiagnosisFinding? DetectPrbProgressive(CountySegmentDetailDto d)
@@ -377,7 +380,7 @@ public class CountyStudioAiService : ICountyStudioAiService
             Summary:          $"PRB {prbF3} above fair band (|PRB| ≤ {PrbFairAbs:F2}) — progressivity confirmed by price-related-bias regression.",
             EvidenceStrength: 0.6m,
             Evidence:         Ev(("prb", d.Prb.Value), ("fairAbs", PrbFairAbs)),
-            ParcelIdHints:    new List<string>());
+            ParcelIdHints:    d.OutlierParcelIds.Take(10).ToList());
     }
 
     // ── Workflow detectors ────────────────────────────────────────────────
@@ -398,7 +401,8 @@ public class CountyStudioAiService : ICountyStudioAiService
                 ("parcelCount",    d.ParcelCount),
                 ("exceptionRate",  Math.Round(rate, 4)),
                 ("capThreshold",   ExceptionRateCap)),
-            ParcelIdHints:    new List<string>());
+            // The extreme-ratio parcels are the most likely exception candidates.
+            ParcelIdHints:    d.OutlierParcelIds.Take(10).ToList());
     }
 
     // ── Market detectors (YoY) ────────────────────────────────────────────
@@ -863,7 +867,8 @@ public class CountyStudioAiService : ICountyStudioAiService
         var canonical = $"{d.SegmentId}|{d.SegmentSetId}|{(d.DerivedAt?.Ticks.ToString() ?? "null")}|" +
                         $"pc={d.ParcelCount};rc={d.RatioCount};med={d.MedianRatio};cod={d.Cod};" +
                         $"prd={d.Prd};prb={d.Prb};vei={d.Vei};ec={d.ExceptionCount};" +
-                        $"cls={d.EquityClassification};yh={string.Join(",", d.YearHistory.Select(p => $"{p.TaxYear}:{p.MedianRatio}:{p.Cod}:{p.ExceptionCount}"))}";
+                        $"cls={d.EquityClassification};yh={string.Join(",", d.YearHistory.Select(p => $"{p.TaxYear}:{p.MedianRatio}:{p.Cod}:{p.ExceptionCount}"))};" +
+                        $"op={string.Join(",", d.OutlierParcelIds)}";
         return HashInputs("segment", canonical);
     }
 

@@ -47,7 +47,8 @@ public sealed class CountyStudioAiNarrativeSamples
             YearHistory:          history ?? new List<SegmentYearPoint>(),
             ComplianceStatus:     "IaaoCompliant",
             Warnings:             new List<string>(),
-            DerivedAt:            new DateTime(2026, 4, 10, 12, 0, 0, DateTimeKind.Utc));
+            DerivedAt:            new DateTime(2026, 4, 10, 12, 0, 0, DateTimeKind.Utc),
+            OutlierParcelIds:     new List<string>());
 
     [Fact]
     public void Sample_Healthy_Narrative()

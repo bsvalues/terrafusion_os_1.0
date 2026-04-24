@@ -115,6 +115,16 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
         // Modal city for this segment — from the derivation grouping's parcels.
         var city = await ResolveCityAsync(study, rule, ct);
 
+        // Outlier parcel IDs — top 10 by |ratio − median|, deterministic order.
+        // Used by AiDiagnosisPanel to surface the specific parcels behind a finding.
+        var segMedian = segment.MedianRatio ?? 0m;
+        var outlierParcelIds = ratios
+            .OrderByDescending(r => Math.Abs(r.Ratio - segMedian))
+            .ThenBy(r => r.ParcelId)           // deterministic tie-break
+            .Take(10)
+            .Select(r => r.ParcelId)
+            .ToList();
+
         return new CountySegmentDetailDto(
             SegmentId:            segment.SegmentId,
             SegmentSetId:         segment.SegmentSetId,
@@ -140,7 +150,8 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
             YearHistory:          yearHistory,
             ComplianceStatus:     compliance.ToString(),
             Warnings:             warnings,
-            DerivedAt:            segmentSet.UpdatedAt);
+            DerivedAt:            segmentSet.UpdatedAt,
+            OutlierParcelIds:     outlierParcelIds);
     }
 
     // ── Endpoint 2: action context ────────────────────────────────────────

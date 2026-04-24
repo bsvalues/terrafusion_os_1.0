@@ -27,6 +27,13 @@ public sealed class CountyStudioAiServiceTests
     /// Build a CountySegmentDetailDto directly so tests don't need a DB. This
     /// mirrors the shape CountyStudyInspectorService produces.
     /// </summary>
+    /// <summary>
+    /// Default outlier hint parcel IDs used when none are explicitly supplied.
+    /// Mirrors what CountyStudyInspectorService would compute from 3 extreme-ratio sales.
+    /// </summary>
+    private static readonly List<string> DefaultOutlierHints =
+        new() { "P-0001", "P-0002", "P-0003" };
+
     private static CountySegmentDetailDto BuildDetail(
         string name = "NBHD-K1/R1/STANDARD",
         string? city = "Kennewick",
@@ -40,7 +47,8 @@ public sealed class CountyStudioAiServiceTests
         decimal? vei = 88m,
         int exceptionCount = 8,
         List<SegmentYearPoint>? history = null,
-        string classification = "Fair")
+        string classification = "Fair",
+        List<string>? outlierParcelIds = null)
     {
         return new CountySegmentDetailDto(
             SegmentId:            Guid.NewGuid(),
@@ -67,7 +75,8 @@ public sealed class CountyStudioAiServiceTests
             YearHistory:          history ?? new List<SegmentYearPoint>(),
             ComplianceStatus:     "IaaoCompliant",
             Warnings:             new List<string>(),
-            DerivedAt:            new DateTime(2026, 4, 10, 12, 0, 0, DateTimeKind.Utc));
+            DerivedAt:            new DateTime(2026, 4, 10, 12, 0, 0, DateTimeKind.Utc),
+            OutlierParcelIds:     outlierParcelIds ?? DefaultOutlierHints);
     }
 
     // ── Finding detectors — each detector has an isolated test ─────────────
@@ -393,5 +402,78 @@ public sealed class CountyStudioAiServiceTests
         // Findings ordered by EvidenceStrength desc — COD_CEILING (0.75) comes before PRD_REGRESSIVE (0.65).
         Assert.Equal("IAAO_COD_CEILING_BREACH", dx.Findings[0].Code);
         Assert.Contains("27.4", dx.Narrative);
+    }
+
+    // ── ParcelIdHints population ───────────────────────────────────────────
+
+    [Fact]
+    public void DetectIaaoCodExtreme_PropagatesOutlierHints()
+    {
+        var hints = new List<string> { "P-9001", "P-9002" };
+        var d = BuildDetail(cod: 35.0m, outlierParcelIds: hints);
+        var f = CountyStudioAiService.DetectIaaoCodExtreme(d);
+        Assert.NotNull(f);
+        Assert.Equal(hints, f!.ParcelIdHints);
+    }
+
+    [Fact]
+    public void DetectIaaoCodCeilingBreach_PropagatesOutlierHints()
+    {
+        var hints = new List<string> { "P-8001" };
+        var d = BuildDetail(cod: 22.0m, outlierParcelIds: hints);
+        var f = CountyStudioAiService.DetectIaaoCodCeilingBreach(d);
+        Assert.NotNull(f);
+        Assert.Equal(hints, f!.ParcelIdHints);
+    }
+
+    [Fact]
+    public void DetectMedianLowUnfair_PropagatesOutlierHints()
+    {
+        var hints = new List<string> { "P-7001", "P-7002", "P-7003" };
+        var d = BuildDetail(median: 0.85m, outlierParcelIds: hints);
+        var f = CountyStudioAiService.DetectMedianLowUnfair(d);
+        Assert.NotNull(f);
+        Assert.Equal(hints, f!.ParcelIdHints);
+    }
+
+    [Fact]
+    public void DetectHighExceptionRate_PropagatesOutlierHints()
+    {
+        // exceptionRate = 20/100 = 20% > 10% cap
+        var hints = new List<string> { "P-6001", "P-6002" };
+        var d = BuildDetail(parcelCount: 100, exceptionCount: 20, outlierParcelIds: hints);
+        var f = CountyStudioAiService.DetectHighExceptionRate(d);
+        Assert.NotNull(f);
+        Assert.Equal(hints, f!.ParcelIdHints);
+    }
+
+    [Fact]
+    public void DetectLowRatioCount_PropagatesOutlierHints()
+    {
+        var hints = new List<string> { "P-5001", "P-5002", "P-5003", "P-5004" };
+        var d = BuildDetail(ratioCount: 8, outlierParcelIds: hints);
+        var f = CountyStudioAiService.DetectLowRatioCount(d);
+        Assert.NotNull(f);
+        Assert.Equal(hints, f!.ParcelIdHints);
+    }
+
+    [Fact]
+    public void Hints_CappedAtTen_WhenOutlierListIsLarger()
+    {
+        // Inspector caps at 10 — but detectors also guard with Take(10).
+        var bigHints = Enumerable.Range(1, 15).Select(i => $"P-{i:D4}").ToList();
+        var d = BuildDetail(cod: 35.0m, outlierParcelIds: bigHints);
+        var f = CountyStudioAiService.DetectIaaoCodExtreme(d);
+        Assert.NotNull(f);
+        Assert.True(f!.ParcelIdHints.Count <= 10, "ParcelIdHints must be capped at 10");
+    }
+
+    [Fact]
+    public void Hints_EmptyList_WhenNoOutlierParcelIds()
+    {
+        var d = BuildDetail(cod: 35.0m, outlierParcelIds: new List<string>());
+        var f = CountyStudioAiService.DetectIaaoCodExtreme(d);
+        Assert.NotNull(f);
+        Assert.Empty(f!.ParcelIdHints);
     }
 }
