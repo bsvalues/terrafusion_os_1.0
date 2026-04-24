@@ -251,6 +251,74 @@ export const inspectorApi = {
     apiFetchJson(`${BASE}/segments/${segmentId}/action-context`),
 };
 
+// ── Evidence Packet (Task H — DOR-defensible export) ─────────────────────────
+
+export interface EvidenceExceptionItem {
+  exceptionSetId: string;
+  reasonCode: string;
+  parcelCount: number;
+  destination: string;
+  status: string;
+  assignedTo: string | null;
+  notes: string | null;
+  createdAt: string;
+}
+
+export interface EvidenceScenarioSection {
+  scenarioId: string;
+  adjustmentType: string;
+  parameters: string;
+  rationale: string;
+  status: string;
+  createdAt: string;
+  createdBy: string;
+}
+
+export interface EvidenceAiFindingSummary {
+  code: string;
+  category: string;
+  summary: string;
+  evidenceStrength: number;
+}
+
+export interface EvidenceAiSection {
+  overallClass: string;
+  overallConfidence: number;
+  healthySegmentCount: number;
+  problemSegmentCount: number;
+  narrative: string;
+  topFindings: EvidenceAiFindingSummary[];
+}
+
+export interface EvidencePacketDto {
+  studyId: string;
+  countyName: string;
+  taxYear: number;
+  studyType: string;
+  studyStatus: string;
+  exportedAt: string;
+  exportedBy: string;
+  medianRatio: number | null;
+  cod: number | null;
+  prd: number | null;
+  complianceStatus: string;
+  parcelCount: number;
+  ratioCount: number;
+  criticalSegments: number;
+  warningSegments: number;
+  healthySegments: number;
+  primaryScenario: EvidenceScenarioSection | null;
+  aiDiagnosis: EvidenceAiSection | null;
+  exceptions: EvidenceExceptionItem[];
+}
+
+export const evidencePacketApi = {
+  get: (studyId: string, scenarioId?: string): Promise<EvidencePacketDto> => {
+    const qs = scenarioId ? `?scenarioId=${scenarioId}` : '';
+    return apiFetchJson(`${BASE}/studies/${studyId}/evidence-packet${qs}`);
+  },
+};
+
 // ── AI Diagnosis (Task E — Fix #6 — deterministic classification + actions) ──
 
 export const diagnosisApi = {

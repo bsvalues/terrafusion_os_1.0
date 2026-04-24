@@ -620,4 +620,46 @@ public class CountyStudyServiceTests
         Assert.Contains("Needs field review", dto.Notes);
         Assert.Contains("admin", dto.Notes);
     }
+
+    // ── Evidence Packet (Task H) ──────────────────────────────────────────────
+
+    [Fact]
+    public async Task EvidencePacket_FreshStudy_HasNoExceptions()
+    {
+        // Arrange: study with no exception sets
+        var (_, svc) = CreateSut();
+        var study = await svc.CreateStudyAsync(
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2025, StudyType.RatioStudy, null), "test");
+
+        // Act: GetExceptionSetsAsync is what the evidence-packet endpoint calls
+        var exceptions = await svc.GetExceptionSetsAsync(study.StudyId);
+
+        // Assert: no exceptions for a fresh study
+        Assert.Empty(exceptions);
+    }
+
+    [Fact]
+    public async Task EvidencePacket_StudyWithScenario_ReturnsScenarioDetails()
+    {
+        // Arrange: study + cohort + scenario
+        var (_, svc) = CreateSut();
+        var study = await svc.CreateStudyAsync(
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2025, StudyType.RatioStudy, null), "test");
+        var cohort = await svc.CreateCohortAsync(
+            new CreateCohortRequest(study.StudyId, "EvidenceCohort",
+                CohortSelectionType.Segment, "{}", 100, false), "test");
+        var scenario = await svc.CreateScenarioAsync(
+            new CreateScenarioRequest(study.StudyId, cohort.CohortId,
+                ScenarioAdjustmentType.TotalValuePercent, "{\"magnitude\":3.5}",
+                "Calibrated to market trend"), "test");
+
+        // Act: GetScenariosAsync returns the scenario the packet will include
+        var scenarios = await svc.GetScenariosAsync(study.StudyId);
+
+        // Assert
+        Assert.Single(scenarios);
+        var s = scenarios[0];
+        Assert.Equal(scenario.ScenarioId, s.ScenarioId);
+        Assert.Equal("Calibrated to market trend", s.Rationale);
+    }
 }

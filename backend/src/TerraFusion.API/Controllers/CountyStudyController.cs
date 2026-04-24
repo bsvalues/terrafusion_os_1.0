@@ -845,4 +845,102 @@ public class CountyStudyController : ControllerBase
             return StatusCode(500, new { error = "Failed to add note." });
         }
     }
+
+    // ── Evidence Packet (Task H — DOR-defensible export) ─────────────────────
+
+    /// <summary>
+    /// Assembles a DOR-defensible evidence packet: IAAO metrics, scenario decision,
+    /// AI diagnosis summary, and exception log. No new data is written.
+    /// </summary>
+    [HttpGet("studies/{studyId:guid}/evidence-packet")]
+    public async Task<IActionResult> GetEvidencePacket(
+        Guid studyId,
+        [FromQuery] Guid? scenarioId,
+        CancellationToken ct)
+    {
+        try
+        {
+            var study = await _svc.GetStudyAsync(studyId);
+            if (study is null)
+                return NotFound(new { error = $"Study {studyId} not found." });
+
+            // ── IAAO health ───────────────────────────────────────────────────
+            CountyHealthSummaryDto? health = null;
+            try { health = await _healthSvc.GetHealthSummaryAsync(studyId, ct); }
+            catch { /* no active segment set — health stays null */ }
+
+            // ── Scenario ──────────────────────────────────────────────────────
+            CountyScenarioDto? scenario = null;
+            if (scenarioId.HasValue)
+            {
+                var allScenarios = await _svc.GetScenariosAsync(studyId);
+                scenario = allScenarios.FirstOrDefault(s => s.ScenarioId == scenarioId.Value);
+            }
+
+            // ── AI diagnosis (best-effort; omit if no segment set) ────────────
+            EvidenceAiSection? aiSection = null;
+            try
+            {
+                var diagnosis = await _aiSvc.DiagnoseCountyAsync(studyId, ct);
+                if (diagnosis is not null)
+                {
+                    var topFindings = diagnosis.TopProblems
+                        .SelectMany(seg => seg.Findings)
+                        .OrderByDescending(f => f.EvidenceStrength)
+                        .Take(5)
+                        .Select(f => new EvidenceAiFindingSummary(f.Code, f.Category, f.Summary, f.EvidenceStrength))
+                        .ToList();
+                    aiSection = new EvidenceAiSection(
+                        diagnosis.OverallClass.ToString(),
+                        diagnosis.OverallConfidence,
+                        diagnosis.HealthySegmentCount,
+                        diagnosis.ProblemSegmentCount,
+                        diagnosis.Narrative,
+                        topFindings);
+                }
+            }
+            catch { /* no segments or other error — diagnosis omitted */ }
+
+            // ── Exceptions ────────────────────────────────────────────────────
+            var exceptions = await _svc.GetExceptionSetsAsync(studyId);
+            var excItems = exceptions.Select(e => new EvidenceExceptionItem(
+                e.ExceptionSetId, e.ReasonCode, e.ParcelCount,
+                e.Destination, e.Status, e.AssignedTo, e.Notes, e.CreatedAt)).ToList();
+
+            // ── Assemble ──────────────────────────────────────────────────────
+            EvidenceScenarioSection? scenSection = scenario is null ? null :
+                new EvidenceScenarioSection(
+                    scenario.ScenarioId, scenario.AdjustmentType,
+                    scenario.Parameters, scenario.Rationale,
+                    scenario.Status, scenario.CreatedAt, scenario.CreatedBy);
+
+            var packet = new EvidencePacketDto(
+                StudyId: studyId,
+                CountyName: "Benton County",
+                TaxYear: study.TaxYear,
+                StudyType: study.StudyType,
+                StudyStatus: study.Status,
+                ExportedAt: DateTime.UtcNow,
+                ExportedBy: CurrentUserId,
+                MedianRatio: health?.MedianRatio,
+                Cod: health?.Cod,
+                Prd: health?.Prd,
+                ComplianceStatus: health?.ComplianceStatus ?? "Unknown",
+                ParcelCount: health?.ParcelCount ?? 0,
+                RatioCount: health?.RatioCount ?? 0,
+                CriticalSegments: health?.CriticalCount ?? 0,
+                WarningSegments: health?.WarningCount ?? 0,
+                HealthySegments: health?.HealthyCount ?? 0,
+                PrimaryScenario: scenSection,
+                AiDiagnosis: aiSection,
+                Exceptions: excItems);
+
+            return Ok(packet);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] GetEvidencePacket failed for study {StudyId}", studyId);
+            return StatusCode(500, new { error = "Failed to generate evidence packet." });
+        }
+    }
 }

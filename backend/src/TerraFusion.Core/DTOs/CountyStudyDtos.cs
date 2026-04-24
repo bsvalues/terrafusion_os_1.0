@@ -439,3 +439,69 @@ public record SegmentActionContextDto(
     DaisHandoffDto Dais,
     DossierHandoffDto Dossier
 );
+
+// ── Evidence Packet (Task H — DOR-defensible export) ─────────────────────────
+
+public record EvidenceExceptionItem(
+    Guid ExceptionSetId,
+    string ReasonCode,
+    int ParcelCount,
+    string Destination,
+    string Status,
+    string? AssignedTo,
+    string? Notes,
+    DateTime CreatedAt
+);
+
+public record EvidenceScenarioSection(
+    Guid ScenarioId,
+    string AdjustmentType,
+    string Parameters,
+    string Rationale,
+    string Status,
+    DateTime CreatedAt,
+    string CreatedBy
+);
+
+public record EvidenceAiFindingSummary(
+    string Code,
+    string Category,
+    string Summary,
+    decimal EvidenceStrength
+);
+
+public record EvidenceAiSection(
+    string OverallClass,
+    decimal OverallConfidence,
+    int HealthySegmentCount,
+    int ProblemSegmentCount,
+    string Narrative,
+    List<EvidenceAiFindingSummary> TopFindings
+);
+
+public record EvidencePacketDto(
+    // ── Header ────────────────────────────────────────────────────────────
+    Guid StudyId,
+    string CountyName,
+    int TaxYear,
+    string StudyType,
+    string StudyStatus,
+    DateTime ExportedAt,
+    string ExportedBy,
+    // ── IAAO Compliance ───────────────────────────────────────────────────
+    decimal? MedianRatio,
+    decimal? Cod,
+    decimal? Prd,
+    string ComplianceStatus,
+    int ParcelCount,
+    int RatioCount,
+    int CriticalSegments,
+    int WarningSegments,
+    int HealthySegments,
+    // ── Scenario Decision ─────────────────────────────────────────────────
+    EvidenceScenarioSection? PrimaryScenario,
+    // ── AI Diagnosis ──────────────────────────────────────────────────────
+    EvidenceAiSection? AiDiagnosis,
+    // ── Exception Log ─────────────────────────────────────────────────────
+    List<EvidenceExceptionItem> Exceptions
+);

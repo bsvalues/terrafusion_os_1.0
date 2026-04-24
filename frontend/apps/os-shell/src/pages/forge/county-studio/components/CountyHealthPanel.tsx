@@ -15,6 +15,7 @@ import React, { useState } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { useStudyData } from '../hooks/useStudyData';
 import { CountyDiagnosisModal } from './CountyDiagnosisModal';
+import { ExportPacketModal } from './ExportPacketModal';
 import type {
   CountyHealthComplianceStatus,
   CountyHealthSummaryDto,
@@ -401,6 +402,8 @@ const PopulatedPanel = ({
   const totalSegments = summary.criticalCount + summary.warningCount + summary.healthyCount;
   const lamp = lampStyle(summary.complianceStatus);
   const [diagnosisOpen, setDiagnosisOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const { activeStudy, activeScenario } = useCountyStudioStore();
 
   return (
     <div
@@ -580,6 +583,22 @@ const PopulatedPanel = ({
         >
           Run County Diagnosis
         </button>
+        <button
+          type="button"
+          data-testid="health-export-evidence-packet"
+          onClick={() => setExportOpen(true)}
+          disabled={!studyOpen}
+          title="Export a DOR-defensible evidence packet: IAAO metrics, scenario decision, AI findings, and exception log."
+          style={{
+            padding: '3px 10px', borderRadius: 4, border: 'none',
+            fontSize: 10, fontWeight: 600,
+            background: '#3b82f622', color: '#3b82f6',
+            cursor: studyOpen ? 'pointer' : 'not-allowed',
+            opacity: studyOpen ? 1 : 0.5,
+          }}
+        >
+          Export Evidence Packet
+        </button>
         <span
           data-testid="health-risk-info"
           tabIndex={0}
@@ -618,6 +637,14 @@ const PopulatedPanel = ({
         open={diagnosisOpen}
         onClose={() => setDiagnosisOpen(false)}
       />
+
+      {exportOpen && activeStudy && (
+        <ExportPacketModal
+          studyId={activeStudy.studyId}
+          scenarioId={activeScenario?.scenarioId}
+          onClose={() => setExportOpen(false)}
+        />
+      )}
     </div>
   );
 };
