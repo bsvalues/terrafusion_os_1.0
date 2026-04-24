@@ -74,7 +74,7 @@ export function LeftRail() {
     loadStatus, loadErrors,
   } = useCountyStudioStore();
 
-  const { retrySegments } = useStudyData();
+  const { retrySegments, retryCityRollup, retryNeighborhoodRollup, retryHealthSummary } = useStudyData();
   const [derive, setDerive] = useState<DeriveState>({ kind: 'idle' });
 
   const handleDerive = async () => {
@@ -89,7 +89,15 @@ export function LeftRail() {
       } catch {
         // Non-fatal: retrySegments below falls back to the first baseline set.
       }
-      await retrySegments();
+      // Refetch the segment list and every rollup / health surface so the
+      // center panel, RightRail, and CountyHealthPanel all reflect the newly
+      // derived set without a manual reload.
+      await Promise.all([
+        retrySegments(),
+        retryCityRollup(),
+        retryNeighborhoodRollup(),
+        retryHealthSummary(),
+      ]);
       setDerive({
         kind: 'success',
         segmentCount: result.segmentCount,

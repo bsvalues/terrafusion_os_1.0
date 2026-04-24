@@ -22,24 +22,45 @@ import { BottomDeck } from './components/BottomDeck';
 import { CohortCreationDialog } from './components/CohortCreationDialog';
 import { OpenStudyDialog } from './components/OpenStudyDialog';
 import { LoadErrorBanner } from './components/LoadErrorBanner';
+import { CountyHealthPanel } from './components/CountyHealthPanel';
 import { useCountyStudyHub } from './hooks/useCountyStudyHub';
 import { useStudyData } from './hooks/useStudyData';
 import type { CountySegmentDto } from './types/countyStudio.types';
 
-type SegmentSeverityFilter = 'all' | 'critical' | 'warnings' | 'healthy';
+type SegmentSeverityFilter = 'all' | 'critical' | 'warnings' | 'healthy' | 'needsData';
 
+/**
+ * Severity filters over CountySegmentDto. All numeric-metric comparisons are
+ * null-guarded — a sparse-sample segment (cod=null / medianRatio=null) must
+ * not throw and must not be incorrectly classified as a critical breach.
+ * Null-metric segments are surfaced via the dedicated 'needsData' bucket so
+ * a chief appraiser can review them explicitly.
+ */
 const SEGMENT_FILTERS: Record<SegmentSeverityFilter, ((seg: CountySegmentDto) => boolean) | undefined> = {
   all:      undefined,
-  critical: (s) => s.stabilityScore < 60 || s.cod > 20,
-  warnings: (s) => (s.stabilityScore >= 60 && s.stabilityScore < 80) || (s.cod > 15 && s.cod <= 20) || s.exceptionCount > 0,
-  healthy:  (s) => s.stabilityScore >= 80 && s.cod <= 15,
+  critical: (s) =>
+    s.stabilityScore < 60
+    || (s.cod != null && s.cod > 20)
+    || (s.medianRatio != null && (s.medianRatio < 0.90 || s.medianRatio > 1.10))
+    || (s.prd != null && (s.prd < 0.98 || s.prd > 1.03))
+    || s.exceptionCount > Math.max(1, Math.floor(s.parcelCount * 0.10)),
+  warnings: (s) =>
+    (s.stabilityScore >= 60 && s.stabilityScore < 80)
+    || (s.cod != null && s.cod > 15 && s.cod <= 20)
+    || s.exceptionCount > 0,
+  healthy:  (s) =>
+    s.stabilityScore >= 80
+    && (s.cod == null || s.cod <= 15)
+    && (s.medianRatio == null || (s.medianRatio >= 0.92 && s.medianRatio <= 1.08)),
+  needsData: (s) => s.cod == null || s.medianRatio == null || s.prd == null,
 };
 
 const SEGMENT_FILTER_PILLS: { key: SegmentSeverityFilter; label: string }[] = [
-  { key: 'all',      label: 'All' },
-  { key: 'critical', label: 'Critical' },
-  { key: 'warnings', label: 'Warnings' },
-  { key: 'healthy',  label: 'Healthy' },
+  { key: 'all',       label: 'All' },
+  { key: 'critical',  label: 'Critical' },
+  { key: 'warnings',  label: 'Warnings' },
+  { key: 'healthy',   label: 'Healthy' },
+  { key: 'needsData', label: 'Needs Data' },
 ];
 
 const syncColor: Record<string, string> = {
@@ -143,7 +164,14 @@ export function CountyStudyPage() {
             data-drill-level={drillLevel}
             style={{ flex: 1, overflow: 'hidden', minHeight: 0, display: 'flex', flexDirection: 'column' }}
           >
-            {drillLevel === 'county' && <CityRollupTable />}
+            {drillLevel === 'county' && (
+              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }}>
+                <CountyHealthPanel />
+                <div style={{ flex: 1, minHeight: 0 }}>
+                  <CityRollupTable />
+                </div>
+              </div>
+            )}
             {drillLevel === 'city'   && <NeighborhoodRollupTable />}
             {drillLevel === 'neighborhood' && (
               <>
