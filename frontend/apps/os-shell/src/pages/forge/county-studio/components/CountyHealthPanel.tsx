@@ -11,9 +11,10 @@
 // renders whatever the endpoint returns. Do NOT re-implement the formula
 // here.
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { useStudyData } from '../hooks/useStudyData';
+import { CountyDiagnosisModal } from './CountyDiagnosisModal';
 import type {
   CountyHealthComplianceStatus,
   CountyHealthSummaryDto,
@@ -399,6 +400,7 @@ const PopulatedPanel = ({
 }) => {
   const totalSegments = summary.criticalCount + summary.warningCount + summary.healthyCount;
   const lamp = lampStyle(summary.complianceStatus);
+  const [diagnosisOpen, setDiagnosisOpen] = useState(false);
 
   return (
     <div
@@ -553,12 +555,31 @@ const PopulatedPanel = ({
       {/* Footer — derived timestamp + info */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        gap: 10,
         fontSize: 10, color: 'hsl(var(--tf-muted))',
         paddingTop: 2,
       }}>
         <span data-testid="health-derived-timestamp">
           Derived {relativeTime(summary.derivedAt)}. Re-derive in LeftRail.
         </span>
+        <button
+          type="button"
+          data-testid="health-run-county-diagnosis"
+          onClick={() => setDiagnosisOpen(true)}
+          disabled={!studyOpen}
+          title="Runs the deterministic per-segment diagnosis across every segment in this study."
+          style={{
+            padding: '3px 10px', borderRadius: 3,
+            border: '1px solid hsl(var(--tf-border))',
+            background: 'transparent', color: 'hsl(var(--tf-fg))',
+            fontSize: 11, fontWeight: 600,
+            cursor: studyOpen ? 'pointer' : 'not-allowed',
+            opacity: studyOpen ? 1 : 0.5,
+            marginLeft: 'auto',
+          }}
+        >
+          Run County Diagnosis
+        </button>
         <span
           data-testid="health-risk-info"
           tabIndex={0}
@@ -591,6 +612,12 @@ const PopulatedPanel = ({
           (no study open)
         </div>
       )}
+
+      <CountyDiagnosisModal
+        studyId={summary.studyId}
+        open={diagnosisOpen}
+        onClose={() => setDiagnosisOpen(false)}
+      />
     </div>
   );
 };

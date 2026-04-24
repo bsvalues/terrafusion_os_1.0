@@ -237,6 +237,9 @@ export interface CountySegmentDetailDto {
   vei: number | null;
   equityClassification: EquityClassification;
   bentonEquityScore: number | null;
+  /** Count of qualified sale-ratio observations PRB/VEI were computed from.
+   *  Differs from parcelCount; used by Task E diagnosis detectors. */
+  ratioCount: number;
   /** Ascending by taxYear. Empty when no history yet. Never null. */
   yearHistory: SegmentYearPoint[];
   complianceStatus: CountyHealthComplianceStatus;
@@ -293,3 +296,81 @@ export interface SegmentActionContextDto {
   dais: DaisHandoffDto;
   dossier: DossierHandoffDto;
 }
+
+// ── AI Diagnosis (Task E — Fix #6 — deterministic classification + actions) ──
+
+/** Root problem class for a diagnosis. Matches the backend ProblemClass enum. */
+export type ProblemClass =
+  | 'Healthy'
+  | 'Data'
+  | 'Model'
+  | 'Workflow'
+  | 'Market';
+
+export interface SegmentDiagnosisFinding {
+  code: string;
+  category: string;
+  summary: string;
+  /** 0.0–1.0 — the weight this finding contributes to the classification argmax. */
+  evidenceStrength: number;
+  /** Structured evidence — primitive values the UI can render verbatim. */
+  evidence: Record<string, unknown>;
+  /** Up to 10 parcel ids most responsible for the finding. Empty = none. */
+  parcelIdHints: string[];
+}
+
+export interface SegmentRecommendedAction {
+  actionCode: string;
+  /** moduleId matching the frontend moduleComponents map. "None" = no handoff. */
+  target: string;
+  summary: string;
+  /** 1 = highest priority. */
+  priority: number;
+  rationale: string;
+  /** Passed verbatim as metadata to activateModule() when the user fires the action. */
+  prebuiltContext: Record<string, unknown> | null;
+}
+
+export interface SegmentDiagnosisDto {
+  segmentId: string;
+  segmentName: string;
+  city: string | null;
+  neighborhoodCode: string | null;
+  parcelCount: number;
+  primaryClass: ProblemClass;
+  /** 0.0–1.0 */
+  primaryConfidence: number;
+  findings: SegmentDiagnosisFinding[];
+  recommendedActions: SegmentRecommendedAction[];
+  /** 2–4 sentences, every sentence cites a real number. Byte-for-byte deterministic. */
+  narrative: string;
+  /** SHA-256 of canonical inputs; identical inputs → identical fingerprint. */
+  inputFingerprint: string;
+  /** ISO timestamp. */
+  generatedAt: string;
+}
+
+export interface CountyPattern {
+  patternCode: string;
+  summary: string;
+  affectedSegmentCount: number;
+  segmentIds: string[];
+  /** 0.0–1.0 fraction of affected segments. */
+  severity: number;
+}
+
+export interface CountyDiagnosisDto {
+  studyId: string;
+  taxYear: number;
+  countyName: string;
+  overallClass: ProblemClass;
+  overallConfidence: number;
+  healthySegmentCount: number;
+  problemSegmentCount: number;
+  topProblems: SegmentDiagnosisDto[];
+  patterns: CountyPattern[];
+  narrative: string;
+  inputFingerprint: string;
+  generatedAt: string;
+}
+

@@ -14,6 +14,8 @@ import type {
   CountyHealthSummaryDto,
   CountySegmentDetailDto,
   SegmentActionContextDto,
+  SegmentDiagnosisDto,
+  CountyDiagnosisDto,
 } from './types/countyStudio.types';
 
 const BASE = '/county-study';
@@ -192,4 +194,26 @@ export const inspectorApi = {
    */
   actionContext: (segmentId: string): Promise<SegmentActionContextDto> =>
     apiFetchJson(`${BASE}/segments/${segmentId}/action-context`),
+};
+
+// ── AI Diagnosis (Task E — Fix #6 — deterministic classification + actions) ──
+
+export const diagnosisApi = {
+  /**
+   * GET /county-study/segments/:segmentId/diagnosis
+   * Returns the deterministic diagnosis for a segment: classification,
+   * findings, recommended actions, narrative. 404 when segment missing,
+   * 409 when the segment has no derived metrics.
+   */
+  segment: (segmentId: string): Promise<SegmentDiagnosisDto> =>
+    apiFetchJson(`${BASE}/segments/${segmentId}/diagnosis`),
+
+  /**
+   * GET /county-study/studies/:studyId/diagnosis
+   * Returns the county-level diagnosis: aggregate class, top-5 problem
+   * segments with their individual diagnoses, cross-segment patterns.
+   * 409 when the study has no active segment set.
+   */
+  county: (studyId: string): Promise<CountyDiagnosisDto> =>
+    apiFetchJson(`${BASE}/studies/${studyId}/diagnosis`),
 };

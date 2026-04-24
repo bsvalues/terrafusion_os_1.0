@@ -23,6 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import activateModule from '@/orchestration/moduleActivation';
 import { useInspectorData } from '../hooks/useInspectorData';
+import { AiDiagnosisPanel } from './AiDiagnosisPanel';
 import type {
   CountySegmentDetailDto,
   EquityClassification,
@@ -726,6 +727,7 @@ export function ObjectInspector() {
           <TabsTrigger value="metrics" data-testid="inspector-tab-metrics" style={{ flex: 1, fontSize: 11 }}>Metrics</TabsTrigger>
           <TabsTrigger value="trend" data-testid="inspector-tab-trend" style={{ flex: 1, fontSize: 11 }}>Trend</TabsTrigger>
           <TabsTrigger value="action" data-testid="inspector-tab-action" style={{ flex: 1, fontSize: 11 }}>Action</TabsTrigger>
+          <TabsTrigger value="diagnosis" data-testid="inspector-tab-diagnosis" style={{ flex: 1, fontSize: 11 }}>Diagnosis</TabsTrigger>
         </TabsList>
 
         <TabsContent value="metrics" data-testid="inspector-panel-metrics">
@@ -755,6 +757,10 @@ export function ObjectInspector() {
             onAtlas={handleOpenAtlas}
             onWorkbench={handleFindParcels}
           />
+        </TabsContent>
+
+        <TabsContent value="diagnosis" data-testid="inspector-panel-diagnosis">
+          <AiDiagnosisPanel segmentId={seg.segmentId} />
         </TabsContent>
       </Tabs>
     </div>

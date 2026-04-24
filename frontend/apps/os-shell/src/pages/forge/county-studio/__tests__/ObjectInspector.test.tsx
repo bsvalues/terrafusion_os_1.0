@@ -97,6 +97,7 @@ function baseDetail(overrides: Partial<CountySegmentDetailDto> = {}): CountySegm
     stabilityScore: 72, riskScore: 35, exceptionCount: 8,
     prb: 0.02, vei: 88, equityClassification: 'Fair',
     bentonEquityScore: 92,
+    ratioCount: 42,
     yearHistory: [],
     complianceStatus: 'IaaoCompliant',
     warnings: [],
