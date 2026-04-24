@@ -1,8 +1,28 @@
 import React, { useState } from 'react';
 import { ObjectInspector } from './ObjectInspector';
+import { CityInspector } from './CityInspector';
+import { NeighborhoodInspector } from './NeighborhoodInspector';
 import { ScenarioWorksheet } from './ScenarioWorksheet';
+import { useCountyStudioStore } from '@/stores/countyStudioStore';
 
 type RightPanel = 'inspector' | 'scenario';
+
+/**
+ * Picks the inspector surface based on the store's drill state.
+ *   - selectedSegmentId set      → ObjectInspector (segment detail)
+ *   - drillLevel === 'neighborhood' → NeighborhoodInspector (rollup aggregates)
+ *   - drillLevel === 'city'         → CityInspector
+ *   - else (county)                 → ObjectInspector (renders its own
+ *     "Select a segment" empty state, which still reads sensibly at the
+ *     county level).
+ */
+function InspectorForScope() {
+  const { drillLevel, selectedSegmentId } = useCountyStudioStore();
+  if (selectedSegmentId) return <ObjectInspector />;
+  if (drillLevel === 'neighborhood') return <NeighborhoodInspector />;
+  if (drillLevel === 'city')         return <CityInspector />;
+  return <ObjectInspector />;
+}
 
 export function RightRail() {
   const [activePanel, setActivePanel] = useState<RightPanel>('inspector');
@@ -40,7 +60,7 @@ export function RightRail() {
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto' }}>
-        {activePanel === 'inspector' ? <ObjectInspector /> : <ScenarioWorksheet />}
+        {activePanel === 'inspector' ? <InspectorForScope /> : <ScenarioWorksheet />}
       </div>
     </div>
   );

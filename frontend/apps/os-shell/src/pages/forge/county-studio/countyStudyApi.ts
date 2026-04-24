@@ -9,6 +9,8 @@ import type {
   CountyCohortDto,
   CountyScenarioDto,
   ScenarioImpactPreviewDto,
+  CityRollupRowDto,
+  NeighborhoodRollupRowDto,
 } from './types/countyStudio.types';
 
 const BASE = '/county-study';
@@ -130,4 +132,25 @@ export const scenarioApi = {
 export const exceptionApi = {
   list: (studyId: string): Promise<unknown[]> =>
     apiFetchJson(`${BASE}/studies/${studyId}/exceptions`),
+};
+
+// ── Rollups (Task B — drill lattice) ──────────────────────────────────────────
+
+export const rollupApi = {
+  /**
+   * GET /county-study/studies/:id/city-rollup
+   * Returns one row per Benton city; backend resolves city via
+   * CamaCharacteristic.City (PacsCanonicalizer-normalized).
+   */
+  cities: (studyId: string): Promise<CityRollupRowDto[]> =>
+    apiFetchJson(`${BASE}/studies/${studyId}/city-rollup`),
+
+  /**
+   * GET /county-study/studies/:id/neighborhood-rollup?city=:city
+   * Returns one row per neighborhood; optional city filter narrows to a city.
+   */
+  neighborhoods: (studyId: string, city?: string): Promise<NeighborhoodRollupRowDto[]> => {
+    const qs = city ? `?city=${encodeURIComponent(city)}` : '';
+    return apiFetchJson(`${BASE}/studies/${studyId}/neighborhood-rollup${qs}`);
+  },
 };

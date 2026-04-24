@@ -97,3 +97,48 @@ export interface PendingSelection {
   geometry?: unknown;
   areaEstimate?: number;
 }
+
+// ── Rollups (Task B — drill lattice) ──────────────────────────────────────
+
+export type RollupComplianceStatus = 'IaaoCompliant' | 'MarginalCompliance' | 'NonCompliant';
+
+export interface CityRollupRowDto {
+  city: string;
+  segmentCount: number;
+  parcelCount: number;
+  medianRatio: number | null;
+  cod: number | null;
+  prd: number | null;
+  exceptionCount: number;
+  exceptionRate: number;
+  worstSegmentName: string | null;
+  worstSegmentMedianRatio: number | null;
+  complianceStatus: RollupComplianceStatus;
+}
+
+export interface NeighborhoodRollupRowDto {
+  neighborhoodCode: string;
+  neighborhoodName: string;
+  city: string;
+  segmentCount: number;
+  parcelCount: number;
+  medianRatio: number | null;
+  cod: number | null;
+  prd: number | null;
+  stabilityScore: number;
+  riskScore: number;
+  exceptionCount: number;
+  exceptionRate: number;
+  complianceStatus: RollupComplianceStatus;
+}
+
+/**
+ * Drill level for the County Studio center panel.
+ *   'county'       — CityRollupTable visible.
+ *   'city'         — NeighborhoodRollupTable filtered to selectedCity.
+ *   'neighborhood' — SegmentTable filtered to selectedNeighborhood's GeographyRef.
+ * Segment-level detail lives in the RightRail's ObjectInspector, selected via
+ * selectedSegmentId; it is not a separate drillLevel because the segment table
+ * remains visible beneath it.
+ */
+export type DrillLevel = 'county' | 'city' | 'neighborhood';

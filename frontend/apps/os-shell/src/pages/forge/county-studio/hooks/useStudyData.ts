@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
-import { segmentSetApi, cohortApi, scenarioApi } from '../countyStudyApi';
+import { segmentSetApi, cohortApi, scenarioApi, rollupApi } from '../countyStudyApi';
 
 /**
  * Watches activeStudy in the store. When it changes, loads:
@@ -21,6 +21,8 @@ export function useStudyData() {
     setCohorts,
     setScenarios,
     setLoadStatus,
+    setCityRollup,
+    setNeighborhoodRollup,
   } = useCountyStudioStore();
 
   const studyId = activeStudy?.studyId ?? null;
@@ -78,11 +80,41 @@ export function useStudyData() {
     }
   }, [studyId, setScenarios, setLoadStatus]);
 
+  const loadCityRollup = useCallback(async () => {
+    if (!studyId) return;
+    setLoadStatus('cityRollup', 'loading');
+    try {
+      const rows = await rollupApi.cities(studyId);
+      setCityRollup(rows);
+      setLoadStatus('cityRollup', 'success');
+    } catch (err) {
+      // 409 (no active segment set) is an expected state before deriving —
+      // surface the message but don't scream in the console.
+      setCityRollup([]);
+      setLoadStatus('cityRollup', 'error', describeError(err, 'cityRollup'));
+    }
+  }, [studyId, setCityRollup, setLoadStatus]);
+
+  const loadNeighborhoodRollup = useCallback(async () => {
+    if (!studyId) return;
+    setLoadStatus('neighborhoodRollup', 'loading');
+    try {
+      const rows = await rollupApi.neighborhoods(studyId);
+      setNeighborhoodRollup(rows);
+      setLoadStatus('neighborhoodRollup', 'success');
+    } catch (err) {
+      setNeighborhoodRollup([]);
+      setLoadStatus('neighborhoodRollup', 'error', describeError(err, 'neighborhoodRollup'));
+    }
+  }, [studyId, setNeighborhoodRollup, setLoadStatus]);
+
   const retryAll = useCallback(() => {
     void loadSegments();
     void loadCohorts();
     void loadScenarios();
-  }, [loadSegments, loadCohorts, loadScenarios]);
+    void loadCityRollup();
+    void loadNeighborhoodRollup();
+  }, [loadSegments, loadCohorts, loadScenarios, loadCityRollup, loadNeighborhoodRollup]);
 
   useEffect(() => {
     if (!studyId) {
@@ -90,19 +122,25 @@ export function useStudyData() {
       setSegments([]);
       setCohorts([]);
       setScenarios([]);
+      setCityRollup([]);
+      setNeighborhoodRollup([]);
       setLoadStatus('segments', 'idle');
       setLoadStatus('cohorts', 'idle');
       setLoadStatus('scenarios', 'idle');
+      setLoadStatus('cityRollup', 'idle');
+      setLoadStatus('neighborhoodRollup', 'idle');
       return;
     }
     retryAll();
-  }, [studyId, retryAll, setSegments, setCohorts, setScenarios, setLoadStatus]);
+  }, [studyId, retryAll, setSegments, setCohorts, setScenarios, setCityRollup, setNeighborhoodRollup, setLoadStatus]);
 
   return {
     retryAll,
     retrySegments: loadSegments,
     retryCohorts: loadCohorts,
     retryScenarios: loadScenarios,
+    retryCityRollup: loadCityRollup,
+    retryNeighborhoodRollup: loadNeighborhoodRollup,
   };
 }
 
