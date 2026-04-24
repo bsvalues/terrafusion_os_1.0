@@ -40,7 +40,7 @@ function makeAdj(overrides: Partial<CountyAdjustmentSetDto> = {}): CountyAdjustm
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockStore.mockReturnValue({ activeStudyId: STUDY_ID });
+  mockStore.mockReturnValue({ activeStudy: { studyId: STUDY_ID } });
 });
 
 describe('AdjustmentSetPanel', () => {
@@ -65,8 +65,8 @@ describe('AdjustmentSetPanel', () => {
     expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
   });
 
-  test('renders no-study state when activeStudyId is null', () => {
-    mockStore.mockReturnValue({ activeStudyId: null });
+  test('renders no-study state when activeStudy is null', () => {
+    mockStore.mockReturnValue({ activeStudy: null });
     render(<AdjustmentSetPanel />);
     expect(screen.getByTestId('adj-panel-no-study')).toBeInTheDocument();
   });

@@ -3,7 +3,7 @@
 // Governance workflow panel for CountyAdjustmentSets.
 // Lists all adjustment sets for the active study and exposes the approval
 // state-machine buttons: Submit → Approve → Publish → Rollback.
-// Read-only when no study is loaded or when a set is already Published.
+// Read-only when no study is loaded or when a set is already RolledBack.
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
@@ -45,12 +45,12 @@ function StateBadge({ state }: { state: AdjustmentSetApprovalState }) {
 const NEXT_STATES: Partial<Record<AdjustmentSetApprovalState, { state: AdjustmentSetApprovalState; label: string }[]>> = {
   Proposed:         [{ state: 'ReadyForApproval', label: 'Submit for Approval' }],
   ReadyForApproval: [
-    { state: 'Approved',  label: 'Approve' },
-    { state: 'Proposed',  label: 'Send Back' },
+    { state: 'Approved', label: 'Approve'   },
+    { state: 'Proposed', label: 'Send Back' },
   ],
-  Approved:         [{ state: 'Published', label: 'Publish' }],
-  Published:        [{ state: 'RolledBack', label: 'Rollback' }],
-  RolledBack:       [],
+  Approved:   [{ state: 'Published',  label: 'Publish'  }],
+  Published:  [{ state: 'RolledBack', label: 'Rollback' }],
+  RolledBack: [],
 };
 
 // ── Single row ────────────────────────────────────────────────────────────────
@@ -62,7 +62,7 @@ function AdjSetRow({
 }: {
   adj: CountyAdjustmentSetDto;
   onAction: (id: string, state: AdjustmentSetApprovalState) => void;
-  busy: string | null; // adjustmentSetId currently in-flight
+  busy: string | null;
 }) {
   const actions = NEXT_STATES[adj.approvalState] ?? [];
   const isBusy  = busy === adj.adjustmentSetId;
@@ -78,11 +78,8 @@ function AdjSetRow({
         gap: 4,
       }}
     >
-      {/* top row: ID abbreviation + state badge */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span
-          style={{ fontFamily: 'monospace', fontSize: 11, color: 'hsl(var(--tf-muted))' }}
-        >
+        <span style={{ fontFamily: 'monospace', fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
           {adj.adjustmentSetId.slice(0, 8)}…
         </span>
         <StateBadge state={adj.approvalState} />
@@ -98,12 +95,10 @@ function AdjSetRow({
         )}
       </div>
 
-      {/* scenario link */}
       <span style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>
         Scenario {adj.scenarioId.slice(0, 8)}…
       </span>
 
-      {/* action buttons */}
       {actions.length > 0 && (
         <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
           {actions.map(({ state, label }) => (
@@ -117,16 +112,14 @@ function AdjSetRow({
                 padding: '3px 10px',
                 borderRadius: 4,
                 border: '1px solid hsl(var(--tf-border))',
-                background: state === 'RolledBack'
-                  ? '#ef444422'
-                  : state === 'Published'
-                  ? '#22c55e22'
-                  : 'hsl(var(--tf-surface))',
-                color: state === 'RolledBack'
-                  ? '#ef4444'
-                  : state === 'Published'
-                  ? '#22c55e'
-                  : 'hsl(var(--tf-fg))',
+                background:
+                  state === 'RolledBack' ? '#ef444422' :
+                  state === 'Published'  ? '#22c55e22' :
+                  'hsl(var(--tf-surface))',
+                color:
+                  state === 'RolledBack' ? '#ef4444' :
+                  state === 'Published'  ? '#22c55e' :
+                  'hsl(var(--tf-fg))',
                 cursor: isBusy ? 'not-allowed' : 'pointer',
                 opacity: isBusy ? 0.5 : 1,
               }}
@@ -143,26 +136,27 @@ function AdjSetRow({
 // ── Panel ─────────────────────────────────────────────────────────────────────
 
 export function AdjustmentSetPanel() {
-  const { activeStudyId } = useCountyStudioStore();
+  const { activeStudy } = useCountyStudioStore();
+  const studyId = activeStudy?.studyId ?? null;
 
   const [sets,    setSets]    = useState<CountyAdjustmentSetDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState<string | null>(null);
-  const [busy,    setBusy]    = useState<string | null>(null); // in-flight set ID
+  const [busy,    setBusy]    = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    if (!activeStudyId) return;
+    if (!studyId) return;
     setLoading(true);
     setError(null);
     try {
-      const data = await adjustmentSetApi.list(activeStudyId);
+      const data = await adjustmentSetApi.list(studyId);
       setSets(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load adjustment sets');
     } finally {
       setLoading(false);
     }
-  }, [activeStudyId]);
+  }, [studyId]);
 
   useEffect(() => { void load(); }, [load]);
 
@@ -181,7 +175,7 @@ export function AdjustmentSetPanel() {
     }
   }, []);
 
-  if (!activeStudyId) {
+  if (!studyId) {
     return (
       <div
         data-testid="adj-panel-no-study"
@@ -253,7 +247,6 @@ export function AdjustmentSetPanel() {
 
   return (
     <div data-testid="adj-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* header */}
       <div
         style={{
           padding: '6px 12px',
