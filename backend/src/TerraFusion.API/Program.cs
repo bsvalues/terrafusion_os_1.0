@@ -1086,6 +1086,13 @@ builder.Services.AddControllers()
       options.JsonSerializerOptions.WriteIndented = false;
       options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never;
       options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+      // Accept enum request bodies as strings ("RatioStudy" not 0). Response DTOs
+      // already use string-typed enum fields via manual mapping, so this only
+      // affects request-body deserialization of enum-typed properties
+      // (e.g. CreateStudyRequest.StudyType). Matches frontend convention where
+      // enums are serialized as their name, not their numeric value.
+      options.JsonSerializerOptions.Converters.Add(
+        new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpClient();
