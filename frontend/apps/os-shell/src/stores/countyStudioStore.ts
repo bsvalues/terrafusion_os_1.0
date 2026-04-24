@@ -10,6 +10,9 @@ import type {
   CountyScenarioDto,
   ScenarioImpactPreviewDto,
   PendingSelection,
+  CityRollupRowDto,
+  NeighborhoodRollupRowDto,
+  DrillLevel,
 } from '../pages/forge/county-studio/types/countyStudio.types';
 
 /**
@@ -25,12 +28,16 @@ export interface CountyStudioLoadState {
   segments: LoadStatus;
   cohorts: LoadStatus;
   scenarios: LoadStatus;
+  cityRollup: LoadStatus;
+  neighborhoodRollup: LoadStatus;
 }
 
 export interface CountyStudioLoadErrors {
   segments: string | null;
   cohorts: string | null;
   scenarios: string | null;
+  cityRollup: string | null;
+  neighborhoodRollup: string | null;
 }
 
 export interface CountyStudioState {
@@ -66,6 +73,22 @@ export interface CountyStudioState {
    */
   incomingProjections: ProjectionEvent[];
 
+  // ── Drill-lattice state (Task B) ───────────────────────────────────────
+  /**
+   * Current drill level — governs which table the center panel renders.
+   *   'county'       — CityRollupTable visible, selectedCity/selectedNeighborhood null.
+   *   'city'         — NeighborhoodRollupTable filtered to selectedCity.
+   *   'neighborhood' — SegmentTable filtered to segments with GeographyRef === selectedNeighborhood.
+   * Transitions are enforced by drillTo* actions so callers cannot leave the
+   * store in an inconsistent state (e.g. level=city with no selectedCity).
+   */
+  drillLevel: DrillLevel;
+  selectedCity: string | null;
+  selectedNeighborhood: string | null;
+
+  cityRollup: CityRollupRowDto[];
+  neighborhoodRollup: NeighborhoodRollupRowDto[];
+
   setStudy: (study: CountyStudySessionDto | null) => void;
   setSegments: (segments: CountySegmentDto[]) => void;
   setCohorts: (cohorts: CountyCohortDto[]) => void;
@@ -91,6 +114,30 @@ export interface CountyStudioState {
   pushIncomingProjection: (event: ProjectionEvent) => void;
   /** Clear all incoming projections (e.g. on 'projection:clear'). */
   clearIncomingProjections: () => void;
+
+  // ── Drill-lattice setters / transitions ────────────────────────────────
+  setCityRollup: (rows: CityRollupRowDto[]) => void;
+  setNeighborhoodRollup: (rows: NeighborhoodRollupRowDto[]) => void;
+  /**
+   * Collapse drill back to the county view (CityRollupTable). Clears both
+   * selectedCity and selectedNeighborhood so the "stale selection" class of
+   * bug (e.g. filtered segment table showing no rows after breadcrumb click)
+   * is mechanically impossible.
+   */
+  drillToCounty: () => void;
+  /**
+   * Advance drill to a specific city. Sets selectedCity and clears any
+   * stale selectedNeighborhood. Also clears selectedSegmentId so the
+   * RightRail's ObjectInspector doesn't show a detail for a segment that
+   * isn't in the new scope.
+   */
+  drillToCity: (city: string) => void;
+  /**
+   * Advance drill to a specific neighborhood within a city. Both city and
+   * neighborhood are required so the state machine can never land at
+   * drillLevel='neighborhood' without a parent city.
+   */
+  drillToNeighborhood: (city: string, neighborhoodCode: string) => void;
 }
 
 export interface PeerPresenceEvent {
@@ -124,11 +171,17 @@ export const useCountyStudioStore = create<CountyStudioState>()(
       activeMetric: 'ratio',
       pendingSelection: null,
 
-      loadStatus: { segments: 'idle', cohorts: 'idle', scenarios: 'idle' },
-      loadErrors: { segments: null, cohorts: null, scenarios: null },
+      loadStatus: { segments: 'idle', cohorts: 'idle', scenarios: 'idle', cityRollup: 'idle', neighborhoodRollup: 'idle' },
+      loadErrors: { segments: null, cohorts: null, scenarios: null, cityRollup: null, neighborhoodRollup: null },
 
       peerPresence: [],
       incomingProjections: [],
+
+      drillLevel: 'county',
+      selectedCity: null,
+      selectedNeighborhood: null,
+      cityRollup: [],
+      neighborhoodRollup: [],
 
       setStudy: (study) => set({ activeStudy: study }, false, 'setStudy'),
       setSegments: (segments) => set({ segments }, false, 'setSegments'),
@@ -186,6 +239,44 @@ export const useCountyStudioStore = create<CountyStudioState>()(
 
       clearIncomingProjections: () =>
         set({ incomingProjections: [] }, false, 'clearIncomingProjections'),
+
+      setCityRollup: (cityRollup) => set({ cityRollup }, false, 'setCityRollup'),
+      setNeighborhoodRollup: (neighborhoodRollup) =>
+        set({ neighborhoodRollup }, false, 'setNeighborhoodRollup'),
+
+      drillToCounty: () =>
+        set(
+          {
+            drillLevel: 'county',
+            selectedCity: null,
+            selectedNeighborhood: null,
+            selectedSegmentId: null,
+          },
+          false,
+          'drillToCounty'
+        ),
+      drillToCity: (city) =>
+        set(
+          {
+            drillLevel: 'city',
+            selectedCity: city,
+            selectedNeighborhood: null,
+            selectedSegmentId: null,
+          },
+          false,
+          `drillToCity/${city}`
+        ),
+      drillToNeighborhood: (city, neighborhoodCode) =>
+        set(
+          {
+            drillLevel: 'neighborhood',
+            selectedCity: city,
+            selectedNeighborhood: neighborhoodCode,
+            selectedSegmentId: null,
+          },
+          false,
+          `drillToNeighborhood/${city}/${neighborhoodCode}`
+        ),
     }),
     { name: 'CountyStudioStore' }
   )
