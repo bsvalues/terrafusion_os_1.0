@@ -618,6 +618,448 @@ public class CountyStudyService : ICountyStudyService
             .ToListAsync();
     }
 
+    // ── Rollups (Task B — County → City → Neighborhood drill lattice) ────
+
+    /// <summary>
+    /// Builds the county-level city rollup from the study's active segment set.
+    /// For every segment in the set we re-resolve the segment's parcels from
+    /// canonical Properties + CamaCharacteristics (same grouping key used by
+    /// derivation) so we can map a segment's city via CamaCharacteristic.City
+    /// normalized to canonical Benton city names. Medians are parcel-weighted,
+    /// so we reconstitute parcel-level ratios using qualified ComparableSales
+    /// for the study's tax-year window.
+    /// </summary>
+    public async Task<List<CityRollupRowDto>> GetCityRollupAsync(Guid studyId)
+    {
+        var (segments, perParcel) = await LoadRollupInputsAsync(studyId);
+
+        // Group parcel-level ratio rows by city.
+        var byCity = perParcel
+            .GroupBy(p => p.City)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        // Also group segments by city so SegmentCount, ExceptionCount,
+        // WorstSegment metrics are aligned. A segment's city is the modal
+        // (most-frequent) city among its parcels; ties break to the first
+        // lexicographic canonical city name.
+        var segmentCityMap = BuildSegmentCityMap(segments, perParcel);
+
+        // Union of cities appearing either in ratios or in segment membership.
+        var cityKeys = new HashSet<string>(byCity.Keys);
+        foreach (var city in segmentCityMap.Values) cityKeys.Add(city);
+
+        var rows = new List<CityRollupRowDto>();
+        foreach (var city in cityKeys.OrderBy(c => c))
+        {
+            byCity.TryGetValue(city, out var parcelRows);
+            parcelRows ??= new();
+
+            // Segments assigned to this city via modal-city mapping.
+            var segsInCity = segments
+                .Where(s => segmentCityMap.TryGetValue(s.SegmentId, out var c) && c == city)
+                .ToList();
+
+            int parcelCount = segsInCity.Sum(s => s.ParcelCount);
+            int exceptionCount = segsInCity.Sum(s => s.ExceptionCount);
+            decimal exceptionRate = parcelCount > 0
+                ? Math.Round((decimal)exceptionCount / parcelCount, 4)
+                : 0m;
+
+            // Parcel-weighted median: compute from all parcel-level ratios for this city.
+            decimal? medianRatio = parcelRows.Count > 0
+                ? ComputeMedian(parcelRows.Select(r => r.Ratio).ToList())
+                : null;
+            decimal? cod = parcelRows.Count >= 5 && medianRatio.HasValue && medianRatio.Value > 0
+                ? ComputeCod(parcelRows.Select(r => r.Ratio).ToList(), medianRatio.Value)
+                : null;
+            decimal? prd = ComputePrd(parcelRows);
+
+            // Worst segment: largest |MedianRatio - 1.0| (skip segments without a median).
+            var worstSeg = segsInCity
+                .Where(s => s.MedianRatio.HasValue)
+                .OrderByDescending(s => Math.Abs(s.MedianRatio!.Value - 1.0m))
+                .FirstOrDefault();
+
+            var compliance = ClassifyCompliance(medianRatio, cod, prd);
+
+            rows.Add(new CityRollupRowDto(
+                City: city,
+                SegmentCount: segsInCity.Count,
+                ParcelCount: parcelCount,
+                MedianRatio: medianRatio.HasValue ? Math.Round(medianRatio.Value, 4) : null,
+                Cod: cod.HasValue ? Math.Round(cod.Value, 2) : null,
+                Prd: prd.HasValue ? Math.Round(prd.Value, 4) : null,
+                ExceptionCount: exceptionCount,
+                ExceptionRate: exceptionRate,
+                WorstSegmentName: worstSeg?.Name,
+                WorstSegmentMedianRatio: worstSeg?.MedianRatio,
+                ComplianceStatus: compliance.ToString()));
+        }
+
+        return rows;
+    }
+
+    public async Task<List<NeighborhoodRollupRowDto>> GetNeighborhoodRollupAsync(Guid studyId, string? cityFilter)
+    {
+        var (segments, perParcel) = await LoadRollupInputsAsync(studyId);
+        var segmentCityMap = BuildSegmentCityMap(segments, perParcel);
+
+        if (!string.IsNullOrWhiteSpace(cityFilter))
+        {
+            segments = segments
+                .Where(s => segmentCityMap.TryGetValue(s.SegmentId, out var c) && string.Equals(c, cityFilter, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            perParcel = perParcel
+                .Where(p => string.Equals(p.City, cityFilter, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        // Group segments by neighborhood (GeographyRef).
+        var rows = new List<NeighborhoodRollupRowDto>();
+        var byNeighborhood = segments
+            .GroupBy(s => s.GeographyRef ?? "UNKNOWN")
+            .OrderBy(g => g.Key);
+
+        foreach (var group in byNeighborhood)
+        {
+            var segsInHood = group.ToList();
+            var hoodCode = group.Key;
+
+            // Neighborhood's city = modal city among its segments.
+            var hoodCity = segsInHood
+                .Select(s => segmentCityMap.TryGetValue(s.SegmentId, out var c) ? c : "Unincorporated")
+                .GroupBy(c => c)
+                .OrderByDescending(g => g.Count())
+                .ThenBy(g => g.Key)
+                .First().Key;
+
+            var parcelRows = perParcel
+                .Where(p => p.NeighborhoodCode == hoodCode)
+                .ToList();
+
+            int parcelCount = segsInHood.Sum(s => s.ParcelCount);
+            int exceptionCount = segsInHood.Sum(s => s.ExceptionCount);
+            decimal exceptionRate = parcelCount > 0
+                ? Math.Round((decimal)exceptionCount / parcelCount, 4)
+                : 0m;
+
+            decimal? medianRatio = parcelRows.Count > 0
+                ? ComputeMedian(parcelRows.Select(r => r.Ratio).ToList())
+                : null;
+            decimal? cod = parcelRows.Count >= 5 && medianRatio.HasValue && medianRatio.Value > 0
+                ? ComputeCod(parcelRows.Select(r => r.Ratio).ToList(), medianRatio.Value)
+                : null;
+            decimal? prd = ComputePrd(parcelRows);
+
+            // Parcel-weighted averages for stability + risk.
+            decimal totalWeight = segsInHood.Sum(s => (decimal)s.ParcelCount);
+            decimal stability = totalWeight > 0
+                ? Math.Round(segsInHood.Sum(s => s.StabilityScore * s.ParcelCount) / totalWeight, 2)
+                : 0m;
+            decimal risk = totalWeight > 0
+                ? Math.Round(segsInHood.Sum(s => s.RiskScore * s.ParcelCount) / totalWeight, 2)
+                : 0m;
+
+            var compliance = ClassifyCompliance(medianRatio, cod, prd);
+
+            rows.Add(new NeighborhoodRollupRowDto(
+                NeighborhoodCode: hoodCode,
+                NeighborhoodName: hoodCode,      // no human name dictionary available yet
+                City: hoodCity,
+                SegmentCount: segsInHood.Count,
+                ParcelCount: parcelCount,
+                MedianRatio: medianRatio.HasValue ? Math.Round(medianRatio.Value, 4) : null,
+                Cod: cod.HasValue ? Math.Round(cod.Value, 2) : null,
+                Prd: prd.HasValue ? Math.Round(prd.Value, 4) : null,
+                StabilityScore: stability,
+                RiskScore: risk,
+                ExceptionCount: exceptionCount,
+                ExceptionRate: exceptionRate,
+                ComplianceStatus: compliance.ToString()));
+        }
+
+        return rows;
+    }
+
+    // ── Rollup helpers ────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Per-parcel rollup input row. Computed once and reused by both rollups
+    /// so the two endpoints are consistent and the expensive PACS → canonical
+    /// join only runs once per call.
+    /// </summary>
+    private record RollupParcelRow(
+        string ParcelId,
+        string NeighborhoodCode,
+        string BuildingType,
+        string QualityGrade,
+        decimal AssessedValue,
+        decimal SalePrice,
+        decimal Ratio,
+        string City);
+
+    /// <summary>
+    /// Loads the segments in the study's active segment set and computes a
+    /// parcel-level ratio + city map by re-resolving the derivation grouping
+    /// key against canonical Properties + CamaCharacteristics + qualified
+    /// ComparableSales. Throws InvalidOperationException when the study has
+    /// no active segment set (caller maps to 409).
+    /// </summary>
+    private async Task<(List<CountySegment> segments, List<RollupParcelRow> perParcel)>
+        LoadRollupInputsAsync(Guid studyId)
+    {
+        var study = await _db.CountyStudySessions.FindAsync(studyId)
+            ?? throw new InvalidOperationException($"Study {studyId} not found");
+        if (study.ActiveSegmentSetId is null)
+            throw new InvalidOperationException(
+                $"Study {studyId} has no active segment set. Derive segments first via LeftRail → Derive Segment Metrics.");
+
+        var setId = study.ActiveSegmentSetId.Value;
+        var segments = await _db.CountySegments
+            .Where(s => s.SegmentSetId == setId)
+            .ToListAsync();
+
+        // Collect every (neighborhood × buildingType × qualityGrade) grouping
+        // key in the set so we can resolve parcels in a single scan.
+        var groupKeys = new HashSet<(string Hood, string BldgType, string Quality)>();
+        foreach (var seg in segments)
+        {
+            if (string.IsNullOrWhiteSpace(seg.RuleDefinition)) continue;
+            try
+            {
+                var rule = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(seg.RuleDefinition);
+                if (rule == null) continue;
+                var hood = rule.TryGetValue("neighborhood", out var h) && h.ValueKind == JsonValueKind.String ? (h.GetString() ?? "UNKNOWN") : "UNKNOWN";
+                var bldg = rule.TryGetValue("buildingType", out var b) && b.ValueKind == JsonValueKind.String ? (b.GetString() ?? "UNKNOWN") : "UNKNOWN";
+                var qual = rule.TryGetValue("qualityGrade", out var q) && q.ValueKind == JsonValueKind.String ? (q.GetString() ?? "UNKNOWN") : "UNKNOWN";
+                groupKeys.Add((hood, bldg, qual));
+            }
+            catch (JsonException) { /* skip malformed */ }
+        }
+
+        if (groupKeys.Count == 0)
+            return (segments, new List<RollupParcelRow>());
+
+        var countyId = study.CountyId;
+        var taxYear  = study.TaxYear;
+
+        // Parcels + CAMA — matches derivation service's left-join shape.
+        var parcels = await (
+            from p in _db.Properties.AsNoTracking()
+            where p.CountyId == countyId && p.TaxYear == taxYear
+            join c in _db.CamaCharacteristics.AsNoTracking()
+                on new { p.ParcelId, p.TaxYear } equals new { c.ParcelId, c.TaxYear } into cj
+            from c in cj.DefaultIfEmpty()
+            select new
+            {
+                p.ParcelId,
+                p.AssessedValue,
+                Neighborhood = p.Neighborhood,
+                BuildingType = c != null ? c.BuildingType : null,
+                QualityGrade = c != null ? c.QualityGrade : null,
+                City         = c != null ? c.City : null,
+                SitusCity    = p.SitusCity,
+            }).ToListAsync();
+
+        // Filter to parcels in scope for the segment set's grouping keys.
+        var inScope = new List<(string ParcelId, string Hood, string BldgType, string Quality, decimal Assessed, string City)>();
+        foreach (var pc in parcels)
+        {
+            var key = (
+                Hood:     string.IsNullOrWhiteSpace(pc.Neighborhood) ? "UNKNOWN" : pc.Neighborhood!,
+                BldgType: string.IsNullOrWhiteSpace(pc.BuildingType) ? "UNKNOWN" : pc.BuildingType!,
+                Quality:  string.IsNullOrWhiteSpace(pc.QualityGrade) ? "UNKNOWN" : pc.QualityGrade!
+            );
+            if (!groupKeys.Contains(key)) continue;
+
+            // Prefer CAMA-canonicalized City if present; fall back to Property.SitusCity.
+            var cityRaw = !string.IsNullOrWhiteSpace(pc.City) ? pc.City : pc.SitusCity;
+            var city = NormalizeCity(cityRaw);
+
+            inScope.Add((pc.ParcelId, key.Hood, key.BldgType, key.Quality, pc.AssessedValue, city));
+        }
+
+        if (inScope.Count == 0)
+            return (segments, new List<RollupParcelRow>());
+
+        // Qualified sales for the tax-year window — same rule as derivation service.
+        var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lookbackEnd   = new DateTime(taxYear, 12, 31, 23, 59, 59, DateTimeKind.Utc);
+        var matchedIds = inScope.Select(p => p.ParcelId).ToHashSet();
+        var salesRows = await _db.ComparableSales.AsNoTracking()
+            .Where(s => s.CountyId == countyId)
+            .Where(s => s.SaleDate >= lookbackStart && s.SaleDate <= lookbackEnd)
+            .Where(s => s.SalePrice > 0)
+            .Where(s => (s.QualificationDecision ?? s.QualificationRecommendation ?? s.SaleQualification) == "qualified")
+            .Where(s => matchedIds.Contains(s.ParcelId))
+            .Select(s => new { s.ParcelId, Price = s.AdjustedSalePrice ?? s.SalePrice })
+            .ToListAsync();
+
+        var priceByParcel = salesRows
+            .GroupBy(s => s.ParcelId)
+            .ToDictionary(g => g.Key, g => g.Select(x => x.Price).Average());
+
+        var perParcel = new List<RollupParcelRow>();
+        foreach (var p in inScope)
+        {
+            if (!priceByParcel.TryGetValue(p.ParcelId, out var price) || price <= 0) continue;
+            if (p.Assessed <= 0) continue;
+
+            perParcel.Add(new RollupParcelRow(
+                ParcelId: p.ParcelId,
+                NeighborhoodCode: p.Hood,
+                BuildingType: p.BldgType,
+                QualityGrade: p.Quality,
+                AssessedValue: p.Assessed,
+                SalePrice: price,
+                Ratio: p.Assessed / price,
+                City: p.City));
+        }
+
+        return (segments, perParcel);
+    }
+
+    /// <summary>
+    /// Build a SegmentId → City mapping using the modal city among each
+    /// segment's in-scope parcels. Segments without parcels (no ratio data)
+    /// are assigned "Unincorporated" so they still surface in rollups.
+    /// </summary>
+    private static Dictionary<Guid, string> BuildSegmentCityMap(
+        List<CountySegment> segments,
+        List<RollupParcelRow> perParcel)
+    {
+        // Derive each segment's grouping key once from its RuleDefinition.
+        var keyBySegment = new Dictionary<Guid, (string Hood, string BldgType, string Quality)>();
+        foreach (var seg in segments)
+        {
+            if (string.IsNullOrWhiteSpace(seg.RuleDefinition)) continue;
+            try
+            {
+                var rule = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(seg.RuleDefinition);
+                if (rule == null) continue;
+                var hood = rule.TryGetValue("neighborhood", out var h) && h.ValueKind == JsonValueKind.String ? (h.GetString() ?? "UNKNOWN") : "UNKNOWN";
+                var bldg = rule.TryGetValue("buildingType", out var b) && b.ValueKind == JsonValueKind.String ? (b.GetString() ?? "UNKNOWN") : "UNKNOWN";
+                var qual = rule.TryGetValue("qualityGrade", out var q) && q.ValueKind == JsonValueKind.String ? (q.GetString() ?? "UNKNOWN") : "UNKNOWN";
+                keyBySegment[seg.SegmentId] = (hood, bldg, qual);
+            }
+            catch (JsonException) { /* no key → segment falls through to Unincorporated */ }
+        }
+
+        // Index parcels by their grouping key.
+        var parcelsByKey = perParcel
+            .GroupBy(p => (p.NeighborhoodCode, p.BuildingType, p.QualityGrade))
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        var map = new Dictionary<Guid, string>();
+        foreach (var seg in segments)
+        {
+            if (!keyBySegment.TryGetValue(seg.SegmentId, out var key))
+            {
+                map[seg.SegmentId] = "Unincorporated";
+                continue;
+            }
+            if (!parcelsByKey.TryGetValue(key, out var parcels) || parcels.Count == 0)
+            {
+                map[seg.SegmentId] = "Unincorporated";
+                continue;
+            }
+            // Modal city; lexicographic tiebreak keeps the choice deterministic.
+            var modalCity = parcels
+                .GroupBy(p => p.City)
+                .OrderByDescending(g => g.Count())
+                .ThenBy(g => g.Key)
+                .First().Key;
+            map[seg.SegmentId] = modalCity;
+        }
+        return map;
+    }
+
+    private static decimal ComputeMedian(IList<decimal> values)
+    {
+        if (values.Count == 0) return 0m;
+        var sorted = values.OrderBy(v => v).ToList();
+        var mid = sorted.Count / 2;
+        return sorted.Count % 2 == 0
+            ? (sorted[mid - 1] + sorted[mid]) / 2m
+            : sorted[mid];
+    }
+
+    private static decimal ComputeCod(IList<decimal> ratios, decimal median)
+    {
+        if (ratios.Count == 0 || median <= 0) return 0m;
+        var absDev = ratios.Select(r => Math.Abs(r - median)).Average();
+        return absDev / median * 100m;
+    }
+
+    private static decimal? ComputePrd(List<RollupParcelRow> rows)
+    {
+        if (rows.Count < 5) return null;
+        var arithmetic = rows.Select(r => r.Ratio).Average();
+        var sumAssessed = rows.Sum(r => r.AssessedValue);
+        var sumPrice    = rows.Sum(r => r.SalePrice);
+        if (sumPrice <= 0) return null;
+        var weighted = sumAssessed / sumPrice;
+        return weighted > 0 ? arithmetic / weighted : null;
+    }
+
+    /// <summary>
+    /// IAAO compliance thresholds per task spec:
+    ///   median 0.90–1.10, COD ≤ 20, PRD 0.98–1.03.
+    /// Rules:
+    ///   - IaaoCompliant    → all three pass (a null metric counts as a pass only
+    ///     when there are no parcels at all; otherwise it counts as non-compliant
+    ///     because we cannot affirmatively say the rollup is compliant).
+    ///   - NonCompliant     → any metric present AND failing.
+    ///   - MarginalCompliance → metrics present and close to the edges but none
+    ///     hard-fail (e.g. median in [0.90,0.92] ∪ [1.08,1.10] or COD in (15,20]
+    ///     or PRD in [0.98,0.99] ∪ [1.02,1.03]).
+    /// </summary>
+    private static RollupComplianceStatus ClassifyCompliance(decimal? median, decimal? cod, decimal? prd)
+    {
+        // No metrics at all → not enough data to say anything.
+        if (!median.HasValue && !cod.HasValue && !prd.HasValue)
+            return RollupComplianceStatus.NonCompliant;
+
+        bool medianHardFail = median.HasValue && (median.Value < 0.90m || median.Value > 1.10m);
+        bool codHardFail    = cod.HasValue    &&  cod.Value   > 20m;
+        bool prdHardFail    = prd.HasValue    && (prd.Value   < 0.98m || prd.Value   > 1.03m);
+        if (medianHardFail || codHardFail || prdHardFail)
+            return RollupComplianceStatus.NonCompliant;
+
+        bool medianSoft = median.HasValue && (median.Value < 0.92m || median.Value > 1.08m);
+        bool codSoft    = cod.HasValue    &&  cod.Value   > 15m;
+        bool prdSoft    = prd.HasValue    && (prd.Value   < 0.99m || prd.Value   > 1.02m);
+        if (medianSoft || codSoft || prdSoft)
+            return RollupComplianceStatus.MarginalCompliance;
+
+        return RollupComplianceStatus.IaaoCompliant;
+    }
+
+    /// <summary>
+    /// Canonical Benton city normalization. Mirrors PacsCanonicalizer.NormalizeCity
+    /// (kept local to Core so the rollup service doesn't depend on the API project).
+    /// Non-listed inputs fall back to "Unincorporated".
+    /// </summary>
+    private static string NormalizeCity(string? rawCity)
+    {
+        if (string.IsNullOrWhiteSpace(rawCity)) return "Unincorporated";
+        var normalized = rawCity.Trim().ToUpperInvariant();
+        return normalized switch
+        {
+            "KENNEWICK"     => "Kennewick",
+            "RICHLAND"      => "Richland",
+            "PASCO"         => "Pasco",
+            "PROSSER"       => "Prosser",
+            "BENTON CITY"   => "Benton City",
+            "WEST RICHLAND" => "West Richland",
+            "FINLEY"        => "Finley",
+            "BASIN CITY"    => "Basin City",
+            "BURBANK"       => "Burbank",
+            "PATERSON"      => "Paterson",
+            _               => "Unincorporated",
+        };
+    }
+
     // ── Mappers ──────────────────────────────────────────────────────────
 
     private static CountyStudySessionDto MapStudy(CountyStudySession s) =>

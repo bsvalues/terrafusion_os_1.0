@@ -175,6 +175,73 @@ public class CountyStudyController : ControllerBase
         }
     }
 
+    // ── Rollups (Task B — County → City → Neighborhood drill lattice) ────
+
+    /// <summary>
+    /// Returns one row per Benton city, aggregated from the study's active
+    /// CountySegmentSet. Each row carries segment/parcel counts, parcel-weighted
+    /// IAAO metrics (median / COD / PRD), exception stats, a pointer to the
+    /// single worst-performing segment in the city, and an IAAO compliance
+    /// classification. Cities with no matching segments are omitted.
+    ///
+    /// Returns 409 Conflict if the study has no active segment set yet —
+    /// caller should prompt the user to run "Derive Segment Metrics" first.
+    /// </summary>
+    [HttpGet("studies/{studyId:guid}/city-rollup")]
+    public async Task<IActionResult> GetCityRollup(Guid studyId)
+    {
+        try
+        {
+            var rows = await _svc.GetCityRollupAsync(studyId);
+            return Ok(rows);
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("active segment set"))
+        {
+            return Conflict(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] GetCityRollup failed for study {StudyId}", studyId);
+            return StatusCode(500, new { error = "Internal error" });
+        }
+    }
+
+    /// <summary>
+    /// Returns one row per neighborhood in the study's active segment set,
+    /// optionally filtered to a single city. Neighborhoods are grouped by
+    /// CountySegment.GeographyRef (neighborhood code). Each row carries
+    /// parcel-weighted IAAO metrics and parcel-weighted stability + risk
+    /// averages across the neighborhood's segments.
+    ///
+    /// Returns 409 Conflict if the study has no active segment set yet.
+    /// </summary>
+    [HttpGet("studies/{studyId:guid}/neighborhood-rollup")]
+    public async Task<IActionResult> GetNeighborhoodRollup(Guid studyId, [FromQuery] string? city)
+    {
+        try
+        {
+            var rows = await _svc.GetNeighborhoodRollupAsync(studyId, city);
+            return Ok(rows);
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("active segment set"))
+        {
+            return Conflict(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] GetNeighborhoodRollup failed for study {StudyId} city {City}", studyId, city);
+            return StatusCode(500, new { error = "Internal error" });
+        }
+    }
+
     // ── Segment Sets ──────────────────────────────────────────────────────────
 
     /// <summary>

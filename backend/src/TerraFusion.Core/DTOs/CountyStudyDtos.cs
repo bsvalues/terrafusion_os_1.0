@@ -174,3 +174,57 @@ public record CreateCountyExceptionSetRequest(
     List<string> ParcelIds,
     ExceptionDestination Destination
 );
+
+// ── Rollups (Task B — County → City → Neighborhood drill lattice) ─────────
+
+/// <summary>
+/// IAAO compliance tiering for a rollup row:
+///   IaaoCompliant    — median ∈ [0.90, 1.10] AND COD ≤ 20 AND PRD ∈ [0.98, 1.03]
+///   MarginalCompliance — one or two fall in a soft-warn band (see controller helper)
+///   NonCompliant     — any hard failure against the IAAO thresholds above
+/// </summary>
+public enum RollupComplianceStatus
+{
+    IaaoCompliant,
+    MarginalCompliance,
+    NonCompliant,
+}
+
+/// <summary>
+/// One row per Benton city on the county rollup. Aggregated from the study's
+/// active CountySegmentSet by joining each segment's constituent parcels'
+/// CamaCharacteristic.City (normalized via PacsCanonicalizer.NormalizeCity).
+/// </summary>
+public record CityRollupRowDto(
+    string City,
+    int SegmentCount,
+    int ParcelCount,
+    decimal? MedianRatio,
+    decimal? Cod,
+    decimal? Prd,
+    int ExceptionCount,
+    decimal ExceptionRate,
+    string? WorstSegmentName,
+    decimal? WorstSegmentMedianRatio,
+    string ComplianceStatus
+);
+
+/// <summary>
+/// One row per neighborhood on the city/neighborhood rollup. Aggregated from
+/// each segment's GeographyRef (neighborhood code) within the resolved city.
+/// </summary>
+public record NeighborhoodRollupRowDto(
+    string NeighborhoodCode,
+    string NeighborhoodName,
+    string City,
+    int SegmentCount,
+    int ParcelCount,
+    decimal? MedianRatio,
+    decimal? Cod,
+    decimal? Prd,
+    decimal StabilityScore,
+    decimal RiskScore,
+    int ExceptionCount,
+    decimal ExceptionRate,
+    string ComplianceStatus
+);

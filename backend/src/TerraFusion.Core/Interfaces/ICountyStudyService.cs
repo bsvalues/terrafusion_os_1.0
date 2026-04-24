@@ -35,4 +35,8 @@ public interface ICountyStudyService
     // Exception Sets
     Task<CountyExceptionSetDto> CreateExceptionSetAsync(CreateCountyExceptionSetRequest req, string userId);
     Task<List<CountyExceptionSetDto>> GetExceptionSetsAsync(Guid studyId);
+
+    // Rollups (Task B — County → City → Neighborhood drill lattice)
+    Task<List<CityRollupRowDto>> GetCityRollupAsync(Guid studyId);
+    Task<List<NeighborhoodRollupRowDto>> GetNeighborhoodRollupAsync(Guid studyId, string? cityFilter);
 }
