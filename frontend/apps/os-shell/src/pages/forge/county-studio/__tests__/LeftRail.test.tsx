@@ -26,9 +26,12 @@ const retrySegmentsMock = vi.fn(async () => {});
 vi.mock('../hooks/useStudyData', () => ({
   useStudyData: () => ({
     retrySegments: retrySegmentsMock,
-    retryCohorts: vi.fn(),
-    retryScenarios: vi.fn(),
-    retryAll: vi.fn(),
+    retryCohorts: vi.fn(async () => {}),
+    retryScenarios: vi.fn(async () => {}),
+    retryCityRollup: vi.fn(async () => {}),
+    retryNeighborhoodRollup: vi.fn(async () => {}),
+    retryHealthSummary: vi.fn(async () => {}),
+    retryAll: vi.fn(async () => {}),
   }),
 }));
 
