@@ -53,6 +53,18 @@ static IEnumerable<string> EnumerateSelfAndAncestors(string startPath)
 
 static string ResolveApiContentRoot()
 {
+    // Explicit override — test harnesses set this before host construction to
+    // bypass the ancestor walk. Honor it first so WebApplicationFactory-style
+    // test fixtures work in non-standard layouts (worktrees, custom bin dirs).
+    var envOverride = Environment.GetEnvironmentVariable("TERRAFUSION_API_CONTENT_ROOT")
+                   ?? Environment.GetEnvironmentVariable("ASPNETCORE_CONTENTROOT");
+    if (!string.IsNullOrWhiteSpace(envOverride) &&
+        File.Exists(Path.Combine(envOverride, "TerraFusion.API.csproj")) &&
+        File.Exists(Path.Combine(envOverride, "appsettings.json")))
+    {
+        return Path.GetFullPath(envOverride);
+    }
+
     var candidateStarts = new[]
     {
         Directory.GetCurrentDirectory(),
@@ -70,6 +82,18 @@ static string ResolveApiContentRoot()
                 File.Exists(Path.Combine(probe, "appsettings.json")))
             {
                 return probe;
+            }
+
+            // Also probe the conventional src/TerraFusion.API sibling layout —
+            // tests run from backend/TerraFusion.API.Tests/bin/..., where the
+            // API source is at backend/src/TerraFusion.API. Without this probe,
+            // the walk finds `backend/` but keeps going without spotting the
+            // API project as a child of an ancestor.
+            var sibling = Path.Combine(probe, "src", "TerraFusion.API");
+            if (File.Exists(Path.Combine(sibling, "TerraFusion.API.csproj")) &&
+                File.Exists(Path.Combine(sibling, "appsettings.json")))
+            {
+                return Path.GetFullPath(sibling);
             }
         }
     }
