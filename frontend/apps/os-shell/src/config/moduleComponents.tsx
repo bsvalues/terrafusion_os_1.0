@@ -1103,13 +1103,28 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
           />
         );
       }
+      // Task D3: Dais and Dossier suite homes consume County Studio
+      // Inspector metadata (segmentId + workflowTemplate / packetTemplate)
+      // on mount to seed a segment-scoped draft. Forward metadata.
+      if (module.id === 'suite-dais') {
+        return (
+          <Suspense fallback={<ModuleLoadingFallback />}>
+            <DaisSuiteHome metadata={metadata as Record<string, unknown> | undefined} />
+          </Suspense>
+        );
+      }
+      if (module.id === 'suite-dossier') {
+        return (
+          <Suspense fallback={<ModuleLoadingFallback />}>
+            <DossierSuiteHome metadata={metadata as Record<string, unknown> | undefined} />
+          </Suspense>
+        );
+      }
       const SuiteComponent = {
         'suite-forge': ForgeSuiteHome,
         'suite-atlas': AtlasSuiteHome,
-        'suite-dais': DaisSuiteHome,
-        'suite-dossier': DossierSuiteHome,
         'suite-gpt': GptSuiteHome,
-      }[module.id]!;
+      }[module.id as 'suite-forge' | 'suite-atlas' | 'suite-gpt']!;
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
           <SuiteComponent />

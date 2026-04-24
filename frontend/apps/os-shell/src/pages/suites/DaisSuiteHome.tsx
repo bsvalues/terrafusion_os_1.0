@@ -10,9 +10,17 @@
  * Note: TerraDais API metrics are composed via useDaisSuiteStats.
  * Falls back to county-provider aggregates when live Dais endpoints are unavailable.
  * Per-parcel appeal work routes to the Workbench Dais tab.
+ *
+ * Task D3 — receives County Studio Inspector handoff metadata on mount.
+ * Supported metadata keys (all optional):
+ *   deeplinkQuery:    '?template=SegmentReview&segmentId=s1' — raw query;
+ *                     parsed as a fallback if pre-split fields are missing.
+ *   workflowTemplate: string (currently always 'SegmentReview').
+ *   segmentId:        string — seeds the draft + back-chip.
+ *   segmentLabel:     string — human label for the draft.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { invokeTool } from '../../api/pilotApi';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
@@ -21,6 +29,8 @@ import NoticeBatchQueuePanel from '../../components/dais/NoticeBatchQueuePanel';
 import CertRollPanel from '../../components/dais/CertRollPanel';
 import ManagementDashboardPanel from '../../components/dais/ManagementDashboardPanel';
 import SupervisorFlagQueue from '../../components/dais/SupervisorFlagQueue';
+import DaisWorkflowDraftPanel from '../../components/dais/DaisWorkflowDraftPanel';
+import { useSegmentWorkflowDraftStore } from './segmentWorkflowDraftStore';
 import { useDaisSuiteStats } from './useDaisSuiteStats';
 import {
   Scale,
@@ -94,8 +104,50 @@ const DAIS_MODULES: SuiteModuleDef[] = [
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
 
-export default function DaisSuiteHome() {
+/** Best-effort parser for the raw backend deeplink query string (Task D3). */
+function parseDaisDeeplinkQuery(raw: unknown): { template?: string; segmentId?: string } {
+  if (typeof raw !== 'string' || raw.length === 0) return {};
+  try {
+    const trimmed = raw.startsWith('?') ? raw.slice(1) : raw;
+    const params  = new URLSearchParams(trimmed);
+    const out: { template?: string; segmentId?: string } = {};
+    const template = params.get('template');
+    if (template) out.template = template;
+    const segmentId = params.get('segmentId');
+    if (segmentId) out.segmentId = segmentId;
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+export interface DaisSuiteHomeProps {
+  /** Optional metadata from the shell's window system (County Studio handoff). */
+  metadata?: Record<string, unknown>;
+}
+
+export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
   const { stats, loading, error, source } = useDaisSuiteStats();
+  const createDraft = useSegmentWorkflowDraftStore((s) => s.createDraft);
+
+  // ── Consume County Studio handoff metadata on mount (Task D3) ───────────
+  useEffect(() => {
+    if (!metadata) return;
+    const parsed = parseDaisDeeplinkQuery(metadata.deeplinkQuery);
+
+    const templateFromMeta = typeof metadata.workflowTemplate === 'string' ? metadata.workflowTemplate : null;
+    const template = templateFromMeta ?? parsed.template ?? null;
+
+    const segmentFromMeta = typeof metadata.segmentId === 'string' ? metadata.segmentId : null;
+    const segmentId = segmentFromMeta ?? parsed.segmentId ?? null;
+
+    const labelFromMeta = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
+
+    if (template === 'SegmentReview' && segmentId) {
+      createDraft(template, segmentId, labelFromMeta ?? segmentId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [selectedRole, setSelectedRole] = useState<AssessorStaffRole>('chief_appraiser');
   const [briefState, setBriefState] = useState<{
     status: 'idle' | 'loading' | 'success' | 'error';
@@ -150,6 +202,9 @@ export default function DaisSuiteHome() {
   return (
     <div data-testid="suite-dais-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="dais" />
+
+      {/* Task D3 — County Studio handoff: segment workflow draft */}
+      <DaisWorkflowDraftPanel />
 
       {loading && !stats && (
         <div data-testid="dais-loading" role="status" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Loading stats...</div>
