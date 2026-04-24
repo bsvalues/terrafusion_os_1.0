@@ -72,6 +72,18 @@ vi.mock('../hooks/useInspectorData', () => ({
   }),
 }));
 
+// Diagnosis tab uses its own hook — stub it with an inert response so
+// Inspector tests (metrics / trend / action) don't exercise the panel.
+vi.mock('../hooks/useDiagnosisData', () => ({
+  useDiagnosisData: () => ({
+    diagnosis: null,
+    loading: false,
+    error: null,
+    notDerived: false,
+    retry: () => {},
+  }),
+}));
+
 const MOCK_STUDY: CountyStudySessionDto = {
   studyId: 'study-1', countyId: 'benton', taxYear: 2026,
   studyType: 'RatioStudy', status: 'Active',
@@ -162,11 +174,12 @@ describe('ObjectInspector — panel visibility', () => {
     expect(screen.getByText(/select a segment/i)).toBeInTheDocument();
   });
 
-  it('renders the three tab triggers when a segment is selected', () => {
+  it('renders the four tab triggers when a segment is selected', () => {
     render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
     expect(screen.getByTestId('inspector-tab-metrics')).toBeInTheDocument();
     expect(screen.getByTestId('inspector-tab-trend')).toBeInTheDocument();
     expect(screen.getByTestId('inspector-tab-action')).toBeInTheDocument();
+    expect(screen.getByTestId('inspector-tab-diagnosis')).toBeInTheDocument();
   });
 });
 
