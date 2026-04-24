@@ -1,6 +1,8 @@
 // frontend/apps/os-shell/src/pages/forge/county-studio/components/LeftRail.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
+import { segmentSetApi, studyApi } from '../countyStudyApi';
+import { useStudyData } from '../hooks/useStudyData';
 
 const SectionHeader = ({ label }: { label: string }) => (
   <div style={{
@@ -58,24 +60,124 @@ const InlineError = ({ message }: { message: string }) => (
   </div>
 );
 
+/** Local state machine for the Derive Segment Metrics action. */
+type DeriveState =
+  | { kind: 'idle' }
+  | { kind: 'deriving' }
+  | { kind: 'success'; segmentCount: number; segmentsWithRatios: number }
+  | { kind: 'error'; message: string };
+
 export function LeftRail() {
   const {
     activeStudy, cohorts, scenarios, activeCohortId, activeScenario,
-    setActiveCohort, setActiveScenario,
+    setActiveCohort, setActiveScenario, setStudy,
     loadStatus, loadErrors,
   } = useCountyStudioStore();
 
+  const { retrySegments } = useStudyData();
+  const [derive, setDerive] = useState<DeriveState>({ kind: 'idle' });
+
+  const handleDerive = async () => {
+    if (!activeStudy || derive.kind === 'deriving') return;
+    setDerive({ kind: 'deriving' });
+    try {
+      const result = await segmentSetApi.derive(activeStudy.studyId);
+      // Refresh the study so activeSegmentSetId reflects the new baseline set.
+      try {
+        const refreshed = await studyApi.get(activeStudy.studyId);
+        setStudy(refreshed);
+      } catch {
+        // Non-fatal: retrySegments below falls back to the first baseline set.
+      }
+      await retrySegments();
+      setDerive({
+        kind: 'success',
+        segmentCount: result.segmentCount,
+        segmentsWithRatios: result.segmentsWithRatios,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Derivation failed';
+      setDerive({ kind: 'error', message });
+    }
+  };
+
+  const deriveLabel = (() => {
+    switch (derive.kind) {
+      case 'deriving': return 'Deriving…';
+      case 'success':  return 'Derive again';
+      case 'error':    return 'Retry derive';
+      default:         return 'Derive Segment Metrics';
+    }
+  })();
+
+  const deriveDisabled = !activeStudy || derive.kind === 'deriving';
+
   return (
     <div style={{ padding: '8px 0' }}>
-      <style>{`@keyframes tf-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+      <style>{`@keyframes tf-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+      @keyframes tf-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }`}</style>
 
       <SectionHeader label="Studies" />
       {activeStudy ? (
-        <NavItem
-          label={`${activeStudy.taxYear} ${activeStudy.studyType}`}
-          sub={activeStudy.status}
-          active
-        />
+        <>
+          <NavItem
+            label={`${activeStudy.taxYear} ${activeStudy.studyType}`}
+            sub={activeStudy.status}
+            active
+          />
+          <div style={{ padding: '6px 12px 4px' }}>
+            <button
+              data-testid="derive-segments-btn"
+              onClick={handleDerive}
+              disabled={deriveDisabled}
+              aria-busy={derive.kind === 'deriving'}
+              aria-label="Derive Segment Metrics"
+              style={{
+                width: '100%', padding: '6px 10px',
+                border: '1px solid hsl(var(--tf-border))',
+                borderRadius: 3,
+                background: derive.kind === 'deriving' ? 'hsl(var(--tf-surface))' : 'transparent',
+                color: deriveDisabled ? 'hsl(var(--tf-muted))' : 'hsl(var(--tf-fg))',
+                fontSize: 11, fontWeight: 600,
+                cursor: deriveDisabled ? 'not-allowed' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              }}
+            >
+              {derive.kind === 'deriving' && (
+                <span
+                  aria-hidden="true"
+                  data-testid="derive-spinner"
+                  style={{
+                    width: 10, height: 10, borderRadius: '50%',
+                    border: '2px solid hsl(var(--tf-muted))',
+                    borderTopColor: 'transparent',
+                    animation: 'tf-spin 0.8s linear infinite',
+                  }}
+                />
+              )}
+              {deriveLabel}
+            </button>
+            {derive.kind === 'success' && (
+              <div
+                data-testid="derive-success"
+                role="status"
+                style={{ marginTop: 4, padding: '2px 2px', fontSize: 10, color: 'hsl(var(--tf-muted))' }}
+              >
+                Wrote {derive.segmentCount} segments · {derive.segmentsWithRatios} with ratios
+              </div>
+            )}
+            {derive.kind === 'error' && (
+              <div
+                data-testid="derive-error"
+                role="alert"
+                title={derive.message}
+                style={{ marginTop: 4, padding: '2px 2px', fontSize: 10, color: '#ef4444' }}
+              >
+                ⚠ {derive.message}
+              </div>
+            )}
+          </div>
+        </>
       ) : (
         <div style={{ padding: '4px 12px', fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
           No study open
@@ -140,11 +242,6 @@ export function LeftRail() {
           />
         ))
       )}
-
-      <SectionHeader label="Snapshots" />
-      <div style={{ padding: '4px 12px', fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
-        None saved
-      </div>
     </div>
   );
 }
