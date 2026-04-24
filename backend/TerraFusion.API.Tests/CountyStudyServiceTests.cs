@@ -498,4 +498,70 @@ public class CountyStudyServiceTests
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => svc.CreateExceptionSetAsync(req, "u1"));
     }
+
+    // ── Task F: Exception lifecycle ───────────────────────────────────────
+
+    private async Task<(CountyStudyService svc, TerraFusion.Data.TerraFusionDbContext ctx, CountyExceptionSet exc)>
+        SeedExceptionAsync(ExceptionReasonCode reason = ExceptionReasonCode.LowSample,
+                           ExceptionDestination dest = ExceptionDestination.Dais)
+    {
+        var (ctx, svc) = CreateSut();
+        var study = await svc.CreateStudyAsync(
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2026, StudyType.RatioStudy, null), "u1");
+        var cohort = await svc.CreateCohortAsync(
+            new CreateCohortRequest(study.StudyId, "ExcCohort", CohortSelectionType.Segment,
+                "{}", 5, false), "u1");
+        var scenario = await svc.CreateScenarioAsync(
+            new CreateScenarioRequest(study.StudyId, cohort.CohortId,
+                ScenarioAdjustmentType.LandValuePercent, "{}", "test"), "u1");
+
+        var exc = new CountyExceptionSet
+        {
+            StudyId = study.StudyId,
+            SourceScenarioId = scenario.ScenarioId,
+            CountyId = Guid.NewGuid(),
+            ReasonCode = reason,
+            ParcelCount = 5,
+            Destination = dest,
+            Status = ExceptionSetStatus.Created,
+            CreatedBy = "test",
+            UpdatedBy = "test"
+        };
+        ctx.CountyExceptionSets.Add(exc);
+        await ctx.SaveChangesAsync();
+        return (svc, ctx, exc);
+    }
+
+    [Fact]
+    public async Task UpdateExceptionStatus_Dispatched_UpdatesStatusAndReturnsDto()
+    {
+        var (svc, _, exc) = await SeedExceptionAsync();
+
+        var dto = await svc.UpdateExceptionStatusAsync(exc.ExceptionSetId, ExceptionSetStatus.Dispatched, "test-user");
+
+        Assert.Equal("Dispatched", dto.Status);
+        Assert.Equal("test", dto.CreatedBy); // CreatedBy unchanged
+    }
+
+    [Fact]
+    public async Task AssignExceptionSet_SetsAssigneeName()
+    {
+        var (svc, _, exc) = await SeedExceptionAsync(ExceptionReasonCode.Outlier);
+
+        var dto = await svc.AssignExceptionSetAsync(exc.ExceptionSetId, "Jane Assessor", "admin");
+
+        Assert.Equal("Jane Assessor", dto.AssignedTo);
+    }
+
+    [Fact]
+    public async Task AddExceptionNote_AppendsTimestampedEntry()
+    {
+        var (svc, _, exc) = await SeedExceptionAsync(ExceptionReasonCode.Heterogeneity);
+
+        var dto = await svc.AddExceptionNoteAsync(exc.ExceptionSetId, "Needs field review", "admin");
+
+        Assert.NotNull(dto.Notes);
+        Assert.Contains("Needs field review", dto.Notes);
+        Assert.Contains("admin", dto.Notes);
+    }
 }

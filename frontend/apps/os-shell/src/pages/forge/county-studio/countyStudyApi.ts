@@ -134,9 +134,44 @@ export const scenarioApi = {
 
 // ── Exception Sets ────────────────────────────────────────────────────────────
 
+export interface CountyExceptionSetDto {
+  exceptionSetId: string;
+  studyId: string;
+  sourceScenarioId: string;
+  reasonCode: string;   // LowSample | SegmentInstability | Outlier | EdgeEffect | Heterogeneity | ManualFlag
+  parcelCount: number;
+  destination: string;  // Dais | Dossier | Internal
+  status: string;       // Created | Dispatched | Resolved
+  assignedTo: string | null;
+  notes: string | null;
+  createdAt: string;    // ISO date string
+  createdBy: string;
+}
+
 export const exceptionApi = {
-  list: (studyId: string): Promise<unknown[]> =>
+  list: (studyId: string): Promise<CountyExceptionSetDto[]> =>
     apiFetchJson(`${BASE}/studies/${studyId}/exceptions`),
+
+  updateStatus: (id: string, newStatus: string): Promise<CountyExceptionSetDto> =>
+    apiFetchJson(`${BASE}/exceptions/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ newStatus }),
+    }),
+
+  assign: (id: string, assignTo: string): Promise<CountyExceptionSetDto> =>
+    apiFetchJson(`${BASE}/exceptions/${id}/assign`, {
+      method: 'PATCH',
+      body: JSON.stringify({ assignTo }),
+    }),
+
+  addNote: (id: string, noteText: string): Promise<CountyExceptionSetDto> =>
+    apiFetchJson(`${BASE}/exceptions/${id}/notes`, {
+      method: 'POST',
+      body: JSON.stringify({ noteText }),
+    }),
+
+  dispatch: (id: string, _dto: CountyExceptionSetDto): Promise<CountyExceptionSetDto> =>
+    exceptionApi.updateStatus(id, 'Dispatched'),
 };
 
 // ── Rollups (Task B — drill lattice) ──────────────────────────────────────────

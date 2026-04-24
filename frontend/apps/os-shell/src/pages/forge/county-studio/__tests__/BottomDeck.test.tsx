@@ -14,12 +14,21 @@ vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
+vi.mock('../components/ExceptionQueuePanel', () => ({
+  ExceptionQueuePanel: () => <div data-testid="exception-queue-panel" />,
+}));
+
 describe('BottomDeck', () => {
   it('renders three tabs', () => {
     render(<BottomDeck />);
     expect(screen.getByText('Distribution')).toBeInTheDocument();
     expect(screen.getByText('Before / After')).toBeInTheDocument();
     expect(screen.getByText('Warnings')).toBeInTheDocument();
+  });
+
+  it('renders Exceptions tab button', () => {
+    render(<BottomDeck />);
+    expect(screen.getByText(/Exceptions/i)).toBeInTheDocument();
   });
 
   it('defaults to Distribution tab', () => {

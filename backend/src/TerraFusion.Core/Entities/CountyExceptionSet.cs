@@ -28,6 +28,9 @@ public class CountyExceptionSet
     public ExceptionDestination Destination { get; set; } = ExceptionDestination.Internal;
     public ExceptionSetStatus Status { get; set; } = ExceptionSetStatus.Created;
 
+    public string? AssignedTo { get; set; }   // free-text staff name
+    public string? Notes { get; set; }         // accumulated notes (append-style via service)
+
     // Navigation
     public CountyScenario? SourceScenario { get; set; }
 

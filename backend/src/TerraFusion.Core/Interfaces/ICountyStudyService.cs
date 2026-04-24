@@ -1,5 +1,6 @@
 // backend/src/TerraFusion.Core/Interfaces/ICountyStudyService.cs
 using TerraFusion.Core.DTOs;
+using TerraFusion.Core.Entities;
 
 namespace TerraFusion.Core.Interfaces;
 
@@ -35,6 +36,9 @@ public interface ICountyStudyService
     // Exception Sets
     Task<CountyExceptionSetDto> CreateExceptionSetAsync(CreateCountyExceptionSetRequest req, string userId);
     Task<List<CountyExceptionSetDto>> GetExceptionSetsAsync(Guid studyId);
+    Task<CountyExceptionSetDto> UpdateExceptionStatusAsync(Guid exceptionSetId, ExceptionSetStatus newStatus, string userId);
+    Task<CountyExceptionSetDto> AssignExceptionSetAsync(Guid exceptionSetId, string assignTo, string userId);
+    Task<CountyExceptionSetDto> AddExceptionNoteAsync(Guid exceptionSetId, string noteText, string userId);
 
     // Rollups (Task B — County → City → Neighborhood drill lattice)
     Task<List<CityRollupRowDto>> GetCityRollupAsync(Guid studyId);

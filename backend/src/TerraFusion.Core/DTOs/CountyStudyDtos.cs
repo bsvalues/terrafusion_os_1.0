@@ -160,7 +160,11 @@ public record CountyExceptionSetDto(
     string ReasonCode,
     int ParcelCount,
     string Destination,
-    string Status
+    string Status,
+    string? AssignedTo,
+    string? Notes,
+    DateTime CreatedAt,
+    string CreatedBy
 );
 
 /// <summary>Body for PATCH api/county-study/studies/{studyId}/status.</summary>
@@ -174,6 +178,10 @@ public record CreateCountyExceptionSetRequest(
     List<string> ParcelIds,
     ExceptionDestination Destination
 );
+
+public record UpdateExceptionStatusRequest(ExceptionSetStatus NewStatus, string UserId);
+public record AssignExceptionRequest(string AssignTo, string UserId);
+public record AddExceptionNoteRequest(string NoteText, string UserId);
 
 // ── Rollups (Task B — County → City → Neighborhood drill lattice) ─────────
 

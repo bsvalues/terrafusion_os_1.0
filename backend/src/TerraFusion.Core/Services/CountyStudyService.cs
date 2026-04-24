@@ -1089,7 +1089,46 @@ public class CountyStudyService : ICountyStudyService
         new(a.AdjustmentSetId, a.StudyId, a.ScenarioId, a.EffectiveScope,
             a.ApprovalState.ToString(), a.ApprovedBy, a.PublishedAt);
 
+    public async Task<CountyExceptionSetDto> UpdateExceptionStatusAsync(
+        Guid exceptionSetId, ExceptionSetStatus newStatus, string userId)
+    {
+        var exc = await _db.CountyExceptionSets.FindAsync(exceptionSetId)
+            ?? throw new InvalidOperationException($"ExceptionSet {exceptionSetId} not found");
+        exc.Status = newStatus;
+        exc.UpdatedBy = userId;
+        exc.UpdatedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+        return MapExceptionSet(exc);
+    }
+
+    public async Task<CountyExceptionSetDto> AssignExceptionSetAsync(
+        Guid exceptionSetId, string assignTo, string userId)
+    {
+        var exc = await _db.CountyExceptionSets.FindAsync(exceptionSetId)
+            ?? throw new InvalidOperationException($"ExceptionSet {exceptionSetId} not found");
+        exc.AssignedTo = assignTo;
+        exc.UpdatedBy = userId;
+        exc.UpdatedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+        return MapExceptionSet(exc);
+    }
+
+    public async Task<CountyExceptionSetDto> AddExceptionNoteAsync(
+        Guid exceptionSetId, string noteText, string userId)
+    {
+        var exc = await _db.CountyExceptionSets.FindAsync(exceptionSetId)
+            ?? throw new InvalidOperationException($"ExceptionSet {exceptionSetId} not found");
+        var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm");
+        var entry = $"[{timestamp} {userId}] {noteText}";
+        exc.Notes = string.IsNullOrEmpty(exc.Notes) ? entry : $"{exc.Notes}\n{entry}";
+        exc.UpdatedBy = userId;
+        exc.UpdatedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+        return MapExceptionSet(exc);
+    }
+
     private static CountyExceptionSetDto MapExceptionSet(CountyExceptionSet e) =>
         new(e.ExceptionSetId, e.StudyId, e.SourceScenarioId, e.ReasonCode.ToString(),
-            e.ParcelCount, e.Destination.ToString(), e.Status.ToString());
+            e.ParcelCount, e.Destination.ToString(), e.Status.ToString(),
+            e.AssignedTo, e.Notes, e.CreatedAt, e.CreatedBy);
 }

@@ -764,4 +764,61 @@ public class CountyStudyController : ControllerBase
             return StatusCode(500, new { error = "Internal error" });
         }
     }
+
+    [HttpPatch("exceptions/{id:guid}/status")]
+    public async Task<IActionResult> UpdateExceptionStatus(Guid id, [FromBody] UpdateExceptionStatusRequest req)
+    {
+        try
+        {
+            var dto = await _svc.UpdateExceptionStatusAsync(id, req.NewStatus, CurrentUserId);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] UpdateExceptionStatus failed for {Id}", id);
+            return StatusCode(500, new { error = "Failed to update exception status." });
+        }
+    }
+
+    [HttpPatch("exceptions/{id:guid}/assign")]
+    public async Task<IActionResult> AssignException(Guid id, [FromBody] AssignExceptionRequest req)
+    {
+        try
+        {
+            var dto = await _svc.AssignExceptionSetAsync(id, req.AssignTo, CurrentUserId);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] AssignException failed for {Id}", id);
+            return StatusCode(500, new { error = "Failed to assign exception." });
+        }
+    }
+
+    [HttpPost("exceptions/{id:guid}/notes")]
+    public async Task<IActionResult> AddExceptionNote(Guid id, [FromBody] AddExceptionNoteRequest req)
+    {
+        try
+        {
+            var dto = await _svc.AddExceptionNoteAsync(id, req.NoteText, CurrentUserId);
+            return Ok(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[CountyStudy] AddExceptionNote failed for {Id}", id);
+            return StatusCode(500, new { error = "Failed to add note." });
+        }
+    }
 }

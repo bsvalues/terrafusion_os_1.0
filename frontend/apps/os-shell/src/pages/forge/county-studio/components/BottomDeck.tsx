@@ -8,8 +8,9 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
+import { ExceptionQueuePanel } from './ExceptionQueuePanel';
 
-type DeckTab = 'distribution' | 'compare' | 'warnings';
+type DeckTab = 'distribution' | 'compare' | 'warnings' | 'exceptions';
 
 function DistributionTab() {
   const { segments } = useCountyStudioStore();
@@ -225,6 +226,7 @@ export function BottomDeck() {
         {tab('Distribution', 'distribution')}
         {tab('Before / After', 'compare')}
         {tab('Warnings', 'warnings')}
+        {tab('Exceptions', 'exceptions')}
       </div>
       <div style={{ flex: 1, minHeight: 0 }}>
         {loadStatus.segments === 'loading' ? (
@@ -236,6 +238,7 @@ export function BottomDeck() {
             {activeTab === 'distribution' && <DistributionTab />}
             {activeTab === 'compare' && <CompareTab />}
             {activeTab === 'warnings' && <WarningsTab />}
+            {activeTab === 'exceptions' && <ExceptionQueuePanel />}
           </>
         )}
       </div>
