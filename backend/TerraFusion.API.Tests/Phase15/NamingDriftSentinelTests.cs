@@ -438,8 +438,9 @@ public class NamingDriftSentinelTests
         // Every field used in tools.json should exist in schema
         var undocumented = allToolFields.Except(schemaFields).ToList();
 
-        // paramsSchema is a freeform object, so it's expected to not match
+        // paramsSchema / parameters are freeform JSON Schema objects — not in the Tool schema
         undocumented.Remove("paramsSchema");
+        undocumented.Remove("parameters");
 
         undocumented.Should().BeEmpty(
             "all fields used in terrapilot.tools.json must be declared in the schema. " +
