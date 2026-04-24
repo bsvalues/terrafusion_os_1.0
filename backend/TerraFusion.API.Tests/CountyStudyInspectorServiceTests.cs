@@ -286,13 +286,12 @@ public sealed class CountyStudyInspectorServiceTests : IDisposable
     [Fact]
     public async Task GetActionContextAsync_SupportFlags_GateDeeplinkQueryNullability()
     {
-        // Task D2 wave 1: SalesForge + CostForge are wired (switch = true).
-        // The other three targets remain honest-disabled
-        // (switch = false → DeeplinkQuery null).
+        // Task D3 wave 2: SalesForge + CostForge + CompsForge are wired.
+        // Dais and Dossier remain honest-disabled (switch = false → DeeplinkQuery null).
         var support = CountyStudyInspectorService.ResolveDeeplinkSupport();
         Assert.True(support.SalesForge);
         Assert.True(support.CostForge);
-        Assert.False(support.CompsForge);
+        Assert.True(support.CompsForge);
         Assert.False(support.Dais);
         Assert.False(support.Dossier);
 
@@ -312,8 +311,12 @@ public sealed class CountyStudyInspectorServiceTests : IDisposable
         Assert.Contains($"year={study.TaxYear}", ctx.CostForge.DeeplinkQuery);
         Assert.Contains($"segmentId={segment.SegmentId}", ctx.CostForge.DeeplinkQuery);
 
+        // CompsForge deeplink: carries segmentId + sample parcel ids.
+        Assert.NotNull(ctx.CompsForge.DeeplinkQuery);
+        Assert.Contains($"segmentId={segment.SegmentId}", ctx.CompsForge.DeeplinkQuery);
+        Assert.Contains("sample=", ctx.CompsForge.DeeplinkQuery);
+
         // Unwired targets stay null so the UI button renders honest-disabled.
-        Assert.Null(ctx.CompsForge.DeeplinkQuery);
         Assert.Null(ctx.Dais.DeeplinkQuery);
         Assert.Null(ctx.Dossier.DeeplinkQuery);
     }

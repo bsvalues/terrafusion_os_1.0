@@ -243,13 +243,18 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
     ///   CostForge  — wired at CostForge.tsx useEffect mount hook, consumes
     ///                stratumKey/taxYear/segmentId and seeds tax-year selector
     ///                + renders Scoped From chip with stratum disclosure.
-    ///   CompsForge, Dais, Dossier — blocked on receiver code in their
-    ///                respective modules; left false until wired.
+    /// Task D3:
+    ///   CompsForge — wired at CompsForgeModule.tsx useEffect mount hook,
+    ///                consumes parcelIds (sample) + segmentId and renders a
+    ///                "Preloaded from County Studio" section above the filters
+    ///                plus a Scoped From chip.
+    ///   Dais, Dossier — blocked on receiver code in their respective
+    ///                modules; left false until wired.
     /// </summary>
     public static DeeplinkSupport ResolveDeeplinkSupport() => new(
         SalesForge: true,
         CostForge:  true,
-        CompsForge: false,
+        CompsForge: true,
         Dais:       false,
         Dossier:    false);
 
