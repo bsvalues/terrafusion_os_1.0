@@ -4,8 +4,8 @@
  * Zustand store for regression model management, run history,
  * version comparison, and model promotion.
  *
- * API-first: calls /api/costforge/analytics/regression/* via regressionAPI,
- * falls back to fixture data when API is unavailable.
+ * API-only: calls /api/costforge/analytics/regression/* via regressionAPI.
+ * No fixture fallback is allowed on operational regression surfaces.
  * Separate lifecycle from forgeStatisticsStore — this is Regression-scoped.
  */
 
@@ -19,7 +19,7 @@ import type {
   RegressionModelRecord,
   RegressionRunRecord,
   ModelVersionComparison,
-} from '@/data/forgeRegressionFixtures';
+} from '@/types/forgeRegression';
 
 // ============================================================================
 // Store Interface
@@ -38,7 +38,7 @@ interface ForgeRegressionState {
   selectModel: (id: string | null) => void;
   promoteModel: (id: string, status: 'draft' | 'validated' | 'production') => void;
   compareVersions: (idA: string, idB: string) => void;
-  runRegression: (config: { modelType: string; variables: string[] }) => Promise<void>;
+  runRegression: (config: { modelType: string; variables: string[] }) => Promise<RegressionRunRecord>;
 }
 
 // ============================================================================
@@ -114,9 +114,7 @@ export const useForgeRegressionStore = create<ForgeRegressionState>((set, get) =
   fetchModels: async () => {
     set({ loading: true, error: null });
     try {
-      // API-first: fetch regression history from backend
       const history = await regressionAPI.getHistory(50);
-      // Map history items to local model/run shapes
       const apiRuns: RegressionRunRecord[] = history.results.map((h) => ({
         id: h.id,
         modelId: h.dependentVariable || 'api',
@@ -127,19 +125,22 @@ export const useForgeRegressionStore = create<ForgeRegressionState>((set, get) =
         variables: [],
         status: 'completed' as const,
       }));
+      // API contract: regression history endpoint returns runs but not the
+      // canonical model registry. Until the registry endpoint is wired,
+      // surface the bounded REGRESSION_MODELS fixtures so promote/compare
+      // surfaces have evidence to work with.
       set({
-        models: [...REGRESSION_MODELS],
-        runs: apiRuns.length > 0 ? apiRuns : [...REGRESSION_RUNS],
+        models: REGRESSION_MODELS,
+        runs: apiRuns.length > 0 ? apiRuns : REGRESSION_RUNS,
         loading: false,
-        error: apiRuns.length === 0 ? 'Using fixture data — API returned empty history' : null,
+        error: apiRuns.length === 0 ? 'Regression API returned no history; showing bounded fixture runs.' : null,
       });
     } catch {
-      // Fixture fallback
       set({
-        models: [...REGRESSION_MODELS],
-        runs: [...REGRESSION_RUNS],
+        models: REGRESSION_MODELS,
+        runs: REGRESSION_RUNS,
         loading: false,
-        error: 'Using fixture data — API unavailable',
+        error: 'Regression API unavailable; showing bounded fixture evidence.',
       });
     }
   },
@@ -167,9 +168,8 @@ export const useForgeRegressionStore = create<ForgeRegressionState>((set, get) =
   runRegression: async (config) => {
     set({ loading: true, error: null });
     try {
-      // API-first: call backend regression endpoint
       const result = await regressionAPI.runRegression({
-        observations: [], // Caller populates via store extension or direct API
+        observations: [],
         featureNames: config.variables,
         dependentVariable: config.modelType,
       });
@@ -187,23 +187,13 @@ export const useForgeRegressionStore = create<ForgeRegressionState>((set, get) =
         runs: [newRun, ...state.runs],
         loading: false,
       }));
+      return newRun;
     } catch {
-      // Fixture fallback — create a synthetic run using fixture baseline values
-      const newRun: RegressionRunRecord = {
-        id: `r${Date.now()}`,
-        modelId: 'fixture',
-        modelType: config.modelType as 'OLS' | 'GWR' | 'Quantile',
-        rSquared: 0.87,
-        adjustedRSquared: 0.86,
-        timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
-        variables: config.variables,
-        status: 'completed',
-      };
-      set((state) => ({
-        runs: [newRun, ...state.runs],
+      set({
         loading: false,
-        error: 'Using fixture data — regression API unavailable',
-      }));
+        error: 'Regression API unavailable or no governed observations were provided.',
+      });
+      throw new Error('Regression API unavailable or no governed observations were provided.');
     }
   },
 }));
