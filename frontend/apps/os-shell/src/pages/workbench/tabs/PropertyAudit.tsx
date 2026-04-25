@@ -234,7 +234,7 @@ export const PropertyAudit: React.FC = () => {
       {/* Audit History from Store */}
       {auditTrail.length > 0 && (
         <BentoCard variant="table" title={`Audit History (${auditTrail.length} entries)`}>
-          <p className='tf-text-tertiary text-sm mb-3'>Audit trail entries on file for this parcel.</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Shown from the audit history currently loaded for this parcel.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
               <thead>
@@ -291,7 +291,7 @@ export const PropertyAudit: React.FC = () => {
 
         {/* Levy Compliance (read_only) */}
         <BentoCard title='✅ Levy Compliance' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Check levy compliance totals and issues for this parcel.</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Request returned levy compliance totals and issues for this parcel</p>
           <button onClick={handleLevyCompliance} disabled={levyState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
             {levyState.status === 'loading' ? 'Checking...' : 'Check Levy Compliance'}
           </button>
@@ -303,7 +303,7 @@ export const PropertyAudit: React.FC = () => {
                   <span className='text-lg'>{levyState.result.compliant ? '✅' : '🔴'}</span>
                   <span className='font-semibold tf-text'>{levyState.result.compliantLevies}/{levyState.result.totalLevies} compliant</span>
                 </div>
-                
+                <p className='text-xs tf-text-dim mb-2'>Shows the levy compliance totals and issues returned by this request.</p>
                 {levyState.result.issues.length > 0 && (
                   <div className='space-y-1 mt-2'>
                     {levyState.result.issues.slice(0, 4).map((iss, i) => (
@@ -323,7 +323,7 @@ export const PropertyAudit: React.FC = () => {
 
         {/* Cross-Office Reconciliation (read_only) */}
         <BentoCard title='🔄 Cross-Office Reconciliation' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Compare Assessor and Treasurer totals with reconciliation variance for this parcel.</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Return Assessor and Treasurer totals with reconciliation variance for this request</p>
           <button onClick={handleReconcile} disabled={reconcileState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
             {reconcileState.status === 'loading' ? 'Reconciling...' : 'Reconcile Offices'}
           </button>
@@ -335,6 +335,7 @@ export const PropertyAudit: React.FC = () => {
                   <span className='text-lg'>{reconcileState.result.variance === 0 ? '✅' : '⚠️'}</span>
                   <span className='font-semibold tf-text'>Variance: ${reconcileState.result.variance.toLocaleString()} ({reconcileState.result.variancePercent}%)</span>
                 </div>
+                <p className='text-xs tf-text-dim mb-2'>Shows the returned assessor total, treasurer total, and variance for this request.</p>
                 <div className='grid grid-cols-2 gap-2 text-sm'>
                   <div><span className='tf-text-dim'>Assessor Total</span><p className='tf-text'>${reconcileState.result.assessorTotal.toLocaleString()}</p></div>
                   <div><span className='tf-text-dim'>Treasurer Total</span><p className='tf-text'>${reconcileState.result.treasurerTotal.toLocaleString()}</p></div>
@@ -401,7 +402,7 @@ export const PropertyAudit: React.FC = () => {
             <div className='space-y-2'>
               <div className='tf-panel p-4'>
                 <span className='font-semibold tf-text'>Report {reportState.result.reportId}</span>
-                
+                <p className='text-xs tf-text-dim mt-1'>Shows the report totals and score returned by this request for the selected tax year.</p>
                 <div className='grid grid-cols-2 gap-2 mt-2 text-sm'>
                   <div><span className='tf-text-dim'>Compliance Score</span><p className='font-semibold tf-text'>{reportState.result.complianceScore}%</p></div>
                   <div><span className='tf-text-dim'>Total Findings</span><p className='tf-text'>{reportState.result.totalFindings}</p></div>

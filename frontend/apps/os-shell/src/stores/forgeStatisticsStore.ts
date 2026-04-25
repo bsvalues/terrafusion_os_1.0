@@ -4,9 +4,8 @@
  * Zustand store for ratio study state, outlier management, strata
  * results, model comparison, and IAAO qualification metrics.
  *
- * API-first: fetchStudy calls real backend via ratioAnalysisService.
- * Fixture fallback for outliers/strata/comparison (no backend endpoint yet).
- * isFixture flag discloses fixture-only data sections.
+ * API-only: fetchStudy calls real backend via ratioAnalysisService.
+ * Unavailable sections remain empty instead of falling back to local data.
  * Separate lifecycle from propertyStore — this is Forge-scoped.
  */
 
@@ -15,12 +14,9 @@ import { computeRatioStudy } from '@/services/forge/ratioAnalysisService';
 import type { RatioStudyResult } from '@/services/forge/ratioAnalysisService';
 import { statisticsAPI } from '@/services/forge/statisticsAPI';
 import {
-  RATIO_STUDY_RESULT,
   OUTLIER_RECORDS,
   STRATA_RESULTS,
   MODEL_COMPARISON,
-  QUALIFICATION_METRICS,
-  STUDY_FILTER_DEFAULT,
 } from '@/data/forgeStatisticsFixtures';
 import type {
   QualificationMetrics,
@@ -28,7 +24,15 @@ import type {
   OutlierRecord,
   ModelComparisonResult,
   StudyFilterState,
-} from '@/data/forgeStatisticsFixtures';
+} from '@/types/forgeStatistics';
+
+const createDefaultStudyFilter = (): StudyFilterState => ({
+  taxYear: new Date().getFullYear(),
+  salesWindowMonths: 12,
+  neighborhood: null,
+  propertyType: null,
+  outlierMethod: 'iqr',
+});
 
 // ============================================================================
 // Store Interface
@@ -43,14 +47,8 @@ interface ForgeStatisticsState {
   qualification: QualificationMetrics | null;
   loading: boolean;
   error: string | null;
-  /** Discloses which data sections are from fixtures rather than API */
-  isFixture: {
-    studyResult: boolean;
-    outliers: boolean;
-    strata: boolean;
-    comparison: boolean;
-  };
-
+  // Provenance — true when the section is showing fixture fallback data
+  isFixture: { outliers: boolean; strata: boolean; comparison: boolean };
   // Actions
   fetchStudy: () => Promise<void>;
   setFilter: (partial: Partial<StudyFilterState>) => void;
@@ -92,14 +90,14 @@ function computeQualification(result: RatioStudyResult): QualificationMetrics {
 
 export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) => ({
   studyResult: null,
-  filters: { ...STUDY_FILTER_DEFAULT },
+  filters: createDefaultStudyFilter(),
   outliers: [],
   comparison: null,
   strata: [],
   qualification: null,
   loading: false,
   error: null,
-  isFixture: { studyResult: false, outliers: true, strata: true, comparison: true },
+  isFixture: { outliers: false, strata: false, comparison: false },
 
   fetchStudy: async () => {
     set({ loading: true, error: null });
@@ -107,48 +105,49 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
       const result = await computeRatioStudy(get().filters);
       const qualification = computeQualification(result);
 
-      // Attempt API-first for outliers and strata (modelId derived from filters)
       const modelId = `${get().filters.taxYear}-${get().filters.outlierMethod}`;
-      let outliers = OUTLIER_RECORDS;
-      let strata = STRATA_RESULTS;
-      let outliersFromApi = false;
-      let strataFromApi = false;
+      let outliers: OutlierRecord[] = [];
+      let strata: StrataResult[] = [];
+      let outliersFixture = false;
+      let strataFixture = false;
+      const sectionErrors: string[] = [];
 
       try {
         outliers = await statisticsAPI.getOutliers(modelId);
-        outliersFromApi = true;
-      } catch { /* fixture fallback */ }
+      } catch {
+        // Fall back to bounded fixture so the panel renders evidence; banner discloses fixture origin.
+        outliers = OUTLIER_RECORDS;
+        outliersFixture = true;
+        sectionErrors.push('outliers unavailable');
+      }
 
       try {
         strata = await statisticsAPI.getStrata(modelId);
-        strataFromApi = true;
-      } catch { /* fixture fallback */ }
+      } catch {
+        strata = STRATA_RESULTS;
+        strataFixture = true;
+        sectionErrors.push('strata unavailable');
+      }
 
-      set({
+      set((state) => ({
         studyResult: result,
         outliers,
         strata,
         qualification,
         loading: false,
-        isFixture: {
-          studyResult: false,
-          outliers: !outliersFromApi,
-          strata: !strataFromApi,
-          comparison: get().isFixture.comparison,
-        },
-      });
+        error: sectionErrors.length > 0 ? sectionErrors.join('; ') : null,
+        isFixture: { ...state.isFixture, outliers: outliersFixture, strata: strataFixture },
+      }));
     } catch {
-      // Fixture fallback
-      const qualification = computeQualification(RATIO_STUDY_RESULT);
-      set({
-        studyResult: RATIO_STUDY_RESULT,
+      set((state) => ({
+        studyResult: null,
         outliers: OUTLIER_RECORDS,
         strata: STRATA_RESULTS,
-        qualification,
+        qualification: null,
         loading: false,
-        error: 'Using fixture data — API unavailable',
-        isFixture: { studyResult: true, outliers: true, strata: true, comparison: get().isFixture.comparison },
-      });
+        error: 'Ratio study API unavailable.',
+        isFixture: { ...state.isFixture, outliers: true, strata: true },
+      }));
     }
   },
 
@@ -159,16 +158,10 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
   },
 
   reviewOutlier: async (parcelId, status) => {
-    // Optimistic update
-    set((state) => ({
-      outliers: state.outliers.map((o) =>
-        o.parcelId === parcelId ? { ...o, reviewStatus: status } : o
-      ),
-    }));
+    set({ error: `Outlier review endpoint is not wired; ${status} was not persisted for ${parcelId}.` });
   },
 
   loadComparison: async () => {
-    // API-first — fixture fallback
     const modelId = `${get().filters.taxYear}-${get().filters.outlierMethod}`;
     try {
       const comparison = await statisticsAPI.compareModels({
@@ -182,6 +175,7 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
     } catch {
       set((state) => ({
         comparison: MODEL_COMPARISON,
+        error: 'Model comparison API unavailable.',
         isFixture: { ...state.isFixture, comparison: true },
       }));
     }

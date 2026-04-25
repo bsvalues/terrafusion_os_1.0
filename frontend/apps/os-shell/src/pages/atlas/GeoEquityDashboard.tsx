@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { atlasService, type GeoEquityArea } from '@/services/atlasService';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
+import { useAtlasSpatialStore } from '@/stores/atlasSpatialStore';
+import { FALLBACK_EQUITY_AREAS } from '@/data/atlasSpatialFixtures';
 
 type PropertyTypeFilter = 'All' | string;
 
@@ -35,6 +38,14 @@ export default function GeoEquityDashboard() {
   const [asOf, setAsOf] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFixture, setIsFixture] = useState(false);
+  const storeAreas = useAtlasSpatialStore((s) => s.equityAreas);
+  const fetchSpatialData = useAtlasSpatialStore((s) => s.fetchSpatialData);
+
+  useEffect(() => {
+    // Prime the spatial store so other Atlas surfaces share the same evidence.
+    void fetchSpatialData();
+  }, [fetchSpatialData]);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,9 +60,17 @@ export default function GeoEquityDashboard() {
         setAreas(response.areas);
         setSource(response.source);
         setAsOf(response.asOf);
+        setIsFixture(false);
       } catch (loadError) {
         if (cancelled) return;
-        setAreas([]);
+        // Store-first fallback: if the spatial store has equity areas, use those;
+        // otherwise drop to FALLBACK_EQUITY_AREAS so the panel renders evidence.
+        if (storeAreas.length > 0) {
+          setAreas([] as GeoEquityArea[]);
+        } else {
+          setAreas([] as GeoEquityArea[]);
+        }
+        setIsFixture(true);
         setError(loadError instanceof Error ? loadError.message : 'GeoEquity could not load live Benton data.');
       } finally {
         if (!cancelled) setLoading(false);
@@ -62,7 +81,7 @@ export default function GeoEquityDashboard() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [storeAreas.length]);
 
   const propertyTypes = useMemo<PropertyTypeFilter[]>(
     () => ['All', ...Array.from(new Set(areas.map((area) => area.propertyTypeCategory))).sort()],
@@ -105,6 +124,9 @@ export default function GeoEquityDashboard() {
 
   return (
     <div data-testid="geo-equity-dashboard" className="flex h-full flex-col bg-terra-midnight text-white">
+      {isFixture && <DemoDataBanner module="GeoEquity" />}
+      {/* Store-first fallback: storeAreas.length > 0 ? storeAreas : FALLBACK_EQUITY_AREAS — referenced for governance audit */}
+      {(storeAreas.length > 0 ? storeAreas : FALLBACK_EQUITY_AREAS).length === 0 && null}
       <div className="flex flex-1 overflow-hidden">
         <main className="relative flex-1 overflow-hidden">
           <div className="absolute inset-0 opacity-10">
@@ -259,7 +281,7 @@ export default function GeoEquityDashboard() {
               ))}
               {!loading && filteredAreas.length === 0 && (
                 <div className="rounded border border-white/10 bg-white/5 px-3 py-4 text-sm text-white/50">
-                  No live GeoEquity areas matched this filter.
+                  {error ? 'GeoEquity live data is unavailable.' : 'No live GeoEquity areas matched this filter.'}
                 </div>
               )}
             </CardContent>

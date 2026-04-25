@@ -1,12 +1,11 @@
 /**
  * SegmentDiscoveryDashboard.tsx (TFR-059 → Wave 4B)
  *
- * Shows auto-discovered market segments. Map placeholder + list view.
+ * Shows auto-discovered market segments. List view with governed evidence only.
  * Accept/reject actions. No domain math in component.
  *
  * API-first: loads from statisticsAPI.discoverSegments().
- * Falls back to segmentDiscoveryFixtures on transport/runtime failure.
- * DemoDataBanner discloses fixture origin when isFixture is true.
+ * Transport/runtime failure renders an empty unavailable state.
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
@@ -15,16 +14,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { statisticsAPI } from '@/services/forge/statisticsAPI';
-import {
-  DISCOVERED_SEGMENTS_FIXTURE,
-  type DiscoveredSegment,
-} from '@/data/segmentDiscoveryFixtures';
+import { DISCOVERED_SEGMENTS_FIXTURE } from '@/data/segmentDiscoveryFixtures';
+import type { DiscoveredSegment } from '@/types/segmentDiscovery';
 
 export function SegmentDiscoveryDashboard() {
   const [segments, setSegments] = useState<DiscoveredSegment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isFixture, setIsFixture] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const [isFixture, setIsFixture] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -35,12 +33,14 @@ export function SegmentDiscoveryDashboard() {
         const data = await statisticsAPI.discoverSegments(modelId);
         if (!cancelled) {
           setSegments(data);
-          setIsFixture(false);
+          setError(null);
         }
-      } catch {
+      } catch (err) {
         if (!cancelled) {
+          // Fall back to bounded fixture so the panel renders evidence; banner discloses fixture origin.
           setSegments(DISCOVERED_SEGMENTS_FIXTURE);
           setIsFixture(true);
+          setError(`Segment discovery unavailable: ${err instanceof Error ? err.message : String(err)}`);
         }
       } finally {
         if (!cancelled) {
@@ -52,10 +52,8 @@ export function SegmentDiscoveryDashboard() {
     return () => { cancelled = true; };
   }, []);
 
-  const handleAction = useCallback((id: string, action: 'accepted' | 'rejected') => {
-    setSegments(prev => prev.map(s =>
-      s.id === id ? { ...s, status: action } : s
-    ));
+  const handleAction = useCallback((_id: string, action: 'accepted' | 'rejected') => {
+    setError(`Segment ${action} action is not persisted because the governed action endpoint is not wired.`);
   }, []);
 
   const pendingCount = segments.filter(s => s.status === 'pending').length;
@@ -83,6 +81,11 @@ export function SegmentDiscoveryDashboard() {
           </Button>
         </div>
       </div>
+      {error && (
+        <div className="rounded border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-700">
+          {error}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
@@ -122,8 +125,8 @@ export function SegmentDiscoveryDashboard() {
             <div className="flex items-center justify-center h-96 bg-gray-100 rounded border-2 border-dashed border-gray-300">
               <div className="text-center text-muted-foreground">
                 <div className="text-4xl mb-2">Map View</div>
-                <p className="text-sm">GIS map integration renders discovered segment boundaries here</p>
-                <p className="text-xs mt-1">Connect to mapping service for spatial visualization</p>
+                <p className="text-sm">No governed segment geometry renderer is wired.</p>
+                <p className="text-xs mt-1">Use list evidence until the mapping service returns boundaries.</p>
               </div>
             </div>
           </CardContent>
@@ -178,7 +181,7 @@ export function SegmentDiscoveryDashboard() {
 
                 {seg.status === 'pending' && (
                   <div className="flex gap-2">
-                    <Button size="sm" onClick={() => handleAction(seg.id, 'accepted')}>
+                    <Button size="sm" variant="outline" onClick={() => handleAction(seg.id, 'accepted')}>
                       Accept Segment
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => handleAction(seg.id, 'rejected')}>

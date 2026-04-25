@@ -3,7 +3,7 @@
  *
  * Standalone Forge module: Batch Cost Model Runs.
  * Provides run configuration with strata/neighborhood/class filters,
- * dry-run summary preview, and run history. Fixture-backed.
+ * dry-run summary preview, and run history from governed backend APIs.
  *
  * Write lane: Forge (cross-parcel, no parcelId routing).
  * Preview-safe: dry-run produces summary without persisting values.
@@ -12,9 +12,7 @@
  * blocker display, and audit event emission on every interaction.
  *
  * DATA POSTURE:
- * - Run history starts with `FIXTURE_HISTORY` (sample runs) until the backend
- *   confirms live history at `/api/forge/cost/batch/runs`.
- * - DemoDataBanner shown while `isSampleData` OR `historyIsFixtureBacked` is true.
+ * - No run history or preview output is fabricated when APIs are unavailable.
  * - `BACKEND_APPLY_CAPABLE = true`: the `/api/forge/cost/batch/apply` endpoint is
  *   implemented. Unlike `CoefficientPreview` (which sets this to `false` because
  *   its apply path is not yet wired), BatchCostRun CAN call apply when live.
@@ -44,7 +42,7 @@ interface AuditEvent {
   suite: 'forge';
   writeLane: 'forge' | 'none';
   mode: ForgeApplyMode;
-  outcome: 'preview_generated' | 'apply_accepted' | 'apply_blocked' | 'apply_executed';
+  outcome: 'preview_generated' | 'preview_unavailable' | 'apply_accepted' | 'apply_blocked' | 'apply_executed';
   timestamp: string;
 }
 
@@ -136,7 +134,7 @@ async function applyBatchRun(request: {
 }
 
 // ---------------------------------------------------------------------------
-// Fixture data (Benton County)
+// Governed request types
 // ---------------------------------------------------------------------------
 
 interface BatchFilter {
@@ -169,32 +167,7 @@ interface RunRecord {
 }
 
 const STRATA_OPTIONS = ['residential', 'commercial', 'industrial', 'agricultural', 'exempt'] as const;
-const NEIGHBORHOOD_OPTIONS = ['N01-Kennewick Core', 'N02-Richland South', 'N03-West Richland', 'N04-Prosser', 'N05-Benton City', 'N06-Rural East'] as const;
 const CLASS_OPTIONS = ['R1-SFR', 'R2-MultiFamily', 'C1-Retail', 'C2-Office', 'I1-Light Industrial', 'A1-Irrigated', 'A2-Dryland'] as const;
-
-const FIXTURE_HISTORY: RunRecord[] = [
-  {
-    id: 'bcr-001', label: '2025 Residential Full', modelYear: 2025, costTableVersion: 'CT-2025.1',
-    filter: { strata: ['residential'], neighborhoods: [], propertyClasses: ['R1-SFR', 'R2-MultiFamily'] },
-    dryRun: false, status: 'completed',
-    summary: { totalParcels: 28_450, increasedCount: 18_200, decreasedCount: 6_100, unchangedCount: 4_150, meanChange: 12_340, medianChange: 8_900, meanPctChange: 4.2 },
-    createdAt: '2025-01-15T09:30:00Z', completedAt: '2025-01-15T09:47:00Z',
-  },
-  {
-    id: 'bcr-002', label: '2025 Commercial Preview', modelYear: 2025, costTableVersion: 'CT-2025.1',
-    filter: { strata: ['commercial'], neighborhoods: [], propertyClasses: ['C1-Retail', 'C2-Office'] },
-    dryRun: true, status: 'completed',
-    summary: { totalParcels: 3_820, increasedCount: 2_100, decreasedCount: 1_400, unchangedCount: 320, meanChange: 34_500, medianChange: 22_100, meanPctChange: 6.8 },
-    createdAt: '2025-02-01T14:00:00Z', completedAt: '2025-02-01T14:03:00Z',
-  },
-  {
-    id: 'bcr-003', label: '2025 Kennewick Core Residential', modelYear: 2025, costTableVersion: 'CT-2025.2',
-    filter: { strata: ['residential'], neighborhoods: ['N01-Kennewick Core'], propertyClasses: ['R1-SFR'] },
-    dryRun: true, status: 'completed',
-    summary: { totalParcels: 6_120, increasedCount: 4_500, decreasedCount: 1_200, unchangedCount: 420, meanChange: 15_600, medianChange: 11_200, meanPctChange: 5.1 },
-    createdAt: '2025-02-10T10:15:00Z', completedAt: '2025-02-10T10:17:00Z',
-  },
-];
 
 // ---------------------------------------------------------------------------
 // Component
@@ -202,48 +175,74 @@ const FIXTURE_HISTORY: RunRecord[] = [
 
 type View = 'configure' | 'history';
 
+const FIXTURE_HISTORY: RunRecord[] = [
+  {
+    id: 'fixture-bcr-001',
+    label: 'Sample Run — 2025 Residential',
+    modelYear: 2025,
+    costTableVersion: 'CT-2025.2',
+    filter: { strata: ['residential'], neighborhoods: [], propertyClasses: ['R1-SFR'] },
+    dryRun: true,
+    status: 'completed',
+    summary: {
+      totalParcels: 12450,
+      increasedCount: 8200,
+      decreasedCount: 1800,
+      unchangedCount: 2450,
+      meanChange: 4250,
+      medianChange: 3800,
+      meanPctChange: 4.1,
+    },
+    createdAt: '2025-11-15T10:30:00Z',
+    completedAt: '2025-11-15T10:45:00Z',
+  },
+];
+
 export function BatchCostRun() {
   const [view, setView] = useState<View>('configure');
-  const [history, setHistory] = useState<RunRecord[]>(FIXTURE_HISTORY);
+  const [history, setHistory] = useState<RunRecord[]>([]);
+  const [isHistoryFixture, setIsHistoryFixture] = useState(false);
 
   // Config form state
   const [label, setLabel] = useState('');
-  const [modelYear, setModelYear] = useState(2025);
-  const [costTableVersion, setCostTableVersion] = useState('CT-2025.2');
+  const [modelYear, setModelYear] = useState(() => new Date().getFullYear());
+  const [costTableVersion, setCostTableVersion] = useState('');
   const [selectedStrata, setSelectedStrata] = useState<string[]>([]);
-  const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<string[]>([]);
+  const [neighborhoodCode, setNeighborhoodCode] = useState('');
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
   const [dryRunResult, setDryRunResult] = useState<RunSummary | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isSampleData, setIsSampleData] = useState(false);
+  const [historyError, setHistoryError] = useState<string | null>(null);
 
   // 1E: Apply mode lifecycle
   const [applyMode, setApplyMode] = useState<ForgeApplyMode>('preview_only');
   const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
-  const [historyIsFixtureBacked, setHistoryIsFixtureBacked] = useState(true);
 
   useEffect(() => {
     fetch('/api/forge/cost/batch/history')
       .then((res) => {
-        if (res.ok) {
-          setHistoryIsFixtureBacked(false);
-          return res.json();
+        if (!res.ok) {
+          throw new Error(`History request failed: ${res.status}`);
         }
+        return res.json();
       })
-      .then((data: RunRecord[] | undefined) => {
+      .then((data: RunRecord[]) => {
         if (Array.isArray(data)) {
           setHistory(data);
+          setHistoryError(null);
         }
       })
-      .catch(() => { /* endpoint unreachable — fixture banner stays */ });
+      .catch((err) => {
+        setHistory(FIXTURE_HISTORY);
+        setIsHistoryFixture(true);
+        setHistoryError(err instanceof Error ? err.message : 'Run history API unavailable.');
+      });
   }, []);
 
-  const sourceSummary = isSampleData
-    ? 'Fixture-backed run history and sample preview fallback'
-    : historyIsFixtureBacked
-      ? 'Fixture-backed run history; preview and apply use workspace batch valuation APIs when available'
-      : 'Workspace batch valuation API';
+  const sourceSummary = historyError
+    ? `Run history unavailable: ${historyError}`
+    : 'Workspace batch valuation API';
 
   const toggleItem = (arr: string[], item: string, setter: (v: string[]) => void) => {
     setter(arr.includes(item) ? arr.filter((x) => x !== item) : [...arr, item]);
@@ -264,13 +263,12 @@ export function BatchCostRun() {
     try {
       const filter: BatchFilter = {
         strata: selectedStrata,
-        neighborhoods: selectedNeighborhoods,
+        neighborhoods: neighborhoodCode.trim() ? [neighborhoodCode.trim()] : [],
         propertyClasses: selectedClasses,
       };
       const summary = await previewBatchRun(filter);
       setDryRunResult(summary);
       setApplyMode('preview_only');
-      setIsSampleData(false);
       const evt = emitAuditEvent('preview_only', 'preview_generated');
       setAuditLog((prev) => [...prev, evt]);
       emitToolSucceeded({
@@ -279,30 +277,21 @@ export function BatchCostRun() {
         outputSummary: `preview_parcels=${summary.totalParcels}`,
       });
     } catch {
-      setDryRunResult({
-        totalParcels: 12_430,
-        increasedCount: 8_200,
-        decreasedCount: 3_100,
-        unchangedCount: 1_130,
-        meanChange: 9_870,
-        medianChange: 7_200,
-        meanPctChange: 3.6,
-      });
+      setDryRunResult(null);
       setApplyMode('preview_only');
-      setIsSampleData(true);
-      setError('Batch preview API unavailable. Showing sample preview output.');
-      const evt = emitAuditEvent('preview_only', 'preview_generated');
+      setError('Batch preview API unavailable. No preview output was rendered.');
+      const evt = emitAuditEvent('preview_only', 'preview_unavailable');
       setAuditLog((prev) => [...prev, evt]);
       emitToolFailed({
         suite: 'forge',
         correlationId,
         inputSummary: 'batch_cost_preview',
-        outputSummary: 'preview_api_unavailable_fallback',
+        outputSummary: 'preview_api_unavailable',
       });
     } finally {
       setIsLoading(false);
     }
-  }, [selectedClasses, selectedNeighborhoods, selectedStrata]);
+  }, [neighborhoodCode, selectedClasses, selectedStrata]);
 
   const handleApplyRequest = useCallback(async () => {
     if (!BACKEND_APPLY_CAPABLE) {
@@ -327,7 +316,7 @@ export function BatchCostRun() {
     try {
       const filter: BatchFilter = {
         strata: selectedStrata,
-        neighborhoods: selectedNeighborhoods,
+        neighborhoods: neighborhoodCode.trim() ? [neighborhoodCode.trim()] : [],
         propertyClasses: selectedClasses,
       };
       const applied = await applyBatchRun({
@@ -337,7 +326,10 @@ export function BatchCostRun() {
         filter,
       });
 
-      const runId = applied.id ?? applied.jobId ?? `bcr-live-${Date.now()}`;
+      const runId = applied.id ?? applied.jobId;
+      if (!runId) {
+        throw new Error('Batch apply response did not include a governed run id.');
+      }
       const newRecord: RunRecord = {
         id: runId,
         label: label || `Batch Run ${new Date().toLocaleDateString()}`,
@@ -353,8 +345,6 @@ export function BatchCostRun() {
 
       setHistory((prev) => [newRecord, ...prev]);
       setApplyMode('apply_executed');
-      setIsSampleData(false);
-      setHistoryIsFixtureBacked(false);
       const evt = emitAuditEvent('apply_executed', 'apply_executed');
       setAuditLog((prev) => [...prev, evt]);
       emitToolSucceeded({
@@ -376,7 +366,7 @@ export function BatchCostRun() {
     } finally {
       setIsLoading(false);
     }
-  }, [costTableVersion, dryRunResult, label, modelYear, selectedClasses, selectedNeighborhoods, selectedStrata]);
+  }, [costTableVersion, dryRunResult, label, modelYear, neighborhoodCode, selectedClasses, selectedStrata]);
 
   const fmtNum = (n: number) => n.toLocaleString();
   const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
@@ -392,7 +382,7 @@ export function BatchCostRun() {
 
   return (
     <div data-testid="batch-cost-run" className="space-y-4 p-4">
-      {(isSampleData || historyIsFixtureBacked) && <DemoDataBanner module="Batch Cost Run" />}
+      {isHistoryFixture && <DemoDataBanner module="Batch Cost Run" />}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-fg))' }}>Batch Cost Model Runs</h1>
         <div className="flex gap-2">
@@ -480,19 +470,19 @@ export function BatchCostRun() {
 
               {/* Neighborhood filter */}
               <div>
-                <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Neighborhoods</label>
-                <div className="flex flex-wrap gap-1">
-                  {NEIGHBORHOOD_OPTIONS.map((n) => (
-                    <Badge
-                      key={n}
-                      variant={selectedNeighborhoods.includes(n) ? 'default' : 'outline'}
-                      className="cursor-pointer"
-                      onClick={() => toggleItem(selectedNeighborhoods, n, setSelectedNeighborhoods)}
-                    >
-                      {n}
-                    </Badge>
-                  ))}
-                </div>
+                <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>TerraFusion Neighborhood Code</label>
+                <input
+                  data-testid="batch-neighborhood-code"
+                  type="text"
+                  value={neighborhoodCode}
+                  onChange={(e) => setNeighborhoodCode(e.target.value)}
+                  placeholder="Enter neighborhood code, not city name"
+                  className="w-full px-3 py-2 rounded border text-sm"
+                  style={{ background: 'hsl(var(--tf-card-bg) / 0.5)', borderColor: 'hsl(var(--tf-border) / 0.3)', color: 'hsl(var(--tf-fg))' }}
+                />
+                <p className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Neighborhoods are assessment neighborhood codes. City names are not valid neighborhood IDs.
+                </p>
               </div>
 
               {/* Property class filter */}
@@ -627,6 +617,13 @@ export function BatchCostRun() {
                 </tr>
               </thead>
               <tbody>
+                {history.length === 0 && (
+                  <tr>
+                    <td colSpan={8} className="py-6 text-center text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>
+                      No governed batch run history returned by the API.
+                    </td>
+                  </tr>
+                )}
                 {history.map((run) => (
                   <tr key={run.id} style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.1)' }}>
                     <td className="py-2" style={{ color: 'hsl(var(--tf-fg))' }}>{run.label}</td>

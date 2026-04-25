@@ -57,7 +57,7 @@ export const GPTChatInterface: React.FC<GPTChatInterfaceProps> = ({
 
   const conversationNote = useMemo(
     () =>
-      'Available in this workspace: conversation create, load, history, send, archive, and delete. Streaming and live hub push are not yet active.',
+      'Available in this workspace: conversation create, load, history, send, archive, and delete. Streaming and live hub push are not yet active. Trace data is loaded on demand via a manual trace fetch through the canonical GPT API.',
     [],
   );
 

@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { apiFetchJson } from '@/lib/apiBase';
 import {
   Table,
@@ -62,6 +63,21 @@ interface CostScheduleApiRow {
   secondaryFeaturePctOfBiv?: number;
 }
 
+async function getCostSchedule(
+  qualityClass: string,
+  signal: AbortSignal,
+): Promise<CostScheduleApiRow[]> {
+  const qs = qualityClass !== 'all' ? `?qualityClass=${encodeURIComponent(qualityClass)}` : '';
+  return apiFetchJson<CostScheduleApiRow[]>(`/costforge/schedule${qs}`, { signal });
+}
+
+const SAMPLE_COST_SCHEDULES: CostScheduleRow[] = [
+  { buildingClass: 'Residential – Average', qualityGrade: 'Average', baseRate: 87.5, unit: '$/SF', effectiveDate: '2025-01-01' },
+  { buildingClass: 'Residential – Good', qualityGrade: 'Good', baseRate: 112.0, unit: '$/SF', effectiveDate: '2025-01-01' },
+  { buildingClass: 'Commercial – Retail', qualityGrade: 'Average', baseRate: 95.0, unit: '$/SF', effectiveDate: '2025-01-01' },
+  { buildingClass: 'Industrial – Light', qualityGrade: 'Average', baseRate: 65.0, unit: '$/SF', effectiveDate: '2025-01-01' },
+];
+
 export function CostManual() {
   const [search, setSearch] = useState('');
   const [qualityFilter, setQualityFilter] = useState<string>('all');
@@ -69,6 +85,7 @@ export function CostManual() {
   const [sfRows, setSfRows] = useState<SecondaryFeatureRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSampleData, setIsSampleData] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -84,11 +101,8 @@ export function CostManual() {
         // Always fetch full schedule (no qualityClass filter) so secondary-feature rows
         // are always present — qualityClass server-filter only applies to primary rows
         // and secondary rows carry no quality tier.
-        const qs = qualityFilter !== 'all' ? `?qualityClass=${encodeURIComponent(qualityFilter)}` : '';
-        const result = await apiFetchJson<CostScheduleApiRow[]>(
-          `/costforge/schedule${qs}`,
-          { signal }
-        );
+        const result = await getCostSchedule(qualityFilter, signal);
+        setIsSampleData(false);
 
         if (Array.isArray(result)) {
           const primary: CostScheduleRow[] = [];
@@ -119,6 +133,9 @@ export function CostManual() {
         }
       } catch (cause) {
         if (cause instanceof DOMException && cause.name === 'AbortError') return;
+        setRows(SAMPLE_COST_SCHEDULES);
+        setSfRows([]);
+        setIsSampleData(true);
         setError(cause instanceof Error ? cause.message : 'Failed to load cost schedules.');
       } finally {
         setIsLoading(false);
@@ -139,6 +156,7 @@ export function CostManual() {
 
   return (
     <div className="space-y-4 p-4">
+      {isSampleData && <DemoDataBanner module="Cost Manual" />}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Cost Schedule</h1>
@@ -210,7 +228,7 @@ export function CostManual() {
               {!isLoading && filtered.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                    No matching cost schedules found.
+                    {error ? 'Cost schedule API unavailable. No local schedule rows are being shown.' : 'No matching cost schedules found.'}
                   </TableCell>
                 </TableRow>
               )}
@@ -220,7 +238,7 @@ export function CostManual() {
       </Card>
 
       {/* Secondary-feature %-of-BIV rates (Benton Method) */}
-      {(sfRows.length > 0 || isLoading) && (
+      {(sfRows.length > 0 || isLoading || error) && (
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
@@ -271,7 +289,7 @@ export function CostManual() {
                 {!isLoading && sfRows.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground py-6">
-                      No secondary feature rates found. Run a Benton sync to populate.
+                      {error ? 'Secondary feature rates unavailable from the live schedule API.' : 'No secondary feature rates found. Run a Benton sync to populate.'}
                     </TableCell>
                   </TableRow>
                 )}

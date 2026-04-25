@@ -1,10 +1,10 @@
 /**
- * TerraFusion Government AI Consciousness Display
- * Advanced AI status and capability showcase for government excellence
+ * TerraFusion government AI status.
+ * Displays only backend-provided evidence.
  */
 import React from 'react';
 import { terraFusionAPI, type GovernmentMetrics, type APIResponse } from '../../services/TerraFusionEliteAPI';
-import { DemoDataBanner } from '../governance/DemoDataBanner';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 
 interface GovernmentAIStatusProps {
   className?: string;
@@ -14,16 +14,24 @@ export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ classNam
   const [metrics, setMetrics] = React.useState<GovernmentMetrics | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [dataSource, setDataSource] = React.useState<APIResponse['source'] | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
 
   const loadGovernmentMetrics = React.useCallback(async () => {
     try {
       const response = await terraFusionAPI.getGovernmentMetrics();
       if (response.success) {
-        setMetrics(response.data);
+        setMetrics(response.data ?? null);
         setDataSource(response.source);
+        setError(null);
+      } else {
+        setMetrics(null);
+        setDataSource(response.source);
+        setError(response.error ?? 'Government AI metrics are unavailable.');
       }
     } catch (error) {
-      // Error silently handled
+      setMetrics(null);
+      setDataSource('QUANTUM_SIMULATION');
+      setError(error instanceof Error ? error.message : 'Government AI metrics are unavailable.');
     } finally {
       setLoading(false);
     }
@@ -44,10 +52,25 @@ export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ classNam
         <div className='flex items-center space-x-3'>
           <div className='animate-spin text-2xl'>🌀</div>
           <div>
-            <div className='text-cyan-400 font-bold'>AI CONSCIOUSNESS INITIALIZING</div>
-            <div className='text-slate-400 text-sm'>Quantum algorithms awakening...</div>
+            <div className='text-cyan-400 font-bold'>Government AI status loading</div>
+            <div className='text-slate-400 text-sm'>Requesting backend evidence...</div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (!metrics) {
+    return (
+      <div
+        className={`bg-gradient-to-br from-blue-900/30 to-cyan-900/20 backdrop-blur-lg
+                       border border-yellow-500/30 rounded-xl p-6 shadow-xl ${className}`}
+      >
+        <div className='text-yellow-400 font-bold'>Government AI evidence unavailable</div>
+        <div className='text-slate-400 text-sm mt-2'>
+          {error ?? 'No backend metrics returned.'}
+        </div>
+        <div className='text-slate-500 text-xs mt-3'>Source: {dataSource ?? 'QUANTUM_SIMULATION'}</div>
       </div>
     );
   }
@@ -60,7 +83,12 @@ export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ classNam
         : 'text-red-400';
   };
 
-  const isSimulated = dataSource !== null && dataSource !== 'BACKEND';
+  const sourceLabel =
+    dataSource === 'ELITE_CACHE' ? 'Cached backend evidence'
+    : dataSource === 'QUANTUM_SIMULATION' ? 'Simulated evidence — not authoritative'
+    : 'Backend evidence';
+  // Provenance disclosure: anything other than BACKEND is fixture-equivalent
+  const isSimulated = dataSource !== 'BACKEND';
 
   return (
     <div
@@ -73,13 +101,11 @@ export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ classNam
         <div className='flex items-center space-x-3'>
           <div className='text-3xl animate-pulse'>🧠</div>
           <div>
-            <div className='text-cyan-400 font-bold text-lg'>AI CONSCIOUSNESS ACTIVE</div>
-            <div className='text-slate-400 text-sm'>TerraFusion Elite Government AI</div>
+            <div className='text-cyan-400 font-bold text-lg'>Government AI Status</div>
+            <div className='text-slate-400 text-sm'>{sourceLabel}</div>
           </div>
         </div>
-        <div className='text-cyan-400 font-bold text-xl'>
-          99.5%<span className='text-sm ml-1'>ACCURACY</span>
-        </div>
+        <div className='text-cyan-400 font-bold text-sm'>{dataSource}</div>
       </div>
 
       {/* Government Metrics Grid */}
@@ -164,15 +190,15 @@ export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ classNam
           </div>
         </div>
 
-        {/* AI Consciousness Status */}
+        {/* AI Evidence Status */}
         <div className='bg-gradient-to-br from-cyan-900/40 to-blue-900/40 rounded-lg p-4 border border-cyan-400/40'>
           <div className='flex items-center justify-between mb-2'>
-            <span className='text-cyan-200 font-semibold'>🧠 AI Consciousness</span>
-            <span className='font-bold text-cyan-300'>TRANSCENDENT</span>
+            <span className='text-cyan-200 font-semibold'>AI Governance</span>
+            <span className='font-bold text-cyan-300'>{dataSource}</span>
           </div>
           <div className='text-sm text-cyan-400'>
-            <div>50,000+ Agents Active</div>
-            <div>Infinite Scale Operational</div>
+            <div>Agent telemetry is not inferred.</div>
+            <div>Only backend-returned metrics are displayed.</div>
           </div>
         </div>
       </div>
@@ -180,7 +206,7 @@ export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ classNam
       {/* Footer Status */}
       <div className='mt-4 pt-4 border-t border-cyan-500/20 text-center'>
         <div className='text-xs text-slate-400'>
-          🏛️ Government. Transcended. • Autonomous Self-Healing • Championship Excellence
+          Evidence source: {sourceLabel}. No AI capability claims are shown without backend data.
         </div>
       </div>
     </div>

@@ -28,6 +28,7 @@ import type { ErrorInfo } from '../../../hooks/useErrorHandler';
 import {
   InvocationHistory,
   EvidenceSnapshotPanel,
+  ParcelContextHeader,
   WorkbenchSourceBadge,
   type InvocationRecord,
 } from '../../../components/workbench';
@@ -48,6 +49,7 @@ import type {
   DossierNoteHeaderItem,
   DossierValuationCategory,
 } from '../../../contracts/dossierDetails';
+import { createStableId } from '../../../utils/stableId';
 import ParcelEvidencePacket from '../../../components/dossier/ParcelEvidencePacket';
 import PacketNarrativeEditor from '../../../components/dossier/PacketNarrativeEditor';
 import PacketFinalizationPanel from '../../../components/dossier/PacketFinalizationPanel';
@@ -460,7 +462,7 @@ export const PropertyDossier: React.FC = () => {
         setAppealPacketState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'APPEAL_PACKET_FAILED', message: response.error?.message || 'Appeal packet lookup failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setAppealPacketState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [appealPacketId, parcelId]);
@@ -482,7 +484,7 @@ export const PropertyDossier: React.FC = () => {
         setEqualizationState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'EQUALIZATION_EXPORT_FAILED', message: response.error?.message || 'Equalization package export failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setEqualizationState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [draftVersion, exportTaxYear, parcelId]);
@@ -510,7 +512,7 @@ export const PropertyDossier: React.FC = () => {
         setAuditBundleState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'AUDIT_EXPORT_FAILED', message: response.error?.message || 'Audit bundle export failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setAuditBundleState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [appealPacketId, exportTaxYear, parcelId]);
@@ -580,7 +582,7 @@ export const PropertyDossier: React.FC = () => {
         });
       }
     } catch (err) {
-      const correlationId = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const correlationId = createStableId('net');
       const errorInfo: ErrorInfo = {
         message: err instanceof Error ? err.message : 'Network error occurred',
         code: 'NETWORK_ERROR',
@@ -647,7 +649,7 @@ export const PropertyDossier: React.FC = () => {
         });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setSynthesizeState({
         status: 'error', correlationId: cid,
         error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid },
@@ -672,7 +674,7 @@ export const PropertyDossier: React.FC = () => {
         setNoteState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'NOTE_FAILED', message: response.error?.message || 'Failed to add note', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setNoteState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, noteText]);
@@ -690,22 +692,23 @@ export const PropertyDossier: React.FC = () => {
         setCasefileState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'CASEFILE_FAILED', message: response.error?.message || 'Casefile summary failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setCasefileState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId]);
 
   return (
     <div className='tf-suite-dossier space-y-4' data-testid='property-dossier-tab'>
+      <ParcelContextHeader icon='📁' title='TerraDossier' parcelId={parcelId} subtitle={`Document & evidence dossier for ${parcelId}`} />
       {/* Documents on File from Store */}
       {documents.length > 0 && (
         <BentoGrid columns="auto" gap={0.75} padding={0}>
-          <BentoCard variant="stat" title="Documents on File">
+          <BentoCard variant="stat" title="Loaded Documents">
             <p className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-transcend-cyan-hs) 70%)' }}>
               {documents.length}
             </p>
             <p className="text-xs mt-1" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
-              Document entries on file for this parcel.
+              Shown from the document entries currently loaded for this parcel.
             </p>
           </BentoCard>
           {documents.slice(0, 2).map((d) => (
@@ -729,7 +732,7 @@ export const PropertyDossier: React.FC = () => {
           <input
             value={appealPacketId}
             onChange={(event) => setAppealPacketId(event.target.value)}
-            placeholder={appeals[0]?.appealId ? `Appeal ID (for example ${appeals[0].appealId})` : 'Appeal ID'}
+            placeholder={appeals?.[0]?.appealId ? `Appeal ID (for example ${appeals[0].appealId})` : 'Appeal ID'}
             className='w-full p-3 rounded-lg tf-input mb-3'
           />
           <button onClick={handleOpenAppealPacket} disabled={appealPacketState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta mb-3'>
@@ -1197,7 +1200,7 @@ export const PropertyDossier: React.FC = () => {
       <BentoCard title="Evidence Synthesis" actions={<span>🔬</span>}>
         <div className='flex items-start justify-between gap-4 flex-wrap mb-3'>
           <p className='tf-text-dim text-sm'>
-            Review synthesized evidence totals and categories for this parcel.
+            Request returned evidence totals and categories for this parcel
           </p>
           <button
             onClick={handleSynthesizeEvidence}
@@ -1220,8 +1223,7 @@ export const PropertyDossier: React.FC = () => {
                 </code>
               )}
             </div>
-
-
+            <p className='text-xs tf-text-dim'>Shows the totals and categories returned by this synthesis request.</p>
 
             {synthesizeState.result.synthesisNarrative && (
               <>
@@ -1262,7 +1264,7 @@ export const PropertyDossier: React.FC = () => {
 
       {/* Casefile Summary */}
       <BentoCard title='📋 Casefile Summary' actions={<span>📑</span>}>
-        <p className='tf-text-tertiary text-sm mb-4'>Casefile summary for notices, appeals, permits, and sales on {parcelId}</p>
+        <p className='tf-text-tertiary text-sm mb-4'>Request returned a casefile summary for notices, appeals, permits, and sales on {parcelId}</p>
         <button onClick={handleCasefileSummary} disabled={casefileState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta mb-4'>
           {casefileState.status === 'loading' ? 'Loading...' : 'Summarize Casefile'}
         </button>
@@ -1270,7 +1272,7 @@ export const PropertyDossier: React.FC = () => {
         {casefileState.status === 'success' && casefileState.result && (
           <div className='space-y-3'>
 
-            <div className='tf-panel p-4'><p className='tf-text-secondary'>{casefileState.result.summary}</p><p className='tf-text-dim text-xs italic mt-2'>AI-synthesized from available casefile data — verify against source records.</p></div>
+            <div className='tf-panel p-4'><p className='tf-text-secondary'>{casefileState.result.summary}</p><p className='text-xs tf-text-dim mt-2'>Shows the summary and highlights returned for the requested casefile sections.</p></div>
             {casefileState.result.highlights.length > 0 && (
               <div className='space-y-1'>
                 {casefileState.result.highlights.map((h, idx) => (

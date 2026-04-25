@@ -83,8 +83,9 @@ export function SuiteModuleGrid({ modules, accentVar = '--tf-accent' }: SuiteMod
       if (!targetId) {
         return;
       }
+      // Standalone modules: navigate by route so deep-links and back-button work.
       void activateModule(targetId, { source: 'start_menu' });
-      navigate('/');
+      navigate(`/${targetId}`);
     }
   };
 

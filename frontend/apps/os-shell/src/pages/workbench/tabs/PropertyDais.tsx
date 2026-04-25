@@ -34,10 +34,12 @@ import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
     InvocationHistory,
+    ParcelContextHeader,
     WorkbenchSourceBadge,
     type InvocationRecord,
 } from '../../../components/workbench';
 import type { ErrorInfo } from '../../../hooks/useErrorHandler';
+import { createStableId } from '../../../utils/stableId';
 import { getEnv } from '../../../runtime/env';
 import { usePropertyStore } from '../../../stores/propertyStore';
 import { BentoGrid } from '../../../ui/materials/BentoGrid';
@@ -353,7 +355,7 @@ export const PropertyDais: React.FC = () => {
         setNoticeState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'DRAFT_FAILED', message: response.error?.message || 'Notice draft failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setNoticeState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, noticeReasons]);
@@ -372,7 +374,7 @@ export const PropertyDais: React.FC = () => {
         setAppealState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'APPEAL_DRAFT_FAILED', message: response.error?.message || 'Appeal response draft failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setAppealState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, appealId, appealPosition]);
@@ -390,7 +392,7 @@ export const PropertyDais: React.FC = () => {
         setDraftNoticeState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'NOTICE_FAILED', message: response.error?.message || 'Notice creation failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setDraftNoticeState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, draftNoticeType]);
@@ -412,7 +414,7 @@ export const PropertyDais: React.FC = () => {
         setAssignTaskState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'ASSIGN_FAILED', message: response.error?.message || 'Task assignment failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setAssignTaskState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, assignTaskId, assignAssigneeId, assignReason]);
@@ -435,7 +437,7 @@ export const PropertyDais: React.FC = () => {
         setBoePacketState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'BOE_PACKET_FAILED', message: response.error?.message || 'BOE packet assembly failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setBoePacketState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     } finally {
       setBoeConfirmed(false);
@@ -464,7 +466,7 @@ export const PropertyDais: React.FC = () => {
         setBoeAppealState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'BOE_APPEAL_FAILED', message: response.error?.message || 'BOE appeal response draft failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setBoeAppealState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, boeAppealCaseId, boeAppealPosition, boeAppealPoints]);
@@ -483,7 +485,7 @@ export const PropertyDais: React.FC = () => {
         setEligibilityState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'ELIGIBILITY_FAILED', message: response.error?.message || 'Eligibility check failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setEligibilityState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId]);
@@ -501,7 +503,7 @@ export const PropertyDais: React.FC = () => {
         setRenewalState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'RENEWAL_FAILED', message: response.error?.message || 'Renewal processing failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setRenewalState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, renewalExemptionId]);
@@ -519,7 +521,7 @@ export const PropertyDais: React.FC = () => {
         setFileAppealState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'APPEAL_FAILED', message: response.error?.message || 'Appeal filing failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setFileAppealState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, appealGrounds]);
@@ -537,7 +539,7 @@ export const PropertyDais: React.FC = () => {
         setHearingState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'HEARING_FAILED', message: response.error?.message || 'Hearing scheduling failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setHearingState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, hearingAppealId, hearingDate]);
@@ -556,7 +558,7 @@ export const PropertyDais: React.FC = () => {
         setQueueNoticeState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'QUEUE_FAILED', message: response.error?.message || 'Notice queuing failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setQueueNoticeState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, queueNoticeIds]);
@@ -574,7 +576,7 @@ export const PropertyDais: React.FC = () => {
         setEscalateState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'ESCALATE_FAILED', message: response.error?.message || 'Task escalation failed', severity: 'error', correlationId: response.correlationId } });
       }
     } catch (err) {
-      const cid = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const cid = createStableId('net');
       setEscalateState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, escalateTaskId, escalateReason]);
@@ -595,6 +597,7 @@ export const PropertyDais: React.FC = () => {
 
   return (
     <div className='tf-suite-dais space-y-4' data-testid='property-dais-tab'>
+      <ParcelContextHeader icon='⚖️' title='TerraDais' parcelId={parcelId} subtitle={`Workflow & dais services for ${parcelId}`} />
       {/* Active Appeals from Store */}
       {appeals.length > 0 && (
         <BentoGrid columns="auto" gap={0.75} padding={0}>

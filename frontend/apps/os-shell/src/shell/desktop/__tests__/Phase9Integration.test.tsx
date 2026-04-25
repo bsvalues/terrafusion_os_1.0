@@ -17,6 +17,16 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const phase9Wrapper = ({ children }: { children: React.ReactNode }) => {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>{children}</MemoryRouter>
+    </QueryClientProvider>
+  );
+};
 
 import { errorTracker } from '../../../hooks/useErrorReporter';
 import { useDesktopStore } from '../../../stores/desktopStore';
@@ -148,7 +158,7 @@ const initializeModuleRegistry = () => {
 describe('Phase 9: Full Stack Integration', () => {
   describe('Desktop → Stores → Components', () => {
     it('Desktop renders with all integrated components', () => {
-      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+      render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
 
       expect(screen.getByTestId('desktop')).toBeInTheDocument();
       expect(screen.getByTestId('window-manager')).toBeInTheDocument();
@@ -158,7 +168,7 @@ describe('Phase 9: Full Stack Integration', () => {
 
     it('Window manager responds to store changes', async () => {
       initializeModuleRegistry();
-      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+      render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
 
       // Initially no windows
       expect(screen.queryByTestId('window')).not.toBeInTheDocument();
@@ -174,7 +184,7 @@ describe('Phase 9: Full Stack Integration', () => {
 
     it('Taskbar shows running windows from store', async () => {
       initializeModuleRegistry();
-      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+      render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
 
       await act(async () => {
         await useModuleRegistryStore.getState().launchModule('government-edition');
@@ -189,7 +199,7 @@ describe('Phase 9: Full Stack Integration', () => {
   describe('Module Launch → Notification Flow', () => {
     it('Module launch shows success notification', async () => {
       initializeModuleRegistry();
-      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+      render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
 
       await act(async () => {
         await useModuleRegistryStore.getState().launchModule('government-edition');
@@ -213,7 +223,7 @@ describe('Phase 9: Full Stack Integration', () => {
 
     it('Multiple module launches show multiple toasts', async () => {
       initializeModuleRegistry();
-      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+      render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
 
       // Add success notifications
       act(() => {
@@ -232,7 +242,7 @@ describe('Phase 9: Full Stack Integration', () => {
 
   describe('Error → Notification Flow', () => {
     it('Error notifications appear in toast container', () => {
-      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+      render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
 
       act(() => {
         useNotificationStore.getState().addNotification({
@@ -247,7 +257,7 @@ describe('Phase 9: Full Stack Integration', () => {
     });
 
     it('Warning notifications appear with correct styling', () => {
-      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+      render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
 
       act(() => {
         useNotificationStore.getState().addNotification({
@@ -266,7 +276,7 @@ describe('Phase 9: Full Stack Integration', () => {
   describe('Window Lifecycle → Store Sync', () => {
     it('Window close updates desktopStore', async () => {
       initializeModuleRegistry();
-      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+      render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
 
       await act(async () => {
         await useModuleRegistryStore.getState().launchModule('government-edition');
@@ -357,7 +367,7 @@ describe('Phase 9: Full Stack Integration', () => {
 
   describe('Start Menu → Module Registry → Desktop', () => {
     it('Start menu toggle via store', () => {
-      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+      render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
 
       expect(screen.queryByTestId('start-menu')).not.toBeInTheDocument();
 
@@ -372,7 +382,7 @@ describe('Phase 9: Full Stack Integration', () => {
       // Start with open
       useStartMenuStore.setState({ ...useStartMenuStore.getState(), isOpen: true });
 
-      render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+      render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
 
       expect(screen.getByTestId('start-menu')).toBeInTheDocument();
 
@@ -446,23 +456,23 @@ describe('Phase 9: Full Stack Integration', () => {
 
 describe('Phase 9: Accessibility Integration', () => {
   it('Desktop has main role', () => {
-    render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
     expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
   it('Taskbar has navigation role', () => {
-    render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
     expect(screen.getByRole('navigation', { name: /taskbar/i })).toBeInTheDocument();
   });
 
   it('Toast container has live region', () => {
-    render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
     const container = screen.getByTestId('toast-container');
     expect(container).toHaveAttribute('aria-live', 'polite');
   });
 
   it('Window manager has region role', () => {
-    render(<DesktopWithErrorBoundary />, { wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter> });
+    render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
     expect(screen.getByRole('region', { name: /application windows/i })).toBeInTheDocument();
   });
 });

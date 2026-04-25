@@ -11,7 +11,7 @@
  *   7. EXEMPTIONS   — amount, types (only when non-zero)
  *
  * Data honesty rules:
- *   - No vendor/system names in rendered text (harris-*, pacs_*, oltp)
+ *   - No vendor/system names in rendered text
  *   - assessmentYear always visible so operator knows data vintage
  *   - Null/empty fields render '—', never blank or 'undefined'
  *   - Source badge shows 'live' or 'fallback', not raw source string
@@ -171,8 +171,8 @@ export const PropertySummary: React.FC = () => {
         <BlockHeader
           label={
             activeParcel?.assessmentYear
-              ? `Valuation · Assessment Year ${activeParcel.assessmentYear}`
-              : 'Valuation'
+              ? `Valuation Snapshot · Assessment Year ${activeParcel.assessmentYear}`
+              : 'Valuation Snapshot'
           }
           badge={<WorkbenchSourceBadge source={disclosureSource} />}
         />
@@ -204,9 +204,17 @@ export const PropertySummary: React.FC = () => {
         </div>
         {/* Provenance — honest vintage, no vendor names */}
         {activeParcel?.assessmentYear && (
-          <p className="mt-2 text-[10px]" style={{ color: 'hsl(var(--tf-text) / 0.3)' }}>
-            Historical assessment snapshot · Data vintage: {activeParcel.assessmentYear}
-          </p>
+          <>
+            <p className="mt-2 text-[10px]" style={{ color: 'hsl(var(--tf-text) / 0.3)' }}>
+              Historical assessment snapshot · Data vintage: {activeParcel.assessmentYear}
+            </p>
+            <p className="mt-1 text-[11px]" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+              Displayed values reflect the loaded parcel summary for assessment year {activeParcel.assessmentYear}.
+            </p>
+            <p className="mt-1 text-[11px]" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+              This route does not show a more precise as-of timestamp than that assessment year. Source: county assessment record.
+            </p>
+          </>
         )}
       </Block>
 
@@ -350,34 +358,37 @@ export const PropertySummary: React.FC = () => {
         </Block>
       )}
 
-      {/* ── FLAGS: Appeals + Permits ───────────────────────────────────────── */}
-      {activeParcel && (activeParcel.hasAppeals || activeParcel.hasActivePermits) && (
+      {/* ── FLAGS: Appeals ─────────────────────────────────────────────────── */}
+      {activeParcel?.hasAppeals && (
         <Block>
-          <BlockHeader label="Active Flags" />
+          <BlockHeader label="Loaded Appeals" />
           <div className="flex flex-wrap gap-2">
-            {activeParcel.hasAppeals && (
-              <span
-                className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                style={{
-                  background: 'hsl(var(--tf-error, 0 80% 60%) / 0.15)',
-                  color: 'hsl(var(--tf-error, 0 80% 60%))',
-                }}
-              >
-                {appeals.length} Appeal{appeals.length !== 1 ? 's' : ''} on record
-              </span>
-            )}
-            {activeParcel.hasActivePermits && (
-              <span
-                className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                style={{
-                  background: 'hsl(var(--tf-info, 200 80% 60%) / 0.15)',
-                  color: 'hsl(var(--tf-info, 200 80% 60%))',
-                }}
-              >
-                Active permits
-              </span>
-            )}
+            <span
+              className="text-xs font-semibold px-2.5 py-1 rounded-full"
+              style={{
+                background: 'hsl(var(--tf-error, 0 80% 60%) / 0.15)',
+                color: 'hsl(var(--tf-error, 0 80% 60%))',
+              }}
+            >
+              {appeals.length} Appeal{appeals.length !== 1 ? 's' : ''} on record
+            </span>
           </div>
+          <p className="mt-2 text-[11px]" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+            Shown from the appeal records currently loaded for this parcel.
+          </p>
+        </Block>
+      )}
+
+      {/* ── FLAGS: Permits ─────────────────────────────────────────────────── */}
+      {activeParcel?.hasActivePermits && (
+        <Block>
+          <BlockHeader label="Loaded Parcel Permits" />
+          <p className="text-sm" style={{ color: 'hsl(var(--tf-text) / 0.85)' }}>
+            Loaded parcel is marked with active permits.
+          </p>
+          <p className="mt-2 text-[11px]" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>
+            Shown from the parcel summary currently loaded for this parcel.
+          </p>
         </Block>
       )}
 

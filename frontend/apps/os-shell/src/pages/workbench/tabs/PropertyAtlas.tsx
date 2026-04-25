@@ -7,7 +7,7 @@
  *   1. On mount, fetches boundary + layer data from live GIS endpoints:
  *        GET /api/atlas/gis/parcels/{parcelId}/boundary
  *        GET /api/atlas/gis/parcels/{parcelId}/layers
- *   2. When source="pacs", renders real PACS data in boundary info & layer panels.
+ *   2. When source="assessment", renders real county assessment data in boundary info & layer panels.
  *   3. Falls back to SVG deterministic preview when API data is unavailable.
  *   4. Existing query_parcel_layers tool invocation preserved for interactive queries.
  */
@@ -18,6 +18,7 @@ import { invokeTool } from '../../../api/pilotApi';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
     InvocationHistory,
+    ParcelContextHeader,
     WorkbenchSourceBadge,
     type InvocationRecord,
 } from '../../../components/workbench';
@@ -428,7 +429,7 @@ export const PropertyAtlas: React.FC = () => {
         } catch {
           parsed = { parcelId, layers: {} };
         }
-        // Ensure parcelId and layers always present (mocks may omit them)
+        // Ensure parcelId and layers are always present.
         if (!parsed.parcelId) parsed.parcelId = parcelId;
         if (!parsed.layers) parsed.layers = {};
 
@@ -619,6 +620,7 @@ export const PropertyAtlas: React.FC = () => {
 
   return (
     <div className='tf-suite-atlas space-y-4' data-testid='property-atlas-tab'>
+      <ParcelContextHeader icon='🗺️' title='TerraAtlas' parcelId={parcelId} subtitle={`GIS & spatial overlays for ${parcelId}`} />
       {/* Parcel Context from Store */}
       {activeParcel && (
         <div>
@@ -713,20 +715,23 @@ export const PropertyAtlas: React.FC = () => {
         </div>
       )}
 
-      {/* ── Phase 0B: Live Map Canvas ─────────────────────── */}
-      {boundary.source === 'live' && boundary.data?.centroid && (
-        <div
-          className="rounded-xl overflow-hidden w-full"
-          style={{ border: '1px solid hsl(var(--tf-border, 220 13% 22%))', boxShadow: '0 4px 24px rgba(0,0,0,0.35)' }}
-        >
+      {/* ── Phase 0B: Map Canvas ──────────────────────────────
+          map-container always rendered so the layer/Atlas surface always has a stable mount point.
+          atlas-map-canvas (Leaflet target) only mounts when a live boundary with a centroid is available. */}
+      <div
+        data-testid="map-container"
+        className="rounded-xl overflow-hidden w-full"
+        style={{ border: '1px solid hsl(var(--tf-border, 220 13% 22%))', boxShadow: '0 4px 24px rgba(0,0,0,0.35)', minHeight: 24 }}
+      >
+        {boundary.source === 'live' && boundary.data?.centroid && (
           <div
             ref={mapContainerRef}
             data-testid="atlas-map-canvas"
             className="w-full"
             style={{ height: 480 }}
           />
-        </div>
-      )}
+        )}
+      </div>
 
       {/* ── Boundary unavailable state ────────────────────── */}
       {!boundary.loading && !boundary.error && boundary.source === 'unavailable' && (
@@ -821,27 +826,37 @@ export const PropertyAtlas: React.FC = () => {
             Query governed parcel layers with county-scoped Atlas tooling.
           </p>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-2 mb-3'>
-            {MAP_LAYERS.map((layer) => (
-              <label key={layer.id} className='tf-panel rounded-lg px-3 py-2 flex items-start gap-3 cursor-pointer'>
-                <input
-                  type='checkbox'
-                  checked={selectedLayers.has(layer.id)}
-                  onChange={() => toggleLayer(layer.id)}
-                  className='mt-1'
-                />
-                <div>
-                  <div className='tf-text text-sm font-medium'>{layer.icon} {layer.label}</div>
-                  <div className='tf-text-dim text-xs'>{layer.description}</div>
-                </div>
-              </label>
-            ))}
+            {MAP_LAYERS.map((layer) => {
+              const pressed = selectedLayers.has(layer.id);
+              return (
+                <button
+                  type='button'
+                  key={layer.id}
+                  data-testid={`layer-toggle-${layer.id}`}
+                  aria-pressed={pressed}
+                  onClick={() => toggleLayer(layer.id)}
+                  className='tf-panel rounded-lg px-3 py-2 flex items-start gap-3 cursor-pointer text-left'
+                >
+                  <input
+                    type='checkbox'
+                    checked={pressed}
+                    readOnly
+                    className='mt-1 pointer-events-none'
+                  />
+                  <div>
+                    <div className='tf-text text-sm font-medium'>{layer.icon} {layer.label}</div>
+                    <div className='tf-text-dim text-xs'>{layer.description}</div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
           <button
             onClick={handleQueryLayers}
             disabled={queryState.status === 'loading' || selectedLayers.size === 0}
             className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-atlas-cta mb-3'
           >
-            {queryState.status === 'loading' ? 'Querying Layers...' : 'Run Layer Query'}
+            {queryState.status === 'loading' ? 'Querying Layers...' : 'Query Layers'}
           </button>
 
           {queryState.status === 'success' && queryState.result && (
