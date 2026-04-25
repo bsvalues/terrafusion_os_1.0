@@ -60,7 +60,7 @@ export const useBudgetData = () => {
       } else {
         setBudgetData([]);
         setIsSampleData(true);
-        setError('Levy budget endpoints returned no category data.');
+        setError('Live levy budget endpoints returned no certified budget-category data.');
       }
     } catch (cause) {
       setBudgetData([]);
