@@ -252,6 +252,7 @@ function AdjSetRow({
 
 export function AdjustmentSetPanel() {
   const { activeStudy } = useCountyStudioStore();
+  const lastPromotedAt = useCountyStudioStore((s) => s.lastPromotedAt);
   const studyId = activeStudy?.studyId ?? null;
 
   const [sets,    setSets]    = useState<CountyAdjustmentSetDto[]>([]);
@@ -273,7 +274,7 @@ export function AdjustmentSetPanel() {
     }
   }, [studyId]);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => { void load(); }, [load, lastPromotedAt]);
 
   const handleAction = useCallback(async (
     id: string,

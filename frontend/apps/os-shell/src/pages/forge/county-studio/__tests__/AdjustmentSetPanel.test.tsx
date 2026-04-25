@@ -3,6 +3,7 @@ import React from 'react';
 import { render, screen, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
+import { createStore, useStore } from 'zustand';
 import { AdjustmentSetPanel } from '../components/AdjustmentSetPanel';
 import { adjustmentSetApi } from '../countyStudyApi';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
@@ -194,5 +195,45 @@ describe('AdjustmentSetPanel', () => {
     expect(mockUpdateState).not.toHaveBeenCalled();
     expect(screen.getByTestId('confirm-RolledBack-adj-001')).toBeInTheDocument();
     expect(screen.getByTestId('rollback-reason-adj-001')).toBeInTheDocument();
+  });
+
+  test('re-fetches adjustment sets when store lastPromotedAt changes', async () => {
+    const firstSet  = makeAdj({ approvalState: 'Proposed', adjustmentSetId: 'adj-001' });
+    const secondSet = makeAdj({ approvalState: 'Proposed', adjustmentSetId: 'adj-002' });
+
+    // First fetch returns one set.
+    mockList.mockResolvedValueOnce([firstSet]);
+    // Second fetch (triggered by lastPromotedAt change) returns two sets.
+    mockList.mockResolvedValueOnce([firstSet, secondSet]);
+
+    // Back the mock with a real reactive Zustand store so subscription-based
+    // re-renders fire when setLastPromotion updates lastPromotedAt.
+    type TestState = {
+      activeStudy: { studyId: string };
+      lastPromotedAt: number | null;
+      setLastPromotion: () => void;
+    };
+    const testStore = createStore<TestState>()((set) => ({
+      activeStudy: { studyId: STUDY_ID },
+      lastPromotedAt: null,
+      setLastPromotion: () => set({ lastPromotedAt: Date.now() }),
+    }));
+    mockStore.mockImplementation((selector?: (s: TestState) => unknown) =>
+      useStore(testStore, selector ?? ((s) => s))
+    );
+    (useCountyStudioStore as any).getState = testStore.getState;
+
+    render(<AdjustmentSetPanel />);
+    await screen.findByTestId('adj-row-adj-001');
+    expect(screen.queryByTestId('adj-row-adj-002')).not.toBeInTheDocument();
+
+    // Simulate a promote completing elsewhere.
+    act(() => {
+      useCountyStudioStore.getState().setLastPromotion();
+    });
+
+    await screen.findByTestId('adj-row-adj-002');
+    expect(screen.getByTestId('adj-row-adj-001')).toBeInTheDocument();
+    expect(screen.getByTestId('adj-row-adj-002')).toBeInTheDocument();
   });
 });

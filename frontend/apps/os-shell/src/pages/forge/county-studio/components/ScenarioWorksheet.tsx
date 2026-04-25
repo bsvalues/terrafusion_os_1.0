@@ -153,6 +153,7 @@ export function ScenarioWorksheet() {
         }),
       });
       setPromoteSuccess('Promoted — see Govnc tab for approval workflow.');
+      useCountyStudioStore.getState().setLastPromotion();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Promote failed.');
     } finally {

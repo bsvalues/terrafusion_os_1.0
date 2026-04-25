@@ -158,6 +158,16 @@ export interface CountyStudioState {
    * the segment via selectedSegmentId (so RightRail shows its detail).
    */
   drillToSegment: (city: string, neighborhoodCode: string, segmentId: string) => void;
+
+  /**
+   * Epoch ms timestamp of the last successful scenario promote, or null if none
+   * has occurred this session. AdjustmentSetPanel subscribes to this value so it
+   * auto-refetches when the Scenario tab promotes a scenario while the Govnc tab
+   * is already mounted.
+   */
+  lastPromotedAt: number | null;
+  /** Called by ScenarioWorksheet after a successful promote to signal AdjustmentSetPanel. */
+  setLastPromotion: () => void;
 }
 
 export interface PeerPresenceEvent {
@@ -209,6 +219,8 @@ export const useCountyStudioStore = create<CountyStudioState>()(
       cityRollup: [],
       neighborhoodRollup: [],
       healthSummary: null,
+
+      lastPromotedAt: null,
 
       setStudy: (study) => set({ activeStudy: study }, false, 'setStudy'),
       setSegments: (segments) => set({ segments }, false, 'setSegments'),
@@ -266,6 +278,8 @@ export const useCountyStudioStore = create<CountyStudioState>()(
 
       clearIncomingProjections: () =>
         set({ incomingProjections: [] }, false, 'clearIncomingProjections'),
+
+      setLastPromotion: () => set({ lastPromotedAt: Date.now() }, false, 'setLastPromotion'),
 
       setCityRollup: (cityRollup) => set({ cityRollup }, false, 'setCityRollup'),
       setNeighborhoodRollup: (neighborhoodRollup) =>
