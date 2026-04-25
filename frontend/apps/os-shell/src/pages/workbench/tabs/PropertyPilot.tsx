@@ -161,14 +161,14 @@ export const PropertyPilot: React.FC = () => {
 
       {!toolsLoading && !toolsError && (
         <div className='tf-status-info rounded-xl p-4' data-testid='pilot-muse-scope'>
-          <p className='tf-text'>This panel provides read-only analysis tools for this parcel.</p>
+          <p className='tf-text'>This panel provides only read-only reasoning and explanation tools for this parcel.</p>
         </div>
       )}
 
       {/* Operation history from store */}
       {operations.length > 0 && (
-        <BentoCard variant="table" title={`Operation History (${operations.length})`}>
-          <p className='tf-text-tertiary text-sm mb-3'>Pilot operation history for this parcel.</p>
+        <BentoCard variant="table" title={`Loaded Operation History (${operations.length})`}>
+          <p className='tf-text-tertiary text-sm mb-3'>Shown from the operation history currently loaded for this parcel.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
               <thead>

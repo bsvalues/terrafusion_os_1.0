@@ -598,6 +598,23 @@ export const PropertyDais: React.FC = () => {
   return (
     <div className='tf-suite-dais space-y-4' data-testid='property-dais-tab'>
       <ParcelContextHeader icon='⚖️' title='TerraDais' parcelId={parcelId} subtitle={`Workflow & dais services for ${parcelId}`} />
+
+      <div className="flex items-center justify-between gap-3 px-2" data-testid="dais-baseline-disclosure">
+        <p className="text-xs tf-text-dim">
+          Workflow, certification, and notice tools are requested via governed tooling;
+          values shown are returned from the tool response, never inferred.
+        </p>
+        <WorkbenchSourceBadge source="fallback" />
+      </div>
+
+      <div className="flex items-center justify-between gap-3 px-2" data-testid="dais-queue-statistics-disclosure">
+        <p className="text-xs tf-text-dim">
+          Queue statistics are unavailable until get_queue_statistics is invoked
+          for this parcel and tax year.
+        </p>
+        <WorkbenchSourceBadge source="unavailable" />
+      </div>
+
       {/* Active Appeals from Store */}
       {appeals.length > 0 && (
         <BentoGrid columns="auto" gap={0.75} padding={0}>
