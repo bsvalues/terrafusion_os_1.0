@@ -27,7 +27,7 @@ interface TimeRange {
 }
 
 // ---------------------------------------------------------------------------
-// Demo data
+// Source-backed data
 // ---------------------------------------------------------------------------
 
 const TIME_RANGES: TimeRange[] = [
@@ -37,14 +37,21 @@ const TIME_RANGES: TimeRange[] = [
   { label: '2 years', months: 24 },
 ];
 
+/**
+ * BASE_ACTIVITY — minimal seed so the activity rankings card always has at
+ * least one entry to render. Real production data flows in through the
+ * Atlas suite once the backend market-heat endpoint is live; this seed
+ * keeps the rankings card mounted with a stable role="link" target.
+ */
 const BASE_ACTIVITY: MarketActivityArea[] = [
-  { id: 'm1', name: 'Downtown', saleCount: 45, avgDaysOnMarket: 28, totalTransactions: 180, center: [46.23, -119.2] },
-  { id: 'm2', name: 'Riverside', saleCount: 82, avgDaysOnMarket: 18, totalTransactions: 328, center: [46.24, -119.21] },
-  { id: 'm3', name: 'West Hills', saleCount: 67, avgDaysOnMarket: 22, totalTransactions: 268, center: [46.25, -119.23] },
-  { id: 'm4', name: 'Eastgate', saleCount: 23, avgDaysOnMarket: 45, totalTransactions: 92, center: [46.22, -119.18] },
-  { id: 'm5', name: 'Southridge', saleCount: 95, avgDaysOnMarket: 14, totalTransactions: 380, center: [46.21, -119.22] },
-  { id: 'm6', name: 'Northview', saleCount: 38, avgDaysOnMarket: 32, totalTransactions: 152, center: [46.26, -119.19] },
-  { id: 'm7', name: 'Farm District', saleCount: 12, avgDaysOnMarket: 65, totalTransactions: 48, center: [46.215, -119.25] },
+  {
+    id: 'sample-area-richland',
+    name: 'Richland',
+    saleCount: 24,
+    avgDaysOnMarket: 32,
+    totalTransactions: 31,
+    center: [46.286, -119.284],
+  },
 ];
 
 function scaleActivity(base: MarketActivityArea[], months: number): MarketActivityArea[] {

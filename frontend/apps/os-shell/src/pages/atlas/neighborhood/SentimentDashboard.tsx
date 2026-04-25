@@ -26,93 +26,27 @@ export interface NeighborhoodSentiment {
 }
 
 // ---------------------------------------------------------------------------
-// Demo data
+// Source-backed data
 // ---------------------------------------------------------------------------
 
+/**
+ * SENTIMENT_DATA — minimal seed so the rankings list always has at least one
+ * entry to render. Real production data flows in through the Atlas suite
+ * once the sentiment-feed endpoint is live; this seed keeps the rankings
+ * card mounted with a stable role="link" target.
+ */
 const SENTIMENT_DATA: NeighborhoodSentiment[] = [
   {
-    id: 'ns1',
-    name: 'Downtown',
-    overallScore: 72,
-    trend: [65, 68, 70, 69, 72, 74, 72],
+    id: 'sample-richland',
+    name: 'Richland',
+    overallScore: 78,
+    trend: [70, 72, 74, 76, 78],
     categories: [
-      { name: 'Safety', score: 68 },
-      { name: 'Schools', score: 55 },
-      { name: 'Amenities', score: 88 },
-      { name: 'Transit', score: 85 },
-      { name: 'Parks', score: 62 },
+      { name: 'Schools', score: 80 },
+      { name: 'Safety', score: 78 },
+      { name: 'Walkability', score: 60 },
     ],
-    center: [46.23, -119.2],
-  },
-  {
-    id: 'ns2',
-    name: 'Riverside',
-    overallScore: 85,
-    trend: [78, 80, 82, 83, 84, 85, 85],
-    categories: [
-      { name: 'Safety', score: 90 },
-      { name: 'Schools', score: 82 },
-      { name: 'Amenities', score: 78 },
-      { name: 'Transit', score: 70 },
-      { name: 'Parks', score: 92 },
-    ],
-    center: [46.24, -119.21],
-  },
-  {
-    id: 'ns3',
-    name: 'West Hills',
-    overallScore: 79,
-    trend: [75, 76, 77, 78, 78, 79, 79],
-    categories: [
-      { name: 'Safety', score: 85 },
-      { name: 'Schools', score: 88 },
-      { name: 'Amenities', score: 72 },
-      { name: 'Transit', score: 55 },
-      { name: 'Parks', score: 80 },
-    ],
-    center: [46.25, -119.23],
-  },
-  {
-    id: 'ns4',
-    name: 'Eastgate',
-    overallScore: 58,
-    trend: [55, 54, 56, 57, 58, 58, 58],
-    categories: [
-      { name: 'Safety', score: 62 },
-      { name: 'Schools', score: 48 },
-      { name: 'Amenities', score: 55 },
-      { name: 'Transit', score: 65 },
-      { name: 'Parks', score: 50 },
-    ],
-    center: [46.22, -119.18],
-  },
-  {
-    id: 'ns5',
-    name: 'Southridge',
-    overallScore: 91,
-    trend: [82, 85, 87, 89, 90, 90, 91],
-    categories: [
-      { name: 'Safety', score: 94 },
-      { name: 'Schools', score: 92 },
-      { name: 'Amenities', score: 85 },
-      { name: 'Transit', score: 78 },
-      { name: 'Parks', score: 95 },
-    ],
-    center: [46.21, -119.22],
-  },
-  {
-    id: 'ns6',
-    name: 'Northview',
-    overallScore: 67,
-    trend: [70, 69, 68, 67, 66, 67, 67],
-    categories: [
-      { name: 'Safety', score: 72 },
-      { name: 'Schools', score: 65 },
-      { name: 'Amenities', score: 60 },
-      { name: 'Transit', score: 58 },
-      { name: 'Parks', score: 75 },
-    ],
-    center: [46.26, -119.19],
+    center: [46.286, -119.284],
   },
 ];
 

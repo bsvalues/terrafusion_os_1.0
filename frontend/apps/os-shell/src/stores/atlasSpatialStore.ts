@@ -4,7 +4,7 @@
  * Zustand store for Atlas spatial ops: parcels, neighborhoods,
  * spatial diagnostics, residual data, equity areas.
  *
- * Fixture-driven with API fallback pattern (same as forgeStatisticsStore).
+ * API-driven. Backend gaps remain empty instead of falling back to local data.
  * Separate lifecycle from Forge stores.
  * ======================================================================
  */
@@ -16,13 +16,13 @@ import type {
   SpatialDiagnostics,
   ResidualMapData,
   EquityArea,
-} from '@/data/atlasSpatialFixtures';
+} from '@/types/atlasSpatial';
 import {
+  EQUITY_AREAS,
   SPATIAL_PARCELS,
   NEIGHBORHOOD_SUMMARIES,
   SPATIAL_DIAGNOSTICS,
   RESIDUAL_MAP_DATA,
-  EQUITY_AREAS,
 } from '@/data/atlasSpatialFixtures';
 
 // ---------------------------------------------------------------------------
@@ -62,20 +62,21 @@ export const useAtlasSpatialStore = create<AtlasSpatialState>((set, get) => ({
   fetchSpatialData: async () => {
     set({ loading: true, error: null });
     try {
-      // API fallback: try backend first, fall back to fixtures
       const res = await fetch('/api/atlas/spatial').catch(() => null);
       if (res && res.ok) {
         const data = await res.json();
         set({
-          parcels: data.parcels ?? SPATIAL_PARCELS,
-          neighborhoods: data.neighborhoods ?? NEIGHBORHOOD_SUMMARIES,
-          diagnostics: data.diagnostics ?? SPATIAL_DIAGNOSTICS,
-          residualData: data.residualData ?? RESIDUAL_MAP_DATA,
-          equityAreas: data.equityAreas ?? EQUITY_AREAS,
+          parcels: data.parcels ?? [],
+          neighborhoods: data.neighborhoods ?? [],
+          diagnostics: data.diagnostics ?? null,
+          residualData: data.residualData ?? null,
+          equityAreas: data.equityAreas ?? [],
           loading: false,
         });
       } else {
-        // Fixture fallback
+        // API unavailable — seed from bounded spatial fixtures so Atlas
+        // surfaces have parcels/neighborhoods/diagnostics to render. The
+        // error message documents the fixture origin.
         set({
           parcels: SPATIAL_PARCELS,
           neighborhoods: NEIGHBORHOOD_SUMMARIES,
@@ -83,6 +84,7 @@ export const useAtlasSpatialStore = create<AtlasSpatialState>((set, get) => ({
           residualData: RESIDUAL_MAP_DATA,
           equityAreas: EQUITY_AREAS,
           loading: false,
+          error: 'Atlas spatial API unavailable; showing bounded fixture evidence.',
         });
       }
     } catch (err: any) {

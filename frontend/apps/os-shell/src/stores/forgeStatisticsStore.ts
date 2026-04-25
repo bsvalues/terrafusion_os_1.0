@@ -158,7 +158,17 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
   },
 
   reviewOutlier: async (parcelId, status) => {
-    set({ error: `Outlier review endpoint is not wired; ${status} was not persisted for ${parcelId}.` });
+    // Optimistic local update — Phase 16 contract: review actions reflect in
+    // the local outliers slice even when the persistence endpoint is not yet
+    // wired. The error message documents that the change is not persisted.
+    set((state) => ({
+      outliers: state.outliers.map((outlier) =>
+        outlier.parcelId === parcelId
+          ? { ...outlier, reviewStatus: status }
+          : outlier,
+      ),
+      error: `Outlier review endpoint is not wired; ${status} was not persisted for ${parcelId}.`,
+    }));
   },
 
   loadComparison: async () => {
