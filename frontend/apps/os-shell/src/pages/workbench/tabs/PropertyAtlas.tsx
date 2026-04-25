@@ -870,10 +870,26 @@ export const PropertyAtlas: React.FC = () => {
             {queryState.status === 'loading' ? 'Querying Layers...' : 'Query Layers'}
           </button>
 
+          {queryState.status === 'loading' && (
+            <div role='status' aria-label='Querying parcel layers' className='flex items-center gap-2 text-xs tf-text-dim'>
+              <span className='inline-block h-3 w-3 animate-pulse rounded-full bg-current opacity-50' />
+              Querying parcel layers…
+            </div>
+          )}
+
           {queryState.status === 'success' && queryState.result && (
             <div className='space-y-3'>
               <div className="text-[11px] tf-text-dim" data-testid="atlas-results-source">
                 Layer availability returned from query_parcel_layers (correlationId{queryState.correlationId ? `: ${queryState.correlationId.slice(0, 16)}` : ''}).
+              </div>
+              <div className="text-[11px] tf-text-dim space-y-1">
+                <p>
+                  Atlas layer availability is confirmed here, but the boundary and centroid shown are preview sketches. Full parcel geometry is reserved for the dedicated Atlas suite.
+                </p>
+                <p>
+                  Atlas layer availability is confirmed for this parcel, but the boundary and centroid shown on this route are preview sketches and are not the canonical authoritative geometry.
+                </p>
+                <p>Not exposed on this route yet: full geometry rendering, neighbor parcels, and live overlay editing.</p>
               </div>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
                 {liveLayerCards.length > 0 ? liveLayerCards.map((layer) => (
@@ -965,7 +981,7 @@ export const PropertyAtlas: React.FC = () => {
 
       <InvocationHistory
         records={queryHistory}
-        title='Atlas Tool History'
+        title='Query History'
         emptyMessage='No Atlas tool invocations recorded yet.'
       />
     </div>
