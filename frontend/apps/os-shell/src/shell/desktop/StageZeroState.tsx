@@ -12,9 +12,9 @@
  * Search lives in ⌘K — NOT as the home hero.
  *
  * DATA POSTURE (proof-sealed 2026-03-29, card 50E):
- * - Recent Work: live parcel browsing history from OS session state (not sample).
- * - Parcel count: from useParcelCount() → API-backed, falls back to 89,247 if offline.
- * - Today's Work: DemoDataBanner conditioned on `isSampleData` from useTodaysWork().
+ * - Recent Work: live parcel browsing history from OS session state.
+ * - Parcel count: from useParcelCount() API data; unavailable stays unavailable.
+ * - Today's Work: TerraDais queue API data only.
  * - County status strip: Last sync, appeal count, and system status fields render
  *   "–" (dash) because no live backend source exists yet. They do not claim live state.
  *
@@ -41,9 +41,9 @@ import {
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useRecentParcels } from '../../context/parcelContext';
 import { activateModule } from '../../orchestration/moduleActivation';
+import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { useTodaysWork, type TodaysWorkItem } from '../../hooks/useTodaysWork';
 import { useParcelCount } from '../../hooks/useParcelCount';
-import { DemoDataBanner } from '../../components/governance/DemoDataBanner';
 import { LiquidPanel } from '../../ui/materials';
 import { invokeTool } from '../../api/pilotApi';
 import { Z } from './zIndex';
@@ -153,8 +153,36 @@ const ActionRow: React.FC<{
   </button>
 );
 
-/** Today's Work panel — shows tasks from useTodaysWork hook */
-function TodaysWorkPanel({ tasks, onActivate }: { tasks: TodaysWorkItem[]; onActivate: (route: string) => void }) {
+/** Today's Work panel — shows TerraDais queue tasks from useTodaysWork hook */
+function TodaysWorkPanel({
+  tasks,
+  loading,
+  error,
+  onActivate,
+}: {
+  tasks: TodaysWorkItem[];
+  loading: boolean;
+  error: string | null;
+  onActivate: (route: string) => void;
+}) {
+  if (loading) {
+    return (
+      <div data-testid="todays-work-panel" className="flex flex-col items-center justify-center py-6" style={{ color: 'hsl(var(--tf-muted))' }}>
+        <CalendarDays className="w-8 h-8 mb-2" />
+        <span className="text-sm">Loading Dais queue...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div data-testid="todays-work-panel" className="flex flex-col items-center justify-center py-6" style={{ color: 'hsl(var(--tf-warning-hs) 55%)' }}>
+        <CalendarDays className="w-8 h-8 mb-2" />
+        <span className="text-sm text-center">Today's work unavailable from TerraDais.</span>
+      </div>
+    );
+  }
+
   if (tasks.length === 0) {
     return (
       <div data-testid="todays-work-panel" className="flex flex-col items-center justify-center py-6" style={{ color: 'hsl(var(--tf-muted))' }}>
@@ -179,11 +207,11 @@ function TodaysWorkPanel({ tasks, onActivate }: { tasks: TodaysWorkItem[]; onAct
   );
 }
 
-function parseToolOutput<T>(output: unknown, fallback: T): T {
+function parseToolOutput<T>(output: unknown): T | null {
   try {
     return typeof output === 'string' ? JSON.parse(output) as T : output as T;
   } catch {
-    return fallback;
+    return null;
   }
 }
 
@@ -220,9 +248,11 @@ const CountyMapOverview: React.FC<{
 export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = '' }) => {
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
   const recentParcels = useRecentParcels();
-  const { tasks: todaysTasks, isSampleData } = useTodaysWork();
+  const { tasks: todaysTasks, loading: todaysTasksLoading, error: todaysTasksError, isSampleData } = useTodaysWork();
   const { data: statsData } = useParcelCount();
-  const parcelCount = statsData?.totalParcels ?? 89_247;
+  const parcelCountLabel = typeof statsData?.totalParcels === 'number'
+    ? `${statsData.totalParcels.toLocaleString()} parcels`
+    : 'Parcel count unavailable';
   const [executivePosture, setExecutivePosture] = useState<ExecutivePostureState>({
     dais: { status: 'idle' },
     forge: { status: 'idle' },
@@ -263,6 +293,8 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
     let cancelled = false;
 
     async function loadExecutivePosture() {
+      const taxYear = new Date().getFullYear();
+
       setExecutivePosture({
         dais: { status: 'loading' },
         forge: { status: 'loading' },
@@ -273,15 +305,15 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
       const [daisResult, forgeResult, atlasResult, dossierResult] = await Promise.allSettled([
         invokeTool({
           toolId: 'generate_morning_brief',
-          params: { county: 'benton', role: 'assessor_leadership', taxYear: 2026 },
+          params: { county: 'benton', role: 'assessor_leadership', taxYear },
         }),
         invokeTool({
           toolId: 'generate_morning_brief',
-          params: { county: 'benton', role: 'chief_appraiser', taxYear: 2026 },
+          params: { county: 'benton', role: 'chief_appraiser', taxYear },
         }),
         invokeTool({
           toolId: 'explain_spatial_anomaly',
-          params: { county: 'benton', taxYear: 2026, metric: 'residual_cluster', geographyId: 'BENTON-COUNTY' },
+          params: { county: 'benton', taxYear, metric: 'residual_cluster', geographyId: 'BENTON-COUNTY' },
         }),
         invokeTool({
           toolId: 'open_appeal_packet',
@@ -297,14 +329,13 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
         dais: daisResult.status === 'fulfilled' && daisResult.value.success
           ? (() => {
               const parsed = parseToolOutput<{ queueType?: string; summary?: string; recommendedTool?: string }>(
-                daisResult.value.result?.output,
-                {}
+                daisResult.value.result?.output
               );
               return {
                 status: 'success',
-                summary: parsed.summary || 'County leadership queue posture loaded.',
-                queueType: parsed.queueType,
-                recommendedTool: parsed.recommendedTool,
+                summary: parsed?.summary || 'Summary not returned.',
+                queueType: parsed?.queueType,
+                recommendedTool: parsed?.recommendedTool,
                 correlationId: daisResult.value.correlationId,
               };
             })()
@@ -312,13 +343,12 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
         forge: forgeResult.status === 'fulfilled' && forgeResult.value.success
           ? (() => {
               const parsed = parseToolOutput<{ summary?: string; queueType?: string }>(
-                forgeResult.value.result?.output,
-                {}
+                forgeResult.value.result?.output
               );
               return {
                 status: 'success',
-                summary: parsed.summary || 'Chief appraiser brief loaded.',
-                readiness: parsed.queueType,
+                summary: parsed?.summary || 'Summary not returned.',
+                readiness: parsed?.queueType,
                 correlationId: forgeResult.value.correlationId,
               };
             })()
@@ -326,13 +356,12 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
         atlas: atlasResult.status === 'fulfilled' && atlasResult.value.success
           ? (() => {
               const parsed = parseToolOutput<{ narrative?: string; hotspotCount?: number }>(
-                atlasResult.value.result?.output,
-                {}
+                atlasResult.value.result?.output
               );
               return {
                 status: 'success',
-                summary: parsed.narrative || 'Spatial audit posture loaded.',
-                hotspots: parsed.hotspotCount,
+                summary: parsed?.narrative || 'Summary not returned.',
+                hotspots: parsed?.hotspotCount,
                 correlationId: atlasResult.value.correlationId,
               };
             })()
@@ -340,13 +369,12 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
         dossier: dossierResult.status === 'fulfilled' && dossierResult.value.success
           ? (() => {
               const parsed = parseToolOutput<{ packetRef?: string; payloadRef?: string }>(
-                dossierResult.value.result?.output,
-                {}
+                dossierResult.value.result?.output
               );
               return {
                 status: 'success',
-                summary: parsed.payloadRef || 'Packet readiness loaded.',
-                packetRef: parsed.packetRef,
+                summary: parsed?.payloadRef || 'Summary not returned.',
+                packetRef: parsed?.packetRef,
                 correlationId: dossierResult.value.correlationId,
               };
             })()
@@ -415,7 +443,12 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
           <div className='w-[240px] shrink-0 flex flex-col gap-3'>
             <GlassCard className='flex-1'>
               {isSampleData && <DemoDataBanner module="Today's Work" />}
-              <TodaysWorkPanel tasks={todaysTasks} onActivate={(route) => activateModule(route, { source: 'desktop' })} />
+              <TodaysWorkPanel
+                tasks={todaysTasks}
+                loading={todaysTasksLoading}
+                error={todaysTasksError}
+                onActivate={(route) => activateModule(route, { source: 'desktop' })}
+              />
             </GlassCard>
             <GlassCard className='shrink-0'>
               <SectionHeader icon={<Zap className='h-3.5 w-3.5' />} title='Quick Actions' />
@@ -551,7 +584,7 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
             <span className='font-medium' style={{ color: 'hsl(var(--tf-text))' }}>
               Benton County, WA
             </span>
-            <span>{parcelCount.toLocaleString()} parcels</span>
+            <span>{parcelCountLabel}</span>
             <span>Last sync: –</span>
             <span>Appeals: –</span>
             <span className='flex items-center gap-1'>

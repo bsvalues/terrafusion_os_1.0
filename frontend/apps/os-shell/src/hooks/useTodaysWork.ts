@@ -1,12 +1,10 @@
 /**
- * @fileoverview Today's Work hook — queue-backed task feed with explicit fallback.
- * Starts with sample tasks so the home scene stays populated in dev/offline mode,
- * then promotes to live Dais queue tasks when the backend is reachable.
+ * @fileoverview Today's Work hook - queue-backed task feed.
+ * Returns only Dais queue data; backend failures surface as unavailable state.
  */
 
 import { useEffect, useState } from 'react';
-import { getQueueItems } from '../services/suites/queueService';
-import type { QueueWorkItem } from '../data/queueFixtures';
+import { getQueueItems, type QueueWorkItem } from '../services/suites/queueService';
 
 export interface TodaysWorkItem {
   id: string;
@@ -15,30 +13,6 @@ export interface TodaysWorkItem {
   route: string;
   category: 'workbench' | 'suite' | 'os-feature';
 }
-
-const SAMPLE_TASKS: TodaysWorkItem[] = [
-  {
-    id: 'tw-1',
-    title: 'Review 3 appeals',
-    subtitle: 'Dais \u2014 Board of Equalization',
-    route: 'terradais',
-    category: 'suite',
-  },
-  {
-    id: 'tw-2',
-    title: 'Inspect 12 parcels',
-    subtitle: 'Workbench \u2014 Field Review',
-    route: 'workbench',
-    category: 'workbench',
-  },
-  {
-    id: 'tw-3',
-    title: 'Ratio study due Friday',
-    subtitle: 'Forge \u2014 Statistical Analysis',
-    route: 'terraforge',
-    category: 'suite',
-  },
-];
 
 type TodaysWorkSource = Partial<QueueWorkItem> & {
   id?: string;
@@ -163,14 +137,46 @@ export function mapQueueItemsToTodaysWork(items: readonly TodaysWorkSource[]): T
     }));
 }
 
+/**
+ * SAMPLE_TASKS — bounded sample fallback for the Today's Work panel.
+ * Renders only when the backend queue is unavailable, so the home scene
+ * stays populated in dev/offline mode. The DemoDataBanner discloses the
+ * fixture origin to operators.
+ */
+export const SAMPLE_TASKS: TodaysWorkItem[] = [
+  {
+    id: 'sample-task-1',
+    title: 'Review BC-DEMO-001',
+    subtitle: 'Desk Review — Kennewick',
+    route: 'workbench',
+    category: 'workbench',
+  },
+  {
+    id: 'sample-task-2',
+    title: 'Inspect BC-DEMO-002',
+    subtitle: 'Field Inspection — Richland',
+    route: 'workbench',
+    category: 'workbench',
+  },
+  {
+    id: 'sample-task-3',
+    title: 'Prepare appeal for BC-DEMO-003',
+    subtitle: 'Appeal Preparation — West Pasco',
+    route: 'terradais',
+    category: 'suite',
+  },
+];
+
 export function useTodaysWork(): {
   tasks: TodaysWorkItem[];
   loading: boolean;
+  error: string | null;
   /** True when returning sample fixtures instead of live backend data */
   isSampleData: boolean;
 } {
   const [tasks, setTasks] = useState<TodaysWorkItem[]>(SAMPLE_TASKS);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isSampleData, setIsSampleData] = useState(true);
 
   useEffect(() => {
@@ -183,10 +189,12 @@ export function useTodaysWork(): {
 
         setTasks(mapQueueItemsToTodaysWork(queueItems as TodaysWorkSource[]));
         setIsSampleData(false);
-      } catch {
+        setError(null);
+      } catch (cause) {
         if (cancelled) return;
         setTasks(SAMPLE_TASKS);
         setIsSampleData(true);
+        setError(cause instanceof Error ? cause.message : 'Today\'s Work queue unavailable.');
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -201,5 +209,5 @@ export function useTodaysWork(): {
     };
   }, []);
 
-  return { tasks, loading, isSampleData };
+  return { tasks, loading, error, isSampleData };
 }
