@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRoute, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import LayoutWrapper from '@/components/layout/LayoutWrapper';
-import MainContent from '@/components/layout/MainContent';
+import { apiRequest } from '@/lib/queryClient';
+
+import MainLayout from '@/components/layout/MainLayout';
 import {
   Card,
   CardContent,
@@ -165,42 +166,43 @@ interface PropertyDetails {
 const PropertyDetailsPage = () => {
   const [, params] = useRoute('/properties/:id');
   const { toast } = useToast();
-  const propertyId = params?.id ? parseInt(params.id) : 0;
+  const propertyId = params?.id ?? '';
 
   // Fetch property details
   const { data, isLoading, isError, dataUpdatedAt, isFetching } = useQuery({
-    queryKey: [`/api/properties/${propertyId}/details`],
+    queryKey: [`/api/properties/${propertyId}`],
     queryFn: async () => {
-      const startTime = Date.now();
-      try {
-        // Show loading indicator with console log for debugging
-        console.log("Fetching property details data...");
-        
-        // Make the API request
-        const response = await fetch(`/api/properties/${propertyId}/details`);
-        
-        // Handle error response
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Property fetch error:", errorText);
-          throw new Error(`Failed to fetch property details: ${response.status} ${response.statusText} ${errorText}`);
-        }
-        
-        // Parse response
-        const data = await response.json() as PropertyDetails;
-        console.log("Received property data:", data);
-        
-        // Ensure loading spinner shows for at least 800ms for better user experience
-        const elapsedTime = Date.now() - startTime;
-        if (elapsedTime < 800) {
-          await new Promise(resolve => setTimeout(resolve, 800 - elapsedTime));
-        }
-        
-        return data;
-      } catch (error) {
-        console.error("Error fetching property data:", error);
-        throw error;
+      const raw: any = await apiRequest(`/api/properties/${propertyId}`);
+      // Map .NET flat response → nested PropertyDetails shape
+      if (raw && !raw.property) {
+        return {
+          property: {
+            id: 0,
+            propId: raw.parcelNumber ?? raw.id ?? 0,
+            propertyAddress: raw.address ?? null,
+            propertyCity: null,
+            propertyState: null,
+            propertyZip: null,
+            ownerName: raw.ownerName ?? null,
+            ownerAddress: null,
+            ownerCity: null,
+            ownerState: null,
+            ownerZip: null,
+            parcelNumber: raw.parcelNumber ?? null,
+            zone: raw.propertyType ?? null,
+            neighborhood: null,
+            block: null, tractOrLot: null, legalDesc: null, legalDesc2: null,
+            townshipSection: null, range: null, township: null, section: null,
+            importedAt: raw.createdAt ?? '',
+            createdAt: raw.createdAt ?? null,
+            updatedAt: raw.updatedAt ?? null,
+          },
+          improvements: [],
+          landDetails: [],
+          valuations: [],
+        } as unknown as PropertyDetails;
       }
+      return raw as PropertyDetails;
     },
     enabled: !!propertyId,
     // Add retry logic for better resilience
@@ -209,13 +211,15 @@ const PropertyDetailsPage = () => {
     staleTime: 5 * 60 * 1000, // Data remains fresh for 5 minutes
   });
 
-  if (isError) {
-    toast({
-      title: "Error",
-      description: "Failed to load property details. Please try again later.",
-      variant: "destructive",
-    });
-  }
+  useEffect(() => {
+    if (isError) {
+      toast({
+        title: "Error",
+        description: "Failed to load property details. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  }, [isError]);
 
   // Helper functions for formatting
   const formatAddress = (property: Property) => {
@@ -253,8 +257,8 @@ const PropertyDetailsPage = () => {
   };
 
   return (
-    <LayoutWrapper>
-      <MainContent title="Property Details">
+    
+      <MainLayout pageTitle="Property Details">
         {/* Data Flow Status Indicator */}
         <div className="mb-4 px-4 py-2 bg-muted rounded-md text-sm">
           <div className="flex items-center justify-between">
@@ -717,11 +721,11 @@ const PropertyDetailsPage = () => {
                           // Extract building type based on primary use code
                           const buildingType = determineBuildingType(improvement.primaryUseCd);
                           // Determine region based on property location
-                          const region = determineRegion(data.property);
+                          const revalArea = determineRevalArea(data.property);
                           
                           // Calculate estimated cost based on improvement characteristics
                           const squareFootage = improvement.totalArea ? parseFloat(improvement.totalArea) : 0;
-                          const baseCost = calculateBaseCost(buildingType, region);
+                          const baseCost = calculateBaseCost(buildingType, revalArea);
                           const qualityFactor = determineQualityFactor(improvement);
                           const ageFactor = determineAgeFactor(improvement.actualYearBuilt);
                           
@@ -731,7 +735,7 @@ const PropertyDetailsPage = () => {
                           // Calculation tracking for data flow visibility
                           const calculationSteps = [
                             { step: 'Building Type', value: buildingType, source: `Primary Use Code: ${improvement.primaryUseCd || 'N/A'}` },
-                            { step: 'Region', value: region, source: `Neighborhood: ${data.property.neighborhood || 'N/A'}` },
+                            { step: 'Reval Area', value: revalArea, source: `Neighborhood: ${data.property.neighborhood || 'N/A'}` },
                             { step: 'Square Footage', value: `${squareFootage.toLocaleString()} sq ft`, source: 'Total Area' },
                             { step: 'Base Cost', value: `$${baseCost.toFixed(2)}/sq ft`, source: '2025 Cost Matrix' },
                             { step: 'Quality Factor', value: qualityFactor.toFixed(2), source: `Quality Code: ${improvement.details[0]?.qualityCd || 'Standard'}` },
@@ -757,8 +761,8 @@ const PropertyDetailsPage = () => {
                                     <p className="font-medium">{buildingType || 'Unknown'}</p>
                                   </div>
                                   <div>
-                                    <p className="text-sm text-muted-foreground mb-1">Region</p>
-                                    <p className="font-medium">{region || 'Unknown'}</p>
+                                    <p className="text-sm text-muted-foreground mb-1">Reval Area</p>
+                                    <p className="font-medium">{revalArea || 'Unknown'}</p>
                                   </div>
                                   <div>
                                     <p className="text-sm text-muted-foreground mb-1">Square Footage</p>
@@ -994,8 +998,8 @@ const PropertyDetailsPage = () => {
             </Link>
           </div>
         )}
-      </MainContent>
-    </LayoutWrapper>
+      </MainLayout>
+    
   );
 };
 
@@ -1025,13 +1029,13 @@ const determineBuildingType = (primaryUseCd: string | null): string => {
   return codeMap[primaryUseCd] || 'R1';
 };
 
-const determineRegion = (property: Property): string => {
-  // Determine region based on property location
+const determineRevalArea = (property: Property): string => {
+  // Determine reval area based on property location
   // This is a simple implementation that could be enhanced with more detailed mapping
   if (!property.neighborhood) return 'Central Benton';
 
   const neighborhood = property.neighborhood.toLowerCase();
-  
+
   if (neighborhood.includes('west') || neighborhood.includes('richland')) {
     return 'West Benton';
   } else if (neighborhood.includes('east') || neighborhood.includes('kennewick')) {
@@ -1041,7 +1045,7 @@ const determineRegion = (property: Property): string => {
   }
 };
 
-const calculateBaseCost = (buildingType: string, region: string): number => {
+const calculateBaseCost = (buildingType: string, revalArea: string): number => {
   // Base costs per square foot by building type and region
   const costMatrix: Record<string, Record<string, number>> = {
     'R1': {
@@ -1087,7 +1091,7 @@ const calculateBaseCost = (buildingType: string, region: string): number => {
   };
 
   const regionCosts = costMatrix[buildingType] || costMatrix['R1'];
-  return regionCosts[region] || regionCosts['Central Benton'];
+  return regionCosts[revalArea] || regionCosts['Central Benton'];
 };
 
 const determineQualityFactor = (improvement: Improvement): number => {

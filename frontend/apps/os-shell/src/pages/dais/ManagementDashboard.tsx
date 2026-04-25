@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { WorkbenchSourceBadge } from '@/components/workbench/WorkbenchSourceBadge';
 import type { DisclosureSource } from '@/components/workbench/WorkbenchSourceBadge';
+import { invokeTool } from '@/api/pilotApi';
 import { useSession } from '@/auth/useSession';
 import { getCertificationStatus, getAllAppeals } from '@/services/suites/daisService';
 import { getQueueMetrics, getAppraiserProductivity } from '@/services/suites/queueService';
@@ -45,6 +46,41 @@ import { useWorkloadSummary } from '../../hooks/useWorkloadSummary';
 import { MorningBriefingStrip } from '../../components/dashboard/MorningBriefingStrip';
 
 type Tab = 'overview' | 'certification' | 'appeals' | 'workload';
+type AssessorStaffRole =
+  | 'chief_appraiser'
+  | 'residential_analyst'
+  | 'commercial_analyst'
+  | 'gis_analyst'
+  | 'field_appraiser'
+  | 'appeals_specialist'
+  | 'assessor_leadership';
+
+interface BriefFindingSummary {
+  findingType: string;
+  severity: string;
+  recommendedAction: string;
+}
+
+interface MorningBriefResult {
+  role: AssessorStaffRole;
+  queueType: string;
+  priority: string;
+  dueWindow: string;
+  blockingDependencies: string[];
+  recommendedTool: string;
+  readyToAct: boolean;
+  findings: BriefFindingSummary[];
+}
+
+const ROLE_LABELS: Record<AssessorStaffRole, string> = {
+  chief_appraiser: 'Chief Appraiser',
+  residential_analyst: 'Residential Analyst',
+  commercial_analyst: 'Commercial Analyst',
+  gis_analyst: 'GIS Analyst',
+  field_appraiser: 'Field Appraiser',
+  appeals_specialist: 'Appeals Specialist',
+  assessor_leadership: 'Assessor Leadership',
+};
 
 // --- Props ---
 
@@ -104,11 +140,38 @@ function mapProductivityToAppraisers(prod: AppraiserProductivity[]): Appraiser[]
   }));
 }
 
+function parseToolOutput<T>(output: unknown, fallback: T): T {
+  try {
+    return typeof output === 'string' ? JSON.parse(output) as T : output as T;
+  } catch {
+    return fallback;
+  }
+}
+
+function mapSessionRoleToStaffRole(role: string | undefined): AssessorStaffRole {
+  switch (role) {
+    case 'admin':
+    case 'supervisor':
+      return 'assessor_leadership';
+    case 'clerk':
+      return 'appeals_specialist';
+    default:
+      return 'chief_appraiser';
+  }
+}
+
 // --- Component ---
 
 export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
   const session = useSession();
   const [activeTab, setActiveTab] = useState<Tab>('overview');
+  const [selectedRole, setSelectedRole] = useState<AssessorStaffRole>(() => mapSessionRoleToStaffRole(session?.role));
+  const [briefState, setBriefState] = useState<{
+    status: 'idle' | 'loading' | 'success' | 'error';
+    result?: MorningBriefResult;
+    correlationId?: string;
+    error?: string;
+  }>({ status: 'idle' });
 
   // Phase 8: live data hooks for MorningBriefingStrip
   const swarm    = useSwarmLive();
@@ -137,17 +200,17 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
     // Certification — compose from getCertificationStatus
     try {
       const certData = await getCertificationStatus();
-      if (certData && certData.length > 0) {
+      if (certData) {
         setCertificationAreas(certData.map(mapCertToArea));
         setCertSource('live');
         anyApi = true;
       }
     } catch { /* fixture fallback — already set */ }
 
-    // Appeals — compose from getAllAppeals
+    // Appeals — compose from getAllAppeals (empty array = live, no appeals on file)
     try {
       const appealsData = await getAllAppeals();
-      if (appealsData && appealsData.length > 0) {
+      if (appealsData != null) {
         setRecentAppeals(mapAppealsToRecent(appealsData));
         setAppealsSummary(computeAppealsSummary(appealsData));
         setAppealsSource('live');
@@ -164,11 +227,11 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       }
     } catch { /* fixture fallback */ }
 
-    // Workload — compose from getAppraiserProductivity
+    // Workload — compose from getAppraiserProductivity (empty array = live)
     try {
       const prodData = await getAppraiserProductivity({ throwOnError: true });
-      if (prodData && prodData.length > 0) {
-        setAppraisers(mapProductivityToAppraisers(prodData));
+      if (prodData != null) {
+        if (prodData.length > 0) setAppraisers(mapProductivityToAppraisers(prodData));
         setWorkloadSource('live');
         anyApi = true;
       }
@@ -195,6 +258,70 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
+  useEffect(() => {
+    setSelectedRole(mapSessionRoleToStaffRole(session?.role));
+  }, [session?.role]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadGovernedBrief = async () => {
+      setBriefState({ status: 'loading' });
+      try {
+        const response = await invokeTool({
+          toolId: 'generate_morning_brief',
+          params: {
+            county: session?.countyId ?? 'benton',
+            taxYear: 2026,
+            role: selectedRole,
+          },
+        });
+
+        if (cancelled) {
+          return;
+        }
+
+        if (response.success && response.result) {
+          setBriefState({
+            status: 'success',
+            correlationId: response.correlationId,
+            result: parseToolOutput<MorningBriefResult>(response.result.output, {
+              role: selectedRole,
+              queueType: 'morning_brief',
+              priority: 'medium',
+              dueWindow: 'next business day',
+              blockingDependencies: [],
+              recommendedTool: 'generate_morning_brief',
+              readyToAct: false,
+              findings: [],
+            }),
+          });
+        } else {
+          setBriefState({
+            status: 'error',
+            correlationId: response.correlationId,
+            error: response.error?.message || 'Governed role queue unavailable.',
+          });
+        }
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+        setBriefState({
+          status: 'error',
+          correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+          error: error instanceof Error ? error.message : 'Governed role queue unavailable.',
+        });
+      }
+    };
+
+    void loadGovernedBrief();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedRole, session?.countyId]);
+
   const tabs: { key: Tab; label: string }[] = [
     { key: 'overview', label: 'Overview' },
     { key: 'certification', label: 'Certification' },
@@ -209,6 +336,92 @@ export function ManagementDashboard({ onNavigate }: ManagementDashboardProps) {
       style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}
     >
       <MorningBriefingStrip swarm={swarm} pacs={pacs} appeals={appeals} workload={workload} />
+      <Card data-testid="management-governed-brief">
+        <CardHeader>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <CardTitle>Governed Staff Queue</CardTitle>
+              <p className="mt-1 text-sm text-muted-foreground">
+                County role briefing is generated from governed Pilot tools and routes staff to the correct working lane before certification or appeal action.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-muted-foreground" htmlFor="management-role-select">
+                Staff lane
+              </label>
+              <select
+                id="management-role-select"
+                className="rounded-md border bg-background px-3 py-2 text-sm"
+                value={selectedRole}
+                onChange={(event) => setSelectedRole(event.target.value as AssessorStaffRole)}
+              >
+                {Object.entries(ROLE_LABELS).map(([role, label]) => (
+                  <option key={role} value={role}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border) / 0.2)' }}>
+              <div className="text-xs uppercase tracking-wide text-muted-foreground">Queue Type</div>
+              <div className="mt-2 text-sm font-semibold">
+                {briefState.status === 'success' ? briefState.result?.queueType ?? 'morning_brief' : briefState.status === 'loading' ? 'Loading governed queue...' : 'Governed queue unavailable'}
+              </div>
+            </div>
+            <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border) / 0.2)' }}>
+              <div className="text-xs uppercase tracking-wide text-muted-foreground">Priority Window</div>
+              <div className="mt-2 text-sm font-semibold">
+                {briefState.status === 'success'
+                  ? `${briefState.result?.priority ?? 'medium'} | due ${briefState.result?.dueWindow ?? 'next business day'}`
+                  : briefState.status === 'loading'
+                    ? 'Loading due window...'
+                    : 'Awaiting governed response'}
+              </div>
+            </div>
+            <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border) / 0.2)' }}>
+              <div className="text-xs uppercase tracking-wide text-muted-foreground">Recommended Tool</div>
+              <div className="mt-2 text-sm font-semibold">
+                {briefState.status === 'success'
+                  ? briefState.result?.recommendedTool ?? 'generate_morning_brief'
+                  : briefState.status === 'loading'
+                    ? 'Loading tool recommendation...'
+                    : 'No recommendation'}
+              </div>
+            </div>
+          </div>
+          <div className="rounded-lg border p-3 text-sm" style={{ borderColor: 'hsl(var(--tf-border) / 0.2)' }}>
+            {briefState.status === 'success' && briefState.result ? (
+              <>
+                <div>
+                  {ROLE_LABELS[briefState.result.role]} has {briefState.result.findings.length} queued finding{briefState.result.findings.length === 1 ? '' : 's'} and is {briefState.result.readyToAct ? 'ready to act' : 'waiting on blockers'}.
+                </div>
+                {briefState.result.findings[0] && (
+                  <div className="mt-2 text-muted-foreground">
+                    Top finding: {briefState.result.findings[0].findingType} {'->'} {briefState.result.findings[0].recommendedAction}
+                  </div>
+                )}
+                {briefState.result.blockingDependencies.length > 0 && (
+                  <div className="mt-2 text-muted-foreground">
+                    Blocking dependencies: {briefState.result.blockingDependencies.join(', ')}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-muted-foreground">
+                {briefState.status === 'loading' ? 'Loading governed role queue...' : briefState.error ?? 'Governed role queue unavailable.'}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>{briefState.correlationId ? `corr ${briefState.correlationId}` : 'corr pending'}</span>
+            <span>County-wide operational work stays governed here; parcel corrections still route to the Property Workbench.</span>
+          </div>
+        </CardContent>
+      </Card>
       {/* Show fixture banner while any section is still on fallback data */}
       {(overviewSource !== 'live' || certSource !== 'live' || appealsSource !== 'live' || workloadSource !== 'live') && (
         <DemoDataBanner module="Management Dashboard" />

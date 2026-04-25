@@ -6,7 +6,8 @@
  * for Board of Equalization hearings.
  */
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Package, FileText, Camera, BarChart3, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
@@ -21,6 +22,21 @@ interface DefensePacket {
   createdAt: string;
   updatedAt: string;
   assignedTo: string;
+}
+
+interface OpenAppealPacketSummary {
+  appealId: string;
+  packetRef: string;
+  payloadRef: string;
+  sections: string[];
+  chainOfCustody: string[];
+}
+
+interface ExportEqualizationPackageSummary {
+  payloadRef: string;
+  packageRef: string;
+  artifactCount: number;
+  checklist: string[];
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof Clock }> = {
@@ -119,11 +135,87 @@ const ITEM_ICONS: Record<string, typeof FileText> = {
 
 export default function DefensePacketsModule() {
   const [selectedPacket, setSelectedPacket] = useState<string | null>(DEMO_PACKETS[0].id);
+  const [appealId, setAppealId] = useState(DEMO_PACKETS[0].appealId);
+  const [draftVersion, setDraftVersion] = useState('benton-2026-working');
+  const [packetState, setPacketState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: OpenAppealPacketSummary; correlationId?: string; error?: string }>({ status: 'idle' });
+  const [equalizationState, setEqualizationState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: ExportEqualizationPackageSummary; correlationId?: string; error?: string }>({ status: 'idle' });
 
   const selected = DEMO_PACKETS.find((p) => p.id === selectedPacket);
   const finalCount = DEMO_PACKETS.filter((p) => p.status === 'final').length;
   const reviewCount = DEMO_PACKETS.filter((p) => p.status === 'review').length;
   const draftCount = DEMO_PACKETS.filter((p) => p.status === 'draft').length;
+
+  const parseToolOutput = <T,>(output: unknown, fallback: T): T => {
+    try {
+      return typeof output === 'string' ? JSON.parse(output) as T : output as T;
+    } catch {
+      return fallback;
+    }
+  };
+
+  const handleOpenAppealPacket = useCallback(async () => {
+    setPacketState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'open_appeal_packet',
+        params: { county: 'benton', appealId },
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<OpenAppealPacketSummary>(response.result.output, {
+          appealId,
+          packetRef: '',
+          payloadRef: '',
+          sections: [],
+          chainOfCustody: [],
+        });
+        setPacketState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setPacketState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: response.error?.message || 'Failed to open appeal packet.',
+        });
+      }
+    } catch (toolError) {
+      setPacketState({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: toolError instanceof Error ? toolError.message : 'Failed to open appeal packet.',
+      });
+    }
+  }, [appealId]);
+
+  const handleExportEqualization = useCallback(async () => {
+    setEqualizationState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'export_equalization_package',
+        params: { county: 'benton', draftVersion, taxYear: 2026, reasonCode: 'appeal_defense_review' },
+        confirmation: { confirmed: true, reasonCode: 'appeal_defense_review' },
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<ExportEqualizationPackageSummary>(response.result.output, {
+          payloadRef: '',
+          packageRef: '',
+          artifactCount: 0,
+          checklist: [],
+        });
+        setEqualizationState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setEqualizationState({
+          status: 'error',
+          correlationId: response.correlationId,
+          error: response.error?.message || 'Failed to export equalization package.',
+        });
+      }
+    } catch (toolError) {
+      setEqualizationState({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: toolError instanceof Error ? toolError.message : 'Failed to export equalization package.',
+      });
+    }
+  }, [draftVersion]);
 
   return (
     <div className='p-6 space-y-6'>
@@ -140,6 +232,106 @@ export default function DefensePacketsModule() {
           BOE appeal defense packet assembly — Benton County 2025
         </p>
       </div>
+
+      <Card
+        data-testid="defense-packets-governed-brief"
+        style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}
+      >
+        <CardHeader>
+          <CardTitle style={{ color: 'hsl(var(--tf-fg))' }}>Governed Defense Readiness</CardTitle>
+          <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+            TerraDossier exposes packet posture and export readiness. TerraDais still owns parcel-level defense drafting and hearing prep.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className='space-y-4'>
+          <div className='grid gap-4 md:grid-cols-2'>
+            <label className='space-y-2 text-sm'>
+              <span className='block text-xs font-medium uppercase tracking-[0.14em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                Appeal Id
+              </span>
+              <input
+                value={appealId}
+                onChange={(event) => setAppealId(event.target.value)}
+                className='w-full rounded-md border border-border bg-background px-3 py-2 text-sm'
+              />
+            </label>
+            <label className='space-y-2 text-sm'>
+              <span className='block text-xs font-medium uppercase tracking-[0.14em]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                Draft Version
+              </span>
+              <input
+                value={draftVersion}
+                onChange={(event) => setDraftVersion(event.target.value)}
+                className='w-full rounded-md border border-border bg-background px-3 py-2 text-sm'
+              />
+            </label>
+          </div>
+
+          <div className='flex flex-wrap gap-2'>
+            <button
+              type='button'
+              onClick={handleOpenAppealPacket}
+              className='rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90'
+            >
+              {packetState.status === 'loading' ? 'Opening…' : 'Open Packet Posture'}
+            </button>
+            <button
+              type='button'
+              onClick={handleExportEqualization}
+              className='rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-accent'
+            >
+              {equalizationState.status === 'loading' ? 'Exporting…' : 'Export Equalization Package'}
+            </button>
+          </div>
+
+          <div className='grid gap-4 xl:grid-cols-2'>
+            <div className='rounded-lg border p-4' style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-border) / 0.18)' }}>
+              <div className='text-sm font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>Appeal Packet Access</div>
+              {packetState.status === 'success' && packetState.result ? (
+                <div className='mt-3 space-y-1 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  <p><span style={{ color: 'hsl(var(--tf-fg))' }}>Packet Ref:</span> {packetState.result.packetRef || 'Not returned'}</p>
+                  <p><span style={{ color: 'hsl(var(--tf-fg))' }}>Payload Ref:</span> {packetState.result.payloadRef || 'Not returned'}</p>
+                  <p><span style={{ color: 'hsl(var(--tf-fg))' }}>Sections:</span> {packetState.result.sections.length}</p>
+                  <p><span style={{ color: 'hsl(var(--tf-fg))' }}>Custody Entries:</span> {packetState.result.chainOfCustody.length}</p>
+                  {packetState.correlationId && (
+                    <p className='font-mono text-xs'>Correlation: {packetState.correlationId}</p>
+                  )}
+                </div>
+              ) : packetState.status === 'error' ? (
+                <div className='mt-3 text-sm' style={{ color: 'hsl(var(--tf-warning-hs) 55%)' }}>
+                  {packetState.error}
+                </div>
+              ) : (
+                <p className='mt-3 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Open a governed appeal packet to confirm section posture and chain-of-custody before leaving the suite.
+                </p>
+              )}
+            </div>
+
+            <div className='rounded-lg border p-4' style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-border) / 0.18)' }}>
+              <div className='text-sm font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>County Export Posture</div>
+              {equalizationState.status === 'success' && equalizationState.result ? (
+                <div className='mt-3 space-y-1 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  <p><span style={{ color: 'hsl(var(--tf-fg))' }}>Package Ref:</span> {equalizationState.result.packageRef || 'Not returned'}</p>
+                  <p><span style={{ color: 'hsl(var(--tf-fg))' }}>Artifacts:</span> {equalizationState.result.artifactCount}</p>
+                  <p><span style={{ color: 'hsl(var(--tf-fg))' }}>Checklist:</span> {equalizationState.result.checklist.length}</p>
+                  {equalizationState.correlationId && (
+                    <p className='font-mono text-xs'>Correlation: {equalizationState.correlationId}</p>
+                  )}
+                </div>
+              ) : equalizationState.status === 'error' ? (
+                <div className='mt-3 text-sm' style={{ color: 'hsl(var(--tf-warning-hs) 55%)' }}>
+                  {equalizationState.error}
+                </div>
+              ) : (
+                <p className='mt-3 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  Equalization export stays governed. Use this panel for package posture, then route detailed appeal drafting into the TerraDais workbench lane.
+                </p>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Stats */}
       <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>

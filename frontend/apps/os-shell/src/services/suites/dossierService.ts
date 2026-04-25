@@ -13,8 +13,16 @@
  */
 
 import { assertWriteLane } from '../writeLane';
+import { getToken } from '../../auth/authStorage';
 
 const API = '/api/dossier';
+
+function authHeaders(): Record<string, string> {
+  const token = getToken();
+  return token
+    ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+    : { 'Content-Type': 'application/json' };
+}
 
 // ============================================================================
 // Types
@@ -84,7 +92,8 @@ export async function uploadDocument(
 
 export async function getDocuments(parcelId: string): Promise<Document[]> {
   const res = await fetch(
-    `${API}/documents?parcelId=${encodeURIComponent(parcelId)}`
+    `${API}/parcels/${encodeURIComponent(parcelId)}/documents`,
+    { headers: authHeaders() }
   );
   if (!res.ok) throw new Error(`Failed to fetch documents: ${res.statusText}`);
   const data = await res.json();
@@ -127,11 +136,22 @@ export async function createNarrative(
 
 export async function getNarratives(parcelId: string): Promise<Narrative[]> {
   const res = await fetch(
-    `${API}/narratives?parcelId=${encodeURIComponent(parcelId)}`
+    `${API}/parcels/${encodeURIComponent(parcelId)}/details`,
+    { headers: authHeaders() }
   );
-  if (!res.ok) throw new Error(`Failed to fetch narratives: ${res.statusText}`);
+  if (!res.ok) return [];
   const data = await res.json();
-  return Array.isArray(data) ? data : [];
+  // Backend has no dedicated narratives list; map from details notes if present
+  const notes = Array.isArray(data?.notes) ? data.notes : [];
+  return notes.map((n: { noteId?: string; id?: string; content?: string; addedAt?: string; addedBy?: string }) => ({
+    narrativeId: n.noteId ?? n.id ?? '',
+    parcelId,
+    type: 'subject-description' as const,
+    content: n.content ?? '',
+    generatedAt: n.addedAt ?? new Date().toISOString(),
+    status: 'final' as const,
+    generatedBy: n.addedBy,
+  }));
 }
 
 export async function updateNarrative(
@@ -171,7 +191,8 @@ export async function assemblePacket(
 
 export async function getPackets(parcelId: string): Promise<Packet[]> {
   const res = await fetch(
-    `${API}/packets?parcelId=${encodeURIComponent(parcelId)}`
+    `${API}/parcels/${encodeURIComponent(parcelId)}/packets`,
+    { headers: authHeaders() }
   );
   if (!res.ok) throw new Error(`Failed to fetch packets: ${res.statusText}`);
   const data = await res.json();
@@ -208,7 +229,8 @@ export async function attachEvidence(
 
 export async function getEvidence(parcelId: string): Promise<Evidence[]> {
   const res = await fetch(
-    `${API}/evidence?parcelId=${encodeURIComponent(parcelId)}`
+    `${API}/parcels/${encodeURIComponent(parcelId)}/evidence`,
+    { headers: authHeaders() }
   );
   if (!res.ok) throw new Error(`Failed to fetch evidence: ${res.statusText}`);
   const data = await res.json();

@@ -231,10 +231,10 @@ export const PropertyAudit: React.FC = () => {
     <div className='tf-suite-audit space-y-4'>
       <ParcelContextHeader icon='🔍' title='TerraAudit' parcelId={parcelId} subtitle={`Financial compliance & audit for ${parcelId}`} />
 
-      {/* Loaded Audit History from Store */}
+      {/* Audit History from Store */}
       {auditTrail.length > 0 && (
-        <BentoCard variant="table" title={`Loaded Audit History (${auditTrail.length} entries)`}>
-          <p className='tf-text-tertiary text-sm mb-3'>Shown from the audit history currently loaded for this parcel.</p>
+        <BentoCard variant="table" title={`Audit History (${auditTrail.length} entries)`}>
+          <p className='tf-text-tertiary text-sm mb-3'>Audit trail entries on file for this parcel.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
               <thead>
@@ -283,7 +283,7 @@ export const PropertyAudit: React.FC = () => {
                   <div key={cc.category} className='text-sm tf-text-secondary'>{cc.category}: {cc.count} parcels — ${cc.value.toLocaleString()}</div>
                 ))}
               </div>
-              {rollState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{rollState.correlationId.slice(0, 16)}...</code></div>}
+              {rollState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{rollState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {rollState.status === 'error' && rollState.error && <ErrorDisplay error={{ message: rollState.error.message, errorCode: rollState.error.code, correlationId: rollState.correlationId }} />}
@@ -291,7 +291,7 @@ export const PropertyAudit: React.FC = () => {
 
         {/* Levy Compliance (read_only) */}
         <BentoCard title='✅ Levy Compliance' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Request returned levy compliance totals and issues for this parcel</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Check levy compliance totals and issues for this parcel.</p>
           <button onClick={handleLevyCompliance} disabled={levyState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
             {levyState.status === 'loading' ? 'Checking...' : 'Check Levy Compliance'}
           </button>
@@ -303,7 +303,7 @@ export const PropertyAudit: React.FC = () => {
                   <span className='text-lg'>{levyState.result.compliant ? '✅' : '🔴'}</span>
                   <span className='font-semibold tf-text'>{levyState.result.compliantLevies}/{levyState.result.totalLevies} compliant</span>
                 </div>
-                <p className='text-xs tf-text-dim mb-2'>Shows the levy compliance totals and issues returned by this request.</p>
+                
                 {levyState.result.issues.length > 0 && (
                   <div className='space-y-1 mt-2'>
                     {levyState.result.issues.slice(0, 4).map((iss, i) => (
@@ -315,7 +315,7 @@ export const PropertyAudit: React.FC = () => {
                   </div>
                 )}
               </div>
-              {levyState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{levyState.correlationId.slice(0, 16)}...</code></div>}
+              {levyState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{levyState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {levyState.status === 'error' && levyState.error && <ErrorDisplay error={{ message: levyState.error.message, errorCode: levyState.error.code, correlationId: levyState.correlationId }} />}
@@ -323,7 +323,7 @@ export const PropertyAudit: React.FC = () => {
 
         {/* Cross-Office Reconciliation (read_only) */}
         <BentoCard title='🔄 Cross-Office Reconciliation' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Return Assessor and Treasurer totals with reconciliation variance for this request</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Compare Assessor and Treasurer totals with reconciliation variance for this parcel.</p>
           <button onClick={handleReconcile} disabled={reconcileState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
             {reconcileState.status === 'loading' ? 'Reconciling...' : 'Reconcile Offices'}
           </button>
@@ -339,7 +339,7 @@ export const PropertyAudit: React.FC = () => {
                   <div><span className='tf-text-dim'>Assessor Total</span><p className='tf-text'>${reconcileState.result.assessorTotal.toLocaleString()}</p></div>
                   <div><span className='tf-text-dim'>Treasurer Total</span><p className='tf-text'>${reconcileState.result.treasurerTotal.toLocaleString()}</p></div>
                 </div>
-                <p className='text-xs tf-text-dim mt-2'>Shows the returned assessor total, treasurer total, and variance for this request.</p>
+                
                 {reconcileState.result.discrepancies.length > 0 && (
                   <div className='mt-2'>
                     {reconcileState.result.discrepancies.slice(0, 3).map((d, i) => (
@@ -348,7 +348,7 @@ export const PropertyAudit: React.FC = () => {
                   </div>
                 )}
               </div>
-              {reconcileState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{reconcileState.correlationId.slice(0, 16)}...</code></div>}
+              {reconcileState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{reconcileState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {reconcileState.status === 'error' && reconcileState.error && <ErrorDisplay error={{ message: reconcileState.error.message, errorCode: reconcileState.error.code, correlationId: reconcileState.correlationId }} />}
@@ -383,7 +383,7 @@ export const PropertyAudit: React.FC = () => {
                 <span className='font-semibold tf-text'>Finding {findingState.result.findingId}</span>
                 <p className='tf-text-secondary text-sm'>{findingState.result.category} | {findingState.result.severity} | {findingState.result.status}</p>
               </div>
-              {findingState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{findingState.correlationId.slice(0, 16)}...</code></div>}
+              {findingState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{findingState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {findingState.status === 'error' && findingState.error && <ErrorDisplay error={{ message: findingState.error.message, errorCode: findingState.error.code, correlationId: findingState.correlationId }} />}
@@ -401,7 +401,7 @@ export const PropertyAudit: React.FC = () => {
             <div className='space-y-2'>
               <div className='tf-panel p-4'>
                 <span className='font-semibold tf-text'>Report {reportState.result.reportId}</span>
-                <p className='text-xs tf-text-dim mt-2'>Shows the report totals and score returned by this request for the selected tax year.</p>
+                
                 <div className='grid grid-cols-2 gap-2 mt-2 text-sm'>
                   <div><span className='tf-text-dim'>Compliance Score</span><p className='font-semibold tf-text'>{reportState.result.complianceScore}%</p></div>
                   <div><span className='tf-text-dim'>Total Findings</span><p className='tf-text'>{reportState.result.totalFindings}</p></div>
@@ -409,7 +409,7 @@ export const PropertyAudit: React.FC = () => {
                   <div><span className='tf-text-dim'>Generated</span><p className='tf-text'>{formatDate(reportState.result.generatedAt)}</p></div>
                 </div>
               </div>
-              {reportState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{reportState.correlationId.slice(0, 16)}...</code></div>}
+              {reportState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{reportState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {reportState.status === 'error' && reportState.error && <ErrorDisplay error={{ message: reportState.error.message, errorCode: reportState.error.code, correlationId: reportState.correlationId }} />}

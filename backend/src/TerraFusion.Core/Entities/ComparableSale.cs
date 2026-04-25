@@ -133,6 +133,12 @@ public class ComparableSale
   [StringLength(500)]
   public string? RawComment { get; set; }                // sale.sl_comment — general sale comment (staff notes, clerk notes)
 
+  // ── Layer 1b: Legacy PACS-synced qualification (denormalized, written by PacsComparableSalesSyncJob) ──
+  // This column was written by earlier ingest jobs before the 3-layer qualification model was finalized.
+  // ValuationService falls back to this when QualificationDecision and QualificationRecommendation are both null.
+  [StringLength(50)]
+  public string? SaleQualification { get; set; }             // e.g. "qualified" | "exempt: ..." | "non-arms-length"
+
   // ── Layer 2: TerraFusion Qualification Recommendation (rule engine, post-sync) ──
   // Computed by SaleQualificationService.ComputeRecommendations() — always run AFTER ingest.
   // Never set during sync. Recomputable at any time from Layer 1 raw codes.

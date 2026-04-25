@@ -87,7 +87,7 @@ export const AIWorkflowAutomation: React.FC<AIWorkflowAutomationProps> = ({
           {
             id: 'step1',
             name: 'Data Collection',
-            description: 'Gather property data from Harris PACS',
+            description: 'Gather property data from assessment records',
             status: 'pending',
             aiOptimized: true,
             estimatedTime: 30,

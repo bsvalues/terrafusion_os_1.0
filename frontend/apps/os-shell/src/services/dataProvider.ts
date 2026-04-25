@@ -44,6 +44,78 @@ import { getToken } from '../auth/authStorage';
 
 export type DataMode = 'live' | 'snapshot' | 'fixtures';
 
+/**
+ * Why the provider is in this mode.
+ *   'env-default'  — VITE_DATA_MODE unset or 'live'; live is the canonical default
+ *   'env-explicit' — VITE_DATA_MODE=snapshot|fixtures + VITE_ALLOW_NON_LIVE_MODE=1
+ */
+export type DataModeReason = 'env-default' | 'env-explicit';
+
+export interface DataModeResolution {
+  mode: DataMode;
+  reason: DataModeReason;
+}
+
+export interface DataProviderDiagnostics {
+  mode: DataMode;
+  reason: DataModeReason;
+  /** When the singleton was first constructed. Null before first access. */
+  initializedAt: Date | null;
+}
+
+// Partial env snapshot — passed explicitly in tests, read from import.meta.env in prod.
+type EnvSnapshot = {
+  VITE_DATA_MODE?: string;
+  VITE_ALLOW_NON_LIVE_MODE?: string;
+};
+
+function readImportMetaEnv(): EnvSnapshot {
+  try {
+    return {
+      VITE_DATA_MODE: (import.meta as unknown as { env: Record<string, string> }).env?.VITE_DATA_MODE,
+      VITE_ALLOW_NON_LIVE_MODE: (import.meta as unknown as { env: Record<string, string> }).env?.VITE_ALLOW_NON_LIVE_MODE,
+    };
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * Resolve which data mode to use and why.
+ *
+ * Pass an explicit `env` object in tests so you can exercise fail-fast logic
+ * without touching real env vars.
+ *
+ * Fail-fast contract: if VITE_DATA_MODE is 'snapshot' or 'fixtures' but
+ * VITE_ALLOW_NON_LIVE_MODE is not '1', this throws immediately to prevent
+ * accidental snapshot data in production builds.
+ */
+export function resolveDataMode(env?: EnvSnapshot): DataModeResolution {
+  const { VITE_DATA_MODE: envMode, VITE_ALLOW_NON_LIVE_MODE: allowFlag } =
+    env ?? readImportMetaEnv();
+
+  // Unset or explicitly 'live' → canonical default
+  if (!envMode || envMode === 'live') {
+    return { mode: 'live', reason: 'env-default' };
+  }
+
+  // Unknown value → fall back to live (no throw — don't break on typos in CI)
+  if (envMode !== 'snapshot' && envMode !== 'fixtures') {
+    return { mode: 'live', reason: 'env-default' };
+  }
+
+  // Non-live mode: require explicit opt-in flag
+  if (allowFlag !== '1') {
+    throw new Error(
+      `[DataProvider] VITE_DATA_MODE="${envMode}" requires VITE_ALLOW_NON_LIVE_MODE=1. ` +
+        `Non-live modes must be explicitly opted into to prevent snapshot data reaching ` +
+        `production. Add VITE_ALLOW_NON_LIVE_MODE=1 to your .env.development file.`,
+    );
+  }
+
+  return { mode: envMode as DataMode, reason: 'env-explicit' };
+}
+
 // ---------------------------------------------------------------------------
 // Provider Interface
 // ---------------------------------------------------------------------------
@@ -102,33 +174,46 @@ export interface DataProvider {
 // ---------------------------------------------------------------------------
 
 let _provider: DataProvider | null = null;
+let _diagnostics: DataProviderDiagnostics | null = null;
+
+/**
+ * Returns diagnostics for the current provider singleton.
+ *
+ * Safe to call before the first `getDataProvider()` — returns null initializedAt
+ * until the singleton is constructed.
+ */
+export function getDataProviderDiagnostics(): DataProviderDiagnostics {
+  if (_diagnostics) return _diagnostics;
+  // Uninitialized — resolve mode without constructing provider (no side effects)
+  try {
+    const { mode, reason } = resolveDataMode();
+    return { mode, reason, initializedAt: null };
+  } catch {
+    return { mode: 'live', reason: 'env-default', initializedAt: null };
+  }
+}
 
 /**
  * Get the active DataProvider.
  *
- * Priority:
- *   1. If VITE_DATA_MODE is 'snapshot' or 'fixtures', use that explicitly.
- *   2. Otherwise, default to LiveDataProvider (PACS endpoints are AllowAnonymous).
- *   3. LiveDataProvider gracefully falls back when backend is unreachable.
+ * Mode is resolved once via resolveDataMode() and cached for the session.
+ * Fail-fast: throws if VITE_DATA_MODE=snapshot|fixtures without VITE_ALLOW_NON_LIVE_MODE=1.
  *
  * Note: PACS endpoints (/api/pacs/*, /ops/pacs/*) do NOT require JWT.
- * No token check needed for live mode.
  */
 export function getDataProvider(): DataProvider {
   if (!_provider) {
-    const envMode = (typeof import.meta !== 'undefined'
-      ? (import.meta as any).env?.VITE_DATA_MODE
-      : undefined) as string | undefined;
+    const { mode, reason } = resolveDataMode();
 
-    if (envMode === 'snapshot') {
-      _provider = new SnapshotDataProvider();
-    } else if (envMode === 'fixtures') {
-      // Synchronous fallback — async fixtures loaded via createDataProvider
+    if (mode === 'snapshot' || mode === 'fixtures') {
+      // Synchronous snapshot for both; async fixtures via createDataProvider
       _provider = new SnapshotDataProvider();
     } else {
       // Default: live PACS (works with or without JWT)
       _provider = new LiveDataProvider();
     }
+
+    _diagnostics = { mode, reason, initializedAt: new Date() };
   }
   return _provider;
 }
@@ -163,9 +248,10 @@ export async function createDataProvider(
   return _provider;
 }
 
-/** Reset provider (for testing, mode switch, or auth change). */
+/** Reset provider and diagnostics (for testing, mode switch, or auth change). */
 export function resetDataProvider(): void {
   _provider = null;
+  _diagnostics = null;
 }
 
 /** Called after auth token changes to switch to live provider if available. */

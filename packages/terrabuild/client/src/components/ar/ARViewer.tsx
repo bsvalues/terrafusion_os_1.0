@@ -8,7 +8,7 @@ interface BuildingCostCalculationResult {
   baseCost: number;
   adjustedCost?: number;
   totalCost: number;
-  regionalFactor?: number;
+  revalAreaFactor?: number;
   buildingTypeFactor?: number;
   complexityAdjustment?: number;
   conditionAdjustment?: number;
@@ -21,7 +21,7 @@ interface BuildingCostCalculationResult {
 
 interface ARViewerProps {
   buildingData: {
-    region: string;
+    revalArea: string;
     buildingType: string;
     squareFootage: number;
     yearBuilt: number;

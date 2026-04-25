@@ -163,6 +163,7 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
             Timestamp = DateTime.UtcNow,
             ModuleCount = runtimeModules.Count,
             HealthyModules = runtimeModules.Count(module => module.Status == TerraFusion.Core.Enums.ModuleStatus.Active),
+            FailedModules = runtimeModules.Count(module => module.Status == TerraFusion.Core.Enums.ModuleStatus.ValidationFailed),
             SystemComponents = new Dictionary<string, bool>()
         };
 
@@ -174,6 +175,7 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
                 runtimeModules = await _moduleLoader.LoadDiscoveredModulesAsync();
                 status.ModuleCount = runtimeModules.Count;
                 status.HealthyModules = runtimeModules.Count(module => module.Status == TerraFusion.Core.Enums.ModuleStatus.Active);
+                status.FailedModules = runtimeModules.Count(module => module.Status == TerraFusion.Core.Enums.ModuleStatus.ValidationFailed);
             }
 
             // Check core system components
@@ -182,8 +184,12 @@ public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrat
             status.SystemComponents["AISwarm"] = await CheckAISwarmHealthAsync();
             status.SystemComponents["TerraFusionSync"] = await CheckTerraFusionSyncHealthAsync();
 
+            // Healthy iff all infrastructure components report healthy AND no modules
+            // are in ValidationFailed state. Inactive-by-design modules (scaffolds
+            // awaiting wiring, e.g. TerraPILT) do NOT flip the overall gate — they
+            // are a known "not-yet-activated" state, not a failure.
             status.IsHealthy = status.SystemComponents.Values.All(healthy => healthy) &&
-                              status.HealthyModules > 0;
+                              status.FailedModules == 0;
         }
         catch (Exception ex)
         {
@@ -534,6 +540,7 @@ public class SystemHealthStatus
     public DateTime Timestamp { get; set; }
     public int ModuleCount { get; set; }
     public int HealthyModules { get; set; }
+    public int FailedModules { get; set; }
     public Dictionary<string, bool> SystemComponents { get; set; } = new();
     public string? ErrorMessage { get; set; }
     public string OverallStatus { get; set; } = string.Empty;

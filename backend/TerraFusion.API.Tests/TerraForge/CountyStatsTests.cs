@@ -2,14 +2,14 @@
 //
 // Verifies:
 //   1. Empty DB → totalParcels = 0, no throw
-//   2. Three parcels (SupNum=0, PropValYear=2026) → totalParcels = 3
-//   3. Only SupNum=0 and requested year are counted — other years/supplements excluded
-//   4. averageAssessedValue = AVG(AssessedVal) of qualifying rows  ← uses AssessedVal, not Market
-//   5. averageAssessedValue falls back to Market when AssessedVal is null
-//   6. averageAssessedValue reads AssessedVal even when Market holds a different value (column guard)
-//   7. pendingAssessments = COUNT WHERE NewVal > 0
-//   8. assessmentCompletionPercent = 100 when all rows have AssessedVal > 0
-//   9. assessmentCompletionPercent is proportional when some rows are missing AssessedVal
+//   2. Three parcels (TaxYear=2026, Benton county) → totalParcels = 3
+//   3. Only requested year is counted — wrong-year parcels excluded
+//   4. averageAssessedValue = AVG(AssessedValue) of qualifying rows
+//   5. averageAssessedValue falls back to MarketValue when AssessedValue is 0
+//   6. averageAssessedValue reads AssessedValue even when MarketValue holds a different value
+//   7. pendingAssessments = COUNT of distinct parcels with draft ValuationRecords
+//   8. assessmentCompletionPercent = 100 when all rows have AssessedValue > 0
+//   9. assessmentCompletionPercent is proportional when some rows are missing AssessedValue
 
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
@@ -18,23 +18,27 @@ using Moq;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Services;
 using TerraFusion.API.Tests.TestHelpers;
-using TerraFusion.Core.Entities.Pacs;
+using TerraFusion.Core.Entities;
 using Xunit;
+
+using Task = System.Threading.Tasks.Task;
 
 namespace TerraFusion.API.Tests.TerraForge;
 
 /// <summary>
 /// Unit tests for TerraForgeController.GetCountyStats (Slice 1.3).
 ///
-/// Source: pacs_valuations WHERE PropValYear = taxYear AND SupNum = 0
-/// (working layer only — SupNum > 0 are supplemental layers, excluded from KPIs).
+/// Source: Properties WHERE CountyId = Benton AND TaxYear = taxYear
+/// pendingAssessments: ValuationRecords WHERE Status = "draft" AND CountyId = Benton AND TaxYear = taxYear
 ///
-/// averageAssessedValue uses AssessedVal (tax-roll value), falling back to Market
-/// only when AssessedVal is absent.  Market and AssessedVal differ for ag/timber
-/// current-use parcels and partial-exemption parcels.
+/// averageAssessedValue uses AssessedValue (tax-roll value), falling back to MarketValue
+/// only when AssessedValue is 0.
 /// </summary>
 public sealed class CountyStatsTests : IDisposable
 {
+    private static readonly Guid BentonId =
+        Guid.Parse("19190019-1919-1919-1919-191919191919");
+
     private readonly TerraFusion.Data.TerraFusionDbContext _db;
     private readonly TerraForgeController _sut;
 
@@ -44,7 +48,7 @@ public sealed class CountyStatsTests : IDisposable
         _sut = new TerraForgeController(
             _db,
             NullLogger<TerraForgeController>.Instance,
-            Mock.Of<IOlsRegressionService>());
+            Mock.Of<IOlsRegressionService>(), Mock.Of<ISaleQualificationService>());
     }
 
     public void Dispose() => _db.Dispose();
@@ -52,25 +56,43 @@ public sealed class CountyStatsTests : IDisposable
     // ── Helpers ────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Seeds pacs_valuations rows.
-    /// Tuple: (year, supNum, assessedVal, market, newVal)
-    /// Pass null for assessedVal to simulate a row where only Market is populated.
+    /// Seeds Property rows for county-stats tests.
+    /// Tuple: (taxYear, assessedValue, marketValue)
+    /// Pass 0 for assessedValue to simulate a row where only MarketValue is populated.
     /// </summary>
-    private void SeedValuations(
-        IEnumerable<(int year, int sup, decimal? assessedVal, decimal? market, decimal? newVal)> rows)
+    private void SeedProperties(
+        IEnumerable<(int taxYear, decimal assessedValue, decimal marketValue)> rows)
     {
-        foreach (var (year, sup, assessedVal, market, newVal) in rows)
+        foreach (var (taxYear, assessedValue, marketValue) in rows)
         {
-            _db.PacsValuations.Add(new PacsValuation
+            _db.Properties.Add(new Property
             {
-                Id          = Guid.NewGuid(),
-                PacsPropId  = Random.Shared.Next(1, 999_999),
-                ParcelId    = Guid.NewGuid(),   // InMemory DB does not enforce FK
-                PropValYear = year,
-                SupNum      = sup,
-                AssessedVal = assessedVal,
-                Market      = market,
-                NewVal      = newVal,
+                Id             = Guid.NewGuid(),
+                ParcelNumber   = Guid.NewGuid().ToString("N"),
+                CountyId       = BentonId,
+                TaxYear        = taxYear,
+                AssessedValue  = assessedValue,
+                MarketValue    = marketValue,
+            });
+        }
+        _db.SaveChanges();
+    }
+
+    /// <summary>
+    /// Seeds draft ValuationRecord rows to drive pendingAssessments count.
+    /// </summary>
+    private void SeedDraftValuations(int taxYear, int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            _db.ValuationRecords.Add(new ValuationRecord
+            {
+                Id        = Guid.NewGuid(),
+                ParcelId  = Guid.NewGuid().ToString("N"),
+                CountyId  = BentonId,
+                TaxYear   = taxYear,
+                Status    = "draft",
+                FinalReconciledValue = null,
             });
         }
         _db.SaveChanges();
@@ -97,11 +119,11 @@ public sealed class CountyStatsTests : IDisposable
     [Fact]
     public async Task GetCountyStats_ThreeParcels_ReturnsTotalParcelsThree()
     {
-        SeedValuations(new (int, int, decimal?, decimal?, decimal?)[]
+        SeedProperties(new (int, decimal, decimal)[]
         {
-            (2026, 0, 500_000m, 500_000m, null),
-            (2026, 0, 600_000m, 600_000m, null),
-            (2026, 0, 700_000m, 700_000m, null),
+            (2026, 500_000m, 500_000m),
+            (2026, 600_000m, 600_000m),
+            (2026, 700_000m, 700_000m),
         });
 
         var body = ParseOkBody(await _sut.GetCountyStats(taxYear: 2026));
@@ -112,11 +134,10 @@ public sealed class CountyStatsTests : IDisposable
     [Fact]
     public async Task GetCountyStats_ExcludesOtherYearAndSupRows_OnlyCountsWorkingLayer()
     {
-        SeedValuations(new (int, int, decimal?, decimal?, decimal?)[]
+        SeedProperties(new (int, decimal, decimal)[]
         {
-            (2026, 0, 500_000m, 500_000m, null),   // ← in (working layer, correct year)
-            (2025, 0, 400_000m, 400_000m, null),   // ← out: wrong year
-            (2026, 1, 500_000m, 500_000m, null),   // ← out: supplemental layer (SupNum=1)
+            (2026, 500_000m, 500_000m),   // ← in (correct year)
+            (2025, 400_000m, 400_000m),   // ← out: wrong year
         });
 
         var body = ParseOkBody(await _sut.GetCountyStats(taxYear: 2026));
@@ -127,10 +148,10 @@ public sealed class CountyStatsTests : IDisposable
     [Fact]
     public async Task GetCountyStats_AverageAssessedValue_IsAverageOfAssessedVal()
     {
-        SeedValuations(new (int, int, decimal?, decimal?, decimal?)[]
+        SeedProperties(new (int, decimal, decimal)[]
         {
-            (2026, 0, 400_000m, 400_000m, null),
-            (2026, 0, 600_000m, 600_000m, null),
+            (2026, 400_000m, 400_000m),
+            (2026, 600_000m, 600_000m),
         });
 
         var body = ParseOkBody(await _sut.GetCountyStats(taxYear: 2026));
@@ -139,38 +160,37 @@ public sealed class CountyStatsTests : IDisposable
     }
 
     /// <summary>
-    /// When AssessedVal differs from Market (ag/timber current-use, partial exemption),
-    /// averageAssessedValue must reflect AssessedVal — NOT Market.
-    /// This is the column-source guard test.
+    /// When AssessedValue differs from MarketValue (ag/timber current-use, partial exemption),
+    /// averageAssessedValue must reflect AssessedValue — NOT MarketValue.
     /// </summary>
     [Fact]
     public async Task GetCountyStats_AverageAssessedValue_UsesAssessedVal_NotMarket()
     {
-        // AssessedVal = 200_000 (current-use reduction), Market = 600_000 (true & fair)
-        SeedValuations(new (int, int, decimal?, decimal?, decimal?)[]
+        // AssessedValue = 200k (current-use reduction), MarketValue = 600k (true & fair)
+        SeedProperties(new (int, decimal, decimal)[]
         {
-            (2026, 0, 200_000m, 600_000m, null),
-            (2026, 0, 400_000m, 800_000m, null),
+            (2026, 200_000m, 600_000m),
+            (2026, 400_000m, 800_000m),
         });
 
         var body = ParseOkBody(await _sut.GetCountyStats(taxYear: 2026));
 
-        // Expected: AVG(AssessedVal) = (200k + 400k) / 2 = 300k
+        // Expected: AVG(AssessedValue) = (200k + 400k) / 2 = 300k
         // Wrong if Market used: (600k + 800k) / 2 = 700k
         Assert.Equal(300_000m, body.GetProperty("averageAssessedValue").GetDecimal());
     }
 
     /// <summary>
-    /// When AssessedVal is null, falls back to Market so legacy/incomplete rows
+    /// When AssessedValue is 0, falls back to MarketValue so incomplete rows
     /// still contribute rather than silently drop from the average.
     /// </summary>
     [Fact]
     public async Task GetCountyStats_AverageAssessedValue_FallsBackToMarket_WhenAssessedValNull()
     {
-        SeedValuations(new (int, int, decimal?, decimal?, decimal?)[]
+        SeedProperties(new (int, decimal, decimal)[]
         {
-            (2026, 0, null,     400_000m, null),   // ← no AssessedVal → use Market
-            (2026, 0, 600_000m, 800_000m, null),   // ← has AssessedVal → use AssessedVal
+            (2026, 0m,       400_000m),   // ← no AssessedValue → use MarketValue
+            (2026, 600_000m, 800_000m),   // ← has AssessedValue → use AssessedValue
         });
 
         var body = ParseOkBody(await _sut.GetCountyStats(taxYear: 2026));
@@ -182,12 +202,14 @@ public sealed class CountyStatsTests : IDisposable
     [Fact]
     public async Task GetCountyStats_PendingAssessments_CountsRowsWithPositiveNewVal()
     {
-        SeedValuations(new (int, int, decimal?, decimal?, decimal?)[]
+        SeedProperties(new (int, decimal, decimal)[]
         {
-            (2026, 0, 500_000m, 500_000m, 50_000m),   // ← pending: NewVal > 0
-            (2026, 0, 600_000m, 600_000m, null),       // ← not pending: no NewVal
-            (2026, 0, 700_000m, 700_000m, 0m),         // ← not pending: NewVal == 0
+            (2026, 500_000m, 500_000m),
+            (2026, 600_000m, 600_000m),
+            (2026, 700_000m, 700_000m),
         });
+        // One parcel has a draft valuation (pending)
+        SeedDraftValuations(taxYear: 2026, count: 1);
 
         var body = ParseOkBody(await _sut.GetCountyStats(taxYear: 2026));
 
@@ -197,10 +219,10 @@ public sealed class CountyStatsTests : IDisposable
     [Fact]
     public async Task GetCountyStats_CompletionPercent_Is100WhenAllHaveAssessedVal()
     {
-        SeedValuations(new (int, int, decimal?, decimal?, decimal?)[]
+        SeedProperties(new (int, decimal, decimal)[]
         {
-            (2026, 0, 500_000m, 500_000m, null),
-            (2026, 0, 600_000m, 600_000m, null),
+            (2026, 500_000m, 500_000m),
+            (2026, 600_000m, 600_000m),
         });
 
         var body = ParseOkBody(await _sut.GetCountyStats(taxYear: 2026));
@@ -211,10 +233,10 @@ public sealed class CountyStatsTests : IDisposable
     [Fact]
     public async Task GetCountyStats_CompletionPercent_IsPartialWhenSomeMissingAssessedVal()
     {
-        SeedValuations(new (int, int, decimal?, decimal?, decimal?)[]
+        SeedProperties(new (int, decimal, decimal)[]
         {
-            (2026, 0, 500_000m, 500_000m, null),   // ← has assessed value
-            (2026, 0, null,     null,     null),   // ← missing both (no fallback either)
+            (2026, 500_000m, 500_000m),   // ← has assessed value
+            (2026, 0m,       0m),         // ← missing both (no fallback either)
         });
 
         var body = ParseOkBody(await _sut.GetCountyStats(taxYear: 2026));

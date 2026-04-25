@@ -1,0 +1,42 @@
+- generic [ref=e2]:
+    - generic [ref=e4]:
+        - generic [ref=e5]:
+            - heading "Analytics Dashboard" [level=1] [ref=e6]
+            - paragraph [ref=e7]: Benton County building cost analytics — live data from TerraFusion OS
+        - generic [ref=e9]:
+            - generic [ref=e15]:
+                - generic [ref=e16]:
+                    - generic [ref=e17]: Time Range
+                    - combobox [ref=e18] [cursor=pointer]:
+                        - generic: 1 Year
+                        - img [ref=e19]
+                - generic [ref=e21]:
+                    - generic [ref=e22]: Region
+                    - combobox [ref=e23] [cursor=pointer]:
+                        - generic: All Regions
+                        - img [ref=e24]
+                - generic [ref=e26]:
+                    - generic [ref=e27]: Building Type
+                    - combobox [ref=e28] [cursor=pointer]:
+                        - generic: All Types
+                        - img [ref=e29]
+            - generic [ref=e31]:
+                - tablist [ref=e32]:
+                    - tab "Cost Trends" [selected] [ref=e33] [cursor=pointer]:
+                        - img [ref=e34]
+                        - text: Cost Trends
+                    - tab "Regional" [ref=e37] [cursor=pointer]:
+                        - img [ref=e38]
+                        - text: Regional
+                    - tab "Building Type" [ref=e40] [cursor=pointer]:
+                        - img [ref=e41]
+                        - text: Building Type
+                    - tab "Predictive" [ref=e43] [cursor=pointer]:
+                        - img [ref=e44]
+                        - text: Predictive
+                - tabpanel "Cost Trends" [ref=e48]:
+                    - generic [ref=e50]:
+                        - heading "Building Cost Trends" [level=3] [ref=e51]
+                        - paragraph [ref=e52]: Average cost per sqft over time — TerraFusion PostgreSQL
+    - region "Notifications (F8)":
+        - list

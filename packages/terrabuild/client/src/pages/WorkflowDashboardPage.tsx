@@ -146,14 +146,14 @@ const demoWorkflows: WorkflowMetadata[] = [
   {
     id: 'regional-comparison',
     title: 'Regional Cost Comparison',
-    description: 'Compare building costs across different regions.',
+    description: 'Compare building costs across different reval areas.',
     category: 'visualizations',
     status: 'in-progress',
     percentComplete: 75,
     lastUpdated: new Date(Date.now() - 43200000), // 12 hours ago
     route: '/regional-cost-comparison',
     steps: [
-      { id: 'regions', label: 'Select Regions' },
+      { id: 'revalAreas', label: 'Select Reval Areas' },
       { id: 'building-types', label: 'Building Types' },
       { id: 'visualization', label: 'View Comparison' },
       { id: 'analysis', label: 'Analyze Differences' },
@@ -236,7 +236,11 @@ const WorkflowDashboardPage: React.FC = () => {
         { label: 'Workflows', href: '/workflows' },
       ]}
     >
-      <WorkflowDashboard 
+      {/* v1: Workflows use hardcoded demo data, not connected to any backend */}
+      <div role="status" style={{ margin: '0 0 16px', padding: '10px 12px', borderRadius: '8px', border: '1px solid hsl(var(--tf-warning-amber) / 0.3)', background: 'hsl(var(--tf-warning-amber) / 0.08)', color: 'hsl(var(--tf-warning-amber))', fontSize: '12px' }}>
+        DEMO DATA — Workflow dashboard shows placeholder tasks. Real review queue integration is deferred to v1.2.
+      </div>
+      <WorkflowDashboard
         workflows={demoWorkflows}
         categories={demoCategories}
         userRole="admin"

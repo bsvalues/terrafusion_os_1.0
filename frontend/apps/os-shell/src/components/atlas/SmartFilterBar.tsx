@@ -158,7 +158,7 @@ export default function SmartFilterBar({
         <div className="flex items-center gap-1">
           <input
             type="number"
-            placeholder="SqFt min"
+            placeholder="sq ft min"
             value={filters.sqftMin ?? ''}
             onChange={(e) => update({ sqftMin: e.target.value ? Number(e.target.value) : null })}
             className="w-20 bg-terra-slate/40 border border-white/10 rounded px-2 py-1 text-xs text-white/80 placeholder:text-white/30 focus:outline-none focus:border-terra-cyan/40"
@@ -167,7 +167,7 @@ export default function SmartFilterBar({
           <span className="text-white/30 text-xs">-</span>
           <input
             type="number"
-            placeholder="SqFt max"
+            placeholder="sq ft max"
             value={filters.sqftMax ?? ''}
             onChange={(e) => update({ sqftMax: e.target.value ? Number(e.target.value) : null })}
             className="w-20 bg-terra-slate/40 border border-white/10 rounded px-2 py-1 text-xs text-white/80 placeholder:text-white/30 focus:outline-none focus:border-terra-cyan/40"

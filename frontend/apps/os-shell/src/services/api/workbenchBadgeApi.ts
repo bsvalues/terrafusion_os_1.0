@@ -72,6 +72,7 @@ async function doFetch(parcelId: string): Promise<PropertyBadgeData | null> {
     const res = await fetch(`/ops/pacs/property/${encodeURIComponent(parcelId)}`);
     if (!res.ok) return null;
     const json = await res.json();
+    if (json.pacs === 'offline') return null; // PACS unavailable — suppress badges
     const data: PropertyBadgeData = {
       geoId: json.geoId ?? json.geo_id ?? parcelId,
       address: json.address ?? '',

@@ -61,6 +61,13 @@ public class CostMatrix
     public int? YearBuilt { get; set; }
     public decimal? DepreciationRate { get; set; }
 
+    /// <summary>
+    /// For MatrixType='SecondaryFeature' rows: the %-of-BIV rate to apply
+    /// (e.g. 0.03 for CovPatio = 3% of BIV). Null for primary-rate rows.
+    /// Part of CostForge Benton Method v2 (Track 6).
+    /// </summary>
+    public decimal? SecondaryFeaturePctOfBiv { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? EffectiveDate { get; set; }

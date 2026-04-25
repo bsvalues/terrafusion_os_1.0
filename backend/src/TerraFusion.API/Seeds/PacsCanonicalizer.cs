@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using System.Text.Json;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Data;
 
 namespace TerraFusion.API.Seeds;
@@ -29,6 +31,7 @@ public sealed class PacsCanonicalizer
     private readonly TerraFusionDbContext _db;
     private readonly ILogger _logger;
     private const int BatchSize = 500;
+    private static readonly Guid BentonCountyId = Guid.Parse("19190019-1919-1919-1919-191919191919");
 
     public PacsCanonicalizer(TerraFusionDbContext db, ILogger logger)
     {
@@ -44,13 +47,17 @@ public sealed class PacsCanonicalizer
         var valuations = await CanonicalizeValuationRecordsAsync(ct);
         var sales = await CanonicalizeComparableSalesAsync(ct);
         var cama = await CanonicalizeCamaCharacteristicsAsync(ct);
+        var taxLevies = await CanonicalizeTaxLeviesAsync(ct);
+        var levyCertifications = await CanonicalizeLevyCertificationsAsync(ct);
 
         var result = new CanonicalizeResult
         {
             Properties = properties,
             ValuationRecords = valuations,
             ComparableSales = sales,
-            CamaCharacteristics = cama
+            CamaCharacteristics = cama,
+            TaxLevies = taxLevies,
+            LevyCertifications = levyCertifications
         };
 
         _logger.LogInformation(
@@ -67,6 +74,35 @@ public sealed class PacsCanonicalizer
         var cama = await CanonicalizeCamaCharacteristicsAsync(ct);
         _logger.LogInformation("[PacsCanonicalizer] CAMA-ONLY complete. CamaCharacteristics={Count}", cama);
         return cama;
+    }
+
+    /// <summary>Re-run only Step 1 (Properties). Fast path for GeoId/parcel-key schema updates.</summary>
+    public async Task<int> CanonicalizePropertiesOnlyAsync(CancellationToken ct = default)
+    {
+        _logger.LogInformation("[PacsCanonicalizer] PROPERTIES-ONLY pass (Step 1 only).");
+        var count = await CanonicalizePropertiesAsync(ct);
+        _logger.LogInformation("[PacsCanonicalizer] PROPERTIES-ONLY complete. Properties={Count}", count);
+        return count;
+    }
+
+    public async Task<int> CanonicalizeLevyOnlyAsync(CancellationToken ct = default)
+    {
+        _logger.LogInformation("[PacsCanonicalizer] LEVY-ONLY pass.");
+        var taxLevies = await CanonicalizeTaxLeviesAsync(ct);
+        var levyCertifications = await CanonicalizeLevyCertificationsAsync(ct);
+        _logger.LogInformation(
+            "[PacsCanonicalizer] LEVY-ONLY complete. TaxLevies={TaxLevies} LevyCertifications={LevyCertifications}",
+            taxLevies,
+            levyCertifications);
+        return levyCertifications;
+    }
+
+    public async Task<int> CanonicalizeLevyCertificationsOnlyAsync(CancellationToken ct = default)
+    {
+        _logger.LogInformation("[PacsCanonicalizer] LEVY-CERT-ONLY pass.");
+        var count = await CanonicalizeLevyCertificationsAsync(ct);
+        _logger.LogInformation("[PacsCanonicalizer] LEVY-CERT-ONLY complete. LevyCertifications={Count}", count);
+        return count;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -107,45 +143,96 @@ public sealed class PacsCanonicalizer
 
         // ── Bulk-load ALL supporting data at once — avoids 256+ per-batch round-trips ──
 
-        // Primary situs display address (all parcels)
+        // Primary situs display address and city/state/zip keyed by PacsPropId so
+        // canonical properties remain stable even if mirror Guids are re-seeded.
         var allSitusMap = await _db.PacsSituses
             .Where(s => s.PrimaryFlag == "Y")
-            .GroupBy(s => s.ParcelId)
-            .Select(g => new { ParcelId = g.Key, Display = g.First().SitusDisplay })
-            .ToDictionaryAsync(x => x.ParcelId, x => x.Display, ct);
+            .GroupBy(s => s.PacsPropId)
+            .Select(g => g
+                .OrderByDescending(s => s.UpdatedAt)
+                .Select(s => new
+                {
+                    s.PacsPropId,
+                    Display = s.SitusDisplay,
+                    s.City,
+                    s.State,
+                    s.Zip
+                })
+                .First())
+            .ToDictionaryAsync(x => x.PacsPropId, x => x, ct);
 
-        // Latest owner per parcel — SQLite: OwnerTaxYear is decimal, evaluate first
+        // Latest owner per parcel — OwnerTaxYear is decimal, evaluate first.
         var allOwnerRaw = await _db.PacsOwners
-            .Select(o => new { o.ParcelId, o.OwnerTaxYear, o.FileAsName })
+            .Select(o => new { o.PacsPropId, o.OwnerTaxYear, o.FileAsName })
             .ToListAsync(ct);
         var allOwnerMap = allOwnerRaw
-            .GroupBy(o => o.ParcelId)
+            .GroupBy(o => o.PacsPropId)
             .ToDictionary(
                 g => g.Key,
                 g => g.OrderByDescending(o => o.OwnerTaxYear).First().FileAsName);
 
-        // Latest base-roll valuation — SQLite: decimal, evaluate first
+        // Latest base-roll valuation — includes legal description and classification
+        // fallbacks when the property profile does not carry those fields.
         var allValRaw = await _db.PacsValuations
             .Where(v => v.SupNum == 0)
-            .Select(v => new { v.ParcelId, v.PropValYear, v.MktapprMarket })
+            .Select(v => new
+            {
+                v.PacsPropId,
+                v.PropValYear,
+                v.MktapprMarket,
+                v.LegalDesc,
+                v.LegalDesc2,
+                v.NeighborhoodCode,
+                v.PropertyUseCd
+            })
             .ToListAsync(ct);
         var allValMap = allValRaw
-            .GroupBy(v => v.ParcelId)
+            .GroupBy(v => v.PacsPropId)
             .ToDictionary(
                 g => g.Key,
-                g =>
-                {
-                    var best = g.OrderByDescending(v => v.PropValYear).First();
-                    return new { ParcelId = g.Key, Year = best.PropValYear, Market = best.MktapprMarket };
-                });
+                g => g.OrderByDescending(v => v.PropValYear).First());
+
+        var allProfileRaw = await _db.PacsPropertyProfiles
+            .Where(p => p.SupNum == 0)
+            .Select(p => new
+            {
+                p.PacsPropId,
+                p.PropValYear,
+                p.NeighborhoodCode,
+                p.PropertyUseCd,
+                p.Zoning,
+                p.YearBuilt
+            })
+            .ToListAsync(ct);
+        var allProfileMap = allProfileRaw
+            .GroupBy(p => p.PacsPropId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(p => p.PropValYear).First());
+
+        var allTaxAreaRaw = await _db.PacsTaxAreas
+            .Where(t => t.SupNum == 0)
+            .Select(t => new
+            {
+                t.PacsPropId,
+                t.TaxYear,
+                t.TaxAreaNumber,
+                t.TaxAreaDescription
+            })
+            .ToListAsync(ct);
+        var allTaxAreaMap = allTaxAreaRaw
+            .GroupBy(t => t.PacsPropId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(t => t.TaxYear).First());
 
         // Land value sum (latest year) — SQLite: decimal, evaluate first
         var allLandValRaw = await _db.PacsLandDetails
             .Where(l => l.SupNum == 0)
-            .Select(l => new { l.ParcelId, l.PropValYear, l.LandSegMktVal })
+            .Select(l => new { l.PacsPropId, l.PropValYear, l.LandSegMktVal })
             .ToListAsync(ct);
         var allLandValMap = allLandValRaw
-            .GroupBy(l => l.ParcelId)
+            .GroupBy(l => l.PacsPropId)
             .ToDictionary(
                 g => g.Key,
                 g =>
@@ -154,13 +241,36 @@ public sealed class PacsCanonicalizer
                     return g.Where(x => x.PropValYear == maxYear).Sum(x => x.LandSegMktVal ?? 0m);
                 });
 
+        var allLandDimsRaw = await _db.PacsLandDetails
+            .Where(l => l.SupNum == 0)
+            .Select(l => new
+            {
+                l.PacsPropId,
+                l.PropValYear,
+                l.SizeSquareFeet,
+                l.EffectiveFront,
+                l.WidthFront,
+                l.EffectiveDepth,
+                l.DepthRight,
+                l.DepthLeft
+            })
+            .ToListAsync(ct);
+        var allLandDimsMap = allLandDimsRaw
+            .GroupBy(l => l.PacsPropId)
+            .ToDictionary(
+                g => g.Key,
+                g => g
+                    .OrderByDescending(l => l.PropValYear)
+                    .ThenByDescending(l => l.SizeSquareFeet ?? 0m)
+                    .First());
+
         // Improvement value sum (latest year) — SQLite: decimal, evaluate first
         var allImprvValRaw = await _db.PacsImprovements
             .Where(i => i.SupNum == 0)
-            .Select(i => new { i.ParcelId, i.PropValYear, i.MktapprVal })
+            .Select(i => new { i.PacsPropId, i.PropValYear, i.MktapprVal })
             .ToListAsync(ct);
         var allImprvValMap = allImprvValRaw
-            .GroupBy(i => i.ParcelId)
+            .GroupBy(i => i.PacsPropId)
             .ToDictionary(
                 g => g.Key,
                 g =>
@@ -181,15 +291,26 @@ public sealed class PacsCanonicalizer
             {
                 if (string.IsNullOrEmpty(stub.GeoId)) continue;
 
-                allValMap.TryGetValue(stub.Id, out var val);
-                allSitusMap.TryGetValue(stub.Id, out var address);
-                allOwnerMap.TryGetValue(stub.Id, out var ownerName);
-                allLandValMap.TryGetValue(stub.Id, out var landVal);
-                allImprvValMap.TryGetValue(stub.Id, out var imprvVal);
+                allValMap.TryGetValue(stub.PropId, out var val);
+                allSitusMap.TryGetValue(stub.PropId, out var situs);
+                allOwnerMap.TryGetValue(stub.PropId, out var ownerName);
+                allProfileMap.TryGetValue(stub.PropId, out var profile);
+                allTaxAreaMap.TryGetValue(stub.PropId, out var taxArea);
+                allLandValMap.TryGetValue(stub.PropId, out var landVal);
+                allLandDimsMap.TryGetValue(stub.PropId, out var landDims);
+                allImprvValMap.TryGetValue(stub.PropId, out var imprvVal);
 
-                var marketValue = val?.Market ?? 0m;
-                var taxYear = val?.Year ?? DateTime.UtcNow.Year;
-                var addressStr = address ?? "Address not available";
+                var marketValue = val?.MktapprMarket ?? 0m;
+                var taxYear = val?.PropValYear ?? profile?.PropValYear ?? DateTime.UtcNow.Year;
+                var addressStr = situs?.Display ?? "Address not available";
+                var legalDescription = BuildLegalDescription(val?.LegalDesc, val?.LegalDesc2);
+                var neighborhood = profile?.NeighborhoodCode ?? val?.NeighborhoodCode;
+                var propertyUseCode = profile?.PropertyUseCd ?? val?.PropertyUseCd;
+                var yearBuilt = profile?.YearBuilt.HasValue == true
+                    ? (int?)profile.YearBuilt.Value
+                    : null;
+                var lotWidthFront = landDims?.EffectiveFront ?? landDims?.WidthFront;
+                var lotDepth = landDims?.EffectiveDepth ?? landDims?.DepthRight ?? landDims?.DepthLeft;
 
                 if (allExistingProps.TryGetValue(stub.GeoId, out var existing))
                 {
@@ -199,6 +320,18 @@ public sealed class PacsCanonicalizer
                     existing.Address          = addressStr;
                     existing.OwnerName        = ownerName;
                     existing.PropertyType     = stub.PropTypeCd;
+                    existing.LegalDescription = legalDescription;
+                    existing.Neighborhood     = neighborhood;
+                    existing.PropertyUseCode  = propertyUseCode;
+                    existing.TaxDistrictCode  = taxArea?.TaxAreaNumber;
+                    existing.TaxDistrictName  = taxArea?.TaxAreaDescription;
+                    existing.SitusCity        = situs?.City;
+                    existing.SitusState       = situs?.State;
+                    existing.SitusZip         = situs?.Zip;
+                    existing.Zoning           = profile?.Zoning;
+                    existing.YearBuilt        = yearBuilt;
+                    existing.LotWidthFront    = lotWidthFront;
+                    existing.LotDepth         = lotDepth;
                     existing.MarketValue      = marketValue;
                     existing.LandValue        = landVal;
                     existing.ImprovementValue = imprvVal;
@@ -220,6 +353,18 @@ public sealed class PacsCanonicalizer
                         Address         = addressStr,
                         OwnerName       = ownerName,
                         PropertyType    = stub.PropTypeCd,
+                        LegalDescription = legalDescription,
+                        Neighborhood    = neighborhood,
+                        PropertyUseCode = propertyUseCode,
+                        TaxDistrictCode = taxArea?.TaxAreaNumber,
+                        TaxDistrictName = taxArea?.TaxAreaDescription,
+                        SitusCity       = situs?.City,
+                        SitusState      = situs?.State,
+                        SitusZip        = situs?.Zip,
+                        Zoning          = profile?.Zoning,
+                        YearBuilt       = yearBuilt,
+                        LotWidthFront   = lotWidthFront,
+                        LotDepth        = lotDepth,
                         MarketValue     = marketValue,
                         LandValue       = landVal,
                         ImprovementValue = imprvVal,
@@ -521,6 +666,7 @@ public sealed class PacsCanonicalizer
             {
                 i.Id,
                 i.ParcelId,
+                i.PacsPropId,
                 i.PropValYear,
                 i.ImprvTypeCode,
                 i.ActualYearBuilt,
@@ -592,6 +738,17 @@ public sealed class PacsCanonicalizer
                     var maxYear = g.Max(x => x.PropValYear);
                     return g.Where(x => x.PropValYear == maxYear).Sum(x => x.SizeSquareFeet ?? 0m);
                 });
+
+        // Load PacsPropertyProfile GLA (living_area = above-grade finished sqft)
+        _logger.LogDebug("[PacsCanonicalizer] Loading property profile GLA...");
+        var allProfileGla = await _db.PacsPropertyProfiles
+            .Where(p => p.SupNum == 0 && p.LivingArea > 0)
+            .Select(p => new { p.PacsPropId, p.PropValYear, p.LivingArea })
+            .ToListAsync(ct);
+
+        var profileGlaMap = allProfileGla
+            .GroupBy(p => (p.PacsPropId, p.PropValYear))
+            .ToDictionary(g => g.Key, g => g.Max(x => x.LivingArea));
 
         // Segments grouped by ImprovementId — raw list used for CamaImprovementDetail inserts
         var allSegmentsByImprv = allDetailRaw
@@ -670,11 +827,26 @@ public sealed class PacsCanonicalizer
                         or "Warmed & Cooled Air/Heat Pump")?.AttributeCode;
 
                 int? fireplaces = (int?)(attrList.FirstOrDefault(a => a.AttributeCode == "FIREPLACE")?.AttrUnit);
-                // Bedrooms: AttrCode="Count", AttrUnit=3; Bathrooms: AttrCode="Count", AttrUnit=2
-                int? bedrooms  = (int?)(attrList.FirstOrDefault(a => a.AttributeCode == "Count" && a.AttrUnit == 3m)?.AttrUnit);
-                int? bathrooms = (int?)(attrList.FirstOrDefault(a => a.AttributeCode == "Count" && a.AttrUnit == 2m)?.AttrUnit);
+                // Bedrooms: AttrCode="Count", AttrUnit=3, AttributeValue=actual count
+                // Bathrooms: AttrCode="Count", AttrUnit=2, AttributeValue=actual count
+                int? bedrooms  = (int?)(attrList.FirstOrDefault(a => a.AttributeCode == "Count" && a.AttrUnit == 3m)?.AttributeValue);
+                int? bathrooms = (int?)(attrList.FirstOrDefault(a => a.AttributeCode == "Count" && a.AttrUnit == 2m)?.AttributeValue);
 
-                var sqft     = detail?.TotalArea ?? 0m;
+                // GLA from property_profile.living_area (above-grade finished only).
+                // Fall back to total detail area only if profile has no living_area.
+                profileGlaMap.TryGetValue((imprv.PacsPropId, imprv.PropValYear), out var profileGla);
+                var sqft = profileGla > 0
+                    ? profileGla!.Value
+                    : detail?.TotalArea ?? 0m;
+
+                // Basement and garage sqft from improvement detail segments by type code.
+                var detSegments = allSegmentsByImprv.TryGetValue(imprv.Id, out var segs) ? segs : null;
+                var basementSqft = detSegments?
+                    .Where(s => IsBasementSegmentType(s.ImprvDetTypeCd))
+                    .Sum(s => s.ImprvDetArea ?? 0m) ?? 0m;
+                var garageSqft = detSegments?
+                    .Where(s => IsGarageSegmentType(s.ImprvDetTypeCd))
+                    .Sum(s => s.ImprvDetArea ?? 0m) ?? 0m;
                 var yearBuilt = detail?.YearBuilt.HasValue == true
                     ? (int?)detail.YearBuilt.Value
                     : imprv.ActualYearBuilt.HasValue
@@ -711,6 +883,8 @@ public sealed class PacsCanonicalizer
                     Bedrooms              = bedrooms,
                     Bathrooms             = bathrooms,
                     Fireplaces            = fireplaces,
+                    BasementSqft          = basementSqft > 0 ? basementSqft : null,
+                    GarageSqft            = garageSqft > 0 ? garageSqft : null,
                     ImprvVal              = imprv.ImprvVal,
                     PhysicalDepreciationPct = imprv.PhysicalPct ?? detail?.PhysicalPct,
                     DepreciationPct       = imprv.DepPct,
@@ -767,9 +941,252 @@ public sealed class PacsCanonicalizer
         return total;
     }
 
+    private async Task<int> CanonicalizeTaxLeviesAsync(CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsCanonicalizer] Step 5: TaxLevies...");
+
+        var deleted = await _db.TaxLevies
+            .Where(tl => tl.CountyId == BentonCountyId)
+            .ExecuteDeleteAsync(ct);
+
+        _logger.LogDebug("[PacsCanonicalizer] Cleared {N} Benton TaxLevies.", deleted);
+
+        var levyRows = await _db.PacsLevyRates
+            .AsNoTracking()
+            .OrderBy(l => l.Year)
+            .ThenBy(l => l.TaxDistrictId)
+            .ThenBy(l => l.LevyCd)
+            .ToListAsync(ct);
+
+        var total = 0;
+
+        foreach (var batch in levyRows.Chunk(BatchSize))
+        {
+            foreach (var raw in batch)
+            {
+                var districtLabel = !string.IsNullOrWhiteSpace(raw.LevyDescription)
+                    ? raw.LevyDescription!.Trim()
+                    : !string.IsNullOrWhiteSpace(raw.LevyCd)
+                        ? raw.LevyCd.Trim()
+                        : $"District {raw.TaxDistrictId}";
+
+                var expirationDate = raw.EndYear.HasValue && raw.EndYear.Value >= raw.Year
+                    ? new DateTime(raw.EndYear.Value, 12, 31, 0, 0, 0, DateTimeKind.Utc)
+                    : (DateTime?)null;
+
+                _db.TaxLevies.Add(new TaxLevy
+                {
+                    Id = Guid.NewGuid(),
+                    CountyId = BentonCountyId,
+                    TaxingDistrict = $"{districtLabel} ({raw.TaxDistrictId}:{raw.LevyCd})",
+                    TaxRate = raw.LevyRate,
+                    LevyAmount = raw.VotedLevyAmount ?? 0m,
+                    TaxYear = raw.Year,
+                    Purpose = raw.LevyTypeCd ?? raw.LevyCd,
+                    EffectiveDate = new DateTime(raw.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    ExpirationDate = expirationDate,
+                    IsActive = raw.Year <= DateTime.UtcNow.Year &&
+                               (!raw.EndYear.HasValue || raw.EndYear.Value >= DateTime.UtcNow.Year)
+                });
+
+                total++;
+            }
+
+            await _db.SaveChangesAsync(ct);
+            _logger.LogDebug("[PacsCanonicalizer] TaxLevies: {Done}/{Total}", total, levyRows.Count);
+        }
+
+        _logger.LogInformation("[PacsCanonicalizer] TaxLevies: {Count} inserted.", total);
+        return total;
+    }
+
+    private async Task<int> CanonicalizeLevyCertificationsAsync(CancellationToken ct)
+    {
+        _logger.LogInformation("[PacsCanonicalizer] Step 6: LevyCertifications...");
+
+        var latestYear = await _db.PacsLevyCertificationData
+            .AsNoTracking()
+            .MaxAsync(x => (int?)x.Year, ct);
+
+        if (!latestYear.HasValue)
+        {
+            _logger.LogWarning("[PacsCanonicalizer] Levy certification oracle tables are empty. Skipping canonical certification rebuild.");
+            return 0;
+        }
+
+        var deleted = await _db.LevyCertifications
+            .Where(lc => lc.CountyId == BentonCountyId && lc.CreatedBy == "pacs-canonicalizer")
+            .ExecuteDeleteAsync(ct);
+
+        _logger.LogDebug("[PacsCanonicalizer] Cleared {N} PACS-authored LevyCertifications.", deleted);
+
+        var certData = await _db.PacsLevyCertificationData
+            .AsNoTracking()
+            .Where(x => x.Year == latestYear.Value)
+            .OrderBy(x => x.TaxDistrictId)
+            .ThenBy(x => x.LevyCd)
+            .ToListAsync(ct);
+
+        var highestLawfulLookup = await _db.PacsLevyCertificationHighestLawful
+            .AsNoTracking()
+            .Where(x => x.Year == latestYear.Value)
+            .ToListAsync(ct);
+
+        var currentLimitLookup = highestLawfulLookup
+            .GroupBy(x => (x.TaxDistrictId, x.LevyCd))
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(x => x.LevyYear).ThenByDescending(x => x.HighestLawfulLevy).First());
+
+        var priorLimitLookup = highestLawfulLookup
+            .Where(x => x.LevyYear < x.Year)
+            .GroupBy(x => (x.TaxDistrictId, x.LevyCd))
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(x => x.LevyYear).ThenByDescending(x => x.HighestLawfulLevy).First());
+
+        var constLimitLookup = await _db.PacsLevyCertificationConstitutionalLimits
+            .AsNoTracking()
+            .Where(x => x.Year == latestYear.Value)
+            .ToDictionaryAsync(x => (x.TaxDistrictId, x.LevyCd), x => x, ct);
+
+        var districtAggregateLookup = await BuildDistrictAggregateLimitLookupAsync(latestYear.Value, ct);
+
+        var total = 0;
+
+        foreach (var batch in certData.Chunk(BatchSize))
+        {
+            foreach (var raw in batch)
+            {
+                var key = (raw.TaxDistrictId, raw.LevyCd);
+                currentLimitLookup.TryGetValue(key, out var currentLimit);
+                priorLimitLookup.TryGetValue(key, out var priorLimit);
+                constLimitLookup.TryGetValue(key, out var constitutionalLimit);
+                districtAggregateLookup.TryGetValue(key, out var aggregateLimitPass);
+
+                var requestedLevy = raw.BudgetAmount ?? 0m;
+                var assessedValue = raw.TaxBase ?? 0m;
+                var certifiedRate = constitutionalLimit?.FinalLevyRate
+                    ?? raw.LevyRate
+                    ?? 0m;
+                var certifiedLevy = assessedValue > 0m
+                    ? Math.Round((assessedValue / 1000m) * certifiedRate, 2)
+                    : requestedLevy;
+
+                if (requestedLevy <= 0m && certifiedLevy > 0m)
+                {
+                    requestedLevy = certifiedLevy;
+                }
+
+                var reductionAmount = requestedLevy > certifiedLevy
+                    ? requestedLevy - certifiedLevy
+                    : 0m;
+
+                var payload = new
+                {
+                    source = "pacs-certification-oracle",
+                    levyCertRunId = raw.LevyCertRunId,
+                    taxDistrictId = raw.TaxDistrictId,
+                    levyCode = raw.LevyCd,
+                    levyType = raw.LevyTypeCd,
+                    levyTypeDescription = raw.LevyTypeDescription,
+                    voted = raw.Voted,
+                    outstandingItemCount = raw.OutstandingItemCount,
+                    currentHighestLawfulYear = currentLimit?.LevyYear,
+                    currentHighestLawfulLevy = currentLimit?.HighestLawfulLevy,
+                    priorHighestLawfulYear = priorLimit?.LevyYear,
+                    priorHighestLawfulLevy = priorLimit?.HighestLawfulLevy,
+                    constitutionalStatus = constitutionalLimit?.Status,
+                    constitutionalOriginalRate = constitutionalLimit?.OriginalLevyRate,
+                    constitutionalFinalRate = constitutionalLimit?.FinalLevyRate,
+                    aggregateLimitPass = aggregateLimitPass,
+                    timberAssessedFull = raw.TimberAssessedFull,
+                    timberAssessedHalf = raw.TimberAssessedHalf,
+                    timberAssessedRoll = raw.TimberAssessedRoll
+                };
+
+                _db.LevyCertifications.Add(new LevyCertification
+                {
+                    CountyId = BentonCountyId,
+                    TaxYear = raw.Year,
+                    DistrictCode = raw.LevyCd,
+                    DistrictName = raw.TaxDistrictName ?? raw.LevyDescription ?? raw.LevyCd,
+                    PriorYearLevy = priorLimit?.HighestLawfulLevy ?? 0m,
+                    RequestedLevy = requestedLevy,
+                    CertifiedLevy = certifiedLevy,
+                    AssessedValue = assessedValue,
+                    NewConstructionValue = 0m,
+                    AnnexationValue = 0m,
+                    LevyRate = (double)certifiedRate,
+                    StatutoryLimit = currentLimit?.HighestLawfulLevy ?? requestedLevy,
+                    ConstitutionalLimit = 10.0,
+                    AggregateLimit = 5.90,
+                    WithinConstitutionalLimit = constitutionalLimit?.Status ?? certifiedRate <= 10.0m,
+                    WithinAggregateLimit = aggregateLimitPass,
+                    WasReduced = reductionAmount > 0m,
+                    ReductionAmount = reductionAmount,
+                    Status = "certified",
+                    Details = JsonSerializer.Serialize(payload),
+                    CreatedBy = "pacs-canonicalizer",
+                    CreatedAt = DateTime.UtcNow
+                });
+
+                total++;
+            }
+
+            await _db.SaveChangesAsync(ct);
+            _logger.LogDebug("[PacsCanonicalizer] LevyCertifications: {Done}/{Total}", total, certData.Count);
+        }
+
+        _logger.LogInformation("[PacsCanonicalizer] LevyCertifications: {Count} inserted for tax year {Year}.", total, latestYear.Value);
+        return total;
+    }
+
+    private async Task<Dictionary<(int TaxDistrictId, string LevyCd), bool>> BuildDistrictAggregateLimitLookupAsync(
+        int taxYear,
+        CancellationToken ct)
+    {
+        var aggRows = await _db.PacsLevyCertificationAggregateLimits
+            .AsNoTracking()
+            .Where(x => x.Year == taxYear)
+            .Select(x => new { x.TaxAreaId, x.Status })
+            .ToListAsync(ct);
+
+        var aggByArea = aggRows.ToDictionary(x => x.TaxAreaId, x => x.Status == 1);
+
+        var levyAreaPairs = await _db.PacsLevyTaxAreaAssocs
+            .AsNoTracking()
+            .Where(x => x.Year == taxYear)
+            .Select(x => new { x.TaxDistrictId, x.LevyCd, x.TaxAreaId })
+            .ToListAsync(ct);
+
+        return levyAreaPairs
+            .GroupBy(x => (x.TaxDistrictId, x.LevyCd))
+            .ToDictionary(
+                g => g.Key,
+                g =>
+                {
+                    var statuses = g
+                        .Select(x => aggByArea.TryGetValue(x.TaxAreaId, out var status) ? status : true)
+                        .ToList();
+                    return statuses.Count == 0 || statuses.All(x => x);
+                });
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // Helpers
     // ─────────────────────────────────────────────────────────────────────────
+
+    private static string? BuildLegalDescription(string? legalDesc, string? legalDesc2)
+    {
+        var first = legalDesc?.Trim();
+        var second = legalDesc2?.Trim();
+
+        if (string.IsNullOrWhiteSpace(first))
+            return string.IsNullOrWhiteSpace(second) ? null : second;
+
+        return string.IsNullOrWhiteSpace(second) ? first : $"{first} {second}";
+    }
 
     /// <summary>
     /// Normalize a PACS ImprvDetClassCd to the Benton 1-6 canonical quality tier names.
@@ -794,6 +1211,77 @@ public sealed class PacsCanonicalizer
             null            => null,
             _               => rawClassCd   // pass through unrecognized codes
         };
+
+    /// <summary>Returns true for PACS ImprvDetTypeCd values that represent basement area.</summary>
+    private static bool IsBasementSegmentType(string? typeCd)
+    {
+        if (string.IsNullOrEmpty(typeCd)) return false;
+        var t = typeCd.Trim().ToUpperInvariant();
+        return t.StartsWith("BAS", StringComparison.Ordinal) ||
+               t is "BSMT" or "BSM" or "BFIN" or "BUNF" or "BFLO" or "BGAR";
+    }
+
+    /// <summary>Returns true for PACS ImprvDetTypeCd values that represent garage area.</summary>
+    private static bool IsGarageSegmentType(string? typeCd)
+    {
+        if (string.IsNullOrEmpty(typeCd)) return false;
+        var t = typeCd.Trim().ToUpperInvariant();
+        return t.StartsWith("GAR", StringComparison.Ordinal) ||
+               t is "ATG" or "GARD" or "GARA";
+    }
+
+    /// <summary>
+    /// Maps raw city/address text to canonical Benton County city names.
+    /// Cities not in the lookup are mapped to "Unincorporated".
+    /// </summary>
+    public static string NormalizeCity(string? rawCity)
+    {
+        if (string.IsNullOrWhiteSpace(rawCity)) return "Unincorporated";
+
+        var normalized = rawCity.Trim().ToUpperInvariant();
+        return normalized switch
+        {
+            "KENNEWICK"      => "Kennewick",
+            "RICHLAND"       => "Richland",
+            "PASCO"          => "Pasco",
+            "PROSSER"        => "Prosser",
+            "BENTON CITY"    => "Benton City",
+            "WEST RICHLAND"  => "West Richland",
+            "FINLEY"         => "Finley",
+            "BASIN CITY"     => "Basin City",
+            "BURBANK"        => "Burbank",
+            "PATERSON"       => "Paterson",
+            _                => "Unincorporated",
+        };
+    }
+
+    /// <summary>
+    /// Derives Benton Method property use stratum from PACS building type code.
+    /// R = Residential, M = Manufactured, C = Commercial/Industrial, A = Agricultural, V = Vacant, X = Unknown.
+    /// </summary>
+    public static string DeriveStratum(string? buildingType)
+    {
+        if (string.IsNullOrWhiteSpace(buildingType)) return "X";
+
+        var bt = buildingType.Trim().ToUpperInvariant();
+
+        // Residential
+        if (bt.StartsWith("R")) return "R";
+
+        // Manufactured
+        if (bt.StartsWith("M")) return "M";
+
+        // Agricultural
+        if (bt.StartsWith("A")) return "A";
+
+        // Vacant
+        if (bt == "V") return "V";
+
+        // Commercial, Industrial (I), Special-use (S) all map to C
+        if (bt.StartsWith("C") || bt.StartsWith("I") || bt.StartsWith("S")) return "C";
+
+        return "X";
+    }
 }
 
 // ── Result DTO ────────────────────────────────────────────────────────────────
@@ -804,8 +1292,11 @@ public sealed record CanonicalizeResult
     public int ValuationRecords    { get; init; }
     public int ComparableSales     { get; init; }
     public int CamaCharacteristics { get; init; }
+    public int TaxLevies           { get; init; }
+    public int LevyCertifications  { get; init; }
 
     public override string ToString() =>
         $"Properties={Properties} ValuationRecords={ValuationRecords} " +
-        $"ComparableSales={ComparableSales} CamaCharacteristics={CamaCharacteristics}";
+        $"ComparableSales={ComparableSales} CamaCharacteristics={CamaCharacteristics} " +
+        $"TaxLevies={TaxLevies} LevyCertifications={LevyCertifications}";
 }

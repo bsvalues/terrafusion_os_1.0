@@ -103,11 +103,20 @@ interface PredictiveCostAnalysisProps {
   className?: string;
 }
 
+const REVAL_AREAS = [
+  { id: 'Reval 1', label: 'Reval 1 — Kennewick (Urban Core)',       factor: 1.00 },
+  { id: 'Reval 2', label: 'Reval 2 — West Richland / Badger Mtn',   factor: 1.05 },
+  { id: 'Reval 3', label: 'Reval 3 — North Richland / Horn Rapids',  factor: 1.10 },
+  { id: 'Reval 4', label: 'Reval 4 — East Benton / Benton City',     factor: 0.95 },
+  { id: 'Reval 5', label: 'Reval 5 — Prosser / Wine Country',         factor: 0.90 },
+  { id: 'Reval 6', label: 'Reval 6 — Rural / Agricultural Lands',    factor: 0.82 },
+];
+
 // Schema for the prediction form
 const predictionFormSchema = z.object({
   squareFeet: z.coerce.number().positive('Square feet must be a positive number').min(100, 'Minimum 100 square feet'),
   buildingType: z.string().min(1, 'Building type is required'),
-  region: z.string().min(1, 'Region is required'),
+  revalArea: z.string().min(1, 'Reval Area is required'),
   year: z.coerce.number().int().min(2020, 'Year must be 2020 or later').max(2030, 'Year must be 2030 or earlier').optional(),
   quality: z.enum(['Basic', 'Standard', 'Premium']).optional(),
   complexity: z.enum(['Low', 'Medium', 'High']).optional(),
@@ -173,7 +182,7 @@ export function PredictiveCostAnalysis({ className = '' }: PredictiveCostAnalysi
     defaultValues: {
       squareFeet: 2500,
       buildingType: 'Residential',
-      region: 'Eastern',
+      revalArea: 'Reval 1',
       year: new Date().getFullYear(),
       quality: 'Standard',
       complexity: 'Medium',
@@ -193,36 +202,33 @@ export function PredictiveCostAnalysis({ className = '' }: PredictiveCostAnalysi
   const availableOptions = useMemo(() => {
     if (!costMatrixData || !Array.isArray(costMatrixData)) return {
       buildingTypes: ['Residential', 'Commercial', 'Industrial'],
-      regions: ['Eastern', 'Western', 'Southern', 'Northern'],
+      revalAreas: REVAL_AREAS.map(a => a.id),
       qualities: ['Basic', 'Standard', 'Premium'],
       complexities: ['Low', 'Medium', 'High'],
       conditions: ['Fair', 'Good', 'Excellent']
     };
 
     // Extract unique values from data
-    const buildingTypesSet = new Set();
-    const regionsSet = new Set();
-    const qualitiesSet = new Set();
-    const complexitiesSet = new Set();
-    const conditionsSet = new Set();
-    
+    const buildingTypesSet = new Set<string>();
+    const qualitiesSet = new Set<string>();
+    const complexitiesSet = new Set<string>();
+    const conditionsSet = new Set<string>();
+
     costMatrixData.forEach(item => {
       if (item.buildingType) buildingTypesSet.add(item.buildingType);
-      if (item.region) regionsSet.add(item.region);
       if (item.quality) qualitiesSet.add(item.quality);
       if (item.complexity) complexitiesSet.add(item.complexity);
       if (item.condition) conditionsSet.add(item.condition);
     });
-    
-    const buildingTypes = Array.from(buildingTypesSet) as string[];
-    const regions = Array.from(regionsSet) as string[];
-    const qualities = Array.from(qualitiesSet) as string[];
-    const complexities = Array.from(complexitiesSet) as string[];
-    const conditions = Array.from(conditionsSet) as string[];
+
+    const buildingTypes = Array.from(buildingTypesSet);
+    const qualities = Array.from(qualitiesSet);
+    const complexities = Array.from(complexitiesSet);
+    const conditions = Array.from(conditionsSet);
 
     return {
       buildingTypes: buildingTypes.length > 0 ? buildingTypes : ['Residential', 'Commercial', 'Industrial'],
-      regions: regions.length > 0 ? regions : ['Eastern', 'Western', 'Southern', 'Northern'],
+      revalAreas: REVAL_AREAS.map(a => a.id),
       qualities: qualities.length > 0 ? qualities : ['Basic', 'Standard', 'Premium'],
       complexities: complexities.length > 0 ? complexities : ['Low', 'Medium', 'High'],
       conditions: conditions.length > 0 ? conditions : ['Fair', 'Good', 'Excellent']
@@ -242,9 +248,9 @@ export function PredictiveCostAnalysis({ className = '' }: PredictiveCostAnalysi
         form.setValue('buildingType', filters.buildingTypes[0]);
       }
 
-      // Apply region filter if only one is selected
-      if (filters.regions && filters.regions.length === 1) {
-        form.setValue('region', filters.regions[0]);
+      // Apply reval area filter if only one is selected
+      if (filters.revalAreas && filters.revalAreas.length === 1) {
+        form.setValue('revalArea', filters.revalAreas[0]);
       }
     }
   }, [filters, form]);
@@ -308,7 +314,7 @@ export function PredictiveCostAnalysis({ className = '' }: PredictiveCostAnalysi
       const features: BuildingFeatures = {
         squareFeet: values.squareFeet,
         buildingType: values.buildingType,
-        region: values.region,
+        revalArea: values.revalArea,
         year: values.year,
         quality: values.quality,
         complexity: values.complexity,
@@ -340,7 +346,7 @@ export function PredictiveCostAnalysis({ className = '' }: PredictiveCostAnalysi
     const features: BuildingFeatures = {
       squareFeet: currentFormValues.squareFeet,
       buildingType: currentFormValues.buildingType,
-      region: currentFormValues.region,
+      revalArea: currentFormValues.revalArea,
       year: currentFormValues.year,
       quality: currentFormValues.quality,
       complexity: currentFormValues.complexity,
@@ -376,7 +382,7 @@ export function PredictiveCostAnalysis({ className = '' }: PredictiveCostAnalysi
     // Set form values
     form.setValue('squareFeet', saved.features.squareFeet);
     form.setValue('buildingType', saved.features.buildingType);
-    form.setValue('region', saved.features.region);
+    form.setValue('revalArea', saved.features.revalArea ?? 'Reval 1');
     if (saved.features.year) form.setValue('year', saved.features.year);
     if (saved.features.quality) form.setValue('quality', saved.features.quality as any);
     if (saved.features.complexity) form.setValue('complexity', saved.features.complexity as any);
@@ -412,8 +418,8 @@ export function PredictiveCostAnalysis({ className = '' }: PredictiveCostAnalysi
         case 'buildingType':
           values = availableOptions.buildingTypes;
           break;
-        case 'region':
-          values = availableOptions.regions;
+        case 'revalArea':
+          values = availableOptions.revalAreas;
           break;
         case 'quality':
           values = availableOptions.qualities;
@@ -503,7 +509,7 @@ export function PredictiveCostAnalysis({ className = '' }: PredictiveCostAnalysi
     const displayNames: Record<string, string> = {
       'squareFeet': 'Square Footage',
       'buildingType': 'Building Type',
-      'region': 'Region',
+      'revalArea': 'Reval Area',
       'year': 'Year Built',
       'quality': 'Quality Level',
       'complexity': 'Complexity',
@@ -724,10 +730,10 @@ export function PredictiveCostAnalysis({ className = '' }: PredictiveCostAnalysi
                       
                       <FormField
                         control={form.control}
-                        name="region"
+                        name="revalArea"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Region</FormLabel>
+                            <FormLabel>Reval Area</FormLabel>
                             <FormControl>
                               <div className="flex items-center gap-2">
                                 <Select
@@ -736,12 +742,12 @@ export function PredictiveCostAnalysis({ className = '' }: PredictiveCostAnalysi
                                   disabled={predictionLoading}
                                 >
                                   <SelectTrigger>
-                                    <SelectValue placeholder="Select region" />
+                                    <SelectValue placeholder="Select reval area" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    {availableOptions.regions.map(region => (
-                                      <SelectItem key={region} value={region}>
-                                        {region}
+                                    {availableOptions.revalAreas.map(revalArea => (
+                                      <SelectItem key={revalArea} value={revalArea}>
+                                        {revalArea}
                                       </SelectItem>
                                     ))}
                                   </SelectContent>
@@ -754,13 +760,13 @@ export function PredictiveCostAnalysis({ className = '' }: PredictiveCostAnalysi
                                         variant="outline"
                                         size="sm"
                                         disabled={!modelReady || predictionLoading}
-                                        onClick={() => compareFeatureValues('region')}
+                                        onClick={() => compareFeatureValues('revalArea')}
                                       >
                                         <BarChartIcon className="h-4 w-4" />
                                       </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                      Compare different regions
+                                      Compare different reval areas
                                     </TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
@@ -1006,7 +1012,7 @@ export function PredictiveCostAnalysis({ className = '' }: PredictiveCostAnalysi
                         >
                           <div>
                             <div className="font-medium text-sm">
-                              {saved.features.buildingType} in {saved.features.region}
+                              {saved.features.buildingType} in {saved.features.revalArea ?? (saved.features as any).region}
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {saved.features.squareFeet.toLocaleString()} sq.ft. · {getFormattedCost(saved.prediction)}
@@ -1224,8 +1230,8 @@ export function PredictiveCostAnalysis({ className = '' }: PredictiveCostAnalysi
                                 <div className="text-muted-foreground">Building Type:</div>
                                 <div className="font-medium">{form.getValues().buildingType}</div>
                                 
-                                <div className="text-muted-foreground">Region:</div>
-                                <div className="font-medium">{form.getValues().region}</div>
+                                <div className="text-muted-foreground">Reval Area (Cycle):</div>
+                                <div className="font-medium">{form.getValues().revalArea}</div>
                                 
                                 <div className="text-muted-foreground">Square Feet:</div>
                                 <div className="font-medium">{form.getValues().squareFeet.toLocaleString()}</div>

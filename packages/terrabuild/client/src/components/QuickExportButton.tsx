@@ -28,7 +28,7 @@ interface QuickExportButtonProps {
     squareFootage: number;
     quality?: string;
     buildingAge?: number;
-    region: string;
+    revalArea: string;
     complexityFactor: number;
     conditionFactor: number;
     baseCost: number;
@@ -154,7 +154,7 @@ export default function QuickExportButton({
           // Create table with building info
           const buildingInfoData = [
             ['Building Type:', currentCalculation.buildingType],
-            ['Region:', currentCalculation.region],
+            ['Reval Area:', currentCalculation.revalArea],
             ['Square Footage:', currentCalculation.squareFootage.toLocaleString() + ' sq.ft.'],
             ['Complexity Factor:', currentCalculation.complexityFactor.toFixed(2)],
             ['Condition Factor:', currentCalculation.conditionFactor.toFixed(2)]
@@ -324,8 +324,8 @@ export default function QuickExportButton({
           },
           {
             Category: 'Building Information',
-            Description: 'Region',
-            Value: currentCalculation.region
+            Description: 'Reval Area',
+            Value: currentCalculation.revalArea
           },
           {
             Category: 'Building Information',
@@ -494,8 +494,8 @@ export default function QuickExportButton({
                   <td>${currentCalculation.buildingType}</td>
                 </tr>
                 <tr>
-                  <td><strong>Region</strong></td>
-                  <td>${currentCalculation.region}</td>
+                  <td><strong>Reval Area</strong></td>
+                  <td>${currentCalculation.revalArea}</td>
                 </tr>
                 <tr>
                   <td><strong>Square Footage</strong></td>

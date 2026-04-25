@@ -8,7 +8,7 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { Copy, Trash2, BarChart3, ArrowRight, Info, Plus, GitCompare, FileDown, RefreshCw } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import type { CalculationResult } from './BCBSCostCalculatorAPI';
+import type { CalculationResult } from './CostCalculatorAPI';
 
 // Helper function to format currency
 const formatCurrency = (value: number) => {
@@ -75,7 +75,7 @@ export default function ScenarioComparisonDashboard({
     costPerSqft: scenario.costPerSqft || 0,
     squareFootage: scenario.squareFootage || 0,
     buildingType: scenario.buildingType || 'Unknown',
-    region: scenario.region || 'Unknown',
+    revalArea: scenario.revalArea ?? 'Unknown',
     complexity: scenario.complexityFactor || 1,
     condition: scenario.conditionFactor || 1,
   }));
@@ -155,7 +155,7 @@ export default function ScenarioComparisonDashboard({
                     <TableHead>Scenario</TableHead>
                     <TableHead>Building Type</TableHead>
                     <TableHead>Square Feet</TableHead>
-                    <TableHead>Region</TableHead>
+                    <TableHead>Reval Area (Cycle)</TableHead>
                     <TableHead>Complexity</TableHead>
                     <TableHead>Condition</TableHead>
                     <TableHead className="text-right">Cost per sqft</TableHead>
@@ -170,7 +170,7 @@ export default function ScenarioComparisonDashboard({
                       <TableCell>{scenario.buildingType || 'Unknown'}</TableCell>
                       <TableCell>{scenario.squareFootage?.toLocaleString() || 0}</TableCell>
                       <TableCell>
-                        {scenario.region ? scenario.region.replace(/_/g, ' ') : 'Unknown'}
+                        {scenario.revalArea ? scenario.revalArea.replace(/_/g, ' ') : 'Unknown'}
                       </TableCell>
                       <TableCell>{scenario.complexityFactor?.toFixed(2) || '1.00'}</TableCell>
                       <TableCell>{scenario.conditionFactor?.toFixed(2) || '1.00'}</TableCell>

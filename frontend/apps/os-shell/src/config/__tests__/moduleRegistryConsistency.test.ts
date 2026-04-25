@@ -102,6 +102,20 @@ describe('MODULE_REGISTRY -> ModuleRenderer coverage', () => {
     'terra-notice',
     // AppFrame native-app modules — rendered via <AppFrame> iframe (no MODULE_ENTRY)
     'costforge',
+    // Phase 36+: inline Suspense+lazy in switch (no MODULE_ENTRY)
+    'comps-forge',
+    'neighborhood-ratio-study',
+    'cost-analytics',
+    'geo-forge',
+    // Atlas suite standalone modules — inline Suspense+lazy (no MODULE_ENTRY)
+    'sales-forge',
+    'layer-works',
+    'terra-query',
+    'terra-print',
+    'terra-sketch',
+    // County Studio + Atlas Live View — inline Suspense+lazy (no MODULE_ENTRY)
+    'county-studio',
+    'atlas-live-view',
   ]);
 
   it('every MODULE_REGISTRY entry has a MODULE_ENTRY or is a known placeholder', () => {
@@ -231,6 +245,19 @@ describe('moduleActivation displayNames/icons coverage', () => {
       // Queued modules — registered but pending implementation
       'terra-cert': 'TerraCert',
       'terra-notice': 'TerraNotice',
+      // Phase 36+: inline modules added to registry
+      'comps-forge': 'CompsForge',
+      'sales-forge': 'SalesForge',
+      'neighborhood-ratio-study': 'Neighborhood Ratio Study',
+      'cost-analytics': 'Cost Analytics',
+      'layer-works': 'LayerWorks',
+      'terra-query': 'TerraQuery',
+      'terra-print': 'TerraPrint',
+      'terra-sketch': 'TerraSketch',
+      'geo-forge': 'GeoForge',
+      // County Studio + Atlas Live View
+      'county-studio': 'County Studio',
+      'atlas-live-view': 'Atlas Live View',
     };
 
     const missing: string[] = [];

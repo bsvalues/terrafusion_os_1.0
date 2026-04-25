@@ -33,7 +33,7 @@ export default function ComparativeAnalysisDemo() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Comparative Analysis</h1>
             <p className="text-muted-foreground">
-              Compare building costs across different regions and building types
+              Compare building costs across different reval areas and building types
             </p>
           </div>
         </div>
@@ -43,7 +43,7 @@ export default function ComparativeAnalysisDemo() {
             <Info className="h-4 w-4 text-blue-600" />
             <AlertTitle className="text-blue-800">Interactive Comparison Tool</AlertTitle>
             <AlertDescription className="text-blue-700">
-              This tool allows you to compare building costs across multiple regions and building types.
+              This tool allows you to compare building costs across multiple reval areas and building types.
               Add items to the comparison, and view the data in different visualization formats.
               You can also export the comparison data for further analysis.
             </AlertDescription>
@@ -53,7 +53,7 @@ export default function ComparativeAnalysisDemo() {
         <div className="grid gap-6 md:grid-cols-7">
           <div className="md:col-span-2">
             <FilterControlPanel
-              allowedFilters={['regions', 'buildingTypes']}
+              allowedFilters={['revalAreas', 'buildingTypes']}
               compact={true}
             />
             
@@ -63,7 +63,7 @@ export default function ComparativeAnalysisDemo() {
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground space-y-3">
                 <p>
-                  <span className="font-medium text-foreground">Add items</span>: Click the 'Add' button to select regions and building types for comparison.
+                  <span className="font-medium text-foreground">Add items</span>: Click the 'Add' button to select reval areas and building types for comparison.
                 </p>
                 <p>
                   <span className="font-medium text-foreground">Change visualization</span>: Toggle between different chart types using the tabs above the chart.
@@ -90,7 +90,7 @@ export default function ComparativeAnalysisDemo() {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0 text-xs text-muted-foreground">
-                  Compare costs across regions to identify regional pricing variations and optimize location-based decisions.
+                  Compare costs across reval areas to identify pricing variations and optimize location-based decisions.
                 </CardContent>
               </Card>
               
@@ -132,7 +132,7 @@ export default function ComparativeAnalysisDemo() {
               <div>
                 <h3 className="text-lg font-medium mb-2">Why Compare Building Costs?</h3>
                 <p className="text-muted-foreground mb-3">
-                  Comparative analysis helps identify cost variations across different regions and building types,
+                  Comparative analysis helps identify cost variations across different reval areas and building types,
                   providing valuable insights for budgeting, planning, and decision-making in construction projects.
                 </p>
                 
@@ -147,7 +147,7 @@ export default function ComparativeAnalysisDemo() {
                   <div>
                     <h4 className="font-medium text-sm mb-1">Percentage Differences</h4>
                     <p className="text-xs text-muted-foreground">
-                      Easily identify the percentage differences between regions or building types to spot significant variations.
+                      Easily identify the percentage differences between reval areas or building types to spot significant variations.
                     </p>
                   </div>
                   

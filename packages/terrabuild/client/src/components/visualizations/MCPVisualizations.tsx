@@ -50,11 +50,11 @@ export function MCPVisualizations() {
   
   // Fetch MCP dashboard data
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['/api/mcp/dashboard'],
+    queryKey: ['/api/swarm/status'],
     queryFn: async () => {
-      const response = await fetch('/api/mcp/dashboard');
+      const response = await fetch('/api/swarm/status');
       if (!response.ok) {
-        throw new Error('Failed to fetch MCP dashboard data');
+        throw new Error('Failed to fetch swarm status');
       }
       return response.json() as Promise<MCPDashboardData>;
     },

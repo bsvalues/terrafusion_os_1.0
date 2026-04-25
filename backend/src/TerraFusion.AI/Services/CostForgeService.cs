@@ -232,7 +232,7 @@ public class CostForgeService : ICostForgeService
 
         if (aiModel != null)
         {
-            var valuation = new Valuation
+            var valuation = new TerraFusion.Core.Entities.Valuation
             {
                 PropertyId = property.Id,
                 AIModelId = aiModel.Id,

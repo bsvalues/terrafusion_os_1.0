@@ -71,17 +71,17 @@ vi.mock('../../services/api/activityApi', () => ({
 // ============================================================================
 
 describe('Gate 1: Contract Types', () => {
-  it('WorkbenchTabSlug type covers all 9 canonical tabs', () => {
+  it('WorkbenchTabSlug type covers all 8 canonical tabs', () => {
     // This is enforced at compile time by TypeScript, but we
     // verify the runtime constant matches.
-    const expected = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'];
+    const expected = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier'];
     for (const tab of expected) {
       expect(VALID_WORKBENCH_TAB_IDS).toContain(tab);
     }
   });
 
-  it('tab slug set is exactly 9 members (no drift)', () => {
-    expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(9);
+  it('tab slug set is exactly 8 members (no drift)', () => {
+    expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(8);
   });
 });
 

@@ -55,12 +55,32 @@ public interface ITerraFusionDbContext
     DbSet<CodexUltimatePower> CodexUltimatePowerRecords { get; set; }
     DbSet<CodexAlert> CodexAlerts { get; set; }
 
+    // CAMA (Computer Assisted Mass Appraisal) characteristics — used for search
+    DbSet<CamaCharacteristic> CamaCharacteristics { get; set; }
+
+    // ComparableSales — qualified sales pool for ratio studies + segment derivation.
+    // Canonical ratio: Properties.AssessedValue / ComparableSales.AdjustedSalePrice.
+    DbSet<ComparableSale> ComparableSales { get; set; }
+
+    // Levy certification truth — canonical certification workflow source
+    DbSet<LevyCertification> LevyCertifications { get; set; }
+
     // Dais County Ops — Exemptions, Appeals, Certification, Notices, Queue (Phase 7)
     DbSet<Exemption> Exemptions { get; set; }
     DbSet<Appeal> Appeals { get; set; }
     DbSet<CertificationStep> CertificationSteps { get; set; }
     DbSet<Notice> Notices { get; set; }
     DbSet<QueueItem> QueueItems { get; set; }
+
+    // County Studio — Study sessions, segments, cohorts, scenarios, adjustments, exceptions
+    DbSet<CountyStudySession> CountyStudySessions { get; set; }
+    DbSet<CountySegmentSet> CountySegmentSets { get; set; }
+    DbSet<CountySegment> CountySegments { get; set; }
+    DbSet<CountyCohort> CountyCohorts { get; set; }
+    DbSet<CountyScenario> CountyScenarios { get; set; }
+    DbSet<CountyAdjustmentSet> CountyAdjustmentSets { get; set; }
+    DbSet<CountyExceptionSet> CountyExceptionSets { get; set; }
+    DbSet<CountySpatialArtifact> CountySpatialArtifacts { get; set; }
 
     System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     DbSet<TEntity> Set<TEntity>() where TEntity : class;

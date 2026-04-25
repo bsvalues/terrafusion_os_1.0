@@ -1,0 +1,15 @@
+{
+  "name": "county-studio",
+  "version": "1.0.0",
+  "description": "Segment-first countywide valuation workspace — cohorts, scenarios, adjustment sets",
+  "author": "Terrafusion Systems",
+  "permissions": ["load:county-studio", "data:segments", "data:scenarios", "data:adjustments"],
+  "targetCounties": ["benton"],
+  "legacySystems": ["PACS_9.0"],
+  "dependencies": [],
+  "entryPoint": "index.tsx",
+  "launchPath": "/forge/county-studio",
+  "createdAt": "2026-04-21T00:00:00Z",
+  "hash": "sha256:county-studio-v1-placeholder",
+  "signature": "HMAC-SHA256:benton:county_studio_v1_signature"
+}

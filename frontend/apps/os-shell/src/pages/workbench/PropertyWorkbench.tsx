@@ -26,10 +26,11 @@
  */
 
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { NavLink, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Home, ChevronRight } from 'lucide-react';
 import { ErrorBoundary } from '../../components/errors/ErrorBoundary';
 import { ContextRibbon } from '../../components/workbench/ContextRibbon';
+import { WorkbenchRail } from '../../components/workbench/WorkbenchRail';
 import { ActivityFeed } from '../../components/workbench/ActivityFeed';
 import { BADGE_PROVIDERS } from '../../services/badges';
 import { QUICK_ACTION_PROVIDERS } from '../../services/quickActions';
@@ -40,7 +41,7 @@ import type { WorkbenchTabSlug, WorkMode, Badge, QuickActionDefinition, Workbenc
 import { useWorkbenchRoles } from '../../hooks/useWorkbenchRoles';
 import { useSession } from '../../auth/useSession';
 import { useAuthContext, toOsActor } from '../../auth/useAuthContext';
-import { buildContextRibbonFacts } from '../../components/workbench/parcelContextFacts';
+import { buildContextRibbonFacts as _buildContextRibbonFacts } from '../../components/workbench/parcelContextFacts';
 
 // ============================================================================
 // Types
@@ -100,21 +101,8 @@ const WORKBENCH_TABS: WorkbenchTab[] = [
   { id: 'atlas', label: 'Atlas', path: 'atlas', enabled: true },
   { id: 'dais', label: 'Dais', path: 'dais', enabled: true },
   { id: 'dossier', label: 'Dossier', path: 'dossier', enabled: true },
-  { id: 'pilot', label: 'Pilot', path: 'pilot', enabled: true },
 ];
 
-/**
- * Work-mode → tab emphasis mapping.
- * Each mode highlights the tab most relevant to that workflow.
- * overview highlights nothing (all tabs equally relevant).
- */
-const MODE_TAB_EMPHASIS: Record<WorkMode, WorkbenchTabSlug | null> = {
-  overview: null,
-  valuation: 'forge',
-  mapping: 'atlas',
-  admin: 'dais',
-  case: 'dossier',
-};
 
 // ============================================================================
 // Tab Content Components (Lazy Loaded)
@@ -143,67 +131,7 @@ const TabLoader: React.FC = () => (
   </div>
 );
 
-/**
- * Tab Navigation — uses NavLink for route-based switching with trace emission
- */
-const TabNavigation: React.FC<{
-  parcelId: string;
-  tabs: WorkbenchTab[];
-  currentTabId: WorkbenchTabSlug;
-  emphasizedTabId: WorkbenchTabSlug | null;
-  onTabClick: (tab: WorkbenchTab, isActive: boolean) => void;
-}> = ({ parcelId, tabs, currentTabId, emphasizedTabId, onTabClick }) => (
-  <nav
-    className="border-b px-3 flex gap-1 overflow-x-auto"
-    style={{
-      borderColor: 'hsl(var(--tf-border) / 0.4)',
-      background: 'hsl(var(--tf-surface) / 0.9)',
-    }}
-  >
-    {tabs.map((tab) => {
-      const isCurrentTab = tab.id === currentTabId;
-      return (
-        <NavLink
-          key={tab.id}
-          to={tab.path ? `/property/${parcelId}/${tab.path}` : `/property/${parcelId}`}
-          end={tab.path === ''}
-          className="flex items-center px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap"
-          style={({ isActive }) => {
-            const isEmphasized = emphasizedTabId === tab.id && !isActive;
-            return {
-              color: isActive
-                ? 'hsl(var(--tf-accent))'
-                : isEmphasized
-                  ? 'hsl(var(--tf-text) / 0.82)'
-                  : 'hsl(var(--tf-text) / 0.62)',
-              borderBottom: isActive
-                ? '2px solid hsl(var(--tf-accent))'
-                : isEmphasized
-                  ? '2px solid hsl(var(--tf-border) / 0.8)'
-                  : '2px solid transparent',
-              background: isActive
-                ? 'hsl(var(--tf-accent) / 0.08)'
-                : isEmphasized
-                  ? 'hsl(var(--tf-surface-2) / 0.65)'
-                  : 'transparent',
-              opacity: tab.enabled ? 1 : 0.5,
-              cursor: tab.enabled ? 'pointer' : 'not-allowed',
-            };
-          }}
-          onClick={(e) => {
-            if (!tab.enabled) {
-              e.preventDefault();
-              return;
-            }
-            onTabClick(tab, isCurrentTab);
-          }}
-        >
-          <span>{tab.label}</span>
-        </NavLink>
-      );
-    })}
-  </nav>
-);
+
 
 // ============================================================================
 // Property Workbench Component
@@ -265,13 +193,11 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     [activeParcel, parcelId]
   );
 
-  const parcelFacts = useMemo(
-    () => buildContextRibbonFacts(activeParcel).slice(0, 6),
+  // ── No-op: parcel facts computed for future use
+  const _parcelFacts = useMemo(
+    () => _buildContextRibbonFacts(activeParcel).slice(0, 6),
     [activeParcel]
   );
-
-  // ── Work Mode state ──
-  const [workMode, setWorkMode] = useState<WorkMode>('overview');
 
   // ── Role-based tab visibility (auth claims first, session fallback) ──
   const countyId = auth.countyId ?? session.countyId;
@@ -280,7 +206,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     () => (auth.roles.length > 0 ? [...auth.roles] : session.role ? [session.role] : []),
     [auth.roles, session.role]
   );
-  const { visibleTabs, hiddenCount, showAll, toggleShowAll } = useWorkbenchRoles(roles);
+  const { visibleTabs } = useWorkbenchRoles(roles);
 
   /** Tabs filtered by role visibility — order preserved, never mutated */
   const filteredTabs = useMemo(
@@ -300,7 +226,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
       userId,
       roles,
       parcelId,
-      workMode,
+      workMode: 'overview',
     };
 
     Promise.allSettled(
@@ -315,7 +241,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     });
 
     return () => { cancelled = true; };
-  }, [countyId, parcelId, roles, userId, workMode]);
+  }, [countyId, parcelId, roles, userId]);
 
   // ── Quick Actions — mode-aware, collected from providers ──
   const [quickActions, setQuickActions] = useState<QuickActionDefinition[]>([]);
@@ -329,7 +255,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
       userId,
       roles,
       parcelId,
-      workMode,
+      workMode: 'overview',
     };
 
     Promise.allSettled(
@@ -344,7 +270,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
     });
 
     return () => { cancelled = true; };
-  }, [countyId, parcelId, roles, userId, workMode]);
+  }, [countyId, parcelId, roles, userId]);
 
   // ── Activity Feed — collapsible bottom panel ──
   const [activityOpen, setActivityOpen] = useState(false);
@@ -363,39 +289,12 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
   }, [parcelId]);
 
   /**
-   * Handle tab click — emits OS action trace for user-initiated tab switches
+   * Handle tab click — reserved for future non-NavLink tab switching needs
    */
-  const handleTabClick = useCallback(
-    (tab: WorkbenchTab, isCurrentTab: boolean) => {
-      isInitialMount.current = false;
-
-      if (isCurrentTab) return;
-
-      const targetHref = tab.path ? `/property/${parcelId}/${tab.path}` : `/property/${parcelId}`;
-
-      const action: OsAction = {
-        id: 'workbench_tab_switch',
-        label: `Switch to ${tab.label}`,
-        intent: 'workbench',
-        href: targetHref,
-        disabled: !tab.enabled,
-        disabledReason: !tab.enabled ? 'Tab is currently disabled' : undefined,
-      };
-
-      const context: OsActionContext = {
-        navigate: () => {}, // Navigation handled by NavLink
-        suiteId: 'workbench',
-        surface: 'workbench',
-        moduleId: 'workbench_tabs',
-        parcelIdHash: parcelId ? hashParcelId(parcelId) : undefined,
-        tabId: tab.id,
-        actor: toOsActor(auth),
-      };
-
-      executeOsAction(action, context);
-    },
-    [parcelId]
-  );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _handleTabClick = (tab: WorkbenchTab, _isCurrentTab: boolean) => {
+    isInitialMount.current = false;
+  };
 
   // ── No parcel ──
   if (!parcelId) {
@@ -516,10 +415,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
         owner={propertyData.owner}
         countyName="Benton County"
         badges={badges}
-        parcelFacts={parcelFacts}
         quickActions={quickActions}
-        workMode={workMode}
-        onWorkModeChange={setWorkMode}
         onQuickAction={(action) => {
           // Quick actions are tool-bound — route through TerraPilot
           executeOsAction(
@@ -542,40 +438,21 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
         onPopOut={handlePopOut}
       />
 
-      {/* Workbench content: single tab bar + Outlet */}
-      <div className="flex flex-col flex-1 min-h-0">
-        {/* Tab Navigation — filtered by role visibility */}
-        <div className="flex items-center">
-          <div className="flex-1 min-w-0">
-            <TabNavigation
-              parcelId={parcelId}
-              tabs={filteredTabs}
-              currentTabId={currentTabId}
-              emphasizedTabId={MODE_TAB_EMPHASIS[workMode]}
-              onTabClick={handleTabClick}
-            />
-          </div>
-          {hiddenCount > 0 && (
-            <button
-              onClick={toggleShowAll}
-              className="shrink-0 px-3 py-1 mr-2 text-xs rounded transition-colors"
-              style={{
-                color: showAll ? 'hsl(var(--tf-accent))' : 'hsl(var(--tf-text) / 0.4)',
-                background: showAll ? 'hsl(var(--tf-accent) / 0.1)' : 'transparent',
-              }}
-              title={showAll ? 'Show role-default tabs' : `Show all tabs (+${hiddenCount} hidden)`}
-            >
-              {showAll ? 'Role view' : `+${hiddenCount} more`}
-            </button>
-          )}
-        </div>
+      {/* Workbench content: Rail + Outlet */}
+      <div className="flex flex-row flex-1 min-h-0">
+        {/* Left Rail — Liquid Glass vertical suite dock */}
+        <WorkbenchRail
+          tabs={filteredTabs}
+          parcelId={parcelId}
+          currentTabId={currentTabId}
+        />
 
-        {/* Tab Content via React Router Outlet */}
-        <main className="flex-1 overflow-auto p-2">
+        {/* Stage — tab content */}
+        <main className="flex-1 overflow-auto p-2" style={{ minWidth: 0, paddingBottom: '80px' }}>
           <div className="min-h-full">
             <ErrorBoundary>
               <Suspense fallback={<TabLoader />}>
-                <Outlet context={{ parcelId, propertyData, workMode }} />
+                <Outlet context={{ parcelId, propertyData, workMode: 'overview' as WorkMode }} />
               </Suspense>
             </ErrorBoundary>
           </div>

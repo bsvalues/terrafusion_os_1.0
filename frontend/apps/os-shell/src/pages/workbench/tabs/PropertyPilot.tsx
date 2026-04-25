@@ -148,7 +148,7 @@ export const PropertyPilot: React.FC = () => {
         icon='🎮'
         title='Pilot'
         parcelId={parcelId}
-        subtitle={`Muse-first reasoning tools for parcel ${parcelId}`}
+        subtitle={`AI analysis tools for parcel ${parcelId}`}
         actions={
           <button
             onClick={() => window.open(`/property/${encodeURIComponent(parcelId)}/pilot`, '_blank')}
@@ -161,14 +161,14 @@ export const PropertyPilot: React.FC = () => {
 
       {!toolsLoading && !toolsError && (
         <div className='tf-status-info rounded-xl p-4' data-testid='pilot-muse-scope'>
-          <p className='tf-text'>Muse-first shell: only read-only reasoning and explanation tools are exposed here.</p>
+          <p className='tf-text'>This panel provides read-only analysis tools for this parcel.</p>
         </div>
       )}
 
-      {/* Loaded operation history from store */}
+      {/* Operation history from store */}
       {operations.length > 0 && (
-        <BentoCard variant="table" title={`Loaded Operation History (${operations.length})`}>
-          <p className='tf-text-tertiary text-sm mb-3'>Shown from the operation history currently loaded for this parcel.</p>
+        <BentoCard variant="table" title={`Operation History (${operations.length})`}>
+          <p className='tf-text-tertiary text-sm mb-3'>Pilot operation history for this parcel.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
               <thead>
@@ -203,7 +203,7 @@ export const PropertyPilot: React.FC = () => {
         <div className='tf-status-info rounded-xl p-4' role='status'>
           <div className='flex items-center gap-3'>
             <div className='w-5 h-5 border-2 rounded-full animate-spin' style={{ borderColor: 'hsl(var(--tf-text) / 0.3)', borderTopColor: 'hsl(var(--tf-text))' }} />
-            <span className='tf-text'>Loading tools from manifest…</span>
+            <span className='tf-text'>Loading tools…</span>
           </div>
         </div>
       )}
@@ -241,7 +241,7 @@ export const PropertyPilot: React.FC = () => {
                     <h3 className='tf-text font-semibold'>
                       {tool.displayName ?? tool.toolId}
                     </h3>
-                    <code className='text-xs tf-text-muted'>{tool.toolId}</code>
+                    {import.meta.env.DEV && <code className='text-xs tf-text-muted'>{tool.toolId}</code>}
                   </div>
                 </div>
                 <span className={`px-2 py-0.5 text-xs ${RISK_BADGE_CLASS[tool.risk]} rounded`}>
@@ -251,7 +251,7 @@ export const PropertyPilot: React.FC = () => {
               {tool.description && (
                 <p className='tf-text-secondary text-sm mb-4'>{tool.description}</p>
               )}
-              {tool.suite && (
+              {import.meta.env.DEV && tool.suite && (
                 <p className='tf-text-muted text-xs mb-3'>Suite: {tool.suite}</p>
               )}
               <button
@@ -270,7 +270,7 @@ export const PropertyPilot: React.FC = () => {
 
       {!toolsLoading && !toolsError && tools.length === 0 && (
         <div className='tf-status-info rounded-xl p-4'>
-          <p className='tf-text-muted text-center'>No Muse read-only tools are available in the manifest.</p>
+          <p className='tf-text-muted text-center'>No analysis tools are currently available.</p>
         </div>
       )}
 
@@ -286,7 +286,7 @@ export const PropertyPilot: React.FC = () => {
           <InvocationHistory
             records={invocationHistory}
             title='Invocation History'
-            emptyMessage='No tool invocations for this parcel yet.'
+            emptyMessage='No actions performed on this parcel yet.'
           />
         </div>
 

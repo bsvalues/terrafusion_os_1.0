@@ -161,7 +161,7 @@ export function SegmentDiscoveryDashboard() {
                     <div className="font-bold">${seg.medianValue.toLocaleString()}</div>
                   </div>
                   <div className="p-2 rounded bg-gray-50">
-                    <div className="text-xs text-muted-foreground">Avg Sqft</div>
+                    <div className="text-xs text-muted-foreground">Avg Sq Ft</div>
                     <div className="font-bold">{seg.avgSqft.toLocaleString()}</div>
                   </div>
                   <div className="p-2 rounded bg-gray-50">

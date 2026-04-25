@@ -60,6 +60,26 @@ function MetricRow({ label, valueA, valueB }: MetricRowProps) {
 // Component
 // ============================================================================
 
+// Normalize a model entry from either the live API (flat) or fixture (nested result) shape.
+function extractStats(model: Record<string, unknown>): {
+  cod: number; prd: number; prb: number; medianRatio: number; sampleSize: number; iaaoCompliant: boolean;
+} {
+  // Live API shape: { label, cod, prd, prb, medianRatio, sampleSize }
+  // Fixture shape:  { label, params, result: { cod, prd, prb, medianRatio, sampleSize, iaaoCompliant } }
+  const src = (model.result as Record<string, unknown> | undefined) ?? model;
+  const cod        = Number(src.cod        ?? 0);
+  const prd        = Number(src.prd        ?? 1);
+  const prb        = Number(src.prb        ?? 0);
+  const medianRatio = Number(src.medianRatio ?? 0);
+  const sampleSize = Number(src.sampleSize ?? 0);
+  const iaaoCompliant: boolean =
+    src.iaaoCompliant !== undefined
+      ? Boolean(src.iaaoCompliant)
+      : cod <= 15 && prd >= 0.98 && prd <= 1.03 && Math.abs(prb) < 0.05 &&
+        medianRatio >= 0.9 && medianRatio <= 1.1;
+  return { cod, prd, prb, medianRatio, sampleSize, iaaoCompliant };
+}
+
 export function ModelComparisonPanel() {
   const comparison = useForgeStatisticsStore((s) => s.comparison);
   const strata = useForgeStatisticsStore((s) => s.strata);
@@ -73,6 +93,8 @@ export function ModelComparisonPanel() {
   }
 
   const { modelA, modelB, deltas, improvedMetrics, degradedMetrics } = comparison;
+  const statsA = extractStats(modelA as unknown as Record<string, unknown>);
+  const statsB = extractStats(modelB as unknown as Record<string, unknown>);
 
   return (
     <div data-testid="model-comparison" className="space-y-4">
@@ -83,16 +105,16 @@ export function ModelComparisonPanel() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <span>{modelA.label}</span>
-              {modelA.result.iaaoCompliant && <Badge>Compliant</Badge>}
+              {statsA.iaaoCompliant && <Badge>Compliant</Badge>}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-1">
-              <MetricRow label="COD" valueA={fmtNum(modelA.result.cod, 1)} valueB="" />
-              <MetricRow label="PRD" valueA={fmtNum(modelA.result.prd)} valueB="" />
-              <MetricRow label="PRB" valueA={fmtNum(modelA.result.prb)} valueB="" />
-              <MetricRow label="Median Ratio" valueA={fmtNum(modelA.result.medianRatio)} valueB="" />
-              <MetricRow label="Sample Size" valueA={fmtInt(modelA.result.sampleSize)} valueB="" />
+              <MetricRow label="COD" valueA={fmtNum(statsA.cod, 1)} valueB="" />
+              <MetricRow label="PRD" valueA={fmtNum(statsA.prd)} valueB="" />
+              <MetricRow label="PRB" valueA={fmtNum(statsA.prb)} valueB="" />
+              <MetricRow label="Median Ratio" valueA={fmtNum(statsA.medianRatio)} valueB="" />
+              <MetricRow label="Sample Size" valueA={fmtInt(statsA.sampleSize)} valueB="" />
             </div>
           </CardContent>
         </Card>
@@ -102,16 +124,16 @@ export function ModelComparisonPanel() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <span>{modelB.label}</span>
-              {modelB.result.iaaoCompliant && <Badge>Compliant</Badge>}
+              {statsB.iaaoCompliant && <Badge>Compliant</Badge>}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-1">
-              <MetricRow label="COD" valueA={fmtNum(modelB.result.cod, 1)} valueB="" />
-              <MetricRow label="PRD" valueA={fmtNum(modelB.result.prd)} valueB="" />
-              <MetricRow label="PRB" valueA={fmtNum(modelB.result.prb)} valueB="" />
-              <MetricRow label="Median Ratio" valueA={fmtNum(modelB.result.medianRatio)} valueB="" />
-              <MetricRow label="Sample Size" valueA={fmtInt(modelB.result.sampleSize)} valueB="" />
+              <MetricRow label="COD" valueA={fmtNum(statsB.cod, 1)} valueB="" />
+              <MetricRow label="PRD" valueA={fmtNum(statsB.prd)} valueB="" />
+              <MetricRow label="PRB" valueA={fmtNum(statsB.prb)} valueB="" />
+              <MetricRow label="Median Ratio" valueA={fmtNum(statsB.medianRatio)} valueB="" />
+              <MetricRow label="Sample Size" valueA={fmtInt(statsB.sampleSize)} valueB="" />
             </div>
           </CardContent>
         </Card>

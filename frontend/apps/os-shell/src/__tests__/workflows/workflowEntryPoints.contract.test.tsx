@@ -103,6 +103,10 @@ vi.mock('../../components/workbench/ParcelContextBanner', () => ({
   ParcelContextBanner: () => <div data-testid="mock-parcel-banner" />,
 }));
 
+vi.mock('../../api/pilotApi', () => ({
+  invokeTool: vi.fn(),
+}));
+
 vi.mock('lucide-react', () => {
   const Icon = (props: any) => <svg data-slot="icon" {...props} />;
   return {
@@ -110,7 +114,7 @@ vi.mock('lucide-react', () => {
     BarChart3: Icon, Scale: Icon, TrendingUp: Icon, FileSearch: Icon,
     Gavel: Icon, ShieldCheck: Icon, LineChart: Icon, PieChart: Icon,
     MapPin: Icon, DollarSign: Icon, Map: Icon, Layers: Icon,
-    Crosshair: Icon, Printer: Icon, Download: Icon, Database: Icon,
+    Crosshair: Icon, Printer: Icon, Download: Icon, Database: Icon, BarChart2: Icon, Globe: Icon,
     Receipt: Icon, Landmark: Icon, CheckCircle2: Icon, HardHat: Icon,
     Calendar: Icon, Bot: Icon, LayoutDashboard: Icon, Pencil: Icon, ClipboardList: Icon, Mail: Icon, FileCheck: Icon,
   };

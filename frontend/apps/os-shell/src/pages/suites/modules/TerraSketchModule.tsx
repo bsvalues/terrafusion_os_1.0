@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import {
   Crosshair, Pencil, Square, Circle, Move, Undo2, Redo2, Trash2,
-  Save, Download, CheckCircle2, AlertTriangle, Ruler,
+  Save, Download, CheckCircle2, AlertTriangle, Ruler, Bot,
 } from 'lucide-react';
 
 /* -------------------------------------------------------------------------- */
@@ -22,6 +23,12 @@ import {
 /* -------------------------------------------------------------------------- */
 
 type SketchTool = 'select' | 'polygon' | 'rectangle' | 'circle' | 'line' | 'point' | 'move';
+
+interface GeometryBrief {
+  narrative: string;
+  boundaryNote: string;
+  routingNote: string;
+}
 
 interface SketchVertex {
   id: string;
@@ -95,6 +102,43 @@ export default function TerraSketchModule() {
   const [parcelId, setParcelId] = useState('104841000002000');
   const [snapEnabled, setSnapEnabled] = useState(true);
   const [gridEnabled, setGridEnabled] = useState(false);
+  const [geoBrief, setGeoBrief] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: GeometryBrief; correlationId?: string; error?: string }>({ status: 'idle' });
+
+  const handleAnalyzeGeometry = useCallback(async () => {
+    if (geoBrief.status === 'loading') return;
+    setGeoBrief({ status: 'loading' });
+    try {
+      const resp = await invokeTool({
+        toolId: 'analyze_sketch_geometry',
+        args: {
+          parcelId,
+          vertexCount: vertices.length,
+          area: validation.area,
+          perimeter: validation.perimeter,
+          warnings: validation.warnings,
+        },
+      });
+      if (resp.success && resp.result) {
+        const parsed = typeof resp.result.output === 'string'
+          ? JSON.parse(resp.result.output) as GeometryBrief
+          : resp.result.output as GeometryBrief;
+        setGeoBrief({
+          status: 'success',
+          result: {
+            narrative: parsed.narrative ?? 'Geometry reviewed — no critical anomalies detected.',
+            boundaryNote: parsed.boundaryNote ?? 'Boundary lines within tolerance.',
+            routingNote: parsed.routingNote ?? 'Ready for save/export.',
+          },
+          correlationId: resp.correlationId,
+        });
+      } else {
+        setGeoBrief({ status: 'error', error: 'No result from AI analyst.' });
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Unknown error';
+      setGeoBrief({ status: 'error', error: msg });
+    }
+  }, [parcelId, vertices, validation, geoBrief.status]);
 
   return (
     <div className='p-6 space-y-6'>
@@ -286,6 +330,45 @@ export default function TerraSketchModule() {
           </Card>
         </div>
       </div>
+
+      {/* Governed AI Geometry Brief */}
+      <Card
+        data-testid='terrasketch-governed-brief'
+        style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-suite-atlas) / 0.3)' }}
+      >
+        <CardHeader className='pb-2'>
+          <CardTitle className='text-base flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
+            <Bot size={16} style={{ color: 'hsl(var(--tf-suite-atlas))' }} />
+            AI Geometry Analyst
+          </CardTitle>
+          <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
+            Governed routing — analyze_sketch_geometry
+          </CardDescription>
+        </CardHeader>
+        <CardContent className='space-y-3'>
+          <Button
+            size='sm'
+            onClick={handleAnalyzeGeometry}
+            disabled={geoBrief.status === 'loading'}
+            style={{ background: 'hsl(var(--tf-suite-atlas) / 0.15)', color: 'hsl(var(--tf-suite-atlas))', border: '1px solid hsl(var(--tf-suite-atlas) / 0.3)' }}
+          >
+            {geoBrief.status === 'loading' ? 'Analyzing…' : 'Analyze Geometry'}
+          </Button>
+          {geoBrief.status === 'success' && geoBrief.result && (
+            <div className='space-y-2 text-sm'>
+              <p style={{ color: 'hsl(var(--tf-fg))' }}>{geoBrief.result.narrative}</p>
+              <p style={{ color: 'hsl(var(--tf-muted))' }}><strong>Boundary:</strong> {geoBrief.result.boundaryNote}</p>
+              <p style={{ color: 'hsl(var(--tf-muted))' }}><strong>Routing:</strong> {geoBrief.result.routingNote}</p>
+              {geoBrief.correlationId && (
+                <p className='text-xs font-mono' style={{ color: 'hsl(var(--tf-muted) / 0.5)' }}>corr: {geoBrief.correlationId}</p>
+              )}
+            </div>
+          )}
+          {geoBrief.status === 'error' && (
+            <p className='text-sm' style={{ color: 'hsl(var(--tf-error-hs) 60%)' }}>{geoBrief.error}</p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

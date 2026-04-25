@@ -1,8 +1,12 @@
 /**
  * RegionalCostComparison Component
- * 
- * A bar chart visualization that compares building costs across different regions
- * with enhanced micro-interactions using the DataPointExplorer component.
+ *
+ * A bar chart visualization that compares building costs across Benton County
+ * Reval Areas (PACS Cycle field, numbered 1–6) with enhanced micro-interactions
+ * using the DataPointExplorer component.
+ *
+ * Data source: /api/benchmarking/regional-costs?county=Benton
+ * All data is Benton County only — no statewide or national data exists.
  */
 
 import React, { useState } from 'react';
@@ -10,14 +14,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataPointExplorer, DataPoint } from './DataPointExplorer';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
   ResponsiveContainer,
   Cell
 } from 'recharts';
@@ -26,7 +30,7 @@ import { useTheme } from '@/hooks/use-theme';
 
 interface RegionalCostComparisonProps {
   data: Array<{
-    region: string;
+    revalArea: string;
     baseCost: number;
     adjustedCost: number;
     buildingType: string;
@@ -38,14 +42,14 @@ interface RegionalCostComparisonProps {
     };
     metadata?: Record<string, any>;
   }>;
-  onRegionSelect?: (region: string) => void;
+  onRevalAreaSelect?: (revalArea: string) => void;
   buildingTypes?: string[];
 }
 
-export function RegionalCostComparison({ 
-  data, 
-  onRegionSelect, 
-  buildingTypes = [] 
+export function RegionalCostComparison({
+  data,
+  onRevalAreaSelect,
+  buildingTypes = []
 }: RegionalCostComparisonProps) {
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState('baseCost');
@@ -55,13 +59,13 @@ export function RegionalCostComparison({
   const [selectedDataPoint, setSelectedDataPoint] = useState<DataPoint | null>(null);
 
   // Filter data based on building type selection
-  const filteredData = selectedBuildingType === 'All' 
-    ? data 
+  const filteredData = selectedBuildingType === 'All'
+    ? data
     : data.filter(item => item.buildingType === selectedBuildingType);
 
   // Prepare data for the chart based on active tab
   const chartData = filteredData.map(item => ({
-    region: item.region,
+    revalArea: item.revalArea,
     value: activeTab === 'baseCost' ? item.baseCost : item.adjustedCost,
     buildingType: item.buildingType,
     costFactors: item.costFactors,
@@ -80,11 +84,11 @@ export function RegionalCostComparison({
 
   // Convert chart data to DataPoint format for the explorer
   const createDataPoint = (item: any, index: number): DataPoint => ({
-    id: `${item.region}-${index}`,
-    label: item.region,
+    id: `${item.revalArea}-${index}`,
+    label: item.revalArea,
     value: item.value,
     category: item.buildingType,
-    description: `Building costs in the ${item.region} region for ${item.buildingType} type buildings.`,
+    description: `Building costs in ${item.revalArea} (Benton County) for ${item.buildingType} type buildings.`,
     metadata: {
       ...item.metadata,
       ...(item.costFactors ? {
@@ -97,11 +101,10 @@ export function RegionalCostComparison({
     trend: determineTrend(item.value, chartData),
   });
 
-  // Handle exploring a data point (region) in detail
+  // Handle exploring a data point (Reval Area) in detail
   const handleExplore = (dataPoint: DataPoint) => {
     setSelectedDataPoint(dataPoint);
-    const region = dataPoint.label;
-    onRegionSelect?.(region);
+    onRevalAreaSelect?.(dataPoint.label);
   };
 
   // Custom tooltip component for the chart using DataPointExplorer
@@ -111,7 +114,7 @@ export function RegionalCostComparison({
     }
 
     const data = payload[0].payload;
-    const dataPoint = createDataPoint(data, chartData.findIndex(d => d.region === data.region));
+    const dataPoint = createDataPoint(data, chartData.findIndex(d => d.revalArea === data.revalArea));
 
     return (
       <Card className="p-0 shadow-md border border-gray-200 bg-white">
@@ -129,15 +132,15 @@ export function RegionalCostComparison({
       <CardHeader className="pb-3">
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Regional Cost Comparison</CardTitle>
+            <CardTitle>Reval Area Cost Comparison</CardTitle>
             <CardDescription>
-              {activeTab === 'baseCost' 
-                ? 'Base construction costs by region' 
-                : 'Adjusted construction costs including factors'
+              {activeTab === 'baseCost'
+                ? 'Base construction costs by Reval Area (Cycle) — Benton County'
+                : 'Adjusted construction costs by Reval Area (Cycle) — Benton County'
               }
             </CardDescription>
           </div>
-          
+
           {buildingTypes.length > 0 && (
             <Select
               value={selectedBuildingType}
@@ -156,13 +159,13 @@ export function RegionalCostComparison({
           )}
         </div>
       </CardHeader>
-      
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="px-6">
         <TabsList className="mb-4">
           <TabsTrigger value="baseCost">Base Cost</TabsTrigger>
           <TabsTrigger value="adjustedCost">Adjusted Cost</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="baseCost" className="pt-0 px-0">
           <CardContent className="p-0 pb-6 pl-4">
             <ResponsiveContainer width="100%" height={350}>
@@ -177,14 +180,15 @@ export function RegionalCostComparison({
                 barSize={36}
               >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis 
-                  dataKey="region" 
-                  angle={-45} 
-                  textAnchor="end" 
+                <XAxis
+                  dataKey="revalArea"
+                  angle={-45}
+                  textAnchor="end"
                   height={70}
                   tickMargin={20}
+                  label={{ value: 'Reval Area (Cycle)', position: 'insideBottom', offset: -55 }}
                 />
-                <YAxis 
+                <YAxis
                   tickFormatter={(value) => `$${value.toLocaleString()}`}
                   width={80}
                 />
@@ -219,7 +223,7 @@ export function RegionalCostComparison({
             </ResponsiveContainer>
           </CardContent>
         </TabsContent>
-        
+
         <TabsContent value="adjustedCost" className="pt-0 px-0">
           <CardContent className="p-0 pb-6 pl-4">
             <ResponsiveContainer width="100%" height={350}>
@@ -234,14 +238,15 @@ export function RegionalCostComparison({
                 barSize={36}
               >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis 
-                  dataKey="region" 
-                  angle={-45} 
+                <XAxis
+                  dataKey="revalArea"
+                  angle={-45}
                   textAnchor="end"
                   height={70}
                   tickMargin={20}
+                  label={{ value: 'Reval Area (Cycle)', position: 'insideBottom', offset: -55 }}
                 />
-                <YAxis 
+                <YAxis
                   tickFormatter={(value) => `$${value.toLocaleString()}`}
                   width={80}
                 />

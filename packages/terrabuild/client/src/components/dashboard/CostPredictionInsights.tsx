@@ -44,7 +44,7 @@ export function CostPredictionInsights({
   className,
   showControls = true
 }: CostPredictionInsightsProps) {
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [selectedRevalArea, setSelectedRevalArea] = useState<string | null>(null);
   const [selectedBuildingType, setSelectedBuildingType] = useState<string | null>(null);
   const [predictionYears, setPredictionYears] = useState<number>(3);
   const [analysisLoading, setAnalysisLoading] = useState<boolean>(false);
@@ -57,10 +57,10 @@ export function CostPredictionInsights({
     queryFn: () => fetch('/api/cost-matrices').then(res => res.json())
   });
 
-  // Get unique regions and building types for filters
-  const getUniqueRegions = (data: any[]): string[] => {
+  // Get unique reval areas and building types for filters
+  const getUniqueRevalAreas = (data: any[]): string[] => {
     if (!data || !Array.isArray(data)) return [];
-    return [...new Set(data.map(item => item.region))].sort();
+    return [...new Set(data.map(item => item.revalArea ?? item.region))].sort();
   };
 
   const getUniqueBuildingTypes = (data: any[]): { value: string, label: string }[] => {
@@ -80,10 +80,10 @@ export function CostPredictionInsights({
   const processDataWithPredictions = () => {
     if (!data || !Array.isArray(data)) return { historical: [], predicted: [] };
 
-    // Filter by selected region and building type
+    // Filter by selected reval area and building type
     let filteredData = data;
-    if (selectedRegion) {
-      filteredData = filteredData.filter(item => item.region === selectedRegion);
+    if (selectedRevalArea) {
+      filteredData = filteredData.filter(item => (item.revalArea ?? item.region) === selectedRevalArea);
     }
     if (selectedBuildingType) {
       filteredData = filteredData.filter(item => item.buildingType === selectedBuildingType);
@@ -216,7 +216,7 @@ export function CostPredictionInsights({
       // Prepare API request
       const requestData = {
         buildingType: selectedBuildingType || "RESIDENTIAL",
-        region: selectedRegion || "Government District",
+        revalArea: selectedRevalArea || "Government District",
         targetYear: futureYear,
         squareFootage: 2000, // Default square footage
         selectedFactors: ["inflation", "materials", "labor"],
@@ -252,7 +252,7 @@ export function CostPredictionInsights({
       // Format the AI insight text
       const insightText = `
         Based on AI analysis of historical cost data from ${historical[0].year} to ${historical[historical.length-1].year},
-        building costs for ${selectedBuildingType || "all building types"} in ${selectedRegion || "all regions"}
+        building costs for ${selectedBuildingType || "all building types"} in ${selectedRevalArea || "all reval areas"}
         are predicted to reach $${result.predictedCost.toFixed(2)}/sq.ft by ${futureYear}.
 
         ${result.confidenceInterval ?
@@ -280,7 +280,7 @@ export function CostPredictionInsights({
 
   const { historical, predicted } = processDataWithPredictions();
   const chartData = [...historical, ...predicted];
-  const regions = getUniqueRegions(data || []);
+  const revalAreas = getUniqueRevalAreas(data || []);
   const buildingTypes = getUniqueBuildingTypes(data || []);
   const growthRate = calculateGrowthRate(historical);
 
@@ -356,17 +356,17 @@ export function CostPredictionInsights({
           {showControls && (
             <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0">
               <Select
-                value={selectedRegion || "all"}
-                onValueChange={(value) => setSelectedRegion(value === "all" ? null : value)}
+                value={selectedRevalArea || "all"}
+                onValueChange={(value) => setSelectedRevalArea(value === "all" ? null : value)}
               >
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="All Regions" />
+                  <SelectValue placeholder="All Reval Areas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Regions</SelectItem>
-                  {regions.map((region) => (
-                    <SelectItem key={region} value={region}>
-                      {region}
+                  <SelectItem value="all">All Reval Areas</SelectItem>
+                  {revalAreas.map((revalArea) => (
+                    <SelectItem key={revalArea} value={revalArea}>
+                      {revalArea}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -411,7 +411,7 @@ export function CostPredictionInsights({
         <div className="flex flex-wrap gap-2 mt-2">
           <Badge variant="outline" className="flex items-center gap-1">
             <MapPin className="h-3 w-3" />
-            {selectedRegion || "All Regions"}
+            {selectedRevalArea || "All Reval Areas"}
           </Badge>
           <Badge variant="outline" className="flex items-center gap-1">
             <Building className="h-3 w-3" />

@@ -22,8 +22,7 @@ export type WorkbenchTabSlug =
   | 'clerk'    // R3.2: TerraClerk — County recording & title
   | 'treasury' // R3.3: TerraTreasury — Tax collection & payments
   | 'audit'    // R3.4: TerraAudit — Financial compliance
-  | 'dossier'
-  | 'pilot';
+  | 'dossier';
 
 /** Data classification per FISMA-HIGH policy. */
 export type DataClassification = 'PUBLIC' | 'CONFIDENTIAL' | 'RESTRICTED';

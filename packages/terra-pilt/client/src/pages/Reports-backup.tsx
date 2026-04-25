@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, Download, Mail, Calendar, Building, Loader2, BarChart3  } from '@mui/icons-material';
+import { FileText, Download, Mail, Calendar, Building, Loader2, BarChart3  } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import SpectacularReportGenerator from '@/components/SpectacularReportGenerator';
 
@@ -94,11 +94,10 @@ export default function Reports() {
         const htmlContent = `
 <!DOCTYPE html>
 <html>
-<head><>
+<head>
 
     <title>PILT Certification - ${selectedYear}</title>
-    <style
-</>>
+    <style>
         body { 
             font-family: 'Times New Roman', serif; 
             font-size: 12pt; 
@@ -165,11 +164,10 @@ ${reportData.certification_letter}
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>${type === 'assessor-letter' ? 'Assessor' : type === 'treasurer-letter' ? 'Treasurer' : 'PILT Summary'} Letter - ${year}</title>
-  <style
-</>>
+  <style>
     body { font-family: 'Times New Roman', serif; line-height: 1.6; margin: 40px; color: #333; background: white; }
     .letter-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #005f73; padding-bottom: 20px; }
     .county-letterhead h1 { font-size: 24px; margin: 0; color: #005f73; font-weight: bold; }
@@ -201,22 +199,20 @@ ${reportData.certification_letter}
 
   const generateAssessorLetter = (year: string, currentDate: string, recipientInfo: any, customMessage: string, reportData: any) => {
     const distributionTable = reportData.distributions.map((dist: any) => 
-      `<tr><>
+      `<tr>
 
         <td>${dist.district}</td>
-        <td
-</> style="text-align: right;">${formatCurrency(dist.amount)}</td>
+        <td style="text-align: right;">${formatCurrency(dist.amount)}</td>
         <td style="text-align: right;">${((dist.amount / reportData.totalDistributed) * 100).toFixed(2)}%</td>
       </tr>`
     ).join('');
 
     return `
     <div class="letter-header">
-      <div class="county-letterhead"><>
+      <div class="county-letterhead">
 
         <h1>BENTON COUNTY</h1>
-        <h2
-</>>ASSESSOR'S OFFICE</h2>
+        <h2>ASSESSOR'S OFFICE</h2>
         <p>7122 W. Okanogan Place, Building A<br>
         Kennewick, WA 99336<br>
         Phone: (509) 736-3085</p>
@@ -237,60 +233,54 @@ ${reportData.certification_letter}
       <p><strong>RE: Payment in Lieu of Taxes (PILT) Distribution - ${year}</strong></p>
     </div>
 
-    <div class="letter-body"><>
+    <div class="letter-body">
 
       <p>Dear ${recipientInfo.contact},</p>
       
-      <p
-</>>I am writing to provide you with the official report regarding the Payment in Lieu of Taxes (PILT) 
+      <p>I am writing to provide you with the official report regarding the Payment in Lieu of Taxes (PILT) 
       distribution for Benton County for the year ${year}.</p>
       
       <div class="summary-box">
         <p><strong>Total PILT Received:</strong> ${formatCurrency(reportData.piltAmount)}</p>
         <p><strong>Total Distributed:</strong> ${formatCurrency(reportData.totalDistributed)}</p>
         <p><strong>Number of Districts:</strong> ${reportData.distributions.length}</p>
-      </div><>
+      </div>
 
       
       <p>This amount has been distributed among the eligible school districts within our county in accordance with 
       RCW 84.12.270 and established procedures for PILT fund allocation based on assessed valuation and enrollment data.</p>
       
-      <div
-</> style="margin: 20px 0;"><>
+      <div style="margin: 20px 0;">
 
         <h3>PILT Distribution Summary - ${year}</h3>
-        <table
-</> class="data-table">
+        <table class="data-table">
           <thead>
-            <tr><>
+            <tr>
 
               <th>School District</th>
-              <th
-</>>Amount</th>
+              <th>Amount</th>
               <th>Percentage</th>
             </tr>
           </thead>
           <tbody>
             ${distributionTable}
-            <tr style="background-color: #f9f9f9; font-weight: bold;"><>
+            <tr style="background-color: #f9f9f9; font-weight: bold;">
 
               <td>TOTAL DISTRIBUTED</td>
-              <td
-</> style="text-align: right;">${formatCurrency(reportData.totalDistributed)}</td>
+              <td style="text-align: right;">${formatCurrency(reportData.totalDistributed)}</td>
               <td style="text-align: right;">100.00%</td>
             </tr>
           </tbody>
         </table>
       </div>
       
-      ${customMessage ? `<p>${customMessage}</p>` : ''}<>
+      ${customMessage ? `<p>${customMessage}</p>` : ''}
 
       
       <p>If you require any additional information or documentation regarding this distribution, 
       please do not hesitate to contact our office.</p>
       
-      <p
-</>>Sincerely,</p>
+      <p>Sincerely,</p>
       
       <div class="signature-block">
         <p><br><br>
@@ -308,11 +298,10 @@ ${reportData.certification_letter}
   const generateTreasurerLetter = (year: string, currentDate: string, recipientInfo: any, customMessage: string, reportData: any) => {
     return `
     <div class="letter-header">
-      <div class="county-letterhead"><>
+      <div class="county-letterhead">
 
         <h1>BENTON COUNTY</h1>
-        <h2
-</>>TREASURER'S OFFICE</h2>
+        <h2>TREASURER'S OFFICE</h2>
         <p>7122 W. Okanogan Place, Building A<br>
         Kennewick, WA 99336<br>
         Phone: (509) 736-3031</p>
@@ -333,12 +322,11 @@ ${reportData.certification_letter}
       <p><strong>RE: PILT Fund Management and Distribution Report - ${year}</strong></p>
     </div>
 
-    <div class="letter-body"><>
+    <div class="letter-body">
 
       <p>Dear ${recipientInfo.contact},</p>
       
-      <p
-</>>This letter serves as the official report from the Benton County Treasurer's Office regarding 
+      <p>This letter serves as the official report from the Benton County Treasurer's Office regarding 
       the management and distribution of Payment in Lieu of Taxes (PILT) funds for ${year}.</p>
       
       <div class="summary-box">
@@ -350,14 +338,13 @@ ${reportData.certification_letter}
       <p>All distributions have been made in accordance with state regulations and county procedures. 
       Complete financial records are maintained in our office and are available for audit upon request.</p>
       
-      ${customMessage ? `<p>${customMessage}</p>` : ''}<>
+      ${customMessage ? `<p>${customMessage}</p>` : ''}
 
       
       <p>Please contact our office if you require any additional financial documentation or clarification 
       regarding these distributions.</p>
       
-      <p
-</>>Respectfully,</p>
+      <p>Respectfully,</p>
       
       <div class="signature-block">
         <p><br><br>
@@ -371,63 +358,56 @@ ${reportData.certification_letter}
 
   const generatePiltSummary = (year: string, currentDate: string, customMessage: string, reportData: any) => {
     const distributionTable = reportData.distributions.map((dist: any) => 
-      `<tr><>
+      `<tr>
 
         <td>${dist.district}</td>
-        <td
-</> style="text-align: right;">${formatCurrency(dist.amount)}</td>
+        <td style="text-align: right;">${formatCurrency(dist.amount)}</td>
         <td style="text-align: right;">${((dist.amount / reportData.totalDistributed) * 100).toFixed(2)}%</td>
       </tr>`
     ).join('');
 
     return `
     <div class="letter-header">
-      <div class="county-letterhead"><>
+      <div class="county-letterhead">
 
         <h1>BENTON COUNTY</h1>
-        <h2
-</>>PILT SUMMARY REPORT</h2>
+        <h2>PILT SUMMARY REPORT</h2>
         <p>Payment in Lieu of Taxes - Year: ${year}</p>
       </div>
     </div>
 
-    <div class="letter-body"><>
+    <div class="letter-body">
 
       <h3>Executive Summary</h3>
-      <p
-</>>This report provides a comprehensive summary of Payment in Lieu of Taxes (PILT) receipts 
+      <p>This report provides a comprehensive summary of Payment in Lieu of Taxes (PILT) receipts 
       and distributions for Benton County for the year ${year}.</p>
       
-      <div class="summary-box"><>
+      <div class="summary-box">
 
         <h4>Key Financial Figures</h4>
-        <p
-</>><strong>Total PILT Received:</strong> ${formatCurrency(reportData.piltAmount)}</p>
+        <p><strong>Total PILT Received:</strong> ${formatCurrency(reportData.piltAmount)}</p>
         <p><strong>Total Distributed:</strong> ${formatCurrency(reportData.totalDistributed)}</p>
         <p><strong>Number of Receiving Districts:</strong> ${reportData.distributions.length}</p>
         <p><strong>Report Generated:</strong> ${currentDate}</p>
-      </div><>
+      </div>
 
       
       <h3>Distribution Details</h3>
-      <table
-</> class="data-table">
+      <table class="data-table">
         <thead>
-          <tr><>
+          <tr>
 
             <th>School District</th>
-            <th
-</>>Distribution Amount</th>
+            <th>Distribution Amount</th>
             <th>Percentage of Total</th>
           </tr>
         </thead>
         <tbody>
           ${distributionTable}
-          <tr style="background-color: #f9f9f9; font-weight: bold;"><>
+          <tr style="background-color: #f9f9f9; font-weight: bold;">
 
             <td>TOTAL</td>
-            <td
-</> style="text-align: right;">${formatCurrency(reportData.totalDistributed)}</td>
+            <td style="text-align: right;">${formatCurrency(reportData.totalDistributed)}</td>
             <td style="text-align: right;">100.00%</td>
           </tr>
         </tbody>
@@ -440,31 +420,28 @@ ${reportData.certification_letter}
 
   const generateDistrictBreakdown = (year: string, currentDate: string, customMessage: string, reportData: any) => {
     const districtDetails = reportData.distributions.map((dist: any) => 
-      `<div class="district-detail"><>
+      `<div class="district-detail">
 
         <h4>${dist.district}</h4>
-        <p
-</>><strong>Distribution Amount:</strong> ${formatCurrency(dist.amount)}</p>
+        <p><strong>Distribution Amount:</strong> ${formatCurrency(dist.amount)}</p>
         <p><strong>Percentage of Total:</strong> ${((dist.amount / reportData.totalDistributed) * 100).toFixed(2)}%</p>
       </div>`
     ).join('');
 
     return `
     <div class="letter-header">
-      <div class="county-letterhead"><>
+      <div class="county-letterhead">
 
         <h1>BENTON COUNTY</h1>
-        <h2
-</>>DISTRICT DISTRIBUTION REPORT</h2>
+        <h2>DISTRICT DISTRIBUTION REPORT</h2>
         <p>Detailed PILT Distribution Breakdown - Year: ${year}</p>
       </div>
     </div>
 
-    <div class="letter-body"><>
+    <div class="letter-body">
 
       <h3>Distribution Overview</h3>
-      <div
-</> class="summary-box">
+      <div class="summary-box">
         <p><strong>Total PILT Amount:</strong> ${formatCurrency(reportData.piltAmount)}</p>
         <p><strong>Total Distributed:</strong> ${formatCurrency(reportData.totalDistributed)}</p>
         <p><strong>Report Date:</strong> ${currentDate}</p>
@@ -483,11 +460,10 @@ ${reportData.certification_letter}
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <div><>
+        <div>
 
           <h1 className="text-3xl font-bold tracking-tight">Reports & Letters</h1>
-          <p
-</> className="text-muted-foreground">
+          <p className="text-muted-foreground">
             Generate official reports and correspondence for the Department of Education
           </p>
         </div>
@@ -499,13 +475,12 @@ ${reportData.certification_letter}
 
       <Tabs defaultValue="official" className="space-y-6">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="official" className="flex items-center gap-2"><>
+          <TabsTrigger value="official" className="flex items-center gap-2">
 
             <FileText className="h-4 w-4" />
             Official Letters
           </TabsTrigger>
-          <TabsTrigger
-</> value="analytics" className="flex items-center gap-2">
+          <TabsTrigger value="analytics" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
             Analytics Reports
           </TabsTrigger>
@@ -516,29 +491,26 @@ ${reportData.certification_letter}
             <div className="lg:col-span-2 space-y-6">
               <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><>
+              <CardTitle className="flex items-center gap-2">
 
                 <FileText className="h-5 w-5" />
                 Report Configuration
               </CardTitle>
-              <CardDescription
-</>>
+              <CardDescription>
                 Configure the parameters for your report generation
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2"><>
+                <div className="space-y-2">
 
                   <Label htmlFor="year">Report Year</Label>
-                  <Select
-</> value={selectedYear} onValueChange={setSelectedYear}>
-                    <SelectTrigger><>
+                  <Select value={selectedYear} onValueChange={setSelectedYear}>
+                    <SelectTrigger>
 
                       <SelectValue placeholder="Select year" />
                     </SelectTrigger>
-                    <SelectContent
-</>>
+                    <SelectContent>
                       {years.map(year => (
                         <SelectItem key={year} value={year.toString()}>
                           {year}
@@ -548,17 +520,15 @@ ${reportData.certification_letter}
                   </Select>
                 </div>
 
-                <div className="space-y-2"><>
+                <div className="space-y-2">
 
                   <Label htmlFor="report-type">Report Type</Label>
-                  <Select
-</> value={reportType} onValueChange={setReportType}>
-                    <SelectTrigger><>
+                  <Select value={reportType} onValueChange={setReportType}>
+                    <SelectTrigger>
 
                       <SelectValue placeholder="Select report type" />
                     </SelectTrigger>
-                    <SelectContent
-</>>
+                    <SelectContent>
                       {reportTypes.map(type => (
                         <SelectItem key={type.id} value={type.id}>
                           {type.title}
@@ -570,22 +540,20 @@ ${reportData.certification_letter}
               </div>
 
               {selectedReportType && (
-                <div className="p-4 border rounded-lg bg-muted/50"><>
+                <div className="p-4 border rounded-lg bg-muted/50">
 
                   <h4 className="font-medium">{selectedReportType.title}</h4>
-                  <p
-</> className="text-sm text-muted-foreground mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     {selectedReportType.description}
                   </p>
                 </div>
               )}
 
               {yearData && (
-                <div className="p-4 border rounded-lg bg-green-50"><>
+                <div className="p-4 border rounded-lg bg-green-50">
 
                   <h4 className="font-medium text-green-800">Data Available for {selectedYear}</h4>
-                  <p
-</> className="text-sm text-green-600 mt-1">
+                  <p className="text-sm text-green-600 mt-1">
                     PILT Amount: {formatCurrency(yearData.amount)} | 
                     Districts: {yearDistributions.length} | 
                     Total Distributed: {formatCurrency(totalDistributed)}
@@ -594,11 +562,10 @@ ${reportData.certification_letter}
               )}
 
               {!yearData && yearDistributions.length === 0 && (
-                <div className="p-4 border rounded-lg bg-yellow-50"><>
+                <div className="p-4 border rounded-lg bg-yellow-50">
 
                   <h4 className="font-medium text-yellow-800">Limited Data for {selectedYear}</h4>
-                  <p
-</> className="text-sm text-yellow-600 mt-1">
+                  <p className="text-sm text-yellow-600 mt-1">
                     No complete data available for this year. Please select a different year.
                   </p>
                 </div>
@@ -608,44 +575,40 @@ ${reportData.certification_letter}
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><>
+              <CardTitle className="flex items-center gap-2">
 
                 <Mail className="h-5 w-5" />
                 Recipient Information
               </CardTitle>
-              <CardDescription
-</>>
+              <CardDescription>
                 Configure the recipient details for official correspondence
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2"><>
+              <div className="space-y-2">
 
                 <Label htmlFor="office">Office/Department</Label>
                 <Input
-</>
                   id="office"
                   value={recipientInfo.office}
                   onChange={(e) => setRecipientInfo({...recipientInfo, office: e.target.value})}
                 />
               </div>
 
-              <div className="space-y-2"><>
+              <div className="space-y-2">
 
                 <Label htmlFor="contact">Contact Person</Label>
                 <Input
-</>
                   id="contact"
                   value={recipientInfo.contact}
                   onChange={(e) => setRecipientInfo({...recipientInfo, contact: e.target.value})}
                 />
               </div>
 
-              <div className="space-y-2"><>
+              <div className="space-y-2">
 
                 <Label htmlFor="address">Mailing Address</Label>
                 <Textarea
-</>
                   id="address"
                   value={recipientInfo.address}
                   onChange={(e) => setRecipientInfo({...recipientInfo, address: e.target.value})}
@@ -656,11 +619,10 @@ ${reportData.certification_letter}
           </Card>
 
           <Card>
-            <CardHeader><>
+            <CardHeader>
 
               <CardTitle>Custom Message</CardTitle>
-              <CardDescription
-</>>
+              <CardDescription>
                 Add any additional information or notes for the report
               </CardDescription>
             </CardHeader>
@@ -684,36 +646,32 @@ ${reportData.certification_letter}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between"><>
+              <div className="flex items-center justify-between">
 
                 <span className="text-sm">Selected Year:</span>
-                <Badge
-</> variant="secondary">{selectedYear}</Badge>
+                <Badge variant="secondary">{selectedYear}</Badge>
               </div>
               
-              <div className="flex items-center justify-between"><>
+              <div className="flex items-center justify-between">
 
                 <span className="text-sm">Report Type:</span>
-                <Badge
-</> variant={reportType ? "default" : "outline"}>
+                <Badge variant={reportType ? "default" : "outline"}>
                   {reportType ? "Selected" : "Not Selected"}
                 </Badge>
               </div>
 
-              <div className="flex items-center justify-between"><>
+              <div className="flex items-center justify-between">
 
                 <span className="text-sm">Data Status:</span>
-                <Badge
-</> variant={yearData || yearDistributions.length > 0 ? "default" : "destructive"}>
+                <Badge variant={yearData || yearDistributions.length > 0 ? "default" : "destructive"}>
                   {yearData || yearDistributions.length > 0 ? "Available" : "No Data"}
                 </Badge>
               </div>
 
-              <div className="flex items-center justify-between"><>
+              <div className="flex items-center justify-between">
 
                 <span className="text-sm">Generation Date:</span>
-                <span
-</> className="text-sm text-muted-foreground">
+                <span className="text-sm text-muted-foreground">
                   {new Date().toLocaleDateString()}
                 </span>
               </div>

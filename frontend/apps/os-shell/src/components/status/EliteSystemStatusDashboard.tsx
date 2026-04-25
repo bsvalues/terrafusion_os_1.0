@@ -271,7 +271,7 @@ const EliteSystemStatusDashboard: React.FC = () => {
             </div>
           </div>
           <div className='space-y-1'>
-            <div className='text-gray-400'>Development Mode</div>
+            <div className='text-gray-400'>System Mode</div>
             <div className='text-terra-cyan font-medium'>THE TERRAFUSION WAY</div>
           </div>
         </div>

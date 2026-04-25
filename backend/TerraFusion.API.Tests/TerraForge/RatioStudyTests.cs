@@ -58,7 +58,7 @@ public sealed class RatioStudyTests : IDisposable
         _sut = new TerraForgeController(
             _db,
             NullLogger<TerraForgeController>.Instance,
-            Mock.Of<IOlsRegressionService>());
+            Mock.Of<IOlsRegressionService>(), Mock.Of<ISaleQualificationService>());
     }
 
     public void Dispose() => _db.Dispose();
@@ -95,6 +95,24 @@ public sealed class RatioStudyTests : IDisposable
     private void Seed(params ComparableSale[] sales)
     {
         _db.ComparableSales.AddRange(sales);
+        _db.SaveChanges();
+    }
+
+    /// <summary>
+    /// Seeds a canonical Property so TerraForgeController.GetAssessedValueMapAsync
+    /// can compute AssessedValue / SalePrice ratios for the given parcel.
+    /// </summary>
+    private void SeedProperty(string parcelNumber, int taxYear, decimal assessedValue)
+    {
+        _db.Properties.Add(new Property
+        {
+            Id            = Guid.NewGuid(),
+            ParcelNumber  = parcelNumber,
+            CountyId      = BentonId,
+            TaxYear       = taxYear,
+            AssessedValue = assessedValue,
+            MarketValue   = assessedValue,
+        });
         _db.SaveChanges();
     }
 
@@ -211,11 +229,13 @@ public sealed class RatioStudyTests : IDisposable
     [Fact]
     public async Task GetRatioStudy_CountWithRatio_OnlyPositiveRatios()
     {
-        Seed(
-            MakeSale(pacsComputedRatio: 95m),     // has ratio
-            MakeSale(pacsComputedRatio: null),    // no ratio
-            MakeSale(pacsComputedRatio: 0m)       // zero — excluded from countWithRatio
-        );
+        // TerraFusion computes ratios from canonical Properties (AssessedValue / SalePrice).
+        // Only the first sale has a matching Property → only it contributes to countWithRatio.
+        var saleWithProp = MakeSale();
+        var saleNoProp1  = MakeSale();
+        var saleNoProp2  = MakeSale();
+        Seed(saleWithProp, saleNoProp1, saleNoProp2);
+        SeedProperty(saleWithProp.ParcelId!, taxYear: 2026, assessedValue: 285_000m);
 
         var body = Body(await _sut.GetRatioStudy(taxYear: 2026));
 
@@ -226,16 +246,119 @@ public sealed class RatioStudyTests : IDisposable
     [Fact]
     public async Task GetRatioStudy_MedianRatio_NormalisedFrom0To1()
     {
-        // Two sales: PACS ratios 90 and 110 → normalised 0.90 and 1.10 → median = 1.00
-        Seed(
-            MakeSale(pacsComputedRatio: 90m),
-            MakeSale(pacsComputedRatio: 110m)
-        );
+        // TF computes ratio = AssessedValue / SalePrice.
+        // 270k / 300k = 0.90 and 330k / 300k = 1.10 → median = (0.90 + 1.10) / 2 = 1.00
+        var sale1 = MakeSale(salePrice: 300_000m);
+        var sale2 = MakeSale(salePrice: 300_000m);
+        Seed(sale1, sale2);
+        SeedProperty(sale1.ParcelId!, taxYear: 2026, assessedValue: 270_000m);
+        SeedProperty(sale2.ParcelId!, taxYear: 2026, assessedValue: 330_000m);
 
         var body   = Body(await _sut.GetRatioStudy(taxYear: 2026));
         var median = body.GetProperty("stats").GetProperty("medianRatio").GetDouble();
 
         Assert.Equal(1.00, median, precision: 3);
+    }
+
+    // ── Chunk 2 / April-15 Phase A1: tierSlope + tierMedians ──────────────────
+
+    [Fact]
+    public async Task GetRatioStudy_TierStats_Null_WhenSampleTooSmall()
+    {
+        // Fewer than 5 rows → backend returns null for tierSlope and tierMedians.
+        // Frontend uses this to render "insufficient data" tooltips instead of pretending
+        // zero is real.
+        var sales = new ComparableSale[4];
+        for (var i = 0; i < 4; i++)
+        {
+            sales[i] = MakeSale(salePrice: 300_000m + i * 10_000m);
+            Seed(sales[i]);
+            SeedProperty(sales[i].ParcelId!, 2026, assessedValue: 285_000m);
+        }
+
+        var body  = Body(await _sut.GetRatioStudy(taxYear: 2026));
+        var stats = body.GetProperty("stats");
+
+        Assert.Equal(JsonValueKind.Null, stats.GetProperty("tierSlope").ValueKind);
+        Assert.Equal(JsonValueKind.Null, stats.GetProperty("tierMedians").ValueKind);
+    }
+
+    [Fact]
+    public async Task GetRatioStudy_TierSlope_Computed_WhenSample_AtLeast5()
+    {
+        // 8 rows spanning a price range. Uniform ratios ≈ 0.95 so tierSlope ≈ 0
+        // (no regressivity). Assert slope is present (not null) and has a small
+        // absolute value — exact value depends on floating-point noise so we allow
+        // a reasonable band around zero.
+        for (var i = 0; i < 8; i++)
+        {
+            var price   = 200_000m + i * 50_000m;
+            var sale    = MakeSale(salePrice: price);
+            Seed(sale);
+            SeedProperty(sale.ParcelId!, 2026, assessedValue: price * 0.95m);
+        }
+
+        var body  = Body(await _sut.GetRatioStudy(taxYear: 2026));
+        var stats = body.GetProperty("stats");
+
+        Assert.Equal(JsonValueKind.Number, stats.GetProperty("tierSlope").ValueKind);
+        var tierSlope = stats.GetProperty("tierSlope").GetDouble();
+        Assert.InRange(Math.Abs(tierSlope), 0.0, 0.05); // uniform ratios → near-zero slope
+    }
+
+    [Fact]
+    public async Task GetRatioStudy_TierMedians_AllQuartilesPopulated_WhenSample_AtLeast8()
+    {
+        // 12 rows in ascending price order. Ratios vary across quartiles:
+        // q1 (lowest 3): 0.85, 0.87, 0.90  → median 0.87
+        // q2 (next 3):   0.92, 0.94, 0.95  → median 0.94
+        // q3 (next 3):   0.96, 0.97, 0.98  → median 0.97
+        // q4 (highest 3):0.99, 1.00, 1.02  → median 1.00
+        double[] ratios = { 0.85, 0.87, 0.90, 0.92, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99, 1.00, 1.02 };
+        for (var i = 0; i < ratios.Length; i++)
+        {
+            var price = 100_000m + i * 50_000m;
+            var sale  = MakeSale(salePrice: price);
+            Seed(sale);
+            SeedProperty(sale.ParcelId!, 2026, assessedValue: price * (decimal)ratios[i]);
+        }
+
+        var body  = Body(await _sut.GetRatioStudy(taxYear: 2026));
+        var stats = body.GetProperty("stats");
+        var tm    = stats.GetProperty("tierMedians");
+
+        Assert.Equal(JsonValueKind.Object, tm.ValueKind);
+        // Quartile medians computed on price-sorted ratios — these are the exact
+        // middle-element medians for 3-element strata.
+        Assert.Equal(0.87, tm.GetProperty("q1").GetDouble(), precision: 4);
+        Assert.Equal(0.94, tm.GetProperty("q2").GetDouble(), precision: 4);
+        Assert.Equal(0.97, tm.GetProperty("q3").GetDouble(), precision: 4);
+        Assert.Equal(1.00, tm.GetProperty("q4").GetDouble(), precision: 4);
+
+        // Ratios rise with price → tierSlope should be positive (progressivity).
+        var tierSlope = stats.GetProperty("tierSlope").GetDouble();
+        Assert.True(tierSlope > 0, $"expected positive tierSlope for rising-ratio sample, got {tierSlope}");
+    }
+
+    [Fact]
+    public async Task GetRatioStudy_TierSlope_EqualsPrb_WhenBothComputed()
+    {
+        // By design, tierSlope and prb are the same OLS β₁ (ratio on ln(salePrice)).
+        // Frontend renders them under different labels; backend computes once.
+        for (var i = 0; i < 8; i++)
+        {
+            var price = 200_000m + i * 40_000m;
+            var sale  = MakeSale(salePrice: price);
+            Seed(sale);
+            SeedProperty(sale.ParcelId!, 2026, assessedValue: price * 0.9m);
+        }
+
+        var body  = Body(await _sut.GetRatioStudy(taxYear: 2026));
+        var stats = body.GetProperty("stats");
+
+        var prb       = stats.GetProperty("prb").GetDouble();
+        var tierSlope = stats.GetProperty("tierSlope").GetDouble();
+        Assert.Equal(prb, tierSlope, precision: 4);
     }
 
     [Fact]

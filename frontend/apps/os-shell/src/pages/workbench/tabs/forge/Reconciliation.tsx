@@ -13,7 +13,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWorkbenchTab } from '../../../../context/workbenchTabContext';
 import { BentoCard } from '../../../../ui/materials/BentoCard';
 import { WorkbenchSourceBadge } from '../../../../components/workbench/WorkbenchSourceBadge';
-import { useReconciliation as useReconciliationAPI } from '../../../../hooks/forge/useForgeValuation';
+import { useReconciliation as useReconciliationAPI, useCommitReconciliation } from '../../../../hooks/forge/useForgeValuation';
 import type { ForgeSubTabProps } from './types';
 import { fmtCurrency, CURRENT_YEAR } from './types';
 
@@ -67,6 +67,12 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
 
   /* ── Live API data ──────────────────────────────────────── */
   const reconAPI = useReconciliationAPI(parcelId, taxYear);
+  const commitMutation = useCommitReconciliation(parcelId);
+
+  /* Commit panel state */
+  const [commitConfirmed, setCommitConfirmed] = useState(false);
+  const [appraiserNote, setAppraiserNote] = useState('');
+  const [committedResult, setCommittedResult] = useState<{ flagId: number; finalValue: number } | null>(null);
 
   /* Local state */
   const [indications, setIndications] = useState<ApproachIndication[]>(
@@ -116,12 +122,15 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
     [indications],
   );
 
-  /* Derived: weighted-average value */
+  /* Derived: weighted-average value — only normalize over active (>0) approaches */
   const weightedAvg = useMemo(() => {
-    if (totalWeight === 0) return 0;
-    const sum = indications.reduce((s, a) => s + a.indicatedValue * a.weight, 0);
-    return Math.round(sum / totalWeight);
-  }, [indications, totalWeight]);
+    const active = indications.filter(a => a.indicatedValue > 0);
+    if (active.length === 0) return 0;
+    const activeWeightTotal = active.reduce((s, a) => s + a.weight, 0);
+    if (activeWeightTotal === 0) return 0;
+    const sum = active.reduce((s, a) => s + a.indicatedValue * a.weight, 0);
+    return Math.round(sum / activeWeightTotal);
+  }, [indications]);
 
   /* Compute final value based on method */
   const computeFinal = useCallback((): number => {
@@ -141,6 +150,35 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
     setIndications((prev) => prev.map((a, i) => (i === idx ? { ...a, ...patch } : a)));
     setReconciled(false);
   }, []);
+
+  /* Commit action — submits reconciled value for supervisor review */
+  const handleCommit = useCallback(async () => {
+    if (!commitConfirmed || reconciledValue == null) return;
+    try {
+      const result = await commitMutation.mutateAsync({
+        method,
+        finalValue: reconciledValue,
+        taxYear,
+        appraiserNote: appraiserNote.trim() || undefined,
+        approaches: indications.map((a) => ({
+          approach: a.approach,
+          indicatedValue: a.indicatedValue,
+          weight: a.weight,
+        })),
+      });
+      setCommittedResult({ flagId: result.flagId, finalValue: result.finalValue });
+      onHistoryRecord({
+        id: crypto.randomUUID(),
+        toolId: 'reconciliation_commit',
+        status: 'success',
+        correlationId: `commit-${crypto.randomUUID().slice(0, 8)}`,
+        timestamp: new Date(),
+        meta: { parcelId, taxYear, method, finalValue: reconciledValue, flagId: result.flagId },
+      });
+    } catch {
+      // commitMutation.error will surface the message
+    }
+  }, [commitConfirmed, reconciledValue, method, taxYear, appraiserNote, indications, commitMutation, onHistoryRecord, parcelId]);
 
   /* Reconcile action */
   const handleReconcile = useCallback(() => {
@@ -176,7 +214,7 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
       {/* ── Data Source Indicator ─────────────────────── */}
       <div className="flex items-center justify-between">
         <span className="tf-text-secondary text-sm">
-          Approach indications {seededFromAPI ? 'loaded from API' : 'using fallback data'}
+          Approach indications {seededFromAPI ? 'from live assessment data' : 'using estimated data'}
         </span>
         <WorkbenchSourceBadge source={reconAPI.source} />
       </div>
@@ -189,7 +227,7 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
       )}
 
       {/* ── Approach Cards ─────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ overflow: 'hidden' }}>
         {indications.map((ind, idx) => {
           const meta = APPROACH_LABELS[ind.approach];
           return (
@@ -209,12 +247,21 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
                     className="tf-input w-full px-3 py-1.5 text-sm"
                     data-testid={`approach-value-${ind.approach}`}
                   />
+                  {ind.indicatedValue > 0 && (
+                    <p className="text-xs tf-text-tertiary mt-0.5">
+                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(ind.indicatedValue)}
+                    </p>
+                  )}
                 </div>
 
                 {/* Weight Slider */}
                 <div>
                   <label className="block tf-text-secondary text-xs mb-1">
-                    Weight: <span className="font-semibold">{ind.weight}%</span>
+                    {ind.indicatedValue === 0 ? (
+                      <span className="tf-text-dim">Weight: <span className="font-semibold line-through">{ind.weight}%</span> <span className="italic">(excluded — no value)</span></span>
+                    ) : (
+                      <>Weight: <span className="font-semibold">{ind.weight}%</span></>
+                    )}
                   </label>
                   <input
                     type="range"
@@ -223,6 +270,7 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
                     value={ind.weight}
                     onChange={(e) => updateApproach(idx, { weight: Number(e.target.value) })}
                     className="w-full accent-current"
+                    disabled={ind.indicatedValue === 0}
                     data-testid={`approach-weight-${ind.approach}`}
                   />
                 </div>
@@ -263,7 +311,7 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
         variant="default"
         actions={
           <WorkbenchSourceBadge
-            source={reconciled ? 'live' : reconAPI.source === 'live' ? 'partial' : 'unavailable'}
+            source={reconciled || seededFromAPI ? 'live' : 'unavailable'}
             className="ml-2"
           />
         }
@@ -303,10 +351,20 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
           )}
 
           {/* Preview */}
-          <div className="flex items-center justify-between px-4 py-3 rounded-lg bg-white/5 border tf-border">
+          <div
+            className="flex items-center justify-between px-4 py-3 rounded-lg"
+            style={{
+              background: 'hsl(var(--tf-surface) / 0.8)',
+              border: '1px solid hsl(var(--tf-border) / 0.6)',
+            }}
+          >
             <div>
               <div className="text-xs tf-text-tertiary">Preview</div>
-              <div className="text-2xl font-bold" data-testid="preview-value">
+              <div
+                className="text-2xl font-bold"
+                style={{ color: 'hsl(var(--tf-text))' }}
+                data-testid="preview-value"
+              >
                 {fmtCurrency(computeFinal())}
               </div>
             </div>
@@ -341,6 +399,81 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
               </div>
             </div>
           )}
+
+          {/* ── Submit for Supervisor Review (human gate) ──── */}
+          {reconciled && reconciledValue != null && !committedResult && (
+            <div
+              className="space-y-3 px-4 py-4 rounded-lg border"
+              style={{ borderColor: 'hsl(var(--tf-border) / 0.6)', background: 'hsl(var(--tf-surface) / 0.6)' }}
+              data-testid="reconciliation-submit-panel"
+            >
+              <div className="text-sm font-medium" style={{ color: 'hsl(var(--tf-text))' }}>
+                Submit for Supervisor Review
+              </div>
+              <p className="text-xs tf-text-tertiary">
+                This submits a review flag for{' '}
+                <span className="font-semibold">{fmtCurrency(reconciledValue)}</span>.
+                Your supervisor must approve before any assessed value changes.
+              </p>
+
+              <div>
+                <label className="block tf-text-secondary text-xs mb-1">Appraiser Note (optional)</label>
+                <textarea
+                  value={appraiserNote}
+                  onChange={(e) => setAppraiserNote(e.target.value)}
+                  maxLength={400}
+                  rows={2}
+                  placeholder="Rationale for this reconciliation..."
+                  className="tf-input w-full px-3 py-1.5 text-sm resize-none"
+                  data-testid="appraiser-note"
+                />
+              </div>
+
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={commitConfirmed}
+                  onChange={(e) => setCommitConfirmed(e.target.checked)}
+                  className="mt-0.5"
+                  data-testid="commit-confirm-check"
+                />
+                <span className="text-xs tf-text-secondary">
+                  I have reviewed the reconciled value and confirm this submission is accurate.
+                </span>
+              </label>
+
+              {commitMutation.isError && (
+                <p className="text-xs text-red-400" role="alert">
+                  {commitMutation.error?.message ?? 'Submission failed. Please try again.'}
+                </p>
+              )}
+
+              <button
+                onClick={handleCommit}
+                disabled={!commitConfirmed || commitMutation.isPending}
+                className="w-full px-4 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                data-testid="commit-btn"
+              >
+                {commitMutation.isPending ? 'Submitting…' : 'Submit for Review'}
+              </button>
+            </div>
+          )}
+
+          {/* ── Committed confirmation ─────────────────────── */}
+          {committedResult && (
+            <div
+              className="px-4 py-3 rounded-lg border border-blue-500/40 bg-blue-500/10"
+              data-testid="commit-success"
+            >
+              <div className="text-xs tf-text-tertiary mb-1">Submitted for Supervisor Review</div>
+              <div className="text-lg font-bold" style={{ color: 'hsl(var(--tf-accent))' }}>
+                {fmtCurrency(committedResult.finalValue)}
+              </div>
+              <div className="text-xs tf-text-tertiary mt-1">
+                Flag ID: {committedResult.flagId} — Status: RECONCILIATION_PENDING
+              </div>
+            </div>
+          )}
         </div>
       </BentoCard>
     </div>
@@ -348,3 +481,5 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
 };
 
 export default Reconciliation;
+
+

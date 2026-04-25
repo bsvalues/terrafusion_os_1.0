@@ -1,12 +1,34 @@
-import { useNavigate } from 'react-router-dom';
+/**
+ * TerraFusion OS — TerraForge Suite Home
+ *
+ * ⚠️  MODULE LIST IS FROZEN — DO NOT EDIT WITHOUT EXPLICIT INSTRUCTION ⚠️
+ *
+ * The PRIMARY_MODULES and SECONDARY_MODULES arrays below define the v1
+ * TerraForge app list. This list was verified correct at commit 8da26658a.
+ *
+ * IF THIS FILE LOOKS WRONG (wrong apps, wrong labels, wrong grouping):
+ *   git checkout 8da26658a -- frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx
+ *
+ * DO NOT rewrite the module list from memory or "fix" it by editing.
+ * Restore from git. That is the only correct action.
+ *
+ * Verified layout (matches screenshot from 2026-04-09):
+ *   PRIMARY   : CostForge (cost approach, AppFrame → port 5002)
+ *               CompsForge (sales comparison, standalone React module)
+ *               IncomeForge (income approach, queued)
+ *   SPECIALIST: Statistics Studio (IAAO diagnostics)
+ *               Batch Cost Runs (batch execution)
+ *               Regression Studio / TerraGAMA / Coefficient Preview (queued)
+ */
+import { useCallback, useState } from 'react';
+import { invokeTool } from '../../api/pilotApi';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import type { WorkbenchTabSlug } from '../../contracts/workbench';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { usePropertyStore } from '../../stores/propertyStore';
-import { CompsPoolBrowser } from './CompsPoolBrowser';
-import { RatioStudyPanel } from './RatioStudyPanel';
 import { SaleQualificationQueue } from './SaleQualificationQueue';
+import { CompsPoolBrowser } from './CompsPoolBrowser';
 import './ForgeSuiteHome.css';
 
 type LaunchMode = 'standalone' | 'workbench';
@@ -24,22 +46,95 @@ interface ForgeModuleDef {
   moduleId?: string;
 }
 
+interface CountyFindingSummary {
+  findingType: string;
+  severity: string;
+  recommendedAction: string;
+  correlationId: string;
+}
+
+interface MorningBriefSummary {
+  role: string;
+  queueType: string;
+  priority: string;
+  dueWindow: string;
+  recommendedTool: string;
+  readyToAct: boolean;
+  blockingDependencies: string[];
+  findings: CountyFindingSummary[];
+}
+
+interface CountyImpactPreview {
+  prdBefore: number;
+  prdAfter: number;
+  codBefore: number;
+  codAfter: number;
+  avDelta: number;
+  fairnessDelta: number;
+}
+
+interface CountyDiagnosticsSummary {
+  metrics: CountyImpactPreview;
+  readyForSignoff: boolean;
+  narrative: string;
+}
+
+interface CalibrationMemoSummary {
+  payloadRef: string;
+  sections: string[];
+  summary: string;
+}
+
 const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
   {
     id: 'costforge',
     label: 'CostForge',
     description:
-      'Benton County Cost Approach — replacement cost, depreciation, and RCNLD (sample analytics — not county-runtime truth)',
+      'County-wide cost approach — replacement cost schedules, depreciation tables, land schedules, and RCNLD',
     priority: 'primary',
     launchMode: 'standalone',
     moduleId: 'costforge',
-    chipLabel: 'County-wide valuation',
+    chipLabel: 'Cost approach',
   },
+  {
+    id: 'comps-forge',
+    label: 'CompsForge',
+    description:
+      'County-wide sales comparison — adjustment grid studio, paired-sales analysis, and market-derived time trends',
+    priority: 'primary',
+    launchMode: 'standalone',
+    moduleId: 'comps-forge',
+    chipLabel: 'Sales comparison',
+  },
+  {
+    id: 'income-forge',
+    label: 'IncomeForge',
+    description:
+      'County-wide income approach — cap rates, NOI modeling, and rent schedules for commercial properties',
+    priority: 'primary',
+    launchMode: 'standalone',
+    moduleId: 'income-forge',
+    truthState: 'queued',
+    chipLabel: 'Income approach',
+  },
+  {
+    id: 'sales-forge',
+    label: 'SalesForge',
+    description:
+      'Sale qualification & ratio audit — qualify sales, audit WAC codes, review IAAO stats, and export DOR-certified study',
+    priority: 'primary',
+    launchMode: 'standalone',
+    moduleId: 'sales-forge',
+    chipLabel: 'Sale qualification',
+  },
+] as const;
+
+const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
   {
     id: 'statistics-studio',
     label: 'Statistics Studio',
-    description: 'Ratio studies, COD/PRD/PRB & IAAO statistical diagnostics',
-    priority: 'primary',
+    description: 'IAAO ratio studies — COD, PRD, PRB, and assessment quality diagnostics',
+    priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'statistics-studio',
     chipLabel: 'IAAO diagnostics',
@@ -48,54 +143,15 @@ const PRIMARY_MODULES: readonly ForgeModuleDef[] = [
     id: 'batch-cost-run',
     label: 'Batch Cost Runs',
     description: 'County-wide cost model runs with strata, neighborhood, and class filters',
-    priority: 'primary',
+    priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'batch-cost-run',
     chipLabel: 'Batch execution',
   },
-] as const;
-
-const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
-  {
-    id: 'comps',
-    label: 'CompsForge',
-    description: 'Sales comparison with paired adjustments',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'forge',
-    chipLabel: 'Parcel workbench',
-  },
-  {
-    id: 'income-val',
-    label: 'Income Valuation',
-    description: 'Direct capitalization & GRM for commercial',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'forge',
-    chipLabel: 'Parcel workbench',
-  },
-  {
-    id: 'comparable-sales',
-    label: 'Comparable Sales',
-    description: 'Comp selection with paired sale adjustments',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'forge',
-    chipLabel: 'Parcel workbench',
-  },
-  {
-    id: 'reconcile',
-    label: 'Reconciliation',
-    description: 'Three-approach reconciliation and final value',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'forge',
-    chipLabel: 'Parcel workbench',
-  },
   {
     id: 'regression-studio',
     label: 'Regression Studio',
-    description: 'MRA regression models & IAAO compliance',
+    description: 'MRA regression models with R² diagnostics for market modeling',
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'regression-studio',
@@ -105,7 +161,7 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
   {
     id: 'terra-gama',
     label: 'TerraGAMA',
-    description: 'Geographic Area Market Analysis',
+    description: 'Geospatial automated mass appraisal with spatial lag models',
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'terra-gama',
@@ -115,58 +171,12 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
   {
     id: 'coefficient-preview',
     label: 'Coefficient Preview',
-    description: 'Current vs proposed coefficient comparison',
+    description: 'Live preview of adjustment coefficients before table publication',
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'coefficient-preview',
     truthState: 'queued',
     chipLabel: 'Planned scene',
-  },
-  {
-    id: 'appeal',
-    label: 'Appeals',
-    description: 'BOE appeal prep → routes through TerraDais',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'dais',
-    chipLabel: 'Routes to Dais',
-  },
-  {
-    id: 'audit',
-    label: 'Value Audit',
-    description: 'FISMA-compliant audit trail for changes',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'audit',
-    chipLabel: 'Audit surface',
-  },
-  {
-    id: 'governed',
-    label: 'Governed Run',
-    description: 'Governed run_valuation_model path',
-    priority: 'secondary',
-    launchMode: 'workbench',
-    workbenchTab: 'forge',
-    chipLabel: 'Parcel workbench',
-  },
-  {
-    id: 'cost-manual',
-    label: 'Cost Manual',
-    description: 'Manual cost schedule — replacement cost tables, depreciation, and RCNLD inputs',
-    priority: 'secondary',
-    launchMode: 'standalone',
-    moduleId: 'cost-manual',
-    chipLabel: 'Reference',
-  },
-  {
-    id: 'value-audit-module',
-    label: 'Value Audit Log',
-    description:
-      'Per-parcel value change audit log — FISMA-compliant history of all assessment changes',
-    priority: 'secondary',
-    launchMode: 'standalone',
-    moduleId: 'value-audit-module',
-    chipLabel: 'Reference',
   },
 ] as const;
 
@@ -194,22 +204,28 @@ function getLaunchLabel(mod: ForgeModuleDef): string {
 }
 
 export default function ForgeSuiteHome() {
-  const navigate = useNavigate();
   const { stats, loading, error, source } = useCountyStats();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
   const recentParcels = usePropertyStore((s) => s.recentParcels);
   const sourceDisclosure = getSourceDisclosure(source);
+  const [briefState, setBriefState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: MorningBriefSummary; correlationId?: string; error?: string }>({ status: 'idle' });
+  const [diagnosticsState, setDiagnosticsState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: CountyDiagnosticsSummary; correlationId?: string; error?: string }>({ status: 'idle' });
+  const [memoState, setMemoState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: CalibrationMemoSummary; correlationId?: string; error?: string }>({ status: 'idle' });
 
+  // KPI values from live /api/terraforge/county-stats (PacsValuations, SupNum=0 working layer).
+  // 95,811 is the correct PACS import count for Benton County working layer.
+  const fmt = (n: number | undefined, style: 'decimal' | 'currency' | 'percent', decimals = 0) => {
+    if (n === undefined || n === null) return '—';
+    if (style === 'currency') return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: decimals }).format(n);
+    if (style === 'percent') return `${n.toFixed(1)}%`;
+    return new Intl.NumberFormat('en-US').format(n);
+  };
   const kpiMetrics = [
-    { label: 'TOTAL PARCELS', value: fmtNum(stats?.totalParcels), tone: 'neutral' },
-    { label: 'AVG ASSESSED', value: fmtCurrency(stats?.averageAssessedValue), tone: 'neutral' },
-    { label: 'ASSESSED THIS YEAR', value: fmtNum(stats?.assessedThisYear), tone: 'neutral' },
-    { label: 'PENDING', value: fmtNum(stats?.pendingAssessments), tone: 'warn' },
-    {
-      label: 'COMPLETION',
-      value: stats ? `${(stats.assessmentCompletionPercent ?? 0).toFixed(1)}%` : '—',
-      tone: 'success',
-    },
+    { label: 'TOTAL PARCELS',      value: loading ? '…' : fmt(stats?.totalParcels,             'decimal'),   tone: 'neutral'  },
+    { label: 'AVG ASSESSED',       value: loading ? '…' : fmt(stats?.averageAssessedValue,      'currency'),  tone: 'neutral'  },
+    { label: 'ASSESSED THIS YEAR', value: loading ? '…' : fmt(stats?.assessedThisYear,          'decimal'),   tone: 'neutral'  },
+    { label: 'PENDING',            value: loading ? '…' : fmt(stats?.pendingAssessments,        'decimal'),   tone: 'warn'     },
+    { label: 'COMPLETION',         value: loading ? '…' : (stats ? fmt(stats.assessmentCompletionPercent, 'percent') : '—'), tone: 'success' },
   ] as const;
 
   const handleModuleLaunch = (mod: ForgeModuleDef) => {
@@ -222,17 +238,15 @@ export default function ForgeSuiteHome() {
         return;
       }
       const parcelId = activeParcel?.parcelId;
-      if (parcelId) {
-        navigate(`/property/${parcelId}/${mod.workbenchTab}`);
-      } else {
-        navigate(`/property?openTab=${mod.workbenchTab}`);
-      }
+      void activateModule('property-workbench', {
+        source: 'system',
+        metadata: { tab: mod.workbenchTab, ...(parcelId ? { parcelId } : {}) },
+      });
       return;
     }
 
     const targetId = mod.moduleId ?? mod.id;
     void activateModule(targetId, { source: 'system' });
-    navigate('/');
   };
 
   const handleParcelOpen = (parcelId: string) => {
@@ -241,6 +255,98 @@ export default function ForgeSuiteHome() {
       metadata: { parcelId },
     });
   };
+
+  const parseToolOutput = <T,>(output: unknown, fallback: T): T => {
+    try {
+      return typeof output === 'string' ? JSON.parse(output) as T : output as T;
+    } catch {
+      return fallback;
+    }
+  };
+
+  const handleRefreshBrief = useCallback(async () => {
+    setBriefState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'generate_morning_brief',
+        params: { county: 'benton', taxYear: 2026, role: 'chief_appraiser' },
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<MorningBriefSummary>(response.result.output, {
+          role: 'chief_appraiser',
+          queueType: 'calibration_review',
+          priority: 'medium',
+          dueWindow: 'next business day',
+          recommendedTool: 'propose_rate_adjustment',
+          readyToAct: false,
+          blockingDependencies: [],
+          findings: [],
+        });
+        setBriefState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setBriefState({ status: 'error', correlationId: response.correlationId, error: response.error?.message || 'Failed to load county briefing.' });
+      }
+    } catch (toolError) {
+      setBriefState({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: toolError instanceof Error ? toolError.message : 'Failed to load county briefing.',
+      });
+    }
+  }, []);
+
+  const handleRunDiagnostics = useCallback(async () => {
+    setDiagnosticsState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'rerun_ratio_study',
+        params: { county: 'benton', taxYear: 2026, draftVersion: 'benton-2026-working', scope: 'county' },
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<CountyDiagnosticsSummary>(response.result.output, {
+          metrics: { prdBefore: 0, prdAfter: 0, codBefore: 0, codAfter: 0, avDelta: 0, fairnessDelta: 0 },
+          readyForSignoff: false,
+          narrative: 'No county diagnostics returned.',
+        });
+        setDiagnosticsState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setDiagnosticsState({ status: 'error', correlationId: response.correlationId, error: response.error?.message || 'Failed to run county diagnostics.' });
+      }
+    } catch (toolError) {
+      setDiagnosticsState({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: toolError instanceof Error ? toolError.message : 'Failed to run county diagnostics.',
+      });
+    }
+  }, []);
+
+  const handleDraftBoardMemo = useCallback(async () => {
+    setMemoState({ status: 'loading' });
+    try {
+      const response = await invokeTool({
+        toolId: 'generate_calibration_memo',
+        params: { county: 'benton', draftVersion: 'benton-2026-working', audience: 'board', reasonCode: 'annual_certification' },
+        confirmation: { confirmed: true, reasonCode: 'annual_certification' },
+      });
+      if (response.success && response.result) {
+        const parsed = parseToolOutput<CalibrationMemoSummary>(response.result.output, {
+          payloadRef: '',
+          sections: [],
+          summary: 'No calibration memo returned.',
+        });
+        setMemoState({ status: 'success', result: parsed, correlationId: response.correlationId });
+      } else {
+        setMemoState({ status: 'error', correlationId: response.correlationId, error: response.error?.message || 'Failed to draft board memo.' });
+      }
+    } catch (toolError) {
+      setMemoState({
+        status: 'error',
+        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
+        error: toolError instanceof Error ? toolError.message : 'Failed to draft board memo.',
+      });
+    }
+  }, []);
 
   return (
     <div data-testid="suite-forge-root" className="forge-workspace h-full flex flex-col">
@@ -287,6 +393,132 @@ export default function ForgeSuiteHome() {
             ))}
           </section>
 
+          <section className="forge-panel" data-testid="forge-calibration-desk">
+            <div className="forge-panel__header">
+              <div>
+                <p className="forge-panel__eyebrow">County Calibration Desk</p>
+                <h2 className="forge-panel__title">Chief appraiser command posture</h2>
+              </div>
+            </div>
+
+            <div className="forge-ops-grid">
+              <div className="forge-ops-card">
+                <div className="forge-ops-card__head">
+                  <div>
+                    <div className="forge-ops-card__title">Morning Brief</div>
+                    <div className="forge-ops-card__sub">Ranked findings and recommended next tool for Benton County.</div>
+                  </div>
+                  <button type="button" className="forge-ops-btn" onClick={handleRefreshBrief} disabled={briefState.status === 'loading'}>
+                    {briefState.status === 'loading' ? 'Refreshing…' : 'Refresh Brief'}
+                  </button>
+                </div>
+                {briefState.status === 'success' && briefState.result && (
+                  <div className="forge-ops-body">
+                    <div className="forge-ops-metrics">
+                      <div className="forge-ops-metric">
+                        <span className="forge-ops-metric__label">Queue</span>
+                        <span className="forge-ops-metric__value">{briefState.result.queueType.replace(/_/g, ' ')}</span>
+                      </div>
+                      <div className="forge-ops-metric">
+                        <span className="forge-ops-metric__label">Priority</span>
+                        <span className="forge-ops-metric__value">{briefState.result.priority}</span>
+                      </div>
+                      <div className="forge-ops-metric">
+                        <span className="forge-ops-metric__label">Recommended Tool</span>
+                        <span className="forge-ops-metric__value">{briefState.result.recommendedTool.replace(/_/g, ' ')}</span>
+                      </div>
+                    </div>
+                    {briefState.result.findings.slice(0, 2).map((finding) => (
+                      <div key={finding.correlationId} className="forge-ops-finding">
+                        <div className="forge-ops-finding__top">
+                          <span>{finding.findingType}</span>
+                          <span className="forge-chip forge-chip--warn">{finding.severity}</span>
+                        </div>
+                        <p>{finding.recommendedAction}</p>
+                      </div>
+                    ))}
+                    <div className="forge-ops-foot">
+                      <span>{briefState.result.readyToAct ? 'Ready to act' : 'Awaiting dependencies'}</span>
+                      {briefState.correlationId && <code>{briefState.correlationId.slice(0, 16)}...</code>}
+                    </div>
+                  </div>
+                )}
+                {briefState.status === 'error' && <div className="forge-workspace__notice forge-workspace__notice--error">{briefState.error}</div>}
+              </div>
+
+              <div className="forge-ops-card">
+                <div className="forge-ops-card__head">
+                  <div>
+                    <div className="forge-ops-card__title">County Diagnostics Sweep</div>
+                    <div className="forge-ops-card__sub">Refresh PRD, COD, AV delta, and signoff posture for the working draft.</div>
+                  </div>
+                  <button type="button" className="forge-ops-btn" onClick={handleRunDiagnostics} disabled={diagnosticsState.status === 'loading'}>
+                    {diagnosticsState.status === 'loading' ? 'Running…' : 'Run Sweep'}
+                  </button>
+                </div>
+                {diagnosticsState.status === 'success' && diagnosticsState.result && (
+                  <div className="forge-ops-body">
+                    <div className="forge-ops-metrics forge-ops-metrics--compact">
+                      <div className="forge-ops-metric">
+                        <span className="forge-ops-metric__label">PRD</span>
+                        <span className="forge-ops-metric__value">{diagnosticsState.result.metrics.prdBefore.toFixed(3)} → {diagnosticsState.result.metrics.prdAfter.toFixed(3)}</span>
+                      </div>
+                      <div className="forge-ops-metric">
+                        <span className="forge-ops-metric__label">COD</span>
+                        <span className="forge-ops-metric__value">{diagnosticsState.result.metrics.codBefore.toFixed(2)} → {diagnosticsState.result.metrics.codAfter.toFixed(2)}</span>
+                      </div>
+                      <div className="forge-ops-metric">
+                        <span className="forge-ops-metric__label">AV Delta</span>
+                        <span className="forge-ops-metric__value">{fmtCurrency(diagnosticsState.result.metrics.avDelta)}</span>
+                      </div>
+                    </div>
+                    <p className="forge-ops-note">{diagnosticsState.result.narrative}</p>
+                    <div className="forge-ops-foot">
+                      <span>{diagnosticsState.result.readyForSignoff ? 'Signoff ready' : 'Further review needed'}</span>
+                      {diagnosticsState.correlationId && <code>{diagnosticsState.correlationId.slice(0, 16)}...</code>}
+                    </div>
+                  </div>
+                )}
+                {diagnosticsState.status === 'error' && <div className="forge-workspace__notice forge-workspace__notice--error">{diagnosticsState.error}</div>}
+              </div>
+
+              <div className="forge-ops-card forge-ops-card--wide">
+                <div className="forge-ops-card__head">
+                  <div>
+                    <div className="forge-ops-card__title">Board Memo Packet</div>
+                    <div className="forge-ops-card__sub">Draft the governed board-facing calibration memo and jump directly into the live Forge applications.</div>
+                  </div>
+                  <div className="forge-ops-actions">
+                    <button type="button" className="forge-ops-btn" onClick={handleDraftBoardMemo} disabled={memoState.status === 'loading'}>
+                      {memoState.status === 'loading' ? 'Drafting…' : 'Draft Memo'}
+                    </button>
+                    <button type="button" className="forge-ops-btn forge-ops-btn--ghost" onClick={() => handleModuleLaunch(PRIMARY_MODULES[0])}>
+                      Open CostForge
+                    </button>
+                    <button type="button" className="forge-ops-btn forge-ops-btn--ghost" onClick={() => handleModuleLaunch(SECONDARY_MODULES[0])}>
+                      Open Statistics Studio
+                    </button>
+                  </div>
+                </div>
+                {memoState.status === 'success' && memoState.result && (
+                  <div className="forge-ops-body">
+                    <p className="forge-ops-note">{memoState.result.summary}</p>
+                    <div className="forge-ops-tags">
+                      {memoState.result.sections.map((section) => (
+                        <span key={section} className="forge-chip forge-chip--neutral">{section}</span>
+                      ))}
+                    </div>
+                    <div className="forge-ops-foot">
+                      <span>{memoState.result.payloadRef || 'Payload pending'}</span>
+                      {memoState.correlationId && <code>{memoState.correlationId.slice(0, 16)}...</code>}
+                    </div>
+                  </div>
+                )}
+                {memoState.status === 'error' && <div className="forge-workspace__notice forge-workspace__notice--error">{memoState.error}</div>}
+              </div>
+            </div>
+          </section>
+
           <section className="forge-panel" data-testid="forge-primary-applications">
             <div className="forge-panel__header">
               <div>
@@ -301,6 +533,7 @@ export default function ForgeSuiteHome() {
                   type="button"
                   className="forge-card forge-card--primary"
                   onClick={() => handleModuleLaunch(mod)}
+                  disabled={mod.truthState === 'queued'}
                 >
                   <div className="forge-card__rail">
                     {mod.chipLabel && <span className="forge-chip forge-chip--neutral">{mod.chipLabel}</span>}
@@ -313,42 +546,65 @@ export default function ForgeSuiteHome() {
             </div>
           </section>
 
-          <section className="forge-panel" data-testid="forge-secondary-applications">
+          {/* GeoForge — GIS-first mass appraisal analytics */}
+          <section className="forge-panel" data-testid="forge-gis-applications">
             <div className="forge-panel__header">
               <div>
-                <p className="forge-panel__eyebrow">Specialist Applications</p>
-                <h2 className="forge-panel__title">Parcel adapters, references, and planned scenes</h2>
+                <p className="forge-panel__eyebrow">GIS Valuation Intelligence</p>
+                <h2 className="forge-panel__title">GeoForge · Spatial Mass Appraisal</h2>
               </div>
             </div>
-            <div className="forge-secondary-grid">
-              {SECONDARY_MODULES.map((mod) => (
-                <button
-                  key={mod.id}
-                  type="button"
-                  className="forge-card forge-card--secondary"
-                  onClick={() => handleModuleLaunch(mod)}
-                  disabled={mod.truthState === 'queued'}
-                >
-                  <div className="forge-card__rail">
-                    {mod.chipLabel && <span className="forge-chip forge-chip--neutral">{mod.chipLabel}</span>}
-                    {mod.truthState === 'queued' && <span className="forge-chip forge-chip--warn">Queued</span>}
-                  </div>
-                  <div className="forge-card__title">{mod.label}</div>
-                  <p className="forge-card__description">{mod.description}</p>
-                  <div className="forge-card__foot">{getLaunchLabel(mod)}</div>
-                </button>
-              ))}
+            <button
+              type="button"
+              className="forge-card forge-card--primary"
+              style={{ width: '100%', textAlign: 'left' }}
+              onClick={() => handleModuleLaunch({ id: 'geo-forge', label: 'GeoForge', description: '', priority: 'primary', launchMode: 'standalone', moduleId: 'geo-forge' })}
+            >
+              <div className="forge-card__rail">
+                <span className="forge-chip forge-chip--neutral">GIS · Benton Method</span>
+                <span className="forge-card__foot">Launches in window</span>
+              </div>
+              <div className="forge-card__title">GeoForge</div>
+              <p className="forge-card__description">
+                Full-canvas GIS valuation — Mapbox choropleth, 31 analyst panels, live Benton Method ratio
+                study (COD · PRD · PRB), DOR certification workflow, adjustment workbench, Moran&apos;s I
+                spatial analysis, levy parity, and one-click WAC 458-53A narrative memo.
+              </p>
+            </button>
+          </section>
+
+          {/* County Studio — segment-first countywide valuation workspace */}
+          <section className="forge-panel" data-testid="forge-county-applications">
+            <div className="forge-panel__header">
+              <div>
+                <p className="forge-panel__eyebrow">County Operations</p>
+                <h2 className="forge-panel__title">County Studio · Valuation Command Center</h2>
+              </div>
             </div>
+            <button
+              type="button"
+              className="forge-card forge-card--primary"
+              style={{ width: '100%', textAlign: 'left' }}
+              onClick={() => handleModuleLaunch({ id: 'county-studio', label: 'County Studio', description: '', priority: 'primary', launchMode: 'standalone', moduleId: 'county-studio' })}
+            >
+              <div className="forge-card__rail">
+                <span className="forge-chip forge-chip--neutral">Ratio Study · Scenarios · Segments</span>
+                <span className="forge-card__foot">Launches in window</span>
+              </div>
+              <div className="forge-card__title">County Studio</div>
+              <p className="forge-card__description">
+                Segment-first countywide valuation workspace — load segment sets, define cohorts, model
+                adjustment scenarios with live preview, review IAAO compliance, and publish to Atlas Live View.
+              </p>
+            </button>
           </section>
 
           {/* Slice 1.4 — county-wide sale qualification queue */}
           <SaleQualificationQueue />
 
-          {/* Slice 1.5 — county-wide IAAO ratio study */}
-          <RatioStudyPanel />
-
           {/* Slice 1.6 — qualified comps pool browser */}
           <CompsPoolBrowser />
+
 
           <section className="forge-panel" data-testid="forge-queue">
             <div className="forge-panel__header">

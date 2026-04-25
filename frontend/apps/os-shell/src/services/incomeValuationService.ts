@@ -147,12 +147,12 @@ export interface LocationPremium {
 // ═══════════════════════════════════════════════════════════════
 
 export const DEFAULT_EXPENSES: IncomeExpenses = {
-  propertyTaxes: 24000,
-  insurance: 8500,
+  propertyTaxes: 0,
+  insurance: 0,
   utilities: 0,
-  maintenance: 12000,
-  managementFees: 18000,
-  replacementReserves: 6000,
+  maintenance: 0,
+  managementFees: 0,
+  replacementReserves: 0,
   otherExpenses: 0,
 };
 

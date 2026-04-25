@@ -77,9 +77,9 @@ const SubjectBar: React.FC<{ subject: SubjectProperty }> = ({ subject }) => (
     <span className="font-semibold" style={{ color: 'hsl(var(--tf-accent))' }}>
       Subject: {subject.address || subject.parcelId}
     </span>
-    <span>GLA: {subject.grossLivingArea?.toLocaleString() || '—'} sqft</span>
+    <span>GLA: {subject.grossLivingArea?.toLocaleString() || '—'} sq ft</span>
     <span>Year: {subject.yearBuilt || '—'}</span>
-    <span>Lot: {subject.lotSizeSqft?.toLocaleString() || '—'} sqft</span>
+    <span>Lot: {subject.lotSizeSqft?.toLocaleString() || '—'} sq ft</span>
     <span>Assessed: {subject.assessedValue ? fmtCurrency(subject.assessedValue) : '—'}</span>
   </div>
 );
@@ -165,7 +165,7 @@ const ReconciliationSummary: React.FC<{ result: ReconciliationResult }> = ({ res
         </span>
       </div>
       <div>
-        <span className="block" style={{ color: 'hsl(var(--tf-text) / 0.5)' }}>CV</span>
+        <span className="block" style={{ color: 'hsl(var(--tf-text) / 0.5)' }} title="Coefficient of Variation (σ/μ) — measures spread relative to the mean; IAAO guideline ≤15%">CV</span>
         <span style={{ color: 'hsl(var(--tf-text))' }}>{result.coefficientOfVariation}%</span>
       </div>
     </div>
@@ -398,7 +398,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
               <th className="px-2 py-1.5 text-right">Year</th>
               <th className="px-2 py-1.5 text-left">Cond</th>
               <th className="px-2 py-1.5 text-left">Qual</th>
-              <th className="px-2 py-1.5 text-right">$/SqFt</th>
+              <th className="px-2 py-1.5 text-right">$/Sq Ft</th>
               <th className="px-2 py-1.5 text-right">Sim</th>
             </tr>
           </thead>

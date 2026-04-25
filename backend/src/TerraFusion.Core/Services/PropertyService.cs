@@ -27,16 +27,18 @@ public class PropertyService : IPropertyService
             .Include(p => p.Valuations)
             .AsQueryable();
 
-        // Apply search filter
+        // Apply search filter: SQLite LIKE is case-insensitive for ASCII by default
         if (!string.IsNullOrEmpty(search))
         {
-            query = query.Where(p => (p.ParcelNumber != null && p.ParcelNumber.Contains(search)) ||
-                                   (p.Address != null && p.Address.Contains(search)) ||
-                                   (p.OwnerName != null && p.OwnerName.Contains(search)));
+            var pattern = $"%{search}%";
+            query = query.Where(p =>
+                (p.ParcelNumber != null && EF.Functions.Like(p.ParcelNumber, pattern)) ||
+                (p.Address != null && EF.Functions.Like(p.Address, pattern)) ||
+                (p.OwnerName != null && EF.Functions.Like(p.OwnerName, pattern)));
         }
 
-        // Apply county filter
-        if (countyId.HasValue)
+        // Apply county filter (Guid.Empty = dev/anonymous — no filter)
+        if (countyId.HasValue && countyId.Value != Guid.Empty)
         {
             query = query.Where(p => p.CountyId == countyId.Value);
         }
@@ -62,11 +64,13 @@ public class PropertyService : IPropertyService
 
     public async Task<IEnumerable<PropertyDto>> SearchPropertiesAsync(string searchTerm)
     {
+        var pattern = $"%{searchTerm}%";
         var properties = await _context.Properties
             .Include(p => p.County)
-            .Where(p => (p.ParcelNumber != null && p.ParcelNumber.Contains(searchTerm)) ||
-                       (p.Address != null && p.Address.Contains(searchTerm)) ||
-                       (p.OwnerName != null && p.OwnerName.Contains(searchTerm)))
+            .Where(p =>
+                (p.ParcelNumber != null && EF.Functions.Like(p.ParcelNumber, pattern)) ||
+                (p.Address != null && EF.Functions.Like(p.Address, pattern)) ||
+                (p.OwnerName != null && EF.Functions.Like(p.OwnerName, pattern)))
             .Take(100) // Limit results
             .ToListAsync();
 
@@ -75,11 +79,15 @@ public class PropertyService : IPropertyService
 
     public async Task<PropertyDto?> GetPropertyByIdAsync(Guid id, Guid countyId)
     {
-        var property = await _context.Properties
+        var query = _context.Properties
             .Include(p => p.County)
             .Include(p => p.Valuations)
-            .FirstOrDefaultAsync(p => p.Id == id && p.CountyId == countyId);
+            .Where(p => p.Id == id);
 
+        if (countyId != Guid.Empty)
+            query = query.Where(p => p.CountyId == countyId);
+
+        var property = await query.FirstOrDefaultAsync();
         return property != null ? MapPropertyDto(property) : null;
     }
 
@@ -105,11 +113,15 @@ public class PropertyService : IPropertyService
 
     public async Task<PropertyDto?> GetPropertyByParcelAsync(string parcelNumber, Guid countyId)
     {
-        var property = await _context.Properties
+        var query = _context.Properties
             .Include(p => p.County)
             .Include(p => p.Valuations)
-            .FirstOrDefaultAsync(p => p.ParcelNumber == parcelNumber && p.CountyId == countyId);
+            .Where(p => p.ParcelNumber == parcelNumber);
 
+        if (countyId != Guid.Empty)
+            query = query.Where(p => p.CountyId == countyId);
+
+        var property = await query.FirstOrDefaultAsync();
         return property != null ? MapPropertyDto(property) : null;
     }
 
@@ -300,6 +312,17 @@ public class PropertyService : IPropertyService
             MarketValue = property.MarketValue,
             PropertyType = property.PropertyType,
             YearBuilt = property.YearBuilt,
+            LegalDescription = property.LegalDescription,
+            Neighborhood = property.Neighborhood,
+            PropertyUseCode = property.PropertyUseCode,
+            TaxDistrictCode = property.TaxDistrictCode,
+            TaxDistrictName = property.TaxDistrictName,
+            SitusCity = property.SitusCity,
+            SitusState = property.SitusState,
+            SitusZip = property.SitusZip,
+            Zoning = property.Zoning,
+            LotWidthFront = property.LotWidthFront,
+            LotDepth = property.LotDepth,
             TaxYear = property.TaxYear,
             AssessmentDate = property.AssessmentDate,
             CountyId = property.CountyId,

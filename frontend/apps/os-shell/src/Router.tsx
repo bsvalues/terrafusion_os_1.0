@@ -55,7 +55,6 @@ const PropertyForge = lazy(() => import('./pages/workbench/tabs/PropertyForge'))
 const PropertyAtlas = lazy(() => import('./pages/workbench/tabs/PropertyAtlas'));
 const PropertyDais = lazy(() => import('./pages/workbench/tabs/PropertyDais'));
 const PropertyDossier = lazy(() => import('./pages/workbench/tabs/PropertyDossier'));
-const PropertyPilot = lazy(() => import('./pages/workbench/tabs/PropertyPilot'));
 const PropertyClerk = lazy(() => import('./pages/workbench/tabs/PropertyClerk'));
 const PropertyTreasury = lazy(() => import('./pages/workbench/tabs/PropertyTreasury'));
 const PropertyAudit = lazy(() => import('./pages/workbench/tabs/PropertyAudit'));
@@ -68,9 +67,18 @@ const ExperimentsList = lazy(() => import('./pages/experiments/ExperimentsList')
 const CreateExperiment = lazy(() => import('./pages/experiments/CreateExperiment'));
 const NotificationPreferences = lazy(() => import('./components/codex/NotificationPreferences'));
 
+// TerraForge County Studio (Plan 2) + Atlas Live View (Plan 3)
+const CountyStudyPage = lazy(() =>
+  import('./pages/forge/county-studio/CountyStudyPage').then((m) => ({ default: m.CountyStudyPage }))
+);
+const AtlasLivePage = lazy(() =>
+  import('./pages/forge/atlas-live/AtlasLivePage').then((m) => ({ default: m.AtlasLivePage }))
+);
+
 // Gen2 Module Routes
 const TerraForgeGen2 = lazy(() => import('./pages/gen2/TerraForgeGen2'));
 const TerraDossierGen2 = lazy(() => import('./pages/gen2/TerraDossierGen2'));
+const TerraLevyGen2 = lazy(() => import('./pages/gen2/TerraLevyGen2'));
 
 // Suite Wrappers (Phase 5: MWUX Slices)
 // TerraPrimeSuite — replaced by native PropertySearch page (legacy redirect active)
@@ -158,7 +166,6 @@ const Router: React.FC = () => {
                     <Route path='treasury' element={<PropertyTreasury />} />
                     <Route path='audit' element={<PropertyAudit />} />
                     <Route path='dossier' element={<PropertyDossier />} />
-                    <Route path='pilot' element={<PropertyPilot />} />
                   </Route>
 
                   {/* Legacy Redirects - Demote broken defaults with telemetry */}
@@ -180,6 +187,7 @@ const Router: React.FC = () => {
                   {/* Gen2 Module Routes - Internal OS modules */}
                   <Route path='gen2/terraforge' element={<TerraForgeGen2 />} />
                   <Route path='gen2/dossier' element={<TerraDossierGen2 />} />
+                  <Route path='gen2/terralevy' element={<TerraLevyGen2 />} />
 
                   {/* Suite Routes (Phase 5: MWUX Slices) */}
                   {/* TerraPrime → migrated to native PropertySearch (legacy redirect with telemetry) */}
@@ -187,6 +195,10 @@ const Router: React.FC = () => {
 
                   {/* Constitutional Suite Home Routes (Phase 9) */}
                   <Route path='forge' element={<ForgeHome />} />
+                  {/* TerraForge County Studio */}
+                  <Route path='forge/county-studio' element={<CountyStudyPage />} />
+                  {/* Atlas Live View */}
+                  <Route path='forge/atlas-live' element={<AtlasLivePage />} />
                   <Route path='atlas' element={<AtlasHome />} />
                   <Route path='dais' element={<DaisHome />} />
                   <Route path='dossier' element={<DossierHome />} />

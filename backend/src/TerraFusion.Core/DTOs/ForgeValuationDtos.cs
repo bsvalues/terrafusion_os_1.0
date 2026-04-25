@@ -236,44 +236,26 @@ public record ComparableSaleEntry
     /// <summary>Effective qualification used by ValuationService: Decision ?? Recommendation.</summary>
     public string? EffectiveQualification { get; init; }
 
-    // ── Raw PACS Sale data (Layer 1 verbatim fields for ratio study) ──
-    /// <summary>PACS adjusted_sl_price — the price used in ratio study calculations (raw price ± adjustments). Use this, not SalePrice, for ratio math.</summary>
-    public decimal? AdjustedSalePriceFromPacs { get; init; }
-
-    /// <summary>PACS sl_ratio_type_cd — WA State DOR ratio study type code (e.g. "100").</summary>
-    public string? RawRatioTypeCd { get; init; }
-
-    /// <summary>PACS sl_county_ratio_cd — county's qualified/unqualified designation (e.g. "SWD", "WD").</summary>
-    public string? RawCountyRatioCd { get; init; }
-
-    /// <summary>PACS sl_ratio_cd_reason — human-readable reason for DOR report (e.g. "Gift- Grantee pays debt").</summary>
-    public string? RawRatioCdReason { get; init; }
-
-    /// <summary>PACS sl_type_cd — deed/sale type code.</summary>
-    public string? RawSaleTypeCode { get; init; }
-
-    /// <summary>PACS sl_ratio — pre-computed ratio from PACS (for audit/display; not used in TF calcs).</summary>
-    public decimal? PacsComputedRatio { get; init; }
-
-    /// <summary>PACS land_only_sale — true = land-only; affects which value base the ratio is computed against.</summary>
+    // ── Sale qualification flags (ingested from source data; used by TF rule engine) ──
+    /// <summary>True = land-only sale. TF qualification engine excludes these from improved-property ratio studies.</summary>
     public bool? LandOnlySale { get; init; }
 
-    /// <summary>PACS continue_current_use — WA current use (open space/farm/timber) must continue.</summary>
+    /// <summary>WA current use (open space/farm/timber) — sale must continue current use.</summary>
     public bool? ContinueCurrentUse { get; init; }
 
-    /// <summary>PACS sales_year — DOR ratio study year assigned by PACS (may differ from SaleDate.Year).</summary>
+    /// <summary>DOR ratio study year assigned at ingest (may differ from SaleDate.Year).</summary>
     public int? SalesYear { get; init; }
 
-    /// <summary>PACS suppress_on_ratio_rpt_cd — "T" suppresses this sale from the DOR ratio report.</summary>
+    /// <summary>"T" = suppress from DOR ratio report. Read by TF qualification engine.</summary>
     public string? SuppressOnRatioRptCd { get; init; }
 
-    /// <summary>PACS include_no_calc — sale appears in ratio report but is excluded from IAAO calculations.</summary>
+    /// <summary>True = sale appears in ratio report but excluded from IAAO calculations.</summary>
     public bool? IncludeNoCalc { get; init; }
 
-    /// <summary>PACS exemption_amount — REET exemption amount applied to this sale.</summary>
+    /// <summary>REET exemption amount applied to this sale.</summary>
     public decimal? SaleExemptionAmount { get; init; }
 
-    /// <summary>PACS sl_comment — general sale comment recorded by staff.</summary>
+    /// <summary>Staff comment recorded at ingestion.</summary>
     public string? RawComment { get; init; }
 }
 

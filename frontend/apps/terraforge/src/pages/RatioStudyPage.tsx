@@ -18,8 +18,7 @@ interface SaleRow {
   yearBuilt: number | null;
   hood: string | null;
   propertyType: string | null;
-  ratio: number | null;
-  pacsComputedRatio: number | null;
+  salesRatio: number | null;
   qualificationSource: 'decision' | 'recommendation';
 }
 
@@ -180,7 +179,7 @@ export default function RatioStudyPage() {
                   <td className="tf-right">{r.gla?.toLocaleString() ?? '—'}</td>
                   <td>{r.yearBuilt ?? '—'}</td>
                   <td>{r.hood ?? '—'}</td>
-                  <td className="tf-right tf-mono">{fmtR(r.ratio)}</td>
+                  <td className="tf-right tf-mono">{fmtR(r.salesRatio)}</td>
                   <td>
                     <span className={`tf-badge ${r.qualificationSource === 'decision' ? 'tf-badge--blue' : 'tf-badge--gray'}`}>
                       {r.qualificationSource}

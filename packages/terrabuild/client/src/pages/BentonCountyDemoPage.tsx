@@ -23,16 +23,16 @@ const demoSections = [
     description: 'Explore comprehensive Benton County building cost data with interactive filters and visualizations.',
     href: '/data-exploration-demo',
     icon: <Map className="h-6 w-6" />,
-    features: ['Regional cost analysis', 'Building type breakdown', 'Interactive filtering'],
+    features: ['Reval Area cost analysis', 'Building type breakdown', 'Interactive filtering'],
     badge: 'Start Here',
     badgeColor: 'bg-green-100 text-green-800'
   },
   {
     title: 'Comparative Analysis',
-    description: 'Compare building costs across different regions and building types within Benton County.',
+    description: 'Compare building costs across Reval Areas (Cycles 1–6) and building types within Benton County.',
     href: '/comparative-analysis-demo',
     icon: <BarChart3 className="h-6 w-6" />,
-    features: ['Regional comparisons', 'Building type analysis', 'Cost factor breakdown'],
+    features: ['Reval Area comparisons', 'Building type analysis', 'Cost factor breakdown'],
     badge: 'Core Feature',
     badgeColor: 'bg-blue-100 text-blue-800'
   },
@@ -73,9 +73,9 @@ const keyMetrics = [
     icon: <Building2 className="h-5 w-5" />
   },
   {
-    label: 'Regions Covered',
-    value: '4',
-    description: 'North, South, East, West Benton',
+    label: 'Reval Areas',
+    value: '6',
+    description: 'PACS Cycle areas 1–6 (Benton County)',
     icon: <Map className="h-5 w-5" />
   },
   {

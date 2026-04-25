@@ -59,6 +59,16 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<PluginRevenue> PluginRevenue { get; set; }
   public DbSet<PluginAnalytics> PluginAnalytics { get; set; }
 
+  // Calibration Workbench Entities
+  public DbSet<MatrixVersion> MatrixVersions { get; set; }
+  public DbSet<RevalAreaEvidenceAge> RevalAreaEvidenceAges { get; set; }
+  public DbSet<CalibrationMemo> CalibrationMemos { get; set; }
+  public DbSet<CalibrationFinding> CalibrationFindings { get; set; }
+  public DbSet<SaleRecord> SaleRecords { get; set; }
+  public DbSet<SaleComparableRecord> SaleComparableRecords { get; set; }
+  public DbSet<OutlierExclusion> OutlierExclusions { get; set; }
+  public DbSet<PropertyWorkbenchFlag> PropertyWorkbenchFlags { get; set; }
+
   // Security Entities
   public DbSet<SecurityEvent> SecurityEvents { get; set; }
   public DbSet<UserSession> UserSessions { get; set; }
@@ -116,6 +126,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   // dbo.tax_area_fund_assoc JOIN dbo.tax_area (which levies apply per tax area).
   public DbSet<PacsLevyRate> PacsLevyRates { get; set; } = null!;
   public DbSet<PacsLevyTaxAreaAssoc> PacsLevyTaxAreaAssocs { get; set; } = null!;
+  public DbSet<PacsLevyCertificationData> PacsLevyCertificationData { get; set; } = null!;
+  public DbSet<PacsLevyCertificationHighestLawful> PacsLevyCertificationHighestLawful { get; set; } = null!;
+  public DbSet<PacsLevyCertificationConstitutionalLimit> PacsLevyCertificationConstitutionalLimits { get; set; } = null!;
+  public DbSet<PacsLevyCertificationAggregateLimit> PacsLevyCertificationAggregateLimits { get; set; } = null!;
 
   // Forge Analytics (R2 Wave 26)
   public DbSet<RegressionAnalysis> RegressionAnalyses { get; set; }
@@ -191,6 +205,32 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<PacsOwnerVal> PacsOwnerVals { get; set; } = null!;
   public DbSet<PacsTaxAreaAssoc> PacsTaxAreaAssocs { get; set; } = null!;
 
+  // ArcGIS GIS Sync — Benton County ArcGIS FeatureServer geometry mirror
+  // Sync engine is the only writer; populated by ArcGisSyncService (IHostedService).
+  public DbSet<GisParcelGeometry> GisParcelGeometries { get; set; } = null!;
+
+  // Sales Audit — AI-driven ratio study diagnostics and adjustment proposals (R2 Wave 40)
+  // These are TerraFusion.Core entities: no circular dep with TerraFusion.Data.
+  // Configurations are registered directly in OnModelCreating via SalesAuditEntityConfigurations.
+  public DbSet<SaleAuditDiagnosis> SaleAuditDiagnoses { get; set; } = null!;
+  public DbSet<SalesAuditAdjustmentProposal> SalesAuditAdjustmentProposals { get; set; } = null!;
+
+  // GeoForge Adjustment Workbench — staged mass adjustment workflow with two-person integrity
+  public DbSet<AdjustmentProposal> AdjustmentProposals { get; set; } = null!;
+  public DbSet<AdjustmentSet> AdjustmentSets { get; set; } = null!;
+  public DbSet<AdjustmentRun> AdjustmentRuns { get; set; } = null!;
+  public DbSet<ParcelAdjustmentRecord> ParcelAdjustmentRecords { get; set; } = null!;
+
+  // County Studio Entities — TerraForge countywide valuation workspace
+  public DbSet<CountyStudySession> CountyStudySessions { get; set; } = null!;
+  public DbSet<CountySegmentSet> CountySegmentSets { get; set; } = null!;
+  public DbSet<CountySegment> CountySegments { get; set; } = null!;
+  public DbSet<CountyCohort> CountyCohorts { get; set; } = null!;
+  public DbSet<CountyScenario> CountyScenarios { get; set; } = null!;
+  public DbSet<CountyAdjustmentSet> CountyAdjustmentSets { get; set; } = null!;
+  public DbSet<CountyExceptionSet> CountyExceptionSets { get; set; } = null!;
+  public DbSet<CountySpatialArtifact> CountySpatialArtifacts { get; set; } = null!;
+
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
     if (!optionsBuilder.IsConfigured)
@@ -243,7 +283,23 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.HasKey(e => e.Id);
       entity.Property(e => e.ParcelId).IsRequired().HasMaxLength(50);
       entity.Property(e => e.Address).IsRequired().HasMaxLength(500);
+      entity.Property(e => e.OwnerName).HasMaxLength(200);
+      entity.Property(e => e.PropertyType).HasMaxLength(100);
+      entity.Property(e => e.LegalDescription).HasMaxLength(2000);
+      entity.Property(e => e.Neighborhood).HasMaxLength(10);
+      entity.Property(e => e.PropertyUseCode).HasMaxLength(10);
+      entity.Property(e => e.TaxDistrictCode).HasMaxLength(23);
+      entity.Property(e => e.TaxDistrictName).HasMaxLength(255);
+      entity.Property(e => e.SitusCity).HasMaxLength(30);
+      entity.Property(e => e.SitusState).HasMaxLength(2);
+      entity.Property(e => e.SitusZip).HasMaxLength(10);
+      entity.Property(e => e.Zoning).HasMaxLength(50);
       entity.Property(e => e.AssessedValue).HasPrecision(18, 2);
+      entity.Property(e => e.LandValue).HasPrecision(18, 2);
+      entity.Property(e => e.ImprovementValue).HasPrecision(18, 2);
+      entity.Property(e => e.MarketValue).HasPrecision(18, 2);
+      entity.Property(e => e.LotWidthFront).HasPrecision(10, 2);
+      entity.Property(e => e.LotDepth).HasPrecision(10, 2);
       entity.HasIndex(e => e.ParcelId).IsUnique();
       entity.HasIndex(e => e.CountyId);
     });
@@ -541,6 +597,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new CollaborationUserConfiguration());
     modelBuilder.ApplyConfiguration(new TaskConfiguration());
 
+    // CostForge Benton Method v2 — stratum query indexes (Track 0)
+    modelBuilder.ApplyConfiguration(new CamaCharacteristicConfiguration());
+
     // Apply Codex 3-6-9 Framework configurations
     modelBuilder.ApplyConfiguration(new CodexMetricConfiguration());
     modelBuilder.ApplyConfiguration(new CodexScoreConfiguration());
@@ -726,6 +785,21 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     // GPT Core Entities (Wave 4 — entities are in TerraFusion.Core, no circular dep)
     modelBuilder.ApplyConfiguration(new GptCoreEntityConfigurations.GPTConfigurationConfiguration());
     modelBuilder.ApplyConfiguration(new GptCoreEntityConfigurations.GPTConversationConfiguration());
+
+    // Sales Audit Entities (R2 Wave 40 — TerraFusion.Core entities, no circular dep)
+    // Registered here so EF design-time migrations pick them up without Program.cs hook.
+    modelBuilder.ApplyConfiguration(new SalesAuditEntityConfigurations.SaleAuditDiagnosisConfiguration());
+    modelBuilder.ApplyConfiguration(new SalesAuditEntityConfigurations.SalesAuditAdjustmentProposalConfiguration());
+
+    // County Studio Entities (TerraForge countywide valuation workspace)
+    modelBuilder.ApplyConfiguration(new CountyStudySessionConfiguration());
+    modelBuilder.ApplyConfiguration(new CountySegmentSetConfiguration());
+    modelBuilder.ApplyConfiguration(new CountySegmentConfiguration());
+    modelBuilder.ApplyConfiguration(new CountyCohortConfiguration());
+    modelBuilder.ApplyConfiguration(new CountyScenarioConfiguration());
+    modelBuilder.ApplyConfiguration(new CountyAdjustmentSetConfiguration());
+    modelBuilder.ApplyConfiguration(new CountyExceptionSetConfiguration());
+    modelBuilder.ApplyConfiguration(new CountySpatialArtifactConfiguration());
 
     // GPT/RAG AI Entities (Wave 4 — entities in TerraFusion.AI, registered via hook)
     // Wire in Program.cs: TerraFusionDbContext.OnModelCreatingExtensions = GptAiEntityConfigurations.Apply;

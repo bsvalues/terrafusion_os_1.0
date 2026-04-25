@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stratified Equity Panel — Deep Design</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d1117; color: #e6edf3; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 13px; }
+  .page { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+  h1 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  h2 { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #38bdf8; }
+  h3 { font-size: 11px; font-weight: 700; margin-bottom: 8px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em; }
+  .subtitle { color: #8b949e; font-size: 12px; margin-bottom: 24px; line-height: 1.6; }
+  .divider { border-top: 1px solid #21262d; margin: 28px 0; }
+  .section { margin-bottom: 32px; }
+
+  /* Toggle bar */
+  .view-toggle {
+    display: flex;
+    gap: 0;
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 6px;
+    overflow: hidden;
+    width: fit-content;
+    margin-bottom: 16px;
+  }
+  .toggle-btn {
+    padding: 6px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #8b949e;
+    cursor: pointer;
+    border-right: 1px solid #21262d;
+  }
+  .toggle-btn:last-child { border-right: none; }
+  .toggle-btn.active { background: #1f3a5f; color: #38bdf8; }
+
+  /* ─── EQUITY LAYOUT ─── */
+  .equity-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .panel {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .panel-head {
+    background: #0d1117;
+    border-bottom: 1px solid #21262d;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .panel-head .spacer { flex: 1; }
+  .panel-head .meta { font-size: 10px; color: #8b949e; font-weight: 400; }
+
+  /* ─── HEATMAP ─── */
+  .heatmap-wrap { padding: 16px; }
+
+  .heatmap-label {
+    font-size: 10px;
+    color: #8b949e;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  /* Before/After toggle for heatmap */
+  .heatmap-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+  .hm-toggle-btn {
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #21262d;
+    color: #8b949e;
+    background: #0d1117;
+  }
+  .hm-toggle-btn.active { background: #1f3a5f; border-color: #38bdf8; color: #38bdf8; }
+  .hm-toggle-btn.projected { background: #1a1a3a; border-color: #818cf8; color: #818cf8; }
+  .hm-note { font-size: 10px; color: #818cf8; }
+
+  /* Grid */
+  .heatmap-grid { width: 100%; }
+
+  .hm-col-headers {
+    display: grid;
+    grid-template-columns: 120px repeat(5, 1fr);
+    gap: 3px;
+    margin-bottom: 3px;
+  }
+  .hm-col-label {
+    text-align: center;
+    font-size: 10px;
+    color: #8b949e;
+    font-weight: 600;
+    padding: 4px;
+    line-height: 1.3;
+  }
+  .hm-col-label .range { font-size: 9px; color: #586069; display: block; }
+
+  .hm-row {
+    display: grid;
+    grid-template-columns: 120px repeat(5, 1fr);
+    gap: 3px;
+    margin-bottom: 3px;
+  }
+
+  .hm-row-label {
+    display: flex;
+    align-items: center;
+    font-size: 10px;
+    color: #8b949e;
+    font-weight: 600;
+    padding: 4px 6px;
+    line-height: 1.3;
+  }
+  .hm-row-label .sub { font-size: 9px; color: #586069; display: block; font-weight: 400; }
+
+  .hm-cell {
+    border-radius: 4px;
+    padding: 8px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    position: relative;
+  }
+  .hm-cell:hover { opacity: 0.85; transform: scale(1.04); }
+  .hm-cell .ratio { font-size: 14px; font-weight: 800; font-family: 'Consolas', monospace; display: block; }
+  .hm-cell .count { font-size: 9px; display: block; margin-top: 2px; opacity: 0.7; }
+  .hm-cell .drilldown { font-size: 9px; display: none; }
+  .hm-cell:hover .drilldown { display: block; color: #fff; opacity: 0.9; }
+
+  /* Color scale: red (> 1.10) → orange (1.05-1.10) → yellow (1.03-1.05) → green (0.97-1.03) → blue (< 0.97) */
+  .c-high-high   { background: #7f1d1d; color: #fca5a5; }
+  .c-high        { background: #9a3412; color: #fdba74; }
+  .c-high-mod    { background: #78350f; color: #fcd34d; }
+  .c-mod         { background: #3f3f00; color: #facc15; }
+  .c-near        { background: #14532d; color: #86efac; }
+  .c-ok          { background: #166534; color: #4ade80; }
+  .c-low-mod     { background: #0c4a6e; color: #7dd3fc; }
+
+  /* Legend */
+  .hm-legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 12px;
+    font-size: 9px;
+    color: #8b949e;
+  }
+  .hm-legend-swatch { width: 16px; height: 10px; border-radius: 2px; }
+
+  /* ─── RIGHT PANEL: PRD by quintile ─── */
+  .quintile-bars { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+
+  .q-row { }
+  .q-label { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .q-name { font-size: 11px; font-weight: 600; }
+  .q-vals { display: flex; gap: 8px; font-size: 10px; font-family: 'Consolas', monospace; }
+  .q-val-before { color: #f97316; }
+  .q-val-arrow { color: #8b949e; }
+  .q-val-after { color: #4ade80; }
+  .q-bar-wrap { position: relative; height: 10px; background: #21262d; border-radius: 5px; overflow: visible; }
+  .q-bar-before { position: absolute; top: 0; left: 0; height: 100%; border-radius: 5px; opacity: 0.4; }
+  .q-bar-after { position: absolute; top: 0; left: 0; height: 100%; border-radius: 5px; }
+  .q-ideal { position: absolute; top: -3px; width: 2px; height: 16px; background: #4ade80; border-radius: 1px; }
+  .q-sub { font-size: 9px; color: #8b949e; margin-top: 3px; }
+
+  /* ─── REGRESSIVITY CURVE ─── */
+  .regr-svg { width: 100%; height: 200px; }
+  .regr-label { font-size: 10px; fill: #8b949e; font-family: 'Segoe UI', sans-serif; }
+  .regr-axis { stroke: #21262d; stroke-width: 1; }
+  .regr-ideal { stroke: #4ade80; stroke-width: 1; stroke-dasharray: 4,4; opacity: 0.6; }
+  .regr-curve-before { stroke: #f97316; stroke-width: 2; fill: none; }
+  .regr-curve-after { stroke: #818cf8; stroke-width: 2; fill: none; stroke-dasharray: 6,3; }
+  .regr-dot { cursor: pointer; }
+
+  /* ─── BOTTOM SUMMARY BAR ─── */
+  .summary-bar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: #21262d;
+    border-top: 1px solid #21262d;
+  }
+  .summary-stat {
+    background: #0d1117;
+    padding: 10px 14px;
+    text-align: center;
+  }
+  .summary-stat .label { font-size: 9px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+  .summary-stat .val { font-size: 15px; font-weight: 800; font-family: 'Consolas', monospace; margin-top: 4px; }
+  .summary-stat .projected { font-size: 12px; color: #818cf8; margin-left: 6px; }
+  .summary-stat.good .val { color: #4ade80; }
+  .summary-stat.bad .val { color: #f97316; }
+  .summary-stat.warn .val { color: #facc15; }
+
+  /* ─── DRILL DOWN PREVIEW ─── */
+  .drilldown-banner {
+    background: #0a1f35;
+    border: 1px solid #1f3a5f;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .drilldown-banner .icon { font-size: 18px; }
+  .drilldown-banner .text { font-size: 11px; color: #8b949e; line-height: 1.6; }
+  .drilldown-banner .text strong { color: #38bdf8; }
+  .drilldown-banner .btn {
+    margin-left: auto;
+    background: #1f3a5f;
+    border: 1px solid #38bdf8;
+    color: #38bdf8;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* ─── EXPORT AREA ─── */
+  .export-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .export-btn {
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .export-btn.dor { background: #0e2a0e; border-color: #2ea043; color: #4ade80; }
+  .export-btn.iaao { background: #0e1a2a; border-color: #1e4a7a; color: #60a5fa; }
+  .export-btn.csv { background: #21262d; border-color: #30363d; color: #8b949e; }
+  .export-note { font-size: 10px; color: #8b949e; margin-top: 4px; }
+
+  /* ─── AI INSIGHT CARDS ─── */
+  .insight-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .insight-card {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .insight-card.alert { border-color: #7c3a00; background: #1a1208; }
+  .insight-card.ok { border-color: #1a5a1a; background: #0e2a0e; }
+  .insight-card h4 { font-size: 11px; font-weight: 700; margin-bottom: 8px; }
+  .insight-card.alert h4 { color: #f97316; }
+  .insight-card.ok h4 { color: #4ade80; }
+  .insight-card p { font-size: 11px; color: #8b949e; line-height: 1.7; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Stratified Equity Panel</h1>
+<p class="subtitle">IAAO-standard ratio study by value quintile × age band. Click any cell to drill into parcels. Toggle to preview adjustment impact before applying.</p>
+
+<!-- View toggle -->
+<div class="view-toggle">
+  <div class="toggle-btn active">Value Quintile × Age Band</div>
+  <div class="toggle-btn">By Reval Area</div>
+  <div class="toggle-btn">By Building Type</div>
+  <div class="toggle-btn">Time Trend</div>
+</div>
+
+<!-- Drilldown banner (shown when a cell is clicked) -->
+<div class="drilldown-banner">
+  <span class="icon">🔍</span>
+  <div class="text">
+    <strong>Q1 (Low Value) × Pre-1980 — 34 parcels, median ratio 1.18</strong><br>
+    Highest-ratio stratum in the county. These are older, low-value homes. Classic regressivity signal — low-value properties over-assessed relative to market.
+  </div>
+  <button class="btn">Open in Evidence Viewer →</button>
+</div>
+
+<div class="equity-layout">
+
+  <!-- LEFT: Heatmap -->
+  <div class="panel">
+    <div class="panel-head">
+      Equity Heatmap — Median Ratio by Stratum
+      <span class="spacer"></span>
+      <span class="meta">Reval 3 · S1 Single Family · 2026</span>
+    </div>
+
+    <div class="heatmap-wrap">
+      <!-- Before/After toggle -->
+      <div class="heatmap-toggle">
+        <button class="hm-toggle-btn active">Current</button>
+        <button class="hm-toggle-btn projected">After −6.5% S1</button>
+        <span class="hm-note">Simulation active — click "After" to preview</span>
+      </div>
+
+      <div class="heatmap-label">Value Quintile →&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Age Band ↓</div>
+
+      <!-- Column headers -->
+      <div class="hm-col-headers">
+        <div></div>
+        <div class="hm-col-label">Q1 Lowest<span class="range">&lt;$220k</span></div>
+        <div class="hm-col-label">Q2<span class="range">$220–320k</span></div>
+        <div class="hm-col-label">Q3 Median<span class="range">$320–430k</span></div>
+        <div class="hm-col-label">Q4<span class="range">$430–580k</span></div>
+        <div class="hm-col-label">Q5 Highest<span class="range">&gt;$580k</span></div>
+      </div>
+
+      <!-- Row: Pre-1960 -->
+      <div class="hm-row">
+        <div class="hm-row-label">Pre-1960<span class="sub">Built &lt;1960</span></div>
+        <div class="hm-cell c-high-high" title="Click to drill in"><span class="ratio">1.21</span><span class="count">18 sales</span></div>
+        <div class="hm-cell c-high" title="Click to drill in"><span class="ratio">1.14</span><span class="count">12 sales</span></div>
+        <div class="hm-cell c-high" title="Click to drill in"><span class="ratio">1.12</span><span class="count">9 sales</span></div>
+        <div class="hm-cell c-high-mod" title="Click to drill in"><span class="ratio">1.09</span><span class="count">6 sales</span></div>
+        <div class="hm-cell c-mod" title="Click to drill in"><span class="ratio">1.04</span><span class="count">4 sales</span></div>
+      </div>
+
+      <!-- Row: 1960–1980 -->
+      <div class="hm-row">
+        <div class="hm-row-label">1960–1980<span class="sub">Mid-century</span></div>
+        <div class="hm-cell c-high" title="Click to drill in"><span class="ratio">1.18</span><span class="count">22 sales</span></div>
+        <div class="hm-cell c-high-mod" title="Click to drill in"><span class="ratio">1.11</span><span class="count">19 sales</span></div>
+        <div class="hm-cell c-mod" title="Click to drill in"><span class="ratio">1.08</span><span class="count">14 sales</span></div>
+        <div class="hm-cell c-near" title="Click to drill in"><span class="ratio">1.03</span><span class="count">11 sales</span></div>
+        <div class="hm-cell c-ok" title="Click to drill in"><span class="ratio">1.00</span><span class="count">7 sales</span></div>
+      </div>
+
+      <!-- Row: 1980–2000 -->
+      <div class="hm-row">
+        <div class="hm-row-label">1980–2000<span class="sub">Established</span></div>
+        <div class="hm-cell c-high-mod" title="Click to drill in"><span class="ratio">1.12</span><span class="count">31 sales</span></div>
+        <div class="hm-cell c-mod" title="Click to drill in"><span class="ratio">1.08</span><span class="count">28 sales</span></div>
+        <div class="hm-cell c-near" title="Click to drill in"><span class="ratio">1.04</span><span class="count">24 sales</span></div>
+        <div class="hm-cell c-ok" title="Click to drill in"><span class="ratio">1.01</span><span class="count">18 sales</span></div>
+        <div class="hm-cell c-ok" title="Click to drill in"><span class="ratio">0.99</span><span class="count">12 sales</span></div>
+      </div>
+
+      <!-- Row: 2000–2015 -->
+      <div class="hm-row">
+        <div class="hm-row-label">2000–2015<span class="sub">Modern</span></div>
+        <div class="hm-cell c-near" title="Click to drill in"><span class="ratio">1.06</span><span class="count">27 sales</span></div>
+        <div class="hm-cell c-ok" title="Click to drill in"><span class="ratio">1.02</span><span class="count">31 sales</span></div>
+        <div class="hm-cell c-ok" title="Click to drill in"><span class="ratio">1.00</span><span class="count">29 sales</span></div>
+        <div class="hm-cell c-ok" title="Click to drill in"><span class="ratio">0.99</span><span class="count">22 sales</span></div>
+        <div class="hm-cell c-low-mod" title="Click to drill in"><span class="ratio">0.96</span><span class="count">15 sales</span></div>
+      </div>
+
+      <!-- Row: Post-2015 -->
+      <div class="hm-row">
+        <div class="hm-row-label">Post-2015<span class="sub">New construction</span></div>
+        <div class="hm-cell c-ok" title="Click to drill in"><span class="ratio">1.02</span><span class="count">14 sales</span></div>
+        <div class="hm-cell c-ok" title="Click to drill in"><span class="ratio">1.00</span><span class="count">19 sales</span></div>
+        <div class="hm-cell c-ok" title="Click to drill in"><span class="ratio">0.99</span><span class="count">22 sales</span></div>
+        <div class="hm-cell c-low-mod" title="Click to drill in"><span class="ratio">0.97</span><span class="count">16 sales</span></div>
+        <div class="hm-cell c-low-mod" title="Click to drill in"><span class="ratio">0.95</span><span class="count">11 sales</span></div>
+      </div>
+
+      <!-- Legend -->
+      <div class="hm-legend">
+        <div class="hm-legend-swatch" style="background:#7f1d1d"></div>
+        <span>&gt;1.15</span>
+        <div class="hm-legend-swatch" style="background:#9a3412;margin-left:4px"></div>
+        <span>1.10–1.15</span>
+        <div class="hm-legend-swatch" style="background:#78350f;margin-left:4px"></div>
+        <span>1.05–1.10</span>
+        <div class="hm-legend-swatch" style="background:#166534;margin-left:4px"></div>
+        <span>0.97–1.03 IAAO ✓</span>
+        <div class="hm-legend-swatch" style="background:#0c4a6e;margin-left:4px"></div>
+        <span>&lt;0.97</span>
+        <span style="margin-left:8px;color:#38bdf8">Click any cell → Evidence Viewer</span>
+      </div>
+    </div>
+
+    <!-- Summary bar -->
+    <div class="summary-bar">
+      <div class="summary-stat bad"><div class="label">County PRD</div><div class="val">1.094 <span class="projected">→1.008</span></div></div>
+      <div class="summary-stat warn"><div class="label">PRB</div><div class="val">−0.031 <span class="projected">→−0.004</span></div></div>
+      <div class="summary-stat bad"><div class="label">COD</div><div class="val">18.2% <span class="projected">→10.8%</span></div></div>
+      <div class="summary-stat bad"><div class="label">Strata in range</div><div class="val">9/25 <span class="projected">→21/25</span></div></div>
+      <div class="summary-stat warn"><div class="label">Worst stratum</div><div class="val" style="font-size:11px">Q1×Pre-60</div></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: PRD by quintile + regressivity curve -->
+  <div style="display:flex;flex-direction:column;gap:12px">
+
+    <div class="panel">
+      <div class="panel-head">Regressivity by Value Quintile</div>
+
+      <div style="padding:12px">
+        <!-- Regressivity curve SVG -->
+        <svg class="regr-svg" viewBox="0 0 300 180">
+          <!-- Axes -->
+          <line x1="40" y1="10" x2="40" y2="160" class="regr-axis"/>
+          <line x1="40" y1="160" x2="290" y2="160" class="regr-axis"/>
+          <!-- Ideal line -->
+          <line x1="40" y1="80" x2="290" y2="80" class="regr-ideal"/>
+          <!-- Axis labels -->
+          <text x="4" y="14" class="regr-label">1.25</text>
+          <text x="4" y="47" class="regr-label">1.15</text>
+          <text x="4" y="80" class="regr-label">1.00</text>
+          <text x="4" y="113" class="regr-label">0.95</text>
+          <text x="4" y="155" class="regr-label">0.85</text>
+          <text x="48" y="172" class="regr-label">Q1</text>
+          <text x="100" y="172" class="regr-label">Q2</text>
+          <text x="152" y="172" class="regr-label">Q3</text>
+          <text x="204" y="172" class="regr-label">Q4</text>
+          <text x="254" y="172" class="regr-label">Q5</text>
+
+          <!-- BEFORE curve (orange — regressive pattern) -->
+          <polyline points="60,25 112,42 164,60 216,72 268,80" class="regr-curve-before"/>
+          <circle cx="60" cy="25" r="5" fill="#f97316" class="regr-dot"/>
+          <circle cx="112" cy="42" r="5" fill="#f97316" class="regr-dot"/>
+          <circle cx="164" cy="60" r="5" fill="#f97316" class="regr-dot"/>
+          <circle cx="216" cy="72" r="5" fill="#f97316" class="regr-dot"/>
+          <circle cx="268" cy="80" r="5" fill="#f97316" class="regr-dot"/>
+
+          <!-- AFTER curve (purple — nearly flat) -->
+          <polyline points="60,72 112,76 164,80 216,82 268,88" class="regr-curve-after"/>
+          <circle cx="60" cy="72" r="4" fill="#818cf8" class="regr-dot"/>
+          <circle cx="112" cy="76" r="4" fill="#818cf8" class="regr-dot"/>
+          <circle cx="164" cy="80" r="4" fill="#818cf8" class="regr-dot"/>
+          <circle cx="216" cy="82" r="4" fill="#818cf8" class="regr-dot"/>
+          <circle cx="268" cy="88" r="4" fill="#818cf8" class="regr-dot"/>
+
+          <!-- Legend -->
+          <line x1="48" y1="145" x2="70" y2="145" stroke="#f97316" stroke-width="2"/>
+          <text x="73" y="148" class="regr-label" fill="#f97316">Current</text>
+          <line x1="140" y1="145" x2="162" y2="145" stroke="#818cf8" stroke-width="2" stroke-dasharray="4,2"/>
+          <text x="165" y="148" class="regr-label" fill="#818cf8">After adj.</text>
+        </svg>
+
+        <div style="font-size:10px;color:#8b949e;line-height:1.6;margin-top:8px">
+          The downward-sloping orange curve is the regressivity fingerprint: low-value homes assessed at 1.18× market, high-value at 1.00×. After the −6.5% adjustment, the purple curve is nearly flat — equity restored across all quintiles.
+        </div>
+      </div>
+
+      <!-- Quintile bars -->
+      <div style="border-top:1px solid #21262d;padding:12px;">
+        <h3>PRD per Quintile — Before → After</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="q-row">
+            <div class="q-label">
+              <span class="q-name">Q1 — Low Value (&lt;$220k)</span>
+              <div class="q-vals"><span class="q-val-before">1.18</span><span class="q-val-arrow">→</span><span class="q-val-after">1.02</span></div>
+            </div>
+            <div class="q-bar-wrap">
+              <div class="q-bar-before" style="width:78%;background:#f97316"></div>
+              <div class="q-bar-after" style="width:10%;background:#4ade80"></div>
+              <div class="q-ideal" style="left:0%"></div>
+            </div>
+            <div class="q-sub">Biggest improvement — old, low-value homes most affected by regressivity</div>
+          </div>
+          <div class="q-row">
+            <div class="q-label">
+              <span class="q-name">Q2</span>
+              <div class="q-vals"><span class="q-val-before">1.11</span><span class="q-val-arrow">→</span><span class="q-val-after">1.01</span></div>
+            </div>
+            <div class="q-bar-wrap">
+              <div class="q-bar-before" style="width:55%;background:#f97316"></div>
+              <div class="q-bar-after" style="width:5%;background:#4ade80"></div>
+              <div class="q-ideal" style="left:0%"></div>
+            </div>
+          </div>
+          <div class="q-row">
+            <div class="q-label">
+              <span class="q-name">Q3 — Median</span>
+              <div class="q-vals"><span class="q-val-before">1.08</span><span class="q-val-arrow">→</span><span class="q-val-after">1.00</span></div>
+            </div>
+            <div class="q-bar-wrap">
+              <div class="q-bar-before" style="width:40%;background:#facc15"></div>
+              <div class="q-bar-after" style="width:0%;background:#4ade80"></div>
+              <div class="q-ideal" style="left:0%"></div>
+            </div>
+          </div>
+          <div class="q-row">
+            <div class="q-label">
+              <span class="q-name">Q4</span>
+              <div class="q-vals"><span class="q-val-before">1.03</span><span class="q-val-arrow">→</span><span class="q-val-after">0.98</span></div>
+            </div>
+            <div class="q-bar-wrap">
+              <div class="q-bar-before" style="width:15%;background:#facc15"></div>
+              <div class="q-bar-after" style="width:0%;background:#4ade80"></div>
+              <div class="q-ideal" style="left:0%"></div>
+            </div>
+          </div>
+          <div class="q-row">
+            <div class="q-label">
+              <span class="q-name">Q5 — High Value (&gt;$580k)</span>
+              <div class="q-vals"><span class="q-val-before">1.00</span><span class="q-val-arrow">→</span><span class="q-val-after">0.95</span></div>
+            </div>
+            <div class="q-bar-wrap">
+              <div class="q-bar-before" style="width:2%;background:#4ade80"></div>
+              <div class="q-bar-after" style="width:25%;background:#7dd3fc"></div>
+              <div class="q-ideal" style="left:0%"></div>
+            </div>
+            <div class="q-sub" style="color:#f97316">⚠ High-value homes will be slightly under-assessed. Monitor after applying.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /equity-layout -->
+
+<!-- AI Insight Cards -->
+<div class="insight-grid">
+  <div class="insight-card alert">
+    <h4>⚠ Regressivity Pattern Confirmed</h4>
+    <p>The ratio gradient from Q1 (1.18) to Q5 (1.00) is a textbook regressivity pattern. Low-value homeowners bear a disproportionate tax burden. IAAO PRB of −0.031 quantifies this: for every $100k increase in value, the assessment ratio drops ~3.1 percentage points.</p>
+  </div>
+  <div class="insight-card alert">
+    <h4>⚠ Age + Value Interaction</h4>
+    <p>Pre-1960 properties in Q1 show a median ratio of 1.21 — the worst stratum in the county. These are older, lower-value homes that haven't been physically inspected recently. Reval physical inspection should prioritize this cohort.</p>
+  </div>
+  <div class="insight-card ok">
+    <h4>✓ New Construction is Equitable</h4>
+    <p>Post-2015 construction across all quintiles sits within IAAO range (0.95–1.02). New homes are being assessed correctly. The problem is concentrated in pre-1980 stock — targeted adjustment + reval inspection will resolve it without touching the clean strata.</p>
+  </div>
+</div>
+
+<!-- Export row -->
+<div class="export-row">
+  <button class="export-btn dor">📄 Export DOR Ratio Study Package</button>
+  <button class="export-btn iaao">📊 Export IAAO-Format Report</button>
+  <button class="export-btn csv">⬇ Download Strata CSV</button>
+</div>
+<div class="export-note">DOR package includes stratified equity tables, PRD/PRB/COD calculations, outlier exclusion log, and appraiser certification — ready for legislative audit submission.</div>
+
+</div><!-- /page -->
+</body>
+</html>

@@ -44,7 +44,7 @@ import { useApiEndpoints } from "@/hooks/use-api-endpoints";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ApiEndpoint, InsertApiEndpoint } from "@shared/schema";
+import { ApiEndpoint, InsertApiEndpoint } from '@/types/api';
 import { Check, Edit, FileText, Plus, RefreshCw, Search, Terminal, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";

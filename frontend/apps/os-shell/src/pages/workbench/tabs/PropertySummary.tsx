@@ -28,6 +28,8 @@ import { WorkbenchSourceBadge } from '../../../components/workbench/WorkbenchSou
 const fmt = (v: number | undefined | null) => (v ? `$${v.toLocaleString()}` : '—');
 const num = (v: number | undefined | null) => (v != null ? v.toLocaleString() : '—');
 const dash = (v: string | number | undefined | null) => (v != null && v !== '' ? String(v) : '—');
+/** Render a year value — treats 0 as missing because year 0 is not a valid built year. */
+const dashYear = (v: number | undefined | null) => (v != null && v !== 0 ? String(v) : '—');
 
 function daysSince(dateStr: string | undefined | null): string {
   if (!dateStr) return '';
@@ -116,7 +118,7 @@ export const PropertySummary: React.FC = () => {
               <>
                 {dash(propertyData.address)}
                 {activeParcel?.city && (
-                  <span className="text-xs ml-1" style={{ color: 'hsl(var(--tf-text) / 0.45)' }}>
+                  <span className="block text-xs mt-0.5" style={{ color: 'hsl(var(--tf-text) / 0.45)' }}>
                     {activeParcel.city}{activeParcel.zip ? `, ${activeParcel.zip}` : ''}
                   </span>
                 )}
@@ -127,16 +129,14 @@ export const PropertySummary: React.FC = () => {
             label="Property Type"
             value={`${TYPE_LABELS[propertyData.propertyType] || propertyData.propertyType || '—'}${activeParcel?.landUseDescription ? ` · ${activeParcel.landUseDescription}` : ''}`}
           />
-          {propertyData.legalDescription && (
-            <div className="col-span-2 flex flex-col gap-0.5 pt-0.5">
-              <span className="text-[10px] uppercase tracking-wide" style={{ color: 'hsl(var(--tf-text) / 0.38)' }}>
-                Legal Description
-              </span>
-              <span className="text-xs font-mono leading-relaxed" style={{ color: 'hsl(var(--tf-text) / 0.7)' }}>
-                {propertyData.legalDescription}
-              </span>
-            </div>
-          )}
+          <div className="col-span-2 flex flex-col gap-0.5 pt-0.5">
+            <span className="text-[10px] uppercase tracking-wide" style={{ color: 'hsl(var(--tf-text) / 0.38)' }}>
+              Legal Description
+            </span>
+            <span className="text-xs font-mono leading-relaxed" style={{ color: 'hsl(var(--tf-text) / 0.7)' }}>
+              {propertyData.legalDescription || '\u2014'}
+            </span>
+          </div>
         </div>
       </Block>
 
@@ -149,7 +149,7 @@ export const PropertySummary: React.FC = () => {
               label="Tax District"
               value={
                 activeParcel.taxDistrictName
-                  ? `${activeParcel.taxDistrictName}${activeParcel.taxDistrictCode ? ` (${activeParcel.taxDistrictCode})` : ''}`
+                  ? `${activeParcel.taxDistrictName}${activeParcel.taxDistrictCode && activeParcel.taxDistrictCode !== activeParcel.taxDistrictName ? ` (${activeParcel.taxDistrictCode})` : ''}`
                   : '—'
               }
             />
@@ -214,13 +214,63 @@ export const PropertySummary: React.FC = () => {
       {activeParcel && (
         <Block>
           <BlockHeader label="Physical Characteristics" />
-          <div className="grid grid-cols-5 gap-x-4 gap-y-2.5">
-            <Field label="Year Built" value={dash(activeParcel.yearBuilt)} mono />
-            <Field label="Sq Ft" value={num(activeParcel.buildingSquareFeet)} mono />
+          {/* Row 1: Year / Bed / Bath / Acres */}
+          <div className="grid grid-cols-4 gap-x-4 gap-y-2.5">
+            <Field label="Year Built" value={dashYear(activeParcel.yearBuilt)} mono />
             <Field label="Bedrooms" value={dash(activeParcel.bedrooms)} mono />
-            <Field label="Bathrooms" value={dash(activeParcel.bathrooms)} mono />
+            <Field label="Bathrooms" value={activeParcel.bathrooms != null ? String(activeParcel.bathrooms) : '—'} mono />
             <Field label="Land Acres" value={activeParcel.landAcreage ? activeParcel.landAcreage.toFixed(2) : '—'} mono />
           </div>
+          {/* Row 2: USPAP sq ft breakdown */}
+          <div className="grid grid-cols-4 gap-x-4 gap-y-2.5 mt-2 pt-2" style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.12)' }}>
+            <Field
+              label="GLA (Above Grade)"
+              value={num(activeParcel.grossLivingArea ?? activeParcel.buildingSquareFeet)}
+              mono
+            />
+            <Field
+              label="Basement"
+              value={activeParcel.basementSqft ? num(activeParcel.basementSqft) : '\u2014'}
+              mono
+            />
+            <Field
+              label="Garage"
+              value={activeParcel.garageSqft ? num(activeParcel.garageSqft) : '\u2014'}
+              mono
+            />
+            <Field
+              label="Total Sq Ft"
+              value={num(
+                (activeParcel.grossLivingArea ?? activeParcel.buildingSquareFeet) +
+                (activeParcel.basementSqft ?? 0) +
+                (activeParcel.garageSqft ?? 0)
+              )}
+              mono
+            />
+          </div>
+          {/* Row 3: Lot dimensions */}
+          {(activeParcel.lotWidthFront || activeParcel.lotDepth) && (
+            <div className="grid grid-cols-4 gap-x-4 gap-y-2.5 mt-2 pt-2" style={{ borderTop: '1px solid hsl(var(--tf-border) / 0.12)' }}>
+              <Field
+                label="Lot Frontage"
+                value={activeParcel.lotWidthFront ? `${activeParcel.lotWidthFront.toFixed(0)}'` : '\u2014'}
+                mono
+              />
+              <Field
+                label="Lot Depth"
+                value={activeParcel.lotDepth ? `${activeParcel.lotDepth.toFixed(0)}'` : '\u2014'}
+                mono
+              />
+              <Field
+                label="Lot Size (ft²)"
+                value={(activeParcel.lotWidthFront && activeParcel.lotDepth)
+                  ? num(activeParcel.lotWidthFront * activeParcel.lotDepth)
+                  : '\u2014'}
+                mono
+              />
+              <div />
+            </div>
+          )}
         </Block>
       )}
 

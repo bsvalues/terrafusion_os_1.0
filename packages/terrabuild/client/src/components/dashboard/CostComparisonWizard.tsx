@@ -27,7 +27,7 @@ import { Separator } from "@/components/ui/separator";
 type CostScenario = {
   id: string;
   name: string;
-  region: string;
+  revalArea: string;
   buildingType: string;
   squareFootage: number;
   complexityLevel: string;
@@ -47,7 +47,7 @@ export function CostComparisonWizard() {
     {
       id: "scenario-1",
       name: "Scenario 1",
-      region: "Central Benton",
+      revalArea: "Reval 1",
       buildingType: "R1",
       squareFootage: 2000,
       complexityLevel: "Medium",
@@ -68,7 +68,7 @@ export function CostComparisonWizard() {
       {
         id: newId,
         name: `Scenario ${scenarios.length + 1}`,
-        region: "Central Benton",
+        revalArea: "Reval 1",
         buildingType: "R1",
         squareFootage: 2000,
         complexityLevel: "Medium",
@@ -128,7 +128,7 @@ export function CostComparisonWizard() {
           scenario.complexityLevel === "High" ? 1.1 : 1.0;
           
         const calculationResult = await calculateBuildingCost({
-          region: scenario.region,
+          revalArea: scenario.revalArea,
           buildingType: scenario.buildingType,
           squareFootage: scenario.squareFootage,
           complexityFactor: complexityValue.toString(),
@@ -183,7 +183,7 @@ export function CostComparisonWizard() {
         <div>
           <h3 className="text-lg font-medium">Cost Scenario Comparison Wizard</h3>
           <p className="text-sm text-muted-foreground">
-            Compare building cost scenarios for different regions, types, and specifications
+            Compare Benton County building cost scenarios for different Reval Areas, types, and specifications. All costs from the Benton County cost matrix.
           </p>
         </div>
         
@@ -233,13 +233,13 @@ export function CostComparisonWizard() {
                 
                 <CardContent className="space-y-3">
                   <div className="grid gap-2">
-                    <Label htmlFor={`region-${scenario.id}`}>Region</Label>
+                    <Label htmlFor={`region-${scenario.id}`}>Reval Area (Cycle)</Label>
                     <Select
-                      value={scenario.region}
-                      onValueChange={(value) => updateScenario(scenario.id, "region", value)}
+                      value={scenario.revalArea}
+                      onValueChange={(value) => updateScenario(scenario.id, "revalArea", value)}
                     >
                       <SelectTrigger id={`region-${scenario.id}`}>
-                        <SelectValue placeholder="Select region" />
+                        <SelectValue placeholder="Select Reval Area" />
                       </SelectTrigger>
                       <SelectContent>
                         {regions.map((region) => (
@@ -371,9 +371,9 @@ export function CostComparisonWizard() {
                 
                 <TableBody>
                   <TableRow>
-                    <TableCell className="font-medium">Region</TableCell>
+                    <TableCell className="font-medium">Reval Area (Cycle)</TableCell>
                     {scenarios.map((scenario) => (
-                      <TableCell key={scenario.id}>{scenario.region}</TableCell>
+                      <TableCell key={scenario.id}>{scenario.revalArea}</TableCell>
                     ))}
                   </TableRow>
                   
@@ -436,7 +436,7 @@ export function CostComparisonWizard() {
                   </TableRow>
                   
                   <TableRow>
-                    <TableCell className="font-medium">Region Factor</TableCell>
+                    <TableCell className="font-medium">Reval Area Factor</TableCell>
                     {scenarios.map((scenario) => (
                       <TableCell key={scenario.id}>
                         {scenario.results ? parseFloat(scenario.results.regionFactor).toFixed(2) : '-'}

@@ -78,7 +78,7 @@ const HarrisPacsPlugin: React.FC<HarrisPacsPluginProps> = ({ context }) => {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading Harris PACS migration status...</div>
+        <div className={styles.loading}>Loading assessment data import status...</div>
       </div>
     );
   }
@@ -86,8 +86,8 @@ const HarrisPacsPlugin: React.FC<HarrisPacsPluginProps> = ({ context }) => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2>Harris PACS 9.0 Migration</h2>
-        <p>Benton County Legacy System Integration</p>
+        <h2>Assessment Data Import</h2>
+        <p>Benton County Data Integration</p>
       </div>
 
       {status && (
@@ -140,10 +140,10 @@ const HarrisPacsPlugin: React.FC<HarrisPacsPluginProps> = ({ context }) => {
               <h3>System Mapping</h3>
               <div className={styles.mappingInfo}>
                 <div className={styles.mappingRow}>
-                  <span>PACS Parcel ID → {status.conversionMappings.pacsParcelId}</span>
+                  <span>Source Parcel ID → {status.conversionMappings.pacsParcelId}</span>
                 </div>
                 <div className={styles.mappingRow}>
-                  <span>PACS Owner Rec → {status.conversionMappings.pacsOwnerRec}</span>
+                  <span>Source Owner Rec → {status.conversionMappings.pacsOwnerRec}</span>
                 </div>
                 <div className={styles.mappingStats}>
                   <span>Mapped: {status.conversionMappings.totalMapped.toLocaleString()}</span>
@@ -155,7 +155,7 @@ const HarrisPacsPlugin: React.FC<HarrisPacsPluginProps> = ({ context }) => {
 
           <div className={styles.actions}>
             <button className={styles.primaryButton} onClick={startImport} disabled={importRunning}>
-              {importRunning ? 'Starting Import...' : 'Start PACS Import'}
+              {importRunning ? 'Starting Import...' : 'Start Data Import'}
             </button>
 
             <button

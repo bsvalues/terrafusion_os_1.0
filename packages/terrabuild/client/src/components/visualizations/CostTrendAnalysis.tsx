@@ -243,15 +243,15 @@ export function CostTrendAnalysis({ className = '' }: CostTrendAnalysisProps) {
     }
     // Apply filters from the global context
     else if (filters?.buildingTypes && filters.buildingTypes.length > 0) {
-      filteredData = filteredData.filter(item => 
-        filters.buildingTypes.includes(item.buildingType)
+      filteredData = filteredData.filter(item =>
+        filters.buildingTypes!.includes(item.buildingType)
       );
     }
-    
-    // Apply region filter from the global context
-    if (filters?.regions && filters.regions.length > 0) {
-      filteredData = filteredData.filter(item => 
-        filters.regions.includes(item.region)
+
+    // Apply reval area filter from the global context
+    if (filters?.revalAreas && filters.revalAreas.length > 0) {
+      filteredData = filteredData.filter(item =>
+        filters.revalAreas!.includes(item.revalArea ?? item.region)
       );
     }
 

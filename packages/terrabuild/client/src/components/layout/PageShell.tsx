@@ -88,7 +88,7 @@ export default function PageShell({
         onClick={action.onClick || (action.href ? () => navigate(action.href as string) : undefined)}
         disabled={action.disabled}
         className={cn(
-          action.variant === 'default' && 'bg-[#29B7D3] hover:bg-[#29B7D3]/90',
+          action.variant === 'default' && 'bg-primary hover:bg-primary/90',
           'transition-all'
         )}
       >
@@ -154,7 +154,7 @@ export default function PageShell({
         
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-[#243E4D] tracking-tight">{title}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">{title}</h1>
             {description && <p className="text-muted-foreground mt-1.5">{description}</p>}
           </div>
           
@@ -168,7 +168,7 @@ export default function PageShell({
       
       {/* Optional navigation flow (workflow steps) */}
       {navigationFlow && (
-        <Card className="shadow-sm bg-white/70 backdrop-blur border-[#e6eef2]">
+        <Card className="shadow-sm border-border">
           <CardContent className="py-4">
             {navigationFlow}
           </CardContent>
@@ -180,7 +180,7 @@ export default function PageShell({
         <Alert 
           variant={infoAlert.variant || 'default'} 
           className={cn(
-            infoAlert.variant === 'default' || !infoAlert.variant ? 'bg-[#e6f7fb] border-[#29B7D3]/30' : '',
+            infoAlert.variant === 'default' || !infoAlert.variant ? 'border-primary/30' : '',
             infoAlert.variant === 'destructive' ? 'bg-[#fdf0f0] border-[#f87171]/30' : '',
             'animate-fade-in'
           )}
@@ -206,7 +206,7 @@ export default function PageShell({
                     key={tab.id} 
                     value={tab.id}
                     disabled={tab.disabled}
-                    className="data-[state=active]:border-b-2 data-[state=active]:border-[#29B7D3] rounded-none"
+                    className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
                   >
                     {tab.icon && <span className="mr-2">{tab.icon}</span>}
                     {tab.label}
@@ -228,7 +228,7 @@ export default function PageShell({
           {helpText && (
             <div className="mt-8 border-t pt-4 text-sm text-muted-foreground">
               <div className="flex items-start">
-                <HelpCircle className="h-5 w-5 mr-2 text-[#29B7D3] flex-shrink-0 mt-0.5" />
+                <HelpCircle className="h-5 w-5 mr-2 text-primary flex-shrink-0 mt-0.5" />
                 <p>{helpText}</p>
               </div>
             </div>
@@ -265,7 +265,7 @@ export function InfoCard({ title, description, children, icon, className, action
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div className="flex items-center">
-            {icon && <div className="mr-3 text-[#29B7D3]">{icon}</div>}
+            {icon && <div className="mr-3 text-primary">{icon}</div>}
             <div>
               <CardTitle className="text-lg">{title}</CardTitle>
               {description && <CardDescription className="mt-1">{description}</CardDescription>}

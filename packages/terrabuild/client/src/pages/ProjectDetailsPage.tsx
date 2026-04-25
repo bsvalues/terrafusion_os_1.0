@@ -526,11 +526,11 @@ const ProjectDetailsPage: React.FC = () => {
                     <CardTitle>Project Progress</CardTitle>
                     <CardDescription>Track the completion status of this project</CardDescription>
                   </div>
-                  <ProjectProgressReport projectId={currentProject.id} />
+                  <ProjectProgressReport projectId={String(currentProject.id)} />
                 </CardHeader>
                 <CardContent>
-                  <ProjectProgressTracker 
-                    projectId={currentProject.id}
+                  <ProjectProgressTracker
+                    projectId={String(currentProject.id)}
                   />
                 </CardContent>
               </Card>
@@ -541,8 +541,8 @@ const ProjectDetailsPage: React.FC = () => {
                   <CardDescription>Track all changes and actions in this project</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ProjectActivitiesLog 
-                    projectId={currentProject.id}
+                  <ProjectActivitiesLog
+                    projectId={String(currentProject.id)}
                     className="h-full"
                   />
                 </CardContent>

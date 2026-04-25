@@ -9,7 +9,7 @@
  * @module applications/terra-levy/TerraLevyDashboard
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type {
   LevyDataPoint,
   LevyDashboardData,
@@ -23,6 +23,15 @@ import type {
 import type { PaymentAnalytics } from './types/PaymentTypes';
 import { DemoDataBanner } from '../../components/governance/DemoDataBanner';
 import { useBudgetData } from './hooks/useBudgetData';
+import {
+  getBentonTaxingDistricts,
+  getStatutoryLimits,
+  getCertificationSteps,
+  type TaxingDistrict,
+  type StatutoryLimit,
+  type CertificationStep,
+} from '../../services/levyService';
+import ReferenceComplianceTab from './ReferenceComplianceTab';
 
 // ============================================================================
 // Design Tokens — all colors via CSS custom properties (ratchet-safe)
@@ -138,8 +147,7 @@ function priorityBadge(p: BudgetCategory['priority']): string {
 // ============================================================================
 // Component
 // ============================================================================
-
-type Tab = 'overview' | 'levies' | 'budget' | 'ai';
+type Tab = 'overview' | 'levies' | 'districts' | 'budget' | 'compliance' | 'ai';
 
 export default function TerraLevyDashboard() {
   const [tab, setTab] = useState<Tab>('overview');
@@ -215,7 +223,7 @@ export default function TerraLevyDashboard() {
         display: 'flex', gap: 0, borderBottom: '1px solid hsl(var(--tf-fg) / 0.08)',
         padding: '0 24px',
       }}>
-        {(['overview', 'levies', 'budget', 'ai'] as Tab[]).map(t => (
+        {(['overview', 'levies', 'districts', 'budget', 'compliance', 'ai'] as Tab[]).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -228,7 +236,7 @@ export default function TerraLevyDashboard() {
               transition: 'all 0.15s ease',
             }}
           >
-            {t === 'ai' ? 'AI Insights' : t}
+            {t === 'ai' ? 'AI Insights' : t === 'districts' ? 'Districts & Rates' : t === 'compliance' ? 'Reference & Compliance' : t}
           </button>
         ))}
       </div>
@@ -237,7 +245,9 @@ export default function TerraLevyDashboard() {
       <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
         {tab === 'overview' && <OverviewTab metrics={metrics} budgetMetrics={budgetMetrics} levies={SAMPLE_LEVIES} />}
         {tab === 'levies' && <LeviesTab levies={SAMPLE_LEVIES} />}
+        {tab === 'districts' && <DistrictsTab />}
         {tab === 'budget' && <BudgetTab budget={SAMPLE_BUDGET} metrics={budgetMetrics} />}
+        {tab === 'compliance' && <ReferenceComplianceTab />}
         {tab === 'ai' && <AITab insights={aiInsights} />}
       </div>
     </div>
@@ -541,3 +551,337 @@ function AITab({ insights }: {
     </div>
   );
 }
+
+// ============================================================================
+// Tab: Districts & Rates — LIVE DATA from /api/levy-calculation/*
+// ============================================================================
+
+interface DistrictsState {
+  status: 'idle' | 'loading' | 'ok' | 'error' | 'empty';
+  districts: TaxingDistrict[];
+  limits: StatutoryLimit[];
+  steps: CertificationStep[];
+  sourceDistricts?: string;
+  sourceLimits?: string;
+  error?: string;
+}
+
+function DistrictsTab() {
+  const [state, setState] = useState<DistrictsState>({
+    status: 'idle',
+    districts: [],
+    limits: [],
+    steps: [],
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    setState(s => ({ ...s, status: 'loading', error: undefined }));
+    Promise.all([
+      getBentonTaxingDistricts(),
+      getStatutoryLimits(),
+      getCertificationSteps(),
+    ])
+      .then(([districtsRes, limitsRes, stepsRes]) => {
+        if (cancelled) return;
+        const hasAny =
+          (districtsRes.districts?.length ?? 0) > 0 ||
+          (limitsRes.limits?.length ?? 0) > 0 ||
+          (stepsRes.steps?.length ?? 0) > 0;
+        setState({
+          status: hasAny ? 'ok' : 'empty',
+          districts: districtsRes.districts ?? [],
+          limits: limitsRes.limits ?? [],
+          steps: stepsRes.steps ?? [],
+          sourceDistricts: districtsRes.source,
+          sourceLimits: limitsRes.source,
+        });
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        const message =
+          err instanceof Error ? err.message : 'Unknown error fetching levy data';
+        setState(s => ({ ...s, status: 'error', error: message }));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (state.status === 'loading' || state.status === 'idle') {
+    return (
+      <div style={{ textAlign: 'center', padding: 40, color: T.textDim }}>
+        <p style={{ fontSize: 14 }}>Loading Benton County taxing districts…</p>
+      </div>
+    );
+  }
+
+  if (state.status === 'error') {
+    return (
+      <div
+        style={{
+          padding: 20,
+          borderRadius: 12,
+          background: 'hsl(var(--tf-destructive) / 0.08)',
+          border: '1px solid hsl(var(--tf-destructive) / 0.3)',
+          color: T.danger,
+        }}
+      >
+        <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
+          Unable to load live levy data
+        </div>
+        <div style={{ fontSize: 13, color: T.textMuted }}>
+          Endpoint <code>/api/levy-calculation/*</code> not reachable. Start the
+          backend (<code>dotnet run --project backend/src/TerraFusion.API</code>)
+          or check your API base URL.
+        </div>
+        <div
+          style={{
+            fontSize: 12,
+            color: T.textDim,
+            marginTop: 8,
+            fontFamily: 'monospace',
+          }}
+        >
+          {state.error}
+        </div>
+      </div>
+    );
+  }
+
+  if (state.status === 'empty') {
+    return (
+      <div style={{ textAlign: 'center', padding: 40, color: T.textDim }}>
+        <p style={{ fontSize: 14 }}>
+          No district or statutory data available from the API.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      {/* Live-data banner (honest) */}
+      <div
+        style={{
+          padding: 12,
+          borderRadius: 10,
+          background: 'hsl(var(--tf-success) / 0.08)',
+          border: '1px solid hsl(var(--tf-success) / 0.3)',
+          color: T.success,
+          fontSize: 13,
+        }}
+      >
+        <strong>Live data</strong> — served by
+        {' '}<code>/api/levy-calculation/*</code>. Source:{' '}
+        <code>{state.sourceDistricts ?? '(unknown)'}</code>. RCW citations below
+        link to Washington State statute.
+      </div>
+
+      {/* Benton taxing districts */}
+      <section>
+        <h2
+          style={{
+            fontSize: 16,
+            fontWeight: 700,
+            color: T.cyan,
+            marginTop: 0,
+            marginBottom: 12,
+          }}
+        >
+          Benton County Taxing Districts ({state.districts.length})
+        </h2>
+        <div style={{ overflow: 'auto', borderRadius: 10, border: T.cardBorder }}>
+          <table
+            style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              fontSize: 13,
+              background: T.cardBg,
+            }}
+          >
+            <thead>
+              <tr style={{ textAlign: 'left', color: T.textMuted }}>
+                <th style={thStyle}>Code</th>
+                <th style={thStyle}>District</th>
+                <th style={thStyle}>Type</th>
+                <th style={{ ...thStyle, textAlign: 'right' }}>
+                  Limit / $1,000 AV
+                </th>
+                <th style={thStyle}>RCW</th>
+                <th style={thStyle}>Voted</th>
+              </tr>
+            </thead>
+            <tbody>
+              {state.districts.map(d => (
+                <tr
+                  key={d.code}
+                  style={{ borderTop: '1px solid hsl(var(--tf-fg) / 0.06)' }}
+                >
+                  <td style={{ ...tdStyle, fontFamily: 'monospace' }}>{d.code}</td>
+                  <td style={tdStyle}>{d.name}</td>
+                  <td style={{ ...tdStyle, color: T.textMuted }}>{d.type}</td>
+                  <td style={{ ...tdStyle, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                    {d.statutoryLimitPerThousand.toFixed(4)}
+                  </td>
+                  <td style={{ ...tdStyle, color: T.textMuted }}>{d.rcwReference}</td>
+                  <td style={tdStyle}>{d.isVoted ? 'yes' : '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Statutory limits */}
+      <section>
+        <h2
+          style={{
+            fontSize: 16,
+            fontWeight: 700,
+            color: T.cyan,
+            marginTop: 0,
+            marginBottom: 12,
+          }}
+        >
+          Statutory Rate Limits — RCW 84.52 ({state.limits.length})
+        </h2>
+        <div style={{ overflow: 'auto', borderRadius: 10, border: T.cardBorder }}>
+          <table
+            style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              fontSize: 13,
+              background: T.cardBg,
+            }}
+          >
+            <thead>
+              <tr style={{ textAlign: 'left', color: T.textMuted }}>
+                <th style={thStyle}>District Type</th>
+                <th style={{ ...thStyle, textAlign: 'right' }}>
+                  Limit / $1,000 AV
+                </th>
+                <th style={thStyle}>RCW</th>
+                <th style={thStyle}>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {state.limits.map(l => (
+                <tr
+                  key={l.districtType + l.rcwReference}
+                  style={{ borderTop: '1px solid hsl(var(--tf-fg) / 0.06)' }}
+                >
+                  <td style={tdStyle}>{l.districtType}</td>
+                  <td
+                    style={{
+                      ...tdStyle,
+                      textAlign: 'right',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
+                    {l.limitPerThousandAV.toFixed(4)}
+                  </td>
+                  <td style={{ ...tdStyle, color: T.textMuted }}>
+                    {l.rcwReference}
+                  </td>
+                  <td style={{ ...tdStyle, color: T.textMuted }}>{l.notes}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Certification steps */}
+      <section>
+        <h2
+          style={{
+            fontSize: 16,
+            fontWeight: 700,
+            color: T.cyan,
+            marginTop: 0,
+            marginBottom: 12,
+          }}
+        >
+          Levy Certification Process ({state.steps.length} steps)
+        </h2>
+        <ol
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8,
+            paddingLeft: 20,
+            margin: 0,
+          }}
+        >
+          {state.steps.map(s => (
+            <li
+              key={s.stepNumber}
+              style={{
+                padding: 12,
+                borderRadius: 8,
+                background: T.cardBg,
+                border: T.cardBorder,
+                listStyle: 'none',
+              }}
+            >
+              <div
+                style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}
+              >
+                <div style={{ fontWeight: 600, fontSize: 14 }}>
+                  Step {s.stepNumber}. {s.name}
+                </div>
+                <div style={{ fontSize: 12, color: T.textMuted }}>
+                  {s.rcwReference}
+                </div>
+              </div>
+              <div style={{ fontSize: 13, color: T.textMuted, marginTop: 4 }}>
+                {s.description}
+              </div>
+              <div style={{ fontSize: 12, color: T.textDim, marginTop: 4 }}>
+                Responsible: {s.responsibleParty}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* Known gaps disclosure (honest surface) */}
+      <section
+        style={{
+          padding: 16,
+          borderRadius: 10,
+          background: 'hsl(var(--tf-warning) / 0.06)',
+          border: '1px solid hsl(var(--tf-warning) / 0.25)',
+          color: T.textMuted,
+          fontSize: 13,
+        }}
+      >
+        <div style={{ fontWeight: 600, color: 'hsl(var(--tf-warning))', marginBottom: 6 }}>
+          Known gaps (tracked in docs/levy/reference/open-tickets/)
+        </div>
+        <ul style={{ margin: 0, paddingLeft: 18 }}>
+          <li>
+            Limit factor hard-coded to 1.01 — IPD lookup pending (LEV-136).
+          </li>
+          <li>
+            Banked capacity computed per-request — stateful ledger pending (LEV-137).
+          </li>
+          <li>Lid lifts (LEV-138), first-time levy (LEV-139), state school (LEV-140), senior freeze (LEV-141) not yet implemented.</li>
+        </ul>
+      </section>
+    </div>
+  );
+}
+
+const thStyle: React.CSSProperties = {
+  padding: '10px 12px',
+  fontWeight: 600,
+  fontSize: 12,
+  textTransform: 'uppercase',
+  letterSpacing: 0.4,
+};
+const tdStyle: React.CSSProperties = {
+  padding: '10px 12px',
+  verticalAlign: 'top',
+};

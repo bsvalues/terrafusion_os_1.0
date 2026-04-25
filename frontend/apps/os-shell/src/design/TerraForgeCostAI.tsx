@@ -193,7 +193,7 @@ export const TerraForgeCostAI: React.FC = () => {
         category: 'Materials',
         value: 112,
         weight: 0.3,
-        source: 'Marshall & Swift',
+        source: 'Benton County Cost Schedule',
         lastUpdated: Date.now(),
       },
       {

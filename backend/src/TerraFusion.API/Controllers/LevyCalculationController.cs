@@ -1,11 +1,5 @@
-/*
- * ═══════════════════════════════════════════════════════════════
- * TERRAFUSION OS - LEVY CALCULATION CONTROLLER
- * Championship-Level Tax Levy Rate Calculation with Quantum Optimization
- * Factor 949, 99.5% Accuracy, RCW Compliance Validation
- * THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
- * ═══════════════════════════════════════════════════════════════
- */
+// TerraFusion OS — Levy Calculation Controller
+// Washington State property tax levy rate calculation with RCW 84.52 / 84.55 compliance.
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -19,27 +13,36 @@ using Task = System.Threading.Tasks.Task;
 namespace TerraFusion.API.Controllers;
 
 /// <summary>
-/// Levy Calculation API Controller
-/// 
-/// Provides championship-level tax levy rate calculation with quantum-enhanced
-/// optimization (Factor 949) for Washington State counties. Ensures statutory
-/// compliance with RCW 84.52, 84.55, calculates optimal rates balancing
-/// revenue needs with taxpayer burden.
-/// 
-/// Capabilities:
-/// - Quantum-optimized levy rate calculation (99.5%+ accuracy)
-/// - RCW statutory limit validation (MRSC compliance)
-/// - Risk assessment (economic, collection, legislative, assessment)
-/// - Batch processing for multi-district calculations
-/// - Revenue projection with confidence intervals
-/// 
-/// Research Foundation:
-/// - Public Finance Theory (Musgrave &amp; Musgrave, 1989)
-/// - Tax Policy Analysis (Rosen &amp; Gayer, 2014)
-/// - Washington State Tax Law (RCW 84.52, 84.55)
+/// Levy Calculation API Controller.
+///
+/// Calculates property tax levy rates for Washington State taxing districts with
+/// statutory compliance validation (RCW 84.52 aggregate/individual limits,
+/// RCW 84.55 highest-lawful-levy).
+///
+/// Endpoints (see attribute routes below):
+/// - POST calculate-rate            : single-district rate calculation
+/// - GET  history                   : calculation history (county-scoped)
+/// - POST calculate-batch           : multi-district batch
+/// - GET  statutory-limits          : RCW 84.52 rate table
+/// - GET  benton/taxing-districts   : Benton County districts + filed rates
+/// - GET  benton/levy-certification-steps : WA 8-step certification reference
+/// - POST highest-lawful-levy       : RCW 84.55.010 HLL computation
+/// - POST aggregate-check           : $5.90/$10 aggregate rule validation
+///
+/// Known gaps (tracked in docs/levy/reference/open-tickets/):
+/// - Limit factor is hard-coded 1.01; LEV-136 adds IPD lookup for min(1.01, 1+IPD%).
+/// - Banked capacity is computed per-request; LEV-137 adds stateful ledger entity.
+/// - Lid lifts (LEV-138), first-time levy (LEV-139), state school (LEV-140),
+///   senior freeze (LEV-141), refund outside-cap, port/PUD exemption not yet implemented.
+///
+/// References:
+/// - RCW 84.52 (rate limits): https://app.leg.wa.gov/RCW/default.aspx?cite=84.52
+/// - RCW 84.55 (levy limit):  https://app.leg.wa.gov/RCW/default.aspx?cite=84.55
+/// - WAC 458-19 (property tax rules): https://app.leg.wa.gov/WAC/default.aspx?cite=458-19
 /// </summary>
 [ApiController]
 [Route("api/levy-calculation")]
+[Route("api/levy/v1")] // Canonical contract route (see docs/levy/api-documentation.md). Legacy route kept for compatibility.
 [Authorize(Roles = "LevyClerk,Assessor,Admin,Administrator")]
 public class LevyCalculationController : ControllerBase
 {
@@ -197,24 +200,22 @@ public class LevyCalculationController : ControllerBase
   }
 
   /// <summary>
-  /// Calculate optimal levy rate with quantum optimization (Factor 949)
+  /// Calculate levy rate for a single taxing district.
   /// </summary>
   /// <remarks>
-  /// Calculates base rate from assessed value and budget amount, then applies
-  /// quantum-enhanced optimization (Factor 949) for 99.5%+ accuracy. Validates
-  /// against RCW statutory limits, performs risk assessment, and provides
-  /// confidence scoring.
-  /// 
+  /// Derives a base rate from (budgetAmount / assessedValue) × 1000, then applies
+  /// a bounded adjustment via <c>ApplyQuantumOptimizationAsync</c> (legacy name;
+  /// internal tuning parameter, not a quantum computation — rename tracked in
+  /// docs/levy/reference/open-tickets/). Validates against RCW 84.52 individual
+  /// limits and returns a statutory-compliance flag + projected revenue.
+  ///
   /// Formula:
-  /// - Base Rate = (Budget Amount / Assessed Value) * 1,000
-  /// - Optimal Rate = Base Rate × Quantum Factor 949 optimization
-  /// - Confidence Score = Historical accuracy + System stability (0.90-0.995)
-  /// 
-  /// Example:
-  /// - Assessed Value: $1,500,000,000
-  /// - Budget Amount: $45,000,000
-  /// - Base Rate: 30.00 per $1,000 AV
-  /// - Quantum Optimal: 29.87 per $1,000 AV (99.5% confidence)
+  /// - Base Rate   = (BudgetAmount / AssessedValue) × 1000        (per $1,000 AV)
+  /// - Final Rate  = Base Rate × tuning factor (see method)
+  /// - Revenue     = (Final Rate / 1000) × AssessedValue
+  ///
+  /// Example (illustrative, not normative):
+  /// - AV $1,500,000,000; Budget $45,000,000 → Base Rate 30.00 / $1,000 AV
   /// </remarks>
   [HttpPost("calculate-rate")]
   [ProducesResponseType(typeof(LevyCalculationResultDto), 200)]
@@ -224,7 +225,7 @@ public class LevyCalculationController : ControllerBase
       [FromBody] LevyMeasureRequest request)
   {
     _logger.LogInformation(
-        "💰 Calculating levy rate: District {District}, AV ${AssessedValue:N0}, Budget ${BudgetAmount:N0}",
+        "Calculating levy rate: District {District}, AV ${AssessedValue:N0}, Budget ${BudgetAmount:N0}",
         request.DistrictId,
         request.AssessedValue,
         request.BudgetAmount);
@@ -251,9 +252,9 @@ public class LevyCalculationController : ControllerBase
       // Calculate base rate (per $1,000 assessed value)
       var baseRate = (request.BudgetAmount / request.AssessedValue) * 1000.0;
 
-      _logger.LogInformation("📊 Base rate calculated: ${BaseRate:F6} per $1,000 AV", baseRate);
+      _logger.LogInformation("Base rate calculated: ${BaseRate:F6} per $1,000 AV", baseRate);
 
-      // Apply quantum optimization (Factor 949)
+      // Apply tuning adjustment (legacy identifier — see class-level note)
       var quantumOptimizedRate = await ApplyQuantumOptimizationAsync(
           baseRate,
           request.DistrictId,
@@ -261,7 +262,7 @@ public class LevyCalculationController : ControllerBase
           request.MeasureType);
 
       _logger.LogInformation(
-          "⚛️ Quantum optimization complete: ${OptimalRate:F6} per $1,000 AV (Factor 949)",
+          "Levy rate computed: ${OptimalRate:F6} per $1,000 AV",
           quantumOptimizedRate.Rate);
 
       // Validate statutory compliance (RCW 84.52, 84.55)
@@ -274,7 +275,7 @@ public class LevyCalculationController : ControllerBase
       if (!compliance.IsCompliant)
       {
         _logger.LogWarning(
-            "⚠️ Rate ${Rate:F6} exceeds statutory limit ${Limit:F6} for {DistrictType}",
+            "Rate ${Rate:F6} exceeds statutory limit ${Limit:F6} for {DistrictType}",
             quantumOptimizedRate.Rate,
             compliance.StatutoryLimit,
             request.DistrictType);
@@ -291,7 +292,7 @@ public class LevyCalculationController : ControllerBase
           compliance.StatutoryLimit);
 
       _logger.LogInformation(
-          "✅ Levy calculation complete: Rate ${Rate:F6}, Revenue ${Revenue:N0}, Risk {Risk}",
+          "Levy calculation complete: Rate ${Rate:F6}, Revenue ${Revenue:N0}, Risk {Risk}",
           quantumOptimizedRate.Rate,
           projectedRevenue,
           riskLevel);
@@ -326,13 +327,14 @@ public class LevyCalculationController : ControllerBase
         RiskLevel = riskLevel,
         Warnings = compliance.Warnings,
         CalculationTimestamp = taxLevy.EffectiveDate,
+        // Legacy DTO fields retained for API compatibility — see helper method summary.
         QuantumFactor = 949,
-        OptimizationMethod = "QuantumGradientBoosting_v1.0"
+        OptimizationMethod = "v1-legacy-multiplier"
       });
     }
     catch (Exception ex)
     {
-      _logger.LogError(ex, "❌ Failed to calculate levy rate for district {District}", request.DistrictId);
+      _logger.LogError(ex, "Failed to calculate levy rate for district {District}", request.DistrictId);
       return StatusCode(500, new ProblemDetails
       {
         Title = "Levy Calculation Failed",
@@ -395,7 +397,7 @@ public class LevyCalculationController : ControllerBase
   public async Task<ActionResult<BatchCalculationResultDto>> CalculateBatch(
       [FromBody] List<LevyMeasureRequest> requests)
   {
-    _logger.LogInformation("🚀 Batch levy calculation: {Count} measures", requests.Count);
+    _logger.LogInformation("Batch levy calculation: {Count} measures", requests.Count);
 
     if (requests.Count == 0)
       return BadRequest("Batch request must contain at least one measure");
@@ -457,7 +459,7 @@ public class LevyCalculationController : ControllerBase
     stopwatch.Stop();
 
     _logger.LogInformation(
-        "✅ Batch calculation complete: {Success}/{Total} successful in {Duration}ms",
+        "Batch calculation complete: {Success}/{Total} successful in {Duration}ms",
         results.Count,
         requests.Count,
         stopwatch.ElapsedMilliseconds);
@@ -477,7 +479,16 @@ public class LevyCalculationController : ControllerBase
   #region Private Helper Methods
 
   /// <summary>
-  /// Apply quantum optimization (Factor 949) to base levy rate
+  /// Apply a v1 bounded tuning multiplier to the base levy rate.
+  ///
+  /// Important honesty note: this is NOT a quantum computation, NOT a trained ML
+  /// model, and NOT 99.5% accurate. It is a flat multiplicative adjustment
+  /// (~0.51% shave) retained to preserve DTO shape from the v1 MVP.
+  ///
+  /// The returned <c>ConfidenceScore</c> is a static lookup by measure type,
+  /// not a statistical confidence interval. The method name, result type, and
+  /// <c>QuantumFactor = 949</c> DTO field are legacy identifiers pending rename
+  /// (tracked in docs/levy/reference/open-tickets/).
   /// </summary>
   private async Task<QuantumOptimizationResult> ApplyQuantumOptimizationAsync(
       double baseRate,
@@ -485,29 +496,27 @@ public class LevyCalculationController : ControllerBase
       string districtType,
       string measureType)
   {
-    // TODO: Integrate with QuantumConsciousnessOrchestrator
     await Task.CompletedTask;
 
-    // Quantum enhancement formula (Factor 949)
-    // Applies machine learning corrections based on historical levy performance
-    var quantumFactor = 949.0 / 1000.0; // 0.949 multiplier
-    var optimizedRate = baseRate * (1.0 - (1.0 - quantumFactor) * 0.1);
+    // Flat multiplier (legacy tuning parameter; see method summary).
+    const double tuningFactor = 0.949;
+    var optimizedRate = baseRate * (1.0 - (1.0 - tuningFactor) * 0.1);
 
-    // Confidence score based on district type and historical accuracy
+    // Static lookup — not a computed confidence interval.
     var confidenceScore = measureType.ToLower() switch
     {
-      "regular" => 0.995, // Regular levies: highest confidence
-      "excess" => 0.985,  // Excess levies: high confidence
-      "bond" => 0.975,    // Bond levies: slightly lower (voter variability)
-      _ => 0.950
+      "regular" => 0.995,
+      "excess"  => 0.985,
+      "bond"    => 0.975,
+      _         => 0.950
     };
 
     return new QuantumOptimizationResult
     {
       Rate = optimizedRate,
       ConfidenceScore = confidenceScore,
-      OptimizationFactor = quantumFactor,
-      Method = "QuantumGradientBoosting_Factor949"
+      OptimizationFactor = tuningFactor,
+      Method = "v1-legacy-multiplier"
     };
   }
 

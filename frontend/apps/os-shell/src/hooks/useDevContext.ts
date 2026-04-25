@@ -39,8 +39,10 @@ export function useDevContext(): void {
       setBuildStatus('clean');
 
       return () => {
-        hot.off('vite:error', onError);
-        hot.off('vite:beforeUpdate', onUpdate);
+        if (typeof hot.off === 'function') {
+          hot.off('vite:error', onError);
+          hot.off('vite:beforeUpdate', onUpdate);
+        }
       };
     }
 

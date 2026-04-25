@@ -54,7 +54,7 @@ const PWAShell: React.FC = () => {
       id: 'government-edition',
       name: 'Government Edition Property Assessment Suite',
       description:
-        'Complete property assessment solution with Harris PACS integration. Production ready with await DynamicPropertyService.GetPropertyCountAsync("benton") parcel records.',
+        'Complete property assessment solution for county government. Production ready with await DynamicPropertyService.GetPropertyCountAsync("benton") parcel records.',
       icon: '🏛️',
       enabled: true,
       url: '/modules/government-edition/index.html',

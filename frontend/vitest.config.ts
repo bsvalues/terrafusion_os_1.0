@@ -26,6 +26,7 @@ export default defineConfig({
       '@terrafusion/shared': path.resolve(__dirname, '../terrafusion-shared/dist/index.js'),
       '@terrafusion/ui': path.resolve(__dirname, '__mocks__/@terrafusion/ui.ts'),
       'react-leaflet': path.resolve(__dirname, '__mocks__/react-leaflet.tsx'),
+      '@microsoft/signalr': path.resolve(__dirname, '__mocks__/@microsoft/signalr.ts'),
     },
   },
   test: {

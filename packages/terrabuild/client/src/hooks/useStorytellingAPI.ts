@@ -15,7 +15,7 @@ export enum StoryType {
 export interface StoryRequest {
   storyType: StoryType;
   buildingTypes?: string[];
-  regions?: string[];
+  revalAreas?: string[];
   propertyIds?: number[];
   timeframe?: {
     start: Date;

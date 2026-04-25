@@ -186,10 +186,13 @@ public class DaisWorkflowPersistenceTests
         completed.CompletedAt.Should().HaveValue();
         completed.CompletedAt!.Value.Should().BeOnOrAfter(before);
 
-        // Confirm GetByTaxYear reflects completed status
-        var steps = await svc.GetByTaxYearAsync(2025, countyId);
-        steps.Should().HaveCount(1);
-        steps[0].Status.Should().Be("completed");
+        // Confirm GetByTaxYear reflects completed status. GetByTaxYearAsync
+        // auto-reconciles canonical certification steps, so the returned list
+        // includes the seeded PRELIMINARY_ROLL step plus the six canonical
+        // steps. Find our specific step by Id and confirm it's now completed.
+        var steps   = await svc.GetByTaxYearAsync(2025, countyId);
+        var ourStep = steps.Should().ContainSingle(s => s.Id == step.Id).Subject;
+        ourStep.Status.Should().Be("completed");
     }
 
     // ─── 4. Notice — Generated → Sent status transition ──────────────
@@ -215,9 +218,9 @@ public class DaisWorkflowPersistenceTests
         notice.Id.Should().NotBeEmpty();
         notice.Status.Should().Be("generated");
 
-        // Queue it
-        var queued = await svc.UpdateStatusAsync(notice.Id, "queued", countyId);
-        queued.Status.Should().Be("queued");
+        // Queue it — NoticeService state machine canonical value is "queued_for_mailing".
+        var queued = await svc.UpdateStatusAsync(notice.Id, "queued_for_mailing", countyId);
+        queued.Status.Should().Be("queued_for_mailing");
 
         // Mark sent
         var sent = await svc.UpdateStatusAsync(notice.Id, "sent", countyId);

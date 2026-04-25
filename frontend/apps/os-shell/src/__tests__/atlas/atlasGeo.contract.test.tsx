@@ -24,6 +24,7 @@
 import '@testing-library/jest-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 
 // ---------------------------------------------------------------------------
 // UI primitive mocks — use relative paths, not @/ aliases
@@ -56,6 +57,174 @@ vi.mock('../../hooks/useParcelCount', () => ({
     error: null,
     isSuccess: true,
   }),
+}));
+
+const MASS_APPRAISAL_FIXTURE = {
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[
+          [-119.31, 46.24],
+          [-119.30, 46.24],
+          [-119.30, 46.25],
+          [-119.31, 46.25],
+          [-119.31, 46.24],
+        ]],
+      },
+      properties: {
+        Parcel_ID: '100100000000001',
+        situs_display: '123 Live Parcel Rd WA',
+        Property_Type: 'Residential',
+        neighborhood: '540100',
+        zoning: 'R-1',
+        Current_Ratio: 0.82,
+        TotalMarketValue: 325000,
+        Shape__Area: 7200,
+      },
+    },
+    {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[
+          [-119.295, 46.245],
+          [-119.285, 46.245],
+          [-119.285, 46.255],
+          [-119.295, 46.255],
+          [-119.295, 46.245],
+        ]],
+      },
+      properties: {
+        Parcel_ID: '100100000000002',
+        situs_display: '456 County Review Ave WA',
+        Property_Type: 'Commercial',
+        neighborhood: '540100',
+        zoning: 'C-1',
+        Current_Ratio: 1.18,
+        TotalMarketValue: 510000,
+        Shape__Area: 9100,
+      },
+    },
+  ],
+  properties: {
+    exceededTransferLimit: false,
+  },
+} as const;
+
+vi.mock('../../services/atlasService', () => ({
+  atlasService: {
+    getGeometryHealth: vi.fn(async () => ({
+      totalParcels: 89247,
+      parcelsWithGeometry: 89239,
+      parcelsMissingGeometry: 8,
+      flaggedGeometryRecords: 17,
+      lastSyncTimestamp: '2026-04-16T00:00:00Z',
+      source: 'Benton County ArcGIS AssessorPropVal geometry coverage and recalculation flags grouped by neighborhood',
+      areaStats: [
+        {
+          id: '150007',
+          name: 'Neighborhood 150007',
+          neighborhoodCode: '150007',
+          totalParcels: 2861,
+          parcelsWithGeometry: 2861,
+          parcelsMissingGeometry: 0,
+          flaggedGeometryRecords: 0,
+          center: [46.27982, -119.354085],
+        },
+        {
+          id: '530300',
+          name: 'Neighborhood 530300',
+          neighborhoodCode: '530300',
+          totalParcels: 1783,
+          parcelsWithGeometry: 1783,
+          parcelsMissingGeometry: 0,
+          flaggedGeometryRecords: 14,
+          center: [46.049809, -119.413432],
+        },
+      ],
+    })),
+    getGeoEquityAreas: vi.fn(async () => ({
+      count: 2,
+      asOf: '2026-04-16T00:00:00Z',
+      source: 'Benton County ArcGIS AssessorPropVal grouped by neighborhood and property type',
+      areas: [
+        {
+          id: '150007:Residential',
+          name: 'Neighborhood 150007',
+          neighborhoodCode: '150007',
+          propertyType: 'Residential',
+          propertyTypeCategory: 'Residential',
+          equityRatio: 1.1281,
+          ratioStdDev: 0.2398,
+          parcelCount: 1622,
+          averageMarketValue: 280500.91,
+          center: [46.278638, -119.355752],
+        },
+        {
+          id: '11040:Residential',
+          name: 'Neighborhood 11040',
+          neighborhoodCode: '11040',
+          propertyType: 'Residential',
+          propertyTypeCategory: 'Residential',
+          equityRatio: 1.1501,
+          ratioStdDev: 0.2185,
+          parcelCount: 781,
+          averageMarketValue: 273722.23,
+          center: [46.216697, -119.237311],
+        },
+      ],
+    })),
+    getMassAppraisalStats: vi.fn(async () => ({
+      totalParcels: 89247,
+      totalAcreage: 123456,
+      zoningDistrictCount: 18,
+      floodZoneCount: 0,
+      lastDataUpdate: '2026-04-16T00:00:00Z',
+      typeBreakdown: [
+        { type: 'Residential', count: 60000 },
+        { type: 'Commercial', count: 12000 },
+      ],
+      averageAssessedValue: 418000,
+      averageMarketValue: 418000,
+      totalAssessedValue: 37300000000,
+      totalMarketValue: 40100000000,
+      layers: ['atlas-api'],
+    })),
+    getStats: vi.fn(async () => ({
+      totalParcels: 89247,
+      totalAcreage: 123456,
+      zoningDistrictCount: 18,
+      floodZoneCount: 0,
+      lastDataUpdate: '2026-04-16T00:00:00Z',
+      typeBreakdown: [
+        { type: 'Residential', count: 60000 },
+        { type: 'Commercial', count: 12000 },
+      ],
+      averageAssessedValue: 418000,
+      averageMarketValue: 418000,
+      totalAssessedValue: 37300000000,
+      totalMarketValue: 40100000000,
+      layers: ['atlas-api'],
+    })),
+    searchMassAppraisalParcels: vi.fn(async () => MASS_APPRAISAL_FIXTURE),
+  },
+}));
+
+vi.mock('../../api/pilotApi', () => ({
+  invokeTool: vi.fn(async () => ({
+    success: true,
+    correlationId: 'corr-atlas-001',
+    result: {
+      output: JSON.stringify({
+        narrative: 'Residual clustering is concentrated in the governed Benton audit area.',
+        hotspotCount: 3,
+        recommendedAction: 'Route neighborhood review to TerraForge and parcel defects to Workbench.',
+      }),
+    },
+  })),
 }));
 
 // ---------------------------------------------------------------------------
@@ -123,16 +292,31 @@ describe('GeoEquityDashboard — contract', () => {
     expect(bentoCards.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('sidebar area buttons carry role="link"', () => {
+  it('sidebar area buttons carry role="link"', async () => {
     const { container } = render(<GeoEquityDashboard />);
-    const linkButtons = container.querySelectorAll('button[role="link"]');
-    expect(linkButtons.length).toBeGreaterThanOrEqual(1);
+    await waitFor(() => {
+      const linkButtons = container.querySelectorAll('button[role="link"]');
+      expect(linkButtons.length).toBeGreaterThanOrEqual(1);
+    });
   });
 
   it('contains no hardcoded light-mode Tailwind classes', () => {
     const { container } = render(<GeoEquityDashboard />);
     const violations = findLightModeViolations(container.innerHTML);
     expect(violations).toEqual([]);
+  });
+
+  it('renders live Benton GeoEquity posture instead of the old governed fixture brief', async () => {
+    render(<GeoEquityDashboard />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Live Benton County neighborhood equity groups derived from the Assessor Prop Val layer\./i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Neighborhood 150007/i)
+      ).toBeInTheDocument();
+    });
   });
 });
 
@@ -163,6 +347,17 @@ describe('GeometryHealth — contract', () => {
     const { container } = render(<GeometryHealth />);
     const violations = findLightModeViolations(container.innerHTML);
     expect(violations).toEqual([]);
+  });
+
+  it('renders live Benton geometry posture instead of demo area health data', async () => {
+    render(<GeometryHealth />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Live Benton County geometry coverage derived from Assessor Prop Val parcel geometry and recalculation flags\./i),
+      ).toBeInTheDocument();
+      expect(screen.getAllByText(/Neighborhood 530300/i).length).toBeGreaterThanOrEqual(1);
+    });
   });
 });
 
@@ -217,5 +412,20 @@ describe('MassAppraisalGIS — contract', () => {
     const { container } = render(<MassAppraisalGIS />);
     const violations = findLightModeViolations(container.innerHTML);
     expect(violations).toEqual([]);
+  });
+
+  it('renders a live county audit brief for the Atlas parcel slice', async () => {
+    render(<MassAppraisalGIS />);
+
+    expect(screen.getByTestId('mass-appraisal-governed-brief')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/2 parcels in the current live slice are outside the 0.90-1.10 ratio band\./i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Live Benton County ArcGIS geometry and Atlas county stats\./i)
+      ).toBeInTheDocument();
+    });
   });
 });

@@ -34,6 +34,48 @@ public class PropertyDto
 
     public int? YearBuilt { get; set; }
 
+    public decimal? SquareFeet { get; set; }
+
+    public int? Bedrooms { get; set; }
+
+    public int? Bathrooms { get; set; }
+
+    public decimal? LandAcres { get; set; }
+
+    /// <summary>Full legal description — up to 2000 chars from CAMA record.</summary>
+    public string? LegalDescription { get; set; }
+
+    /// <summary>Gross Living Area (above-grade finished area only). Does NOT include basement or garage.</summary>
+    public decimal? GrossLivingArea { get; set; }
+
+    /// <summary>Basement area (below-grade). Excluded from GLA per USPAP.</summary>
+    public decimal? BasementSqft { get; set; }
+
+    /// <summary>Attached/detached garage area. Excluded from GLA per USPAP.</summary>
+    public decimal? GarageSqft { get; set; }
+
+    /// <summary>Lot width at street frontage in feet (PACS land_detail.effective_front or width_front).</summary>
+    public decimal? LotWidthFront { get; set; }
+
+    /// <summary>Lot depth in feet (PACS land_detail.effective_depth or depth_right).</summary>
+    public decimal? LotDepth { get; set; }
+
+    public string? Neighborhood { get; set; }
+
+    public string? PropertyUseCode { get; set; }
+
+    public string? TaxDistrictCode { get; set; }
+
+    public string? TaxDistrictName { get; set; }
+
+    public string? SitusCity { get; set; }
+
+    public string? SitusState { get; set; }
+
+    public string? SitusZip { get; set; }
+
+    public string? Zoning { get; set; }
+
     public int TaxYear { get; set; }
 
     public DateTime AssessmentDate { get; set; }

@@ -3,12 +3,11 @@ import React from "react";
 const Footer: React.FC = () => {
   return (
     <footer className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-t border-slate-700/50 mt-auto">
-      {/* Top gradient border */}<>
+      {/* Top gradient border */}
 
       <div className="h-px bg-gradient-to-r from-transparent via-[#0891b2] to-transparent"></div>
 
-      <div
-</> className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Terrafusion Branding */}
           <div className="space-y-4">
@@ -31,72 +30,61 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Excellence Standards */}
-          <div className="space-y-4"><>
+          <div className="space-y-4">
 
             <h4 className="text-white font-semibold text-lg">Excellence Standards</h4>
-            <div
-</> className="grid grid-cols-2 gap-3">
-              <div className="flex items-center space-x-2"><>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center space-x-2">
 
                 <div className="w-2 h-2 bg-[#0891b2] rounded-full"></div>
-                <span
-</> className="text-slate-300 text-sm">Tesla Precision</span>
+                <span className="text-slate-300 text-sm">Tesla Precision</span>
               </div>
-              <div className="flex items-center space-x-2"><>
+              <div className="flex items-center space-x-2">
 
                 <div className="w-2 h-2 bg-[#00d2ff] rounded-full"></div>
-                <span
-</> className="text-slate-300 text-sm">Jobs Elegance</span>
+                <span className="text-slate-300 text-sm">Jobs Elegance</span>
               </div>
-              <div className="flex items-center space-x-2"><>
+              <div className="flex items-center space-x-2">
 
                 <div className="w-2 h-2 bg-[#0891b2] rounded-full"></div>
-                <span
-</> className="text-slate-300 text-sm">Musk Scale</span>
+                <span className="text-slate-300 text-sm">Musk Scale</span>
               </div>
-              <div className="flex items-center space-x-2"><>
+              <div className="flex items-center space-x-2">
 
                 <div className="w-2 h-2 bg-[#00d2ff] rounded-full"></div>
-                <span
-</> className="text-slate-300 text-sm">Brady Excellence</span>
+                <span className="text-slate-300 text-sm">Brady Excellence</span>
               </div>
             </div>
           </div>
 
           {/* System Info */}
-          <div className="space-y-4"><>
+          <div className="space-y-4">
 
             <h4 className="text-white font-semibold text-lg">System Information</h4>
-            <div
-</> className="space-y-2 text-sm">
-              <div className="flex justify-between"><>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
 
                 <span className="text-slate-400">Version:</span>
-                <span
-</> className="text-slate-300 font-mono">v2.0.0</span>
+                <span className="text-slate-300 font-mono">v2.0.0</span>
               </div>
-              <div className="flex justify-between"><>
+              <div className="flex justify-between">
 
                 <span className="text-slate-400">Environment:</span>
-                <span
-</> className="text-green-400 font-mono">Production</span>
+                <span className="text-green-400 font-mono">Production</span>
               </div>
-              <div className="flex justify-between"><>
+              <div className="flex justify-between">
 
                 <span className="text-slate-400">Status:</span>
-                <div
-</> className="flex items-center space-x-1"><>
+                <div className="flex items-center space-x-1">
 
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span
-</> className="text-green-400">Online</span>
+                  <span className="text-green-400">Online</span>
                 </div>
               </div>
-              <div className="flex justify-between"><>
+              <div className="flex justify-between">
 
                 <span className="text-slate-400">Compliance:</span>
-                <span
-</> className="text-blue-400">Federal Certified</span>
+                <span className="text-blue-400">Federal Certified</span>
               </div>
             </div>
           </div>
@@ -109,27 +97,23 @@ const Footer: React.FC = () => {
               © {new Date().getFullYear()} TerraFusionPilt - Benton County, Washington.
               <span className="ml-2 text-slate-500">Powered by Terrafusion Enterprise.</span>
             </div>
-            <div className="flex items-center space-x-6 text-sm"><>
+            <div className="flex items-center space-x-6 text-sm">
 
               <span className="text-slate-400">Built with</span>
-              <div
-</> className="flex items-center space-x-2"><>
+              <div className="flex items-center space-x-2">
 
                 <div className="w-1 h-1 bg-[#0891b2] rounded-full"></div>
-                <span
-</> className="text-slate-300">React</span>
+                <span className="text-slate-300">React</span>
               </div>
-              <div className="flex items-center space-x-2"><>
+              <div className="flex items-center space-x-2">
 
                 <div className="w-1 h-1 bg-[#00d2ff] rounded-full"></div>
-                <span
-</> className="text-slate-300">TypeScript</span>
+                <span className="text-slate-300">TypeScript</span>
               </div>
-              <div className="flex items-center space-x-2"><>
+              <div className="flex items-center space-x-2">
 
                 <div className="w-1 h-1 bg-[#0891b2] rounded-full"></div>
-                <span
-</> className="text-slate-300">TailwindCSS</span>
+                <span className="text-slate-300">TailwindCSS</span>
               </div>
             </div>
           </div>

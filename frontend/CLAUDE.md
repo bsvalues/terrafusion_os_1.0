@@ -2,6 +2,29 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠️ FROZEN FILES — RESTORE FROM GIT, NEVER REWRITE
+
+### ForgeSuiteHome.tsx — module list is frozen
+
+**File:** `apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx`
+**Restore commit:** `8da26658a`
+**Verified screenshot:** TerraForge 2026-04-09
+
+If TerraForge shows the wrong apps (Statistics Studio as primary, Income Valuation,
+Comparable Sales, Reconciliation, Appeals, Value Audit Log, Governed Run, Cost Manual —
+any of these are WRONG), do not edit the file. Run:
+
+```bash
+git checkout 8da26658a -- frontend/apps/os-shell/src/pages/suites/ForgeSuiteHome.tsx
+```
+
+**Correct v1 layout:**
+- PRIMARY: CostForge (AppFrame → port 5002), CompsForge (React module), IncomeForge (queued)
+- SPECIALIST: Statistics Studio, Batch Cost Runs, Regression Studio (queued), TerraGAMA (queued), Coefficient Preview (queued)
+- KPI stats: always `—` until `/api/terraforge/county-stats` is verified against real 89,247 Benton parcel count
+
+**Enforcement:** `src/pages/suites/__tests__/ForgeSuiteHome.moduleList.test.tsx` — 9 tests that fail if the list is wrong.
+
 ## Overview
 
 **TerraFusion OS Frontend** is a React 18 + TypeScript PWA with Electron desktop shell for government operations. This is the UI layer for a complete government operating system with real-time AI coordination, property management, and citizen services.

@@ -805,9 +805,13 @@ public class DossierController : ControllerBase
           })
           .ToListAsync();
 
+      // Compute per-parcel annual levy obligation: rate × (assessedValue / 1000)
+      var assessedValue = property.AssessedValue;
       var recentLevies = recentLevyData
           .Select(t => new LevyEntry(t.Id, t.TaxingDistrict, t.TaxRate,
-              t.LevyAmount, t.TaxYear, t.Purpose, t.EffectiveDate))
+              t.LevyAmount,
+              Math.Round(t.TaxRate * (assessedValue / 1000m), 2),
+              t.TaxYear, t.Purpose, t.EffectiveDate))
           .ToList();
 
       levyDetails = new LevyDetails(totalLevies, recentLevies.Count, recentLevies);
@@ -968,7 +972,7 @@ public class DossierController : ControllerBase
 
     var totalLevies = await levyQuery.CountAsync();
     var totalLevyAmount = totalLevies > 0
-        ? await levyQuery.SumAsync(t => t.LevyAmount)
+        ? (await levyQuery.Select(t => t.LevyAmount).ToListAsync()).Sum()
         : 0m;
 
     // ── Note summary (county-isolated, no content) ───────────
@@ -1413,7 +1417,7 @@ public class DossierController : ControllerBase
           "verified", 2, ["MLS", "County Auditor", "Excise Tax Affidavit"]),
       new("cost-analysis", "Cost Approach Evidence",
           "Replacement/reproduction cost data and depreciation schedules",
-          "verified", 2, ["Marshall & Swift", "CostForge", "County Cost Tables"]),
+          "verified", 2, ["CostForge", "Benton County Cost Schedule", "County Cost Tables"]),
       new("income-analysis", "Income Approach Evidence",
           "Rental income, vacancy rates, and capitalization data",
           "verified", 2, ["Property Owner", "Market Survey", "CoStar"]),

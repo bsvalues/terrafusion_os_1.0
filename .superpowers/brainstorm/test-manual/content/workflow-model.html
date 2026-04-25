@@ -1,0 +1,83 @@
+<h2>Calibration Workbench — Core Workflow Model</h2>
+<p class="subtitle">The PhD Chief Appraiser needs to Audit → Diagnose → Adjust → Verify → Document. Which paradigm fits best?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Guided Calibration Loop</h3>
+      <p>Step-by-step wizard: Triage → Drill → Diagnose → Adjust → Verify → Document. Each phase unlocks the next. Structured, auditable, defensible for BOR hearings. Every action is traceable.</p>
+      <div style="margin-top:12px;background:#0f172a;border-radius:8px;padding:12px;font-size:11px;font-family:monospace;color:#94a3b8;">
+        <div style="color:#38bdf8;margin-bottom:6px;">① TRIAGE &nbsp;→&nbsp; ② DRILL &nbsp;→&nbsp; ③ DIAGNOSE &nbsp;→&nbsp; ④ ADJUST &nbsp;→&nbsp; ⑤ VERIFY &nbsp;→&nbsp; ⑥ MEMO</div>
+        <div style="color:#f59e0b;">Currently: PRD=1.000 ✓ &nbsp;|&nbsp; COD=26.1% ⚠ &nbsp;|&nbsp; 0 outlier cells</div>
+        <div style="color:#64748b;margin-top:4px;">AI diagnosis: Cross-type spread drives COD. Not a rate problem — it's a type-mix problem. Recommended: run segmented ratio study per type.</div>
+      </div>
+      <div class="pros-cons" style="margin-top:10px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Defensible audit trail</li><li>Enforces Benton Method SOP</li><li>Less cognitive load</li><li>Auto-generates Calibration Memo</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Linear flow — expert users may want to jump</li><li>More clicks to get to adjustment</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Command-Center Power Tool</h3>
+      <p>All panels live simultaneously: heat map, drill-down parcel table, rate sliders, live PRD/COD recalculation. The expert sees everything at once, adjusts on the fly, and runs the calibration loop at their own pace.</p>
+      <div style="margin-top:12px;background:#0f172a;border-radius:8px;padding:8px;font-size:10px;font-family:monospace;color:#94a3b8;display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="border:1px solid #334155;padding:6px;border-radius:4px;">
+          <div style="color:#38bdf8;margin-bottom:4px;">MATRIX HEAT MAP</div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:2px;">
+            <div style="background:#22c55e20;color:#22c55e;text-align:center;padding:2px;font-size:9px;">R1</div>
+            <div style="background:#22c55e20;color:#22c55e;text-align:center;padding:2px;font-size:9px;">R2</div>
+            <div style="background:#f59e0b20;color:#f59e0b;text-align:center;padding:2px;font-size:9px;">R3</div>
+            <div style="background:#22c55e20;color:#22c55e;text-align:center;padding:2px;font-size:9px;">R4</div>
+            <div style="background:#ef444420;color:#ef4444;text-align:center;padding:2px;font-size:9px;">R5</div>
+            <div style="background:#22c55e20;color:#22c55e;text-align:center;padding:2px;font-size:9px;">R6</div>
+          </div>
+          <div style="color:#64748b;font-size:9px;margin-top:4px;">Click cell → drill</div>
+        </div>
+        <div style="border:1px solid #334155;padding:6px;border-radius:4px;">
+          <div style="color:#38bdf8;margin-bottom:4px;">LIVE DIAGNOSTICS</div>
+          <div style="color:#22c55e;font-size:9px;">PRD: 1.000 ✓</div>
+          <div style="color:#f59e0b;font-size:9px;">COD: 26.1% ⚠</div>
+          <div style="color:#64748b;font-size:9px;">Adj. impact: +$0M</div>
+        </div>
+        <div style="border:1px solid #334155;padding:6px;border-radius:4px;grid-column:span 2;">
+          <div style="color:#38bdf8;margin-bottom:4px;">RATE SLIDERS — Hospital (S1)</div>
+          <div style="color:#64748b;font-size:9px;">Base: $190.57 &nbsp;[──────●──] $190.57 &nbsp; New PRD: 1.000</div>
+        </div>
+      </div>
+      <div class="pros-cons" style="margin-top:10px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Maximum expert velocity</li><li>Everything visible at once</li><li>Non-linear exploration</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Dense UI, steep learning curve</li><li>Harder to enforce SOP sequence</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>AI-First Conversational Workbench</h3>
+      <p>Natural language + AI reads the data and drives the investigation. "Why is COD 26.1%?" → AI explains. "What needs to change?" → AI proposes rate adjustments. "Apply it" → AI updates the matrix. Visual panels appear contextually as the AI surfaces findings.</p>
+      <div style="margin-top:12px;background:#0f172a;border-radius:8px;padding:12px;font-size:11px;font-family:monospace;">
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <div style="color:#64748b;flex-shrink:0;">Chief:</div>
+          <div style="color:#f8fafc;">"COD is 26.1% — is this a rate problem or a data problem?"</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;background:#1e293b;padding:8px;border-radius:4px;">
+          <div style="color:#38bdf8;flex-shrink:0;">AI:</div>
+          <div style="color:#94a3b8;">COD of 26.1% is driven by cross-type spread ($44/sqft Warehouse vs $216/sqft Hospital), not within-type variance. Each type has COD 8.2% — well within IAAO limits. This is a <span style="color:#f59e0b;">type-mix diagnostic signal</span>, not a calibration error. No rate adjustment needed. Recommend: run stratified ratio study per type to confirm base rates are market-supported.</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <div style="color:#64748b;flex-shrink:0;">Chief:</div>
+          <div style="color:#f8fafc;">"Show me Hospital sales. Are any outliers?"</div>
+        </div>
+      </div>
+      <div class="pros-cons" style="margin-top:10px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Highest AI leverage</li><li>Zero-friction for expert users</li><li>AI distinguishes data vs rate problems automatically</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Requires TerraFusion AI module</li><li>Less structured audit trail (needs wrapping)</li><li>Unfamiliar paradigm for some staff</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

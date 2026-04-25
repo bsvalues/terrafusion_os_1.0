@@ -209,10 +209,9 @@ export function WorkflowDesigner() {
       {/* Phase 1 Notice */}
       <Alert className="bg-blue-900/20 border-blue-800">
         <AlertCircle className="h-4 w-4 text-blue-400" />
-        <AlertTitle className="text-blue-400">Phase 1 Placeholder</AlertTitle>
+        <AlertTitle className="text-blue-400">Workflow Designer — Preview</AlertTitle>
         <AlertDescription className="text-slate-300">
-          This is a workflow template gallery. Phase 4 will implement full React Flow integration with:
-          drag-and-drop node editor, custom AI agent nodes, real-time execution visualization, and workflow versioning.
+          A workflow template gallery is available now. A full drag-and-drop workflow editor with AI agent nodes, real-time execution visualization, and versioning is scheduled for a future release.
         </AlertDescription>
       </Alert>
 

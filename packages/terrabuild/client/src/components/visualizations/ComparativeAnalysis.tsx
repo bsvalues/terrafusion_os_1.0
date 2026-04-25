@@ -77,7 +77,7 @@ import { Separator } from '@/components/ui/separator';
 
 interface ComparisonItem {
   id: number;
-  region: string;
+  revalArea: string;
   buildingType: string;
   baseCost: number;
   adjustedCost: number;
@@ -106,7 +106,7 @@ export function ComparativeAnalysis({
   defaultVisualizationType = 'bar',
   className = '',
 }: ComparativeAnalysisProps) {
-  const [selectedRegion, setSelectedRegion] = useState<string>('');
+  const [selectedRevalArea, setSelectedRevalArea] = useState<string>('');
   const [selectedBuildingType, setSelectedBuildingType] = useState<string>('');
   const [comparisonItems, setComparisonItems] = useState<ComparisonItem[]>([]);
   const [showComparisonDialog, setShowComparisonDialog] = useState(false);
@@ -123,9 +123,9 @@ export function ComparativeAnalysis({
     queryKey: ['/cost-matrices'],
   });
 
-  // Extract available regions and building types from data
-  const regions = costMatrixData && Array.isArray(costMatrixData)
-    ? Array.from(new Set(costMatrixData.map((item: any) => item.region)))
+  // Extract available reval areas and building types from data
+  const revalAreas = costMatrixData && Array.isArray(costMatrixData)
+    ? Array.from(new Set(costMatrixData.map((item: any) => item.revalArea ?? item.region)))
     : [];
 
   const buildingTypes = costMatrixData && Array.isArray(costMatrixData)
@@ -150,13 +150,13 @@ export function ComparativeAnalysis({
 
   // Add item to comparison
   const addComparisonItem = () => {
-    if (!selectedRegion || !selectedBuildingType) return;
+    if (!selectedRevalArea || !selectedBuildingType) return;
     if (comparisonItems.length >= maxComparisons) return;
 
     // Find matching data
     const matchingItem = costMatrixData && Array.isArray(costMatrixData)
-      ? costMatrixData.find((item: any) => 
-          item.region === selectedRegion && 
+      ? costMatrixData.find((item: any) =>
+          (item.revalArea ?? item.region) === selectedRevalArea &&
           item.buildingType === selectedBuildingType
         )
       : null;
@@ -172,7 +172,7 @@ export function ComparativeAnalysis({
 
       const newItem: ComparisonItem = {
         id: matchingItem.id,
-        region: matchingItem.region,
+        revalArea: matchingItem.revalArea ?? matchingItem.region,
         buildingType: matchingItem.buildingType,
         baseCost: matchingItem.baseCost || 0,
         adjustedCost: (matchingItem.baseCost || 0) * (1 + 
@@ -193,7 +193,7 @@ export function ComparativeAnalysis({
       };
 
       setComparisonItems(prev => [...prev, newItem]);
-      setSelectedRegion('');
+      setSelectedRevalArea('');
       setSelectedBuildingType('');
       setShowComparisonDialog(false);
     }
@@ -262,7 +262,7 @@ export function ComparativeAnalysis({
     comparisonItems.forEach((item, index) => {
       // Base cost entry
       result.push({
-        name: `${item.region} Base`,
+        name: `${item.revalArea} Base`,
         value: item.baseCost,
         itemIndex: index,
         fill: colors[index % colors.length]
@@ -270,7 +270,7 @@ export function ComparativeAnalysis({
       
       // Adjusted cost entry
       result.push({
-        name: `${item.region} Adjusted`,
+        name: `${item.revalArea} Adjusted`,
         value: item.adjustedCost,
         itemIndex: index,
         fill: colors[index % colors.length],
@@ -286,7 +286,7 @@ export function ComparativeAnalysis({
     if (comparisonItems.length === 0) return;
 
     // Generate headers and data rows
-    const headers = ['Attribute', ...comparisonItems.map(item => `${item.region} - ${item.buildingType}`)];
+    const headers = ['Attribute', ...comparisonItems.map(item => `${item.revalArea} - ${item.buildingType}`)];
     
     const rows = [
       ['Base Cost', ...comparisonItems.map(item => item.baseCost.toString())],
@@ -294,7 +294,7 @@ export function ComparativeAnalysis({
       ['Complexity Factor', ...comparisonItems.map(item => item.complexityFactor.toString())],
       ['Quality Factor', ...comparisonItems.map(item => item.qualityFactor.toString())],
       ['Condition Factor', ...comparisonItems.map(item => item.conditionFactor.toString())],
-      ['Region', ...comparisonItems.map(item => item.region)],
+      ['Reval Area', ...comparisonItems.map(item => item.revalArea)],
       ['Building Type', ...comparisonItems.map(item => item.buildingType)],
       ['County', ...comparisonItems.map(item => item.metadata.county || 'N/A')],
       ['State', ...comparisonItems.map(item => item.metadata.state || 'N/A')],
@@ -352,7 +352,7 @@ export function ComparativeAnalysis({
             <Bar 
               key={index} 
               dataKey={`item${index}`} 
-              name={`${comparisonItems[index].region} - ${comparisonItems[index].buildingType}`} 
+              name={`${comparisonItems[index].revalArea} - ${comparisonItems[index].buildingType}`}
               fill={colors[index % colors.length]} 
             />
           ))}
@@ -379,7 +379,7 @@ export function ComparativeAnalysis({
               key={index} 
               type="monotone" 
               dataKey={`item${index}`} 
-              name={`${comparisonItems[index].region} - ${comparisonItems[index].buildingType}`} 
+              name={`${comparisonItems[index].revalArea} - ${comparisonItems[index].buildingType}`}
               stroke={colors[index % colors.length]} 
               activeDot={{ r: 8 }}
             />
@@ -427,7 +427,7 @@ export function ComparativeAnalysis({
                         className="w-3 h-3 mr-2 inline-block"
                         style={{ backgroundColor: colors[index % colors.length] }}
                       />
-                      <span>{item.region} - {item.buildingType}</span>
+                      <span>{item.revalArea} - {item.buildingType}</span>
                     </li>
                   ))}
                 </ul>
@@ -444,13 +444,13 @@ export function ComparativeAnalysis({
   const renderComparisonTable = () => (
     <div className="overflow-x-auto">
       <Table>
-        <TableCaption>Cost comparison data for selected regions and building types</TableCaption>
+        <TableCaption>Cost comparison data for selected reval areas and building types</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead>Attribute</TableHead>
             {comparisonItems.map((item, index) => (
               <TableHead key={index} className="text-right">
-                {item.region} - {item.buildingType}
+                {item.revalArea} - {item.buildingType}
               </TableHead>
             ))}
             {comparisonItems.length > 1 && <TableHead className="text-right">Difference</TableHead>}
@@ -536,21 +536,21 @@ export function ComparativeAnalysis({
       <CardHeader>
         <CardTitle className="text-base">Add Comparison Item</CardTitle>
         <CardDescription>
-          Select a region and building type to add to the comparison
+          Select a reval area and building type to add to the comparison
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium mb-1 block">Region</label>
-            <Select value={selectedRegion} onValueChange={setSelectedRegion}>
+            <label className="text-sm font-medium mb-1 block">Reval Area</label>
+            <Select value={selectedRevalArea} onValueChange={setSelectedRevalArea}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a region" />
+                <SelectValue placeholder="Select a reval area" />
               </SelectTrigger>
               <SelectContent>
-                {regions.map((region: string) => (
-                  <SelectItem key={region} value={region}>
-                    {region}
+                {revalAreas.map((revalArea: string) => (
+                  <SelectItem key={revalArea} value={revalArea}>
+                    {revalArea}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -580,7 +580,7 @@ export function ComparativeAnalysis({
         </Button>
         <Button 
           onClick={addComparisonItem}
-          disabled={!selectedRegion || !selectedBuildingType}
+          disabled={!selectedRevalArea || !selectedBuildingType}
         >
           Add to Comparison
         </Button>
@@ -596,7 +596,7 @@ export function ComparativeAnalysis({
             <div>
               <CardTitle>Comparative Analysis</CardTitle>
               <CardDescription>
-                Compare building costs across different regions and building types
+                Compare building costs across different reval areas and building types
               </CardDescription>
             </div>
             
@@ -662,7 +662,7 @@ export function ComparativeAnalysis({
                     className="flex items-center gap-1 pl-2"
                     style={{ borderColor: colors[index % colors.length] }}
                   >
-                    <span className="font-medium">{item.region} Region</span>
+                    <span className="font-medium">Reval Area {item.revalArea}</span>
                     <span className="text-muted-foreground">({item.buildingType})</span>
                     <Button
                       variant="ghost"

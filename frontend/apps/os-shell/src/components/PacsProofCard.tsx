@@ -53,12 +53,12 @@ export const PacsProofCard: React.FC = () => {
             gap: '0.3rem',
           }}
         >
-          <Database size={12} /> PACS Contract
+          <Database size={12} /> Assessment Contract
         </span>
         <button
           onClick={fetchProof}
           disabled={status === 'loading'}
-          aria-label="Refresh PACS proof"
+          aria-label="Refresh assessment proof"
           style={{
             background: 'none',
             border: 'none',

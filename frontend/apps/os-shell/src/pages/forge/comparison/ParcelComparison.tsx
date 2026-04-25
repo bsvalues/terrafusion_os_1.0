@@ -27,8 +27,8 @@ interface ParcelData {
 
 const ATTRIBUTES: { key: keyof ParcelData; label: string; format?: (v: unknown) => string }[] = [
   { key: 'address', label: 'Address' },
-  { key: 'sqft', label: 'Living Area (sqft)', format: (v) => Number(v).toLocaleString() },
-  { key: 'lotSize', label: 'Lot Size (sqft)', format: (v) => Number(v).toLocaleString() },
+  { key: 'sqft', label: 'Living Area (Sq Ft)', format: (v) => Number(v).toLocaleString() },
+  { key: 'lotSize', label: 'Lot Size (Sq Ft)', format: (v) => Number(v).toLocaleString() },
   { key: 'yearBuilt', label: 'Year Built' },
   { key: 'quality', label: 'Quality Grade' },
   { key: 'condition', label: 'Condition' },

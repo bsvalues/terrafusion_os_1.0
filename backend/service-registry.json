@@ -1,13 +1,13 @@
 {
-  "LastUpdated": "2026-04-03T20:13:07.7702584Z",
+  "LastUpdated": "2026-04-18T04:45:59.1242832Z",
   "Services": {
     "backend": {
       "Name": "backend",
       "Port": 5000,
       "Url": "http://localhost:5000",
       "Status": "running",
-      "Pid": 23204,
-      "StartedAt": "2026-04-03T20:13:07.7702435Z"
+      "Pid": 30812,
+      "StartedAt": "2026-04-18T04:45:59.1242831Z"
     },
     "costforge": {
       "Name": "costforge",
@@ -27,8 +27,8 @@
     },
     "terra-pilt": {
       "Name": "terra-pilt",
-      "Port": 5179,
-      "Url": "http://localhost:5179",
+      "Port": 5009,
+      "Url": "http://localhost:5009",
       "Status": "stopped",
       "Pid": null,
       "StartedAt": null

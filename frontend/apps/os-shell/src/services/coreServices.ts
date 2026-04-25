@@ -199,7 +199,7 @@ export const terraFlowService = {
 
 export const costForgeService = {
   /**
-   * AI Property Valuation (379M× faster than Marshall & Swift!)
+   * AI Property Valuation — Benton County locally calibrated cost schedules
    */
   propertyValuation: async (
     request: PropertyValuationRequest

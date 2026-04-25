@@ -1,0 +1,347 @@
+- main "TerraFusion Desktop" [ref=e8]:
+    - link "Skip to desktop content" [ref=e9] [cursor=pointer]:
+        - /url: '#desktop-main-content'
+    - generic [ref=e10]:
+        - generic [ref=e12]: TerraFusion OS
+        - generic [ref=e13]:
+            - generic [ref=e14]: Benton County
+            - generic [ref=e16]: Assessor's Office
+        - group "System utilities" [ref=e17]:
+            - button "Search (Ctrl+K)" [ref=e18]:
+                - img [ref=e19]
+                - generic [ref=e22]: ⌘K
+            - button "Scenes (Ctrl+,)" [ref=e23]:
+                - img [ref=e24]
+            - button "Sentinel diagnostics (Ctrl+Shift+S)" [ref=e29]:
+                - status [ref=e30]:
+                    - text: SENTINEL
+                    - generic [ref=e32]: · 7ms
+            - generic "Backend health responding" [ref=e33]:
+                - generic [ref=e35]: LIVE
+            - button "Notifications - 1 unread" [ref=e293] [cursor=pointer]:
+                - generic [ref=e38]: 🔔
+                - generic [ref=e294]: '1'
+            - 'generic "Current time: 5:35 PM, Tuesday, April 14, 2026" [ref=e292]':
+                - time [ref=e40]:
+                    - text: 5:35 PM
+                    - generic [ref=e41]: Apr 14
+            - button "Control Center (Ctrl+.)" [ref=e43]:
+                - img [ref=e44]
+            - button "Profile" [ref=e47]:
+                - img [ref=e48]
+    - generic [ref=e51]:
+        - button "Open TerraForge" [active] [pressed] [ref=e52] [cursor=pointer]:
+            - generic [ref=e53]:
+                - img [ref=e56]
+                - generic [ref=e58]: WB
+            - generic [ref=e59]: TerraForge
+        - button "Open TerraAtlas" [ref=e60] [cursor=pointer]:
+            - generic [ref=e61]:
+                - img [ref=e64]
+                - generic [ref=e67]: WB
+            - generic [ref=e68]: TerraAtlas
+        - button "Open TerraDais" [ref=e69] [cursor=pointer]:
+            - generic [ref=e70]:
+                - img [ref=e73]
+                - generic [ref=e78]: WB
+            - generic [ref=e79]: TerraDais
+        - button "Open TerraDossier" [ref=e80] [cursor=pointer]:
+            - generic [ref=e81]:
+                - img [ref=e84]
+                - generic [ref=e86]: WB
+            - generic [ref=e87]: TerraDossier
+        - button "Open TerraGPT" [ref=e88] [cursor=pointer]:
+            - generic [ref=e89]:
+                - img [ref=e92]
+                - generic [ref=e94]: OS
+            - generic [ref=e95]: TerraGPT
+        - button "Open Property Workbench" [ref=e96] [cursor=pointer]:
+            - generic [ref=e97]:
+                - img [ref=e100]
+                - generic [ref=e102]: OS
+            - generic [ref=e103]: Property Workbench
+        - button "Open TerraPilot" [ref=e104] [cursor=pointer]:
+            - generic [ref=e105]:
+                - img [ref=e108]
+                - generic [ref=e110]: OS
+            - generic [ref=e111]: TerraPilot
+        - button "Open TerraTrace" [ref=e112] [cursor=pointer]:
+            - generic [ref=e113]:
+                - img [ref=e116]
+                - generic [ref=e118]: OS
+            - generic [ref=e119]: TerraTrace
+        - button "Open TerraCanon" [ref=e120] [cursor=pointer]:
+            - generic [ref=e121]:
+                - img [ref=e124]
+                - generic [ref=e126]: OS
+            - generic [ref=e127]: TerraCanon
+    - region "Application windows":
+        - generic [ref=e297]:
+            - generic [ref=e298]:
+                - generic [ref=e300]:
+                    - button "Close" [ref=e301]:
+                        - generic [ref=e303]: ×
+                    - button "Minimize" [ref=e304]:
+                        - generic [ref=e306]: −
+                    - button "Maximize" [ref=e307]:
+                        - generic [ref=e309]: □
+                - generic:
+                    - img:
+                        - generic:
+                            - generic:
+                                - generic:
+                                    - generic:
+                                        - img
+                    - generic: TerraForge
+            - main [ref=e314]:
+                - generic [ref=e315]:
+                    - generic [ref=e316]:
+                        - generic [ref=e317]:
+                            - paragraph [ref=e318]: Suite-Forge · County-Wide Workspace
+                            - heading "TerraForge" [level=1] [ref=e319]
+                            - paragraph [ref=e320]: Property Valuation & Cost Analysis Engine
+                        - generic [ref=e321]:
+                            - generic [ref=e322]: Layer 2 Workspace
+                            - generic [ref=e323]: Live metrics
+                    - generic [ref=e324]:
+                        - generic [ref=e325]:
+                            - generic [ref=e326]: TOTAL PARCELS
+                            - generic [ref=e327]: 95,811
+                        - generic [ref=e328]:
+                            - generic [ref=e329]: AVG ASSESSED
+                            - generic [ref=e330]: $469,513
+                        - generic [ref=e331]:
+                            - generic [ref=e332]: ASSESSED THIS YEAR
+                            - generic [ref=e333]: 95,811
+                        - generic [ref=e334]:
+                            - generic [ref=e335]: PENDING
+                            - generic [ref=e336]: '0'
+                        - generic [ref=e337]:
+                            - generic [ref=e338]: COMPLETION
+                            - generic [ref=e339]: 96.0%
+                    - generic [ref=e340]:
+                        - generic [ref=e342]:
+                            - paragraph [ref=e343]: Primary Applications
+                            - heading "County-wide valuation scenes" [level=2] [ref=e344]
+                        - generic [ref=e345]:
+                            - button "Cost approach Launches in window CostForge County-wide cost approach — replacement cost schedules, depreciation tables, land schedules, and RCNLD" [ref=e346]:
+                                - generic [ref=e347]:
+                                    - generic [ref=e348]: Cost approach
+                                    - generic [ref=e349]: Launches in window
+                                - generic [ref=e350]: CostForge
+                                - paragraph [ref=e351]: County-wide cost approach — replacement cost schedules, depreciation tables, land schedules, and RCNLD
+                            - button "Sales comparison Launches in window CompsForge County-wide sales comparison — adjustment grid studio, paired-sales analysis, and market-derived time trends" [ref=e352]:
+                                - generic [ref=e353]:
+                                    - generic [ref=e354]: Sales comparison
+                                    - generic [ref=e355]: Launches in window
+                                - generic [ref=e356]: CompsForge
+                                - paragraph [ref=e357]: County-wide sales comparison — adjustment grid studio, paired-sales analysis, and market-derived time trends
+                            - button "Income approach Queued surface IncomeForge County-wide income approach — cap rates, NOI modeling, and rent schedules for commercial properties" [disabled] [ref=e358]:
+                                - generic [ref=e359]:
+                                    - generic [ref=e360]: Income approach
+                                    - generic [ref=e361]: Queued surface
+                                - generic [ref=e362]: IncomeForge
+                                - paragraph [ref=e363]: County-wide income approach — cap rates, NOI modeling, and rent schedules for commercial properties
+                            - button "Sale qualification Launches in window SalesForge Sale qualification & ratio audit — qualify sales, audit WAC codes, review IAAO stats, and export DOR-certified study" [ref=e364]:
+                                - generic [ref=e365]:
+                                    - generic [ref=e366]: Sale qualification
+                                    - generic [ref=e367]: Launches in window
+                                - generic [ref=e368]: SalesForge
+                                - paragraph [ref=e369]: Sale qualification & ratio audit — qualify sales, audit WAC codes, review IAAO stats, and export DOR-certified study
+                    - generic [ref=e370]:
+                        - generic [ref=e372]:
+                            - paragraph [ref=e373]: Specialist Applications
+                            - heading "Supporting analytics and batch operations" [level=2] [ref=e374]
+                        - generic [ref=e375]:
+                            - button "IAAO diagnostics Statistics Studio IAAO ratio studies — COD, PRD, PRB, and assessment quality diagnostics Launches in window" [ref=e376]:
+                                - generic [ref=e378]: IAAO diagnostics
+                                - generic [ref=e379]: Statistics Studio
+                                - paragraph [ref=e380]: IAAO ratio studies — COD, PRD, PRB, and assessment quality diagnostics
+                                - generic [ref=e381]: Launches in window
+                            - button "Batch execution Batch Cost Runs County-wide cost model runs with strata, neighborhood, and class filters Launches in window" [ref=e382]:
+                                - generic [ref=e384]: Batch execution
+                                - generic [ref=e385]: Batch Cost Runs
+                                - paragraph [ref=e386]: County-wide cost model runs with strata, neighborhood, and class filters
+                                - generic [ref=e387]: Launches in window
+                            - button "Planned scene Queued Regression Studio MRA regression models with R² diagnostics for market modeling Queued surface" [disabled] [ref=e388]:
+                                - generic [ref=e389]:
+                                    - generic [ref=e390]: Planned scene
+                                    - generic [ref=e391]: Queued
+                                - generic [ref=e392]: Regression Studio
+                                - paragraph [ref=e393]: MRA regression models with R² diagnostics for market modeling
+                                - generic [ref=e394]: Queued surface
+                            - button "Planned scene Queued TerraGAMA Geospatial automated mass appraisal with spatial lag models Queued surface" [disabled] [ref=e395]:
+                                - generic [ref=e396]:
+                                    - generic [ref=e397]: Planned scene
+                                    - generic [ref=e398]: Queued
+                                - generic [ref=e399]: TerraGAMA
+                                - paragraph [ref=e400]: Geospatial automated mass appraisal with spatial lag models
+                                - generic [ref=e401]: Queued surface
+                            - button "Planned scene Queued Coefficient Preview Live preview of adjustment coefficients before table publication Queued surface" [disabled] [ref=e402]:
+                                - generic [ref=e403]:
+                                    - generic [ref=e404]: Planned scene
+                                    - generic [ref=e405]: Queued
+                                - generic [ref=e406]: Coefficient Preview
+                                - paragraph [ref=e407]: Live preview of adjustment coefficients before table publication
+                                - generic [ref=e408]: Queued surface
+                    - generic [ref=e409]:
+                        - generic [ref=e410]:
+                            - generic [ref=e411]:
+                                - paragraph [ref=e412]: Sale Qualification
+                                - heading "County-wide qualification queue" [level=2] [ref=e413]
+                            - generic [ref=e414]: 2026 ratio window
+                        - tablist [ref=e415]:
+                            - tab "Pending" [selected] [ref=e416] [cursor=pointer]
+                            - tab "Staff confirmed" [ref=e417] [cursor=pointer]
+                            - tab "Appraiser final" [ref=e418] [cursor=pointer]
+                        - status [ref=e419]: Loading sales…
+                    - generic [ref=e420]:
+                        - generic [ref=e421]:
+                            - generic [ref=e422]:
+                                - paragraph [ref=e423]: Comps Pool
+                                - heading "Qualified comps pool browser" [level=2] [ref=e424]
+                            - generic [ref=e425]: 2026 ratio window
+                        - generic "Comps pool filters" [ref=e426]:
+                            - generic [ref=e427]:
+                                - generic [ref=e428]:
+                                    - generic [ref=e429]: Neighborhood
+                                    - textbox "Neighborhood" [ref=e430]:
+                                        - /placeholder: e.g. 1A
+                                - generic [ref=e431]:
+                                    - generic [ref=e432]: Property type
+                                    - textbox "Property type" [ref=e433]:
+                                        - /placeholder: e.g. residential
+                                - generic [ref=e434]:
+                                    - generic [ref=e435]: Min price ($)
+                                    - spinbutton "Min price ($)" [ref=e436]
+                                - generic [ref=e437]:
+                                    - generic [ref=e438]: Max price ($)
+                                    - spinbutton "Max price ($)" [ref=e439]
+                                - generic [ref=e440]:
+                                    - generic [ref=e441]: Min GLA (sf)
+                                    - spinbutton "Min GLA (sf)" [ref=e442]
+                                - generic [ref=e443]:
+                                    - generic [ref=e444]: Max GLA (sf)
+                                    - spinbutton "Max GLA (sf)" [ref=e445]
+                            - button "Apply filters" [ref=e447] [cursor=pointer]
+                        - status [ref=e448]: Loading comps pool…
+                    - generic [ref=e449]:
+                        - generic [ref=e451]:
+                            - paragraph [ref=e452]: Operational Queue
+                            - heading "Recent parcels" [level=2] [ref=e453]
+                        - generic [ref=e454]: No recent parcel activity.
+    - navigation "Taskbar" [ref=e128]:
+        - button "Start Menu" [ref=e129]
+        - group "Core suites" [ref=e140]:
+            - button "TerraForge" [ref=e141]:
+                - img [ref=e142]
+                - generic [ref=e146]: Forge
+            - button "TerraAtlas" [ref=e147]:
+                - img [ref=e148]
+                - generic [ref=e151]: Atlas
+            - button "TerraDais" [ref=e152]:
+                - img [ref=e153]
+                - generic [ref=e158]: Dais
+            - button "TerraDossier" [ref=e159]:
+                - img [ref=e160]
+                - generic [ref=e164]: Dossier
+            - button "TerraGPT" [ref=e165]:
+                - img [ref=e166]
+                - generic [ref=e169]: GPT
+        - group "Running applications" [ref=e464]:
+            - button "TerraForge" [pressed] [ref=e465]:
+                - img [ref=e466]
+        - button "Open TerraPilot (Ctrl+\\\\)" [ref=e171]:
+            - img [ref=e172]
+    - region "Notifications"
+    - dialog "Sentinel Console" [ref=e176]:
+        - generic [ref=e177]:
+            - generic [ref=e179]: SENTINEL CONSOLE
+            - button "Close Sentinel" [ref=e180]: ✕
+        - generic [ref=e181]:
+            - generic [ref=e182]:
+                - button "HEALTH" [ref=e183]
+                - button "NEURAL FEED" [ref=e184]
+            - generic [ref=e185]:
+                - generic [ref=e186]:
+                    - generic [ref=e187]: System Status
+                    - generic [ref=e188]: degraded
+                - generic [ref=e189]:
+                    - generic [ref=e190]: Latency
+                    - generic [ref=e191]: 7 ms
+            - generic [ref=e192]:
+                - generic [ref=e193]: Modules
+                - generic [ref=e194]:
+                    - generic [ref=e195]:
+                        - generic [ref=e196]: Active
+                        - generic [ref=e197]: '0'
+                    - generic [ref=e198]:
+                        - generic [ref=e199]: Total Detected
+                        - generic [ref=e200]: '1'
+            - generic [ref=e201]:
+                - generic [ref=e202]:
+                    - generic [ref=e203]: Components
+                    - generic [ref=e204]:
+                        - generic [ref=e205]: 4 OK
+                        - generic [ref=e206]: ·
+                        - generic [ref=e207]: 4 TOTAL
+                - generic [ref=e208]:
+                    - generic [ref=e209]:
+                        - generic [ref=e212]: ModuleLoader
+                        - generic [ref=e213]: OK
+                    - generic [ref=e214]:
+                        - generic [ref=e217]: LegacyIntegration
+                        - generic [ref=e218]: OK
+                    - generic [ref=e219]:
+                        - generic [ref=e222]: AISwarm
+                        - generic [ref=e223]: OK
+                    - generic [ref=e224]:
+                        - generic [ref=e227]: TerraFusionSync
+                        - generic [ref=e228]: OK
+            - generic [ref=e229]:
+                - generic [ref=e230]: 'SHA: dev'
+                - generic [ref=e231]: 'API: /api/system/health'
+                - generic [ref=e232]: 'Last Ping: 5:35:20 PM'
+            - generic [ref=e233]:
+                - generic [ref=e235]: Warnings Detected
+                - list [ref=e236]:
+                    - listitem [ref=e237]: 'Health status reported: Degraded'
+                    - listitem [ref=e238]: No active modules loaded (check TF_MODULE_INTENT_FILTER and module path)
+    - dialog "Control Center" [ref=e239]:
+        - generic [ref=e240]:
+            - generic [ref=e241]:
+                - generic [ref=e242]:
+                    - img [ref=e243]
+                    - generic [ref=e246]: CONTROL CENTER
+                - button "Close Control Center" [ref=e247] [cursor=pointer]:
+                    - img [ref=e248]
+            - generic [ref=e251]:
+                - generic [ref=e252]:
+                    - generic [ref=e253]:
+                        - img [ref=e254]
+                        - generic [ref=e256]: Map Layers
+                        - status [ref=e257]: '2'
+                    - generic [ref=e259]:
+                        - generic [ref=e260] [cursor=pointer]:
+                            - generic [ref=e261]: Parcels
+                            - switch "Parcels" [checked] [ref=e262]
+                        - generic [ref=e264] [cursor=pointer]:
+                            - generic [ref=e265]: Zoning
+                            - switch "Zoning" [ref=e266]
+                        - generic [ref=e268] [cursor=pointer]:
+                            - generic [ref=e269]: Flood Zones
+                            - switch "Flood Zones" [ref=e270]
+                        - generic [ref=e272] [cursor=pointer]:
+                            - generic [ref=e273]: Aerial Imagery
+                            - switch "Aerial Imagery" [checked] [ref=e274]
+                        - generic [ref=e276] [cursor=pointer]:
+                            - generic [ref=e277]: Contours
+                            - switch "Contours" [ref=e278]
+                - generic [ref=e280]:
+                    - generic [ref=e281]:
+                        - img [ref=e282]
+                        - generic [ref=e286]: Model Version
+                    - generic [ref=e288]:
+                        - button "v2026.1" [pressed] [ref=e289] [cursor=pointer]
+                        - button "v2025.2" [ref=e290] [cursor=pointer]
+                        - button "v2025.1" [ref=e291] [cursor=pointer]

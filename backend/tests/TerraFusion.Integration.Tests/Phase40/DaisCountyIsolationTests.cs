@@ -204,13 +204,18 @@ public class DaisCountyIsolationTests
         var bentonSteps = await svc.GetByTaxYearAsync(2025, bentonId);
         var kingSteps   = await svc.GetByTaxYearAsync(2025, kingId);
 
-        bentonSteps.Should().HaveCount(1);
-        bentonSteps[0].StepCode.Should().Be("PRELIMINARY_ROLL");
-        bentonSteps[0].CountyId.Should().Be(bentonId);
+        // GetByTaxYearAsync auto-reconciles canonical certification steps per
+        // county, so each side returns the seeded non-canonical step PLUS the
+        // canonical ones. Isolation is proven by confirming each side contains
+        // its own seeded StepCode, not the other county's, and every returned
+        // row is county-scoped.
+        bentonSteps.Should().Contain(s => s.StepCode == "PRELIMINARY_ROLL" && s.CountyId == bentonId);
+        bentonSteps.Should().NotContain(s => s.StepCode == "FINAL_VALUES");
+        bentonSteps.Should().OnlyContain(s => s.CountyId == bentonId);
 
-        kingSteps.Should().HaveCount(1);
-        kingSteps[0].StepCode.Should().Be("FINAL_VALUES");
-        kingSteps[0].CountyId.Should().Be(kingId);
+        kingSteps.Should().Contain(s => s.StepCode == "FINAL_VALUES" && s.CountyId == kingId);
+        kingSteps.Should().NotContain(s => s.StepCode == "PRELIMINARY_ROLL");
+        kingSteps.Should().OnlyContain(s => s.CountyId == kingId);
     }
 
     // ─── 5. Notice — GetByParcel isolates to county ──────────────────

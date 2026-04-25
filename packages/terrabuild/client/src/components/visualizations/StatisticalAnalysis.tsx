@@ -19,20 +19,23 @@ interface StatisticalAnalysisProps {
  * Statistical Analysis Component
  * Displays statistical analysis of cost data including correlations and outliers
  */
+const REVAL_AREAS = [
+  { id: 'Reval 1', label: 'Reval 1 — Kennewick (Urban Core)',       factor: 1.00 },
+  { id: 'Reval 2', label: 'Reval 2 — West Richland / Badger Mtn',   factor: 1.05 },
+  { id: 'Reval 3', label: 'Reval 3 — North Richland / Horn Rapids',  factor: 1.10 },
+  { id: 'Reval 4', label: 'Reval 4 — East Benton / Benton City',     factor: 0.95 },
+  { id: 'Reval 5', label: 'Reval 5 — Prosser / Wine Country',         factor: 0.90 },
+  { id: 'Reval 6', label: 'Reval 6 — Rural / Agricultural Lands',    factor: 0.82 },
+];
+
 const StatisticalAnalysis: React.FC<StatisticalAnalysisProps> = ({
   title = 'Statistical Analysis',
   description = 'Data quality, correlations, and outlier detection'
 }) => {
-  const [selectedRegion, setSelectedRegion] = useState<string>('Washington');
+  const [selectedRevalArea, setSelectedRevalArea] = useState<string>('Reval 1');
   const [selectedBuildingType, setSelectedBuildingType] = useState<string>('RESIDENTIAL');
   const [activeTab, setActiveTab] = useState<string>('data-quality');
-  
-  // Get available regions
-  const { data: regionsData } = useQuery({
-    queryKey: ['/api/regions'],
-    retry: 1
-  });
-  
+
   // For simplicity, we'll use a fixed list of building types
   const buildingTypes = [
     { value: 'RESIDENTIAL', label: 'Residential' },
@@ -42,13 +45,14 @@ const StatisticalAnalysis: React.FC<StatisticalAnalysisProps> = ({
   
   // Fetch cost data for statistical analysis
   const { data: costData, isLoading, error } = useQuery({
-    queryKey: ['/api/benchmarking/statistical-data', selectedRegion, selectedBuildingType],
+    queryKey: ['/api/benchmarking/statistical-data', selectedRevalArea, selectedBuildingType],
     queryFn: async () => {
-      const response = await fetch('/api/benchmarking/statistical-data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ region: selectedRegion, buildingType: selectedBuildingType })
+      const params = new URLSearchParams({
+        county: 'Benton',
+        revalArea: selectedRevalArea,
+        buildingType: selectedBuildingType,
       });
+      const response = await fetch(`/api/benchmarking/statistical-data?${params}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch statistical data');
@@ -56,7 +60,7 @@ const StatisticalAnalysis: React.FC<StatisticalAnalysisProps> = ({
       
       return response.json();
     },
-    enabled: !!selectedRegion && !!selectedBuildingType,
+    enabled: !!selectedRevalArea && !!selectedBuildingType,
     retry: 1
   });
   
@@ -70,7 +74,7 @@ const StatisticalAnalysis: React.FC<StatisticalAnalysisProps> = ({
     if (costData) {
       // Validate data quality
       if (costData.buildings && Array.isArray(costData.buildings)) {
-        const quality = validateDataCompleteness(costData.buildings, ['id', 'region', 'cost', 'size', 'yearBuilt']);
+        const quality = validateDataCompleteness(costData.buildings, ['id', 'revalArea', 'cost', 'size', 'yearBuilt']);
         setDataQuality(quality);
       }
       
@@ -169,18 +173,18 @@ const StatisticalAnalysis: React.FC<StatisticalAnalysisProps> = ({
         
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="flex-1">
-            <label className="text-sm font-medium mb-2 block">Region</label>
+            <label className="text-sm font-medium mb-2 block">Reval Area (Cycle)</label>
             <Select
-              value={selectedRegion}
-              onValueChange={setSelectedRegion}
+              value={selectedRevalArea}
+              onValueChange={setSelectedRevalArea}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Region" />
+                <SelectValue placeholder="Select Reval Area" />
               </SelectTrigger>
               <SelectContent>
-                {Array.isArray(regionsData) && regionsData.map((region: string) => (
-                  <SelectItem key={region} value={region}>
-                    {region}
+                {REVAL_AREAS.map((area) => (
+                  <SelectItem key={area.id} value={area.id}>
+                    {area.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -247,7 +251,7 @@ const StatisticalAnalysis: React.FC<StatisticalAnalysisProps> = ({
                       Data Quality Assessment
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      {getBuildingTypeLabel(selectedBuildingType)} buildings in {selectedRegion}
+                      {getBuildingTypeLabel(selectedBuildingType)} buildings in Benton County — {selectedRevalArea}
                     </p>
                   </div>
                   
@@ -318,7 +322,7 @@ const StatisticalAnalysis: React.FC<StatisticalAnalysisProps> = ({
                       Size vs. Cost Correlation
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      {getBuildingTypeLabel(selectedBuildingType)} buildings in {selectedRegion}
+                      {getBuildingTypeLabel(selectedBuildingType)} buildings in Benton County — {selectedRevalArea}
                     </p>
                   </div>
                   
@@ -425,7 +429,7 @@ const StatisticalAnalysis: React.FC<StatisticalAnalysisProps> = ({
                       Cost Outlier Detection
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      {getBuildingTypeLabel(selectedBuildingType)} buildings in {selectedRegion}
+                      {getBuildingTypeLabel(selectedBuildingType)} buildings in Benton County — {selectedRevalArea}
                     </p>
                   </div>
                   

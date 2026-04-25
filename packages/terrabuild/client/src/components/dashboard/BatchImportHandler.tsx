@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useFileUploads } from '@/hooks/use-file-uploads';
-import { FileUpload } from '@shared/schema';
+import { FileUpload } from '@/types/api';
 import { AlertCircle, CheckCircle, FileSpreadsheet, FileText, PauseCircle, PlayCircle, RefreshCw } from 'lucide-react';
 import React, { useState } from 'react';
 import FileUploader from '../common/FileUploader';

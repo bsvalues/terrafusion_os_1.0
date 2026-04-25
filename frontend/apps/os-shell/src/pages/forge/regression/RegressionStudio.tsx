@@ -19,8 +19,9 @@ import { CoefficientPanel } from './CoefficientPanel';
 import { VersionComparePanel } from './VersionComparePanel';
 import { ResidualPlot, CoefficientBarChart, PredictedVsActual, QQPlot } from './charts';
 import { useForgeRegressionStore } from '@/stores/forgeRegressionStore';
+import { RegressionStudioDashboard } from './RegressionStudioDashboard';
 
-type View = 'list' | 'new' | 'compare' | 'detail';
+type View = 'list' | 'new' | 'compare' | 'detail' | 'advanced';
 
 export function RegressionStudio() {
   const [view, setView] = useState<View>('list');
@@ -76,6 +77,13 @@ export function RegressionStudio() {
             onClick={() => setView('compare')}
           >
             Compare
+          </Button>
+          <Button
+            variant={view === 'advanced' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setView('advanced')}
+          >
+            Advanced
           </Button>
         </div>
       </div>
@@ -209,6 +217,9 @@ export function RegressionStudio() {
 
       {/* View: Compare */}
       {view === 'compare' && <VersionComparePanel />}
+
+      {/* View: Advanced — full regression statistical laboratory */}
+      {view === 'advanced' && <RegressionStudioDashboard />}
 
       {/* View: Model Detail */}
       {view === 'detail' && selectedModelId && (

@@ -13,8 +13,7 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
 
-    <!-- SignalR for real-time streaming -->
-    <PackageReference Include="Microsoft.AspNetCore.SignalR" />
+    <!-- SignalR for real-time streaming (base SignalR included via Microsoft.NET.Sdk.Web framework) -->
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" />
 
     <!-- Authentication & Security -->
@@ -24,13 +23,15 @@
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="Serilog.Enrichers.Environment" />
+    <PackageReference Include="Serilog.Enrichers.Thread" />
 
     <!-- Health Checks -->
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
 
     <!-- Time-series and streaming -->
-    <PackageReference Include="System.Reactive" Version="6.0.0" />
+    <PackageReference Include="System.Reactive" />
 
     <!-- Configuration -->
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />

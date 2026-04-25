@@ -1,115 +1,131 @@
-/**
- * TFR-105: Geometry Health Dashboard
- * Monitors parcel polygon linkage quality.
- * Stats: parcels with polygons, orphaned polygons, parcels missing geometry.
- * Map showing gaps in polygon coverage.
- */
-import { useMemo, useState } from 'react';
-import { useParcelCount } from '../../hooks/useParcelCount';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { atlasService, type GeometryHealthArea } from '@/services/atlasService';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-export interface GeometryHealthData {
+interface GeometryHealthData {
   totalParcels: number;
-  parcelsWithPolygons: number;
+  parcelsWithGeometry: number;
   parcelsMissingGeometry: number;
-  orphanedPolygons: number;
+  flaggedGeometryRecords: number;
   lastSyncTimestamp: string;
-  areaStats: AreaGeometryStats[];
+  source: string;
+  areaStats: GeometryHealthArea[];
 }
 
-export interface AreaGeometryStats {
-  id: string;
-  name: string;
-  totalParcels: number;
-  linkedParcels: number;
-  missingGeometry: number;
-  orphanedPolygons: number;
-  center: [number, number];
+function coveragePercent(linked: number, total: number): number {
+  if (total <= 0) return 100;
+  return Math.round((linked / total) * 10000) / 100;
 }
 
-// ---------------------------------------------------------------------------
-// Demo data
-// ---------------------------------------------------------------------------
-
-const HEALTH_DATA: GeometryHealthData = {
-  totalParcels: 89_247,
-  parcelsWithPolygons: 85612,
-  parcelsMissingGeometry: 3208,
-  orphanedPolygons: 427,
-  lastSyncTimestamp: '2026-03-15T08:30:00Z',
-  areaStats: [
-    { id: 'a1', name: 'Downtown', totalParcels: 12450, linkedParcels: 12380, missingGeometry: 42, orphanedPolygons: 28, center: [46.23, -119.2] },
-    { id: 'a2', name: 'Riverside', totalParcels: 18200, linkedParcels: 17950, missingGeometry: 180, orphanedPolygons: 70, center: [46.24, -119.21] },
-    { id: 'a3', name: 'West Hills', totalParcels: 14300, linkedParcels: 13800, missingGeometry: 420, orphanedPolygons: 80, center: [46.25, -119.23] },
-    { id: 'a4', name: 'Eastgate', totalParcels: 8900, linkedParcels: 7200, missingGeometry: 1500, orphanedPolygons: 200, center: [46.22, -119.18] },
-    { id: 'a5', name: 'Southridge', totalParcels: 21500, linkedParcels: 21400, missingGeometry: 66, orphanedPolygons: 34, center: [46.21, -119.22] },
-    { id: 'a6', name: 'Northview', totalParcels: 13897, linkedParcels: 12882, missingGeometry: 1000, orphanedPolygons: 15, center: [46.26, -119.19] },
-  ],
-};
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function healthScore(linked: number, total: number): number {
-  if (total === 0) return 100;
-  return Math.round((linked / total) * 100);
+function reviewIntensity(area: GeometryHealthArea): number {
+  return area.parcelsMissingGeometry + area.flaggedGeometryRecords;
 }
 
-function healthColor(score: number): string {
-  if (score >= 95) return '#22C55E';
-  if (score >= 85) return '#F59E0B';
+function healthColor(area: Pick<GeometryHealthArea, 'totalParcels' | 'parcelsWithGeometry' | 'parcelsMissingGeometry' | 'flaggedGeometryRecords'>): string {
+  const coverage = coveragePercent(area.parcelsWithGeometry, area.totalParcels);
+  const reviewLoad = area.parcelsMissingGeometry + area.flaggedGeometryRecords;
+  if (coverage >= 99.95 && reviewLoad === 0) return '#22C55E';
+  if (coverage >= 99.5 && reviewLoad <= 10) return '#F59E0B';
   return '#EF4444';
 }
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+function formatTimestamp(timestamp: string): string {
+  return new Date(timestamp).toLocaleString();
+}
 
 export default function GeometryHealth() {
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
-  const { data: statsData } = useParcelCount();
-  const parcelCount = statsData?.totalParcels ?? 89_247;
+  const [data, setData] = useState<GeometryHealthData>({
+    totalParcels: 0,
+    parcelsWithGeometry: 0,
+    parcelsMissingGeometry: 0,
+    flaggedGeometryRecords: 0,
+    lastSyncTimestamp: '',
+    source: 'Loading live Benton geometry health...',
+    areaStats: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const overallScore = useMemo(
-    () => healthScore(HEALTH_DATA.parcelsWithPolygons, parcelCount),
-    [parcelCount],
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await atlasService.getGeometryHealth(50);
+        if (cancelled) return;
+        setData(response);
+      } catch (loadError) {
+        if (cancelled) return;
+        setError(loadError instanceof Error ? loadError.message : 'GeometryHealth could not load live Benton data.');
+        setData((current) => ({
+          ...current,
+          areaStats: [],
+        }));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const overallCoverage = useMemo(
+    () => coveragePercent(data.parcelsWithGeometry, data.totalParcels),
+    [data.parcelsWithGeometry, data.totalParcels],
   );
 
   const selectedArea = useMemo(
-    () => HEALTH_DATA.areaStats.find((a) => a.id === selectedAreaId) ?? null,
-    [selectedAreaId],
+    () => data.areaStats.find((area) => area.id === selectedAreaId) ?? null,
+    [data.areaStats, selectedAreaId],
+  );
+
+  const prioritizedAreas = useMemo(
+    () =>
+      [...data.areaStats]
+        .sort((left, right) => {
+          const issueDelta = reviewIntensity(right) - reviewIntensity(left);
+          if (issueDelta !== 0) return issueDelta;
+          return right.totalParcels - left.totalParcels;
+        })
+        .slice(0, 8),
+    [data.areaStats],
   );
 
   const recommendations = useMemo(() => {
-    const recs: string[] = [];
-    if (HEALTH_DATA.parcelsMissingGeometry > 0) {
-      recs.push(`${HEALTH_DATA.parcelsMissingGeometry.toLocaleString()} parcels need polygon linkage`);
+    const output: string[] = [];
+
+    if (data.parcelsMissingGeometry > 0) {
+      output.push(`${data.parcelsMissingGeometry.toLocaleString()} live records are missing geometry coverage.`);
+    } else {
+      output.push('No county parcels are currently missing geometry coverage in the live Benton feed.');
     }
-    if (HEALTH_DATA.orphanedPolygons > 0) {
-      recs.push(`${HEALTH_DATA.orphanedPolygons.toLocaleString()} orphaned polygons need review`);
+
+    if (data.flaggedGeometryRecords > 0) {
+      output.push(
+        `${data.flaggedGeometryRecords.toLocaleString()} live records carry recalculation flags and should be reviewed before any parcel edit is closed.`,
+      );
     }
-    const worstArea = [...HEALTH_DATA.areaStats].sort(
-      (a, b) => healthScore(a.linkedParcels, a.totalParcels) - healthScore(b.linkedParcels, b.totalParcels),
-    )[0];
+
+    const worstArea = prioritizedAreas[0];
     if (worstArea) {
-      const score = healthScore(worstArea.linkedParcels, worstArea.totalParcels);
-      if (score < 90) {
-        recs.push(`Priority: ${worstArea.name} has lowest coverage at ${score}%`);
-      }
+      output.push(
+        `${worstArea.name} has the highest live review load with ${reviewIntensity(worstArea).toLocaleString()} records needing attention.`,
+      );
     }
-    return recs;
-  }, []);
+
+    return output;
+  }, [data.flaggedGeometryRecords, data.parcelsMissingGeometry, prioritizedAreas]);
 
   return (
     <div data-testid="geometry-health" className="flex h-full bg-terra-midnight text-white">
-      {/* Map */}
-      <main className="flex-1 relative overflow-hidden">
+      <main className="relative flex-1 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <svg width="100%" height="100%">
             <defs>
@@ -121,14 +137,27 @@ export default function GeometryHealth() {
           </svg>
         </div>
 
-        {/* Area coverage indicators */}
-        {HEALTH_DATA.areaStats.map((area) => {
-          const xPct = ((area.center[1] + 119.26) / 0.1) * 100;
-          const yPct = ((46.27 - area.center[0]) / 0.08) * 100;
-          const score = healthScore(area.linkedParcels, area.totalParcels);
-          const color = healthColor(score);
+        <div className="absolute left-4 top-4 max-w-xl rounded border border-white/10 bg-terra-midnight/80 p-4 backdrop-blur-sm">
+          <h1 className="text-lg font-semibold text-terra-cyan">Geometry Health</h1>
+          <p className="mt-1 text-sm text-white/70">
+            Live Benton County geometry coverage derived from Assessor Prop Val parcel geometry and recalculation flags.
+          </p>
+          <p className="mt-2 text-xs text-white/40">
+            {loading
+              ? 'Loading live neighborhood geometry coverage...'
+              : error
+                ? error
+                : `${data.areaStats.length} live neighborhoods | ${data.source} | as of ${formatTimestamp(data.lastSyncTimestamp)}`}
+          </p>
+        </div>
+
+        {data.areaStats.map((area) => {
+          const xPct = ((area.center[1] + 119.9) / 0.9) * 100;
+          const yPct = ((46.45 - area.center[0]) / 0.4) * 100;
+          const color = healthColor(area);
           const isSelected = selectedAreaId === area.id;
-          const size = 50 + area.totalParcels / 200;
+          const size = 42 + Math.min(34, area.totalParcels / 85);
+          const coverage = coveragePercent(area.parcelsWithGeometry, area.totalParcels);
 
           return (
             <button
@@ -136,104 +165,145 @@ export default function GeometryHealth() {
               onClick={() => setSelectedAreaId(isSelected ? null : area.id)}
               className="absolute transition-all duration-300"
               style={{
-                left: `${Math.max(8, Math.min(88, xPct))}%`,
-                top: `${Math.max(8, Math.min(88, yPct))}%`,
+                left: `${Math.max(8, Math.min(92, xPct))}%`,
+                top: `${Math.max(8, Math.min(90, yPct))}%`,
                 transform: 'translate(-50%, -50%)',
               }}
-              aria-label={`${area.name}: ${score}% coverage`}
+              aria-label={`${area.name}: ${coverage.toFixed(2)} percent geometry coverage`}
             >
-              {/* Coverage ring */}
-              <svg width={size} height={size} className="transition-all">
-                <circle cx={size / 2} cy={size / 2} r={size / 2 - 4} fill={`${color}18`} stroke={`${color}44`} strokeWidth="1" />
-                <circle
-                  cx={size / 2}
-                  cy={size / 2}
-                  r={size / 2 - 4}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={isSelected ? 3 : 2}
-                  strokeDasharray={`${(score / 100) * Math.PI * (size - 8)} ${Math.PI * (size - 8)}`}
-                  strokeLinecap="round"
-                  transform={`rotate(-90 ${size / 2} ${size / 2})`}
-                  style={{ filter: isSelected ? `drop-shadow(0 0 6px ${color})` : 'none' }}
-                />
-                <text x={size / 2} y={size / 2 - 4} textAnchor="middle" fill={color} fontSize="11" fontWeight="bold">
-                  {score}%
-                </text>
-                <text x={size / 2} y={size / 2 + 8} textAnchor="middle" fill="white" fillOpacity="0.5" fontSize="8">
-                  {area.name}
-                </text>
-              </svg>
+              <div
+                className="flex flex-col items-center justify-center rounded-lg transition-all"
+                style={{
+                  width: size,
+                  height: size * 0.82,
+                  backgroundColor: `${color}${isSelected ? '44' : '1F'}`,
+                  border: `2px solid ${color}${isSelected ? 'DD' : '66'}`,
+                  boxShadow: isSelected ? `0 0 20px ${color}44` : 'none',
+                }}
+              >
+                <span className="text-xs font-bold" style={{ color }}>
+                  {coverage.toFixed(1)}%
+                </span>
+                <span className="max-w-full truncate px-1 text-[9px] text-white/70">
+                  {area.neighborhoodCode}
+                </span>
+              </div>
             </button>
           );
         })}
+
+        <div className="absolute bottom-4 left-4 rounded border border-white/10 bg-terra-midnight/80 p-3 backdrop-blur-sm">
+          <p className="mb-2 text-[10px] uppercase tracking-wider text-white/40">Geometry Review Load</p>
+          <div className="flex gap-3 text-[10px]">
+            <span className="flex items-center gap-1">
+              <span className="h-2 w-2 rounded-full bg-[#22C55E]" /> Clean coverage
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="h-2 w-2 rounded-full bg-[#F59E0B]" /> Minor review load
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="h-2 w-2 rounded-full bg-[#EF4444]" /> Active issues
+            </span>
+          </div>
+        </div>
       </main>
 
-      {/* Sidebar */}
-      <aside className="w-80 flex-shrink-0 border-l border-white/10 overflow-y-auto p-4 space-y-4">
-        <h1 className="text-lg font-semibold text-terra-cyan">Geometry Health</h1>
-
-        {/* Overall health */}
+      <aside className="w-80 flex-shrink-0 space-y-4 overflow-y-auto border-l border-white/10 p-4">
         <Card variant="glass" data-material="bento">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm text-white/70">Overall Health</CardTitle>
-              <span className="text-2xl font-bold" style={{ color: healthColor(overallScore) }}>
-                {overallScore}%
+              <CardTitle className="text-sm text-white/70">County Geometry Coverage</CardTitle>
+              <span className="text-2xl font-bold" style={{ color: healthColor({
+                totalParcels: data.totalParcels,
+                parcelsWithGeometry: data.parcelsWithGeometry,
+                parcelsMissingGeometry: data.parcelsMissingGeometry,
+                flaggedGeometryRecords: data.flaggedGeometryRecords,
+              }) }}>
+                {overallCoverage.toFixed(2)}%
               </span>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-2 overflow-hidden rounded-full bg-white/10">
               <div
                 className="h-full rounded-full transition-all"
-                style={{ width: `${overallScore}%`, backgroundColor: healthColor(overallScore) }}
+                style={{
+                  width: `${Math.max(0, Math.min(100, overallCoverage))}%`,
+                  backgroundColor: healthColor({
+                    totalParcels: data.totalParcels,
+                    parcelsWithGeometry: data.parcelsWithGeometry,
+                    parcelsMissingGeometry: data.parcelsMissingGeometry,
+                    flaggedGeometryRecords: data.flaggedGeometryRecords,
+                  }),
+                }}
               />
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-white/5 rounded p-2">
-                <p className="text-white/40">Total Parcels</p>
-                <p className="text-white font-medium">{parcelCount.toLocaleString()}</p>
+              <div className="rounded bg-white/5 p-2">
+                <p className="text-white/40">Total parcels</p>
+                <p className="font-medium text-white">{data.totalParcels.toLocaleString()}</p>
               </div>
-              <div className="bg-white/5 rounded p-2">
-                <p className="text-white/40">Linked</p>
-                <p className="text-[#22C55E] font-medium">{HEALTH_DATA.parcelsWithPolygons.toLocaleString()}</p>
+              <div className="rounded bg-white/5 p-2">
+                <p className="text-white/40">With geometry</p>
+                <p className="font-medium text-[#22C55E]">{data.parcelsWithGeometry.toLocaleString()}</p>
               </div>
-              <div className="bg-white/5 rounded p-2">
-                <p className="text-white/40">Missing</p>
-                <p className="text-[#EF4444] font-medium">{HEALTH_DATA.parcelsMissingGeometry.toLocaleString()}</p>
+              <div className="rounded bg-white/5 p-2">
+                <p className="text-white/40">Missing geometry</p>
+                <p className="font-medium text-[#EF4444]">{data.parcelsMissingGeometry.toLocaleString()}</p>
               </div>
-              <div className="bg-white/5 rounded p-2">
-                <p className="text-white/40">Orphaned</p>
-                <p className="text-[#F59E0B] font-medium">{HEALTH_DATA.orphanedPolygons.toLocaleString()}</p>
+              <div className="rounded bg-white/5 p-2">
+                <p className="text-white/40">Flagged records</p>
+                <p className="font-medium text-[#F59E0B]">{data.flaggedGeometryRecords.toLocaleString()}</p>
               </div>
             </div>
-            <p className="text-[10px] text-white/30">
-              Last sync: {new Date(HEALTH_DATA.lastSyncTimestamp).toLocaleString()}
-            </p>
           </CardContent>
         </Card>
 
-        {/* Recommendations */}
-        {recommendations.length > 0 && (
-          <Card variant="glass" data-material="bento">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-white/70">Recommendations</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
-                {recommendations.map((rec, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs">
-                    <span className="text-terra-cyan mt-0.5">*</span>
-                    <span className="text-white/70">{rec}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        )}
+        <Card variant="glass" data-material="bento">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-white/70">Review Priorities</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <ul className="space-y-2">
+              {recommendations.map((recommendation) => (
+                <li key={recommendation} className="flex items-start gap-2 text-xs">
+                  <span className="mt-0.5 text-terra-cyan">*</span>
+                  <span className="text-white/70">{recommendation}</span>
+                </li>
+              ))}
+            </ul>
 
-        {/* Selected area */}
+            <div className="space-y-1 border-t border-white/10 pt-3">
+              {prioritizedAreas.map((area) => (
+                <button
+                  key={area.id}
+                  role="link"
+                  onClick={() => setSelectedAreaId(area.id)}
+                  className={`w-full rounded px-3 py-2 text-left text-sm transition-colors ${
+                    selectedAreaId === area.id ? 'bg-white/10' : 'hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="truncate text-white/75">{area.name}</span>
+                    <span className="text-xs font-bold" style={{ color: healthColor(area) }}>
+                      {reviewIntensity(area).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="mt-1 flex items-center justify-between gap-2 text-[11px] text-white/45">
+                    <span>{coveragePercent(area.parcelsWithGeometry, area.totalParcels).toFixed(2)}% coverage</span>
+                    <span>{area.totalParcels.toLocaleString()} parcels</span>
+                  </div>
+                </button>
+              ))}
+              {!loading && prioritizedAreas.length === 0 && (
+                <div className="rounded border border-white/10 bg-white/5 px-3 py-4 text-sm text-white/50">
+                  No live geometry review areas matched the current county feed.
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
         {selectedArea && (
           <Card variant="glass" data-material="bento">
             <CardHeader className="pb-2">
@@ -241,27 +311,34 @@ export default function GeometryHealth() {
             </CardHeader>
             <CardContent>
               <dl className="space-y-2 text-sm">
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-white/50">Neighborhood code</dt>
+                  <dd>{selectedArea.neighborhoodCode}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
                   <dt className="text-white/50">Coverage</dt>
-                  <dd className="font-bold" style={{ color: healthColor(healthScore(selectedArea.linkedParcels, selectedArea.totalParcels)) }}>
-                    {healthScore(selectedArea.linkedParcels, selectedArea.totalParcels)}%
+                  <dd style={{ color: healthColor(selectedArea) }}>
+                    {coveragePercent(selectedArea.parcelsWithGeometry, selectedArea.totalParcels).toFixed(2)}%
                   </dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt className="text-white/50">Total Parcels</dt>
-                  <dd className="text-white">{selectedArea.totalParcels.toLocaleString()}</dd>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-white/50">Total parcels</dt>
+                  <dd>{selectedArea.totalParcels.toLocaleString()}</dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt className="text-white/50">Linked</dt>
-                  <dd className="text-[#22C55E]">{selectedArea.linkedParcels.toLocaleString()}</dd>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-white/50">With geometry</dt>
+                  <dd className="text-[#22C55E]">{selectedArea.parcelsWithGeometry.toLocaleString()}</dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt className="text-white/50">Missing</dt>
-                  <dd className="text-[#EF4444]">{selectedArea.missingGeometry.toLocaleString()}</dd>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-white/50">Missing geometry</dt>
+                  <dd className="text-[#EF4444]">{selectedArea.parcelsMissingGeometry.toLocaleString()}</dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt className="text-white/50">Orphaned</dt>
-                  <dd className="text-[#F59E0B]">{selectedArea.orphanedPolygons.toLocaleString()}</dd>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-white/50">Flagged recalcs</dt>
+                  <dd className="text-[#F59E0B]">{selectedArea.flaggedGeometryRecords.toLocaleString()}</dd>
+                </div>
+                <div className="rounded border border-white/10 bg-white/5 p-3 text-xs text-white/55">
+                  Live Benton County geometry posture only. Atlas identifies the geometry issue, Workbench handles parcel repair, and Forge should not be used unless the issue becomes a valuation problem after GIS correction.
                 </div>
               </dl>
             </CardContent>

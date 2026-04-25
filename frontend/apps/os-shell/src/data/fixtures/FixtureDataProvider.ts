@@ -462,18 +462,20 @@ export class FixtureDataProvider implements DataProvider {
   }
 
   async getCountyStats(): Promise<CountyAggregateStats> {
+    // Fixture mode: only return values that are directly computed from
+    // the fixture set. Everything else is null so the UI shows '—'.
     return {
       totalParcels: FIXTURE_PROPERTIES.length,
       totalAssessedValue: FIXTURE_PROPERTIES.reduce((s, p) => s + p.totalAssessedValue, 0),
       averageAssessedValue:
         FIXTURE_PROPERTIES.reduce((s, p) => s + p.totalAssessedValue, 0) /
         FIXTURE_PROPERTIES.length,
-      medianAssessedValue: 250000,
-      assessedThisYear: FIXTURE_PROPERTIES.length,
-      pendingAssessments: 1,
-      activeAppeals: FIXTURE_PROPERTIES.filter((p) => p.hasAppeals).length,
-      totalLevyRevenue: 50000,
-      assessmentCompletionPercent: 80.0,
+      medianAssessedValue: null,
+      assessedThisYear: null,
+      pendingAssessments: null,
+      activeAppeals: null,
+      totalLevyRevenue: null,
+      assessmentCompletionPercent: null,
       parcelsByType: {
         residential: 3,
         'vacant-land': 1,

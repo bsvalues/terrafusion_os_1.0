@@ -201,10 +201,9 @@ export function SwarmVisualization3D({
       {/* Phase 1 Notice */}
       <Alert className="bg-blue-900/20 border-blue-800">
         <AlertCircle className="h-4 w-4 text-blue-400" />
-        <AlertTitle className="text-blue-400">Phase 1 Placeholder</AlertTitle>
+        <AlertTitle className="text-blue-400">Swarm Visualization — Preview</AlertTitle>
         <AlertDescription className="text-slate-300">
-          This is a simplified 2D visualization. Phase 2 will implement full 3D rendering with Three.js/WebGL,
-          supporting real-time visualization of 50,000 agents at 60 FPS with interactive controls.
+          A 2D overview of swarm activity is available now. Full 3D rendering with real-time visualization of agents and interactive controls is scheduled for a future release.
         </AlertDescription>
       </Alert>
 

@@ -14,6 +14,7 @@ using AuditLogger = TerraFusion.Abstractions.Interfaces.IAuditLogger;
 using CostForgeAIService = TerraFusion.Core.Services.ICostForgeAIService;
 using CostForgeService = TerraFusion.Core.Services.ICostForgeService;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
+using SaleRecord = TerraFusion.API.Controllers.SaleRecord;
 using Task = System.Threading.Tasks.Task;
 
 namespace TerraFusion.Unit.Tests.R2Wave29;

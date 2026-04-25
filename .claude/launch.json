@@ -6,13 +6,25 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 5173,
+      "autoPort": true,
       "cwd": "frontend"
     },
     {
       "name": "backend-api",
-      "runtimeExecutable": "bash",
-      "runtimeArgs": ["backend/start-api-headless.sh"],
-      "port": 5000
+      "runtimeExecutable": "C:\\Program Files\\dotnet\\dotnet.exe",
+      "runtimeArgs": [
+        "run",
+        "--project",
+        "backend/src/TerraFusion.API/TerraFusion.API.csproj"
+      ],
+      "port": 5000,
+      "env": {
+        "DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLOR_REDIRECTION": "1",
+        "DOTNET_NOLOGO": "1",
+        "NO_COLOR": "1",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "TF_SKIP_DEV_SEEDERS": "true"
+      }
     },
     {
       "name": "pilot-runtime",
@@ -49,6 +61,13 @@
         "backend/src/TerraFusion.Operations/TerraFusion.Operations.csproj"
       ],
       "port": 5002
+    },
+    {
+      "name": "costforge",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5002,
+      "cwd": "packages/terrabuild"
     },
     {
       "name": "storybook",

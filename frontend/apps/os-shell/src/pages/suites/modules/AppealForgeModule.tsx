@@ -10,6 +10,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { invokeTool } from '@/api/pilotApi';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -37,6 +38,7 @@ import {
   Scale,
   Shield,
   Eye,
+  Lock,
 } from 'lucide-react';
 
 import {
@@ -50,6 +52,20 @@ import {
   type AppealDecision,
   type AppealEvidence,
 } from '../../../services/forgeService';
+
+interface DraftAppealResult {
+  appealId: string;
+  payloadRef: string;
+  draftSummary: string;
+  wordCount: number;
+  position: string;
+}
+
+type DraftState =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'success'; result: DraftAppealResult; correlationId: string }
+  | { status: 'error'; error: string; correlationId: string };
 
 const fmt = (n: number) =>
   '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 });
@@ -97,6 +113,11 @@ export default function AppealForgeModule() {
   const [newEvidenceType, setNewEvidenceType] = useState<AppealEvidence['type']>('comparable_sale');
   const [newEvidenceTitle, setNewEvidenceTitle] = useState('');
   const [newEvidenceDesc, setNewEvidenceDesc] = useState('');
+
+  // TerraPilot: draft_appeal_response gate
+  const [draftConfirmed, setDraftConfirmed] = useState(false);
+  const [draftPosition, setDraftPosition] = useState<'uphold' | 'adjust' | 'partial'>('uphold');
+  const [draftState, setDraftState] = useState<DraftState>({ status: 'idle' });
 
   // Appeal data — disabled pending R2 backend integration
   useEffect(() => {
@@ -190,6 +211,35 @@ export default function AppealForgeModule() {
     setAppeals((prev) => prev.filter((a) => a.id !== id));
     if (selectedAppeal === id) setSelectedAppeal(null);
   }, [selectedAppeal]);
+
+  const handleDraftAppealResponse = useCallback(async () => {
+    if (!activeAppeal || !draftConfirmed) return;
+    setDraftState({ status: 'loading' });
+    try {
+      const res = await invokeTool<DraftAppealResult>({
+        toolId: 'draft_appeal_response',
+        params: {
+          parcelId: activeAppeal.parcelId,
+          appealId: activeAppeal.id,
+          position: draftPosition,
+          tone: 'formal',
+          includeEvidenceRefs: true,
+        },
+      });
+      setDraftState({
+        status: 'success',
+        result: res.result,
+        correlationId: res.correlationId,
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Draft failed';
+      setDraftState({
+        status: 'error',
+        error: msg,
+        correlationId: (err as { correlationId?: string })?.correlationId ?? 'unknown',
+      });
+    }
+  }, [activeAppeal, draftConfirmed, draftPosition]);
 
   return (
     <div className='p-6 space-y-6 max-w-[1400px] mx-auto'>
@@ -594,6 +644,124 @@ export default function AppealForgeModule() {
                   )}
                 </CardContent>
               </Card>
+
+              {/* TerraPilot: Draft Appeal Response Gate */}
+              {!['DECIDED', 'WITHDRAWN'].includes(activeAppeal.status) && (
+                <Card
+                  data-testid='appeal-draft-gate'
+                  style={{
+                    background: 'hsl(var(--tf-card-bg))',
+                    borderColor: 'hsl(var(--tf-suite-forge) / 0.4)',
+                  }}
+                >
+                  <CardHeader className='pb-2'>
+                    <CardTitle className='text-sm font-medium flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
+                      <Lock size={14} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
+                      TerraPilot: Draft Appeal Response
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className='space-y-3'>
+                    <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                      Request a formal defense draft for parcel{' '}
+                      <span className='font-mono' style={{ color: 'hsl(var(--tf-fg))' }}>
+                        {activeAppeal.parcelId}
+                      </span>{' '}
+                      with {activeAppeal.evidence.length} evidence item
+                      {activeAppeal.evidence.length !== 1 ? 's' : ''} attached.
+                      TerraPilot will return a draft summary and word count — you review before any submission.
+                    </p>
+
+                    {/* Position selector */}
+                    <div className='flex items-center gap-3'>
+                      <Label className='text-xs shrink-0' style={{ color: 'hsl(var(--tf-muted))' }}>
+                        Defense position:
+                      </Label>
+                      <Select
+                        value={draftPosition}
+                        onValueChange={(v) => setDraftPosition(v as typeof draftPosition)}
+                      >
+                        <SelectTrigger
+                          className='text-xs h-7 w-36'
+                          style={{
+                            background: 'hsl(var(--tf-bg))',
+                            borderColor: 'hsl(var(--tf-border))',
+                            color: 'hsl(var(--tf-fg))',
+                          }}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='uphold'>Uphold value</SelectItem>
+                          <SelectItem value='adjust'>Adjust value</SelectItem>
+                          <SelectItem value='partial'>Partial concession</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Human gate */}
+                    <label className='flex items-center gap-2 cursor-pointer'>
+                      <input
+                        type='checkbox'
+                        checked={draftConfirmed}
+                        onChange={(e) => setDraftConfirmed(e.target.checked)}
+                        data-testid='appeal-draft-confirm-checkbox'
+                        style={{ accentColor: 'hsl(var(--tf-suite-forge))' }}
+                      />
+                      <span className='text-xs' style={{ color: 'hsl(var(--tf-fg))' }}>
+                        I confirm this appeal record is accurate and authorise TerraPilot to draft a response.
+                      </span>
+                    </label>
+
+                    <TactileButton
+                      size='sm'
+                      onClick={handleDraftAppealResponse}
+                      disabled={!draftConfirmed || draftState.status === 'loading'}
+                      data-testid='appeal-draft-submit-btn'
+                      leftIcon={<Scale size={14} />}
+                    >
+                      {draftState.status === 'loading' ? 'Requesting draft…' : 'Request Draft'}
+                    </TactileButton>
+
+                    {/* Error */}
+                    {draftState.status === 'error' && (
+                      <div
+                        className='p-2 rounded text-xs space-y-1'
+                        style={{ background: 'hsl(var(--tf-error-hs) 60% / 0.1)', color: 'hsl(var(--tf-error-hs) 60%)' }}
+                      >
+                        <p>{draftState.error}</p>
+                        <p className='font-mono text-[10px]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                          ref: {draftState.correlationId}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Success */}
+                    {draftState.status === 'success' && (
+                      <div
+                        className='p-3 rounded space-y-1'
+                        style={{ background: 'hsl(var(--tf-success-hs) 45% / 0.1)', border: '1px solid hsl(var(--tf-success-hs) 45% / 0.3)' }}
+                        data-testid='appeal-draft-success'
+                      >
+                        <div className='flex items-center gap-2'>
+                          <CheckCircle2 size={14} style={{ color: 'hsl(var(--tf-success-hs) 45%)' }} />
+                          <span className='text-xs font-medium' style={{ color: 'hsl(var(--tf-success-hs) 45%)' }}>
+                            Draft requested — position: {draftState.result.position}
+                          </span>
+                        </div>
+                        <p className='text-xs' style={{ color: 'hsl(var(--tf-fg))' }}>
+                          {draftState.result.draftSummary}
+                        </p>
+                        <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
+                          {draftState.result.wordCount} words · ref: {draftState.result.payloadRef}
+                        </p>
+                        <p className='text-[10px] font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>
+                          correlationId: {draftState.correlationId}
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
             </>
           ) : (
             /* No Selection */

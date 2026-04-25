@@ -243,10 +243,10 @@ export const PropertyClerk: React.FC = () => {
     <div className='tf-suite-clerk space-y-4'>
       <ParcelContextHeader icon='📜' title='TerraClerk' parcelId={parcelId} subtitle={`Recording & title services for ${parcelId}`} />
 
-      {/* Loaded recording history from store */}
+      {/* Recording history from store */}
       {recordings.length > 0 && (
-        <BentoCard variant="table" title={`Loaded Recording History (${recordings.length})`}>
-          <p className='tf-text-tertiary text-sm mb-3'>Shown from the recording history currently loaded for this parcel.</p>
+        <BentoCard variant="table" title={`Recording History (${recordings.length})`}>
+          <p className='tf-text-tertiary text-sm mb-3'>Recording entries on file for this parcel.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ color: 'hsl(var(--tf-text) / 0.9)' }}>
               <thead>
@@ -276,7 +276,7 @@ export const PropertyClerk: React.FC = () => {
 
         {/* Search Recorded Documents (read_only) */}
         <BentoCard title='🔍 Search Recorded Documents' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Search returned recorded-document preview entries for this parcel using the entered query</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Search recorded documents for this parcel using the entered query.</p>
           <input type='text' value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder='Search query (e.g. deed, lien, easement)' className='w-full p-2 rounded-lg tf-input mb-3' />
           <button onClick={handleSearchDocuments} disabled={searchState.status === 'loading' || !searchQuery.trim()} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
             {searchState.status === 'loading' ? 'Searching...' : 'Search Documents'}
@@ -286,14 +286,14 @@ export const PropertyClerk: React.FC = () => {
             <div className='space-y-2'>
               <div className='tf-panel p-4'>
                 <span className='font-semibold tf-text'>{searchState.result.totalCount} document(s) found</span>
-                <p className='text-xs tf-text-dim mt-2'>Shows the returned document count and preview entries for this parcel query.</p>
+                
                 {searchState.result.documents.slice(0, 5).map(d => (
                   <div key={d.documentId} className='text-sm tf-text-secondary mt-1'>
                     {d.type} — {d.grantor} → {d.grantee} ({formatDate(d.recordedAt)})
                   </div>
                 ))}
               </div>
-              {searchState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{searchState.correlationId.slice(0, 16)}...</code></div>}
+              {searchState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{searchState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {searchState.status === 'error' && searchState.error && <ErrorDisplay error={{ message: searchState.error.message, errorCode: searchState.error.code, correlationId: searchState.correlationId }} />}
@@ -301,7 +301,7 @@ export const PropertyClerk: React.FC = () => {
 
         {/* Title Chain (read_only) */}
         <BentoCard title='🔗 Title Chain' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Returned title-chain owner and preview entries for parcel {parcelId}</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Title chain for parcel {parcelId}</p>
           <button onClick={handleGetTitleChain} disabled={titleChainState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
             {titleChainState.status === 'loading' ? 'Loading...' : 'Get Title Chain'}
           </button>
@@ -309,15 +309,15 @@ export const PropertyClerk: React.FC = () => {
           {titleChainState.status === 'success' && titleChainState.result && (
             <div className='space-y-2'>
               <div className='tf-panel p-4'>
-                <span className='font-semibold tf-text'>Returned Title-Chain Owner: {titleChainState.result.currentOwner}</span>
-                <p className='text-xs tf-text-dim mt-1'>Owner shown from the returned title chain. This preview shows up to five returned chain entries.</p>
+                <span className='font-semibold tf-text'>Current Owner: {titleChainState.result.currentOwner}</span>
+                <p className='text-xs tf-text-dim mt-1'>Showing up to five chain entries.</p>
                 {titleChainState.result.chain.slice(0, 5).map(c => (
                   <div key={c.documentId} className='text-sm tf-text-secondary mt-1'>
                     {c.type}: {c.grantor} → {c.grantee} ({formatDate(c.date)})
                   </div>
                 ))}
               </div>
-              {titleChainState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{titleChainState.correlationId.slice(0, 16)}...</code></div>}
+              {titleChainState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{titleChainState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {titleChainState.status === 'error' && titleChainState.error && <ErrorDisplay error={{ message: titleChainState.error.message, errorCode: titleChainState.error.code, correlationId: titleChainState.correlationId }} />}
@@ -346,7 +346,7 @@ export const PropertyClerk: React.FC = () => {
                 ))}
                 <p className='text-xs tf-text-dim mt-2'>Effective: {formatDate(feesState.result.effectiveDate)}</p>
               </div>
-              {feesState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{feesState.correlationId.slice(0, 16)}...</code></div>}
+              {feesState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{feesState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {feesState.status === 'error' && feesState.error && <ErrorDisplay error={{ message: feesState.error.message, errorCode: feesState.error.code, correlationId: feesState.correlationId }} />}
@@ -354,7 +354,7 @@ export const PropertyClerk: React.FC = () => {
 
         {/* Record Document (write_high) */}
         <BentoCard title='📝 Record Document' actions={<span className='text-xs tf-badge-danger px-2 py-0.5 rounded'>write_high</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Submit a governed recording request for county processing. Official record status appears only after the tool returns a recording number and timestamp.</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Submit a recording request for county processing. Official record status appears only after a recording number and timestamp are confirmed.</p>
           <div className='space-y-2 mb-3'>
             <select value={recordDocType} onChange={e => setRecordDocType(e.target.value)} className='w-full p-2 rounded-lg tf-input'>
               <option value=''>Select document type</option>
@@ -379,7 +379,7 @@ export const PropertyClerk: React.FC = () => {
           {recordState.status === 'success' && recordState.result && (
             <div className='space-y-2'>
               <div className='tf-panel p-4'><span className='font-semibold tf-text'>Recording confirmed: {recordState.result.recordingNumber}</span><p className='tf-text-secondary text-sm'>Doc {recordState.result.documentId} | {formatDate(recordState.result.recordedAt)}</p></div>
-              {recordState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{recordState.correlationId.slice(0, 16)}...</code></div>}
+              {recordState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{recordState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {recordState.status === 'error' && recordState.error && <ErrorDisplay error={{ message: recordState.error.message, errorCode: recordState.error.code, correlationId: recordState.correlationId }} />}
@@ -396,7 +396,7 @@ export const PropertyClerk: React.FC = () => {
           {releaseState.status === 'success' && releaseState.result && (
             <div className='space-y-2'>
               <div className='tf-panel p-4'><span className='font-semibold tf-text'>Lien {releaseState.result.lienId} Released</span><p className='tf-text-secondary text-sm'>Status: {releaseState.result.status} | Doc: {releaseState.result.documentId}</p></div>
-              {releaseState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{releaseState.correlationId.slice(0, 16)}...</code></div>}
+              {releaseState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{releaseState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {releaseState.status === 'error' && releaseState.error && <ErrorDisplay error={{ message: releaseState.error.message, errorCode: releaseState.error.code, correlationId: releaseState.correlationId }} />}
@@ -404,7 +404,7 @@ export const PropertyClerk: React.FC = () => {
 
         {/* Recording Summary (read_only) */}
         <BentoCard title='📊 Recording Summary' actions={<span className='text-xs tf-badge px-2 py-0.5 rounded'>read_only</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>Returned recording totals and preview entries for parcel {parcelId}</p>
+          <p className='tf-text-tertiary text-sm mb-3'>Recording activity summary for parcel {parcelId}</p>
           <button onClick={handleSummarizeRecordings} disabled={summaryState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4'>
             {summaryState.status === 'loading' ? 'Loading...' : 'Get Recording Summary'}
           </button>
@@ -416,12 +416,12 @@ export const PropertyClerk: React.FC = () => {
                   <div><span className='text-xs tf-text-dim'>Total Recordings</span><p className='font-semibold tf-text'>{summaryState.result.totalRecordings}</p></div>
                   <div><span className='text-xs tf-text-dim'>Encumbrances</span><p className='font-semibold tf-text'>{summaryState.result.encumbrances}</p></div>
                 </div>
-                <p className='text-xs tf-text-dim mb-2'>Previewing up to 3 recordings returned in this summary.</p>
+                <p className='text-xs tf-text-dim mb-2'>Showing up to 3 recent recordings.</p>
                 {summaryState.result.recentRecordings.slice(0, 3).map((r, i) => (
                   <div key={i} className='text-sm tf-text-secondary mt-1'>{r.type}: {r.parties} ({formatDate(r.date)})</div>
                 ))}
               </div>
-              {summaryState.correlationId && <div className='text-xs tf-text-dim'>ID: <code className='tf-suite-accent-text font-mono'>{summaryState.correlationId.slice(0, 16)}...</code></div>}
+              {summaryState.correlationId && <div className='text-xs tf-text-dim'>Ref: <code className='tf-suite-accent-text font-mono'>{summaryState.correlationId.slice(0, 16)}...</code></div>}
             </div>
           )}
           {summaryState.status === 'error' && summaryState.error && <ErrorDisplay error={{ message: summaryState.error.message, errorCode: summaryState.error.code, correlationId: summaryState.correlationId }} />}

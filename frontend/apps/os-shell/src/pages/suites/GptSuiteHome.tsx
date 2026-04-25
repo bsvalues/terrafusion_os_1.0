@@ -15,6 +15,7 @@ import { ParcelContextBanner } from '../../components/workbench/ParcelContextBan
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
 import { GPTManagementDashboard } from '../../components/gpt/GPTManagementDashboard';
 import { RAGDatasetManager } from '../../components/gpt/RAGDatasetManager';
+import { GptQuickChat } from '../../components/gpt/GptQuickChat';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import {
   ArrowLeft,
@@ -42,47 +43,47 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
     id: 'management',
     label: 'GPT Management',
     icon: Settings,
-    description: 'Manage GPT configurations, installs, and usage from the canonical service lane.',
+    description: 'Manage GPT configurations, installs, and usage.',
     status: 'live',
   },
   {
     id: 'rag',
     label: 'RAG Datasets',
     icon: Database,
-    description: 'Operate dataset, document, and chunk flows directly against confirmed RAG endpoints.',
+    description: 'Operate dataset, document, and chunk flows against the RAG pipeline.',
     status: 'live',
   },
   {
     id: 'studio',
     label: 'GPT Studio',
     icon: MessageSquare,
-    description: 'Conversation workspace remains queued until chat contract truth is opened.',
-    status: 'queued',
+    description: 'Inline conversation workspace — pick a system GPT and start chatting.',
+    status: 'live',
   },
   {
     id: 'marketplace',
     label: 'GPT Marketplace',
     icon: Store,
-    description: 'Marketplace flow remains behind the canonical management lane for this slice.',
+    description: 'GPT Marketplace is coming in a future release.',
     status: 'queued',
   },
   {
     id: 'builder',
     label: 'GPT Builder',
     icon: Wrench,
-    description: 'Builder stays queued until create/edit flows are opened as a separate bounded slice.',
+    description: 'GPT Builder for creating and editing configurations. Coming soon.',
     status: 'queued',
   },
   {
     id: 'analytics',
     label: 'GPT Analytics',
     icon: BarChart3,
-    description: 'Analytics stays queued until management and dataset truth are stable end-to-end.',
+    description: 'GPT usage analytics. Coming soon.',
     status: 'queued',
   },
 ];
 
-const LIVE_WORKSPACE_VIEWS: WorkspaceView[] = ['management', 'rag'];
+const LIVE_WORKSPACE_VIEWS: WorkspaceView[] = ['management', 'rag', 'studio'];
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
@@ -171,6 +172,8 @@ export default function GptSuiteHome() {
         );
       case 'rag':
         return <RAGDatasetManager />;
+      case 'studio':
+        return <GptQuickChat />;
       default:
         return renderQueuedPanel(activeCard);
     }

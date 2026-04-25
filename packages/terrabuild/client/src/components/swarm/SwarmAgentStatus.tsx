@@ -15,21 +15,17 @@ import {
 } from '@/components/ui/table';
 import { Activity, BarChart, Clock, FileText } from 'lucide-react';
 
+import type { AgentInfo } from '@/lib/swarmClient';
+
 interface SwarmAgentStatusProps {
-  agents: Array<{
-    id: string;
-    name: string;
-    active: boolean;
-    pendingTasks: number;
-    processingTasks: number;
-  }>;
+  agents: AgentInfo[];
 }
 
 export function SwarmAgentStatus({ agents }: SwarmAgentStatusProps) {
   if (!agents || agents.length === 0) {
     return (
       <div className="p-4 text-center text-gray-500">
-        No agents available or swarm is not active.
+        Agent-level telemetry is aggregated at the swarm level. See metrics above for live swarm health.
       </div>
     );
   }
@@ -40,15 +36,15 @@ export function SwarmAgentStatus({ agents }: SwarmAgentStatusProps) {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[200px]">Agent</TableHead>
+            <TableHead>Specialization</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead className="text-right">Pending Tasks</TableHead>
-            <TableHead className="text-right">Processing Tasks</TableHead>
-            <TableHead className="text-right">Capability</TableHead>
+            <TableHead className="text-right">Load</TableHead>
+            <TableHead className="text-right">Tasks Completed</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {agents.map((agent) => (
-            <TableRow key={agent.id}>
+            <TableRow key={agent.agentId}>
               <TableCell className="font-medium">
                 <div className="flex items-center">
                   {getAgentIcon(agent.name)}
@@ -56,15 +52,15 @@ export function SwarmAgentStatus({ agents }: SwarmAgentStatusProps) {
                 </div>
               </TableCell>
               <TableCell>
-                <Badge variant={agent.active ? "success" : "outline"}>
-                  {agent.active ? "Active" : "Inactive"}
+                <Badge variant="outline">{agent.specialization || getAgentCapability(agent.name)}</Badge>
+              </TableCell>
+              <TableCell>
+                <Badge variant={agent.status === 'idle' || agent.status === 'active' ? "success" : "outline"}>
+                  {agent.status}
                 </Badge>
               </TableCell>
-              <TableCell className="text-right">{agent.pendingTasks}</TableCell>
-              <TableCell className="text-right">{agent.processingTasks}</TableCell>
-              <TableCell className="text-right">
-                <Badge variant="outline">{getAgentCapability(agent.name)}</Badge>
-              </TableCell>
+              <TableCell className="text-right">{Math.round((agent.load ?? 0) * 100)}%</TableCell>
+              <TableCell className="text-right">{agent.tasksCompleted ?? 0}</TableCell>
             </TableRow>
           ))}
         </TableBody>

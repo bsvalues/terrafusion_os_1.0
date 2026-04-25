@@ -234,7 +234,7 @@ export const TerraGaiaDashboard: React.FC = () => {
           status: 'SUCCESS',
           processingTime: { totalMilliseconds: 150 + Math.random() * 200 },
           terraGaiaAnalysis: {
-            naturalLanguageResponse: `Based on analysis of "${query}", the TerraFusion government systems show excellent performance. Benton County operational status indicates ${governmentData.operationalStatus || 'EXCELLENT'} with ${governmentData.parcelCount || 'await DynamicPropertyService.GetPropertyCountAsync("benton")'} parcels managed efficiently. The Harris PACS v12.4.7 system integration demonstrates FISMA-HIGH compliance standards with 99.9% availability target achievement.`,
+            naturalLanguageResponse: `Based on analysis of "${query}", the TerraFusion government systems show excellent performance. Benton County operational status indicates ${governmentData.operationalStatus || 'EXCELLENT'} with ${governmentData.parcelCount || 'await DynamicPropertyService.GetPropertyCountAsync("benton")'} parcels managed efficiently. FISMA-HIGH compliance standards with 99.9% availability target achievement.`,
             confidenceScore: 0.95 + Math.random() * 0.05,
             reasoningPath: [
               'Analyzed government operations data from TerraFusion backend',
@@ -246,7 +246,7 @@ export const TerraGaiaDashboard: React.FC = () => {
             dataSourcesUsed: [
               'TerraFusion Government API',
               'Benton County Config',
-              'Harris PACS v12.4.7',
+              'County Assessment Records',
               'FISMA-HIGH Compliance Engine',
             ],
             complexityAnalysis: {

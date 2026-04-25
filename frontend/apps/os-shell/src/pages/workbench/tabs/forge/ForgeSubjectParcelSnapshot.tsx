@@ -104,7 +104,7 @@ export const ForgeSubjectParcelSnapshot: React.FC = () => {
         <SnapshotSection title="Physical">
           <div className="grid grid-cols-2 gap-3">
             <SnapshotField label="Year Built" value={activeParcel?.yearBuilt ? String(activeParcel.yearBuilt) : '-'} mono />
-            <SnapshotField label="Sq Ft" value={activeParcel?.buildingSquareFeet ? formatIntegerValue(activeParcel.buildingSquareFeet) : '-'} mono />
+            <SnapshotField label="GLA (Sq Ft)" value={activeParcel?.buildingSquareFeet ? formatIntegerValue(activeParcel.buildingSquareFeet) : '-'} mono />
             <SnapshotField label="Land Acres" value={activeParcel?.landAcreage ? formatAcreage(activeParcel.landAcreage) : '-'} mono />
             <SnapshotField label="Zoning" value={dash(activeParcel?.zoning)} />
             <SnapshotField label="Bedrooms" value={activeParcel?.bedrooms != null ? String(activeParcel.bedrooms) : '-'} mono />

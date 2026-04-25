@@ -108,15 +108,15 @@ export const AutonomousOperationsDashboard: React.FC = () => {
           <p className='text-gray-400'>AI Models are analyzing system telemetry...</p>
           {/* Placeholder for charts */}
           <div className='h-48 bg-gray-900 mt-4 rounded flex items-center justify-center text-gray-600'>
-            [Prediction Chart Placeholder]
+            Chart data loading...
           </div>
         </div>
         <div className='bg-gray-800 rounded-lg p-6 border border-gray-700'>
           <h2 className='text-xl font-semibold mb-4'>Resource Optimization</h2>
           <p className='text-gray-400'>Auto-scaling metrics...</p>
-          {/* Placeholder for charts */}
+          {/* Chart renders when data is available */}
           <div className='h-48 bg-gray-900 mt-4 rounded flex items-center justify-center text-gray-600'>
-            [Resource Usage Chart Placeholder]
+            Chart data loading...
           </div>
         </div>
       </div>

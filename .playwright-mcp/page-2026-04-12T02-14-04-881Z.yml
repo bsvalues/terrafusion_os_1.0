@@ -1,0 +1,254 @@
+- generic [ref=e2]:
+    - generic [ref=e3]:
+        - generic [ref=e4]:
+            - button [ref=e5] [cursor=pointer]:
+                - img
+            - button [ref=e7] [cursor=pointer]:
+                - img
+            - generic [ref=e9]:
+                - generic [ref=e10]: Auto-hide
+                - switch "Auto-hide" [checked] [ref=e11] [cursor=pointer]
+            - generic [ref=e16]:
+                - generic [ref=e17]:
+                    - generic [ref=e18]:
+                        - img [ref=e19]
+                        - generic [ref=e22]: Workspace
+                    - generic [ref=e23]:
+                        - generic [ref=e24]:
+                            - link "Dashboard" [ref=e25] [cursor=pointer]:
+                                - /url: /dashboard
+                                - button "Dashboard" [ref=e26]:
+                                    - img
+                                    - generic [ref=e28]: Dashboard
+                            - button [ref=e30] [cursor=pointer]:
+                                - img
+                        - generic [ref=e31]:
+                            - link "Properties" [ref=e32] [cursor=pointer]:
+                                - /url: /properties
+                                - button "Properties" [ref=e33]:
+                                    - img
+                                    - generic [ref=e35]: Properties
+                            - button [ref=e37] [cursor=pointer]:
+                                - img
+                        - generic [ref=e38]:
+                            - link "Cost Estimator" [ref=e39] [cursor=pointer]:
+                                - /url: /calculator
+                                - button "Cost Estimator" [ref=e40]:
+                                    - img
+                                    - generic [ref=e42]: Cost Estimator
+                            - button [ref=e44] [cursor=pointer]:
+                                - img
+                - generic [ref=e45]:
+                    - generic [ref=e46]:
+                        - img [ref=e47]
+                        - generic [ref=e49]: Analysis
+                    - generic [ref=e50]:
+                        - generic [ref=e51]:
+                            - link "Analytics" [ref=e52] [cursor=pointer]:
+                                - /url: /analytics
+                                - button "Analytics" [ref=e53]:
+                                    - img
+                                    - generic [ref=e55]: Analytics
+                            - button [ref=e57] [cursor=pointer]:
+                                - img
+                        - generic [ref=e58]:
+                            - link "Benchmarking" [ref=e59] [cursor=pointer]:
+                                - /url: /benchmarking
+                                - button "Benchmarking" [ref=e60]:
+                                    - img
+                                    - generic [ref=e62]: Benchmarking
+                            - button [ref=e64] [cursor=pointer]:
+                                - img
+                        - generic [ref=e65]:
+                            - link "What-If Scenarios" [ref=e66] [cursor=pointer]:
+                                - /url: /what-if-scenarios
+                                - button "What-If Scenarios" [ref=e67]:
+                                    - img
+                                    - generic [ref=e69]: What-If Scenarios
+                            - button [ref=e71] [cursor=pointer]:
+                                - img
+                        - generic [ref=e72]:
+                            - link "Regional Costs" [ref=e73] [cursor=pointer]:
+                                - /url: /regional-cost-comparison
+                                - button "Regional Costs" [ref=e74]:
+                                    - img
+                                    - generic [ref=e76]: Regional Costs
+                            - button [ref=e78] [cursor=pointer]:
+                                - img
+                - generic [ref=e79]:
+                    - generic [ref=e80]:
+                        - img [ref=e81]
+                        - generic [ref=e84]: AI & Agents
+                    - generic [ref=e85]:
+                        - generic [ref=e86]:
+                            - link "AI Tools" [ref=e87] [cursor=pointer]:
+                                - /url: /ai-tools
+                                - button "AI Tools" [ref=e88]:
+                                    - img
+                                    - generic [ref=e90]: AI Tools
+                            - button [ref=e92] [cursor=pointer]:
+                                - img
+                        - generic [ref=e93]:
+                            - link "AI Cost Wizard" [ref=e94] [cursor=pointer]:
+                                - /url: /ai-cost-wizard
+                                - button "AI Cost Wizard" [ref=e95]:
+                                    - img
+                                    - generic [ref=e97]: AI Cost Wizard
+                            - button [ref=e99] [cursor=pointer]:
+                                - img
+                        - generic [ref=e100]:
+                            - link "AI Swarm" [ref=e101] [cursor=pointer]:
+                                - /url: /ai-swarm
+                                - button "AI Swarm" [ref=e102]:
+                                    - img
+                                    - generic [ref=e104]: AI Swarm
+                            - button [ref=e106] [cursor=pointer]:
+                                - img
+                - generic [ref=e107]:
+                    - generic [ref=e108]:
+                        - img [ref=e109]
+                        - generic [ref=e112]: Reports & Data
+                    - generic [ref=e113]:
+                        - generic [ref=e114]:
+                            - link "Reports" [ref=e115] [cursor=pointer]:
+                                - /url: /reports
+                                - button "Reports" [ref=e116]:
+                                    - img
+                                    - generic [ref=e118]: Reports
+                            - button [ref=e120] [cursor=pointer]:
+                                - img
+                        - generic [ref=e121]:
+                            - link "Data Import" [ref=e122] [cursor=pointer]:
+                                - /url: /data-import
+                                - button "Data Import" [ref=e123]:
+                                    - img
+                                    - generic [ref=e125]: Data Import
+                            - button [ref=e127] [cursor=pointer]:
+                                - img
+                        - generic [ref=e128]:
+                            - link "Data Connections" [ref=e129] [cursor=pointer]:
+                                - /url: /data-connections
+                                - button "Data Connections" [ref=e130]:
+                                    - img
+                                    - generic [ref=e132]: Data Connections
+                            - button [ref=e134] [cursor=pointer]:
+                                - img
+                - generic [ref=e135]:
+                    - generic [ref=e136]:
+                        - img [ref=e137]
+                        - generic [ref=e140]: Admin
+                    - generic [ref=e141]:
+                        - generic [ref=e142]:
+                            - link "Settings" [ref=e143] [cursor=pointer]:
+                                - /url: /settings/ftp-sync
+                                - button "Settings" [ref=e144]:
+                                    - img
+                                    - generic [ref=e146]: Settings
+                            - button [ref=e148] [cursor=pointer]:
+                                - img
+                        - generic [ref=e149]:
+                            - link "MCP Overview" [ref=e150] [cursor=pointer]:
+                                - /url: /mcp-overview
+                                - button "MCP Overview" [ref=e151]:
+                                    - img
+                                    - generic [ref=e153]: MCP Overview
+                            - button [ref=e155] [cursor=pointer]:
+                                - img
+                        - generic [ref=e156]:
+                            - link "Integration Health" [ref=e157] [cursor=pointer]:
+                                - /url: /mcp-dashboard
+                                - button "Integration Health" [ref=e158]:
+                                    - img
+                                    - generic [ref=e160]: Integration Health
+                            - button [ref=e162] [cursor=pointer]:
+                                - img
+                        - generic [ref=e163]:
+                            - link "User Management" [ref=e164] [cursor=pointer]:
+                                - /url: /users
+                                - button "User Management" [ref=e165]:
+                                    - img
+                                    - generic [ref=e167]: User Management
+                            - button [ref=e169] [cursor=pointer]:
+                                - img
+        - main [ref=e171]:
+            - generic [ref=e175]:
+                - generic [ref=e176]:
+                    - generic [ref=e177]:
+                        - heading "CostForge Dashboard" [level=1] [ref=e178]
+                        - paragraph [ref=e179]: Benton County — Cost Approach Assessment
+                    - generic [ref=e180]:
+                        - button "Refresh" [ref=e181] [cursor=pointer]:
+                            - img
+                            - text: Refresh
+                        - link "New Calculation" [ref=e182] [cursor=pointer]:
+                            - /url: /calculator
+                            - img
+                            - text: New Calculation
+                - generic [ref=e183]:
+                    - generic [ref=e185]:
+                        - generic [ref=e186]:
+                            - generic [ref=e187]: Total Parcels
+                            - img [ref=e189]
+                        - generic [ref=e192]: —
+                    - generic [ref=e194]:
+                        - generic [ref=e195]:
+                            - generic [ref=e196]: Cost Matrices
+                            - img [ref=e198]
+                        - generic [ref=e200]: —
+                    - generic [ref=e202]:
+                        - generic [ref=e203]:
+                            - generic [ref=e204]: Total Calculations
+                            - img [ref=e206]
+                        - generic [ref=e211]: —
+                    - generic [ref=e213]:
+                        - generic [ref=e214]:
+                            - generic [ref=e215]: System Status
+                            - img [ref=e217]
+                        - generic [ref=e220]: —
+                - generic [ref=e221]:
+                    - tablist [ref=e222]:
+                        - tab "Overview" [selected] [ref=e223] [cursor=pointer]
+                        - tab "Reports" [ref=e224] [cursor=pointer]
+                        - tab "Analytics" [ref=e225] [cursor=pointer]
+                    - tabpanel "Overview" [ref=e226]:
+                        - generic [ref=e227]:
+                            - generic [ref=e228]:
+                                - heading "Recent Calculations No saved valuations yet" [level=3] [ref=e230]:
+                                    - img [ref=e231]
+                                    - text: Recent Calculations
+                                    - generic [ref=e233]: No saved valuations yet
+                                - link "Run new calculation →" [ref=e236] [cursor=pointer]:
+                                    - /url: /calculator
+                            - generic [ref=e237]:
+                                - heading "Cost Trends — Central Benton" [level=3] [ref=e239]:
+                                    - img [ref=e240]
+                                    - text: Cost Trends — Central Benton
+                                - generic [ref=e243]:
+                                    - img [ref=e244]
+                                    - text: Cost trend chart — coming in Phase 3
+                        - generic [ref=e247]:
+                            - heading "Quick Access" [level=3] [ref=e249]
+                            - generic [ref=e251]:
+                                - link "Calculator Run a cost calculation" [ref=e252] [cursor=pointer]:
+                                    - /url: /calculator
+                                    - generic [ref=e253]:
+                                        - img [ref=e255]
+                                        - generic [ref=e257]:
+                                            - generic [ref=e258]: Calculator
+                                            - generic [ref=e259]: Run a cost calculation
+                                - link "Reports View saved reports" [ref=e260] [cursor=pointer]:
+                                    - /url: /reports
+                                    - generic [ref=e261]:
+                                        - img [ref=e263]
+                                        - generic [ref=e266]:
+                                            - generic [ref=e267]: Reports
+                                            - generic [ref=e268]: View saved reports
+                                - link "Analytics Cost breakdown analysis" [ref=e269] [cursor=pointer]:
+                                    - /url: /analytics
+                                    - generic [ref=e270]:
+                                        - img [ref=e272]
+                                        - generic [ref=e275]:
+                                            - generic [ref=e276]: Analytics
+                                            - generic [ref=e277]: Cost breakdown analysis
+    - region "Notifications (F8)":
+        - list

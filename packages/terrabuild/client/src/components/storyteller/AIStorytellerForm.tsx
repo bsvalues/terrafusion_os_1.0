@@ -48,7 +48,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 const formSchema = z.object({
   storyType: z.nativeEnum(StoryType),
   buildingTypes: z.array(z.string()).optional(),
-  regions: z.array(z.string()).optional(),
+  revalAreas: z.array(z.string()).optional(),
   propertyIds: z.array(z.number()).optional(),
   timeframe: z.object({
     start: z.date(),
@@ -76,7 +76,7 @@ export function AIStorytellerForm({ onStoryGenerated }: AIStorytellerFormProps) 
     defaultValues: {
       storyType: StoryType.COST_TRENDS,
       buildingTypes: [],
-      regions: [],
+      revalAreas: [],
       propertyIds: [],
       customPrompt: '',
       includeCharts: true,
@@ -215,13 +215,13 @@ export function AIStorytellerForm({ onStoryGenerated }: AIStorytellerFormProps) 
               watchedStoryType === StoryType.BUILDING_TYPE_ANALYSIS) && (
               <FormField
                 control={form.control}
-                name="regions"
+                name="revalAreas"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Regions (Optional)</FormLabel>
+                    <FormLabel>Reval Areas (Optional)</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Enter regions separated by commas" 
+                      <Input
+                        placeholder="Enter reval areas separated by commas"
                         onChange={(e) => {
                           const values = e.target.value.split(',').map(v => v.trim()).filter(Boolean);
                           field.onChange(values);
@@ -230,7 +230,7 @@ export function AIStorytellerForm({ onStoryGenerated }: AIStorytellerFormProps) 
                       />
                     </FormControl>
                     <div className="text-sm text-gray-500 mt-1">
-                      Leave empty to analyze all regions
+                      Leave empty to analyze all reval areas
                     </div>
                     <FormMessage />
                   </FormItem>

@@ -96,7 +96,7 @@ export default function TrustRegistry() {
   const connectors: ConnectorStatus[] = [
     {
       id: 'harris-pacs',
-      name: 'Harris PACS 9.0',
+      name: 'County Assessment System',
       source: 'Harris Govern',
       lastSync: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
       qualityGrade: 'A',

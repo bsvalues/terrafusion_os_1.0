@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Moq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -49,7 +50,7 @@ public sealed class R2Wave43RegressionEndpointTests
 
     // Real OlsRegressionService — pure math, no dependencies.
     private static TerraForgeController CreateController(DataDbContext db)
-        => new(db, NullLogger<TerraForgeController>.Instance, new OlsRegressionService());
+        => new(db, NullLogger<TerraForgeController>.Instance, new OlsRegressionService(), Mock.Of<ISaleQualificationService>());
 
     private static async Task SeedCountyAsync(DataDbContext db)
     {

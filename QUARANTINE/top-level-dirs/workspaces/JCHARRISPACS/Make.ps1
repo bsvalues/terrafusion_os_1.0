@@ -38,6 +38,8 @@ function Show-Help {
     Write-Host "  data-dictionary        Export data dictionary (extended properties)" -ForegroundColor White
     Write-Host "  all-checks             Run all verification checks" -ForegroundColor White
     Write-Host "  validate-mermaid       Validate Mermaid syntax (dry-run)" -ForegroundColor White
+    Write-Host "  asend-certify          Generate Asend/Proval county readiness certification pack" -ForegroundColor White
+    Write-Host "  asend-intake           Run one-command county intake (profiling + certify + packet)" -ForegroundColor White
     Write-Host "  api-run                Start PacsApi dev server (http://localhost:5200)" -ForegroundColor White
     Write-Host "  api-build              dotnet build PacsApi (CI check)" -ForegroundColor White
     Write-Host "  test-api               Smoke-test PacsApi /health endpoint (API must be running)" -ForegroundColor White
@@ -48,6 +50,8 @@ function Show-Help {
     Write-Host "  PACS_SERVER = $env:PACS_SERVER" -ForegroundColor Gray
     Write-Host "  PACS_DB     = $env:PACS_DB" -ForegroundColor Gray
     Write-Host "  PACS_USER   = $env:PACS_USER" -ForegroundColor Gray
+        Write-Host "  COUNTY_NAME / COUNTY_STATE / INTAKE_OWNER / SUPPORT_TIER" -ForegroundColor Gray
+        Write-Host "  MDB1 / MDB2 / ASSESSOR_CONTACT / DBA_CONTACT / IT_CONTACT / PRODUCTION_NOTES" -ForegroundColor Gray
 }
 
 function Invoke-Viz {
@@ -318,6 +322,77 @@ function Invoke-ValidateMermaid {
     }
 }
 
+function Invoke-AsendCertify {
+    Write-Host "🏛️ Generating Asend/Proval county certification pack..." -ForegroundColor Cyan
+
+    $script = Join-Path $PSScriptRoot 'scripts\diagnostics\Build-AsendProvalCertification.ps1'
+    $profileDir = Join-Path $PSScriptRoot '_artifacts\asend_proval\profiling'
+    $outputDir  = Join-Path $PSScriptRoot '_artifacts\asend_proval\certification'
+    if (-not (Test-Path $script)) {
+        Write-Host "❌ Certification script not found: $script" -ForegroundColor Red
+        exit 1
+    }
+
+    & $script `
+        -ProfileDir $profileDir `
+        -OutputDir $outputDir `
+        -CountyName "Benton County"
+
+    if (-not $?) {
+        Write-Host "❌ Asend/Proval certification generation failed" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host "✅ Certification artifacts written to $outputDir" -ForegroundColor Green
+}
+
+function Invoke-AsendIntake {
+    Write-Host "📦 Running one-command Asend/Proval county intake..." -ForegroundColor Cyan
+
+    $script = Join-Path $PSScriptRoot 'scripts\diagnostics\Run-AsendProvalCountyIntake.ps1'
+    if (-not (Test-Path $script)) {
+        Write-Host "❌ Intake runner script not found: $script" -ForegroundColor Red
+        exit 1
+    }
+
+    $county = if ($env:COUNTY_NAME) { $env:COUNTY_NAME } else { "Benton County" }
+    $mdb1 = if ($env:MDB1) { $env:MDB1 } else { "" }
+    $mdb2 = if ($env:MDB2) { $env:MDB2 } else { "" }
+    $state = if ($env:COUNTY_STATE) { $env:COUNTY_STATE } else { "WA" }
+    $owner = if ($env:INTAKE_OWNER) { $env:INTAKE_OWNER } else { "" }
+    $tier = if ($env:SUPPORT_TIER) { $env:SUPPORT_TIER } else { "Legacy-Only" }
+    $assessor = if ($env:ASSESSOR_CONTACT) { $env:ASSESSOR_CONTACT } else { "" }
+    $dba = if ($env:DBA_CONTACT) { $env:DBA_CONTACT } else { "" }
+    $it = if ($env:IT_CONTACT) { $env:IT_CONTACT } else { "" }
+    $notes = if ($env:PRODUCTION_NOTES) { $env:PRODUCTION_NOTES } else { "" }
+
+    if ([string]::IsNullOrWhiteSpace($mdb1)) {
+        Write-Host "❌ Missing MDB1 environment variable." -ForegroundColor Red
+        Write-Host "   Example:" -ForegroundColor Yellow
+        Write-Host "   `$env:COUNTY_NAME='Benton County'; `$env:MDB1='e:\\path\\gis.mdb'; `$env:MDB2='e:\\path\\real.mdb'; `$env:ASSESSOR_CONTACT='Jane Doe'; .\Make.ps1 asend-intake" -ForegroundColor Gray
+        exit 1
+    }
+
+    & $script `
+        -CountyName $county `
+        -MdbPath1 $mdb1 `
+        -MdbPath2 $mdb2 `
+        -State $state `
+        -IntakeOwner $owner `
+        -AssessorContact $assessor `
+        -DbaContact $dba `
+        -ItContact $it `
+        -ProductionSystemNotes $notes `
+        -SupportTierTarget $tier
+
+    if (-not $?) {
+        Write-Host "❌ County intake failed" -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host "✅ County intake completed" -ForegroundColor Green
+}
+
 function Invoke-DockerUp {
     Write-Host "Starting PACS full stack (SQL + Prometheus + Grafana + sql_exporter)..." -ForegroundColor Cyan
     $compose = Join-Path $PSScriptRoot 'pacs-server-benton\infra\docker\compose.full.yml'
@@ -389,6 +464,8 @@ switch ($Target.ToLower()) {
     "data-dictionary" { Invoke-DataDictionary }
     "all-checks" { Invoke-AllChecks }
     "validate-mermaid" { Invoke-ValidateMermaid }
+    "asend-certify" { Invoke-AsendCertify }
+    "asend-intake" { Invoke-AsendIntake }
     "api-run" { Invoke-ApiRun }
     "test-api" { Invoke-ApiTest }
     "api-build" { Invoke-ApiBuild }

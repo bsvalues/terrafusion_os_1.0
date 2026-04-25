@@ -39,7 +39,7 @@ export default function BentonCountyHeader({
   };
 
   // Default navigation links if none provided
-  const defaultNavLinks = [
+  const defaultNavLinks: { label: string; href: string; active?: boolean }[] = [
     { label: 'Home', href: '/' },
     { label: 'Projects', href: '/projects' },
     { label: 'Shared Projects', href: '/shared-projects' },

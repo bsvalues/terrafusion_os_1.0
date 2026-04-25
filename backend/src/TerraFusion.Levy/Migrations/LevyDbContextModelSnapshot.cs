@@ -34,7 +34,74 @@ namespace TerraFusion.Levy.Migrations
 
                     b.HasIndex("LevyMeasuresId");
 
-                    b.ToTable("LevyMeasureDistricts", (string)null);
+                    b.ToTable("DistrictLevyMeasure");
+                });
+
+            modelBuilder.Entity("TerraFusion.Levy.Models.BankedCapacity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("AccruedThisYear")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("CertificationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("ClosingBalance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("CountyId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("DistrictCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<decimal>("OpeningBalance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("ResolutionReferenceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("TaxYear")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<decimal>("UsedThisYear")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountyId", "DistrictCode", "TaxYear", "IsActive")
+                        .HasDatabaseName("IX_BankedCapacities_Lookup");
+
+                    b.ToTable("BankedCapacities");
                 });
 
             modelBuilder.Entity("TerraFusion.Levy.Models.District", b =>
@@ -88,7 +155,6 @@ namespace TerraFusion.Levy.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal>("TotalAssessedValue")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -99,16 +165,6 @@ namespace TerraFusion.Levy.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CountyId")
-                        .HasDatabaseName("IX_Districts_CountyId");
-
-                    b.HasIndex("DistrictType")
-                        .HasDatabaseName("IX_Districts_DistrictType");
-
-                    b.HasIndex("CountyId", "DistrictCode")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Districts_CountyId_DistrictCode");
 
                     b.ToTable("Districts");
                 });
@@ -123,7 +179,6 @@ namespace TerraFusion.Levy.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("AssessedValue")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("CountyId")
@@ -162,20 +217,142 @@ namespace TerraFusion.Levy.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountyId")
-                        .HasDatabaseName("IX_DistrictParcels_CountyId");
-
-                    b.HasIndex("DistrictId")
-                        .HasDatabaseName("IX_DistrictParcels_DistrictId");
-
-                    b.HasIndex("ParcelNumber")
-                        .HasDatabaseName("IX_DistrictParcels_ParcelNumber");
-
-                    b.HasIndex("CountyId", "DistrictId", "ParcelNumber")
-                        .IsUnique()
-                        .HasDatabaseName("IX_DistrictParcels_CountyId_DistrictId_ParcelNumber");
+                    b.HasIndex("DistrictId");
 
                     b.ToTable("DistrictParcels");
+                });
+
+            modelBuilder.Entity("TerraFusion.Levy.Models.LevyCertification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("AnnexationLevy")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("AnnexationValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("AssessedValueRegular")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("AttestationCorrelationId")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("AttestationEnvelope")
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("AttestationHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<decimal>("BankedCapacityRemaining")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("BankedCapacityUsed")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("CalculationSnapshot")
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime?>("CertifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CertifiedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("CountyId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("DistrictCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<decimal>("HighestLawfulLevy")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("IpdReferenceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("LeviedAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("LevyRate")
+                        .HasColumnType("decimal(10,6)");
+
+                    b.Property<decimal?>("LidLiftAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("LidLiftReferenceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("LimitFactor")
+                        .HasColumnType("decimal(10,6)");
+
+                    b.Property<decimal>("NewConstructionLevy")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("NewConstructionValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<decimal?>("RefundFundAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("RefundFundReferenceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("StateSchoolReferenceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("SupersededAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("SupersededByCertificationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("TaxYear")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttestationCorrelationId")
+                        .HasDatabaseName("IX_LevyCertifications_CorrelationId");
+
+                    b.HasIndex("AttestationHash")
+                        .HasDatabaseName("IX_LevyCertifications_AttestationHash");
+
+                    b.HasIndex("CountyId", "DistrictCode", "TaxYear", "Status")
+                        .HasDatabaseName("IX_LevyCertifications_Lookup");
+
+                    b.ToTable("LevyCertifications");
                 });
 
             modelBuilder.Entity("TerraFusion.Levy.Models.LevyMeasure", b =>
@@ -191,11 +368,9 @@ namespace TerraFusion.Levy.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("CalculatedAmount")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("CalculatedRate")
-                        .HasPrecision(10, 6)
                         .HasColumnType("decimal(10,6)");
 
                     b.Property<string>("CountyId")
@@ -230,7 +405,6 @@ namespace TerraFusion.Levy.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal?>("MaximumRate")
-                        .HasPrecision(10, 6)
                         .HasColumnType("decimal(10,6)");
 
                     b.Property<string>("Metadata")
@@ -253,11 +427,9 @@ namespace TerraFusion.Levy.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<decimal>("TargetAmount")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("TotalAssessedValue")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -269,15 +441,6 @@ namespace TerraFusion.Levy.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountyId")
-                        .HasDatabaseName("IX_LevyMeasures_CountyId");
-
-                    b.HasIndex("Status")
-                        .HasDatabaseName("IX_LevyMeasures_Status");
-
-                    b.HasIndex("CountyId", "LevyYear")
-                        .HasDatabaseName("IX_LevyMeasures_CountyId_LevyYear");
-
                     b.ToTable("LevyMeasures");
                 });
 
@@ -288,11 +451,9 @@ namespace TerraFusion.Levy.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<decimal?>("AiOptimalRate")
-                        .HasPrecision(10, 6)
                         .HasColumnType("decimal(10,6)");
 
                     b.Property<decimal>("AssessedValue")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("ConfidenceScore")
@@ -321,14 +482,12 @@ namespace TerraFusion.Levy.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("LevyAmount")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("LevyMeasureId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("Rate")
-                        .HasPrecision(10, 6)
                         .HasColumnType("decimal(10,6)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -340,14 +499,9 @@ namespace TerraFusion.Levy.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountyId")
-                        .HasDatabaseName("IX_LevyRates_CountyId");
+                    b.HasIndex("DistrictId");
 
-                    b.HasIndex("DistrictId")
-                        .HasDatabaseName("IX_LevyRates_DistrictId");
-
-                    b.HasIndex("LevyMeasureId")
-                        .HasDatabaseName("IX_LevyRates_LevyMeasureId");
+                    b.HasIndex("LevyMeasureId");
 
                     b.ToTable("LevyRates");
                 });
@@ -362,18 +516,15 @@ namespace TerraFusion.Levy.Migrations
                         .HasColumnType("jsonb");
 
                     b.Property<decimal>("AssessedValue")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Assumptions")
                         .HasColumnType("jsonb");
 
                     b.Property<decimal>("CalculatedAmount")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("CollectionRate")
-                        .HasPrecision(5, 4)
                         .HasColumnType("decimal(5,4)");
 
                     b.Property<decimal?>("ConfidenceScore")
@@ -403,7 +554,6 @@ namespace TerraFusion.Levy.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("LevyRate")
-                        .HasPrecision(10, 6)
                         .HasColumnType("decimal(10,6)");
 
                     b.Property<string>("Name")
@@ -412,7 +562,6 @@ namespace TerraFusion.Levy.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<decimal>("ProjectedRevenue")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("QuantumOptimized")
@@ -432,16 +581,90 @@ namespace TerraFusion.Levy.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountyId")
-                        .HasDatabaseName("IX_LevyScenarios_CountyId");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("IX_LevyScenarios_IsActive");
-
-                    b.HasIndex("LevyMeasureId")
-                        .HasDatabaseName("IX_LevyScenarios_LevyMeasureId");
+                    b.HasIndex("LevyMeasureId");
 
                     b.ToTable("LevyScenarios");
+                });
+
+            modelBuilder.Entity("TerraFusion.Levy.Models.ReferenceSource", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Citation")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("CountyId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("DistrictCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("IngestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("IngestedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("IssuedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("IssuedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ReviewedBy")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("SourceType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SourceUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("TaxYear")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("Value")
+                        .HasColumnType("decimal(18,6)");
+
+                    b.Property<string>("ValueJson")
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("ValueUnit")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountyId", "Citation", "TaxYear")
+                        .HasDatabaseName("IX_ReferenceSources_Citation");
+
+                    b.HasIndex("CountyId", "SourceType", "TaxYear", "DistrictCode", "IsActive")
+                        .HasDatabaseName("IX_ReferenceSources_Lookup");
+
+                    b.ToTable("ReferenceSources");
                 });
 
             modelBuilder.Entity("TerraFusion.Levy.Models.RevenueProjection", b =>
@@ -451,7 +674,6 @@ namespace TerraFusion.Levy.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<decimal?>("AiProjectedRevenue")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("ConfidenceLevel")
@@ -474,26 +696,21 @@ namespace TerraFusion.Levy.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal>("GrowthRate")
-                        .HasPrecision(5, 4)
                         .HasColumnType("decimal(5,4)");
 
                     b.Property<Guid>("LevyScenarioId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("ProjectedAssessedValue")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ProjectedCollectionRate")
-                        .HasPrecision(5, 4)
                         .HasColumnType("decimal(5,4)");
 
                     b.Property<decimal>("ProjectedLevyAmount")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ProjectedNetRevenue")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("RiskFactors")
@@ -508,14 +725,7 @@ namespace TerraFusion.Levy.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CountyId")
-                        .HasDatabaseName("IX_RevenueProjections_CountyId");
-
-                    b.HasIndex("FiscalYear")
-                        .HasDatabaseName("IX_RevenueProjections_FiscalYear");
-
-                    b.HasIndex("LevyScenarioId")
-                        .HasDatabaseName("IX_RevenueProjections_LevyScenarioId");
+                    b.HasIndex("LevyScenarioId");
 
                     b.ToTable("RevenueProjections");
                 });
@@ -550,8 +760,7 @@ namespace TerraFusion.Levy.Migrations
                 {
                     b.HasOne("TerraFusion.Levy.Models.District", "District")
                         .WithMany()
-                        .HasForeignKey("DistrictId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("DistrictId");
 
                     b.HasOne("TerraFusion.Levy.Models.LevyMeasure", "LevyMeasure")
                         .WithMany("LevyRates")

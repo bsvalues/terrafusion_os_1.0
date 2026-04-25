@@ -136,7 +136,7 @@ export function SaleQualificationQueue({ taxYear = TAX_YEAR }: Props) {
     dispatch({ type: 'FETCH_START' });
     try {
       const url =
-        `/api/terraforge/sale-qualification` +
+        `/terraforge/sale-qualification` +
         `?taxYear=${taxYear}&status=${state.status}&page=${state.page}&pageSize=${PAGE_SIZE}`;
       const res = await apiFetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -167,7 +167,7 @@ export function SaleQualificationQueue({ taxYear = TAX_YEAR }: Props) {
     async (saleId: string, decision: 'qualified' | 'non-arms-length') => {
       dispatch({ type: 'PATCH_START', saleId });
       try {
-        const res = await apiFetch(`/api/terraforge/sale-qualification/${saleId}`, {
+        const res = await apiFetch(`/terraforge/sale-qualification/${saleId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

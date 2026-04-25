@@ -53,6 +53,50 @@ vi.mock('../../orchestration/moduleActivation', () => ({
   activateModule: vi.fn(),
 }));
 
+vi.mock('../../api/pilotApi', () => ({
+  __esModule: true,
+  invokeTool: vi.fn(async ({ toolId }: { toolId: string }) => {
+    if (toolId === 'generate_morning_brief') {
+      return {
+        success: true,
+        correlationId: 'corr-brief',
+        result: {
+          toolId,
+          output: JSON.stringify({
+            queueType: 'ranked_worklist',
+            summary: 'County queue posture loaded.',
+            recommendedTool: 'dais',
+          }),
+        },
+      };
+    }
+    if (toolId === 'explain_spatial_anomaly') {
+      return {
+        success: true,
+        correlationId: 'corr-atlas',
+        result: {
+          toolId,
+          output: JSON.stringify({
+            narrative: 'Spatial audit posture loaded.',
+            hotspotCount: 4,
+          }),
+        },
+      };
+    }
+    return {
+      success: true,
+      correlationId: 'corr-dossier',
+      result: {
+        toolId,
+        output: JSON.stringify({
+          packetRef: 'BOE-2026-001',
+          payloadRef: 'Packet readiness loaded.',
+        }),
+      },
+    };
+  }),
+}));
+
 vi.mock('../../ui/materials', () => ({
   __esModule: true,
   LiquidPanel: ({ children, className }: { children: React.ReactNode; className?: string }) => (

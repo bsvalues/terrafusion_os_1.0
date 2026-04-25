@@ -58,7 +58,7 @@ export function CorrelationAnalysis({
     }
     
     // Create data for scatter plot
-    const data = buildings.map((building, index) => ({
+    const data = buildings.map((building: any, index: any) => ({
       id: building.id || index,
       county: building.county || 'Unknown',
       x: correlations.size[index], // Size
@@ -67,13 +67,13 @@ export function CorrelationAnalysis({
     }));
     
     // Filter out points with null/undefined values
-    const validData = data.filter(d => 
+    const validData = data.filter((d: any) =>
       d.x !== null && d.x !== undefined && 
       d.y !== null && d.y !== undefined
     );
     
-    const validXValues = correlations.size.filter(x => x !== null && x !== undefined) as number[];
-    const validYValues = correlations.cost.filter(y => y !== null && y !== undefined) as number[];
+    const validXValues = correlations.size.filter((x: any) => x !== null && x !== undefined) as number[];
+    const validYValues = correlations.cost.filter((y: any) => y !== null && y !== undefined) as number[];
     
     // Calculate correlation coefficient
     const corr = calculateCorrelation(validXValues, validYValues);
@@ -224,7 +224,7 @@ export function CorrelationAnalysis({
               {/* Regular data points */}
               <Scatter
                 name="Buildings"
-                data={chartData.filter((_, i) => !outlierIndices.includes(i))}
+                data={chartData.filter((_: any, i: any) => !outlierIndices.includes(i))}
                 fill="#8884d8"
                 shape="circle"
                 onClick={handlePointClick}
@@ -235,7 +235,7 @@ export function CorrelationAnalysis({
               {outlierIndices.length > 0 && (
                 <Scatter
                   name="Outliers"
-                  data={chartData.filter((_, i) => outlierIndices.includes(i))}
+                  data={chartData.filter((_: any, i: any) => outlierIndices.includes(i))}
                   fill="#ff7300"
                   shape="circle"
                   onClick={handlePointClick}
