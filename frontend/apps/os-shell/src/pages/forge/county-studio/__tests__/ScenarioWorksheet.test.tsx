@@ -142,9 +142,8 @@ describe('ScenarioWorksheet', () => {
     fireEvent.click(screen.getByTestId('promote-btn-sc-saved'));
     await waitFor(() => {
       expect(vi.mocked(scenarioApi.promote)).toHaveBeenCalledWith({
-        studyId:    'study-1',
-        countyId:   'benton',
-        scenarioId: 'sc-saved',
+        scenarioId:     'sc-saved',
+        effectiveScope: expect.stringContaining('sc-saved'),
       });
       expect(screen.getByTestId('sw-promote-success')).toBeInTheDocument();
     });

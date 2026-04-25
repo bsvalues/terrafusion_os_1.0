@@ -129,11 +129,9 @@ export const scenarioApi = {
     apiFetchJson(`${BASE}/scenarios/${scenarioIdA}/compare?compareWithId=${compareWithId}`),
 
   promote: (body: {
-    studyId: string;
-    countyId: string;
-    scenarioId: string;
-    notes?: string;
-  }): Promise<void> =>
+    scenarioId:     string;
+    effectiveScope: string;   // JSON: { scenarioId, cohortId }
+  }): Promise<CountyAdjustmentSetDto> =>
     apiFetchJson(`${BASE}/scenarios/promote`, { method: 'POST', body: JSON.stringify(body) }),
 };
 

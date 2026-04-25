@@ -147,9 +147,11 @@ export function ScenarioWorksheet() {
     setError(null);
     try {
       await scenarioApi.promote({
-        studyId:    activeStudy.studyId,
-        countyId:   activeStudy.countyId,
-        scenarioId: scenario.scenarioId,
+        scenarioId:     scenario.scenarioId,
+        effectiveScope: JSON.stringify({
+          scenarioId: scenario.scenarioId,
+          cohortId:   scenario.cohortId,
+        }),
       });
       setPromoteSuccess('Promoted — see Govnc tab for approval workflow.');
     } catch (e) {
