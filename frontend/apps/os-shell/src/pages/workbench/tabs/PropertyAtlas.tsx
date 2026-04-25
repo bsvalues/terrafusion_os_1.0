@@ -247,7 +247,7 @@ function ParcelMapVisualization({
               className="ml-1 text-white/30"
               style={{ fontSize: 9 }}
             >
-              (approx.)
+              (preview only)
             </span>
           </span>
         )}
@@ -290,7 +290,7 @@ export const PropertyAtlas: React.FC = () => {
   const boundary = useParcelBoundary(parcelId);
   const layers = useParcelLayers(parcelId);
 
-  const [selectedLayers, setSelectedLayers] = useState<Set<LayerId>>(new Set<LayerId>(['boundary']));
+  const [selectedLayers, setSelectedLayers] = useState<Set<LayerId>>(new Set<LayerId>());
   const [queryState, setQueryState] = useState<QueryState>({ status: 'idle' });
   const [queryHistory, setQueryHistory] = useState<InvocationRecord[]>([]);
   const [anomalyMetric, setAnomalyMetric] = useState<'residual_cluster' | 'prd' | 'prb' | 'cod'>('residual_cluster');
@@ -624,6 +624,11 @@ export const PropertyAtlas: React.FC = () => {
       {/* Parcel Context from Store */}
       {activeParcel && (
         <div>
+          <div className="flex justify-end mb-2" data-testid="atlas-parcel-context-source">
+            <span className="text-[11px] tf-text-dim">
+              Address, acreage, district, and zoning are returned from the active property store snapshot.
+            </span>
+          </div>
           <BentoGrid columns="auto" gap={0.75} padding={0}>
           <BentoCard variant="stat" title="Address">
             <p className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-text))' }}>
@@ -867,6 +872,9 @@ export const PropertyAtlas: React.FC = () => {
 
           {queryState.status === 'success' && queryState.result && (
             <div className='space-y-3'>
+              <div className="text-[11px] tf-text-dim" data-testid="atlas-results-source">
+                Layer availability returned from query_parcel_layers (correlationId{queryState.correlationId ? `: ${queryState.correlationId.slice(0, 16)}` : ''}).
+              </div>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
                 {liveLayerCards.length > 0 ? liveLayerCards.map((layer) => (
                   <div key={layer.id} className='tf-panel rounded-lg px-3 py-2'>
