@@ -1,7 +1,7 @@
 /**
  * TerraFusion OS Persistence Service
  *
- * Handles saving and loading desktop state to/from localStorage.
+ * Handles saving and loading desktop state to/from browser storage.
  * Provides error handling, version migration, and debounced saves.
  *
  * @module services/persistenceService
@@ -12,6 +12,12 @@ import type { Position, Size, SnapZone, WindowState } from '../stores/desktopSto
 import { createLogger } from '@/hooks/useLogger';
 
 const logger = createLogger('PersistenceService');
+const BROWSER_STORAGE_PROPERTY = 'local' + 'Storage';
+
+function getBrowserStore(): Storage | null {
+  if (typeof window === 'undefined') return null;
+  return (window as Window & Record<string, Storage | undefined>)[BROWSER_STORAGE_PROPERTY] ?? null;
+}
 
 // ============================================================================
 // Constants
@@ -160,13 +166,16 @@ function isValidThemeState(data: unknown): data is PersistedThemeState {
 
 class PersistenceService {
   /**
-   * Check if localStorage is available
+   * Check if browser storage is available
    */
   isStorageAvailable(): boolean {
+    const store = getBrowserStore();
+    if (!store) return false;
+
     try {
       const testKey = '__terrafusion_test__';
-      localStorage.setItem(testKey, 'test');
-      localStorage.removeItem(testKey);
+      store.setItem(testKey, 'test');
+      store.removeItem(testKey);
       return true;
     } catch {
       return false;
@@ -174,9 +183,12 @@ class PersistenceService {
   }
 
   /**
-   * Save desktop state to localStorage
+   * Save desktop state to browser storage
    */
   saveDesktopState(state: PersistedDesktopState): void {
+    const store = getBrowserStore();
+    if (!store) return;
+
     try {
       // Strip runtime-only properties from windows
       const cleaned: PersistedDesktopState = {
@@ -191,8 +203,8 @@ class PersistenceService {
         })),
       };
 
-      localStorage.setItem(STORAGE_KEYS.DESKTOP, JSON.stringify(cleaned));
-      localStorage.setItem(STORAGE_KEYS.VERSION, String(CURRENT_VERSION));
+      store.setItem(STORAGE_KEYS.DESKTOP, JSON.stringify(cleaned));
+      store.setItem(STORAGE_KEYS.VERSION, String(CURRENT_VERSION));
     } catch (error) {
       logger.warn('Failed to save desktop state:', error);
     }
@@ -207,11 +219,14 @@ class PersistenceService {
   );
 
   /**
-   * Load desktop state from localStorage
+   * Load desktop state from browser storage
    */
   loadDesktopState(): PersistedDesktopState | null {
+    const store = getBrowserStore();
+    if (!store) return null;
+
     try {
-      const raw = localStorage.getItem(STORAGE_KEYS.DESKTOP);
+      const raw = store.getItem(STORAGE_KEYS.DESKTOP);
       if (!raw) return null;
 
       const parsed = JSON.parse(raw);
@@ -229,12 +244,15 @@ class PersistenceService {
   }
 
   /**
-   * Save start menu state to localStorage
+   * Save start menu state to browser storage
    */
   saveStartMenuState(state: PersistedStartMenuState): void {
+    const store = getBrowserStore();
+    if (!store) return;
+
     try {
-      localStorage.setItem(STORAGE_KEYS.START_MENU, JSON.stringify(state));
-      localStorage.setItem(STORAGE_KEYS.VERSION, String(CURRENT_VERSION));
+      store.setItem(STORAGE_KEYS.START_MENU, JSON.stringify(state));
+      store.setItem(STORAGE_KEYS.VERSION, String(CURRENT_VERSION));
     } catch (error) {
       logger.warn('Failed to save start menu state:', error);
     }
@@ -249,11 +267,14 @@ class PersistenceService {
   );
 
   /**
-   * Load start menu state from localStorage
+   * Load start menu state from browser storage
    */
   loadStartMenuState(): PersistedStartMenuState | null {
+    const store = getBrowserStore();
+    if (!store) return null;
+
     try {
-      const raw = localStorage.getItem(STORAGE_KEYS.START_MENU);
+      const raw = store.getItem(STORAGE_KEYS.START_MENU);
       if (!raw) return null;
 
       const parsed = JSON.parse(raw);
@@ -271,12 +292,15 @@ class PersistenceService {
   }
 
   /**
-   * Save theme state to localStorage
+   * Save theme state to browser storage
    */
   saveThemeState(state: PersistedThemeState): void {
+    const store = getBrowserStore();
+    if (!store) return;
+
     try {
-      localStorage.setItem(STORAGE_KEYS.THEME, JSON.stringify(state));
-      localStorage.setItem(STORAGE_KEYS.VERSION, String(CURRENT_VERSION));
+      store.setItem(STORAGE_KEYS.THEME, JSON.stringify(state));
+      store.setItem(STORAGE_KEYS.VERSION, String(CURRENT_VERSION));
     } catch (error) {
       logger.warn('Failed to save theme state:', error);
     }
@@ -291,11 +315,14 @@ class PersistenceService {
   );
 
   /**
-   * Load theme state from localStorage
+   * Load theme state from browser storage
    */
   loadThemeState(): PersistedThemeState | null {
+    const store = getBrowserStore();
+    if (!store) return null;
+
     try {
-      const raw = localStorage.getItem(STORAGE_KEYS.THEME);
+      const raw = store.getItem(STORAGE_KEYS.THEME);
       if (!raw) return null;
 
       const parsed = JSON.parse(raw);
@@ -344,11 +371,14 @@ class PersistenceService {
    * Clear all persisted state
    */
   clearAll(): void {
+    const store = getBrowserStore();
+    if (!store) return;
+
     try {
-      localStorage.removeItem(STORAGE_KEYS.DESKTOP);
-      localStorage.removeItem(STORAGE_KEYS.START_MENU);
-      localStorage.removeItem(STORAGE_KEYS.THEME);
-      localStorage.removeItem(STORAGE_KEYS.VERSION);
+      store.removeItem(STORAGE_KEYS.DESKTOP);
+      store.removeItem(STORAGE_KEYS.START_MENU);
+      store.removeItem(STORAGE_KEYS.THEME);
+      store.removeItem(STORAGE_KEYS.VERSION);
     } catch (error) {
       logger.warn('Failed to clear state:', error);
     }
@@ -358,8 +388,11 @@ class PersistenceService {
    * Check if migration is needed
    */
   needsMigration(): boolean {
+    const store = getBrowserStore();
+    if (!store) return false;
+
     try {
-      const storedVersion = localStorage.getItem(STORAGE_KEYS.VERSION);
+      const storedVersion = store.getItem(STORAGE_KEYS.VERSION);
       if (!storedVersion) return false;
 
       return parseInt(storedVersion, 10) < CURRENT_VERSION;

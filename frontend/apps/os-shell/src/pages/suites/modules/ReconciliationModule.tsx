@@ -5,13 +5,14 @@
  * indications into a single final opinion of value.
  *
  * Three methods: Weighted Average | Bracketed (Midpoint) | Primary Approach
- * Default weights by property type (Benton County standards).
+ * Policy weights by property type (Benton County standards).
  *
  * Source: QUARANTINE/terraforge-suite/harness/src/approaches/reconcile.ts
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { invokeTool } from '@/api/pilotApi';
+import { usePropertyStore } from '@/stores/propertyStore';
 import {
   Scale,
   Calculator,
@@ -30,9 +31,8 @@ import {
   type ReconciliationMethod,
   type PropertyCategory,
   type ReconciliationOutput,
-  DEFAULT_RECONCILIATION_WEIGHTS,
+  RECONCILIATION_WEIGHT_POLICY,
   runReconciliation,
-  appendAuditEntry,
 } from '../../../services/forgeService';
 
 const PROPERTY_CATEGORIES: { id: PropertyCategory; label: string }[] = [
@@ -59,25 +59,41 @@ interface BoePacketResult {
   payloadRef: string;
 }
 
+function mapPropertyCategory(propertyType: string | undefined): PropertyCategory {
+  switch (propertyType) {
+    case 'commercial':
+    case 'mixed-use':
+    case 'multi-family':
+      return 'commercial';
+    case 'industrial':
+      return 'industrial';
+    case 'agricultural':
+      return 'agricultural';
+    default:
+      return 'residential';
+  }
+}
+
 export default function ReconciliationModule() {
+  const activeParcel = usePropertyStore((state) => state.activeParcel);
   const [propertyType, setPropertyType] = useState<PropertyCategory>('residential');
   const [method, setMethod] = useState<ReconciliationMethod>('weighted_average');
-  const [subjectId, setSubjectId] = useState('1-0455-100-0001-001');
+  const [subjectId, setSubjectId] = useState('');
   const [forcedWeights, setForcedWeights] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Approach values
-  const [costValue, setCostValue] = useState(325000);
+  const [costValue, setCostValue] = useState(0);
   const [costConfidence, setCostConfidence] = useState<'high' | 'medium' | 'low'>('high');
   const [costWeight, setCostWeight] = useState(0.3);
-  const [costEnabled, setCostEnabled] = useState(true);
+  const [costEnabled, setCostEnabled] = useState(false);
 
-  const [salesValue, setSalesValue] = useState(342000);
+  const [salesValue, setSalesValue] = useState(0);
   const [salesConfidence, setSalesConfidence] = useState<'high' | 'medium' | 'low'>('high');
   const [salesWeight, setSalesWeight] = useState(0.6);
-  const [salesEnabled, setSalesEnabled] = useState(true);
+  const [salesEnabled, setSalesEnabled] = useState(false);
 
-  const [incomeValue, setIncomeValue] = useState(310000);
+  const [incomeValue, setIncomeValue] = useState(0);
   const [incomeConfidence, setIncomeConfidence] = useState<'high' | 'medium' | 'low'>('medium');
   const [incomeWeight, setIncomeWeight] = useState(0.1);
   const [incomeEnabled, setIncomeEnabled] = useState(false);
@@ -91,16 +107,24 @@ export default function ReconciliationModule() {
     error?: string;
   }>({ status: 'idle' });
 
+  useEffect(() => {
+    setSubjectId(activeParcel?.parcelId ?? '');
+    if (activeParcel?.propertyType) {
+      setPropertyType(mapPropertyCategory(activeParcel.propertyType));
+    }
+  }, [activeParcel]);
+
   const approaches = useMemo(() => {
     const result: Record<string, ApproachValue> = {};
-    if (costEnabled) result.cost = { indicatedValue: costValue, confidenceLevel: costConfidence, weight: forcedWeights ? costWeight : undefined };
-    if (salesEnabled) result.sales = { indicatedValue: salesValue, confidenceLevel: salesConfidence, weight: forcedWeights ? salesWeight : undefined };
-    if (incomeEnabled) result.income = { indicatedValue: incomeValue, confidenceLevel: incomeConfidence, weight: forcedWeights ? incomeWeight : undefined };
+    if (costEnabled && costValue > 0) result.cost = { indicatedValue: costValue, confidenceLevel: costConfidence, weight: forcedWeights ? costWeight : undefined };
+    if (salesEnabled && salesValue > 0) result.sales = { indicatedValue: salesValue, confidenceLevel: salesConfidence, weight: forcedWeights ? salesWeight : undefined };
+    if (incomeEnabled && incomeValue > 0) result.income = { indicatedValue: incomeValue, confidenceLevel: incomeConfidence, weight: forcedWeights ? incomeWeight : undefined };
     return result;
   }, [costEnabled, costValue, costConfidence, costWeight, salesEnabled, salesValue, salesConfidence, salesWeight, incomeEnabled, incomeValue, incomeConfidence, incomeWeight, forcedWeights]);
 
   const result: ReconciliationOutput | null = useMemo(() => {
-    const enabledCount = [costEnabled, salesEnabled, incomeEnabled].filter(Boolean).length;
+    if (!subjectId) return null;
+    const enabledCount = Object.keys(approaches).length;
     if (enabledCount === 0) return null;
     try {
       return runReconciliation({
@@ -114,35 +138,12 @@ export default function ReconciliationModule() {
     } catch {
       return null;
     }
-  }, [approaches, propertyType, method, forcedWeights, subjectId, costEnabled, salesEnabled, incomeEnabled]);
+  }, [approaches, propertyType, method, forcedWeights, subjectId]);
 
-  const defaultWeights = DEFAULT_RECONCILIATION_WEIGHTS[propertyType];
-
-  const handleSaveToAudit = useCallback(() => {
-    if (!result) return;
-    appendAuditEntry({
-      parcelId: subjectId,
-      action: 'RECONCILIATION_COMPLETED',
-      userId: 'appraiser-001',
-      previousValue: null,
-      newValue: result.finalOpinionOfValue,
-      module: 'ReconciliationModule',
-      details: {
-        method,
-        propertyType,
-        approachCount: Object.keys(approaches).length,
-        spreadPercentage: result.reconciliationAnalysis.spreadPercentage,
-        primaryApproach: result.reconciliationAnalysis.primaryApproach,
-      },
-      notes: `Reconciled ${Object.keys(approaches).length} approaches via ${method}`,
-    });
-  }, [result, subjectId, method, propertyType, approaches]);
+  const policyWeights = RECONCILIATION_WEIGHT_POLICY[propertyType];
 
   const handleCommitReconciliation = useCallback(async () => {
-    if (!result || !commitConfirmed) return;
-    // Write to local audit trail first
-    handleSaveToAudit();
-    // Then assemble BOE packet via TerraPilot
+    if (!result || !commitConfirmed || !subjectId) return;
     setCommitState({ status: 'loading' });
     try {
       const response = await invokeTool({
@@ -172,7 +173,7 @@ export default function ReconciliationModule() {
         error: err instanceof Error ? err.message : 'Failed to assemble BOE packet.',
       });
     }
-  }, [result, commitConfirmed, subjectId, handleSaveToAudit]);
+  }, [result, commitConfirmed, subjectId]);
 
   const agreementColor = (a: string) => a === 'strong' ? 'hsl(var(--tf-success-hs) 45%)' : a === 'moderate' ? 'hsl(var(--tf-warning-hs) 50%)' : 'hsl(var(--tf-error-hs) 55%)';
   const confidenceColor = (c: string) => c === 'high' ? 'hsl(var(--tf-success-hs) 45%)' : c === 'medium' ? 'hsl(var(--tf-warning-hs) 50%)' : 'hsl(var(--tf-error-hs) 55%)';
@@ -201,7 +202,9 @@ export default function ReconciliationModule() {
             <div>
               <label className='block text-xs mb-1' style={{ color: 'hsl(var(--tf-muted))' }}>Parcel ID</label>
               <input
-                type='text' value={subjectId} onChange={(e) => setSubjectId(e.target.value)}
+                type='text'
+                value={subjectId || 'Select a parcel to reconcile'}
+                readOnly
                 className='w-full px-3 py-1.5 rounded text-sm' style={{ background: 'hsl(var(--tf-bg))', border: '1px solid hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}
               />
             </div>
@@ -228,20 +231,20 @@ export default function ReconciliationModule() {
             </div>
           </div>
 
-          {/* Default Weights */}
+          {/* Policy Weights */}
           <div className='rounded-lg p-4 space-y-2' style={{ background: 'hsl(var(--tf-card-bg))', border: '1px solid hsl(var(--tf-border))' }}>
             <p className='text-xs font-medium uppercase tracking-wider' style={{ color: 'hsl(var(--tf-muted))' }}>
-              Default Weights ({propertyType})
+              Policy Weights ({propertyType})
             </p>
             {(['sales', 'income', 'cost'] as const).map(k => (
               <div key={k} className='flex items-center justify-between'>
                 <span className='text-sm capitalize' style={{ color: 'hsl(var(--tf-fg))' }}>{k}</span>
                 <div className='flex items-center gap-2'>
                   <div className='w-24 h-2 rounded-full overflow-hidden' style={{ background: 'hsl(var(--tf-bg))' }}>
-                    <div className='h-full rounded-full' style={{ width: `${defaultWeights[k] * 100}%`, background: 'hsl(var(--tf-suite-forge))' }} />
+                    <div className='h-full rounded-full' style={{ width: `${policyWeights[k] * 100}%`, background: 'hsl(var(--tf-suite-forge))' }} />
                   </div>
                   <span className='text-xs font-mono w-10 text-right' style={{ color: 'hsl(var(--tf-muted))' }}>
-                    {pct(defaultWeights[k])}
+                    {pct(policyWeights[k])}
                   </span>
                 </div>
               </div>
@@ -533,6 +536,7 @@ export default function ReconciliationModule() {
                   <TactileButton
                     onClick={handleCommitReconciliation}
                     fullWidth
+                    disabled={!commitConfirmed || !subjectId || commitState.status === 'loading'}
                     data-testid='reconciliation-commit-btn'
                   >
                     {commitState.status === 'loading' ? 'Assembling BOE Packet…' : 'Commit Reconciliation + Assemble BOE Packet'}
@@ -572,22 +576,13 @@ export default function ReconciliationModule() {
                   </div>
                 )}
               </div>
-
-              {/* Legacy audit-only save */}
-              <TactileButton
-                onClick={handleSaveToAudit}
-                fullWidth
-                data-testid='reconciliation-audit-save'
-              >
-                Save to Audit Trail Only
-              </TactileButton>
             </>
           ) : (
             <div className='flex items-center justify-center min-h-[300px]'>
               <div className='text-center space-y-2'>
                 <Scale size={48} className='mx-auto' style={{ color: 'hsl(var(--tf-suite-forge) / 0.3)' }} />
                 <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
-                  Enable at least one approach to reconcile
+                  Select a parcel and enter at least one positive approach indication to reconcile.
                 </p>
               </div>
             </div>

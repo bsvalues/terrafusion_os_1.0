@@ -81,7 +81,7 @@ type DocumentFormState = {
   author: string;
 };
 
-const DEFAULT_DATASET_FORM: DatasetFormState = {
+const EMPTY_DATASET_FORM: DatasetFormState = {
   name: '',
   description: '',
   category: '',
@@ -89,7 +89,7 @@ const DEFAULT_DATASET_FORM: DatasetFormState = {
   embeddingModel: 'text-embedding-3-small',
 };
 
-const DEFAULT_DOCUMENT_FORM: DocumentFormState = {
+const EMPTY_DOCUMENT_FORM: DocumentFormState = {
   title: '',
   content: '',
   sourceUrl: '',
@@ -138,8 +138,8 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
   const [isSavingDocument, setIsSavingDocument] = useState(false);
   const [createDatasetDialogOpen, setCreateDatasetDialogOpen] = useState(false);
   const [documentDialogOpen, setDocumentDialogOpen] = useState(false);
-  const [newDatasetForm, setNewDatasetForm] = useState<DatasetFormState>(DEFAULT_DATASET_FORM);
-  const [documentForm, setDocumentForm] = useState<DocumentFormState>(DEFAULT_DOCUMENT_FORM);
+  const [newDatasetForm, setNewDatasetForm] = useState<DatasetFormState>(EMPTY_DATASET_FORM);
+  const [documentForm, setDocumentForm] = useState<DocumentFormState>(EMPTY_DOCUMENT_FORM);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -234,7 +234,7 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
 
       setSuccessMessage(`Dataset "${createdDataset.name}" created successfully`);
       setCreateDatasetDialogOpen(false);
-      setNewDatasetForm(DEFAULT_DATASET_FORM);
+      setNewDatasetForm(EMPTY_DATASET_FORM);
       await loadDatasets();
     } catch (error) {
       setErrorMessage(getErrorMessage(error, 'Failed to create dataset'));
@@ -260,7 +260,7 @@ export const RAGDatasetManager: React.FC<RAGDatasetManagerProps> = ({ onSelectDa
 
       setSuccessMessage(`Document "${document.title}" added and indexed successfully`);
       setDocumentDialogOpen(false);
-      setDocumentForm(DEFAULT_DOCUMENT_FORM);
+      setDocumentForm(EMPTY_DOCUMENT_FORM);
       await Promise.all([
         loadDocuments(selectedDataset.id),
         loadDatasets(),

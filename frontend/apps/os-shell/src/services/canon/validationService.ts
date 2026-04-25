@@ -56,7 +56,7 @@ export function validateParcelId(id: unknown): ValidationResult[] {
   }
 
   // Only alphanumeric, hyphens, and dots allowed
-  if (!/^[A-Za-z0-9.\-]+$/.test(trimmed)) {
+  if (!/^[A-Za-z0-9.-]+$/.test(trimmed)) {
     results.push(
       result(
         'parcelId',

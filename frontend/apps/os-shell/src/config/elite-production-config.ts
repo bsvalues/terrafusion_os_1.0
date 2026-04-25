@@ -121,7 +121,7 @@ export const eliteProductionConfig = defineConfig({
       template: 'treemap',
       gzipSize: true,
       brotliSize: true,
-    }) as any,
+    }) as Plugin,
 
     // Compression disabled - use server-side compression for production
     // compression can be added via build tools if needed

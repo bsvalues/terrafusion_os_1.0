@@ -50,11 +50,10 @@ const PropertySearch: React.FC = () => {
       setTotalCount(null);
       setError(err instanceof Error ? err : new Error(String(err)));
     } finally {
-      if (!mountedRef.current || requestId !== requestIdRef.current) {
-        return;
+      if (mountedRef.current && requestId === requestIdRef.current) {
+        setLoading(false);
+        setInitialLoaded(true);
       }
-      setLoading(false);
-      setInitialLoaded(true);
     }
   }, []);
 

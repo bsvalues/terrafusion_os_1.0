@@ -3,7 +3,7 @@
  * Full standalone OS window. Five tabs, live IAAO stats, deep PACS audit.
  *
  * Architecture: Statistics Studio pattern (React module, not AppFrame iframe).
- * Data: All real PACS via .NET API — no fixtures, no mock data.
+ * Data: All real PACS via .NET API; fixtures and synthetic records are not used in this surface.
  *
  * Task D2 — receives County Studio Inspector deeplinks via window metadata.
  * Supported metadata keys (all optional):

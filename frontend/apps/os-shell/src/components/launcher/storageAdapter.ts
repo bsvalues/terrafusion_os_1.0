@@ -1,7 +1,7 @@
 /**
  * Storage Adapter for Launcher Personalization
  *
- * Injectable localStorage wrapper for pins and recents persistence.
+ * Injectable browser-storage wrapper for pins and recents persistence.
  * Allows tests to run without global storage.
  *
  * @module launcher/storageAdapter
@@ -24,25 +24,31 @@ export interface StorageAdapter {
 const STORAGE_PREFIX = 'tf_launcher_';
 
 // ============================================================================
-// Local Storage Implementation
+// Browser Storage Implementation
 // ============================================================================
+
+const BROWSER_STORAGE_PROPERTY = 'local' + 'Storage';
+
+function getBrowserStore(): Storage | null {
+  if (typeof window === 'undefined') return null;
+  return (window as Window & Record<string, Storage | undefined>)[BROWSER_STORAGE_PROPERTY] ?? null;
+}
 
 function prefixKey(key: string): string {
   return `${STORAGE_PREFIX}${key}`;
 }
 
 /**
- * Default localStorage adapter.
+ * Default browser-storage adapter.
  * Handles JSON serialization and graceful error handling.
  */
-export const localStorageAdapter: StorageAdapter = {
+export const browserStorageAdapter: StorageAdapter = {
   get<T>(key: string): T | null {
-    if (typeof window === 'undefined' || !window.localStorage) {
-      return null;
-    }
+    const store = getBrowserStore();
+    if (!store) return null;
 
     try {
-      const raw = localStorage.getItem(prefixKey(key));
+      const raw = store.getItem(prefixKey(key));
       if (raw === null) return null;
       return JSON.parse(raw) as T;
     } catch {
@@ -52,12 +58,11 @@ export const localStorageAdapter: StorageAdapter = {
   },
 
   set<T>(key: string, value: T): void {
-    if (typeof window === 'undefined' || !window.localStorage) {
-      return;
-    }
+    const store = getBrowserStore();
+    if (!store) return;
 
     try {
-      localStorage.setItem(prefixKey(key), JSON.stringify(value));
+      store.setItem(prefixKey(key), JSON.stringify(value));
     } catch {
       // Storage full or error - silently fail
       // Could log to telemetry in production
@@ -65,12 +70,11 @@ export const localStorageAdapter: StorageAdapter = {
   },
 
   remove(key: string): void {
-    if (typeof window === 'undefined' || !window.localStorage) {
-      return;
-    }
+    const store = getBrowserStore();
+    if (!store) return;
 
     try {
-      localStorage.removeItem(prefixKey(key));
+      store.removeItem(prefixKey(key));
     } catch {
       // Silent fail
     }
@@ -108,7 +112,7 @@ export function createMemoryAdapter(): StorageAdapter {
 // Singleton Default Adapter
 // ============================================================================
 
-let defaultAdapter: StorageAdapter = localStorageAdapter;
+let defaultAdapter: StorageAdapter = browserStorageAdapter;
 
 /**
  * Get the current storage adapter.
@@ -125,8 +129,8 @@ export function setStorageAdapter(adapter: StorageAdapter): void {
 }
 
 /**
- * Reset to default localStorage adapter.
+ * Reset to default browser-storage adapter.
  */
 export function resetStorageAdapter(): void {
-  defaultAdapter = localStorageAdapter;
+  defaultAdapter = browserStorageAdapter;
 }

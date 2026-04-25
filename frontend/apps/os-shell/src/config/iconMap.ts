@@ -1,4 +1,3 @@
-import type { ComponentType } from 'react';
 import {
   Activity,
   BarChart3,
@@ -21,6 +20,7 @@ import {
   Network,
   LayoutDashboard,
   Briefcase,
+  type LucideIcon,
 } from 'lucide-react';
 
 export const LUCIDE_ICON_MAP = {
@@ -50,5 +50,5 @@ export const LUCIDE_ICON_MAP = {
 export type LucideIconName = keyof typeof LUCIDE_ICON_MAP;
 
 export function getLucideIcon(iconName: string) {
-  return (LUCIDE_ICON_MAP as Record<string, ComponentType<any>>)[iconName] ?? Activity;
+  return (LUCIDE_ICON_MAP as Record<string, LucideIcon>)[iconName] ?? Activity;
 }
