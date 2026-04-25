@@ -309,7 +309,7 @@ export function CostForgeDashboard() {
                 </thead>
                 <tbody>
                   {scheduleStatus.map((s) => (
-                    <tr key={s.type} className="border-b hover:bg-white/5">
+                    <tr key={s.type} role="link" className="border-b hover:bg-white/5 cursor-pointer">
                       <td className="py-2 font-medium">{s.type}</td>
                       <td className="py-2 text-right tabular-nums">
                         {s.entryCount != null ? s.entryCount : <span className="text-muted-foreground">—</span>}

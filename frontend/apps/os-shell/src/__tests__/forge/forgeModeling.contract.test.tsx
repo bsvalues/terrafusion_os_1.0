@@ -14,10 +14,17 @@
 
 import '@testing-library/jest-dom';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+/** Wrap a component with QueryClientProvider so useQuery hooks don't throw. */
+function withQueryClient(ui: React.ReactElement): React.ReactElement {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return <QueryClientProvider client={qc}>{ui}</QueryClientProvider>;
+}
 
 // ---------------------------------------------------------------------------
 // Light-mode patterns — any hit means the component uses hardcoded color
@@ -202,24 +209,53 @@ vi.mock('../../components/workbench/ParcelContextBanner', () => ({
   ParcelContextBanner: () => null,
 }));
 
+// Heavy ForgeSuiteHome transitive deps — prevent cold-start hang in isolation
+vi.mock('../../orchestration/moduleActivation', () => ({
+  activateModule: vi.fn(),
+  normalizeModuleId: vi.fn((id: string) => id),
+}));
+
+vi.mock('../../stores/propertyStore', () => ({
+  usePropertyStore: vi.fn((selector?: (s: any) => any) => {
+    const state = { activeParcel: null, recentParcels: [] };
+    return selector ? selector(state) : state;
+  }),
+}));
+
+vi.mock('../../api/pilotApi', () => ({
+  invokeTool: vi.fn().mockResolvedValue({ result: 'ok' }),
+}));
+
+// Stub apiFetch so CostForgeDashboard's useQuery calls resolve immediately
+vi.mock('../../lib/apiBase', () => ({
+  apiFetch: vi.fn().mockImplementation((url: string) =>
+    Promise.resolve({
+      json: () => Promise.resolve(
+        url.includes('schedule')
+          ? []
+          : {
+              taxYear: 2026, totalParcels: 89247,
+              propertyTypeDistribution: [], depreciationSummary: [],
+              source: 'stub', avgResCostPerSqft: null, dataIntegrityWarning: null,
+            }
+      ),
+    })
+  ),
+}));
+
+vi.mock('../../pages/suites/SaleQualificationQueue', () => ({
+  SaleQualificationQueue: () => <div data-testid="sale-qualification-queue" />,
+}));
+
+vi.mock('../../pages/suites/CompsPoolBrowser', () => ({
+  CompsPoolBrowser: () => <div data-testid="comps-pool-browser" />,
+}));
+
 vi.mock('lucide-react', () => {
   const Icon = (props: any) => <svg data-slot="icon" {...props} />;
-  return {
-    ArrowLeft: Icon,
-    Hammer: Icon,
-    Calculator: Icon,
-    BarChart3: Icon,
-    Scale: Icon,
-    TrendingUp: Icon,
-    FileSearch: Icon,
-    Gavel: Icon,
-    ShieldCheck: Icon,
-    LineChart: Icon,
-    PieChart: Icon,
-    MapPin: Icon,
-    DollarSign: Icon,
-    Search: Icon,
-  };
+  return new Proxy({ __esModule: true }, {
+    get: (_target, prop) => (prop === '__esModule' ? true : Icon),
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -273,32 +309,39 @@ describe('Phase 10: Forge Modeling Contract', () => {
 
   describe('CostForgeDashboard', () => {
     it('1. renders with data-testid="cost-forge-dashboard"', () => {
-      const { container } = render(<CostForgeDashboard />);
+      const { container } = render(withQueryClient(<CostForgeDashboard />));
       const root = container.querySelector('[data-testid="cost-forge-dashboard"]');
       expect(root).toBeInTheDocument();
     });
 
-    it('2. summary cards have data-material="bento"', () => {
-      const { container } = render(<CostForgeDashboard />);
+    it('2. summary cards have data-material="bento"', async () => {
+      const { container } = render(withQueryClient(<CostForgeDashboard />));
       // The 4 summary cards in the grid should carry data-material="bento"
-      const bentoCards = container.querySelectorAll('[data-material="bento"]');
-      expect(bentoCards.length).toBeGreaterThanOrEqual(4);
+      await waitFor(() => {
+        const bentoCards = container.querySelectorAll('[data-material="bento"]');
+        expect(bentoCards.length).toBeGreaterThanOrEqual(4);
+      });
     });
 
-    it('3. schedule table has data-material="bento"', () => {
-      const { container } = render(<CostForgeDashboard />);
+    it('3. schedule table has data-material="bento"', async () => {
+      const { container } = render(withQueryClient(<CostForgeDashboard />));
       // The schedule table (or its wrapping Card) should have data-material="bento"
-      const table = container.querySelector('table');
-      expect(table).toBeInTheDocument();
-      // Either the table itself or its parent Card should carry the attribute
-      const tableParent = table!.closest('[data-material="bento"]');
-      expect(tableParent).toBeInTheDocument();
+      await waitFor(() => {
+        const table = container.querySelector('table');
+        expect(table).toBeInTheDocument();
+        // Either the table itself or its parent Card should carry the attribute
+        const tableParent = table!.closest('[data-material="bento"]');
+        expect(tableParent).toBeInTheDocument();
+      });
     });
 
-    it('4. schedule table rows have role="link"', () => {
-      const { container } = render(<CostForgeDashboard />);
+    it('4. schedule table rows have role="link"', async () => {
+      const { container } = render(withQueryClient(<CostForgeDashboard />));
+      await waitFor(() => {
+        const tbody = container.querySelector('tbody');
+        expect(tbody).toBeInTheDocument();
+      });
       const tbody = container.querySelector('tbody');
-      expect(tbody).toBeInTheDocument();
       const rows = tbody!.querySelectorAll('tr');
       expect(rows.length).toBeGreaterThan(0);
       rows.forEach((row) => {
@@ -307,7 +350,7 @@ describe('Phase 10: Forge Modeling Contract', () => {
     });
 
     it('5. no light-mode Tailwind classes (no hover:bg-gray-50 etc.)', () => {
-      const { container } = render(<CostForgeDashboard />);
+      const { container } = render(withQueryClient(<CostForgeDashboard />));
       const violations = findLightModeViolations(container.innerHTML);
       expect(violations).toEqual([]);
     });
@@ -415,12 +458,12 @@ describe('Phase 10: Forge Modeling Contract', () => {
   // =========================================================================
 
   describe('ForgeSuiteHome', () => {
-    it('16. has data-testid on stats strip ("forge-stats"), module grid ("forge-modules"), and queue ("forge-queue")', () => {
+    it('16. has data-testid on stats strip ("forge-stats"), module grid ("forge-primary-applications"), and queue ("forge-queue")', () => {
       renderWithRouter(<ForgeSuiteHome />);
 
       expect(screen.getByTestId('suite-forge-root')).toBeInTheDocument();
       expect(screen.getByTestId('forge-stats')).toBeInTheDocument();
-      expect(screen.getByTestId('forge-modules')).toBeInTheDocument();
+      expect(screen.getByTestId('forge-primary-applications')).toBeInTheDocument();
       expect(screen.getByTestId('forge-queue')).toBeInTheDocument();
     });
   });
