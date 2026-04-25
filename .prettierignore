@@ -48,6 +48,9 @@ LICENSE
 
 _archive/
 
+# WA Counties reference adapter library — large generated files, not source
+docs/Washington Counties/
+
 # Third-party app packages (copied from QUARANTINE/E:\ — not our source)
 packages/gis-pro/
 packages/terra-gama/
