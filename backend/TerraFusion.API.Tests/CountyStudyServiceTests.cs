@@ -621,6 +621,125 @@ public class CountyStudyServiceTests
         Assert.Contains("admin", dto.Notes);
     }
 
+    // ── UpdateApprovalStateAsync — state machine unit tests ──────────────────
+
+    /// <summary>
+    /// Seeds a study → cohort → scenario → (save) → promote into Proposed state.
+    /// Returns (svc, adjSetId) so state-machine tests can exercise transitions.
+    /// </summary>
+    private async Task<(CountyStudyService svc, Guid adjSetId)> SeedProposedAdjSetAsync()
+    {
+        var (_, svc) = CreateSut();
+        var study = await svc.CreateStudyAsync(
+            new CreateStudyRequest(Guid.NewGuid().ToString(), 2026, StudyType.RatioStudy, null), "u1");
+        var cohort = await svc.CreateCohortAsync(
+            new CreateCohortRequest(study.StudyId, "StateMachineCohort",
+                CohortSelectionType.Segment, "{}", 100, false), "u1");
+        var scenario = await svc.CreateScenarioAsync(
+            new CreateScenarioRequest(study.StudyId, cohort.CohortId,
+                ScenarioAdjustmentType.TotalValuePercent, "{\"magnitude\":2.5}", "StateMachineTest"), "u1");
+        await svc.SaveScenarioAsync(scenario.ScenarioId, "u1");
+        var adj = await svc.PromoteScenarioAsync(
+            new PromoteScenarioRequest(scenario.ScenarioId, "{\"scope\":\"county\"}"), "u1");
+        return (svc, adj.AdjustmentSetId);
+    }
+
+    [Fact]
+    public async Task UpdateApprovalState_Proposed_To_ReadyForApproval_Succeeds()
+    {
+        var (svc, adjId) = await SeedProposedAdjSetAsync();
+
+        var dto = await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.ReadyForApproval, "u1");
+
+        Assert.Equal("ReadyForApproval", dto.ApprovalState);
+        Assert.Null(dto.ApprovedBy);
+    }
+
+    [Fact]
+    public async Task UpdateApprovalState_ReadyForApproval_To_Approved_SetsApprovedBy()
+    {
+        var (svc, adjId) = await SeedProposedAdjSetAsync();
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.ReadyForApproval, "u1");
+
+        var dto = await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Approved, "reviewer");
+
+        Assert.Equal("Approved", dto.ApprovalState);
+        Assert.Equal("reviewer", dto.ApprovedBy);
+    }
+
+    [Fact]
+    public async Task UpdateApprovalState_Approved_To_Published_SetsPublishedAt()
+    {
+        var (svc, adjId) = await SeedProposedAdjSetAsync();
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.ReadyForApproval, "u1");
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Approved, "u1");
+
+        var before = DateTime.UtcNow.AddSeconds(-1);
+        var dto = await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Published, "u1");
+        var after = DateTime.UtcNow.AddSeconds(1);
+
+        Assert.Equal("Published", dto.ApprovalState);
+        Assert.NotNull(dto.PublishedAt);
+        Assert.True(dto.PublishedAt >= before && dto.PublishedAt <= after);
+    }
+
+    [Fact]
+    public async Task UpdateApprovalState_ReadyForApproval_SendBack_To_Proposed_Succeeds()
+    {
+        var (svc, adjId) = await SeedProposedAdjSetAsync();
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.ReadyForApproval, "u1");
+
+        // Send-back: ReadyForApproval → Proposed is a legal transition.
+        var dto = await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Proposed, "u1");
+
+        Assert.Equal("Proposed", dto.ApprovalState);
+    }
+
+    [Fact]
+    public async Task UpdateApprovalState_Published_To_RolledBack_Succeeds()
+    {
+        var (svc, adjId) = await SeedProposedAdjSetAsync();
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.ReadyForApproval, "u1");
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Approved, "u1");
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Published, "u1");
+
+        var dto = await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.RolledBack, "u1");
+
+        Assert.Equal("RolledBack", dto.ApprovalState);
+    }
+
+    [Fact]
+    public async Task UpdateApprovalState_IllegalSkip_Proposed_To_Published_Throws()
+    {
+        var (svc, adjId) = await SeedProposedAdjSetAsync();
+
+        // Direct jump from Proposed → Published is illegal (must go through RFA → Approved first).
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Published, "u1"));
+    }
+
+    [Fact]
+    public async Task UpdateApprovalState_Published_To_Approved_IllegalReversal_Throws()
+    {
+        var (svc, adjId) = await SeedProposedAdjSetAsync();
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.ReadyForApproval, "u1");
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Approved, "u1");
+        await svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Published, "u1");
+
+        // Rolling back to Approved directly from Published is illegal.
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            svc.UpdateApprovalStateAsync(adjId, AdjustmentSetApprovalState.Approved, "u1"));
+    }
+
+    [Fact]
+    public async Task UpdateApprovalState_NotFound_ThrowsInvalidOperation()
+    {
+        var (_, svc) = CreateSut();
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            svc.UpdateApprovalStateAsync(Guid.NewGuid(), AdjustmentSetApprovalState.ReadyForApproval, "u1"));
+    }
+
     // ── Evidence Packet (Task H) ──────────────────────────────────────────────
 
     [Fact]
