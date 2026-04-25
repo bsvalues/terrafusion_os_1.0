@@ -71,7 +71,7 @@ export function StatisticsStudio() {
   const loadComparison = useForgeStatisticsStore((s) => s.loadComparison);
   const statsLoading = useForgeStatisticsStore((s) => s.loading);
   const ratioData = useRatioData();
-  const [isFixture] = useState(false); // banner activates if a fixture fallback is wired in future
+  const [isFixture] = useState(false);
   const availableTaxYears = useMemo(
     () =>
       Array.from(
