@@ -35,6 +35,25 @@ vi.mock('react-router-dom', async () => {
 const BENTON_TEST_PARCEL = '1-0001-010-0010-000';
 const BENTON_TEST_ADDRESS = '123 TULIP LN, KENNEWICK WA 99336';
 
+// PropertySearch reads from assessmentPropertyService (canonical service);
+// pacsService is a re-export shim. Mock both to keep legacy contract tests
+// portable against either import surface.
+vi.mock('../../services/assessmentPropertyService', () => ({
+  getAssessmentProperties: vi.fn().mockResolvedValue({
+    items: [
+      {
+        geoId: BENTON_TEST_PARCEL,
+        address: BENTON_TEST_ADDRESS,
+        assessedValue: 285000,
+        marketValue: 310000,
+        propertyType: 'Residential',
+      },
+    ],
+    totalCount: 1,
+    page: 1,
+    pageSize: 20,
+  }),
+}));
 vi.mock('../../services/pacsService', () => ({
   getPacsProperties: vi.fn().mockResolvedValue({
     items: [
@@ -113,7 +132,9 @@ describe('Phase 12: Benton County Golden Journey Contract', () => {
 
     it('renders the Property Search heading', async () => {
       await renderPropertySearch();
-      expect(screen.getByText(/Property Search/i)).toBeTruthy();
+      // PropertySearch surfaces the phrase 'Property Search' in both the page
+      // heading and route copy, so any-of-many is the right contract here.
+      expect(screen.getAllByText(/Property Search/i).length).toBeGreaterThan(0);
     });
 
     it('shows Benton County parcel count after initial load', async () => {
