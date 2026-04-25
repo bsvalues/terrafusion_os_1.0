@@ -282,7 +282,7 @@ describe('Window Component', () => {
 
       const windowVisuals = screen.getByTestId('tf-window-chrome');
       expect(windowVisuals).toHaveStyle({
-        border: '0.5px solid hsl(var(--tf-text) / 0.12)',
+        border: '0.5px solid hsl(var(--tf-border) / 0.5)',
       });
     });
 
@@ -300,7 +300,7 @@ describe('Window Component', () => {
 
       const windowVisuals = screen.getByTestId('tf-window-chrome');
       expect(windowVisuals).toHaveStyle({
-        border: '0.5px solid hsl(var(--tf-border) / 0.3)',
+        border: '0.5px solid hsl(var(--tf-border) / 0.25)',
       });
     });
 
@@ -373,7 +373,8 @@ describe('Window Component', () => {
       const titleBar = screen.getByTestId('window-titlebar');
       const title = titleBar.querySelector('span.truncate');
       expect(title).not.toBeNull();
-      expect(title!.className).toContain('text-white');
+      // Component uses CSS-variable-based class for active title color
+      expect(title!.className).toContain('text-[hsl(var(--tf-text))]');
     });
 
     it('shows inactive title color when window is not active', () => {
@@ -391,7 +392,8 @@ describe('Window Component', () => {
       const titleBar = screen.getByTestId('window-titlebar');
       const title = titleBar.querySelector('span.truncate');
       expect(title).not.toBeNull();
-      expect(title!.className).toContain('text-white/60');
+      // Component uses CSS-variable-based class for inactive title color
+      expect(title!.className).toContain('text-[hsl(var(--tf-text)/0.5)]');
     });
 
     it('toggles maximize on double-click', async () => {
