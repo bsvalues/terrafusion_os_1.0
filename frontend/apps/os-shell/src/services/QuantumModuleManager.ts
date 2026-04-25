@@ -424,106 +424,11 @@ class QuantumModuleManagerService {
   /**
    * OS API methods for modules to interact with the system
    */
-  async invoke(command: string, params: any): Promise<any> {
-
-    // Mock API responses for common commands
-    switch (command) {
-      case 'costforge.analyze':
-        return this.mockCostForgeAnalysis(params);
-      case 'costforge.mlForecast':
-        return this.mockMLForecast(params);
-      case 'costforge.generateReport':
-        return this.mockGenerateReport(params);
-      default:
-        return { success: true, message: `Command ${command} executed`, data: params };
-    }
-  }
-
-  /**
-   * Mock CostForge AI analysis for demonstration
-   */
-  private async mockCostForgeAnalysis(params: any): Promise<any> {
-    // Simulate quantum AI processing delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    return {
-      success: true,
-      costBreakdown: {
-        totalCost: 485000 + Math.random() * 100000,
-        costPerSqFt: 194 + Math.random() * 50,
-        materials: 285000,
-        labor: 165000,
-        permits: 15000,
-        overhead: 20000,
-      },
-      aiInsights: {
-        summary: `Quantum AI analysis complete for ${params.projectType} property. Market conditions optimal. 99.5% accuracy achieved.`,
-        confidence: 0.995,
-        marketTrends: 'favorable',
-        riskFactors: 'minimal',
-        recommendations: [
-          'Proceed with current valuation methodology',
-          'Monitor market conditions quarterly',
-          'Consider premium materials upgrade',
-        ],
-      },
-      quantumMetrics: {
-        optimizationFactor: 949,
-        processingTime: '1.2s',
-        quantumCoherence: 0.987,
-      },
-    };
-  }
-
-  /**
-   * Mock ML forecast for demonstration
-   */
-  private async mockMLForecast(params: any): Promise<any> {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    return {
-      success: true,
-      forecast: {
-        timeframe: params.timeframe,
-        projectedIncrease: 12.5 + Math.random() * 5,
-        confidence: params.confidence,
-        factors: [
-          'Regional economic growth',
-          'Infrastructure development',
-          'Population density increase',
-        ],
-      },
-      quantumPrediction: {
-        accuracy: 99.5,
-        convergenceTime: '0.8s',
-        modelComplexity: 'transcendent',
-      },
-    };
-  }
-
-  /**
-   * Mock report generation for demonstration
-   */
-  private async mockGenerateReport(params: any): Promise<any> {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    return {
-      success: true,
-      report: {
-        format: params.format,
-        generatedAt: new Date().toISOString(),
-        pages: 47,
-        insights: 23,
-        charts: 12,
-        accuracy: 99.5,
-      },
-      downloadUrl: `/reports/terrafusion-${Date.now()}.pdf`,
-      quantumGeneration: {
-        processingSpeed: '0.3s',
-        dataPoints: 50000,
-        qualityScore: 'transcendent',
-      },
-    };
+  async invoke(command: string, params: unknown): Promise<never> {
+    void params;
+    throw new Error(
+      `QuantumModuleManager command "${command}" is not wired to a governed Pilot tool. Route this action through Pilot before exposing results.`,
+    );
   }
 }
 

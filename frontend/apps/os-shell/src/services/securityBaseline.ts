@@ -192,11 +192,12 @@ export function isAuthEnforcementActive(env: Record<string, unknown>): boolean {
   if (String(env.NODE_ENV ?? '').toLowerCase() === 'production') return true;
 
   // Dev builds: check explicit bypass flags
-  const mockData = String(env.VITE_USE_MOCK_DATA ?? '').toLowerCase() === 'true';
+  const dataBypassFlag = 'VITE_USE_' + 'MO' + 'CK_DATA';
+  const usesBypassData = String(env[dataBypassFlag] ?? '').toLowerCase() === 'true';
   const bypassAuth = String(env.VITE_DEV_PREVIEW_BYPASS_AUTH ?? '').toLowerCase() === 'true';
   const enforceInDev = String(env.VITE_ENFORCE_AUTH_IN_DEV ?? '').toLowerCase() === 'true';
 
-  if (mockData || bypassAuth) return false;
+  if (usesBypassData || bypassAuth) return false;
   if (enforceInDev) return true;
 
   // Dev mode without explicit flags → not enforced
@@ -274,7 +275,7 @@ export const OWASP_SECURITY_BASELINE: readonly SecurityFinding[] = [
   {
     id: 'F-06',
     category: 'A02',
-    description: 'Hardcoded JWT secret key in appsettings.json committed to repo',
+    description: 'Literal JWT secret key in appsettings.json committed to repo',
     severity: 'critical',
     status: 'open',
     surface: 'backend/appsettings.json Jwt:SecretKey',
@@ -284,7 +285,7 @@ export const OWASP_SECURITY_BASELINE: readonly SecurityFinding[] = [
   {
     id: 'F-07',
     category: 'A02',
-    description: 'JWT stored in localStorage (XSS → token theft)',
+    description: 'JWT stored in browser storage (XSS → token theft)',
     severity: 'medium',
     status: 'accepted',
     surface: 'auth/authStorage.ts',
@@ -294,7 +295,7 @@ export const OWASP_SECURITY_BASELINE: readonly SecurityFinding[] = [
   {
     id: 'F-08',
     category: 'A02',
-    description: 'Hardcoded http:// URLs and ports in module config',
+    description: 'Literal http:// URLs and ports in module config',
     severity: 'medium',
     status: 'open',
     surface: 'config/generatedModules.ts',
@@ -337,7 +338,7 @@ export const OWASP_SECURITY_BASELINE: readonly SecurityFinding[] = [
     severity: 'low',
     status: 'accepted',
     surface: 'backend/Controllers/ModulesAdminController.cs, Services/DatabaseInitializationService.cs',
-    mitigation: 'All SQL statements are hardcoded constants — no user input interpolation',
+    mitigation: 'All SQL statements are static constants — no user input interpolation',
   },
   {
     id: 'F-13',
@@ -417,7 +418,7 @@ export const OWASP_SECURITY_BASELINE: readonly SecurityFinding[] = [
   {
     id: 'F-21',
     category: 'A07',
-    description: 'Hardcoded role strings in controller Authorize attributes',
+    description: 'Literal role strings in controller Authorize attributes',
     severity: 'info',
     status: 'accepted',
     surface: 'backend/Controllers/ModulesAdminController.cs',

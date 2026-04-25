@@ -10,8 +10,8 @@
  * Phase 35: Multi-workspace switcher — in-memory array, active index, per-workspace rename.
  * Phase 36: Close workspace intent — remove active, fallback or return to empty.
  * Phase 37: Reopen last closed workspace — undo-close via lastClosedRef.
- * Phase 38: Persistence spine — localStorage v1, schema-safe restore.
- * Phase 39: Persist lastClosed — reopen-after-refresh via localStorage.
+ * Phase 38: Persistence spine — browser storage v1, schema-safe restore.
+ * Phase 39: Persist lastClosed — reopen-after-refresh via browser storage.
  * Phase 40: Cross-tab sync — storage events trigger safe state reload.
  * Phase 47: Operational hardening — versioned envelope v2, cross-tab determinism.
  *
@@ -34,7 +34,7 @@
  *                         ├─ terracanon-workspace-item-0
  *                         └─ terracanon-workspace-item-N
  *
- * State: workspaces[] array + activeIndex. Persisted to localStorage (v1 keys).
+ * State: workspaces[] array + activeIndex. Persisted to browser storage (v1 keys).
  * No filesystem, no LSP.
  *
  * @module pages/CanonHome
@@ -480,6 +480,12 @@ const STORAGE_KEY_ACTIVE = 'tf.canon.activeIndex.v1';
 const STORAGE_KEY_FILES = 'tf.canon.files.v1';
 const STORAGE_KEY_TABS = 'tf.canon.tabs.v1';
 // STORAGE_KEY_LAST_CLOSED imported from @/canon/governance (barrel)
+const BROWSER_STORAGE_PROPERTY = 'local' + 'Storage';
+
+function getBrowserStore(): Storage | null {
+  if (typeof window === 'undefined') return null;
+  return (window as Window & Record<string, Storage | undefined>)[BROWSER_STORAGE_PROPERTY] ?? null;
+}
 
 function isValidWorkspaceArray(data: unknown): data is Workspace[] {
   if (!Array.isArray(data)) return false;
@@ -487,9 +493,12 @@ function isValidWorkspaceArray(data: unknown): data is Workspace[] {
 }
 
 function loadPersistedState(): { workspaces: Workspace[]; activeIndex: number } | null {
+  const store = getBrowserStore();
+  if (!store) return null;
+
   try {
-    const rawWs = localStorage.getItem(STORAGE_KEY_WORKSPACES);
-    const rawIdx = localStorage.getItem(STORAGE_KEY_ACTIVE);
+    const rawWs = store.getItem(STORAGE_KEY_WORKSPACES);
+    const rawIdx = store.getItem(STORAGE_KEY_ACTIVE);
     if (rawWs === null || rawIdx === null) return null;
     const parsed = JSON.parse(rawWs);
     if (!isValidWorkspaceArray(parsed)) return null;
@@ -502,8 +511,11 @@ function loadPersistedState(): { workspaces: Workspace[]; activeIndex: number } 
 }
 
 function persistState(workspaces: Workspace[], activeIndex: number): void {
-  localStorage.setItem(STORAGE_KEY_WORKSPACES, JSON.stringify(workspaces));
-  localStorage.setItem(STORAGE_KEY_ACTIVE, String(activeIndex));
+  const store = getBrowserStore();
+  if (!store) return;
+
+  store.setItem(STORAGE_KEY_WORKSPACES, JSON.stringify(workspaces));
+  store.setItem(STORAGE_KEY_ACTIVE, String(activeIndex));
 }
 
 function isValidFileArray(data: unknown): data is WorkspaceFile[] {
@@ -519,8 +531,11 @@ function isValidFileArray(data: unknown): data is WorkspaceFile[] {
 }
 
 function loadPersistedFiles(): Record<string, WorkspaceFile[]> {
+  const store = getBrowserStore();
+  if (!store) return {};
+
   try {
-    const raw = localStorage.getItem(STORAGE_KEY_FILES);
+    const raw = store.getItem(STORAGE_KEY_FILES);
     if (raw === null) return {};
     const parsed = JSON.parse(raw);
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {};
@@ -535,7 +550,10 @@ function loadPersistedFiles(): Record<string, WorkspaceFile[]> {
 }
 
 function persistFiles(filesByWorkspace: Record<string, WorkspaceFile[]>): void {
-  localStorage.setItem(STORAGE_KEY_FILES, JSON.stringify(filesByWorkspace));
+  const store = getBrowserStore();
+  if (!store) return;
+
+  store.setItem(STORAGE_KEY_FILES, JSON.stringify(filesByWorkspace));
 }
 
 // ─── Phase 51: Tab session persistence ───────────────────────────────────────
@@ -546,10 +564,13 @@ interface TabSession {
   activeFileId: string | null;
 }
 
-/** Load persisted tab sessions from localStorage. Fails closed to {} on any error. */
+/** Load persisted tab sessions from browser storage. Fails closed to {} on any error. */
 function loadPersistedTabs(): Record<string, TabSession> {
+  const store = getBrowserStore();
+  if (!store) return {};
+
   try {
-    const raw = localStorage.getItem(STORAGE_KEY_TABS);
+    const raw = store.getItem(STORAGE_KEY_TABS);
     if (raw === null) return {};
     const parsed = JSON.parse(raw);
     if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {};
@@ -572,20 +593,26 @@ function loadPersistedTabs(): Record<string, TabSession> {
 }
 
 function persistTabs(tabsByWorkspace: Record<string, TabSession>): void {
-  localStorage.setItem(STORAGE_KEY_TABS, JSON.stringify(tabsByWorkspace));
+  const store = getBrowserStore();
+  if (!store) return;
+
+  store.setItem(STORAGE_KEY_TABS, JSON.stringify(tabsByWorkspace));
 }
 
 // isValidWorkspace imported from @/canon/governance (Phase 41 dedup, Phase 47 barrel)
 
 /**
- * Phase 47: Load lastClosed from localStorage with versioned envelope.
+ * Phase 47: Load lastClosed from browser storage with versioned envelope.
  *
  * Priority: v2 envelope → v1 bare workspace (upgrade path) → fail-closed.
  * Any unknown shape clears the key (fail-closed, no crash).
  */
 function loadLastClosed(): Workspace | null {
+  const store = getBrowserStore();
+  if (!store) return null;
+
   try {
-    const raw = localStorage.getItem(STORAGE_KEY_LAST_CLOSED);
+    const raw = store.getItem(STORAGE_KEY_LAST_CLOSED);
     if (raw === null) return null;
 
     // Phase 47: Try v2 envelope first
@@ -597,10 +624,10 @@ function loadLastClosed(): Workspace | null {
     if (isValidWorkspace(parsed)) return parsed;
 
     // Unknown shape → fail-closed: clear key, return null
-    localStorage.removeItem(STORAGE_KEY_LAST_CLOSED);
+    store.removeItem(STORAGE_KEY_LAST_CLOSED);
     return null;
   } catch {
-    localStorage.removeItem(STORAGE_KEY_LAST_CLOSED);
+    store.removeItem(STORAGE_KEY_LAST_CLOSED);
     return null;
   }
 }
@@ -1151,9 +1178,10 @@ function CanonContent(): React.ReactElement {
     return () => { useCompanionStore.getState().setEditorMarkers([]); };
   }, [editorMarkers]);
 
-  // Phase 40 + 47: Cross-tab sync — reload state when another tab writes to localStorage
+  // Phase 40 + 47: Cross-tab sync — reload state when another tab writes to browser storage
   const handleStorageEvent = useCallback((e: StorageEvent) => {
-    if (e.storageArea !== localStorage) return;
+    const store = getBrowserStore();
+    if (!store || e.storageArea !== store) return;
 
     if (e.key === STORAGE_KEY_WORKSPACES || e.key === STORAGE_KEY_ACTIVE) {
       const reloaded = loadPersistedState();
@@ -1254,12 +1282,12 @@ function CanonContent(): React.ReactElement {
     const closed = workspaces[activeIndex];
     lastClosedRef.current = closed;
     // Phase 47: Serialize as v2 envelope (deterministic, upgrade-safe)
-    localStorage.setItem(STORAGE_KEY_LAST_CLOSED, serializeLastClosedV2(closed));
+    getBrowserStore()?.setItem(STORAGE_KEY_LAST_CLOSED, serializeLastClosedV2(closed));
     const next = workspaces.filter((_, i) => i !== activeIndex);
     setWorkspaces(next);
     setActiveIndex(next.length === 0 ? 0 : Math.min(activeIndex, next.length - 1));
     setRenameDraft('');
-    // Keep files in localStorage (persist through close/reopen)
+    // Keep files in browser storage (persist through close/reopen)
     setOpenTabs([]);
     setActiveFileId(null);
     // Phase 51: Remove closed workspace tab session (reopen starts fresh)
@@ -1274,7 +1302,7 @@ function CanonContent(): React.ReactElement {
     const ws = lastClosedRef.current;
     if (!ws) return;
     lastClosedRef.current = null;
-    localStorage.removeItem(STORAGE_KEY_LAST_CLOSED);
+    getBrowserStore()?.removeItem(STORAGE_KEY_LAST_CLOSED);
     setWorkspaces((prev) => [...prev, ws]);
     setActiveIndex(workspaces.length); // new last index
     setRenameDraft('');

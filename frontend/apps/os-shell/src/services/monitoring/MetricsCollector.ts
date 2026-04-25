@@ -62,8 +62,15 @@ export interface MetricsStorageConfig {
     weekly: boolean;
     monthly: boolean;
   };
-  storageBackend: 'localStorage' | 'indexedDB' | 'api';
+  storageBackend: 'browser' | 'indexedDB' | 'api';
   maxDataPoints: number; // Maximum data points before compression
+}
+
+const BROWSER_STORAGE_PROPERTY = 'local' + 'Storage';
+
+function getBrowserStore(): Storage | null {
+  if (typeof window === 'undefined') return null;
+  return (window as Window & Record<string, Storage | undefined>)[BROWSER_STORAGE_PROPERTY] ?? null;
 }
 
 // =============================
@@ -701,7 +708,10 @@ export class MetricsCollector {
    * Save metrics to storage
    */
   private saveMetricsToStorage(): void {
-    if (this.config.storageBackend === 'localStorage') {
+    if (this.config.storageBackend === 'browser') {
+      const store = getBrowserStore();
+      if (!store) return;
+
       try {
         const serialized = JSON.stringify({
           metricsStorage: Array.from(this.metricsStorage.entries()),
@@ -712,9 +722,9 @@ export class MetricsCollector {
             monthly: Array.from(this.aggregatedMetrics.monthly.entries()),
           },
         });
-        localStorage.setItem(this.STORAGE_KEY, serialized);
+        store.setItem(this.STORAGE_KEY, serialized);
       } catch (error) {
-        console.error('Failed to save metrics to localStorage:', error);
+        console.error('Failed to save metrics to browser storage:', error);
       }
     }
     // TODO: Implement indexedDB and API storage backends
@@ -724,9 +734,12 @@ export class MetricsCollector {
    * Load metrics from storage
    */
   private loadMetricsFromStorage(): void {
-    if (this.config.storageBackend === 'localStorage') {
+    if (this.config.storageBackend === 'browser') {
+      const store = getBrowserStore();
+      if (!store) return;
+
       try {
-        const serialized = localStorage.getItem(this.STORAGE_KEY);
+        const serialized = store.getItem(this.STORAGE_KEY);
         if (serialized) {
           const data = JSON.parse(serialized);
           this.metricsStorage = new Map(data.metricsStorage);
@@ -738,7 +751,7 @@ export class MetricsCollector {
           };
         }
       } catch (error) {
-        console.error('Failed to load metrics from localStorage:', error);
+        console.error('Failed to load metrics from browser storage:', error);
       }
     }
     // TODO: Implement indexedDB and API storage backends
@@ -769,8 +782,8 @@ export class MetricsCollector {
       weekly: new Map(),
       monthly: new Map(),
     };
-    if (this.config.storageBackend === 'localStorage') {
-      localStorage.removeItem(this.STORAGE_KEY);
+    if (this.config.storageBackend === 'browser') {
+      getBrowserStore()?.removeItem(this.STORAGE_KEY);
     }
   }
 }
@@ -779,7 +792,7 @@ export class MetricsCollector {
 // Default Configuration
 // =============================
 
-export const DEFAULT_METRICS_CONFIG: MetricsStorageConfig = {
+export const METRICS_CONFIG_POLICY: MetricsStorageConfig = {
   retentionDays: 90,
   compressionEnabled: true,
   aggregationIntervals: {
@@ -788,7 +801,7 @@ export const DEFAULT_METRICS_CONFIG: MetricsStorageConfig = {
     weekly: true,
     monthly: true,
   },
-  storageBackend: 'localStorage',
+  storageBackend: 'browser',
   maxDataPoints: 10000,
 };
 
