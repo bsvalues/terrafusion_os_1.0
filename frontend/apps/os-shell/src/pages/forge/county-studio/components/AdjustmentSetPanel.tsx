@@ -64,7 +64,7 @@ function AdjSetRow({
   busy,
 }: {
   adj: CountyAdjustmentSetDto;
-  onAction: (id: string, state: AdjustmentSetApprovalState) => void;
+  onAction: (id: string, state: AdjustmentSetApprovalState, reason?: string) => void;
   busy: string | null;
 }) {
   const actions = NEXT_STATES[adj.approvalState] ?? [];
@@ -83,7 +83,11 @@ function AdjSetRow({
 
   const handleConfirmYes = () => {
     if (confirming) {
-      onAction(adj.adjustmentSetId, confirming);
+      onAction(
+        adj.adjustmentSetId,
+        confirming,
+        confirming === 'RolledBack' ? rollbackReason : undefined,
+      );
       setConfirming(null);
       setRollbackReason('');
     }
@@ -183,8 +187,8 @@ function AdjSetRow({
                   ? 'hsl(var(--tf-error) / 0.13)'
                   : 'hsl(var(--tf-success) / 0.13)',
                 color: confirming === 'RolledBack'
-                  ? 'hsl(var(--tf-error-hs) 55% 50%)'
-                  : 'hsl(var(--tf-success-hs) 22% 44%)',
+                  ? 'hsl(var(--tf-error))'
+                  : 'hsl(var(--tf-success))',
                 cursor: (isBusy || (confirming === 'RolledBack' && rollbackReason.trim() === '')) ? 'not-allowed' : 'pointer',
                 opacity: (isBusy || (confirming === 'RolledBack' && rollbackReason.trim() === '')) ? 0.5 : 1,
               }}
@@ -274,9 +278,11 @@ export function AdjustmentSetPanel() {
   const handleAction = useCallback(async (
     id: string,
     newState: AdjustmentSetApprovalState,
+    reason?: string,
   ) => {
     setBusy(id);
     try {
+      // TODO: forward reason to API when backend UpdateAdjustmentApprovalStateRequest includes rollbackReason field
       const updated = await adjustmentSetApi.updateApprovalState(id, newState);
       setSets((prev) => prev.map((a) => a.adjustmentSetId === id ? updated : a));
     } catch (e) {
