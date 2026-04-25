@@ -52,7 +52,7 @@ vi.mock('../../canon/CanonEditor', () => ({
   detectLanguage: vi.fn().mockReturnValue('plaintext'),
 }));
 
-import { Taskbar } from '../../shell/desktop/Taskbar';
+import { DataModeIndicator } from '../../shell/desktop/DataModeIndicator';
 import CanonHome from '../../pages/CanonHome';
 
 describe('Shell honesty indicators', () => {
@@ -84,7 +84,7 @@ describe('Shell honesty indicators', () => {
     vi.clearAllMocks();
   });
 
-  it('taskbar reports backend health rather than a generic live state', () => {
+  it('shell chrome reports backend health rather than a generic live state', () => {
     useDataModeMock.mockReturnValue({
       mode: 'live',
       connected: true,
@@ -94,7 +94,7 @@ describe('Shell honesty indicators', () => {
 
     render(
       <MemoryRouter initialEntries={['/']}>
-        <Taskbar />
+        <DataModeIndicator />
       </MemoryRouter>
     );
 
@@ -103,10 +103,10 @@ describe('Shell honesty indicators', () => {
     expect(screen.queryByTitle('Connected to live backend')).not.toBeInTheDocument();
   });
 
-  it('taskbar makes mock fallback explicit when backend health is unavailable', () => {
+  it('shell chrome makes mock fallback explicit when backend health is unavailable', () => {
     render(
       <MemoryRouter initialEntries={['/']}>
-        <Taskbar />
+        <DataModeIndicator />
       </MemoryRouter>
     );
 
