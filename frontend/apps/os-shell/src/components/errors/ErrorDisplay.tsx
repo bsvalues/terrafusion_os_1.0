@@ -79,6 +79,22 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error }) => {
     };
   };
 
+  /** Severity className tag — used by tests and styling layers to identify
+   *  the visual severity bucket without parsing inline style hsl() values. */
+  const getSeverityClassName = (errorCode?: string): string => {
+    if (errorCode === 'EXECUTION_FAILED' || errorCode === 'HANDLER_ERROR') {
+      return 'tf-error-display tf-error-critical';
+    }
+    if (
+      errorCode === 'CONFIRMATION_REQUIRED' ||
+      errorCode === 'REASON_CODE_REQUIRED' ||
+      errorCode === 'SUPERVISOR_APPROVAL_REQUIRED'
+    ) {
+      return 'tf-error-display tf-error-warning';
+    }
+    return 'tf-error-display tf-error-warning';
+  };
+
   const formatTimestamp = (timestamp?: string): string => {
     if (!timestamp) return '';
 
@@ -90,7 +106,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error }) => {
   };
 
   return (
-    <div role='alert' style={getSeverityStyle(error.errorCode)}>
+    <div role='alert' className={getSeverityClassName(error.errorCode)} style={getSeverityStyle(error.errorCode)}>
       {/* Header */}
       <div className='flex items-start justify-between mb-3'>
         <div className='flex items-center'>
