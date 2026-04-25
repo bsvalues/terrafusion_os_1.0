@@ -219,9 +219,25 @@ const btnStyle = (color: string): React.CSSProperties => ({
 });
 
 const complianceBadge = (status: string) => {
-  const colors: Record<string, string> = { Compliant: '#22c55e', Marginal: '#f59e0b', NonCompliant: '#ef4444' };
+  const colors: Record<string, string> = {
+    IaaoCompliant:      '#22c55e',
+    MarginalCompliance: '#f59e0b',
+    NonCompliant:       '#ef4444',
+    InsufficientData:   '#6b7280',
+  };
   const c = colors[status] ?? '#6b7280';
-  return <span style={{ padding: '1px 8px', borderRadius: 10, background: `${c}22`, color: c, fontWeight: 700, fontSize: 11 }}>{status}</span>;
+  return (
+    <span
+      data-compliance={status}
+      data-compliance-color={c}
+      style={{
+        padding: '1px 8px', borderRadius: 10,
+        background: `${c}22`, color: c, fontWeight: 700, fontSize: 11,
+      }}
+    >
+      {status}
+    </span>
+  );
 };
 
 const sectionTitle: React.CSSProperties = {

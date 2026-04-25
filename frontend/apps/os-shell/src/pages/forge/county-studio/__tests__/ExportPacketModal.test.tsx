@@ -133,4 +133,33 @@ describe('ExportPacketModal', () => {
     render(<ExportPacketModal studyId="study-1" scenarioId="sc-42" onClose={vi.fn()} />);
     expect(mockGet).toHaveBeenCalledWith('study-1', 'sc-42');
   });
+
+  describe('ExportPacketModal — compliance badge colors', () => {
+    it('compliance badge data-compliance-color is green (#22c55e) for IaaoCompliant', async () => {
+      mockGet.mockResolvedValueOnce({ ...MOCK_PACKET, complianceStatus: 'IaaoCompliant' });
+      render(<ExportPacketModal studyId="study-1" onClose={vi.fn()} />);
+      await screen.findByTestId('export-packet-content');
+      const badge = document.querySelector('[data-compliance="IaaoCompliant"]');
+      expect(badge).not.toBeNull();
+      expect(badge!.getAttribute('data-compliance-color')).toBe('#22c55e');
+    });
+
+    it('compliance badge data-compliance-color is amber (#f59e0b) for MarginalCompliance', async () => {
+      mockGet.mockResolvedValueOnce({ ...MOCK_PACKET, complianceStatus: 'MarginalCompliance' });
+      render(<ExportPacketModal studyId="study-1" onClose={vi.fn()} />);
+      await screen.findByTestId('export-packet-content');
+      const badge = document.querySelector('[data-compliance="MarginalCompliance"]');
+      expect(badge).not.toBeNull();
+      expect(badge!.getAttribute('data-compliance-color')).toBe('#f59e0b');
+    });
+
+    it('compliance badge data-compliance-color is red (#ef4444) for NonCompliant', async () => {
+      mockGet.mockResolvedValueOnce({ ...MOCK_PACKET, complianceStatus: 'NonCompliant' });
+      render(<ExportPacketModal studyId="study-1" onClose={vi.fn()} />);
+      await screen.findByTestId('export-packet-content');
+      const badge = document.querySelector('[data-compliance="NonCompliant"]');
+      expect(badge).not.toBeNull();
+      expect(badge!.getAttribute('data-compliance-color')).toBe('#ef4444');
+    });
+  });
 });
