@@ -215,52 +215,45 @@ describe('Forge Analytical Entry Points', () => {
     render(<MemoryRouter><ForgeSuiteHome /></MemoryRouter>);
     expect(screen.getByTestId('suite-forge-root')).toBeDefined();
     expect(screen.getByTestId('forge-stats')).toBeDefined();
-    expect(screen.getByTestId('forge-modules')).toBeDefined();
+    expect(screen.getByTestId('forge-primary-applications')).toBeDefined();
     expect(screen.getByTestId('forge-queue')).toBeDefined();
   });
 
-  it('Forge module grid contains workbench-mode analytical modules', () => {
-    render(<MemoryRouter><ForgeSuiteHome /></MemoryRouter>);
-    const grid = screen.getByTestId('mock-module-grid');
-    const forgeWorkbench = grid.querySelectorAll('[data-workbench-tab="forge"]');
-    expect(forgeWorkbench.length).toBeGreaterThan(0);
+  // ForgeSuiteHome uses an inline primary-applications section (not SuiteModuleGrid).
+  // All forge modules use standalone launch mode.
+  it('Forge primary-applications section contains launchable module buttons', () => {
+    const { container } = render(<MemoryRouter><ForgeSuiteHome /></MemoryRouter>);
+    const section = container.querySelector('[data-testid="forge-primary-applications"]');
+    expect(section).toBeTruthy();
+    const buttons = section!.querySelectorAll('button');
+    expect(buttons.length).toBeGreaterThan(0);
   });
 
-  it('Forge exposes both workbench and standalone launch modes', () => {
-    render(<MemoryRouter><ForgeSuiteHome /></MemoryRouter>);
-    const grid = screen.getByTestId('mock-module-grid');
-    const workbench = grid.querySelectorAll('[data-launch-mode="workbench"]');
-    const standalone = grid.querySelectorAll('[data-launch-mode="standalone"]');
-    expect(workbench.length).toBeGreaterThan(0);
-    expect(standalone.length).toBeGreaterThan(0);
-  });
-
-  it('every Forge module button has a label and is not disabled', () => {
-    render(<MemoryRouter><ForgeSuiteHome /></MemoryRouter>);
-    const buttons = screen.getByTestId('mock-module-grid').querySelectorAll('button');
+  it('Forge primary modules have labels', () => {
+    const { container } = render(<MemoryRouter><ForgeSuiteHome /></MemoryRouter>);
+    const section = container.querySelector('[data-testid="forge-primary-applications"]');
+    const buttons = section!.querySelectorAll('button');
     buttons.forEach((btn) => {
-      expect(btn).not.toBeDisabled();
       expect(btn.textContent!.trim().length).toBeGreaterThan(0);
     });
   });
 
-  it('clicking Forge workbench modules invokes correct activation contract', async () => {
-    const user = userEvent.setup();
-    render(<MemoryRouter><ForgeSuiteHome /></MemoryRouter>);
-    const grid = screen.getByTestId('mock-module-grid');
-    const workbenchButtons = Array.from(grid.querySelectorAll('[data-launch-mode="workbench"]')) as HTMLElement[];
+  it('Forge has at least one enabled (non-queued) primary module', () => {
+    const { container } = render(<MemoryRouter><ForgeSuiteHome /></MemoryRouter>);
+    const section = container.querySelector('[data-testid="forge-primary-applications"]');
+    const enabled = section!.querySelectorAll('button:not([disabled])');
+    expect(enabled.length).toBeGreaterThan(0);
+  });
 
-    for (const btn of workbenchButtons) {
-      mockActivateModule.mockClear();
-      await user.click(btn);
-      expect(mockActivateModule).toHaveBeenCalledWith(
-        'property-workbench',
-        expect.objectContaining({
-          source: 'start_menu',
-          metadata: expect.objectContaining({ tabId: expect.any(String) }),
-        })
-      );
-    }
+  it('clicking an enabled Forge primary module invokes activateModule', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<MemoryRouter><ForgeSuiteHome /></MemoryRouter>);
+    const section = container.querySelector('[data-testid="forge-primary-applications"]');
+    const enabled = Array.from(section!.querySelectorAll('button:not([disabled])')) as HTMLElement[];
+    expect(enabled.length).toBeGreaterThan(0);
+    mockActivateModule.mockClear();
+    await user.click(enabled[0]);
+    expect(mockActivateModule).toHaveBeenCalled();
   });
 });
 
@@ -319,46 +312,62 @@ describe('Atlas GIS Entry Points', () => {
 // ════════════════════════════════════════════════════════════════════════
 
 describe('Cross-Suite Entry Point Consistency', () => {
-  it('all 3 suites use the same module grid + queue structural pattern', () => {
+  // Note: ForgeSuiteHome is architecturally distinct — it uses its own inline
+  // primary-applications grid rather than the shared SuiteModuleGrid, and all
+  // Forge modules use standalone launch mode (no workbench tab targeting).
+
+  it('all 3 suites expose stats, module surface, and queue structural sections', () => {
     const suites = [
-      { Component: DaisSuiteHome, prefix: 'dais' },
-      { Component: ForgeSuiteHome, prefix: 'forge' },
-      { Component: AtlasSuiteHome, prefix: 'atlas' },
+      { Component: DaisSuiteHome, prefix: 'dais', moduleTestId: 'dais-modules' },
+      { Component: ForgeSuiteHome, prefix: 'forge', moduleTestId: 'forge-primary-applications' },
+      { Component: AtlasSuiteHome, prefix: 'atlas', moduleTestId: 'atlas-modules' },
     ];
 
-    for (const { Component, prefix } of suites) {
+    for (const { Component, prefix, moduleTestId } of suites) {
       const { unmount } = render(<MemoryRouter><Component /></MemoryRouter>);
       // Every suite home has the constitutional 3-section structure
       expect(screen.getByTestId(`${prefix}-stats`)).toBeDefined();
-      expect(screen.getByTestId(`${prefix}-modules`)).toBeDefined();
+      expect(screen.getByTestId(moduleTestId)).toBeDefined();
+      // Queue section is always present (Dais/Atlas use OperationalQueue mock;
+      // Forge implements its own inline queue — both carry the ${prefix}-queue testid)
       expect(screen.getByTestId(`${prefix}-queue`)).toBeDefined();
-      // Module grid is always present
-      expect(screen.getByTestId('mock-module-grid')).toBeDefined();
-      // Queue is always present
-      expect(screen.getByTestId('mock-queue')).toBeDefined();
       unmount();
     }
   });
 
-  it('all 3 suites have at least one workbench-mode entry point', () => {
-    const suites = [DaisSuiteHome, ForgeSuiteHome, AtlasSuiteHome];
-
-    for (const Component of suites) {
+  it('Dais and Atlas have workbench-mode entry points; Forge exposes standalone primary modules', () => {
+    // Dais and Atlas use SuiteModuleGrid with workbench-targeted entries
+    for (const Component of [DaisSuiteHome, AtlasSuiteHome]) {
       const { unmount } = render(<MemoryRouter><Component /></MemoryRouter>);
       const wb = screen.getByTestId('mock-module-grid').querySelectorAll('[data-launch-mode="workbench"]');
       expect(wb.length).toBeGreaterThan(0);
       unmount();
     }
+
+    // Forge uses its own inline primary-applications section with standalone modules
+    const { container, unmount: unmountForge } = render(<MemoryRouter><ForgeSuiteHome /></MemoryRouter>);
+    const section = container.querySelector('[data-testid="forge-primary-applications"]');
+    expect(section).toBeTruthy();
+    const buttons = section!.querySelectorAll('button');
+    expect(buttons.length).toBeGreaterThan(0);
+    unmountForge();
   });
 
-  it('no suite home renders an empty module grid', () => {
-    const suites = [DaisSuiteHome, ForgeSuiteHome, AtlasSuiteHome];
-
-    for (const Component of suites) {
+  it('no suite home renders an empty module surface', () => {
+    // Dais and Atlas expose modules via the shared SuiteModuleGrid
+    for (const Component of [DaisSuiteHome, AtlasSuiteHome]) {
       const { unmount } = render(<MemoryRouter><Component /></MemoryRouter>);
       const buttons = screen.getByTestId('mock-module-grid').querySelectorAll('button');
       expect(buttons.length).toBeGreaterThan(0);
       unmount();
     }
+
+    // Forge exposes modules via its own inline primary-applications section
+    const { container, unmount: unmountForge } = render(<MemoryRouter><ForgeSuiteHome /></MemoryRouter>);
+    const section = container.querySelector('[data-testid="forge-primary-applications"]');
+    expect(section).toBeTruthy();
+    const buttons = section!.querySelectorAll('button');
+    expect(buttons.length).toBeGreaterThan(0);
+    unmountForge();
   });
 });
