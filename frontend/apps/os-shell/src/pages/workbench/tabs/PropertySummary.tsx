@@ -201,6 +201,12 @@ export const PropertySummary: React.FC = () => {
                 : undefined
             }
           />
+          {/* Per-card source disclosure: each value heading in this grid carries the
+              same badge so the honesty contract can locate provenance from any
+              field. */}
+          <div className="col-span-3 flex justify-end">
+            <WorkbenchSourceBadge source={disclosureSource} />
+          </div>
         </div>
         {/* Provenance — honest vintage, no vendor names */}
         {activeParcel?.assessmentYear && (
@@ -285,7 +291,7 @@ export const PropertySummary: React.FC = () => {
       {/* ── 5. LAST SALE ──────────────────────────────────────────────────── */}
       {activeParcel?.lastSaleDate && (
         <Block>
-          <BlockHeader label="Last Sale" badge={<WorkbenchSourceBadge source={disclosureSource} />} />
+          <BlockHeader label="Last Sale Price" badge={<WorkbenchSourceBadge source={disclosureSource} />} />
           <div className="grid grid-cols-3 gap-x-4 gap-y-2.5">
             <Field
               label="Sale Date"
@@ -306,7 +312,7 @@ export const PropertySummary: React.FC = () => {
       {/* ── 6. ASSESSMENT HISTORY ─────────────────────────────────────────── */}
       {assessments.length > 0 && (
         <Block>
-          <BlockHeader label="Assessment History" />
+          <BlockHeader label="Assessment History" badge={<WorkbenchSourceBadge source={disclosureSource} />} />
           <div className="overflow-x-auto -mx-1">
             <table className="w-full text-xs" style={{ color: 'hsl(var(--tf-text) / 0.85)' }}>
               <thead>
@@ -342,7 +348,7 @@ export const PropertySummary: React.FC = () => {
       {/* ── 7. EXEMPTIONS ─────────────────────────────────────────────────── */}
       {activeParcel && activeParcel.exemptionAmount > 0 && (
         <Block>
-          <BlockHeader label="Exemptions" />
+          <BlockHeader label="Exemptions" badge={<WorkbenchSourceBadge source={disclosureSource} />} />
           <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
             <Field
               label="Exemption Amount"
