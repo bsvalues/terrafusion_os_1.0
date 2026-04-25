@@ -4,7 +4,8 @@
  */
 
 import { useEffect, useState } from 'react';
-import { getQueueItems, type QueueWorkItem } from '../services/suites/queueService';
+import { getQueueItems } from '../services/suites/queueService';
+import type { QueueWorkItem } from '../services/suites/queueService';
 
 export interface TodaysWorkItem {
   id: string;
@@ -174,9 +175,11 @@ export function useTodaysWork(): {
   /** True when returning sample fixtures instead of live backend data */
   isSampleData: boolean;
 } {
-  const [tasks, setTasks] = useState<TodaysWorkItem[]>(SAMPLE_TASKS);
+  const [tasks, setTasks] = useState<TodaysWorkItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Provenance — true while no live queue read has succeeded yet, so the
+  // DemoDataBanner discloses that the panel is showing fixture-equivalent state.
   const [isSampleData, setIsSampleData] = useState(true);
 
   useEffect(() => {
@@ -192,7 +195,10 @@ export function useTodaysWork(): {
         setError(null);
       } catch (cause) {
         if (cancelled) return;
-        setTasks(SAMPLE_TASKS);
+        // Live queue unavailable — surface unavailable state explicitly.
+        // SAMPLE_TASKS is defined for design-time reference, but we do NOT
+        // pre-seed the panel with sample data; banner discloses fixture origin.
+        setTasks([]);
         setIsSampleData(true);
         setError(cause instanceof Error ? cause.message : 'Today\'s Work queue unavailable.');
       } finally {
