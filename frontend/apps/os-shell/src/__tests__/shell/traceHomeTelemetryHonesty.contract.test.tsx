@@ -28,8 +28,12 @@ describe('TraceHome telemetry honesty contract', () => {
 
     expect(screen.getByTestId('standalone-shell')).toBeInTheDocument();
     expect(screen.getByText('System Telemetry')).toBeInTheDocument();
+    // The contract requires the telemetry blurb to disclose its 15s refresh
+    // cadence and avoid absolute real-time claims. TraceHome's current prose
+    // (Card 45C) reads: "Telemetry trace stream — 15s local refresh. Events
+    // appear as OS actions are performed."
     expect(
-      screen.getByText(/Live action stream with 15-second telemetry refresh and audit trail visualization\./i)
+      screen.getByText(/Telemetry trace stream — 15s local refresh\. Events appear as OS actions are performed\./i)
     ).toBeInTheDocument();
     expect(screen.getByTestId('action-stream-module')).toBeInTheDocument();
     expect(screen.queryByText(/Real-time observability and audit trail visualization\./i)).not.toBeInTheDocument();
