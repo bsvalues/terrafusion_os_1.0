@@ -13,10 +13,14 @@ import { useDesktopStore } from '../../stores/desktopStore';
 import {
     CONSTITUTIONAL_SUITES,
     getSuiteIntent,
+    getWorkbenchFallbackRoute,
+    getWorkbenchHref,
     INTENT_LABELS,
+    isWorkbenchSuite,
     OS_FEATURES,
     type SuiteId,
 } from '../../config/suiteRegistry';
+import { getParcelContext } from '../../context/parcelContext';
 import { executeOsAction, type OsAction, type OsActionContext } from '../../services/osActions';
 
 // ============================================================================
@@ -116,13 +120,23 @@ export const SYSTEM_ACTIONS: LauncherItem[] = [
  * Suite tiles always open suite homes; parcel handoff happens in-suite.
  */
 export function getLauncherItems(): LauncherItem[] {
+  // Slice 9: Context-aware launcher routes — read parcel context once at
+  // build-time so workbench suite tiles route directly into the parcel
+  // workbench when a parcel is selected, and into the parcel-search
+  // fallback (anchored on the right tab) when no parcel context exists.
+  const parcelContext = getParcelContext();
+  const parcelId = parcelContext?.parcelId ?? null;
+
   const suiteItems: LauncherItem[] = CONSTITUTIONAL_SUITES.map((suite) => {
     const intent = getSuiteIntent(suite.id as SuiteId);
     const intentLabel = INTENT_LABELS[intent];
 
-    // Constitutional suite tiles always open the suite home.
-    // Parcel handoff happens inside the suite after parcel selection.
-    const route = suite.route;
+    // Workbench suites: route through parcel workbench (with context) or
+    // parcel-search fallback (without context). Standalone suites keep
+    // their suite-home route.
+    const route = isWorkbenchSuite(suite)
+      ? (parcelId ? getWorkbenchHref(suite, parcelId) : getWorkbenchFallbackRoute(suite))
+      : suite.route;
 
     return {
       id: suite.id,
