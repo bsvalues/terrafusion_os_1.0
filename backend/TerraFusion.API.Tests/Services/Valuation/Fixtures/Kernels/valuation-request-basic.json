@@ -5,7 +5,11 @@
   "action": "valuate",
   "payload": {
     "subject": { "parcelId": "PARCEL-0001", "attributes": {} },
-    "costBreakdown": { "replacementCost": 309558.75, "depreciation": 30955.88, "rcnld": 278602.87 },
+    "costBreakdown": {
+      "replacementCost": 309558.75,
+      "depreciation": 30955.88,
+      "rcnld": 278602.87
+    },
     "model": {
       "landValue": 65000.0,
       "adjustmentFactors": { "neighborhood": 1.05, "location": 0.98 }

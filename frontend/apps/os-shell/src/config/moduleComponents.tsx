@@ -743,7 +743,7 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
         </Suspense>
       );
 
-    // CompsForge — Sales comparison approach (standalone window, demo data)
+    // CompsForge — Sales comparison approach with active parcel context.
     case 'comps-forge':
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>

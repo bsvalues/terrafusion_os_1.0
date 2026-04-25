@@ -1,6 +1,10 @@
 {
   "success": true,
-  "data": { "replacementCost": 309558.75, "depreciation": 30955.88, "rcnld": 278602.87 },
+  "data": {
+    "replacementCost": 309558.75,
+    "depreciation": 30955.88,
+    "rcnld": 278602.87
+  },
   "auditEvent": {
     "eventId": "550e8400-e29b-41d4-a716-446655440000",
     "timestamp": "2026-04-22T10:00:00Z",

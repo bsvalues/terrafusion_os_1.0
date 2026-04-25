@@ -1,861 +1,456 @@
 /**
- * CompsForge Module — Sales Comparison Approach
- * ===================================================================
- * Constitutional module of TerraForge (Article V Section 5.1).
+ * CompsForge Module - Sales Comparison Approach
  *
- * Wired to GET /api/terraforge/comps-pool — real PACS comparable sales,
- * effective qualified pool (QualificationDecision="qualified" OR
- * QualificationRecommendation="qualified").
- *
- * Adjustment engine uses paired-sales methodology with PACS physical
- * characteristics: GLA, lot size, age, quality grade, condition.
- *
- * Task D3 — receives County Studio Inspector handoff metadata on mount.
- * Supported metadata keys (all optional):
- *   deeplinkQuery: '?segmentId=s1&sample=HP-0,HP-1,HP-2' — raw query;
- *                  parsed as a fallback if pre-split fields are missing.
- *   parcelIds:     string[] | string — preloaded sample parcel ids (up to 10).
- *   segmentId:     string — drives the "Scoped From" chip.
- *   segmentLabel:  string — human label for the chip.
- * When preloadedSampleIds is present a top-of-main "Preloaded from County
- * Studio" section renders listing those parcels as initial comp candidates.
+ * Uses the active parcel as subject context, Benton PACS-sourced sales as the
+ * candidate pool, and CostForge endpoints as the adjustment/reconciliation
+ * authority. The module does not fabricate subject characteristics or comp
+ * values when source data is unavailable.
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import activateModule from '@/orchestration/moduleActivation';
-import { invokeTool } from '@/api/pilotApi';
-import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import {
+  AlertTriangle,
   BarChart3,
   Calendar,
-  Ruler,
-  Home,
-  CheckCircle,
   CheckCircle2,
   DollarSign,
-  Lock,
+  Home,
+  Ruler,
   Search,
-  ChevronLeft,
-  ChevronRight,
-  SlidersHorizontal,
 } from 'lucide-react';
-import { apiFetch } from '@/lib/apiBase';
 import { usePropertyStore } from '@/stores/propertyStore';
-import { useCompsForgeHandoffStore } from './compsForgeHandoffStore';
+import {
+  adjustComp,
+  findCompsForSubject,
+  loadBentonComps,
+  reconcileComps,
+  type AdjustmentResult,
+  type ReconciliationResult,
+  type ScoredComp,
+  type SubjectProperty,
+} from '@/services/comparableSalesService';
 
-// ============================================================================
-// Types
-// ============================================================================
-
-interface ComparableSaleFromApi {
-  saleId:             string;
-  parcelId:           string;
-  address:            string | null;
-  hood:               string | null;
-  propertyType:       string | null;
-  saleDate:           string;
-  salePrice:          number;
-  rawSalePrice:       number;
-  adjustedSalePrice:  number | null;
-  gla:                number | null;
-  lotSizeSqft:        number | null;
-  yearBuilt:          number | null;
-  bedrooms:           number | null;
-  bathrooms:          number | null;
-  condition:          string | null;
-  qualityGrade:       string | null;
-  salesRatio:         number | null;
-  qualificationSource: 'decision' | 'recommendation';
-}
-
-interface CompsPoolPage {
-  total:    number;
-  page:     number;
-  pageSize: number;
-  items:    ComparableSaleFromApi[];
-}
-
-interface AdjustmentItem {
-  category: string;
-  amount:   number;
-  percent:  number;
-}
-
-interface SubjectCharacteristics {
-  gla:         number;
-  yearBuilt:   number;
-  qualityGrade: string;
-  condition:   string;
-  lotSizeSqft: number;
-}
-
-// Filter state — separate draft (user typing) from committed (API params)
-interface FilterDraft {
-  hood:         string;
-  propertyType: string;
-  minGla:       string;
-  maxGla:       string;
-}
-
-interface CommittedFilters {
-  hood:         string | null;
-  propertyType: string | null;
-  minGla:       number | null;
-  maxGla:       number | null;
-}
-
-type SortKey = 'date' | 'price' | 'size' | 'ratio';
-
-const TAX_YEAR = 2026;
-const PAGE_SIZE = 12;
-
-const DEFAULT_SUBJECT: SubjectCharacteristics = {
-  gla:          2000,
-  yearBuilt:    2005,
-  qualityGrade: 'Average',
-  condition:    'Good',
-  lotSizeSqft:  7000,
+type SaleWindow = {
+  start: string;
+  end: string;
 };
 
-// ============================================================================
-// Adjustment Engine
-// ============================================================================
-
-// Quality grade ladder — maps PACS qualityGrade strings to ordinal scores
-const QUALITY_SCORES: Record<string, number> = {
-  'Economy': 1, 'Low': 1,
-  'Fair': 2,
-  'Average': 3, 'Avg': 3, 'Standard': 3,
-  'Good': 4,
-  'Very Good': 5, 'VeryGood': 5,
-  'Excellent': 6, 'Superior': 6,
-  'Luxury': 7,
+const INITIAL_SALE_WINDOW: SaleWindow = {
+  start: '2016-01-01',
+  end: '2026-12-31',
 };
 
-// Condition ladder
-const CONDITION_SCORES: Record<string, number> = {
-  'Poor':      1,
-  'Fair':      2,
-  'Average':   3, 'Avg': 3,
-  'Good':      4,
-  'Excellent': 5, 'Superior': 5,
-};
-
-function getScore(map: Record<string, number>, key: string | null | undefined, fallback: number): number {
-  if (!key) return fallback;
-  return map[key] ?? map[Object.keys(map).find(k => k.toLowerCase() === key.toLowerCase()) ?? ''] ?? fallback;
+function compKey(comp: ScoredComp): string {
+  return `${comp.parcelId}|${comp.saleDate}`;
 }
 
-function calculateAdjustments(comp: ComparableSaleFromApi, subject: SubjectCharacteristics): AdjustmentItem[] {
-  const adjustments: AdjustmentItem[] = [];
-  const sp = comp.salePrice;
-
-  // ── Time adjustment: 0.3%/month back from Jan 2026 baseline
-  const saleDate  = new Date(comp.saleDate);
-  const baseline  = new Date('2026-01-01');
-  const monthsDiff = (baseline.getTime() - saleDate.getTime()) / (30.44 * 24 * 60 * 60 * 1000);
-  if (Math.abs(monthsDiff) > 0.5) {
-    const adj = monthsDiff * 0.003 * sp;
-    adjustments.push({ category: 'Time', amount: adj, percent: monthsDiff * 0.3 });
-  }
-
-  // ── GLA adjustment: $75/sqft difference (subject vs comp)
-  if (comp.gla != null && Math.abs(subject.gla - comp.gla) > 50) {
-    const adj = (subject.gla - comp.gla) * 75;
-    adjustments.push({ category: 'GLA', amount: adj, percent: (adj / sp) * 100 });
-  }
-
-  // ── Age adjustment: $1,500/year (newer comp → negative adj for subject)
-  if (comp.yearBuilt != null && Math.abs(comp.yearBuilt - subject.yearBuilt) > 1) {
-    const adj = -(comp.yearBuilt - subject.yearBuilt) * 1500;
-    adjustments.push({ category: 'Age', amount: adj, percent: (adj / sp) * 100 });
-  }
-
-  // ── Quality grade adjustment: $12,000/grade step
-  const subjectQScore = getScore(QUALITY_SCORES, subject.qualityGrade, 3);
-  const compQScore    = getScore(QUALITY_SCORES, comp.qualityGrade,    3);
-  if (subjectQScore !== compQScore) {
-    const adj = (subjectQScore - compQScore) * 12000;
-    adjustments.push({ category: 'Quality', amount: adj, percent: (adj / sp) * 100 });
-  }
-
-  // ── Condition adjustment: $8,000/condition step
-  const subjectCScore = getScore(CONDITION_SCORES, subject.condition, 3);
-  const compCScore    = getScore(CONDITION_SCORES, comp.condition,    3);
-  if (subjectCScore !== compCScore) {
-    const adj = (subjectCScore - compCScore) * 8000;
-    adjustments.push({ category: 'Condition', amount: adj, percent: (adj / sp) * 100 });
-  }
-
-  // ── Lot size adjustment: $3/sqft difference
-  if (comp.lotSizeSqft != null && Math.abs(subject.lotSizeSqft - comp.lotSizeSqft) > 200) {
-    const adj = (subject.lotSizeSqft - comp.lotSizeSqft) * 3;
-    adjustments.push({ category: 'Lot', amount: adj, percent: (adj / sp) * 100 });
-  }
-
-  return adjustments;
+function numberOrZero(value: number | null | undefined): number {
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0;
 }
-
-// ============================================================================
-// Helpers
-// ============================================================================
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(value);
 }
 
-function fmtDate(iso: string): string {
-  try { return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
-  catch { return iso; }
+function formatOptionalNumber(value: number): string {
+  return value > 0 ? value.toLocaleString() : 'Unavailable';
 }
 
-function buildUrl(taxYear: number, filters: CommittedFilters, page: number): string {
-  const p = new URLSearchParams({
-    taxYear:  String(taxYear),
-    page:     String(page),
-    pageSize: String(PAGE_SIZE),
-  });
-  if (filters.hood)         p.set('hood',         filters.hood);
-  if (filters.propertyType) p.set('propertyType', filters.propertyType);
-  if (filters.minGla)       p.set('minGla',       String(filters.minGla));
-  if (filters.maxGla)       p.set('maxGla',       String(filters.maxGla));
-  return `/terraforge/comps-pool?${p.toString()}`;
+function formatDate(value: string): string {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value.slice(0, 10) : date.toLocaleDateString();
 }
 
-async function fetchCompsPool(url: string): Promise<CompsPoolPage> {
-  const res = await apiFetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json() as Promise<CompsPoolPage>;
+function adjustmentSummary(adjustment: AdjustmentResult | undefined): string {
+  if (!adjustment) return 'Waiting for governed adjustment';
+  return `${formatCurrency(adjustment.adjustedPrice)} adjusted`;
 }
 
-interface CompsCommitResult {
-  caseId: string;
-  packetRef: string;
-  sections: string[];
-  payloadRef: string;
+function buildSubjectFromActiveParcel(
+  activeParcel: ReturnType<typeof usePropertyStore.getState>['activeParcel'],
+): SubjectProperty | null {
+  if (!activeParcel) return null;
+
+  return {
+    parcelId: activeParcel.parcelId,
+    address: activeParcel.address,
+    grossLivingArea: numberOrZero(activeParcel.buildingSquareFeet),
+    lotSizeSqft: numberOrZero(activeParcel.landAcreage) > 0
+      ? Math.round(numberOrZero(activeParcel.landAcreage) * 43560)
+      : 0,
+    yearBuilt: numberOrZero(activeParcel.yearBuilt),
+    bedrooms: numberOrZero(activeParcel.bedrooms),
+    bathrooms: numberOrZero(activeParcel.bathrooms),
+    condition: 'Average',
+    qualityGrade: 'Unspecified',
+    propertyType: activeParcel.propertyType,
+    assessedValue: numberOrZero(activeParcel.totalAssessedValue),
+  };
 }
 
-// ============================================================================
-// Deeplink parsing (Task D3)
-// ============================================================================
+export default function CompsForgeModule() {
+  const activeParcel = usePropertyStore((state) => state.activeParcel);
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+  const [qualifiedOnly, setQualifiedOnly] = useState(true);
+  const [saleWindow, setSaleWindow] = useState<SaleWindow>(INITIAL_SALE_WINDOW);
+  const [adjustments, setAdjustments] = useState<Record<string, AdjustmentResult>>({});
+  const [reconciliation, setReconciliation] = useState<ReconciliationResult | null>(null);
+  const [adjustmentError, setAdjustmentError] = useState<string | null>(null);
+  const [isAdjusting, setIsAdjusting] = useState(false);
 
-/** Best-effort parser for the raw backend deeplink query string. */
-function parseDeeplinkQuery(raw: unknown): {
-  parcelIds?: string[];
-  segmentId?: string;
-} {
-  if (typeof raw !== 'string' || raw.length === 0) return {};
-  try {
-    const trimmed = raw.startsWith('?') ? raw.slice(1) : raw;
-    const params = new URLSearchParams(trimmed);
-    const out: { parcelIds?: string[]; segmentId?: string } = {};
-    const sample = params.get('sample');
-    if (sample) {
-      const ids = sample
-        .split(',')
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0);
-      if (ids.length > 0) out.parcelIds = ids;
-    }
-    const segmentId = params.get('segmentId');
-    if (segmentId) out.segmentId = segmentId;
-    return out;
-  } catch {
-    return {};
-  }
-}
+  const subject = useMemo(() => buildSubjectFromActiveParcel(activeParcel), [activeParcel]);
+  const allSales = useMemo(() => loadBentonComps(), []);
 
-/** Normalize parcelIds metadata field (accepts string[] or comma-separated string). */
-function normalizeParcelIds(raw: unknown): string[] | null {
-  if (Array.isArray(raw)) {
-    const ids = raw.filter((x): x is string => typeof x === 'string' && x.length > 0);
-    return ids.length > 0 ? ids : null;
-  }
-  if (typeof raw === 'string' && raw.length > 0) {
-    const ids = raw
-      .split(',')
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
-    return ids.length > 0 ? ids : null;
-  }
-  return null;
-}
+  const candidates = useMemo(() => {
+    if (!subject) return [];
+    return findCompsForSubject(
+      subject,
+      allSales,
+      {
+        qualifiedOnly,
+        saleDateRange: {
+          start: saleWindow.start,
+          end: saleWindow.end,
+        },
+      },
+      30,
+    );
+  }, [allSales, qualifiedOnly, saleWindow.end, saleWindow.start, subject]);
 
-export interface CompsForgeModuleProps {
-  /**
-   * Optional metadata from the shell's window system. Carries County Studio
-   * Inspector handoff payload (parcelIds / segmentId / label).
-   */
-  metadata?: Record<string, unknown>;
-}
-
-// ============================================================================
-// Component
-// ============================================================================
-
-export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {}) {
-  const activeParcel = usePropertyStore((s) => s.activeParcel);
-  const preloadedSampleIds  = useCompsForgeHandoffStore((s) => s.preloadedSampleIds);
-  const contextSegmentId    = useCompsForgeHandoffStore((s) => s.contextSegmentId);
-  const contextSegmentLabel = useCompsForgeHandoffStore((s) => s.contextSegmentLabel);
-  const setHandoffContext   = useCompsForgeHandoffStore((s) => s.setHandoffContext);
-
-  // ── Consume County Studio handoff metadata on mount ─────────────────────
   useEffect(() => {
-    if (!metadata) return;
-    const parsed = parseDeeplinkQuery(metadata.deeplinkQuery);
+    setAdjustments({});
+    setReconciliation(null);
+    setAdjustmentError(null);
+    setSelectedKeys(() => new Set(candidates.slice(0, Math.min(3, candidates.length)).map(compKey)));
+  }, [candidates]);
 
-    const idsFromMeta = normalizeParcelIds(metadata.parcelIds);
-    const ids = idsFromMeta ?? parsed.parcelIds ?? null;
+  const selectedComps = useMemo(
+    () => candidates.filter((candidate) => selectedKeys.has(compKey(candidate))),
+    [candidates, selectedKeys],
+  );
 
-    const segmentFromMeta = typeof metadata.segmentId === 'string' ? metadata.segmentId : null;
-    const segmentId = segmentFromMeta ?? parsed.segmentId ?? null;
+  useEffect(() => {
+    let cancelled = false;
 
-    const label = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
+    async function runGovernedAdjustment() {
+      if (!subject || selectedComps.length === 0) {
+        setAdjustments({});
+        setReconciliation(null);
+        return;
+      }
 
-    if (ids && ids.length > 0) {
-      setHandoffContext(ids, segmentId, label);
-    } else if (segmentId) {
-      setHandoffContext([], segmentId, label);
+      setIsAdjusting(true);
+      setAdjustmentError(null);
+      setReconciliation(null);
+
+      try {
+        const adjustedEntries = await Promise.all(
+          selectedComps.map(async (comp) => {
+            const result = await adjustComp(subject, comp);
+            return [compKey(comp), result] as const;
+          }),
+        );
+
+        if (cancelled) return;
+
+        const nextAdjustments = Object.fromEntries(adjustedEntries) as Record<string, AdjustmentResult>;
+        setAdjustments(nextAdjustments);
+
+        if (adjustedEntries.length >= 2) {
+          const reconciled = await reconcileComps(
+            adjustedEntries.map(([, result]) => ({
+              adjustedPrice: result.adjustedPrice,
+              grossAdjustmentPct: result.grossAdjustmentPct,
+            })),
+          );
+          if (!cancelled) setReconciliation(reconciled);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setAdjustments({});
+          setReconciliation(null);
+          setAdjustmentError(error instanceof Error ? error.message : 'CostForge adjustment failed');
+        }
+      } finally {
+        if (!cancelled) setIsAdjusting(false);
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  const handleBackToCountyStudio = useCallback(() => {
-    void activateModule('county-studio', {
-      source: 'system',
-      metadata: contextSegmentId ? { segmentId: contextSegmentId } : undefined,
-    });
-  }, [contextSegmentId]);
+    void runGovernedAdjustment();
 
-  // Subject property — prefer active parcel characteristics, fallback to defaults
-  const subject = useMemo<SubjectCharacteristics>(() => {
-    if (!activeParcel) return DEFAULT_SUBJECT;
-    return {
-      gla:          activeParcel.buildingSquareFeet ?? DEFAULT_SUBJECT.gla,
-      yearBuilt:    activeParcel.yearBuilt          ?? DEFAULT_SUBJECT.yearBuilt,
-      qualityGrade: DEFAULT_SUBJECT.qualityGrade,   // not in Property type — keep default
-      condition:    DEFAULT_SUBJECT.condition,
-      lotSizeSqft:  activeParcel.landAcreage
-                      ? activeParcel.landAcreage * 43560
-                      : DEFAULT_SUBJECT.lotSizeSqft,
+    return () => {
+      cancelled = true;
     };
-  }, [activeParcel]);
+  }, [selectedComps, subject]);
 
-  // Filters
-  const [draft, setDraft] = useState<FilterDraft>({ hood: '', propertyType: '', minGla: '', maxGla: '' });
-  const [committed, setCommitted] = useState<CommittedFilters>({ hood: null, propertyType: null, minGla: null, maxGla: null });
-  const [page, setPage] = useState(1);
-
-  const applyFilters = useCallback(() => {
-    setCommitted({
-      hood:         draft.hood         || null,
-      propertyType: draft.propertyType || null,
-      minGla:       draft.minGla       ? Number(draft.minGla) : null,
-      maxGla:       draft.maxGla       ? Number(draft.maxGla) : null,
-    });
-    setPage(1);
-  }, [draft]);
-
-  const clearFilters = useCallback(() => {
-    setDraft({ hood: '', propertyType: '', minGla: '', maxGla: '' });
-    setCommitted({ hood: null, propertyType: null, minGla: null, maxGla: null });
-    setPage(1);
-  }, []);
-
-  // Fetch
-  const url = buildUrl(TAX_YEAR, committed, page);
-  const { data, isLoading, isError, error } = useQuery<CompsPoolPage>({
-    queryKey: ['comps-pool', TAX_YEAR, committed, page],
-    queryFn:  () => fetchCompsPool(url),
-    staleTime: 60_000,
-  });
-
-  // Selection + sort (client-side on current page)
-  const [selectedIds, setSelectedIds]   = useState<Set<string>>(new Set());
-  const [sortKey,     setSortKey]       = useState<SortKey>('date');
-
-  const toggleSelect = useCallback((id: string) => {
-    setSelectedIds((prev) => {
+  const toggleSelect = useCallback((comp: ScoredComp) => {
+    const key = compKey(comp);
+    setSelectedKeys((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       return next;
     });
   }, []);
 
-  const sortedItems = useMemo(() => {
-    if (!data?.items) return [];
-    return [...data.items].sort((a, b) => {
-      switch (sortKey) {
-        case 'date':  return new Date(b.saleDate).getTime() - new Date(a.saleDate).getTime();
-        case 'price': return a.salePrice - b.salePrice;
-        case 'size':  return (a.gla ?? 0) - (b.gla ?? 0);
-        case 'ratio': return (a.salesRatio ?? 0) - (b.salesRatio ?? 0);
-        default:      return 0;
-      }
-    });
-  }, [data?.items, sortKey]);
-
-  const selectedComps = sortedItems.filter((c) => selectedIds.has(c.saleId));
-
-  const reconciled = useMemo(() => {
-    if (selectedComps.length === 0) return null;
-    const adjustedValues = selectedComps.map((comp) => {
-      const adjs     = calculateAdjustments(comp, subject);
-      const totalAdj = adjs.reduce((s, a) => s + a.amount, 0);
-      return comp.salePrice + totalAdj;
-    });
-    const sorted = [...adjustedValues].sort((a, b) => a - b);
-    const median = sorted.length % 2 === 0
-      ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
-      : sorted[Math.floor(sorted.length / 2)];
-    const average = adjustedValues.reduce((s, v) => s + v, 0) / adjustedValues.length;
-    return { median, average, low: sorted[0], high: sorted[sorted.length - 1], count: selectedComps.length };
-  }, [selectedComps, subject]);
-
-  const totalPages = data ? Math.ceil(data.total / PAGE_SIZE) : 0;
-
-  // Human-gated comps value commit state
-  const [compsCommitConfirmed, setCompsCommitConfirmed] = useState(false);
-  const [compsCommitState, setCompsCommitState] = useState<{
-    status: 'idle' | 'loading' | 'success' | 'error';
-    result?: CompsCommitResult;
-    correlationId?: string;
-    error?: string;
-  }>({ status: 'idle' });
-
-  const handleCommitCompsValue = useCallback(async () => {
-    if (!reconciled || !compsCommitConfirmed) return;
-    const parcelId = activeParcel?.parcelId || activeParcel?.parcelNumber || 'unknown';
-    setCompsCommitState({ status: 'loading' });
-    try {
-      const response = await invokeTool({
-        toolId: 'assemble_boe_packet',
-        params: {
-          county: 'benton',
-          caseId: parcelId,
-          include: ['evidence', 'valuation_history', 'comps'],
-        },
-      });
-      if (response.success && response.result) {
-        const raw = response.result.output;
-        const parsed: CompsCommitResult =
-          typeof raw === 'string' ? (JSON.parse(raw) as CompsCommitResult) : (raw as CompsCommitResult);
-        setCompsCommitState({ status: 'success', result: parsed, correlationId: response.correlationId });
-      } else {
-        setCompsCommitState({
-          status: 'error',
-          correlationId: response.correlationId,
-          error: response.error?.message || 'Failed to assemble BOE packet.',
-        });
-      }
-    } catch (err) {
-      setCompsCommitState({
-        status: 'error',
-        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
-        error: err instanceof Error ? err.message : 'Failed to assemble BOE packet.',
-      });
-    }
-  }, [reconciled, compsCommitConfirmed, activeParcel]);
-
-  // ── Render ──────────────────────────────────────────────────────────────
+  const subjectCanScore = Boolean(
+    subject &&
+    subject.grossLivingArea > 0 &&
+    subject.yearBuilt > 0 &&
+    subject.assessedValue > 0,
+  );
 
   return (
     <div className='p-6 space-y-6'>
-      {/* Header */}
-      <div className='flex items-start justify-between'>
-        <div>
-          <h2 className='text-2xl font-semibold flex items-center gap-3' style={{ color: 'hsl(var(--tf-fg))' }}>
-            <BarChart3 style={{ color: 'hsl(var(--tf-suite-forge))' }} size={28} />
-            CompsForge — Sales Comparison
-          </h2>
-          <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
-            Benton County qualified comps pool · {TAX_YEAR} ratio window
-            {activeParcel && (
-              <span style={{ marginLeft: 8, color: 'hsl(var(--tf-suite-forge))' }}>
-                · Subject: {activeParcel.address}
-              </span>
-            )}
-          </p>
-        </div>
-        <div className='flex items-center gap-2'>
-          {contextSegmentId && (
-            <button
-              type='button'
-              data-testid='cf-scoped-from-chip'
-              data-segment-id={contextSegmentId}
-              onClick={handleBackToCountyStudio}
-              title='Back to County Studio'
-              style={{
-                background: 'hsl(var(--tf-suite-forge) / 0.12)',
-                border: '1px solid hsl(var(--tf-suite-forge) / 0.4)',
-                color: 'hsl(var(--tf-suite-forge))',
-                padding: '3px 10px',
-                borderRadius: 999,
-                fontSize: 11,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              ← From County Studio · Segment {contextSegmentLabel ?? contextSegmentId}
-            </button>
-          )}
-          {data && (
-            <Badge variant='outline' style={{ color: 'hsl(var(--tf-fg))' }}>
-              {data.total.toLocaleString()} qualified sales
-            </Badge>
-          )}
-        </div>
+      <div>
+        <h2
+          className='text-2xl font-semibold flex items-center gap-3'
+          style={{ color: 'hsl(var(--tf-fg))' }}
+        >
+          <BarChart3 style={{ color: 'hsl(var(--tf-suite-forge))' }} size={28} />
+          CompsForge - Sales Comparison
+        </h2>
+        <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
+          Active-parcel comp selection using PACS-sourced Benton sales and CostForge governed adjustments.
+        </p>
       </div>
 
-      {/* Task D3 — Preloaded from County Studio */}
-      {preloadedSampleIds && preloadedSampleIds.length > 0 && (
-        <div
-          data-testid='cf-preloaded-section'
+      {!subject && (
+        <Card
           style={{
-            padding: '12px 16px',
-            borderRadius: 8,
-            background: 'hsl(var(--tf-suite-forge) / 0.06)',
-            border: '1px solid hsl(var(--tf-suite-forge) / 0.25)',
+            background: 'hsl(var(--tf-card-bg))',
+            borderColor: 'hsl(var(--tf-warning) / 0.4)',
           }}
         >
-          <div className='flex items-center justify-between mb-2'>
+          <CardContent className='pt-6 flex items-start gap-3'>
+            <AlertTriangle size={22} style={{ color: 'hsl(var(--tf-warning))' }} />
             <div>
-              <div className='text-xs uppercase tracking-wider font-semibold' style={{ color: 'hsl(var(--tf-suite-forge))' }}>
-                Preloaded from County Studio
-              </div>
-              <div className='text-xs mt-0.5' style={{ color: 'hsl(var(--tf-muted))' }}>
-                {preloadedSampleIds.length} sample parcel{preloadedSampleIds.length !== 1 ? 's' : ''} from segment {contextSegmentLabel ?? contextSegmentId ?? ''}
-              </div>
-            </div>
-          </div>
-          <ul data-testid='cf-preloaded-list' className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-2'>
-            {preloadedSampleIds.map((pid) => (
-              <li
-                key={pid}
-                data-testid='cf-preloaded-parcel'
-                data-parcel-id={pid}
-                className='flex items-center justify-between rounded-md px-3 py-2 text-xs'
-                style={{
-                  background: 'hsl(var(--tf-card-bg))',
-                  border: '1px solid hsl(var(--tf-border))',
-                  color: 'hsl(var(--tf-fg))',
-                }}
-              >
-                <span className='font-mono'>{pid}</span>
-              </li>
-            ))}
-          </ul>
-          <div className='text-xs mt-2' style={{ color: 'hsl(var(--tf-muted) / 0.8)' }}>
-            Use the filters below to pull these parcels into the qualified comps pool, or select comps from the full pool as usual.
-          </div>
-        </div>
-      )}
-
-      {/* Filters */}
-      <div
-        style={{
-          padding: '12px 16px',
-          borderRadius: 8,
-          background: 'hsl(var(--tf-card-bg))',
-          border: '1px solid hsl(var(--tf-border))',
-        }}
-      >
-        <div className='flex items-center gap-2 mb-3'>
-          <SlidersHorizontal size={14} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
-          <span className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>Filters</span>
-          <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>(applied on Search)</span>
-        </div>
-        <div className='flex items-end gap-3 flex-wrap'>
-          <div>
-            <Label className='text-xs mb-1 block' style={{ color: 'hsl(var(--tf-muted))' }}>Neighborhood</Label>
-            <Input
-              placeholder='e.g. Meadow Springs'
-              value={draft.hood}
-              onChange={(e) => setDraft((d) => ({ ...d, hood: e.target.value }))}
-              className='w-[180px] h-8 text-sm'
-              style={{ background: 'hsl(var(--tf-bg))', borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}
-            />
-          </div>
-          <div>
-            <Label className='text-xs mb-1 block' style={{ color: 'hsl(var(--tf-muted))' }}>Property Type</Label>
-            <Input
-              placeholder='e.g. R1'
-              value={draft.propertyType}
-              onChange={(e) => setDraft((d) => ({ ...d, propertyType: e.target.value }))}
-              className='w-[120px] h-8 text-sm'
-              style={{ background: 'hsl(var(--tf-bg))', borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}
-            />
-          </div>
-          <div>
-            <Label className='text-xs mb-1 block' style={{ color: 'hsl(var(--tf-muted))' }}>Min GLA (Sq Ft)</Label>
-            <Input
-              type='number'
-              placeholder='1000'
-              value={draft.minGla}
-              onChange={(e) => setDraft((d) => ({ ...d, minGla: e.target.value }))}
-              className='w-[110px] h-8 text-sm'
-              style={{ background: 'hsl(var(--tf-bg))', borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}
-            />
-          </div>
-          <div>
-            <Label className='text-xs mb-1 block' style={{ color: 'hsl(var(--tf-muted))' }}>Max GLA (Sq Ft)</Label>
-            <Input
-              type='number'
-              placeholder='4000'
-              value={draft.maxGla}
-              onChange={(e) => setDraft((d) => ({ ...d, maxGla: e.target.value }))}
-              className='w-[110px] h-8 text-sm'
-              style={{ background: 'hsl(var(--tf-bg))', borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}
-            />
-          </div>
-          <Button size='sm' onClick={applyFilters} style={{ background: 'hsl(var(--tf-suite-forge))', color: '#000', height: 32 }}>
-            Search
-          </Button>
-          {(committed.hood || committed.propertyType || committed.minGla || committed.maxGla) && (
-            <Button size='sm' variant='ghost' onClick={clearFilters} style={{ height: 32, color: 'hsl(var(--tf-muted))' }}>
-              Clear
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {/* Sort bar */}
-      <div className='flex items-center gap-4'>
-        <div className='flex items-center gap-2'>
-          <Label className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Sort</Label>
-          <Select value={sortKey} onValueChange={(v) => setSortKey(v as SortKey)}>
-            <SelectTrigger className='w-[130px] h-8 text-sm' style={{ background: 'hsl(var(--tf-bg))', borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='date'>Sale date</SelectItem>
-              <SelectItem value='price'>Sale price</SelectItem>
-              <SelectItem value='size'>GLA</SelectItem>
-              <SelectItem value='ratio'>Sales ratio</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        {selectedIds.size > 0 && (
-          <Badge style={{ background: 'hsl(var(--tf-suite-forge) / 0.15)', color: 'hsl(var(--tf-suite-forge))' }}>
-            {selectedIds.size} selected
-          </Badge>
-        )}
-      </div>
-
-      {/* Main grid */}
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-
-        {/* Comp cards — left 2/3 */}
-        <div className='lg:col-span-2 space-y-3'>
-
-          {isLoading && (
-            <div className='flex items-center justify-center py-16' style={{ color: 'hsl(var(--tf-muted))' }}>
-              Loading comparable sales…
-            </div>
-          )}
-
-          {isError && (
-            <div className='py-8 text-center'>
-              <p style={{ color: 'hsl(var(--tf-danger, 0 70% 60%))' }}>
-                Failed to load comps pool: {error instanceof Error ? error.message : 'Unknown error'}
+              <p className='font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+                Select a parcel before running sales comparison.
               </p>
               <p className='text-sm mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>
-                Ensure the API is running at port 5000 with ASPNETCORE_ENVIRONMENT=Development
+                CompsForge requires an active subject parcel so scoring, evidence, and any Pilot action remain parcel-bound.
               </p>
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {subject && !subjectCanScore && (
+        <Card
+          style={{
+            background: 'hsl(var(--tf-card-bg))',
+            borderColor: 'hsl(var(--tf-warning) / 0.35)',
+          }}
+        >
+          <CardContent className='pt-5 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+            Subject data is incomplete. Candidate sales can still be reviewed, but scoring quality is limited until GLA,
+            year built, and assessed value are present in the parcel provider.
+          </CardContent>
+        </Card>
+      )}
+
+      <div className='flex items-center gap-4 flex-wrap'>
+        <label className='flex items-center gap-2 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+          <input
+            type='checkbox'
+            checked={qualifiedOnly}
+            onChange={(event) => setQualifiedOnly(event.target.checked)}
+          />
+          Qualified sales only
+        </label>
+
+        <div className='flex items-center gap-2'>
+          <Label className='text-sm shrink-0' style={{ color: 'hsl(var(--tf-muted))' }}>Sale from</Label>
+          <Input
+            type='date'
+            value={saleWindow.start}
+            onChange={(event) => setSaleWindow((prev) => ({ ...prev, start: event.target.value }))}
+            className='w-[150px]'
+            style={{
+              background: 'hsl(var(--tf-bg))',
+              borderColor: 'hsl(var(--tf-border))',
+              color: 'hsl(var(--tf-fg))',
+            }}
+          />
+        </div>
+
+        <div className='flex items-center gap-2'>
+          <Label className='text-sm shrink-0' style={{ color: 'hsl(var(--tf-muted))' }}>through</Label>
+          <Input
+            type='date'
+            value={saleWindow.end}
+            onChange={(event) => setSaleWindow((prev) => ({ ...prev, end: event.target.value }))}
+            className='w-[150px]'
+            style={{
+              background: 'hsl(var(--tf-bg))',
+              borderColor: 'hsl(var(--tf-border))',
+              color: 'hsl(var(--tf-fg))',
+            }}
+          />
+        </div>
+
+        <Badge variant='outline' style={{ color: 'hsl(var(--tf-fg))' }}>
+          {selectedKeys.size} selected / {candidates.length} candidates
+        </Badge>
+
+        <Button
+          type='button'
+          variant='outline'
+          onClick={() => setSelectedKeys(new Set(candidates.slice(0, Math.min(3, candidates.length)).map(compKey)))}
+          disabled={!subject || candidates.length === 0}
+        >
+          Use top 3
+        </Button>
+      </div>
+
+      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+        <div className='lg:col-span-2 space-y-3'>
+          {candidates.length === 0 && (
+            <Card
+              style={{
+                background: 'hsl(var(--tf-card-bg))',
+                borderColor: 'hsl(var(--tf-border))',
+              }}
+            >
+              <CardContent className='text-center py-10'>
+                <Search size={32} className='mx-auto mb-3' style={{ color: 'hsl(var(--tf-muted) / 0.4)' }} />
+                <p style={{ color: 'hsl(var(--tf-muted))' }}>
+                  No comparable sales match the current parcel and filters.
+                </p>
+              </CardContent>
+            </Card>
           )}
 
-          {!isLoading && !isError && data?.items.length === 0 && (
-            <div className='flex flex-col items-center justify-center py-16 gap-3'>
-              <Search size={40} style={{ color: 'hsl(var(--tf-muted) / 0.4)' }} />
-              <p style={{ color: 'hsl(var(--tf-muted))' }}>
-                No qualified sales found for the {TAX_YEAR} ratio window.
-              </p>
-              <p className='text-sm' style={{ color: 'hsl(var(--tf-muted) / 0.6)' }}>
-                Try clearing filters or running sale qualification via the Sale Qualification Queue.
-              </p>
-            </div>
-          )}
-
-          {sortedItems.map((comp) => {
-            const isSelected  = selectedIds.has(comp.saleId);
-            const adjustments = calculateAdjustments(comp, subject);
-            const totalAdj    = adjustments.reduce((s, a) => s + a.amount, 0);
-            const adjPrice    = comp.salePrice + totalAdj;
+          {candidates.map((comp) => {
+            const key = compKey(comp);
+            const isSelected = selectedKeys.has(key);
+            const adjustment = adjustments[key];
 
             return (
               <Card
-                key={comp.saleId}
+                key={key}
                 className='cursor-pointer transition-all duration-200'
-                onClick={() => toggleSelect(comp.saleId)}
+                onClick={() => toggleSelect(comp)}
                 style={{
-                  background:   'hsl(var(--tf-card-bg))',
-                  borderColor:  isSelected ? 'hsl(var(--tf-suite-forge))' : 'hsl(var(--tf-border))',
-                  borderWidth:  isSelected ? 2 : 1,
+                  background: 'hsl(var(--tf-card-bg))',
+                  borderColor: isSelected ? 'hsl(var(--tf-suite-forge))' : 'hsl(var(--tf-border))',
+                  borderWidth: isSelected ? '2px' : '1px',
                 }}
               >
                 <CardContent className='pt-4'>
-                  <div className='flex items-start justify-between'>
-                    <div className='flex-1'>
+                  <div className='flex items-start justify-between gap-4'>
+                    <div className='flex-1 min-w-0'>
                       <div className='flex items-center gap-2'>
-                        {isSelected && <CheckCircle2 size={16} style={{ color: 'hsl(var(--tf-suite-forge))' }} />}
-                        <span className='font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
-                          {comp.address ?? comp.parcelId}
-                        </span>
-                        {comp.qualificationSource === 'decision' && (
-                          <span className='text-xs px-1.5 py-0.5 rounded' style={{ background: 'hsl(var(--tf-success, 140 70% 50%) / 0.15)', color: 'hsl(var(--tf-success, 140 70% 50%))' }}>
-                            Appraiser-confirmed
-                          </span>
+                        {isSelected && (
+                          <CheckCircle2 size={16} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
                         )}
+                        <span className='font-medium truncate' style={{ color: 'hsl(var(--tf-fg))' }}>
+                          {comp.address || 'Address unavailable'}
+                        </span>
                       </div>
                       <p className='text-xs mt-0.5' style={{ color: 'hsl(var(--tf-muted))' }}>
-                        {comp.parcelId}{comp.hood ? ` · ${comp.hood}` : ''}
+                        Parcel: {comp.parcelId}
                       </p>
                     </div>
                     <div className='text-right'>
                       <p className='font-semibold' style={{ color: 'hsl(var(--tf-fg))' }}>
                         {formatCurrency(comp.salePrice)}
                       </p>
-                      {comp.gla && comp.gla > 0 && (
-                        <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-                          {formatCurrency(comp.salePrice / comp.gla)}/sq ft
-                        </p>
-                      )}
+                      <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                        {comp.pricePerSqft ? `${formatCurrency(comp.pricePerSqft)}/sqft` : 'Price/sqft unavailable'}
+                      </p>
                     </div>
                   </div>
 
                   <div className='flex items-center gap-4 mt-3 text-xs flex-wrap' style={{ color: 'hsl(var(--tf-muted))' }}>
                     <span className='flex items-center gap-1'>
                       <Calendar size={12} />
-                      {fmtDate(comp.saleDate)}
+                      {formatDate(comp.saleDate)}
                     </span>
-                    {comp.gla && (
-                      <span className='flex items-center gap-1'>
-                        <Ruler size={12} />
-                        {comp.gla.toLocaleString()} sq ft
-                      </span>
-                    )}
-                    {comp.yearBuilt && (
-                      <span className='flex items-center gap-1'>
-                        <Home size={12} />
-                        {comp.yearBuilt}
-                        {comp.bedrooms != null ? ` · ${comp.bedrooms}bd` : ''}
-                        {comp.bathrooms != null ? `/${comp.bathrooms}ba` : ''}
-                      </span>
-                    )}
-                    {comp.qualityGrade && (
-                      <span>Q: {comp.qualityGrade}</span>
-                    )}
-                    {comp.condition && (
-                      <span>C: {comp.condition}</span>
-                    )}
-                    {comp.salesRatio != null && (
-                      <span style={{ color: 'hsl(var(--tf-suite-forge))' }}>
-                        Ratio: {comp.salesRatio.toFixed(3)}
-                      </span>
-                    )}
+                    <span className='flex items-center gap-1'>
+                      <Ruler size={12} />
+                      {formatOptionalNumber(numberOrZero(comp.grossLivingArea))} sqft
+                    </span>
+                    <span className='flex items-center gap-1'>
+                      <Home size={12} />
+                      {formatOptionalNumber(numberOrZero(comp.yearBuilt))}
+                    </span>
+                    <span>
+                      Similarity: {Math.round(comp.similarityScore * 100)}%
+                    </span>
+                    <span>
+                      Qualification: {comp.saleQualification || 'Unspecified'}
+                    </span>
                   </div>
 
-                  {isSelected && adjustments.length > 0 && (
-                    <div className='mt-3 pt-3' style={{ borderTop: '1px solid hsl(var(--tf-border))' }}>
-                      <div className='grid grid-cols-2 md:grid-cols-4 gap-2'>
-                        {adjustments.map((adj) => (
-                          <div key={adj.category} className='text-xs'>
-                            <span style={{ color: 'hsl(var(--tf-muted))' }}>{adj.category}</span>
-                            <span
-                              className='ml-1 font-medium'
-                              style={{
-                                color: adj.amount >= 0
-                                  ? 'hsl(var(--tf-success, 140 70% 50%))'
-                                  : 'hsl(var(--tf-danger, 0 70% 60%))',
-                              }}
-                            >
-                              {adj.amount >= 0 ? '+' : ''}{formatCurrency(adj.amount)}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className='flex justify-between mt-2 pt-2 text-sm' style={{ borderTop: '1px solid hsl(var(--tf-border))' }}>
-                        <span style={{ color: 'hsl(var(--tf-muted))' }}>Adjusted Value</span>
-                        <span className='font-semibold' style={{ color: 'hsl(var(--tf-suite-forge))' }}>
-                          {formatCurrency(adjPrice)}
+                  {isSelected && (
+                    <div className='mt-3 pt-3 text-sm' style={{ borderTop: '1px solid hsl(var(--tf-border))' }}>
+                      <div className='flex justify-between'>
+                        <span style={{ color: 'hsl(var(--tf-muted))' }}>CostForge adjustment</span>
+                        <span className='font-medium' style={{ color: 'hsl(var(--tf-suite-forge))' }}>
+                          {adjustmentSummary(adjustment)}
                         </span>
                       </div>
+                      {adjustment && (
+                        <div className='grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-xs'>
+                          <span style={{ color: 'hsl(var(--tf-muted))' }}>
+                            Net: {formatCurrency(adjustment.totalNetAdjustment)}
+                          </span>
+                          <span style={{ color: 'hsl(var(--tf-muted))' }}>
+                            Gross adj: {Math.round(adjustment.grossAdjustmentPct)}%
+                          </span>
+                          <span style={{ color: 'hsl(var(--tf-muted))' }}>
+                            Source: {adjustment.source}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </CardContent>
               </Card>
             );
           })}
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className='flex items-center justify-center gap-3 pt-2'>
-              <Button
-                size='sm'
-                variant='ghost'
-                disabled={page <= 1}
-                onClick={() => setPage((p) => p - 1)}
-                style={{ color: 'hsl(var(--tf-muted))' }}
-              >
-                <ChevronLeft size={16} />
-                Prev
-              </Button>
-              <span className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
-                {page} / {totalPages}
-                {data && <span style={{ marginLeft: 6, opacity: 0.6 }}>({data.total.toLocaleString()} total)</span>}
-              </span>
-              <Button
-                size='sm'
-                variant='ghost'
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => p + 1)}
-                style={{ color: 'hsl(var(--tf-muted))' }}
-              >
-                Next
-                <ChevronRight size={16} />
-              </Button>
-            </div>
-          )}
         </div>
 
-        {/* Right column — reconciliation + subject summary */}
         <div className='space-y-4'>
-
-          {/* Reconciliation panel */}
-          <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-suite-forge) / 0.3)' }}>
+          <Card
+            style={{
+              background: 'hsl(var(--tf-card-bg))',
+              borderColor: 'hsl(var(--tf-suite-forge) / 0.3)',
+            }}
+          >
             <CardHeader>
-              <CardTitle className='text-lg flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
+              <CardTitle
+                className='text-lg flex items-center gap-2'
+                style={{ color: 'hsl(var(--tf-fg))' }}
+              >
                 <DollarSign size={20} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
                 Reconciliation
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {reconciled ? (
+              {reconciliation ? (
                 <div className='space-y-4'>
                   <div className='text-center space-y-1'>
                     <p className='text-xs uppercase tracking-wider' style={{ color: 'hsl(var(--tf-muted))' }}>
-                      Indicated Value (Median Adjusted)
+                      Governed Indication
                     </p>
                     <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
-                      {formatCurrency(reconciled.median)}
+                      {formatCurrency(reconciliation.weightedAverage)}
                     </p>
                     <Badge className='bg-green-500/20 text-green-400 border-green-500/30' variant='outline'>
-                      {reconciled.count} comp{reconciled.count !== 1 ? 's' : ''} selected
+                      {reconciliation.confidence} confidence
                     </Badge>
                   </div>
 
@@ -863,169 +458,99 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
 
                   <div className='space-y-2 text-sm'>
                     <div className='flex justify-between'>
-                      <span style={{ color: 'hsl(var(--tf-muted))' }}>Average</span>
-                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciled.average)}</span>
+                      <span style={{ color: 'hsl(var(--tf-muted))' }}>Median</span>
+                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciliation.median)}</span>
                     </div>
                     <div className='flex justify-between'>
                       <span style={{ color: 'hsl(var(--tf-muted))' }}>Low</span>
-                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciled.low)}</span>
+                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciliation.low)}</span>
                     </div>
                     <div className='flex justify-between'>
                       <span style={{ color: 'hsl(var(--tf-muted))' }}>High</span>
-                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciled.high)}</span>
+                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciliation.high)}</span>
                     </div>
                     <div className='flex justify-between'>
-                      <span style={{ color: 'hsl(var(--tf-muted))' }}>Range</span>
-                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciled.high - reconciled.low)}</span>
+                      <span style={{ color: 'hsl(var(--tf-muted))' }}>Source</span>
+                      <span style={{ color: 'hsl(var(--tf-fg))' }}>{reconciliation.source}</span>
                     </div>
-                  </div>
-
-                  <div
-                    className='text-xs p-2 rounded'
-                    style={{ background: 'hsl(var(--tf-suite-forge) / 0.08)', color: 'hsl(var(--tf-muted))' }}
-                  >
-                    Adjustments applied: Time trend, GLA, Age, Quality, Condition, Lot size
                   </div>
                 </div>
               ) : (
                 <div className='text-center py-8'>
                   <Search size={32} className='mx-auto mb-3' style={{ color: 'hsl(var(--tf-muted) / 0.4)' }} />
                   <p style={{ color: 'hsl(var(--tf-muted))' }}>
-                    Select comparable sales to reconcile a value
+                    {isAdjusting
+                      ? 'CostForge is adjusting selected sales.'
+                      : selectedComps.length < 2
+                        ? 'Select at least two sales for reconciliation.'
+                        : 'Reconciliation waits for governed CostForge adjustment output.'}
                   </p>
+                  {adjustmentError && (
+                    <p className='text-xs mt-3' style={{ color: 'hsl(var(--tf-warning))' }}>
+                      {adjustmentError}
+                    </p>
+                  )}
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Governed Comps Value Commit Gate */}
-          {reconciled && (
-            <div
-              className='rounded-lg p-4 space-y-4'
-              style={{ background: 'hsl(var(--tf-card-bg))', border: '1px solid hsl(var(--tf-border))' }}
-              data-testid='comps-commit-gate'
-              data-material='bento'
-            >
-              <div className='flex items-center gap-2'>
-                <Lock size={14} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
-                <p className='text-xs font-medium uppercase tracking-wider' style={{ color: 'hsl(var(--tf-muted))' }}>Commit Sales Indication</p>
-              </div>
-              <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-                Confirm the indicated value from {reconciled.count} comp{reconciled.count !== 1 ? 's' : ''} and assemble the BOE support packet. This records the sales comparison indication and cannot be undone without re-selecting comps.
-              </p>
-
-              {compsCommitState.status !== 'success' && (
-                <label className='flex items-start gap-2 cursor-pointer' data-testid='comps-commit-label'>
-                  <input
-                    type='checkbox'
-                    checked={compsCommitConfirmed}
-                    onChange={(e) => setCompsCommitConfirmed(e.target.checked)}
-                    className='mt-0.5'
-                    data-testid='comps-commit-checkbox'
-                  />
-                  <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-                    I have reviewed all {reconciled.count} adjusted comp{reconciled.count !== 1 ? 's' : ''} and confirm{' '}
-                    <strong style={{ color: 'hsl(var(--tf-fg))' }}>{formatCurrency(reconciled.median)}</strong>{' '}
-                    (median adjusted) as the sales comparison indication.
-                  </span>
-                </label>
-              )}
-
-              {compsCommitState.status !== 'success' && (
-                <button
-                  onClick={handleCommitCompsValue}
-                  disabled={!compsCommitConfirmed || compsCommitState.status === 'loading'}
-                  className='w-full rounded-md px-3 py-2 text-sm font-medium transition-opacity disabled:opacity-40'
-                  style={{ background: 'hsl(var(--tf-suite-forge))', color: '#000' }}
-                  data-testid='comps-commit-btn'
-                >
-                  {compsCommitState.status === 'loading' ? 'Assembling BOE Packet…' : 'Commit Sales Indication + Assemble BOE Packet'}
-                </button>
-              )}
-
-              {compsCommitState.status === 'error' && (
-                <div
-                  className='rounded-md px-3 py-2 text-xs'
-                  style={{ background: 'hsl(var(--tf-error-hs, 0 70%) 55% / 0.12)', color: 'hsl(var(--tf-error-hs, 0 70%) 65%)' }}
-                  data-testid='comps-commit-error'
-                >
-                  <span className='font-semibold'>Commit failed:</span> {compsCommitState.error}
-                  {compsCommitState.correlationId && (
-                    <span className='ml-2 opacity-60 font-mono text-xs'>{compsCommitState.correlationId}</span>
-                  )}
-                </div>
-              )}
-
-              {compsCommitState.status === 'success' && compsCommitState.result && (
-                <div
-                  className='rounded-lg p-3 space-y-2'
-                  style={{ background: 'hsl(var(--tf-suite-forge) / 0.08)', border: '1px solid hsl(var(--tf-suite-forge) / 0.25)' }}
-                  data-testid='comps-commit-success'
-                >
-                  <div className='flex items-center gap-2'>
-                    <CheckCircle size={14} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
-                    <span className='text-xs font-semibold' style={{ color: 'hsl(var(--tf-suite-forge))' }}>BOE Packet Assembled</span>
-                    {compsCommitState.correlationId && (
-                      <span className='ml-auto font-mono text-xs opacity-50'>{compsCommitState.correlationId}</span>
-                    )}
-                  </div>
-                  <div className='grid grid-cols-1 gap-1 text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-                    <div>
-                      <span className='uppercase tracking-wider'>Packet Ref</span>
-                      <p className='font-mono mt-0.5' style={{ color: 'hsl(var(--tf-fg))' }}>{compsCommitState.result.packetRef}</p>
-                    </div>
-                    <div>
-                      <span className='uppercase tracking-wider'>Sections</span>
-                      <p className='mt-0.5' style={{ color: 'hsl(var(--tf-fg))' }}>{compsCommitState.result.sections.join(', ')}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Subject property summary */}
-          <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+          <Card
+            style={{
+              background: 'hsl(var(--tf-card-bg))',
+              borderColor: 'hsl(var(--tf-border))',
+            }}
+          >
             <CardHeader className='pb-2'>
-              <CardTitle className='text-sm flex items-center gap-2' style={{ color: 'hsl(var(--tf-fg))' }}>
+              <CardTitle
+                className='text-sm flex items-center gap-2'
+                style={{ color: 'hsl(var(--tf-fg))' }}
+              >
                 <Home size={16} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
                 Subject Property
-                {!activeParcel && (
-                  <span className='text-xs font-normal' style={{ color: 'hsl(var(--tf-muted))' }}>(defaults)</span>
-                )}
               </CardTitle>
             </CardHeader>
             <CardContent className='space-y-1 text-sm'>
-              {activeParcel && (
-                <div className='mb-2 pb-2' style={{ borderBottom: '1px solid hsl(var(--tf-border))', color: 'hsl(var(--tf-suite-forge))' }}>
-                  {activeParcel.address}
-                </div>
-              )}
-              <div className='flex justify-between'>
+              <div className='flex justify-between gap-4'>
+                <span style={{ color: 'hsl(var(--tf-muted))' }}>Parcel</span>
+                <span className='text-right' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {subject?.parcelId ?? 'Required'}
+                </span>
+              </div>
+              <div className='flex justify-between gap-4'>
+                <span style={{ color: 'hsl(var(--tf-muted))' }}>County</span>
+                <span style={{ color: 'hsl(var(--tf-fg))' }}>{activeParcel?.countyCode ?? 'Unavailable'}</span>
+              </div>
+              <div className='flex justify-between gap-4'>
+                <span style={{ color: 'hsl(var(--tf-muted))' }}>Neighborhood code</span>
+                <span className='text-right' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {activeParcel?.neighborhood ?? 'Unavailable from current provider'}
+                </span>
+              </div>
+              <div className='flex justify-between gap-4'>
                 <span style={{ color: 'hsl(var(--tf-muted))' }}>GLA</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{subject.gla.toLocaleString()} sq ft</span>
+                <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {subject ? formatOptionalNumber(subject.grossLivingArea) : 'Required'} sqft
+                </span>
               </div>
-              <div className='flex justify-between'>
+              <div className='flex justify-between gap-4'>
                 <span style={{ color: 'hsl(var(--tf-muted))' }}>Year Built</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{subject.yearBuilt}</span>
+                <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {subject ? formatOptionalNumber(subject.yearBuilt) : 'Required'}
+                </span>
               </div>
-              <div className='flex justify-between'>
-                <span style={{ color: 'hsl(var(--tf-muted))' }}>Quality</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{subject.qualityGrade}</span>
+              <div className='flex justify-between gap-4'>
+                <span style={{ color: 'hsl(var(--tf-muted))' }}>Assessed</span>
+                <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {subject && subject.assessedValue > 0 ? formatCurrency(subject.assessedValue) : 'Unavailable'}
+                </span>
               </div>
-              <div className='flex justify-between'>
-                <span style={{ color: 'hsl(var(--tf-muted))' }}>Condition</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{subject.condition}</span>
-              </div>
-              <div className='flex justify-between'>
+              <div className='flex justify-between gap-4'>
                 <span style={{ color: 'hsl(var(--tf-muted))' }}>Lot</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{subject.lotSizeSqft.toLocaleString()} sq ft</span>
+                <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {subject ? formatOptionalNumber(subject.lotSizeSqft) : 'Required'} sqft
+                </span>
               </div>
-              {!activeParcel && (
-                <p className='text-xs pt-2' style={{ color: 'hsl(var(--tf-muted) / 0.6)' }}>
-                  Open a parcel in Property Search to set subject characteristics.
-                </p>
-              )}
             </CardContent>
           </Card>
         </div>
