@@ -1,7 +1,7 @@
 // TerraFusion OS — DCF Income Approach Panel
 // Full interactive Discounted Cash Flow engine with sensitivity matrix.
 // Mined from bsvalues/TerraFusion-Valuator-Pro-Studio components/dcf-income-approach.tsx
-// Adapted: hardcoded dark tokens → CSS vars; raw inputs kept for appraisal editing UX;
+// Adapted: fixed dark tokens to CSS vars; raw inputs kept for appraisal editing UX;
 //          removed "use client" (Vite/React SPA); no Supabase deps.
 
 import { useState, useMemo } from "react";
@@ -64,16 +64,64 @@ interface YearlyProjection {
   cumDcf: number;
 }
 
+interface DCFResult {
+  projections: YearlyProjection[];
+  terminalValue: number;
+  presentValueNOI: number;
+  presentValueReversion: number;
+  indicatedValue: number;
+  irr: number;
+  equityMultiple: number;
+  directCapValue: number;
+  yr1CapRate: number;
+  yr1Noi: number;
+  avgNoi: number;
+}
+
 // ---------------------------------------------------------------------------
 // DCF Engine (self-contained)
 // ---------------------------------------------------------------------------
 
-function calculateDCF(inputs: DCFInputs) {
+function buildEmptyDCFResult(holdingPeriod: number): DCFResult {
+  const period = Math.max(1, Math.floor(holdingPeriod || 10));
+  const projections = Array.from({ length: period }, (_, idx) => ({
+    year: idx + 1,
+    pgi: 0,
+    vacancy: 0,
+    egi: 0,
+    opex: 0,
+    noi: 0,
+    capex: 0,
+    ncf: 0,
+    dcf: 0,
+    cumDcf: 0,
+  }));
+
+  return {
+    projections,
+    terminalValue: 0,
+    presentValueNOI: 0,
+    presentValueReversion: 0,
+    indicatedValue: 0,
+    irr: 0,
+    equityMultiple: 0,
+    directCapValue: 0,
+    yr1CapRate: 0,
+    yr1Noi: 0,
+    avgNoi: 0,
+  };
+}
+
+function calculateDCF(inputs: DCFInputs): DCFResult {
   const {
     totalSqft, marketRentPsf, marketVacancyRate, rentGrowthRate, expenseGrowthRate,
     operatingExpenses, managementFee, insurancePsf, realEstateTaxPsf, maintenancePsf,
     reservesPsf, discountRate, terminalCapRate, holdingPeriod, dispositionCosts, tenants,
   } = inputs;
+
+  if (totalSqft <= 0 || holdingPeriod <= 0 || terminalCapRate <= 0 || discountRate <= -100) {
+    return buildEmptyDCFResult(holdingPeriod);
+  }
 
   const dr = discountRate / 100;
   const rg = rentGrowthRate / 100;
@@ -140,7 +188,7 @@ function calculateDCF(inputs: DCFInputs) {
 
   const yr1Noi = projections[0]?.noi || 0;
   const directCapValue = yr1Noi / (terminalCapRate / 100);
-  const yr1CapRate = (yr1Noi / indicatedValue) * 100;
+  const yr1CapRate = indicatedValue > 0 ? (yr1Noi / indicatedValue) * 100 : 0;
   const avgNoi = projections.reduce((s, p) => s + p.noi, 0) / projections.length;
 
   // Newton-Raphson IRR
@@ -157,28 +205,53 @@ function calculateDCF(inputs: DCFInputs) {
     if (Math.abs(delta) < 1e-7) break;
   }
 
-  const equityMultiple = (projections.reduce((s, p) => s + p.ncf, 0) + netTerminalValue) / indicatedValue;
+  const equityMultiple = indicatedValue > 0
+    ? (projections.reduce((s, p) => s + p.ncf, 0) + netTerminalValue) / indicatedValue
+    : 0;
 
   return { projections, terminalValue: netTerminalValue, presentValueNOI, presentValueReversion, indicatedValue, irr: irr * 100, equityMultiple, directCapValue, yr1CapRate, yr1Noi, avgNoi };
 }
 
 // ---------------------------------------------------------------------------
-// Defaults
+// Manual entry seeds
 // ---------------------------------------------------------------------------
 
-const DEFAULT_TENANT: Tenant = {
-  id: "T1", name: "Anchor Tenant LLC", suite: "100", sqft: 5000,
-  leaseStart: "2023-01-01", leaseEnd: "2027-12-31",
-  currentRent: 28, annualEscalation: 3, renewalProbability: 75,
-  renewalTerm: 5, renewalRentAdj: 5, tenantImprovements: 25, leasingCommission: 4, creditRating: "A",
+const TENANT_TEMPLATE: Tenant = {
+  id: "",
+  name: "",
+  suite: "",
+  sqft: 0,
+  leaseStart: "",
+  leaseEnd: "",
+  currentRent: 0,
+  annualEscalation: 0,
+  renewalProbability: 0,
+  renewalTerm: 0,
+  renewalRentAdj: 0,
+  tenantImprovements: 0,
+  leasingCommission: 0,
+  creditRating: "C",
 };
 
-const DEFAULT_INPUTS: DCFInputs = {
-  totalSqft: 20000, propertyType: "Office",
-  marketRentPsf: 30, marketVacancyRate: 8, rentGrowthRate: 3, expenseGrowthRate: 2.5,
-  operatingExpenses: 8, managementFee: 4, insurancePsf: 0.5, realEstateTaxPsf: 2.5,
-  maintenancePsf: 1.5, reservesPsf: 0.25, discountRate: 8.5, terminalCapRate: 7.0,
-  holdingPeriod: 10, acquisitionCosts: 1.5, dispositionCosts: 2.0, tenants: [DEFAULT_TENANT],
+const DCF_STARTING_INPUTS: DCFInputs = {
+  totalSqft: 0,
+  propertyType: "Unspecified",
+  marketRentPsf: 0,
+  marketVacancyRate: 0,
+  rentGrowthRate: 0,
+  expenseGrowthRate: 0,
+  operatingExpenses: 0,
+  managementFee: 0,
+  insurancePsf: 0,
+  realEstateTaxPsf: 0,
+  maintenancePsf: 0,
+  reservesPsf: 0,
+  discountRate: 0,
+  terminalCapRate: 0,
+  holdingPeriod: 10,
+  acquisitionCosts: 0,
+  dispositionCosts: 0,
+  tenants: [],
 };
 
 // ---------------------------------------------------------------------------
@@ -197,8 +270,8 @@ export interface DcfPanelProps {
   onValueChange?: (value: number) => void;
 }
 
-export function DcfPanel({ initialSqft = 20000, initialPropertyType = "Office", onValueChange }: DcfPanelProps) {
-  const [inputs, setInputs] = useState<DCFInputs>({ ...DEFAULT_INPUTS, totalSqft: initialSqft, propertyType: initialPropertyType });
+export function DcfPanel({ initialSqft = 0, initialPropertyType = "Unspecified", onValueChange }: DcfPanelProps) {
+  const [inputs, setInputs] = useState<DCFInputs>({ ...DCF_STARTING_INPUTS, totalSqft: initialSqft, propertyType: initialPropertyType });
   const [showTenants, setShowTenants] = useState(true);
   const [activeView, setActiveView] = useState<"projections" | "sensitivity" | "assumptions">("projections");
 
@@ -211,7 +284,7 @@ export function DcfPanel({ initialSqft = 20000, initialPropertyType = "Office", 
   const upd = (field: keyof DCFInputs, value: unknown) => setInputs((p) => ({ ...p, [field]: value }));
 
   const addTenant = () => {
-    const newTenant: Tenant = { ...DEFAULT_TENANT, id: `T${Date.now()}`, name: `Tenant ${inputs.tenants.length + 1}`, suite: `${(inputs.tenants.length + 1) * 100}` };
+    const newTenant: Tenant = { ...TENANT_TEMPLATE, id: `T${Date.now()}` };
     upd("tenants", [...inputs.tenants, newTenant]);
   };
 
@@ -225,7 +298,7 @@ export function DcfPanel({ initialSqft = 20000, initialPropertyType = "Office", 
   const fmtPsf = (n: number) => `$${n.toFixed(2)}/sf`;
 
   const leasedSqft = inputs.tenants.reduce((s, t) => s + t.sqft, 0);
-  const occupancy = Math.min(100, (leasedSqft / inputs.totalSqft) * 100);
+  const occupancy = inputs.totalSqft > 0 ? Math.min(100, (leasedSqft / inputs.totalSqft) * 100) : 0;
 
   // 7×7 sensitivity
   const sensitivityData = useMemo(() => {
@@ -237,6 +310,11 @@ export function DcfPanel({ initialSqft = 20000, initialPropertyType = "Office", 
   }, [inputs]);
 
   const baseValue = results.indicatedValue;
+  const yr1NoiPsf = inputs.totalSqft > 0 ? results.yr1Noi / inputs.totalSqft : 0;
+  const indicatedValuePsf = inputs.totalSqft > 0 ? results.indicatedValue / inputs.totalSqft : 0;
+  const noiShareOfValue = results.indicatedValue > 0 ? (results.presentValueNOI / results.indicatedValue) * 100 : 0;
+  const lastProjection = results.projections[results.projections.length - 1] ?? buildEmptyDCFResult(inputs.holdingPeriod).projections[0];
+  const terminalNoi = lastProjection.noi * (1 + inputs.rentGrowthRate / 100);
 
   const ROWS = [
     { key: "pgi",     label: "Potential Gross Income",       color: "text-foreground",         bold: false, neg: false },
@@ -260,7 +338,7 @@ export function DcfPanel({ initialSqft = 20000, initialPropertyType = "Office", 
             INCOME CAPITALIZATION APPROACH — DCF MODEL
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            USPAP SR 1-4(b) · {inputs.holdingPeriod}-Year Discounted Cash Flow with Reversion
+            USPAP SR 1-4(b) · manual assumptions required · {inputs.holdingPeriod}-Year Discounted Cash Flow with Reversion
           </p>
         </div>
         <div className="text-right">
@@ -275,7 +353,7 @@ export function DcfPanel({ initialSqft = 20000, initialPropertyType = "Office", 
       {/* KPI row */}
       <div className="grid grid-cols-6 gap-2">
         {[
-          { label: "Yr 1 NOI",     value: fmt(results.yr1Noi),          sub: fmtPsf(results.yr1Noi / inputs.totalSqft) },
+          { label: "Yr 1 NOI",     value: fmt(results.yr1Noi),          sub: fmtPsf(yr1NoiPsf) },
           { label: "Avg NOI",      value: fmt(results.avgNoi),           sub: `${inputs.holdingPeriod}-yr avg` },
           { label: "Going-In Cap", value: fmtPct(results.yr1CapRate),    sub: "Yr 1 NOI / Value" },
           { label: "Terminal Cap", value: fmtPct(inputs.terminalCapRate),sub: "Exit cap rate" },
@@ -347,19 +425,19 @@ export function DcfPanel({ initialSqft = 20000, initialPropertyType = "Office", 
             <div className="rounded-lg border border-border/30 p-3">
               <div className="text-[10px] text-muted-foreground font-mono mb-1">PV OF NOI CASH FLOWS</div>
               <div className="text-lg font-bold text-primary font-mono">{fmt(results.presentValueNOI)}</div>
-              <div className="text-[10px] text-muted-foreground/60">{((results.presentValueNOI / results.indicatedValue) * 100).toFixed(1)}% of total value</div>
+              <div className="text-[10px] text-muted-foreground/60">{noiShareOfValue.toFixed(1)}% of total value</div>
             </div>
             <div className="rounded-lg border border-border/30 p-3">
               <div className="text-[10px] text-muted-foreground font-mono mb-1">PV OF REVERSION</div>
               <div className="text-lg font-bold text-chart-5 font-mono">{fmt(results.presentValueReversion)}</div>
               <div className="text-[10px] text-muted-foreground/60">
-                Terminal NOI: {fmt(results.projections[results.projections.length - 1].noi * (1 + inputs.rentGrowthRate / 100))} ÷ {inputs.terminalCapRate}%
+                Terminal NOI: {fmt(terminalNoi)} ÷ {inputs.terminalCapRate}%
               </div>
             </div>
             <div className="rounded-lg border border-chart-2/30 bg-chart-2/5 p-3">
               <div className="text-[10px] text-muted-foreground font-mono mb-1">INDICATED VALUE (DCF)</div>
               <div className="text-lg font-bold text-chart-2 font-mono">{fmt(results.indicatedValue)}</div>
-              <div className="text-[10px] text-muted-foreground/60">${(results.indicatedValue / inputs.totalSqft).toFixed(0)}/sf overall</div>
+              <div className="text-[10px] text-muted-foreground/60">${indicatedValuePsf.toFixed(0)}/sf overall</div>
             </div>
           </div>
         </div>
@@ -390,7 +468,7 @@ export function DcfPanel({ initialSqft = 20000, initialPropertyType = "Office", 
                       {(inputs.discountRate + drDelta).toFixed(1)}%
                     </td>
                     {sensitivityData[ri].map((val, ci) => {
-                      const pct = ((val - baseValue) / baseValue) * 100;
+                      const pct = baseValue > 0 ? ((val - baseValue) / baseValue) * 100 : 0;
                       const isBase = drDelta === 0 && ci === 3;
                       return (
                         <td
@@ -497,7 +575,7 @@ export function DcfPanel({ initialSqft = 20000, initialPropertyType = "Office", 
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Per Square Foot</span>
-                <span className="text-muted-foreground font-mono">${(results.indicatedValue / inputs.totalSqft).toFixed(0)}/sf</span>
+                <span className="text-muted-foreground font-mono">${indicatedValuePsf.toFixed(0)}/sf</span>
               </div>
             </div>
           </div>
