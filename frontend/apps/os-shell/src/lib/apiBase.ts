@@ -80,3 +80,27 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
   const url = buildApiUrl(path);
   return fetch(url, init);
 }
+
+/**
+ * Fetches JSON from the API with proper base URL handling.
+ * Throws on non-2xx responses with the response body included in the error.
+ *
+ * @param path - API path (e.g., '/pilt/status') — MUST NOT include '/api' prefix
+ * @param init - Optional RequestInit (signal, headers, method, body, ...)
+ * @returns Parsed JSON body cast to T
+ */
+export async function apiFetchJson<T = unknown>(path: string, init?: RequestInit): Promise<T> {
+  const res = await apiFetch(path, init);
+  if (!res.ok) {
+    let detail = '';
+    try {
+      detail = await res.text();
+    } catch {
+      // ignore
+    }
+    throw new Error(
+      `[apiFetchJson] ${res.status} ${res.statusText} for ${path}${detail ? ` — ${detail}` : ''}`
+    );
+  }
+  return (await res.json()) as T;
+}
