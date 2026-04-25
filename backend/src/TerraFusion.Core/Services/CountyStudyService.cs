@@ -27,7 +27,7 @@ public class CountyStudyService : ICountyStudyService
         var study = new CountyStudySession
         {
             CountyId = countyId,
-            CountyName = county?.Name ?? req.CountyId,
+            CountyName = county?.Name ?? "Unknown County",
             TaxYear = req.TaxYear,
             StudyType = req.StudyType,
             BaselineVersion = req.BaselineVersion,

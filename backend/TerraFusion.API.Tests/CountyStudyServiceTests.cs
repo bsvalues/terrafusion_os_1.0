@@ -68,7 +68,7 @@ public class CountyStudyServiceTests
     }
 
     [Fact]
-    public async Task CreateStudy_CountyName_FallsBackToInputString_WhenCountyNotFound()
+    public async Task CreateStudy_CountyName_FallsBackToUnknownCounty_WhenCountyNotFound()
     {
         var (_, svc) = CreateSut();
         var countyId = Guid.NewGuid();
@@ -78,9 +78,8 @@ public class CountyStudyServiceTests
             new CreateStudyRequest(countyId.ToString(), 2026, StudyType.RatioStudy, null),
             "u1");
 
-        // Fallback: CountyName is non-null and non-empty.
-        Assert.NotNull(study.CountyName);
-        Assert.NotEmpty(study.CountyName);
+        // Fallback: CountyName is "Unknown County".
+        Assert.Equal("Unknown County", study.CountyName);
     }
 
     [Fact]

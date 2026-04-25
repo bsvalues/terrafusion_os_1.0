@@ -11,6 +11,7 @@ public sealed class CountyStudySessionConfiguration : IEntityTypeConfiguration<C
     {
         builder.HasKey(e => e.StudyId);
         builder.ToTable("CountyStudySessions");
+        builder.Property(e => e.CountyName).HasMaxLength(100).HasDefaultValue(string.Empty);
         builder.Property(e => e.StudyType).IsRequired().HasConversion<string>().HasMaxLength(50);
         builder.Property(e => e.Status).IsRequired().HasConversion<string>().HasMaxLength(50);
         builder.Property(e => e.BaselineVersion).HasMaxLength(200);
