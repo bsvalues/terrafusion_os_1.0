@@ -80,8 +80,9 @@ describe('Gate 1: Contract Types', () => {
     }
   });
 
-  it('tab slug set is exactly 8 members (no drift)', () => {
-    expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(8);
+  it('tab slug set is exactly 9 members (no drift)', () => {
+    // Gate 5 locks the canonical 9-tab list (summary..dossier + pilot).
+    expect(VALID_WORKBENCH_TAB_IDS).toHaveLength(9);
   });
 });
 
@@ -301,7 +302,11 @@ describe('Gate 7: Badge API Client', () => {
     expect(badges[0].key).toBe('atlas-geo-linked');
   });
 
-  it('dossier provider returns source badge when source present', async () => {
+  it('dossier provider does not expose vendor source names in OS surface', async () => {
+    // No-vendor-names rule: dossier badges must not surface internal source-system
+    // identifiers (PACS, Tyler, Aumentum, etc.). Dossier-owned badges are reserved
+    // for evidence/document status, not provenance vendor strings. The provider
+    // therefore returns an empty list at this layer.
     const dossierProvider = BADGE_PROVIDERS.find((p) => p.owner === 'dossier')!;
     const badges = await dossierProvider.getBadges('test-parcel', {
       countyId: 'benton',
@@ -311,9 +316,10 @@ describe('Gate 7: Badge API Client', () => {
       workMode: 'overview',
     });
 
-    expect(badges.length).toBe(1);
-    expect(badges[0].key).toBe('dossier-source');
-    expect(badges[0].label).toBe('PACS');
+    expect(Array.isArray(badges)).toBe(true);
+    for (const badge of badges) {
+      expect(badge.label).not.toMatch(/PACS|Tyler|Aumentum/i);
+    }
   });
 });
 

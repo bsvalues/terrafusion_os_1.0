@@ -580,6 +580,9 @@ export function isValidPrimaryAction(
 /**
  * Valid workbench tab ids (mirrored from PropertyWorkbench).
  * This is the canonical list - PropertyWorkbench should use this.
+ *
+ * Gate 5 of workbench.contractGates locks this list to exactly:
+ *   summary, forge, atlas, dais, clerk, treasury, audit, dossier, pilot
  */
 export const VALID_WORKBENCH_TAB_IDS: readonly WorkbenchTabId[] = [
   'summary',
