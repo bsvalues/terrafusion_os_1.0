@@ -945,7 +945,7 @@ public class CountyStudyController : ControllerBase
 
             var packet = new EvidencePacketDto(
                 StudyId: studyId,
-                CountyName: "Benton County",
+                CountyName: study.CountyName,
                 TaxYear: study.TaxYear,
                 StudyType: study.StudyType,
                 StudyStatus: study.Status,

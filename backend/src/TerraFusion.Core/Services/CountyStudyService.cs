@@ -23,9 +23,11 @@ public class CountyStudyService : ICountyStudyService
     public async Task<CountyStudySessionDto> CreateStudyAsync(CreateStudyRequest req, string userId)
     {
         var countyId = await _countyResolver.ResolveAsync(req.CountyId);
+        var county = await _db.Counties.FindAsync(countyId);
         var study = new CountyStudySession
         {
             CountyId = countyId,
+            CountyName = county?.Name ?? req.CountyId,
             TaxYear = req.TaxYear,
             StudyType = req.StudyType,
             BaselineVersion = req.BaselineVersion,
@@ -1152,7 +1154,7 @@ public class CountyStudyService : ICountyStudyService
     // ── Mappers ──────────────────────────────────────────────────────────
 
     private static CountyStudySessionDto MapStudy(CountyStudySession s) =>
-        new(s.StudyId, s.CountyId, s.TaxYear, s.StudyType.ToString(),
+        new(s.StudyId, s.CountyId, s.CountyName, s.TaxYear, s.StudyType.ToString(),
             s.Status.ToString(), s.BaselineVersion, s.ActiveSegmentSetId,
             s.CreatedAt, s.CreatedBy);
 

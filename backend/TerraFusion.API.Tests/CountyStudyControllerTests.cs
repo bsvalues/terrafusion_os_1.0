@@ -46,7 +46,7 @@ public class CountyStudyControllerTests
         var studyId  = Guid.NewGuid();
 
         var expected = new CountyStudySessionDto(
-            studyId, countyId, 2026,
+            studyId, countyId, "Test County", 2026,
             nameof(StudyType.RatioStudy), nameof(StudyStatus.Draft),
             null, null,
             DateTime.UtcNow, "system");
@@ -87,9 +87,9 @@ public class CountyStudyControllerTests
         var countyId = Guid.NewGuid();
         var studies  = new List<CountyStudySessionDto>
         {
-            new(Guid.NewGuid(), countyId, 2026, nameof(StudyType.RatioStudy), nameof(StudyStatus.Draft),
+            new(Guid.NewGuid(), countyId, "Test County", 2026, nameof(StudyType.RatioStudy), nameof(StudyStatus.Draft),
                 null, null, DateTime.UtcNow, "system"),
-            new(Guid.NewGuid(), countyId, 2025, nameof(StudyType.MassAppraisal), nameof(StudyStatus.Active),
+            new(Guid.NewGuid(), countyId, "Test County", 2025, nameof(StudyType.MassAppraisal), nameof(StudyStatus.Active),
                 null, null, DateTime.UtcNow.AddYears(-1), "system")
         };
 
@@ -150,7 +150,7 @@ public class CountyStudyControllerTests
         var countyId = Guid.NewGuid();
 
         var expected = new CountyStudySessionDto(
-            studyId, countyId, 2026,
+            studyId, countyId, "Test County", 2026,
             nameof(StudyType.RatioStudy), nameof(StudyStatus.Active),
             null, null,
             DateTime.UtcNow, "system");

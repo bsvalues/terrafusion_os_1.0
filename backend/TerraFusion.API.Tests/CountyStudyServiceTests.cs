@@ -45,6 +45,45 @@ public class CountyStudyServiceTests
     }
 
     [Fact]
+    public async Task CreateStudy_SetsCountyName_FromCountyEntityOrFallback()
+    {
+        var (ctx, svc) = CreateSut();
+        var countyId = Guid.NewGuid();
+
+        // Seed a County entity so the service can look up the name.
+        ctx.Counties.Add(new TerraFusion.Core.Entities.County
+        {
+            Id       = countyId,
+            Name     = "Franklin County",
+            State    = "WA",
+            FipsCode = "53005",
+        });
+        await ctx.SaveChangesAsync();
+
+        var study = await svc.CreateStudyAsync(
+            new CreateStudyRequest(countyId.ToString(), 2026, StudyType.RatioStudy, null),
+            "u1");
+
+        Assert.Equal("Franklin County", study.CountyName);
+    }
+
+    [Fact]
+    public async Task CreateStudy_CountyName_FallsBackToInputString_WhenCountyNotFound()
+    {
+        var (_, svc) = CreateSut();
+        var countyId = Guid.NewGuid();
+
+        // No County row seeded — resolver returns the Guid.
+        var study = await svc.CreateStudyAsync(
+            new CreateStudyRequest(countyId.ToString(), 2026, StudyType.RatioStudy, null),
+            "u1");
+
+        // Fallback: CountyName is non-null and non-empty.
+        Assert.NotNull(study.CountyName);
+        Assert.NotEmpty(study.CountyName);
+    }
+
+    [Fact]
     public async Task GetStudies_ReturnsOnlyCountyStudies()
     {
         var (_, svc) = CreateSut();

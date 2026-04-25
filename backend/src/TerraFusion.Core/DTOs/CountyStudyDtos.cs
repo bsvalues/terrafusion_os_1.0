@@ -11,6 +11,7 @@ namespace TerraFusion.Core.DTOs;
 public record CountyStudySessionDto(
     Guid StudyId,
     Guid CountyId,
+    string CountyName,
     int TaxYear,
     string StudyType,
     string Status,

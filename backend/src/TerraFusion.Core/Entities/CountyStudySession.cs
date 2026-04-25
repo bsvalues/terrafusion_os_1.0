@@ -10,6 +10,13 @@ public class CountyStudySession
 {
     public Guid StudyId { get; set; } = Guid.NewGuid();
     public Guid CountyId { get; set; }
+
+    /// <summary>
+    /// Denormalized county display name, resolved from Counties table at study creation.
+    /// Stored here so evidence packets don't require a live join.
+    /// </summary>
+    public string CountyName { get; set; } = string.Empty;
+
     public int TaxYear { get; set; }
     public StudyType StudyType { get; set; } = StudyType.RatioStudy;
     public StudyStatus Status { get; set; } = StudyStatus.Draft;
