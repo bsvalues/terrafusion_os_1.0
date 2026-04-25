@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Settings } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   EliteActivityIcon,
   EliteBrainIcon,
@@ -43,110 +43,48 @@ interface SystemPerformanceMetrics {
 }
 
 const EliteWidgetPerformanceMonitor: React.FC = () => {
-  const [performanceData, setPerformanceData] = useState<WidgetPerformanceData[]>([]);
-  const [systemMetrics, setSystemMetrics] = useState<SystemPerformanceMetrics>({
-    totalWidgets: 0,
-    averageRenderTime: 0,
-    totalMemoryUsage: 0,
-    errorRate: 0,
-    uptimePercentage: 100,
-    aiOptimizationSuggestions: 0,
-  });
+  const [performanceData] = useState<WidgetPerformanceData[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [operatorMessage, setOperatorMessage] = useState<string | null>(null);
+  const telemetryAvailable = performanceData.length > 0;
+  const systemMetrics = useMemo<SystemPerformanceMetrics>(() => {
+    const totalWidgets = performanceData.length;
+    if (totalWidgets === 0) {
+      return {
+        totalWidgets: 0,
+        averageRenderTime: 0,
+        totalMemoryUsage: 0,
+        errorRate: 0,
+        uptimePercentage: 0,
+        aiOptimizationSuggestions: 0,
+      };
+    }
 
-  // Simulate Elite Performance Data Collection
-  useEffect(() => {
-    const collectPerformanceData = () => {
-      // Simulate real widget performance data
-      const mockWidgets: WidgetPerformanceData[] = [
-        {
-          id: 'system-health',
-          name: 'System Health Monitor',
-          renderTime: Math.random() * 50 + 10,
-          memoryUsage: Math.random() * 100 + 50,
-          errorCount: Math.floor(Math.random() * 3),
-          healthStatus: Math.random() > 0.8 ? 'warning' : 'healthy',
-          lastUpdated: new Date(),
-        },
-        {
-          id: 'ai-insights',
-          name: 'AI Insights Dashboard',
-          renderTime: Math.random() * 80 + 20,
-          memoryUsage: Math.random() * 150 + 75,
-          errorCount: Math.floor(Math.random() * 2),
-          healthStatus: Math.random() > 0.9 ? 'critical' : 'healthy',
-          lastUpdated: new Date(),
-        },
-        {
-          id: 'government-core',
-          name: 'Government Core Module',
-          renderTime: Math.random() * 60 + 15,
-          memoryUsage: Math.random() * 120 + 60,
-          errorCount: Math.floor(Math.random() * 4),
-          healthStatus: Math.random() > 0.85 ? 'warning' : 'healthy',
-          lastUpdated: new Date(),
-        },
-        {
-          id: 'quantum-ui',
-          name: 'Quantum UI Components',
-          renderTime: Math.random() * 40 + 8,
-          memoryUsage: Math.random() * 80 + 40,
-          errorCount: Math.floor(Math.random() * 1),
-          healthStatus: 'healthy',
-          lastUpdated: new Date(),
-        },
-      ];
+    const averageRenderTime =
+      performanceData.reduce((sum, w) => sum + w.renderTime, 0) / totalWidgets;
+    const totalMemoryUsage = performanceData.reduce((sum, w) => sum + w.memoryUsage, 0);
+    const totalErrors = performanceData.reduce((sum, w) => sum + w.errorCount, 0);
+    const errorRate = totalErrors / totalWidgets;
+    const healthyWidgets = performanceData.filter((w) => w.healthStatus === 'healthy').length;
+    const uptimePercentage = (healthyWidgets / totalWidgets) * 100;
+    const aiOptimizationSuggestions = performanceData.filter(
+      (w) => w.healthStatus !== 'healthy' || w.errorCount > 0
+    ).length;
 
-      setPerformanceData(mockWidgets);
-
-      // Calculate system metrics
-      const totalWidgets = mockWidgets.length;
-      const averageRenderTime =
-        mockWidgets.reduce((sum, w) => sum + w.renderTime, 0) / totalWidgets;
-      const totalMemoryUsage = mockWidgets.reduce((sum, w) => sum + w.memoryUsage, 0);
-      const totalErrors = mockWidgets.reduce((sum, w) => sum + w.errorCount, 0);
-      const errorRate = totalErrors / totalWidgets;
-      const healthyWidgets = mockWidgets.filter((w) => w.healthStatus === 'healthy').length;
-      const uptimePercentage = (healthyWidgets / totalWidgets) * 100;
-
-      setSystemMetrics({
-        totalWidgets,
-        averageRenderTime,
-        totalMemoryUsage,
-        errorRate,
-        uptimePercentage,
-        aiOptimizationSuggestions: Math.floor(Math.random() * 5) + 2,
-      });
+    return {
+      totalWidgets,
+      averageRenderTime,
+      totalMemoryUsage,
+      errorRate,
+      uptimePercentage,
+      aiOptimizationSuggestions,
     };
+  }, [performanceData]);
 
-    // Initial data collection
-    collectPerformanceData();
-
-    // Real-time updates every 3 seconds
-    const interval = setInterval(collectPerformanceData, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // AI-Powered Optimization
-  const runAIOptimization = async () => {
-    setIsOptimizing(true);
-
-    // Simulate AI optimization process
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // Update performance after optimization
-    setPerformanceData((prev) =>
-      prev.map((widget) => ({
-        ...widget,
-        renderTime: widget.renderTime * 0.85, // 15% improvement
-        memoryUsage: widget.memoryUsage * 0.9, // 10% memory reduction
-        healthStatus: 'healthy' as const,
-      }))
+  const runGovernedOptimization = () => {
+    setOperatorMessage(
+      'Widget optimization requires live widget telemetry and a governed Pilot action before results can be changed.'
     );
-
-    setIsOptimizing(false);
   };
 
   // Performance Status Color
@@ -180,7 +118,7 @@ const EliteWidgetPerformanceMonitor: React.FC = () => {
           <div>
             <h3 className='text-lg font-semibold text-white'>Elite Widget Performance</h3>
             <p className='text-sm text-gray-400'>
-              Real-time performance analytics & AI optimization
+              Instrumented widget telemetry and governed optimization
             </p>
           </div>
         </div>
@@ -189,21 +127,12 @@ const EliteWidgetPerformanceMonitor: React.FC = () => {
           <Button
             variant='outline'
             size='sm'
-            onClick={runAIOptimization}
-            disabled={isOptimizing}
+            onClick={runGovernedOptimization}
+            disabled={!telemetryAvailable}
             className='border-terra-cyan/30 text-terra-cyan hover:bg-terra-cyan/10'
           >
-            {isOptimizing ? (
-              <>
-                <EliteBrainIcon className='w-4 h-4 mr-2 animate-pulse' />
-                Optimizing...
-              </>
-            ) : (
-              <>
-                <EliteBrainIcon className='w-4 h-4 mr-2' />
-                AI Optimize
-              </>
-            )}
+            <EliteBrainIcon className='w-4 h-4 mr-2' />
+            Pilot Optimize
           </Button>
 
           <Button
@@ -239,7 +168,7 @@ const EliteWidgetPerformanceMonitor: React.FC = () => {
               <div>
                 <p className='text-xs text-gray-400 uppercase tracking-wide'>Uptime</p>
                 <p className='text-lg font-bold text-white'>
-                  {systemMetrics.uptimePercentage.toFixed(1)}%
+                  {telemetryAvailable ? `${systemMetrics.uptimePercentage.toFixed(1)}%` : 'Unavailable'}
                 </p>
               </div>
               <EliteShieldIcon className='w-5 h-5 text-green-400' />
@@ -251,7 +180,7 @@ const EliteWidgetPerformanceMonitor: React.FC = () => {
               <div>
                 <p className='text-xs text-gray-400 uppercase tracking-wide'>Avg Render</p>
                 <p className='text-lg font-bold text-white'>
-                  {systemMetrics.averageRenderTime.toFixed(1)}ms
+                  {telemetryAvailable ? `${systemMetrics.averageRenderTime.toFixed(1)}ms` : 'Unavailable'}
                 </p>
               </div>
               <EliteZapIcon className='w-5 h-5 text-blue-400' />
@@ -263,13 +192,32 @@ const EliteWidgetPerformanceMonitor: React.FC = () => {
               <div>
                 <p className='text-xs text-gray-400 uppercase tracking-wide'>Memory</p>
                 <p className='text-lg font-bold text-white'>
-                  {systemMetrics.totalMemoryUsage.toFixed(0)}MB
+                  {telemetryAvailable ? `${systemMetrics.totalMemoryUsage.toFixed(0)}MB` : 'Unavailable'}
                 </p>
               </div>
               <EliteMemoryIcon className='w-5 h-5 text-purple-400' />
             </div>
           </div>
         </div>
+
+        {!telemetryAvailable && (
+          <div className='p-3 rounded-lg bg-terra-slate/30 border border-yellow-500/20'>
+            <div className='flex items-start space-x-2'>
+              <EliteActivityIcon className='w-4 h-4 text-yellow-400 mt-0.5' />
+              <p className='text-sm text-gray-300'>
+                No live widget telemetry is registered. This panel will not report health,
+                recommendations, or optimization outcomes until instrumented widgets publish
+                measurements into the monitor.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {operatorMessage && (
+          <div className='p-3 rounded-lg bg-blue-500/10 border border-blue-500/20'>
+            <p className='text-sm text-blue-200'>{operatorMessage}</p>
+          </div>
+        )}
 
         {/* Individual Widget Performance */}
         {isExpanded && (
@@ -279,68 +227,79 @@ const EliteWidgetPerformanceMonitor: React.FC = () => {
               Widget Performance Details
             </h4>
 
-            {performanceData.map((widget) => (
-              <div
-                key={widget.id}
-                className='p-3 rounded-lg bg-terra-slate/30 border border-terra-cyan/10'
-              >
-                <div className='flex items-center justify-between mb-2'>
-                  <div className='flex items-center space-x-2'>
-                    {getHealthIcon(widget.healthStatus)}
-                    <span className='text-sm font-medium text-white'>{widget.name}</span>
-                    <Badge variant='secondary' className='text-xs'>
-                      {widget.healthStatus}
-                    </Badge>
+            {performanceData.length > 0 ? (
+              performanceData.map((widget) => (
+                <div
+                  key={widget.id}
+                  className='p-3 rounded-lg bg-terra-slate/30 border border-terra-cyan/10'
+                >
+                  <div className='flex items-center justify-between mb-2'>
+                    <div className='flex items-center space-x-2'>
+                      {getHealthIcon(widget.healthStatus)}
+                      <span className='text-sm font-medium text-white'>{widget.name}</span>
+                      <Badge variant='secondary' className='text-xs'>
+                        {widget.healthStatus}
+                      </Badge>
+                    </div>
+                    <div className='flex items-center space-x-4 text-xs text-gray-400'>
+                      <span className={getPerformanceColor(widget.renderTime)}>
+                        <EliteCpuIcon className='w-3 h-3 inline mr-1' />
+                        {widget.renderTime.toFixed(1)}ms
+                      </span>
+                      <span className='text-purple-400'>
+                        <EliteMemoryIcon className='w-3 h-3 inline mr-1' />
+                        {widget.memoryUsage.toFixed(0)}MB
+                      </span>
+                    </div>
                   </div>
-                  <div className='flex items-center space-x-4 text-xs text-gray-400'>
-                    <span className={getPerformanceColor(widget.renderTime)}>
-                      <EliteCpuIcon className='w-3 h-3 inline mr-1' />
-                      {widget.renderTime.toFixed(1)}ms
-                    </span>
-                    <span className='text-purple-400'>
-                      <EliteMemoryIcon className='w-3 h-3 inline mr-1' />
-                      {widget.memoryUsage.toFixed(0)}MB
-                    </span>
+
+                  <div className='space-y-2'>
+                    <div>
+                      <div className='flex justify-between text-xs text-gray-400 mb-1'>
+                        <span>Render Performance</span>
+                        <span>{widget.renderTime.toFixed(1)}ms</span>
+                      </div>
+                      <Progress
+                        value={Math.min((widget.renderTime / 100) * 100, 100)}
+                        className='h-2 bg-terra-slate'
+                      />
+                    </div>
+
+                    <div>
+                      <div className='flex justify-between text-xs text-gray-400 mb-1'>
+                        <span>Memory Usage</span>
+                        <span>{widget.memoryUsage.toFixed(0)}MB</span>
+                      </div>
+                      <Progress
+                        value={Math.min((widget.memoryUsage / 200) * 100, 100)}
+                        className='h-2 bg-terra-slate'
+                      />
+                    </div>
+
+                    {widget.errorCount > 0 && (
+                      <div className='flex items-center text-xs text-red-400'>
+                        <EliteActivityIcon className='w-3 h-3 mr-1' />
+                        {widget.errorCount} error{widget.errorCount !== 1 ? 's' : ''} detected
+                      </div>
+                    )}
+                    <p className='text-[10px] text-gray-500'>
+                      Last updated {widget.lastUpdated.toISOString()}
+                    </p>
                   </div>
                 </div>
-
-                <div className='space-y-2'>
-                  <div>
-                    <div className='flex justify-between text-xs text-gray-400 mb-1'>
-                      <span>Render Performance</span>
-                      <span>{widget.renderTime.toFixed(1)}ms</span>
-                    </div>
-                    <Progress
-                      value={Math.min((widget.renderTime / 100) * 100, 100)}
-                      className='h-2 bg-terra-slate'
-                    />
-                  </div>
-
-                  <div>
-                    <div className='flex justify-between text-xs text-gray-400 mb-1'>
-                      <span>Memory Usage</span>
-                      <span>{widget.memoryUsage.toFixed(0)}MB</span>
-                    </div>
-                    <Progress
-                      value={Math.min((widget.memoryUsage / 200) * 100, 100)}
-                      className='h-2 bg-terra-slate'
-                    />
-                  </div>
-
-                  {widget.errorCount > 0 && (
-                    <div className='flex items-center text-xs text-red-400'>
-                      <EliteActivityIcon className='w-3 h-3 mr-1' />
-                      {widget.errorCount} error{widget.errorCount !== 1 ? 's' : ''} detected
-                    </div>
-                  )}
-                </div>
+              ))
+            ) : (
+              <div className='p-3 rounded-lg bg-terra-slate/30 border border-terra-cyan/10'>
+                <p className='text-sm text-gray-300'>
+                  No instrumented widget records are available for drilldown.
+                </p>
               </div>
-            ))}
+            )}
           </div>
         )}
 
-        {/* AI Optimization Suggestions */}
-        {systemMetrics.aiOptimizationSuggestions > 0 && (
+        {/* Governed Optimization Suggestions */}
+        {telemetryAvailable && systemMetrics.aiOptimizationSuggestions > 0 && (
           <div className='p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20'>
             <div className='flex items-center justify-between'>
               <div className='flex items-center space-x-2'>
