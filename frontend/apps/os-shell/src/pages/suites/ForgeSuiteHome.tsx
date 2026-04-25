@@ -133,7 +133,7 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
   {
     id: 'statistics-studio',
     label: 'Statistics Studio',
-    description: 'IAAO ratio studies — COD, PRD, PRB, and assessment quality diagnostics',
+    description: 'IAAO assessment quality — COD, PRD, PRB, and uniformity diagnostics',
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'statistics-studio',
@@ -546,6 +546,34 @@ export default function ForgeSuiteHome() {
             </div>
           </section>
 
+          {/* Secondary / Specialist Applications */}
+          <section className="forge-panel" data-testid="forge-secondary-applications">
+            <div className="forge-panel__header">
+              <div>
+                <p className="forge-panel__eyebrow">Specialist Tools</p>
+                <h2 className="forge-panel__title">Analytics &amp; calibration</h2>
+              </div>
+            </div>
+            <div className="forge-primary-grid">
+              {SECONDARY_MODULES.map((mod) => (
+                <button
+                  key={mod.id}
+                  type="button"
+                  className="forge-card forge-card--secondary"
+                  onClick={() => handleModuleLaunch(mod)}
+                  disabled={mod.truthState === 'queued'}
+                >
+                  <div className="forge-card__rail">
+                    {mod.chipLabel && <span className="forge-chip forge-chip--neutral">{mod.chipLabel}</span>}
+                    <span className="forge-card__foot">{getLaunchLabel(mod)}</span>
+                  </div>
+                  <div className="forge-card__title">{mod.label}</div>
+                  <p className="forge-card__description">{mod.description}</p>
+                </button>
+              ))}
+            </div>
+          </section>
+
           {/* GeoForge — GIS-first mass appraisal analytics */}
           <section className="forge-panel" data-testid="forge-gis-applications">
             <div className="forge-panel__header">
@@ -566,8 +594,8 @@ export default function ForgeSuiteHome() {
               </div>
               <div className="forge-card__title">GeoForge</div>
               <p className="forge-card__description">
-                Full-canvas GIS valuation — Mapbox choropleth, 31 analyst panels, live Benton Method ratio
-                study (COD · PRD · PRB), DOR certification workflow, adjustment workbench, Moran&apos;s I
+                Full-canvas GIS valuation — Mapbox choropleth, 31 analyst panels, live Benton Method
+                COD · PRD · PRB diagnostics, DOR certification workflow, adjustment workbench, Moran&apos;s I
                 spatial analysis, levy parity, and one-click WAC 458-53A narrative memo.
               </p>
             </button>
@@ -588,13 +616,29 @@ export default function ForgeSuiteHome() {
               onClick={() => handleModuleLaunch({ id: 'county-studio', label: 'County Studio', description: '', priority: 'primary', launchMode: 'standalone', moduleId: 'county-studio' })}
             >
               <div className="forge-card__rail">
-                <span className="forge-chip forge-chip--neutral">Ratio Study · Scenarios · Segments</span>
+                <span className="forge-chip forge-chip--neutral">Segments · Scenarios · IAAO</span>
                 <span className="forge-card__foot">Launches in window</span>
               </div>
               <div className="forge-card__title">County Studio</div>
               <p className="forge-card__description">
                 Segment-first countywide valuation workspace — load segment sets, define cohorts, model
                 adjustment scenarios with live preview, review IAAO compliance, and publish to Atlas Live View.
+              </p>
+            </button>
+            <button
+              type="button"
+              className="forge-card forge-card--secondary"
+              style={{ width: '100%', textAlign: 'left' }}
+              onClick={() => handleModuleLaunch({ id: 'atlas-live-view', label: 'Atlas Live View', description: '', priority: 'primary', launchMode: 'standalone', moduleId: 'atlas-live-view' })}
+            >
+              <div className="forge-card__rail">
+                <span className="forge-chip forge-chip--neutral">Spatial · Parcels · Live Map</span>
+                <span className="forge-card__foot">Launches in window</span>
+              </div>
+              <div className="forge-card__title">Atlas Live View</div>
+              <p className="forge-card__description">
+                Study-aware spatial surface — real-time Benton County parcel map with neighborhood
+                outlines, choropleth overlays, and County Studio session sync.
               </p>
             </button>
           </section>
