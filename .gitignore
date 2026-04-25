@@ -615,3 +615,44 @@ os-platform/core/types/assessorSuperpowers.ts
 tools/bin/commands/*.mjs
 tools/bin/lib/*.mjs
 os-platform/core/pilot/ops/screenshots/
+
+# Root-level investigation/verification artifacts (playwright sessions, screenshots, eval JSON)
+.playwright-mcp/
+*.png
+preview-app-verify-*.png
+sales-app-verify-*.png
+suite-app-verify-*.png
+sales-live-eval-*.json
+suite-live-eval-*.json
+sales-live-snapshot-*.md
+r.txt
+response.json
+type-check-output.txt
+screenshot_polished.js
+screenshot_script.js
+
+# Frontend ad-hoc check/test scripts (not part of test suite)
+frontend/check.cjs
+frontend/check_levy.cjs
+frontend/check_tabs.cjs
+frontend/check_terralevy.cjs
+frontend/check_terralevy.js
+frontend/extract_levies.cjs
+frontend/inspect_terralevy.js
+frontend/playwright_sweep.spec.ts
+frontend/playwright_test.spec.ts
+frontend/test_script.cjs
+frontend/test_script.js
+frontend/test_terralevy.cjs
+frontend/terralevy_*.png
+frontend/dist-livefix/
+frontend/publish/
+frontend/error_screenshot.png
+frontend/levies_screenshot.png
+
+# Backend temp artifacts
+.tmp-backend-image/
+.tmp-ssh-upload-test.txt
+.tmp-terrafusion-api.pp.xml
+.tmp-zipverify/
+backend/TerraFusion.API.Tests/Services/ModuleRuntimeHealthTest.txt
