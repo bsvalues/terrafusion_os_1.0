@@ -66,12 +66,12 @@ export function StatisticsStudio() {
   const [activeTab, setActiveTab] = useState<Tab>('ratio-study');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [taxYear, setTaxYear] = useState(currentTaxYear);
-  const [isFixture] = useState(false); // all data is live (API-first); banner activates if fixture fallback is introduced
   const fetchStudy = useForgeStatisticsStore((s) => s.fetchStudy);
   const setStudyFilter = useForgeStatisticsStore((s) => s.setFilter);
   const loadComparison = useForgeStatisticsStore((s) => s.loadComparison);
   const statsLoading = useForgeStatisticsStore((s) => s.loading);
   const ratioData = useRatioData();
+  const [isFixture] = useState(false); // banner activates if a fixture fallback is wired in future
   const availableTaxYears = useMemo(
     () =>
       Array.from(
