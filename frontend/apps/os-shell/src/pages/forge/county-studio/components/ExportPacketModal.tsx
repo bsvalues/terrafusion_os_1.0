@@ -57,30 +57,30 @@ export function ExportPacketModal({ studyId, scenarioId, onClose }: Props) {
   };
 
   return (
-    <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
+    <div data-testid="export-packet-overlay" style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
       <div style={modal}>
         {/* Header */}
         <div style={{ padding: '12px 16px', borderBottom: '1px solid hsl(var(--tf-border))', display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontWeight: 700, fontSize: 13, flex: 1 }}>Evidence Packet Export</span>
           {packet && (
             <>
-              <button onClick={handleDownloadJson} style={btnStyle('#3b82f6')}>
+              <button data-testid="export-download-json" onClick={handleDownloadJson} style={btnStyle('#3b82f6')}>
                 Download JSON
               </button>
-              <button onClick={handleCopyMarkdown} style={btnStyle('#22c55e')}>
+              <button data-testid="export-copy-markdown" onClick={handleCopyMarkdown} style={btnStyle('#22c55e')}>
                 {copied ? '✓ Copied!' : 'Copy Markdown'}
               </button>
             </>
           )}
-          <button onClick={onClose} style={{ ...btnStyle('#6b7280'), padding: '3px 8px' }}>✕</button>
+          <button data-testid="export-close" onClick={onClose} style={{ ...btnStyle('#6b7280'), padding: '3px 8px' }}>✕</button>
         </div>
 
         {/* Content */}
         <div style={{ flex: 1, overflowY: 'auto', padding: 16, fontSize: 12 }}>
-          {loading && <div style={{ color: 'hsl(var(--tf-muted))', textAlign: 'center', paddingTop: 40 }}>Generating packet…</div>}
-          {error && <div style={{ color: '#ef4444' }}>{error}</div>}
+          {loading && <div data-testid="export-loading" style={{ color: 'hsl(var(--tf-muted))', textAlign: 'center', paddingTop: 40 }}>Generating packet…</div>}
+          {error && <div data-testid="export-error" style={{ color: '#ef4444' }}>{error}</div>}
           {packet && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div data-testid="export-packet-content" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {/* Header section */}
               <section>
                 <h3 style={sectionTitle}>Study Header</h3>
