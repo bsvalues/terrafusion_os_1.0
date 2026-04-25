@@ -290,6 +290,9 @@ public class CountyStudioSmokeTests
         Assert.Equal("Approved", approved.ApprovalState);
         Assert.Equal("bsvalues", approved.ApprovedBy);
 
+        // Identity contract: ApprovedBy must be the real user, not the "system" fallback.
+        Assert.NotEqual("system", approved.ApprovedBy);
+
         var published = await svc.UpdateApprovalStateAsync(
             adjSet.AdjustmentSetId, AdjustmentSetApprovalState.Published, "bsvalues");
         Assert.Equal("Published", published.ApprovalState);

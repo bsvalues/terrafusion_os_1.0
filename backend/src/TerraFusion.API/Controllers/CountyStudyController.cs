@@ -11,6 +11,7 @@
 //   Exception                 → 500 Internal     { error: "Internal error" }  + Error log
 
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Interfaces;
@@ -53,7 +54,9 @@ public class CountyStudyController : ControllerBase
     }
 
     private string CurrentUserId =>
-        User?.Identity?.Name ?? FallbackUserId;
+        User.FindFirstValue(ClaimTypes.NameIdentifier)
+        ?? User.FindFirst("sub")?.Value
+        ?? FallbackUserId;
 
     // ── Studies ───────────────────────────────────────────────────────────────
 
