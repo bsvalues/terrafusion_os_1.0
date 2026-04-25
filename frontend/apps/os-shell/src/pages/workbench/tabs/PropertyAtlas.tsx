@@ -740,6 +740,12 @@ export const PropertyAtlas: React.FC = () => {
         </div>
       )}
 
+      {/* ── Honesty disclosure: full GIS geometry is not exposed on this route ── */}
+      <div className="text-[11px] tf-text-dim px-2" data-testid="atlas-geometry-disclosure">
+        This route shows boundary previews and layer availability only.
+        Full GIS geometry rendering is reserved for the dedicated Atlas suite.
+      </div>
+
       {/* ── Live GIS Layer Data ─────────────────────────────── */}
       {layers.source === 'live' && layers.data && (
         <div data-testid="atlas-gis-layers">

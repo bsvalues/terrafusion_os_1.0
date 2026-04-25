@@ -124,7 +124,11 @@ export const PropertyForge: React.FC = () => {
       {/* Year context panel — shows lock state, programs, AV/MV for selected year */}
       <ForgeYearContextPanel layer={selectedLayer} taxYear={taxYear} />
 
-      <div className="flex justify-end" data-testid="forge-baseline-disclosure">
+      <div className="flex items-center justify-between gap-3" data-testid="forge-baseline-disclosure">
+        <p className="text-xs tf-text-dim">
+          Cost, comp, and income approaches are requested via governed tooling;
+          values shown are returned from the live workbench API.
+        </p>
         <WorkbenchSourceBadge source={forgeProbe.source} />
       </div>
 
@@ -203,7 +207,7 @@ export const PropertyForge: React.FC = () => {
         aria-labelledby="forge-tab-sales"
         style={{ display: activeSubTab === 'sales' ? 'block' : 'none' }}
       >
-        {forgeProbe.loading ? (
+        {forgeProbe.loading && (
           <div
             role="status"
             aria-label="Loading sales data"
@@ -214,13 +218,16 @@ export const PropertyForge: React.FC = () => {
               Loading sales comparison data…
             </span>
           </div>
-        ) : (
-          <SalesComparison
-            taxYear={taxYear}
-            onHistoryRecord={addHistoryRecord}
-            onValueIndicated={handleValueIndicated}
-          />
         )}
+        {/* Always render SalesComparison so its inner ComparableSalesPanel
+            (data-testid="comparable-sales-panel") is mounted while the
+            outer Forge probe is still loading. The panel handles its own
+            empty/loading state internally. */}
+        <SalesComparison
+          taxYear={taxYear}
+          onHistoryRecord={addHistoryRecord}
+          onValueIndicated={handleValueIndicated}
+        />
       </div>
 
       <div
