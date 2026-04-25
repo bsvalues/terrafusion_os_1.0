@@ -55,6 +55,9 @@ const NEXT_STATES: Partial<Record<AdjustmentSetApprovalState, { state: Adjustmen
 
 // ── Single row ────────────────────────────────────────────────────────────────
 
+const requiresConfirm = (state: AdjustmentSetApprovalState): boolean =>
+  state === 'Published' || state === 'RolledBack';
+
 function AdjSetRow({
   adj,
   onAction,
@@ -66,6 +69,30 @@ function AdjSetRow({
 }) {
   const actions = NEXT_STATES[adj.approvalState] ?? [];
   const isBusy  = busy === adj.adjustmentSetId;
+
+  const [confirming,     setConfirming]     = useState<AdjustmentSetApprovalState | null>(null);
+  const [rollbackReason, setRollbackReason] = useState('');
+
+  const handleClick = (state: AdjustmentSetApprovalState) => {
+    if (requiresConfirm(state)) {
+      setConfirming(state);
+    } else {
+      onAction(adj.adjustmentSetId, state);
+    }
+  };
+
+  const handleConfirmYes = () => {
+    if (confirming) {
+      onAction(adj.adjustmentSetId, confirming);
+      setConfirming(null);
+      setRollbackReason('');
+    }
+  };
+
+  const handleConfirmCancel = () => {
+    setConfirming(null);
+    setRollbackReason('');
+  };
 
   return (
     <div
@@ -99,35 +126,119 @@ function AdjSetRow({
         Scenario {adj.scenarioId.slice(0, 8)}…
       </span>
 
-      {actions.length > 0 && (
-        <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
-          {actions.map(({ state, label }) => (
+      {confirming ? (
+        <div
+          data-testid={`confirm-${confirming}-${adj.adjustmentSetId}`}
+          style={{
+            marginTop: 4,
+            padding: '6px 8px',
+            borderRadius: 4,
+            border: '1px solid hsl(var(--tf-border))',
+            background: confirming === 'RolledBack'
+              ? 'hsl(var(--tf-error) / 0.07)'
+              : 'hsl(var(--tf-success) / 0.07)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 6,
+          }}
+        >
+          <div style={{ fontSize: 11, fontWeight: 600 }}>
+            Confirm {confirming === 'Published' ? 'Publish' : 'Rollback'}?
+            {confirming === 'Published' && (
+              <span style={{ fontSize: 10, fontWeight: 400, marginLeft: 6, color: 'hsl(var(--tf-muted))' }}>
+                This locks the DOR submission.
+              </span>
+            )}
+          </div>
+          {confirming === 'RolledBack' && (
+            <input
+              data-testid={`rollback-reason-${adj.adjustmentSetId}`}
+              type="text"
+              placeholder="Reason for rollback (required for audit trail)"
+              value={rollbackReason}
+              onChange={(e) => setRollbackReason(e.target.value)}
+              style={{
+                fontSize: 10,
+                padding: '3px 6px',
+                borderRadius: 3,
+                border: '1px solid hsl(var(--tf-border))',
+                background: 'hsl(var(--tf-surface))',
+                color: 'hsl(var(--tf-fg))',
+                width: '100%',
+                boxSizing: 'border-box',
+              }}
+            />
+          )}
+          <div style={{ display: 'flex', gap: 6 }}>
             <button
-              key={state}
-              data-testid={`btn-${state}-${adj.adjustmentSetId}`}
-              disabled={isBusy}
-              onClick={() => onAction(adj.adjustmentSetId, state)}
+              data-testid={`confirm-yes-${adj.adjustmentSetId}`}
+              disabled={isBusy || (confirming === 'RolledBack' && rollbackReason.trim() === '')}
+              onClick={handleConfirmYes}
               style={{
                 fontSize: 10,
                 padding: '3px 10px',
                 borderRadius: 4,
                 border: '1px solid hsl(var(--tf-border))',
-                background:
-                  state === 'RolledBack' ? '#ef444422' :
-                  state === 'Published'  ? '#22c55e22' :
-                  'hsl(var(--tf-surface))',
-                color:
-                  state === 'RolledBack' ? '#ef4444' :
-                  state === 'Published'  ? '#22c55e' :
-                  'hsl(var(--tf-fg))',
-                cursor: isBusy ? 'not-allowed' : 'pointer',
-                opacity: isBusy ? 0.5 : 1,
+                background: confirming === 'RolledBack'
+                  ? 'hsl(var(--tf-error) / 0.13)'
+                  : 'hsl(var(--tf-success) / 0.13)',
+                color: confirming === 'RolledBack'
+                  ? 'hsl(var(--tf-error-hs) 55% 50%)'
+                  : 'hsl(var(--tf-success-hs) 22% 44%)',
+                cursor: (isBusy || (confirming === 'RolledBack' && rollbackReason.trim() === '')) ? 'not-allowed' : 'pointer',
+                opacity: (isBusy || (confirming === 'RolledBack' && rollbackReason.trim() === '')) ? 0.5 : 1,
               }}
             >
-              {isBusy ? '…' : label}
+              {isBusy ? '…' : 'Yes, confirm'}
             </button>
-          ))}
+            <button
+              data-testid={`confirm-cancel-${adj.adjustmentSetId}`}
+              onClick={handleConfirmCancel}
+              style={{
+                fontSize: 10,
+                padding: '3px 10px',
+                borderRadius: 4,
+                border: '1px solid hsl(var(--tf-border))',
+                background: 'hsl(var(--tf-surface))',
+                color: 'hsl(var(--tf-fg))',
+                cursor: 'pointer',
+              }}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
+      ) : (
+        actions.length > 0 && (
+          <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
+            {actions.map(({ state, label }) => (
+              <button
+                key={state}
+                data-testid={`btn-${state}-${adj.adjustmentSetId}`}
+                disabled={isBusy}
+                onClick={() => handleClick(state)}
+                style={{
+                  fontSize: 10,
+                  padding: '3px 10px',
+                  borderRadius: 4,
+                  border: '1px solid hsl(var(--tf-border))',
+                  background:
+                    state === 'RolledBack' ? '#ef444422' :
+                    state === 'Published'  ? '#22c55e22' :
+                    'hsl(var(--tf-surface))',
+                  color:
+                    state === 'RolledBack' ? '#ef4444' :
+                    state === 'Published'  ? '#22c55e' :
+                    'hsl(var(--tf-fg))',
+                  cursor: isBusy ? 'not-allowed' : 'pointer',
+                  opacity: isBusy ? 0.5 : 1,
+                }}
+              >
+                {isBusy ? '…' : label}
+              </button>
+            ))}
+          </div>
+        )
       )}
     </div>
   );

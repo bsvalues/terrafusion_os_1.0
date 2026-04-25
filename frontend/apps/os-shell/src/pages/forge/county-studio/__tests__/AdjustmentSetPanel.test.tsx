@@ -135,4 +135,64 @@ describe('AdjustmentSetPanel', () => {
     await screen.findByTestId('adj-panel-error');
     expect(screen.getByTestId('adj-panel-error')).toHaveTextContent('Illegal transition');
   });
+
+  test('clicking Publish shows confirmation prompt, not immediately calling updateApprovalState', async () => {
+    mockList.mockResolvedValueOnce([makeAdj({ approvalState: 'Approved' })]);
+    const user = userEvent.setup();
+    render(<AdjustmentSetPanel />);
+    await screen.findByTestId('btn-Published-adj-001');
+
+    await user.click(screen.getByTestId('btn-Published-adj-001'));
+
+    // Must NOT have called the API yet — confirmation step required first.
+    expect(mockUpdateState).not.toHaveBeenCalled();
+    // Confirm prompt must be visible.
+    expect(screen.getByTestId('confirm-Published-adj-001')).toBeInTheDocument();
+  });
+
+  test('clicking Yes in Publish confirm calls updateApprovalState', async () => {
+    const updated = makeAdj({ approvalState: 'Published' });
+    mockList.mockResolvedValueOnce([makeAdj({ approvalState: 'Approved' })]);
+    mockUpdateState.mockResolvedValueOnce(updated);
+    const user = userEvent.setup();
+    render(<AdjustmentSetPanel />);
+    await screen.findByTestId('btn-Published-adj-001');
+
+    await user.click(screen.getByTestId('btn-Published-adj-001'));
+    await user.click(screen.getByTestId('confirm-yes-adj-001'));
+
+    expect(mockUpdateState).toHaveBeenCalledWith('adj-001', 'Published');
+    await waitFor(() =>
+      expect(screen.getByTestId('state-badge-Published')).toBeInTheDocument()
+    );
+  });
+
+  test('clicking Cancel in Publish confirm restores original buttons', async () => {
+    mockList.mockResolvedValueOnce([makeAdj({ approvalState: 'Approved' })]);
+    const user = userEvent.setup();
+    render(<AdjustmentSetPanel />);
+    await screen.findByTestId('btn-Published-adj-001');
+
+    await user.click(screen.getByTestId('btn-Published-adj-001'));
+    expect(screen.getByTestId('confirm-Published-adj-001')).toBeInTheDocument();
+
+    await user.click(screen.getByTestId('confirm-cancel-adj-001'));
+
+    expect(mockUpdateState).not.toHaveBeenCalled();
+    expect(screen.queryByTestId('confirm-Published-adj-001')).not.toBeInTheDocument();
+    expect(screen.getByTestId('btn-Published-adj-001')).toBeInTheDocument();
+  });
+
+  test('clicking Rollback shows confirmation prompt with reason input', async () => {
+    mockList.mockResolvedValueOnce([makeAdj({ approvalState: 'Published' })]);
+    const user = userEvent.setup();
+    render(<AdjustmentSetPanel />);
+    await screen.findByTestId('btn-RolledBack-adj-001');
+
+    await user.click(screen.getByTestId('btn-RolledBack-adj-001'));
+
+    expect(mockUpdateState).not.toHaveBeenCalled();
+    expect(screen.getByTestId('confirm-RolledBack-adj-001')).toBeInTheDocument();
+    expect(screen.getByTestId('rollback-reason-adj-001')).toBeInTheDocument();
+  });
 });
