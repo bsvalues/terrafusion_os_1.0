@@ -170,16 +170,24 @@ describe('Phase 9: Full Stack Integration', () => {
       initializeModuleRegistry();
       render(<DesktopWithErrorBoundary />, { wrapper: phase9Wrapper });
 
-      // Initially no windows
-      expect(screen.queryByTestId('window')).not.toBeInTheDocument();
+      // Desktop auto-spawns the TerraPilot companion ('os-pilot') on mount.
+      // Filter it out so we can assert against operator-launched windows.
+      const userWindows = () =>
+        useDesktopStore.getState().windows.filter((w) => w.moduleId !== 'os-pilot');
+
+      // Initially no operator-launched windows
+      expect(userWindows().length).toBe(0);
 
       // Launch module
       await act(async () => {
         await useModuleRegistryStore.getState().launchModule('government-edition');
       });
 
-      // Window should appear
-      expect(screen.getByTestId('window')).toBeInTheDocument();
+      // The government-edition window should appear in both store and DOM
+      expect(userWindows().length).toBe(1);
+      expect(userWindows()[0].moduleId).toBe('government-edition');
+      // At least one rendered window element exists
+      expect(screen.getAllByTestId('window').length).toBeGreaterThanOrEqual(1);
     });
 
     it('Taskbar shows running windows from store', async () => {
@@ -282,17 +290,21 @@ describe('Phase 9: Full Stack Integration', () => {
         await useModuleRegistryStore.getState().launchModule('government-edition');
       });
 
-      // Verify window exists
-      expect(useDesktopStore.getState().windows.length).toBe(1);
+      // Filter out the auto-spawned TerraPilot companion ('os-pilot')
+      const govWindows = () =>
+        useDesktopStore.getState().windows.filter((w) => w.moduleId === 'government-edition');
+
+      // Verify the launched window exists
+      expect(govWindows().length).toBe(1);
 
       // Close via store
       act(() => {
-        const windowId = useDesktopStore.getState().windows[0].id;
+        const windowId = govWindows()[0].id;
         useDesktopStore.getState().closeWindow(windowId);
       });
 
-      // Window removed
-      expect(useDesktopStore.getState().windows.length).toBe(0);
+      // Government-edition window removed
+      expect(govWindows().length).toBe(0);
     });
 
     it('Window focus updates activeWindowId', async () => {
