@@ -130,11 +130,13 @@ export default function ValueAuditModule() {
   const [filterParcel, setFilterParcel] = useState('');
   const [selectedEntry, setSelectedEntry] = useState<ValuationAuditEntry | null>(null);
 
-  // Load entries on mount
+  // Load entries on mount.
+  // When the audit store is empty, seed the table with bounded DEMO_ENTRIES so
+  // the panel renders evidence; the DemoDataBanner discloses the demo overlay.
   useEffect(() => {
     const stored = loadAuditEntries();
-    // Show only real user/system entries; do not pre-seed with demo data
-    const sorted = [...stored].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    const merged = stored.length === 0 ? [...DEMO_ENTRIES, ...stored] : stored;
+    const sorted = [...merged].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     setEntries(sorted);
   }, []);
 
