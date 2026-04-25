@@ -141,10 +141,11 @@ describe('ScenarioWorksheet', () => {
     render(<ScenarioWorksheet />);
     fireEvent.click(screen.getByTestId('promote-btn-sc-saved'));
     await waitFor(() => {
-      expect(vi.mocked(scenarioApi.promote)).toHaveBeenCalledWith({
-        scenarioId:     'sc-saved',
-        effectiveScope: expect.stringContaining('sc-saved'),
-      });
+      const promoteCall = vi.mocked(scenarioApi.promote).mock.calls[0][0];
+      expect(promoteCall.scenarioId).toBe('sc-saved');
+      const scope = JSON.parse(promoteCall.effectiveScope) as Record<string, unknown>;
+      expect(scope.cohortId).toBe('c1');
+      expect('scenarioId' in scope).toBe(false);
       expect(screen.getByTestId('sw-promote-success')).toBeInTheDocument();
     });
   });

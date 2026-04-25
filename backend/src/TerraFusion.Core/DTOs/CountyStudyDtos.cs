@@ -165,7 +165,7 @@ public record CountyAdjustmentSetDto(
 
 public record PromoteScenarioRequest(
     Guid ScenarioId,
-    string EffectiveScope  // JSON: { cohortId, segmentIds[], parcelCount }
+    string EffectiveScope  // JSON: { "cohortId": "<guid>" }
 );
 
 public record UpdateAdjustmentApprovalStateRequest(string NewState);

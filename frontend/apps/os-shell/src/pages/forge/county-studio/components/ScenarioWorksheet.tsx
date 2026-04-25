@@ -149,8 +149,7 @@ export function ScenarioWorksheet() {
       await scenarioApi.promote({
         scenarioId:     scenario.scenarioId,
         effectiveScope: JSON.stringify({
-          scenarioId: scenario.scenarioId,
-          cohortId:   scenario.cohortId,
+          cohortId: scenario.cohortId,
         }),
       });
       setPromoteSuccess('Promoted — see Govnc tab for approval workflow.');
