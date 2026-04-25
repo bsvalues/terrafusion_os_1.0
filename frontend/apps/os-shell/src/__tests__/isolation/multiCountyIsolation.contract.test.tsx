@@ -117,6 +117,33 @@ vi.mock('../../services/pacsService', () => ({
   }),
 }));
 
+// PropertySearch consumes assessmentPropertyService.getAssessmentProperties()
+// (which fans out to assessmentSourceService over axios). Mock at this layer so
+// the page renders the county's mocked parcels instead of a network error state.
+vi.mock('../../services/assessmentPropertyService', () => ({
+  getAssessmentProperties: vi.fn(async () => {
+    const slice = PACS_RESPONSES_BY_COUNTY[currentAuth.countyId ?? ''] ?? {
+      items: [],
+      totalCount: 0,
+    };
+    return {
+      items: slice.items.map((p: any) => ({
+        geoId: p.geoId,
+        propId: p.geoId,
+        ownerName: 'Mock Owner',
+        situsAddress: p.address ?? '',
+        propertyType: p.propertyType ?? 'Residential',
+        assessedValue: p.assessedValue ?? 0,
+        marketValue: p.marketValue ?? 0,
+      })),
+      totalCount: slice.totalCount,
+      page: 1,
+      pageSize: 20,
+    };
+  }),
+  getAssessmentProof: vi.fn(async () => ({ source: 'mock', counts: {} })),
+}));
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 async function renderPropertySearchAs(auth: AuthContextValue) {
@@ -127,6 +154,25 @@ async function renderPropertySearchAs(auth: AuthContextValue) {
   const { getPacsProperties } = await import('../../services/pacsService');
   vi.mocked(getPacsProperties).mockImplementation(async () => {
     return PACS_RESPONSES_BY_COUNTY[auth.countyId ?? ''] ?? { items: [], totalCount: 0 };
+  });
+  // PropertySearch reads from getAssessmentProperties — re-bind to the active county
+  const { getAssessmentProperties } = await import('../../services/assessmentPropertyService');
+  vi.mocked(getAssessmentProperties).mockImplementation(async () => {
+    const slice = PACS_RESPONSES_BY_COUNTY[auth.countyId ?? ''] ?? { items: [], totalCount: 0 };
+    return {
+      items: slice.items.map((p: any) => ({
+        geoId: p.geoId,
+        propId: p.geoId,
+        ownerName: 'Mock Owner',
+        situsAddress: p.address ?? '',
+        propertyType: p.propertyType ?? 'Residential',
+        assessedValue: p.assessedValue ?? 0,
+        marketValue: p.marketValue ?? 0,
+      })) as any,
+      totalCount: slice.totalCount,
+      page: 1,
+      pageSize: 20,
+    };
   });
 
   const { default: PropertySearch } = await import('../../pages/PropertySearch');
