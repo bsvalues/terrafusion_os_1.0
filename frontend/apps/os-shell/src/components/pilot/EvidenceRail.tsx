@@ -176,7 +176,7 @@ function TimelineEvent({ event }: { event: PilotTraceEvent }) {
         {/* Gate 6: payloadRef — reference only, no link */}
         {event.payloadRef && (
           <p className="text-[11px] text-white/40 italic" data-testid="payload-ref">
-            Evidence reference: {event.payloadRef}
+            Payload stored: {event.payloadRef}
           </p>
         )}
 

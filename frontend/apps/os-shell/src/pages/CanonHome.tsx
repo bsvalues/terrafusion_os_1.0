@@ -155,7 +155,7 @@ interface FileTreePaneProps {
 function FileTreePane({ files, activeFileId, onOpenFile }: FileTreePaneProps): React.ReactElement {
   return (
     <aside
-      className='canon-filetree border-r border-gray-700/50 w-60 min-h-[200px] p-3'
+      className='canon-filetree liquid-panel--shell border-r border-gray-700/50 w-60 min-h-[200px] p-3'
       data-testid='terracanon-filetree'
     >
       <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2'>Files</h3>
@@ -266,7 +266,7 @@ function EditorPane({
 
   return (
     <section
-      className='canon-editor flex-1 min-h-[200px] flex flex-col'
+      className='canon-editor liquid-panel--shell flex-1 min-h-[200px] flex flex-col'
       data-testid='terracanon-editor'
     >
       {/* ── Tab bar ────────────────────────────────────────────── */}
@@ -1818,7 +1818,7 @@ function CanonContent(): React.ReactElement {
       </div>
 
       {/* ── Dev Cockpit ─ primary surface ─────────────────────────── */}
-      <section className='canon-devCockpit' data-testid='canon-devCockpit'>
+      <section className='canon-devCockpit liquid-panel--infrastructure' data-testid='canon-devCockpit'>
         <div className='canon-devCockpit__inner canon-ide'>
           {/* ── Suite Launcher (workspace panels) ────────────────────── */}
           <div style={{ display: 'contents' }} data-testid='canon-suiteLauncher'>

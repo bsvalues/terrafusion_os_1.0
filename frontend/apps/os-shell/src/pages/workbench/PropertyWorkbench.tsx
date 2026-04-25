@@ -82,9 +82,9 @@ function getCurrentTabFromPath(pathname: string, parcelId: string): WorkbenchTab
     forge: 'forge',
     atlas: 'atlas',
     dais: 'dais',
-    clerk: 'dossier',
-    treasury: 'dais',
-    audit: 'dossier',
+    clerk: 'clerk',
+    treasury: 'treasury',
+    audit: 'audit',
     dossier: 'dossier',
     pilot: 'pilot',
   };
@@ -100,7 +100,11 @@ const WORKBENCH_TABS: WorkbenchTab[] = [
   { id: 'forge', label: 'Forge', path: 'forge', enabled: true },
   { id: 'atlas', label: 'Atlas', path: 'atlas', enabled: true },
   { id: 'dais', label: 'Dais', path: 'dais', enabled: true },
+  { id: 'clerk', label: 'Clerk', path: 'clerk', enabled: true },
+  { id: 'treasury', label: 'Treasury', path: 'treasury', enabled: true },
+  { id: 'audit', label: 'Audit', path: 'audit', enabled: true },
   { id: 'dossier', label: 'Dossier', path: 'dossier', enabled: true },
+  { id: 'pilot', label: 'Pilot', path: 'pilot', enabled: true },
 ];
 
 
