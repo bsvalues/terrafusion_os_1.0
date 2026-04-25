@@ -22,6 +22,7 @@ export interface CountyAdjustmentSetDto {
   approvalState: AdjustmentSetApprovalState;
   approvedBy: string | null;
   publishedAt: string | null;
+  rollbackReason: string | null;
 }
 
 export interface CountyStudySessionDto {

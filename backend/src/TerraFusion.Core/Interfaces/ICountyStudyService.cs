@@ -33,7 +33,7 @@ public interface ICountyStudyService
     // Adjustment Sets
     Task<CountyAdjustmentSetDto> PromoteScenarioAsync(PromoteScenarioRequest req, string userId);
     Task<List<CountyAdjustmentSetDto>> GetAdjustmentSetsAsync(Guid studyId);
-    Task<CountyAdjustmentSetDto> UpdateApprovalStateAsync(Guid adjustmentSetId, AdjustmentSetApprovalState newState, string userId);
+    Task<CountyAdjustmentSetDto> UpdateApprovalStateAsync(Guid adjustmentSetId, AdjustmentSetApprovalState newState, string userId, string? rollbackReason = null);
 
     // Exception Sets
     Task<CountyExceptionSetDto> CreateExceptionSetAsync(CreateCountyExceptionSetRequest req, string userId);

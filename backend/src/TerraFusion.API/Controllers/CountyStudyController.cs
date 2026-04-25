@@ -760,7 +760,7 @@ public class CountyStudyController : ControllerBase
             return BadRequest(new { error = $"Unknown approval state '{req.NewState}'." });
         try
         {
-            var dto = await _svc.UpdateApprovalStateAsync(id, parsed, CurrentUserId);
+            var dto = await _svc.UpdateApprovalStateAsync(id, parsed, CurrentUserId, req.RollbackReason);
             return Ok(dto);
         }
         catch (InvalidOperationException ex)

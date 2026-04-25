@@ -32,6 +32,13 @@ public class CountyAdjustmentSet
 
     public DateTime? PublishedAt { get; set; }
 
+    /// <summary>
+    /// Reason provided by the user when rolling back a published set.
+    /// Required for FISMA audit trail. Populated only when State transitions to RolledBack.
+    /// </summary>
+    [StringLength(1000)]
+    public string? RollbackReason { get; set; }
+
     // Navigation
     public CountyScenario? Scenario { get; set; }
 

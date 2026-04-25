@@ -144,10 +144,11 @@ export const adjustmentSetApi = {
   updateApprovalState: (
     adjustmentSetId: string,
     newState: AdjustmentSetApprovalState,
+    rollbackReason?: string,
   ): Promise<CountyAdjustmentSetDto> =>
     apiFetchJson(`${BASE}/adjustment-sets/${adjustmentSetId}/approval-state`, {
       method: 'PATCH',
-      body: JSON.stringify({ newState }),
+      body: JSON.stringify({ newState, rollbackReason }),
     }),
 };
 

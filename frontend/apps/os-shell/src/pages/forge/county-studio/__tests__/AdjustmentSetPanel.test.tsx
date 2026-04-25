@@ -35,6 +35,7 @@ function makeAdj(overrides: Partial<CountyAdjustmentSetDto> = {}): CountyAdjustm
     approvalState:   'Proposed',
     approvedBy:      null,
     publishedAt:     null,
+    rollbackReason:  null,
     ...overrides,
   };
 }
@@ -90,7 +91,7 @@ describe('AdjustmentSetPanel', () => {
     await screen.findByTestId('btn-ReadyForApproval-adj-001');
     await user.click(screen.getByTestId('btn-ReadyForApproval-adj-001'));
 
-    expect(mockUpdateState).toHaveBeenCalledWith('adj-001', 'ReadyForApproval');
+    expect(mockUpdateState).toHaveBeenCalledWith('adj-001', 'ReadyForApproval', undefined);
 
     await waitFor(() =>
       expect(screen.getByTestId('state-badge-ReadyForApproval')).toBeInTheDocument()
@@ -162,7 +163,7 @@ describe('AdjustmentSetPanel', () => {
     await user.click(screen.getByTestId('btn-Published-adj-001'));
     await user.click(screen.getByTestId('confirm-yes-adj-001'));
 
-    expect(mockUpdateState).toHaveBeenCalledWith('adj-001', 'Published');
+    expect(mockUpdateState).toHaveBeenCalledWith('adj-001', 'Published', undefined);
     await waitFor(() =>
       expect(screen.getByTestId('state-badge-Published')).toBeInTheDocument()
     );

@@ -283,8 +283,7 @@ export function AdjustmentSetPanel() {
   ) => {
     setBusy(id);
     try {
-      // TODO: forward reason to API when backend UpdateAdjustmentApprovalStateRequest includes rollbackReason field
-      const updated = await adjustmentSetApi.updateApprovalState(id, newState);
+      const updated = await adjustmentSetApi.updateApprovalState(id, newState, reason);
       setSets((prev) => prev.map((a) => a.adjustmentSetId === id ? updated : a));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Transition failed');

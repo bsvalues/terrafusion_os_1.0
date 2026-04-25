@@ -161,7 +161,8 @@ public record CountyAdjustmentSetDto(
     string EffectiveScope,
     string ApprovalState,
     string? ApprovedBy,
-    DateTime? PublishedAt
+    DateTime? PublishedAt,
+    string? RollbackReason
 );
 
 public record PromoteScenarioRequest(
@@ -169,7 +170,10 @@ public record PromoteScenarioRequest(
     string EffectiveScope  // JSON: { "cohortId": "<guid>" }
 );
 
-public record UpdateAdjustmentApprovalStateRequest(string NewState);
+public record UpdateAdjustmentApprovalStateRequest(
+    string NewState,
+    string? RollbackReason = null   // Required for FISMA audit trail when transitioning to RolledBack
+);
 
 // ── ExceptionSet ──────────────────────────────────────────────────────────────
 

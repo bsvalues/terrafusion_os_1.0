@@ -640,7 +640,8 @@ public class CountyStudyService : ICountyStudyService
     }
 
     public async Task<CountyAdjustmentSetDto> UpdateApprovalStateAsync(
-        Guid adjustmentSetId, AdjustmentSetApprovalState newState, string userId)
+        Guid adjustmentSetId, AdjustmentSetApprovalState newState, string userId,
+        string? rollbackReason = null)
     {
         var adj = await _db.CountyAdjustmentSets.FindAsync(adjustmentSetId)
             ?? throw new InvalidOperationException($"AdjustmentSet {adjustmentSetId} not found");
@@ -668,6 +669,9 @@ public class CountyStudyService : ICountyStudyService
 
         if (newState == AdjustmentSetApprovalState.Published)
             adj.PublishedAt = DateTime.UtcNow;
+
+        if (newState == AdjustmentSetApprovalState.RolledBack && rollbackReason != null)
+            adj.RollbackReason = rollbackReason;
 
         await _db.SaveChangesAsync();
         return MapAdjustmentSet(adj);
@@ -1178,7 +1182,7 @@ public class CountyStudyService : ICountyStudyService
 
     private static CountyAdjustmentSetDto MapAdjustmentSet(CountyAdjustmentSet a) =>
         new(a.AdjustmentSetId, a.StudyId, a.ScenarioId, a.EffectiveScope,
-            a.ApprovalState.ToString(), a.ApprovedBy, a.PublishedAt);
+            a.ApprovalState.ToString(), a.ApprovedBy, a.PublishedAt, a.RollbackReason);
 
     public async Task<CountyExceptionSetDto> UpdateExceptionStatusAsync(
         Guid exceptionSetId, ExceptionSetStatus newStatus, string userId)
