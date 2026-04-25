@@ -54,8 +54,8 @@ public class CountyStudyController : ControllerBase
     }
 
     private string CurrentUserId =>
-        User.FindFirstValue(ClaimTypes.NameIdentifier)
-        ?? User.FindFirst("sub")?.Value
+        User?.FindFirstValue(ClaimTypes.NameIdentifier)
+        ?? User?.FindFirst("sub")?.Value
         ?? FallbackUserId;
 
     // ── Studies ───────────────────────────────────────────────────────────────
