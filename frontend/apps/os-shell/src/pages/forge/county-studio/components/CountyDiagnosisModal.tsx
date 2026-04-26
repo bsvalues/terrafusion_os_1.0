@@ -181,12 +181,15 @@ export function CountyDiagnosisModal({ studyId, open, onClose }: CountyDiagnosis
     }
   }, [studyId]);
 
-  // Trigger load on open, once per mount-with-open.
+  // Trigger load on open, once per mount-with-open. Include `error` in the
+  // gate so a fetch that already failed isn't re-fired on the next render
+  // (which would clobber the error state via setError(null) in load()).
+  // The Retry button is the explicit re-fire path.
   React.useEffect(() => {
-    if (open && !diagnosis && !loading) {
+    if (open && !diagnosis && !loading && !error) {
       void load();
     }
-  }, [open, diagnosis, loading, load]);
+  }, [open, diagnosis, loading, error, load]);
 
   if (!open) return null;
 
