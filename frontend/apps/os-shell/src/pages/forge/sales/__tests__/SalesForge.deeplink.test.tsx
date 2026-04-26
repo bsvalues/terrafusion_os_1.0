@@ -10,7 +10,7 @@
 //   - no-metadata mount does NOT clobber existing store state
 
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import SalesForge from '../SalesForge';
 import { useSalesForgeStore } from '../salesForgeStore';
@@ -76,7 +76,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(screen.queryByTestId('sf-scoped-from-chip')).not.toBeInTheDocument();
   });
 
-  it('consumes pre-split metadata (stratumKey / taxYear / segmentId) on mount', () => {
+  it('consumes pre-split metadata (stratumKey / taxYear / segmentId) on mount', async () => {
     render(
       <SalesForge
         metadata={{
@@ -102,8 +102,8 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(chip).toHaveAttribute('data-segment-id', 'seg-42');
     expect(chip.textContent).toMatch(/Kennewick R1/);
 
-    // AI AUDIT panel is the one visible; it receives the new year.
-    const aiAudit = screen.getByTestId('stub-ai-audit');
+    // AI AUDIT panel is lazy + Suspense — wait for the resolve.
+    const aiAudit = await screen.findByTestId('stub-ai-audit');
     expect(aiAudit.getAttribute('data-year')).toBe('2025');
   });
 

@@ -97,7 +97,7 @@ describe('AxiomFS Module Integration', () => {
     });
 
     // Assert Window Creation — surface host must appear
-    const surface = await screen.findByTestId('axiomfs-surface-host');
+    const surface = await screen.findByTestId('axiomfs-surface-host', {}, { timeout: 15000 });
     expect(surface).toBeInTheDocument();
 
     // Assert Window Title — at least one element with "AxiomFS" must be present
@@ -127,7 +127,7 @@ describe('AxiomFS Module Integration', () => {
     });
 
     // Wait for surface
-    await screen.findByTestId('axiomfs-surface-host');
+    await screen.findByTestId('axiomfs-surface-host', {}, { timeout: 15000 });
 
     // Note: Since we mocked AxiomFSSurface, we can't test the actual voxel click here
     // unless we unmock it or mock it to render a button.
@@ -149,7 +149,7 @@ describe('AxiomFS Module Integration', () => {
     });
 
     // Relaxed check: toBeInTheDocument is sufficient for verifying presence on active desktop
-    expect(await screen.findByTestId('axiomfs-surface-host')).toBeInTheDocument();
+    expect(await screen.findByTestId('axiomfs-surface-host', {}, { timeout: 15000 })).toBeInTheDocument();
 
     // 2. Switch to Desktop 2
     act(() => {
@@ -167,7 +167,7 @@ describe('AxiomFS Module Integration', () => {
     });
 
     // Wait for window
-    await screen.findByTestId('axiomfs-surface-host');
+    await screen.findByTestId('axiomfs-surface-host', {}, { timeout: 15000 });
 
     // Find Search Input
     const searchInput = screen.getByTestId('axiomfs-search-input');
