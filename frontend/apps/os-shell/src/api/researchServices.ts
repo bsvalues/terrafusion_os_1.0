@@ -20,7 +20,7 @@ import { getViteEnv } from '../env/getViteEnv';
  * Backend Integration:
  * - QuantumAnalyticsEngine.cs → /api/quantum-analytics/*
  * - ImmersiveVisualizationService.cs → /api/visualization/*
- * - ConsciousnessParameterTuningService.cs → /api/consciousness-tuning/*
+ * - Consciousness parameter tuning lane is currently unavailable; no governed backend route is active
  * - ResearchGradeMetricsService.cs → /api/research-metrics/*
  * - AISuperiorityController.cs → /api/aisuperiority/*
  *
@@ -350,6 +350,24 @@ async function apiClient<T>(
   }
 }
 
+function unavailableApiResponse<T>(message: string): ApiResponse<T> {
+  return {
+    success: false,
+    data: null as unknown as T,
+    error: {
+      code: 'UNAVAILABLE',
+      message,
+      retryable: false,
+    },
+    metadata: {
+      requestId: `unavailable-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      duration: 0,
+      cached: false,
+    },
+  };
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // RESEARCH SESSION API
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -427,31 +445,27 @@ export const consciousnessParameterAPI = {
   adjust: async (
     request: ConsciousnessParameterRequest
   ): Promise<ApiResponse<ConsciousnessParameterResponse>> => {
-    return apiClient<ConsciousnessParameterResponse>('/api/consciousness-tuning/adjust', {
-      method: 'POST',
-      body: JSON.stringify(request),
-    });
+    return unavailableApiResponse<ConsciousnessParameterResponse>(
+      'Consciousness tuning is unavailable because no governed /api/consciousness-tuning backend contract is active.',
+    );
   },
 
   applyPreset: async (presetName: string): Promise<ApiResponse<any>> => {
-    return apiClient<any>('/api/consciousness-tuning/preset/apply', {
-      method: 'POST',
-      body: JSON.stringify({ presetName }),
-    });
+    return unavailableApiResponse<any>(
+      'Consciousness preset application is unavailable because no governed /api/consciousness-tuning backend contract is active.',
+    );
   },
 
   analyzeImpact: async (parameters: Record<string, number>): Promise<ApiResponse<any>> => {
-    return apiClient<any>('/api/consciousness-tuning/analyze-impact', {
-      method: 'POST',
-      body: JSON.stringify({ parameters }),
-    });
+    return unavailableApiResponse<any>(
+      'Consciousness impact analysis is unavailable because no governed /api/consciousness-tuning backend contract is active.',
+    );
   },
 
   runExperiment: async (experimentConfig: any): Promise<ApiResponse<any>> => {
-    return apiClient<any>('/api/consciousness-tuning/experiment/run', {
-      method: 'POST',
-      body: JSON.stringify(experimentConfig),
-    });
+    return unavailableApiResponse<any>(
+      'Consciousness experiment launch is unavailable because no governed /api/consciousness-tuning backend contract is active.',
+    );
   },
 };
 

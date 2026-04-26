@@ -22,7 +22,7 @@ interface AdjRates {
   garage: string;  // $ per garage stall diff
 }
 
-const DEFAULT_RATES: AdjRates = {
+const INITIAL_RATES: AdjRates = {
   gla: '60',
   age: '500',
   lot: '2',
@@ -117,7 +117,7 @@ const MAX_COMPS = 5;
 export function CompAdjGridPanel() {
   const [subject, setSubject] = useState<ParcelFeatures>({ ...EMPTY_FEATURES });
   const [comps, setComps] = useState<ParcelFeatures[]>([{ ...EMPTY_FEATURES }]);
-  const [rates, setRates] = useState<AdjRates>({ ...DEFAULT_RATES });
+  const [rates, setRates] = useState<AdjRates>({ ...INITIAL_RATES });
   const [showRates, setShowRates] = useState(false);
 
   function updateSubject(k: keyof ParcelFeatures, v: string) {

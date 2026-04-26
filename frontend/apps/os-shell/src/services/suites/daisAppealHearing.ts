@@ -11,6 +11,7 @@
 
 import { assertWriteLane } from '../writeLane';
 import { emitTraceEvent } from '../terraTrace';
+import { createStableId } from '../../utils/stableId';
 
 // Re-export DeadlineState for test convenience
 export type { DeadlineState } from './daisAppealDeadline';
@@ -59,7 +60,7 @@ export interface SchedulingReadiness {
 // ============================================================================
 
 function generateHearingId(): string {
-  return `HRG-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return createStableId('HRG');
 }
 
 // ============================================================================

@@ -65,6 +65,7 @@ export const MODULE_ALIASES: Record<string, string> = {
   sync: 'terra-sync',
   flow: 'terra-flow',
   pacs: 'pacs-bridge',
+  'assessment-data-bridge': 'pacs-bridge',
   gama: 'terra-gama',
   'property-tax': 'property-tax-ai',
   management: 'management-dashboard',
@@ -540,7 +541,7 @@ const PlaceholderModule: React.FC<PlaceholderModuleProps> = ({
     partial: { color: 'hsl(var(--tf-info))', label: 'Partial' },
     rehosting: { color: 'hsl(var(--tf-accent-2))', label: 'Rehosting' },
     live: { color: 'hsl(var(--tf-success) / 1)', label: 'Live' },
-    'coming-soon': { color: 'hsl(var(--tf-warning))', label: 'Coming Soon' },
+    'coming-soon': { color: 'hsl(var(--tf-warning))', label: 'Queued' },
     'in-development': { color: 'hsl(var(--tf-info))', label: 'In Development' },
     beta: { color: 'hsl(var(--tf-accent-2))', label: 'Beta' },
   };

@@ -53,7 +53,7 @@ export type PilotHealth = { ok: true } | { ok: false; error: string };
 
 import { getViteEnv } from '@/env/getViteEnv';
 
-const DEFAULT_BASE_URL =
+const PILOT_BASE_URL =
   getViteEnv().VITE_PILOT_API_URL || getViteEnv().PILOT_API_URL || '';
 
 const buildHeaders = (ctx: PilotApiHeaders): Record<string, string> => {
@@ -96,7 +96,7 @@ const resolveHeaders = (input: PilotContextInput): Record<string, string> => {
 
 export const listTools = async (
   ctx: PilotContextInput,
-  baseUrl: string = DEFAULT_BASE_URL
+  baseUrl: string = PILOT_BASE_URL
 ): Promise<ListToolsResponse> => {
   const response = await fetch(`${baseUrl}/api/tools`, {
     headers: resolveHeaders(ctx),
@@ -116,7 +116,7 @@ export const executeTool = async (
   toolId: string,
   params: Record<string, unknown>,
   ctx: PilotContextInput,
-  baseUrl: string = DEFAULT_BASE_URL
+  baseUrl: string = PILOT_BASE_URL
 ): Promise<ExecuteToolResponse> => {
   const response = await fetch(`${baseUrl}/api/tools/execute`, {
     method: 'POST',
@@ -141,7 +141,7 @@ export const executeTool = async (
 };
 
 export const checkHealth = async (
-  baseUrl: string = DEFAULT_BASE_URL,
+  baseUrl: string = PILOT_BASE_URL,
   timeoutMs: number = 1800
 ): Promise<PilotHealth> => {
   const controller = new AbortController();

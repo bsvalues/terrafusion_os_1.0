@@ -31,19 +31,10 @@ interface GamaFilters {
 }
 
 // ---------------------------------------------------------------------------
-// Demo data
+// Source-backed data
 // ---------------------------------------------------------------------------
 
-const GAMA_PARCELS: GamaParcel[] = [
-  { id: 'g1', parcelNumber: '1-0234-001', address: '100 Main St', neighborhood: 'Downtown', zoning: 'C-1', propertyClass: 'Commercial', sqft: 4200, yearBuilt: 1985, center: [46.23, -119.2] },
-  { id: 'g2', parcelNumber: '1-0234-002', address: '200 Oak Ave', neighborhood: 'Riverside', zoning: 'R-1', propertyClass: 'Residential', sqft: 1850, yearBuilt: 2001, center: [46.235, -119.21] },
-  { id: 'g3', parcelNumber: '1-0234-003', address: '300 Industrial Pkwy', neighborhood: 'Eastgate', zoning: 'I-1', propertyClass: 'Industrial', sqft: 12000, yearBuilt: 1972, center: [46.225, -119.185] },
-  { id: 'g4', parcelNumber: '1-0234-004', address: '400 Elm St', neighborhood: 'West Hills', zoning: 'R-2', propertyClass: 'Multi-Family', sqft: 3600, yearBuilt: 1995, center: [46.248, -119.225] },
-  { id: 'g5', parcelNumber: '1-0234-005', address: '500 Country Rd', neighborhood: 'Southridge', zoning: 'AG', propertyClass: 'Agricultural', sqft: 2200, yearBuilt: 1960, center: [46.215, -119.22] },
-  { id: 'g6', parcelNumber: '1-0234-006', address: '600 Pine St', neighborhood: 'Downtown', zoning: 'C-2', propertyClass: 'Commercial', sqft: 8500, yearBuilt: 2010, center: [46.232, -119.198] },
-  { id: 'g7', parcelNumber: '1-0234-007', address: '700 Cedar Ln', neighborhood: 'Northview', zoning: 'R-1', propertyClass: 'Residential', sqft: 2100, yearBuilt: 2015, center: [46.258, -119.192] },
-  { id: 'g8', parcelNumber: '1-0234-008', address: '800 River Rd', neighborhood: 'Riverside', zoning: 'PUD', propertyClass: 'Residential', sqft: 2800, yearBuilt: 2020, center: [46.242, -119.215] },
-];
+const GAMA_PARCELS: GamaParcel[] = [];
 
 const ZONING_COLORS: Record<string, string> = {
   'R-1': '#22C55E', 'R-2': '#16A34A', 'R-3': '#15803D',

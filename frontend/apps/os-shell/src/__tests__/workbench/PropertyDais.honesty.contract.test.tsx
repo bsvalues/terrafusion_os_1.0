@@ -4,7 +4,7 @@
  * Source honesty contract for PropertyDais tab.
  * Ensures:
  *   1. Baseline disclosure info box carries a WorkbenchSourceBadge
- *   2. All badges show fallback/unavailable at idle (no live claims without tool calls)
+ *   2. Idle badges do not claim live data before tool calls
  *   3. Subtitle uses governed-tool disclosure wording (not aspirational)
  *   4. No tool invocations fire on mount without user action
  */
@@ -70,19 +70,19 @@ describe('PropertyDais source honesty contract', () => {
     expect(badge).toBeInTheDocument();
   });
 
-  it('baseline disclosure badge shows "fallback" for idle state', () => {
+  it('baseline disclosure badge shows "unavailable" for idle state', () => {
     render(<MemoryRouter><PropertyDais /></MemoryRouter>);
     const disclosure = screen.getByTestId('dais-baseline-disclosure');
     const badge = disclosure.querySelector('[data-testid="workbench-source-badge"]');
-    expect(badge).toHaveAttribute('data-source', 'fallback');
+    expect(badge).toHaveAttribute('data-source', 'unavailable');
   });
 
-  it('all badges show fallback or unavailable at idle', () => {
+  it('all badges avoid synthetic live claims at idle', () => {
     render(<MemoryRouter><PropertyDais /></MemoryRouter>);
     const badges = screen.getAllByTestId('workbench-source-badge');
     for (const badge of badges) {
       const src = badge.getAttribute('data-source');
-      expect(['fallback', 'unavailable', 'live']).toContain(src);
+      expect(['unavailable', 'live']).toContain(src);
     }
   });
 

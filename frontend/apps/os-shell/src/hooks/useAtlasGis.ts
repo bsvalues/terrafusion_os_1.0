@@ -109,10 +109,9 @@ async function atlasGisFetch<T>(path: string): Promise<{ data: T; source: AtlasG
   const data: T = await res.json();
   // Map backend "source" field to AtlasGisSource.
   // GisDataService returns:
-  //   "canonical" — real PACS mirror data (treat as live)
+  //   "canonical" — real county assessment mirror data (treat as live)
   //   "arcgis"    — real ArcGIS county geometry (treat as live)
   //   "stub"      — parcel not found or layer not available (treat as unavailable)
-  //   contains "pacs" — future PACS-direct sources (treat as live)
   //   anything else non-empty — partial/enriched fallback
   const raw = data as Record<string, unknown>;
   const rawSrc = typeof raw.source === 'string' ? raw.source.toLowerCase() : '';

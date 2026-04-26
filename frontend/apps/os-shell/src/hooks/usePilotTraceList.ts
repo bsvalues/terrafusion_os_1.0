@@ -41,15 +41,15 @@ export interface UsePilotTraceListResult {
 // Constants
 // ============================================================================
 
-const DEFAULT_LIMIT = 50;
-const DEFAULT_POLL_MS = 5000;
+const TRACE_LIST_LIMIT = 50;
+const TRACE_LIST_POLL_MS = 5000;
 
 // ============================================================================
 // Hook
 // ============================================================================
 
 export function usePilotTraceList(options: UsePilotTraceListOptions): UsePilotTraceListResult {
-  const { parcelId, toolId, limit = DEFAULT_LIMIT, pollMs = DEFAULT_POLL_MS } = options;
+  const { parcelId, toolId, limit = TRACE_LIST_LIMIT, pollMs = TRACE_LIST_POLL_MS } = options;
 
   const [phase, setPhase] = useState<TraceListPhase>('idle');
   const [events, setEvents] = useState<PilotTraceEvent[]>([]);

@@ -281,8 +281,10 @@ describe('Window Component', () => {
       render(<Window window={mockWindow} />);
 
       const windowVisuals = screen.getByTestId('tf-window-chrome');
+      // Active windows use --tf-text/0.12 for the activated edge
+      // (LuminPrimitiveContract Phase 7).
       expect(windowVisuals).toHaveStyle({
-        border: '0.5px solid hsl(var(--tf-border) / 0.5)',
+        border: '0.5px solid hsl(var(--tf-text) / 0.12)',
       });
     });
 
@@ -299,8 +301,9 @@ describe('Window Component', () => {
       render(<Window window={mockWindow} />);
 
       const windowVisuals = screen.getByTestId('tf-window-chrome');
+      // Inactive windows use the structural --tf-border at 0.3 opacity.
       expect(windowVisuals).toHaveStyle({
-        border: '0.5px solid hsl(var(--tf-border) / 0.25)',
+        border: '0.5px solid hsl(var(--tf-border) / 0.3)',
       });
     });
 

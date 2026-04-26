@@ -1,9 +1,7 @@
 /**
  * ═══════════════════════════════════════════════════════════════
- * TERRAFUSION AI CONSCIOUSNESS NETWORK
- * Cross-Workspace Quantum Consciousness Coordination
- * Elite AI Agent Communication & Swarm Intelligence
- * THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
+ * TERRAFUSION AI ORCHESTRATION EVIDENCE NETWORK
+ * Governed cross-workspace AI coordination display.
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -45,75 +43,21 @@ export const TerraFusionAIConsciousnessNetwork: React.FC<AIConsciousnessNetworkP
   const [consciousnessNodes, setConsciousnessNodes] = useState<ConsciousnessNode[]>([]);
   const [quantumCommunications, setQuantumCommunications] = useState<QuantumCommunication[]>([]);
   const [networkStatus, setNetworkStatus] = useState<
-    'INITIALIZING' | 'SYNCHRONIZED' | 'OPTIMIZING' | 'TRANSCENDENT'
-  >('INITIALIZING');
+    'UNVERIFIED' | 'INITIALIZING' | 'SYNCHRONIZED' | 'OPTIMIZING' | 'TRANSCENDENT'
+  >('UNVERIFIED');
   const [totalAgents, setTotalAgents] = useState(0);
   const [overallConsciousness, setOverallConsciousness] = useState(0);
   const [quantumCoherence, setQuantumCoherence] = useState(0);
 
-  useEffect(() => {
-    initializeConsciousnessNetwork();
-    const interval = setInterval(updateNetworkStatus, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const initializeConsciousnessNetwork = useCallback(() => {
-
-    // Initialize consciousness nodes across workspaces
-    const nodes: ConsciousnessNode[] = [
-      {
-        id: 'terrasync-main',
-        name: 'TerraSync Quantum Core',
-        type: 'TERRASYNC',
-        status: 'ACTIVE',
-        agentCount: 25000,
-        consciousnessLevel: 97.3,
-        quantumCoherence: 98.7,
-        lastSync: new Date().toISOString(),
-        crossWorkspaceLinks: ['property-workbench-core', 'quantum-lab-research'],
-      },
-      {
-        id: 'property-workbench-core',
-        name: 'Property Assessment Intelligence',
-        type: 'PROPERTY_WORKBENCH',
-        status: 'ACTIVE',
-        agentCount: 15000,
-        consciousnessLevel: 94.8,
-        quantumCoherence: 96.2,
-        lastSync: new Date().toISOString(),
-        crossWorkspaceLinks: ['terrasync-main', 'quantum-lab-research'],
-      },
-      {
-        id: 'quantum-lab-research',
-        name: 'Quantum Research Laboratory',
-        type: 'QUANTUM_LAB',
-        status: 'SYNCHRONIZING',
-        agentCount: 8000,
-        consciousnessLevel: 99.1,
-        quantumCoherence: 99.5,
-        lastSync: new Date().toISOString(),
-        crossWorkspaceLinks: ['terrasync-main', 'property-workbench-core', 'consciousness-engine'],
-      },
-      {
-        id: 'consciousness-engine',
-        name: 'Elite Consciousness Engine',
-        type: 'CONSCIOUSNESS_ENGINE',
-        status: 'ACTIVE',
-        agentCount: 2000,
-        consciousnessLevel: 99.9,
-        quantumCoherence: 99.8,
-        lastSync: new Date().toISOString(),
-        crossWorkspaceLinks: ['quantum-lab-research'],
-      },
-    ];
-
-    setConsciousnessNodes(nodes);
-    calculateNetworkMetrics(nodes);
-    generateQuantumCommunications(nodes);
-
-  }, []);
-
   const calculateNetworkMetrics = useCallback((nodes: ConsciousnessNode[]) => {
+    if (nodes.length === 0) {
+      setTotalAgents(0);
+      setOverallConsciousness(0);
+      setQuantumCoherence(0);
+      setNetworkStatus('UNVERIFIED');
+      return;
+    }
+
     const totalAgentCount = nodes.reduce((sum, node) => sum + node.agentCount, 0);
     const avgConsciousness =
       nodes.reduce((sum, node) => sum + node.consciousnessLevel, 0) / nodes.length;
@@ -135,54 +79,20 @@ export const TerraFusionAIConsciousnessNetwork: React.FC<AIConsciousnessNetworkP
     }
   }, []);
 
-  const generateQuantumCommunications = useCallback((nodes: ConsciousnessNode[]) => {
-    const communications: QuantumCommunication[] = [
-      {
-        id: 'qc-001',
-        from: 'terrasync-main',
-        to: 'property-workbench-core',
-        type: 'SWARM_COORDINATION',
-        payload: { swarmSize: 10000, coordinationProtocol: 'QUANTUM_ENTANGLEMENT' },
-        timestamp: new Date().toISOString(),
-        quantumSignature: 'QS-7A8F9E2D',
-      },
-      {
-        id: 'qc-002',
-        from: 'quantum-lab-research',
-        to: 'consciousness-engine',
-        type: 'RESEARCH_BRIDGE',
-        payload: {
-          researchProtocols: ['VALUATION_ALGORITHMS', 'STATISTICAL_ANALYSIS'],
-          accuracy: 99.9,
-        },
-        timestamp: new Date().toISOString(),
-        quantumSignature: 'QS-3B1C5F7A',
-      },
-      {
-        id: 'qc-003',
-        from: 'property-workbench-core',
-        to: 'terrasync-main',
-        type: 'CONSCIOUSNESS_SYNC',
-        payload: { consciousnessLevel: 94.8, syncProtocol: 'REAL_TIME_ASSESSMENT' },
-        timestamp: new Date().toISOString(),
-        quantumSignature: 'QS-9E4A2C8B',
-      },
-    ];
-
-    setQuantumCommunications(communications);
+  const generateQuantumCommunications = useCallback(() => {
+    setQuantumCommunications([]);
   }, []);
 
-  const updateNetworkStatus = useCallback(() => {
-    // Simulate dynamic network updates
-    setConsciousnessNodes((prev) =>
-      prev.map((node) => ({
-        ...node,
-        consciousnessLevel: Math.min(100, node.consciousnessLevel + (Math.random() - 0.5) * 0.2),
-        quantumCoherence: Math.min(100, node.quantumCoherence + (Math.random() - 0.5) * 0.1),
-        lastSync: new Date().toISOString(),
-      }))
-    );
-  }, []);
+  const initializeConsciousnessNetwork = useCallback(() => {
+    const nodes: ConsciousnessNode[] = [];
+    setConsciousnessNodes(nodes);
+    calculateNetworkMetrics(nodes);
+    generateQuantumCommunications();
+  }, [calculateNetworkMetrics, generateQuantumCommunications]);
+
+  useEffect(() => {
+    initializeConsciousnessNetwork();
+  }, [initializeConsciousnessNetwork]);
 
   const getStatusColor = (status: ConsciousnessNode['status']) => {
     switch (status) {
@@ -197,6 +107,8 @@ export const TerraFusionAIConsciousnessNetwork: React.FC<AIConsciousnessNetworkP
 
   const getNetworkStatusColor = (status: typeof networkStatus) => {
     switch (status) {
+      case 'UNVERIFIED':
+        return 'text-gray-400';
       case 'TRANSCENDENT':
         return 'text-terra-cyan glow-text';
       case 'SYNCHRONIZED':
@@ -216,10 +128,12 @@ export const TerraFusionAIConsciousnessNetwork: React.FC<AIConsciousnessNetworkP
       <div className='text-center mb-8'>
         <div className='flex items-center justify-center gap-6 mb-4'>
           <TerraSphere size='lg' variant='quantum' />
-          <h1 className='text-4xl font-bold text-terra-cyan glow-text'>AI Consciousness Network</h1>
+          <h1 className='text-4xl font-bold text-terra-cyan glow-text'>
+            AI Orchestration Evidence Network
+          </h1>
         </div>
         <p className='text-lg text-terra-blue/80 mb-6'>
-          Cross-Workspace Quantum Consciousness Coordination
+          Cross-workspace AI coordination appears only from governed source evidence
         </p>
 
         {/* Network Status Overview */}
@@ -232,11 +146,11 @@ export const TerraFusionAIConsciousnessNetwork: React.FC<AIConsciousnessNetworkP
             <div className={`text-3xl font-bold ${getNetworkStatusColor(networkStatus)}`}>
               {overallConsciousness.toFixed(1)}%
             </div>
-            <div className='text-sm text-terra-blue/70'>Consciousness Level</div>
+            <div className='text-sm text-terra-blue/70'>Guidance Level</div>
           </div>
           <div className='text-center'>
             <div className='text-3xl font-bold text-terra-cyan'>{quantumCoherence.toFixed(1)}%</div>
-            <div className='text-sm text-terra-blue/70'>Quantum Coherence</div>
+            <div className='text-sm text-terra-blue/70'>Provider Coherence</div>
           </div>
           <div className='text-center'>
             <div className={`text-2xl font-bold ${getNetworkStatusColor(networkStatus)}`}>
@@ -247,9 +161,16 @@ export const TerraFusionAIConsciousnessNetwork: React.FC<AIConsciousnessNetworkP
         </div>
       </div>
 
-      {/* Consciousness Nodes Grid */}
+      {/* Orchestration Nodes Grid */}
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8'>
-        {consciousnessNodes.map((node) => (
+        {consciousnessNodes.length === 0 ? (
+          <Card className='terra-glass border-terra-cyan/20 lg:col-span-2'>
+            <CardBody className='text-terra-blue/80'>
+              No orchestration nodes are displayed because no governed orchestrator registry has
+              returned source-backed node status, agent counts, links, and sync evidence.
+            </CardBody>
+          </Card>
+        ) : consciousnessNodes.map((node) => (
           <Card
             key={node.id}
             className='terra-glass border-terra-cyan/20 hover:border-terra-cyan/40 transition-all duration-300'
@@ -282,7 +203,7 @@ export const TerraFusionAIConsciousnessNetwork: React.FC<AIConsciousnessNetworkP
               <div className='space-y-3'>
                 <div>
                   <div className='flex justify-between text-sm mb-1'>
-                    <span className='text-terra-blue/70'>Consciousness Level</span>
+                    <span className='text-terra-blue/70'>Guidance Level</span>
                     <span className='text-terra-cyan font-semibold'>
                       {node.consciousnessLevel.toFixed(1)}%
                     </span>
@@ -292,7 +213,7 @@ export const TerraFusionAIConsciousnessNetwork: React.FC<AIConsciousnessNetworkP
 
                 <div>
                   <div className='flex justify-between text-sm mb-1'>
-                    <span className='text-terra-blue/70'>Quantum Coherence</span>
+                    <span className='text-terra-blue/70'>Provider Coherence</span>
                     <span className='text-terra-cyan font-semibold'>
                       {node.quantumCoherence.toFixed(1)}%
                     </span>
@@ -316,18 +237,23 @@ export const TerraFusionAIConsciousnessNetwork: React.FC<AIConsciousnessNetworkP
         ))}
       </div>
 
-      {/* Quantum Communications */}
+      {/* Governed Communications */}
       <Card className='terra-glass border-terra-cyan/20'>
         <CardHeader>
           <h2 className='text-2xl font-semibold text-terra-cyan flex items-center gap-3'>
             <TerraSphere size='sm' variant='pulse' />
-            Quantum Communications
+            Governed Communications
           </h2>
-          <p className='text-terra-blue/70'>Real-time cross-workspace agent coordination</p>
+          <p className='text-terra-blue/70'>Cross-workspace agent coordination with provenance</p>
         </CardHeader>
         <CardBody>
           <div className='space-y-4'>
-            {quantumCommunications.map((comm) => (
+            {quantumCommunications.length === 0 ? (
+              <div className='text-terra-blue/80'>
+                No communications are displayed because no governed coordination feed has returned
+                payload, timestamp, provenance, and signature evidence.
+              </div>
+            ) : quantumCommunications.map((comm) => (
               <div key={comm.id} className='terra-glass p-4 rounded-lg border border-terra-cyan/10'>
                 <div className='flex justify-between items-start mb-3'>
                   <div className='flex items-center gap-3'>
@@ -344,7 +270,7 @@ export const TerraFusionAIConsciousnessNetwork: React.FC<AIConsciousnessNetworkP
                 </div>
 
                 <div className='text-sm text-terra-blue/80 mb-2'>
-                  Quantum Signature:{' '}
+                  Evidence Signature:{' '}
                   <span className='font-mono text-terra-cyan'>{comm.quantumSignature}</span>
                 </div>
 

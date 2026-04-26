@@ -26,17 +26,10 @@ export interface MarketHeatMapProps {
 }
 
 // ---------------------------------------------------------------------------
-// Default data
+// Empty data
 // ---------------------------------------------------------------------------
 
-const DEFAULT_POINTS: MarketHeatPoint[] = [
-  { id: 'mh1', name: 'Downtown', saleCount: 45, center: [46.23, -119.2] },
-  { id: 'mh2', name: 'Riverside', saleCount: 82, center: [46.24, -119.21] },
-  { id: 'mh3', name: 'West Hills', saleCount: 67, center: [46.25, -119.23] },
-  { id: 'mh4', name: 'Eastgate', saleCount: 23, center: [46.22, -119.18] },
-  { id: 'mh5', name: 'Southridge', saleCount: 95, center: [46.21, -119.22] },
-  { id: 'mh6', name: 'Northview', saleCount: 38, center: [46.26, -119.19] },
-];
+const EMPTY_POINTS: MarketHeatPoint[] = [];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -55,7 +48,7 @@ function intensityColor(count: number, max: number): string {
 // ---------------------------------------------------------------------------
 
 export default function MarketHeatMap({
-  points = DEFAULT_POINTS,
+  points = EMPTY_POINTS,
   mapCenter = [46.235, -119.21],
   radius = 70,
   blur = 20,
@@ -79,6 +72,12 @@ export default function MarketHeatMap({
       role="img"
       aria-label="Market activity heatmap - sale frequency"
     >
+      {points.length === 0 && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center text-sm text-white/50">
+          No governed market activity points loaded.
+        </div>
+      )}
+
       {/* Grid */}
       <div className="absolute inset-0 opacity-10">
         <svg width="100%" height="100%">
@@ -145,6 +144,7 @@ export default function MarketHeatMap({
       })}
 
       {/* Legend */}
+      {points.length > 0 && (
       <div className="absolute bottom-3 left-3 bg-terra-midnight/80 backdrop-blur-sm rounded border border-white/10 p-2">
         <p className="text-[9px] text-white/40 uppercase tracking-wider mb-1">Sale Frequency</p>
         <div className="flex gap-2 text-[9px]">
@@ -154,6 +154,7 @@ export default function MarketHeatMap({
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#22C55E]" /> Min</span>
         </div>
       </div>
+      )}
     </div>
   );
 }

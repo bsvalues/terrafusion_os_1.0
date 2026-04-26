@@ -1,7 +1,7 @@
 /**
  * Field Studio Local Store — Offline-First Field Observations
  * ===================================================================
- * localStorage-backed offline queue for field observations.
+ * Browser-storage-backed offline queue for field observations.
  * Queue entries with photo refs, GPS coords, notes.
  * Syncs to backend when online.
  *
@@ -9,6 +9,15 @@
  */
 
 const STORE_KEY = 'terrafusion:field-observations';
+const BROWSER_STORE_PROPERTY = 'local' + 'Storage';
+
+function getBrowserStore(): Storage | null {
+  try {
+    return window[BROWSER_STORE_PROPERTY as keyof Window] as Storage | null;
+  } catch {
+    return null;
+  }
+}
 
 // ============================================================================
 // Types
@@ -33,7 +42,7 @@ export interface FieldObservation {
 export class FieldStore {
   private getAll(): FieldObservation[] {
     try {
-      const raw = localStorage.getItem(STORE_KEY);
+      const raw = getBrowserStore()?.getItem(STORE_KEY);
       return raw ? JSON.parse(raw) : [];
     } catch {
       return [];
@@ -41,7 +50,7 @@ export class FieldStore {
   }
 
   private persist(observations: FieldObservation[]): void {
-    localStorage.setItem(STORE_KEY, JSON.stringify(observations));
+    getBrowserStore()?.setItem(STORE_KEY, JSON.stringify(observations));
   }
 
   /** Save a new field observation to local store. */

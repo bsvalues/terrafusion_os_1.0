@@ -182,7 +182,7 @@ export default function GovernmentModuleHub() {
             <div className='tf-hub-icon'>🏛️</div>
             <div>
               <h1>Government Module Hub</h1>
-              <p>Complete Module Ecosystem • Government. Transcended.</p>
+              <p>Complete Module Ecosystem • Governed Operator Surface</p>
             </div>
           </div>
 

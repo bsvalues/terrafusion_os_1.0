@@ -4,7 +4,7 @@ namespace TerraFusion.AI.Interfaces
 {
     /// <summary>
     /// AI Swarm Orchestrator Interface
-    /// Supreme Commander Claude - Elite AI Agent Coordination
+    /// Legacy swarm orchestration contract retained for compatibility.
     /// </summary>
     public interface IAISwarmOrchestrator
     {
@@ -54,12 +54,12 @@ namespace TerraFusion.AI.Interfaces
     /// </summary>
     public class AISwarmStatus
     {
-        public string SupremeCommander { get; set; } = "Supreme Commander Claude";
+        public string SupremeCommander { get; set; } = "Unavailable";
         public int TotalAgentsManaged { get; set; }
         public int ActiveGaugeTheoryAgents { get; set; }
-        public string CoordinationMode { get; set; } = "Hierarchical Mesh";
+        public string CoordinationMode { get; set; } = "Unavailable";
         public double QuantumAcceleration { get; set; }
-        public string OperationalStatus { get; set; } = "OPERATIONAL";
+        public string OperationalStatus { get; set; } = "UNAVAILABLE";
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
         public Dictionary<string, string> ServiceStatus { get; set; } = new();
     }
@@ -71,7 +71,7 @@ namespace TerraFusion.AI.Interfaces
     {
         public bool Success { get; set; }
         public string CountyId { get; set; } = string.Empty;
-        public string OptimizedBy { get; set; } = "Gauge Theory AI Swarm";
+        public string OptimizedBy { get; set; } = "Unavailable";
         public Dictionary<string, object> Results { get; set; } = new();
         public double ProcessingTime { get; set; }
         public double QuantumAcceleration { get; set; }
@@ -86,7 +86,7 @@ namespace TerraFusion.AI.Interfaces
     {
         public bool Success { get; set; }
         public string WorkflowId { get; set; } = string.Empty;
-        public string ExecutedBy { get; set; } = "Supreme Commander Claude";
+        public string ExecutedBy { get; set; } = "Unavailable";
         public Dictionary<string, object> Results { get; set; } = new();
         public double Duration { get; set; }
         public List<WorkflowStep> Steps { get; set; } = new();
@@ -120,10 +120,10 @@ namespace TerraFusion.AI.Interfaces
     /// </summary>
     public class SwarmCoordinationMetrics
     {
-        public string SupremeCommander { get; set; } = "Claude";
+        public string SupremeCommander { get; set; } = "Unavailable";
         public int TotalAgentsManaged { get; set; }
-        public string CoordinationEfficiency { get; set; } = "97.6%";
-        public string ResponseTime { get; set; } = "1.0ms average";
+        public string CoordinationEfficiency { get; set; } = "Unavailable";
+        public string ResponseTime { get; set; } = "Unavailable";
     }
 
     /// <summary>
@@ -134,7 +134,7 @@ namespace TerraFusion.AI.Interfaces
         public int SpecialistAgents { get; set; }
         public double QuantumAcceleration { get; set; }
         public double OptimizationSuccessRate { get; set; }
-        public string FieldStability { get; set; } = "95.8%";
+        public string FieldStability { get; set; } = "Unavailable";
     }
 
     /// <summary>
@@ -145,7 +145,7 @@ namespace TerraFusion.AI.Interfaces
         public int ApiHealthScore { get; set; }
         public int SwarmCoordinationScore { get; set; }
         public bool QuantumOptimizationActive { get; set; }
-        public string ProductionReadiness { get; set; } = "66.8%";
+        public string ProductionReadiness { get; set; } = "Unavailable";
     }
 
     /// <summary>

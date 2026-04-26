@@ -273,37 +273,26 @@ public class CodexNotificationController : ControllerBase
 
     /// <summary>
     /// Get notification history
-    /// Returns recent notification activity for audit trail
+    /// Returns notification history availability status for audit trail consumers
     /// </summary>
     [HttpGet("history")]
     [Authorize(Roles = "Admin,SystemAdministrator,CountyAdministrator")]
-    [ProducesResponseType(typeof(NotificationHistoryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(NotificationHistoryDto), StatusCodes.Status501NotImplemented)]
     public async Task<ActionResult<NotificationHistoryDto>> GetNotificationHistory(
         [FromQuery] string? countyId,
         [FromQuery] int days = 7)
     {
-        await Task.CompletedTask;
-        await Task.CompletedTask;
         try
         {
-            // This would be implemented with actual database tracking
-            // For now, return a placeholder response
             _logger.LogInformation("Retrieving notification history for last {Days} days", days);
 
-            return Ok(new NotificationHistoryDto
+            return StatusCode(StatusCodes.Status501NotImplemented, new NotificationHistoryDto
             {
                 CountyId = countyId,
                 DaysRequested = days,
                 TotalNotifications = 0,
-                NotificationsByType = new Dictionary<string, int>
-                {
-                    { "DailyDigest", 0 },
-                    { "WeeklySummary", 0 },
-                    { "CriticalAlert", 0 },
-                    { "DivineBalance", 0 },
-                    { "Championship", 0 }
-                },
-                Message = "Notification history tracking is configured. History will be available after first notifications are sent."
+                NotificationsByType = new Dictionary<string, int>(),
+                Message = "Notification history retrieval is not operational. Placeholder audit counts were removed until governed history persistence is implemented."
             });
         }
         catch (Exception ex)

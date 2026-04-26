@@ -7,12 +7,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useConsciousnessEngine } from '../ai/ConsciousnessEngine';
 
 interface SecurityState {
-  level: 'BASIC' | 'ELEVATED' | 'TRANSCENDENT';
+  level: 'UNKNOWN' | 'BASIC' | 'ELEVATED' | 'TRANSCENDENT';
   authenticated: boolean;
   mfaRequired: boolean;
   sessionExpiry: number;
   riskScore: number;
-  complianceStatus: 'COMPLIANT' | 'WARNING' | 'VIOLATION';
+  complianceStatus: 'UNKNOWN' | 'COMPLIANT' | 'WARNING' | 'VIOLATION';
   auditTrail: SecurityEvent[];
 }
 
@@ -32,54 +32,33 @@ interface BiometricCapability {
 
 export function useGovernmentSecurity() {
   const [securityState, setSecurityState] = useState<SecurityState>({
-    level: 'BASIC',
+    level: 'UNKNOWN',
     authenticated: false,
     mfaRequired: true,
-    sessionExpiry: Date.now() + 8 * 60 * 60 * 1000, // 8 hours
-    riskScore: 0,
-    complianceStatus: 'COMPLIANT',
+    sessionExpiry: 0,
+    riskScore: 100,
+    complianceStatus: 'UNKNOWN',
     auditTrail: [],
   });
 
   const [biometrics, setBiometrics] = useState<BiometricCapability[]>([]);
   const { learnFromAction } = useConsciousnessEngine();
 
-  // Initialize security capabilities
+  // Initialize security capabilities. Detection is not authentication evidence.
   useEffect(() => {
     const detectCapabilities = async () => {
-      const capabilities: BiometricCapability[] = [];
-
-      // Check for WebAuthn support
-      if ('credentials' in navigator && 'create' in navigator.credentials) {
-        capabilities.push({
-          type: 'fingerprint',
-          available: true,
-          confidence: 95,
-        });
-      }
-
-      // Check for camera access (face recognition)
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const hasCamera = devices.some((device) => device.kind === 'videoinput');
-        if (hasCamera) {
-          capabilities.push({
-            type: 'face',
-            available: true,
-            confidence: 88,
-          });
-        }
-      } catch (error) {
-      }
-
-      // Behavioral biometrics (always available)
-      capabilities.push({
-        type: 'behavioral',
-        available: true,
-        confidence: 75,
-      });
-
-      setBiometrics(capabilities);
+      const hasWebAuthn = 'credentials' in navigator && 'create' in navigator.credentials;
+      setBiometrics(
+        hasWebAuthn
+          ? [
+              {
+                type: 'fingerprint',
+                available: false,
+                confidence: 0,
+              },
+            ]
+          : []
+      );
     };
 
     detectCapabilities();
@@ -87,33 +66,17 @@ export function useGovernmentSecurity() {
 
   // Security risk assessment
   const assessRiskScore = useCallback(() => {
-    let score = 0;
-
-    // Time-based risk
-    const currentHour = new Date().getHours();
-    if (currentHour < 6 || currentHour > 22) score += 10; // After hours
-
-    // Session duration risk
-    const sessionAge = Date.now() - (securityState.sessionExpiry - 8 * 60 * 60 * 1000);
-    if (sessionAge > 4 * 60 * 60 * 1000) score += 15; // Session over 4 hours
-
-    // Location risk (simulated)
-    const isKnownLocation = Math.random() > 0.1; // 90% chance of known location
-    if (!isKnownLocation) score += 25;
-
-    // Device risk (simulated)
-    const isKnownDevice = Math.random() > 0.05; // 95% chance of known device
-    if (!isKnownDevice) score += 30;
+    const score = securityState.authenticated && Date.now() < securityState.sessionExpiry ? 25 : 100;
 
     setSecurityState((prev) => ({
       ...prev,
-      riskScore: Math.min(100, score),
-      level: score < 20 ? 'TRANSCENDENT' : score < 50 ? 'ELEVATED' : 'BASIC',
-      complianceStatus: score > 70 ? 'VIOLATION' : score > 40 ? 'WARNING' : 'COMPLIANT',
+      riskScore: score,
+      level: score < 50 ? 'ELEVATED' : 'UNKNOWN',
+      complianceStatus: score < 50 ? 'WARNING' : 'UNKNOWN',
     }));
 
     return score;
-  }, [securityState.sessionExpiry]);
+  }, [securityState.authenticated, securityState.sessionExpiry]);
 
   // Authentication with quantum biometrics
   const authenticateWithBiometrics = useCallback(
@@ -124,32 +87,7 @@ export function useGovernmentSecurity() {
           throw new Error(`${type} authentication not available`);
         }
 
-        // Simulate biometric authentication
-        const success = Math.random() < capability.confidence / 100;
-
-        if (success) {
-          setSecurityState((prev) => ({
-            ...prev,
-            authenticated: true,
-            level: 'TRANSCENDENT',
-            riskScore: Math.max(0, prev.riskScore - 20),
-            auditTrail: [
-              ...prev.auditTrail,
-              {
-                timestamp: Date.now(),
-                event: `Biometric authentication successful (${type})`,
-                severity: 'LOW',
-                details: `User authenticated via ${type} with ${capability.confidence}% confidence`,
-                resolved: true,
-              },
-            ],
-          }));
-
-          learnFromAction('biometric-auth', type, true);
-          return { success: true, confidence: capability.confidence };
-        } else {
-          throw new Error('Biometric authentication failed');
-        }
+        throw new Error('Governed authentication provider is not connected');
       } catch (error) {
         const event: SecurityEvent = {
           timestamp: Date.now(),
@@ -177,67 +115,29 @@ export function useGovernmentSecurity() {
 
   // Multi-factor authentication
   const performMFA = useCallback(async (methods: string[]) => {
-    const requiredMethods = ['primary', 'secondary'];
-    const completedMethods: string[] = [];
+    setSecurityState((prev) => ({
+      ...prev,
+      riskScore: 100,
+      auditTrail: [
+        ...prev.auditTrail,
+        {
+          timestamp: Date.now(),
+          event: 'MFA verification unavailable',
+          severity: 'HIGH',
+          details: `Governed MFA provider is not connected for requested methods: ${methods.join(', ') || 'none'}`,
+          resolved: false,
+        },
+      ],
+    }));
 
-    for (const method of methods) {
-      // Simulate MFA verification
-      const success = Math.random() > 0.1; // 90% success rate
-
-      if (success) {
-        completedMethods.push(method);
-      } else {
-        setSecurityState((prev) => ({
-          ...prev,
-          riskScore: Math.min(100, prev.riskScore + 10),
-          auditTrail: [
-            ...prev.auditTrail,
-            {
-              timestamp: Date.now(),
-              event: `MFA verification failed (${method})`,
-              severity: 'MEDIUM',
-              details: `Multi-factor authentication step failed`,
-              resolved: false,
-            },
-          ],
-        }));
-        return { success: false, completedMethods };
-      }
-    }
-
-    const allMethodsCompleted = requiredMethods.every((method) =>
-      completedMethods.includes(method)
-    );
-
-    if (allMethodsCompleted) {
-      setSecurityState((prev) => ({
-        ...prev,
-        mfaRequired: false,
-        level: 'TRANSCENDENT',
-        riskScore: Math.max(0, prev.riskScore - 25),
-        auditTrail: [
-          ...prev.auditTrail,
-          {
-            timestamp: Date.now(),
-            event: 'MFA verification successful',
-            severity: 'LOW',
-            details: `All required authentication factors verified`,
-            resolved: true,
-          },
-        ],
-      }));
-    }
-
-    return { success: allMethodsCompleted, completedMethods };
+    return { success: false, completedMethods: [] };
   }, []);
 
   // Session monitoring
   useEffect(() => {
     const interval = setInterval(() => {
-      assessRiskScore();
-
       // Check session expiry
-      if (Date.now() > securityState.sessionExpiry) {
+      if (securityState.sessionExpiry > 0 && Date.now() > securityState.sessionExpiry) {
         setSecurityState((prev) => ({
           ...prev,
           authenticated: false,
@@ -274,6 +174,8 @@ export function SecurityDashboard() {
 
   const getSecurityColor = () => {
     switch (securityState.level) {
+      case 'UNKNOWN':
+        return 'text-gray-400';
       case 'TRANSCENDENT':
         return 'text-terra-cyan';
       case 'ELEVATED':
@@ -285,6 +187,8 @@ export function SecurityDashboard() {
 
   const getComplianceColor = () => {
     switch (securityState.complianceStatus) {
+      case 'UNKNOWN':
+        return 'text-gray-400';
       case 'COMPLIANT':
         return 'text-success-green';
       case 'WARNING':
@@ -438,7 +342,7 @@ export function SecurityDashboard() {
                 key: 'bio-title',
                 className: 'text-sm font-semibold text-gray-300 mb-3',
               },
-              'Available Authentication Methods'
+                  'Authentication Provider Status'
             ),
             React.createElement(
               'div',
@@ -471,7 +375,9 @@ export function SecurityDashboard() {
                         key: 'bio-confidence',
                         className: 'text-xs text-gray-400',
                       },
-                      `${bio.confidence}% confidence`
+                      bio.available
+                        ? `${bio.confidence}% confidence`
+                        : 'Governed provider required'
                     ),
                   ]
                 )
@@ -570,6 +476,8 @@ export function QuantumSecurityBadge() {
 
   const getBadgeStyle = () => {
     switch (securityState.level) {
+      case 'UNKNOWN':
+        return 'bg-gradient-to-r from-gray-600 to-gray-500 text-white';
       case 'TRANSCENDENT':
         return 'bg-gradient-to-r from-terra-cyan to-success-green text-terra-midnight';
       case 'ELEVATED':

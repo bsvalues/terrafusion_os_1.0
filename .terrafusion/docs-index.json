@@ -1,0 +1,159 @@
+{
+  "createdAt": 1777178214,
+  "version": "0.1.0",
+  "entries": [
+    {
+      "id": "command-registry",
+      "title": "Command Registry",
+      "path": ".terrafusion/command-registry.md",
+      "category": "Operations",
+      "audience": ["founder", "county-it"],
+      "required": true,
+      "summary": "Machine-readable command registry for future UI consumers.",
+      "exists": true
+    },
+    {
+      "id": "control-center-state",
+      "title": "Control Center State",
+      "path": ".terrafusion/control-center-state.md",
+      "category": "Operations",
+      "audience": ["founder", "county-it"],
+      "required": true,
+      "summary": "Read-only state contract for terminal and future desktop control centers.",
+      "exists": true
+    },
+    {
+      "id": "doctor-report",
+      "title": "Doctor Report",
+      "path": ".terrafusion/doctor-report.json",
+      "category": "Operations",
+      "audience": ["founder", "county-it"],
+      "required": false,
+      "summary": "Founder-safe runtime diagnostics summarizing local readiness, patch count, and evidence posture.",
+      "exists": false
+    },
+    {
+      "id": "model-runtime-status",
+      "title": "Model Runtime Status",
+      "path": ".terrafusion/model-runtime-status.json",
+      "category": "Operations",
+      "audience": ["founder", "county-it"],
+      "required": false,
+      "summary": "Loopback-only model gateway health and model inventory status for local operational review.",
+      "exists": false
+    },
+    {
+      "id": "product-manifest",
+      "title": "Product Manifest",
+      "path": ".terrafusion/product-manifest.md",
+      "category": "Release",
+      "audience": ["founder", "county-it"],
+      "required": true,
+      "summary": "Runtime shipping contract, county-safe posture, and Prometheus naming decision.",
+      "exists": true
+    },
+    {
+      "id": "release-check",
+      "title": "Release Check Report",
+      "path": ".terrafusion/release-check-report.md",
+      "category": "Release",
+      "audience": ["founder"],
+      "required": true,
+      "summary": "Release evidence gate before ship and tag steps.",
+      "exists": true
+    },
+    {
+      "id": "release-notes",
+      "title": "0.1.0 Release Notes",
+      "path": ".terrafusion/release-notes-0.1.0.md",
+      "category": "Release",
+      "audience": ["founder", "county-it"],
+      "required": true,
+      "summary": "Release notes documenting the Prometheus codename, capabilities, county-safe posture, known limitations, and manual tag posture.",
+      "exists": true
+    },
+    {
+      "id": "release-freeze",
+      "title": "Release Freeze Card",
+      "path": ".terrafusion/release-freeze-card.md",
+      "category": "Release",
+      "audience": ["founder"],
+      "required": false,
+      "summary": "Founder launch freeze snapshot with guarded artifact fingerprints, canonical closeout, and rerun gates.",
+      "exists": false
+    },
+    {
+      "id": "tag-gate",
+      "title": "Tag Gate Report",
+      "path": ".terrafusion/tag-gate-report.md",
+      "category": "Release",
+      "audience": ["founder"],
+      "required": false,
+      "summary": "Validates release-tag readiness without creating the git tag.",
+      "exists": false
+    },
+    {
+      "id": "release-approval",
+      "title": "Release Approval",
+      "path": ".terrafusion/release-approval.md",
+      "category": "Release",
+      "audience": ["founder"],
+      "required": false,
+      "summary": "Records human release owner approval after Tag Gate passes.",
+      "exists": false
+    },
+    {
+      "id": "tag-command",
+      "title": "Tag Command Report",
+      "path": ".terrafusion/tag-command-report.md",
+      "category": "Release",
+      "audience": ["founder"],
+      "required": false,
+      "summary": "Prints the final manual git tag command and verification commands without executing them.",
+      "exists": false
+    },
+    {
+      "id": "release-runbook",
+      "title": "Final Release Runbook",
+      "path": ".terrafusion/release-runbook-0.1.0.md",
+      "category": "Release",
+      "audience": ["founder", "county-it"],
+      "required": false,
+      "summary": "Human-readable final release runbook with manual tag, verification, and rollback instructions.",
+      "exists": false
+    },
+    {
+      "id": "ship-report",
+      "title": "Ship Report",
+      "path": ".terrafusion/ship-report.md",
+      "category": "Release",
+      "audience": ["founder"],
+      "required": false,
+      "summary": "Release evidence bundle report without tag execution.",
+      "exists": false
+    }
+  ],
+  "readingPaths": [
+    {
+      "id": "release-review",
+      "title": "MVP Release Review Path",
+      "audience": "Founder / technical reviewer",
+      "entries": [
+        "product-manifest",
+        "command-registry",
+        "control-center-state",
+        "doctor-report",
+        "model-runtime-status",
+        "release-check",
+        "release-notes",
+        "release-freeze",
+        "tag-gate",
+        "release-approval",
+        "tag-command",
+        "release-runbook"
+      ],
+      "nextCommand": "pnpm run tf:local-agent -- release-freeze"
+    }
+  ],
+  "missingRequired": []
+}

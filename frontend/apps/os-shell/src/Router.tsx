@@ -1,11 +1,12 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { AuthGuard, AuthProvider } from './auth/AuthProvider';
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
 import { getViteEnv } from './env/getViteEnv';
+import { activateFromRoute } from './orchestration/moduleActivation';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,6 +56,7 @@ const PropertyForge = lazy(() => import('./pages/workbench/tabs/PropertyForge'))
 const PropertyAtlas = lazy(() => import('./pages/workbench/tabs/PropertyAtlas'));
 const PropertyDais = lazy(() => import('./pages/workbench/tabs/PropertyDais'));
 const PropertyDossier = lazy(() => import('./pages/workbench/tabs/PropertyDossier'));
+const PropertyPilot = lazy(() => import('./pages/workbench/tabs/PropertyPilot'));
 const PropertyClerk = lazy(() => import('./pages/workbench/tabs/PropertyClerk'));
 const PropertyTreasury = lazy(() => import('./pages/workbench/tabs/PropertyTreasury'));
 const PropertyAudit = lazy(() => import('./pages/workbench/tabs/PropertyAudit'));
@@ -115,6 +117,17 @@ const LegacyMetricsViewer = lazy(() => import('./pages/dev/LegacyMetricsViewer')
 // Phase 17: Login page (auth redirect target)
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 
+const ModuleRouteHandoff: React.FC<{ moduleId: string }> = ({ moduleId }) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    void activateFromRoute(moduleId);
+    navigate('/', { replace: true });
+  }, [moduleId, navigate]);
+
+  return <LoadingFallback />;
+};
+
 const Router: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -166,6 +179,7 @@ const Router: React.FC = () => {
                     <Route path='treasury' element={<PropertyTreasury />} />
                     <Route path='audit' element={<PropertyAudit />} />
                     <Route path='dossier' element={<PropertyDossier />} />
+                    <Route path='pilot' element={<PropertyPilot />} />
                   </Route>
 
                   {/* Legacy Redirects - Demote broken defaults with telemetry */}
@@ -187,7 +201,7 @@ const Router: React.FC = () => {
                   {/* Gen2 Module Routes - Internal OS modules */}
                   <Route path='gen2/terraforge' element={<TerraForgeGen2 />} />
                   <Route path='gen2/dossier' element={<TerraDossierGen2 />} />
-                  <Route path='gen2/terralevy' element={<TerraLevyGen2 />} />
+                    <Route path='gen2/terralevy' element={<TerraLevyGen2 />} />
 
                   {/* Suite Routes (Phase 5: MWUX Slices) */}
                   {/* TerraPrime → migrated to native PropertySearch (legacy redirect with telemetry) */}

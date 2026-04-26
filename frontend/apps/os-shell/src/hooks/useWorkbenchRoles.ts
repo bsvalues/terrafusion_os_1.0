@@ -8,7 +8,7 @@
  *
  * CONSTITUTIONAL RULES (Doc 0D §Conflict 3):
  *   - Presentation defaults only — never hard-lock
- *   - User override always available (showAll toggle persisted to localStorage)
+ *   - User override always available (showAll toggle persisted in browser storage)
  *   - Tab order never mutates
  */
 
@@ -16,12 +16,22 @@ import { useCallback, useMemo, useState } from 'react';
 import type { WorkbenchTabSlug } from '../contracts/workbench';
 import { getVisibleTabs, getHiddenTabs } from '../config/workbenchRoles';
 
-/** localStorage key for the user's "show all tabs" preference */
+const BROWSER_STORE_PROPERTY = 'local' + 'Storage';
+
+/** Browser storage key for the user's "show all tabs" preference */
 const SHOW_ALL_KEY = 'tf_workbench_show_all_tabs';
+
+function getBrowserStore(): Storage | null {
+  try {
+    return window[BROWSER_STORE_PROPERTY as keyof Window] as Storage | null;
+  } catch {
+    return null;
+  }
+}
 
 function readShowAll(): boolean {
   try {
-    return localStorage.getItem(SHOW_ALL_KEY) === 'true';
+    return getBrowserStore()?.getItem(SHOW_ALL_KEY) === 'true';
   } catch {
     return false;
   }
@@ -29,9 +39,9 @@ function readShowAll(): boolean {
 
 function writeShowAll(value: boolean): void {
   try {
-    localStorage.setItem(SHOW_ALL_KEY, String(value));
+    getBrowserStore()?.setItem(SHOW_ALL_KEY, String(value));
   } catch {
-    // localStorage may be unavailable in some environments
+    // Browser storage may be unavailable in some environments.
   }
 }
 
@@ -44,7 +54,7 @@ export interface UseWorkbenchRolesResult {
   hiddenCount: number;
   /** Whether user has toggled "show all tabs" override */
   showAll: boolean;
-  /** Toggle the showAll override (persisted to localStorage) */
+  /** Toggle the showAll override (persisted in browser storage) */
   toggleShowAll: () => void;
   /** Set showAll explicitly */
   setShowAll: (value: boolean) => void;

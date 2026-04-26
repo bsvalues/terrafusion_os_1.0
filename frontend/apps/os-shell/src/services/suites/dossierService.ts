@@ -24,6 +24,24 @@ function authHeaders(): Record<string, string> {
     : { 'Content-Type': 'application/json' };
 }
 
+function authReadHeaders(): Record<string, string> {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+function readArray<T>(payload: unknown, keys: string[]): T[] {
+  if (Array.isArray(payload)) return payload as T[];
+  if (!payload || typeof payload !== 'object') return [];
+
+  const record = payload as Record<string, unknown>;
+  for (const key of keys) {
+    const value = record[key];
+    if (Array.isArray(value)) return value as T[];
+  }
+
+  return [];
+}
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -65,6 +83,58 @@ export interface Evidence {
   description: string;
   documentId?: string;
   addedAt: string;
+}
+
+export type CustodyAction = 'created' | 'transferred' | 'reviewed' | 'signed' | 'sealed' | 'accessed';
+
+export interface CustodyEvent {
+  timestamp: string;
+  action: CustodyAction;
+  actor: string;
+  role: string;
+  from?: string;
+  to?: string;
+  hash: string;
+  note?: string;
+}
+
+export interface CustodyRecord {
+  id: string;
+  documentId: string;
+  documentName: string;
+  parcelId: string;
+  events: CustodyEvent[];
+  currentHolder: string;
+  integrityStatus: 'verified' | 'warning' | 'broken';
+}
+
+export interface DefensePacket {
+  id: string;
+  appealId: string;
+  parcelId: string;
+  address: string;
+  status: 'draft' | 'review' | 'final';
+  items: { type: string; count: number }[];
+  createdAt: string;
+  updatedAt: string;
+  assignedTo: string;
+}
+
+export interface PropertyPhoto {
+  id: string;
+  parcelId: string;
+  address: string;
+  filename: string;
+  thumbnailUrl?: string;
+  elevation: 'front' | 'rear' | 'left' | 'right' | 'aerial' | 'interior' | 'detail';
+  dateTaken: string;
+  photographer: string;
+  lat?: number;
+  lng?: number;
+  resolution?: string;
+  fileSize?: string;
+  fileSizeBytes?: number;
+  tags: string[];
 }
 
 // ============================================================================
@@ -235,4 +305,22 @@ export async function getEvidence(parcelId: string): Promise<Evidence[]> {
   if (!res.ok) throw new Error(`Failed to fetch evidence: ${res.statusText}`);
   const data = await res.json();
   return Array.isArray(data) ? data : [];
+}
+
+export async function getChainOfCustodyRecords(): Promise<CustodyRecord[]> {
+  const res = await fetch(`${API}/chain-of-custody`, { headers: authReadHeaders() });
+  if (!res.ok) throw new Error(`Failed to fetch chain of custody: ${res.statusText}`);
+  return readArray<CustodyRecord>(await res.json(), ['records', 'custodyRecords', 'items']);
+}
+
+export async function getDefensePackets(): Promise<DefensePacket[]> {
+  const res = await fetch(`${API}/defense-packets`, { headers: authReadHeaders() });
+  if (!res.ok) throw new Error(`Failed to fetch defense packets: ${res.statusText}`);
+  return readArray<DefensePacket>(await res.json(), ['packets', 'defensePackets', 'items']);
+}
+
+export async function getPropertyPhotos(): Promise<PropertyPhoto[]> {
+  const res = await fetch(`${API}/photos`, { headers: authReadHeaders() });
+  if (!res.ok) throw new Error(`Failed to fetch property photos: ${res.statusText}`);
+  return readArray<PropertyPhoto>(await res.json(), ['photos', 'propertyPhotos', 'items']);
 }

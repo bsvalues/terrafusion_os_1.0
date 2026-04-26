@@ -6,7 +6,7 @@
  * Lineage: BCBSCOSTApp → TerraBuild → TerraFusionBuild → CostForge → TerraForge
  *
  * ALL cost data is Benton County's OWN cost approach system.
- * Matrix data extracted from Harris PACS 9.0 production tables.
+ * Matrix data extracted from Benton County cost tables.
  *
  * @see useCostForgeAPI.ts for backend API integration
  */
@@ -116,7 +116,7 @@ export interface CostScenario {
 
 // ============================================================================
 // Benton County Cost Matrix — 42 entries (14 types × 3 regions)
-// Source: Harris PACS 9.0 production tables, Matrix Year 2025
+// Source: Benton County cost tables, Matrix Year 2025
 // ============================================================================
 
 export const COST_MATRIX: readonly CostMatrixEntry[] = [
@@ -183,7 +183,7 @@ export const COST_MATRIX: readonly CostMatrixEntry[] = [
 ] as const;
 
 // ============================================================================
-// Building Types — 14 Harris PACS codes with categories
+// Building Types — 14 Benton cost codes with categories
 // ============================================================================
 
 export const BUILDING_TYPES: readonly BuildingTypeInfo[] = [

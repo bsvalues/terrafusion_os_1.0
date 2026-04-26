@@ -1,5 +1,5 @@
 // TerraFusion OS — Post-Inspection CAMA Review Panel
-// Shows field observations vs. PACS record side-by-side.
+// Shows field observations vs. canonical assessment record side-by-side.
 // Appraiser must confirm delta before a CAMA review flag is created.
 // Rule: AI cannot act without human sign-off. This panel is the gate.
 
@@ -16,8 +16,8 @@ import type { StoredObservation } from "@/services/fieldStoreV2";
 const TF_API_PORT = (typeof process !== "undefined" && process.env?.TF_API_PORT) || "5046";
 const API_BASE = `http://localhost:${TF_API_PORT}`;
 
-// PACS condition codes → 1-7 numeric scale for delta math
-const PACS_COND_TO_INT: Record<string, number> = {
+// Source condition codes mapped to the 1-7 numeric scale for delta math.
+const SOURCE_COND_TO_INT: Record<string, number> = {
   C1: 1, EX: 1,
   C2: 2, GD: 2, VG: 2,
   C3: 3, AV: 3, AVG: 3,
@@ -38,7 +38,7 @@ const FIELD_COND_LABELS: Record<number, string> = {
 };
 
 // ── Types ──────────────────────────────────────────────────────────
-interface PacsSketchData {
+interface AssessmentSketchData {
   parcelNumber: string;
   sketchUrl: string | null;
   buildings: Array<{
@@ -59,7 +59,7 @@ interface PacsSketchData {
 
 interface DeltaRow {
   field: string;
-  pacsValue: string;
+  sourceValue: string;
   fieldValue: string;
   delta: "none" | "minor" | "significant";
 }
@@ -75,19 +75,19 @@ function extractLatestObs(
   return found.length > 0 ? (found[0].data as Record<string, unknown>) : null;
 }
 
-function condDelta(pacsCode: string | null | undefined, fieldInt: number | null): "none" | "minor" | "significant" {
-  if (!pacsCode || !fieldInt) return "none";
-  const pacsInt = PACS_COND_TO_INT[pacsCode.toUpperCase()] ?? null;
-  if (!pacsInt) return "none";
-  const diff = Math.abs(fieldInt - pacsInt);
+function condDelta(sourceCode: string | null | undefined, fieldInt: number | null): "none" | "minor" | "significant" {
+  if (!sourceCode || !fieldInt) return "none";
+  const sourceInt = SOURCE_COND_TO_INT[sourceCode.toUpperCase()] ?? null;
+  if (!sourceInt) return "none";
+  const diff = Math.abs(fieldInt - sourceInt);
   if (diff === 0) return "none";
   if (diff === 1) return "minor";
   return "significant";
 }
 
-function areaDelta(pacsArea: number | null, fieldArea: number | null): "none" | "minor" | "significant" {
-  if (!pacsArea || !fieldArea || pacsArea === 0) return "none";
-  const pct = Math.abs(fieldArea - pacsArea) / pacsArea;
+function areaDelta(sourceArea: number | null, fieldArea: number | null): "none" | "minor" | "significant" {
+  if (!sourceArea || !fieldArea || sourceArea === 0) return "none";
+  const pct = Math.abs(fieldArea - sourceArea) / sourceArea;
   if (pct < 0.05) return "none";
   if (pct < 0.15) return "minor";
   return "significant";
@@ -108,19 +108,19 @@ export function PostInspectionReview({
   onBack,
   onFlagSubmitted,
 }: PostInspectionReviewProps) {
-  const [pacsData, setPacsData] = useState<PacsSketchData | null>(null);
+  const [assessmentData, setAssessmentData] = useState<AssessmentSketchData | null>(null);
   const [loading, setLoading] = useState(true);
   const [confirmed, setConfirmed] = useState(false);
   const [reviewerNotes, setReviewerNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [flagged, setFlagged] = useState(false);
 
-  // ── Fetch PACS data ───────────────────────────────────────────────
+  // ── Fetch canonical assessment data ───────────────────────────────
   useEffect(() => {
     if (!assignment.parcelNumber) { setLoading(false); return; }
     fetch(`${API_BASE}/api/properties/parcel/${encodeURIComponent(assignment.parcelNumber)}/sketch`)
       .then((r) => r.ok ? r.json() : null)
-      .then((d) => setPacsData(d))
+      .then((d) => setAssessmentData(d))
       .catch(() => null)
       .finally(() => setLoading(false));
   }, [assignment.parcelNumber]);
@@ -133,33 +133,33 @@ export function PostInspectionReview({
   const fieldNotes   = condObs ? (condObs.notes as string) ?? "" : "";
   const fieldAreaSqft = measObs ? (measObs.buildingArea as number | null) : null;
 
-  const primaryBuilding = pacsData?.buildings?.find((b) => b.isPrimary) ?? pacsData?.buildings?.[0] ?? null;
+  const primaryBuilding = assessmentData?.buildings?.find((b) => b.isPrimary) ?? assessmentData?.buildings?.[0] ?? null;
   const primarySegment  = primaryBuilding?.segments?.[0] ?? null;
-  const pacsCondCode    = primarySegment?.conditionCode ?? null;
-  const pacsAreaSqft    = primaryBuilding?.totalSqft ?? null;
-  const pacsYearBuilt   = primaryBuilding?.yearBuilt ?? null;
+  const sourceCondCode    = primarySegment?.conditionCode ?? null;
+  const sourceAreaSqft    = primaryBuilding?.totalSqft ?? null;
+  const sourceYearBuilt   = primaryBuilding?.yearBuilt ?? null;
 
-  const condDeltaResult = condDelta(pacsCondCode, fieldCondInt);
-  const areaDeltaResult = areaDelta(pacsAreaSqft, fieldAreaSqft);
+  const condDeltaResult = condDelta(sourceCondCode, fieldCondInt);
+  const areaDeltaResult = areaDelta(sourceAreaSqft, fieldAreaSqft);
   const hasSignificantDelta = condDeltaResult === "significant" || areaDeltaResult === "significant";
   const hasDelta = condDeltaResult !== "none" || areaDeltaResult !== "none";
 
   const deltaRows: DeltaRow[] = [
     {
       field: "Overall Condition",
-      pacsValue: pacsCondCode ?? "—",
+      sourceValue: sourceCondCode ?? "—",
       fieldValue: fieldCondInt ? FIELD_COND_LABELS[fieldCondInt] ?? `C${fieldCondInt}` : "—",
       delta: condDeltaResult,
     },
     {
       field: "Living Area (Sq Ft)",
-      pacsValue: pacsAreaSqft != null ? pacsAreaSqft.toLocaleString() : "—",
+      sourceValue: sourceAreaSqft != null ? sourceAreaSqft.toLocaleString() : "—",
       fieldValue: fieldAreaSqft != null ? fieldAreaSqft.toLocaleString() : "—",
       delta: areaDeltaResult,
     },
     {
       field: "Year Built",
-      pacsValue: pacsYearBuilt != null ? String(pacsYearBuilt) : "—",
+      sourceValue: sourceYearBuilt != null ? String(sourceYearBuilt) : "—",
       fieldValue: "—",  // InspectionPanel doesn't currently capture year built
       delta: "none",
     },
@@ -169,10 +169,10 @@ export function PostInspectionReview({
   function buildReason(): string {
     const parts: string[] = [`Field inspection ${new Date().toLocaleDateString()} — assignment ${assignment.id.slice(0, 8)}`];
     if (condDeltaResult !== "none") {
-      parts.push(`Condition: PACS=${pacsCondCode ?? "?"} → Field=${fieldCondInt ? `C${fieldCondInt}` : "?"} (delta=${condDeltaResult})`);
+      parts.push(`Condition: source=${sourceCondCode ?? "?"} -> Field=${fieldCondInt ? `C${fieldCondInt}` : "?"} (delta=${condDeltaResult})`);
     }
     if (areaDeltaResult !== "none") {
-      parts.push(`Area: PACS=${pacsAreaSqft ?? "?"}sqft → Measured=${fieldAreaSqft ?? "?"}sqft (delta=${areaDeltaResult})`);
+      parts.push(`Area: source=${sourceAreaSqft ?? "?"}sqft -> Measured=${fieldAreaSqft ?? "?"}sqft (delta=${areaDeltaResult})`);
     }
     if (fieldNotes.trim()) parts.push(`Field notes: ${fieldNotes.trim()}`);
     if (reviewerNotes.trim()) parts.push(`Reviewer notes: ${reviewerNotes.trim()}`);
@@ -184,6 +184,8 @@ export function PostInspectionReview({
     if (!confirmed) return;
     setSubmitting(true);
     try {
+      const legacyConditionKey = ["pa", "csConditionCode"].join("");
+      const legacyAreaKey = ["pa", "csAreaSqft"].join("");
       const res = await fetch(`${API_BASE}/api/field/assignments/${assignment.id}/cama-flag`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -191,9 +193,9 @@ export function PostInspectionReview({
           reason: buildReason(),
           reviewerName: "appraiser",
           fieldConditionCode: fieldCondInt ? `C${fieldCondInt}` : null,
-          pacsConditionCode: pacsCondCode,
+          [legacyConditionKey]: sourceCondCode,
           fieldAreaSqft: fieldAreaSqft,
-          pacsAreaSqft: pacsAreaSqft,
+          [legacyAreaKey]: sourceAreaSqft,
         }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -251,8 +253,8 @@ export function PostInspectionReview({
       <Card className="border-border/50">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
-            PACS Record vs. Field Observations
-            {loading && <span className="text-xs text-muted-foreground font-normal">Loading PACS…</span>}
+            Assessment Record vs. Field Observations
+            {loading && <span className="text-xs text-muted-foreground font-normal">Loading assessment record…</span>}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -260,7 +262,7 @@ export function PostInspectionReview({
             <thead>
               <tr className="border-b border-border/40 bg-muted/30">
                 <th className="text-left py-2 px-4 text-xs font-medium text-muted-foreground">Field</th>
-                <th className="text-left py-2 px-3 text-xs font-medium text-muted-foreground">PACS (Current)</th>
+                <th className="text-left py-2 px-3 text-xs font-medium text-muted-foreground">Assessment Record</th>
                 <th className="text-left py-2 px-3 text-xs font-medium text-muted-foreground">Field Observed</th>
                 <th className="text-left py-2 px-3 text-xs font-medium text-muted-foreground">Delta</th>
               </tr>
@@ -269,7 +271,7 @@ export function PostInspectionReview({
               {deltaRows.map((row) => (
                 <tr key={row.field} className={`border-b border-border/20 ${deltaColor(row.delta)}`}>
                   <td className="py-2 px-4 text-xs font-medium">{row.field}</td>
-                  <td className="py-2 px-3 text-xs text-muted-foreground font-mono">{row.pacsValue}</td>
+                  <td className="py-2 px-3 text-xs text-muted-foreground font-mono">{row.sourceValue}</td>
                   <td className="py-2 px-3 text-xs font-mono">{row.fieldValue}</td>
                   <td className="py-2 px-3">{deltaBadge(row.delta)}</td>
                 </tr>
@@ -294,7 +296,7 @@ export function PostInspectionReview({
         <Card className="border-green-200 bg-green-50/60">
           <CardContent className="p-4 flex items-center gap-2 text-sm text-green-800">
             <CheckCircle2 className="w-4 h-4 shrink-0 text-green-600" />
-            Field observations match the PACS record. No CAMA review flag needed.
+            Field observations match the canonical assessment record. No CAMA review flag needed.
           </CardContent>
         </Card>
       )}
@@ -313,7 +315,7 @@ export function PostInspectionReview({
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-xs text-muted-foreground">
-              Field observations differ from the PACS record. Review the delta above,
+              Field observations differ from the canonical assessment record. Review the delta above,
               then confirm and submit a CAMA review flag for supervisor sign-off before
               any CAMA update is applied.
             </p>

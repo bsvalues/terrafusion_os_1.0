@@ -33,7 +33,7 @@ export interface GamaMapProps {
 // ---------------------------------------------------------------------------
 
 const SELECTED_TEXT_COLOR = 'hsl(var(--tf-text-primary-hs) var(--tf-l-100))';
-const DEFAULT_ZONING_COLOR = 'hsl(var(--muted-foreground))';
+const FALLBACK_ZONING_COLOR = 'hsl(var(--muted-foreground))';
 
 const ZONING_COLORS: Record<string, string> = {
   'R-1': 'hsl(var(--tf-success))',
@@ -100,7 +100,7 @@ export default function GamaMap({
         {parcels.map((parcel) => {
           const xPct = ((parcel.center[1] - mapCenter[1]) / 0.06 + 0.5) * 100;
           const yPct = ((mapCenter[0] - parcel.center[0]) / 0.04 + 0.5) * 100;
-          const color = ZONING_COLORS[parcel.zoning] ?? DEFAULT_ZONING_COLOR;
+        const color = ZONING_COLORS[parcel.zoning] ?? FALLBACK_ZONING_COLOR;
           const isSelected = selectedParcelId === parcel.id;
           const isHovered = hoveredId === parcel.id;
 

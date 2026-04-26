@@ -21,25 +21,46 @@ interface MetricsStore {
   refresh: () => Promise<void>;
 }
 
-/** Convert raw API health response into display KPIs */
+/** Convert governed API health response into display KPIs without inferred telemetry. */
 function buildKpis(health: Record<string, unknown>, stats: Record<string, unknown> | null): KPI[] {
-  const memory = typeof health.memory === 'number' ? health.memory : 45;
-  const cpu = typeof health.cpu === 'number' ? health.cpu : 12;
-  const activeModules = typeof health.activeModules === 'number' ? health.activeModules : 0;
-  const totalModules = typeof health.totalModules === 'number' ? health.totalModules : 32;
-  const uptime = typeof health.uptime === 'number' ? health.uptime : 0;
-
-  const uptimeHrs = Math.floor(uptime / 3600);
-  const uptimeFormatted = uptimeHrs >= 24 ? `${Math.floor(uptimeHrs / 24)}d ${uptimeHrs % 24}h` : `${uptimeHrs}h`;
-
-  const healthPct = cpu < 80 && memory < 85 ? 99.9 : cpu < 95 && memory < 95 ? 98.5 : 95.0;
-  const healthStatus: KPI['status'] = healthPct >= 99 ? 'verified' : healthPct >= 97 ? 'pending' : 'anomaly';
+  const status = typeof health.status === 'string' ? health.status : 'Unavailable';
+  const moduleCount = typeof health.moduleCount === 'number' ? health.moduleCount : 0;
+  const healthyModules = typeof health.healthyModules === 'number' ? health.healthyModules : 0;
+  const totalModules =
+    typeof health.moduleCountTotal === 'number' ? health.moduleCountTotal : moduleCount;
+  const activeModules =
+    typeof health.moduleCountActive === 'number' ? health.moduleCountActive : healthyModules;
+  const warnings = Array.isArray(health.warnings) ? health.warnings : [];
+  const systemComponents =
+    health.systemComponents && typeof health.systemComponents === 'object'
+      ? (health.systemComponents as Record<string, boolean>)
+      : {};
+  const unhealthyComponents = Object.values(systemComponents).filter((healthy) => !healthy).length;
+  const statusNormalized = status.toLowerCase();
+  const healthStatus: KPI['status'] =
+    statusNormalized === 'healthy' ? 'verified' : statusNormalized === 'degraded' ? 'pending' : 'anomaly';
 
   const kpis: KPI[] = [
-    { id: 'health', label: 'System Health', value: `${healthPct}%`, status: healthStatus, delta: `CPU ${cpu}%` },
-    { id: 'modules', label: 'Active Modules', value: `${activeModules}/${totalModules}`, status: activeModules >= totalModules ? 'verified' : 'pending' },
-    { id: 'memory', label: 'Memory', value: `${memory}%`, status: memory < 80 ? 'verified' : memory < 90 ? 'pending' : 'anomaly', delta: `${(memory / 100 * 16).toFixed(1)} GB` },
-    { id: 'uptime', label: 'Uptime', value: uptimeFormatted, status: 'verified' },
+    { id: 'health', label: 'System Health', value: status, status: healthStatus },
+    {
+      id: 'modules',
+      label: 'Active Modules',
+      value: `${activeModules}/${totalModules}`,
+      status: activeModules > 0 && activeModules === totalModules ? 'verified' : 'pending',
+    },
+    {
+      id: 'orchestration',
+      label: 'Healthy Modules',
+      value: `${healthyModules}/${moduleCount}`,
+      status: healthyModules === moduleCount ? 'verified' : 'pending',
+    },
+    {
+      id: 'warnings',
+      label: 'Health Warnings',
+      value: warnings.length,
+      status: warnings.length === 0 ? 'verified' : 'pending',
+      delta: unhealthyComponents > 0 ? `${unhealthyComponents} unhealthy component(s)` : undefined,
+    },
   ];
 
   // Merge stats if available (e.g. agent count, parcel count)

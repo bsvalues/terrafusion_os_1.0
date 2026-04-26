@@ -53,14 +53,10 @@ const SystemMonitor: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const stats = (await window.electronAPI?.getSystemMetrics?.()) || {
-          activePlugins: 4,
-          messageRate: Math.floor(Math.random() * 50) + 10,
-          memoryUsage: Math.floor(Math.random() * 200) + 150,
-          wsConnections: 1,
-          apiLatency: Math.floor(Math.random() * 50) + 25,
-          uptime: Date.now() - (Date.now() % 86400000),
-        };
+        const stats = await window.electronAPI?.getSystemMetrics?.();
+        if (!stats) {
+          throw new Error('System metrics bridge unavailable');
+        }
         setMetrics(stats);
         setIsConnected(true);
       } catch (err) {
@@ -116,12 +112,12 @@ const SystemMonitor: React.FC = () => {
         <h4>Database Connections</h4>
         <div className={styles.dbStatusGrid}>
           <div
-            className={`${styles.dbStatusItem} ${connectionStatus?.realPacsConnected ? styles.connected : styles.disconnected}`}
+            className={`${styles.dbStatusItem} ${connectionStatus?.assessmentDbConnected ? styles.connected : styles.disconnected}`}
           >
             <span className={styles.dbIcon}>🗄️</span>
             <span className={styles.dbName}>County Records</span>
             <span className={styles.dbStatus}>
-              {connectionStatus?.realPacsConnected ? '✅ Connected' : '❌ Disconnected'}
+              {connectionStatus?.assessmentDbConnected ? '✅ Connected' : '❌ Disconnected'}
             </span>
           </div>
           <div

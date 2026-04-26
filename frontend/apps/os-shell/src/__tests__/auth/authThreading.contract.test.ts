@@ -191,23 +191,28 @@ describe('Gate 7 — QuantumModuleManager auth threading', () => {
 });
 
 // ============================================================================
-// Gate 8: Wave 1 hooks are API-first with fallback provenance
+// Gate 8: Wave 1 hooks are API-first with explicit unavailable provenance
 // ============================================================================
 
 describe('Gate 8 — Wave 1 hooks', () => {
-  it('useTodaysWork reads from queueService before falling back', () => {
+  it('useTodaysWork reads from queueService and exposes explicit read state', () => {
     const src = readSrc('hooks/useTodaysWork.ts');
     expect(src).toContain("import { getQueueItems } from '../services/suites/queueService'");
     expect(src).toContain('getQueueItems({ throwOnError: true })');
-    expect(src).toContain('setIsSampleData(false)');
+    expect(src).toContain('readState: TodaysWorkReadState');
+    expect(src).toContain("setReadState('live')");
+    expect(src).toContain("setReadState('unavailable')");
+    expect(src).not.toContain('isSampleData');
+    expect(src).not.toContain('SAMPLE_TASKS');
   });
 
-  it('useBudgetData reads levy endpoints through the governed API client', () => {
+  it('useBudgetData reads levy endpoints through the governed API client without sample fallback state', () => {
     const src = readSrc('applications/terra-levy/hooks/useBudgetData.ts');
     expect(src).toMatch(/import\s+api\s+from\s+['"]@\/services\/api['"]/);
     expect(src).toContain('/levy/dashboard/summary');
     expect(src).toContain('/levy/budget/scenarios');
     expect(src).toContain('/levy/budget/visualization');
-    expect(src).toContain('setIsSampleData(false)');
+    expect(src).toContain('Live levy budget endpoints returned no certified budget-category data.');
+    expect(src).not.toContain('isSampleData');
   });
 });

@@ -58,46 +58,7 @@ export const MarketplaceApp: React.FC = () => {
       setPlugins(response.data.plugins);
     } catch (error) {
       console.error('Failed to load plugins:', error);
-      // Load mock data for demo
-      setPlugins([
-        {
-          id: 'costforge-ai',
-          name: 'CostForge AI',
-          version: '2.1.0',
-          description:
-            'AI-powered property valuation and cost estimation for government assessments',
-          author: 'Terrafusion',
-          category: 'AI & Analytics',
-          tags: ['ai', 'valuation', 'property', 'assessment'],
-          downloads: 15420,
-          rating: 4.8,
-          ratingCount: 342,
-        },
-        {
-          id: 'harris-pacs',
-          name: 'County Data Connector',
-          version: '1.5.2',
-          description: 'Integration with county property assessment and records systems',
-          author: 'Terrafusion',
-          category: 'Data Integration',
-          tags: ['data', 'integration', 'property', 'assessment'],
-          downloads: 8930,
-          rating: 4.6,
-          ratingCount: 156,
-        },
-        {
-          id: 'gis-core',
-          name: 'GIS Core Engine',
-          version: '3.0.1',
-          description: 'Advanced GIS mapping and spatial analysis for government operations',
-          author: 'Terrafusion',
-          category: 'Mapping & GIS',
-          tags: ['gis', 'mapping', 'spatial', 'analysis'],
-          downloads: 12750,
-          rating: 4.9,
-          ratingCount: 289,
-        },
-      ]);
+      setPlugins([]);
     } finally {
       setLoading(false);
     }
@@ -109,14 +70,7 @@ export const MarketplaceApp: React.FC = () => {
       setCategories(response.data);
     } catch (error) {
       console.error('Failed to load categories:', error);
-      // Load mock categories
-      setCategories([
-        { name: 'AI & Analytics', count: 12, icon: '🤖' },
-        { name: 'Data Integration', count: 8, icon: '🔗' },
-        { name: 'Mapping & GIS', count: 15, icon: '🗺️' },
-        { name: 'Financial', count: 6, icon: '💰' },
-        { name: 'Compliance', count: 9, icon: '📋' },
-      ]);
+      setCategories([]);
     }
   };
 

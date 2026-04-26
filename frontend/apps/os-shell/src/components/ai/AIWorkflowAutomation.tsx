@@ -21,7 +21,6 @@ import {
   CheckCircle,
   Clock,
   FileCheck,
-  Pause,
   Play,
   TrendingUp,
   Zap,
@@ -69,171 +68,31 @@ export const AIWorkflowAutomation: React.FC<AIWorkflowAutomationProps> = ({
   const [workflows, setWorkflows] = useState<AutomationWorkflow[]>([]);
   const [activeWorkflow, setActiveWorkflow] = useState<string | null>(null);
   const [isExecuting, setIsExecuting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Initialize available workflows based on department
   useEffect(() => {
-    const departmentWorkflows = getWorkflowsForDepartment(department);
-    setWorkflows(departmentWorkflows);
-  }, [department]);
+    const loadWorkflows = async () => {
+      try {
+        setError(null);
+        const params = new URLSearchParams({ countyId, department });
+        const response = await fetch(`/api/ai/workflows?${params.toString()}`, {
+          headers: { Accept: 'application/json' },
+        });
 
-  const getWorkflowsForDepartment = (dept: string): AutomationWorkflow[] => {
-    const baseWorkflows: AutomationWorkflow[] = [
-      {
-        id: 'bulk-assessment',
-        name: 'Bulk Property Assessment',
-        category: 'property',
-        description: 'AI-powered batch processing of 847 properties with quantum valuation',
-        steps: [
-          {
-            id: 'step1',
-            name: 'Data Collection',
-            description: 'Gather property data from assessment records',
-            status: 'pending',
-            aiOptimized: true,
-            estimatedTime: 30,
-          },
-          {
-            id: 'step2',
-            name: 'AI Valuation',
-            description: 'Quantum-enhanced property valuations',
-            status: 'pending',
-            aiOptimized: true,
-            estimatedTime: 120,
-          },
-          {
-            id: 'step3',
-            name: 'Comparable Analysis',
-            description: 'Analyze 847+ comparable properties',
-            status: 'pending',
-            aiOptimized: true,
-            estimatedTime: 60,
-          },
-          {
-            id: 'step4',
-            name: 'IAAO Validation',
-            description: 'Compliance verification',
-            status: 'pending',
-            aiOptimized: true,
-            estimatedTime: 45,
-          },
-          {
-            id: 'step5',
-            name: 'Report Generation',
-            description: 'Generate assessment reports',
-            status: 'pending',
-            aiOptimized: false,
-            estimatedTime: 30,
-          },
-        ],
-        totalProperties: 847,
-        aiConfidence: 0.957,
-        estimatedSavings: {
-          time: 18.5,
-          accuracy: 4.2,
-        },
-      },
-      {
-        id: 'compliance-audit',
-        name: 'FISMA-High Compliance Audit',
-        category: 'security',
-        description: 'Comprehensive security and compliance validation across all systems',
-        steps: [
-          {
-            id: 'step1',
-            name: 'Security Scan',
-            description: 'FISMA-High controls validation',
-            status: 'pending',
-            aiOptimized: true,
-            estimatedTime: 60,
-          },
-          {
-            id: 'step2',
-            name: 'Access Control Audit',
-            description: 'Verify AC-2, AC-3, AC-6 controls',
-            status: 'pending',
-            aiOptimized: true,
-            estimatedTime: 45,
-          },
-          {
-            id: 'step3',
-            name: 'Data Isolation Check',
-            description: 'County data sovereignty validation',
-            status: 'pending',
-            aiOptimized: true,
-            estimatedTime: 30,
-          },
-          {
-            id: 'step4',
-            name: 'Audit Trail Review',
-            description: 'AU-2, AU-3, AU-6 compliance',
-            status: 'pending',
-            aiOptimized: true,
-            estimatedTime: 40,
-          },
-          {
-            id: 'step5',
-            name: 'Compliance Report',
-            description: 'Generate certification documentation',
-            status: 'pending',
-            aiOptimized: false,
-            estimatedTime: 25,
-          },
-        ],
-        aiConfidence: 0.992,
-        estimatedSavings: {
-          time: 12.0,
-          accuracy: 8.5,
-        },
-      },
-      {
-        id: 'market-trend-analysis',
-        name: 'Market Trend Analysis & Forecasting',
-        category: 'analytics',
-        description: 'AI-powered market analysis with predictive insights',
-        steps: [
-          {
-            id: 'step1',
-            name: 'Data Aggregation',
-            description: 'Collect market data from multiple sources',
-            status: 'pending',
-            aiOptimized: true,
-            estimatedTime: 40,
-          },
-          {
-            id: 'step2',
-            name: 'Trend Analysis',
-            description: 'Identify market patterns and shifts',
-            status: 'pending',
-            aiOptimized: true,
-            estimatedTime: 90,
-          },
-          {
-            id: 'step3',
-            name: 'Predictive Modeling',
-            description: 'Forecast future market conditions',
-            status: 'pending',
-            aiOptimized: true,
-            estimatedTime: 120,
-          },
-          {
-            id: 'step4',
-            name: 'Visualization',
-            description: 'Create interactive dashboards',
-            status: 'pending',
-            aiOptimized: false,
-            estimatedTime: 45,
-          },
-        ],
-        aiConfidence: 0.943,
-        estimatedSavings: {
-          time: 24.0,
-          accuracy: 12.3,
-        },
-      },
-    ];
+        if (!response.ok) {
+          throw new Error(`Workflow API unavailable: ${response.status}`);
+        }
 
-    return baseWorkflows;
-  };
+        const payload = await response.json();
+        setWorkflows(Array.isArray(payload.workflows) ? payload.workflows : []);
+      } catch (err) {
+        setWorkflows([]);
+        setError(err instanceof Error ? err.message : 'Workflow evidence is unavailable.');
+      }
+    };
+
+    void loadWorkflows();
+  }, [countyId, department]);
 
   const executeWorkflow = async (workflowId: string) => {
     setActiveWorkflow(workflowId);
@@ -242,45 +101,31 @@ export const AIWorkflowAutomation: React.FC<AIWorkflowAutomationProps> = ({
     const workflow = workflows.find((w) => w.id === workflowId);
     if (!workflow) return;
 
-    // Simulate workflow execution
-    for (let i = 0; i < workflow.steps.length; i++) {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const response = await fetch(`/api/ai/workflows/${workflowId}/execute`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ countyId, department }),
+      });
 
-      setWorkflows((prev) =>
-        prev.map((w) => {
-          if (w.id === workflowId) {
-            const updatedSteps = [...w.steps];
-            updatedSteps[i] = {
-              ...updatedSteps[i],
-              status: 'running',
-            };
-            return { ...w, steps: updatedSteps };
-          }
-          return w;
-        })
-      );
+      if (!response.ok) {
+        throw new Error(`Workflow execution API unavailable: ${response.status}`);
+      }
 
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const payload = await response.json();
+      if (payload.workflow) {
+        setWorkflows((prev) => prev.map((w) => (w.id === workflowId ? payload.workflow : w)));
+      }
 
-      setWorkflows((prev) =>
-        prev.map((w) => {
-          if (w.id === workflowId) {
-            const updatedSteps = [...w.steps];
-            updatedSteps[i] = {
-              ...updatedSteps[i],
-              status: 'completed',
-              actualTime: updatedSteps[i].estimatedTime * (0.8 + Math.random() * 0.4),
-              accuracy: 0.95 + Math.random() * 0.05,
-            };
-            return { ...w, steps: updatedSteps };
-          }
-          return w;
-        })
-      );
+      onWorkflowExecute?.(workflowId);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Workflow execution evidence is unavailable.');
+    } finally {
+      setIsExecuting(false);
     }
-
-    setIsExecuting(false);
-    onWorkflowExecute?.(workflowId);
   };
 
   const getStepIcon = (status: string) => {
@@ -315,12 +160,24 @@ export const AIWorkflowAutomation: React.FC<AIWorkflowAutomationProps> = ({
         </div>
         <Badge variant='quantum' className='quantum-pulse'>
           <Brain className='w-4 h-4 mr-2' />
-          AI Optimized
+          Evidence Backed
         </Badge>
       </div>
 
       {/* Workflows Grid */}
       <div className='grid gap-6'>
+        {error && (
+          <Card className='terra-glass border border-yellow-500/20'>
+            <CardContent className='p-4 text-yellow-200'>{error}</CardContent>
+          </Card>
+        )}
+        {workflows.length === 0 && !error && (
+          <Card className='terra-glass border border-terra-cyan/20'>
+            <CardContent className='p-4 text-slate-400'>
+              No governed workflows returned for this county and department.
+            </CardContent>
+          </Card>
+        )}
         {workflows.map((workflow) => {
           const isActive = activeWorkflow === workflow.id;
           const progress = calculateProgress(workflow.steps);
@@ -383,8 +240,8 @@ export const AIWorkflowAutomation: React.FC<AIWorkflowAutomationProps> = ({
                       </>
                     ) : isActive ? (
                       <>
-                        <Pause className='w-4 h-4 mr-2' />
-                        Running
+                        <Clock className='w-4 h-4 mr-2' />
+                        Executing
                       </>
                     ) : (
                       <>
@@ -464,8 +321,8 @@ export const AIWorkflowAutomation: React.FC<AIWorkflowAutomationProps> = ({
                       <span className='font-semibold'>Workflow Completed Successfully</span>
                     </div>
                     <p className='text-xs text-slate-400'>
-                      All {workflow.steps.length} steps completed with championship-level
-                      excellence. AI optimization factor: 949. Government. Transcended.
+                      All {workflow.steps.length} steps completed according to the workflow API
+                      response.
                     </p>
                   </div>
                 )}

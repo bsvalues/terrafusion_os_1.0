@@ -64,6 +64,14 @@
   flex-wrap: wrap;
 }
 
+.sf-header__source-note {
+  margin: 10px 0 0;
+  max-width: 920px;
+  color: var(--sf-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
 /* ── Tab bar ─────────────────────────────────────────────────────────────────── */
 
 .sf-tabbar {

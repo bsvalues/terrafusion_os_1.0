@@ -328,7 +328,7 @@ export default function TerraQueryModule() {
                 Live Query Review
               </CardTitle>
               <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
-                TerraQuery only executes live Benton Atlas criteria. The SQL mock editor and simulated result timer have been removed.
+                TerraQuery only executes live Benton Atlas criteria. Offline SQL editors and simulated result timers are not part of this lane.
               </CardDescription>
             </CardHeader>
             <CardContent className='space-y-3'>
@@ -384,7 +384,7 @@ export default function TerraQueryModule() {
                     Live Query Builder
                   </CardTitle>
                   <CardDescription style={{ color: 'hsl(var(--tf-muted))' }}>
-                    Run governed Benton parcel criteria through Atlas and ArcGIS. No PACS shortcuts, no “coming soon” stubs.
+                    Run governed Benton parcel criteria through Atlas and ArcGIS with no legacy shortcuts or placeholder routes.
                   </CardDescription>
                 </div>
                 <TactileButton

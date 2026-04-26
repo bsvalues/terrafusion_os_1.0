@@ -132,7 +132,7 @@ export function createTelemetryStore(
 // Singleton Instance
 // ============================================================================
 
-const DEFAULT_CONFIG: TelemetryStoreConfig = {
+const TELEMETRY_STORE_CONFIG: TelemetryStoreConfig = {
   maxEvents: 5000,
   maxAgeDays: 7,
 };
@@ -141,7 +141,7 @@ let defaultStore: TelemetryStore | null = null;
 
 export function getTelemetryStore(): TelemetryStore {
   if (!defaultStore) {
-    defaultStore = createTelemetryStore(getStorageAdapter(), DEFAULT_CONFIG);
+    defaultStore = createTelemetryStore(getStorageAdapter(), TELEMETRY_STORE_CONFIG);
   }
   return defaultStore;
 }

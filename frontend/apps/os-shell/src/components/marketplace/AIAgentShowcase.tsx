@@ -22,7 +22,7 @@ import {
   Speed,
   TrendingUp,
 } from '@mui/icons-material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 interface AIAgentCategory {
   id: string;
@@ -52,30 +52,18 @@ export const AIAgentShowcase: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [hoveredAgent, setHoveredAgent] = useState<string | null>(null);
   const [realTimeMetrics, setRealTimeMetrics] = useState({
-    totalProcessed: 847293,
-    activeNow: 18942,
-    accuracy: 99.5,
+    totalProcessed: 0,
+    activeNow: 0,
+    accuracy: 0,
   });
-
-  // Simulate real-time AI processing
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRealTimeMetrics((prev) => ({
-        totalProcessed: prev.totalProcessed + Math.floor(Math.random() * 50),
-        activeNow: prev.activeNow + Math.floor(Math.random() * 10) - 5,
-        accuracy: Math.min(99.9, prev.accuracy + Math.random() * 0.1),
-      }));
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
 
   const aiCategories: AIAgentCategory[] = [
     {
       id: 'assessment',
       name: 'Property Assessment AI',
-      description: 'Autonomous property valuation with 99.5% accuracy',
+      description: 'Governed property valuation agents when provider telemetry is wired',
       icon: <Assessment className='w-8 h-8' />,
-      agentCount: 8742,
+      agentCount: 0,
       color: 'var(--tf-network-blue)',
       featured: true,
       aiCapabilities: ['Computer Vision', 'Predictive Analytics', 'Market Analysis'],
@@ -86,7 +74,7 @@ export const AIAgentShowcase: React.FC = () => {
       name: 'Law Enforcement AI',
       description: 'Predictive policing and real-time crime analysis',
       icon: <LocalPolice className='w-8 h-8' />,
-      agentCount: 2847,
+      agentCount: 0,
       color: 'var(--tf-accent-error)',
       featured: true,
       aiCapabilities: ['Pattern Recognition', 'Predictive Modeling', 'Real-time Analysis'],
@@ -97,7 +85,7 @@ export const AIAgentShowcase: React.FC = () => {
       name: 'Infrastructure Intelligence',
       description: 'Self-healing smart city infrastructure management',
       icon: <Engineering className='w-8 h-8' />,
-      agentCount: 5129,
+      agentCount: 0,
       color: 'var(--tf-transcend-highlight)',
       featured: true,
       aiCapabilities: ['IoT Integration', 'Predictive Maintenance', 'Resource Optimization'],
@@ -108,7 +96,7 @@ export const AIAgentShowcase: React.FC = () => {
       name: 'Financial Intelligence',
       description: 'Budget optimization and fraud detection AI',
       icon: <AttachMoney className='w-8 h-8' />,
-      agentCount: 3456,
+      agentCount: 0,
       color: 'var(--tf-accent-success)',
       featured: false,
       aiCapabilities: ['Fraud Detection', 'Budget Optimization', 'Risk Assessment'],
@@ -119,7 +107,7 @@ export const AIAgentShowcase: React.FC = () => {
       name: 'Public Health AI',
       description: 'Predictive health monitoring and emergency response',
       icon: <HealthAndSafety className='w-8 h-8' />,
-      agentCount: 2198,
+      agentCount: 0,
       color: 'var(--tf-accent-quantum)',
       featured: false,
       aiCapabilities: ['Epidemic Modeling', 'Resource Allocation', 'Emergency Response'],
@@ -130,7 +118,7 @@ export const AIAgentShowcase: React.FC = () => {
       name: 'Legal Intelligence',
       description: 'AI-powered legal research and document analysis',
       icon: <Gavel className='w-8 h-8' />,
-      agentCount: 1876,
+      agentCount: 0,
       color: 'var(--tf-accent-warning)',
       featured: false,
       aiCapabilities: ['Document Analysis', 'Legal Research', 'Case Prediction'],
@@ -138,41 +126,7 @@ export const AIAgentShowcase: React.FC = () => {
     },
   ];
 
-  const featuredAgents: AIAgent[] = [
-    {
-      id: 'costforge',
-      name: 'CostForge AI',
-      category: 'assessment',
-      description: 'Revolutionary property assessment with quantum algorithms',
-      aiLevel: 'Transcendent',
-      accuracy: 99.5,
-      autonomy: 98,
-      realTimeOps: true,
-      icon: <Psychology className='w-6 h-6' />,
-    },
-    {
-      id: 'crimepredict',
-      name: 'CrimePredict Elite',
-      category: 'law-enforcement',
-      description: 'Predictive policing with neural network analysis',
-      aiLevel: 'Elite',
-      accuracy: 97.8,
-      autonomy: 95,
-      realTimeOps: true,
-      icon: <Security className='w-6 h-6' />,
-    },
-    {
-      id: 'smartgrid',
-      name: 'SmartGrid Intelligence',
-      category: 'infrastructure',
-      description: 'Self-healing infrastructure with autonomous optimization',
-      aiLevel: 'Elite',
-      accuracy: 99.1,
-      autonomy: 96,
-      realTimeOps: true,
-      icon: <AutoAwesome className='w-6 h-6' />,
-    },
-  ];
+  const featuredAgents: AIAgent[] = [];
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-[var(--tf-bg-surface)] via-[var(--tf-bg-surface)] to-[var(--tf-bg-surface)] p-8'>
@@ -190,7 +144,7 @@ export const AIAgentShowcase: React.FC = () => {
               <div className='flex items-center justify-center mt-2'>
                 <TrendingUp className='w-4 h-4 text-[var(--tf-accent-success)] mr-1' />
                 <span className='text-[var(--tf-accent-success)] text-xs'>
-                  +{Math.floor(Math.random() * 20)}% efficiency
+                  Telemetry unavailable
                 </span>
               </div>
             </div>
@@ -307,7 +261,7 @@ export const AIAgentShowcase: React.FC = () => {
                   <span className='text-gray-400'>Processing Status</span>
                   <div className='flex items-center'>
                     <div className='w-2 h-2 bg-[var(--tf-accent-success)] rounded-full mr-2 animate-pulse'></div>
-                    <span className='text-[var(--tf-accent-success)]'>ACTIVE</span>
+                <span className='text-[var(--tf-accent-success)]'>UNWIRED</span>
                   </div>
                 </div>
               </div>
@@ -330,6 +284,11 @@ export const AIAgentShowcase: React.FC = () => {
         </div>
 
         <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
+          {featuredAgents.length === 0 && (
+            <div className='md:col-span-3 text-center text-gray-300 border border-gray-600/30 rounded-3xl p-8'>
+              Governed AI-agent telemetry is not wired for this marketplace surface.
+            </div>
+          )}
           {featuredAgents.map((agent) => (
             <div
               key={agent.id}
@@ -424,7 +383,7 @@ export const AIAgentShowcase: React.FC = () => {
             </p>
             <div className='mt-6'>
               <span className='text-[var(--tf-transcend-highlight)] font-bold text-lg italic'>
-                "Government. Transcended."
+                "Governed Operator Surface"
               </span>
             </div>
           </div>

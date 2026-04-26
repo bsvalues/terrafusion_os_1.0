@@ -1,77 +1,158 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import * as signalR from '@microsoft/signalr'
+import { useEffect, useRef, useState } from 'react'
+import { useAuthContextOptional } from '../auth/useAuthContext'
+import { getToken } from '../auth/authStorage'
+import { getApiBase } from '../lib/apiBase'
 import type { FreshData, SwarmConnectionState } from '../lib/freshData'
 import { DAIS_REFRESH } from '../config/daisRefresh.config'
 
 export interface SwarmStatus {
   connectionState: SwarmConnectionState
-  totalAgents: number
-  healthyAgents: number
-  overallStatus: string
+  countyId: string
+  activeAgents: number
+  swarmActivity: string
+  accuracyScore: number
 }
 
-// Initial state: not loading (isLoading:false) so that a connection failure
-// caught via .catch() can be distinguished from "still connecting".
-// `isLoading:true` is never set; consumers see `source:'unavailable'` until
-// a live message arrives. This matches the test contract for the unavailable case.
+interface AssistantSwarmStatusResponse {
+  countyId: string
+  activeAgents: number
+  swarmActivity: string
+  accuracyScore: number
+}
+
 const INITIAL: FreshData<SwarmStatus> = {
   data: null, isLoading: false, error: null,
   lastUpdated: null, source: 'unavailable', isStale: false,
 }
 
-interface SwarmPayload { totalAgents: number; healthyAgents: number; overallStatus: string }
+function parseSwarmPayload(payload: unknown): Omit<SwarmStatus, 'connectionState'> {
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('Governed swarm status response was not an object')
+  }
+
+  const data = payload as Partial<AssistantSwarmStatusResponse>
+  if (
+    typeof data.countyId !== 'string' ||
+    typeof data.activeAgents !== 'number' ||
+    typeof data.swarmActivity !== 'string' ||
+    typeof data.accuracyScore !== 'number'
+  ) {
+    throw new Error('Governed swarm status response was missing required fields')
+  }
+
+  return {
+    countyId: data.countyId,
+    activeAgents: data.activeAgents,
+    swarmActivity: data.swarmActivity,
+    accuracyScore: data.accuracyScore,
+  }
+}
 
 export function useSwarmLive(): FreshData<SwarmStatus> {
+  const auth = useAuthContextOptional()
+  const countyId = auth?.countyId ?? null
+  const token = auth?.token ?? (typeof window !== 'undefined' ? getToken() : null)
+
   const [state, setState] = useState<FreshData<SwarmStatus>>(INITIAL)
   const lastDataRef = useRef<SwarmStatus | null>(null)
   const lastUpdatedRef = useRef<number | null>(null)
 
-  const handleMessage = useCallback((payload: SwarmPayload) => {
-    const lastUpdated = Date.now()
-    lastUpdatedRef.current = lastUpdated
-    const data: SwarmStatus = { connectionState: 'connected', ...payload }
-    lastDataRef.current = data
-    setState({ data, isLoading: false, error: null, lastUpdated, source: 'live', isStale: false })
-  }, [])
-
-  const handleDisconnect = useCallback(() => {
-    // Reset lastUpdated to null so isStale resolves true immediately
-    lastUpdatedRef.current = null
-    setState({
-      data: lastDataRef.current,
-      isLoading: false,
-      error: 'Swarm hub disconnected',
-      lastUpdated: null,
-      source: lastDataRef.current !== null ? 'fallback' : 'unavailable',
-      isStale: true,
-    })
-  }, [])
-
   useEffect(() => {
-    const url = (import.meta.env.VITE_CONSCIOUSNESS_URL as string | undefined) ?? 'http://localhost:3004'
-    const conn = new signalR.HubConnectionBuilder()
-      .withUrl(`${url}/hubs/swarm`)
-      .withAutomaticReconnect()
-      .configureLogging(signalR.LogLevel.Warning)
-      .build()
+    let cancelled = false
 
-    conn.on('SwarmStatusUpdate', handleMessage as (payload: unknown) => void)
-    conn.onreconnecting(() => {
-      setState(prev => prev.data
-        ? { ...prev, data: { ...prev.data, connectionState: 'connecting' } }
-        : prev)
-    })
-    conn.onreconnected(() => {
-      setState(prev => prev.data
-        ? { ...prev, data: { ...prev.data, connectionState: 'connected' } }
-        : prev)
-    })
-    conn.onclose(handleDisconnect)
+    if (!countyId || !token) {
+      lastDataRef.current = null
+      lastUpdatedRef.current = null
+      setState({
+        data: null,
+        isLoading: false,
+        error: 'Governed county swarm status requires an authenticated county session',
+        lastUpdated: null,
+        source: 'unavailable',
+        isStale: false,
+      })
+      return () => { cancelled = true }
+    }
 
-    // Stale detection interval — marks isStale between messages.
-    // Only fires when we are in a settled (non-loading) state to avoid
-    // marking the initial loading state as stale before connection resolves.
-    const staleId = setInterval(() => {
+    const fetchSwarmStatus = async () => {
+      try {
+        setState(prev => ({
+          ...prev,
+          isLoading: prev.data === null,
+          error: null,
+        }))
+
+        const response = await fetch(
+          `${getApiBase()}/AIAssistant/swarm-status/${encodeURIComponent(countyId)}`,
+          {
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+
+        if (!response.ok) {
+          throw new Error(`Governed swarm status returned HTTP ${response.status}`)
+        }
+
+        const payload = await response.json()
+        const parsed = parseSwarmPayload(payload)
+        const lastUpdated = Date.now()
+        const data: SwarmStatus = {
+          connectionState: 'connected',
+          ...parsed,
+        }
+
+        if (cancelled) return
+
+        lastDataRef.current = data
+        lastUpdatedRef.current = lastUpdated
+        setState({
+          data,
+          isLoading: false,
+          error: null,
+          lastUpdated,
+          source: 'polled',
+          isStale: false,
+        })
+      } catch (error) {
+        if (cancelled) return
+
+        const message = error instanceof Error ? error.message : 'Failed to load governed swarm status'
+
+        if (lastDataRef.current) {
+          lastUpdatedRef.current = null
+          setState({
+            data: { ...lastDataRef.current, connectionState: 'degraded' },
+            isLoading: false,
+            error: message,
+            lastUpdated: null,
+            source: 'fallback',
+            isStale: true,
+          })
+          return
+        }
+
+        setState({
+          data: null,
+          isLoading: false,
+          error: message,
+          lastUpdated: null,
+          source: 'unavailable',
+          isStale: false,
+        })
+      }
+    }
+
+    void fetchSwarmStatus()
+
+    const pollId = window.setInterval(() => {
+      void fetchSwarmStatus()
+    }, DAIS_REFRESH.swarmMs)
+
+    const staleId = window.setInterval(() => {
       setState(prev => {
         if (prev.isLoading) return prev
         const lu = lastUpdatedRef.current
@@ -81,16 +162,12 @@ export function useSwarmLive(): FreshData<SwarmStatus> {
       })
     }, 1000)
 
-    conn.start().catch(() => {
-      setState({ data: null, isLoading: false, error: 'Failed to connect to swarm hub',
-        lastUpdated: null, source: 'unavailable', isStale: false })
-    })
-
     return () => {
-      clearInterval(staleId)
-      conn.stop()
+      cancelled = true
+      window.clearInterval(pollId)
+      window.clearInterval(staleId)
     }
-  }, [handleMessage, handleDisconnect])
+  }, [countyId, token])
 
   return state
 }

@@ -1,178 +1,68 @@
-/*
- * ═══════════════════════════════════════════════════════════════
- * TERRAFUSION OS - CONSCIOUSNESS CONTROLLER
- * Elite AI Consciousness Coordination for Government Operations
- * Real-time Consciousness Monitoring &amp; Hybrid Intelligence
- * THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
- * ═══════════════════════════════════════════════════════════════
- */
-
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using TerraFusion.Consciousness.DTOs;
-using TerraFusion.Consciousness.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace TerraFusion.API.Controllers;
 
 /// <summary>
-/// AI Consciousness Management API Controller
-/// Provides elite consciousness monitoring and hybrid intelligence coordination
+/// Governed consciousness API boundary.
+/// The historical consciousness manager behind this namespace is still synthetic,
+/// so these endpoints must not present fake-success payloads as production truth.
 /// </summary>
 [ApiController]
 [Route("api/ai/consciousness")]
 public class ConsciousnessController : ControllerBase
 {
-    private readonly IHybridConsciousnessManager _consciousnessManager;
     private readonly ILogger<ConsciousnessController> _logger;
 
-    public ConsciousnessController(
-        IHybridConsciousnessManager consciousnessManager,
-        ILogger<ConsciousnessController> logger)
+    public ConsciousnessController(ILogger<ConsciousnessController> logger)
     {
-        _consciousnessManager = consciousnessManager;
         _logger = logger;
     }
 
-    /// <summary>
-    /// Get current consciousness data for government operations
-    /// </summary>
     [HttpGet]
-    [ProducesResponseType(typeof(ConsciousnessDataDto), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ConsciousnessDataDto>> GetConsciousnessData()
-    {
-        try
-        {
-            _logger.LogInformation("🧠 Getting consciousness data");
-            var data = await _consciousnessManager.GetConsciousnessDataAsync();
-            return Ok(data);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "❌ Failed to get consciousness data");
-            return StatusCode(500, new { error = "Failed to retrieve consciousness data", message = ex.Message });
-        }
-    }
+    public ActionResult GetConsciousnessData() => GovernedUnavailable("Consciousness data");
 
-    /// <summary>
-    /// Get enhanced consciousness data with quantum metrics
-    /// </summary>
     [HttpGet("enhanced")]
-    [ProducesResponseType(typeof(EnhancedConsciousnessDataDto), StatusCodes.Status200OK)]
-    public async Task<ActionResult<EnhancedConsciousnessDataDto>> GetEnhancedConsciousnessData()
-    {
-        try
-        {
-            _logger.LogInformation("🚀 Getting enhanced consciousness data");
-            var data = await _consciousnessManager.GetEnhancedConsciousnessDataAsync();
-            return Ok(data);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "❌ Failed to get enhanced consciousness data");
-            return StatusCode(500, new { error = "Failed to retrieve enhanced consciousness data", message = ex.Message });
-        }
-    }
+    public ActionResult GetEnhancedConsciousnessData() => GovernedUnavailable("Enhanced consciousness data");
 
-    /// <summary>
-    /// Switch consciousness mode for operational requirements
-    /// </summary>
     [HttpPost("mode")]
-    [ProducesResponseType(typeof(ConsciousnessModeResultDto), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ConsciousnessModeResultDto>> SwitchConsciousnessMode([FromBody] ConsciousnessModeRequestDto request)
-    {
-        try
-        {
-            _logger.LogInformation("🔄 Switching consciousness mode to {Mode}", request.RequestedMode);
-            var result = await _consciousnessManager.SwitchConsciousnessModeAsync(request);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "❌ Failed to switch consciousness mode");
-            return StatusCode(500, new { error = "Failed to switch consciousness mode", message = ex.Message });
-        }
-    }
+    public ActionResult SwitchConsciousnessMode() => GovernedUnavailable("Consciousness mode switching");
 
-    /// <summary>
-    /// Get hybrid system status for monitoring
-    /// </summary>
     [HttpGet("system-status")]
-    [ProducesResponseType(typeof(HybridSystemStatusDto), StatusCodes.Status200OK)]
-    public async Task<ActionResult<HybridSystemStatusDto>> GetSystemStatus()
-    {
-        try
-        {
-            _logger.LogInformation("📊 Getting hybrid system status");
-            var status = await _consciousnessManager.GetHybridSystemStatusAsync();
-            return Ok(status);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "❌ Failed to get system status");
-            return StatusCode(500, new { error = "Failed to retrieve system status", message = ex.Message });
-        }
-    }
+    public ActionResult GetSystemStatus() => GovernedUnavailable("Consciousness system status");
 
-    /// <summary>
-    /// Initialize consciousness management system
-    /// </summary>
+    [HttpGet("status")]
+    public ActionResult GetLegacyStatusAlias() => GovernedUnavailable("Consciousness system status");
+
     [HttpPost("initialize")]
-    [ProducesResponseType(typeof(HybridInitializationResult), StatusCodes.Status200OK)]
-    public async Task<ActionResult<HybridInitializationResult>> InitializeConsciousness()
-    {
-        try
-        {
-            _logger.LogInformation("🚀 Initializing consciousness system");
-            var result = await _consciousnessManager.InitializeAsync();
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "❌ Failed to initialize consciousness");
-            return StatusCode(500, new { error = "Failed to initialize consciousness", message = ex.Message });
-        }
-    }
+    public ActionResult InitializeConsciousness() => GovernedUnavailable("Consciousness initialization");
 
-    /// <summary>
-    /// Health check for consciousness services
-    /// </summary>
     [HttpGet("health")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-    public async Task<ActionResult> GetConsciousnessHealth()
+    public ActionResult GetConsciousnessHealth()
     {
-        try
+        return Ok(new
         {
-            var status = await _consciousnessManager.GetHybridSystemStatusAsync();
-            return Ok(new
-            {
-                status = "healthy",
-                consciousness = new
-                {
-                    systemReady = true,
-                    agentsActive = 1008,
-                    quantumEnabled = true,
-                    governmentCompliant = true
-                },
-                timestamp = DateTime.UtcNow
-            });
-        }
-        catch (Exception ex)
+            status = "unavailable",
+            governedContractAvailable = false,
+            providerConnected = false,
+            reason = "The active consciousness manager remains synthetic and is not an approved runtime dependency.",
+            timestamp = DateTime.UtcNow
+        });
+    }
+
+    private ObjectResult GovernedUnavailable(string capability)
+    {
+        const string detail =
+            "The active consciousness manager still relies on synthetic assumptions and is not an approved governed runtime dependency.";
+
+        _logger.LogWarning("{Capability} requested but the governed consciousness contract is unavailable.", capability);
+
+        return StatusCode(StatusCodes.Status501NotImplemented, new ProblemDetails
         {
-            _logger.LogWarning(ex, "⚠️ Consciousness health check degraded");
-            return Ok(new
-            {
-                status = "degraded",
-                consciousness = new
-                {
-                    systemReady = false,
-                    agentsActive = 0,
-                    quantumEnabled = false,
-                    governmentCompliant = true
-                },
-                timestamp = DateTime.UtcNow,
-                error = ex.Message
-            });
-        }
+            Title = "Governed consciousness surface unavailable",
+            Detail = $"{capability} is unavailable. {detail}",
+            Status = StatusCodes.Status501NotImplemented
+        });
     }
 }

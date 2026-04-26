@@ -4,11 +4,10 @@
  * Jupyter-style notebook interface for PhD-level data analysis.
  * Provides interactive code cells, data visualization, and markdown documentation.
  *
- * Phase 1: Placeholder with basic code execution interface
- * Phase 3: Full Jupyter notebook integration with Python/R kernels
+ * Evidence-gated notebook editor. Execution requires a governed kernel service.
  *
  * @author TerraFusion Elite Government OS Engineering Agent
- * @version 1.0.0 - Phase 1 Foundation
+ * @version 1.0.0 - Evidence-gated editor
  */
 
 import React, { useState } from 'react';
@@ -48,21 +47,13 @@ export function AnalyticsWorkbench() {
     {
       id: '1',
       type: 'markdown',
-      content: '# TerraFusion Analytics Workbench\n\nWelcome to the PhD-level analytics environment. This notebook supports:\n- Statistical analysis\n- Data visualization\n- Machine learning workflows\n- Scientific computing',
+      content: '# TerraFusion Analytics Workbench\n\nNotebook editing is available. Code execution is disabled until a governed kernel service returns real output, provenance, and execution receipts.',
       status: 'completed'
     },
     {
       id: '2',
       type: 'code',
-      content: '// Phase 1 Example: Fetch property data\nconst response = await fetch(\'/api/properties?county=benton\');\nconst properties = await response.json();\nproperties.length;',
-      output: 'Loaded await DynamicPropertyService.GetPropertyCountAsync("benton") properties',
-      executionTime: 124,
-      status: 'completed'
-    },
-    {
-      id: '3',
-      type: 'code',
-      content: '// Phase 1 Example: Basic statistics\nconst values = properties.map(p => p.assessedValue);\nconst mean = values.reduce((a, b) => a + b) / values.length;\nconst sorted = values.sort((a, b) => a - b);\nconst median = sorted[Math.floor(sorted.length / 2)];\n({ mean, median });',
+      content: '// Connect this cell to a governed kernel service before running analysis.\n// No local browser execution is performed for assessment workflows.',
       status: 'idle'
     }
   ]);
@@ -91,44 +82,18 @@ export function AnalyticsWorkbench() {
     setCells(cells.map(c => c.id === cellId ? { ...c, content } : c));
   };
 
-  const executeCell = async (cellId: string) => {
+  const executeCell = (cellId: string) => {
     const cell = cells.find(c => c.id === cellId);
     if (!cell || cell.type !== 'code') return;
 
-    // Update cell status to running
-    setCells(cells.map(c => c.id === cellId ? { ...c, status: 'running' as const } : c));
+    setCells(cells.map(c => c.id === cellId ? {
+      ...c,
+      status: 'error' as const,
+      output: 'Execution unavailable: no governed analytics kernel is configured for this workspace.',
+      executionTime: undefined
+    } : c));
 
-    // Phase 1: Simulated execution (Phase 3 will use real Python/R kernels)
-    try {
-      await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
-
-      // Simulated output
-      const output = `// Execution output (Phase 1 placeholder)
-Executed successfully in ${(500 + Math.random() * 500).toFixed(0)}ms
-
-Note: Phase 3 will integrate real Python/R/Julia kernels with:
-- NumPy, Pandas, SciPy, Scikit-learn
-- R statistical packages
-- Plotly, Matplotlib visualizations
-- Real-time execution results`;
-
-      setCells(cells.map(c => c.id === cellId ? {
-        ...c,
-        status: 'completed' as const,
-        output,
-        executionTime: 500 + Math.random() * 500
-      } : c));
-
-      toast.success('Cell executed successfully');
-    } catch (error) {
-      setCells(cells.map(c => c.id === cellId ? {
-        ...c,
-        status: 'error' as const,
-        output: `Error: ${error}`
-      } : c));
-
-      toast.error('Cell execution failed');
-    }
+    toast.error('Cell execution unavailable');
   };
 
   const saveNotebook = () => {
@@ -154,17 +119,17 @@ Note: Phase 3 will integrate real Python/R/Julia kernels with:
   };
 
   const exportNotebook = () => {
-    toast.success('Export to PDF/HTML (Phase 3 feature)');
+    toast.error('Export unavailable until a governed notebook renderer is configured');
   };
 
   return (
     <div className="space-y-6">
-      {/* Phase 1 Notice */}
+      {/* Kernel status notice */}
       <Alert className="bg-blue-900/20 border-blue-800">
         <AlertCircle className="h-4 w-4 text-blue-400" />
-        <AlertTitle className="text-blue-400">Analytics Workbench — Preview</AlertTitle>
+        <AlertTitle className="text-blue-400">Analytics Workbench — Kernel unavailable</AlertTitle>
         <AlertDescription className="text-slate-300">
-          A simplified analytics environment is available now. Full notebook integration with Python/R/Julia kernels, real-time execution, and collaborative editing is scheduled for a future release.
+          Notebook editing is available. Code execution and export are disabled until a governed kernel/renderer returns real output and receipts.
         </AlertDescription>
       </Alert>
 
@@ -187,7 +152,7 @@ Note: Phase 3 will integrate real Python/R/Julia kernels with:
               </Badge>
               <Badge variant="outline" className="text-green-400 border-green-400">
                 <CheckCircle2 className="w-3 h-3 mr-1" />
-                Kernel Ready
+                Kernel unavailable
               </Badge>
             </div>
           </div>

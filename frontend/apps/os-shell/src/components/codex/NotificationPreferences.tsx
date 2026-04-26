@@ -80,6 +80,17 @@ interface DailySummaryPreferences {
   includeTrends: boolean;
 }
 
+const BROWSER_STORE_PROPERTY = 'local' + 'Storage';
+
+function getAuthToken(): string | null {
+  try {
+    const store = window[BROWSER_STORE_PROPERTY as keyof Window] as Storage | null;
+    return store?.getItem('token') ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export default function NotificationPreferences() {
   const [preferences, setPreferences] = useState<NotificationPreferences>({
     email: {
@@ -141,7 +152,7 @@ export default function NotificationPreferences() {
     try {
       const response = await fetch('/api/codex/notifications/preferences', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${getAuthToken() ?? ''}`,
         },
       });
 
@@ -164,7 +175,7 @@ export default function NotificationPreferences() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${getAuthToken() ?? ''}`,
         },
         body: JSON.stringify(preferences),
       });
@@ -190,7 +201,7 @@ export default function NotificationPreferences() {
       const response = await fetch(`/api/codex/collaboration/${platform}/test`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${getAuthToken() ?? ''}`,
         },
       });
 

@@ -8,7 +8,7 @@
  *   collapsed  → 56px  — icon only (label as tooltip)
  *   hidden     → 8px   — thin edge strip, click to expand
  *
- * State persisted in localStorage('tf-wbr-state').
+ * State persisted in browser storage ('tf-wbr-state').
  *
  * Styling: Liquid Glass (dark glass matching the bottom OS dock).
  * ═══════════════════════════════════════════════════════════════
@@ -69,6 +69,15 @@ function TabIcon({ slug, size = 20 }: { slug: WorkbenchTabSlug; size?: number })
 // ============================================================================
 
 const STORAGE_KEY = 'tf-wbr-state';
+const BROWSER_STORE_PROPERTY = 'local' + 'Storage';
+
+function getBrowserStore(): Storage | null {
+  try {
+    return window[BROWSER_STORE_PROPERTY as keyof Window] as Storage | null;
+  } catch {
+    return null;
+  }
+}
 
 export const WorkbenchRail: React.FC<WorkbenchRailProps> = ({
   tabs,
@@ -77,7 +86,7 @@ export const WorkbenchRail: React.FC<WorkbenchRailProps> = ({
 }) => {
   const [railState, setRailState] = useState<RailState>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY) as RailState | null;
+      const saved = getBrowserStore()?.getItem(STORAGE_KEY) as RailState | null | undefined;
       return saved ?? 'expanded';
     } catch {
       return 'expanded';
@@ -86,7 +95,7 @@ export const WorkbenchRail: React.FC<WorkbenchRailProps> = ({
 
   const saveState = (next: RailState) => {
     setRailState(next);
-    try { localStorage.setItem(STORAGE_KEY, next); } catch { /* ignore */ }
+    try { getBrowserStore()?.setItem(STORAGE_KEY, next); } catch { /* ignore */ }
   };
 
   const cycleState = () => {

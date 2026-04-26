@@ -406,6 +406,10 @@
   --tf-glass-border: var(--glass-border);
   --tf-glass-bg: var(--glass-bg);
   --tf-blur-near: 40px;
+
+  /* ═══ COMPAT ALIASES — keeps component code stable ═══ */
+  --tf-fg: var(--tf-text);          /* foreground channel alias → --tf-text   */
+  --tf-destructive: var(--tf-error); /* destructive channel alias → --tf-error */
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -421,6 +425,8 @@
   --tf-border: 220 16% 26%;
   --tf-text: 214 22% 91%;
   --tf-muted: 214 16% 58%;
+  /* Night accent: switch terracotta → cyan for dark-mode cohesion */
+  --tf-accent: 192 58% 60%;
   --glass-bg: hsl(220 18% 16% / 0.72);
   --glass-bg-light: hsl(220 18% 16% / 0.45);
   --glass-bg-heavy: hsl(220 18% 16% / 0.88);

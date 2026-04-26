@@ -16,11 +16,11 @@ public interface ILevyCertificationService
     Task<LevyCertificationResult> RejectAsync(Guid levyRunId, string rejectedBy, string reason, CancellationToken ct = default);
 
     /// <summary>Get current certification status for a levy run.</summary>
-    Task<LevyCertificationStatus?> GetStatusAsync(Guid levyRunId, CancellationToken ct = default);
+    Task<LevyCertificationStatusDto?> GetStatusAsync(Guid levyRunId, CancellationToken ct = default);
 }
 
 /// <summary>Outcome of a certification state transition.</summary>
 public sealed record LevyCertificationResult(bool Success, string NewStatus, string? Message);
 
 /// <summary>Current certification status of a levy run.</summary>
-public sealed record LevyCertificationStatus(Guid LevyRunId, string Status, string? LastActionBy, DateTime? LastActionAt, string? Notes);
+public sealed record LevyCertificationStatusDto(Guid LevyRunId, string Status, string? LastActionBy, DateTime? LastActionAt, string? Notes);

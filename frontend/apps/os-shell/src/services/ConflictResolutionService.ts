@@ -45,6 +45,16 @@ export interface TransformResult {
 
 // ==================== CONFLICT RESOLUTION SERVICE ====================
 
+let operationSequence = 0;
+
+function createOperationId(): string {
+  const uuid = globalThis.crypto?.randomUUID?.();
+  if (uuid) return `op_${uuid}`;
+
+  operationSequence = (operationSequence + 1) % Number.MAX_SAFE_INTEGER;
+  return `op_${Date.now().toString(36)}_${operationSequence.toString(36)}`;
+}
+
 export class ConflictResolutionService {
   /**
    * Transform operation against another concurrent operation (OT algorithm)
@@ -319,7 +329,7 @@ export class ConflictResolutionService {
     version: number
   ): Operation {
     return {
-      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: createOperationId(),
       type: 'insert',
       position,
       content,
@@ -341,7 +351,7 @@ export class ConflictResolutionService {
     version: number
   ): Operation {
     return {
-      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: createOperationId(),
       type: 'delete',
       position,
       length,
@@ -364,7 +374,7 @@ export class ConflictResolutionService {
     version: number
   ): Operation {
     return {
-      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: createOperationId(),
       type: 'replace',
       position,
       length,

@@ -5,16 +5,12 @@
  * version comparison, and model promotion.
  *
  * API-only: calls /api/costforge/analytics/regression/* via regressionAPI.
- * No fixture fallback is allowed on operational regression surfaces.
+ * No synthetic fallback is allowed on operational regression surfaces.
  * Separate lifecycle from forgeStatisticsStore — this is Regression-scoped.
  */
 
 import { create } from 'zustand';
 import { regressionAPI } from '@/services/forge/regressionAPI';
-import {
-  REGRESSION_MODELS,
-  REGRESSION_RUNS,
-} from '@/data/forgeRegressionFixtures';
 import type {
   RegressionModelRecord,
   RegressionRunRecord,
@@ -125,22 +121,20 @@ export const useForgeRegressionStore = create<ForgeRegressionState>((set, get) =
         variables: [],
         status: 'completed' as const,
       }));
-      // API contract: regression history endpoint returns runs but not the
-      // canonical model registry. Until the registry endpoint is wired,
-      // surface the bounded REGRESSION_MODELS fixtures so promote/compare
-      // surfaces have evidence to work with.
       set({
-        models: REGRESSION_MODELS,
-        runs: apiRuns.length > 0 ? apiRuns : REGRESSION_RUNS,
+        models: [],
+        runs: apiRuns,
         loading: false,
-        error: apiRuns.length === 0 ? 'Regression API returned no history; showing bounded fixture runs.' : null,
+        error: apiRuns.length === 0
+          ? 'No governed regression models or run history returned by the backend.'
+          : 'Saved regression model registry unavailable; run history only.',
       });
     } catch {
       set({
-        models: REGRESSION_MODELS,
-        runs: REGRESSION_RUNS,
+        models: [],
+        runs: [],
         loading: false,
-        error: 'Regression API unavailable; showing bounded fixture evidence.',
+        error: 'Regression API unavailable.',
       });
     }
   },

@@ -161,7 +161,7 @@ export const TerraFusionMarketplace: React.FC = () => {
 
             <div className='pt-8 border-t border-[var(--tf-transcend-highlight)]/20'>
               <p className='text-3xl font-bold bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] bg-clip-text text-transparent mb-2'>
-                Government. Transcended.
+                Governed Operator Surface
               </p>
               <p className='text-gray-400 text-sm'>
                 Pioneering the future of AI-native government technology

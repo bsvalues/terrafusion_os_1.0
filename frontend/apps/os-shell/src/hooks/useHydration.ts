@@ -2,7 +2,7 @@
  * TerraFusion OS Hydration Hook
  *
  * React hook for restoring persisted state on application mount.
- * Handles loading state from localStorage and hydrating Zustand stores.
+ * Handles loading state from browser-persisted Zustand stores.
  *
  * @module hooks/useHydration
  * @see SUCCESS CRITERIA SC-5.17, SC-5.18: Hydration
@@ -46,7 +46,7 @@ export interface HydrationResult extends HydrationState {
 // ============================================================================
 
 /**
- * Hook to hydrate application state from localStorage
+ * Hook to hydrate application state from browser-persisted storage
  *
  * @example
  * ```tsx

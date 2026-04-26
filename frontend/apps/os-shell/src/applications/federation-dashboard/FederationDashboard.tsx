@@ -1,266 +1,332 @@
-import React, { useState, useEffect } from 'react';
-import { FederationNode, SwarmMission } from './types';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useCountyStats } from '../../hooks/useCountyStats';
+import { getApiBase } from '../../lib/apiBase';
+import { useAuthContextOptional } from '../../auth/useAuthContext';
 
-// WA county network topology — Benton is active (deployed), others are planned
-const NETWORK_NODES: FederationNode[] = [
-  {
-    nodeId: 'did:terra:node:benton',
-    region: 'US-WA-Benton',
-    status: 'active',
-    latency: 12,
-    coordinates: { x: 150, y: 100 },
-  },
-  {
-    nodeId: 'did:terra:node:yakima',
-    region: 'US-WA-Yakima',
-    status: 'degraded',
-    latency: 0,
-    coordinates: { x: 180, y: 120 },
-  },
-  {
-    nodeId: 'did:terra:node:franklin',
-    region: 'US-WA-Franklin',
-    status: 'degraded',
-    latency: 0,
-    coordinates: { x: 160, y: 110 },
-  },
-  {
-    nodeId: 'did:terra:node:king',
-    region: 'US-WA-King',
-    status: 'degraded',
-    latency: 0,
-    coordinates: { x: 120, y: 80 },
-  },
-];
+const SWARM_STATUS_SOURCE = 'AIAssistant/swarm-status';
 
-interface SwarmStatusModule {
-  moduleName: string;
-  agentCount: number;
-  statusMessage: string;
-  isHealthy: boolean;
+interface FederationSwarmStatus {
+  countyId: string;
+  activeAgents: number;
+  swarmActivity: string;
+  quantumOptimizationFactor: number;
+  responseTime: number;
+  accuracyScore: number;
+  consciousnessLevel: number;
+  lastUpdate: string;
 }
 
-interface SwarmStatusResponse {
-  swarm?: {
-    totalAgents: number;
-    modules: SwarmStatusModule[];
-  };
-  agentConfig?: {
-    active_agents: number;
-    agent_types: Record<string, number>;
+function asFiniteNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function parseFederationSwarmStatus(payload: unknown): FederationSwarmStatus {
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('Governed swarm status response was not an object.');
+  }
+
+  const data = payload as Record<string, unknown>;
+  const countyId = typeof data.countyId === 'string' ? data.countyId : null;
+  const swarmActivity = typeof data.swarmActivity === 'string' ? data.swarmActivity : null;
+  const lastUpdate = typeof data.lastUpdate === 'string' ? data.lastUpdate : null;
+
+  const activeAgents = asFiniteNumber(data.activeAgents);
+  const quantumOptimizationFactor = asFiniteNumber(data.quantumOptimizationFactor);
+  const responseTime = asFiniteNumber(data.responseTime);
+  const accuracyScore = asFiniteNumber(data.accuracyScore);
+  const consciousnessLevel = asFiniteNumber(data.consciousnessLevel);
+
+  if (
+    countyId == null ||
+    swarmActivity == null ||
+    lastUpdate == null ||
+    activeAgents == null ||
+    quantumOptimizationFactor == null ||
+    responseTime == null ||
+    accuracyScore == null ||
+    consciousnessLevel == null
+  ) {
+    throw new Error('Governed swarm status response was missing required fields.');
+  }
+
+  return {
+    countyId,
+    activeAgents,
+    swarmActivity,
+    quantumOptimizationFactor,
+    responseTime,
+    accuracyScore,
+    consciousnessLevel,
+    lastUpdate,
   };
 }
 
-function missionsFromSwarm(status: SwarmStatusResponse): SwarmMission[] {
-  const agentTypes = status.agentConfig?.agent_types ?? {};
-  const totalActive = status.agentConfig?.active_agents ?? 0;
+function formatPercent(value: number): string {
+  return `${(value * 100).toFixed(1)}%`;
+}
 
-  const entries = Object.entries(agentTypes).filter(([, count]) => count > 0);
-  if (entries.length === 0) return [];
+function formatResponseTime(value: number): string {
+  return value > 0 ? `${value.toFixed(1)} ms` : 'No recent latency samples';
+}
 
-  return entries.slice(0, 4).map(([type, count], i) => ({
-    id: `mission-${type}`,
-    objective: type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-    activeAgents: count,
-    progress: Math.round((count / totalActive) * 100),
-  }));
+function formatQuantumFactor(value: number): string {
+  return value > 0 ? value.toString() : 'Not recorded';
 }
 
 export const FederationDashboard: React.FC = () => {
-  const [nodes] = useState<FederationNode[]>(NETWORK_NODES);
-  const [missions, setMissions] = useState<SwarmMission[]>([]);
-  const [swarmTotal, setSwarmTotal] = useState<number | null>(null);
-  const [selectedNode, setSelectedNode] = useState<FederationNode | null>(null);
-  const { stats } = useCountyStats();
+  const auth = useAuthContextOptional();
+  const countyId = auth?.countyId ?? null;
+  const token = auth?.token ?? null;
+  const { stats, loading: statsLoading, error: statsError, sourceDisclosure } = useCountyStats();
+
+  const [swarmStatus, setSwarmStatus] = useState<FederationSwarmStatus | null>(null);
+  const [swarmLoading, setSwarmLoading] = useState(false);
+  const [swarmError, setSwarmError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/swarm/status')
-      .then((r) => r.ok ? r.json() as Promise<SwarmStatusResponse> : null)
-      .then((data) => {
-        if (!data) return;
-        setMissions(missionsFromSwarm(data));
-        setSwarmTotal(data.agentConfig?.active_agents ?? null);
-      })
-      .catch(() => { /* swarm unreachable */ });
-  }, []);
+    let cancelled = false;
+
+    if (!countyId || !token) {
+      setSwarmStatus(null);
+      setSwarmLoading(false);
+      setSwarmError('Governed county swarm status requires an authenticated county session.');
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const loadSwarmStatus = async () => {
+      try {
+        setSwarmLoading(true);
+        setSwarmError(null);
+
+        const response = await fetch(
+          `${getApiBase()}/AIAssistant/swarm-status/${encodeURIComponent(countyId)}`,
+          {
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const detail = await response.text().catch(() => '');
+          throw new Error(
+            `Governed county swarm status returned HTTP ${response.status}${detail ? `: ${detail}` : ''}`
+          );
+        }
+
+        const payload = await response.json();
+        const nextStatus = parseFederationSwarmStatus(payload);
+
+        if (cancelled) {
+          return;
+        }
+
+        setSwarmStatus(nextStatus);
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+
+        setSwarmStatus(null);
+        setSwarmError(
+          error instanceof Error ? error.message : 'Failed to load governed county swarm status.'
+        );
+      } finally {
+        if (!cancelled) {
+          setSwarmLoading(false);
+        }
+      }
+    };
+
+    void loadSwarmStatus();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [countyId, token]);
+
+  const countyLabel = useMemo(() => {
+    if (!countyId) {
+      return 'No county context';
+    }
+
+    return countyId.charAt(0).toUpperCase() + countyId.slice(1);
+  }, [countyId]);
 
   return (
-    <div className='flex h-full w-full bg-slate-900 text-white overflow-hidden'>
-      {/* Sidebar */}
-      <div className='w-64 bg-slate-800 border-r border-slate-700 p-4 flex flex-col'>
-        <h2 className='text-xl font-bold text-cyan-400 mb-6'>Federation Command</h2>
+    <div
+      className='min-h-full bg-slate-950 text-white p-6 md:p-8'
+      data-testid='federation-dashboard-guardrail'
+    >
+      <div className='mx-auto max-w-6xl space-y-6'>
+        <header className='rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/50'>
+          <div className='flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between'>
+            <div className='space-y-2'>
+              <p className='text-sm font-medium uppercase tracking-[0.24em] text-cyan-300'>
+                Federation Readiness Guardrail
+              </p>
+              <h1 className='text-3xl font-semibold tracking-tight text-white'>
+                No governed multi-county federation registry is connected
+              </h1>
+              <p className='max-w-3xl text-sm text-slate-300'>
+                This surface no longer invents county deployment topology, latency, or swarm
+                missions. It shows only provider-backed county aggregates plus the authenticated
+                county assistant status route when that route is available.
+              </p>
+            </div>
 
-        <div className='mb-6'>
-          <h3 className='text-sm font-semibold text-slate-400 mb-2 uppercase'>
-            Active Swarms
-            {swarmTotal != null && (
-              <span className='ml-2 text-cyan-300 normal-case font-normal'>{swarmTotal.toLocaleString()} agents</span>
-            )}
-          </h3>
-          <div className='space-y-2'>
-            {missions.length === 0 ? (
-              <p className='text-xs text-slate-500 italic'>Connecting to swarm…</p>
+            <div className='rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100'>
+              <div className='font-semibold'>Topology withheld</div>
+              <div className='mt-1 text-amber-50/80'>
+                County-to-county routing, readiness scoring, and deployment maps remain unavailable
+                until a governed accreditation registry exists.
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div className='grid gap-4 lg:grid-cols-3'>
+          <section className='rounded-3xl border border-slate-800 bg-slate-900/70 p-5'>
+            <div className='flex items-start justify-between gap-4'>
+              <div>
+                <p className='text-xs uppercase tracking-[0.24em] text-slate-400'>
+                  County Aggregate Source
+                </p>
+                <h2 className='mt-2 text-xl font-semibold text-white'>Provider-backed county stats</h2>
+              </div>
+              <span className='rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-300'>
+                {statsLoading ? 'Loading' : stats ? 'Loaded' : 'Unavailable'}
+              </span>
+            </div>
+
+            {stats ? (
+              <div className='mt-4 space-y-3 text-sm text-slate-200'>
+                <div className='flex items-center justify-between'>
+                  <span className='text-slate-400'>Parcels</span>
+                  <span className='font-medium'>{stats.totalParcels.toLocaleString()}</span>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <span className='text-slate-400'>Average assessed value</span>
+                  <span className='font-medium'>
+                    ${stats.averageAssessedValue?.toLocaleString() ?? 'Unavailable'}
+                  </span>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <span className='text-slate-400'>Assessment completion</span>
+                  <span className='font-medium'>
+                    {stats.assessmentCompletionPercent.toFixed(1)}%
+                  </span>
+                </div>
+              </div>
             ) : (
-              missions.map((mission) => (
-                <div key={mission.id} className='bg-slate-700/50 p-3 rounded border border-slate-600'>
-                  <div className='text-sm font-medium truncate'>{mission.objective}</div>
-                  <div className='flex justify-between text-xs text-slate-400 mt-1'>
-                    <span>{mission.activeAgents.toLocaleString()} Agents</span>
-                    <span>{mission.progress}%</span>
-                  </div>
-                  <div className='w-full bg-slate-600 h-1 mt-2 rounded-full overflow-hidden'>
-                    <div
-                      className='bg-cyan-500 h-full'
-                      style={{ width: `${mission.progress}%` }}
-                    ></div>
-                  </div>
-                </div>
-              ))
+              <p className='mt-4 text-sm text-slate-400'>
+                {statsError ?? 'County aggregate statistics are not available from the current provider.'}
+              </p>
             )}
-          </div>
-        </div>
 
-        {/* Benton County Stats */}
-        {stats && (
-          <div className='mb-4 p-3 bg-slate-700/30 rounded border border-slate-600'>
-            <h3 className='text-xs font-semibold text-slate-400 mb-2 uppercase'>Benton County</h3>
-            <div className='space-y-1 text-xs'>
-              <div className='flex justify-between'><span className='text-slate-400'>Parcels</span><span className='text-cyan-300'>{stats.totalParcels.toLocaleString()}</span></div>
-              <div className='flex justify-between'><span className='text-slate-400'>Avg Assessed</span><span className='text-white'>${stats.averageAssessedValue?.toLocaleString()}</span></div>
-              <div className='flex justify-between'><span className='text-slate-400'>Completion</span><span className='text-green-400'>{stats.assessmentCompletionPercent.toFixed(1)}%</span></div>
-            </div>
-          </div>
-        )}
+            {sourceDisclosure && (
+              <div className='mt-4 rounded-2xl border border-slate-800 bg-slate-950/80 p-3 text-xs text-amber-200'>
+                {sourceDisclosure}
+              </div>
+            )}
+          </section>
 
-        <div className='mt-auto'>
-          <div className='text-xs text-slate-500'>
-            Benton Node: <span className='text-green-400'>ACTIVE</span>
-          </div>
-          <div className='text-xs text-slate-500'>Network Nodes: {nodes.length}</div>
-        </div>
-      </div>
-
-      {/* Main Content - Map Visualization */}
-      <div className='flex-1 relative bg-slate-950'>
-        <div className='absolute top-4 left-4 z-10'>
-          <h1 className='text-2xl font-bold text-white'>WA County Network Map</h1>
-          <p className='text-slate-400'>Planned multi-county deployment topology · Benton active</p>
-        </div>
-
-        {/* Simple SVG Map Visualization */}
-        <svg className='w-full h-full' viewBox='0 0 800 600'>
-          {/* Grid Lines */}
-          <defs>
-            <pattern id='grid' width='40' height='40' patternUnits='userSpaceOnUse'>
-              <path
-                d='M 40 0 L 0 0 0 40'
-                fill='none'
-                stroke='hsl(var(--tf-text) / 0.05)'
-                strokeWidth='1'
-              />
-            </pattern>
-          </defs>
-          <rect width='100%' height='100%' fill='url(#grid)' />
-
-          {/* Connections */}
-          {nodes.map((node, i) =>
-            nodes.map((target, j) => {
-              if (i < j) {
-                return (
-                  <line
-                    key={`${node.nodeId}-${target.nodeId}`}
-                    x1={node.coordinates.x * 2 + 100}
-                    y1={node.coordinates.y * 2 + 50}
-                    x2={target.coordinates.x * 2 + 100}
-                    y2={target.coordinates.y * 2 + 50}
-                    stroke='hsl(var(--tf-accent) / 0.2)'
-                    strokeWidth='1'
-                  />
-                );
-              }
-              return null;
-            })
-          )}
-
-          {/* Nodes */}
-          {nodes.map((node) => (
-            <g
-              key={node.nodeId}
-              transform={`translate(${node.coordinates.x * 2 + 100}, ${node.coordinates.y * 2 + 50})`}
-              onClick={() => setSelectedNode(node)}
-              className='cursor-pointer hover:opacity-80 transition-opacity'
-            >
-              <circle
-                r='6'
-                fill={
-                  node.status === 'active'
-                    ? 'var(--tf-transcend-cyan)'
-                    : node.status === 'degraded'
-                      ? 'var(--tf-accent-yellow)'
-                      : 'var(--tf-accent-error)'
-                }
-              />
-              {node.status === 'active' && (
-                <circle
-                  r='12'
-                  fill='var(--tf-transcend-cyan)'
-                  opacity='0.2'
-                >
-                  <animate attributeName='r' from='6' to='20' dur='2s' repeatCount='indefinite' />
-                  <animate attributeName='opacity' from='0.4' to='0' dur='2s' repeatCount='indefinite' />
-                </circle>
-              )}
-              <text
-                y='20'
-                textAnchor='middle'
-                fill='white'
-                fontSize='10'
-                className='pointer-events-none select-none'
-              >
-                {node.region}
-              </text>
-            </g>
-          ))}
-        </svg>
-
-        {/* Node Details Panel */}
-        {selectedNode && (
-          <div className='absolute top-4 right-4 w-80 bg-slate-900/90 backdrop-blur border border-slate-700 p-4 rounded shadow-xl'>
-            <div className='flex justify-between items-start mb-4'>
-              <h3 className='text-lg font-bold text-white'>Node Details</h3>
-              <button
-                onClick={() => setSelectedNode(null)}
-                className='text-slate-400 hover:text-white'
-              >
-                ×
-              </button>
+          <section className='rounded-3xl border border-slate-800 bg-slate-900/70 p-5'>
+            <div className='flex items-start justify-between gap-4'>
+              <div>
+                <p className='text-xs uppercase tracking-[0.24em] text-slate-400'>
+                  Governed County Swarm Status
+                </p>
+                <h2 className='mt-2 text-xl font-semibold text-white'>{countyLabel}</h2>
+              </div>
+              <span className='rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-300'>
+                {swarmLoading ? 'Loading' : swarmStatus ? 'Live' : 'Unavailable'}
+              </span>
             </div>
 
-            <div className='space-y-3 text-sm'>
-              <div className='flex justify-between'>
-                <span className='text-slate-400'>ID:</span>
-                <span className='text-cyan-300 font-mono text-xs'>{selectedNode.nodeId}</span>
-              </div>
-              <div className='flex justify-between'>
-                <span className='text-slate-400'>Region:</span>
-                <span className='text-white'>{selectedNode.region}</span>
-              </div>
-              <div className='flex justify-between'>
-                <span className='text-slate-400'>Status:</span>
-                <span className={selectedNode.status === 'active' ? 'text-green-400' : 'text-yellow-400'}>
-                  {selectedNode.status === 'active' ? 'ACTIVE' : 'PLANNED'}
-                </span>
-              </div>
-              {selectedNode.latency > 0 && (
-                <div className='flex justify-between'>
-                  <span className='text-slate-400'>Latency:</span>
-                  <span className='text-white'>{selectedNode.latency}ms</span>
+            {swarmStatus ? (
+              <div className='mt-4 space-y-3 text-sm text-slate-200'>
+                <div className='flex items-center justify-between'>
+                  <span className='text-slate-400'>Source</span>
+                  <span className='font-mono text-xs text-cyan-300'>{SWARM_STATUS_SOURCE}</span>
                 </div>
-              )}
+                <div className='flex items-center justify-between'>
+                  <span className='text-slate-400'>Active agents</span>
+                  <span className='font-medium'>{swarmStatus.activeAgents.toLocaleString()}</span>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <span className='text-slate-400'>Swarm activity</span>
+                  <span className='font-medium'>{swarmStatus.swarmActivity}</span>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <span className='text-slate-400'>Accuracy score</span>
+                  <span className='font-medium'>{formatPercent(swarmStatus.accuracyScore)}</span>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <span className='text-slate-400'>Consciousness level</span>
+                  <span className='font-medium'>
+                    {formatPercent(swarmStatus.consciousnessLevel)}
+                  </span>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <span className='text-slate-400'>Average response time</span>
+                  <span className='font-medium'>
+                    {formatResponseTime(swarmStatus.responseTime)}
+                  </span>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <span className='text-slate-400'>Quantum factor</span>
+                  <span className='font-medium'>
+                    {formatQuantumFactor(swarmStatus.quantumOptimizationFactor)}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className='mt-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100'>
+                {swarmError ?? 'Governed county swarm status is not available for this session.'}
+              </div>
+            )}
+          </section>
+
+          <section className='rounded-3xl border border-slate-800 bg-slate-900/70 p-5'>
+            <p className='text-xs uppercase tracking-[0.24em] text-slate-400'>Blocked Claims</p>
+            <h2 className='mt-2 text-xl font-semibold text-white'>What this page will not claim</h2>
+
+            <ul className='mt-4 space-y-3 text-sm text-slate-300'>
+              <li className='rounded-2xl border border-slate-800 bg-slate-950/70 p-3'>
+                No city-to-county network map, no cross-county latency, and no “planned” node
+                status without a governed deployment registry.
+              </li>
+              <li className='rounded-2xl border border-slate-800 bg-slate-950/70 p-3'>
+                No swarm mission percentages or agent-type breakdowns from the retired
+                Claude-Flow and Gauge Theory demo services.
+              </li>
+              <li className='rounded-2xl border border-slate-800 bg-slate-950/70 p-3'>
+                No county readiness scoring until accreditation evidence, topology records, and
+                governed rollout state are stored in one canonical control plane.
+              </li>
+            </ul>
+          </section>
+        </div>
+
+        <section className='rounded-3xl border border-slate-800 bg-slate-900/70 p-5'>
+          <p className='text-xs uppercase tracking-[0.24em] text-slate-400'>Evidence Required</p>
+          <h2 className='mt-2 text-xl font-semibold text-white'>What finished federation should include</h2>
+          <div className='mt-4 grid gap-3 md:grid-cols-3'>
+            <div className='rounded-2xl border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-300'>
+              County accreditation records tied to real deployment state, not seeded node objects.
+            </div>
+            <div className='rounded-2xl border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-300'>
+              Governed topology evidence with county ownership, route health, and correlation-backed actions.
+            </div>
+            <div className='rounded-2xl border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-300'>
+              A canonical statewide registry that can explain why a county is live, degraded, or unavailable.
             </div>
           </div>
-        )}
+        </section>
       </div>
     </div>
   );

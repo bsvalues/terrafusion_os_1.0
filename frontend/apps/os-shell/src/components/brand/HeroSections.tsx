@@ -22,9 +22,9 @@ const HeroSections: React.FC<HeroSectionsProps> = ({ currentHero = 1, onHeroChan
       for (let i = 0; i < 50; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 20 + 's';
-        particle.style.animationDuration = 15 + Math.random() * 10 + 's';
+        particle.style.left = `${(i * 37) % 100}%`;
+        particle.style.animationDelay = `${(i % 20)}s`;
+        particle.style.animationDuration = `${15 + (i % 10)}s`;
         container.appendChild(particle);
       }
     };
@@ -43,57 +43,57 @@ const HeroSections: React.FC<HeroSectionsProps> = ({ currentHero = 1, onHeroChan
   const heroes = [
     {
       id: 1,
-      badge: '✨ Transcendence Ready',
-      headline: 'Government. Transcended.',
+      badge: 'Governed Rollout Ready',
+      headline: 'County operations, under control.',
       subhead:
-        'Turn complexity into clarity across every department—so teams move faster, make better calls, and never second-guess the next step.',
-      primaryCTA: 'Begin Transcendence',
-      secondaryCTA: 'Discover Clarity',
+        'Keep parcel, sales, levy, and evidence work inside a governed operator surface with visible ownership and traceability.',
+      primaryCTA: 'Review Control Surface',
+      secondaryCTA: 'Inspect Workflows',
     },
     {
       id: 2,
-      badge: '🎯 Clarity Achieved',
-      headline: 'Where Complexity Becomes Clarity',
+      badge: 'Operator Clarity',
+      headline: 'One surface for real county work',
       subhead:
-        "Terrafusion OS gives counties a unified, modern workspace that's simple, secure, and built to do it right the first time.",
-      primaryCTA: 'See It In Action',
-      secondaryCTA: 'Explore Modules',
+        "TerraFusion OS gives county staff a role-aware workspace for assessment, sales review, and governed execution without hiding the evidence trail.",
+      primaryCTA: 'Open Operator View',
+      secondaryCTA: 'Explore Workflows',
     },
     {
       id: 3,
-      badge: '🚀 Path Illuminated',
-      headline: 'Your Path Is Clear',
+      badge: 'Evidence First',
+      headline: 'Move from signal to action',
       subhead:
-        'From valuations to permits, orchestrate work with confidence. One platform. Zero friction. Real results.',
-      primaryCTA: 'Start Now',
-      secondaryCTA: 'View Success Stories',
+        'Give assessors and operators drillable context, clear evidence paths, and actions that stay inside governed boundaries.',
+      primaryCTA: 'View Evidence Paths',
+      secondaryCTA: 'See Operator Flows',
     },
     {
       id: 4,
-      badge: '⚡ Excellence Enabled',
-      headline: 'Elevate County Operations',
+      badge: 'Role Adaptive',
+      headline: 'Built for staff, not slogans',
       subhead:
-        'Empower every user—new hire to power user—with tools that make progress feel inevitable.',
-      primaryCTA: 'Try Terrafusion',
-      secondaryCTA: 'Take the Product Tour',
+        'Support the new hire, the appraiser, and the county lead with workflows that explain what happened, who owns it, and what comes next.',
+      primaryCTA: 'Review User Lanes',
+      secondaryCTA: 'Take the Surface Tour',
     },
     {
       id: 5,
-      badge: '💎 Day One Ready',
-      headline: 'Clarity, On Day One',
+      badge: 'Day One Useful',
+      headline: 'Operational value before disruption',
       subhead:
-        'Deploy a secure, unified OS for government that cuts through the noise and delivers excellence—every action, every day.',
-      primaryCTA: 'Begin Transcendence',
-      secondaryCTA: 'See How It Works',
+        'Deliver immediate workflow relief while preserving county judgment, local control, and defensible audit posture.',
+      primaryCTA: 'Review Rollout Path',
+      secondaryCTA: 'See How It Operates',
     },
     {
       id: 6,
-      badge: '🔒 Enterprise Ready',
-      headline: 'Enterprise-Grade. Effortless to Run.',
+      badge: 'Governed Infrastructure',
+      headline: 'Fast to operate, explicit about limits',
       subhead:
-        'Local-first, secure by design, and built for rapid rollout—without the admin headaches.',
+        'Local-first where needed, operator-safe by design, and honest when a lane is unavailable instead of pretending it is production-ready.',
       primaryCTA: 'Review Architecture',
-      secondaryCTA: 'Deploy a Pilot',
+      secondaryCTA: 'Inspect Guardrails',
     },
   ];
 

@@ -4,6 +4,8 @@
 // escalation policies, incident response automation, and multi-channel notifications
 // =============================
 
+import { createStableId } from '../../utils/stableId';
+
 // =============================
 // Type Definitions
 // =============================
@@ -587,7 +589,7 @@ export class AlertingEngine {
    * Generate unique alert ID
    */
   private generateAlertId(): string {
-    return `alert_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    return createStableId('alert');
   }
 
   /**
@@ -650,10 +652,10 @@ export class AlertingEngine {
 }
 
 // =============================
-// Default Configuration
+// Base Configuration
 // =============================
 
-export const DEFAULT_NOTIFICATION_CONFIG: NotificationConfig = {
+export const NOTIFICATION_CONFIG_BASE: NotificationConfig = {
   email: {
     enabled: false,
     smtpHost: 'smtp.gmail.com',

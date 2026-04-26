@@ -22,7 +22,7 @@ function computeSourceDisclosure(source: DataMode | null): string | null {
     return 'Snapshot-backed county aggregates: TerraForge stats are using bundled county snapshot data, not live backend metrics.';
   }
   if (source === 'fixtures') {
-    return 'Fixture-backed county aggregates: TerraForge stats are using test fixture data, not live backend metrics.';
+    return 'Non-live county aggregate mode is active; these metrics are not live backend metrics.';
   }
   return null;
 }

@@ -137,10 +137,10 @@ vi.mock('../../lib/utils', () => ({
 // Mock useTodaysWork
 vi.mock('../../hooks/useTodaysWork', () => ({
   __esModule: true,
-  useTodaysWork: () => ({ tasks: [], loading: false, isSampleData: false }),
+  useTodaysWork: () => ({ tasks: [], loading: false, error: null, readState: 'live' }),
 }));
 
-// Mock useParcelCount — returns fallback so '89,247 parcels' assertion holds
+// Mock useParcelCount — unavailable stays unavailable
 vi.mock('../../hooks/useParcelCount', () => ({
   __esModule: true,
   useParcelCount: () => ({ data: undefined, isLoading: false, error: null }),
@@ -197,7 +197,7 @@ describe('Phase 24: County Ops Scene — Rendering', () => {
     render(<StageZeroState />);
     expect(screen.getByTestId('county-status-strip')).toBeInTheDocument();
     expect(screen.getByText('Benton County, WA')).toBeInTheDocument();
-    expect(screen.getByText('89,247 parcels')).toBeInTheDocument();
+    expect(screen.getByText('Parcel count unavailable')).toBeInTheDocument();
   });
 
   it('6. Search is NOT the hero surface — no prominent search bar', () => {

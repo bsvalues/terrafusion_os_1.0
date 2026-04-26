@@ -1,9 +1,9 @@
 /**
  * SalesForge — Flagship Sale Qualification & Ratio Audit module.
- * Full standalone OS window. Five tabs, live IAAO stats, deep PACS audit.
+ * Full standalone OS window. Five tabs, live IAAO stats, deep source-code audit.
  *
  * Architecture: Statistics Studio pattern (React module, not AppFrame iframe).
- * Data: All real PACS via .NET API; fixtures and synthetic records are not used in this surface.
+ * Data: TerraFusion sale truth via .NET API or the governed Washington launch data package.
  *
  * Task D2 — receives County Studio Inspector deeplinks via window metadata.
  * Supported metadata keys (all optional):
@@ -23,6 +23,7 @@ import activateModule from '@/orchestration/moduleActivation';
 import { useSalesForgeStore } from './salesForgeStore';
 import { RunningStatsPanel } from './components/RunningStatsPanel';
 import type { SalesForgeTab } from './salesForgeTypes';
+import { isWashingtonLaunchDataEnabled, WASHINGTON_COUNTIES } from './washingtonLaunchApi';
 import './SalesForge.css';
 
 const QualificationQueuePanel = lazy(() =>
@@ -104,6 +105,9 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const setContextSegment = useSalesForgeStore((s) => s.setContextSegment);
   const contextSegmentId    = useSalesForgeStore((s) => s.contextSegmentId);
   const contextSegmentLabel = useSalesForgeStore((s) => s.contextSegmentLabel);
+  const committedFilters = useSalesForgeStore((s) => s.committedFilters);
+  const launchDataMode = isWashingtonLaunchDataEnabled();
+  const selectedCounty = WASHINGTON_COUNTIES.find((county) => county.code === committedFilters.countyCode);
 
   // ── Consume County Studio handoff metadata on mount ────────────────────
   // Runs exactly once per mount so store state isn't re-clobbered on rerender.
@@ -178,9 +182,17 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
               </button>
             )}
             <span className="forge-chip forge-chip--neutral">{taxYear} study year</span>
-            <span className="forge-chip forge-chip--success">Live county data</span>
+            <span className="forge-chip forge-chip--neutral">{selectedCounty?.name ?? 'Benton'} County</span>
+            <span className="forge-chip forge-chip--success">
+              {launchDataMode ? 'Washington launch data package' : 'Live TerraFusion API'}
+            </span>
           </div>
         </div>
+        {launchDataMode && (
+          <p className="sf-header__source-note">
+            Hosted preview reads the Prometheus Washington data package: 39 counties, TerraFusion neighborhood codes, and provenance-bearing sale records.
+          </p>
+        )}
       </header>
 
       {/* Tab bar */}

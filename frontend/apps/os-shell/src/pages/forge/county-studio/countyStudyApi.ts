@@ -217,7 +217,7 @@ export const rollupApi = {
   /**
    * GET /county-study/studies/:id/city-rollup
    * Returns one row per Benton city; backend resolves city via
-   * CamaCharacteristic.City (PacsCanonicalizer-normalized).
+* CamaCharacteristic.City (source-normalized).
    */
   cities: (studyId: string): Promise<CityRollupRowDto[]> =>
     apiFetchJson(`${BASE}/studies/${studyId}/city-rollup`),

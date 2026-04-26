@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Paper,
@@ -47,110 +47,11 @@ interface SystemNotification {
   read: boolean;
 }
 
-const SAMPLE_METRICS: SystemMetric[] = [
-  {
-    id: 'cpu',
-    name: 'CPU Usage',
-    value: 23,
-    unit: '%',
-    status: 'normal',
-    trend: 'stable',
-  },
-  {
-    id: 'memory',
-    name: 'Memory Usage',
-    value: 67,
-    unit: '%',
-    status: 'normal',
-    trend: 'up',
-  },
-  {
-    id: 'ai_agents',
-    name: 'AI Agents Active',
-    value: 1008,
-    unit: 'agents',
-    status: 'normal',
-    trend: 'stable',
-  },
-  {
-    id: 'quantum_performance',
-    name: 'Quantum Performance',
-    value: 379000000,
-    unit: '× faster',
-    status: 'normal',
-    trend: 'up',
-  },
-  {
-    id: 'response_time',
-    name: 'Avg Response Time',
-    value: 0.47,
-    unit: 'ms',
-    status: 'normal',
-    trend: 'down',
-  },
-];
-
-const SAMPLE_NOTIFICATIONS: SystemNotification[] = [
-  {
-    id: '1',
-    type: 'success',
-    title: 'AI Swarm Optimization Complete',
-    message: 'All 1,008 AI agents successfully optimized for 379M× performance improvement',
-    timestamp: new Date(Date.now() - 5 * 60 * 1000),
-    read: false,
-  },
-  {
-    id: '2',
-    type: 'info',
-    title: 'Security Scan Complete',
-    message: 'Daily security scan completed successfully - no vulnerabilities detected',
-    timestamp: new Date(Date.now() - 15 * 60 * 1000),
-    read: false,
-  },
-  {
-    id: '3',
-    type: 'warning',
-    title: 'Database Connection Pool',
-    message: 'Database connection pool at 80% capacity',
-    timestamp: new Date(Date.now() - 30 * 60 * 1000),
-    read: true,
-  },
-  {
-    id: '4',
-    type: 'success',
-    title: 'Module Launch',
-    message: 'CostForge AI module launched successfully',
-    timestamp: new Date(Date.now() - 45 * 60 * 1000),
-    read: true,
-  },
-];
-
 export const SystemTray: React.FC = () => {
-  const [metrics, setMetrics] = useState<SystemMetric[]>(SAMPLE_METRICS);
-  const [notifications, setNotifications] = useState<SystemNotification[]>(SAMPLE_NOTIFICATIONS);
+  const [metrics] = useState<SystemMetric[]>([]);
+  const [notifications, setNotifications] = useState<SystemNotification[]>([]);
   const [notificationAnchor, setNotificationAnchor] = useState<HTMLElement | null>(null);
   const [metricsAnchor, setMetricsAnchor] = useState<HTMLElement | null>(null);
-
-  // Simulate real-time metric updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMetrics((prev) =>
-        prev.map((metric) => ({
-          ...metric,
-          value:
-            metric.id === 'cpu'
-              ? Math.max(10, Math.min(90, metric.value + (Math.random() - 0.5) * 10))
-              : metric.id === 'memory'
-                ? Math.max(40, Math.min(95, metric.value + (Math.random() - 0.5) * 5))
-                : metric.id === 'response_time'
-                  ? Math.max(0.1, Math.min(2.0, metric.value + (Math.random() - 0.5) * 0.2))
-                  : metric.value,
-        }))
-      );
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const unreadNotifications = notifications.filter((n) => !n.read);
 
@@ -265,44 +166,56 @@ export const SystemTray: React.FC = () => {
           </Typography>
 
           <List dense>
-            {metrics.map((metric) => (
-              <ListItem key={metric.id} sx={{ px: 0 }}>
+            {metrics.length === 0 ? (
+              <ListItem sx={{ px: 0 }}>
                 <ListItemIcon>
-                  {metric.id === 'cpu' && <MemoryIcon />}
-                  {metric.id === 'memory' && <MemoryIcon />}
-                  {metric.id === 'ai_agents' && <SecurityIcon />}
-                  {metric.id === 'quantum_performance' && <SpeedIcon />}
-                  {metric.id === 'response_time' && <CloudIcon />}
+                  <InfoIcon color='info' />
                 </ListItemIcon>
                 <ListItemText
-                  primary={metric.name}
-                  secondary={
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-                      <Typography variant='body2' component='span'>
-                        {formatValue(metric)}
-                      </Typography>
-                      <Chip
-                        label={metric.status}
-                        size='small'
-                        color={getStatusColor(metric.status) as any}
-                      />
-                    </Box>
-                  }
+                  primary='Telemetry unavailable'
+                  secondary='No governed system metrics source is connected.'
                 />
               </ListItem>
-            ))}
+            ) : (
+              metrics.map((metric) => (
+                <ListItem key={metric.id} sx={{ px: 0 }}>
+                  <ListItemIcon>
+                    {metric.id === 'cpu' && <MemoryIcon />}
+                    {metric.id === 'memory' && <MemoryIcon />}
+                    {metric.id === 'ai_agents' && <SecurityIcon />}
+                    {metric.id === 'quantum_performance' && <SpeedIcon />}
+                    {metric.id === 'response_time' && <CloudIcon />}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={metric.name}
+                    secondary={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                        <Typography variant='body2' component='span'>
+                          {formatValue(metric)}
+                        </Typography>
+                        <Chip
+                          label={metric.status}
+                          size='small'
+                          color={getStatusColor(metric.status) as any}
+                        />
+                      </Box>
+                    }
+                  />
+                </ListItem>
+              ))
+            )}
           </List>
 
           <Divider sx={{ my: 1 }} />
 
           <Box sx={{ mt: 2 }}>
             <Typography variant='body2' color='text.secondary' gutterBottom>
-              Terrafusion OS Status: All Systems Operational
+              Terrafusion OS Status: telemetry source unavailable
             </Typography>
             <LinearProgress
               variant='determinate'
-              value={95}
-              color='success'
+              value={0}
+              color='warning'
               sx={{ height: 8, borderRadius: 4 }}
             />
           </Box>

@@ -5,7 +5,7 @@
  * GET /api/terraforge/ratio-study?taxYear=…&page=…&pageSize=…
  *
  * Surface: ForgeSuiteHome (os-shell), NOT the standalone terraforge harness.
- * Read-only: ratios are PACS-computed, not staff-editable here.
+ * Read-only: ratios are computed from TerraFusion-normalized sales, not staff-editable here.
  *
  * IAAO reference thresholds (residential):
  *   Median ratio: 0.90 – 1.10   (level of appraisal)
@@ -284,7 +284,7 @@ export function RatioStudyPanel({ taxYear = TAX_YEAR }: Props) {
                 <span role="columnheader">Sale date</span>
                 <span role="columnheader">Sale price</span>
                 <span role="columnheader">Ratio</span>
-                <span role="columnheader">Hood</span>
+                <span role="columnheader">Neighborhood code</span>
                 <span role="columnheader">Source</span>
               </div>
 

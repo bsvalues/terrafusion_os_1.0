@@ -9,7 +9,7 @@
  *
  * Lifecycle: idle → preflight → confirming → executing → succeeded → failed
  *
- * Uses real pilotApi — no mock data, no demo tools.
+ * Uses real pilotApi only.
  */
 
 import React, { useCallback, useState } from 'react';

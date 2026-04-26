@@ -10,6 +10,7 @@
 
 import { assertWriteLane } from '../writeLane';
 import { emitTraceEvent } from '../terraTrace';
+import { createStableId } from '../../utils/stableId';
 
 // ============================================================================
 // Types
@@ -61,7 +62,7 @@ const WARNING_THRESHOLD_DAYS = 7;
 // ============================================================================
 
 function generateQueueItemId(): string {
-  return `QI-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return createStableId('QI');
 }
 
 function computePriority(input: QueueDerivationInput): QueueItem['priority'] {

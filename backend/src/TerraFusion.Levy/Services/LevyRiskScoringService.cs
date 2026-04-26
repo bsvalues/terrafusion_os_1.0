@@ -197,7 +197,7 @@ public sealed class LevyRiskScoringService : ILevyRiskScoringService
             if (!string.IsNullOrEmpty(distCode))
             {
                 bool certified = certByDistrict.TryGetValue(distCode, out var cert) &&
-                                 cert.Status == LevyCertificationStatus.Certified;
+                                 cert.Status == TerraFusion.Levy.Models.LevyCertificationStatus.Certified;
                 if (!certified)
                 {
                     var daysSinceRate = (DateTime.UtcNow - rate.CreatedAt).TotalDays;

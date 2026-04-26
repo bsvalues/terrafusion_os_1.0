@@ -14,7 +14,7 @@
  *   - No vendor/system names in rendered text
  *   - assessmentYear always visible so operator knows data vintage
  *   - Null/empty fields render '—', never blank or 'undefined'
- *   - Source badge shows 'live' or 'fallback', not raw source string
+ *   - Source badge shows canonical live/non-live disclosure, not raw source strings
  *
  * @module pages/workbench/tabs/PropertySummary
  */

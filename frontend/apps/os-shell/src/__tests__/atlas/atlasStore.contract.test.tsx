@@ -7,13 +7,14 @@
  * They codify:
  *   - Store shape: parcels, neighborhoods, diagnostics, residualData,
  *     selectedNeighborhood, loading, error
- *   - fetchSpatialData loads fixture data
+ *   - fetchSpatialData does not consume the documented dev fixture bundle
+ *   - unsupported Atlas spatial surfaces stay empty with explicit unavailable messaging
  *   - selectNeighborhood sets/clears selection
  *   - getParcelsByNeighborhood returns filtered parcels
  * ======================================================================
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { act } from '@testing-library/react';
 
 import { useAtlasSpatialStore } from '../../stores/atlasSpatialStore';
@@ -87,54 +88,58 @@ describe('Phase 17: atlasSpatialStore Contract', () => {
   // fetchSpatialData
   // =========================================================================
   describe('fetchSpatialData', () => {
-    it('loads 20 parcels from fixtures', async () => {
+    it('does not call fetch for the legacy dev fixture endpoint', async () => {
+      const fetchSpy = vi.spyOn(globalThis, 'fetch');
+
       await act(async () => {
         await getState().fetchSpatialData();
       });
-      expect(getState().parcels).toHaveLength(20);
+
+      expect(fetchSpy).not.toHaveBeenCalled();
     });
 
-    it('loads 7 neighborhoods from fixtures', async () => {
+    it('keeps parcels empty when no governed spatial bundle exists', async () => {
       await act(async () => {
         await getState().fetchSpatialData();
       });
-      expect(getState().neighborhoods).toHaveLength(7);
+      expect(getState().parcels).toHaveLength(0);
     });
 
-    it('loads spatial diagnostics', async () => {
+    it('keeps neighborhoods empty when no governed spatial bundle exists', async () => {
       await act(async () => {
         await getState().fetchSpatialData();
       });
-      const diag = getState().diagnostics;
-      expect(diag).not.toBeNull();
-      expect(diag!.moransI).toBe(0.42);
-      expect(diag!.moransIInterpretation).toBe('clustered');
+      expect(getState().neighborhoods).toHaveLength(0);
     });
 
-    it('loads residual map data with 7 neighborhoods', async () => {
+    it('keeps diagnostics unavailable', async () => {
       await act(async () => {
         await getState().fetchSpatialData();
       });
-      const rd = getState().residualData;
-      expect(rd).not.toBeNull();
-      expect(rd!.neighborhoods).toHaveLength(7);
+      expect(getState().diagnostics).toBeNull();
     });
 
-    it('loads 7 equity areas', async () => {
+    it('keeps residual map data unavailable', async () => {
       await act(async () => {
         await getState().fetchSpatialData();
       });
-      expect(getState().equityAreas).toHaveLength(7);
+      expect(getState().residualData).toBeNull();
     });
 
-    it('includes Richland neighborhood', async () => {
+    it('keeps equity areas empty in the shared unsupported bundle', async () => {
       await act(async () => {
         await getState().fetchSpatialData();
       });
-      const rich = getState().neighborhoods.find((n) => n.code === 'RICH');
-      expect(rich).toBeDefined();
-      expect(rich!.name).toBe('Richland');
-      expect(rich!.qualified).toBe(true);
+      expect(getState().equityAreas).toHaveLength(0);
+    });
+
+    it('surfaces explicit unavailable messaging', async () => {
+      await act(async () => {
+        await getState().fetchSpatialData();
+      });
+      expect(getState().error).toBe(
+        'Atlas spatial bundle unavailable. Neighborhood delineation, residual map, and spatial diagnostics still depend on a dev fixture endpoint.',
+      );
     });
 
     it('sets loading false after fetch', async () => {
@@ -177,21 +182,12 @@ describe('Phase 17: atlasSpatialStore Contract', () => {
   // getParcelsByNeighborhood
   // =========================================================================
   describe('getParcelsByNeighborhood', () => {
-    it('returns parcels for Richland', async () => {
+    it('returns an empty array for any neighborhood when no governed spatial bundle exists', async () => {
       await act(async () => {
         await getState().fetchSpatialData();
       });
       const richParcels = getState().getParcelsByNeighborhood('RICH');
-      expect(richParcels).toHaveLength(4);
-      expect(richParcels.every((p) => p.neighborhood === 'RICH')).toBe(true);
-    });
-
-    it('returns parcels for Kennewick', async () => {
-      await act(async () => {
-        await getState().fetchSpatialData();
-      });
-      const kennParcels = getState().getParcelsByNeighborhood('KENN');
-      expect(kennParcels).toHaveLength(4);
+      expect(richParcels).toHaveLength(0);
     });
 
     it('returns empty array for unknown neighborhood', async () => {

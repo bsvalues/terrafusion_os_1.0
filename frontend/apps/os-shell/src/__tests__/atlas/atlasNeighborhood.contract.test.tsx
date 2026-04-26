@@ -228,11 +228,13 @@ describe('SentimentDashboard — contract', () => {
     expect(bentoCards.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('ranking buttons have role="link"', () => {
+  it('renders explicit unavailable disclosure instead of seeded sentiment rows', () => {
     render(<SentimentDashboard />);
-    // Sidebar ranking list items must be keyboard/screen-reader navigable
-    const linkRoles = screen.getAllByRole('link');
-    expect(linkRoles.length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByTestId('sentiment-dashboard-unavailable')).toBeInTheDocument();
+    expect(screen.getByText(/Neighborhood sentiment unavailable\./i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/no seeded Richland ranking or pseudo-heat bubbles are rendered here/i),
+    ).toBeInTheDocument();
   });
 
   it('has no light-mode class violations', () => {

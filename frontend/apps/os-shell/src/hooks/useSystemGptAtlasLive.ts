@@ -79,9 +79,9 @@ export interface UseSystemGptAtlasLiveReturn {
 // Constants
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const DEFAULT_BASE_URL = '/api/gpt';
-const DEFAULT_MAX_RETRIES = 5;
-const DEFAULT_POLLING_INTERVAL_MS = 3000;
+const ATLAS_BASE_URL = '/api/gpt';
+const ATLAS_MAX_RETRIES = 5;
+const ATLAS_POLLING_INTERVAL_MS = 3000;
 const RECONNECT_DELAY_MS = 5000;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -95,10 +95,10 @@ export function useSystemGptAtlasLive(
   options: UseSystemGptAtlasLiveOptions = {}
 ): UseSystemGptAtlasLiveReturn {
   const {
-    baseUrl = DEFAULT_BASE_URL,
-    maxRetries = DEFAULT_MAX_RETRIES,
+    baseUrl = ATLAS_BASE_URL,
+    maxRetries = ATLAS_MAX_RETRIES,
     enablePollingFallback = true,
-    pollingIntervalMs = DEFAULT_POLLING_INTERVAL_MS,
+    pollingIntervalMs = ATLAS_POLLING_INTERVAL_MS,
     onConnectionStateChange,
   } = options;
 
@@ -226,9 +226,9 @@ export function useSystemGptAtlasLive(
         if (retryCountRef.current <= maxRetries) {
           updateConnectionState('reconnecting');
 
-          // Exponential backoff with jitter
+          // Exponential backoff with deterministic spread to avoid fabricated randomness.
           const delay = RECONNECT_DELAY_MS * Math.pow(1.5, retryCountRef.current - 1);
-          const jitter = Math.random() * 1000;
+          const jitter = (retryCountRef.current % 10) * 100;
 
           setTimeout(() => {
             if (isMountedRef.current) {

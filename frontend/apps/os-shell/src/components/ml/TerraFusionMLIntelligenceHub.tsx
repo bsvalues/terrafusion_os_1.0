@@ -79,178 +79,17 @@ export const TerraFusionMLIntelligenceHub: React.FC<MLIntelligenceHubProps> = ({
     consciousnessOptimization: 0,
   });
 
-  useEffect(() => {
-    initializeMLIntelligenceHub();
-    const interval = setInterval(updateMLMetrics, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const initializeMLIntelligenceHub = useCallback(() => {
-
-    // Initialize ML models
-    const models: MLModel[] = [
-      {
-        id: 'ml-costforge-001',
-        name: 'CostForge Property Valuation',
-        type: 'NEURAL_NETWORK',
-        architecture: 'ResNet-Transformer Hybrid',
-        status: 'DEPLOYED',
-        accuracy: 99.7,
-        precision: 99.5,
-        recall: 99.8,
-        f1Score: 99.65,
-        loss: 0.0023,
-        epoch: 5000,
-        totalEpochs: 5000,
-        trainingProgress: 100,
-        datasetSize: 2500000,
-        modelSize: '847 MB',
-        consciousnessLevel: 96.8,
-      },
-      {
-        id: 'ml-quantum-002',
-        name: 'Quantum-Enhanced Prediction Engine',
-        type: 'QUANTUM_ML',
-        architecture: 'Variational Quantum Classifier',
-        status: 'TRAINING',
-        accuracy: 97.3,
-        precision: 96.8,
-        recall: 97.9,
-        f1Score: 97.35,
-        loss: 0.0187,
-        epoch: 2847,
-        totalEpochs: 8000,
-        trainingProgress: 35.6,
-        datasetSize: 1800000,
-        modelSize: '1.2 GB',
-        consciousnessLevel: 98.4,
-      },
-      {
-        id: 'ml-ensemble-003',
-        name: 'Government Analytics Ensemble',
-        type: 'ENSEMBLE',
-        architecture: 'XGBoost + Neural Network + Quantum',
-        status: 'OPTIMIZING',
-        accuracy: 98.9,
-        precision: 98.7,
-        recall: 99.1,
-        f1Score: 98.9,
-        loss: 0.0089,
-        epoch: 3456,
-        totalEpochs: 6000,
-        trainingProgress: 57.6,
-        datasetSize: 3200000,
-        modelSize: '2.1 GB',
-        consciousnessLevel: 94.2,
-      },
-      {
-        id: 'ml-transformer-004',
-        name: 'Natural Language Processing Core',
-        type: 'TRANSFORMER',
-        architecture: 'GPT-4 Government Fine-tuned',
-        status: 'READY',
-        accuracy: 96.4,
-        precision: 96.1,
-        recall: 96.7,
-        f1Score: 96.4,
-        loss: 0.0234,
-        epoch: 1200,
-        totalEpochs: 1200,
-        trainingProgress: 100,
-        datasetSize: 5400000,
-        modelSize: '3.7 GB',
-        consciousnessLevel: 92.1,
-      },
-    ];
-
-    // Initialize training pipelines
-    const pipelines: TrainingPipeline[] = [
-      {
-        id: 'pipeline-001',
-        name: 'Advanced Property Assessment Model',
-        modelType: 'Deep Neural Network',
-        stage: 'MODEL_TRAINING',
-        progress: 73.4,
-        estimatedTimeRemaining: 142,
-        accuracyTarget: 99.5,
-        currentAccuracy: 97.8,
-        status: 'ACTIVE',
-      },
-      {
-        id: 'pipeline-002',
-        name: 'Tax Revenue Forecasting Pipeline',
-        modelType: 'LSTM + Attention',
-        stage: 'VALIDATION',
-        progress: 89.2,
-        estimatedTimeRemaining: 34,
-        accuracyTarget: 98.0,
-        currentAccuracy: 98.3,
-        status: 'ACTIVE',
-      },
-      {
-        id: 'pipeline-003',
-        name: 'Quantum Optimization Training',
-        modelType: 'Variational Quantum Neural Network',
-        stage: 'FEATURE_ENGINEERING',
-        progress: 41.7,
-        estimatedTimeRemaining: 287,
-        accuracyTarget: 99.9,
-        currentAccuracy: 94.1,
-        status: 'ACTIVE',
-      },
-    ];
-
-    // Initialize predictive analytics
-    const analytics: PredictiveAnalytics[] = [
-      {
-        id: 'pred-001',
-        name: 'King County Property Values Q4 2024',
-        predictionType: 'PROPERTY_VALUE',
-        confidence: 97.8,
-        prediction: 847250,
-        actualValue: 849100,
-        accuracy: 99.78,
-        trend: 'INCREASING',
-        lastUpdate: new Date().toISOString(),
-      },
-      {
-        id: 'pred-002',
-        name: 'Statewide Tax Revenue 2025',
-        predictionType: 'TAX_REVENUE',
-        confidence: 94.6,
-        prediction: 18750000000,
-        accuracy: 96.2,
-        trend: 'INCREASING',
-        lastUpdate: new Date().toISOString(),
-      },
-      {
-        id: 'pred-003',
-        name: 'System Performance Next Quarter',
-        predictionType: 'SYSTEM_PERFORMANCE',
-        confidence: 98.9,
-        prediction: 99.97,
-        accuracy: 99.1,
-        trend: 'STABLE',
-        lastUpdate: new Date().toISOString(),
-      },
-    ];
-
-    setMLModels(models);
-    setTrainingPipelines(pipelines);
-    setPredictiveAnalytics(analytics);
-    calculateHubMetrics(models, pipelines, analytics);
-
-  }, []);
-
   const calculateHubMetrics = useCallback(
     (models: MLModel[], pipelines: TrainingPipeline[], analytics: PredictiveAnalytics[]) => {
       const totalModels = models.length;
       const activeTraining = pipelines.filter((p) => p.status === 'ACTIVE').length;
       const averageAccuracy =
-        models.reduce((sum, model) => sum + model.accuracy, 0) / models.length;
+        models.length > 0 ? models.reduce((sum, model) => sum + model.accuracy, 0) / models.length : 0;
       const totalPredictions = analytics.length;
       const consciousnessOptimization =
-        models.reduce((sum, model) => sum + model.consciousnessLevel, 0) / models.length;
+        models.length > 0
+          ? models.reduce((sum, model) => sum + model.consciousnessLevel, 0) / models.length
+          : 0;
 
       setHubMetrics({
         totalModels,
@@ -263,55 +102,20 @@ export const TerraFusionMLIntelligenceHub: React.FC<MLIntelligenceHubProps> = ({
     []
   );
 
-  const updateMLMetrics = useCallback(() => {
-    // Simulate dynamic ML training updates
-    setMLModels((prev) =>
-      prev.map((model) => {
-        if (model.status === 'TRAINING') {
-          const newEpoch = Math.min(
-            model.totalEpochs,
-            model.epoch + Math.floor(Math.random() * 10) + 1
-          );
-          const newProgress = (newEpoch / model.totalEpochs) * 100;
-          const newAccuracy = Math.min(100, model.accuracy + (Math.random() - 0.5) * 0.1);
-          const newLoss = Math.max(0, model.loss + (Math.random() - 0.7) * 0.001);
+  const initializeMLIntelligenceHub = useCallback(() => {
+    const models: MLModel[] = [];
+    const pipelines: TrainingPipeline[] = [];
+    const analytics: PredictiveAnalytics[] = [];
 
-          return {
-            ...model,
-            epoch: newEpoch,
-            trainingProgress: newProgress,
-            accuracy: newAccuracy,
-            loss: newLoss,
-            status: newProgress >= 100 ? 'DEPLOYED' : 'TRAINING',
-          };
-        }
-        return model;
-      })
-    );
+    setMLModels(models);
+    setTrainingPipelines(pipelines);
+    setPredictiveAnalytics(analytics);
+    calculateHubMetrics(models, pipelines, analytics);
+  }, [calculateHubMetrics]);
 
-    setTrainingPipelines((prev) =>
-      prev.map((pipeline) => {
-        if (pipeline.status === 'ACTIVE') {
-          const newProgress = Math.min(100, pipeline.progress + Math.random() * 0.5);
-          const newAccuracy = Math.min(
-            pipeline.accuracyTarget,
-            pipeline.currentAccuracy + Math.random() * 0.1
-          );
-
-          return {
-            ...pipeline,
-            progress: newProgress,
-            currentAccuracy: newAccuracy,
-            estimatedTimeRemaining: Math.max(
-              0,
-              pipeline.estimatedTimeRemaining - Math.floor(Math.random() * 3)
-            ),
-          };
-        }
-        return pipeline;
-      })
-    );
-  }, []);
+  useEffect(() => {
+    initializeMLIntelligenceHub();
+  }, [initializeMLIntelligenceHub]);
 
   const getModelTypeColor = (type: MLModel['type']) => {
     switch (type) {

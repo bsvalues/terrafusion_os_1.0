@@ -9,6 +9,7 @@
  */
 
 import type { OsActionTracePayload } from '../osActions';
+import { createStableId } from '../../utils/stableId';
 import type { StoredTraceEvent, TelemetryStore } from './telemetryStore';
 
 // ============================================================================
@@ -59,13 +60,8 @@ export interface TraceEventInput {
 // Implementation
 // ============================================================================
 
-let idCounter = 0;
-
 function generateEventId(): string {
-  const timestamp = Date.now().toString(36);
-  const random = Math.random().toString(36).substring(2, 8);
-  const counter = (idCounter++).toString(36);
-  return `te-${timestamp}-${random}-${counter}`;
+  return createStableId('te');
 }
 
 export function createTelemetrySink(
@@ -176,7 +172,7 @@ export function createTelemetrySink(
 import { subscribeToAllTraces } from '../osActions';
 import { getTelemetryStore } from './telemetryStore';
 
-const DEFAULT_SINK_CONFIG: TelemetrySinkConfig = {
+const TELEMETRY_SINK_CONFIG: TelemetrySinkConfig = {
   batchSize: 10,
   flushIntervalMs: 250,
 };
@@ -187,7 +183,7 @@ let unsubscribe: (() => void) | null = null;
 export function startTelemetrySink(): TelemetrySink {
   if (defaultSink) return defaultSink;
 
-  defaultSink = createTelemetrySink(getTelemetryStore(), DEFAULT_SINK_CONFIG);
+  defaultSink = createTelemetrySink(getTelemetryStore(), TELEMETRY_SINK_CONFIG);
 
   // Subscribe to trace bus
   unsubscribe = subscribeToAllTraces((event) => {

@@ -1,677 +1,106 @@
 /**
- * BatchCostRun.tsx (Tranche 1D → 1E audit-proof)
+ * BatchCostRun.tsx
  *
- * Standalone Forge module: Batch Cost Model Runs.
- * Provides run configuration with strata/neighborhood/class filters,
- * dry-run summary preview, and run history from governed backend APIs.
- *
- * Write lane: Forge (cross-parcel, no parcelId routing).
- * Preview-safe: dry-run produces summary without persisting values.
- *
- * 1E additions: ForgeApplyMode lifecycle, backend-capability gate,
- * blocker display, and audit event emission on every interaction.
+ * Standalone Forge module: Batch cost model runs.
  *
  * DATA POSTURE:
- * - No run history or preview output is fabricated when APIs are unavailable.
- * - `BACKEND_APPLY_CAPABLE = true`: the `/api/forge/cost/batch/apply` endpoint is
- *   implemented. Unlike `CoefficientPreview` (which sets this to `false` because
- *   its apply path is not yet wired), BatchCostRun CAN call apply when live.
+ * - The governed batch preview engine is not available on this surface.
+ * - `/api/forge/cost/batch/preview` is documented by the backend as a dev stub.
+ * - No governed `/api/forge/cost/batch/apply` endpoint exists in the current API.
+ * - No persisted governed batch run history exists for this lane.
+ *
+ * This module therefore renders an explicit unavailable state instead of
+ * calling stub routes or implying that batch apply is operational.
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
-import {
-  emitToolFailed,
-  emitToolInvoked,
-  emitToolSucceeded,
-  generateCorrelationId,
-} from '@/services/terraTrace';
 
-// ---------------------------------------------------------------------------
-// 1E: Apply-mode types & audit event emitter
-// ---------------------------------------------------------------------------
-
-type ForgeApplyMode = 'preview_only' | 'apply_pending_backend' | 'apply_executed';
-
-interface AuditEvent {
-  eventId: string;
-  requestId: string;
-  suite: 'forge';
-  writeLane: 'forge' | 'none';
-  mode: ForgeApplyMode;
-  outcome: 'preview_generated' | 'preview_unavailable' | 'apply_accepted' | 'apply_blocked' | 'apply_executed';
-  timestamp: string;
-}
-
-/** Apply is backend-wired: /api/forge/cost/batch/apply is implemented.
- * Set to false in CoefficientPreview (apply not yet wired there). */
-const BACKEND_APPLY_CAPABLE = true;
-
-let _auditSeq = 0;
-function emitAuditEvent(
-  mode: ForgeApplyMode,
-  outcome: AuditEvent['outcome'],
-): AuditEvent {
-  const evt: AuditEvent = {
-    eventId: `bcr-audit-${++_auditSeq}`,
-    requestId: `bcr-req-${Date.now()}`,
-    suite: 'forge',
-    writeLane: mode === 'preview_only' ? 'none' : 'forge',
-    mode,
-    outcome,
-    timestamp: new Date().toISOString(),
-  };
-  return evt;
-}
-
-async function previewBatchRun(filter: BatchFilter): Promise<RunSummary> {
-  const params = new URLSearchParams();
-  if (filter.neighborhoods.length > 0) {
-    params.set('neighborhood', filter.neighborhoods[0]);
-  }
-  if (filter.propertyClasses.length > 0) {
-    params.set('propertyType', filter.propertyClasses[0]);
-  }
-
-  const response = await fetch(`/api/forge/cost/batch/preview?${params.toString()}`);
-  if (!response.ok) {
-    throw new Error(`Preview request failed: ${response.status}`);
-  }
-
-  const data = (await response.json()) as Partial<RunSummary> & { matchCount?: number };
-
-  if (typeof data.totalParcels === 'number') {
-    return {
-      totalParcels: data.totalParcels,
-      increasedCount: data.increasedCount ?? 0,
-      decreasedCount: data.decreasedCount ?? 0,
-      unchangedCount: data.unchangedCount ?? 0,
-      meanChange: data.meanChange ?? 0,
-      medianChange: data.medianChange ?? 0,
-      meanPctChange: data.meanPctChange ?? 0,
-    };
-  }
-
-  const matchCount = data.matchCount ?? 0;
-  return {
-    totalParcels: matchCount,
-    increasedCount: 0,
-    decreasedCount: 0,
-    unchangedCount: matchCount,
-    meanChange: 0,
-    medianChange: 0,
-    meanPctChange: 0,
-  };
-}
-
-async function applyBatchRun(request: {
-  label: string;
-  modelYear: number;
-  costTableVersion: string;
-  filter: BatchFilter;
-}): Promise<Partial<RunRecord> & { jobId?: string }> {
-  const response = await fetch('/api/forge/cost/batch/apply', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      neighborhoodFilter: request.filter.neighborhoods[0] ?? '',
-      propertyType: request.filter.propertyClasses[0] ?? '',
-      costScheduleId: request.costTableVersion,
-      modelYear: request.modelYear,
-      strata: request.filter.strata,
-      label: request.label,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Apply request failed: ${response.status}`);
-  }
-
-  return response.json();
-}
-
-// ---------------------------------------------------------------------------
-// Governed request types
-// ---------------------------------------------------------------------------
-
-interface BatchFilter {
-  strata: string[];
-  neighborhoods: string[];
-  propertyClasses: string[];
-}
-
-interface RunSummary {
-  totalParcels: number;
-  increasedCount: number;
-  decreasedCount: number;
-  unchangedCount: number;
-  meanChange: number;
-  medianChange: number;
-  meanPctChange: number;
-}
-
-interface RunRecord {
-  id: string;
-  label: string;
-  modelYear: number;
-  costTableVersion: string;
-  filter: BatchFilter;
-  dryRun: boolean;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
-  summary: RunSummary | null;
-  createdAt: string;
-  completedAt: string | null;
-}
-
-const STRATA_OPTIONS = ['residential', 'commercial', 'industrial', 'agricultural', 'exempt'] as const;
-const CLASS_OPTIONS = ['R1-SFR', 'R2-MultiFamily', 'C1-Retail', 'C2-Office', 'I1-Light Industrial', 'A1-Irrigated', 'A2-Dryland'] as const;
-
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
-
-type View = 'configure' | 'history';
-
-const FIXTURE_HISTORY: RunRecord[] = [
+const GOVERNED_BLOCKERS = [
   {
-    id: 'fixture-bcr-001',
-    label: 'Sample Run — 2025 Residential',
-    modelYear: 2025,
-    costTableVersion: 'CT-2025.2',
-    filter: { strata: ['residential'], neighborhoods: [], propertyClasses: ['R1-SFR'] },
-    dryRun: true,
-    status: 'completed',
-    summary: {
-      totalParcels: 12450,
-      increasedCount: 8200,
-      decreasedCount: 1800,
-      unchangedCount: 2450,
-      meanChange: 4250,
-      medianChange: 3800,
-      meanPctChange: 4.1,
-    },
-    createdAt: '2025-11-15T10:30:00Z',
-    completedAt: '2025-11-15T10:45:00Z',
+    lane: 'Preview Engine',
+    status: 'Unavailable',
+    detail: 'The current backend preview route is a development stub, not a governed batch valuation engine.',
   },
-];
+  {
+    lane: 'Apply Endpoint',
+    status: 'Unavailable',
+    detail: 'No governed /api/forge/cost/batch/apply endpoint exists in the current API surface.',
+  },
+  {
+    lane: 'Run History',
+    status: 'Unavailable',
+    detail: 'There is no persisted batch run history store for this lane, so prior runs cannot be audited here.',
+  },
+] as const;
 
 export function BatchCostRun() {
-  const [view, setView] = useState<View>('configure');
-  const [history, setHistory] = useState<RunRecord[]>([]);
-  const [isHistoryFixture, setIsHistoryFixture] = useState(false);
-
-  // Config form state
-  const [label, setLabel] = useState('');
-  const [modelYear, setModelYear] = useState(() => new Date().getFullYear());
-  const [costTableVersion, setCostTableVersion] = useState('');
-  const [selectedStrata, setSelectedStrata] = useState<string[]>([]);
-  const [neighborhoodCode, setNeighborhoodCode] = useState('');
-  const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
-  const [dryRunResult, setDryRunResult] = useState<RunSummary | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [historyError, setHistoryError] = useState<string | null>(null);
-
-  // 1E: Apply mode lifecycle
-  const [applyMode, setApplyMode] = useState<ForgeApplyMode>('preview_only');
-  const [auditLog, setAuditLog] = useState<AuditEvent[]>([]);
-
-  useEffect(() => {
-    fetch('/api/forge/cost/batch/history')
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`History request failed: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data: RunRecord[]) => {
-        if (Array.isArray(data)) {
-          setHistory(data);
-          setHistoryError(null);
-        }
-      })
-      .catch((err) => {
-        setHistory(FIXTURE_HISTORY);
-        setIsHistoryFixture(true);
-        setHistoryError(err instanceof Error ? err.message : 'Run history API unavailable.');
-      });
-  }, []);
-
-  const sourceSummary = historyError
-    ? `Run history unavailable: ${historyError}`
-    : 'Workspace batch valuation API';
-
-  const toggleItem = (arr: string[], item: string, setter: (v: string[]) => void) => {
-    setter(arr.includes(item) ? arr.filter((x) => x !== item) : [...arr, item]);
-  };
-
-  const handleDryRun = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    const correlationId = generateCorrelationId();
-    emitToolInvoked({
-      suite: 'forge',
-      correlationId,
-      inputSummary: 'batch_cost_preview',
-      risk: 'read_only',
-    });
-
-    try {
-      const filter: BatchFilter = {
-        strata: selectedStrata,
-        neighborhoods: neighborhoodCode.trim() ? [neighborhoodCode.trim()] : [],
-        propertyClasses: selectedClasses,
-      };
-      const summary = await previewBatchRun(filter);
-      setDryRunResult(summary);
-      setApplyMode('preview_only');
-      const evt = emitAuditEvent('preview_only', 'preview_generated');
-      setAuditLog((prev) => [...prev, evt]);
-      emitToolSucceeded({
-        suite: 'forge',
-        correlationId,
-        outputSummary: `preview_parcels=${summary.totalParcels}`,
-      });
-    } catch {
-      setDryRunResult(null);
-      setApplyMode('preview_only');
-      setError('Batch preview API unavailable. No preview output was rendered.');
-      const evt = emitAuditEvent('preview_only', 'preview_unavailable');
-      setAuditLog((prev) => [...prev, evt]);
-      emitToolFailed({
-        suite: 'forge',
-        correlationId,
-        inputSummary: 'batch_cost_preview',
-        outputSummary: 'preview_api_unavailable',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [neighborhoodCode, selectedClasses, selectedStrata]);
-
-  const handleApplyRequest = useCallback(async () => {
-    if (!BACKEND_APPLY_CAPABLE) {
-      setApplyMode('apply_pending_backend');
-      const blocked = emitAuditEvent('apply_pending_backend', 'apply_blocked');
-      setAuditLog((prev) => [...prev, blocked]);
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    const correlationId = generateCorrelationId();
-    emitToolInvoked({
-      suite: 'forge',
-      correlationId,
-      inputSummary: 'batch_cost_apply',
-      risk: 'write_high',
-      reasonCode: 'batch_valuation_update',
-    });
-
-    try {
-      const filter: BatchFilter = {
-        strata: selectedStrata,
-        neighborhoods: neighborhoodCode.trim() ? [neighborhoodCode.trim()] : [],
-        propertyClasses: selectedClasses,
-      };
-      const applied = await applyBatchRun({
-        label,
-        modelYear,
-        costTableVersion,
-        filter,
-      });
-
-      const runId = applied.id ?? applied.jobId;
-      if (!runId) {
-        throw new Error('Batch apply response did not include a governed run id.');
-      }
-      const newRecord: RunRecord = {
-        id: runId,
-        label: label || `Batch Run ${new Date().toLocaleDateString()}`,
-        modelYear,
-        costTableVersion,
-        filter,
-        dryRun: false,
-        status: (applied.status as RunRecord['status']) ?? 'running',
-        summary: dryRunResult,
-        createdAt: new Date().toISOString(),
-        completedAt: null,
-      };
-
-      setHistory((prev) => [newRecord, ...prev]);
-      setApplyMode('apply_executed');
-      const evt = emitAuditEvent('apply_executed', 'apply_executed');
-      setAuditLog((prev) => [...prev, evt]);
-      emitToolSucceeded({
-        suite: 'forge',
-        correlationId,
-        outputSummary: `batch_run_id=${runId}`,
-      });
-    } catch {
-      setApplyMode('apply_pending_backend');
-      setError('Batch apply API unavailable. Apply request blocked.');
-      const evt = emitAuditEvent('apply_pending_backend', 'apply_blocked');
-      setAuditLog((prev) => [...prev, evt]);
-      emitToolFailed({
-        suite: 'forge',
-        correlationId,
-        inputSummary: 'batch_cost_apply',
-        outputSummary: 'apply_api_failed',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [costTableVersion, dryRunResult, label, modelYear, neighborhoodCode, selectedClasses, selectedStrata]);
-
-  const fmtNum = (n: number) => n.toLocaleString();
-  const fmtCurrency = (n: number) => `$${n.toLocaleString()}`;
-
-  const statusVariant = (s: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
-    switch (s) {
-      case 'completed': return 'secondary';
-      case 'running': return 'default';
-      case 'failed': return 'destructive';
-      default: return 'outline';
-    }
-  };
-
   return (
     <div data-testid="batch-cost-run" className="space-y-4 p-4">
-      {isHistoryFixture && <DemoDataBanner module="Batch Cost Run" />}
+      <div
+        data-testid="batch-cost-run-unavailable"
+        className="rounded-lg border px-4 py-3"
+        style={{
+          background: 'hsl(var(--tf-warning) / 0.08)',
+          borderColor: 'hsl(var(--tf-warning) / 0.35)',
+        }}
+      >
+        <p className="text-sm font-medium">Governed batch cost run unavailable.</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          This surface no longer calls the stub batch preview/history routes or pretends the
+          batch apply lane is operational.
+        </p>
+      </div>
+
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--tf-fg))' }}>Batch Cost Model Runs</h1>
-        <div className="flex gap-2">
-          <Button variant={view === 'configure' ? 'default' : 'outline'} size="sm" onClick={() => setView('configure')}>
-            Configure Run
-          </Button>
-          <Button variant={view === 'history' ? 'default' : 'outline'} size="sm" onClick={() => setView('history')}>
-            Run History
-          </Button>
+        <div>
+          <h1 className="text-2xl font-bold">Batch Cost Model Runs</h1>
+          <p className="text-muted-foreground">Governed batch engine unavailable</p>
         </div>
+        <Badge variant="outline">Blocked</Badge>
       </div>
-      <div className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
-        Source: {sourceSummary}
+
+      <div className="text-xs text-muted-foreground">
+        Source: No governed batch valuation engine is currently wired for this module.
       </div>
-      {error && (
-        <div className="text-xs px-2 py-1 rounded" style={{
-          background: 'hsl(40 80% 40% / 0.2)',
-          color: 'hsl(40 80% 70%)',
-        }}>
-          {error}
-        </div>
-      )}
 
-      {/* VIEW: Configure */}
-      {view === 'configure' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Left: Config Form */}
-          <Card>
-            <CardHeader><CardTitle>Run Configuration</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Run Label</label>
-                <input
-                  data-testid="batch-label"
-                  type="text"
-                  value={label}
-                  onChange={(e) => setLabel(e.target.value)}
-                  placeholder="e.g. 2025 Residential Full"
-                  className="w-full px-3 py-2 rounded border text-sm"
-                  style={{ background: 'hsl(var(--tf-card-bg) / 0.5)', borderColor: 'hsl(var(--tf-border) / 0.3)', color: 'hsl(var(--tf-fg))' }}
-                />
+      <Card>
+        <CardHeader>
+          <CardTitle>Blocked Execution Lanes</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {GOVERNED_BLOCKERS.map((blocker) => (
+            <div
+              key={blocker.lane}
+              className="rounded-lg border px-3 py-3"
+              style={{
+                background: 'hsl(var(--tf-card-bg) / 0.35)',
+                borderColor: 'hsl(var(--tf-border) / 0.25)',
+              }}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-medium">{blocker.lane}</span>
+                <Badge variant="outline">{blocker.status}</Badge>
               </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Model Year</label>
-                  <input
-                    data-testid="batch-year"
-                    type="number"
-                    value={modelYear}
-                    onChange={(e) => setModelYear(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded border text-sm"
-                    style={{ background: 'hsl(var(--tf-card-bg) / 0.5)', borderColor: 'hsl(var(--tf-border) / 0.3)', color: 'hsl(var(--tf-fg))' }}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Cost Table Version</label>
-                  <input
-                    data-testid="batch-cost-table"
-                    type="text"
-                    value={costTableVersion}
-                    onChange={(e) => setCostTableVersion(e.target.value)}
-                    className="w-full px-3 py-2 rounded border text-sm"
-                    style={{ background: 'hsl(var(--tf-card-bg) / 0.5)', borderColor: 'hsl(var(--tf-border) / 0.3)', color: 'hsl(var(--tf-fg))' }}
-                  />
-                </div>
-              </div>
-
-              {/* Strata filter */}
-              <div>
-                <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Strata</label>
-                <div className="flex flex-wrap gap-1">
-                  {STRATA_OPTIONS.map((s) => (
-                    <Badge
-                      key={s}
-                      variant={selectedStrata.includes(s) ? 'default' : 'outline'}
-                      className="cursor-pointer"
-                      onClick={() => toggleItem(selectedStrata, s, setSelectedStrata)}
-                    >
-                      {s}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              {/* Neighborhood filter */}
-              <div>
-                <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>TerraFusion Neighborhood Code</label>
-                <input
-                  data-testid="batch-neighborhood-code"
-                  type="text"
-                  value={neighborhoodCode}
-                  onChange={(e) => setNeighborhoodCode(e.target.value)}
-                  placeholder="Enter neighborhood code, not city name"
-                  className="w-full px-3 py-2 rounded border text-sm"
-                  style={{ background: 'hsl(var(--tf-card-bg) / 0.5)', borderColor: 'hsl(var(--tf-border) / 0.3)', color: 'hsl(var(--tf-fg))' }}
-                />
-                <p className="mt-1 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
-                  Neighborhoods are assessment neighborhood codes. City names are not valid neighborhood IDs.
-                </p>
-              </div>
-
-              {/* Property class filter */}
-              <div>
-                <label className="text-sm font-medium block mb-1" style={{ color: 'hsl(var(--tf-muted))' }}>Property Classes</label>
-                <div className="flex flex-wrap gap-1">
-                  {CLASS_OPTIONS.map((c) => (
-                    <Badge
-                      key={c}
-                      variant={selectedClasses.includes(c) ? 'default' : 'outline'}
-                      className="cursor-pointer"
-                      onClick={() => toggleItem(selectedClasses, c, setSelectedClasses)}
-                    >
-                      {c}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              <Button data-testid="batch-dry-run-btn" onClick={handleDryRun} className="w-full">
-                {isLoading ? 'Loading Preview...' : 'Preview (Dry Run)'}
-              </Button>
-
-              {/* 1E: Apply Request — only visible after a preview */}
-              {dryRunResult && (
-                <div className="space-y-2 pt-2">
-                  <Button
-                    data-testid="batch-apply-btn"
-                    variant={applyMode === 'apply_executed' ? 'default' : 'outline'}
-                    onClick={handleApplyRequest}
-                    disabled={applyMode === 'apply_executed' || isLoading}
-                    className="w-full"
-                  >
-                    {applyMode === 'apply_executed'
-                      ? 'Applied'
-                      : applyMode === 'apply_pending_backend'
-                        ? 'Retry Apply'
-                        : 'Request Apply'}
-                  </Button>
-
-                  {/* 1E: Apply mode banner */}
-                  <div data-testid="batch-apply-mode" className="text-xs px-2 py-1 rounded" style={{
-                    background: applyMode === 'preview_only'
-                      ? 'hsl(200 60% 30% / 0.2)'
-                      : applyMode === 'apply_pending_backend'
-                        ? 'hsl(40 80% 40% / 0.2)'
-                        : 'hsl(120 50% 35% / 0.2)',
-                    color: applyMode === 'preview_only'
-                      ? 'hsl(200 60% 70%)'
-                      : applyMode === 'apply_pending_backend'
-                        ? 'hsl(40 80% 70%)'
-                        : 'hsl(120 60% 60%)',
-                  }}>
-                    {applyMode === 'preview_only' && 'Mode: Preview Only — no values persisted'}
-                    {applyMode === 'apply_pending_backend' && 'Mode: Apply Blocked — backend capability not available. Request recorded.'}
-                    {applyMode === 'apply_executed' && 'Mode: Applied — values persisted to cost tables'}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Right: Dry-Run Summary */}
-          <Card>
-            <CardHeader><CardTitle>Dry-Run Summary</CardTitle></CardHeader>
-            <CardContent>
-              {!dryRunResult ? (
-                <div className="flex items-center justify-center py-16" style={{ color: 'hsl(var(--tf-muted))' }}>
-                  Configure filters and run a preview to see projected impact.
-                </div>
-              ) : (
-                <div data-testid="batch-dry-run-summary" className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 rounded" style={{ background: 'hsl(var(--tf-card-bg) / 0.4)' }}>
-                      <div className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>Total Parcels</div>
-                      <div className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(dryRunResult.totalParcels)}</div>
-                    </div>
-                    <div className="p-3 rounded" style={{ background: 'hsl(var(--tf-card-bg) / 0.4)' }}>
-                      <div className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>Mean % Change</div>
-                      <div className="text-lg font-semibold" style={{ color: 'hsl(var(--tf-suite-forge))' }}>{dryRunResult.meanPctChange.toFixed(1)}%</div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="p-2 rounded text-center" style={{ background: 'hsl(120 40% 30% / 0.2)' }}>
-                      <div className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>Increased</div>
-                      <div className="font-semibold" style={{ color: 'hsl(120 60% 60%)' }}>{fmtNum(dryRunResult.increasedCount)}</div>
-                    </div>
-                    <div className="p-2 rounded text-center" style={{ background: 'hsl(0 40% 30% / 0.2)' }}>
-                      <div className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>Decreased</div>
-                      <div className="font-semibold" style={{ color: 'hsl(0 60% 60%)' }}>{fmtNum(dryRunResult.decreasedCount)}</div>
-                    </div>
-                    <div className="p-2 rounded text-center" style={{ background: 'hsl(var(--tf-card-bg) / 0.4)' }}>
-                      <div className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>Unchanged</div>
-                      <div className="font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtNum(dryRunResult.unchangedCount)}</div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 rounded" style={{ background: 'hsl(var(--tf-card-bg) / 0.4)' }}>
-                      <div className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>Mean Change</div>
-                      <div className="font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtCurrency(dryRunResult.meanChange)}</div>
-                    </div>
-                    <div className="p-3 rounded" style={{ background: 'hsl(var(--tf-card-bg) / 0.4)' }}>
-                      <div className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>Median Change</div>
-                      <div className="font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{fmtCurrency(dryRunResult.medianChange)}</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* VIEW: Run History */}
-      {view === 'history' && (
-        <Card>
-          <CardHeader><CardTitle>Run History</CardTitle></CardHeader>
-          <CardContent>
-            <table data-testid="batch-run-history" className="w-full text-sm">
-              <thead>
-                <tr style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.2)' }}>
-                  <th className="text-left py-2" style={{ color: 'hsl(var(--tf-muted))' }}>Label</th>
-                  <th className="text-left py-2" style={{ color: 'hsl(var(--tf-muted))' }}>Year</th>
-                  <th className="text-left py-2" style={{ color: 'hsl(var(--tf-muted))' }}>Cost Table</th>
-                  <th className="text-right py-2" style={{ color: 'hsl(var(--tf-muted))' }}>Parcels</th>
-                  <th className="text-right py-2" style={{ color: 'hsl(var(--tf-muted))' }}>Mean Δ%</th>
-                  <th className="text-left py-2" style={{ color: 'hsl(var(--tf-muted))' }}>Type</th>
-                  <th className="text-left py-2" style={{ color: 'hsl(var(--tf-muted))' }}>Status</th>
-                  <th className="text-left py-2" style={{ color: 'hsl(var(--tf-muted))' }}>Created</th>
-                </tr>
-              </thead>
-              <tbody>
-                {history.length === 0 && (
-                  <tr>
-                    <td colSpan={8} className="py-6 text-center text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>
-                      No governed batch run history returned by the API.
-                    </td>
-                  </tr>
-                )}
-                {history.map((run) => (
-                  <tr key={run.id} style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.1)' }}>
-                    <td className="py-2" style={{ color: 'hsl(var(--tf-fg))' }}>{run.label}</td>
-                    <td className="py-2" style={{ color: 'hsl(var(--tf-fg))' }}>{run.modelYear}</td>
-                    <td className="py-2 font-mono text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>{run.costTableVersion}</td>
-                    <td className="py-2 text-right font-mono" style={{ color: 'hsl(var(--tf-fg))' }}>
-                      {run.summary ? fmtNum(run.summary.totalParcels) : '—'}
-                    </td>
-                    <td className="py-2 text-right font-mono" style={{ color: 'hsl(var(--tf-suite-forge))' }}>
-                      {run.summary ? `${run.summary.meanPctChange.toFixed(1)}%` : '—'}
-                    </td>
-                    <td className="py-2">
-                      <Badge variant={run.dryRun ? 'outline' : 'secondary'}>{run.dryRun ? 'Preview' : 'Applied'}</Badge>
-                    </td>
-                    <td className="py-2">
-                      <Badge variant={statusVariant(run.status)}>{run.status}</Badge>
-                    </td>
-                    <td className="py-2 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
-                      {new Date(run.createdAt).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* 1E: Audit Trail */}
-      {auditLog.length > 0 && (
-        <Card>
-          <CardHeader><CardTitle>Audit Trail</CardTitle></CardHeader>
-          <CardContent>
-            <div data-testid="batch-audit-trail" className="space-y-1">
-              {auditLog.map((evt) => (
-                <div key={evt.eventId} className="flex items-center gap-2 text-xs py-1" style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.1)' }}>
-                  <Badge variant="outline" className="shrink-0">{evt.outcome}</Badge>
-                  <span className="font-mono" style={{ color: 'hsl(var(--tf-muted))' }}>{evt.mode}</span>
-                  <span className="font-mono" style={{ color: 'hsl(var(--tf-muted))' }}>lane:{evt.writeLane}</span>
-                  <span className="ml-auto font-mono" style={{ color: 'hsl(var(--tf-muted))' }}>
-                    {new Date(evt.timestamp).toLocaleTimeString()}
-                  </span>
-                </div>
-              ))}
+              <p className="mt-2 text-sm text-muted-foreground">{blocker.detail}</p>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Operator Guidance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
+            <li>Use Cost Manual for governed Benton schedule review.</li>
+            <li>Use Coefficient Preview for controlled coefficient what-if work until a real batch engine exists.</li>
+            <li>Do not treat batch preview, apply, or history output from this lane as production evidence until the backend is replaced with governed endpoints.</li>
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
 }

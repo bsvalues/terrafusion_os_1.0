@@ -830,7 +830,7 @@ export function PilotConsole(): React.ReactElement {
         {/* Footer */}
         <div className='mt-12 pt-6 border-t border-slate-800 text-center text-slate-500 text-xs'>
           <p>TerraFusion GovernanceLock • Phase 6.2 • Preflight-First Enforcement</p>
-          <p className='mt-1 text-cyan-500/50'>Government. Transcended.</p>
+          <p className='mt-1 text-cyan-500/50'>Governed Operator Surface</p>
         </div>
       </div>
 

@@ -200,9 +200,12 @@ const AmbientQuantumParticles: React.FC = () => {
     const positions = new Float32Array(500 * 3);
 
     for (let i = 0; i < 500; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 10;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+      const theta = (i / 500) * Math.PI * 2;
+      const phi = Math.acos(2 * ((i + 0.5) / 500) - 1);
+      const radius = 5;
+      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = radius * Math.cos(phi);
     }
 
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -414,121 +417,23 @@ export const QuantumResearchDashboard: React.FC = () => {
   const [session, setSession] = useState<ResearchSession | null>(null);
   const [visualizationData, setVisualizationData] = useState<QuantumVisualizationData | null>(null);
   const [metrics, setMetrics] = useState<SystemMetrics>({
-    activeAgents: 1008,
-    quantumCoherence: 0.995,
-    entanglementStrength: 0.987,
-    consciousnessLevel: 8.5,
-    throughputOps: 105000,
-    latencyMs: 8.3,
-    accuracyScore: 0.99923,
+    activeAgents: 0,
+    quantumCoherence: 0,
+    entanglementStrength: 0,
+    consciousnessLevel: 0,
+    throughputOps: 0,
+    latencyMs: 0,
+    accuracyScore: 0,
   });
   const [isAnimating, setIsAnimating] = useState(true);
   const [visualizationMode, setVisualizationMode] = useState<
     'property' | 'consciousness' | 'swarm'
   >('property');
 
-  // Initialize session
+  // Visualization remains empty until a governed research provider supplies data.
   useEffect(() => {
-    const initSession: ResearchSession = {
-      sessionId: `TERRA-${Date.now()}`,
-      researcherName: 'Dr. Quantum Researcher',
-      institution: 'Harvard-MIT Research Lab',
-      startTime: new Date(),
-      activeAgents: 1008,
-      quantumCoherence: 0.995,
-      consciousnessLevel: 8.5,
-    };
-    setSession(initSession);
-  }, []);
-
-  // Generate sample visualization data
-  useEffect(() => {
-    const generateSampleData = (): QuantumVisualizationData => {
-      const points = [];
-      const connections = [];
-      const pointCount = 200;
-
-      // Generate quantum point cloud
-      for (let i = 0; i < pointCount; i++) {
-        const theta = (i / pointCount) * Math.PI * 2;
-        const phi = Math.acos(2 * (i / pointCount) - 1);
-        const radius = 2 + Math.random() * 0.5;
-
-        points.push({
-          x: radius * Math.sin(phi) * Math.cos(theta),
-          y: radius * Math.sin(phi) * Math.sin(theta),
-          z: radius * Math.cos(phi),
-          color: `hsl(${180 + Math.random() * 30}, 100%, ${50 + Math.random() * 20}%)`,
-          size: 0.05 + Math.random() * 0.1,
-          label: `Property ${i + 1}`,
-        });
-      }
-
-      // Generate k-nearest connections
-      for (let i = 0; i < pointCount; i++) {
-        const k = 3; // k-nearest neighbors
-        const distances = points.map((p, j) => ({
-          index: j,
-          distance:
-            i === j
-              ? Infinity
-              : Math.sqrt(
-                  Math.pow(points[i].x - p.x, 2) +
-                    Math.pow(points[i].y - p.y, 2) +
-                    Math.pow(points[i].z - p.z, 2)
-                ),
-        }));
-
-        distances.sort((a, b) => a.distance - b.distance);
-
-        for (let j = 0; j < k && j < distances.length; j++) {
-          connections.push({
-            from: i,
-            to: distances[j].index,
-            strength: 0.5 + Math.random() * 0.5,
-          });
-        }
-      }
-
-      return {
-        points,
-        connections,
-        metadata: {
-          totalPoints: pointCount,
-          visualizationMode: 'quantum-property-space',
-          quantumCoherence: 0.995,
-        },
-      };
-    };
-
-    setVisualizationData(generateSampleData());
+    setVisualizationData(null);
   }, [visualizationMode]);
-
-  // Real-time metrics updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMetrics((prev) => ({
-        ...prev,
-        activeAgents: prev.activeAgents + Math.floor((Math.random() - 0.5) * 10),
-        quantumCoherence: Math.min(
-          0.999,
-          Math.max(0.99, prev.quantumCoherence + (Math.random() - 0.5) * 0.001)
-        ),
-        entanglementStrength: Math.min(
-          0.999,
-          Math.max(0.98, prev.entanglementStrength + (Math.random() - 0.5) * 0.002)
-        ),
-        throughputOps: prev.throughputOps + (Math.random() - 0.5) * 5000,
-        latencyMs: Math.max(5, Math.min(15, prev.latencyMs + (Math.random() - 0.5) * 2)),
-        accuracyScore: Math.min(
-          0.9999,
-          Math.max(0.999, prev.accuracyScore + (Math.random() - 0.5) * 0.00001)
-        ),
-      }));
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const handleVisualizationModeChange = (mode: typeof visualizationMode) => {
     setVisualizationMode(mode);

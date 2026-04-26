@@ -14,6 +14,8 @@
  * Endpoints target the TerraFusion Kernel ratio-study API.
  */
 
+import { createStableId } from '../../utils/stableId';
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -203,7 +205,7 @@ export async function computeRatioStudy(params: RatioStudyParams): Promise<Ratio
 export async function emitModelReceipt(result: RatioStudyResult): Promise<ModelReceipt> {
   // No dedicated receipts endpoint in backend; log locally for audit trail
   const receipt: ModelReceipt = {
-    receiptId: `rcpt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    receiptId: createStableId('rcpt'),
     modelType: 'ratio_study',
     paramsHash: btoa(JSON.stringify(result.params)).slice(0, 16),
     computedAt: result.computedAt,

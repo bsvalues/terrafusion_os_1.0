@@ -34,9 +34,9 @@ public sealed class LevyCertificationService : ILevyCertificationService
         return Task.FromResult(new LevyCertificationResult(true, "Draft", reason));
     }
 
-    public Task<LevyCertificationStatus?> GetStatusAsync(Guid levyRunId, CancellationToken ct = default)
+    public Task<LevyCertificationStatusDto?> GetStatusAsync(Guid levyRunId, CancellationToken ct = default)
     {
         // Stub: returns null until DB-backed state machine is implemented (B5 follow-on)
-        return Task.FromResult<LevyCertificationStatus?>(null);
+        return Task.FromResult<LevyCertificationStatusDto?>(null);
     }
 }

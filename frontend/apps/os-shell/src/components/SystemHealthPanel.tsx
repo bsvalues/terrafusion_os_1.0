@@ -1,7 +1,7 @@
 /**
  * SystemHealthPanel — Home-screen sidebar health summary.
  *
- * Compact card showing CPU, memory, module counts, and uptime.
+ * Compact card showing governed module health plus optional telemetry.
  * Accepts the flat SystemHealth shape from useSystemHealth.
  *
  * NOTE: This is NOT the detailed tray panel at shell/desktop/SystemHealthPanel.
@@ -14,15 +14,18 @@ import React from 'react';
 import { Activity, Cpu, HardDrive, RefreshCw } from 'lucide-react';
 
 interface SystemHealth {
-  memory: number;
-  memoryStatus: 'healthy' | 'warning' | 'error';
-  cpu: number;
-  cpuStatus: 'healthy' | 'warning' | 'error';
+  memory: number | null;
+  memoryStatus: 'healthy' | 'warning' | 'error' | 'unknown';
+  cpu: number | null;
+  cpuStatus: 'healthy' | 'warning' | 'error' | 'unknown';
   notifications: number;
-  uptime: number;
+  uptime: number | null;
   activeModules: number;
   totalModules: number;
   lastUpdated: string;
+  status: string;
+  warnings: string[];
+  systemComponents: Record<string, boolean>;
 }
 
 export interface SystemHealthPanelProps {
@@ -31,7 +34,7 @@ export interface SystemHealthPanelProps {
   onRefresh: () => void;
 }
 
-const statusColor = (s: 'healthy' | 'warning' | 'error'): string => {
+const statusColor = (s: 'healthy' | 'warning' | 'error' | 'unknown'): string => {
   switch (s) {
     case 'healthy':
       return 'hsl(var(--tf-accent-success))';
@@ -39,11 +42,13 @@ const statusColor = (s: 'healthy' | 'warning' | 'error'): string => {
       return 'hsl(var(--tf-accent-warning))';
     case 'error':
       return 'hsl(var(--tf-accent-danger))';
+    case 'unknown':
+      return 'hsl(var(--tf-muted-foreground))';
   }
 };
 
-const formatUptime = (seconds: number): string => {
-  if (seconds <= 0) return '—';
+const formatUptime = (seconds: number | null): string => {
+  if (!seconds || seconds <= 0) return 'not reported';
   const d = Math.floor(seconds / 86400);
   const h = Math.floor((seconds % 86400) / 3600);
   if (d > 0) return `${d}d ${h}h`;
@@ -99,19 +104,23 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({
       {/* CPU */}
       <span
         style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}
-        title={`CPU: ${health.cpu}%`}
+        title={health.cpu === null ? 'CPU telemetry not reported' : `CPU: ${health.cpu}%`}
       >
         <Cpu size={11} style={{ color: statusColor(health.cpuStatus) }} />
-        <span style={{ color: statusColor(health.cpuStatus) }}>{health.cpu}%</span>
+        <span style={{ color: statusColor(health.cpuStatus) }}>
+          {health.cpu === null ? 'CPU n/a' : `${health.cpu}%`}
+        </span>
       </span>
 
       {/* Memory */}
       <span
         style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}
-        title={`Memory: ${health.memory}%`}
+        title={health.memory === null ? 'Memory telemetry not reported' : `Memory: ${health.memory}%`}
       >
         <HardDrive size={11} style={{ color: statusColor(health.memoryStatus) }} />
-        <span style={{ color: statusColor(health.memoryStatus) }}>{health.memory}%</span>
+        <span style={{ color: statusColor(health.memoryStatus) }}>
+          {health.memory === null ? 'Memory n/a' : `${health.memory}%`}
+        </span>
       </span>
 
       {/* Modules */}

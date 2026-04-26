@@ -83,10 +83,10 @@ describe('PropertyForge source honesty contract', () => {
     expect(badge).toBeInTheDocument();
   });
 
-  it('baseline disclosure badge shows "fallback" for store-loaded data', () => {
+  it('baseline disclosure badge shows "unavailable" before Forge API data is loaded', () => {
     renderForge();
     const disclosure = screen.getByTestId('forge-baseline-disclosure');
     const badge = disclosure.querySelector('[data-testid="workbench-source-badge"]');
-    expect(badge).toHaveAttribute('data-source', 'fallback');
+    expect(badge).toHaveAttribute('data-source', 'unavailable');
   });
 });

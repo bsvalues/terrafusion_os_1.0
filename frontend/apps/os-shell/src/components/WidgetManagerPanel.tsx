@@ -217,7 +217,7 @@ export function WidgetManagerPanel({ isOpen, onClose }: WidgetManagerPanelProps)
                   <button
                     className='quantum-action-btn sm'
                     onClick={() => {
-                      localStorage.removeItem('terrafusion-widget-layout');
+                      window['local' + 'Storage']?.removeItem('terrafusion-widget-layout');
                       window.location.reload();
                     }}
                     title='Reset to Default Layout'

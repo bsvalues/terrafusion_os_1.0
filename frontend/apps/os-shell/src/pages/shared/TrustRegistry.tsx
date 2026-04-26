@@ -17,16 +17,16 @@ interface ConnectorStatus {
   id: string;
   name: string;
   source: string;
-  lastSync: string;
-  qualityGrade: 'A' | 'B' | 'C' | 'D' | 'F';
-  status: 'healthy' | 'degraded' | 'offline';
+  lastSync: string | null;
+  qualityGrade: 'A' | 'B' | 'C' | 'D' | 'F' | 'unverified';
+  status: 'healthy' | 'degraded' | 'offline' | 'unverified';
   recordCount: number;
 }
 
 interface ProvenanceBadgeProps {
   source: string;
-  lastSync: string;
-  qualityGrade: 'A' | 'B' | 'C' | 'D' | 'F';
+  lastSync: string | null;
+  qualityGrade: ConnectorStatus['qualityGrade'];
 }
 
 interface TrustBoundaryProps {
@@ -45,12 +45,14 @@ const GRADE_COLORS: Record<string, string> = {
   C: 'bg-yellow-600',
   D: 'bg-orange-600',
   F: 'bg-red-600',
+  unverified: 'bg-slate-500',
 };
 
 const STATUS_COLORS: Record<string, string> = {
   healthy: 'text-green-400',
   degraded: 'text-yellow-400',
   offline: 'text-red-400',
+  unverified: 'text-slate-400',
 };
 
 export function ProvenanceBadge({ source, lastSync, qualityGrade }: ProvenanceBadgeProps) {
@@ -59,7 +61,9 @@ export function ProvenanceBadge({ source, lastSync, qualityGrade }: ProvenanceBa
       <span className={`inline-block h-2 w-2 rounded-full ${GRADE_COLORS[qualityGrade]}`} />
       <span className="font-medium">{source}</span>
       <span className="text-white/50">|</span>
-      <span className="text-white/50">{new Date(lastSync).toLocaleDateString()}</span>
+      <span className="text-white/50">
+        {lastSync ? new Date(lastSync).toLocaleDateString() : 'Sync time not reported'}
+      </span>
       <span className="text-white/50">|</span>
       <span className="font-semibold">{qualityGrade}</span>
     </span>
@@ -91,46 +95,21 @@ export function TrustBoundary({ label, trusted, children }: TrustBoundaryProps) 
 
 export default function TrustRegistry() {
   const { data: statsData } = useParcelCount();
-  const parcelCount = statsData?.totalParcels ?? 89_247;
+  const parcelCount = statsData?.totalParcels ?? 0;
 
-  const connectors: ConnectorStatus[] = [
-    {
-      id: 'harris-pacs',
-      name: 'County Assessment System',
-      source: 'Harris Govern',
-      lastSync: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      qualityGrade: 'A',
-      status: 'healthy',
-      recordCount: parcelCount,
-    },
-    {
-      id: 'census-acs',
-      name: 'Census ACS 5-Year',
-      source: 'US Census Bureau',
-      lastSync: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-      qualityGrade: 'B',
-      status: 'healthy',
-      recordCount: 1420,
-    },
-    {
-      id: 'fema-nfhl',
-      name: 'FEMA Flood Zones',
-      source: 'FEMA NFHL',
-      lastSync: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-      qualityGrade: 'C',
-      status: 'degraded',
-      recordCount: 4320,
-    },
-    {
-      id: 'county-gis',
-      name: 'County GIS Parcel Layer',
-      source: 'Benton County GIS',
-      lastSync: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-      qualityGrade: 'A',
-      status: 'healthy',
-      recordCount: parcelCount,
-    },
-  ];
+  const connectors: ConnectorStatus[] = statsData
+    ? [
+        {
+          id: 'county-assessment-source',
+          name: 'County Assessment Source',
+          source: statsData.dataSource || 'government/stats',
+          lastSync: null,
+          qualityGrade: 'unverified',
+          status: statsData.stubbed ? 'degraded' : 'healthy',
+          recordCount: parcelCount,
+        },
+      ]
+    : [];
 
   const healthyCount = connectors.filter((c) => c.status === 'healthy').length;
   const degradedCount = connectors.filter((c) => c.status === 'degraded').length;
@@ -180,7 +159,9 @@ export default function TrustRegistry() {
               <tr key={c.id} className="border-b border-white/5">
                 <td className="py-2 font-medium text-white">{c.name}</td>
                 <td className="py-2 text-white/60">{c.source}</td>
-                <td className="py-2 text-white/60">{new Date(c.lastSync).toLocaleString()}</td>
+                <td className="py-2 text-white/60">
+                  {c.lastSync ? new Date(c.lastSync).toLocaleString() : 'Not reported'}
+                </td>
                 <td className="py-2 text-white/60">{c.recordCount.toLocaleString()}</td>
                 <td className="py-2">
                   <ProvenanceBadge source={c.source} lastSync={c.lastSync} qualityGrade={c.qualityGrade} />
@@ -190,6 +171,13 @@ export default function TrustRegistry() {
                 </td>
               </tr>
             ))}
+            {connectors.length === 0 && (
+              <tr>
+                <td className="py-4 text-white/60" colSpan={6}>
+                  No connector evidence has been returned by the backend yet.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </TrustBoundary>

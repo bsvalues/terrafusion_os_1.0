@@ -51,66 +51,16 @@ interface WindowState extends WindowConfig {
   zIndex: number;
 }
 
-const DEFAULT_WINDOW_SIZE = { width: 800, height: 600 };
-const DEFAULT_WINDOW_POSITION = { x: 100, y: 100 };
+const WINDOW_BASE_SIZE = { width: 800, height: 600 };
+const WINDOW_BASE_POSITION = { x: 100, y: 100 };
 const MIN_WINDOW_SIZE = { width: 320, height: 240 };
-
-// Sample components for demonstration
-const SampleModuleComponent: React.FC<{ title: string }> = ({ title }) => (
-  <Box sx={{ p: 3, height: '100%', overflow: 'auto' }}>
-    <Typography variant='h5' gutterBottom>
-      {title}
-    </Typography>
-    <Typography paragraph>
-      This is a sample module component demonstrating the window management system. The Terrafusion
-      OS supports multiple windowed applications with full drag, resize, minimize, maximize, and
-      fullscreen capabilities.
-    </Typography>
-
-    <Typography paragraph>Key features:</Typography>
-    <ul>
-      <li>Quantum-optimized performance (379M× faster)</li>
-      <li>Government-grade security compliance</li>
-
-      <li>Real-time AI agent coordination</li>
-      <li>Advanced property assessment algorithms</li>
-      <li>Blockchain-verified audit trails</li>
-    </ul>
-  </Box>
-);
 
 export const WindowManager: React.FC = () => {
   const [windows, setWindows] = useState<WindowState[]>([]);
   const [nextZIndex, setNextZIndex] = useState(1000);
   const [taskbarVisible, setTaskbarVisible] = useState(true);
 
-  // Sample window configurations
-  const availableModules: WindowConfig[] = [
-    {
-      id: 'terra-agent',
-      title: 'Terra Agent',
-      component: SampleModuleComponent,
-      props: { title: 'Terra Agent - AI Property Assistant' },
-      icon: '🤖',
-      initialSize: { width: 900, height: 700 },
-    },
-    {
-      id: 'costforge-ai',
-      title: 'CostForge AI',
-      component: SampleModuleComponent,
-      props: { title: 'CostForge AI - Property Valuation' },
-      icon: '💰',
-      initialSize: { width: 800, height: 600 },
-    },
-    {
-      id: 'gispro',
-      title: 'GIS Pro',
-      component: SampleModuleComponent,
-      props: { title: 'GIS Pro - Geographic Information System' },
-      icon: '🗺️',
-      initialSize: { width: 1000, height: 800 },
-    },
-  ];
+  const availableModules: WindowConfig[] = [];
 
   const openWindow = useCallback(
     (config: WindowConfig) => {
@@ -128,8 +78,8 @@ export const WindowManager: React.FC = () => {
       // Calculate position to avoid overlap
       const offset = windows.length * 30;
       const position = config.initialPosition || {
-        x: DEFAULT_WINDOW_POSITION.x + offset,
-        y: DEFAULT_WINDOW_POSITION.y + offset,
+        x: WINDOW_BASE_POSITION.x + offset,
+        y: WINDOW_BASE_POSITION.y + offset,
       };
 
       const newWindow: WindowState = {
@@ -139,7 +89,7 @@ export const WindowManager: React.FC = () => {
         isMaximized: false,
         isFullscreen: false,
         position,
-        size: config.initialSize || DEFAULT_WINDOW_SIZE,
+        size: config.initialSize || WINDOW_BASE_SIZE,
         zIndex: nextZIndex,
       };
 
@@ -397,19 +347,24 @@ export const WindowManager: React.FC = () => {
           }}
         >
           <Stack direction='row' spacing={1} sx={{ flexGrow: 1 }}>
-            {/* Available modules */}
-            {availableModules.map((module) => (
-              <Tooltip key={module.id} title={`Open ${module.title}`}>
-                <Button
-                  variant={windows.some((w) => w.id === module.id) ? 'contained' : 'outlined'}
-                  size='small'
-                  onClick={() => openWindow(module)}
-                  sx={{ minWidth: 120 }}
-                >
-                  {module.icon} {module.title}
-                </Button>
-              </Tooltip>
-            ))}
+            {availableModules.length > 0 ? (
+              availableModules.map((module) => (
+                <Tooltip key={module.id} title={`Open ${module.title}`}>
+                  <Button
+                    variant={windows.some((w) => w.id === module.id) ? 'contained' : 'outlined'}
+                    size='small'
+                    onClick={() => openWindow(module)}
+                    sx={{ minWidth: 120 }}
+                  >
+                    {module.icon} {module.title}
+                  </Button>
+                </Tooltip>
+              ))
+            ) : (
+              <Typography variant='caption' color='text.secondary' sx={{ alignSelf: 'center' }}>
+                No governed window modules registered.
+              </Typography>
+            )}
           </Stack>
 
           {/* Minimized windows */}

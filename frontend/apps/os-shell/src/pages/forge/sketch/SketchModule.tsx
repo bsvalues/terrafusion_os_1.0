@@ -67,7 +67,7 @@ interface ApiSketchResult {
   buildings: ApiBuilding[];
 }
 
-// ── Segment type inference from PACS type codes ───────────────────
+// ── Segment type inference from source building type codes ────────
 const SEGMENT_TYPE_MAP: Record<string, SketchSegment['type']> = {
   HOS: 'main', GLA: 'main', LVA: 'main', LVG: 'main',
   GAR: 'garage', CTG: 'garage', BG: 'garage',

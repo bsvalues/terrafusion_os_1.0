@@ -11,6 +11,7 @@
 
 import { assertWriteLane } from '../writeLane';
 import { emitTraceEvent } from '../terraTrace';
+import { createStableId } from '../../utils/stableId';
 
 import type { QueueItem } from './daisQueue';
 import type { NoticeBatch } from './daisNoticeBatch';
@@ -99,7 +100,7 @@ const DAIS_WRITE_LANES = new Set(['dais']);
 // ============================================================================
 
 function generateRollupId(): string {
-  return `ROLLUP-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return createStableId('ROLLUP');
 }
 
 function computeExposureLevel(openAppeals: number, totalAppeals: number): AppealExposure['exposureLevel'] {

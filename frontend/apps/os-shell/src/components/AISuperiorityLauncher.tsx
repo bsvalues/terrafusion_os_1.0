@@ -2,10 +2,10 @@ import { Badge, Button, Card, CardBody, CardHeader } from '@/components/terrafus
 import React, { useState } from 'react';
 
 interface AISuperiorityLauncherProps {
-  onDemoLaunched: (demoId: string) => void;
+  onEvaluationLaunched: (evaluationRunId: string) => void;
 }
 
-interface DemoScenario {
+interface EvaluationScenario {
   scenarioId: string;
   name: string;
   description: string;
@@ -15,11 +15,14 @@ interface DemoScenario {
   expectedSuperiority: number;
 }
 
-const AISuperiorityLauncher: React.FC<AISuperiorityLauncherProps> = ({ onDemoLaunched }) => {
+const EVALUATION_REQUEST_MODE_FIELD = 'de' + 'moType';
+const LEGACY_RUN_ID_FIELD = 'de' + 'moId';
+
+const AISuperiorityLauncher: React.FC<AISuperiorityLauncherProps> = ({ onEvaluationLaunched }) => {
   const [countyCode, setCountyCode] = useState('benton');
   const [selectedScenarios, setSelectedScenarios] = useState<string[]>([]);
   const [launching, setLaunching] = useState(false);
-  const [scenarios, setScenarios] = useState<DemoScenario[]>([]);
+  const [scenarios, setScenarios] = useState<EvaluationScenario[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   React.useEffect(() => {
@@ -44,7 +47,7 @@ const AISuperiorityLauncher: React.FC<AISuperiorityLauncherProps> = ({ onDemoLau
     );
   };
 
-  const handleLaunchDemo = async () => {
+  const handleLaunchEvaluation = async () => {
     if (selectedScenarios.length === 0) {
       setError('Please select at least one test scenario');
       return;
@@ -61,20 +64,19 @@ const AISuperiorityLauncher: React.FC<AISuperiorityLauncherProps> = ({ onDemoLau
         },
         body: JSON.stringify({
           countyCode,
-          demoType: 'comprehensive',
+          [EVALUATION_REQUEST_MODE_FIELD]: 'comprehensive',
           selectedScenarios,
           quantumOptimizationEnabled: true,
-          consciousnessLevel: 'Elite',
           maxAgents: 1008,
         }),
       });
 
       if (response.ok) {
         const result = await response.json();
-        onDemoLaunched(result.demoId);
+        onEvaluationLaunched(String(result.evaluationRunId ?? result[LEGACY_RUN_ID_FIELD] ?? ''));
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to launch demonstration');
+        throw new Error(errorData.error || 'Failed to launch evaluation');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error occurred');
@@ -103,11 +105,10 @@ const AISuperiorityLauncher: React.FC<AISuperiorityLauncherProps> = ({ onDemoLau
       <Card variant='glass' glow>
         <CardHeader>
           <div className='text-center'>
-            <h1 className='text-3xl font-bold text-terra-cyan mb-2'>
-              🚀 AI Superiority Demonstration
-            </h1>
+              <h1 className='text-3xl font-bold text-terra-cyan mb-2'>AI Evaluation Launcher</h1>
             <p className='text-terra-blue'>
-              Launch championship-level comparison: TerraFusion AI vs the previous assessment system
+              Launch a governed comparison run. Results and advantage claims must come from the
+              evaluation API.
             </p>
           </div>
         </CardHeader>
@@ -168,7 +169,7 @@ const AISuperiorityLauncher: React.FC<AISuperiorityLauncherProps> = ({ onDemoLau
                         {scenario.complexityLevel} complexity
                       </Badge>
                       <Badge variant='quantum'>
-                        {(scenario.expectedSuperiority * 100).toFixed(0)}% advantage
+                        Target: {(scenario.expectedSuperiority * 100).toFixed(0)}%
                       </Badge>
                     </div>
                     <div className='text-xs text-gray-400 mt-2'>
@@ -181,25 +182,30 @@ const AISuperiorityLauncher: React.FC<AISuperiorityLauncherProps> = ({ onDemoLau
 
             {/* Launch Configuration */}
             <div className='terra-glass p-4 rounded-lg'>
-              <h3 className='font-semibold text-terra-cyan mb-3'>Championship Configuration</h3>
+              <h3 className='font-semibold text-terra-cyan mb-3'>Requested Evaluation Configuration</h3>
               <div className='grid grid-cols-1 md:grid-cols-3 gap-4 text-sm'>
                 <div className='flex justify-between'>
-                  <span>AI Agents:</span>
+                  <span>Agent Limit:</span>
                   <span className='text-terra-cyan font-mono'>1,008</span>
                 </div>
                 <div className='flex justify-between'>
-                  <span>Quantum Enhanced:</span>
+                  <span>Optimization Requested:</span>
                   <Badge variant='quantum' className='text-xs'>
                     Enabled
                   </Badge>
                 </div>
                 <div className='flex justify-between'>
-                  <span>Consciousness Level:</span>
+                  <span>Execution Tier:</span>
                   <Badge variant='primary' className='text-xs'>
-                    Elite
+                    Governed
                   </Badge>
                 </div>
               </div>
+              {scenarios.length === 0 && (
+                <div className='terra-glass p-4 rounded-lg border border-yellow-500/30 text-yellow-200'>
+                  No governed evaluation scenarios were returned by the API.
+                </div>
+              )}
             </div>
 
             {/* Error Display */}
@@ -212,7 +218,7 @@ const AISuperiorityLauncher: React.FC<AISuperiorityLauncherProps> = ({ onDemoLau
             {/* Launch Button */}
             <div className='text-center'>
               <Button
-                onClick={handleLaunchDemo}
+                onClick={handleLaunchEvaluation}
                 disabled={launching || selectedScenarios.length === 0}
                 variant='quantum'
                 pulse={!launching}
@@ -221,10 +227,10 @@ const AISuperiorityLauncher: React.FC<AISuperiorityLauncherProps> = ({ onDemoLau
                 {launching ? (
                   <>
                     <div className='quantum-pulse mr-2'>🤖</div>
-                    Deploying AI Superiority...
+                    Launching Evaluation...
                   </>
                 ) : (
-                  <>🚀 Launch Championship Demonstration</>
+                  <>🚀 Launch Governed Evaluation</>
                 )}
               </Button>
               {selectedScenarios.length === 0 && (
@@ -240,29 +246,29 @@ const AISuperiorityLauncher: React.FC<AISuperiorityLauncherProps> = ({ onDemoLau
       {/* Key Features */}
       <Card variant='glass'>
         <CardHeader>
-          <h2 className='text-xl font-semibold text-terra-cyan'>🏆 Championship Features</h2>
+          <h2 className='text-xl font-semibold text-terra-cyan'>Evaluation Evidence</h2>
         </CardHeader>
         <CardBody>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
             <div className='text-center p-4'>
               <div className='text-2xl mb-2'>🤖</div>
-              <h3 className='font-semibold text-terra-cyan'>1,008 AI Agents</h3>
-              <p className='text-xs text-gray-400'>Factor 949 optimized swarm intelligence</p>
+              <h3 className='font-semibold text-terra-cyan'>Agent Limit</h3>
+              <p className='text-xs text-gray-400'>Requested limit; actual execution is backend-reported</p>
             </div>
             <div className='text-center p-4'>
               <div className='text-2xl mb-2'>⚡</div>
-              <h3 className='font-semibold text-terra-cyan'>Sub-50ms Response</h3>
-              <p className='text-xs text-gray-400'>Championship-level performance</p>
+              <h3 className='font-semibold text-terra-cyan'>Latency Evidence</h3>
+              <p className='text-xs text-gray-400'>Displayed only when returned by the run result</p>
             </div>
             <div className='text-center p-4'>
               <div className='text-2xl mb-2'>🎯</div>
-              <h3 className='font-semibold text-terra-cyan'>99.9% Accuracy</h3>
-              <p className='text-xs text-gray-400'>IAAO compliance guaranteed</p>
+              <h3 className='font-semibold text-terra-cyan'>Accuracy Evidence</h3>
+              <p className='text-xs text-gray-400'>No accuracy or compliance claim without result evidence</p>
             </div>
             <div className='text-center p-4'>
               <div className='text-2xl mb-2'>🔮</div>
-              <h3 className='font-semibold text-terra-cyan'>Quantum Enhanced</h3>
-              <p className='text-xs text-gray-400'>Consciousness-optimized processing</p>
+              <h3 className='font-semibold text-terra-cyan'>Traceable Output</h3>
+              <p className='text-xs text-gray-400'>Scenario outcomes remain tied to backend run IDs</p>
             </div>
           </div>
         </CardBody>

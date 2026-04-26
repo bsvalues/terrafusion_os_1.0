@@ -85,8 +85,7 @@ const PropertyAssessmentWorkflow: React.FC = () => {
     ownerName: '',
     ownerAddress: '',
   });
-  const [aiAssessmentProgress, setAiAssessmentProgress] = useState(0);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [submissionMessage, setSubmissionMessage] = useState<string | null>(null);
 
   const steps = [
     {
@@ -102,10 +101,10 @@ const PropertyAssessmentWorkflow: React.FC = () => {
       required: ['propertyType', 'yearBuilt', 'squareFootage'],
     },
     {
-      label: 'AI Valuation',
-      description: 'AI-powered assessment analysis',
+      label: 'Valuation Evidence',
+      description: 'Enter source-backed valuation evidence',
       icon: <Assessment />,
-      required: [],
+      required: ['landValue', 'improvementValue', 'totalValue'],
     },
     {
       label: 'Owner Information',
@@ -122,32 +121,8 @@ const PropertyAssessmentWorkflow: React.FC = () => {
   ];
 
   const handleNext = () => {
-    if (activeStep === 2) {
-      // Simulate AI assessment
-      setIsProcessing(true);
-      setAiAssessmentProgress(0);
-
-      const interval = setInterval(() => {
-        setAiAssessmentProgress((prev) => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            setIsProcessing(false);
-
-            // Simulate AI-generated values
-            setPropertyData((prev) => ({
-              ...prev,
-              landValue: '$285,000',
-              improvementValue: '$342,000',
-              totalValue: '$627,000',
-            }));
-
-            setActiveStep(activeStep + 1);
-            return 100;
-          }
-          return prev + Math.random() * 15;
-        });
-      }, 200);
-
+    if (activeStep === steps.length - 1) {
+      setSubmissionMessage('Assessment submission is unavailable until a governed backend/Pilot action is configured.');
       return;
     }
 
@@ -249,110 +224,51 @@ const PropertyAssessmentWorkflow: React.FC = () => {
 
       case 2:
         return (
-          <Box>
-            {isProcessing ? (
-              <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Typography variant='h6' sx={{ color: 'white', mb: 2 }}>
-                  🤖 Orchestrating clarity…
-                </Typography>
-                <LinearProgress
-                  variant='determinate'
-                  value={aiAssessmentProgress}
-                  sx={{
-                    height: 8,
-                    borderRadius: 4,
-                    mb: 2,
-                    '& .MuiLinearProgress-bar': {
-                      background: 'linear-gradient(90deg, var(--tf-transcend-cyan), var(--tf-accent-quantum))',
-                    },
-                  }}
-                />
-                <Typography variant='body2' sx={{ color: 'hsl(var(--tf-paw-neutral-hs) 100% / 0.7)' }}>
-                  Advancing county intelligence with 1,008 AI agents...
-                </Typography>
-              </Box>
-            ) : (
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={4}>
-                  <WorkflowCard>
-                    <CardContent sx={{ textAlign: 'center' }}>
-                      <Avatar
-                        sx={{
-                          background: 'linear-gradient(135deg, var(--tf-accent-success), var(--tf-transcend-cyan))',
-                          mx: 'auto',
-                          mb: 2,
-                        }}
-                      >
-                        <LocationOn />
-                      </Avatar>
-                      <Typography variant='h6' sx={{ color: 'white', mb: 1 }}>
-                        Land Value
-                      </Typography>
-                      <Typography variant='h4' sx={{ color: 'var(--tf-accent-success)', fontWeight: 700 }}>
-                        {propertyData.landValue}
-                      </Typography>
-                    </CardContent>
-                  </WorkflowCard>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <WorkflowCard>
-                    <CardContent sx={{ textAlign: 'center' }}>
-                      <Avatar
-                        sx={{
-                          background: 'linear-gradient(135deg, var(--tf-transcend-cyan), var(--tf-network-blue))',
-                          mx: 'auto',
-                          mb: 2,
-                        }}
-                      >
-                        <Business />
-                      </Avatar>
-                      <Typography variant='h6' sx={{ color: 'white', mb: 1 }}>
-                        Improvement Value
-                      </Typography>
-                      <Typography variant='h4' sx={{ color: 'var(--tf-transcend-cyan)', fontWeight: 700 }}>
-                        {propertyData.improvementValue}
-                      </Typography>
-                    </CardContent>
-                  </WorkflowCard>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <WorkflowCard>
-                    <CardContent sx={{ textAlign: 'center' }}>
-                      <Avatar
-                        sx={{
-                          background: 'linear-gradient(135deg, var(--tf-accent-quantum), var(--tf-accent-quantum))',
-                          mx: 'auto',
-                          mb: 2,
-                        }}
-                      >
-                        <AttachMoney />
-                      </Avatar>
-                      <Typography variant='h6' sx={{ color: 'white', mb: 1 }}>
-                        Total Assessed Value
-                      </Typography>
-                      <Typography variant='h4' sx={{ color: 'var(--tf-accent-quantum)', fontWeight: 700 }}>
-                        {propertyData.totalValue}
-                      </Typography>
-                    </CardContent>
-                  </WorkflowCard>
-                </Grid>
-                <Grid item xs={12}>
-                  <Alert
-                    severity='success'
-                    sx={{
-                      background: 'hsl(var(--tf-paw-green-hs) 50% / 0.1)',
-                      border: '1px solid hsl(var(--tf-paw-green-hs) 50% / 0.3)',
-                      color: 'var(--tf-accent-success)',
-                      '& .MuiAlert-icon': { color: 'var(--tf-accent-success)' },
-                    }}
-                  >
-                    Transcendence complete. Values generated with 99.7% confidence using
-                    quantum-enhanced analysis. Your path is clear.
-                  </Alert>
-                </Grid>
-              </Grid>
-            )}
-          </Box>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Alert
+                severity='warning'
+                sx={{
+                  background: 'hsl(var(--tf-paw-cyan-hs) 50% / 0.1)',
+                  border: '1px solid hsl(var(--tf-paw-cyan-hs) 50% / 0.3)',
+                  color: 'var(--tf-transcend-cyan)',
+                  '& .MuiAlert-icon': { color: 'var(--tf-transcend-cyan)' },
+                }}
+              >
+                Governed AI valuation is not connected. Enter values only from source-backed assessment evidence.
+              </Alert>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                label='Land Value *'
+                value={propertyData.landValue}
+                onChange={handleInputChange('landValue')}
+                variant='outlined'
+                sx={{ mb: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                label='Improvement Value *'
+                value={propertyData.improvementValue}
+                onChange={handleInputChange('improvementValue')}
+                variant='outlined'
+                sx={{ mb: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                label='Total Assessed Value *'
+                value={propertyData.totalValue}
+                onChange={handleInputChange('totalValue')}
+                variant='outlined'
+                sx={{ mb: 2 }}
+              />
+            </Grid>
+          </Grid>
         );
 
       case 3:
@@ -396,6 +312,11 @@ const PropertyAssessmentWorkflow: React.FC = () => {
             >
               Please review all assessment details before final submission.
             </Alert>
+            {submissionMessage && (
+              <Alert severity='warning' sx={{ mb: 3 }}>
+                {submissionMessage}
+              </Alert>
+            )}
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
                 <Typography variant='h6' sx={{ color: 'white', mb: 2 }}>
@@ -526,8 +447,8 @@ const PropertyAssessmentWorkflow: React.FC = () => {
                 >
                   {activeStep === steps.length - 1
                     ? 'Submit Assessment'
-                    : activeStep === 2 && !isProcessing
-                      ? 'Run AI Analysis'
+                    : activeStep === 2
+                      ? 'Continue with Evidence'
                       : 'Next'}
                 </Button>
               </Box>

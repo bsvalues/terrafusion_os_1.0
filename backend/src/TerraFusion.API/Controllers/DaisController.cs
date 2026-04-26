@@ -1219,7 +1219,7 @@ public class DaisController : ControllerBase
   {
     var countyAccess = await RequireCountyAccessAsync();
     if (countyAccess.ErrorResult is not null)
-      return Ok(Array.Empty<object>());
+      return countyAccess.ErrorResult;
 
     var effectiveCountyId = countyAccess.CountyId!.Value;
 
@@ -1229,24 +1229,14 @@ public class DaisController : ControllerBase
 
   /// <summary>
   /// GET api/dais/queue/metrics — Queue-wide aggregate metrics.
-  /// Returns stub metrics when the caller has no county access so dashboard banners clear gracefully.
+  /// Returns authenticated county-scoped metrics only.
   /// </summary>
   [HttpGet("queue/metrics")]
   public async Task<IActionResult> GetQueueMetrics()
   {
     var countyAccess = await RequireCountyAccessAsync();
     if (countyAccess.ErrorResult is not null)
-    {
-      // Dev/anonymous mode: stub metrics so ManagementDashboard banner clears
-      return Ok(new
-      {
-        totalPendingReview = 47,
-        totalItems = 312,
-        completedToday = 18,
-        activeAppraisers = 6,
-        averageDaysInQueue = 3.2,
-      });
-    }
+      return countyAccess.ErrorResult;
 
     var effectiveCountyId = countyAccess.CountyId!.Value;
 
@@ -1256,14 +1246,14 @@ public class DaisController : ControllerBase
 
   /// <summary>
   /// GET api/dais/queue/productivity — Per-appraiser productivity stats.
-  /// Returns an empty list when the caller has no county access (graceful degradation).
+  /// Returns authenticated county-scoped productivity only.
   /// </summary>
   [HttpGet("queue/productivity")]
   public async Task<IActionResult> GetQueueProductivity()
   {
     var countyAccess = await RequireCountyAccessAsync();
     if (countyAccess.ErrorResult is not null)
-      return Ok(Array.Empty<object>());
+      return countyAccess.ErrorResult;
 
     var effectiveCountyId = countyAccess.CountyId!.Value;
 

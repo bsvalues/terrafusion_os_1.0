@@ -427,11 +427,11 @@ export const OWASP_SECURITY_BASELINE: readonly SecurityFinding[] = [
   {
     id: 'F-22',
     category: 'A07',
-    description: 'Math.random() used for correlation/request IDs (non-security)',
+    description: 'Legacy client-generated correlation/request IDs lacked deterministic trace guarantees',
     severity: 'low',
-    status: 'accepted',
+    status: 'remediated',
     surface: 'api/pilotApi.ts, ipc/ipcBridge.ts, hooks/useErrorHandler.ts',
-    mitigation: 'Used for tracing only — security tokens use server-side JWT generation',
+    mitigation: 'Client trace IDs use stableId/crypto-backed providers; security tokens remain server-side JWTs',
   },
 ] as const;
 

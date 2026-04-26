@@ -22,7 +22,7 @@ export interface StratumSale {
   wacCode: string | null;
   aiFlag: string | null;
   aiReason: string | null;
-  pacsQualification: string | null;
+  sourceQualification: string | null;
   recommendation: string | null;
   qualificationDecision: string | null;
 }

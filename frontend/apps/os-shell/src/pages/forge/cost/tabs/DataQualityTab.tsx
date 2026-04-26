@@ -1,7 +1,7 @@
 /**
  * DataQualityTab.tsx
  *
- * PACS data quality scanner for the cost approach.
+ * Source-record data quality scanner for the cost approach.
  * Calls /costforge/analytics/data-quality/assess and surfaces:
  * - completeness score (missing fields)
  * - accuracy score (values out of expected range)

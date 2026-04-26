@@ -4,6 +4,21 @@ import ts from 'typescript';
 
 const HEADER = '// GENERATED - DO NOT EDIT';
 const ROOT = process.cwd();
+function collectTsTargets(dir) {
+  const absDir = path.resolve(ROOT, dir);
+  if (!fs.existsSync(absDir)) {
+    return [];
+  }
+
+  return fs.readdirSync(absDir, { withFileTypes: true })
+    .filter(entry => entry.isFile() && entry.name.endsWith('.ts'))
+    .sort((left, right) => left.name.localeCompare(right.name))
+    .map(entry => ({
+      source: path.posix.join(dir.replace(/\\/g, '/'), entry.name),
+      out: path.posix.join(dir.replace(/\\/g, '/'), entry.name.replace(/\.ts$/, '.js')),
+    }));
+}
+
 const targets = [
   {
     source: 'os-platform/core/types/commandGovernance.ts',
@@ -41,6 +56,7 @@ const targets = [
     source: 'os-platform/core/pilot/index.ts',
     out: 'os-platform/core/pilot/index.js',
   },
+  ...collectTsTargets('os-platform/core/pilot/local-agent'),
   {
     source: 'os-platform/core/pilot/traceExport.ts',
     out: 'os-platform/core/pilot/traceExport.js',

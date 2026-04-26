@@ -1,0 +1,51 @@
+{
+  "createdAt": 1777178181,
+  "ok": true,
+  "releaseStatus": "release-ready-mvp",
+  "criticalFailures": 0,
+  "warnings": 2,
+  "items": [
+    {
+      "name": "Command Registry",
+      "ok": true,
+      "severity": "info",
+      "message": "Artifact exists.",
+      "path": ".terrafusion/command-registry.md"
+    },
+    {
+      "name": "Control Center State",
+      "ok": true,
+      "severity": "info",
+      "message": "Artifact exists.",
+      "path": ".terrafusion/control-center-state.md"
+    },
+    {
+      "name": "Product Manifest",
+      "ok": true,
+      "severity": "info",
+      "message": "Artifact JSON is readable.",
+      "path": ".terrafusion/product-manifest.json"
+    },
+    {
+      "name": "Release Notes",
+      "ok": true,
+      "severity": "info",
+      "message": "Artifact JSON is readable.",
+      "path": ".terrafusion/release-notes-0.1.0.json"
+    },
+    {
+      "name": "Doctor Report",
+      "ok": false,
+      "severity": "warning",
+      "message": "Doctor diagnostics are not required for release, but improve review context.",
+      "path": ".terrafusion/doctor-report.json"
+    },
+    {
+      "name": "Model Runtime Status",
+      "ok": false,
+      "severity": "warning",
+      "message": "Model runtime diagnostics are optional release evidence.",
+      "path": ".terrafusion/model-runtime-status.json"
+    }
+  ]
+}

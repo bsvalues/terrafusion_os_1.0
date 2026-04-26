@@ -294,17 +294,22 @@ export function TerraFusionBrandEnhancementSystem({
     // Create quantum particles
     for (let i = 0; i < 50; i++) {
       const particle = document.createElement('div');
+      const opacity = 0.1 + (i % 10) * 0.05;
+      const left = (i * 37) % 100;
+      const top = (i * 53) % 100;
+      const duration = 10 + (i % 20);
+      const delay = (i % 5);
       particle.style.cssText = `
         position: absolute;
         width: 2px;
         height: 2px;
         background: var(--terra-cyan);
         border-radius: 50%;
-        opacity: ${Math.random() * 0.5 + 0.1};
-        left: ${Math.random() * 100}%;
-        top: ${Math.random() * 100}%;
-        animation: terraQuantumOrbit ${Math.random() * 20 + 10}s linear infinite;
-        animation-delay: ${Math.random() * 5}s;
+        opacity: ${opacity};
+        left: ${left}%;
+        top: ${top}%;
+        animation: terraQuantumOrbit ${duration}s linear infinite;
+        animation-delay: ${delay}s;
       `;
       particleContainer.appendChild(particle);
     }

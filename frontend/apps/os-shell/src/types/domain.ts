@@ -19,7 +19,7 @@
 export interface Property {
   readonly parcelId: string;
   readonly countyCode: string;
-  harrisPacsId?: string;
+  assessmentSourceId?: string;
 
   // Location
   address: string;
@@ -112,8 +112,8 @@ export type AssessmentStatus =
   | 'sealed';
 
 export type DataSource =
-  | 'harris-pacs'
-  | 'harris-pacs-live'
+  | 'assessment-source'
+  | 'assessment-source-live'
   | 'manual-entry'
   | 'ai-enhancement'
   | 'batch-import'

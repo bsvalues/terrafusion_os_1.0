@@ -604,7 +604,7 @@ export const PropertyDais: React.FC = () => {
           Workflow, certification, and notice tools are requested via governed tooling;
           values shown are returned from the tool response, never inferred.
         </p>
-        <WorkbenchSourceBadge source="fallback" />
+        <WorkbenchSourceBadge source="unavailable" />
       </div>
 
       <div className="flex items-center justify-between gap-3 px-2" data-testid="dais-queue-statistics-disclosure">

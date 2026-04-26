@@ -14,10 +14,10 @@ export const GovernmentExcellenceStatus: React.FC<GovernmentExcellenceStatusProp
   className = '',
 }) => {
   const [status, setStatus] = React.useState({
-    operationalMode: 'QUANTUM_SIMULATION' as
+    operationalMode: 'UNAVAILABLE' as
       | 'BACKEND_CONNECTED'
-      | 'ELITE_CACHE'
-      | 'QUANTUM_SIMULATION',
+      | 'CACHE_AVAILABLE'
+      | 'UNAVAILABLE',
     cacheSize: 0,
     backendAvailable: false,
     lastHealthCheck: '',
@@ -37,13 +37,13 @@ export const GovernmentExcellenceStatus: React.FC<GovernmentExcellenceStatusProp
   const getStatusIcon = () => {
     switch (status.operationalMode) {
       case 'BACKEND_CONNECTED':
-        return '🌐';
-      case 'ELITE_CACHE':
-        return '⚡';
-      case 'QUANTUM_SIMULATION':
-        return '🚀';
+        return 'LIVE';
+      case 'CACHE_AVAILABLE':
+        return 'CACHE';
+      case 'UNAVAILABLE':
+        return 'OFF';
       default:
-        return '🔧';
+        return 'CHECK';
     }
   };
 
@@ -51,10 +51,10 @@ export const GovernmentExcellenceStatus: React.FC<GovernmentExcellenceStatusProp
     switch (status.operationalMode) {
       case 'BACKEND_CONNECTED':
         return 'text-green-400';
-      case 'ELITE_CACHE':
+      case 'CACHE_AVAILABLE':
         return 'text-yellow-400';
-      case 'QUANTUM_SIMULATION':
-        return 'text-cyan-400';
+      case 'UNAVAILABLE':
+        return 'text-red-400';
       default:
         return 'text-gray-400';
     }
@@ -64,10 +64,10 @@ export const GovernmentExcellenceStatus: React.FC<GovernmentExcellenceStatusProp
     switch (status.operationalMode) {
       case 'BACKEND_CONNECTED':
         return 'BENTON COUNTY LIVE';
-      case 'ELITE_CACHE':
-        return 'BENTON COUNTY CACHE';
-      case 'QUANTUM_SIMULATION':
-        return 'BENTON COUNTY DEMO';
+      case 'CACHE_AVAILABLE':
+        return 'BENTON COUNTY CACHE EVIDENCE';
+      case 'UNAVAILABLE':
+        return 'BENTON EVIDENCE UNAVAILABLE';
       default:
         return 'BENTON INITIALIZING';
     }
@@ -80,7 +80,7 @@ export const GovernmentExcellenceStatus: React.FC<GovernmentExcellenceStatusProp
     >
       <div className='flex items-center justify-between'>
         <div className='flex items-center space-x-3'>
-          <div className='text-2xl'>{getStatusIcon()}</div>
+          <div className='text-xs font-bold tracking-wide text-slate-300'>{getStatusIcon()}</div>
           <div>
             <div className={`text-sm font-bold ${getStatusColor()}`}>{getStatusMessage()}</div>
             <div className='text-xs text-slate-400'>Benton County Assessment System</div>
@@ -90,7 +90,7 @@ export const GovernmentExcellenceStatus: React.FC<GovernmentExcellenceStatusProp
         <div className='text-right'>
           <div className='text-xs text-slate-400'>Cache: {status.cacheSize} entries</div>
           <div className='text-xs text-slate-400'>
-            Backend: {status.backendAvailable ? '✅' : '⭕'}
+            Backend: {status.backendAvailable ? 'Connected' : 'Unavailable'}
           </div>
         </div>
       </div>
@@ -118,14 +118,16 @@ export const GovernmentExcellenceStatus: React.FC<GovernmentExcellenceStatusProp
           </div>
 
           <div className='text-center'>
-            <div className='font-bold text-cyan-400'>QUANTUM</div>
-            <div className='text-slate-400'>Simulation</div>
+            <div className='font-bold text-cyan-400'>EVIDENCE</div>
+            <div className='text-slate-400'>
+              {status.operationalMode === 'UNAVAILABLE' ? 'Required' : 'Present'}
+            </div>
           </div>
         </div>
       </div>
 
       <div className='mt-2 text-xs text-slate-500 text-center'>
-        Government. Transcended. • 100% Uptime Excellence
+        Operational claims require backend evidence and source freshness.
       </div>
     </div>
   );

@@ -69,6 +69,7 @@ export const AIInsightsPanel: React.FC<AIInsightsPanelProps> = ({
   const [insights, setInsights] = useState<AIInsight[]>([]);
   const [predictions, setPredictions] = useState<PredictiveMetric[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     analyzeAndGenerateInsights();
@@ -76,129 +77,36 @@ export const AIInsightsPanel: React.FC<AIInsightsPanelProps> = ({
 
   const analyzeAndGenerateInsights = async () => {
     setIsAnalyzing(true);
+    setError(null);
 
-    // Simulate AI analysis (replace with actual API)
-    setTimeout(() => {
-      setInsights([
-        {
-          id: '1',
-          type: 'trend',
-          severity: 'success',
-          title: 'Market Value Increase Detected',
-          description:
-            'Residential properties in District 5 showing +3.2% value increase over past 30 days. 847 properties analyzed.',
-          confidence: 0.957,
-          impact: {
-            category: 'revenue',
-            value: 1.2,
-            unit: 'million',
-          },
-          actionable: true,
-          timestamp: new Date(),
-        },
-        {
-          id: '2',
-          type: 'anomaly',
-          severity: 'warning',
-          title: 'Assessment Outliers Identified',
-          description:
-            '2 commercial properties (Parcels #8842, #9103) showing significant deviation from comparable properties.', // tdc:allow — parcel IDs, not color hex
-          confidence: 0.943,
-          impact: {
-            category: 'accuracy',
-            value: -2.1,
-            unit: 'percent',
-          },
-          actionable: true,
-          timestamp: new Date(),
-        },
-        {
-          id: '3',
-          type: 'recommendation',
-          severity: 'info',
-          title: 'Workflow Optimization Available',
-          description:
-            'AI identified 5 manual tasks that can be automated, saving estimated 18.5 hours per week.',
-          confidence: 0.982,
-          impact: {
-            category: 'efficiency',
-            value: 18.5,
-            unit: 'hours/week',
-          },
-          actionable: true,
-          timestamp: new Date(),
-        },
-        {
-          id: '4',
-          type: 'prediction',
-          severity: 'info',
-          title: 'Q1 2026 Assessment Volume Forecast',
-          description:
-            'Predictive model forecasts 12% increase in assessment requests for Q1 2026 based on historical patterns.',
-          confidence: 0.891,
-          impact: {
-            category: 'workload',
-            value: 12,
-            unit: 'percent',
-          },
-          actionable: false,
-          timestamp: new Date(),
-        },
-        {
-          id: '5',
-          type: 'trend',
-          severity: 'critical',
-          title: 'IAAO Compliance Metric Alert',
-          description:
-            'Coefficient of Dispersion trending toward 14.8%. Recommend review before reaching 15% threshold.',
-          confidence: 0.967,
-          impact: {
-            category: 'compliance',
-            value: 14.8,
-            unit: 'percent',
-          },
-          actionable: true,
-          timestamp: new Date(),
-        },
-      ]);
+    try {
+      const params = new URLSearchParams({ countyId, department, timeframe });
+      const response = await fetch(`/api/ai/insights?${params.toString()}`, {
+        headers: { Accept: 'application/json' },
+      });
 
-      setPredictions([
-        {
-          name: 'Property Assessments',
-          current: 847,
-          predicted: 950,
-          trend: 'up',
-          confidence: 0.89,
-          unit: 'properties',
-        },
-        {
-          name: 'Processing Time',
-          current: 45,
-          predicted: 28,
-          trend: 'down',
-          confidence: 0.93,
-          unit: 'minutes',
-        },
-        {
-          name: 'Accuracy Score',
-          current: 99.5,
-          predicted: 99.7,
-          trend: 'up',
-          confidence: 0.96,
-          unit: 'percent',
-        },
-        {
-          name: 'Citizen Satisfaction',
-          current: 87.3,
-          predicted: 92.1,
-          trend: 'up',
-          confidence: 0.88,
-          unit: 'percent',
-        },
-      ]);
+      if (!response.ok) {
+        throw new Error(`AI insights API unavailable: ${response.status}`);
+      }
 
+      const payload = await response.json();
+      const nextInsights = Array.isArray(payload.insights) ? payload.insights : [];
+      const nextPredictions = Array.isArray(payload.predictions) ? payload.predictions : [];
+
+      setInsights(
+        nextInsights.map((insight: AIInsight) => ({
+          ...insight,
+          timestamp: new Date(insight.timestamp),
+        }))
+      );
+      setPredictions(nextPredictions);
+    } catch (err) {
+      setInsights([]);
+      setPredictions([]);
+      setError(err instanceof Error ? err.message : 'AI insight evidence is unavailable.');
+    } finally {
       setIsAnalyzing(false);
-    }, 1200);
+    }
   };
 
   const getSeverityColor = (severity: string) => {
@@ -259,7 +167,7 @@ export const AIInsightsPanel: React.FC<AIInsightsPanelProps> = ({
           ) : (
             <Badge variant='quantum' className='quantum-pulse'>
               <Brain className='w-3 h-3 mr-2' />
-              AI Active
+              Evidence Ready
             </Badge>
           )}
           <Badge variant='outline' className='text-xs'>
@@ -278,8 +186,14 @@ export const AIInsightsPanel: React.FC<AIInsightsPanelProps> = ({
         </CardHeader>
         <CardContent className='p-6'>
           <div className='grid grid-cols-2 gap-4'>
+            {predictions.length === 0 && (
+              <div className='col-span-2 text-sm text-slate-400'>
+                No predictive metrics returned by the AI insights API.
+              </div>
+            )}
             {predictions.map((metric) => {
-              const change = ((metric.predicted - metric.current) / metric.current) * 100;
+              const change =
+                metric.current === 0 ? 0 : ((metric.predicted - metric.current) / metric.current) * 100;
               const isPositive = metric.trend === 'up' && change > 0;
 
               return (
@@ -326,6 +240,18 @@ export const AIInsightsPanel: React.FC<AIInsightsPanelProps> = ({
 
       {/* AI Insights */}
       <div className='space-y-4'>
+        {error && (
+          <Card className='terra-glass border border-yellow-500/20'>
+            <CardContent className='p-4 text-yellow-200'>{error}</CardContent>
+          </Card>
+        )}
+        {insights.length === 0 && !error && (
+          <Card className='terra-glass border border-terra-cyan/20'>
+            <CardContent className='p-4 text-slate-400'>
+              No AI insights returned for this county, department, and timeframe.
+            </CardContent>
+          </Card>
+        )}
         {insights.map((insight) => (
           <Card
             key={insight.id}
@@ -399,12 +325,8 @@ export const AIInsightsPanel: React.FC<AIInsightsPanelProps> = ({
           <div className='flex items-center gap-2 text-sm text-slate-400'>
             <Sparkles className='w-4 h-4 text-terra-cyan' />
             <span>
-              AI analyzed {insights.length} insights with average{' '}
-              {(
-                (insights.reduce((acc, i) => acc + i.confidence, 0) / insights.length) *
-                100
-              ).toFixed(1)}
-              % confidence. Quantum optimization factor: 949. Government. Transcended.
+              AI insight evidence is rendered only from the governed insights API. Current returned
+              insight count: {insights.length}.
             </span>
           </div>
         </CardContent>

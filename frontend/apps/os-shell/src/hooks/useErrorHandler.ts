@@ -1,6 +1,7 @@
 import { useCallback, useContext } from 'react';
 
 import { ErrorContext } from '../contexts/ErrorContext';
+import { createStableId } from '../utils/stableId';
 
 export interface ErrorInfo {
   message: string;
@@ -32,7 +33,7 @@ export const useErrorHandler = () => {
         message: error.message,
         stack: error.stack,
         timestamp: new Date().toISOString(),
-        errorId: `async-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        errorId: createStableId('async'),
         context: { ...error.context, ...context },
       };
 

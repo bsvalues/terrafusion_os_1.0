@@ -6,13 +6,15 @@
  */
 
 import { create } from 'zustand';
-import type { QueueWorkItem, QueueMetrics, AppraiserProductivity } from '@/data/queueFixtures';
 import {
   getQueueItems,
   getQueueMetrics,
   getAppraiserProductivity,
   assignWorkItems as apiAssign,
   reviewWorkItem as apiReview,
+  type QueueWorkItem,
+  type QueueMetrics,
+  type AppraiserProductivity,
 } from '@/services/suites/queueService';
 
 interface QueueState {
@@ -21,12 +23,12 @@ interface QueueState {
   productivity: AppraiserProductivity[];
   loading: boolean;
   error: string | null;
-  isFixture: boolean;
+  dataSource: 'live' | 'unavailable';
   selectedItemIds: Set<string>;
 
   // Actions
   fetchQueue: () => Promise<void>;
-  assignItems: (appraiserName: string) => Promise<void>;
+  assignItems: (appraiserName: string, workItemIds?: string[]) => Promise<void>;
   reviewItem: (workItemId: string, action: 'approve' | 'reject') => Promise<void>;
   toggleSelection: (workItemId: string) => void;
   selectAll: (workItemIds: string[]) => void;
@@ -39,7 +41,7 @@ export const useQueueStore = create<QueueState>((set, get) => ({
   productivity: [],
   loading: false,
   error: null,
-  isFixture: true,
+  dataSource: 'unavailable',
   selectedItemIds: new Set(),
 
   fetchQueue: async () => {
@@ -50,51 +52,41 @@ export const useQueueStore = create<QueueState>((set, get) => ({
         getQueueMetrics({ throwOnError: true }),
         getAppraiserProductivity({ throwOnError: true }),
       ]);
-      set({ items, metrics, productivity, isFixture: false, loading: false });
-    } catch {
-      const [items, metrics, productivity] = await Promise.all([
-        getQueueItems(),
-        getQueueMetrics(),
-        getAppraiserProductivity(),
-      ]);
-      set({ items, metrics, productivity, isFixture: true, loading: false });
+      set({ items, metrics, productivity, dataSource: 'live', loading: false });
+    } catch (error) {
+      set({
+        items: [],
+        metrics: null,
+        productivity: [],
+        dataSource: 'unavailable',
+        loading: false,
+        error: error instanceof Error ? error.message : 'Queue backend unavailable.',
+      });
     }
   },
 
-  assignItems: async (appraiserName: string) => {
-    const { selectedItemIds, items } = get();
-    const ids = Array.from(selectedItemIds);
+  assignItems: async (appraiserName: string, workItemIds?: string[]) => {
+    const { selectedItemIds } = get();
+    const ids = workItemIds ?? Array.from(selectedItemIds);
     if (ids.length === 0) return;
 
-    // Optimistic update
-    const now = new Date().toISOString().slice(0, 10);
-    set({
-      items: items.map((item) =>
-        selectedItemIds.has(item.workItemId)
-          ? { ...item, status: 'assigned' as const, assignedTo: appraiserName, assignedDate: now, lastUpdated: now }
-          : item
-      ),
-      selectedItemIds: new Set(),
-    });
-
-    await apiAssign(ids, appraiserName);
+    try {
+      await apiAssign(ids, appraiserName);
+      set({ selectedItemIds: new Set(), error: null });
+      await get().fetchQueue();
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Assignment failed.' });
+    }
   },
 
   reviewItem: async (workItemId: string, action: 'approve' | 'reject') => {
-    const { items } = get();
-    const newStatus = action === 'approve' ? 'approved' : 'rejected';
-
-    // Optimistic update
-    const now = new Date().toISOString().slice(0, 10);
-    set({
-      items: items.map((item) =>
-        item.workItemId === workItemId
-          ? { ...item, status: newStatus as QueueWorkItem['status'], lastUpdated: now }
-          : item
-      ),
-    });
-
-    await apiReview(workItemId, action);
+    try {
+      await apiReview(workItemId, action);
+      set({ error: null });
+      await get().fetchQueue();
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Review action failed.' });
+    }
   },
 
   toggleSelection: (workItemId: string) => {

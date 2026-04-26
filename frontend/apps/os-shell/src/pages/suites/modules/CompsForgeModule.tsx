@@ -1,7 +1,7 @@
 /**
  * CompsForge Module - Sales Comparison Approach
  *
- * Uses the active parcel as subject context, Benton PACS-sourced sales as the
+ * Uses the active parcel as subject context, TerraFusion-normalized Benton sales as the
  * candidate pool, and CostForge endpoints as the adjustment/reconciliation
  * authority. The module does not fabricate subject characteristics or comp
  * values when source data is unavailable.
@@ -221,7 +221,7 @@ export default function CompsForgeModule() {
           CompsForge - Sales Comparison
         </h2>
         <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
-          Active-parcel comp selection using PACS-sourced Benton sales and CostForge governed adjustments.
+          Active-parcel comp selection using TerraFusion-normalized Benton sales and CostForge governed adjustments.
         </p>
       </div>
 

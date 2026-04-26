@@ -73,8 +73,11 @@ function generateDorCsv(data: StratifiedResponse): void {
   URL.revokeObjectURL(url);
 }
 
-export function StratifiedStudyPanel() {
-  const [taxYear] = useState(2026);
+interface StratifiedStudyPanelProps {
+  taxYear?: number;
+}
+
+export function StratifiedStudyPanel({ taxYear = new Date().getFullYear() }: StratifiedStudyPanelProps) {
 
   const { data, isLoading, error } = useQuery<StratifiedResponse>({
     queryKey: ['ratio-study-stratified', taxYear],

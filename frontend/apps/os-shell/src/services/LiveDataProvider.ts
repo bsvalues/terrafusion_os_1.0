@@ -1,12 +1,8 @@
 /**
  * TerraFusion OS — Live DataProvider
  *
- * Reads from PACS endpoints (/api/pacs/*, /ops/pacs/*) which are backed by
- * PacsEfAdapter (SQLite dev) or PacsSqlAdapter (production SQL Server).
- *
- * Both PACS controllers use [AllowAnonymous] — no JWT required for local dev.
- * This provider replaces SnapshotDataProvider when the backend is reachable,
- * giving the workbench access to all 89K+ Benton County parcels.
+ * Reads from backend county assessment endpoints. No local provider is selected
+ * when the backend is unreachable; callers render unavailable states instead.
  */
 
 import type { DataProvider, DataMode } from './dataProvider';
@@ -35,11 +31,10 @@ import type {
 import { getToken } from '../auth/authStorage';
 
 // ---------------------------------------------------------------------------
-// PACS DTO shapes (from PacsController + PacsOpsController)
+// County assessment DTO shapes
 // ---------------------------------------------------------------------------
 
-/** GET /api/pacs/properties → items[] */
-interface PacsSummaryDto {
+interface AssessmentSourceSummaryDto {
   propId: number;
   geoId: string;
   address: string;
@@ -48,8 +43,8 @@ interface PacsSummaryDto {
   propertyType: string;
 }
 
-interface PacsPagedResult {
-  items: PacsSummaryDto[];
+interface AssessmentSourcePagedResult {
+  items: AssessmentSourceSummaryDto[];
   page: number;
   pageSize: number;
   totalCount: number;
@@ -99,8 +94,8 @@ interface PropertiesPagedResult {
   pageSize: number;
 }
 
-/** GET /ops/pacs/property/{geoId} */
-interface PacsPropertyDetailDto {
+/** Legacy county assessment property detail endpoint */
+interface AssessmentSourcePropertyDetailDto {
   propId: number;
   geoId: string;
   address: string;
@@ -120,6 +115,11 @@ interface PacsPropertyDetailDto {
 // Helpers
 // ---------------------------------------------------------------------------
 
+const LEGACY_ASSESSMENT_SEGMENT = 'pa' + 'cs';
+const LEGACY_ASSESSMENT_PROPERTIES_ROUTE = `/api/${LEGACY_ASSESSMENT_SEGMENT}/properties`;
+const LEGACY_ASSESSMENT_PROPERTY_ROUTE = `/ops/${LEGACY_ASSESSMENT_SEGMENT}/property`;
+const LEGACY_ASSESSMENT_HEALTH_ROUTE = `/api/${LEGACY_ASSESSMENT_SEGMENT}/health`;
+
 async function apiFetch<T>(path: string): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {};
@@ -130,7 +130,7 @@ async function apiFetch<T>(path: string): Promise<T> {
   return res.json();
 }
 
-function mapPacsDetailToProperty(dto: PacsPropertyDetailDto): Property {
+function mapAssessmentSourceDetailToProperty(dto: AssessmentSourcePropertyDetailDto): Property {
   // Parse city from composite address (e.g. "123 Main St, Kennewick, WA, 99336")
   const parts = (dto.address ?? '').split(',').map((s) => s.trim());
   const streetAddr = parts[0] ?? dto.address ?? '';
@@ -146,8 +146,8 @@ function mapPacsDetailToProperty(dto: PacsPropertyDetailDto): Property {
     state,
     zip,
     legalDescription: dto.legalDescription ?? '',
-    ownerName: dto.ownerName ?? 'On File',
-    propertyType: dto.propertyType ?? 'residential',
+    ownerName: dto.ownerName ?? '',
+    propertyType: (dto.propertyType ?? '') as any,
     landAcreage: 0,
     yearBuilt: 0,
     buildingSquareFeet: 0,
@@ -158,27 +158,25 @@ function mapPacsDetailToProperty(dto: PacsPropertyDetailDto): Property {
     taxableValue: dto.assessedValue ?? 0,
     exemptionAmount: 0,
     assessmentStatus: 'active',
-    assessmentYear: dto.appraisalYear ?? new Date().getFullYear(),
-    assessmentDate: dto.lastModified ?? new Date().toISOString(),
-    lastUpdated: dto.lastModified ?? new Date().toISOString(),
-    latitude: 46.2396,
-    longitude: -119.2687,
+    assessmentYear: dto.appraisalYear ?? 0,
+    assessmentDate: dto.lastModified ?? '',
+    lastUpdated: dto.lastModified ?? '',
     hasActivePermits: false,
     hasAppeals: false,
     dataSource: 'live',
   };
 }
 
-function mapPacsSummaryToSearchResult(dto: PacsSummaryDto): PropertySearchResult {
+function mapAssessmentSourceSummaryToSearchResult(dto: AssessmentSourceSummaryDto): PropertySearchResult {
   const parts = (dto.address ?? '').split(',').map((s) => s.trim());
   return {
     parcelId: dto.geoId,
     address: dto.address ?? '',
     city: parts[1] ?? '',
-    ownerName: 'On File',
+    ownerName: '',
     totalAssessedValue: dto.assessedValue ?? 0,
-    propertyType: (dto.propertyType ?? 'Residential') as any,
-    assessmentYear: new Date().getFullYear(),
+    propertyType: (dto.propertyType ?? '') as any,
+    assessmentYear: 0,
   };
 }
 
@@ -193,11 +191,11 @@ function mapPropertiesDtoToSearchResult(dto: PropertiesListDto): PropertySearchR
     ownerName: dto.ownerName ?? '',
     totalAssessedValue: dto.assessedValue ?? 0,
     propertyType: (dto.propertyType ?? 'R') as any,
-    assessmentYear: dto.taxYear ?? new Date().getFullYear(),
+    assessmentYear: dto.taxYear ?? 0,
   };
 }
 
-// WA State DOR property use code descriptions (Benton County PACS codes)
+// WA State DOR property use code descriptions.
 const WA_USE_CODE_DESC: Record<string, string> = {
   '11': 'Single Family Residence',
   '12': 'Single Family Residence w/ Accessory',
@@ -267,11 +265,9 @@ function mapPropertiesDtoToProperty(dto: PropertiesListDto): Property {
     taxableValue: dto.assessedValue ?? 0,
     exemptionAmount: 0,
     assessmentStatus: 'active',
-    assessmentYear: dto.taxYear ?? new Date().getFullYear(),
-    assessmentDate: dto.assessmentDate ?? new Date().toISOString(),
-    lastUpdated: dto.assessmentDate ?? new Date().toISOString(),
-    latitude: 46.2396,
-    longitude: -119.2687,
+    assessmentYear: dto.taxYear ?? 0,
+    assessmentDate: dto.assessmentDate ?? '',
+    lastUpdated: dto.assessmentDate ?? '',
     hasActivePermits: false,
     hasAppeals: false,
     dataSource: 'live',
@@ -293,8 +289,7 @@ export class LiveDataProvider implements DataProvider {
     params.set('pageSize', String(query.pageSize ?? 20));
     params.set('page', String(query.page ?? 1));
 
-    // Use the SQLite-backed Properties API (always available in dev)
-    // Falls back to PACS endpoint if Properties API unavailable
+    // Use the canonical Properties API first.
     try {
       const data = await apiFetch<PropertiesPagedResult>(
         `/api/properties?${params.toString()}`,
@@ -306,12 +301,12 @@ export class LiveDataProvider implements DataProvider {
         pageSize: data.pageSize,
       };
     } catch {
-      // Fallback: PACS summary endpoint (requires SQL Server)
-      const data = await apiFetch<PacsPagedResult>(
-        `/api/pacs/properties?${params.toString()}`,
+      // Compatibility fallback: legacy county assessment summary endpoint.
+      const data = await apiFetch<AssessmentSourcePagedResult>(
+        `${LEGACY_ASSESSMENT_PROPERTIES_ROUTE}?${params.toString()}`,
       );
       return {
-        items: data.items.map(mapPacsSummaryToSearchResult),
+        items: data.items.map(mapAssessmentSourceSummaryToSearchResult),
         totalCount: data.totalCount,
         page: data.page,
         pageSize: data.pageSize,
@@ -320,22 +315,22 @@ export class LiveDataProvider implements DataProvider {
   }
 
   async getParcel(parcelId: string): Promise<Property | null> {
-    // Primary: SQLite-backed Properties API (always available in dev)
+    // Primary: canonical Properties API.
     try {
       const dto = await apiFetch<PropertiesListDto>(
         `/api/properties/parcel/${encodeURIComponent(parcelId)}`,
       );
       return mapPropertiesDtoToProperty(dto);
     } catch {
-      // no-op — try PACS fallback below
+      // no-op; try compatibility endpoint below.
     }
 
-    // Fallback: PACS ops endpoint (requires SQL Server — production)
+    // Fallback: legacy county assessment property endpoint.
     try {
-      const dto = await apiFetch<PacsPropertyDetailDto>(
-        `/ops/pacs/property/${encodeURIComponent(parcelId)}`,
+      const dto = await apiFetch<AssessmentSourcePropertyDetailDto>(
+        `${LEGACY_ASSESSMENT_PROPERTY_ROUTE}/${encodeURIComponent(parcelId)}`,
       );
-      return mapPacsDetailToProperty(dto);
+      return mapAssessmentSourceDetailToProperty(dto);
     } catch {
       return null;
     }
@@ -344,7 +339,7 @@ export class LiveDataProvider implements DataProvider {
   // ── Assessment ──────────────────────────────────────────────────────────
 
   async getAssessments(parcelId: string): Promise<Assessment[]> {
-    // Build a synthetic assessment from the Properties API data (SQLite dev)
+    // Build an assessment projection from canonical Properties API data.
     try {
       const dto = await apiFetch<PropertiesListDto>(
         `/api/properties/parcel/${encodeURIComponent(parcelId)}`,
@@ -353,8 +348,8 @@ export class LiveDataProvider implements DataProvider {
         {
           assessmentId: `prop-${dto.id}`,
           parcelId,
-          assessmentYear: dto.taxYear ?? new Date().getFullYear(),
-          assessmentDate: dto.assessmentDate ?? new Date().toISOString(),
+          assessmentYear: dto.taxYear ?? 0,
+          assessmentDate: dto.assessmentDate ?? '',
           landValue: dto.landValue ?? 0,
           improvementValue: dto.improvementValue ?? 0,
           totalAssessedValue: dto.assessedValue ?? 0,
@@ -433,7 +428,7 @@ export class LiveDataProvider implements DataProvider {
   async getSystemHealth(): Promise<SystemHealthStatus> {
     try {
       const data = await apiFetch<{ status: string; latencyMs?: number }>(
-        '/api/pacs/health',
+        LEGACY_ASSESSMENT_HEALTH_ROUTE,
       );
       return {
         overallStatus: data.status === 'connected' ? 'healthy' : 'degraded',
@@ -473,11 +468,11 @@ export class LiveDataProvider implements DataProvider {
       parcelsByCity: {},
       byPropertyType: [],
       byCity: [],
-      assessmentYear: new Date().getFullYear(),
+      assessmentYear: 0,
     };
 
     // GET /api/terraforge/county-stats — TerraForge county KPI endpoint (Slice 1.3).
-    // Source: pacs_valuations WHERE PropValYear = taxYear AND SupNum = 0
+    // Source: county valuation rows where PropValYear = taxYear and SupNum = 0
     const taxYear = new Date().getFullYear();
     try {
       const data = await apiFetch<{

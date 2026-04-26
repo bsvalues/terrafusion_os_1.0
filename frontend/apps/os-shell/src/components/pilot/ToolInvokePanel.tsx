@@ -2,13 +2,14 @@
  * ToolInvokePanel.tsx
  *
  * Phase 2: TerraPilot Read-Only Tool Invocation UI
- * Minimal vertical slice: one hardcoded read-only tool → correlationId-first UX
+ * Minimal vertical slice: one read-only tool path with correlationId-first UX
  */
 
 import React, { useState } from 'react';
 import { invokeTool } from '../../api/pilotApi';
 import type { ErrorInfo } from '../../hooks/useErrorHandler';
 import { getEnv } from '../../runtime/env';
+import { createStableId } from '../../utils/stableId';
 import { ErrorDisplay } from '../errors/ErrorDisplay';
 
 interface InvocationState {
@@ -62,7 +63,7 @@ export const ToolInvokePanel: React.FC = () => {
       }
     } catch (err) {
       // Network error: Generate correlationId (net-* prefix)
-      const correlationId = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+      const correlationId = createStableId('net');
 
       setInvocationState({
         status: 'error',

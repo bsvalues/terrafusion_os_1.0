@@ -1,6 +1,6 @@
 /**
  * SaleDetailPanel — Full detail expand for a selected sale.
- * Shows all 40+ fields including raw PACS codes, time-of-sale characteristics,
+ * Shows all 40+ fields including raw source qualification codes, time-of-sale characteristics,
  * and the three-layer qualification data.
  */
 
@@ -107,7 +107,7 @@ export function SaleDetailPanel() {
             <Field label="Sales ratio"         value={fmtRatio(saleDetail.salesRatio)} />
           </div>
 
-          {/* Raw PACS codes */}
+          {/* Raw source qualification codes */}
           <div className="sf-detail-section-heading">Qualification codes</div>
           <div className="sf-detail-grid">
             <Field label="WAC code (458-61A)" value={saleDetail.rawWacCd} />

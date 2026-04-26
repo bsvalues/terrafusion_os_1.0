@@ -29,11 +29,11 @@ interface AIMetrics {
 
 export const AIMarketplaceHero: React.FC = () => {
   const [metrics, setMetrics] = useState<AIMetrics>({
-    totalAgents: 50000,
-    activeModules: 2847,
-    quantumProcesses: 18,
-    governmentAgencies: 39,
-    realTimeOps: 'INFINITE',
+    totalAgents: 0,
+    activeModules: 0,
+    quantumProcesses: 0,
+    governmentAgencies: 0,
+    realTimeOps: 'Unavailable',
   });
 
   const [currentDemo, setCurrentDemo] = useState(0);
@@ -43,12 +43,6 @@ export const AIMarketplaceHero: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setConsciousness((prev) => (prev + 1) % 100);
-      // Simulate real-time agent growth
-      setMetrics((prev) => ({
-        ...prev,
-        totalAgents: prev.totalAgents + Math.floor(Math.random() * 3),
-        activeModules: prev.activeModules + Math.floor(Math.random() * 2),
-      }));
     }, 2000);
     return () => clearInterval(interval);
   }, []);
@@ -63,13 +57,13 @@ export const AIMarketplaceHero: React.FC = () => {
 
   const demoFeatures = [
     {
-      title: '50,000+ AI Agents',
-      description: 'Autonomous government operations',
+      title: 'Agent Telemetry',
+      description: 'Provider-backed agent inventory required',
       icon: <SmartToy className='w-8 h-8' />,
     },
     {
       title: 'Quantum Processing',
-      description: 'Infinite scale capabilities',
+      description: 'Runtime evidence required before scale claims',
       icon: <Psychology className='w-8 h-8' />,
     },
     {
@@ -79,10 +73,16 @@ export const AIMarketplaceHero: React.FC = () => {
     },
     {
       title: 'Championship Analytics',
-      description: '99.5% accuracy achieved',
+      description: 'Accuracy shown only from governed evaluation output',
       icon: <TrendingUp className='w-8 h-8' />,
     },
   ];
+  const particleStyle = (index: number): React.CSSProperties => ({
+    left: `${(index * 37) % 100}%`,
+    top: `${(index * 53) % 100}%`,
+    animationDelay: `${(index % 6) * 0.35}s`,
+    animationDuration: `${2 + (index % 5) * 0.4}s`,
+  });
 
   return (
     <div className='relative min-h-screen bg-gradient-to-br from-[var(--tf-bg-surface)] via-[var(--tf-bg-surface)] to-[var(--tf-bg-surface)] overflow-hidden'>
@@ -98,12 +98,7 @@ export const AIMarketplaceHero: React.FC = () => {
           <div
             key={i}
             className='absolute w-1 h-1 bg-[var(--tf-transcend-highlight)] rounded-full animate-pulse'
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 2}s`,
-              animationDuration: `${2 + Math.random() * 3}s`,
-            }}
+            style={particleStyle(i)}
           />
         ))}
       </div>
@@ -133,7 +128,7 @@ export const AIMarketplaceHero: React.FC = () => {
             <p className='text-xl text-gray-300 mb-4'>
               For the First AI-Native Government Operating System
             </p>
-            <p className='text-lg text-gray-400 italic'>"Government. Transcended."</p>
+            <p className='text-lg text-gray-400 italic'>"Governed Operator Surface"</p>
           </div>
 
           {/* Live AI Consciousness Metrics */}
@@ -159,7 +154,7 @@ export const AIMarketplaceHero: React.FC = () => {
               <div className='flex items-center mt-3'>
                 <TrendingUp className='w-4 h-4 text-[var(--tf-accent-success)] mr-1' />
                 <span className='text-[var(--tf-accent-success)] text-xs'>
-                  +{Math.floor(Math.random() * 10)}% growth
+                  Telemetry unavailable
                 </span>
               </div>
             </div>
@@ -174,7 +169,7 @@ export const AIMarketplaceHero: React.FC = () => {
             </div>
 
             <div className='tf-glass-card bg-white/5 backdrop-blur-lg border border-[var(--tf-accent-error)]/20 rounded-2xl p-6 hover:transform hover:-translate-y-1 transition-all duration-500'>
-              <div className='text-4xl font-black text-[var(--tf-accent-error)] mb-2'>99.5%</div>
+              <div className='text-4xl font-black text-[var(--tf-accent-error)] mb-2'>N/A</div>
               <div className='text-gray-300 text-sm uppercase tracking-wider'>Accuracy Rate</div>
               <div className='flex items-center mt-3'>
                 <Security className='w-4 h-4 text-[var(--tf-accent-error)] mr-1' />

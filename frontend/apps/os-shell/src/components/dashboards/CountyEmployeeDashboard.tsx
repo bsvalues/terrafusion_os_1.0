@@ -1,8 +1,7 @@
 /**
  * ═══════════════════════════════════════════════════════════════
  * COUNTY EMPLOYEE DASHBOARD - Unified AI-Powered Workspace
- * TerraFusion OS Elite Government Interface
- * Government. Transcended.
+ * TerraFusion OS evidence-gated county workspace.
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -30,15 +29,15 @@ import {
   TrendingUp,
   Zap,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 interface DashboardMetrics {
-  tasksCompleted: number;
-  tasksPending: number;
-  aiAssists: number;
-  accuracy: number;
-  avgResponseTime: number;
-  propertiesProcessed: number;
+  tasksCompleted: number | null;
+  tasksPending: number | null;
+  aiAssists: number | null;
+  accuracy: number | null;
+  avgResponseTime: number | null;
+  propertiesProcessed: number | null;
 }
 
 interface CountyEmployeeDashboardProps {
@@ -49,6 +48,18 @@ interface CountyEmployeeDashboardProps {
   department: string;
 }
 
+interface RecentProperty {
+  parcelId: string;
+  address: string;
+  propertyType: string;
+  squareFootage: number;
+  yearBuilt: number;
+  assessedValue: number;
+  marketValue: number;
+  lastAssessment: Date;
+  ownerName: string;
+}
+
 export const CountyEmployeeDashboard: React.FC<CountyEmployeeDashboardProps> = ({
   employeeId,
   employeeName,
@@ -57,63 +68,28 @@ export const CountyEmployeeDashboard: React.FC<CountyEmployeeDashboardProps> = (
   department,
 }) => {
   const [metrics, setMetrics] = useState<DashboardMetrics>({
-    tasksCompleted: 0,
-    tasksPending: 0,
-    aiAssists: 0,
-    accuracy: 0,
-    avgResponseTime: 0,
-    propertiesProcessed: 0,
+    tasksCompleted: null,
+    tasksPending: null,
+    aiAssists: null,
+    accuracy: null,
+    avgResponseTime: null,
+    propertiesProcessed: null,
   });
 
-  const [recentProperties] = useState([
-    {
-      parcelId: 'P-001-8842',
-      address: '123 Main St, Richland, WA',
-      propertyType: 'Residential',
-      squareFootage: 2400,
-      yearBuilt: 2015,
-      assessedValue: 385000,
-      marketValue: 425000,
-      lastAssessment: new Date('2024-10-15'),
-      ownerName: 'Smith Family Trust',
-    },
-    {
-      parcelId: 'P-002-9103',
-      address: '456 Oak Ave, Kennewick, WA',
-      propertyType: 'Commercial',
-      squareFootage: 5200,
-      yearBuilt: 2018,
-      assessedValue: 820000,
-      marketValue: 875000,
-      lastAssessment: new Date('2024-10-20'),
-      ownerName: 'Oak Avenue LLC',
-    },
-  ]);
+  const [recentProperties] = useState<RecentProperty[]>([]);
 
   const [showAIPanel, setShowAIPanel] = useState(true);
 
-  // Simulate real-time metrics (replace with actual API)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMetrics((prev) => ({
-        tasksCompleted: Math.min(prev.tasksCompleted + Math.floor(Math.random() * 3), 247),
-        tasksPending: Math.max(prev.tasksPending - Math.floor(Math.random() * 2), 12),
-        aiAssists: prev.aiAssists + Math.floor(Math.random() * 5),
-        accuracy: Math.min(prev.accuracy + 0.001, 0.997),
-        avgResponseTime: Math.max(prev.avgResponseTime - 0.1, 8.2),
-        propertiesProcessed: prev.propertiesProcessed + Math.floor(Math.random() * 4),
-      }));
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const handlePropertyAction = (action: string, property: any) => {
-    // Implement action handlers
+  const formatMetric = (value: number | null, suffix = '') => {
+    return value == null ? 'Unavailable' : `${value}${suffix}`;
   };
 
-  const handleAISuggestion = (suggestion: string) => {
-    // Implement suggestion handlers
+  const handlePropertyAction = (_action: string, _property: RecentProperty) => {
+    setMetrics((prev) => ({ ...prev }));
+  };
+
+  const handleAISuggestion = (_suggestion: string) => {
+    setMetrics((prev) => ({ ...prev }));
   };
 
   return (
@@ -167,11 +143,9 @@ export const CountyEmployeeDashboard: React.FC<CountyEmployeeDashboardProps> = (
             <CardContent className='p-4'>
               <div className='flex items-center justify-between mb-2'>
                 <CheckCircle className='w-5 h-5 text-green-400' />
-                <Badge variant='quantum' className='text-xs'>
-                  +{Math.floor(Math.random() * 10)}
-                </Badge>
+                <Badge variant='outline' className='text-xs'>No feed</Badge>
               </div>
-              <p className='text-2xl font-bold text-white mb-1'>{metrics.tasksCompleted}</p>
+              <p className='text-2xl font-bold text-white mb-1'>{formatMetric(metrics.tasksCompleted)}</p>
               <p className='text-xs text-slate-400'>Tasks Completed</p>
             </CardContent>
           </Card>
@@ -181,10 +155,10 @@ export const CountyEmployeeDashboard: React.FC<CountyEmployeeDashboardProps> = (
               <div className='flex items-center justify-between mb-2'>
                 <Clock className='w-5 h-5 text-yellow-400' />
                 <Badge variant='outline' className='text-xs'>
-                  {metrics.tasksPending}
+                  {formatMetric(metrics.tasksPending)}
                 </Badge>
               </div>
-              <p className='text-2xl font-bold text-white mb-1'>{metrics.tasksPending}</p>
+              <p className='text-2xl font-bold text-white mb-1'>{formatMetric(metrics.tasksPending)}</p>
               <p className='text-xs text-slate-400'>Tasks Pending</p>
             </CardContent>
           </Card>
@@ -195,7 +169,7 @@ export const CountyEmployeeDashboard: React.FC<CountyEmployeeDashboardProps> = (
                 <Sparkles className='w-5 h-5 text-terra-cyan' />
                 <Zap className='w-4 h-4 text-terra-cyan animate-pulse' />
               </div>
-              <p className='text-2xl font-bold text-white mb-1'>{metrics.aiAssists}</p>
+              <p className='text-2xl font-bold text-white mb-1'>{formatMetric(metrics.aiAssists)}</p>
               <p className='text-xs text-slate-400'>AI Assists Today</p>
             </CardContent>
           </Card>
@@ -207,7 +181,7 @@ export const CountyEmployeeDashboard: React.FC<CountyEmployeeDashboardProps> = (
                 <TrendingUp className='w-4 h-4 text-green-400' />
               </div>
               <p className='text-2xl font-bold text-white mb-1'>
-                {(metrics.accuracy * 100).toFixed(1)}%
+                {metrics.accuracy == null ? 'Unavailable' : `${(metrics.accuracy * 100).toFixed(1)}%`}
               </p>
               <p className='text-xs text-slate-400'>Accuracy Score</p>
             </CardContent>
@@ -218,10 +192,10 @@ export const CountyEmployeeDashboard: React.FC<CountyEmployeeDashboardProps> = (
               <div className='flex items-center justify-between mb-2'>
                 <Activity className='w-5 h-5 text-terra-blue' />
                 <span className='text-xs text-terra-cyan font-mono'>
-                  {metrics.avgResponseTime.toFixed(1)}ms
+                  {metrics.avgResponseTime == null ? 'Unavailable' : `${metrics.avgResponseTime.toFixed(1)}ms`}
                 </span>
               </div>
-              <p className='text-2xl font-bold text-white mb-1'>&lt;10ms</p>
+              <p className='text-2xl font-bold text-white mb-1'>{formatMetric(metrics.avgResponseTime, 'ms')}</p>
               <p className='text-xs text-slate-400'>Avg Response</p>
             </CardContent>
           </Card>
@@ -232,7 +206,7 @@ export const CountyEmployeeDashboard: React.FC<CountyEmployeeDashboardProps> = (
                 <FileText className='w-5 h-5 text-purple-400' />
                 <BarChart3 className='w-4 h-4 text-purple-400' />
               </div>
-              <p className='text-2xl font-bold text-white mb-1'>{metrics.propertiesProcessed}</p>
+              <p className='text-2xl font-bold text-white mb-1'>{formatMetric(metrics.propertiesProcessed)}</p>
               <p className='text-xs text-slate-400'>Properties Today</p>
             </CardContent>
           </Card>
@@ -252,7 +226,7 @@ export const CountyEmployeeDashboard: React.FC<CountyEmployeeDashboardProps> = (
                   <h2 className='text-lg font-semibold text-white'>Recent Properties</h2>
                   <Badge variant='quantum' className='quantum-pulse'>
                     <Sparkles className='w-3 h-3 mr-1' />
-                    AI Enhanced
+                    Source-backed only
                   </Badge>
                 </div>
                 <Button variant='outline' size='sm'>
@@ -262,15 +236,21 @@ export const CountyEmployeeDashboard: React.FC<CountyEmployeeDashboardProps> = (
             </CardHeader>
             <CardContent className='p-6'>
               <div className='grid gap-4'>
-                {recentProperties.map((property) => (
-                  <SmartPropertyCard
-                    key={property.parcelId}
-                    property={property}
-                    countyId={countyId}
-                    showAIInsights={true}
-                    onAction={handlePropertyAction}
-                  />
-                ))}
+                {recentProperties.length === 0 ? (
+                  <div className='p-4 rounded-lg border border-terra-cyan/10 text-sm text-slate-400'>
+                    No recent properties are displayed because no governed employee activity feed is connected.
+                  </div>
+                ) : (
+                  recentProperties.map((property) => (
+                    <SmartPropertyCard
+                      key={property.parcelId}
+                      property={property}
+                      countyId={countyId}
+                      showAIInsights={false}
+                      onAction={handlePropertyAction}
+                    />
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -285,53 +265,13 @@ export const CountyEmployeeDashboard: React.FC<CountyEmployeeDashboardProps> = (
             </CardHeader>
             <CardContent className='p-6'>
               <div className='space-y-3'>
-                <div className='flex items-start gap-3 p-4 bg-terra-cyan/10 rounded-lg border border-terra-cyan/20 hover-quantum cursor-pointer'>
+                <div className='flex items-start gap-3 p-4 bg-terra-cyan/10 rounded-lg border border-terra-cyan/20'>
                   <Zap className='w-5 h-5 text-terra-cyan mt-0.5' />
                   <div className='flex-1'>
-                    <p className='text-sm font-semibold text-white mb-1'>Bulk Assessment Ready</p>
+                    <p className='text-sm font-semibold text-white mb-1'>No governed suggestions returned</p>
                     <p className='text-xs text-slate-400 mb-2'>
-                      AI has prepared 847 properties for quarterly assessment. Review and approve
-                      with one click.
+                      Workflow guidance will appear only when a governed AI service returns confidence, uncertainty, and provenance.
                     </p>
-                    <div className='flex gap-2'>
-                      <Button variant='quantum' size='sm' className='quantum-pulse'>
-                        Review Properties
-                      </Button>
-                      <Button variant='outline' size='sm'>
-                        View Details
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='flex items-start gap-3 p-4 bg-green-500/10 rounded-lg border border-green-500/20 hover-quantum cursor-pointer'>
-                  <CheckCircle className='w-5 h-5 text-green-400 mt-0.5' />
-                  <div className='flex-1'>
-                    <p className='text-sm font-semibold text-white mb-1'>
-                      IAAO Compliance Check Complete
-                    </p>
-                    <p className='text-xs text-slate-400 mb-2'>
-                      All assessments meet IAAO standards. COD: 8.2% (Target: &lt;15%). Ready for
-                      certification.
-                    </p>
-                    <Button variant='outline' size='sm'>
-                      Generate Report
-                    </Button>
-                  </div>
-                </div>
-
-                <div className='flex items-start gap-3 p-4 bg-purple-500/10 rounded-lg border border-purple-500/20 hover-quantum cursor-pointer'>
-                  <TrendingUp className='w-5 h-5 text-purple-400 mt-0.5' />
-                  <div className='flex-1'>
-                    <p className='text-sm font-semibold text-white mb-1'>
-                      Market Trend Analysis Available
-                    </p>
-                    <p className='text-xs text-slate-400 mb-2'>
-                      AI detected +3.2% market shift in residential properties. Update cost factors?
-                    </p>
-                    <Button variant='outline' size='sm'>
-                      View Analysis
-                    </Button>
                   </div>
                 </div>
               </div>

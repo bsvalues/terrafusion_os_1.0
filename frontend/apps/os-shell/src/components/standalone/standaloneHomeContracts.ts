@@ -154,13 +154,13 @@ export interface StandaloneHomeContext {
 }
 
 // ============================================================================
-// Default Values
+// Base Values
 // ============================================================================
 
 /**
- * Default home metadata for a standalone feature.
+ * Base home metadata for a standalone feature.
  */
-export const DEFAULT_STANDALONE_META: StandaloneHomeMeta = {
+export const STANDALONE_META_BASE: StandaloneHomeMeta = {
   title: 'Standalone Feature',
   description: 'An OS feature running in standalone mode.',
   icon: 'terminal',

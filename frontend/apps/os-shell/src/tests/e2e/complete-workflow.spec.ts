@@ -373,11 +373,11 @@ test.describe('Complete County Employee Workflow - End-to-End', () => {
     await expect(page.locator('text=/\\d+ AI assists today/i')).toBeVisible();
 
     // Verify all systems operational
-    await expect(page.locator('text=/Government\\. Transcended\\./i')).toBeVisible();
+    await expect(page.locator('text=/Governed Operator Surface/i')).toBeVisible();
     await expect(page.locator('text=/Elite Mode Active/i')).toBeVisible();
 
     console.log('🏆 Complete daily workflow executed successfully!');
-    console.log('✨ Government. Transcended. - Mission accomplished');
+    console.log('✨ Governed operator surface verified - mission accomplished');
   });
 });
 

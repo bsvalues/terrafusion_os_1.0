@@ -5,7 +5,7 @@
  * Read-only display. No domain math.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
@@ -22,15 +22,6 @@ interface RevaluationSegment {
   dueDate: string;
 }
 
-const SEGMENTS: RevaluationSegment[] = [
-  { id: 's1', name: 'Downtown Residential', parcelCount: 1245, status: 'complete', progress: 100, avgValueChange: 4.2, totalValueImpact: 12500000, lastRevaluation: '2026-02-15', dueDate: '2026-03-01' },
-  { id: 's2', name: 'West Side Commercial', parcelCount: 342, status: 'in-progress', progress: 67, avgValueChange: 6.8, totalValueImpact: 8900000, lastRevaluation: '2025-08-10', dueDate: '2026-04-01' },
-  { id: 's3', name: 'Rural Agricultural', parcelCount: 2180, status: 'pending', progress: 0, avgValueChange: 0, totalValueImpact: 0, lastRevaluation: '2025-03-20', dueDate: '2026-06-01' },
-  { id: 's4', name: 'Industrial Park', parcelCount: 187, status: 'review', progress: 100, avgValueChange: -2.1, totalValueImpact: -1450000, lastRevaluation: '2026-01-05', dueDate: '2026-03-15' },
-  { id: 's5', name: 'Suburban Residential', parcelCount: 3456, status: 'in-progress', progress: 34, avgValueChange: 3.5, totalValueImpact: 24000000, lastRevaluation: '2025-06-12', dueDate: '2026-05-01' },
-  { id: 's6', name: 'Waterfront Properties', parcelCount: 89, status: 'pending', progress: 0, avgValueChange: 0, totalValueImpact: 0, lastRevaluation: '2025-09-01', dueDate: '2026-07-01' },
-];
-
 const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {
   'pending': { label: 'Pending', variant: 'outline' },
   'in-progress': { label: 'In Progress', variant: 'secondary' },
@@ -38,17 +29,27 @@ const statusConfig: Record<string, { label: string; variant: 'default' | 'second
   'review': { label: 'Under Review', variant: 'destructive' },
 };
 
-export function SegmentRevaluationDashboard() {
-  const [loading] = useState(false);
+interface SegmentRevaluationDashboardProps {
+  segments?: RevaluationSegment[];
+  loading?: boolean;
+  sourceLabel?: string;
+}
 
-  const totalParcels = SEGMENTS.reduce((sum, s) => sum + s.parcelCount, 0);
-  const completedParcels = SEGMENTS.filter(s => s.status === 'complete' || s.status === 'review')
+export function SegmentRevaluationDashboard({
+  segments = [],
+  loading = false,
+  sourceLabel = 'No revaluation segment provider is configured for this surface.',
+}: SegmentRevaluationDashboardProps) {
+  const totalParcels = segments.reduce((sum, s) => sum + s.parcelCount, 0);
+  const completedParcels = segments.filter(s => s.status === 'complete' || s.status === 'review')
     .reduce((sum, s) => sum + s.parcelCount, 0);
-  const inProgressParcels = SEGMENTS.filter(s => s.status === 'in-progress')
+  const inProgressParcels = segments.filter(s => s.status === 'in-progress')
     .reduce((sum, s) => sum + Math.round(s.parcelCount * s.progress / 100), 0);
-  const overallProgress = Math.round(((completedParcels + inProgressParcels) / totalParcels) * 100);
+  const overallProgress = totalParcels > 0
+    ? Math.round(((completedParcels + inProgressParcels) / totalParcels) * 100)
+    : 0;
 
-  const chartData = SEGMENTS.filter(s => s.avgValueChange !== 0).map(s => ({
+  const chartData = segments.filter(s => s.avgValueChange !== 0).map(s => ({
     name: s.name.length > 15 ? s.name.substring(0, 15) + '...' : s.name,
     change: s.avgValueChange,
   }));
@@ -66,7 +67,7 @@ export function SegmentRevaluationDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card>
               <CardContent className="pt-6 text-center">
-                <div className="text-3xl font-bold">{SEGMENTS.length}</div>
+                <div className="text-3xl font-bold">{segments.length}</div>
                 <div className="text-sm text-muted-foreground">Total Segments</div>
               </CardContent>
             </Card>
@@ -85,7 +86,7 @@ export function SegmentRevaluationDashboard() {
             <Card>
               <CardContent className="pt-6 text-center">
                 <div className="text-3xl font-bold">
-                  {SEGMENTS.filter(s => s.status === 'pending').length}
+                  {segments.filter(s => s.status === 'pending').length}
                 </div>
                 <div className="text-sm text-muted-foreground">Pending</div>
               </CardContent>
@@ -97,19 +98,25 @@ export function SegmentRevaluationDashboard() {
               <CardTitle>Average Value Change by Segment</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={chartData} margin={{ top: 10, right: 10, bottom: 30, left: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" angle={-20} textAnchor="end" height={60} />
-                  <YAxis tickFormatter={(v) => `${v}%`} />
-                  <Tooltip formatter={(value: number) => `${value}%`} />
-                  <Bar dataKey="change" radius={[4, 4, 0, 0]}>
-                    {chartData.map((entry, index) => (
-                      <Cell key={index} fill={entry.change >= 0 ? '#10b981' : '#ef4444'} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={chartData} margin={{ top: 10, right: 10, bottom: 30, left: 10 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" angle={-20} textAnchor="end" height={60} />
+                    <YAxis tickFormatter={(v) => `${v}%`} />
+                    <Tooltip formatter={(value: number) => `${value}%`} />
+                    <Bar dataKey="change" radius={[4, 4, 0, 0]}>
+                      {chartData.map((entry, index) => (
+                        <Cell key={index} fill={entry.change >= 0 ? '#10b981' : '#ef4444'} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="rounded border border-dashed p-6 text-sm text-muted-foreground">
+                  {sourceLabel}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -131,7 +138,13 @@ export function SegmentRevaluationDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {SEGMENTS.map(seg => (
+                  {segments.length === 0 ? (
+                    <tr>
+                      <td className="py-4 text-muted-foreground" colSpan={7}>
+                        {sourceLabel}
+                      </td>
+                    </tr>
+                  ) : segments.map(seg => (
                     <tr key={seg.id} className="border-b hover:bg-gray-50">
                       <td className="py-2 font-medium">{seg.name}</td>
                       <td className="py-2 text-right">{seg.parcelCount.toLocaleString()}</td>

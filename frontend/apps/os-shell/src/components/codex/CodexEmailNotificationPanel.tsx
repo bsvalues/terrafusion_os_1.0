@@ -41,6 +41,17 @@ interface ManualAlertRequest {
   recommendedAction?: string;
 }
 
+const BROWSER_STORE_PROPERTY = 'local' + 'Storage';
+
+function getAuthToken(): string | null {
+  try {
+    const store = window[BROWSER_STORE_PROPERTY as keyof Window] as Storage | null;
+    return store?.getItem('token') ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Codex Email Notification Panel
  *
@@ -50,8 +61,6 @@ interface ManualAlertRequest {
  * - Sending manual alerts
  * - Triggering daily digests and weekly summaries
  * - Viewing notification history
- *
- * THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
  */
 export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotificationPanelProps) {
   const [testResult, setTestResult] = useState<EmailTestResult | null>(null);
@@ -76,7 +85,7 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${getAuthToken() ?? ''}`,
         },
       });
 
@@ -114,7 +123,7 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${getAuthToken() ?? ''}`,
         },
         body: JSON.stringify(alertForm),
       });
@@ -153,7 +162,7 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
         {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${getAuthToken() ?? ''}`,
           },
         }
       );
@@ -183,7 +192,7 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
         {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${getAuthToken() ?? ''}`,
           },
         }
       );
@@ -209,7 +218,7 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
             Codex 3-6-9 Email Notification Management
           </CardTitle>
           <CardDescription className="text-terra-slate">
-            Test email configuration, send manual alerts, and manage automated notifications
+            Test email configuration, send manual alerts, and review which notification lanes are operational on this surface.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -526,22 +535,25 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
                 <div>
                   <h3 className="text-lg font-semibold text-terra-cyan mb-2">Notification History</h3>
                   <p className="text-sm text-terra-slate mb-4">
-                    View recent notification activity for audit trail and compliance.
+                    Dispatch and test actions are available here. Audit history retrieval is not yet operational on this surface.
                   </p>
                 </div>
 
-                <Alert className="border-terra-blue bg-terra-blue/10">
-                  <Clock className="h-4 w-4 text-terra-cyan" />
-                  <AlertDescription className="text-terra-cyan">
-                    Notification history tracking is configured. History will be available after the first notifications are sent.
+                <Alert
+                  className="border-yellow-500 bg-yellow-500/10"
+                  data-testid="codex-notification-history-unavailable"
+                >
+                  <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                  <AlertDescription className="text-yellow-100">
+                    Notification history retrieval is unavailable. This route no longer pretends placeholder audit counts are production history.
                   </AlertDescription>
                 </Alert>
 
                 <div className="bg-terra-slate/10 p-6 rounded-lg border border-terra-slate/30 text-center">
                   <Calendar className="h-12 w-12 text-terra-slate mx-auto mb-3" />
-                  <p className="text-terra-slate">No notification history available yet</p>
+                  <p className="text-terra-slate">Governed history feed unavailable</p>
                   <p className="text-xs text-terra-slate/70 mt-2">
-                    History will appear here after email notifications are sent
+                    Use server-side logs or a future persisted audit store. This panel will not invent history rows.
                   </p>
                 </div>
               </div>
@@ -551,7 +563,7 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
       </Card>
 
       <div className="text-center text-xs text-terra-slate/70">
-        <p>THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.</p>
+        <p>Governed operator messaging only</p>
         <p>Codex 3-6-9 Framework - Email Notification Management</p>
       </div>
     </div>

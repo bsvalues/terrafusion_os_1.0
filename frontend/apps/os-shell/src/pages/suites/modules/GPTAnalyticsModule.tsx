@@ -55,34 +55,12 @@ interface DailyUsage {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Mock data                                                                   */
+/* Evidence-backed data must be supplied by the GPT analytics API.             */
 /* -------------------------------------------------------------------------- */
 
-const METRICS: MetricCard[] = [
-  { label: 'Total Conversations', value: '12,847', change: 8.3, icon: MessageSquare },
-  { label: 'Total Tokens', value: '48.2M', change: 12.1, icon: Zap },
-  { label: 'Total Cost', value: '$2,341.50', change: -3.2, icon: DollarSign },
-  { label: 'Active Users', value: '156', change: 5.7, icon: Users },
-];
-
-const GPT_USAGE: GptUsageRow[] = [
-  { name: 'Property Assistant', conversations: 4_521, messages: 18_432, tokens: 15_200_000, cost: 760.00, avgRating: 4.6, trend: 'up' },
-  { name: 'Zoning Advisor', conversations: 2_834, messages: 11_220, tokens: 9_800_000, cost: 490.00, avgRating: 4.4, trend: 'up' },
-  { name: 'Tax Calculator', conversations: 2_156, messages: 6_420, tokens: 8_400_000, cost: 420.00, avgRating: 4.8, trend: 'flat' },
-  { name: 'Appeal Guide', conversations: 1_892, messages: 9_460, tokens: 7_200_000, cost: 360.00, avgRating: 4.3, trend: 'up' },
-  { name: 'Data Analyst', conversations: 987, messages: 4_935, tokens: 5_100_000, cost: 204.00, avgRating: 4.1, trend: 'down' },
-  { name: 'Compliance Checker', conversations: 457, messages: 1_371, tokens: 2_500_000, cost: 107.50, avgRating: 4.7, trend: 'flat' },
-];
-
-const DAILY_USAGE: DailyUsage[] = [
-  { date: 'Mon 02/17', conversations: 1_842, tokens: 7_100_000, cost: 355.00 },
-  { date: 'Tue 02/18', conversations: 2_010, tokens: 7_600_000, cost: 380.00 },
-  { date: 'Wed 02/19', conversations: 1_956, tokens: 7_300_000, cost: 365.00 },
-  { date: 'Thu 02/20', conversations: 2_145, tokens: 8_100_000, cost: 405.00 },
-  { date: 'Fri 02/21', conversations: 1_678, tokens: 6_200_000, cost: 310.00 },
-  { date: 'Sat 02/22', conversations: 412, tokens: 1_500_000, cost: 75.00 },
-  { date: 'Sun 02/23', conversations: 204, tokens: 800_000, cost: 40.00 },
-];
+const METRICS: MetricCard[] = [];
+const GPT_USAGE: GptUsageRow[] = [];
+const DAILY_USAGE: DailyUsage[] = [];
 
 /* -------------------------------------------------------------------------- */
 /* Helpers                                                                     */
@@ -104,6 +82,13 @@ function formatCurrency(n: number): string {
 
 export default function GPTAnalyticsModule() {
   const [timeRange, setTimeRange] = useState('7d');
+  const totalCost = DAILY_USAGE.reduce((sum, day) => sum + day.cost, 0);
+  const totalConversations = DAILY_USAGE.reduce((sum, day) => sum + day.conversations, 0);
+  const totalTokens = DAILY_USAGE.reduce((sum, day) => sum + day.tokens, 0);
+  const dailyAverage = DAILY_USAGE.length > 0 ? totalCost / DAILY_USAGE.length : 0;
+  const costPerConversation = totalConversations > 0 ? totalCost / totalConversations : 0;
+  const avgTokensPerConversation =
+    totalConversations > 0 ? Math.round(totalTokens / totalConversations) : 0;
 
   return (
     <div className='p-6 space-y-6'>
@@ -246,10 +231,10 @@ export default function GPTAnalyticsModule() {
             </CardHeader>
             <CardContent className='space-y-2'>
               {[
-                ['Weekly Total', formatCurrency(DAILY_USAGE.reduce((s, d) => s + d.cost, 0))],
-                ['Daily Average', formatCurrency(DAILY_USAGE.reduce((s, d) => s + d.cost, 0) / DAILY_USAGE.length)],
-                ['Cost per Conversation', formatCurrency(DAILY_USAGE.reduce((s, d) => s + d.cost, 0) / DAILY_USAGE.reduce((s, d) => s + d.conversations, 0))],
-                ['Avg Tokens/Conversation', formatTokens(Math.round(DAILY_USAGE.reduce((s, d) => s + d.tokens, 0) / DAILY_USAGE.reduce((s, d) => s + d.conversations, 0)))],
+                ['Weekly Total', formatCurrency(totalCost)],
+                ['Daily Average', formatCurrency(dailyAverage)],
+                ['Cost per Conversation', formatCurrency(costPerConversation)],
+                ['Avg Tokens/Conversation', formatTokens(avgTokensPerConversation)],
               ].map(([label, value]) => (
                 <div key={label} className='flex justify-between py-1' style={{ borderBottom: '1px solid hsl(var(--tf-border) / 0.5)' }}>
                   <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>{label}</span>

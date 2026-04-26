@@ -5,41 +5,42 @@
  * Accept/reject actions. No domain math in component.
  *
  * API-first: loads from statisticsAPI.discoverSegments().
- * Transport/runtime failure renders an empty unavailable state.
+ * Transport/runtime failure renders an explicit unavailable state.
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { statisticsAPI } from '@/services/forge/statisticsAPI';
-import { DISCOVERED_SEGMENTS_FIXTURE } from '@/data/segmentDiscoveryFixtures';
 import type { DiscoveredSegment } from '@/types/segmentDiscovery';
+
+type SegmentDiscoveryReadState = 'loading' | 'live' | 'unavailable';
 
 export function SegmentDiscoveryDashboard() {
   const [segments, setSegments] = useState<DiscoveredSegment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
-  const [isFixture, setIsFixture] = useState(false);
+  const [readState, setReadState] = useState<SegmentDiscoveryReadState>('loading');
 
   useEffect(() => {
     let cancelled = false;
     async function loadSegments() {
       setLoading(true);
+      setReadState('loading');
       try {
         const modelId = `${new Date().getFullYear()}-discovery`;
         const data = await statisticsAPI.discoverSegments(modelId);
         if (!cancelled) {
           setSegments(data);
           setError(null);
+          setReadState('live');
         }
       } catch (err) {
         if (!cancelled) {
-          // Fall back to bounded fixture so the panel renders evidence; banner discloses fixture origin.
-          setSegments(DISCOVERED_SEGMENTS_FIXTURE);
-          setIsFixture(true);
+          setSegments([]);
+          setReadState('unavailable');
           setError(`Segment discovery unavailable: ${err instanceof Error ? err.message : String(err)}`);
         }
       } finally {
@@ -61,7 +62,21 @@ export function SegmentDiscoveryDashboard() {
 
   return (
     <div className="space-y-4 p-4">
-      {isFixture && <DemoDataBanner module="Segment Discovery" />}
+      {readState === 'unavailable' && (
+        <div
+          data-testid="segment-discovery-unavailable"
+          className="rounded-lg border px-4 py-3"
+          style={{
+            background: 'hsl(var(--tf-warning) / 0.08)',
+            borderColor: 'hsl(var(--tf-warning) / 0.35)',
+          }}
+        >
+          <p className="text-sm font-medium">Segment discovery unavailable.</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            No governed segment evidence is being replaced with fixture data on this surface.
+          </p>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Segment Discovery</h1>
         <div className="flex gap-2">
@@ -90,19 +105,19 @@ export function SegmentDiscoveryDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6 text-center">
-            <div className="text-3xl font-bold">{segments.length}</div>
+            <div className="text-3xl font-bold">{readState === 'unavailable' ? '—' : segments.length}</div>
             <div className="text-sm text-muted-foreground">Discovered Segments</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6 text-center">
-            <div className="text-3xl font-bold text-amber-600">{pendingCount}</div>
+            <div className="text-3xl font-bold text-amber-600">{readState === 'unavailable' ? '—' : pendingCount}</div>
             <div className="text-sm text-muted-foreground">Pending Review</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6 text-center">
-            <div className="text-3xl font-bold text-green-600">{acceptedCount}</div>
+            <div className="text-3xl font-bold text-green-600">{readState === 'unavailable' ? '—' : acceptedCount}</div>
             <div className="text-sm text-muted-foreground">Accepted</div>
           </CardContent>
         </Card>
@@ -111,6 +126,12 @@ export function SegmentDiscoveryDashboard() {
       {loading ? (
         <div className="flex items-center justify-center py-12">
           <span className="text-muted-foreground">Loading discovered segments...</span>
+        </div>
+      ) : readState === 'unavailable' ? (
+        <div className="flex items-center justify-center py-12">
+          <span className="text-muted-foreground">
+            Segment discovery unavailable. No governed segments are being shown.
+          </span>
         </div>
       ) : segments.length === 0 ? (
         <div className="flex items-center justify-center py-12">

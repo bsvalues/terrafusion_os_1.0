@@ -49,11 +49,20 @@ vi.mock('../../stores/desktopStore', async () => {
 
 vi.mock('../../stores/altTabStore');
 vi.mock('../../stores/startMenuStore', () => ({
-  useStartMenuStore: vi.fn(() => ({
-    isOpen: false,
-    toggle: vi.fn(),
-    close: vi.fn(),
-  })),
+  useStartMenuStore: vi.fn((selector?: (state: any) => any) => {
+    const state = {
+      isOpen: false,
+      searchQuery: '',
+      pinnedApps: [],
+      allApps: [],
+      focusedIndex: -1,
+      focusedSection: 'search',
+      toggle: vi.fn(),
+      close: vi.fn(),
+      setSearchQuery: vi.fn(),
+    };
+    return selector ? selector(state) : state;
+  }),
 }));
 
 vi.mock('react-i18next', () => ({

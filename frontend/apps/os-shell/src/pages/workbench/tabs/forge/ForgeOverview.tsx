@@ -83,9 +83,10 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
   /** Determine overall data source from API results */
   const apiSources = [costAPI, salesAPI, incomeAPI, reconAPI];
   const liveCount = apiSources.filter((a) => a.source === 'live').length;
+  const apiErrorCount = apiSources.filter((a) => a.error).length;
   const overviewSource = liveCount === 4 ? 'live' as const
     : liveCount > 0 ? 'partial' as const
-    : 'fallback' as const;
+    : 'unavailable' as const;
 
   const [audience, setAudience] = useState<AudienceType>('internal');
   const [compareEnabled, setCompareEnabled] = useState(false);
@@ -584,7 +585,9 @@ export const ForgeOverview: React.FC<ForgeOverviewProps> = ({
         )}
         {!costAPI.loading && !salesAPI.loading && !incomeAPI.loading && !reconAPI.loading && liveCount === 0 && (
           <p className="tf-text-tertiary text-sm py-2">
-            No valuation data on file. Use the tools below to generate valuations.
+            {apiErrorCount > 0
+              ? 'Valuation data unavailable from the live workbench API.'
+              : 'No valuation data on file. Use the tools below to generate valuations.'}
           </p>
         )}
       </BentoCard>

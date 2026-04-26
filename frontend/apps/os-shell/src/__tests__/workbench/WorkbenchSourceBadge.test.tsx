@@ -12,10 +12,10 @@ describe('WorkbenchSourceBadge', () => {
     expect(badge).toHaveAttribute('data-source', 'live');
   });
 
-  it('renders Demo data badge for fallback source', () => {
+  it('renders Non-live data badge for fallback source', () => {
     render(<WorkbenchSourceBadge source="fallback" />);
     const badge = screen.getByTestId('workbench-source-badge');
-    expect(badge).toHaveTextContent('Demo data');
+    expect(badge).toHaveTextContent('Non-live data');
     expect(badge).toHaveAttribute('data-source', 'fallback');
   });
 

@@ -67,7 +67,8 @@ namespace TerraFusion.Consciousness.Services
                     { "TotalAgents", 1000000 },
                     { "ActiveLayers", 5 },
                     { "ValidationRings", 4 },
-                    { "SystemCapacity", "Quantum-Ready" },
+                    { "SystemCapacity", "Mesh-only" },
+                    { "QuantumConsciousness", "Unavailable" },
                     { "ComplianceLevel", "FISMA/FedRAMP" }
                 };
 
@@ -209,7 +210,7 @@ namespace TerraFusion.Consciousness.Services
                 var componentHealth = new Dictionary<string, double>
                 {
                     { "MeshOrchestrator", meshHealth },
-                    { "QuantumConsciousness", 0.95 }, // quantumHealth.HealthScore - TEMP HARDCODED DUE TO CIRCULAR DEPENDENCY
+                    { "QuantumConsciousness", 0.0 },
                     { "MillionAgents", agentHealth.HealthScore },
                     { "ValidationRings", 0.98 },
                     { "DataSovereignty", 0.99 }
@@ -222,6 +223,7 @@ namespace TerraFusion.Consciousness.Services
                 {
                     systemAlerts.Add("System performance below optimal threshold");
                 }
+                systemAlerts.Add("QuantumConsciousness unavailable: circular dependency unresolved.");
 
                 return new ConsciousnessHealthDto
                 {

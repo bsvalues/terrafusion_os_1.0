@@ -3,19 +3,17 @@
  *
  * Ensures:
  *   1. WorkbenchSourceBadge is rendered on the dashboard
- *   2. Badges show fallback/unavailable when no live API is connected
- *   3. No "AI-powered" fluff language appears in the component
+ *   2. Badges show unavailable when no live API is connected
+ *   3. The dashboard does not regress to demo-banner disclosure
+ *   4. No "AI-powered" fluff language appears in the component
  */
 
 import React from 'react';
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 
 const invokeToolMock = vi.fn();
 
-// ---------- Mocks ----------
-
-// Mock live data hooks — all return unavailable/loading initial states
 vi.mock('../../hooks/useSwarmLive', () => ({
   useSwarmLive: () => ({
     data: null, isLoading: false, error: null,
@@ -50,7 +48,6 @@ vi.mock('../../auth/useSession', () => ({
   }),
 }));
 
-// Mock service calls — all reject (backend unavailable)
 vi.mock('../../services/suites/daisService', () => ({
   getCertificationStatus: vi.fn().mockRejectedValue(new Error('offline')),
   getAllAppeals: vi.fn().mockRejectedValue(new Error('offline')),
@@ -64,14 +61,11 @@ vi.mock('../../api/pilotApi', () => ({
   invokeTool: (...args: unknown[]) => invokeToolMock(...args),
 }));
 
-// Mock auth storage
 vi.mock('../../auth/authStorage', () => ({
   getToken: () => null,
 }));
 
 import { ManagementDashboard } from '../../pages/dais/ManagementDashboard';
-
-// ---------- Tests ----------
 
 describe('ManagementDashboard source honesty contract', () => {
   beforeEach(() => {
@@ -106,13 +100,18 @@ describe('ManagementDashboard source honesty contract', () => {
     expect(badges.length).toBeGreaterThan(0);
   });
 
-  it('badges show fallback at idle when backend is unavailable', () => {
+  it('badges show unavailable when backend is unavailable', () => {
     render(<ManagementDashboard />);
     const badges = screen.getAllByTestId('workbench-source-badge');
     for (const badge of badges) {
-      const src = badge.getAttribute('data-source');
-      expect(['fallback', 'unavailable']).toContain(src);
+      expect(badge.getAttribute('data-source')).toBe('unavailable');
     }
+  });
+
+  it('shows explicit unavailable messages instead of fixture disclosure', () => {
+    render(<ManagementDashboard />);
+    expect(screen.queryByText(/DEMO DATA/i)).not.toBeInTheDocument();
+    expect(screen.getByText('Certification deadlines unavailable.')).toBeInTheDocument();
   });
 
   it('does not contain "AI-powered" fluff language', () => {
@@ -136,13 +135,7 @@ describe('ManagementDashboard source honesty contract', () => {
     expect(screen.getByTestId('management-dashboard')).toBeInTheDocument();
   });
 
-  it('shows DemoDataBanner when using fixture data', () => {
-    render(<ManagementDashboard />);
-    // isFixture defaults to true, so DemoDataBanner should render
-    expect(screen.getByRole('status')).toBeInTheDocument();
-  });
-
-  it('renders a governed staff queue panel with Benton role briefing language', async () => {
+  it('renders a governed staff queue panel with governed role briefing language', async () => {
     render(<ManagementDashboard />);
 
     expect(screen.getByTestId('management-governed-brief')).toBeInTheDocument();

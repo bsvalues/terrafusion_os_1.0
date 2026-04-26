@@ -351,13 +351,13 @@ export function emitTrace(event: OsTraceEvent): void {
 // Policy Registry
 // ============================================================================
 
-/** Default permissive policy */
-const DEFAULT_POLICY: OsActionPolicy = {
+/** Base permissive policy */
+const BASE_POLICY: OsActionPolicy = {
   canExecute: () => ({ allowed: true }),
 };
 
 /** Current active policy */
-let currentPolicy: OsActionPolicy = DEFAULT_POLICY;
+let currentPolicy: OsActionPolicy = BASE_POLICY;
 
 /**
  * Set custom action policy gate
@@ -370,7 +370,7 @@ export function setActionPolicy(policy: OsActionPolicy): void {
  * Reset to default permissive policy
  */
 export function resetActionPolicy(): void {
-  currentPolicy = DEFAULT_POLICY;
+  currentPolicy = BASE_POLICY;
 }
 
 // ============================================================================

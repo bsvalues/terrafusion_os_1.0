@@ -3,10 +3,10 @@
  *
  * Static source-file inspection (no rendering, no mocking).
  * Verifies provenance disclosure for governed hot paths:
- *   - useTodaysWork exposes isSampleData flag
- *   - useBudgetData exposes isSampleData flag
- *   - CostManual renders DemoDataBanner for SAMPLE data
- *   - BatchCostRun renders DemoDataBanner + BACKEND_APPLY_CAPABLE gate
+ *   - useTodaysWork exposes explicit live/unavailable read state
+ *   - useBudgetData exposes an explicit live-data gap instead of sample fallback
+ *   - CostManual renders governed live/unavailable states instead of fixture fallback
+ *   - BatchCostRun renders an explicit governed unavailable state
  *   - Sealed wave regression (W4A, W4B, W5B, W5C)
  */
 
@@ -21,46 +21,44 @@ function readSrc(relPath: string): string {
 }
 
 // ============================================================================
-// Gate 1 — useTodaysWork: API-first with fallback provenance
+// Gate 1 — useTodaysWork: API-first with explicit unavailable state
 // ============================================================================
 
-describe('Gate 1 — useTodaysWork exposes fallback provenance', () => {
+describe('Gate 1 — useTodaysWork exposes explicit unavailable state', () => {
   const src = readSrc('hooks/useTodaysWork.ts');
 
-  it('returns isSampleData field', () => {
-    expect(src).toContain('isSampleData');
+  it('does not expose sample fallback state', () => {
+    expect(src).not.toContain('isSampleData');
+    expect(src).not.toContain('SAMPLE_TASKS');
   });
 
-  it('defines SAMPLE_TASKS constant for bounded fallback', () => {
-    expect(src).toContain('SAMPLE_TASKS');
-  });
-
-  it('reads live queue tasks before falling back', () => {
+  it('reads live queue tasks from queueService', () => {
     expect(src).toContain("import { getQueueItems } from '../services/suites/queueService'");
     expect(src).toContain('getQueueItems({ throwOnError: true })');
   });
 
-  it('returns tasks, loading, and isSampleData in hook signature', () => {
+  it('returns tasks, loading, error, and readState in hook signature', () => {
     expect(src).toContain('tasks:');
     expect(src).toContain('loading:');
-    expect(src).toContain('isSampleData:');
+    expect(src).toContain('error:');
+    expect(src).toContain('readState:');
   });
 
-  it('tracks both live and fallback provenance states', () => {
-    expect(src).toContain('setIsSampleData(false)');
-    expect(src).toContain('setIsSampleData(true)');
+  it('tracks live and unavailable read states', () => {
+    expect(src).toContain("setReadState('live')");
+    expect(src).toContain("setReadState('unavailable')");
   });
 });
 
 // ============================================================================
-// Gate 2 — useBudgetData: API-first with fallback provenance
+// Gate 2 — useBudgetData: API-first with explicit live-data gap
 // ============================================================================
 
-describe('Gate 2 — useBudgetData exposes fallback provenance', () => {
+describe('Gate 2 — useBudgetData exposes governed unavailable state', () => {
   const src = readSrc('applications/terra-levy/hooks/useBudgetData.ts');
 
-  it('returns isSampleData field', () => {
-    expect(src).toContain('isSampleData');
+  it('does not expose sample fallback state', () => {
+    expect(src).not.toContain('isSampleData');
   });
 
   it('uses the governed API client for levy budget reads', () => {
@@ -70,9 +68,8 @@ describe('Gate 2 — useBudgetData exposes fallback provenance', () => {
     expect(src).toContain('/levy/budget/visualization');
   });
 
-  it('tracks both live and fallback provenance states', () => {
-    expect(src).toContain('setIsSampleData(false)');
-    expect(src).toContain('setIsSampleData(true)');
+  it('returns an explicit live-data gap when no certified categories exist', () => {
+    expect(src).toContain('Live levy budget endpoints returned no certified budget-category data.');
   });
 
   it('refreshData and updateBudgetCategory remain exposed to consumers', () => {
@@ -82,94 +79,67 @@ describe('Gate 2 — useBudgetData exposes fallback provenance', () => {
 });
 
 // ============================================================================
-// Gate 3 — CostManual: DemoDataBanner with SAMPLE data
+// Gate 3 — CostManual: live schedule path with explicit unavailable state
 // ============================================================================
 
-describe('Gate 3 — CostManual renders DemoDataBanner for sample data', () => {
+describe('Gate 3 — CostManual renders governed live/unavailable state', () => {
   const src = readSrc('pages/forge/cost/CostManual.tsx');
 
-  it('imports DemoDataBanner from governance', () => {
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toMatch(/from\s+['"]@\/components\/governance\/DemoDataBanner['"]/);
+  it('does not import DemoDataBanner or define SAMPLE fixtures', () => {
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).not.toContain('SAMPLE_COST_SCHEDULES');
   });
 
-  it('renders DemoDataBanner with module="Cost Manual"', () => {
-    expect(src).toContain('module="Cost Manual"');
+  it('tracks explicit loading/live/unavailable read states', () => {
+    expect(src).toContain("type CostManualReadState = 'loading' | 'live' | 'unavailable'");
+    expect(src).toContain("setReadState('loading')");
+    expect(src).toContain("setReadState('live')");
+    expect(src).toContain("setReadState('unavailable')");
   });
 
-  it('uses SAMPLE_COST_SCHEDULES (not named as live data)', () => {
-    expect(src).toContain('SAMPLE_COST_SCHEDULES');
+  it('declares a governed unavailable state instead of sample replacement', () => {
+    expect(src).toContain('data-testid="cost-manual-unavailable"');
+    expect(src).toContain('Live cost schedule unavailable.');
+    expect(src).toContain('not being replaced with sample data');
   });
 
-  it('is API-first with explicit sample fallback', () => {
+  it('uses the live schedule API with backend-aligned quality classes', () => {
     expect(src).toContain('getCostSchedule');
-    expect(src).toContain('setIsSampleData(true)');
-    expect(src).toContain('setIsSampleData(false)');
+    expect(src).toContain("{ value: 'ECONOMY', label: 'Economy' }");
+    expect(src).toContain("{ value: 'STANDARD', label: 'Standard' }");
+    expect(src).toContain("{ value: 'CUSTOM', label: 'Custom' }");
+    expect(src).toContain("{ value: 'PREMIUM', label: 'Premium' }");
+    expect(src).toContain("{ value: 'LUXURY', label: 'Luxury' }");
   });
 });
 
 // ============================================================================
-// Gate 4 — BatchCostRun: DemoDataBanner + BACKEND_APPLY_CAPABLE gate
+// Gate 4 — BatchCostRun: explicit governed unavailable state
 // ============================================================================
 
-describe('Gate 4 — BatchCostRun: disclosure + apply-capability gating', () => {
+describe('Gate 4 — BatchCostRun: explicit governed unavailable state', () => {
   const src = readSrc('pages/forge/batch/BatchCostRun.tsx');
 
-  it('imports DemoDataBanner from governance', () => {
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toMatch(/from\s+['"]@\/components\/governance\/DemoDataBanner['"]/);
+  it('does not import DemoDataBanner or define fixture history', () => {
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).not.toContain('FIXTURE_HISTORY');
   });
 
-  it('renders DemoDataBanner with module="Batch Cost Run"', () => {
-    expect(src).toContain('module="Batch Cost Run"');
+  it('declares the governed unavailable state with a test landmark', () => {
+    expect(src).toContain('data-testid="batch-cost-run-unavailable"');
+    expect(src).toContain('Governed batch cost run unavailable.');
   });
 
-  it('defines BACKEND_APPLY_CAPABLE gate constant', () => {
-    expect(src).toContain('BACKEND_APPLY_CAPABLE');
+  it('states the three blocked execution lanes explicitly', () => {
+    expect(src).toContain("lane: 'Preview Engine'");
+    expect(src).toContain("lane: 'Apply Endpoint'");
+    expect(src).toContain("lane: 'Run History'");
   });
 
-  it('defines ForgeApplyMode type with all three states', () => {
-    expect(src).toContain("'preview_only'");
-    expect(src).toContain("'apply_pending_backend'");
-    expect(src).toContain("'apply_executed'");
-  });
-
-  it('gates apply execution on BACKEND_APPLY_CAPABLE', () => {
-    expect(src).toContain('BACKEND_APPLY_CAPABLE');
-    expect(src).toContain('apply_pending_backend');
-  });
-
-  it('shows apply_pending_backend mode when backend not available', () => {
-    expect(src).toContain('apply_pending_backend');
-    expect(src).toContain('apply_blocked');
-  });
-
-  it('emits audit events for all apply mode transitions', () => {
-    expect(src).toContain('emitAuditEvent');
-    // At least 3 calls: preview_generated, apply_executed, apply_blocked
-    const auditCalls = src.match(/emitAuditEvent\(/g);
-    expect(auditCalls).not.toBeNull();
-    expect(auditCalls!.length).toBeGreaterThanOrEqual(3);
-  });
-
-  it('uses FIXTURE_HISTORY (not named as live data)', () => {
-    expect(src).toContain('FIXTURE_HISTORY');
-  });
-
-  it('emits canonical TerraTrace events for preview/apply lifecycle', () => {
-    expect(src).toContain('emitToolInvoked');
-    expect(src).toContain('emitToolSucceeded');
-    expect(src).toContain('emitToolFailed');
-  });
-
-  it('has batch-apply-mode test id for apply state visibility', () => {
-    expect(src).toContain('data-testid="batch-apply-mode"');
-  });
-
-  it('displays honest mode text for each apply state', () => {
-    expect(src).toContain('Mode: Preview Only');
-    expect(src).toContain('Mode: Apply Blocked');
-    expect(src).toContain('Mode: Applied');
+  it('makes operator guidance explicit instead of rendering fake preview/apply flow', () => {
+    expect(src).toContain('Use Cost Manual for governed Benton schedule review.');
+    expect(src).toContain('Use Coefficient Preview for controlled coefficient what-if work');
+    expect(src).toContain('Do not treat batch preview, apply, or history output from this lane as production evidence');
   });
 });
 
@@ -188,16 +158,19 @@ describe('Gate 5 — sealed wave regression', () => {
     expect(src).toContain('getHistory');
   });
 
-  it('SegmentDiscoveryDashboard still has DemoDataBanner (W4B)', () => {
+  it('SegmentDiscoveryDashboard keeps explicit unavailable disclosure (W4B)', () => {
     const src = readSrc('pages/forge/calibration/SegmentDiscoveryDashboard.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('isFixture');
+    expect(src).toContain('segment-discovery-unavailable');
+    expect(src).toContain('Segment discovery unavailable.');
+    expect(src).not.toContain('DemoDataBanner');
   });
 
-  it('GeoEquityDashboard still has DemoDataBanner (W5B)', () => {
+  it('GeoEquityDashboard keeps explicit unavailable disclosure instead of DemoDataBanner (W5B)', () => {
     const src = readSrc('pages/atlas/GeoEquityDashboard.tsx');
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toContain('isFixture');
+    expect(src).toContain('geo-equity-unavailable');
+    expect(src).toContain('GeoEquityReadState');
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).not.toContain('isFixture');
   });
 
   it('queueService has throwOnError option (W5C)', () => {
@@ -213,48 +186,43 @@ describe('Gate 5 — sealed wave regression', () => {
 });
 
 // ============================================================================
-// Gate 6 — StageZeroState: Today's Work panel wires isSampleData to DemoDataBanner
+// Gate 6 — StageZeroState: Today's Work panel stays honest without demo banner
 // ============================================================================
 
-describe('Gate 6 — StageZeroState wires useTodaysWork.isSampleData to DemoDataBanner', () => {
+describe('Gate 6 — StageZeroState surfaces explicit unavailable state without demo banner', () => {
   const src = readSrc('shell/desktop/StageZeroState.tsx');
 
-  it('imports DemoDataBanner from governance', () => {
-    expect(src).toMatch(/from\s+['"].*governance\/DemoDataBanner['"]/);
+  it('does not import DemoDataBanner or use isSampleData', () => {
+    expect(src).not.toMatch(/from\s+['"].*governance\/DemoDataBanner['"]/);
+    expect(src).not.toContain('isSampleData');
   });
 
-  it('destructures isSampleData from useTodaysWork', () => {
-    expect(src).toContain('isSampleData');
-  });
-
-  it('conditionally renders DemoDataBanner when isSampleData is true', () => {
-    expect(src).toMatch(/isSampleData\s*&&\s*.*DemoDataBanner|DemoDataBanner.*isSampleData/);
-  });
-
-  it('uses module="Today\'s Work" on the banner', () => {
-    expect(src).toContain("module=\"Today's Work\"");
+  it('renders explicit TerraDais unavailable text for failed reads', () => {
+    expect(src).toContain("Today's work unavailable from TerraDais.");
   });
 });
 
 // ============================================================================
-// Gate 7 — ValueAuditModule: DEMO_ENTRIES always present → DemoDataBanner required
+// Gate 7 — ValueAuditModule: explicit unavailable state, no demo rows
 // ============================================================================
 
-describe('Gate 7 — ValueAuditModule renders DemoDataBanner for DEMO_ENTRIES', () => {
+describe('Gate 7 — ValueAuditModule renders explicit unavailable state without demo rows', () => {
   const src = readSrc('pages/suites/modules/ValueAuditModule.tsx');
 
-  it('imports DemoDataBanner from governance', () => {
-    expect(src).toContain('DemoDataBanner');
-    expect(src).toMatch(/from\s+['"].*governance\/DemoDataBanner['"]/);
+  it('does not import DemoDataBanner or define DEMO_ENTRIES', () => {
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).not.toContain('DEMO_ENTRIES');
   });
 
-  it('renders DemoDataBanner with module="Value Audit"', () => {
-    expect(src).toContain('module="Value Audit"');
+  it('renders explicit unavailable disclosure for missing TerraTrace feed', () => {
+    expect(src).toContain('Value audit entries unavailable.');
+    expect(src).toContain('governed TerraTrace audit feed');
   });
 
-  it('still merges DEMO_ENTRIES with stored entries', () => {
-    expect(src).toContain('DEMO_ENTRIES');
-    expect(src).toMatch(/\[\s*\.\.\.DEMO_ENTRIES/);
+  it('does not append test entries or clear synthetic user rows', () => {
+    expect(src).not.toContain('appendAuditEntry');
+    expect(src).not.toContain('clearAuditEntries');
+    expect(src).not.toContain('+ Test Entry');
   });
 });
 

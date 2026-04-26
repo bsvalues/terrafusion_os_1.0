@@ -18,6 +18,13 @@ import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { vi } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+/** Wrap a component with QueryClientProvider so useQuery hooks don't throw. */
+function withQueryClient(ui: React.ReactElement): React.ReactElement {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return <QueryClientProvider client={qc}>{ui}</QueryClientProvider>;
+}
 
 // ---------------------------------------------------------------------------
 // Light-mode pattern list (from Phase 9 convention)
@@ -303,13 +310,13 @@ describe('Phase 10: Forge Analytics Contract', () => {
   describe('StatisticsStudio', () => {
     // WILL FAIL — component does not yet emit data-testid="statistics-studio"
     it('renders with data-testid="statistics-studio"', () => {
-      render(<StatisticsStudio />);
+      render(withQueryClient(<StatisticsStudio />));
       expect(screen.getByTestId('statistics-studio')).toBeInTheDocument();
     });
 
     // WILL FAIL — tab buttons do not yet have data-testid attributes
     it('tab buttons have data-testid attributes', () => {
-      render(<StatisticsStudio />);
+      render(withQueryClient(<StatisticsStudio />));
       expect(screen.getByTestId('tab-ratio-study')).toBeInTheDocument();
       expect(screen.getByTestId('tab-trends')).toBeInTheDocument();
       expect(screen.getByTestId('tab-equity')).toBeInTheDocument();
@@ -319,21 +326,21 @@ describe('Phase 10: Forge Analytics Contract', () => {
     });
 
     it('no light-mode classes in rendered output', () => {
-      const { container } = render(<StatisticsStudio />);
+      const { container } = render(withQueryClient(<StatisticsStudio />));
       const violations = findLightModeViolations(container.innerHTML);
       expect(violations).toEqual([]);
     });
 
     // Phase 16: Outliers tab renders stub
     it('Outliers tab renders OutlierReviewPanel stub', () => {
-      render(<StatisticsStudio />);
+      render(withQueryClient(<StatisticsStudio />));
       fireEvent.click(screen.getByTestId('tab-outliers'));
       expect(screen.getByTestId('outlier-review-stub')).toBeInTheDocument();
     });
 
     // Phase 16: Comparison tab renders stub
     it('Comparison tab renders ModelComparisonPanel stub', () => {
-      render(<StatisticsStudio />);
+      render(withQueryClient(<StatisticsStudio />));
       fireEvent.click(screen.getByTestId('tab-comparison'));
       expect(screen.getByTestId('model-comparison-stub')).toBeInTheDocument();
     });

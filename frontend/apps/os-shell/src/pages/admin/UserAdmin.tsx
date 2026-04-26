@@ -2,12 +2,10 @@
 // User list with search/filter, role assignment, account status management,
 // and audit log of user actions.
 //
-// DATA POSTURE: INITIAL_USERS and AUDIT_LOG are hardcoded sample fixtures
-// scoped to Benton County. No backend connection. All mutations (edit, suspend,
-// activate) operate on in-memory state only and do not persist.
+// DATA POSTURE: API-only. No local users or audit entries are fabricated when
+// the backend is unavailable.
 
-import React, { useState, useMemo, useCallback } from 'react';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -35,25 +33,24 @@ interface UserAuditEntry {
   performedBy: string;
 }
 
-// ── Sample data ─────────────────────────────────────────────────────────────
+async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(path, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      ...init?.headers,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText}`);
+  }
+  return response.json() as Promise<T>;
+}
 
-const INITIAL_USERS: User[] = [
-  { id: '1', email: 'admin@benton.wa.gov', displayName: 'County Admin', role: 'Admin', status: 'active', lastLogin: '2026-03-15T09:32:00Z', createdAt: '2025-06-01T00:00:00Z', countyId: 'benton' },
-  { id: '2', email: 'dev@benton.wa.gov', displayName: 'Dev User', role: 'Developer', status: 'active', lastLogin: '2026-03-14T16:45:00Z', createdAt: '2025-08-15T00:00:00Z', countyId: 'benton' },
-  { id: '3', email: 'viewer@benton.wa.gov', displayName: 'Staff Viewer', role: 'Viewer', status: 'active', lastLogin: '2026-03-15T08:10:00Z', createdAt: '2025-09-20T00:00:00Z', countyId: 'benton' },
-  { id: '4', email: 'suspended@benton.wa.gov', displayName: 'Former Staff', role: 'Viewer', status: 'suspended', lastLogin: '2026-02-28T10:00:00Z', createdAt: '2025-03-01T00:00:00Z', countyId: 'benton' },
-  { id: '5', email: 'appraiser@benton.wa.gov', displayName: 'Field Appraiser', role: 'Viewer', status: 'active', lastLogin: '2026-03-13T14:20:00Z', createdAt: '2025-11-01T00:00:00Z', countyId: 'benton' },
-  { id: '6', email: 'newuser@benton.wa.gov', displayName: 'New Hire', role: 'Viewer', status: 'pending', lastLogin: null, createdAt: '2026-03-10T00:00:00Z', countyId: 'benton' },
-];
-
-const AUDIT_LOG: UserAuditEntry[] = [
-  { id: '1', userId: '1', userName: 'County Admin', action: 'LOGIN', detail: 'Successful login from 10.0.1.45', timestamp: '2026-03-15T09:32:00Z', performedBy: 'system' },
-  { id: '2', userId: '4', userName: 'Former Staff', action: 'STATUS_CHANGE', detail: 'Account suspended by admin', timestamp: '2026-03-10T11:00:00Z', performedBy: 'admin@benton.wa.gov' },
-  { id: '3', userId: '6', userName: 'New Hire', action: 'ACCOUNT_CREATED', detail: 'Account created with Viewer role', timestamp: '2026-03-10T09:00:00Z', performedBy: 'admin@benton.wa.gov' },
-  { id: '4', userId: '2', userName: 'Dev User', action: 'ROLE_CHANGE', detail: 'Role changed from Viewer to Developer', timestamp: '2026-03-05T14:30:00Z', performedBy: 'admin@benton.wa.gov' },
-  { id: '5', userId: '3', userName: 'Staff Viewer', action: 'PASSWORD_RESET', detail: 'Password reset requested', timestamp: '2026-03-01T10:15:00Z', performedBy: 'viewer@benton.wa.gov' },
-  { id: '6', userId: '5', userName: 'Field Appraiser', action: 'DATA_EXPORT', detail: 'Exported 1,200 property records', timestamp: '2026-02-28T16:00:00Z', performedBy: 'appraiser@benton.wa.gov' },
-];
+function unwrapArray<T>(payload: T[] | { items?: T[]; data?: T[] }): T[] {
+  if (Array.isArray(payload)) return payload;
+  return payload.items ?? payload.data ?? [];
+}
 
 // ── Sub-components ──────────────────────────────────────────────────────────
 
@@ -167,12 +164,55 @@ function EditUserModal({ user, onSave, onCancel }: EditUserModalProps) {
 // ── Main Component ──────────────────────────────────────────────────────────
 
 const UserAdmin: React.FC = () => {
-  const [users, setUsers] = useState<User[]>(INITIAL_USERS);
+  const [users, setUsers] = useState<User[]>([]);
+  const [auditLog, setAuditLog] = useState<UserAuditEntry[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<UserRole | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<UserStatus | 'all'>('all');
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [activeSection, setActiveSection] = useState<'users' | 'audit'>('users');
+  const [loading, setLoading] = useState(true);
+  const [auditLoading, setAuditLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [auditError, setAuditError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchJson<User[] | { items?: User[]; data?: User[] }>('/api/admin/users')
+      .then((payload) => {
+        if (cancelled) return;
+        setUsers(unwrapArray(payload));
+        setError(null);
+      })
+      .catch((loadError) => {
+        if (cancelled) return;
+        setUsers([]);
+        setError(loadError instanceof Error ? loadError.message : 'User API unavailable.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    fetchJson<UserAuditEntry[] | { items?: UserAuditEntry[]; data?: UserAuditEntry[] }>('/api/admin/users/audit')
+      .then((payload) => {
+        if (cancelled) return;
+        setAuditLog(unwrapArray(payload));
+        setAuditError(null);
+      })
+      .catch((loadError) => {
+        if (cancelled) return;
+        setAuditLog([]);
+        setAuditError(loadError instanceof Error ? loadError.message : 'User audit API unavailable.');
+      })
+      .finally(() => {
+        if (!cancelled) setAuditLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Filter users
   const filteredUsers = useMemo(() => {
@@ -200,26 +240,36 @@ const UserAdmin: React.FC = () => {
     viewers: users.filter((u) => u.role === 'Viewer').length,
   }), [users]);
 
-  const handleSaveUser = useCallback((updated: User) => {
-    setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
-    setEditingUser(null);
+  const handleSaveUser = useCallback(async (updated: User) => {
+    try {
+      const saved = await fetchJson<User>(`/api/admin/users/${encodeURIComponent(updated.id)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ role: updated.role, status: updated.status }),
+      });
+      setUsers((prev) => prev.map((u) => (u.id === saved.id ? saved : u)));
+      setEditingUser(null);
+      setError(null);
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : 'Unable to save user changes.');
+    }
   }, []);
 
-  const handleToggleStatus = useCallback((userId: string) => {
-    setUsers((prev) =>
-      prev.map((u) =>
-        u.id === userId
-          ? { ...u, status: u.status === 'active' ? 'suspended' : 'active' }
-          : u,
-      ),
-    );
+  const handleToggleStatus = useCallback(async (user: User) => {
+    const status: UserStatus = user.status === 'active' ? 'suspended' : 'active';
+    try {
+      const saved = await fetchJson<User>(`/api/admin/users/${encodeURIComponent(user.id)}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+      setUsers((prev) => prev.map((u) => (u.id === saved.id ? saved : u)));
+      setError(null);
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : 'Unable to update user status.');
+    }
   }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Card 50D: INITIAL_USERS and AUDIT_LOG are sample fixtures — always disclose */}
-      <DemoDataBanner module="User Administration" />
-
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
@@ -255,6 +305,16 @@ const UserAdmin: React.FC = () => {
       </div>
 
       <div className="p-6">
+        {error && activeSection === 'users' && (
+          <div className="mb-4 rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+            User administration API unavailable: {error}
+          </div>
+        )}
+        {auditError && activeSection === 'audit' && (
+          <div className="mb-4 rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+            User audit API unavailable: {auditError}
+          </div>
+        )}
         {activeSection === 'users' ? (
           <>
             {/* Summary cards */}
@@ -325,10 +385,16 @@ const UserAdmin: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {filteredUsers.length === 0 ? (
+                    {loading ? (
                       <tr>
                         <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
-                          No users match the current filters.
+                          Loading users from the admin API...
+                        </td>
+                      </tr>
+                    ) : filteredUsers.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                          {error ? 'No users loaded from the admin API.' : 'No users match the current filters.'}
                         </td>
                       </tr>
                     ) : (
@@ -360,7 +426,7 @@ const UserAdmin: React.FC = () => {
                               Edit
                             </button>
                             <button
-                              onClick={() => handleToggleStatus(user.id)}
+                              onClick={() => void handleToggleStatus(user)}
                               className={`font-medium ${
                                 user.status === 'active'
                                   ? 'text-red-600 hover:text-red-800'
@@ -398,23 +464,37 @@ const UserAdmin: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {AUDIT_LOG.map((entry) => (
-                      <tr key={entry.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
-                          {new Date(entry.timestamp).toLocaleString()}
+                    {auditLoading ? (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                          Loading audit events from the admin API...
                         </td>
-                        <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                          {entry.userName}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            {entry.action}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">{entry.detail}</td>
-                        <td className="px-4 py-3 text-sm text-gray-500">{entry.performedBy}</td>
                       </tr>
-                    ))}
+                    ) : auditLog.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                          {auditError ? 'No audit events loaded from the admin API.' : 'No user audit events returned.'}
+                        </td>
+                      </tr>
+                    ) : (
+                      auditLog.map((entry) => (
+                        <tr key={entry.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+                            {new Date(entry.timestamp).toLocaleString()}
+                          </td>
+                          <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                            {entry.userName}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                              {entry.action}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">{entry.detail}</td>
+                          <td className="px-4 py-3 text-sm text-gray-500">{entry.performedBy}</td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

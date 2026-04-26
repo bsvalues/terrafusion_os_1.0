@@ -5,8 +5,8 @@
  * GET /api/forge/{parcelId}/{approach}?taxYear= endpoints.
  *
  * Each hook returns { data, loading, error, source } where
- *   source = "live"     when the API responds successfully
- *   source = "fallback" when the API call fails (component should use its own fallback data)
+ *   source = "live"        when the API responds successfully
+ *   source = "unavailable" when the API call fails or no governed data is present
  */
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -40,7 +40,7 @@ export interface CostApproachData {
   landAreaAcres: number | null;
   isAgriculturalOrTimber: boolean;
   waClassificationNote: string | null;
-  // Phase B: physical building attributes from PACS improvement attributes
+  // Phase B: physical building attributes from county assessment improvement attributes
   foundation: string | null;
   exteriorWall: string | null;
   roofType: string | null;
@@ -97,7 +97,7 @@ export interface SalesComparisonData {
   salesRatioMedian: number;
   coefficientOfDispersion: number;
   neighborhoodFilterActive: boolean;
-  // R2Wave39: PRD + qualified sale count (0.0 / 0 when < 2 qualified sales with PACS ratios)
+  // R2Wave39: PRD + qualified sale count (0.0 / 0 when < 2 qualified county ratios)
   priceRelatedDifferential: number;
   qualifiedSaleCount: number;
   // OLS regression model (market-extracted adjustment derivation)
@@ -156,7 +156,7 @@ export interface ForgeHookResult<T> {
   data: T | undefined;
   loading: boolean;
   error: Error | null;
-  source: 'live' | 'fallback';
+  source: 'live' | 'unavailable';
   refetch: () => void;
 }
 
@@ -192,7 +192,7 @@ function useForgeQuery<T>(
     data: query.data,
     loading: query.isLoading,
     error: query.error as Error | null,
-    source: query.data ? 'live' : 'fallback',
+    source: query.data ? 'live' : 'unavailable',
     refetch: query.refetch,
   };
 }

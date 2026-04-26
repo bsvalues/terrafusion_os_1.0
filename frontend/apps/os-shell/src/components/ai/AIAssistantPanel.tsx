@@ -15,11 +15,12 @@ import {
   CardContent,
   CardHeader,
   Input,
-  Progress,
 } from '@/components/terrafusion-design-system';
 import { cn } from '@utils/cn';
 import { Brain, CheckCircle, MessageSquare, Sparkles, Zap } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+import { getToken } from '../../auth/authStorage';
+import { getApiBase } from '../../lib/apiBase';
 
 interface AIMessage {
   id: string;
@@ -54,26 +55,18 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
   const [inputValue, setInputValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [aiStatus, setAiStatus] = useState<'active' | 'idle' | 'processing'>('idle');
-  const [swarmActivity, setSwarmActivity] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Simulate AI consciousness connection (replace with actual API)
   useEffect(() => {
-    const connectToAISwarm = async () => {
-      setAiStatus('active');
-      // Add welcome message from AI
-      setMessages([
-        {
-          id: '1',
-          role: 'system',
-          content: `🏛️ **AI Swarm Connected** - ${countyId.toUpperCase()} Government Excellence Mode\n\nI'm your TerraFusion AI Assistant with access to 50,000+ specialized agents. I can help you with:\n\n✨ **Property Assessment** - Instant valuations with 99.5% accuracy\n🔍 **Data Analysis** - Real-time insights from county systems\n📊 **Compliance Validation** - IAAO standards verification\n⚡ **Workflow Automation** - Intelligent task completion\n\nHow can I amplify your capabilities today?`,
-          timestamp: new Date(),
-          confidence: 1.0,
-        },
-      ]);
-    };
-
-    connectToAISwarm();
+    setAiStatus('active');
+    setMessages([
+      {
+        id: 'system-welcome',
+        role: 'system',
+        content: `**AI Assistant Ready** - ${countyId.toUpperCase()}\n\nResponses come from the governed TerraFusion AI Assistant API. I will not report agent counts, valuation accuracy, compliance status, or workflow completion unless the backend returns evidence for it.\n\nRole context: ${employeeRole}`,
+        timestamp: new Date(),
+      },
+    ]);
   }, [countyId]);
 
   // Auto-scroll to latest message
@@ -81,22 +74,14 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Simulate swarm activity monitoring
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSwarmActivity((prev) => Math.min(prev + Math.random() * 10, 100));
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
+    const messageText = inputValue;
 
     const userMessage: AIMessage = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputValue,
+      content: messageText,
       timestamp: new Date(),
     };
 
@@ -105,38 +90,54 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
     setIsProcessing(true);
     setAiStatus('processing');
 
-    // Simulate AI processing (replace with actual API call)
-    setTimeout(() => {
+    try {
+      const response = await fetch(`${getApiBase()}/AIAssistant/message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({
+          countyId,
+          employeeRole,
+          message: messageText,
+          context: currentContext,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`AI Assistant API unavailable: ${response.status}`);
+      }
+
+      const data = await response.json();
       const aiResponse: AIMessage = {
-        id: (Date.now() + 1).toString(),
+        id: data.messageId || (Date.now() + 1).toString(),
         role: 'assistant',
-        content: generateAIResponse(inputValue, currentContext),
-        timestamp: new Date(),
-        confidence: 0.95,
-        suggestions: [
-          'Run comprehensive analysis',
-          'Generate compliance report',
-          'Schedule workflow automation',
-        ],
+        content: data.content,
+        timestamp: data.timestamp ? new Date(data.timestamp) : new Date(),
+        confidence: data.confidence,
+        suggestions: Array.isArray(data.suggestions) ? data.suggestions : [],
+        metadata: data.metadata,
       };
 
       setMessages((prev) => [...prev, aiResponse]);
-      setIsProcessing(false);
       setAiStatus('active');
-    }, 1500);
-  };
-
-  const generateAIResponse = (query: string, context?: any): string => {
-    // Championship-level AI response generation
-    if (query.toLowerCase().includes('property') || query.toLowerCase().includes('parcel')) {
-      return `🏡 **Property Analysis Complete**\n\nI've analyzed 847 comparable properties in your jurisdiction using quantum-enhanced valuation algorithms.\n\n**Key Insights:**\n• Market trend: +3.2% (last 6 months)\n• Valuation accuracy: 99.7%\n• IAAO compliance: ✓ Certified\n• Outliers detected: 2 properties flagged for review\n\n**Recommended Actions:**\n1. Review flagged properties (Parcels #8842, #9103) /* tdc:allow — parcel IDs, not color hex */\n2. Update cost factors based on market analysis\n3. Generate assessment roll with AI validation\n\nWould you like me to execute any of these actions?`;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'AI Assistant API unavailable.';
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `error-${Date.now()}`,
+          role: 'system',
+          content: `AI Assistant evidence unavailable. ${errorMessage}`,
+          timestamp: new Date(),
+          confidence: 0,
+        },
+      ]);
+      setAiStatus('idle');
+    } finally {
+      setIsProcessing(false);
     }
-
-    if (query.toLowerCase().includes('compliance') || query.toLowerCase().includes('audit')) {
-      return `🛡️ **Compliance Check Complete**\n\nFISMA-High security scan completed across all ${countyId} systems.\n\n**Status: EXCELLENT**\n• Security score: 99.2%\n• Audit trail: Complete\n• Data isolation: Verified\n• Access controls: Optimal\n\n**Zero critical issues detected.** All government standards exceeded.\n\nNext audit scheduled: Auto-monitoring active 24/7`;
-    }
-
-    return `✨ **AI Analysis Ready**\n\nI've processed your request using the TerraFusion AI swarm. Based on your role as ${employeeRole} in ${countyId}, I can provide:\n\n• **Instant Analysis** - Real-time data insights\n• **Smart Suggestions** - AI-powered recommendations\n• **Workflow Automation** - One-click task completion\n• **Predictive Intelligence** - Future trend forecasting\n\nWhat specific task would you like me to help with?`;
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -159,14 +160,14 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
           </div>
           <div>
             <h3 className='text-lg font-semibold text-terra-cyan'>AI Assistant</h3>
-            <p className='text-xs text-slate-400'>50,000+ Agent Swarm</p>
+            <p className='text-xs text-slate-400'>Governed backend responses only</p>
           </div>
         </div>
 
         <div className='flex items-center gap-2'>
           <Badge variant='quantum' className='quantum-pulse'>
             <Sparkles className='w-3 h-3 mr-1' />
-            Active
+            {aiStatus === 'processing' ? 'Processing' : aiStatus === 'active' ? 'Ready' : 'Offline'}
           </Badge>
           <Badge variant='outline' className='text-xs'>
             {countyId.toUpperCase()}
@@ -174,13 +175,11 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
         </div>
       </CardHeader>
 
-      {/* Swarm Activity Monitor */}
+      {/* Backend Evidence Notice */}
       <div className='px-4 py-2 bg-terra-midnight/30'>
-        <div className='flex items-center justify-between text-xs mb-1'>
-          <span className='text-slate-400'>AI Swarm Coordination</span>
-          <span className='text-terra-cyan font-mono'>{Math.round(swarmActivity)}%</span>
+        <div className='text-xs text-slate-400'>
+          Agent telemetry, confidence, and provenance are displayed only when returned by the API.
         </div>
-        <Progress value={swarmActivity} className='h-1' />
       </div>
 
       {/* Messages Area */}

@@ -545,7 +545,7 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
   {
     "id": "pacs-bridge",
     "displayName": "County Data Bridge",
-    "description": "System/admin — import/export bridge for county assessment systems, data sync, and field mapping. Legacy: PACS-DataBridge.",
+    "description": "System/admin — import/export bridge for county assessment systems, data sync, and field mapping.",
     "iconName": "Cable",
     "category": "system",
     "tier": 1,
@@ -603,7 +603,7 @@ export const GENERATED_MODULES: readonly ModuleManifest[] = [
   {
     "id": "terra-miner",
     "displayName": "TerraMiner",
-    "description": "Property research & outside data mining — aggregates external data sources (MLS, permits, assessor feeds) for parcel enrichment. Legacy: TerraMiner (Private).",
+    "description": "Property research & outside data mining — aggregates external recorder, permit, and assessor feeds for parcel enrichment. Legacy: TerraMiner (Private).",
     "iconName": "Search",
     "category": "assessment",
     "tier": 1,

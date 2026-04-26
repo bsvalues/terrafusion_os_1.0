@@ -96,22 +96,16 @@ const ModuleEcosystemDashboard: React.FC = () => {
   const performanceData = useMemo(() => {
     if (!currentStatus) return [];
 
-    // Generate mock time series data for performance chart
-    return Array.from({ length: 12 }, (_, i) => ({
-      time: `${12 - i}min ago`,
-      performance: Math.max(
-        0,
-        Math.min(100, currentStatus.averagePerformance * 100 + (Math.random() - 0.5) * 20)
-      ),
-      memory: Math.max(
-        0,
-        Math.min(
-          100,
-          (currentStatus.totalMemoryUsage / (32 * 1024 * 1024 * 1024)) * 100 +
-            (Math.random() - 0.5) * 10
-        )
-      ),
-    }));
+    return [
+      {
+        time: 'current',
+        performance: Math.max(0, Math.min(100, currentStatus.averagePerformance * 100)),
+        memory: Math.max(
+          0,
+          Math.min(100, (currentStatus.totalMemoryUsage / (32 * 1024 * 1024 * 1024)) * 100),
+        ),
+      },
+    ];
   }, [currentStatus]);
 
   const getHealthColor = (health: string) => {

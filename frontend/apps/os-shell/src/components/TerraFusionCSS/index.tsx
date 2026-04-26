@@ -21,12 +21,12 @@ interface AIAgentState {
   coherence: number;
 }
 
-// Simplified CSS Engine for immediate use
+// CSS engine shell. Metrics remain zero until a real telemetry provider updates them.
 class SimpleTerraFusionCSSEngine {
   private performanceMetrics: PerformanceMetrics = {
-    performanceIndex: 0.8,
-    fps: 60,
-    memoryUsage: 0.5,
+    performanceIndex: 0,
+    fps: 0,
+    memoryUsage: 0,
   };
 
   private aiAgents: Map<string, AIAgentState> = new Map();
@@ -40,11 +40,11 @@ class SimpleTerraFusionCSSEngine {
   }
 
   updateUserPreference(_key: string, _value: any): void {
-    // Placeholder implementation
+    // Preference persistence is intentionally provider-backed only.
   }
 
   destroy(): void {
-    // Placeholder implementation
+    this.aiAgents.clear();
   }
 }
 
@@ -266,7 +266,7 @@ export const QuantumElement: React.FC<QuantumElementProps> = ({
 
   const quantumStyle = {
     '--tf-quantum-coherence': coherenceLevel.toString(),
-    '--tf-quantum-phase': (Math.random() * 360).toString(),
+    '--tf-quantum-phase': ((coherenceLevel * 360) % 360).toString(),
     opacity: performanceMetrics.performanceIndex > 0.8 ? 1 : 0.8,
   } as React.CSSProperties;
 

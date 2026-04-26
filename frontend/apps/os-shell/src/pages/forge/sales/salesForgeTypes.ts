@@ -7,6 +7,8 @@
 
 export interface SaleQueueItem {
   saleId: string;
+  county?: string | null;
+  countyCode?: string | null;
   parcelId: string | null;
   address: string | null;
   saleDate: string;
@@ -53,7 +55,7 @@ export interface SaleDetail extends SaleQueueItem {
   saleAdjustmentAmount: number | null;
   saleExemptionAmount: number | null;
   exciseNumber: number | null;
-  pacsChgOfOwnerId: number | null;
+  sourceChangeOfOwnerId: number | null;
   slLandAcres: number | null;
   slLandSqft: number | null;
   lotSizeSqft: number | null;
@@ -142,6 +144,7 @@ export interface CodeAudit {
 // ── Filter forms ──────────────────────────────────────────────────────────────
 
 export interface FilterForm {
+  countyCode: string;
   hood: string;
   propertyType: string;
   saleDateFrom: string;
@@ -151,6 +154,7 @@ export interface FilterForm {
 }
 
 export interface CommittedFilters {
+  countyCode: string;
   hood: string | null;
   propertyType: string | null;
   saleDateFrom: string | null;
@@ -160,6 +164,7 @@ export interface CommittedFilters {
 }
 
 export const EMPTY_FILTER_FORM: FilterForm = {
+  countyCode: '005',
   hood: '',
   propertyType: '',
   saleDateFrom: '',
@@ -169,6 +174,7 @@ export const EMPTY_FILTER_FORM: FilterForm = {
 };
 
 export const EMPTY_COMMITTED: CommittedFilters = {
+  countyCode: '005',
   hood: null,
   propertyType: null,
   saleDateFrom: null,

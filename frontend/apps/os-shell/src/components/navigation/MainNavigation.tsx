@@ -65,7 +65,7 @@ const MainNavigation: React.FC = () => {
           <Button
             color='inherit'
             startIcon={<Description />}
-            onClick={() => navigate('/harris-pacs')}
+            onClick={() => navigate('/m/assessment-data-bridge')}
           >
             Data Bridge
           </Button>

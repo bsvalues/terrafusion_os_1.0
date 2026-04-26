@@ -131,7 +131,8 @@ vi.mock('../../hooks/useTodaysWork', () => ({
       { id: 'task-3', title: 'Ratio study due Friday', subtitle: 'TerraForge calibration', route: 'suite-forge' },
     ],
     loading: false,
-    isSampleData: false,
+    error: null,
+    readState: 'live',
   }),
 }));
 
@@ -176,7 +177,7 @@ describe('Phase 7: Today\'s Work Panel', () => {
     // Mock useTodaysWork to return empty tasks
     const todaysWorkModule = await import('../../hooks/useTodaysWork');
     const spy = vi.spyOn(todaysWorkModule, 'useTodaysWork');
-    spy.mockReturnValue({ tasks: [], loading: false, isSampleData: false });
+    spy.mockReturnValue({ tasks: [], loading: false, error: null, readState: 'live' });
 
     const { unmount } = render(<StageZeroState />);
     const panel = screen.getByTestId('todays-work-panel');

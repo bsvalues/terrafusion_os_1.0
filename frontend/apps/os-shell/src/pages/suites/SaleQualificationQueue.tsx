@@ -6,7 +6,7 @@
  * PATCH /api/terraforge/sale-qualification/{saleId}
  *
  * Surface: ForgeSuiteHome (os-shell), NOT the standalone terraforge harness.
- * Owner: Suite-Forge layer.  Read PACS comps; write appraiser decisions only.
+ * Owner: Suite-Forge layer. Read normalized sale candidates; write appraiser decisions only.
  */
 
 import { useCallback, useEffect, useReducer, useRef } from 'react';
@@ -84,8 +84,31 @@ function reducer(state: QueueState, action: QueueAction): QueueState {
   }
 }
 
-const PAGE_SIZE = 15;
+export const PAGE_SIZE = 15;
 const TAX_YEAR = new Date().getFullYear();
+
+/**
+ * Page-clamp helper — if a PATCH empties the current page and earlier
+ * pages still have rows, return the last valid page so the UI can
+ * re-fetch instead of showing an impossible page indicator. Returns
+ * `null` when no clamp is needed (items present, or genuine empty
+ * queue on page 1).
+ *
+ * Exported for SaleQualificationQueue.test.tsx — keeps the
+ * fetchPage clamp invariant covered without needing a full render.
+ */
+export function computeClampedPage(
+  currentItemsLength: number,
+  totalRemaining: number,
+  currentPage: number,
+): number | null {
+  // Items still present — no clamp needed.
+  if (currentItemsLength > 0) return null;
+  // Page 1 with no items is a genuine empty queue, not a clamp event.
+  if (currentPage <= 1) return null;
+  const newTotalPages = Math.ceil(totalRemaining / PAGE_SIZE);
+  return Math.max(1, newTotalPages);
+}
 
 // ── Formatters ─────────────────────────────────────────────────────────────
 

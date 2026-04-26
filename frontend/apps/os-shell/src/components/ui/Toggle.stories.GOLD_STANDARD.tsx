@@ -529,7 +529,7 @@ export const Interactive: Story = {
     docs: {
       description: {
         story:
-          'Controlled component pattern demonstration. External buttons manipulate state programmatically.',
+          'Controlled component pattern example. External buttons manipulate state programmatically.',
       },
     },
   },
@@ -938,7 +938,7 @@ export const EdgeCases: Story = {
 // ============================================================================
 
 /**
- * Responsive design demonstration.
+ * Responsive design example.
  *
  * Shows component behavior at different viewport sizes:
  * - Mobile (320px) - Touch-optimized

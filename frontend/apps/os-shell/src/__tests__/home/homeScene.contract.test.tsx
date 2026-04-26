@@ -132,7 +132,7 @@ vi.mock('../../lib/utils', () => ({
 // Mock useTodaysWork (StageZeroState dependency)
 vi.mock('../../hooks/useTodaysWork', () => ({
   __esModule: true,
-  useTodaysWork: () => ({ tasks: [], loading: false, isSampleData: false }),
+  useTodaysWork: () => ({ tasks: [], loading: false, error: null, readState: 'live' }),
 }));
 
 // Mock useParcelCount — no QueryClientProvider in this test tree

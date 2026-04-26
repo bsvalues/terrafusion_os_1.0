@@ -72,92 +72,11 @@ interface RagDocument {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Mock data (Benton County RAG sets)                                          */
+/* Evidence-backed data must be supplied by the RAG API.                       */
 /* -------------------------------------------------------------------------- */
 
-const DATASETS: RagDataset[] = [
-  {
-    id: 'ds-rcw',
-    name: 'Washington RCW Statutes',
-    description: 'Complete WA Revised Code of Washington for property tax law (Title 84)',
-    documentCount: 48,
-    chunkCount: 3420,
-    embeddingModel: 'text-embedding-3-small',
-    status: 'ready',
-    sizeBytes: 14_200_000,
-    createdAt: '2026-01-10T00:00:00Z',
-    lastUpdated: '2026-02-20T00:00:00Z',
-    linkedGpts: 3,
-  },
-  {
-    id: 'ds-wac',
-    name: 'WAC Assessment Standards',
-    description: 'WA Administrative Code: DOR assessment standards & ratio guidelines',
-    documentCount: 22,
-    chunkCount: 1580,
-    embeddingModel: 'text-embedding-3-small',
-    status: 'ready',
-    sizeBytes: 6_800_000,
-    createdAt: '2026-01-15T00:00:00Z',
-    lastUpdated: '2026-02-18T00:00:00Z',
-    linkedGpts: 2,
-  },
-  {
-    id: 'ds-benton-cama',
-    name: 'Benton County CAMA Manual',
-    description: 'County appraisal procedures, cost tables, and field guide',
-    documentCount: 12,
-    chunkCount: 890,
-    embeddingModel: 'text-embedding-3-small',
-    status: 'ready',
-    sizeBytes: 3_200_000,
-    createdAt: '2026-02-01T00:00:00Z',
-    lastUpdated: '2026-02-25T00:00:00Z',
-    linkedGpts: 4,
-  },
-  {
-    id: 'ds-uspap',
-    name: 'USPAP Standards',
-    description: 'Uniform Standards of Professional Appraisal Practice (current edition)',
-    documentCount: 8,
-    chunkCount: 620,
-    embeddingModel: 'text-embedding-3-small',
-    status: 'ready',
-    sizeBytes: 2_100_000,
-    createdAt: '2026-01-20T00:00:00Z',
-    lastUpdated: '2026-02-10T00:00:00Z',
-    linkedGpts: 2,
-  },
-  {
-    id: 'ds-market',
-    name: 'Benton County Market Data',
-    description: 'Sales, permits, and market trends (auto-refreshed weekly)',
-    documentCount: 156,
-    chunkCount: 8400,
-    embeddingModel: 'text-embedding-3-small',
-    status: 'processing',
-    sizeBytes: 28_500_000,
-    createdAt: '2026-02-15T00:00:00Z',
-    lastUpdated: '2026-02-26T00:00:00Z',
-    linkedGpts: 1,
-  },
-];
-
-const DOCUMENTS: Record<string, RagDocument[]> = {
-  'ds-rcw': [
-    { id: 'd1', filename: 'RCW_Title84_Ch01.pdf', type: 'pdf', chunks: 142, sizeBytes: 580_000, status: 'embedded', addedAt: '2026-01-10' },
-    { id: 'd2', filename: 'RCW_Title84_Ch04.pdf', type: 'pdf', chunks: 98, sizeBytes: 420_000, status: 'embedded', addedAt: '2026-01-10' },
-    { id: 'd3', filename: 'RCW_Title84_Ch33.pdf', type: 'pdf', chunks: 76, sizeBytes: 310_000, status: 'embedded', addedAt: '2026-01-11' },
-    { id: 'd4', filename: 'RCW_Title84_Ch36.pdf', type: 'pdf', chunks: 112, sizeBytes: 480_000, status: 'embedded', addedAt: '2026-01-11' },
-    { id: 'd5', filename: 'RCW_Title84_Ch40.pdf', type: 'pdf', chunks: 88, sizeBytes: 360_000, status: 'embedded', addedAt: '2026-01-12' },
-  ],
-  'ds-benton-cama': [
-    { id: 'd10', filename: 'Benton_Field_Guide_2026.pdf', type: 'pdf', chunks: 210, sizeBytes: 820_000, status: 'embedded', addedAt: '2026-02-01' },
-    { id: 'd11', filename: 'Cost_Tables_Residential.xlsx', type: 'xlsx', chunks: 180, sizeBytes: 540_000, status: 'embedded', addedAt: '2026-02-01' },
-    { id: 'd12', filename: 'Commercial_Procedures.docx', type: 'docx', chunks: 95, sizeBytes: 280_000, status: 'embedded', addedAt: '2026-02-05' },
-    { id: 'd13', filename: 'Agricultural_Land_Manual.pdf', type: 'pdf', chunks: 145, sizeBytes: 520_000, status: 'processing', addedAt: '2026-02-20' },
-  ],
-};
+const DATASETS: RagDataset[] = [];
+const DOCUMENTS: Record<string, RagDocument[]> = {};
 
 /* -------------------------------------------------------------------------- */
 /* Helpers                                                                     */

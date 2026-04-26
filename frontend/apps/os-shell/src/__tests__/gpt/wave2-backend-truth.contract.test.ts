@@ -148,7 +148,7 @@ describe('Wave 2: Security & Isolation Findings', () => {
 
   it('GATE 9 — registry captures 7+ unscoped RAG endpoints', () => {
     const ragUnscoped = RAG_ENDPOINTS.filter(
-      (e) => e.isolation === 'unscoped' || e.isolation === 'hardcoded_county',
+    (e) => e.isolation === 'unscoped' || e.isolation === 'fixed_county',
     );
     expect(ragUnscoped.length).toBeGreaterThanOrEqual(7);
   });

@@ -29,12 +29,8 @@ export interface SmartFilterBarProps {
 }
 
 // ---------------------------------------------------------------------------
-// Defaults
+// Empty filters
 // ---------------------------------------------------------------------------
-
-const DEFAULT_NEIGHBORHOODS = ['Downtown', 'Riverside', 'West Hills', 'Eastgate', 'Southridge', 'Northview'];
-const DEFAULT_ZONINGS = ['R-1', 'R-2', 'R-3', 'C-1', 'C-2', 'I-1', 'I-2', 'AG', 'PUD'];
-const DEFAULT_CLASSES = ['Residential', 'Commercial', 'Industrial', 'Multi-Family', 'Agricultural', 'Vacant'];
 
 export const EMPTY_FILTERS: SmartFilterState = {
   neighborhood: null,
@@ -53,9 +49,9 @@ export const EMPTY_FILTERS: SmartFilterState = {
 export default function SmartFilterBar({
   filters,
   onFilterChange,
-  neighborhoods = DEFAULT_NEIGHBORHOODS,
-  zonings = DEFAULT_ZONINGS,
-  propertyClasses = DEFAULT_CLASSES,
+  neighborhoods = [],
+  zonings = [],
+  propertyClasses = [],
   className = '',
 }: SmartFilterBarProps) {
   const update = useCallback(

@@ -1,0 +1,328 @@
+{
+  "createdAt": 1777178155,
+  "version": "0.1.0",
+  "identity": {
+    "productName": "TerraFusion Local Agent Runtime",
+    "internalCodename": "Prometheus",
+    "productSentence": "Prometheus is the county-safe local agent runtime harness that gives TerraFusion a Claude Code / Codex-class copilot posture without changing the external product name.",
+    "operatingFaces": [
+      "Founder Builder",
+      "County Operations Assistant",
+      "TerraPilot Dev Mode"
+    ],
+    "notes": [
+      "Prometheus is an internal codename.",
+      "Prometheus is not a model.",
+      "Prometheus is not OpenMythos.",
+      "Prometheus is not a GUI."
+    ]
+  },
+  "policy": {
+    "available": true,
+    "profile": "founder",
+    "source": "founder-default",
+    "purpose": "Default local-agent founder policy is active until an exported policy is present.",
+    "cloudAllowed": false,
+    "privateLanAllowed": false,
+    "modelEndpoint": null,
+    "warning": "No exported active policy found; summarizing the founder-default local-agent posture."
+  },
+  "doctor": {
+    "available": false,
+    "overallStatus": null,
+    "criticalFailures": 0,
+    "warnings": 0,
+    "path": null
+  },
+  "model": {
+    "available": false,
+    "healthy": null,
+    "endpoint": null,
+    "model": null,
+    "startupMode": null,
+    "warnings": [],
+    "path": null
+  },
+  "artifacts": {
+    "activePolicy": false,
+    "commandRegistry": true,
+    "controlCenterState": false,
+    "currentWorkCard": true,
+    "patchPreview": false,
+    "proofResults": false,
+    "saveState": false,
+    "finalReport": false,
+    "doctorReport": false,
+    "modelRuntimeStatus": false,
+    "releaseNotes": true,
+    "docsIndex": true,
+    "productManifest": true,
+    "releaseCheck": false,
+    "releaseFreeze": false,
+    "shipReport": false,
+    "tagGate": false,
+    "releaseApproval": false,
+    "tagCommand": false,
+    "releaseRunbook": false
+  },
+  "nextCommand": "pnpm run tf:local-agent -- proof",
+  "nextReason": "A locked work card exists, but proof has not run yet.",
+  "commandCount": 34,
+  "commandGroups": [
+    "Guidance",
+    "Release",
+    "Planning",
+    "Patch Control",
+    "Validation",
+    "Handoff",
+    "Advanced"
+  ],
+  "commandRegistryPath": ".terrafusion/command-registry.json",
+  "actions": [
+    {
+      "id": "start",
+      "label": "Open Founder Cockpit",
+      "command": "pnpm run tf:local-agent -- start",
+      "group": "Guidance",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": false
+    },
+    {
+      "id": "help-me",
+      "label": "Help Me",
+      "command": "pnpm run tf:local-agent -- help-me",
+      "group": "Guidance",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": false
+    },
+    {
+      "id": "next",
+      "label": "Recommend Next Step",
+      "command": "pnpm run tf:local-agent -- next",
+      "group": "Guidance",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": false
+    },
+    {
+      "id": "command-registry",
+      "label": "Write Command Registry",
+      "command": "pnpm run tf:local-agent -- command-registry",
+      "group": "Guidance",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "doctor",
+      "label": "Run Doctor",
+      "command": "pnpm run tf:local-agent -- doctor --model-endpoint http://127.0.0.1:11434/v1 --model-name local-coder",
+      "group": "Guidance",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "control-center-state",
+      "label": "Write Control Center State",
+      "command": "pnpm run tf:local-agent -- control-center-state",
+      "group": "Guidance",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "control-center-preview",
+      "label": "Preview Control Center",
+      "command": "pnpm run tf:local-agent -- control-center-preview",
+      "group": "Guidance",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": false
+    },
+    {
+      "id": "release-notes",
+      "label": "Write Release Notes",
+      "command": "pnpm run tf:local-agent -- release-notes",
+      "group": "Release",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "docs-index",
+      "label": "Write Docs Index",
+      "command": "pnpm run tf:local-agent -- docs-index",
+      "group": "Release",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "product-manifest",
+      "label": "Write Product Manifest",
+      "command": "pnpm run tf:local-agent -- product-manifest",
+      "group": "Release",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "release-check",
+      "label": "Run Release Check",
+      "command": "pnpm run tf:local-agent -- release-check",
+      "group": "Release",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "release-freeze",
+      "label": "Write Release Freeze Card",
+      "command": "pnpm run tf:local-agent -- release-freeze",
+      "group": "Release",
+      "enabled": false,
+      "reason": "Release freeze requires release notes, docs index, product manifest, and a passing release check artifact.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "ship-mvp",
+      "label": "Ship MVP Evidence",
+      "command": "pnpm run tf:local-agent -- ship-mvp release --overwrite",
+      "group": "Release",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "tag-gate",
+      "label": "Run Tag Gate",
+      "command": "pnpm run tf:local-agent -- tag-gate 0.1.0",
+      "group": "Release",
+      "enabled": false,
+      "reason": "Tag Gate requires release notes, docs index, product manifest, release check, and ship report.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "release-approve",
+      "label": "Record Release Approval",
+      "command": "pnpm run tf:local-agent -- release-approve 0.1.0 --name \"Founder\"",
+      "group": "Release",
+      "enabled": false,
+      "reason": "Release approval requires a passing Tag Gate report.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "tag-command",
+      "label": "Write Tag Command Report",
+      "command": "pnpm run tf:local-agent -- tag-command 0.1.0",
+      "group": "Release",
+      "enabled": false,
+      "reason": "Tag command requires release approval.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "release-runbook",
+      "label": "Write Release Runbook",
+      "command": "pnpm run tf:local-agent -- release-runbook 0.1.0",
+      "group": "Release",
+      "enabled": false,
+      "reason": "Release runbook requires tag gate, release approval, and tag command artifacts.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "plan",
+      "label": "Plan Task",
+      "command": "pnpm run tf:local-agent -- plan \"Describe your task here\"",
+      "group": "Planning",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": false
+    },
+    {
+      "id": "lock-card",
+      "label": "Lock Work Card",
+      "command": "pnpm run tf:local-agent -- lock-card \"Describe your task here\"",
+      "group": "Planning",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "current-card",
+      "label": "Show Current Card",
+      "command": "pnpm run tf:local-agent -- current-card",
+      "group": "Planning",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": false
+    },
+    {
+      "id": "clear-card",
+      "label": "Clear Current Card",
+      "command": "pnpm run tf:local-agent -- clear-card",
+      "group": "Planning",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "proof",
+      "label": "Run Proof Gates",
+      "command": "pnpm run tf:local-agent -- proof",
+      "group": "Validation",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "save-state",
+      "label": "Save State",
+      "command": "pnpm run tf:local-agent -- save-state \"Summarize what happened\" --next-step \"Write the next exact action\"",
+      "group": "Handoff",
+      "enabled": true,
+      "reason": "Available under current local state.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    },
+    {
+      "id": "finalize",
+      "label": "Finalize",
+      "command": "pnpm run tf:local-agent -- finalize",
+      "group": "Handoff",
+      "enabled": false,
+      "reason": "Finalize requires proof results and Save State.",
+      "beginnerSafe": true,
+      "mutatesState": true
+    }
+  ],
+  "notes": [
+    "Control Center state is read-only UI input.",
+    "Future buttons must still route through the local-agent CLI.",
+    "The harness keeps authority even when a desktop shell renders this contract."
+  ]
+}

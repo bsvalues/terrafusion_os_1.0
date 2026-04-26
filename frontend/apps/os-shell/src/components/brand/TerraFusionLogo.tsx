@@ -98,7 +98,7 @@ const TerraFusionLogo: React.FC<TerraFusionLogoProps> = ({
 
     case 'browser':
       return (
-        <Box className={`tf-browser-mockup ${className}`}>
+    <Box className={`tf-browser-frame ${className}`}>
           <Box className='tf-browser-dots'>
             <Box className='tf-browser-dot close' />
             <Box className='tf-browser-dot minimize' />

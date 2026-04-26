@@ -45,7 +45,7 @@ const DOSSIER_MODULES: SuiteModuleDef[] = [
   { id: 'photos', label: 'Photo Manager', icon: Camera, description: 'Geotagged property photos with metadata', launchMode: 'workbench', workbenchTab: 'dossier' },
   { id: 'search', label: 'Deep Search', icon: FileSearch, description: 'Full-text search across all documents and evidence', launchMode: 'workbench', workbenchTab: 'dossier' },
   // Standalone-mode (system/admin, opens standalone window)
-  { id: 'pacs-bridge', label: 'Assessment DataBridge', icon: Plug, description: 'County data import/export & sync management', launchMode: 'standalone', moduleId: 'pacs-bridge', truthState: 'queued' },
+  { id: 'assessment-data-bridge', label: 'Assessment DataBridge', icon: Plug, description: 'County data import/export & sync management', launchMode: 'standalone', moduleId: 'assessment-data-bridge', truthState: 'queued' },
   { id: 'terra-sync', label: 'TerraSync', icon: RefreshCw, description: 'County data synchronization — multi-source ETL pipeline', launchMode: 'standalone', moduleId: 'terra-sync', truthState: 'queued' },
   { id: 'terra-flow', label: 'TerraFlow', icon: Zap, description: 'Workflow automation engine — assessment pipeline orchestration', launchMode: 'standalone', moduleId: 'terra-flow', truthState: 'queued' },
 ];
@@ -79,7 +79,7 @@ function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): s
     return 'Snapshot-backed county aggregates: TerraDossier stats are using bundled county snapshot data, not live backend metrics.';
   }
   if (source === 'fixtures') {
-    return 'Fixture-backed county aggregates: TerraDossier stats are using test fixture data, not live backend metrics.';
+    return 'Non-live county aggregate mode is active; TerraDossier stats are not live backend metrics.';
   }
   return null;
 }
@@ -472,7 +472,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
           style={{ color: 'hsl(var(--tf-muted))' }}
         >
           Document and evidence tools open in the Property Workbench for parcel-scoped operations.
-          Assessment DataBridge, TerraSync, and TerraFlow integrations are scheduled for a future release.
+          Assessment DataBridge, TerraSync, and TerraFlow remain queued until governed providers are registered.
         </p>
         <SuiteModuleGrid modules={DOSSIER_MODULES} accentVar="--tf-suite-dossier" />
         <OperationalQueue title="Recent Parcels" accentVar="--tf-suite-dossier" emptyMessage="No recent parcel activity" />

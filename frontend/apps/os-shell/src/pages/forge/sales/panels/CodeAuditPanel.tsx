@@ -1,6 +1,6 @@
 /**
  * CodeAuditPanel — Tab 4 of SalesForge.
- * Raw PACS code breakdown: WAC, SaleQualifier, RatioType, CountyRatio.
+ * Raw source code breakdown: WAC, SaleQualifier, RatioType, CountyRatio.
  * Prominently flags the known rawWacCd null/seeding gap.
  */
 

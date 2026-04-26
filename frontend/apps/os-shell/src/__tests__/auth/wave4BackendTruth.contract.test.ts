@@ -6,7 +6,7 @@
  * Enforces that:
  *   1. statisticsAPI client exists with auth interceptor and correct base URL
  *   2. forgeStatisticsStore imports statisticsAPI and calls it for strata/outliers/comparison
- *   3. forgeStatisticsStore retains fixture fallback + isFixture disclosure
+ *   3. forgeStatisticsStore remains API-first without runtime fixture fallback
  *   4. statisticsAPI mirrors regressionAPI auth pattern (getToken + Bearer)
  *   5. No Math.random in stores or API clients
  *   6. W3 contract gates remain intact (regression)
@@ -129,34 +129,26 @@ describe('Gate 3 — forgeStatisticsStore wired to statisticsAPI', () => {
 });
 
 // ============================================================================
-// Gate 4: forgeStatisticsStore retains fixture fallback + isFixture disclosure
+// Gate 4: forgeStatisticsStore remains API-first without fixture fallback
 // ============================================================================
 
-describe('Gate 4 — forgeStatisticsStore fixture fallback preserved', () => {
+describe('Gate 4 — forgeStatisticsStore does not retain fixture fallback', () => {
   const src = readSrc('stores/forgeStatisticsStore.ts');
 
-  it('imports OUTLIER_RECORDS fixture', () => {
-    expect(src).toContain('OUTLIER_RECORDS');
+  it('does not import OUTLIER_RECORDS fixture', () => {
+    expect(src).not.toContain('OUTLIER_RECORDS');
   });
 
-  it('imports STRATA_RESULTS fixture', () => {
-    expect(src).toContain('STRATA_RESULTS');
+  it('does not import STRATA_RESULTS fixture', () => {
+    expect(src).not.toContain('STRATA_RESULTS');
   });
 
-  it('imports MODEL_COMPARISON fixture', () => {
-    expect(src).toContain('MODEL_COMPARISON');
+  it('does not import MODEL_COMPARISON fixture', () => {
+    expect(src).not.toContain('MODEL_COMPARISON');
   });
 
-  it('tracks isFixture state for outliers', () => {
-    expect(src).toMatch(/isFixture.*outliers|outliers.*isFixture/s);
-  });
-
-  it('tracks isFixture state for strata', () => {
-    expect(src).toMatch(/isFixture.*strata|strata.*isFixture/s);
-  });
-
-  it('tracks isFixture state for comparison', () => {
-    expect(src).toMatch(/isFixture.*comparison|comparison.*isFixture/s);
+  it('does not track isFixture state', () => {
+    expect(src).not.toContain('isFixture');
   });
 });
 

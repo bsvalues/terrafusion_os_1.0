@@ -42,7 +42,7 @@ export const DesktopShell: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeModule, setActiveModule] = useState<string | null>(null);
   const { systemHealth } = useSystemHealth();
-  const { modules, loadModule } = useModules();
+  const { modules, loadModule, isLoading: modulesLoading, errorMessage: modulesError } = useModules();
 
   const handleModuleLaunch = async (moduleId: string) => {
     setActiveModule(moduleId);
@@ -61,6 +61,26 @@ export const DesktopShell: React.FC = () => {
         return 'default';
     }
   };
+
+  const activeModuleCount = modules.filter((module) => module.status === 'active').length;
+  const moduleStatusLabel = modulesLoading
+    ? 'Module registry loading'
+    : modulesError
+      ? 'Module registry unavailable'
+      : `${activeModuleCount} Active Modules`;
+  const moduleStatusColor = modulesLoading ? 'warning' : modulesError ? 'error' : 'success';
+  const systemStatusLabel =
+    systemHealth.status === 'Unavailable'
+      ? 'System health unavailable'
+      : systemHealth.warnings.length > 0
+        ? `${systemHealth.warnings.length} system warnings`
+        : `Health ${systemHealth.status}`;
+  const systemStatusColor =
+    systemHealth.status === 'Unavailable'
+      ? 'warning'
+      : systemHealth.warnings.length > 0
+        ? 'warning'
+        : 'success';
 
   return (
     <Box
@@ -108,20 +128,20 @@ export const DesktopShell: React.FC = () => {
               fontWeight: 600,
             }}
           >
-            TerraFusion OS 1.0 • Government. Transcended.
+            TerraFusion OS 1.0 • Governed Operator Desktop
           </Typography>
 
           {/* System Health Indicators */}
           <Box sx={{ display: 'flex', gap: 1, mr: 2 }}>
             <Chip
               icon={<Memory />}
-              label={`${systemHealth.memory}MB`}
+              label={systemHealth.memory === null ? 'Memory n/a' : `${systemHealth.memory}%`}
               size='small'
               color={getStatusColor(systemHealth.memoryStatus)}
             />
             <Chip
               icon={<Speed />}
-              label={`${systemHealth.cpu}%`}
+              label={systemHealth.cpu === null ? 'CPU n/a' : `${systemHealth.cpu}%`}
               size='small'
               color={getStatusColor(systemHealth.cpuStatus)}
             />
@@ -198,13 +218,12 @@ export const DesktopShell: React.FC = () => {
                       fontWeight: 500,
                     }}
                   >
-                    50,000+ AI Agents • 379M× Performance • Quantum Computing • Government.
-                    Transcended.
+                    Governed operator desktop for launching live TerraFusion modules, monitoring runtime status, and entering county workflows without synthetic fallback surfaces.
                   </Typography>
                   <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                    <Chip label='Benton County' color='primary' size='small' />
-                    <Chip label='Cowlitz County' color='primary' size='small' />
-                    <Chip label='Yakima County' color='primary' size='small' />
+                    <Chip label='Governed Runtime' color='primary' size='small' />
+                    <Chip label='Registry-backed' color='primary' size='small' />
+                    <Chip label='Operator Workflows' color='primary' size='small' />
                   </Box>
                 </CardContent>
               </Card>
@@ -226,15 +245,17 @@ export const DesktopShell: React.FC = () => {
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Chip
                       icon={<Apps />}
-                      label={`${modules.filter((m) => m.status === 'active').length} Active Modules`}
-                      color='success'
+                      label={moduleStatusLabel}
+                      color={moduleStatusColor}
                       size='small'
+                      data-testid='desktop-shell-module-registry-status'
                     />
                     <Chip
                       icon={<Security />}
-                      label='All Systems Secure'
-                      color='success'
+                      label={systemStatusLabel}
+                      color={systemStatusColor}
                       size='small'
+                      data-testid='desktop-shell-system-health-status'
                     />
                   </Box>
                 </CardContent>
@@ -243,7 +264,12 @@ export const DesktopShell: React.FC = () => {
           </Grid>
 
           {/* Module Launcher */}
-          <ModuleLauncher modules={modules} onModuleLaunch={handleModuleLaunch} />
+          <ModuleLauncher
+            modules={modules}
+            isLoading={modulesLoading}
+            error={modulesError}
+            onModuleLaunch={handleModuleLaunch}
+          />
         </Box>
 
         {/* Window Manager for Active Modules */}

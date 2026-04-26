@@ -14,10 +14,25 @@
  * ======================================================================
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { act } from '@testing-library/react';
 
+const { mockRegressionApi } = vi.hoisted(() => ({
+  mockRegressionApi: {
+    getHistory: vi.fn(),
+    runRegression: vi.fn(),
+  },
+}));
+
+vi.mock('@/services/forge/regressionAPI', () => ({
+  regressionAPI: {
+    getHistory: mockRegressionApi.getHistory,
+    runRegression: mockRegressionApi.runRegression,
+  },
+}));
+
 import { useForgeRegressionStore } from '../../stores/forgeRegressionStore';
+import { REGRESSION_MODELS } from '../../data/forgeRegressionFixtures';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -33,8 +48,33 @@ function getState() {
 
 describe('Phase 16B: forgeRegressionStore Contract', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
+    mockRegressionApi.getHistory.mockResolvedValue({
+      count: 2,
+      results: [
+        {
+          id: 'run-1',
+          dependentVariable: 'sale_price',
+          rSquared: 0.8742,
+          adjustedRSquared: 0.8611,
+          fStatistic: 42.5,
+          sampleSize: 315,
+          createdAt: '2026-04-25T08:00:00Z',
+          createdBy: 'analyst',
+        },
+        {
+          id: 'run-2',
+          dependentVariable: 'market_value',
+          rSquared: 0.9103,
+          adjustedRSquared: 0.9022,
+          fStatistic: 51.7,
+          sampleSize: 412,
+          createdAt: '2026-04-25T09:15:00Z',
+          createdBy: 'analyst',
+        },
+      ],
+    });
     // Reset store between tests
-    const { fetchModels } = getState();
     act(() => {
       useForgeRegressionStore.setState({
         models: [],
@@ -80,28 +120,25 @@ describe('Phase 16B: forgeRegressionStore Contract', () => {
   // fetchModels
   // =========================================================================
   describe('fetchModels', () => {
-    it('loads 3 models from fixtures', async () => {
+    it('does not invent saved models when no governed registry exists', async () => {
       await act(async () => {
         await getState().fetchModels();
       });
-      expect(getState().models).toHaveLength(3);
+      expect(getState().models).toHaveLength(0);
     });
 
-    it('loads 5 run records from fixtures', async () => {
+    it('loads run records from regression history API', async () => {
       await act(async () => {
         await getState().fetchModels();
       });
-      expect(getState().runs).toHaveLength(5);
+      expect(getState().runs).toHaveLength(2);
     });
 
-    it('includes SFR Base Model', async () => {
+    it('surfaces explicit registry-unavailable messaging when history is present', async () => {
       await act(async () => {
         await getState().fetchModels();
       });
-      const sfr = getState().models.find((m) => m.name === 'SFR Base Model');
-      expect(sfr).toBeDefined();
-      expect(sfr!.modelType).toBe('OLS');
-      expect(sfr!.status).toBe('production');
+      expect(getState().error).toBe('Saved regression model registry unavailable; run history only.');
     });
 
     it('sets loading false after fetch', async () => {
@@ -145,8 +182,8 @@ describe('Phase 16B: forgeRegressionStore Contract', () => {
   // =========================================================================
   describe('promoteModel', () => {
     it('changes model status from draft to validated', async () => {
-      await act(async () => {
-        await getState().fetchModels();
+      act(() => {
+        useForgeRegressionStore.setState({ models: REGRESSION_MODELS });
       });
       act(() => {
         getState().promoteModel('m3', 'validated');
@@ -161,8 +198,8 @@ describe('Phase 16B: forgeRegressionStore Contract', () => {
   // =========================================================================
   describe('compareVersions', () => {
     it('computes comparison between two models', async () => {
-      await act(async () => {
-        await getState().fetchModels();
+      act(() => {
+        useForgeRegressionStore.setState({ models: REGRESSION_MODELS });
       });
       act(() => {
         getState().compareVersions('m1-v2', 'm2');
@@ -174,8 +211,8 @@ describe('Phase 16B: forgeRegressionStore Contract', () => {
     });
 
     it('computes metric deltas', async () => {
-      await act(async () => {
-        await getState().fetchModels();
+      act(() => {
+        useForgeRegressionStore.setState({ models: REGRESSION_MODELS });
       });
       act(() => {
         getState().compareVersions('m1-v2', 'm2');
@@ -185,8 +222,8 @@ describe('Phase 16B: forgeRegressionStore Contract', () => {
     });
 
     it('identifies improved and degraded metrics', async () => {
-      await act(async () => {
-        await getState().fetchModels();
+      act(() => {
+        useForgeRegressionStore.setState({ models: REGRESSION_MODELS });
       });
       act(() => {
         getState().compareVersions('m1-v2', 'm2');

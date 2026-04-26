@@ -44,14 +44,14 @@ describe('useSourceDisclosure', () => {
   it('returns fallback when source is live but isStale', () => {
     const result = useSourceDisclosure(makeFresh({ source: 'live', isStale: true, data: {} }));
     expect(result.source).toBe('fallback');
-    expect(result.label).toBe('Demo data');
+    expect(result.label).toBe('Non-live data');
     expect(result.variant).toBe('warning');
   });
 
   it('returns fallback when source is fallback', () => {
     const result = useSourceDisclosure(makeFresh({ source: 'fallback', data: {} }));
     expect(result.source).toBe('fallback');
-    expect(result.label).toBe('Demo data');
+    expect(result.label).toBe('Non-live data');
     expect(result.variant).toBe('warning');
   });
 

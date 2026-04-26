@@ -24,6 +24,7 @@ import {
     type Risk,
 } from '../../api/pilotApi';
 import type { ErrorInfo } from '../../hooks/useErrorHandler';
+import { createStableId } from '../../utils/stableId';
 import { ErrorDisplay } from '../errors/ErrorDisplay';
 import { RiskConfirmationModal } from './RiskConfirmationModal';
 
@@ -98,7 +99,7 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
         }
       } catch (err) {
         if (!isMounted) return;
-        const correlationId = `gate-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+        const correlationId = createStableId('gate');
         setState({
           phase: 'error',
           error: {
@@ -126,7 +127,7 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
         setState({ phase: 'complete' });
       } catch (err) {
         if (!isMounted) return;
-        const correlationId = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+        const correlationId = createStableId('net');
         setState({
           phase: 'error',
           error: {
@@ -222,7 +223,7 @@ export const RiskPolicyGate: React.FC<RiskPolicyGateProps> = ({
           setState({ phase: 'complete' });
         }
       } catch (err) {
-        const correlationId = `net-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+        const correlationId = createStableId('net');
         setState({
           phase: 'error',
           error: {

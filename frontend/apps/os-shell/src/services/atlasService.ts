@@ -588,7 +588,7 @@ async function fetchArcGisParcelRecord(parcelId: string): Promise<ParcelLensReco
   };
 }
 
-const DEFAULT_ARCGIS_SEARCH_FIELD_MAP: ArcGisParcelFieldMap[] = [
+const ARCGIS_SEARCH_FIELD_MAP: ArcGisParcelFieldMap[] = [
   { canonical: 'parcelId', arcgisFields: ['PARCEL_ID', 'Parcel_ID'] },
   { canonical: 'pin', arcgisFields: ['PIN'] },
   { canonical: 'address', arcgisFields: ['SITE_ADDR', 'situs_display', 'SITUS_ADDRESS'] },
@@ -664,7 +664,7 @@ async function fetchArcGisSearchRecords(
         outputFormat: 'geojson',
         spatialReference: 4326,
       },
-      fieldMapping: DEFAULT_ARCGIS_SEARCH_FIELD_MAP,
+      fieldMapping: ARCGIS_SEARCH_FIELD_MAP,
       source: 'Direct Benton ArcGIS parcel query fallback',
     };
   }

@@ -60,8 +60,18 @@ export function getTraceContext(): { countyId: string; actor: string } {
   return { countyId: _countyId, actor: _actor };
 }
 
+let traceSequence = 0;
+
+function createTraceId(prefix: string): string {
+  const uuid = globalThis.crypto?.randomUUID?.();
+  if (uuid) return `${prefix}_${uuid}`;
+
+  traceSequence = (traceSequence + 1) % Number.MAX_SAFE_INTEGER;
+  return `${prefix}_${Date.now().toString(36)}_${traceSequence.toString(36)}`;
+}
+
 function generateId(): string {
-  return `tr_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  return createTraceId('tr');
 }
 
 // ---------------------------------------------------------------------------
@@ -225,7 +235,7 @@ const TRACE_API_PATH = '/api/trace/events';
  * emitToolSucceeded / emitToolFailed so events can be causally linked.
  */
 export function generateCorrelationId(): string {
-  return `cid_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  return createTraceId('cid');
 }
 
 /**

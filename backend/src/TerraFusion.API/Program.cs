@@ -1209,6 +1209,7 @@ if (IsFeatureEnabled(builder.Configuration, "ArcGisSync:Enabled", "TF_ENABLE_ARC
 builder.Services.AddScoped<IAISwarmIntelligenceOrchestrator, AISwarmIntelligenceOrchestrator>();
 builder.Services.AddScoped<IAdvancedSecurityFrameworkService, AdvancedSecurityFrameworkService>();
 // ✅ RE-ENABLED: Registration of workflow and assistant services needed for Controllers
+builder.Services.AddScoped<TerraFusion.Consciousness.Interfaces.IConsciousnessEngine, TerraFusion.Consciousness.Services.ConsciousnessEngineStub>();
 builder.Services.AddScoped<TerraFusion.AI.Services.IWorkflowAutomationService, TerraFusion.AI.Services.WorkflowAutomationService>();
 builder.Services.AddScoped<TerraFusion.AI.Services.IAIAssistantService, TerraFusion.AI.Services.AIAssistantService>();
 // Phase 9B: Muse Mode explain service
@@ -1778,6 +1779,7 @@ builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyCalculationService, Te
 builder.Services.AddScoped<TerraFusion.Levy.Services.IRevenueProjectionService, TerraFusion.Levy.Services.RevenueProjectionService>();
 builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyPropertyAssessmentService, TerraFusion.Levy.Services.LevyPropertyAssessmentService>();
 builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyDataQualityService, TerraFusion.Levy.Services.LevyDataQualityService>();
+builder.Services.AddScoped<TerraFusion.Levy.Services.ILevyRiskScoringService, TerraFusion.Levy.Services.LevyRiskScoringService>();
 // NOTE: Levy certification flow uses TerraFusion.Core.Services.ICertificationService
 // (registered above at the Dais CRUD block). The old TerraFusion.Levy B5
 // certification stub surface has been removed so the runtime no longer carries
@@ -2712,9 +2714,7 @@ levy.MapPost("/scenarios/compare", async (
 //         "/api/modules",
 //         "/api/modules/{name}/status",
 //         "/api/database/status",
-//         "/api/swarm/status",
-//         "/api/swarm/modules",
-//         "/api/swarm/mcp-tools",
+//         "/api/AIAssistant/health",
 //         "/hubs/oscore"
 //     },
 //     timestamp = DateTime.UtcNow
@@ -2743,14 +2743,10 @@ Console.WriteLine("   • GET  /api/modules/{name}/status - Individual module st
 Console.WriteLine("   • POST /api/modules/refresh       - Refresh modules cache");
 Console.WriteLine("   • GET  /api/database/status       - Database connection and initialization status");
 Console.WriteLine("   • POST /api/database/initialize   - Initialize database and seed modules");
-Console.WriteLine("   • GET  /api/swarm/status          - AI swarm status (1,008 agents)");
-Console.WriteLine("   • GET  /api/swarm/modules         - Active AI modules");
-Console.WriteLine("   • GET  /api/swarm/mcp-tools       - MCP tools integration status (87 tools)");
-Console.WriteLine("   • POST /api/swarm/execute         - Execute AI command");
+Console.WriteLine("   • GET  /api/AIAssistant/health    - AI assistant health");
+Console.WriteLine("   • GET  /api/AIAssistant/swarm-status/{countyId} - Governed county assistant status (auth required)");
 Console.WriteLine("   • WS   /hubs/oscore               - SignalR hub for module hot-reload");
 Console.WriteLine("📋 Server configuration: Using ASPNETCORE_URLS environment variable");
-// Console.WriteLine("🧩 Module System: 15 production modules configured");
-// Console.WriteLine("🤖 AI Swarm: 1,008 agents with 87 MCP tools");
 if (startupConnectionString.Contains("Host=", StringComparison.OrdinalIgnoreCase) ||
     string.Equals(builder.Configuration["DatabaseProvider"], "Postgres", StringComparison.OrdinalIgnoreCase))
 {
@@ -2789,8 +2785,7 @@ try
     Console.WriteLine($"🛑 ApplicationStopped event fired at {DateTime.Now:HH:mm:ss.fff}");
   });
 
-  // 🌟 Initialize Ultimate CostForge AI Consciousness
-  // RE-ENABLED: Championship-level 1M agent deployment with quantum Factor 999
+  // Initialize CostForge runtime services required by the active API host.
   await app.Services.InitializeUltimateCostForgeAsync();
 
   // CARD-06: Seed Properties from PacsParcel in Development (idempotent).

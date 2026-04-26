@@ -60,7 +60,7 @@ function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): s
     return 'Snapshot-backed county aggregates: TerraAtlas stats are using bundled county snapshot data, not live backend metrics.';
   }
   if (source === 'fixtures') {
-    return 'Fixture-backed county aggregates: TerraAtlas stats are using test fixture data, not live backend metrics.';
+    return 'Non-live county aggregate mode is active; TerraAtlas stats are not live backend metrics.';
   }
   return null;
 }

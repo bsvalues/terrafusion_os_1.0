@@ -28,7 +28,7 @@ const SUITE_UI: Record<string, { icon: React.ElementType; colorClass: string; bg
 
 const LINEAGE_NODES: LineageNode[] = [
   { id: "cama",        label: "CAMA Import",        suite: "os",      type: "source",    description: "Property characteristics synced from county CAMA system" },
-  { id: "sales",       label: "Sales Data",          suite: "os",      type: "source",    description: "Arms-length qualified sales from MLS and deed records" },
+  { id: "sales",       label: "Sales Data",          suite: "os",      type: "source",    description: "Arms-length qualified sales from deed, recorder, and county sale records" },
   { id: "gis",         label: "GIS Boundaries",      suite: "atlas",   type: "source",    description: "Parcel geometry, neighborhood polygons, flood zones" },
   { id: "calibration", label: "Model Calibration",   suite: "forge",   type: "transform", description: "Regression coefficients fitted per neighborhood" },
   { id: "cost-sched",  label: "Cost Schedules",      suite: "forge",   type: "transform", description: "RCN rates by property class, quality, and year" },

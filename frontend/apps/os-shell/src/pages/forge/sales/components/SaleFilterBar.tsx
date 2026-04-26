@@ -4,6 +4,7 @@
  */
 
 import { useSalesForgeStore } from '../salesForgeStore';
+import { WASHINGTON_COUNTIES } from '../washingtonLaunchApi';
 
 export function SaleFilterBar() {
   const filterForm       = useSalesForgeStore((s) => s.filterForm);
@@ -12,7 +13,10 @@ export function SaleFilterBar() {
   const applyFilters     = useSalesForgeStore((s) => s.applyFilters);
   const clearFilters     = useSalesForgeStore((s) => s.clearFilters);
 
-  const hasFilters = Object.values(committedFilters).some((v) => v != null);
+  const hasFilters = Object.entries(committedFilters).some(([key, value]) => {
+    if (key === 'countyCode') return value !== '005';
+    return value != null;
+  });
 
   const handleKey = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') applyFilters();
@@ -22,11 +26,26 @@ export function SaleFilterBar() {
     <div className="sf-filterbar">
       <div className="sf-filter-row">
         <label className="sf-filter-group">
-          <span className="sf-filter-label">Neighborhood</span>
+          <span className="sf-filter-label">County</span>
+          <select
+            className="sf-filter-input"
+            value={filterForm.countyCode}
+            onChange={(e) => setFilterForm({ countyCode: e.target.value })}
+          >
+            {WASHINGTON_COUNTIES.map((county) => (
+              <option key={county.code} value={county.code}>
+                {county.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="sf-filter-group">
+          <span className="sf-filter-label">TerraFusion neighborhood code</span>
           <input
             className="sf-filter-input"
             type="text"
-            placeholder="e.g. 1A"
+            placeholder="e.g. 12081"
             value={filterForm.hood}
             onChange={(e) => setFilterForm({ hood: e.target.value })}
             onKeyDown={handleKey}

@@ -60,12 +60,12 @@ function MetricRow({ label, valueA, valueB }: MetricRowProps) {
 // Component
 // ============================================================================
 
-// Normalize a model entry from either the live API (flat) or fixture (nested result) shape.
+// Normalize a model entry from supported backend response shapes.
 function extractStats(model: Record<string, unknown>): {
   cod: number; prd: number; prb: number; medianRatio: number; sampleSize: number; iaaoCompliant: boolean;
 } {
-  // Live API shape: { label, cod, prd, prb, medianRatio, sampleSize }
-  // Fixture shape:  { label, params, result: { cod, prd, prb, medianRatio, sampleSize, iaaoCompliant } }
+  // Flat API shape: { label, cod, prd, prb, medianRatio, sampleSize }
+  // Nested API shape: { label, params, result: { cod, prd, prb, medianRatio, sampleSize, iaaoCompliant } }
   const src = (model.result as Record<string, unknown> | undefined) ?? model;
   const cod        = Number(src.cod        ?? 0);
   const prd        = Number(src.prd        ?? 1);
@@ -83,11 +83,14 @@ function extractStats(model: Record<string, unknown>): {
 export function ModelComparisonPanel() {
   const comparison = useForgeStatisticsStore((s) => s.comparison);
   const strata = useForgeStatisticsStore((s) => s.strata);
+  const error = useForgeStatisticsStore((s) => s.error);
 
   if (!comparison) {
     return (
       <div data-testid="model-comparison" className="p-4">
-        <p style={{ color: 'hsl(var(--tf-muted))' }}>No comparison loaded.</p>
+        <p style={{ color: error ? 'hsl(var(--tf-warning-hs) 55%)' : 'hsl(var(--tf-muted))' }}>
+          {error || 'No model comparison was returned by the MassAppraisal API.'}
+        </p>
       </div>
     );
   }
@@ -173,6 +176,11 @@ export function ModelComparisonPanel() {
           <CardTitle>Strata Breakdown</CardTitle>
         </CardHeader>
         <CardContent>
+          {strata.length === 0 && (
+            <div className="rounded-md border px-3 py-6 text-center text-sm" style={{ borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-muted))' }}>
+              No strata records were returned by the MassAppraisal API.
+            </div>
+          )}
           <div data-testid="strata-table" className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

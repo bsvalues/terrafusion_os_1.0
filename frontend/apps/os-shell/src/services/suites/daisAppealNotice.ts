@@ -11,6 +11,7 @@
 
 import { assertWriteLane } from '../writeLane';
 import { emitTraceEvent } from '../terraTrace';
+import { createStableId } from '../../utils/stableId';
 
 // ============================================================================
 // Types
@@ -83,7 +84,7 @@ export interface NoticeQueueResult {
 // ============================================================================
 
 function generateNoticeId(): string {
-  return `NTC-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return createStableId('NTC');
 }
 
 function selectTemplate(hearingStatus: string): string {

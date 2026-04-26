@@ -24,7 +24,7 @@ import {
 } from '@mui/icons-material';
 
 interface Module {
-  id: string;
+  id: string | number;
   name: string;
   displayName: string;
   description?: string;
@@ -36,6 +36,8 @@ interface Module {
 
 interface ModuleLauncherProps {
   modules: Module[];
+  isLoading?: boolean;
+  error?: string | null;
   onModuleLaunch: (moduleId: string) => void;
 }
 
@@ -92,7 +94,87 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export const ModuleLauncher: React.FC<ModuleLauncherProps> = ({ modules, onModuleLaunch }) => {
+export const ModuleLauncher: React.FC<ModuleLauncherProps> = ({
+  modules,
+  isLoading = false,
+  error = null,
+  onModuleLaunch,
+}) => {
+  if (isLoading) {
+    return (
+      <Box sx={{ mt: 4 }}>
+        <Card
+          sx={{
+            background: 'hsl(var(--tf-neutral-hs) 9% / 0.8)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid hsl(var(--tf-primary-hs) 50% / 0.3)',
+          }}
+          data-testid='module-launcher-loading'
+        >
+          <CardContent>
+            <Typography variant='h6' sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+              Loading governed module registry…
+            </Typography>
+            <Typography variant='body2' sx={{ color: 'hsl(var(--tf-neutral-hs) 100% / 0.72)' }}>
+              The desktop is waiting for the live TerraFusion module catalog before it renders launch targets.
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ mt: 4 }}>
+        <Card
+          sx={{
+            background: 'hsl(var(--tf-neutral-hs) 9% / 0.8)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid hsl(var(--tf-danger-hs, 0 80% 55%) / 0.45)',
+          }}
+          data-testid='module-launcher-unavailable'
+        >
+          <CardContent>
+            <Typography variant='h6' sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+              Module registry unavailable.
+            </Typography>
+            <Typography variant='body2' sx={{ color: 'hsl(var(--tf-neutral-hs) 100% / 0.72)', mb: 1 }}>
+              TerraFusion OS is not rendering fallback modules on this desktop because the governed registry could not be loaded.
+            </Typography>
+            <Typography variant='caption' sx={{ color: 'hsl(var(--tf-neutral-hs) 100% / 0.56)' }}>
+              {error}
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
+    );
+  }
+
+  if (modules.length === 0) {
+    return (
+      <Box sx={{ mt: 4 }}>
+        <Card
+          sx={{
+            background: 'hsl(var(--tf-neutral-hs) 9% / 0.8)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid hsl(var(--tf-primary-hs) 50% / 0.3)',
+          }}
+          data-testid='module-launcher-empty'
+        >
+          <CardContent>
+            <Typography variant='h6' sx={{ color: 'white', fontWeight: 'bold', mb: 1 }}>
+              No governed modules available.
+            </Typography>
+            <Typography variant='body2' sx={{ color: 'hsl(var(--tf-neutral-hs) 100% / 0.72)' }}>
+              The live registry returned no launchable modules for this desktop session.
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
+    );
+  }
+
   const tier1Modules = modules.filter((m) => m.tier === 'Tier1');
   const tier2Modules = modules.filter((m) => m.tier === 'Tier2');
   const tier3Modules = modules.filter((m) => m.tier === 'Tier3');
@@ -112,7 +194,7 @@ export const ModuleLauncher: React.FC<ModuleLauncherProps> = ({ modules, onModul
             boxShadow: '0 8px 32px color-mix(in srgb, var(--tf-text-primary) 30%, transparent)',
           },
         }}
-        onClick={() => onModuleLaunch(module.id)}
+        onClick={() => onModuleLaunch(String(module.id))}
       >
         <CardContent sx={{ textAlign: 'center', p: 2 }}>
           <Box sx={{ mb: 2 }}>
@@ -199,4 +281,3 @@ export const ModuleLauncher: React.FC<ModuleLauncherProps> = ({ modules, onModul
     </Box>
   );
 };
-

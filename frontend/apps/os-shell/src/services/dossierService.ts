@@ -213,8 +213,14 @@ async function dossierPost<T>(path: string, body: unknown): Promise<T> {
 }
 
 /** Generate a correlation ID matching the CostForge pattern. */
+let dossierCorrelationSequence = 0;
+
 function generateCorrelationId(): string {
-  return `tf-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+  const uuid = globalThis.crypto?.randomUUID?.();
+  if (uuid) return `tf-${uuid}`;
+
+  dossierCorrelationSequence = (dossierCorrelationSequence + 1) % Number.MAX_SAFE_INTEGER;
+  return `tf-${Date.now().toString(36)}-${dossierCorrelationSequence.toString(36)}`;
 }
 
 /**

@@ -11,6 +11,7 @@
 
 import { assertWriteLane } from '../writeLane';
 import { emitTraceEvent } from '../terraTrace';
+import { createStableId } from '../../utils/stableId';
 import type { PacketMetadata } from './packetComposition';
 
 // ============================================================================
@@ -52,7 +53,7 @@ export interface AlignmentResult {
 // ============================================================================
 
 function generateNarrativeId(): string {
-  return `nar_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  return createStableId('nar');
 }
 
 // ============================================================================

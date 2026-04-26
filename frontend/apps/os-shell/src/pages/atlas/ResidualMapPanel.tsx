@@ -39,7 +39,17 @@ export function ResidualMapPanel() {
   if (!residualData) {
     return (
       <div data-testid="residual-map" className="p-4">
-        <span style={{ color: 'hsl(var(--tf-muted))' }}>No residual data available</span>
+        <div
+          data-testid="residual-map-unavailable"
+          className="rounded border px-4 py-3 text-sm"
+          style={{
+            borderColor: 'hsl(var(--tf-warning, 40 90% 60%) / 0.35)',
+            background: 'hsl(var(--tf-warning, 40 90% 60%) / 0.08)',
+            color: 'hsl(var(--tf-fg))',
+          }}
+        >
+          Residual map unavailable. Atlas does not have a governed residual-map feed for this panel, and the legacy fixture bundle is not rendered here.
+        </div>
       </div>
     );
   }

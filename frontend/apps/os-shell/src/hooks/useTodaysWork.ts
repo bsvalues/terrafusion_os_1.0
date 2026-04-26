@@ -15,6 +15,8 @@ export interface TodaysWorkItem {
   category: 'workbench' | 'suite' | 'os-feature';
 }
 
+export type TodaysWorkReadState = 'loading' | 'live' | 'unavailable';
+
 type TodaysWorkSource = Partial<QueueWorkItem> & {
   id?: string;
   taskType?: string;
@@ -138,49 +140,16 @@ export function mapQueueItemsToTodaysWork(items: readonly TodaysWorkSource[]): T
     }));
 }
 
-/**
- * SAMPLE_TASKS — bounded sample fallback for the Today's Work panel.
- * Renders only when the backend queue is unavailable, so the home scene
- * stays populated in dev/offline mode. The DemoDataBanner discloses the
- * fixture origin to operators.
- */
-export const SAMPLE_TASKS: TodaysWorkItem[] = [
-  {
-    id: 'sample-task-1',
-    title: 'Review BC-DEMO-001',
-    subtitle: 'Desk Review — Kennewick',
-    route: 'workbench',
-    category: 'workbench',
-  },
-  {
-    id: 'sample-task-2',
-    title: 'Inspect BC-DEMO-002',
-    subtitle: 'Field Inspection — Richland',
-    route: 'workbench',
-    category: 'workbench',
-  },
-  {
-    id: 'sample-task-3',
-    title: 'Prepare appeal for BC-DEMO-003',
-    subtitle: 'Appeal Preparation — West Pasco',
-    route: 'terradais',
-    category: 'suite',
-  },
-];
-
 export function useTodaysWork(): {
   tasks: TodaysWorkItem[];
   loading: boolean;
   error: string | null;
-  /** True when returning sample fixtures instead of live backend data */
-  isSampleData: boolean;
+  readState: TodaysWorkReadState;
 } {
   const [tasks, setTasks] = useState<TodaysWorkItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // Provenance — true while no live queue read has succeeded yet, so the
-  // DemoDataBanner discloses that the panel is showing fixture-equivalent state.
-  const [isSampleData, setIsSampleData] = useState(true);
+  const [readState, setReadState] = useState<TodaysWorkReadState>('loading');
 
   useEffect(() => {
     let cancelled = false;
@@ -191,15 +160,12 @@ export function useTodaysWork(): {
         if (cancelled) return;
 
         setTasks(mapQueueItemsToTodaysWork(queueItems as TodaysWorkSource[]));
-        setIsSampleData(false);
+        setReadState('live');
         setError(null);
       } catch (cause) {
         if (cancelled) return;
-        // Live queue unavailable — surface unavailable state explicitly.
-        // SAMPLE_TASKS is defined for design-time reference, but we do NOT
-        // pre-seed the panel with sample data; banner discloses fixture origin.
         setTasks([]);
-        setIsSampleData(true);
+        setReadState('unavailable');
         setError(cause instanceof Error ? cause.message : 'Today\'s Work queue unavailable.');
       } finally {
         if (!cancelled) {
@@ -215,5 +181,5 @@ export function useTodaysWork(): {
     };
   }, []);
 
-  return { tasks, loading, error, isSampleData };
+  return { tasks, loading, error, readState };
 }

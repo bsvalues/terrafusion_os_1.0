@@ -354,35 +354,13 @@ export class HealthCheckService {
     connectionString: string;
     maxConnections: number;
   }): Promise<DatabaseHealthCheck> {
-    // In production, this would execute actual database health queries
-    // For now, simulating realistic database health checks
-
-    try {
-      const startTime = Date.now();
-
-      // Simulate database health check query
-      // In production: SELECT 1 (PostgreSQL), db.ping() (MongoDB), PING (Redis)
-      await this.sleep(Math.random() * 10 + 2); // 2-12ms simulated query time
-
-      const queryTimeout = Date.now() - startTime;
-      const isHealthy = queryTimeout < 50; // Database should respond within 50ms
-
-      return {
-        connectionString: this.maskConnectionString(db.connectionString),
-        queryTimeout,
-        maxConnections: db.maxConnections,
-        currentConnections: Math.floor(Math.random() * (db.maxConnections * 0.8)), // Simulate 0-80% connection usage
-        isConnected: isHealthy,
-      };
-    } catch (error) {
-      return {
-        connectionString: this.maskConnectionString(db.connectionString),
-        queryTimeout: 0,
-        maxConnections: db.maxConnections,
-        currentConnections: 0,
-        isConnected: false,
-      };
-    }
+    return {
+      connectionString: this.maskConnectionString(db.connectionString),
+      queryTimeout: 0,
+      maxConnections: db.maxConnections,
+      currentConnections: 0,
+      isConnected: false,
+    };
   }
 
   /**
@@ -424,7 +402,7 @@ export class HealthCheckService {
   private calculateServiceUptime(serviceName: string): number {
     const history = this.healthHistory.get(serviceName);
     if (!history || history.length === 0) {
-      return 100; // No history means no downtime detected yet
+      return 0;
     }
 
     const healthyChecks = history.filter((h) => h.isHealthy).length;
@@ -596,10 +574,10 @@ export class HealthCheckService {
 }
 
 // =============================
-// Default Configuration
+// Base Configuration
 // =============================
 
-export const DEFAULT_HEALTH_CHECK_CONFIG: HealthCheckConfig = {
+export const HEALTH_CHECK_CONFIG_BASE: HealthCheckConfig = {
   services: [
     {
       name: 'researchSession',
@@ -622,17 +600,6 @@ export const DEFAULT_HEALTH_CHECK_CONFIG: HealthCheckConfig = {
         retryAttempts: 3,
       },
       criticalityLevel: 'high',
-    },
-    {
-      name: 'consciousnessParameter',
-      endpoint: {
-        url: '/api/consciousness-parameters/health',
-        method: 'GET',
-        expectedStatusCode: 200,
-        timeout: 5000,
-        retryAttempts: 3,
-      },
-      criticalityLevel: 'critical',
     },
     {
       name: 'statisticalAnalysis',

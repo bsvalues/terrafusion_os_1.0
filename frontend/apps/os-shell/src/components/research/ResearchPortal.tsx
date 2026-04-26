@@ -9,7 +9,7 @@
  * 1. QuantumResearchDashboard - 3D quantum visualization with property space exploration
  * 2. ConsciousnessParameterTuningPanel - Real-time AI consciousness control with predictive analytics
  * 3. InfinitePrecisionAnalyticsPanel - Statistical analysis workbench with correlation matrices
- * 4. AISwarmManagementPanel - 50K+ AI agent orchestration with swarm intelligence
+ * 4. AISwarmManagementPanel - county-scoped swarm health and evidence status
  * 5. StatisticalValidationWorkbench - IAAO compliance validation with certification tracking
  *
  * Features:
@@ -30,7 +30,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AISwarmManagementPanel } from './AISwarmManagementPanel';
+import { AISwarmManagementPanel, type ResearchSwarmStatus } from './AISwarmManagementPanel';
 import { ConsciousnessParameterTuningPanel } from './ConsciousnessParameterTuningPanel';
 import { InfinitePrecisionAnalyticsPanel } from './InfinitePrecisionAnalyticsPanel';
 import { QuantumResearchDashboard } from './QuantumResearchDashboard';
@@ -68,10 +68,11 @@ interface ResearchSession {
   };
 
   aiSwarmMetrics: {
+    availability: 'live' | 'unavailable';
     activeAgents: number;
     coordinationMode: string;
     swarmEfficiency: number;
-    avgResponseTime: number;
+    avgResponseTime: number | null;
   };
 
   statisticalContext: {
@@ -127,6 +128,7 @@ interface ResearchIdentity {
   researcherId: string;
   researcherName: string;
   institutionName: string;
+  countyId: string | null;
 }
 
 function formatResearcherName(userId: string | null): string {
@@ -160,13 +162,14 @@ function buildResearchSession(identity: ResearchIdentity, sessionId: string, sta
       optimizationFactor: 949,
     },
     aiSwarmMetrics: {
-      activeAgents: 50000,
-      coordinationMode: 'quantum',
-      swarmEfficiency: 0.985,
-      avgResponseTime: 8.5,
+      availability: 'unavailable',
+      activeAgents: 0,
+      coordinationMode: 'Unavailable',
+      swarmEfficiency: 0,
+      avgResponseTime: null,
     },
     statisticalContext: {
-      selectedCounty: 'king',
+      selectedCounty: identity.countyId ?? 'unassigned',
       assessmentPeriod: '2024',
       propertyType: 'residential',
       certificationTarget: 'championship',
@@ -199,6 +202,7 @@ export const ResearchPortal: React.FC = () => {
       researcherId: researcherId ?? 'authenticated-researcher',
       researcherName: formatResearcherName(researcherId ?? sessionIdentity.userId),
       institutionName: formatInstitutionName(countyId),
+      countyId,
     };
   }, [auth.countyId, auth.userId, sessionIdentity.countyId, sessionIdentity.userId]);
 
@@ -400,6 +404,31 @@ export const ResearchPortal: React.FC = () => {
     [session]
   );
 
+  const handleSwarmStatusChange = useCallback((swarmStatus: ResearchSwarmStatus | null) => {
+    setSession((prev) =>
+      prev
+        ? {
+            ...prev,
+            aiSwarmMetrics: swarmStatus
+              ? {
+                  availability: 'live',
+                  activeAgents: swarmStatus.activeAgents,
+                  coordinationMode: swarmStatus.swarmActivity,
+                  swarmEfficiency: swarmStatus.accuracyScore,
+                  avgResponseTime: swarmStatus.responseTime,
+                }
+              : {
+                  availability: 'unavailable',
+                  activeAgents: 0,
+                  coordinationMode: 'Unavailable',
+                  swarmEfficiency: 0,
+                  avgResponseTime: null,
+                },
+          }
+        : prev,
+    );
+  }, []);
+
   // ─────────────────────────────────────────────────────────────────────────────
   // EXPORT FUNCTIONALITY
   // ─────────────────────────────────────────────────────────────────────────────
@@ -470,7 +499,7 @@ export const ResearchPortal: React.FC = () => {
         name: 'Swarm Management',
         icon: '🐝',
         shortcut: 'Ctrl+4',
-        description: '50K+ AI agent orchestration',
+        description: 'County-scoped swarm health and evidence status',
       },
       {
         id: 'statistical-validation' as ResearchPanelType,
@@ -709,7 +738,12 @@ export const ResearchPortal: React.FC = () => {
           <ConsciousnessParameterTuningPanel onParameterChange={handleParameterChange} />
         )}
         {activePanel === 'analytics-workbench' && <InfinitePrecisionAnalyticsPanel />}
-        {activePanel === 'swarm-management' && <AISwarmManagementPanel />}
+        {activePanel === 'swarm-management' && (
+          <AISwarmManagementPanel
+            countyId={auth.countyId ?? sessionIdentity.countyId ?? 'benton'}
+            onStatusChange={handleSwarmStatusChange}
+          />
+        )}
         {activePanel === 'statistical-validation' && <StatisticalValidationWorkbench />}
       </div>
 
@@ -731,7 +765,9 @@ export const ResearchPortal: React.FC = () => {
           <span>
             Active Agents:{' '}
             <strong style={{ color: 'var(--tf-transcend-cyan)' }}>
-              {session?.aiSwarmMetrics.activeAgents.toLocaleString() || '0'}
+              {session?.aiSwarmMetrics.availability === 'live'
+                ? session.aiSwarmMetrics.activeAgents.toLocaleString()
+                : 'Unavailable'}
             </strong>
           </span>
           <span>
@@ -743,7 +779,9 @@ export const ResearchPortal: React.FC = () => {
           <span>
             Swarm Efficiency:{' '}
             <strong style={{ color: 'var(--tf-transcend-cyan)' }}>
-              {((session?.aiSwarmMetrics.swarmEfficiency || 0) * 100).toFixed(1)}%
+              {session?.aiSwarmMetrics.availability === 'live'
+                ? `${((session.aiSwarmMetrics.swarmEfficiency || 0) * 100).toFixed(1)}%`
+                : 'Unavailable'}
             </strong>
           </span>
           <span>

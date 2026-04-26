@@ -203,7 +203,7 @@ function AtlasMapSurface({
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     GeoForgeV2Map = require('../geo/v2/GeoForgeV2Map').GeoForgeV2Map;
   } catch {
-    return <div data-testid="mock-map" style={{ width: '100%', height: '100%', background: '#0a0e1a' }} />;
+    return <div data-testid="map-unavailable" style={{ width: '100%', height: '100%', background: '#0a0e1a' }} />;
   }
 
   return (

@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Activity, AlertTriangle, CheckCircle, Database, Shield, Trophy, Zap } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 interface ComplianceStatus {
   isCompliant: boolean;
@@ -15,14 +15,14 @@ interface ComplianceDashboard {
   overallCompliant: boolean;
   overallScore: number;
   lastUpdated: string;
-  fismaStatus: ComplianceStatus;
-  wcagStatus: ComplianceStatus;
-  countyStatus: ComplianceStatus;
-  aiAgentStatus: ComplianceStatus;
+  fismaStatus?: ComplianceStatus;
+  wcagStatus?: ComplianceStatus;
+  countyStatus?: ComplianceStatus;
+  aiAgentStatus?: ComplianceStatus;
   totalViolations: number;
   criticalViolations: number;
-  certificationLevel: string;
-  governmentClassification: string;
+  certificationLevel?: string;
+  governmentClassification?: string;
 }
 
 interface CertificationStatus {
@@ -36,153 +36,120 @@ interface CertificationStatus {
   governmentEndorsement: string;
 }
 
-/**
- * 🏛️ TerraFusion Elite Government Compliance Dashboard - TIER 3 Championship Excellence
- * Real-time compliance monitoring for FISMA, WCAG 2.1 AA, Washington State multi-county deployment
- * Supporting 50,000+ AI agents with government-grade compliance validation
- * "Government. Transcended." - Infinite scale compliance for championship-level operations
- */
+const COMPLIANCE_DASHBOARD_URL = '/api/compliance/dashboard';
+const CERTIFICATION_STATUS_URL = '/api/compliance/certification';
+
 export const GovernmentComplianceDashboard: React.FC = () => {
   const [complianceDashboard, setComplianceDashboard] = useState<ComplianceDashboard | null>(null);
   const [certificationStatus, setCertificationStatus] = useState<CertificationStatus | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load compliance dashboard data
-  const loadComplianceDashboard = async () => {
+  const loadCertificationStatus = useCallback(async () => {
+    const response = await fetch(CERTIFICATION_STATUS_URL, {
+      headers: { Accept: 'application/json' },
+    });
+
+    if (!response.ok) {
+      setCertificationStatus(null);
+      return;
+    }
+
+    const data = await response.json() as CertificationStatus;
+    setCertificationStatus(data);
+  }, []);
+
+  const loadComplianceDashboard = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
 
-      // Simulate API call to compliance dashboard
-      // In real implementation: const response = await fetch('/api/compliance/dashboard');
+      const response = await fetch(COMPLIANCE_DASHBOARD_URL, {
+        headers: { Accept: 'application/json' },
+      });
 
-      // Mock compliance data showcasing TIER 3 excellence
-      const mockDashboard: ComplianceDashboard = {
-        overallCompliant: true,
-        overallScore: 0.987,
-        lastUpdated: new Date().toISOString(),
-        fismaStatus: {
-          isCompliant: true,
-          score: 0.995,
-          status: 'High Assurance',
-          lastChecked: new Date().toISOString(),
-        },
-        wcagStatus: {
-          isCompliant: true,
-          score: 1.0,
-          status: 'AA Compliant',
-          lastChecked: new Date().toISOString(),
-        },
-        countyStatus: {
-          isCompliant: true,
-          score: 0.984,
-          status: 'Multi-County Compliant',
-          lastChecked: new Date().toISOString(),
-        },
-        aiAgentStatus: {
-          isCompliant: true,
-          score: 0.992,
-          status: 'Swarm Compliant',
-          lastChecked: new Date().toISOString(),
-        },
-        totalViolations: 0,
-        criticalViolations: 0,
-        certificationLevel: 'Championship Excellence',
-        governmentClassification: 'GOVERNMENT TRANSCENDED',
-      };
+      if (!response.ok) {
+        throw new Error(`Compliance API unavailable: ${response.status}`);
+      }
 
-      setComplianceDashboard(mockDashboard);
+      const dashboard = await response.json() as ComplianceDashboard;
+      setComplianceDashboard(dashboard);
       setLastRefresh(new Date());
-    } catch (error) {
-      console.error('[Compliance Dashboard] Failed to load dashboard:', error);
+      await loadCertificationStatus();
+    } catch (err) {
+      setComplianceDashboard(null);
+      setCertificationStatus(null);
+      setError(err instanceof Error ? err.message : 'Compliance evidence is unavailable.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [loadCertificationStatus]);
 
-  // Load certification status
-  const loadCertificationStatus = async () => {
-    try {
-      // Mock certification data
-      const mockCertification: CertificationStatus = {
-        certificationLevel: 'Championship Excellence',
-        issuedDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-        expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-        certifyingAuthority: 'Washington State Government Technology Services',
-        certificationId: 'TF-ELITE-2025-001',
-        capabilitiesCertified: [
-          '50,000+ AI Agent Coordination',
-          '39 County Multi-Jurisdiction Support',
-          'Real-time Compliance Monitoring',
-          'Government-Grade Security',
-          'Infinite Scale Architecture',
-          'Autonomous Self-Healing',
-          'Championship Performance',
-        ],
-        nextReview: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString(),
-        governmentEndorsement:
-          'Government. Transcended. - Elite certification for championship-level operations',
-      };
-
-      setCertificationStatus(mockCertification);
-    } catch (error) {
-      console.error('[Compliance Dashboard] Failed to load certification:', error);
-    }
-  };
-
-  // Auto-refresh compliance data
   useEffect(() => {
-    loadComplianceDashboard();
-    loadCertificationStatus();
+    void loadComplianceDashboard();
 
-    if (autoRefresh) {
-      const interval = setInterval(() => {
-        loadComplianceDashboard();
-      }, 30000); // Refresh every 30 seconds
-
-      return () => clearInterval(interval);
+    if (!autoRefresh) {
+      return undefined;
     }
-  }, [autoRefresh]);
 
-  // Compliance status indicator component
+    const interval = setInterval(() => {
+      void loadComplianceDashboard();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [autoRefresh, loadComplianceDashboard]);
+
   const ComplianceStatusIndicator = ({
     status,
     label,
   }: {
-    status: ComplianceStatus;
+    status: ComplianceStatus | undefined;
     label: string;
   }) => {
-    const getStatusColor = (score: number) => {
-      if (score >= 0.98) return 'text-[var(--tf-accent-success)]';
-      if (score >= 0.95) return 'text-[var(--tf-transcend-highlight)]';
-      if (score >= 0.9) return 'text-yellow-500';
-      return 'text-red-500';
-    };
-
-    const getStatusIcon = (isCompliant: boolean) => {
-      return isCompliant ? (
-        <CheckCircle className='w-5 h-5 text-[var(--tf-accent-success)]' />
-      ) : (
-        <AlertTriangle className='w-5 h-5 text-red-500' />
+    if (!status) {
+      return (
+        <div className='flex items-center justify-between p-4 bg-white/5 rounded-lg border border-yellow-500/20'>
+          <div className='flex items-center gap-3'>
+            <AlertTriangle className='w-5 h-5 text-yellow-500' />
+            <div>
+              <h4 className='font-semibold text-white'>{label}</h4>
+              <p className='text-sm text-gray-400'>No evidence returned by compliance API</p>
+            </div>
+          </div>
+          <Badge variant='outline' className='text-yellow-400 border-yellow-500/30'>
+            Unavailable
+          </Badge>
+        </div>
       );
-    };
+    }
+
+    const scorePercent = status.score * 100;
+    const scoreColor =
+      scorePercent >= 98
+        ? 'text-[var(--tf-accent-success)]'
+        : scorePercent >= 90
+          ? 'text-yellow-500'
+          : 'text-red-500';
 
     return (
       <div className='flex items-center justify-between p-4 bg-white/5 rounded-lg border border-[var(--tf-transcend-highlight)]/20'>
         <div className='flex items-center gap-3'>
-          {getStatusIcon(status.isCompliant)}
+          {status.isCompliant ? (
+            <CheckCircle className='w-5 h-5 text-[var(--tf-accent-success)]' />
+          ) : (
+            <AlertTriangle className='w-5 h-5 text-red-500' />
+          )}
           <div>
             <h4 className='font-semibold text-white'>{label}</h4>
             <p className='text-sm text-gray-400'>{status.status}</p>
           </div>
         </div>
         <div className='text-right'>
-          <div className={`text-xl font-mono ${getStatusColor(status.score)}`}>
-            {(status.score * 100).toFixed(1)}%
-          </div>
+          <div className={`text-xl font-mono ${scoreColor}`}>{scorePercent.toFixed(1)}%</div>
           <div className='text-xs text-gray-500'>
-            {new Date(status.lastChecked).toLocaleTimeString()}
+            {new Date(status.lastChecked).toLocaleString()}
           </div>
         </div>
       </div>
@@ -191,7 +158,6 @@ export const GovernmentComplianceDashboard: React.FC = () => {
 
   return (
     <div className='tf-compliance-dashboard space-y-6 p-6'>
-      {/* Header Section */}
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-4'>
           <Shield className='w-8 h-8 text-[var(--tf-transcend-highlight)]' />
@@ -200,7 +166,7 @@ export const GovernmentComplianceDashboard: React.FC = () => {
               GOVERNMENT COMPLIANCE DASHBOARD
             </h1>
             <p className='text-lg text-[var(--tf-transcend-highlight)]'>
-              TIER 3 Championship Excellence - Government. Transcended.
+              Evidence-backed compliance status from governed API responses.
             </p>
           </div>
         </div>
@@ -216,7 +182,7 @@ export const GovernmentComplianceDashboard: React.FC = () => {
           </Button>
 
           <Button
-            onClick={loadComplianceDashboard}
+            onClick={() => void loadComplianceDashboard()}
             disabled={loading}
             size='sm'
             className='bg-gradient-to-r from-[var(--tf-network-blue)] via-[var(--tf-transcend-highlight)] to-[var(--tf-accent-success)] text-white'
@@ -226,11 +192,27 @@ export const GovernmentComplianceDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Overall Status Card */}
+      {error && (
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-yellow-500/20'>
+          <CardContent className='p-6'>
+            <div className='flex items-start gap-3'>
+              <AlertTriangle className='w-6 h-6 text-yellow-500 mt-1' />
+              <div>
+                <h2 className='text-xl font-semibold text-white'>Compliance evidence unavailable</h2>
+                <p className='text-sm text-gray-400 mt-1'>{error}</p>
+                <p className='text-sm text-gray-400 mt-2'>
+                  This surface will not report compliance, certification, or county accreditation
+                  claims without a successful governed API response.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {complianceDashboard && (
-        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20 relative overflow-hidden'>
-          <div className='tf-scan-line animate-tf-scan absolute inset-0 bg-gradient-to-r from-transparent via-[var(--tf-transcend-highlight)]/20 to-transparent' />
-          <CardContent className='p-6 relative z-10'>
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
+          <CardContent className='p-6'>
             <div className='text-center space-y-4'>
               <div className='flex items-center justify-center gap-3'>
                 <Trophy className='w-12 h-12 text-[var(--tf-accent-success)]' />
@@ -238,7 +220,9 @@ export const GovernmentComplianceDashboard: React.FC = () => {
                   <h2 className='text-4xl font-bold text-[var(--tf-accent-success)]'>
                     {(complianceDashboard.overallScore * 100).toFixed(1)}%
                   </h2>
-                  <p className='text-xl text-[var(--tf-transcend-highlight)]'>{complianceDashboard.certificationLevel}</p>
+                  <p className='text-xl text-[var(--tf-transcend-highlight)]'>
+                    {complianceDashboard.certificationLevel ?? 'Certification level not returned'}
+                  </p>
                 </div>
               </div>
 
@@ -250,12 +234,14 @@ export const GovernmentComplianceDashboard: React.FC = () => {
                     : 'text-lg px-6 py-2'
                 }
               >
-                {complianceDashboard.overallCompliant ? '✅ FULLY COMPLIANT' : '⚠️ NON-COMPLIANT'}
+                {complianceDashboard.overallCompliant ? 'COMPLIANT' : 'NON-COMPLIANT'}
               </Badge>
 
-              <div className='text-[var(--tf-transcend-highlight)] font-semibold text-lg'>
-                {complianceDashboard.governmentClassification}
-              </div>
+              {complianceDashboard.governmentClassification && (
+                <div className='text-[var(--tf-transcend-highlight)] font-semibold text-lg'>
+                  {complianceDashboard.governmentClassification}
+                </div>
+              )}
 
               <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mt-6'>
                 <div className='text-center'>
@@ -271,8 +257,10 @@ export const GovernmentComplianceDashboard: React.FC = () => {
                   <div className='text-sm text-gray-400'>Critical Violations</div>
                 </div>
                 <div className='text-center'>
-                  <div className='text-2xl font-mono text-[var(--tf-accent-success)]'>39</div>
-                  <div className='text-sm text-gray-400'>Counties Compliant</div>
+                  <div className='text-2xl font-mono text-[var(--tf-accent-success)]'>
+                    {new Date(complianceDashboard.lastUpdated).toLocaleTimeString()}
+                  </div>
+                  <div className='text-sm text-gray-400'>Evidence Timestamp</div>
                 </div>
               </div>
             </div>
@@ -280,150 +268,62 @@ export const GovernmentComplianceDashboard: React.FC = () => {
         </Card>
       )}
 
-      {/* Compliance Standards Grid */}
-      {complianceDashboard && (
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
-            <CardHeader>
-              <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
-                <Shield className='w-5 h-5' />
-                FISMA Security Compliance
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ComplianceStatusIndicator
-                status={complianceDashboard.fismaStatus}
-                label='Federal Security Standards'
-              />
-              <div className='mt-4 space-y-2 text-sm'>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Access Control (AC)</span>
-                  <span className='text-[var(--tf-accent-success)]'>✓ Compliant</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Audit & Accountability (AU)</span>
-                  <span className='text-[var(--tf-accent-success)]'>✓ Compliant</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Configuration Management (CM)</span>
-                  <span className='text-[var(--tf-accent-success)]'>✓ Compliant</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>System Protection (SC)</span>
-                  <span className='text-[var(--tf-accent-success)]'>✓ Compliant</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
+          <CardHeader>
+            <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
+              <Shield className='w-5 h-5' />
+              FISMA Security Compliance
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ComplianceStatusIndicator status={complianceDashboard?.fismaStatus} label='Federal Security Standards' />
+          </CardContent>
+        </Card>
 
-          <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
-            <CardHeader>
-              <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
-                <Activity className='w-5 h-5' />
-                WCAG 2.1 AA Accessibility
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ComplianceStatusIndicator
-                status={complianceDashboard.wcagStatus}
-                label='Web Accessibility Standards'
-              />
-              <div className='mt-4 space-y-2 text-sm'>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Perceivable (13 criteria)</span>
-                  <span className='text-[var(--tf-accent-success)]'>✓ 13/13</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Operable (9 criteria)</span>
-                  <span className='text-[var(--tf-accent-success)]'>✓ 9/9</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Understandable (6 criteria)</span>
-                  <span className='text-[var(--tf-accent-success)]'>✓ 6/6</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Robust (2 criteria)</span>
-                  <span className='text-[var(--tf-accent-success)]'>✓ 2/2</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
+          <CardHeader>
+            <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
+              <Activity className='w-5 h-5' />
+              WCAG Accessibility
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ComplianceStatusIndicator status={complianceDashboard?.wcagStatus} label='Web Accessibility Standards' />
+          </CardContent>
+        </Card>
 
-          <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
-            <CardHeader>
-              <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
-                <Database className='w-5 h-5' />
-                Washington State Multi-County
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ComplianceStatusIndicator
-                status={complianceDashboard.countyStatus}
-                label='39 County Deployment'
-              />
-              <div className='mt-4 space-y-2 text-sm'>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Data Sovereignty</span>
-                  <span className='text-[var(--tf-accent-success)]'>✓ Protected</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Public Records (RCW 42.56)</span>
-                  <span className='text-[var(--tf-accent-success)]'>✓ Compliant</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Open Government (RCW 42.30)</span>
-                  <span className='text-[var(--tf-accent-success)]'>✓ Compliant</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Counties Deployed</span>
-                  <span className='text-[var(--tf-accent-success)]'>✓ 39/39</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
+          <CardHeader>
+            <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
+              <Database className='w-5 h-5' />
+              County Accreditation
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ComplianceStatusIndicator status={complianceDashboard?.countyStatus} label='County Deployment Evidence' />
+          </CardContent>
+        </Card>
 
-          <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
-            <CardHeader>
-              <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
-                <Zap className='w-5 h-5' />
-                AI Agent Swarm Compliance
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ComplianceStatusIndicator
-                status={complianceDashboard.aiAgentStatus}
-                label='50,000+ AI Agents'
-              />
-              <div className='mt-4 space-y-2 text-sm'>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Ethics Score</span>
-                  <span className='text-[var(--tf-accent-success)]'>99.2%</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Transparency Score</span>
-                  <span className='text-[var(--tf-accent-success)]'>98.8%</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Bias Monitoring</span>
-                  <span className='text-[var(--tf-accent-success)]'>99.5%</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-400'>Active Agents</span>
-                  <span className='text-[var(--tf-accent-success)]'>50,123/50,247</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+        <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
+          <CardHeader>
+            <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
+              <Zap className='w-5 h-5' />
+              AI Agent Governance
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ComplianceStatusIndicator status={complianceDashboard?.aiAgentStatus} label='Agent Governance Evidence' />
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Government Certification Status */}
       {certificationStatus && (
         <Card className='tf-glass-card bg-white/10 backdrop-blur-lg border border-[var(--tf-transcend-highlight)]/20'>
           <CardHeader>
             <CardTitle className='text-[var(--tf-transcend-highlight)] flex items-center gap-2'>
               <Trophy className='w-6 h-6 text-[var(--tf-accent-success)]' />
-              Government Excellence Certification
+              Government Certification Evidence
             </CardTitle>
           </CardHeader>
           <CardContent className='space-y-6'>
@@ -445,7 +345,9 @@ export const GovernmentComplianceDashboard: React.FC = () => {
                   </div>
                   <div className='flex justify-between'>
                     <span className='text-gray-400'>Authority:</span>
-                    <span className='text-[var(--tf-accent-success)]'>WA State GTS</span>
+                    <span className='text-[var(--tf-accent-success)]'>
+                      {certificationStatus.certifyingAuthority}
+                    </span>
                   </div>
                   <div className='flex justify-between'>
                     <span className='text-gray-400'>Next Review:</span>
@@ -459,14 +361,12 @@ export const GovernmentComplianceDashboard: React.FC = () => {
               <div className='space-y-3'>
                 <h4 className='font-semibold text-[var(--tf-transcend-highlight)]'>Certified Capabilities</h4>
                 <div className='grid grid-cols-1 gap-1'>
-                  {certificationStatus.capabilitiesCertified
-                    .slice(0, 4)
-                    .map((capability, index) => (
-                      <div key={index} className='flex items-center gap-2 text-sm'>
-                        <CheckCircle className='w-4 h-4 text-[var(--tf-accent-success)]' />
-                        <span className='text-gray-300'>{capability}</span>
-                      </div>
-                    ))}
+                  {certificationStatus.capabilitiesCertified.map((capability) => (
+                    <div key={capability} className='flex items-center gap-2 text-sm'>
+                      <CheckCircle className='w-4 h-4 text-[var(--tf-accent-success)]' />
+                      <span className='text-gray-300'>{capability}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -480,11 +380,10 @@ export const GovernmentComplianceDashboard: React.FC = () => {
         </Card>
       )}
 
-      {/* Last Refresh Info */}
       {lastRefresh && (
         <div className='text-center text-sm text-gray-400'>
           Last refreshed: {lastRefresh.toLocaleTimeString()} • Auto-refresh:{' '}
-          {autoRefresh ? 'Enabled' : 'Disabled'} • TIER 3 Championship Monitoring Active
+          {autoRefresh ? 'Enabled' : 'Disabled'}
         </div>
       )}
     </div>

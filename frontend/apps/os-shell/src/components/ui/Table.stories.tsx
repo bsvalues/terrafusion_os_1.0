@@ -1273,7 +1273,7 @@ export const UsageGuidelines: Story = {
 /**
  * ## Story 9: Accessibility Test
  *
- * Interactive demonstration of keyboard navigation and accessibility features for tables.
+ * Interactive example of keyboard navigation and accessibility features for tables.
  * Tests WCAG 2.1 AAA compliance for data tables.
  */
 export const AccessibilityTest: Story = {

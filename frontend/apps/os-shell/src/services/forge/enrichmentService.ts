@@ -2,7 +2,7 @@
  * Forge Enrichment Service (BIV-150)
  * ===================================================================
  * Client-side API service for enriching property data from external
- * sources (MLS, permit records, satellite imagery, etc.) and
+ * sources (recorder records, permit records, imagery, etc.) and
  * tracking enrichment pipeline status.
  */
 
@@ -32,7 +32,7 @@ export interface EnrichmentResult {
 export interface EnrichmentSource {
   /** Source identifier */
   sourceId: string;
-  /** Source display name (e.g. 'Benton County MLS', 'WA DOL Permits') */
+  /** Source display name (e.g. 'County Recorder', 'WA DOL Permits') */
   sourceName: string;
   /** Whether data was successfully retrieved from this source */
   available: boolean;

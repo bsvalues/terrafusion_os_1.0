@@ -63,9 +63,8 @@ export const useAIAssistant = ({
       const welcomeMessage: AIMessage = {
         id: 'system-welcome',
         role: 'system',
-        content: `🏛️ **AI Swarm Connected** - ${countyId.toUpperCase()} Government Excellence Mode\n\nI'm your TerraFusion AI Assistant with access to 50,000+ specialized agents. I can help you with:\n\n✨ **Property Assessment** - Instant valuations with 99.5% accuracy\n🔍 **Data Analysis** - Real-time insights from county systems\n📊 **Compliance Validation** - IAAO standards verification\n⚡ **Workflow Automation** - Intelligent task completion\n\nHow can I amplify your capabilities today?`,
+        content: `**AI Assistant Ready** - ${countyId.toUpperCase()}\n\nResponses come from the governed TerraFusion AI Assistant API. Agent counts, valuation accuracy, compliance status, and workflow completion are shown only when returned with backend evidence.\n\nRole context: ${employeeRole}`,
         timestamp: new Date(),
-        confidence: 1.0,
       };
 
       setMessages([welcomeMessage]);

@@ -31,9 +31,9 @@ export interface DistrictMapProps {
 
 const MAP_BACKGROUND_COLOR = 'hsl(var(--tf-text-primary-hs) var(--tf-l-0))';
 const SELECTED_FILL_COLOR = 'hsl(var(--primary))';
-const DEFAULT_FILL_COLOR = 'hsl(var(--secondary))';
+const BASE_FILL_COLOR = 'hsl(var(--secondary))';
 const SELECTED_STROKE_COLOR = 'hsl(var(--primary) / 0.8)';
-const DEFAULT_STROKE_COLOR = 'hsl(var(--muted-foreground))';
+const BASE_STROKE_COLOR = 'hsl(var(--muted-foreground))';
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
@@ -87,8 +87,8 @@ const DistrictMap: React.FC<DistrictMapProps> = ({
             <polygon
               key={d.id}
               points={points}
-              fill={d.fillColor ?? (isSelected ? SELECTED_FILL_COLOR : DEFAULT_FILL_COLOR)}
-              stroke={isSelected ? SELECTED_STROKE_COLOR : DEFAULT_STROKE_COLOR}
+              fill={d.fillColor ?? (isSelected ? SELECTED_FILL_COLOR : BASE_FILL_COLOR)}
+              stroke={isSelected ? SELECTED_STROKE_COLOR : BASE_STROKE_COLOR}
               strokeWidth={isSelected ? 2.5 : 1}
               opacity={isSelected ? 1 : 0.8}
               className="cursor-pointer transition-colors hover:fill-blue-800"

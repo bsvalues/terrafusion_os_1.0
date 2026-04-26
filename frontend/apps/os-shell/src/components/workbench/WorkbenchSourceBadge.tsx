@@ -31,7 +31,7 @@ function getLabel(
   }
   const LABELS: Record<Exclude<DisclosureSource, 'partial'>, string> = {
     live: 'Live',
-    fallback: 'Demo data',
+    fallback: 'Non-live data',
     unavailable: 'Unavailable',
   };
   return LABELS[source];

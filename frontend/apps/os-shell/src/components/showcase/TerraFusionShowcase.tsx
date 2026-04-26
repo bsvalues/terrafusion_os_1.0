@@ -1,7 +1,7 @@
 /**
  * ═══════════════════════════════════════════════════════════════
  * TERRAFUSION COMPONENT SHOWCASE
- * Demonstration of all TerraFusion components working together
+ * TerraFusion component showcase
  * ═══════════════════════════════════════════════════════════════
  */
 

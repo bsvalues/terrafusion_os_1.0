@@ -188,7 +188,7 @@ function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): s
     return 'Snapshot-backed county aggregates: TerraForge stats are using bundled county snapshot data, not live backend metrics.';
   }
   if (source === 'fixtures') {
-    return 'Fixture-backed county aggregates: TerraForge stats are using test fixture data, not live backend metrics.';
+    return 'Non-live county aggregate mode is active; TerraForge stats are not live backend metrics.';
   }
   return null;
 }
@@ -212,8 +212,7 @@ export default function ForgeSuiteHome() {
   const [diagnosticsState, setDiagnosticsState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: CountyDiagnosticsSummary; correlationId?: string; error?: string }>({ status: 'idle' });
   const [memoState, setMemoState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error'; result?: CalibrationMemoSummary; correlationId?: string; error?: string }>({ status: 'idle' });
 
-  // KPI values from live /api/terraforge/county-stats (PacsValuations, SupNum=0 working layer).
-  // 95,811 is the correct PACS import count for Benton County working layer.
+  // KPI values from /api/terraforge/county-stats when the provider is live.
   const fmt = (n: number | undefined, style: 'decimal' | 'currency' | 'percent', decimals = 0) => {
     if (n === undefined || n === null) return '—';
     if (style === 'currency') return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: decimals }).format(n);

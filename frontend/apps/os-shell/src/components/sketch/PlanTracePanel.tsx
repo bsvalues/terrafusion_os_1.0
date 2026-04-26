@@ -28,7 +28,7 @@ interface TracePoint {
 
 const SOURCE_TYPES: { value: PlanSourceType; label: string }[] = [
   { value: "permit_packet", label: "Permit Packet" },
-  { value: "mls", label: "MLS Listing" },
+  { value: "recorder_document", label: "Recorder Document" },
   { value: "builder", label: "Builder Plans" },
   { value: "assessor_archive", label: "Assessor Archive" },
   { value: "autocad_export", label: "AutoCAD Export" },

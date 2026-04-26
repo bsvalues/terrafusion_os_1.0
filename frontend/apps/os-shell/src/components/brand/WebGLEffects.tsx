@@ -4,6 +4,16 @@ interface WebGLEffectsProps {
   effect?: number;
   onEffectChange?: (_effect: number) => void;
 }
+
+function seededUnit(seed: number): number {
+  const value = Math.sin(seed * 12.9898) * 43758.5453;
+  return value - Math.floor(value);
+}
+
+function seededSigned(seed: number): number {
+  return seededUnit(seed) - 0.5;
+}
+
 const WebGLEffects: React.FC<WebGLEffectsProps> = ({ effect = 1, onEffectChange }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [currentEffect, setCurrentEffect] = useState(effect);
@@ -157,13 +167,13 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({ effect = 1, onEffectChange 
     for (let i = 0; i < 50; i++) {
       const geometry = new THREE.SphereGeometry(0.05, 8, 8);
       const material = new THREE.MeshBasicMaterial({
-        color: new THREE.Color().setHSL(0.5 + Math.random() * 0.2, 0.8, 0.5),
+        color: new THREE.Color().setHSL(0.5 + seededUnit(i) * 0.2, 0.8, 0.5),
       });
       const node = new THREE.Mesh(geometry, material);
       node.position.set(
-        (Math.random() - 0.5) * 10,
-        (Math.random() - 0.5) * 10,
-        (Math.random() - 0.5) * 5
+        seededSigned(i + 1) * 10,
+        seededSigned(i + 101) * 10,
+        seededSigned(i + 201) * 5
       );
       nodes.push(node);
       scene.add(node);
@@ -172,7 +182,7 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({ effect = 1, onEffectChange 
     // Create connections
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
-        if (Math.random() < 0.1) {
+        if (seededUnit(i * 53 + j) < 0.1) {
           // 10% chance of connection
           const geometry = new THREE.BufferGeometry().setFromPoints([
             nodes[i].position,
@@ -196,19 +206,19 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({ effect = 1, onEffectChange 
     const streams: THREE.Line[] = [];
     for (let i = 0; i < 100; i++) {
       const points = [];
-      const startY = (Math.random() - 0.5) * 10;
+      const startY = seededSigned(i + 301) * 10;
       for (let j = 0; j < 20; j++) {
         points.push(
           new THREE.Vector3(
             -10 + j * 1,
             startY + Math.sin(j * 0.5) * 0.5,
-            (Math.random() - 0.5) * 2
+            seededSigned(i * 20 + j + 401) * 2
           )
         );
       }
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       const material = new THREE.LineBasicMaterial({
-        color: new THREE.Color().setHSL(Math.random() * 0.3 + 0.4, 0.8, 0.5),
+        color: new THREE.Color().setHSL(seededUnit(i + 501) * 0.3 + 0.4, 0.8, 0.5),
         transparent: true,
         opacity: 0.6,
       });
@@ -223,13 +233,13 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({ effect = 1, onEffectChange 
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
     for (let i = 0; i < particleCount; i++) {
-      const radius = Math.random() * 5;
-      const angle = Math.random() * Math.PI * 2;
-      const height = (Math.random() - 0.5) * 2;
+      const radius = seededUnit(i + 601) * 5;
+      const angle = seededUnit(i + 701) * Math.PI * 2;
+      const height = seededSigned(i + 801) * 2;
       positions[i * 3] = Math.cos(angle) * radius;
       positions[i * 3 + 1] = height;
       positions[i * 3 + 2] = Math.sin(angle) * radius;
-      const color = new THREE.Color().setHSL(0.5 + Math.random() * 0.3, 0.8, 0.5);
+      const color = new THREE.Color().setHSL(0.5 + seededUnit(i + 901) * 0.3, 0.8, 0.5);
       colors[i * 3] = color.r;
       colors[i * 3 + 1] = color.g;
       colors[i * 3 + 2] = color.b;
@@ -271,8 +281,8 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({ effect = 1, onEffectChange 
         opacity: 0.3,
       });
       const torus = new THREE.Mesh(geometry, material);
-      torus.rotation.x = Math.random() * Math.PI;
-      torus.rotation.y = Math.random() * Math.PI;
+      torus.rotation.x = seededUnit(i + 1001) * Math.PI;
+      torus.rotation.y = seededUnit(i + 1101) * Math.PI;
       group.add(torus);
     }
     scene.add(group);
@@ -284,10 +294,14 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({ effect = 1, onEffectChange 
     for (let x = -5; x <= 5; x++) {
       for (let y = -5; y <= 5; y++) {
         for (let z = -2; z <= 2; z++) {
-          if (Math.random() < 0.3) {
+          if (seededUnit((x + 5) * 121 + (y + 5) * 11 + (z + 2)) < 0.3) {
             const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
             const material = new THREE.MeshBasicMaterial({
-              color: new THREE.Color().setHSL(0.5, 0.8, Math.random()),
+              color: new THREE.Color().setHSL(
+                0.5,
+                0.8,
+                seededUnit((x + 5) * 211 + (y + 5) * 17 + (z + 2))
+              ),
               transparent: true,
               opacity: 0.7,
             });

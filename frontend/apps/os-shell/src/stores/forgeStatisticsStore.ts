@@ -13,11 +13,6 @@ import { create } from 'zustand';
 import { computeRatioStudy } from '@/services/forge/ratioAnalysisService';
 import type { RatioStudyResult } from '@/services/forge/ratioAnalysisService';
 import { statisticsAPI } from '@/services/forge/statisticsAPI';
-import {
-  OUTLIER_RECORDS,
-  STRATA_RESULTS,
-  MODEL_COMPARISON,
-} from '@/data/forgeStatisticsFixtures';
 import type {
   QualificationMetrics,
   StrataResult,
@@ -47,8 +42,6 @@ interface ForgeStatisticsState {
   qualification: QualificationMetrics | null;
   loading: boolean;
   error: string | null;
-  // Provenance — true when the section is showing fixture fallback data
-  isFixture: { outliers: boolean; strata: boolean; comparison: boolean };
   // Actions
   fetchStudy: () => Promise<void>;
   setFilter: (partial: Partial<StudyFilterState>) => void;
@@ -97,7 +90,6 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
   qualification: null,
   loading: false,
   error: null,
-  isFixture: { outliers: false, strata: false, comparison: false },
 
   fetchStudy: async () => {
     set({ loading: true, error: null });
@@ -108,46 +100,36 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
       const modelId = `${get().filters.taxYear}-${get().filters.outlierMethod}`;
       let outliers: OutlierRecord[] = [];
       let strata: StrataResult[] = [];
-      let outliersFixture = false;
-      let strataFixture = false;
-      const sectionErrors: string[] = [];
 
       try {
         outliers = await statisticsAPI.getOutliers(modelId);
       } catch {
-        // Fall back to bounded fixture so the panel renders evidence; banner discloses fixture origin.
-        outliers = OUTLIER_RECORDS;
-        outliersFixture = true;
-        sectionErrors.push('outliers unavailable');
+        outliers = [];
       }
 
       try {
         strata = await statisticsAPI.getStrata(modelId);
       } catch {
-        strata = STRATA_RESULTS;
-        strataFixture = true;
-        sectionErrors.push('strata unavailable');
+        strata = [];
       }
 
-      set((state) => ({
+      set({
         studyResult: result,
         outliers,
         strata,
         qualification,
         loading: false,
-        error: sectionErrors.length > 0 ? sectionErrors.join('; ') : null,
-        isFixture: { ...state.isFixture, outliers: outliersFixture, strata: strataFixture },
-      }));
+        error: null,
+      });
     } catch {
-      set((state) => ({
+      set({
         studyResult: null,
-        outliers: OUTLIER_RECORDS,
-        strata: STRATA_RESULTS,
+        outliers: [],
+        strata: [],
         qualification: null,
         loading: false,
         error: 'Ratio study API unavailable.',
-        isFixture: { ...state.isFixture, outliers: true, strata: true },
-      }));
+      });
     }
   },
 
@@ -178,16 +160,13 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
         modelIdA: `${modelId}-12mo`,
         modelIdB: `${modelId}-24mo`,
       });
-      set((state) => ({
+      set({
         comparison,
-        isFixture: { ...state.isFixture, comparison: false },
-      }));
+      });
     } catch {
-      set((state) => ({
-        comparison: MODEL_COMPARISON,
-        error: 'Model comparison API unavailable.',
-        isFixture: { ...state.isFixture, comparison: true },
-      }));
+      set({
+        comparison: null,
+      });
     }
   },
 

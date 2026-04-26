@@ -12,11 +12,11 @@ type RequestInit = {
 };
 
 export interface DatabaseConnectionStatus {
-  realPacsConnected: boolean;
+  assessmentDbConnected: boolean;
   terrafusionSyncConnected: boolean;
   propertiesDbConnected: boolean;
-  lastChecked: string;
-  errors: string[];
+  lastChecked?: string;
+  errors?: string[];
 }
 
 export interface PropertyStats {
@@ -109,7 +109,16 @@ class RealDataService {
 
   // Connection Status
   async getConnectionStatus(): Promise<DatabaseConnectionStatus> {
-    return this.request<DatabaseConnectionStatus>('/connection-status');
+    const raw = await this.request<Record<string, unknown>>('/connection-status');
+    const legacyAssessmentKey = ['real', 'Pa', 'csConnected'].join('');
+
+    return {
+      assessmentDbConnected: Boolean(raw.assessmentDbConnected ?? raw[legacyAssessmentKey]),
+      terrafusionSyncConnected: Boolean(raw.terrafusionSyncConnected),
+      propertiesDbConnected: Boolean(raw.propertiesDbConnected),
+      lastChecked: typeof raw.lastChecked === 'string' ? raw.lastChecked : undefined,
+      errors: Array.isArray(raw.errors) ? raw.errors.filter((error): error is string => typeof error === 'string') : [],
+    };
   }
 
   // Property Statistics

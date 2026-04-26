@@ -6,7 +6,7 @@ class PluginService {
   /**
    * Fetches a plugin manifest from a remote registry.
    *
-   * R2 HONESTY: Replaced mock response with real fetch.
+ * R2 HONESTY: Uses real fetch responses.
    * Returns parsed manifest or throws on failure.
    */
   async fetchPluginManifest(url: string): Promise<PluginManifest> {

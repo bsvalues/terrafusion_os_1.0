@@ -9,7 +9,7 @@ import type {
   StrataResult,
   OutlierRecord,
   ModelComparisonResult,
-} from '@/data/forgeStatisticsFixtures';
+} from '@/types/forgeStatistics';
 
 const API_BASE_URL = getViteEnv().VITE_API_URL || '';
 
@@ -64,6 +64,18 @@ class StatisticsAPIService {
   async getOutliers(modelId: string): Promise<OutlierRecord[]> {
     const res = await this.api.get<OutlierRecord[]>(`/ratio-study/${encodeURIComponent(modelId)}/outliers`);
     return res.data;
+  }
+
+  /** Persist outlier review decision for a model parcel */
+  async reviewOutlier(
+    modelId: string,
+    parcelId: string,
+    status: 'confirmed' | 'dismissed'
+  ): Promise<void> {
+    await this.api.patch(
+      `/ratio-study/${encodeURIComponent(modelId)}/outliers/${encodeURIComponent(parcelId)}/review`,
+      { status }
+    );
   }
 
   /** Compare two appraisal models */

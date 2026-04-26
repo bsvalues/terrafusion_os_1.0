@@ -19,8 +19,7 @@ using TerraFusion.Consciousness.DTOs;
 namespace TerraFusion.AI.Services
 {
     /// <summary>
-    /// AI Assistant Service providing county employee AI superpowers
-    /// Coordinates 50,000+ agent swarm for intelligent assistance
+    /// AI Assistant Service providing county-scoped governed assistance.
     /// </summary>
     public interface IAIAssistantService
     {
@@ -114,7 +113,7 @@ namespace TerraFusion.AI.Services
                 CountyId = countyId,
                 ActiveAgents = status.ActiveAgents,
                 SwarmActivity = status.ActivityLevel,
-                QuantumOptimizationFactor = 949,
+                QuantumOptimizationFactor = 0,
                 ResponseTime = status.AvgResponseTimeMs,
                 AccuracyScore = status.AccuracyScore,
                 ConsciousnessLevel = status.ConsciousnessLevel,

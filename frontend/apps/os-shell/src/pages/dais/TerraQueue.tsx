@@ -13,10 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useQueueStore } from '@/stores/queueStore';
-import { APPRAISERS } from '@/data/queueFixtures';
-import type { QueueWorkItem } from '@/data/queueFixtures';
+import type { QueueWorkItem } from '@/services/suites/queueService';
 import { emitTraceEvent } from '@/services/terraTrace';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 
 type Tab = 'unassigned' | 'in-progress' | 'review' | 'metrics';
 type SortKey = 'priority' | 'value' | 'created' | 'area';
@@ -100,7 +98,7 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
   const [reassignDropdown, setReassignDropdown] = useState<string | null>(null);
 
   const {
-    items, metrics, productivity, loading, isFixture,
+    items, metrics, productivity, loading, dataSource, error,
     selectedItemIds, fetchQueue,
     toggleSelection, selectAll, clearSelection,
     assignItems, reviewItem,
@@ -116,6 +114,7 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
     ['assigned', 'inspection-pending', 'inspected', 'valued', 'flagged'].includes(i.status)
   );
   const reviewPending = items.filter((i) => i.status === 'review-pending');
+  const appraiserNames = useMemo(() => productivity.map((appraiser) => appraiser.name), [productivity]);
 
   const handleRowClick = (parcelId: string) => {
     emitTraceEvent('queue_drill_through', 'queue', parcelId, undefined, { parcelId });
@@ -139,7 +138,7 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
   ];
 
   const handleAssign = (appraiser: string) => {
-    assignItems(appraiser);
+    void assignItems(appraiser);
     setAssignDropdown(null);
   };
 
@@ -157,7 +156,11 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
       className="space-y-4 p-4"
       style={{ background: 'hsl(var(--tf-bg))', color: 'hsl(var(--tf-fg))' }}
     >
-      {isFixture && <DemoDataBanner module="TerraQueue" />}
+      {(error || dataSource === 'unavailable') && (
+        <div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-200" role="alert">
+          {error ?? 'Queue backend unavailable. No work items are shown because TerraQueue no longer fabricates queue data.'}
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">TerraQueue</h1>
         <div className="flex gap-2">
@@ -206,15 +209,21 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
                     className="absolute top-full left-0 mt-1 rounded shadow-lg z-10 py-1"
                     style={{ background: 'hsl(var(--tf-card))', border: '1px solid hsl(var(--tf-border) / 0.3)', minWidth: '200px' }}
                   >
-                    {APPRAISERS.map((name) => (
-                      <button
-                        key={name}
-                        className="block w-full text-left px-4 py-2 text-sm hover:bg-white/10"
-                        onClick={() => handleAssign(name)}
-                      >
-                        {name}
-                      </button>
-                    ))}
+                  {appraiserNames.length > 0 ? (
+                    appraiserNames.map((name) => (
+                        <button
+                          key={name}
+                          className="block w-full text-left px-4 py-2 text-sm hover:bg-white/10"
+                          onClick={() => handleAssign(name)}
+                        >
+                          {name}
+                        </button>
+                      ))
+                  ) : (
+                    <div className="px-4 py-2 text-sm text-muted-foreground">
+                      No appraiser roster returned by backend.
+                    </div>
+                  )}
                   </div>
                 )}
               </div>
@@ -273,6 +282,13 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
                       </td>
                     </tr>
                   ))}
+                  {unassigned.length === 0 && (
+                    <tr>
+                      <td colSpan={9} className="py-8 text-center text-muted-foreground">
+                        No unassigned work items returned by backend.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </CardContent>
@@ -284,7 +300,7 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
       {activeTab === 'in-progress' && (
         <div data-testid="tab-in-progress">
           {/* Group by appraiser */}
-          {APPRAISERS.map((appraiser) => {
+          {appraiserNames.map((appraiser) => {
             const appraiserItems = inProgress.filter((i) => i.assignedTo === appraiser);
             if (appraiserItems.length === 0) return null;
             return (
@@ -336,12 +352,12 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
                                   className="absolute top-full right-0 mt-1 rounded shadow-lg z-10 py-1"
                                   style={{ background: 'hsl(var(--tf-card))', border: '1px solid hsl(var(--tf-border) / 0.3)', minWidth: '200px' }}
                                 >
-                                  {APPRAISERS.filter((n) => n !== appraiser).map((name) => (
+                                  {appraiserNames.filter((n) => n !== appraiser).map((name) => (
                                     <button
                                       key={name}
                                       className="block w-full text-left px-4 py-2 text-sm hover:bg-white/10"
                                       onClick={() => {
-                                        assignItems(name);
+                                        void assignItems(name, [item.workItemId]);
                                         setReassignDropdown(null);
                                       }}
                                     >
@@ -360,6 +376,13 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
               </Card>
             );
           })}
+          {inProgress.length === 0 && (
+            <Card>
+              <CardContent className="py-8 text-center text-muted-foreground">
+                No in-progress work items returned by backend.
+              </CardContent>
+            </Card>
+          )}
         </div>
       )}
 
@@ -432,14 +455,14 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
                           <Button
                             size="sm"
                             variant="default"
-                            onClick={() => reviewItem(item.workItemId, 'approve')}
+                            onClick={() => void reviewItem(item.workItemId, 'approve')}
                           >
                             Approve
                           </Button>
                           <Button
                             size="sm"
                             variant="destructive"
-                            onClick={() => reviewItem(item.workItemId, 'reject')}
+                            onClick={() => void reviewItem(item.workItemId, 'reject')}
                           >
                             Reject
                           </Button>
@@ -447,6 +470,13 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
                       </td>
                     </tr>
                   ))}
+                  {reviewPending.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="py-8 text-center text-muted-foreground">
+                        No review-pending work items returned by backend.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </CardContent>
@@ -529,6 +559,13 @@ export function TerraQueue({ onDrillThrough }: TerraQueueProps = {}) {
                       <td className="py-3 px-3 text-right font-mono">{p.reviewRejectRate}%</td>
                     </tr>
                   ))}
+                  {productivity.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center text-muted-foreground">
+                        No appraiser productivity records returned by backend.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </CardContent>

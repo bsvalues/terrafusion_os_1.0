@@ -63,14 +63,14 @@ export const SystemTray: React.FC = () => {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <Chip
           icon={<Memory />}
-          label={`${systemHealth.memory}MB`}
+          label={systemHealth.memory === null ? 'Memory n/a' : `${systemHealth.memory}%`}
           size='small'
           color={getStatusColor(systemHealth.memoryStatus)}
           variant='outlined'
         />
         <Chip
           icon={<Speed />}
-          label={`${systemHealth.cpu}%`}
+          label={systemHealth.cpu === null ? 'CPU n/a' : `${systemHealth.cpu}%`}
           size='small'
           color={getStatusColor(systemHealth.cpuStatus)}
           variant='outlined'

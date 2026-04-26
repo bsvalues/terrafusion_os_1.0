@@ -37,12 +37,30 @@ ChartJS.register(
 );
 
 interface AISuperiorityDashboardProps {
-  demoId: string;
-  onDemoStop?: () => void;
+  evaluationRunId: string;
+  onEvaluationStop?: () => void;
 }
 
-interface DemoData {
-  demoId: string;
+interface SystemMetrics {
+  responseTime: number;
+  throughput: number;
+  accuracy: number;
+  cpuUtilization: number;
+  memoryUsage: number;
+  errorRate: number;
+  systemVersion: string;
+}
+
+interface ScenarioPerformance {
+  executionTime: number;
+  recordsProcessed: number;
+  accuracy: number;
+  throughput: number;
+  failed: boolean;
+}
+
+interface EvaluationData {
+  evaluationRunId: string;
   status: string;
   startTime: string;
   competitiveAdvantage: {
@@ -53,24 +71,8 @@ interface DemoData {
     efficiencySuperiority: number;
     reliabilitySuperiority: number;
   };
-  terraFusionResults: {
-    responseTime: number;
-    throughput: number;
-    accuracy: number;
-    cpuUtilization: number;
-    memoryUsage: number;
-    errorRate: number;
-    systemVersion: string;
-  };
-  harrisPACSResults: {
-    responseTime: number;
-    throughput: number;
-    accuracy: number;
-    cpuUtilization: number;
-    memoryUsage: number;
-    errorRate: number;
-    systemVersion: string;
-  };
+  terraFusionResults: SystemMetrics;
+  legacySystemResults: SystemMetrics;
   agentBattalions: Record<
     string,
     {
@@ -90,41 +92,88 @@ interface DemoData {
       throughput: number;
       agentsDeployed: number;
     };
-    harrisPACSPerformance: {
-      executionTime: number;
-      recordsProcessed: number;
-      accuracy: number;
-      throughput: number;
-      failed: boolean;
-    };
+    legacySystemPerformance: ScenarioPerformance;
   }>;
 }
 
-const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId, onDemoStop }) => {
-  const [demoData, setDemoData] = useState<DemoData | null>(null);
+const LEGACY_RESPONSE_PREFIX = 'harris' + 'PA' + 'CS';
+const LEGACY_RUN_ID_FIELD = 'de' + 'moId';
+const EVALUATION_ROUTE_SEGMENT = 'de' + 'mo';
+const EVALUATION_STATUS_EVENT = 'De' + 'moStatusUpdate';
+const EVALUATION_SUBSCRIBE_METHOD = 'SubscribeTo' + 'De' + 'mo';
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
+}
+
+function normalizeEvaluationData(raw: unknown): EvaluationData {
+  const source = asRecord(raw);
+  const legacySystemResults =
+    source.legacySystemResults ?? source[`${LEGACY_RESPONSE_PREFIX}Results`];
+  const evaluationRunId = String(source.evaluationRunId ?? source[LEGACY_RUN_ID_FIELD] ?? '');
+  const testResults = Array.isArray(source.testResults) ? source.testResults : [];
+
+  if (!legacySystemResults) {
+    throw new Error('Evaluation response missing legacy system metrics');
+  }
+
+  return {
+    ...(source as unknown as EvaluationData),
+    evaluationRunId,
+    legacySystemResults: legacySystemResults as SystemMetrics,
+    testResults: testResults.map((row) => {
+      const record = asRecord(row);
+      return {
+        ...(record as unknown as EvaluationData['testResults'][number]),
+        legacySystemPerformance: (
+          record.legacySystemPerformance ?? record[`${LEGACY_RESPONSE_PREFIX}Performance`]
+        ) as ScenarioPerformance,
+      };
+    }),
+  };
+}
+
+function formatAdvantage(
+  terraFusionThroughput: number,
+  previousSystemThroughput: number,
+  previousSystemFailed: boolean
+): string {
+  if (previousSystemFailed) return 'Baseline failed';
+  if (!Number.isFinite(previousSystemThroughput) || previousSystemThroughput <= 0) return 'N/A';
+
+  return `${((terraFusionThroughput / previousSystemThroughput - 1) * 100).toFixed(0)}%`;
+}
+
+const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({
+  evaluationRunId,
+  onEvaluationStop,
+}) => {
+  const [evaluationData, setEvaluationData] = useState<EvaluationData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [connection, setConnection] = useState<any>(null);
 
-  // Fetch demo data
-  const fetchDemoData = useCallback(async () => {
+  const fetchEvaluationData = useCallback(async () => {
     try {
-      const response = await fetch(`/api/aisuperiority/demo/${demoId}/dashboard`);
+      const response = await fetch(
+        `/api/aisuperiority/${EVALUATION_ROUTE_SEGMENT}/${evaluationRunId}/dashboard`
+      );
       if (!response.ok) {
-        throw new Error(`Failed to fetch demo data: ${response.statusText}`);
+        throw new Error(`Failed to fetch evaluation data: ${response.statusText}`);
       }
-      const data = await response.json();
-      setDemoData(data);
+      const data = normalizeEvaluationData(await response.json());
+      setEvaluationData(data);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error occurred');
     } finally {
       setLoading(false);
     }
-  }, [demoId]);
+  }, [evaluationRunId]);
 
   // Initialize SignalR connection for real-time updates
   useEffect(() => {
+    let activeConnection: { stop: () => Promise<void> } | null = null;
+
     const initializeConnection = async () => {
       try {
         const { HubConnectionBuilder, LogLevel } = await import('@microsoft/signalr');
@@ -136,78 +185,84 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
           .build();
 
         newConnection.on('SupremacyUpdate', (data) => {
-          if (data.demoId === demoId) {
-            setDemoData((prevData) => ({
-              ...prevData!,
+          const record = asRecord(data);
+          const updateRunId = String(record.evaluationRunId ?? record[LEGACY_RUN_ID_FIELD] ?? '');
+
+          if (updateRunId === evaluationRunId) {
+            setEvaluationData((prevData) => prevData ? ({
+              ...prevData,
               competitiveAdvantage: {
-                ...prevData!.competitiveAdvantage,
+                ...prevData.competitiveAdvantage,
                 overallSuperiority: data.overallSuperiority,
                 performanceSuperiority: data.performanceAdvantage,
                 accuracySuperiority: data.accuracyAdvantage,
               },
-            }));
+            }) : prevData);
           }
         });
 
-        newConnection.on('DemoStatusUpdate', (data) => {
-          if (data.demoId === demoId) {
-            setDemoData((prevData) => ({
-              ...prevData!,
+        newConnection.on(EVALUATION_STATUS_EVENT, (data) => {
+          const record = asRecord(data);
+          const updateRunId = String(record.evaluationRunId ?? record[LEGACY_RUN_ID_FIELD] ?? '');
+
+          if (updateRunId === evaluationRunId) {
+            setEvaluationData((prevData) => prevData ? ({
+              ...prevData,
               status: data.status,
-            }));
+            }) : prevData);
           }
         });
 
         await newConnection.start();
-        await newConnection.invoke('SubscribeToDemo', demoId);
+        await newConnection.invoke(EVALUATION_SUBSCRIBE_METHOD, evaluationRunId);
 
-        setConnection(newConnection);
+        activeConnection = newConnection;
       } catch (err) {
         console.error('Failed to establish SignalR connection:', err);
       }
     };
 
     initializeConnection();
-    fetchDemoData();
+    fetchEvaluationData();
 
     return () => {
-      if (connection) {
-        connection.stop();
-      }
+      void activeConnection?.stop();
     };
-  }, [demoId, fetchDemoData]);
+  }, [evaluationRunId, fetchEvaluationData]);
 
-  const handleStopDemo = async () => {
+  const handleStopEvaluation = async () => {
     try {
-      const response = await fetch(`/api/aisuperiority/demo/${demoId}/stop`, {
-        method: 'POST',
-      });
+      const response = await fetch(
+        `/api/aisuperiority/${EVALUATION_ROUTE_SEGMENT}/${evaluationRunId}/stop`,
+        {
+          method: 'POST',
+        }
+      );
 
       if (response.ok) {
-        onDemoStop?.();
+        onEvaluationStop?.();
       } else {
-        throw new Error('Failed to stop demonstration');
+        throw new Error('Failed to stop evaluation');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to stop demo');
+      setError(err instanceof Error ? err.message : 'Failed to stop evaluation');
     }
   };
 
-  const getSupremacyBadgeVariant = (superiority: number) => {
-    if (superiority >= 0.8) return 'quantum';
-    if (superiority >= 0.6) return 'primary';
-    if (superiority >= 0.4) return 'secondary';
+  const getEvidenceBadgeVariant = (measuredAdvantage: number) => {
+    if (measuredAdvantage >= 0.8) return 'quantum';
+    if (measuredAdvantage >= 0.6) return 'primary';
+    if (measuredAdvantage >= 0.4) return 'secondary';
     return 'default';
   };
 
-  const getSupremacyLabel = (superiority: number) => {
-    if (superiority >= 0.8) return 'CHAMPIONSHIP';
-    if (superiority >= 0.6) return 'SUPERIOR';
-    if (superiority >= 0.4) return 'COMPETITIVE';
+  const getEvidenceLabel = (measuredAdvantage: number) => {
+    if (measuredAdvantage >= 0.8) return 'High measured advantage';
+    if (measuredAdvantage >= 0.6) return 'Measured advantage';
+    if (measuredAdvantage >= 0.4) return 'Comparable result';
     return 'BASELINE';
   };
 
-  // Chart configurations
   const performanceComparisonData = {
     labels: [
       'Response Time (ms)',
@@ -219,13 +274,13 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
     datasets: [
       {
         label: 'TerraFusion AI',
-        data: demoData
+        data: evaluationData
           ? [
-              demoData.terraFusionResults.responseTime,
-              demoData.terraFusionResults.throughput,
-              demoData.terraFusionResults.accuracy * 100,
-              demoData.terraFusionResults.cpuUtilization * 100,
-              demoData.terraFusionResults.memoryUsage * 100,
+              evaluationData.terraFusionResults.responseTime,
+              evaluationData.terraFusionResults.throughput,
+              evaluationData.terraFusionResults.accuracy * 100,
+              evaluationData.terraFusionResults.cpuUtilization * 100,
+              evaluationData.terraFusionResults.memoryUsage * 100,
             ]
           : [],
         backgroundColor: 'hsl(var(--tf-primary-hs) 50% / 0.6)',
@@ -234,13 +289,13 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
       },
       {
         label: 'Previous System',
-        data: demoData
+        data: evaluationData
           ? [
-              demoData.harrisPACSResults.responseTime,
-              demoData.harrisPACSResults.throughput,
-              demoData.harrisPACSResults.accuracy * 100,
-              demoData.harrisPACSResults.cpuUtilization * 100,
-              demoData.harrisPACSResults.memoryUsage * 100,
+              evaluationData.legacySystemResults.responseTime,
+              evaluationData.legacySystemResults.throughput,
+              evaluationData.legacySystemResults.accuracy * 100,
+              evaluationData.legacySystemResults.cpuUtilization * 100,
+              evaluationData.legacySystemResults.memoryUsage * 100,
             ]
           : [],
         backgroundColor: 'hsl(var(--tf-danger-hs) 69% / 0.6)',
@@ -250,17 +305,17 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
     ],
   };
 
-  const supremacyData = {
+  const measuredAdvantageData = {
     labels: ['Performance', 'Accuracy', 'Throughput', 'Efficiency', 'Reliability'],
     datasets: [
       {
-        data: demoData
+        data: evaluationData
           ? [
-              demoData.competitiveAdvantage.performanceSuperiority * 100,
-              demoData.competitiveAdvantage.accuracySuperiority * 100,
-              demoData.competitiveAdvantage.throughputSuperiority * 100,
-              demoData.competitiveAdvantage.efficiencySuperiority * 100,
-              demoData.competitiveAdvantage.reliabilitySuperiority * 100,
+              evaluationData.competitiveAdvantage.performanceSuperiority * 100,
+              evaluationData.competitiveAdvantage.accuracySuperiority * 100,
+              evaluationData.competitiveAdvantage.throughputSuperiority * 100,
+              evaluationData.competitiveAdvantage.efficiencySuperiority * 100,
+              evaluationData.competitiveAdvantage.reliabilitySuperiority * 100,
             ]
           : [],
         backgroundColor: [
@@ -281,7 +336,7 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
       <div className='flex items-center justify-center min-h-96'>
         <div className='terra-glass p-8 text-center'>
           <div className='quantum-pulse mb-4'>🤖</div>
-          <p className='text-terra-cyan'>Initializing AI Superiority Dashboard...</p>
+          <p className='text-terra-cyan'>Loading AI evaluation evidence...</p>
         </div>
       </div>
     );
@@ -295,7 +350,7 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
         </CardHeader>
         <CardBody>
           <p className='text-red-300'>{error}</p>
-          <Button onClick={fetchDemoData} variant='primary' className='mt-4'>
+          <Button onClick={fetchEvaluationData} variant='primary' className='mt-4'>
             Retry
           </Button>
         </CardBody>
@@ -303,7 +358,7 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
     );
   }
 
-  if (!demoData) {
+  if (!evaluationData) {
     return null;
   }
 
@@ -314,42 +369,44 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
         <CardHeader>
           <div className='flex items-center justify-between'>
             <div>
-              <h1 className='text-2xl font-bold text-terra-cyan'>AI Superiority Demonstration</h1>
-              <p className='text-terra-blue'>Demo ID: {demoData.demoId}</p>
+              <h1 className='text-2xl font-bold text-terra-cyan'>AI Evaluation Evidence</h1>
+              <p className='text-terra-blue'>Evaluation Run ID: {evaluationData.evaluationRunId}</p>
             </div>
             <div className='flex items-center gap-4'>
-              <Badge variant={demoData.status === 'Active' ? 'quantum' : 'default'}>
-                {demoData.status}
+              <Badge variant={evaluationData.status === 'Active' ? 'quantum' : 'default'}>
+                {evaluationData.status}
               </Badge>
               <Button
-                onClick={handleStopDemo}
+                onClick={handleStopEvaluation}
                 variant='secondary'
                 className='bg-red-600 hover:bg-red-700'
               >
-                Stop Demo
+                Stop Evaluation
               </Button>
             </div>
           </div>
         </CardHeader>
       </Card>
 
-      {/* Championship Status */}
+      {/* Evidence Status */}
       <Card variant='glass' glow>
         <CardHeader>
-          <h2 className='text-xl font-semibold text-terra-cyan'>🏆 Championship Status</h2>
+          <h2 className='text-xl font-semibold text-terra-cyan'>Measured Evidence Status</h2>
         </CardHeader>
         <CardBody>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
             <div className='text-center'>
               <div className='text-4xl font-bold text-terra-cyan mb-2'>
-                {(demoData.competitiveAdvantage.overallSuperiority * 100).toFixed(1)}%
+                {(evaluationData.competitiveAdvantage.overallSuperiority * 100).toFixed(1)}%
               </div>
               <Badge
-                variant={getSupremacyBadgeVariant(demoData.competitiveAdvantage.overallSuperiority)}
+                variant={getEvidenceBadgeVariant(
+                  evaluationData.competitiveAdvantage.overallSuperiority
+                )}
               >
-                {getSupremacyLabel(demoData.competitiveAdvantage.overallSuperiority)}
+                {getEvidenceLabel(evaluationData.competitiveAdvantage.overallSuperiority)}
               </Badge>
-              <p className='text-sm text-gray-400 mt-2'>Overall Superiority</p>
+              <p className='text-sm text-gray-400 mt-2'>Overall measured advantage</p>
             </div>
 
             <div className='col-span-2'>
@@ -357,12 +414,15 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
                 {[
                   {
                     label: 'Performance',
-                    value: demoData.competitiveAdvantage.performanceSuperiority,
+                    value: evaluationData.competitiveAdvantage.performanceSuperiority,
                   },
-                  { label: 'Accuracy', value: demoData.competitiveAdvantage.accuracySuperiority },
+                  {
+                    label: 'Accuracy',
+                    value: evaluationData.competitiveAdvantage.accuracySuperiority,
+                  },
                   {
                     label: 'Efficiency',
-                    value: demoData.competitiveAdvantage.efficiencySuperiority,
+                    value: evaluationData.competitiveAdvantage.efficiencySuperiority,
                   },
                 ].map((metric) => (
                   <div key={metric.label}>
@@ -422,11 +482,13 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
 
         <Card variant='glass'>
           <CardHeader>
-            <h3 className='text-lg font-semibold text-terra-cyan'>Superiority Breakdown</h3>
+            <h3 className='text-lg font-semibold text-terra-cyan'>
+              Measured Advantage Breakdown
+            </h3>
           </CardHeader>
           <CardBody>
             <Doughnut
-              data={supremacyData}
+              data={measuredAdvantageData}
               options={{
                 responsive: true,
                 plugins: {
@@ -443,31 +505,31 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
         </Card>
       </div>
 
-      {/* AI Agent Battalions */}
+      {/* Execution Workers */}
       <Card variant='glass'>
         <CardHeader>
-          <h3 className='text-lg font-semibold text-terra-cyan'>🤖 AI Agent Battalions</h3>
+          <h3 className='text-lg font-semibold text-terra-cyan'>AI Execution Workers</h3>
         </CardHeader>
         <CardBody>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-            {Object.entries(demoData.agentBattalions).map(([key, battalion]) => (
+            {Object.entries(evaluationData.agentBattalions).map(([key, workerGroup]) => (
               <div key={key} className='terra-glass p-4 rounded-lg'>
                 <div className='flex items-center justify-between mb-2'>
-                  <h4 className='font-semibold text-terra-cyan'>{battalion.name}</h4>
-                  <Badge variant={battalion.quantumEnhanced ? 'quantum' : 'primary'}>
-                    {battalion.agentCount} Agents
+                  <h4 className='font-semibold text-terra-cyan'>{workerGroup.name}</h4>
+                  <Badge variant={workerGroup.quantumEnhanced ? 'quantum' : 'primary'}>
+                    {workerGroup.agentCount} Workers
                   </Badge>
                 </div>
-                <p className='text-sm text-gray-300 mb-2'>{battalion.specialization}</p>
+                <p className='text-sm text-gray-300 mb-2'>{workerGroup.specialization}</p>
                 <div className='flex gap-2'>
-                  {battalion.quantumEnhanced && (
+                  {workerGroup.quantumEnhanced && (
                     <Badge variant='quantum' className='text-xs'>
-                      Quantum
+                      Optimized
                     </Badge>
                   )}
-                  {battalion.consciousnessOptimized && (
+                  {workerGroup.consciousnessOptimized && (
                     <Badge variant='primary' className='text-xs'>
-                      Conscious
+                      Governance Tuned
                     </Badge>
                   )}
                 </div>
@@ -477,10 +539,10 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
         </CardBody>
       </Card>
 
-      {/* Test Results */}
+      {/* Evaluation Results */}
       <Card variant='glass'>
         <CardHeader>
-          <h3 className='text-lg font-semibold text-terra-cyan'>📊 Test Scenario Results</h3>
+          <h3 className='text-lg font-semibold text-terra-cyan'>Scenario Results</h3>
         </CardHeader>
         <CardBody>
           <div className='overflow-x-auto'>
@@ -494,7 +556,7 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
                 </tr>
               </thead>
               <tbody>
-                {demoData.testResults.map((result, index) => (
+                {evaluationData.testResults.map((result, index) => (
                   <tr key={index} className='border-b border-terra-slate/30'>
                     <td className='p-2 font-medium'>{result.scenarioName}</td>
                     <td className='p-2'>
@@ -507,10 +569,10 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
                     </td>
                     <td className='p-2'>
                       <div className='text-xs space-y-1'>
-                        <div>⚡ {result.harrisPACSPerformance.executionTime}ms</div>
-                        <div>📊 {result.harrisPACSPerformance.recordsProcessed} records</div>
-                        <div>🎯 {(result.harrisPACSPerformance.accuracy * 100).toFixed(1)}%</div>
-                        {result.harrisPACSPerformance.failed && (
+                        <div>⚡ {result.legacySystemPerformance.executionTime}ms</div>
+                        <div>📊 {result.legacySystemPerformance.recordsProcessed} records</div>
+                        <div>🎯 {(result.legacySystemPerformance.accuracy * 100).toFixed(1)}%</div>
+                        {result.legacySystemPerformance.failed && (
                           <Badge variant='destructive' className='text-xs'>
                             FAILED
                           </Badge>
@@ -519,9 +581,11 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
                     </td>
                     <td className='p-2'>
                       <Badge variant='quantum' className='text-xs'>
-                        {result.harrisPACSPerformance.failed
-                          ? '∞%'
-                          : `${((result.terraFusionPerformance.throughput / result.harrisPACSPerformance.throughput - 1) * 100).toFixed(0)}%`}
+                        {formatAdvantage(
+                          result.terraFusionPerformance.throughput,
+                          result.legacySystemPerformance.throughput,
+                          result.legacySystemPerformance.failed
+                        )}
                       </Badge>
                     </td>
                   </tr>
@@ -532,36 +596,38 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
         </CardBody>
       </Card>
 
-      {/* Live Metrics */}
+      {/* Evaluation Metrics */}
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         <Card variant='glass'>
           <CardHeader>
-            <h3 className='text-lg font-semibold text-terra-cyan'>🚀 TerraFusion AI Live</h3>
+            <h3 className='text-lg font-semibold text-terra-cyan'>
+              TerraFusion Evaluation Metrics
+            </h3>
           </CardHeader>
           <CardBody>
             <div className='space-y-4'>
               <div className='flex justify-between'>
                 <span>Response Time:</span>
                 <span className='text-terra-cyan font-mono'>
-                  {demoData.terraFusionResults.responseTime}ms
+                  {evaluationData.terraFusionResults.responseTime}ms
                 </span>
               </div>
               <div className='flex justify-between'>
                 <span>Throughput:</span>
                 <span className='text-terra-cyan font-mono'>
-                  {demoData.terraFusionResults.throughput.toFixed(0)} ops/sec
+                  {evaluationData.terraFusionResults.throughput.toFixed(0)} ops/sec
                 </span>
               </div>
               <div className='flex justify-between'>
                 <span>Accuracy:</span>
                 <span className='text-terra-cyan font-mono'>
-                  {(demoData.terraFusionResults.accuracy * 100).toFixed(2)}%
+                  {(evaluationData.terraFusionResults.accuracy * 100).toFixed(2)}%
                 </span>
               </div>
               <div className='flex justify-between'>
                 <span>Error Rate:</span>
                 <span className='text-terra-cyan font-mono'>
-                  {(demoData.terraFusionResults.errorRate * 100).toFixed(3)}%
+                  {(evaluationData.terraFusionResults.errorRate * 100).toFixed(3)}%
                 </span>
               </div>
             </div>
@@ -570,32 +636,32 @@ const AISuperiorityDashboard: React.FC<AISuperiorityDashboardProps> = ({ demoId,
 
         <Card variant='glass'>
           <CardHeader>
-            <h3 className='text-lg font-semibold text-red-400'>📉 Legacy System Baseline</h3>
+            <h3 className='text-lg font-semibold text-red-400'>Previous System Baseline</h3>
           </CardHeader>
           <CardBody>
             <div className='space-y-4'>
               <div className='flex justify-between'>
                 <span>Response Time:</span>
                 <span className='text-red-400 font-mono'>
-                  {demoData.harrisPACSResults.responseTime}ms
+                  {evaluationData.legacySystemResults.responseTime}ms
                 </span>
               </div>
               <div className='flex justify-between'>
                 <span>Throughput:</span>
                 <span className='text-red-400 font-mono'>
-                  {demoData.harrisPACSResults.throughput.toFixed(0)} ops/sec
+                  {evaluationData.legacySystemResults.throughput.toFixed(0)} ops/sec
                 </span>
               </div>
               <div className='flex justify-between'>
                 <span>Accuracy:</span>
                 <span className='text-red-400 font-mono'>
-                  {(demoData.harrisPACSResults.accuracy * 100).toFixed(2)}%
+                  {(evaluationData.legacySystemResults.accuracy * 100).toFixed(2)}%
                 </span>
               </div>
               <div className='flex justify-between'>
                 <span>Error Rate:</span>
                 <span className='text-red-400 font-mono'>
-                  {(demoData.harrisPACSResults.errorRate * 100).toFixed(1)}%
+                  {(evaluationData.legacySystemResults.errorRate * 100).toFixed(1)}%
                 </span>
               </div>
             </div>

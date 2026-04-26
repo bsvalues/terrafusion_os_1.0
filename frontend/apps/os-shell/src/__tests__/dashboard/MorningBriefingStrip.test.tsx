@@ -17,7 +17,13 @@ const polled = <T,>(data: T): FreshData<T> => ({
   lastUpdated: Date.now(), source: 'polled', isStale: false,
 })
 
-const swarmData: SwarmStatus = { connectionState: 'connected', totalAgents: 2016, healthyAgents: 1980, overallStatus: 'degraded' }
+const swarmData: SwarmStatus = {
+  connectionState: 'connected',
+  countyId: 'benton',
+  activeAgents: 2016,
+  swarmActivity: 'Medium',
+  accuracyScore: 0.982,
+}
 const pacsData: PacsHealth = { contractValid: true, reachable: true, latencyMs: 120, lastProofUtc: null }
 const appealsData: AppealsQueueSummary = { total: 42, openCount: 30, pendingHearingCount: 8, closedThisCycleCount: 4 }
 const workloadData: WorkloadSummary = { totalParcels: 89247, parcelsReviewed: 12000, parcelsRemaining: 77247, appraisersActive: 8, utilizationPct: 72 }
@@ -42,6 +48,8 @@ describe('MorningBriefingStrip', () => {
       />
     )
     expect(screen.getByText('connected', { exact: false })).toBeInTheDocument()
+    expect(screen.getByText(/2,016 active agents/i)).toBeInTheDocument()
+    expect(screen.getByText(/Accuracy 98.2%/i)).toBeInTheDocument()
     expect(screen.getByText('Contract valid')).toBeInTheDocument()
     expect(screen.getByText('30')).toBeInTheDocument()  // openCount
     expect(screen.getByText('13%')).toBeInTheDocument() // workload pct (12000/89247)

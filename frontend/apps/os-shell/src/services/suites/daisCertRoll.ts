@@ -10,6 +10,7 @@
 
 import { assertWriteLane } from '../writeLane';
 import { emitTraceEvent } from '../terraTrace';
+import { createStableId } from '../../utils/stableId';
 
 // ============================================================================
 // Types
@@ -68,11 +69,11 @@ export interface ExportResult {
 // ============================================================================
 
 function generateBatchId(): string {
-  return `CBATCH-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return createStableId('CBATCH');
 }
 
 function generateExportId(): string {
-  return `CEXP-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  return createStableId('CEXP');
 }
 
 function validateParcel(parcel: CertBatchParcel): string[] {

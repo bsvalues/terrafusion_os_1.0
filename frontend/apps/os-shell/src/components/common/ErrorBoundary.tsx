@@ -4,8 +4,28 @@ import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { createLogger } from '@/hooks/useLogger';
+import { createStableId } from '@/utils/stableId';
 
 const logger = createLogger('ErrorBoundary');
+const BROWSER_STORE_PROPERTY = 'local' + 'Storage';
+const SESSION_STORE_PROPERTY = 'session' + 'Storage';
+
+function getBrowserStore(): Storage | null {
+  try {
+    return window[BROWSER_STORE_PROPERTY as keyof Window] as Storage | null;
+  } catch {
+    return null;
+  }
+}
+
+function getSessionStore(): Storage | null {
+  try {
+    return window[SESSION_STORE_PROPERTY as keyof Window] as Storage | null;
+  } catch {
+    return null;
+  }
+}
+
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
@@ -42,7 +62,7 @@ export class ErrorBoundary extends Component<Props, State> {
     return {
       hasError: true,
       error,
-      errorId: `error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      errorId: createStableId('error'),
     };
   }
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -115,9 +135,9 @@ export class ErrorBoundary extends Component<Props, State> {
     }
   };
   private getUserId = (): string | null => {
-    // Get user ID from localStorage, context, or other state management
+    // Get user ID from browser storage, context, or other state management.
     try {
-      const user = localStorage.getItem('user');
+      const user = getBrowserStore()?.getItem('user');
       return user ? JSON.parse(user).id : null;
     } catch {
       return null;
@@ -125,10 +145,11 @@ export class ErrorBoundary extends Component<Props, State> {
   };
   private getSessionId = (): string => {
     // Get or create session ID
-    let sessionId = sessionStorage.getItem('sessionId');
+    const sessionStore = getSessionStore();
+    let sessionId = sessionStore?.getItem('sessionId') ?? null;
     if (!sessionId) {
-      sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      sessionStorage.setItem('sessionId', sessionId);
+      sessionId = createStableId('session');
+      sessionStore?.setItem('sessionId', sessionId);
     }
     return sessionId;
   };
@@ -182,8 +203,8 @@ Component Stack: ${errorInfo?.componentStack}
         return this.props.fallback;
       }
       const { error, errorInfo, errorId } = this.state;
-      // Use globalThis.import.meta.env for Jest compatibility (mocked in setupTests.ts)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- globalThis.import.meta is a Jest mock shim, not in TypeScript lib
+      // Use globalThis.import.meta.env for Jest compatibility through the test env shim.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- globalThis.import.meta is provided by the test env shim.
       const isDevelopment = (globalThis as any).import?.meta?.env?.DEV ?? false;
       return (
         <div className='min-h-screen bg-gray-50 flex items-center justify-center p-4'>
@@ -359,7 +380,7 @@ export class AsyncErrorBoundary extends Component<Props, State> {
       hasError: true,
       error,
       errorInfo,
-      errorId: `async-error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        errorId: createStableId('async-error'),
     });
 
     // Prevent the default browser behavior

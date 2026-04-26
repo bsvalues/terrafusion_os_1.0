@@ -7,6 +7,7 @@
 
 import { cn } from '@utils/cn';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createStableId } from '@/utils/stableId';
 import './NotificationSystem.css';
 
 // ═══ TYPES & INTERFACES ═══
@@ -351,7 +352,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const addNotification = useCallback((notification: Omit<Notification, 'id'>) => {
-    const id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+    const id = createStableId('notification');
     const newNotification: Notification = { ...notification, id };
 
     setNotifications((prev) => [...prev, newNotification]);

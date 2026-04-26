@@ -160,7 +160,7 @@ describe('PropertySummary honesty pass — source disclosure on value claims', (
     badges.forEach((badge) => {
       const text = badge.textContent ?? '';
       // Must be one of the canonical labels
-      expect(text).toMatch(/^(Live|Demo data|Partial|Unavailable)/);
+      expect(text).toMatch(/^(Live|Non-live data|Partial|Unavailable)/);
     });
   });
 });

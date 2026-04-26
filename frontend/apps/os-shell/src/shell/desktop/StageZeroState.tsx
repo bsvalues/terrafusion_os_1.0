@@ -14,7 +14,8 @@
  * DATA POSTURE (proof-sealed 2026-03-29, card 50E):
  * - Recent Work: live parcel browsing history from OS session state.
  * - Parcel count: from useParcelCount() API data; unavailable stays unavailable.
- * - Today's Work: TerraDais queue API data only.
+ * - Today's Work: TerraDais queue API data only; unavailable state renders
+ *   explicitly and never falls back to seeded sample tasks.
  * - County status strip: Last sync, appeal count, and system status fields render
  *   "–" (dash) because no live backend source exists yet. They do not claim live state.
  *
@@ -41,7 +42,6 @@ import {
 import { useCommandPaletteStore } from '../../stores/commandPaletteStore';
 import { useRecentParcels } from '../../context/parcelContext';
 import { activateModule } from '../../orchestration/moduleActivation';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { useTodaysWork, type TodaysWorkItem } from '../../hooks/useTodaysWork';
 import { useParcelCount } from '../../hooks/useParcelCount';
 import { LiquidPanel } from '../../ui/materials';
@@ -248,7 +248,7 @@ const CountyMapOverview: React.FC<{
 export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = '' }) => {
   const openCommandPalette = useCommandPaletteStore((state) => state.open);
   const recentParcels = useRecentParcels();
-  const { tasks: todaysTasks, loading: todaysTasksLoading, error: todaysTasksError, isSampleData } = useTodaysWork();
+  const { tasks: todaysTasks, loading: todaysTasksLoading, error: todaysTasksError } = useTodaysWork();
   const { data: statsData } = useParcelCount();
   const parcelCountLabel = typeof statsData?.totalParcels === 'number'
     ? `${statsData.totalParcels.toLocaleString()} parcels`
@@ -442,7 +442,6 @@ export const StageZeroState: React.FC<StageZeroStateProps> = ({ id, className = 
           {/* ═══ Right Panel: Today's Work + Quick Actions ═══ */}
           <div className='w-[240px] shrink-0 flex flex-col gap-3'>
             <GlassCard className='flex-1'>
-              {isSampleData && <DemoDataBanner module="Today's Work" />}
               <TodaysWorkPanel
                 tasks={todaysTasks}
                 loading={todaysTasksLoading}

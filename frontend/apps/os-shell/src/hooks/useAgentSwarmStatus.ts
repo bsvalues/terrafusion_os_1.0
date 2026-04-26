@@ -1,27 +1,24 @@
 /**
  * useAgentSwarmStatus Hook
  *
- * React hook for monitoring TerraFusion AI agent swarm status.
- * Connects to TerraFusion.Consciousness service (port 3004) for real-time swarm metrics.
- *
- * @author TerraFusion Elite Government OS Engineering Agent
- * @version 1.0.0 - Phase 1 Foundation
+ * React hook for county-scoped governed swarm status.
+ * Reads the authenticated AI assistant status route instead of the retired
+ * external consciousness demo service contract.
  */
 
-import { useState, useEffect } from 'react';
-import { getViteEnv } from '../env/getViteEnv';
-
-const CONSCIOUSNESS_URL = getViteEnv().VITE_CONSCIOUSNESS_URL || `http://localhost:${getViteEnv().VITE_CONSCIOUSNESS_PORT || '3004'}`;
+import { useEffect, useState } from 'react';
+import { useAuthContextOptional } from '../auth/useAuthContext';
+import { getToken } from '../auth/authStorage';
+import { getApiBase } from '../lib/apiBase';
 
 interface AgentSwarmMetrics {
-  agentCount: number;
-  coherence: number;
-  harmony: number;
+  countyId: string;
   activeAgents: number;
-  idleAgents: number;
-  errorAgents: number;
-  avgResponseTime: number;
-  tasksCompleted: number;
+  swarmActivity: string;
+  responseTimeMs: number;
+  accuracyScore: number;
+  consciousnessLevel: number;
+  quantumOptimizationFactor: number;
 }
 
 interface AgentSwarmStatusReturn {
@@ -35,21 +32,35 @@ interface AgentSwarmStatusReturn {
   lastUpdate: Date | null;
 }
 
+interface AssistantSwarmStatusResponse {
+  countyId: string;
+  activeAgents: number;
+  swarmActivity: string;
+  quantumOptimizationFactor: number;
+  responseTime: number;
+  accuracyScore: number;
+  consciousnessLevel: number;
+  lastUpdate: string;
+}
+
 /**
- * Hook to monitor AI agent swarm status
+ * Hook to monitor county-scoped AI assistant swarm status.
  *
- * Phase 1: Simulated metrics (will connect to real SignalR hub in Phase 2)
- * Phase 2: Real-time SignalR connection to TerraFusion.Consciousness
- *
- * @param pollInterval - Polling interval in milliseconds (default: 5000ms)
- * @returns Swarm status and real-time metrics
+ * @param countyIdOverride - Optional county override. Defaults to authenticated county.
+ * @param pollInterval - Polling interval in milliseconds (default: 30000ms)
+ * @returns Swarm status derived from the governed assistant route
  */
 export function useAgentSwarmStatus(
-  pollInterval: number = 5000
+  countyIdOverride?: string | null,
+  pollInterval: number = 30000
 ): AgentSwarmStatusReturn {
-  const [agentCount, setAgentCount] = useState<number>(1008); // Production count
-  const [coherence, setCoherence] = useState<number>(0.987);  // 98.7% coherence
-  const [harmony, setHarmony] = useState<number>(0.954);      // 95.4% harmony
+  const auth = useAuthContextOptional();
+  const countyId = countyIdOverride ?? auth?.countyId ?? null;
+  const token = auth?.token ?? (typeof window !== 'undefined' ? getToken() : null);
+
+  const [agentCount, setAgentCount] = useState<number>(0);
+  const [coherence, setCoherence] = useState<number>(0);
+  const [harmony, setHarmony] = useState<number>(0);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -60,79 +71,80 @@ export function useAgentSwarmStatus(
     let isMounted = true;
 
     const fetchSwarmStatus = async () => {
+      if (!countyId) {
+        if (!isMounted) {
+          return;
+        }
+
+        setAgentCount(0);
+        setCoherence(0);
+        setHarmony(0);
+        setMetrics(null);
+        setError('County context is required for governed swarm status.');
+        setIsConnected(false);
+        setIsLoading(false);
+        return;
+      }
+
+      if (!token) {
+        if (!isMounted) {
+          return;
+        }
+
+        setAgentCount(0);
+        setCoherence(0);
+        setHarmony(0);
+        setMetrics(null);
+        setError('Authentication required for governed swarm status.');
+        setIsConnected(false);
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
         setError(null);
 
-        // Phase 1: Try to connect to Consciousness service
-        // Phase 2: Will use SignalR for real-time updates
-        try {
-          const response = await fetch(`${CONSCIOUSNESS_URL}/api/swarm/status`, {
+        const response = await fetch(
+          `${getApiBase()}/AIAssistant/swarm-status/${encodeURIComponent(countyId)}`,
+          {
             method: 'GET',
             headers: {
-              'Accept': 'application/json'
-            }
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-
-            if (!isMounted) return;
-
-            setAgentCount(data.totalAgents || 1008);
-            setCoherence(data.coherence || 0.987);
-            setHarmony(data.harmony || 0.954);
-            setMetrics({
-              agentCount: data.totalAgents || 1008,
-              coherence: data.coherence || 0.987,
-              harmony: data.harmony || 0.954,
-              activeAgents: data.activeAgents || 876,
-              idleAgents: data.idleAgents || 121,
-              errorAgents: data.errorAgents || 11,
-              avgResponseTime: data.avgResponseTime || 47,
-              tasksCompleted: data.tasksCompleted || 12847
-            });
-            setIsConnected(true);
-            setLastUpdate(new Date());
-          } else {
-            throw new Error('Consciousness service not available');
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
           }
-        } catch (apiError) {
-          // Phase 1: Fall back to simulated metrics
-          if (!isMounted) return;
+        );
 
-          // Simulate realistic variations
-          const baseAgentCount = 1008;
-          const variation = () => (Math.random() - 0.5) * 0.02; // ±1% variation
-
-          const simulatedCoherence = Math.max(0.95, Math.min(0.99, 0.987 + variation()));
-          const simulatedHarmony = Math.max(0.93, Math.min(0.97, 0.954 + variation()));
-          const simulatedActiveAgents = Math.floor(baseAgentCount * (0.85 + Math.random() * 0.05));
-          const simulatedIdleAgents = Math.floor(baseAgentCount * (0.10 + Math.random() * 0.05));
-          const simulatedErrorAgents = Math.floor(baseAgentCount * (0.005 + Math.random() * 0.015));
-
-          setAgentCount(baseAgentCount);
-          setCoherence(simulatedCoherence);
-          setHarmony(simulatedHarmony);
-          setMetrics({
-            agentCount: baseAgentCount,
-            coherence: simulatedCoherence,
-            harmony: simulatedHarmony,
-            activeAgents: simulatedActiveAgents,
-            idleAgents: simulatedIdleAgents,
-            errorAgents: simulatedErrorAgents,
-            avgResponseTime: 40 + Math.random() * 20,
-            tasksCompleted: Math.floor(12000 + Math.random() * 2000)
-          });
-          setIsConnected(false); // Using simulated data
-          setLastUpdate(new Date());
-
+        if (!response.ok) {
+          throw new Error(`Governed swarm status returned HTTP ${response.status}`);
         }
-      } catch (err: any) {
-        if (!isMounted) return;
 
-        console.error('Agent swarm status check failed:', err.message);
-        setError(err.message);
+        const data = (await response.json()) as AssistantSwarmStatusResponse;
+        const nextMetrics = parseSwarmMetrics(data);
+
+        if (!isMounted) {
+          return;
+        }
+
+        setAgentCount(nextMetrics.activeAgents);
+        setCoherence(nextMetrics.consciousnessLevel);
+        setHarmony(nextMetrics.accuracyScore);
+        setMetrics(nextMetrics);
+        setIsConnected(true);
+        setLastUpdate(new Date(data.lastUpdate));
+      } catch (err) {
+        if (!isMounted) {
+          return;
+        }
+
+        const message =
+          err instanceof Error ? err.message : 'Governed swarm status check failed';
+        setAgentCount(0);
+        setCoherence(0);
+        setHarmony(0);
+        setMetrics(null);
+        setError(message);
         setIsConnected(false);
       } finally {
         if (isMounted) {
@@ -141,18 +153,16 @@ export function useAgentSwarmStatus(
       }
     };
 
-    // Initial fetch
-    fetchSwarmStatus();
+    void fetchSwarmStatus();
+    const intervalId = window.setInterval(() => {
+      void fetchSwarmStatus();
+    }, pollInterval);
 
-    // Set up polling
-    const intervalId = setInterval(fetchSwarmStatus, pollInterval);
-
-    // Cleanup
     return () => {
       isMounted = false;
-      clearInterval(intervalId);
+      window.clearInterval(intervalId);
     };
-  }, [pollInterval]);
+  }, [countyId, pollInterval, token]);
 
   return {
     agentCount,
@@ -162,8 +172,44 @@ export function useAgentSwarmStatus(
     isLoading,
     error,
     metrics,
-    lastUpdate
+    lastUpdate,
   };
 }
 
 export default useAgentSwarmStatus;
+
+function finiteNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function requiredNumber(data: Record<string, unknown>, key: string): number {
+  const value = finiteNumber(data[key]);
+  if (value == null) {
+    throw new Error(`Governed swarm status missing numeric field: ${key}`);
+  }
+  return value;
+}
+
+function parseSwarmMetrics(payload: unknown): AgentSwarmMetrics {
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('Governed swarm status response was not an object');
+  }
+
+  const data = payload as Record<string, unknown>;
+  const countyId = typeof data.countyId === 'string' ? data.countyId : null;
+  const swarmActivity = typeof data.swarmActivity === 'string' ? data.swarmActivity : null;
+
+  if (!countyId || !swarmActivity) {
+    throw new Error('Governed swarm status response missing countyId or swarmActivity');
+  }
+
+  return {
+    countyId,
+    activeAgents: requiredNumber(data, 'activeAgents'),
+    swarmActivity,
+    responseTimeMs: requiredNumber(data, 'responseTime'),
+    accuracyScore: requiredNumber(data, 'accuracyScore'),
+    consciousnessLevel: requiredNumber(data, 'consciousnessLevel'),
+    quantumOptimizationFactor: requiredNumber(data, 'quantumOptimizationFactor'),
+  };
+}

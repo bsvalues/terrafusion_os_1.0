@@ -21,7 +21,7 @@ export namespace OSProtocol {
   }
 
   export interface EncryptedCredentials {
-    // Placeholder for future SecureVault envelope
+    // SecureVault envelope contract.
     algorithm: 'AES-256-GCM' | string;
     ciphertext: string;
     iv: string;
@@ -30,7 +30,7 @@ export namespace OSProtocol {
 
   export interface AuthMessage extends BaseMessage {
     countyId: 'benton';
-    legacySystem: 'PACS_9.0';
+    legacySystem: string;
     credentials?: EncryptedCredentials | null;
   }
 

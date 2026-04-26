@@ -7,10 +7,8 @@ using System.ComponentModel.DataAnnotations;
 namespace TerraFusion.API.Controllers
 {
   /// <summary>
-  /// 🏛️ TerraFusion Elite Government Compliance API - TIER 3 Championship Excellence
-  /// Real-time compliance validation and monitoring for government-grade operations
-  /// Supporting FISMA, WCAG 2.1 AA, Washington State multi-county deployment
-  /// "Government. Transcended." - Infinite scale compliance for 50,000+ AI agents
+  /// Government compliance API.
+  /// Compliance and certification claims must be backed by governed evidence.
   /// </summary>
   [ApiController]
   [Route("api/compliance")]
@@ -32,8 +30,7 @@ namespace TerraFusion.API.Controllers
     }
 
     /// <summary>
-    /// 🎯 TIER 3 Real-Time Compliance Validation
-    /// Validates component compliance against all government standards
+    /// Validates component compliance against configured government standards.
     /// </summary>
     /// <param name="component">System component to validate</param>
     /// <param name="operation">Operation being performed</param>
@@ -48,7 +45,7 @@ namespace TerraFusion.API.Controllers
     {
       try
       {
-        _logger.LogInformation("🔍 TIER 3 Compliance validation requested: {Component}.{Operation}",
+        _logger.LogInformation("Compliance validation requested: {Component}.{Operation}",
             component, operation);
 
         var result = await _complianceService.ValidateComplianceAsync(component, operation);
@@ -88,7 +85,6 @@ namespace TerraFusion.API.Controllers
     }
 
     /// <summary>
-    /// 🔒 FISMA Security Compliance Status
     /// Get current FISMA compliance status for the system
     /// </summary>
     [HttpGet("fisma/status")]
@@ -104,16 +100,9 @@ namespace TerraFusion.API.Controllers
           IsCompliant = result.FISMACompliant,
           ComplianceScore = result.FISMAScore ?? 0.0,
           LastValidated = result.Timestamp,
-          SecurityControls = new List<SecurityControlStatus>
-          {
-            new() { ControlFamily = "AC", ControlName = "Access Control", Status = "Compliant", LastAssessed = DateTime.UtcNow },
-            new() { ControlFamily = "AU", ControlName = "Audit and Accountability", Status = "Compliant", LastAssessed = DateTime.UtcNow },
-            new() { ControlFamily = "CM", ControlName = "Configuration Management", Status = "Compliant", LastAssessed = DateTime.UtcNow },
-            new() { ControlFamily = "IA", ControlName = "Identification and Authentication", Status = "Compliant", LastAssessed = DateTime.UtcNow },
-            new() { ControlFamily = "SC", ControlName = "System and Communications Protection", Status = "Compliant", LastAssessed = DateTime.UtcNow }
-          },
-          CertificationLevel = result.FISMAScore >= 0.95 ? "High" : result.FISMAScore >= 0.85 ? "Moderate" : "Low",
-          NextAssessment = DateTime.UtcNow.AddMonths(3)
+          SecurityControls = new List<SecurityControlStatus>(),
+          CertificationLevel = result.FISMACompliant ? "Evidence compliant" : "Not certified",
+          NextAssessment = default
         };
 
         await _auditLogger.LogApiCallAsync(HttpContext.Request.Method, HttpContext.Request.Path, 200, 0);
@@ -128,7 +117,6 @@ namespace TerraFusion.API.Controllers
     }
 
     /// <summary>
-    /// ♿ WCAG 2.1 AA Accessibility Compliance Status
     /// Get current accessibility compliance status
     /// </summary>
     [HttpGet("wcag/status")]
@@ -145,14 +133,8 @@ namespace TerraFusion.API.Controllers
           ComplianceScore = result.WCAGScore ?? 0.0,
           Level = "AA",
           LastValidated = result.Timestamp,
-          Principles = new List<WCAGPrincipleStatus>
-          {
-            new() { Principle = "Perceivable", Status = "Compliant", Criteria = 13, CompliantCriteria = 13 },
-            new() { Principle = "Operable", Status = "Compliant", Criteria = 9, CompliantCriteria = 9 },
-            new() { Principle = "Understandable", Status = "Compliant", Criteria = 6, CompliantCriteria = 6 },
-            new() { Principle = "Robust", Status = "Compliant", Criteria = 2, CompliantCriteria = 2 }
-          },
-          NextAudit = DateTime.UtcNow.AddMonths(6)
+          Principles = new List<WCAGPrincipleStatus>(),
+          NextAudit = default
         };
 
         await _auditLogger.LogApiCallAsync(HttpContext.Request.Method, HttpContext.Request.Path, 200, 0);
@@ -167,8 +149,7 @@ namespace TerraFusion.API.Controllers
     }
 
     /// <summary>
-    /// 🏛️ Washington State Multi-County Compliance Status
-    /// Get compliance status for all 39 Washington State counties
+    /// Get Washington State county compliance evidence status.
     /// </summary>
     [HttpGet("counties/status")]
     [ProducesResponseType(typeof(CountyComplianceOverview), 200)]
@@ -183,21 +164,12 @@ namespace TerraFusion.API.Controllers
           IsCompliant = result.CountyCompliant,
           OverallScore = result.CountyScore ?? 0.0,
           TotalCounties = 39,
-          CompliantCounties = 39, // Simulated - would be calculated from actual data
+          CompliantCounties = 0,
           LastValidated = result.Timestamp,
-          CountyDetails = new List<CountyComplianceDetail>
-          {
-            new() { County = "King", ComplianceScore = 0.99, Status = "Compliant", PopulationServed = 2269675 },
-            new() { County = "Pierce", ComplianceScore = 0.98, Status = "Compliant", PopulationServed = 921130 },
-            new() { County = "Snohomish", ComplianceScore = 0.99, Status = "Compliant", PopulationServed = 827957 },
-            new() { County = "Spokane", ComplianceScore = 0.97, Status = "Compliant", PopulationServed = 539339 },
-            new() { County = "Benton", ComplianceScore = 1.00, Status = "Compliant", PopulationServed = 206873 },
-            new() { County = "Franklin", ComplianceScore = 0.99, Status = "Compliant", PopulationServed = 95222 },
-            new() { County = "Yakima", ComplianceScore = 0.98, Status = "Compliant", PopulationServed = 256728 }
-          },
-          DataSovereigntyProtected = true,
-          PublicRecordsCompliant = true,
-          OpenGovernmentCompliant = true
+          CountyDetails = new List<CountyComplianceDetail>(),
+          DataSovereigntyProtected = false,
+          PublicRecordsCompliant = false,
+          OpenGovernmentCompliant = false
         };
 
         await _auditLogger.LogApiCallAsync(HttpContext.Request.Method, HttpContext.Request.Path, 200, 0);
@@ -212,8 +184,7 @@ namespace TerraFusion.API.Controllers
     }
 
     /// <summary>
-    /// 🤖 AI Agent Compliance Status for 50,000+ Agents
-    /// Get compliance status for massive AI agent swarms
+    /// Get AI-agent compliance evidence status.
     /// </summary>
     [HttpGet("ai-agents/status")]
     [ProducesResponseType(typeof(AIAgentComplianceStatus), 200)]
@@ -227,21 +198,14 @@ namespace TerraFusion.API.Controllers
         {
           IsCompliant = result.AIAgentCompliant,
           ComplianceScore = result.AIAgentScore ?? 0.0,
-          TotalAgents = 50247,
-          CompliantAgents = 50123,
+          TotalAgents = 0,
+          CompliantAgents = 0,
           LastValidated = result.Timestamp,
-          EthicsScore = 0.992,
-          TransparencyScore = 0.988,
-          BiasScore = 0.995,
-          AgentCategories = new List<AgentCategoryCompliance>
-          {
-            new() { Category = "Cost Analysis", AgentCount = 15000, ComplianceScore = 0.995, Status = "Compliant" },
-            new() { Category = "Data Processing", AgentCount = 12500, ComplianceScore = 0.988, Status = "Compliant" },
-            new() { Category = "Validation", AgentCount = 8000, ComplianceScore = 0.992, Status = "Compliant" },
-            new() { Category = "Harris PACS Sync", AgentCount = 7500, ComplianceScore = 0.975, Status = "Compliant" },
-            new() { Category = "County Integration", AgentCount = 7247, ComplianceScore = 0.983, Status = "Compliant" }
-          },
-          NextAudit = DateTime.UtcNow.AddDays(30)
+          EthicsScore = 0.0,
+          TransparencyScore = 0.0,
+          BiasScore = 0.0,
+          AgentCategories = new List<AgentCategoryCompliance>(),
+          NextAudit = default
         };
 
         await _auditLogger.LogApiCallAsync(HttpContext.Request.Method, HttpContext.Request.Path, 200, 0);
@@ -256,7 +220,6 @@ namespace TerraFusion.API.Controllers
     }
 
     /// <summary>
-    /// 📊 Overall Compliance Dashboard
     /// Comprehensive compliance overview for all standards
     /// </summary>
     [HttpGet("dashboard")]
@@ -308,11 +271,11 @@ namespace TerraFusion.API.Controllers
           TotalViolations = result.Violations.Count,
           CriticalViolations = result.Violations.Count(v => v.Severity == ViolationSeverity.Critical),
 
-          CertificationLevel = result.OverallScore >= 0.98 ? "Championship" :
-                              result.OverallScore >= 0.95 ? "Excellence" :
-                              result.OverallScore >= 0.90 ? "Proficient" : "Developing",
+          CertificationLevel = result.OverallCompliant ? "Evidence compliant" : "Not certified",
 
-          GovernmentClassification = "GOVERNMENT TRANSCENDED"
+          GovernmentClassification = result.OverallCompliant
+            ? "Evidence-backed compliance status"
+            : "Compliance evidence incomplete"
         };
 
         await _auditLogger.LogApiCallAsync(HttpContext.Request.Method, HttpContext.Request.Path, 200, 0);
@@ -327,8 +290,7 @@ namespace TerraFusion.API.Controllers
     }
 
     /// <summary>
-    /// 🏆 Government Excellence Certification Status
-    /// Get TerraFusion championship-level certification status
+    /// Get government certification status.
     /// </summary>
     [HttpGet("certification")]
     [ProducesResponseType(typeof(GovernmentCertificationStatus), 200)]
@@ -338,40 +300,16 @@ namespace TerraFusion.API.Controllers
       {
         var result = await _complianceService.ValidateComplianceAsync("System", "CertificationStatus");
 
-        var certification = new GovernmentCertificationStatus
+        await _auditLogger.LogApiCallAsync(HttpContext.Request.Method, HttpContext.Request.Path, 503, 0);
+
+        return StatusCode(503, new
         {
-          CertificationLevel = "Championship Excellence",
-          IssuedDate = DateTime.UtcNow.AddDays(-30),
-          ExpirationDate = DateTime.UtcNow.AddYears(1),
-          CertifyingAuthority = "Washington State Government Technology Services",
-          CertificationId = "TF-ELITE-2025-001",
-
-          ComplianceStandards = new List<CertificationStandard>
-          {
-            new() { Standard = "FISMA", Level = "High", Status = "Certified", Score = result.FISMAScore ?? 0.0 },
-            new() { Standard = "WCAG 2.1", Level = "AA", Status = "Certified", Score = result.WCAGScore ?? 0.0 },
-            new() { Standard = "WA State Multi-County", Level = "Full", Status = "Certified", Score = result.CountyScore ?? 0.0 },
-            new() { Standard = "AI Agent Ethics", Level = "Excellence", Status = "Certified", Score = result.AIAgentScore ?? 0.0 }
-          },
-
-          CapabilitiesCertified = new List<string>
-          {
-            "50,000+ AI Agent Coordination",
-            "39 County Multi-Jurisdiction Support",
-            "Real-time Compliance Monitoring",
-            "Government-Grade Security",
-            "Infinite Scale Architecture",
-            "Autonomous Self-Healing",
-            "Championship Performance"
-          },
-
-          NextReview = DateTime.UtcNow.AddMonths(6),
-          GovernmentEndorsement = "Government. Transcended. - Elite certification for championship-level operations"
-        };
-
-        await _auditLogger.LogApiCallAsync(HttpContext.Request.Method, HttpContext.Request.Path, 200, 0);
-
-        return Ok(certification);
+          error = "Government certification evidence is unavailable",
+          overallCompliant = result.OverallCompliant,
+          overallScore = result.OverallScore,
+          violationCount = result.Violations.Count,
+          requestId = HttpContext.TraceIdentifier
+        });
       }
       catch (Exception ex)
       {

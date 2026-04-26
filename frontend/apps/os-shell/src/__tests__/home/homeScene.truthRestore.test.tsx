@@ -116,7 +116,7 @@ vi.mock('../../lib/utils', () => ({
 
 vi.mock('../../hooks/useTodaysWork', () => ({
   __esModule: true,
-  useTodaysWork: () => ({ tasks: [], loading: false, isSampleData: false }),
+  useTodaysWork: () => ({ tasks: [], loading: false, error: null, readState: 'live' }),
 }));
 
 vi.mock('../../hooks/useParcelCount', () => ({

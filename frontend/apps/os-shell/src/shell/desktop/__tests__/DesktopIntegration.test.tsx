@@ -15,6 +15,7 @@ import '@testing-library/jest-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useDesktopStore } from '../../../stores/desktopStore';
 import { useNotificationStore } from '../../../stores/notificationStore';
@@ -22,12 +23,18 @@ import { useStartMenuStore } from '../../../stores/startMenuStore';
 import { DesktopWithErrorBoundary } from '../Desktop';
 
 /**
- * Test wrapper providing Router context required by DesktopIconGrid
- * which uses useNavigate() for module launch routing.
+ * Test wrapper providing Router context required by DesktopIconGrid (which
+ * uses useNavigate()) and a TanStack Query client required by useParcelCount
+ * inside StageZeroState.
  */
-const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>
-);
+const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/']}>{children}</MemoryRouter>
+    </QueryClientProvider>
+  );
+};
 
 // Suppress console.error for error boundary tests
 const originalError = console.error;

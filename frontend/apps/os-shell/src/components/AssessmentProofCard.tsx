@@ -1,26 +1,29 @@
 /**
- * PacsProofCard — Compact PACS contract proof indicator for the OS sidebar.
+ * AssessmentProofCard — Compact assessment contract proof indicator for the OS sidebar.
  *
  * Shows: contract valid / invalid, DB name, property count, latency.
- * Calls /ops/pacs/proof on mount + manual refresh.
+ * Calls the canonical assessment proof service on mount + manual refresh.
  *
- * @module components/PacsProofCard
+ * @module components/AssessmentProofCard
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { Database, RefreshCw, CheckCircle2, XCircle, Wifi, WifiOff } from 'lucide-react';
-import { getPacsProof, type PacsProofResponse } from '../services/pacsService';
+import {
+  getAssessmentProof,
+  type AssessmentProofResponse,
+} from '../services/assessmentPropertyService';
 
 type Status = 'idle' | 'loading' | 'live' | 'offline';
 
-export const PacsProofCard: React.FC = () => {
-  const [proof, setProof] = useState<PacsProofResponse | null>(null);
+export const AssessmentProofCard: React.FC = () => {
+  const [proof, setProof] = useState<AssessmentProofResponse | null>(null);
   const [status, setStatus] = useState<Status>('idle');
 
   const fetchProof = useCallback(async () => {
     setStatus('loading');
     try {
-      const data = await getPacsProof();
+      const data = await getAssessmentProof();
       setProof(data);
       setStatus(data.contractValid ? 'live' : 'offline');
     } catch {

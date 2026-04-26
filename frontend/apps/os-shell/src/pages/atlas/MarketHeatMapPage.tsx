@@ -1,10 +1,15 @@
 /**
  * TFT-150: Market Heat Map Page
- * Spatial visualization of market activity -- sale FREQUENCY by area.
- * Shows WHERE sales are happening, NOT WHAT things are worth.
- * Time slider for date range.
+ * ------------------------------------------------------------------
+ * Governed Atlas surface for neighborhood-level sales-frequency mapping.
+ *
+ * Current truth:
+ * - Atlas does not yet expose a governed market-activity feed for this page.
+ * - No seeded area rankings or pseudo-sales clusters are rendered.
+ * - The page stays mounted with explicit unavailable disclosure until the
+ *   live market-heat endpoint exists.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -37,73 +42,13 @@ const TIME_RANGES: TimeRange[] = [
   { label: '2 years', months: 24 },
 ];
 
-/**
- * BASE_ACTIVITY — minimal seed so the activity rankings card always has at
- * least one entry to render. Real production data flows in through the
- * Atlas suite once the backend market-heat endpoint is live; this seed
- * keeps the rankings card mounted with a stable role="link" target.
- */
-const BASE_ACTIVITY: MarketActivityArea[] = [
-  {
-    id: 'sample-area-richland',
-    name: 'Richland',
-    saleCount: 24,
-    avgDaysOnMarket: 32,
-    totalTransactions: 31,
-    center: [46.286, -119.284],
-  },
-];
-
-function scaleActivity(base: MarketActivityArea[], months: number): MarketActivityArea[] {
-  const factor = months / 12;
-  return base.map((a) => ({
-    ...a,
-    saleCount: Math.round(a.saleCount * factor),
-    totalTransactions: Math.round(a.totalTransactions * factor),
-  }));
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function intensityColor(saleCount: number, maxCount: number): string {
-  const ratio = maxCount > 0 ? saleCount / maxCount : 0;
-  if (ratio >= 0.75) return '#EF4444';
-  if (ratio >= 0.5) return '#F59E0B';
-  if (ratio >= 0.25) return '#3B82F6';
-  return '#22C55E';
-}
-
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 export default function MarketHeatMapPage() {
   const [timeRangeIndex, setTimeRangeIndex] = useState(2); // default 1 year
-  const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
-
   const timeRange = TIME_RANGES[timeRangeIndex];
-
-  const activityData = useMemo(
-    () => scaleActivity(BASE_ACTIVITY, timeRange.months),
-    [timeRange.months],
-  );
-
-  const maxSaleCount = useMemo(
-    () => Math.max(...activityData.map((a) => a.saleCount), 1),
-    [activityData],
-  );
-
-  const selectedArea = useMemo(
-    () => activityData.find((a) => a.id === selectedAreaId) ?? null,
-    [activityData, selectedAreaId],
-  );
-
-  const totalSales = useMemo(
-    () => activityData.reduce((sum, a) => sum + a.saleCount, 0),
-    [activityData],
-  );
 
   const handleSliderChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setTimeRangeIndex(Number(e.target.value));
@@ -134,7 +79,7 @@ export default function MarketHeatMapPage() {
         </span>
 
         <span className="text-xs text-white/40 ml-auto">
-          {totalSales.toLocaleString()} total sales
+          Live sales activity unavailable
         </span>
       </header>
 
@@ -152,57 +97,25 @@ export default function MarketHeatMapPage() {
             </svg>
           </div>
 
-          {/* Heat circles */}
-          {activityData.map((area) => {
-            const xPct = ((area.center[1] + 119.26) / 0.1) * 100;
-            const yPct = ((46.27 - area.center[0]) / 0.08) * 100;
-            const color = intensityColor(area.saleCount, maxSaleCount);
-            const isSelected = selectedAreaId === area.id;
-            const ratio = area.saleCount / maxSaleCount;
-            const size = 40 + ratio * 80;
-
-            return (
-              <button
-                key={area.id}
-                onClick={() => setSelectedAreaId(isSelected ? null : area.id)}
-                className="absolute transition-all duration-300"
-                style={{
-                  left: `${Math.max(8, Math.min(88, xPct))}%`,
-                  top: `${Math.max(8, Math.min(88, yPct))}%`,
-                  transform: 'translate(-50%, -50%)',
-                }}
-                aria-label={`${area.name}: ${area.saleCount} sales`}
-              >
-                {/* Glow ring */}
-                <div
-                  className="rounded-full transition-all"
-                  style={{
-                    width: size,
-                    height: size,
-                    background: `radial-gradient(circle, ${color}44 0%, ${color}11 50%, transparent 70%)`,
-                    border: `2px solid ${color}${isSelected ? 'CC' : '44'}`,
-                    boxShadow: isSelected ? `0 0 24px ${color}66` : 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <span className="text-xs font-bold" style={{ color }}>{area.saleCount}</span>
-                  <span className="text-[8px] text-white/50">{area.name}</span>
-                </div>
-              </button>
-            );
-          })}
-
-          {/* Legend */}
-          <div className="absolute bottom-4 left-4 bg-terra-midnight/80 backdrop-blur-sm rounded border border-white/10 p-3">
-            <p className="text-[10px] text-white/40 uppercase tracking-wider mb-2">Sale Frequency</p>
-            <div className="flex gap-3 text-[10px]">
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#EF4444]" /> High</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#F59E0B]" /> Medium</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#3B82F6]" /> Low</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#22C55E]" /> Minimal</span>
+          <div
+            data-testid="market-heat-map-unavailable"
+            className="absolute inset-0 flex items-center justify-center p-6"
+          >
+            <div className="max-w-xl rounded-xl border border-white/10 bg-terra-midnight/75 p-6 text-center backdrop-blur-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-terra-cyan">
+                Governed Atlas Required
+              </p>
+              <h2 className="mt-3 text-2xl font-semibold text-white">
+                Market activity heat map unavailable.
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-white/70">
+                Atlas does not have a governed neighborhood sales-frequency feed for this page,
+                and no seeded area rankings or pseudo-sale clusters are rendered here.
+              </p>
+              <p className="mt-4 text-xs text-white/50">
+                Selected time range: {timeRange.label}. Control remains visible so the live filter
+                contract is preserved once the backend feed exists.
+              </p>
             </div>
           </div>
         </main>
@@ -214,54 +127,13 @@ export default function MarketHeatMapPage() {
               <CardTitle className="text-sm text-white/70">Activity Rankings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-1">
-              {[...activityData].sort((a, b) => b.saleCount - a.saleCount).map((area, i) => {
-                const color = intensityColor(area.saleCount, maxSaleCount);
-                const barWidth = (area.saleCount / maxSaleCount) * 100;
-                return (
-                  <button
-                    key={area.id}
-                    role="link"
-                    onClick={() => setSelectedAreaId(area.id)}
-                    className={`w-full text-left px-2 py-1.5 rounded text-xs transition-colors ${
-                      selectedAreaId === area.id ? 'bg-white/10' : 'hover:bg-white/5'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-white/70">{i + 1}. {area.name}</span>
-                      <span className="font-medium" style={{ color }}>{area.saleCount}</span>
-                    </div>
-                    <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${barWidth}%`, backgroundColor: color }} />
-                    </div>
-                  </button>
-                );
-              })}
+              <p className="text-sm text-white/80">Governed neighborhood rankings unavailable.</p>
+              <p className="text-xs leading-5 text-white/55">
+                This panel stays mounted without seeded Richland or city-level activity rows until
+                Atlas exposes a live market-heat dataset.
+              </p>
             </CardContent>
           </Card>
-
-          {selectedArea && (
-            <Card variant="glass" data-material="bento">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-terra-cyan">{selectedArea.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <dl className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <dt className="text-white/50">Sales ({timeRange.label})</dt>
-                    <dd className="text-white font-medium">{selectedArea.saleCount}</dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt className="text-white/50">Avg Days on Market</dt>
-                    <dd className="text-white">{selectedArea.avgDaysOnMarket}</dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt className="text-white/50">Total Transactions</dt>
-                    <dd className="text-white">{selectedArea.totalTransactions.toLocaleString()}</dd>
-                  </div>
-                </dl>
-              </CardContent>
-            </Card>
-          )}
         </aside>
       </div>
     </div>

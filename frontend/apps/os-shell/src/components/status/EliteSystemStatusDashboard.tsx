@@ -1,7 +1,7 @@
 /**
  * ═══════════════════════════════════════════════════════════════
  * ELITE SYSTEM STATUS DASHBOARD
- * Real-time System Health & Performance Monitoring
+ * Evidence-gated System Health & Performance Monitoring
  * THE TERRAFUSION WAY - Live Excellence Display
  * ═══════════════════════════════════════════════════════════════
  */
@@ -9,7 +9,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import EliteProgress from '@/components/ui/EliteProgress';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   EliteActivityIcon,
   EliteBrainIcon,
@@ -20,58 +20,37 @@ import {
 
 interface SystemStatus {
   timestamp: Date;
-  serverStatus: 'online' | 'degraded' | 'offline';
-  buildStatus: 'success' | 'building' | 'failed';
-  typeScriptErrors: number;
-  performanceGrade: 'A+' | 'A' | 'B+' | 'B' | 'C';
-  bundleSize: number;
-  renderFPS: number;
-  memoryUsage: number;
-  networkLatency: number;
-  totalComponents: number;
-  eliteComponents: number;
-  accessibilityScore: number;
+  serverStatus: 'online' | 'degraded' | 'offline' | 'unknown';
+  buildStatus: 'success' | 'building' | 'failed' | 'unknown';
+  typeScriptErrors: number | null;
+  performanceGrade: 'A+' | 'A' | 'B+' | 'B' | 'C' | '—';
+  bundleSize: number | null;
+  renderFPS: number | null;
+  memoryUsage: number | null;
+  networkLatency: number | null;
+  totalComponents: number | null;
+  eliteComponents: number | null;
+  accessibilityScore: number | null;
 }
 
 const EliteSystemStatusDashboard: React.FC = () => {
   const [systemStatus, setSystemStatus] = useState<SystemStatus>({
     timestamp: new Date(),
-    serverStatus: 'online',
-    buildStatus: 'success',
-    typeScriptErrors: 15, // Tracking our current errors
-    performanceGrade: 'A+',
-    bundleSize: 2.1,
-    renderFPS: 60,
-    memoryUsage: 48,
-    networkLatency: 23,
-    totalComponents: 47,
-    eliteComponents: 12,
-    accessibilityScore: 89,
+    serverStatus: 'unknown',
+    buildStatus: 'unknown',
+    typeScriptErrors: null,
+    performanceGrade: '—',
+    bundleSize: null,
+    renderFPS: null,
+    memoryUsage: null,
+    networkLatency: null,
+    totalComponents: null,
+    eliteComponents: null,
+    accessibilityScore: null,
   });
 
-  const [isLive, setIsLive] = useState(true);
-
-  // Real-time status updates
-  useEffect(() => {
-    const updateStatus = () => {
-      setSystemStatus((prev) => ({
-        ...prev,
-        timestamp: new Date(),
-        renderFPS: Math.max(55, Math.min(60, prev.renderFPS + (Math.random() - 0.5) * 2)),
-        memoryUsage: Math.max(30, Math.min(60, prev.memoryUsage + (Math.random() - 0.5) * 3)),
-        networkLatency: Math.max(15, Math.min(40, prev.networkLatency + (Math.random() - 0.5) * 5)),
-        accessibilityScore: Math.max(
-          85,
-          Math.min(95, prev.accessibilityScore + (Math.random() - 0.5) * 1)
-        ),
-      }));
-    };
-
-    if (isLive) {
-      const interval = setInterval(updateStatus, 2000);
-      return () => clearInterval(interval);
-    }
-  }, [isLive]);
+  const [isLive] = useState(false);
+  const touchTimestamp = () => setSystemStatus((prev) => ({ ...prev, timestamp: new Date() }));
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -84,6 +63,8 @@ const EliteSystemStatusDashboard: React.FC = () => {
       case 'offline':
       case 'failed':
         return 'text-red-400 bg-red-500/20 border-red-500/30';
+      case 'unknown':
+        return 'text-gray-400 bg-gray-500/20 border-gray-500/30';
       default:
         return 'text-gray-400 bg-gray-500/20 border-gray-500/30';
     }
@@ -106,14 +87,11 @@ const EliteSystemStatusDashboard: React.FC = () => {
     }
   };
 
-  const eliteProgress = (systemStatus.eliteComponents / systemStatus.totalComponents) * 100;
-  const overallHealth = Math.round(
-    (systemStatus.renderFPS / 60) * 20 +
-      ((100 - systemStatus.memoryUsage) / 100) * 20 +
-      ((100 - systemStatus.networkLatency) / 100) * 20 +
-      (systemStatus.accessibilityScore / 100) * 20 +
-      (eliteProgress / 100) * 20
-  );
+  const eliteProgress = systemStatus.eliteComponents != null && systemStatus.totalComponents
+    ? (systemStatus.eliteComponents / systemStatus.totalComponents) * 100
+    : 0;
+  const overallHealth = 0;
+  const fmt = (value: number | null, suffix = '') => value == null ? 'Unavailable' : `${value}${suffix}`;
 
   return (
     <Card className='w-full terra-glass border-terra-cyan/20 backdrop-blur-md'>
@@ -125,7 +103,7 @@ const EliteSystemStatusDashboard: React.FC = () => {
           <div>
             <h3 className='text-lg font-semibold text-white'>Elite System Status</h3>
             <p className='text-sm text-gray-400'>
-              Real-time TerraFusion monitoring - THE TERRAFUSION WAY
+              System monitoring requires governed telemetry evidence
             </p>
           </div>
         </div>
@@ -143,7 +121,7 @@ const EliteSystemStatusDashboard: React.FC = () => {
           <div
             className={`w-3 h-3 rounded-full ${isLive ? 'bg-green-400 animate-pulse' : 'bg-gray-400'}`}
           />
-          <span className='text-xs text-gray-400'>{isLive ? 'LIVE' : 'PAUSED'}</span>
+          <span className='text-xs text-gray-400'>{isLive ? 'LIVE' : 'UNAVAILABLE'}</span>
         </div>
       </CardHeader>
 
@@ -158,7 +136,7 @@ const EliteSystemStatusDashboard: React.FC = () => {
               </Badge>
             </div>
             <div className='text-xs text-gray-400 uppercase tracking-wide'>Server Status</div>
-            <div className='text-sm text-white mt-1'>Port: 3008</div>
+            <div className='text-sm text-white mt-1'>Port: Unverified</div>
           </div>
 
           <div className='p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20'>
@@ -169,7 +147,7 @@ const EliteSystemStatusDashboard: React.FC = () => {
               </Badge>
             </div>
             <div className='text-xs text-gray-400 uppercase tracking-wide'>Build Status</div>
-            <div className='text-sm text-white mt-1'>Vite Ready</div>
+            <div className='text-sm text-white mt-1'>Build evidence unavailable</div>
           </div>
 
           <div className='p-3 rounded-lg bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20'>
@@ -180,16 +158,16 @@ const EliteSystemStatusDashboard: React.FC = () => {
               </span>
             </div>
             <div className='text-xs text-gray-400 uppercase tracking-wide'>Performance</div>
-            <div className='text-sm text-white mt-1'>Elite Grade</div>
+            <div className='text-sm text-white mt-1'>Evidence unavailable</div>
           </div>
 
           <div className='p-3 rounded-lg bg-gradient-to-br from-yellow-500/10 to-transparent border border-yellow-500/20'>
             <div className='flex items-center justify-between mb-2'>
               <EliteActivityIcon className='w-5 h-5 text-yellow-400' />
-              <span className='text-lg font-bold text-white'>{systemStatus.typeScriptErrors}</span>
+              <span className='text-lg font-bold text-white'>{fmt(systemStatus.typeScriptErrors)}</span>
             </div>
             <div className='text-xs text-gray-400 uppercase tracking-wide'>TS Errors</div>
-            <div className='text-sm text-white mt-1'>Being Fixed</div>
+            <div className='text-sm text-white mt-1'>Run typecheck for proof</div>
           </div>
         </div>
 
@@ -198,28 +176,28 @@ const EliteSystemStatusDashboard: React.FC = () => {
           <div className='space-y-2'>
             <div className='flex justify-between items-center'>
               <span className='text-sm text-gray-400'>Render FPS</span>
-              <span className='text-sm text-white font-medium'>{systemStatus.renderFPS}</span>
+              <span className='text-sm text-white font-medium'>{fmt(systemStatus.renderFPS)}</span>
             </div>
-            <EliteProgress value={systemStatus.renderFPS} max={60} variant='glow' size='sm' />
+            <EliteProgress value={systemStatus.renderFPS ?? 0} max={60} variant='glow' size='sm' />
           </div>
 
           <div className='space-y-2'>
             <div className='flex justify-between items-center'>
               <span className='text-sm text-gray-400'>Memory Usage</span>
-              <span className='text-sm text-white font-medium'>{systemStatus.memoryUsage}%</span>
+              <span className='text-sm text-white font-medium'>{fmt(systemStatus.memoryUsage, '%')}</span>
             </div>
-            <EliteProgress value={systemStatus.memoryUsage} variant='quantum' size='sm' />
+            <EliteProgress value={systemStatus.memoryUsage ?? 0} variant='quantum' size='sm' />
           </div>
 
           <div className='space-y-2'>
             <div className='flex justify-between items-center'>
               <span className='text-sm text-gray-400'>Network Latency</span>
               <span className='text-sm text-white font-medium'>
-                {systemStatus.networkLatency}ms
+                {fmt(systemStatus.networkLatency, 'ms')}
               </span>
             </div>
             <EliteProgress
-              value={Math.min(100, (systemStatus.networkLatency / 100) * 100)}
+              value={systemStatus.networkLatency == null ? 0 : Math.min(100, (systemStatus.networkLatency / 100) * 100)}
               variant='default'
               size='sm'
             />
@@ -229,10 +207,10 @@ const EliteSystemStatusDashboard: React.FC = () => {
             <div className='flex justify-between items-center'>
               <span className='text-sm text-gray-400'>Accessibility</span>
               <span className='text-sm text-white font-medium'>
-                {systemStatus.accessibilityScore}%
+                {fmt(systemStatus.accessibilityScore, '%')}
               </span>
             </div>
-            <EliteProgress value={systemStatus.accessibilityScore} variant='glow' size='sm' />
+            <EliteProgress value={systemStatus.accessibilityScore ?? 0} variant='glow' size='sm' />
           </div>
         </div>
 
@@ -244,7 +222,7 @@ const EliteSystemStatusDashboard: React.FC = () => {
               <h4 className='text-sm font-semibold text-white'>Elite Component Migration</h4>
             </div>
             <Badge className='text-terra-cyan bg-terra-cyan/20 border-terra-cyan/30'>
-              {systemStatus.eliteComponents}/{systemStatus.totalComponents}
+              {systemStatus.eliteComponents ?? '—'}/{systemStatus.totalComponents ?? '—'}
             </Badge>
           </div>
           <EliteProgress
@@ -254,7 +232,7 @@ const EliteSystemStatusDashboard: React.FC = () => {
             label='Component Migration Progress'
           />
           <div className='mt-2 text-xs text-gray-400'>
-            Converting legacy components to Elite TerraFusion design system
+            Component migration evidence unavailable from this panel
           </div>
         </div>
 
@@ -262,7 +240,7 @@ const EliteSystemStatusDashboard: React.FC = () => {
         <div className='grid grid-cols-1 md:grid-cols-3 gap-4 text-sm'>
           <div className='space-y-1'>
             <div className='text-gray-400'>Bundle Size</div>
-            <div className='text-white font-medium'>{systemStatus.bundleSize} MB</div>
+            <div className='text-white font-medium'>{fmt(systemStatus.bundleSize, ' MB')}</div>
           </div>
           <div className='space-y-1'>
             <div className='text-gray-400'>Last Update</div>
@@ -272,7 +250,7 @@ const EliteSystemStatusDashboard: React.FC = () => {
           </div>
           <div className='space-y-1'>
             <div className='text-gray-400'>System Mode</div>
-            <div className='text-terra-cyan font-medium'>THE TERRAFUSION WAY</div>
+            <div className='text-terra-cyan font-medium'>Evidence required</div>
           </div>
         </div>
 
@@ -280,14 +258,20 @@ const EliteSystemStatusDashboard: React.FC = () => {
         <div className='p-4 rounded-lg bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/20'>
           <div className='flex items-center justify-between'>
             <div>
-              <h4 className='text-sm font-semibold text-white'>System Status: OPERATIONAL</h4>
+              <h4 className='text-sm font-semibold text-white'>System Status: UNVERIFIED</h4>
               <p className='text-xs text-gray-400'>
-                All core systems running with elite performance
+                Connect governed telemetry before presenting health, build, accessibility, or performance claims.
               </p>
             </div>
             <div className='text-right'>
-              <div className='text-xl font-bold text-green-400'>✅ ELITE</div>
-              <div className='text-xs text-gray-400'>PhD-Level Excellence</div>
+              <button
+                type='button'
+                className='text-xl font-bold text-yellow-400'
+                onClick={touchTimestamp}
+              >
+                Evidence Required
+              </button>
+              <div className='text-xs text-gray-400'>No local health claim</div>
             </div>
           </div>
         </div>

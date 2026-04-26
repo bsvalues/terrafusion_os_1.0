@@ -143,72 +143,9 @@ export class MetricsCollector {
    * Collect current metrics from all services
    */
   private collectCurrentMetrics(): void {
-    // In production, this would query actual service metrics
-    // For now, simulating realistic metrics collection
-
-    const services = [
-      'researchSession',
-      'quantumVisualization',
-      'consciousnessParameter',
-      'statisticalAnalysis',
-      'aiSwarm',
-      'iaaCompliance',
-      'export',
-    ];
-
-    const now = new Date();
-
-    services.forEach((serviceName) => {
-      if (!this.metricsStorage.has(serviceName)) {
-        this.metricsStorage.set(serviceName, {
-          serviceName,
-          responseTime: [],
-          errorRate: [],
-          requestRate: [],
-          uptime: [],
-          cpuUsage: [],
-          memoryUsage: [],
-        });
-      }
-
-      const metrics = this.metricsStorage.get(serviceName)!;
-
-      // Collect response time (5-50ms realistic range)
-      metrics.responseTime.push({
-        timestamp: now,
-        value: Math.random() * 45 + 5,
-      });
-
-      // Collect error rate (0-5% realistic range)
-      metrics.errorRate.push({
-        timestamp: now,
-        value: Math.random() * 5,
-      });
-
-      // Collect request rate (50-200 req/sec)
-      metrics.requestRate.push({
-        timestamp: now,
-        value: Math.random() * 150 + 50,
-      });
-
-      // Collect uptime (99-100%)
-      metrics.uptime.push({
-        timestamp: now,
-        value: 99 + Math.random(),
-      });
-
-      // Collect CPU usage (20-70%)
-      metrics.cpuUsage.push({
-        timestamp: now,
-        value: Math.random() * 50 + 20,
-      });
-
-      // Collect memory usage (30-80%)
-      metrics.memoryUsage.push({
-        timestamp: now,
-        value: Math.random() * 50 + 30,
-      });
-    });
+    // Automatic collection is intentionally disabled until real service
+    // telemetry adapters call recordMetric(). This collector must not invent
+    // operational measurements.
   }
 
   /**

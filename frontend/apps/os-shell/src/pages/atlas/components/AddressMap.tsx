@@ -1,8 +1,7 @@
 /**
  * BIV-096: Address Map Component
- * Leaflet-based address map with marker placement.
- * Geocode search bar, click-to-place marker, marker popup with address info.
- * Note: When Leaflet is integrated, replace the placeholder map with actual tiles.
+ * Coordinate canvas with marker placement.
+ * Search is disabled unless a governed geocoding API is wired.
  */
 import { useCallback, useState } from 'react';
 
@@ -42,6 +41,7 @@ export default function AddressMap({
   className = '',
 }: AddressMapProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [activeMarkerId, setActiveMarkerId] = useState<string | null>(null);
   const [placedMarker, setPlacedMarker] = useState<{ lat: number; lng: number } | null>(null);
 
@@ -58,16 +58,11 @@ export default function AddressMap({
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      // In production, this would call a geocoding API.
-      // For now, place a marker near the center with a slight offset.
       if (searchQuery.trim()) {
-        const lat = center[0] + (Math.random() - 0.5) * 0.02;
-        const lng = center[1] + (Math.random() - 0.5) * 0.02;
-        setPlacedMarker({ lat, lng });
-        onMarkerPlace?.(lat, lng);
+        setSearchError('Address geocoding API is not configured. Place a marker manually or select a parcel-backed address.');
       }
     },
-    [searchQuery, center, onMarkerPlace],
+    [searchQuery],
   );
 
   const handleMapClick = useCallback(
@@ -111,6 +106,11 @@ export default function AddressMap({
             Search
           </button>
         </div>
+        {searchError && (
+          <p className="mt-2 text-xs text-amber-300">
+            {searchError}
+          </p>
+        )}
       </form>
 
       {/* Map area */}

@@ -8,19 +8,11 @@
  * recent parcel queue. Does NOT host parcel execution.
  *
  * Note: TerraDais API metrics are composed via useDaisSuiteStats.
- * Falls back to county-provider aggregates when live Dais endpoints are unavailable.
+ * Uses TerraDais API metrics when available; county-provider aggregates are labeled by source.
  * Per-parcel appeal work routes to the Workbench Dais tab.
- *
- * Task D3 — receives County Studio Inspector handoff metadata on mount.
- * Supported metadata keys (all optional):
- *   deeplinkQuery:    '?template=SegmentReview&segmentId=s1' — raw query;
- *                     parsed as a fallback if pre-split fields are missing.
- *   workflowTemplate: string (currently always 'SegmentReview').
- *   segmentId:        string — seeds the draft + back-chip.
- *   segmentLabel:     string — human label for the draft.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { invokeTool } from '../../api/pilotApi';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
@@ -29,8 +21,6 @@ import NoticeBatchQueuePanel from '../../components/dais/NoticeBatchQueuePanel';
 import CertRollPanel from '../../components/dais/CertRollPanel';
 import ManagementDashboardPanel from '../../components/dais/ManagementDashboardPanel';
 import SupervisorFlagQueue from '../../components/dais/SupervisorFlagQueue';
-import DaisWorkflowDraftPanel from '../../components/dais/DaisWorkflowDraftPanel';
-import { useSegmentWorkflowDraftStore } from './segmentWorkflowDraftStore';
 import { useDaisSuiteStats } from './useDaisSuiteStats';
 import {
   Scale,
@@ -90,12 +80,12 @@ const DAIS_MODULES: SuiteModuleDef[] = [
   { id: 'appeals', label: 'Appeals', icon: Scale, description: 'BOE appeal tracking, scheduling, and outcomes', launchMode: 'workbench', workbenchTab: 'dais' },
   { id: 'calendar', label: 'Calendar', icon: Calendar, description: 'Assessment cycle deadlines and scheduling', launchMode: 'workbench', workbenchTab: 'dais' },
   // Standalone-mode (county-wide, opens standalone window)
-  { id: 'terra-levy', label: 'TerraLevy', icon: Receipt, description: 'County-wide property tax levy rates by district', launchMode: 'standalone', moduleId: 'terra-levy', truthState: 'queued' },
+  { id: 'terra-levy', label: 'TerraLevy', icon: Receipt, description: 'County-wide property tax levy rates by district', launchMode: 'standalone', moduleId: 'terra-levy', truthState: 'live' },
   { id: 'terra-pilt', label: 'TerraPILT', icon: Landmark, description: 'Payment In Lieu of Taxes — federal/state land values', launchMode: 'standalone', moduleId: 'terra-pilt', truthState: 'queued' },
   { id: 'terra-permit', label: 'TerraPermit', icon: HardHat, description: 'Building permit intake and workflow tracking', launchMode: 'standalone', moduleId: 'terra-permit', truthState: 'queued' },
   { id: 'vei', label: 'VEI', icon: Search, description: 'Vertical Equality Index — assessment equity & PRB analysis', launchMode: 'standalone', moduleId: 'vei', truthState: 'queued' },
   { id: 'property-tax-ai', label: 'PropertyTax AI', icon: Bot, description: 'AI-driven property tax analysis & anomaly detection', launchMode: 'standalone', moduleId: 'property-tax-ai', truthState: 'queued' },
-  { id: 'management-dashboard', label: 'Management', icon: LayoutDashboard, description: 'Assessor operations — certification, workload, staff metrics (conditional-live: some views fall back to fixture data)', launchMode: 'standalone', moduleId: 'management-dashboard' },
+  { id: 'management-dashboard', label: 'Management', icon: LayoutDashboard, description: 'Assessor operations — certification, workload, staff metrics with visible source labeling', launchMode: 'standalone', moduleId: 'management-dashboard' },
   { id: 'terra-queue', label: 'TerraQueue', icon: ClipboardList, description: 'Cross-parcel work queue — assignment, progress, quality review', launchMode: 'standalone', moduleId: 'terra-queue', truthState: 'queued' },
   { id: 'terra-cert', label: 'TerraCert', icon: FileCheck, description: 'Roll sign-off, statutory export, and certification operations', launchMode: 'standalone', moduleId: 'terra-cert', truthState: 'queued' },
   { id: 'terra-notice', label: 'TerraNotice', icon: Mail, description: 'Batch notice dispatch — mail/print queue and delivery tracking', launchMode: 'standalone', moduleId: 'terra-notice', truthState: 'queued' },
@@ -104,50 +94,8 @@ const DAIS_MODULES: SuiteModuleDef[] = [
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 const fmtCurrency = (n: number | undefined | null) => (n != null ? `$${n.toLocaleString()}` : '—');
 
-/** Best-effort parser for the raw backend deeplink query string (Task D3). */
-function parseDaisDeeplinkQuery(raw: unknown): { template?: string; segmentId?: string } {
-  if (typeof raw !== 'string' || raw.length === 0) return {};
-  try {
-    const trimmed = raw.startsWith('?') ? raw.slice(1) : raw;
-    const params  = new URLSearchParams(trimmed);
-    const out: { template?: string; segmentId?: string } = {};
-    const template = params.get('template');
-    if (template) out.template = template;
-    const segmentId = params.get('segmentId');
-    if (segmentId) out.segmentId = segmentId;
-    return out;
-  } catch {
-    return {};
-  }
-}
-
-export interface DaisSuiteHomeProps {
-  /** Optional metadata from the shell's window system (County Studio handoff). */
-  metadata?: Record<string, unknown>;
-}
-
-export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
+export default function DaisSuiteHome() {
   const { stats, loading, error, source } = useDaisSuiteStats();
-  const createDraft = useSegmentWorkflowDraftStore((s) => s.createDraft);
-
-  // ── Consume County Studio handoff metadata on mount (Task D3) ───────────
-  useEffect(() => {
-    if (!metadata) return;
-    const parsed = parseDaisDeeplinkQuery(metadata.deeplinkQuery);
-
-    const templateFromMeta = typeof metadata.workflowTemplate === 'string' ? metadata.workflowTemplate : null;
-    const template = templateFromMeta ?? parsed.template ?? null;
-
-    const segmentFromMeta = typeof metadata.segmentId === 'string' ? metadata.segmentId : null;
-    const segmentId = segmentFromMeta ?? parsed.segmentId ?? null;
-
-    const labelFromMeta = typeof metadata.segmentLabel === 'string' ? metadata.segmentLabel : null;
-
-    if (template === 'SegmentReview' && segmentId) {
-      createDraft(template, segmentId, labelFromMeta ?? segmentId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const [selectedRole, setSelectedRole] = useState<AssessorStaffRole>('chief_appraiser');
   const [briefState, setBriefState] = useState<{
     status: 'idle' | 'loading' | 'success' | 'error';
@@ -202,9 +150,6 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
   return (
     <div data-testid="suite-dais-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="dais" />
-
-      {/* Task D3 — County Studio handoff: segment workflow draft */}
-      <DaisWorkflowDraftPanel />
 
       {loading && !stats && (
         <div data-testid="dais-loading" role="status" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Loading stats...</div>

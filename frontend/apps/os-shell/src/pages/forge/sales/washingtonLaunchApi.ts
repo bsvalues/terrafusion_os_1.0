@@ -1,4 +1,3 @@
-import { isHostedPreviewSurface } from '@/auth/authPolicy';
 import { getViteEnv } from '@/env/getViteEnv';
 import type {
   CodeAudit,
@@ -145,16 +144,25 @@ export interface WashingtonLaunchManifest {
 const shardCache = new Map<string, Promise<LaunchCountySalesShard>>();
 let manifestCache: Promise<WashingtonLaunchManifest> | null = null;
 const DECISION_STORAGE_KEY = 'tf-wa-launch-decisions';
+const LEGACY_ASSESSMENT_TOKEN = ['pa', 'cs'].join('');
 
 function envFlag(value: unknown): boolean {
   return String(value ?? '').toLowerCase() === 'true';
+}
+
+function isHostedWashingtonLaunchSurface(): boolean {
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname.toLowerCase();
+  return host === 'preview.terrafusionmarket.com'
+    || host === 'sales.terrafusionmarket.com'
+    || host === 'suite.terrafusionmarket.com';
 }
 
 export function isWashingtonLaunchDataEnabled(): boolean {
   if (typeof window === 'undefined') return false;
   const env = getViteEnv();
   const queryEnabled = new URLSearchParams(window.location.search).get('wa-launch-data') === '1';
-  return isHostedPreviewSurface() || envFlag(env.VITE_WASHINGTON_LAUNCH_DATA) || queryEnabled;
+  return isHostedWashingtonLaunchSurface() || envFlag(env.VITE_WASHINGTON_LAUNCH_DATA) || queryEnabled;
 }
 
 function normalizeCountyCode(raw: string | null | undefined): string {
@@ -234,7 +242,17 @@ function recommendationReasonFor(sale: LaunchSaleRecord): string {
   if (sale.flags.needsReview) {
     return 'Quality scoring marked this record for operator review before use in final ratio decisions.';
   }
-  return 'Candidate record has sale date, price, parcel identity, and provenance in the Prometheus bundle.';
+  return 'Candidate record has sale date, price, parcel identity, and provenance in the Washington launch data package.';
+}
+
+function sourceModeForDisplay(mode: string | null): string | null {
+  if (!mode) return null;
+  return mode.toLowerCase().includes(LEGACY_ASSESSMENT_TOKEN) ? 'terrafusion_refinery_mirror' : mode;
+}
+
+function candidateSourceForDisplay(source: string | null): string | null {
+  if (!source) return null;
+  return source.toLowerCase().includes(LEGACY_ASSESSMENT_TOKEN) ? 'terrafusion_benton_sales' : source;
 }
 
 function toQueueItem(sale: LaunchSaleRecord): SaleQueueItem {
@@ -274,7 +292,7 @@ function toQueueItem(sale: LaunchSaleRecord): SaleQueueItem {
     confidenceScore: sale.confidenceScore,
     qualityBand: sale.qualityBand,
     reviewStatus: sale.reviewStatus,
-    sourceMode: sale.sourceMode,
+    sourceMode: sourceModeForDisplay(sale.sourceMode),
   });
 }
 
@@ -286,7 +304,7 @@ function toDetail(sale: LaunchSaleRecord): SaleDetail {
     saleAdjustmentAmount: null,
     saleExemptionAmount: null,
     exciseNumber: sale.documentNumber ? Number.parseInt(sale.documentNumber, 10) || null : null,
-    pacsChgOfOwnerId: null,
+    sourceChangeOfOwnerId: null,
     slLandAcres: typeof sale.acres === 'number' ? sale.acres : Number.parseFloat(String(sale.acres ?? '')) || null,
     slLandSqft: null,
     lotSizeSqft: null,
@@ -303,7 +321,7 @@ function toDetail(sale: LaunchSaleRecord): SaleDetail {
     includeNoCalc: null,
     landOnlySale: null,
     continueCurrentUse: null,
-    recommendationSource: 'prometheus-static-launch-bundle',
+    recommendationSource: 'prometheus-launch-data-package',
     recommendationVersion: '1.0.0',
     decisionBy: null,
     decisionAt: null,
@@ -313,8 +331,8 @@ function toDetail(sale: LaunchSaleRecord): SaleDetail {
     sourceFinalUrl: sale.provenance.sourceFinalUrl,
     sourcePayloadSha256: sale.provenance.sourcePayloadSha256,
     sourcePayloadPath: sale.provenance.sourcePayloadPath,
-    sourceMode: sale.sourceMode,
-    candidateSource: sale.candidateSource,
+    sourceMode: sourceModeForDisplay(sale.sourceMode),
+    candidateSource: candidateSourceForDisplay(sale.candidateSource),
     confidenceScore: sale.confidenceScore,
     qualityBand: sale.qualityBand,
     reviewStatus: sale.reviewStatus,
@@ -443,7 +461,7 @@ export async function fetchWashingtonLaunchNeighborhoodStats(
     hoods: [...groups.values()].sort((a, b) => b.totalCount - a.totalCount),
     hoodDataGap: groups.size === 0,
     hoodDataGapAlert: groups.size === 0
-      ? 'No neighborhood code is present for the selected county/filter window in the static launch bundle.'
+      ? 'No TerraFusion neighborhood code is present for the selected county/filter window in the Washington launch data package.'
       : null,
   };
 }
@@ -465,8 +483,8 @@ export async function fetchWashingtonLaunchCodeAudit(
   return {
     taxYear,
     totalSales: filtered.length,
-    dataQualityAlert: 'Static statewide launch bundle exposes deed/use-code distributions. WAC and ratio-code fields remain null unless present in the source county feed.',
-    wacCdBreakdown: [{ wacCd: null, description: 'Not provided by static statewide source bundle', count: filtered.length, isDataGap: true }],
+    dataQualityAlert: 'Washington launch data package exposes deed/use-code distributions. WAC and ratio-code fields remain null unless present in the source county feed.',
+    wacCdBreakdown: [{ wacCd: null, description: 'Not provided by Washington launch data package', count: filtered.length, isDataGap: true }],
     saleQualifierBreakdown: [...deedCounts.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, 25)

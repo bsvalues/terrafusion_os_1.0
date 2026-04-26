@@ -1,8 +1,8 @@
 /**
- * DemoDataBanner — visible indicator that a module is using sample/fixture data.
+ * DemoDataBanner — visible indicator that a module is using non-live data.
  *
- * Required by governance: any module rendering hardcoded sample data
- * must display this banner so operators never mistake it for production data.
+ * Required by governance: any module rendering simulated or cached review data
+ * must disclose that it is not authoritative live county evidence.
  */
 
 import React from 'react';
@@ -31,6 +31,6 @@ export const DemoDataBanner: React.FC<DemoDataBannerProps> = ({ module, classNam
       letterSpacing: '0.05em',
     }}
   >
-    ⚠ DEMO DATA — {module} is displaying sample fixtures, not live county data
+    ⚠ NON-LIVE DATA — {module} is displaying non-live or simulated data, not live county data
   </div>
 );

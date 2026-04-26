@@ -8,7 +8,7 @@
  * statutory references but show an operator-visible banner when no
  * authoritative data has been ingested. No synthesised values.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   getIpdRates,
   getLidLifts,
@@ -123,7 +123,62 @@ export default function ReferenceComplianceTab() {
     };
   }, []);
 
-  // ── F8 — attestation demo ────────────────────────────────────────────
+  const referencePacketSummary = useMemo(() => ({
+    ipd: ipd
+      ? {
+          source: ipd.source,
+          count: ipd.count,
+          specialistGated: ipd.specialistGated,
+          specialistGateNote: ipd.specialistGateNote,
+          rcwReference: ipd.rcwReference,
+        }
+      : null,
+    lidLifts: lifts
+      ? {
+          source: lifts.source,
+          count: lifts.count,
+          specialistGated: lifts.specialistGated,
+          specialistGateNote: lifts.specialistGateNote,
+          rcwReference: lifts.rcwReference,
+        }
+      : null,
+    stateSchool: stateSchool
+      ? {
+          source: stateSchool.source,
+          specialistGated: stateSchool.specialistGated,
+          specialistGateNote: stateSchool.specialistGateNote,
+          partCount: stateSchool.parts.length,
+        }
+      : null,
+    refundFund: refund
+      ? {
+          source: refund.source,
+          specialistGated: refund.specialistGated,
+          specialistGateNote: refund.specialistGateNote,
+          outsideAggregateCap: refund.outsideAggregateCap,
+        }
+      : null,
+    taxCodeAreas: tcas
+      ? {
+          source: tcas.source,
+          count: tcas.count,
+          rcwReference: tcas.rcwReference,
+          annexationModelingDeferred: tcas.annexationModelingDeferred,
+          deferralNote: tcas.deferralNote,
+        }
+      : null,
+    retention: retention
+      ? {
+          source: retention.source,
+          count: retention.count,
+          rcwReference: retention.rcwReference,
+          perRecordStampingDeferred: retention.perRecordStampingDeferred,
+          deferralNote: retention.deferralNote,
+        }
+      : null,
+  }), [ipd, lifts, stateSchool, refund, tcas, retention]);
+
+  // ── F8 — reference packet attestation ────────────────────────────────
   const [attestResult, setAttestResult] = useState<AttestationEnvelope | null>(null);
   const [attestError, setAttestError] = useState<string | null>(null);
   const [attestBusy, setAttestBusy] = useState(false);
@@ -132,10 +187,10 @@ export default function ReferenceComplianceTab() {
     setAttestError(null);
     try {
       const env = await attestCalculation({
-        subject: 'TerraLevy.Demo.Reference',
+        subject: 'TerraLevy.ReferencePacket',
         payload: {
-          note: 'Demonstration attestation — hashes the literal payload object.',
-          timestamp: new Date().toISOString(),
+          capturedAt: new Date().toISOString(),
+          packet: referencePacketSummary,
         },
       });
       setAttestResult(env);
@@ -144,7 +199,7 @@ export default function ReferenceComplianceTab() {
     } finally {
       setAttestBusy(false);
     }
-  }, []);
+  }, [referencePacketSummary]);
 
   if (loading) return <div style={{ color: T.textMuted, padding: 16 }}>Loading reference data…</div>;
   if (error) return <div style={{ color: 'red', padding: 16 }}>Error: {error}</div>;
@@ -314,7 +369,8 @@ export default function ReferenceComplianceTab() {
       {/* F8 — Attestation */}
       <SectionCard title="F8 · Attestation (SHA-256)">
         <p style={{ fontSize: 12, color: T.textMuted, margin: '0 0 10px' }}>
-          Produces a stateless attestation envelope: canonical hash, signer, correlationId.
+          Produces a stateless attestation envelope over the currently loaded
+          reference packet summary: canonical hash, signer, correlationId.
           Persistence of envelopes is deferred (see LEV-145).
         </p>
         <button
@@ -330,7 +386,7 @@ export default function ReferenceComplianceTab() {
             cursor: attestBusy ? 'wait' : 'pointer',
           }}
         >
-          {attestBusy ? 'Attesting…' : 'Produce demo attestation'}
+          {attestBusy ? 'Attesting…' : 'Attest current reference packet'}
         </button>
         {attestError && (
           <p style={{ fontSize: 12, color: 'red', marginTop: 8 }}>{attestError}</p>

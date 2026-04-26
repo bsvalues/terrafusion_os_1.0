@@ -5,7 +5,7 @@
  *
  * Enforces that:
  *   1. SegmentDiscoveryDashboard loads from backend service instead of page-local fixtures
- *   2. SegmentDiscoveryDashboard preserves disclosed empty-state behavior
+ *   2. SegmentDiscoveryDashboard preserves honest empty/unavailable state behavior
  *   3. No Math.random or ML clustering logic is introduced
  *   4. W4A contract suite remains green (regression)
  *   5. W3 contract suite remains green (regression)
@@ -54,22 +54,28 @@ describe('Gate 1 — SegmentDiscoveryDashboard loads from backend service', () =
 });
 
 // ============================================================================
-// Gate 2: SegmentDiscoveryDashboard preserves disclosed empty-state
+// Gate 2: SegmentDiscoveryDashboard preserves honest empty/unavailable state
 // ============================================================================
 
-describe('Gate 2 — SegmentDiscoveryDashboard empty-state and disclosure', () => {
+describe('Gate 2 — SegmentDiscoveryDashboard empty-state and governed unavailable state', () => {
   const src = readSrc('pages/forge/calibration/SegmentDiscoveryDashboard.tsx');
 
-  it('has DemoDataBanner for fixture disclosure', () => {
-    expect(src).toContain('DemoDataBanner');
+  it('does not import DemoDataBanner or fixture data', () => {
+    expect(src).not.toContain('DemoDataBanner');
+    expect(src).not.toMatch(/DISCOVERED_SEGMENTS_FIXTURE|segmentDiscoveryFixtures/);
   });
 
-  it('tracks isFixture state for disclosure', () => {
-    expect(src).toContain('isFixture');
+  it('tracks explicit loading/live/unavailable read state', () => {
+    expect(src).toContain("type SegmentDiscoveryReadState = 'loading' | 'live' | 'unavailable'");
+    expect(src).toContain("setReadState('loading')");
+    expect(src).toContain("setReadState('live')");
+    expect(src).toContain("setReadState('unavailable')");
   });
 
-  it('retains fixture import as fallback', () => {
-    expect(src).toMatch(/DISCOVERED_SEGMENTS_FIXTURE|segmentDiscoveryFixtures/);
+  it('renders explicit unavailable disclosure on runtime failure', () => {
+    expect(src).toContain('data-testid="segment-discovery-unavailable"');
+    expect(src).toContain('Segment discovery unavailable.');
+    expect(src).toContain('No governed segment evidence is being replaced with fixture data on this surface.');
   });
 
   it('handles empty segments array gracefully', () => {

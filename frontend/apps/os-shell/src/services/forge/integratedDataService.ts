@@ -2,7 +2,7 @@
  * Forge Integrated Data Service (BIV-151)
  * ===================================================================
  * Client-side API service for retrieving combined property data
- * aggregated from all sources: PACS, MLS, permits, assessments,
+ * aggregated from county assessment, recorder, permit, assessment,
  * hazard data, and enrichment pipelines.
  */
 
@@ -115,7 +115,7 @@ const BASE_URL = '/api/forge/integrated';
 /**
  * Fetch fully integrated property data from all sources for a parcel.
  * @param parcelId - The parcel to retrieve
- * @returns Combined property data from PACS, MLS, permits, and enrichment
+ * @returns Combined property data from county assessment, recorder, permits, and enrichment
  */
 export async function fetchIntegratedData(parcelId: string): Promise<IntegratedPropertyData> {
   const response = await fetch(`${BASE_URL}/${encodeURIComponent(parcelId)}`);

@@ -35,7 +35,8 @@ describe('Wave 1 — useTodaysWork', () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    expect(result.current.isSampleData).toBe(false);
+    expect(result.current.error).toBeNull();
+    expect(result.current.readState).toBe('live');
     expect(result.current.tasks).toEqual([
       {
         id: 'queue-1',
@@ -47,15 +48,15 @@ describe('Wave 1 — useTodaysWork', () => {
     ]);
   });
 
-  it('falls back to sample tasks when the live queue read fails', async () => {
+  it('returns unavailable state when the live queue read fails', async () => {
     mockedGetQueueItems.mockRejectedValue(new Error('queue unavailable'));
 
     const { result } = renderHook(() => useTodaysWork());
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    expect(result.current.isSampleData).toBe(true);
-    expect(result.current.tasks).toHaveLength(3);
-    expect(result.current.tasks[0].title).toBe('Review 3 appeals');
+    expect(result.current.error).toBe('queue unavailable');
+    expect(result.current.readState).toBe('unavailable');
+    expect(result.current.tasks).toEqual([]);
   });
 });

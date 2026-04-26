@@ -23,7 +23,7 @@ import bentonCompsSnapshot from '../data/dev-snapshots/benton-comparable-sales.j
 // Types
 // ═══════════════════════════════════════════════════════════════
 
-/** Shape of a comparable sale record from Benton County snapshot */
+/** Shape of a comparable sale record from TerraFusion-normalized Benton County sales */
 export interface ComparableSale {
   parcelId: string;
   saleDate: string;
@@ -107,7 +107,7 @@ export interface ReconciliationResult {
 // Data Loading
 // ═══════════════════════════════════════════════════════════════
 
-/** Load Benton County comparable sales from dev snapshot */
+/** Load Benton County comparable sales from the TerraFusion-normalized launch package */
 export function loadBentonComps(): ComparableSale[] {
   return (bentonCompsSnapshot as ComparableSale[]).map((raw) => ({
     parcelId: raw.parcelId,

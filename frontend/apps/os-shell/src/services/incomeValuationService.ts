@@ -143,10 +143,10 @@ export interface LocationPremium {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Default Expenses (Benton County typical commercial)
+// Empty Expenses (operator-entered)
 // ═══════════════════════════════════════════════════════════════
 
-export const DEFAULT_EXPENSES: IncomeExpenses = {
+export const EMPTY_EXPENSES: IncomeExpenses = {
   propertyTaxes: 0,
   insurance: 0,
   utilities: 0,

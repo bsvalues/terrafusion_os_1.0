@@ -29,6 +29,7 @@ interface VEIDashboardProps {
   metrics: VEIMetrics | null;
   neighborhoods: NeighborhoodRatio[];
   availableTaxYears: number[];
+  selectedTaxYear?: number;
   loading: boolean;
   onTaxYearChange: (year: number) => void;
   onSalesWindowChange: (months: number) => void;
@@ -39,6 +40,7 @@ export default function VEIDashboard({
   metrics,
   neighborhoods,
   availableTaxYears,
+  selectedTaxYear,
   loading,
   onTaxYearChange,
   onSalesWindowChange,
@@ -74,7 +76,11 @@ export default function VEIDashboard({
           Valuation Equity Index (VEI) Dashboard
         </h2>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <TaxYearSelector years={availableTaxYears} onChange={onTaxYearChange} />
+          <TaxYearSelector
+            years={availableTaxYears}
+            selected={selectedTaxYear}
+            onChange={onTaxYearChange}
+          />
           <SalesWindowSelector onChange={onSalesWindowChange} />
           {/* Outlier method toggle */}
           <div

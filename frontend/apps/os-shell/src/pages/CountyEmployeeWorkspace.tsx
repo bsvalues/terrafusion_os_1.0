@@ -757,7 +757,7 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
             <div className='mt-8 p-4 bg-terra-slate rounded-lg border border-slate-700'>
               <div className='flex items-center justify-between'>
                 <div className='text-sm text-slate-400'>
-                  Government. Transcended. | Workspace status snapshot
+                  Governed Operator Surface | Workspace status snapshot
                   {swarmStatus &&
                     ` | Latest factor ${swarmStatus.quantumOptimizationFactor} | ${swarmStatus.activeAgents.toLocaleString()} agents reported`}
                 </div>

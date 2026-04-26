@@ -13,25 +13,26 @@ const PWAShell: React.FC = () => {
   const [currentModule, setCurrentModule] = useState<Module | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
   const [userName, setUserName] = useState('Loading...');
-  const [loadingMessage, setLoadingMessage] = useState('Preparing transcendence…');
+  const [loadingMessage, setLoadingMessage] = useState('Preparing county workspace...');
   const [realDataConnected, setRealDataConnected] = useState(false);
   const [systemHealth, setSystemHealth] = useState<any>(null);
   const [aiAgentStatus, setAiAgentStatus] = useState<any>(null);
   const [_terraFusionSyncStatus, _setTerraFusionSyncStatus] = useState<any>(null);
+  const [shellError, setShellError] = useState<string | null>(null);
 
   // Cache busting key - forces fresh module data load
   const _CACHE_VERSION = '2.1.20250825_UNIFIED';
   const BRAND = {
-    essence: 'Government. Transcended.',
-    tagline: 'Government. Transcended.',
+    essence: 'Government. Governed.',
+    tagline: 'Government. Governed.',
     slogan: 'Turn Complexity into Clarity.',
     motto: 'We do it right the first time.',
     loadingMessages: [
-      'Preparing transcendence…',
-      'Advancing county intelligence…',
-      'Orchestrating clarity…',
+      'Preparing county workspace...',
+      'Checking governed service health...',
+      'Loading available modules...',
     ],
-    confirmationMessages: ['Transcendence complete.', 'Your path is clear.', 'All systems: Ready.'],
+    confirmationMessages: ['Workspace ready.', 'Your path is clear.', 'Available systems loaded.'],
     errorMessages: [
       "Let's clear the path—together.",
       'We anticipate, we adapt, we solve.',
@@ -39,149 +40,6 @@ const PWAShell: React.FC = () => {
     ],
   };
 
-  // ACTIVE MODULES REGISTRY - Real Terrafusion OS production modules
-  const defaultModules: Module[] = [
-    {
-      id: 'system-monitoring',
-      name: 'System Monitoring Dashboard',
-      description:
-        'Real-time health monitoring, performance metrics, and system status for all Terrafusion services and AI agents.',
-      icon: '📊',
-      enabled: true,
-      url: '/monitoring',
-    },
-    {
-      id: 'government-edition',
-      name: 'Government Edition Property Assessment Suite',
-      description:
-        'Complete property assessment solution for county government. Production ready with await DynamicPropertyService.GetPropertyCountAsync("benton") parcel records.',
-      icon: '🏛️',
-      enabled: true,
-      url: '/modules/government-edition/index.html',
-    },
-    {
-      id: 'costforge-ai-champion',
-      name: 'CostForge AI Champion',
-      description:
-        'AI-powered cost estimation and budget forecasting with PropertyValuation, MarketAnalysis, and RiskAssessment models.',
-      icon: '💎',
-      enabled: true,
-      url: '/modules/costforge-ai-champion/index.html',
-    },
-    {
-      id: 'terra-collections',
-      name: 'Terra Collections',
-      description:
-        'Tax collection management with payment processing and direct bank API connections.',
-      icon: '💰',
-      enabled: true,
-      url: '/modules/terra-collections/index.html',
-    },
-    {
-      id: 'terra-levy',
-      name: 'Terra Levy',
-      description: 'WA State RCW compliant levy calculation and rate management system.',
-      icon: '📊',
-      enabled: true,
-      url: '/modules/terra-levy/index.html',
-    },
-    {
-      id: 'terra-insight',
-      name: 'Terra Insight',
-      description: 'Real-time analytics dashboard and reporting suite with data visualization.',
-      icon: '📈',
-      enabled: true,
-      url: '/modules/terra-insight/index.html',
-    },
-    {
-      id: 'ai-command-brain',
-      name: 'AI Command Brain',
-      description:
-        '1,008 AI agents with 87 MCP tools (Supreme Commander + Field Generals + Squads) for government operations.',
-      icon: '🧠',
-      enabled: true,
-      url: '/modules/ai-command-brain/index.html',
-    },
-    {
-      id: 'ai-swarm',
-      name: 'AI Swarm Orchestrator',
-      description:
-        'Swarm coordination managing 1,008 concurrent agents with task distribution and optimization.',
-      icon: '🤖',
-      enabled: true,
-      url: '/modules/ai-swarm/index.html',
-    },
-    {
-      id: 'ai-advanced',
-      name: 'Enhanced Revenue Hunter',
-      description:
-        'Revenue optimization with anomaly detection. Demonstrated 47,231% ROI improvement.',
-      icon: '🎯',
-      enabled: true,
-      url: '/modules/ai-advanced/index.html',
-    },
-    {
-      id: 'testing-suite',
-      name: 'Testing Suite',
-      description: '716 real tests with 94.7% code coverage plus comprehensive mock testing suite.',
-      icon: '🧪',
-      enabled: true,
-      url: '/modules/testing-suite/index.html',
-    },
-    {
-      id: 'development',
-      name: 'Development Tools',
-      description: 'DevOps automation and CI/CD pipelines for government module development.',
-      icon: '🔧',
-      enabled: true,
-      url: '/modules/development/index.html',
-    },
-    {
-      id: 'commercial-suite',
-      name: 'Commercial Suite',
-      description:
-        'Enterprise licensing system with ROI calculator for commercial implementations.',
-      icon: '💼',
-      enabled: true,
-      url: '/modules/commercial-suite/index.html',
-    },
-    {
-      id: 'marketplace-champion',
-      name: 'Data Marketplace Champion',
-      description:
-        'Data exchange platform with REST APIs and GraphQL integration for inter-county data sharing.',
-      icon: '🏪',
-      enabled: true,
-      url: '/modules/marketplace-champion/index.html',
-    },
-    {
-      id: 'gispro',
-      name: 'GIS Pro Integration',
-      description:
-        'ArcGIS integration with parcel mapping, zoning layers, and spatial analysis tools.',
-      icon: '🗺️',
-      enabled: true,
-      url: '/modules/gispro/index.html',
-    },
-    {
-      id: 'Terrafusion-PublicRecords',
-      name: 'Public Records Portal',
-      description:
-        'FOIA compliant public access portal with role-based access control and audit logging.',
-      icon: '📋',
-      enabled: true,
-      url: '/modules/Terrafusion-PublicRecords/index.html',
-    },
-    {
-      id: 'property-workbench',
-      name: 'Property Workbench',
-      description:
-        'Property management dashboard with MLS data feeds and comprehensive property tracking.',
-      icon: '🏠',
-      enabled: true,
-      url: '/modules/property-workbench/index.html',
-    },
-  ];
   useEffect(() => {
     // Rotate loading messages
     const messageInterval = setInterval(() => {
@@ -229,16 +87,15 @@ const PWAShell: React.FC = () => {
               // eslint-disable-next-line no-console
             }
           } else {
-            // Fallback to default modules
-            setModules(defaultModules);
+            setModules([]);
             if (process.env.NODE_ENV === 'development') {
               // eslint-disable-next-line no-console
             }
           }
         } else {
-          setModules(defaultModules);
+          setModules([]);
         }
-        setLoadingMessage('Checking AI Swarm status...');
+        setLoadingMessage('Checking AI service status...');
 
         // Check AI Swarm status
         try {
@@ -255,10 +112,10 @@ const PWAShell: React.FC = () => {
             // eslint-disable-next-line no-console
           }
         }
-        setLoadingMessage('Finalizing transcendence...');
+        setLoadingMessage('Finalizing workspace...');
       } catch (error) {
-        // Fallback to default modules
-        setModules(defaultModules);
+        setModules([]);
+        setRealDataConnected(false);
         throw error;
       }
     };
@@ -313,8 +170,7 @@ const PWAShell: React.FC = () => {
     const initApp = async () => {
       try {
         await loadRealSystemData();
-        setUserName('County Administrator');
-        setRealDataConnected(true);
+        setUserName('Operator');
         setTimeout(() => {
           setLoading(false);
           startHealthChecks();
@@ -349,8 +205,7 @@ const PWAShell: React.FC = () => {
     setCurrentModule(null);
   };
   const showError = (message: string) => {
-    const brandMessage =
-      BRAND.errorMessages[Math.floor(Math.random() * BRAND.errorMessages.length)];
+    setShellError(message);
   };
   if (loading) {
     return (
@@ -424,7 +279,7 @@ const PWAShell: React.FC = () => {
               marginBottom: '0.5rem',
             }}
           >
-            Government. Transcended.
+            Government. Governed.
           </p>
 
           <p
@@ -571,26 +426,26 @@ const PWAShell: React.FC = () => {
                   fontWeight: 700,
                 }}
               >
-                {realDataConnected ? '✅ UNIFIED SYSTEM OPERATIONAL' : '⚠️ CONNECTING TO BACKEND'}
+                {realDataConnected ? 'Backend connected' : 'Backend unavailable or still connecting'}
               </div>
               {systemHealth && (
                 <div className='flex gap-4'>
                   <span>📦 {systemHealth.ModuleCount || modules.length} Modules</span>
-                  {aiAgentStatus && <span>🤖 {aiAgentStatus.AIAgents || 1008} AI Agents</span>}
-                  <span>🏛️ {systemHealth.Database?.County || 'Benton County'}</span>
+                  {aiAgentStatus?.AIAgents !== undefined && <span>🤖 {aiAgentStatus.AIAgents} AI Agents</span>}
+                  {systemHealth.Database?.County && <span>🏛️ {systemHealth.Database.County}</span>}
                 </div>
               )}
             </div>
             {_terraFusionSyncStatus && (
               <div className='text-right'>
                 <div>🔄 TerraFusionSync Active</div>
-                <div>📊 {_terraFusionSyncStatus.parcels || 'await DynamicPropertyService.GetPropertyCountAsync("benton")'} Parcels</div>
+                <div>📊 {_terraFusionSyncStatus.parcels ?? 'n/a'} Parcels</div>
               </div>
             )}
           </div>
 
           <div className='font-semibold'>
-            🏛️ Official ACTIVE_MODULES.md Registry v2.1 - 15 Production-Ready Government Modules
+            ACTIVE_MODULES.md registry v2.1 loaded for launch routing
           </div>
           <div
             style={{
@@ -599,10 +454,15 @@ const PWAShell: React.FC = () => {
               marginTop: '0.5rem',
             }}
           >
-            ✅ Registry Updated: Aug 25, 2025 | FIXED: useRealData error resolved | Hard refresh
-            (Ctrl+Shift+R) if still seeing old modules
+            Module registration is not an operational readiness claim. Each module still requires its own gate.
           </div>
         </div>
+
+        {shellError && (
+          <div className='mb-4 rounded border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-200'>
+            {shellError}
+          </div>
+        )}
 
         <div
           style={{
@@ -661,7 +521,7 @@ const PWAShell: React.FC = () => {
                   >
                     {module.name}
                   </h3>
-                  {!module.enabled && <span className='font-semibold'>Coming Soon</span>}
+                  {!module.enabled && <span className='font-semibold'>Queued</span>}
                 </div>
               </div>
 
@@ -683,4 +543,3 @@ const PWAShell: React.FC = () => {
   );
 };
 export default PWAShell;
-

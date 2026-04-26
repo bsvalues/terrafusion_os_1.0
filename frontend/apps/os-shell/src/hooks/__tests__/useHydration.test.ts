@@ -38,6 +38,11 @@ const createTestModule = (id: string, name: string): Module => ({
 });
 
 beforeEach(() => {
+  // Ensure JSDOM viewport is large enough that position/size clamping doesn't
+  // interfere with test assertions (default 768 height → 676 usable is too small).
+  Object.defineProperty(window, 'innerHeight', { value: 1400, writable: true, configurable: true });
+  Object.defineProperty(window, 'innerWidth', { value: 1600, writable: true, configurable: true });
+
   // Reset stores
   useDesktopStore.setState({
     windows: [],

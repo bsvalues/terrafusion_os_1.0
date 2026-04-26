@@ -6,6 +6,7 @@
  *
  * Reference: tools/registry/terrapilot.tools.schema.json
  */
+export type { AssessorActionContract, AssessorFindingContract, AssessorStaffRole, CountyFindingScope, CountyFindingType, CountyImpactPreview, CountyQueueType, CountyRecommendedTool, RoleBriefContract } from './assessorSuperpowers.js';
 export type Suite = 'forge' | 'atlas' | 'dais' | 'dossier' | 'os' | 'pilot' | 'gpt' | 'clerk' | 'treasury' | 'audit';
 export type Risk = 'read_only' | 'write_low' | 'write_high' | 'irreversible';
 export type Mode = 'pilot' | 'muse';

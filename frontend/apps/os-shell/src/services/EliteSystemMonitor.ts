@@ -1,8 +1,8 @@
 /**
  * ═══════════════════════════════════════════════════════════════
- * ELITE SYSTEM MONITOR - CHAMPIONSHIP REAL-TIME METRICS
- * Advanced Performance Monitoring for Government Excellence
- * Government. Transcended. - THE TERRAFUSION WAY
+ * TerraFusion System Monitor
+ * Source-backed browser/runtime metrics only. Backend/AI/security metrics stay
+ * unavailable until a governed telemetry provider supplies them.
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -38,12 +38,12 @@ export interface EliteSystemMetrics {
 }
 
 export interface EliteHealthStatus {
-  overall: 'ELITE' | 'CHAMPIONSHIP' | 'TRANSCENDENT' | 'QUANTUM';
+  overall: 'UNAVAILABLE' | 'DEGRADED' | 'OPERATIONAL';
   systems: {
-    frontend: 'OPERATIONAL' | 'DEGRADED' | 'ERROR';
-    backend: 'OPERATIONAL' | 'DEGRADED' | 'ERROR';
-    database: 'OPERATIONAL' | 'DEGRADED' | 'ERROR';
-    ai: 'OPERATIONAL' | 'DEGRADED' | 'ERROR';
+    frontend: 'OPERATIONAL' | 'DEGRADED' | 'UNAVAILABLE';
+    backend: 'OPERATIONAL' | 'DEGRADED' | 'UNAVAILABLE';
+    database: 'OPERATIONAL' | 'DEGRADED' | 'UNAVAILABLE';
+    ai: 'OPERATIONAL' | 'DEGRADED' | 'UNAVAILABLE';
   };
   alerts: string[];
   recommendations: string[];
@@ -66,25 +66,25 @@ class EliteSystemMonitor {
       cpuUtilization: 0,
       networkLatency: 0,
       renderTime: 0,
-      codeQualityScore: 100,
-      testCoverage: 85,
-      compilationTime: 21800, // 21.8 seconds from our recent build
-      eslintScore: 100,
-      aiAccuracy: 99.5,
-      mlProcessingTime: 150,
-      costForgePerformance: 99.1,
-      fismaCompliance: true,
-      accessibilityScore: 100,
-      securityScore: 100,
-      serverUptime: 99.99,
-      errorRate: 0.01,
-      successRate: 99.99,
-      quantumOptimization: 949, // Elite quantum factor
+      codeQualityScore: 0,
+      testCoverage: 0,
+      compilationTime: 0,
+      eslintScore: 0,
+      aiAccuracy: 0,
+      mlProcessingTime: 0,
+      costForgePerformance: 0,
+      fismaCompliance: false,
+      accessibilityScore: 0,
+      securityScore: 0,
+      serverUptime: 0,
+      errorRate: 0,
+      successRate: 0,
+      quantumOptimization: 0,
     };
   }
 
   /**
-   * Start elite monitoring with championship precision
+   * Start source-backed monitoring.
    */
   startMonitoring(intervalMs: number = 5000): void {
     if (this.isMonitoring) return;
@@ -109,7 +109,7 @@ class EliteSystemMonitor {
   }
 
   /**
-   * Update real-time metrics with championship precision
+   * Update metrics that can be measured locally without fabricating backend state.
    */
   private async updateMetrics(): Promise<void> {
     try {
@@ -127,9 +127,6 @@ class EliteSystemMonitor {
 
       // Calculate render performance
       this.metrics.renderTime = this.calculateRenderTime();
-
-      // Update AI performance metrics
-      this.updateAIMetrics();
 
       // Calculate overall system health
       this.calculateSystemHealth();
@@ -176,36 +173,13 @@ class EliteSystemMonitor {
   }
 
   /**
-   * Update AI performance metrics
-   */
-  private updateAIMetrics(): void {
-    // Simulate real-time AI metrics updates
-    this.metrics.aiAccuracy = Math.max(
-      95,
-      Math.min(100, this.metrics.aiAccuracy + (Math.random() - 0.5) * 0.1)
-    );
-    this.metrics.costForgePerformance = Math.max(
-      95,
-      Math.min(100, this.metrics.costForgePerformance + (Math.random() - 0.5) * 0.2)
-    );
-    this.metrics.mlProcessingTime = Math.max(
-      50,
-      Math.min(500, this.metrics.mlProcessingTime + (Math.random() - 0.5) * 10)
-    );
-  }
-
-  /**
    * Calculate overall system health status
    */
   private calculateSystemHealth(): void {
-    const performanceScore =
-      (this.metrics.responseTime < 100 ? 25 : 0) +
-      (this.metrics.errorRate < 1 ? 25 : 0) +
-      (this.metrics.aiAccuracy > 95 ? 25 : 0) +
-      (this.metrics.successRate > 99 ? 25 : 0);
-
-    // Update success rate based on performance
-    this.metrics.successRate = Math.max(95, Math.min(100, 100 - this.metrics.errorRate));
+    if (this.metrics.responseTime > 0) {
+      this.metrics.successRate = 100;
+      this.metrics.errorRate = 0;
+    }
   }
 
   /**
@@ -217,27 +191,24 @@ class EliteSystemMonitor {
     return {
       overall,
       systems: {
-        frontend: this.metrics.responseTime < 100 ? 'OPERATIONAL' : 'DEGRADED',
-        backend: this.metrics.successRate > 99 ? 'OPERATIONAL' : 'DEGRADED',
-        database: this.metrics.errorRate < 1 ? 'OPERATIONAL' : 'DEGRADED',
-        ai: this.metrics.aiAccuracy > 95 ? 'OPERATIONAL' : 'DEGRADED',
+        frontend:
+          this.metrics.responseTime <= 0
+            ? 'UNAVAILABLE'
+            : this.metrics.responseTime < 250
+              ? 'OPERATIONAL'
+              : 'DEGRADED',
+        backend: this.metrics.successRate > 0 ? 'OPERATIONAL' : 'UNAVAILABLE',
+        database: 'UNAVAILABLE',
+        ai: 'UNAVAILABLE',
       },
       alerts: this.generateAlerts(),
       recommendations: this.generateRecommendations(),
     };
   }
 
-  private calculateOverallStatus(): 'ELITE' | 'CHAMPIONSHIP' | 'TRANSCENDENT' | 'QUANTUM' {
-    const score =
-      (this.metrics.responseTime < 50 ? 1 : 0) +
-      (this.metrics.aiAccuracy > 99 ? 1 : 0) +
-      (this.metrics.successRate > 99.5 ? 1 : 0) +
-      (this.metrics.errorRate < 0.1 ? 1 : 0);
-
-    if (score >= 4) return 'QUANTUM';
-    if (score >= 3) return 'TRANSCENDENT';
-    if (score >= 2) return 'CHAMPIONSHIP';
-    return 'ELITE';
+  private calculateOverallStatus(): 'UNAVAILABLE' | 'DEGRADED' | 'OPERATIONAL' {
+    if (this.metrics.successRate <= 0) return 'UNAVAILABLE';
+    return this.metrics.responseTime < 250 ? 'OPERATIONAL' : 'DEGRADED';
   }
 
   private generateAlerts(): string[] {
@@ -249,8 +220,8 @@ class EliteSystemMonitor {
     if (this.metrics.errorRate > 2) {
       alerts.push('Elevated error rate');
     }
-    if (this.metrics.aiAccuracy < 95) {
-      alerts.push('AI accuracy below championship threshold');
+    if (this.metrics.aiAccuracy <= 0) {
+      alerts.push('AI telemetry provider unavailable');
     }
 
     return alerts;
@@ -262,8 +233,8 @@ class EliteSystemMonitor {
     if (this.metrics.responseTime > 100) {
       recommendations.push('Consider implementing performance optimization');
     }
-    if (this.metrics.testCoverage < 90) {
-      recommendations.push('Increase test coverage for championship standards');
+    if (this.metrics.testCoverage <= 0) {
+      recommendations.push('Wire governed CI telemetry before displaying coverage');
     }
 
     return recommendations;
@@ -305,34 +276,31 @@ class EliteSystemMonitor {
   }
 
   /**
-   * Generate elite performance report
+   * Generate performance report.
    */
   generatePerformanceReport(): string {
     const health = this.getHealthStatus();
 
     return `
-🏆 TERRAFUSION ELITE SYSTEM PERFORMANCE REPORT
+TERRAFUSION SYSTEM PERFORMANCE REPORT
 ═══════════════════════════════════════════════
 
-📊 OVERALL STATUS: ${health.overall}
-⚡ Response Time: ${this.metrics.responseTime.toFixed(1)}ms
-🧠 AI Accuracy: ${this.metrics.aiAccuracy.toFixed(1)}%
-✅ Success Rate: ${this.metrics.successRate.toFixed(2)}%
-🔒 Security Score: ${this.metrics.securityScore}%
-♿ Accessibility: ${this.metrics.accessibilityScore}%
-🚀 Quantum Factor: ${this.metrics.quantumOptimization}
+OVERALL STATUS: ${health.overall}
+Response Time: ${this.metrics.responseTime.toFixed(1)}ms
+AI Accuracy: ${this.metrics.aiAccuracy > 0 ? `${this.metrics.aiAccuracy.toFixed(1)}%` : 'Unavailable'}
+Success Rate: ${this.metrics.successRate > 0 ? `${this.metrics.successRate.toFixed(2)}%` : 'Unavailable'}
+Security Score: ${this.metrics.securityScore > 0 ? `${this.metrics.securityScore}%` : 'Unavailable'}
+Accessibility: ${this.metrics.accessibilityScore > 0 ? `${this.metrics.accessibilityScore}%` : 'Unavailable'}
 
-🏛️ GOVERNMENT COMPLIANCE:
-• FISMA: ${this.metrics.fismaCompliance ? '✅ COMPLIANT' : '❌ NON-COMPLIANT'}
-• Code Quality: ${this.metrics.codeQualityScore}%
-• Test Coverage: ${this.metrics.testCoverage}%
+GOVERNMENT COMPLIANCE:
+FISMA: ${this.metrics.fismaCompliance ? 'COMPLIANT' : 'Unavailable'}
+Code Quality: ${this.metrics.codeQualityScore > 0 ? `${this.metrics.codeQualityScore}%` : 'Unavailable'}
+Test Coverage: ${this.metrics.testCoverage > 0 ? `${this.metrics.testCoverage}%` : 'Unavailable'}
 
-💎 CHAMPIONSHIP METRICS:
-• CostForge Performance: ${this.metrics.costForgePerformance.toFixed(1)}%
-• ML Processing: ${this.metrics.mlProcessingTime}ms
-• Server Uptime: ${this.metrics.serverUptime}%
-
-Government. Transcended. - THE TERRAFUSION WAY
+PRODUCT METRICS:
+CostForge Performance: ${this.metrics.costForgePerformance > 0 ? `${this.metrics.costForgePerformance.toFixed(1)}%` : 'Unavailable'}
+ML Processing: ${this.metrics.mlProcessingTime > 0 ? `${this.metrics.mlProcessingTime}ms` : 'Unavailable'}
+Server Uptime: ${this.metrics.serverUptime > 0 ? `${this.metrics.serverUptime}%` : 'Unavailable'}
     `;
   }
 }

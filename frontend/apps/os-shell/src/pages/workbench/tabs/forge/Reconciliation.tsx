@@ -34,6 +34,7 @@ type ReconciliationMethod =
   | 'appraiser_judgment'
   | 'single_approach'
   | 'ai_assisted';
+type ReconciliationReadState = 'loading' | 'live' | 'unavailable';
 
 const APPROACH_LABELS: Record<ApproachType, { label: string; icon: string }> = {
   cost:   { label: 'Cost Approach',       icon: '🏗️' },
@@ -46,14 +47,6 @@ const METHODS: { value: ReconciliationMethod; label: string }[] = [
   { value: 'appraiser_judgment', label: 'Appraiser Judgment' },
   { value: 'single_approach',    label: 'Single Approach' },
   { value: 'ai_assisted',        label: 'AI-Assisted' },
-];
-
-/* ── Benton County fixture indications (dev fallback) ──── */
-
-const FIXTURE_INDICATIONS: ApproachIndication[] = [
-  { approach: 'cost',   indicatedValue: 385000, weight: 40, confidence: 0.82, note: 'RCN less depreciation + land' },
-  { approach: 'sales',  indicatedValue: 392000, weight: 45, confidence: 0.91, note: '3 adjusted comps, median $392k' },
-  { approach: 'income', indicatedValue: 378000, weight: 15, confidence: 0.68, note: 'NOI $26,460 / 7.0% cap rate' },
 ];
 
 /* ── Reconciliation Sub-Tab ─────────────────────────────── */
@@ -75,14 +68,17 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
   const [committedResult, setCommittedResult] = useState<{ flagId: number; finalValue: number } | null>(null);
 
   /* Local state */
-  const [indications, setIndications] = useState<ApproachIndication[]>(
-    () => FIXTURE_INDICATIONS.map((a) => ({ ...a })),
-  );
-  const [seededFromAPI, setSeededFromAPI] = useState(false);
+  const [indications, setIndications] = useState<ApproachIndication[]>([]);
+  const [readState, setReadState] = useState<ReconciliationReadState>('loading');
 
   /* Seed indications from live API data when available */
   useEffect(() => {
-    if (reconAPI.data && reconAPI.data.costApproach && reconAPI.data.salesApproach && reconAPI.data.incomeApproach && !seededFromAPI) {
+    if (reconAPI.loading) {
+      setReadState('loading');
+      return;
+    }
+
+    if (reconAPI.data && reconAPI.data.costApproach && reconAPI.data.salesApproach && reconAPI.data.incomeApproach) {
       const liveIndications: ApproachIndication[] = [
         {
           approach: 'cost',
@@ -107,10 +103,16 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
         },
       ];
       setIndications(liveIndications);
-      setSeededFromAPI(true);
+      setReadState('live');
       setReconciled(false);
+      return;
     }
-  }, [reconAPI.data, seededFromAPI]);
+
+    setIndications([]);
+    setReadState('unavailable');
+    setReconciled(false);
+    setReconciledValue(null);
+  }, [reconAPI.data, reconAPI.loading]);
   const [method, setMethod] = useState<ReconciliationMethod>('weighted_average');
   const [overrideValue, setOverrideValue] = useState<string>('');
   const [reconciled, setReconciled] = useState(false);
@@ -214,9 +216,11 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
       {/* ── Data Source Indicator ─────────────────────── */}
       <div className="flex items-center justify-between">
         <span className="tf-text-secondary text-sm">
-          Approach indications {seededFromAPI ? 'from live assessment data' : 'using estimated data'}
+          {readState === 'live'
+            ? 'Approach indications from live assessment data'
+            : 'Live approach indications unavailable'}
         </span>
-        <WorkbenchSourceBadge source={reconAPI.source} />
+        <WorkbenchSourceBadge source={readState === 'live' ? 'live' : 'unavailable'} />
       </div>
 
       {reconAPI.loading && (
@@ -226,96 +230,116 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
         </div>
       )}
 
+      {readState === 'unavailable' && !reconAPI.loading && (
+        <div
+          data-testid="forge-reconciliation-unavailable"
+          className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm"
+        >
+          <div className="font-medium text-amber-100">Reconciliation unavailable.</div>
+          <p className="mt-1 text-amber-50/90">
+            Live cost, sales, and income indications are required for this lane, and no Benton fixture indications are rendered here.
+          </p>
+          {reconAPI.error && (
+            <p className="mt-2 text-xs text-amber-100/80">{reconAPI.error.message}</p>
+          )}
+        </div>
+      )}
+
       {/* ── Approach Cards ─────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ overflow: 'hidden' }}>
-        {indications.map((ind, idx) => {
-          const meta = APPROACH_LABELS[ind.approach];
-          return (
-            <BentoCard
-              key={ind.approach}
-              title={`${meta.icon} ${meta.label}`}
-              variant="default"
-            >
-              <div className="space-y-3">
-                {/* Indicated Value */}
-                <div>
-                  <label className="block tf-text-secondary text-xs mb-1">Indicated Value</label>
-                  <input
-                    type="number"
-                    value={ind.indicatedValue}
-                    onChange={(e) => updateApproach(idx, { indicatedValue: Number(e.target.value) || 0 })}
-                    className="tf-input w-full px-3 py-1.5 text-sm"
-                    data-testid={`approach-value-${ind.approach}`}
-                  />
-                  {ind.indicatedValue > 0 && (
-                    <p className="text-xs tf-text-tertiary mt-0.5">
-                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(ind.indicatedValue)}
-                    </p>
-                  )}
-                </div>
-
-                {/* Weight Slider */}
-                <div>
-                  <label className="block tf-text-secondary text-xs mb-1">
-                    {ind.indicatedValue === 0 ? (
-                      <span className="tf-text-dim">Weight: <span className="font-semibold line-through">{ind.weight}%</span> <span className="italic">(excluded — no value)</span></span>
-                    ) : (
-                      <>Weight: <span className="font-semibold">{ind.weight}%</span></>
+      {readState === 'live' && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ overflow: 'hidden' }}>
+          {indications.map((ind, idx) => {
+            const meta = APPROACH_LABELS[ind.approach];
+            return (
+              <BentoCard
+                key={ind.approach}
+                title={`${meta.icon} ${meta.label}`}
+                variant="default"
+              >
+                <div className="space-y-3">
+                  {/* Indicated Value */}
+                  <div>
+                    <label className="block tf-text-secondary text-xs mb-1">Indicated Value</label>
+                    <input
+                      type="number"
+                      value={ind.indicatedValue}
+                      onChange={(e) => updateApproach(idx, { indicatedValue: Number(e.target.value) || 0 })}
+                      className="tf-input w-full px-3 py-1.5 text-sm"
+                      data-testid={`approach-value-${ind.approach}`}
+                    />
+                    {ind.indicatedValue > 0 && (
+                      <p className="text-xs tf-text-tertiary mt-0.5">
+                        {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(ind.indicatedValue)}
+                      </p>
                     )}
-                  </label>
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    value={ind.weight}
-                    onChange={(e) => updateApproach(idx, { weight: Number(e.target.value) })}
-                    className="w-full accent-current"
-                    disabled={ind.indicatedValue === 0}
-                    data-testid={`approach-weight-${ind.approach}`}
-                  />
-                </div>
-
-                {/* Confidence */}
-                {ind.confidence != null && (
-                  <div className="text-xs tf-text-tertiary">
-                    Confidence: {Math.round(ind.confidence * 100)}%
                   </div>
-                )}
 
-                {/* Note */}
-                <div className="text-xs tf-text-tertiary italic">
-                  {ind.note || 'No notes'}
+                  {/* Weight Slider */}
+                  <div>
+                    <label className="block tf-text-secondary text-xs mb-1">
+                      {ind.indicatedValue === 0 ? (
+                        <span className="tf-text-dim">Weight: <span className="font-semibold line-through">{ind.weight}%</span> <span className="italic">(excluded — no value)</span></span>
+                      ) : (
+                        <>Weight: <span className="font-semibold">{ind.weight}%</span></>
+                      )}
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      value={ind.weight}
+                      onChange={(e) => updateApproach(idx, { weight: Number(e.target.value) })}
+                      className="w-full accent-current"
+                      disabled={ind.indicatedValue === 0}
+                      data-testid={`approach-weight-${ind.approach}`}
+                    />
+                  </div>
+
+                  {/* Confidence */}
+                  {ind.confidence != null && (
+                    <div className="text-xs tf-text-tertiary">
+                      Confidence: {Math.round(ind.confidence * 100)}%
+                    </div>
+                  )}
+
+                  {/* Note */}
+                  <div className="text-xs tf-text-tertiary italic">
+                    {ind.note || 'No notes'}
+                  </div>
                 </div>
-              </div>
-            </BentoCard>
-          );
-        })}
-      </div>
+              </BentoCard>
+            );
+          })}
+        </div>
+      )}
 
       {/* ── Weight Summary Bar ─────────────────────────── */}
-      <div
-        className={`flex items-center justify-between px-4 py-2 rounded-lg border ${weightBarColor}`}
-        data-testid="weight-summary"
-      >
-        <span className="text-sm font-medium">
-          Total Weight: <span data-testid="total-weight">{totalWeight}%</span>
-        </span>
-        <span className="text-sm">
-          {totalWeight === 100 ? '✓ Balanced' : totalWeight > 100 ? '⚠ Over 100%' : '⚠ Under 100%'}
-        </span>
-      </div>
+      {readState === 'live' && (
+        <div
+          className={`flex items-center justify-between px-4 py-2 rounded-lg border ${weightBarColor}`}
+          data-testid="weight-summary"
+        >
+          <span className="text-sm font-medium">
+            Total Weight: <span data-testid="total-weight">{totalWeight}%</span>
+          </span>
+          <span className="text-sm">
+            {totalWeight === 100 ? '✓ Balanced' : totalWeight > 100 ? '⚠ Over 100%' : '⚠ Under 100%'}
+          </span>
+        </div>
+      )}
 
       {/* ── Reconciliation Controls ────────────────────── */}
-      <BentoCard
-        title="⚖️ Reconciliation"
-        variant="default"
-        actions={
-          <WorkbenchSourceBadge
-            source={reconciled || seededFromAPI ? 'live' : 'unavailable'}
-            className="ml-2"
-          />
-        }
-      >
+      {readState === 'live' && (
+        <BentoCard
+          title="⚖️ Reconciliation"
+          variant="default"
+          actions={
+            <WorkbenchSourceBadge
+              source={reconciled || readState === 'live' ? 'live' : 'unavailable'}
+              className="ml-2"
+            />
+          }
+        >
         <div className="space-y-4">
           {/* Method Selector */}
           <div className="flex items-center gap-4">
@@ -475,11 +499,11 @@ export const Reconciliation: React.FC<ForgeSubTabProps> = ({
             </div>
           )}
         </div>
-      </BentoCard>
+        </BentoCard>
+      )}
     </div>
   );
 };
 
 export default Reconciliation;
-
 

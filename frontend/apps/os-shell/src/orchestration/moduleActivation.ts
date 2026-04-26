@@ -137,7 +137,7 @@ function getModuleDisplayName(moduleId: string): string {
     'terra-gama': 'TerraGAMA',
     'terra-pilt': 'TerraPILT',
     'property-tax-ai': 'PropertyTax AI',
-    'pacs-bridge': 'PACS DataBridge',
+  'pacs-bridge': 'Assessment DataBridge',
     'terra-sync': 'TerraSync',
     'terra-flow': 'TerraFlow',
     'terra-queue': 'TerraQueue',

@@ -73,7 +73,7 @@ namespace TerraFusion.Consciousness
               {
                 Title = "TerraFusion Consciousness API",
                 Version = "v2.0.0",
-                Description = "Million-Agent Quantum Consciousness Orchestration for Government AI"
+                Description = "Legacy TerraFusion consciousness compatibility host with governed availability reporting"
               });
               c.EnableAnnotations();
             });
@@ -197,18 +197,20 @@ namespace TerraFusion.Consciousness
             {
               Service = "TerraFusion.Consciousness",
               Version = "2.0.0",
-              Status = "Operational",
-              Description = "Million-Agent Quantum Consciousness Orchestration",
-              Capabilities = new[]
-                {
-                    "Legacy Consciousness (1,008 agents)",
-                    "Quantum Consciousness (1,000,000 agents)",
-                    "Hybrid Orchestration",
-                    "Real Benton County Data",
-                    "Multi-County Open Data",
-                    "Quantum Security",
-                    "Government Compliance"
-                },
+              Status = "Partial",
+              Description = "Legacy TerraFusion consciousness compatibility host",
+              GovernedSurfaces = new
+              {
+                  BentonPropertyAssessment = true,
+                  CoreConsciousness = false,
+                  QuantumConsciousness = false,
+                  AiLayerMesh = false,
+                  QuantumSecurity = false,
+                  BentonCitizenServices = false,
+                  BentonEmergencyResponse = false,
+                  MultiCountyFederation = false
+              },
+              Message = "Only governed surfaces should be treated as available; legacy compatibility routes report unavailable explicitly.",
               Timestamp = DateTime.UtcNow
             });
 
@@ -219,20 +221,20 @@ namespace TerraFusion.Consciousness
               await Task.CompletedTask;
               try
               {
-                Console.WriteLine("🚀 Initializing TerraFusion Consciousness Systems...");
+                Console.WriteLine("🚀 Initializing TerraFusion Consciousness compatibility host...");
 
-                // Basic consciousness initialization - THE TERRAFUSION WAY!
-                // TODO: Add quantum orchestrator once service registration is complete
+                // Compatibility-host startup only. Governed runtime lanes remain explicit unavailable unless verified.
                 // using var scope = app.Services.CreateScope();
                 // var orchestrator = scope.ServiceProvider.GetRequiredService<IQuantumConsciousnessOrchestrator>();
                 // await orchestrator.InitializeAsync();
 
-                Console.WriteLine("✅ TerraFusion Consciousness Systems Operational");
-                Console.WriteLine("🧠 Basic Consciousness: Ready");
-                Console.WriteLine("⚡ Health Monitoring: Active");
-                Console.WriteLine("🔐 Security Layer: Enabled");
-                Console.WriteLine("🏛️ Government Compliance: Validated");
-                Console.WriteLine("🚀 Ready for AI Agent Coordination!");
+                Console.WriteLine("✅ TerraFusion Consciousness compatibility host started");
+                Console.WriteLine("🏠 Host Status: Partial");
+                Console.WriteLine("🏛️ Benton Property Assessment: Governed");
+                Console.WriteLine("🧠 Core Consciousness: Unavailable");
+                Console.WriteLine("⚡ AI Layer Mesh: Unavailable");
+                Console.WriteLine("🔐 Quantum Security: Unavailable");
+                Console.WriteLine("🌐 Multi-County Federation: Unavailable");
               }
               catch (Exception ex)
               {
@@ -242,7 +244,7 @@ namespace TerraFusion.Consciousness
             });
 
             Console.WriteLine($"🎯 TerraFusion Consciousness starting on {DateTime.UtcNow}");
-            Console.WriteLine("🚀 TerraFusion OS: Government. Transcended.");
+            Console.WriteLine("🚀 TerraFusion Consciousness compatibility host active.");
 
             app.Run();
         }

@@ -9,12 +9,10 @@
  * Source: Harris PACS change_of_value_report + TerraTrace audit spine
  *
  * DATA POSTURE:
- * - `DEMO_ENTRIES` are defined as reference fixtures but are NOT pre-seeded
- *   into the `entries` state. `loadAuditEntries()` populates entries from
- *   persistent storage; if the service seeds demo entries, they will have
- *   `id` values starting with 'demo-'.
- * - DemoDataBanner shows when entries is empty OR when loaded entries contain
- *   demo-prefixed IDs, indicating storage was seeded with sample data.
+ * - `loadAuditEntries()` is the only source for this surface.
+ * - When no governed TerraTrace-backed entries are available, the module
+ *   renders an explicit unavailable state.
+ * - No demo rows or test-entry injectors are permitted on this surface.
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -22,7 +20,6 @@ import {
   FileSearch,
   Clock,
   Filter,
-  Trash2,
   Download,
   ChevronRight,
   Calculator,
@@ -35,13 +32,10 @@ import {
   FileText,
 } from 'lucide-react';
 import { TactileButton } from '@/ui/materials';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import {
   type AuditAction,
   type ValuationAuditEntry,
   loadAuditEntries,
-  clearAuditEntries,
-  appendAuditEntry,
 } from '../../../services/forgeService';
 
 const ACTION_CONFIG: Record<AuditAction, { label: string; icon: typeof Calculator; color: string }> = {
@@ -55,65 +49,6 @@ const ACTION_CONFIG: Record<AuditAction, { label: string; icon: typeof Calculato
   MANUAL_OVERRIDE: { label: 'Manual Override', icon: AlertTriangle, color: 'hsl(var(--tf-warning-hs) 55%)' },
 };
 
-const DEMO_ENTRIES: ValuationAuditEntry[] = [
-  {
-    id: 'demo-1', parcelId: '1-0455-100-0001-001', action: 'COST_CALCULATED',
-    timestamp: '2026-02-20T09:15:00Z', userId: 'appraiser-001',
-    previousValue: null, newValue: 325000, module: 'CostForgeModule',
-    details: { buildingType: '100', region: 'BC-RICHLAND', squareFeet: 2200, confidence: 'HIGH' },
-    notes: 'Initial cost approach for SFR in Richland',
-  },
-  {
-    id: 'demo-2', parcelId: '1-0455-100-0001-001', action: 'COMPS_ANALYZED',
-    timestamp: '2026-02-20T09:32:00Z', userId: 'appraiser-001',
-    previousValue: null, newValue: 342000, module: 'CompsForgeModule',
-    details: { compsUsed: 4, adjustmentRange: '$-8,500 to $12,000', medianAdjusted: 342000 },
-    notes: 'Sales comparison with 4 Richland comps',
-  },
-  {
-    id: 'demo-3', parcelId: '1-0455-100-0001-001', action: 'RECONCILIATION_COMPLETED',
-    timestamp: '2026-02-20T10:05:00Z', userId: 'appraiser-001',
-    previousValue: null, newValue: 337800, module: 'ReconciliationModule',
-    details: { method: 'weighted_average', costWeight: 0.3, salesWeight: 0.6, incomeWeight: 0.1, spread: '5.2%' },
-    notes: 'Reconciled cost ($325K) + sales ($342K) — residential weighted average',
-  },
-  {
-    id: 'demo-4', parcelId: '1-0935-200-0004-002', action: 'INCOME_CALCULATED',
-    timestamp: '2026-02-21T14:20:00Z', userId: 'appraiser-002',
-    previousValue: null, newValue: 1925000, module: 'IncomeApproachModule',
-    details: { noi: 154000, capRate: 0.08, propertyType: 'Multi-Family', units: 12 },
-    notes: 'Direct cap for 12-unit apartment complex',
-  },
-  {
-    id: 'demo-5', parcelId: '1-0935-200-0004-002', action: 'APPEAL_FILED',
-    timestamp: '2026-02-22T08:45:00Z', userId: 'property-owner',
-    previousValue: 2100000, newValue: 1925000, module: 'AppealForgeModule',
-    details: { appealType: 'VALUATION', currentAssessed: 2100000, requestedValue: 1925000, evidenceCount: 3 },
-    notes: 'Owner appeal on market value for multi-family property',
-  },
-  {
-    id: 'demo-6', parcelId: '1-0935-200-0004-002', action: 'APPEAL_DECIDED',
-    timestamp: '2026-02-25T16:00:00Z', userId: 'boe-panel',
-    previousValue: 2100000, newValue: 1975000, module: 'AppealForgeModule',
-    details: { decision: 'PARTIAL', reduction: 125000, hearingDate: '2026-02-25' },
-    notes: 'BOE granted partial reduction to $1,975,000',
-  },
-  {
-    id: 'demo-7', parcelId: '1-1250-300-0002-000', action: 'VALUE_CHANGED',
-    timestamp: '2026-02-24T11:30:00Z', userId: 'appraiser-001',
-    previousValue: 890000, newValue: 875000, module: 'CostForgeModule',
-    details: { reason: 'Updated depreciation rate for commercial office', adjustmentType: 'depreciation' },
-    notes: 'Adjusted depreciation from 15% to 18% after inspection',
-  },
-  {
-    id: 'demo-8', parcelId: '1-0455-100-0001-001', action: 'MANUAL_OVERRIDE',
-    timestamp: '2026-02-26T09:00:00Z', userId: 'chief-appraiser',
-    previousValue: 337800, newValue: 340000, module: 'ReconciliationModule',
-    details: { reason: 'Rounded to nearest $5K per office policy', approvedBy: 'chief-appraiser' },
-    notes: 'Chief appraiser approved rounding for final value',
-  },
-];
-
 const fmt = (n: number | null) => n !== null ? '$' + n.toLocaleString('en-US') : '—';
 const fmtDate = (ts: string) => {
   const d = new Date(ts);
@@ -126,18 +61,16 @@ const fmtTime = (ts: string) => {
 
 export default function ValueAuditModule() {
   const [entries, setEntries] = useState<ValuationAuditEntry[]>([]);
+  const [auditFeedStatus, setAuditFeedStatus] = useState<'loading' | 'available' | 'unavailable'>('loading');
   const [filterAction, setFilterAction] = useState<AuditAction | 'ALL'>('ALL');
   const [filterParcel, setFilterParcel] = useState('');
   const [selectedEntry, setSelectedEntry] = useState<ValuationAuditEntry | null>(null);
 
-  // Load entries on mount.
-  // When the audit store is empty, seed the table with bounded DEMO_ENTRIES so
-  // the panel renders evidence; the DemoDataBanner discloses the demo overlay.
   useEffect(() => {
     const stored = loadAuditEntries();
-    const merged = stored.length === 0 ? [...DEMO_ENTRIES, ...stored] : stored;
-    const sorted = [...merged].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    const sorted = [...stored].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     setEntries(sorted);
+    setAuditFeedStatus(sorted.length > 0 ? 'available' : 'unavailable');
   }, []);
 
   const filteredEntries = useMemo(() => {
@@ -162,12 +95,6 @@ export default function ValueAuditModule() {
     };
   }, [entries]);
 
-  const handleClearUserEntries = useCallback(() => {
-    clearAuditEntries();
-    setEntries([]);
-    setSelectedEntry(null);
-  }, []);
-
   const handleExportCSV = useCallback(() => {
     const headers = ['Timestamp', 'Parcel ID', 'Action', 'Previous Value', 'New Value', 'Module', 'User', 'Notes'];
     const rows = filteredEntries.map(e => [
@@ -183,25 +110,12 @@ export default function ValueAuditModule() {
     a.click(); URL.revokeObjectURL(url);
   }, [filteredEntries]);
 
-  const handleAddTestEntry = useCallback(() => {
-    const entry = appendAuditEntry({
-      parcelId: '1-0455-100-0001-001',
-      action: 'COST_CALCULATED',
-      userId: 'appraiser-001',
-      previousValue: null,
-      newValue: Math.round(300000 + Math.random() * 100000),
-      module: 'CostForgeModule',
-      details: { source: 'test-entry', buildingType: '100' },
-      notes: 'Test audit entry',
-    });
-    setEntries(prev => [entry, ...prev]);
-  }, []);
+  const auditFeedUnavailable = auditFeedStatus === 'unavailable';
+  const auditFeedLoading = auditFeedStatus === 'loading';
+  const canExport = filteredEntries.length > 0;
 
   return (
     <div className='p-6 space-y-6'>
-      {/* Show banner when audit trail is empty OR contains seeded demo entries */}
-      {(entries.length === 0 || entries.some(e => e.id.startsWith('demo-'))) && <DemoDataBanner module="Value Audit" />}
-      {/* Title */}
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-3'>
           <FileSearch size={24} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
@@ -215,19 +129,41 @@ export default function ValueAuditModule() {
           </div>
         </div>
         <div className='flex items-center gap-2'>
-          <button onClick={handleAddTestEntry} className='px-3 py-1.5 rounded text-xs hover:bg-white/10 transition-colors' style={{ border: '1px solid hsl(var(--tf-border))', color: 'hsl(var(--tf-muted))' }}>
-            + Test Entry
-          </button>
-          <TactileButton size='sm' onClick={handleExportCSV} leftIcon={<Download size={12} />}>
-            Export CSV
-          </TactileButton>
-          <button onClick={handleClearUserEntries} className='flex items-center gap-1.5 px-3 py-1.5 rounded text-xs hover:bg-white/10 transition-colors' style={{ border: '1px solid hsl(var(--tf-border))', color: 'hsl(var(--tf-muted))' }}>
-            <Trash2 size={12} /> Clear User Entries
-          </button>
+          {canExport ? (
+            <TactileButton size='sm' onClick={handleExportCSV} leftIcon={<Download size={12} />}>
+              Export CSV
+            </TactileButton>
+          ) : (
+            <button
+              type='button'
+              disabled
+              className='flex items-center gap-1.5 px-3 py-1.5 rounded text-xs cursor-not-allowed opacity-60'
+              style={{ border: '1px solid hsl(var(--tf-border))', color: 'hsl(var(--tf-muted))' }}
+            >
+              <Download size={12} /> Export CSV
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Stats Bar */}
+      {auditFeedUnavailable && (
+        <div
+          data-testid='value-audit-unavailable'
+          className='rounded-lg p-4 flex items-start gap-3'
+          style={{ background: 'hsl(var(--tf-warning) / 0.08)', border: '1px solid hsl(var(--tf-warning) / 0.35)' }}
+        >
+          <AlertTriangle size={18} style={{ color: 'hsl(var(--tf-warning))', marginTop: 2 }} />
+          <div className='space-y-1'>
+            <p className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+              Value audit entries unavailable.
+            </p>
+            <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+              This module is not yet connected to the governed TerraTrace audit feed. No demo rows or test injectors are shown.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className='grid grid-cols-4 gap-4'>
         {[
           { label: 'Total Entries', value: stats.totalEntries.toString(), icon: FileText },
@@ -240,78 +176,102 @@ export default function ValueAuditModule() {
               <Icon size={14} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
               <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>{label}</span>
             </div>
-            <p className='text-lg font-bold mt-1' style={{ color: 'hsl(var(--tf-fg))' }}>{value}</p>
+            <p className='text-lg font-bold mt-1' style={{ color: 'hsl(var(--tf-fg))' }}>
+              {auditFeedStatus === 'available' ? value : auditFeedLoading ? 'Loading…' : 'Unavailable'}
+            </p>
           </div>
         ))}
       </div>
 
       <div className='flex gap-6'>
-        {/* LEFT: Filters + Entry List */}
         <div className='w-2/3 space-y-4'>
-          {/* Filters */}
-          <div className='flex items-center gap-3'>
-            <Filter size={14} style={{ color: 'hsl(var(--tf-muted))' }} />
-            <select
-              value={filterAction} onChange={(e) => setFilterAction(e.target.value as AuditAction | 'ALL')}
-              className='px-3 py-1.5 rounded text-sm' style={{ background: 'hsl(var(--tf-card-bg))', border: '1px solid hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}
-            >
-              <option value='ALL'>All Actions</option>
-              {(Object.keys(ACTION_CONFIG) as AuditAction[]).map(a => (
-                <option key={a} value={a}>{ACTION_CONFIG[a].label}</option>
-              ))}
-            </select>
-            <input
-              type='text' placeholder='Filter by parcel ID...' value={filterParcel}
-              onChange={(e) => setFilterParcel(e.target.value)}
-              className='px-3 py-1.5 rounded text-sm flex-1' style={{ background: 'hsl(var(--tf-card-bg))', border: '1px solid hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}
-            />
-            <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
-              {filteredEntries.length} of {entries.length}
-            </span>
-          </div>
-
-          {/* Entry List */}
-          <div className='space-y-1'>
-            {filteredEntries.map(entry => {
-              const cfg = ACTION_CONFIG[entry.action];
-              const Icon = cfg.icon;
-              const isSelected = selectedEntry?.id === entry.id;
-              return (
-                <button
-                  key={entry.id}
-                  onClick={() => setSelectedEntry(isSelected ? null : entry)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${isSelected ? 'bg-white/10' : 'hover:bg-white/5'}`}
+          {auditFeedStatus === 'available' ? (
+            <>
+              <div className='flex items-center gap-3'>
+                <Filter size={14} style={{ color: 'hsl(var(--tf-muted))' }} />
+                <select
+                  value={filterAction}
+                  onChange={(e) => setFilterAction(e.target.value as AuditAction | 'ALL')}
+                  className='px-3 py-1.5 rounded text-sm'
+                  style={{ background: 'hsl(var(--tf-card-bg))', border: '1px solid hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}
                 >
-                  <div className='p-1.5 rounded' style={{ background: `${cfg.color}20` }}>
-                    <Icon size={14} style={{ color: cfg.color }} />
-                  </div>
-                  <div className='flex-1 min-w-0'>
-                    <div className='flex items-center gap-2'>
-                      <span className='text-sm font-medium truncate' style={{ color: 'hsl(var(--tf-fg))' }}>{cfg.label}</span>
-                      <span className='text-xs font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>{entry.parcelId}</span>
-                    </div>
-                    <p className='text-xs truncate' style={{ color: 'hsl(var(--tf-muted))' }}>{entry.notes}</p>
-                  </div>
-                  <div className='text-right shrink-0'>
-                    {entry.newValue !== null && (
-                      <p className='text-sm font-mono' style={{ color: 'hsl(var(--tf-fg))' }}>{fmt(entry.newValue)}</p>
-                    )}
-                    <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>{fmtDate(entry.timestamp)}</p>
-                  </div>
-                  <ChevronRight size={14} style={{ color: 'hsl(var(--tf-muted))', opacity: isSelected ? 1 : 0.3 }} />
-                </button>
-              );
-            })}
-            {filteredEntries.length === 0 && (
-              <div className='text-center py-12'>
-                <FileSearch size={32} className='mx-auto mb-2' style={{ color: 'hsl(var(--tf-muted) / 0.3)' }} />
-                <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>No audit entries match filters</p>
+                  <option value='ALL'>All Actions</option>
+                  {(Object.keys(ACTION_CONFIG) as AuditAction[]).map(a => (
+                    <option key={a} value={a}>{ACTION_CONFIG[a].label}</option>
+                  ))}
+                </select>
+                <input
+                  type='text'
+                  placeholder='Filter by parcel ID...'
+                  value={filterParcel}
+                  onChange={(e) => setFilterParcel(e.target.value)}
+                  className='px-3 py-1.5 rounded text-sm flex-1'
+                  style={{ background: 'hsl(var(--tf-card-bg))', border: '1px solid hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}
+                />
+                <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  {filteredEntries.length} of {entries.length}
+                </span>
               </div>
-            )}
-          </div>
+
+              <div className='space-y-1'>
+                {filteredEntries.map(entry => {
+                  const cfg = ACTION_CONFIG[entry.action];
+                  const Icon = cfg.icon;
+                  const isSelected = selectedEntry?.id === entry.id;
+                  return (
+                    <button
+                      key={entry.id}
+                      onClick={() => setSelectedEntry(isSelected ? null : entry)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${isSelected ? 'bg-white/10' : 'hover:bg-white/5'}`}
+                    >
+                      <div className='p-1.5 rounded' style={{ background: `${cfg.color}20` }}>
+                        <Icon size={14} style={{ color: cfg.color }} />
+                      </div>
+                      <div className='flex-1 min-w-0'>
+                        <div className='flex items-center gap-2'>
+                          <span className='text-sm font-medium truncate' style={{ color: 'hsl(var(--tf-fg))' }}>{cfg.label}</span>
+                          <span className='text-xs font-mono' style={{ color: 'hsl(var(--tf-muted))' }}>{entry.parcelId}</span>
+                        </div>
+                        <p className='text-xs truncate' style={{ color: 'hsl(var(--tf-muted))' }}>{entry.notes}</p>
+                      </div>
+                      <div className='text-right shrink-0'>
+                        {entry.newValue !== null && (
+                          <p className='text-sm font-mono' style={{ color: 'hsl(var(--tf-fg))' }}>{fmt(entry.newValue)}</p>
+                        )}
+                        <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>{fmtDate(entry.timestamp)}</p>
+                      </div>
+                      <ChevronRight size={14} style={{ color: 'hsl(var(--tf-muted))', opacity: isSelected ? 1 : 0.3 }} />
+                    </button>
+                  );
+                })}
+                {filteredEntries.length === 0 && (
+                  <div className='text-center py-12'>
+                    <FileSearch size={32} className='mx-auto mb-2' style={{ color: 'hsl(var(--tf-muted) / 0.3)' }} />
+                    <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>No audit entries match filters</p>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div
+              className='rounded-lg p-8 flex items-center justify-center min-h-[320px]'
+              style={{ background: 'hsl(var(--tf-card-bg))', border: '1px solid hsl(var(--tf-border))' }}
+            >
+              <div className='text-center space-y-2'>
+                <FileSearch size={36} className='mx-auto' style={{ color: 'hsl(var(--tf-suite-forge) / 0.3)' }} />
+                <p className='text-sm font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {auditFeedLoading ? 'Loading audit trail...' : 'Value audit entries unavailable.'}
+                </p>
+                <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  {auditFeedLoading
+                    ? 'Checking for governed TerraTrace audit entries.'
+                    : 'This module is waiting on a governed audit feed instead of seeding local demo entries.'}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* RIGHT: Detail Panel */}
         <div className='w-1/3'>
           {selectedEntry ? (
             <div className='rounded-lg p-5 space-y-4 sticky top-6' style={{ background: 'hsl(var(--tf-card-bg))', border: '1px solid hsl(var(--tf-border))' }}>
@@ -392,7 +352,13 @@ export default function ValueAuditModule() {
             <div className='rounded-lg p-8 flex items-center justify-center min-h-[400px]' style={{ background: 'hsl(var(--tf-card-bg))', border: '1px solid hsl(var(--tf-border))' }}>
               <div className='text-center space-y-2'>
                 <FileSearch size={36} className='mx-auto' style={{ color: 'hsl(var(--tf-suite-forge) / 0.3)' }} />
-                <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Select an entry to view details</p>
+                <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+                  {auditFeedLoading
+                    ? 'Loading audit trail...'
+                    : auditFeedUnavailable
+                      ? 'Awaiting a governed TerraTrace audit feed'
+                      : 'Select an entry to view details'}
+                </p>
               </div>
             </div>
           )}

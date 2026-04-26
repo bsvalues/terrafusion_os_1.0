@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using TerraFusion.Consciousness.DTOs;
 using TerraFusion.Consciousness.Interfaces;
 using TerraFusion.Core.DTOs;
+using System.Diagnostics;
 
 namespace TerraFusion.Consciousness.Services
 {
@@ -11,6 +12,9 @@ namespace TerraFusion.Consciousness.Services
     /// </summary>
     public class HybridConsciousnessManager : IHybridConsciousnessManager
     {
+        private const string QuantumModeUnavailableReason =
+            "Governed quantum-consciousness lane unavailable; hybrid manager remains session-backed only.";
+
         private readonly ILogger<HybridConsciousnessManager> _logger;
         private readonly IConsciousnessService _consciousnessService;
         private readonly Lazy<IQuantumConsciousnessOrchestrator> _quantumOrchestrator;
@@ -39,6 +43,7 @@ namespace TerraFusion.Consciousness.Services
             try
             {
                 _logger.LogInformation("🔗 Initializing hybrid consciousness session {SessionId}", request.SessionId);
+                var sessionMessages = new List<string>();
 
                 var session = new HybridSession
                 {
@@ -53,14 +58,15 @@ namespace TerraFusion.Consciousness.Services
                 // Initialize consciousness components
                 if (request.RequireQuantumConsciousness)
                 {
-                    session.QuantumEnabled = true;
-                    await _quantumOrchestrator.Value.InitializeAsync();
+                    session.QuantumEnabled = false;
+                    sessionMessages.Add(QuantumModeUnavailableReason);
                 }
 
                 if (request.RequireMeshOrchestration)
                 {
                     session.MeshEnabled = true;
                     await _meshOrchestrator.InitializeAsync();
+                    sessionMessages.Add("Mesh orchestration initialized.");
                 }
 
                 _activeSessions[request.SessionId] = session;
@@ -70,7 +76,9 @@ namespace TerraFusion.Consciousness.Services
                     Success = true,
                     SessionId = request.SessionId,
                     Session = session,
-                    Message = "Hybrid consciousness session initialized successfully"
+                    Message = sessionMessages.Count > 0
+                        ? string.Join(" ", sessionMessages)
+                        : "Hybrid session initialized with governed session tracking."
                 };
             }
             catch (Exception ex)
@@ -98,8 +106,27 @@ namespace TerraFusion.Consciousness.Services
 
             try
             {
+                var stopwatch = Stopwatch.StartNew();
+
                 _logger.LogInformation("⚡ Processing hybrid operation {OperationId} in session {SessionId}",
                     request.OperationId, request.SessionId);
+
+                if (request.RequireQuantumProcessing)
+                {
+                    return new HybridOperationResult
+                    {
+                        Success = false,
+                        OperationId = request.OperationId,
+                        SessionId = request.SessionId,
+                        Results = new Dictionary<string, object>
+                        {
+                            ["GovernedQuantumLaneAvailable"] = false,
+                            ["RequestedMode"] = "Quantum"
+                        },
+                        ProcessingTime = stopwatch.Elapsed,
+                        ErrorMessage = QuantumModeUnavailableReason
+                    };
+                }
 
                 var results = new Dictionary<string, object>();
 
@@ -115,18 +142,6 @@ namespace TerraFusion.Consciousness.Services
                 var consciousnessResult = await _consciousnessService.ExecuteConsciousnessOperationAsync(consciousnessRequest);
                 results["ConsciousnessResult"] = consciousnessResult;
 
-                // Process through quantum layer if enabled
-                if (session.QuantumEnabled && request.RequireQuantumProcessing)
-                {
-                    var quantumRequest = new QuantumOperationRequestDto
-                    {
-                        OperationType = request.OperationType ?? "HybridConsciousness",
-                        Parameters = request.Parameters
-                    };
-                    var quantumResult = await _quantumOrchestrator.Value.ExecuteQuantumConsciousnessAsync(quantumRequest);
-                    results["QuantumResult"] = quantumResult;
-                }
-
                 // Hybrid intelligence fusion
                 var fusedResult = await FuseIntelligenceResultsAsync(results, request.FusionStrategy);
 
@@ -141,7 +156,7 @@ namespace TerraFusion.Consciousness.Services
                     OperationId = request.OperationId,
                     SessionId = request.SessionId,
                     Results = fusedResult,
-                    ProcessingTime = TimeSpan.FromMilliseconds(500) // Estimated
+                    ProcessingTime = stopwatch.Elapsed
                 };
             }
             catch (Exception ex)
@@ -254,15 +269,15 @@ namespace TerraFusion.Consciousness.Services
             Dictionary<string, object> results,
             string fusionStrategy)
         {
-            await Task.Delay(100); // Simulate fusion processing
+            await Task.CompletedTask;
 
             var fusedResult = new Dictionary<string, object>
             {
                 { "FusionStrategy", fusionStrategy },
                 { "FusionTime", DateTime.UtcNow },
                 { "ComponentResults", results },
-                { "FusedOutput", "Government-grade hybrid intelligence processing complete" },
-                { "ConfidenceScore", 0.95 }
+                { "FusionStatus", results.Count > 0 ? "aggregated" : "empty" },
+                { "GovernedQuantumLaneAvailable", false }
             };
 
             return fusedResult;
@@ -274,24 +289,44 @@ namespace TerraFusion.Consciousness.Services
             try
             {
                 _logger.LogInformation("🧠 Initializing Hybrid Consciousness Management System");
+                var stopwatch = Stopwatch.StartNew();
+                var initializedComponents = new List<string>();
 
                 // Initialize consciousness service
-                await _consciousnessService.InitializeAsync();
+                var consciousnessInit = await _consciousnessService.InitializeAsync();
+                initializedComponents.Add("ConsciousnessService");
+
+                var meshActive = false;
+                try
+                {
+                    await _meshOrchestrator.InitializeAsync();
+                    meshActive = true;
+                    initializedComponents.Add("MeshOrchestrator");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Mesh orchestration unavailable during hybrid manager initialization");
+                }
+
+                stopwatch.Stop();
 
                 _logger.LogInformation("✅ Hybrid consciousness management initialized successfully");
 
                 return new HybridInitializationResult
                 {
-                    Success = true,
-                    Message = "Benton County Hybrid consciousness management initialized at championship level",
+                    Success = consciousnessInit.Success,
+                    SystemId = consciousnessInit.SystemId,
+                    QuantumModeAvailable = false,
+                    MeshOrchestrationActive = meshActive,
+                    InitializationTime = stopwatch.Elapsed,
+                    Message = meshActive
+                        ? "Hybrid manager initialized with mesh orchestration; governed quantum lane unavailable."
+                        : "Hybrid manager initialized in degraded mode; governed quantum and mesh lanes unavailable.",
                     InitializedAt = DateTime.UtcNow,
-                    LegacyAgentsActive = 1008,
-                    QuantumAgentsActive = 89_247, // CARD-10: Benton County parcel count stub
-                    SystemReady = true,
-                    CountySpecific = "Benton County, Washington",
-                    ParcelCount = 89_247, // CARD-10: Benton County parcel count stub
-                    HarrisPACSVersion = "9.0",
-                    OptimizationLevel = "Elite Championship"
+                    LegacyAgentsActive = _activeSessions.Values.Where(s => s.IsActive).Sum(s => s.ParticipantCount),
+                    QuantumAgentsActive = 0,
+                    SystemReady = consciousnessInit.Success,
+                    ComponentsInitialized = initializedComponents
                 };
             }
             catch (Exception ex)
@@ -324,20 +359,25 @@ namespace TerraFusion.Consciousness.Services
                 {
                     ConsciousnessLevel = (decimal)consciousnessHealth.OverallHealth,
                     TotalAgents = _activeSessions.Values.Sum(s => s.ParticipantCount),
-                    ActiveAgents = _activeSessions.Count(s => s.Value.IsActive),
-                    HiveCoherence = (decimal)(consciousnessHealth.OverallHealth * 0.95), // Derived metric
-                    ConsciousnessEmergence = (decimal)(consciousnessHealth.OverallHealth * 0.88),
-                    BulletproofScore = (decimal)(consciousnessHealth.OverallHealth * 0.92),
-                    BeautyScore = (decimal)(consciousnessHealth.OverallHealth * 0.85),
+                    ActiveAgents = _activeSessions.Values.Where(s => s.IsActive).Sum(s => s.ParticipantCount),
+                    HiveCoherence = (decimal)consciousnessHealth.OverallHealth,
+                    ConsciousnessEmergence = 0m,
+                    SessionMetrics = sessionMetrics,
+                    BulletproofScore = 0m,
+                    BeautyScore = 0m,
                     ActiveTasks = _activeSessions.Values.Sum(s => s.OperationCount),
-                    CompletedTasks = _activeSessions.Values.Sum(s => s.CompletedOperationCount), // ✅ Properly tracked completed tasks
+                    CompletedTasks = _activeSessions.Values.Sum(s => s.CompletedOperationCount),
                     DeploymentStatus = new DeploymentStatusDto
                     {
-                        SwarmInitialized = true,
-                        BulletproofDeployed = true,
-                        BeautificationDeployed = true
+                        SwarmInitialized = false,
+                        BulletproofDeployed = false,
+                        BeautificationDeployed = false
                     },
-                    LogMessages = new List<string> { $"Hybrid consciousness active with {_activeSessions.Count} sessions" }
+                    LogMessages = new List<string>
+                    {
+                        $"Hybrid session registry active with {_activeSessions.Count} sessions",
+                        QuantumModeUnavailableReason
+                    }
                 };
             }
             catch (Exception ex)
@@ -364,18 +404,17 @@ namespace TerraFusion.Consciousness.Services
                         ["HybridSessionCount"] = _activeSessions.Count,
                         ["QuantumCapabilities"] = new Dictionary<string, object>
                         {
-                            ["QuantumCoherence"] = 0.95,
-                            ["QuantumEntanglement"] = 0.88,
-                            ["ProcessingCapacity"] = 50000
+                            ["Available"] = false,
+                            ["Reason"] = QuantumModeUnavailableReason
                         }
                     },
-                    ConsciousnessLevel = "MAXIMUM_ENHANCEMENT",
+                    ConsciousnessLevel = "governed_degraded",
                     DataTime = DateTime.UtcNow,
                     ConsciousnessMetrics = new Dictionary<string, object>
                     {
-                        ["EnhancementLevel"] = "MAXIMUM",
-                        ["HybridEfficiency"] = 0.95,
-                        ["SystemIntegration"] = 0.98
+                        ["GovernedQuantumLaneAvailable"] = false,
+                        ["HybridSessionCount"] = _activeSessions.Count,
+                        ["MeshHealth"] = meshHealth
                     }
                 };
             }
@@ -386,60 +425,90 @@ namespace TerraFusion.Consciousness.Services
             }
         }
 
-        public async Task<ConsciousnessModeResultDto> SwitchConsciousnessModeAsync(ConsciousnessModeRequestDto request)
+        public Task<ConsciousnessModeResultDto> SwitchConsciousnessModeAsync(ConsciousnessModeRequestDto request)
         {
-            await Task.CompletedTask;
-            await Task.CompletedTask;
+            var stopwatch = Stopwatch.StartNew();
             try
             {
                 _logger.LogInformation("🔄 Switching consciousness mode to {Mode} for session {SessionId}",
                     request.RequestedMode, request.ModeId);
 
-                if (_activeSessions.TryGetValue(request.ModeId, out var session))
+                if (!_activeSessions.TryGetValue(request.ModeId, out var session))
                 {
-                    // Update session based on target mode
-                    switch (request.RequestedMode.ToUpper())
+                    return Task.FromResult(new ConsciousnessModeResultDto
                     {
-                        case "QUANTUM":
-                            session.QuantumEnabled = true;
-                            session.ConsciousnessLevel = "QUANTUM_ENHANCED";
-                            break;
-                        case "MESH":
-                            session.MeshEnabled = true;
-                            session.ConsciousnessLevel = "MESH_ORCHESTRATED";
-                            break;
-                        case "HYBRID":
-                            session.QuantumEnabled = true;
-                            session.MeshEnabled = true;
-                            session.ConsciousnessLevel = "FULL_HYBRID";
-                            break;
-                        case "LEGACY":
-                            session.QuantumEnabled = false;
-                            session.MeshEnabled = false;
-                            session.ConsciousnessLevel = "TRADITIONAL";
-                            break;
-                    }
-
-                    session.LastActivity = DateTime.UtcNow;
+                        Success = false,
+                        ModeId = request.ModeId,
+                        CurrentMode = "unavailable",
+                        NewMode = "unavailable",
+                        PreviousMode = "unavailable",
+                        TransitionTime = stopwatch.Elapsed,
+                        ErrorMessage = $"Session {request.ModeId} not found",
+                        ModeData = new Dictionary<string, object>
+                        {
+                            ["SessionExists"] = false
+                        },
+                        ModeTime = DateTime.UtcNow,
+                        ModeMetrics = new Dictionary<string, object>
+                        {
+                            ["GovernedQuantumLaneAvailable"] = false
+                        }
+                    });
                 }
 
-                return new ConsciousnessModeResultDto
+                var previousMode = session.ConsciousnessLevel;
+                var requestedMode = request.RequestedMode.ToUpperInvariant();
+                var success = true;
+                string? errorMessage = null;
+
+                switch (requestedMode)
                 {
+                    case "MESH":
+                        session.QuantumEnabled = false;
+                        session.MeshEnabled = true;
+                        session.ConsciousnessLevel = "MESH_ORCHESTRATED";
+                        break;
+                    case "LEGACY":
+                        session.QuantumEnabled = false;
+                        session.MeshEnabled = false;
+                        session.ConsciousnessLevel = "TRADITIONAL";
+                        break;
+                    case "QUANTUM":
+                    case "HYBRID":
+                        success = false;
+                        errorMessage = QuantumModeUnavailableReason;
+                        break;
+                    default:
+                        success = false;
+                        errorMessage = $"Unsupported mode '{request.RequestedMode}'";
+                        break;
+                }
+
+                session.LastActivity = DateTime.UtcNow;
+
+                return Task.FromResult(new ConsciousnessModeResultDto
+                {
+                    Success = success,
                     ModeId = request.ModeId,
-                    CurrentMode = request.RequestedMode,
+                    CurrentMode = session.ConsciousnessLevel,
+                    NewMode = session.ConsciousnessLevel,
+                    PreviousMode = previousMode,
+                    TransitionTime = stopwatch.Elapsed,
+                    ErrorMessage = errorMessage,
                     ModeData = new Dictionary<string, object>
                     {
-                        ["QuantumEnabled"] = session?.QuantumEnabled ?? false,
-                        ["MeshEnabled"] = session?.MeshEnabled ?? false,
-                        ["TransitionTime"] = TimeSpan.FromMilliseconds(250)
+                        ["QuantumEnabled"] = session.QuantumEnabled,
+                        ["MeshEnabled"] = session.MeshEnabled,
+                        ["UnavailableReason"] = errorMessage ?? string.Empty
                     },
                     ModeTime = DateTime.UtcNow,
                     ModeMetrics = new Dictionary<string, object>
                     {
-                        ["SessionExists"] = session != null,
-                        ["ModeTransitionMs"] = 250
+                        ["SessionExists"] = true,
+                        ["ModeTransitionMs"] = stopwatch.Elapsed.TotalMilliseconds,
+                        ["GovernedQuantumLaneAvailable"] = false
                     }
-                };
+                });
             }
             catch (Exception ex)
             {
@@ -459,33 +528,34 @@ namespace TerraFusion.Consciousness.Services
                 var quantumEnabledSessions = _activeSessions.Values.Count(s => s.QuantumEnabled);
                 var meshEnabledSessions = _activeSessions.Values.Count(s => s.MeshEnabled);
                 var overallHealth = (consciousnessHealth.OverallHealth + meshHealth) / 2.0;
+                var capabilities = new List<string> { "Legacy Consciousness" };
+
+                if (meshHealth > 0)
+                {
+                    capabilities.Add("Mesh Orchestration");
+                }
 
                 return new HybridSystemStatusDto
                 {
                     SystemId = "HybridConsciousness",
-                    Status = overallHealth > 0.8 ? "Healthy" : "Degraded",
+                    Status = consciousnessHealth.IsOperational ? "degraded" : "unavailable",
                     SystemData = new Dictionary<string, object>
                     {
                         ["SystemHealth"] = overallHealth,
                         ["TotalSessions"] = totalSessions,
                         ["QuantumEnabledSessions"] = quantumEnabledSessions,
                         ["MeshEnabledSessions"] = meshEnabledSessions,
-                        ["SystemUptime"] = DateTime.UtcNow - DateTime.Today, // Simplified uptime
-                        ["SystemCapabilities"] = new List<string>
-                        {
-                            "Legacy Consciousness",
-                            "Quantum Processing",
-                            "Mesh Orchestration",
-                            "Hybrid Intelligence"
-                        }
+                        ["GovernedQuantumLaneAvailable"] = false,
+                        ["SystemCapabilities"] = capabilities
                     },
                     StatusTime = DateTime.UtcNow,
                     SystemMetrics = new Dictionary<string, object>
                     {
                         ["OverallHealth"] = overallHealth,
-                        ["IsHealthy"] = overallHealth > 0.8,
+                        ["IsHealthy"] = false,
                         ["ConsciousnessHealth"] = consciousnessHealth.OverallHealth,
-                        ["MeshHealth"] = meshHealth
+                        ["MeshHealth"] = meshHealth,
+                        ["GovernedQuantumLaneAvailable"] = false
                     }
                 };
             }

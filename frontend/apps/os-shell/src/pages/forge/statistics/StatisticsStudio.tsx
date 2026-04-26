@@ -18,7 +18,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import RatioStudyPanel from './RatioStudyPanel';
 import CODTrendChart from './charts/CODTrendChart';
 import PRDTrendChart from './charts/PRDTrendChart';
@@ -71,7 +70,6 @@ export function StatisticsStudio() {
   const loadComparison = useForgeStatisticsStore((s) => s.loadComparison);
   const statsLoading = useForgeStatisticsStore((s) => s.loading);
   const ratioData = useRatioData();
-  const [isFixture] = useState(false);
   const availableTaxYears = useMemo(
     () =>
       Array.from(
@@ -147,7 +145,6 @@ export function StatisticsStudio() {
 
   return (
     <div data-testid="statistics-studio" className="space-y-4 p-4">
-      {isFixture && <DemoDataBanner module="Statistics Studio" />}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

@@ -1,7 +1,7 @@
 /**
  * SalesForge Zustand store.
  * Owns: qualification queue, sale detail, running stats, neighborhood stats, code audit.
- * Pattern: API-first — no fixture fallback (all data is real PACS).
+ * Pattern: API-first — all data is TerraFusion sale truth.
  */
 
 import { create } from 'zustand';
@@ -24,6 +24,16 @@ import {
   SALESFORGE_TAX_YEAR,
   QUEUE_PAGE_SIZE,
 } from './salesForgeTypes';
+import {
+  bulkPatchWashingtonLaunchDecision,
+  fetchWashingtonLaunchCodeAudit,
+  fetchWashingtonLaunchNeighborhoodStats,
+  fetchWashingtonLaunchQueue,
+  fetchWashingtonLaunchRunningStats,
+  fetchWashingtonLaunchSaleDetail,
+  isWashingtonLaunchDataEnabled,
+  patchWashingtonLaunchDecision,
+} from './washingtonLaunchApi';
 
 // ── State interface ───────────────────────────────────────────────────────────
 
@@ -189,6 +199,7 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     };
     set({
       committedFilters: {
+        countyCode:    filterForm.countyCode.trim() || '005',
         hood:         filterForm.hood.trim() || null,
         propertyType: filterForm.propertyType.trim() || null,
         saleDateFrom: filterForm.saleDateFrom.trim() || null,
@@ -241,11 +252,16 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     if (committedFilters.saleDateTo)   params.set('saleDateTo',   committedFilters.saleDateTo);
     if (committedFilters.minPrice)     params.set('minPrice',     String(committedFilters.minPrice));
     if (committedFilters.maxPrice)     params.set('maxPrice',     String(committedFilters.maxPrice));
+    params.set('countyCode', committedFilters.countyCode);
 
     try {
-      const res = await apiFetch(`/terraforge/sale-qualification?${params}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = (await res.json()) as SaleQueuePage;
+      const data = isWashingtonLaunchDataEnabled()
+        ? await fetchWashingtonLaunchQueue(taxYear, queueTab, queuePage, QUEUE_PAGE_SIZE, committedFilters)
+        : await (async () => {
+            const res = await apiFetch(`/terraforge/sale-qualification?${params}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return (await res.json()) as SaleQueuePage;
+          })();
 
       // Page-clamp: if empty and not on page 1, step back.
       if (data.items.length === 0 && queuePage > 1) {
@@ -264,11 +280,17 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
   },
 
   fetchSaleDetail: async (saleId) => {
+    const { committedFilters } = get();
     set({ detailLoading: true, detailError: null });
     try {
-      const res = await apiFetch(`/terraforge/sale-qualification/${saleId}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      set({ saleDetail: (await res.json()) as SaleDetail, detailLoading: false });
+      const detail = isWashingtonLaunchDataEnabled()
+        ? await fetchWashingtonLaunchSaleDetail(saleId, committedFilters)
+        : await (async () => {
+            const res = await apiFetch(`/terraforge/sale-qualification/${saleId}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return (await res.json()) as SaleDetail;
+          })();
+      set({ saleDetail: detail, detailLoading: false });
     } catch (e) {
       set({
         detailLoading: false,
@@ -281,12 +303,18 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     const { taxYear, committedFilters } = get();
     set({ statsLoading: true, statsError: null });
     const params = new URLSearchParams({ taxYear: String(taxYear) });
+    params.set('countyCode', committedFilters.countyCode);
     if (committedFilters.hood)         params.set('hood',         committedFilters.hood);
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     try {
-      const res = await apiFetch(`/terraforge/sale-qualification/running-stats?${params}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      set({ runningStats: (await res.json()) as RunningStats, statsLoading: false });
+      const stats = isWashingtonLaunchDataEnabled()
+        ? await fetchWashingtonLaunchRunningStats(taxYear, committedFilters)
+        : await (async () => {
+            const res = await apiFetch(`/terraforge/sale-qualification/running-stats?${params}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return (await res.json()) as RunningStats;
+          })();
+      set({ runningStats: stats, statsLoading: false });
     } catch (e) {
       set({
         statsLoading: false,
@@ -299,11 +327,18 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     const { taxYear, committedFilters } = get();
     set({ hoodStatsLoading: true, hoodStatsError: null });
     const params = new URLSearchParams({ taxYear: String(taxYear) });
+    params.set('countyCode', committedFilters.countyCode);
+    if (committedFilters.hood)         params.set('hood',         committedFilters.hood);
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     try {
-      const res = await apiFetch(`/terraforge/sale-qualification/neighborhood-stats?${params}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      set({ hoodStats: (await res.json()) as NeighborhoodStats, hoodStatsLoading: false });
+      const stats = isWashingtonLaunchDataEnabled()
+        ? await fetchWashingtonLaunchNeighborhoodStats(taxYear, committedFilters)
+        : await (async () => {
+            const res = await apiFetch(`/terraforge/sale-qualification/neighborhood-stats?${params}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return (await res.json()) as NeighborhoodStats;
+          })();
+      set({ hoodStats: stats, hoodStatsLoading: false });
     } catch (e) {
       set({
         hoodStatsLoading: false,
@@ -313,12 +348,21 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
   },
 
   fetchCodeAudit: async () => {
-    const { taxYear } = get();
+    const { taxYear, committedFilters } = get();
     set({ codeAuditLoading: true, codeAuditError: null });
+    const params = new URLSearchParams({ taxYear: String(taxYear) });
+    params.set('countyCode', committedFilters.countyCode);
+    if (committedFilters.hood) params.set('hood', committedFilters.hood);
+    if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     try {
-      const res = await apiFetch(`/terraforge/sale-qualification/code-audit?taxYear=${taxYear}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      set({ codeAudit: (await res.json()) as CodeAudit, codeAuditLoading: false });
+      const audit = isWashingtonLaunchDataEnabled()
+        ? await fetchWashingtonLaunchCodeAudit(taxYear, committedFilters)
+        : await (async () => {
+            const res = await apiFetch(`/terraforge/sale-qualification/code-audit?${params}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return (await res.json()) as CodeAudit;
+          })();
+      set({ codeAudit: audit, codeAuditLoading: false });
     } catch (e) {
       set({
         codeAuditLoading: false,
@@ -336,17 +380,21 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
   patchDecision: async (saleId, decision, notes, decidedBy, decisionSource = 'StaffConfirmed') => {
     set((s) => ({ patchState: { ...s.patchState, [saleId]: 'working' } }));
     try {
-      const res = await apiFetch(`/terraforge/sale-qualification/${saleId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          qualificationDecision: decision,
-          researchNotes: notes || null,
-          decidedBy,
-          decisionSource,
-        }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (isWashingtonLaunchDataEnabled()) {
+        await patchWashingtonLaunchDecision(saleId, decision, notes, decidedBy, decisionSource);
+      } else {
+        const res = await apiFetch(`/terraforge/sale-qualification/${saleId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            qualificationDecision: decision,
+            researchNotes: notes || null,
+            decidedBy,
+            decisionSource,
+          }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      }
       set((s) => ({ patchState: { ...s.patchState, [saleId]: 'done' } }));
       // Refresh queue + stats after decision.
       await get().fetchQueue();
@@ -364,18 +412,22 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
       return { patchState: patch };
     });
     try {
-      const res = await apiFetch('/terraforge/sale-qualification/bulk', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          saleIds,
-          qualificationDecision: decision,
-          researchNotes: notes || null,
-          decidedBy,
-          decisionSource: 'StaffConfirmed',
-        }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (isWashingtonLaunchDataEnabled()) {
+        await bulkPatchWashingtonLaunchDecision(saleIds, decision, notes, decidedBy);
+      } else {
+        const res = await apiFetch('/terraforge/sale-qualification/bulk', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            saleIds,
+            qualificationDecision: decision,
+            researchNotes: notes || null,
+            decidedBy,
+            decisionSource: 'StaffConfirmed',
+          }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      }
       set((s) => {
         const patch = { ...s.patchState };
         saleIds.forEach((id) => { patch[id] = 'done'; });

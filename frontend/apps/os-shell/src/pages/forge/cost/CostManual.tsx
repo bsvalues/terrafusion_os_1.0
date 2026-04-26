@@ -2,8 +2,8 @@
  * CostManual.tsx
  *
  * Forge Cost Schedule — Benton County local cost schedules (ratio-study calibrated).
- * Fetches live cost matrix rows from /costforge/schedule (all 66 building-type ×
- * reval-area combinations × 5 quality tiers). Search and quality filter applied
+ * Fetches live cost matrix rows from /costforge/schedule. Quality filtering is
+ * applied by the live API for primary rows, and free-text search is applied
  * client-side after load.
  *
  * Secondary-feature section: %-of-BIV rates for accessory structures (CovPatio,
@@ -15,7 +15,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { apiFetchJson } from '@/lib/apiBase';
 import {
   Table,
@@ -63,6 +62,8 @@ interface CostScheduleApiRow {
   secondaryFeaturePctOfBiv?: number;
 }
 
+type CostManualReadState = 'loading' | 'live' | 'unavailable';
+
 async function getCostSchedule(
   qualityClass: string,
   signal: AbortSignal,
@@ -71,12 +72,14 @@ async function getCostSchedule(
   return apiFetchJson<CostScheduleApiRow[]>(`/costforge/schedule${qs}`, { signal });
 }
 
-const SAMPLE_COST_SCHEDULES: CostScheduleRow[] = [
-  { buildingClass: 'Residential – Average', qualityGrade: 'Average', baseRate: 87.5, unit: '$/SF', effectiveDate: '2025-01-01' },
-  { buildingClass: 'Residential – Good', qualityGrade: 'Good', baseRate: 112.0, unit: '$/SF', effectiveDate: '2025-01-01' },
-  { buildingClass: 'Commercial – Retail', qualityGrade: 'Average', baseRate: 95.0, unit: '$/SF', effectiveDate: '2025-01-01' },
-  { buildingClass: 'Industrial – Light', qualityGrade: 'Average', baseRate: 65.0, unit: '$/SF', effectiveDate: '2025-01-01' },
-];
+const QUALITY_OPTIONS = [
+  { value: 'all', label: 'All Grades' },
+  { value: 'ECONOMY', label: 'Economy' },
+  { value: 'STANDARD', label: 'Standard' },
+  { value: 'CUSTOM', label: 'Custom' },
+  { value: 'PREMIUM', label: 'Premium' },
+  { value: 'LUXURY', label: 'Luxury' },
+] as const;
 
 export function CostManual() {
   const [search, setSearch] = useState('');
@@ -85,7 +88,7 @@ export function CostManual() {
   const [sfRows, setSfRows] = useState<SecondaryFeatureRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSampleData, setIsSampleData] = useState(false);
+  const [readState, setReadState] = useState<CostManualReadState>('loading');
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -96,13 +99,13 @@ export function CostManual() {
     const loadRows = async () => {
       setIsLoading(true);
       setError(null);
+      setReadState('loading');
 
       try {
-        // Always fetch full schedule (no qualityClass filter) so secondary-feature rows
-        // are always present — qualityClass server-filter only applies to primary rows
-        // and secondary rows carry no quality tier.
+        // The live API applies quality filtering only to primary schedule rows.
+        // Secondary-feature rows have no quality tier and still return alongside
+        // the filtered primary payload.
         const result = await getCostSchedule(qualityFilter, signal);
-        setIsSampleData(false);
 
         if (Array.isArray(result)) {
           const primary: CostScheduleRow[] = [];
@@ -130,12 +133,23 @@ export function CostManual() {
 
           setRows(primary);
           setSfRows(secondary);
+          if (primary.length === 0) {
+            setReadState('unavailable');
+            setError('Live cost schedule endpoint returned no primary schedule rows.');
+          } else {
+            setReadState('live');
+          }
+        } else {
+          setRows([]);
+          setSfRows([]);
+          setReadState('unavailable');
+          setError('Live cost schedule endpoint returned an invalid payload.');
         }
       } catch (cause) {
         if (cause instanceof DOMException && cause.name === 'AbortError') return;
-        setRows(SAMPLE_COST_SCHEDULES);
+        setRows([]);
         setSfRows([]);
-        setIsSampleData(true);
+        setReadState('unavailable');
         setError(cause instanceof Error ? cause.message : 'Failed to load cost schedules.');
       } finally {
         setIsLoading(false);
@@ -156,12 +170,23 @@ export function CostManual() {
 
   return (
     <div className="space-y-4 p-4">
-      {isSampleData && <DemoDataBanner module="Cost Manual" />}
+      {readState === 'unavailable' && (
+        <div
+          data-testid="cost-manual-unavailable"
+          className="rounded-lg border px-4 py-3"
+          style={{ background: 'hsl(var(--tf-warning) / 0.08)', borderColor: 'hsl(var(--tf-warning) / 0.35)' }}
+        >
+          <p className="text-sm font-medium">Live cost schedule unavailable.</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Benton schedule rows are not being replaced with sample data on this surface.
+          </p>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Cost Schedule</h1>
           <p className="text-muted-foreground">
-            Benton County base rates — {rows.length > 0 ? `${rows.length} schedule rows` : 'loading…'}
+            Benton County base rates — {rows.length > 0 ? `${rows.length} schedule rows` : readState === 'unavailable' ? 'live schedule unavailable' : 'loading…'}
           </p>
           {error && (
             <p className="text-xs text-amber-500 mt-1">
@@ -184,10 +209,9 @@ export function CostManual() {
             <SelectValue placeholder="Quality Grade" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Grades</SelectItem>
-            <SelectItem value="Low">Low</SelectItem>
-            <SelectItem value="Average">Average</SelectItem>
-            <SelectItem value="Good">Good</SelectItem>
+            {QUALITY_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -228,7 +252,7 @@ export function CostManual() {
               {!isLoading && filtered.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                    {error ? 'Cost schedule API unavailable. No local schedule rows are being shown.' : 'No matching cost schedules found.'}
+                    {readState === 'unavailable' ? 'Cost schedule unavailable. No Benton schedule rows are being shown.' : 'No matching cost schedules found.'}
                   </TableCell>
                 </TableRow>
               )}
@@ -238,7 +262,7 @@ export function CostManual() {
       </Card>
 
       {/* Secondary-feature %-of-BIV rates (Benton Method) */}
-      {(sfRows.length > 0 || isLoading || error) && (
+      {(sfRows.length > 0 || isLoading || readState === 'unavailable') && (
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
@@ -289,7 +313,7 @@ export function CostManual() {
                 {!isLoading && sfRows.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground py-6">
-                      {error ? 'Secondary feature rates unavailable from the live schedule API.' : 'No secondary feature rates found. Run a Benton sync to populate.'}
+                      {readState === 'unavailable' ? 'Secondary feature rates unavailable from the live schedule API.' : 'No secondary feature rates found. Run a Benton sync to populate.'}
                     </TableCell>
                   </TableRow>
                 )}

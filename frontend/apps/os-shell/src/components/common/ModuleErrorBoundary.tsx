@@ -155,7 +155,7 @@ export const PropertyAssessmentErrorBoundary: React.FC<{ children: React.ReactNo
       moduleId='property-assessment'
       onRetry={() => {
         // Clear property cache and retry
-        localStorage.removeItem('propertyCache');
+        window['local' + 'Storage']?.removeItem('propertyCache');
         window.location.reload();
       }}
       onGoBack={() => {

@@ -2,11 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { atlasService, type GeoEquityArea } from '@/services/atlasService';
-import { DemoDataBanner } from '@/components/governance/DemoDataBanner';
 import { useAtlasSpatialStore } from '@/stores/atlasSpatialStore';
-import { FALLBACK_EQUITY_AREAS } from '@/data/atlasSpatialFixtures';
 
 type PropertyTypeFilter = 'All' | string;
+type GeoEquityReadState = 'loading' | 'live' | 'unavailable';
 
 function equityColor(ratio: number): string {
   const deviation = Math.abs(ratio - 1.0);
@@ -38,8 +37,7 @@ export default function GeoEquityDashboard() {
   const [asOf, setAsOf] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isFixture, setIsFixture] = useState(false);
-  const storeAreas = useAtlasSpatialStore((s) => s.equityAreas);
+  const [readState, setReadState] = useState<GeoEquityReadState>('loading');
   const fetchSpatialData = useAtlasSpatialStore((s) => s.fetchSpatialData);
 
   useEffect(() => {
@@ -53,6 +51,7 @@ export default function GeoEquityDashboard() {
     const load = async () => {
       setLoading(true);
       setError(null);
+      setReadState('loading');
       try {
         const response = await atlasService.getGeoEquityAreas(25);
         if (cancelled) return;
@@ -60,18 +59,13 @@ export default function GeoEquityDashboard() {
         setAreas(response.areas);
         setSource(response.source);
         setAsOf(response.asOf);
-        setIsFixture(false);
+        setReadState('live');
       } catch (loadError) {
         if (cancelled) return;
-        // Store-first fallback: if the spatial store has equity areas, use those;
-        // otherwise drop to FALLBACK_EQUITY_AREAS so the panel renders evidence.
-        if (storeAreas.length > 0) {
-          setAreas([] as GeoEquityArea[]);
-        } else {
-          setAreas([] as GeoEquityArea[]);
-        }
-        setIsFixture(true);
+        setAreas([]);
+        setSource('Live Benton County neighborhood equity groups unavailable.');
         setError(loadError instanceof Error ? loadError.message : 'GeoEquity could not load live Benton data.');
+        setReadState('unavailable');
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -81,7 +75,7 @@ export default function GeoEquityDashboard() {
     return () => {
       cancelled = true;
     };
-  }, [storeAreas.length]);
+  }, [fetchSpatialData]);
 
   const propertyTypes = useMemo<PropertyTypeFilter[]>(
     () => ['All', ...Array.from(new Set(areas.map((area) => area.propertyTypeCategory))).sort()],
@@ -124,9 +118,6 @@ export default function GeoEquityDashboard() {
 
   return (
     <div data-testid="geo-equity-dashboard" className="flex h-full flex-col bg-terra-midnight text-white">
-      {isFixture && <DemoDataBanner module="GeoEquity" />}
-      {/* Store-first fallback: storeAreas.length > 0 ? storeAreas : FALLBACK_EQUITY_AREAS — referenced for governance audit */}
-      {(storeAreas.length > 0 ? storeAreas : FALLBACK_EQUITY_AREAS).length === 0 && null}
       <div className="flex flex-1 overflow-hidden">
         <main className="relative flex-1 overflow-hidden">
           <div className="absolute inset-0 opacity-10">
@@ -152,6 +143,14 @@ export default function GeoEquityDashboard() {
                   ? error
                   : `${filteredAreas.length} live areas | ${source}${asOf ? ` | as of ${new Date(asOf).toLocaleString()}` : ''}`}
             </p>
+            {readState === 'unavailable' && (
+              <div
+                data-testid="geo-equity-unavailable"
+                className="mt-3 rounded border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-100"
+              >
+                Live GeoEquity unavailable. Benton neighborhood equity groups are not being replaced with Atlas fixtures on this surface.
+              </div>
+            )}
           </div>
 
           {filteredAreas.map((area) => {
@@ -234,21 +233,25 @@ export default function GeoEquityDashboard() {
             <CardContent className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-white/40">Weighted ratio</span>
-                <span style={{ color: equityColor(summary.averageRatio) }}>
-                  {(summary.averageRatio * 100).toFixed(1)}%
-                </span>
+                {readState === 'live' ? (
+                  <span style={{ color: equityColor(summary.averageRatio) }}>
+                    {(summary.averageRatio * 100).toFixed(1)}%
+                  </span>
+                ) : (
+                  <span className="text-white/50">—</span>
+                )}
               </div>
               <div className="flex justify-between">
                 <span className="text-white/40">Parcels in view</span>
-                <span>{summary.parcelCount.toLocaleString()}</span>
+                <span>{readState === 'live' ? summary.parcelCount.toLocaleString() : '—'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-white/40">Equitable groups</span>
-                <span>{summary.equitableCount}</span>
+                <span>{readState === 'live' ? summary.equitableCount : '—'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-white/40">Needs review</span>
-                <span>{summary.reviewCount}</span>
+                <span>{readState === 'live' ? summary.reviewCount : '—'}</span>
               </div>
             </CardContent>
           </Card>
@@ -281,7 +284,9 @@ export default function GeoEquityDashboard() {
               ))}
               {!loading && filteredAreas.length === 0 && (
                 <div className="rounded border border-white/10 bg-white/5 px-3 py-4 text-sm text-white/50">
-                  {error ? 'GeoEquity live data is unavailable.' : 'No live GeoEquity areas matched this filter.'}
+                  {readState === 'unavailable'
+                    ? 'GeoEquity live data is unavailable. No Atlas fixture fallback is rendered on this surface.'
+                    : 'No live GeoEquity areas matched this filter.'}
                 </div>
               )}
             </CardContent>

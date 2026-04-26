@@ -55,7 +55,7 @@ export interface ComponentArea {
 // ── Plan Source Provenance ─────────────────────────────────────────
 export type PlanSourceType =
   | "permit_packet"
-  | "mls"
+  | "recorder_document"
   | "builder"
   | "assessor_archive"
   | "autocad_export"

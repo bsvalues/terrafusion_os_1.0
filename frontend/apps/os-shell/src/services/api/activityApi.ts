@@ -126,7 +126,7 @@ async function doFetch(parcelId: string): Promise<ParsedActivityEntry[] | null> 
  * Fetch activity events for a parcel from the backend.
  *
  * Returns cached data (30s TTL), deduplicates in-flight requests,
- * and returns null when the API is unavailable (caller should fall back to mock).
+ * and returns null when the API is unavailable.
  */
 export async function fetchParcelActivity(
   parcelId: string,

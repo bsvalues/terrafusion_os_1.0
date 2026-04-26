@@ -378,10 +378,15 @@ describe('MarketHeatMapPage — contract', () => {
     expect(bentoCards.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('ranking buttons inside rankings Card carry role="link"', () => {
-    const { container } = render(<MarketHeatMapPage />);
-    const linkButtons = container.querySelectorAll('button[role="link"]');
-    expect(linkButtons.length).toBeGreaterThanOrEqual(1);
+  it('renders explicit unavailable disclosure instead of seeded area rankings', () => {
+    render(<MarketHeatMapPage />);
+    expect(screen.getByTestId('market-heat-map-unavailable')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Market activity heat map unavailable\./i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/no seeded area rankings or pseudo-sale clusters are rendered here/i),
+    ).toBeInTheDocument();
   });
 
   it('contains no hardcoded light-mode Tailwind classes', () => {

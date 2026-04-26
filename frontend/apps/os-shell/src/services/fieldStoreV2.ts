@@ -1,7 +1,7 @@
 // TerraFusion OS — Field Studio IndexedDB Store (v2)
 // Event-sourced offline queue with sync tracking, retry support, and queue stats.
 // Harvested from terra-forge-rebuild — Supabase-free, pure browser storage.
-// Upgrade from localStorage fieldStore to IndexedDB for larger payload support.
+// Upgrade from browser key-value fieldStore to IndexedDB for larger payload support.
 
 import { openDB, type IDBPDatabase } from "idb";
 import type {

@@ -25,17 +25,21 @@ vi.mock('recharts', () => ({
 }));
 
 describe('Monitoring honesty contract', () => {
-  it('discloses workspace simulation instead of claiming live swarm telemetry', () => {
+  it('discloses governed telemetry unavailability instead of claiming live swarm telemetry', () => {
     render(<Monitoring />);
 
+    expect(screen.getByTestId('monitoring-governed-unavailable')).toBeInTheDocument();
     expect(
-      screen.getByText(/Workspace simulation of swarm telemetry and control patterns, not live county agent telemetry/i)
+      screen.getByText(/No governed county agent telemetry feed is attached to this route/i)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/AI Swarm Monitoring is displaying sample fixtures, not live county data/i)
+      screen.getByText(
+        /This legacy monitoring page is retained only as a guardrail\. It does not display live county agent counts, live task throughput, or live health telemetry/i
+      )
     ).toBeInTheDocument();
-    expect(screen.getByText(/Simulated Performance Metrics/i)).toBeInTheDocument();
+    expect(screen.getByText(/Governed telemetry unavailable/i)).toBeInTheDocument();
     expect(screen.queryByText(/Supreme Commander Claude/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Real-Time Performance Metrics/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/sample fixtures/i)).not.toBeInTheDocument();
   });
 });

@@ -46,7 +46,7 @@ const RealDataDashboard: React.FC<RealDataDashboardProps> = ({ className = '' })
   const getConnectionStatusIcon = () => {
     if (isConnectionLoading) return '⏳';
     if (!connectionStatus) return '❌';
-    if (connectionStatus.realPacsConnected && connectionStatus.terrafusionSyncConnected)
+    if (connectionStatus.assessmentDbConnected && connectionStatus.terrafusionSyncConnected)
       return '✅';
     return '⚠️';
   };
@@ -56,7 +56,7 @@ const RealDataDashboard: React.FC<RealDataDashboardProps> = ({ className = '' })
     if (!connectionStatus) return 'Connection status unknown';
 
     const connected = [
-      connectionStatus.realPacsConnected && 'Assessment Database',
+      connectionStatus.assessmentDbConnected && 'Assessment Database',
       connectionStatus.terrafusionSyncConnected && 'Terrafusion Sync',
       connectionStatus.propertiesDbConnected && 'Properties DB',
     ].filter(Boolean);
@@ -162,9 +162,9 @@ const RealDataDashboard: React.FC<RealDataDashboardProps> = ({ className = '' })
                 <div className='tf-status-item'>
                   <span className='tf-status-label'>Assessment Database:</span>
                   <span
-                    className={`tf-status-indicator ${connectionStatus?.realPacsConnected ? 'connected' : 'disconnected'}`}
+                    className={`tf-status-indicator ${connectionStatus?.assessmentDbConnected ? 'connected' : 'disconnected'}`}
                   >
-                    {connectionStatus?.realPacsConnected ? '🟢 Connected' : '🔴 Disconnected'}
+                    {connectionStatus?.assessmentDbConnected ? '🟢 Connected' : '🔴 Disconnected'}
                   </span>
                 </div>
                 <div className='tf-status-item'>

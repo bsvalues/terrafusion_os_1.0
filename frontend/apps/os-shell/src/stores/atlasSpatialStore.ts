@@ -4,7 +4,8 @@
  * Zustand store for Atlas spatial ops: parcels, neighborhoods,
  * spatial diagnostics, residual data, equity areas.
  *
- * API-driven. Backend gaps remain empty instead of falling back to local data.
+ * Honest-state only. The legacy /api/atlas/spatial bundle is a documented
+ * dev fixture endpoint and is not consumed here.
  * Separate lifecycle from Forge stores.
  * ======================================================================
  */
@@ -17,13 +18,9 @@ import type {
   ResidualMapData,
   EquityArea,
 } from '@/types/atlasSpatial';
-import {
-  EQUITY_AREAS,
-  SPATIAL_PARCELS,
-  NEIGHBORHOOD_SUMMARIES,
-  SPATIAL_DIAGNOSTICS,
-  RESIDUAL_MAP_DATA,
-} from '@/data/atlasSpatialFixtures';
+
+const ATLAS_SPATIAL_UNAVAILABLE_MESSAGE =
+  'Atlas spatial bundle unavailable. Neighborhood delineation, residual map, and spatial diagnostics still depend on a dev fixture endpoint.';
 
 // ---------------------------------------------------------------------------
 // State shape
@@ -61,43 +58,16 @@ export const useAtlasSpatialStore = create<AtlasSpatialState>((set, get) => ({
 
   fetchSpatialData: async () => {
     set({ loading: true, error: null });
-    try {
-      const res = await fetch('/api/atlas/spatial').catch(() => null);
-      if (res && res.ok) {
-        const data = await res.json();
-        set({
-          parcels: data.parcels ?? [],
-          neighborhoods: data.neighborhoods ?? [],
-          diagnostics: data.diagnostics ?? null,
-          residualData: data.residualData ?? null,
-          equityAreas: data.equityAreas ?? [],
-          loading: false,
-        });
-      } else {
-        // API unavailable — seed from bounded spatial fixtures so Atlas
-        // surfaces have parcels/neighborhoods/diagnostics to render. The
-        // error message documents the fixture origin.
-        set({
-          parcels: SPATIAL_PARCELS,
-          neighborhoods: NEIGHBORHOOD_SUMMARIES,
-          diagnostics: SPATIAL_DIAGNOSTICS,
-          residualData: RESIDUAL_MAP_DATA,
-          equityAreas: EQUITY_AREAS,
-          loading: false,
-          error: 'Atlas spatial API unavailable; showing bounded fixture evidence.',
-        });
-      }
-    } catch (err: any) {
-      set({
-        parcels: SPATIAL_PARCELS,
-        neighborhoods: NEIGHBORHOOD_SUMMARIES,
-        diagnostics: SPATIAL_DIAGNOSTICS,
-        residualData: RESIDUAL_MAP_DATA,
-        equityAreas: EQUITY_AREAS,
-        loading: false,
-        error: err?.message ?? 'Failed to fetch spatial data',
-      });
-    }
+    set({
+      parcels: [],
+      neighborhoods: [],
+      diagnostics: null,
+      residualData: null,
+      equityAreas: [],
+      selectedNeighborhood: null,
+      loading: false,
+      error: ATLAS_SPATIAL_UNAVAILABLE_MESSAGE,
+    });
   },
 
   selectNeighborhood: (code) => {

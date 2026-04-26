@@ -58,7 +58,7 @@ const fmt = (n: number) =>
 const fmtPct = (n: number) => (n * 100).toFixed(1) + '%';
 
 // Default expense structure for demo
-const DEFAULT_EXPENSES: IncomeExpenses = {
+const EMPTY_EXPENSES: IncomeExpenses = {
   taxes: 24000,
   insurance: 8500,
   utilities: 0,
@@ -82,7 +82,7 @@ export default function IncomeForgeModule() {
   const [pgi, setPgi] = useState(240000);
   const [vacancyRate, setVacancyRate] = useState(5);
   const [otherIncome, setOtherIncome] = useState(0);
-  const [expenses, setExpenses] = useState<IncomeExpenses>(DEFAULT_EXPENSES);
+  const [expenses, setExpenses] = useState<IncomeExpenses>(EMPTY_EXPENSES);
   const [capRate, setCapRate] = useState(7.5);
   const [capRateSource, setCapRateSource] = useState<'market_extraction' | 'band_of_investment' | 'provided'>('market_extraction');
   const [selectedComps, setSelectedComps] = useState<string[]>(['INC-COMP-1', 'INC-COMP-2', 'INC-COMP-3']);

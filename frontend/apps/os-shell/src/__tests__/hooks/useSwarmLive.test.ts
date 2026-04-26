@@ -3,113 +3,142 @@ import { renderHook, waitFor, act } from '@testing-library/react'
 import { useSwarmLive } from '../../hooks/useSwarmLive'
 import { DAIS_REFRESH } from '../../config/daisRefresh.config'
 
-// Captured callbacks from mock
-let onHandlers: Record<string, (payload: unknown) => void> = {}
-let closeCb: (() => void) | null = null
-let reconnectingCb: (() => void) | null = null
-let reconnectedCb: (() => void) | null = null
-let startResolve: (() => void) | null = null
-let startReject: ((e: Error) => void) | null = null
+const fetchMock = vi.fn()
 
-const mockConnection = {
-  on: vi.fn((event: string, cb: (payload: unknown) => void) => {
-    onHandlers[event] = cb
+vi.mock('../../auth/useAuthContext', () => ({
+  useAuthContextOptional: () => ({
+    countyId: 'benton',
+    token: 'test-token',
+    isAuthenticated: true,
+    userId: 'test-user',
+    roles: ['assessor'],
   }),
-  onclose: vi.fn((cb: () => void) => { closeCb = cb }),
-  onreconnecting: vi.fn((cb: () => void) => { reconnectingCb = cb }),
-  onreconnected: vi.fn((cb: () => void) => { reconnectedCb = cb }),
-  start: vi.fn(() => new Promise<void>((res, rej) => { startResolve = res; startReject = rej })),
-  stop: vi.fn().mockResolvedValue(undefined),
-}
+}))
 
-vi.mock('@microsoft/signalr', () => ({
-  HubConnectionBuilder: vi.fn(() => ({
-    withUrl: vi.fn().mockReturnThis(),
-    withAutomaticReconnect: vi.fn().mockReturnThis(),
-    configureLogging: vi.fn().mockReturnThis(),
-    build: vi.fn(() => mockConnection),
-  })),
-  LogLevel: { Warning: 1 },
+vi.mock('../../auth/authStorage', () => ({
+  getToken: () => 'test-token',
 }))
 
 describe('useSwarmLive', () => {
   beforeEach(() => {
-    vi.useFakeTimers()
-    onHandlers = {}; closeCb = null; reconnectingCb = null
-    reconnectedCb = null; startResolve = null; startReject = null
+    vi.useFakeTimers({ shouldAdvanceTime: true })
     vi.clearAllMocks()
-    mockConnection.on.mockImplementation((event, cb) => { onHandlers[event] = cb })
-    mockConnection.onclose.mockImplementation(cb => { closeCb = cb })
-    mockConnection.onreconnecting.mockImplementation(cb => { reconnectingCb = cb })
-    mockConnection.onreconnected.mockImplementation(cb => { reconnectedCb = cb })
-    mockConnection.start.mockImplementation(() =>
-      new Promise<void>((res, rej) => { startResolve = res; startReject = rej }))
+    fetchMock.mockReset()
+    vi.stubGlobal('fetch', fetchMock)
   })
-  afterEach(() => { vi.restoreAllMocks(); vi.useRealTimers() })
 
-  it('sets source:live and stamps lastUpdated on SwarmStatusUpdate message', async () => {
-    const { result } = renderHook(() => useSwarmLive())
-    act(() => { startResolve?.() })
-    act(() => {
-      onHandlers['SwarmStatusUpdate']?.({
-        totalAgents: 2016, healthyAgents: 1980, overallStatus: 'degraded'
-      })
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.useRealTimers()
+  })
+
+  it('sets source:polled and stamps lastUpdated on governed swarm status success', async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        countyId: 'benton',
+        activeAgents: 2016,
+        swarmActivity: 'Medium',
+        accuracyScore: 0.982,
+      }),
     })
-    await waitFor(() => expect(result.current.source).toBe('live'))
-    expect(result.current.data?.totalAgents).toBe(2016)
+
+    const { result } = renderHook(() => useSwarmLive())
+
+    await waitFor(() => expect(result.current.source).toBe('polled'), { timeout: 1000 })
+    expect(result.current.data?.activeAgents).toBe(2016)
     expect(result.current.data?.connectionState).toBe('connected')
     expect(result.current.lastUpdated).toBeTypeOf('number')
     expect(result.current.isStale).toBe(false)
   })
 
-  it('sets isStale:true after swarmStaleAfterMs with no new message', async () => {
-    const { result } = renderHook(() => useSwarmLive())
-    act(() => { startResolve?.() })
-    act(() => {
-      onHandlers['SwarmStatusUpdate']?.({
-        totalAgents: 2016, healthyAgents: 1980, overallStatus: 'degraded'
-      })
+  it('sets isStale:true after swarmStaleAfterMs with no new poll response', async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        countyId: 'benton',
+        activeAgents: 2016,
+        swarmActivity: 'Medium',
+        accuracyScore: 0.982,
+      }),
     })
-    await waitFor(() => expect(result.current.source).toBe('live'))
+
+    const { result } = renderHook(() => useSwarmLive())
+
+    await waitFor(() => expect(result.current.source).toBe('polled'), { timeout: 1000 })
     act(() => { vi.advanceTimersByTime(DAIS_REFRESH.swarmStaleAfterMs + 1000) })
-    await waitFor(() => expect(result.current.isStale).toBe(true))
+    await waitFor(() => expect(result.current.isStale).toBe(true), { timeout: 1000 })
   })
 
-  it('sets source:fallback and isStale:true on disconnect with prior data', async () => {
-    const { result } = renderHook(() => useSwarmLive())
-    act(() => { startResolve?.() })
-    act(() => {
-      onHandlers['SwarmStatusUpdate']?.({
-        totalAgents: 2016, healthyAgents: 1980, overallStatus: 'degraded'
+  it('sets source:fallback and isStale:true on poll failure with prior data', async () => {
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          countyId: 'benton',
+          activeAgents: 2016,
+          swarmActivity: 'Medium',
+          accuracyScore: 0.982,
+        }),
       })
-    })
-    await waitFor(() => expect(result.current.source).toBe('live'))
-    act(() => { closeCb?.() })
-    await waitFor(() => expect(result.current.source).toBe('fallback'))
+      .mockRejectedValueOnce(new Error('connection refused'))
+
+    const { result } = renderHook(() => useSwarmLive())
+
+    await waitFor(() => expect(result.current.source).toBe('polled'), { timeout: 1000 })
+
+    act(() => { vi.advanceTimersByTime(DAIS_REFRESH.swarmMs + 1000) })
+
+    await waitFor(() => expect(result.current.source).toBe('fallback'), { timeout: 1000 })
     expect(result.current.isStale).toBe(true)
-    expect(result.current.lastUpdated).toBeNull()  // spec: reset to null on disconnect so isStale is immediately true
-    expect(result.current.data?.totalAgents).toBe(2016)
+    expect(result.current.lastUpdated).toBeNull()
+    expect(result.current.data?.activeAgents).toBe(2016)
+    expect(result.current.data?.connectionState).toBe('degraded')
     expect(result.current.isLoading).toBe(false)
   })
 
-  it('sets source:unavailable when connection fails before any data', async () => {
+  it('sets source:unavailable when initial fetch fails before any data', async () => {
+    fetchMock.mockRejectedValue(new Error('connection refused'))
+
     const { result } = renderHook(() => useSwarmLive())
-    act(() => { startReject?.(new Error('connection refused')) })
-    await waitFor(() => expect(result.current.source).toBe('unavailable'))
+
+    await waitFor(() => expect(result.current.source).toBe('unavailable'), { timeout: 1000 })
     expect(result.current.data).toBeNull()
-    expect(result.current.isLoading).toBe(false)
+    await waitFor(() => expect(result.current.isLoading).toBe(false), { timeout: 1000 })
   })
 
-  it('clears isStale and sets source:live after reconnect delivers a new message', async () => {
+  it('clears isStale and sets source:polled after a successful retry', async () => {
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          countyId: 'benton',
+          activeAgents: 2016,
+          swarmActivity: 'Medium',
+          accuracyScore: 0.982,
+        }),
+      })
+      .mockRejectedValueOnce(new Error('connection refused'))
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          countyId: 'benton',
+          activeAgents: 2024,
+          swarmActivity: 'High',
+          accuracyScore: 0.989,
+        }),
+      })
+
     const { result } = renderHook(() => useSwarmLive())
-    act(() => { startResolve?.() })
-    act(() => { onHandlers['SwarmStatusUpdate']?.({ totalAgents: 2016, healthyAgents: 1980, overallStatus: 'degraded' }) })
-    await waitFor(() => expect(result.current.source).toBe('live'))
-    act(() => { closeCb?.() })
-    await waitFor(() => expect(result.current.source).toBe('fallback'))
-    // Reconnect delivers new message
-    act(() => { onHandlers['SwarmStatusUpdate']?.({ totalAgents: 2016, healthyAgents: 1980, overallStatus: 'healthy' }) })
-    await waitFor(() => expect(result.current.source).toBe('live'))
+
+    await waitFor(() => expect(result.current.source).toBe('polled'), { timeout: 1000 })
+    act(() => { vi.advanceTimersByTime(DAIS_REFRESH.swarmMs + 1000) })
+    await waitFor(() => expect(result.current.source).toBe('fallback'), { timeout: 1000 })
+
+    act(() => { vi.advanceTimersByTime(DAIS_REFRESH.swarmMs + 1000) })
+    await waitFor(() => expect(result.current.source).toBe('polled'), { timeout: 1000 })
     expect(result.current.isStale).toBe(false)
+    expect(result.current.data?.activeAgents).toBe(2024)
+    expect(result.current.data?.connectionState).toBe('connected')
   })
 })

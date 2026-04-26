@@ -5,25 +5,14 @@
  * Manages geotagged property photos with metadata and parcel association.
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Camera, MapPin, Calendar, User, Image, Filter } from 'lucide-react';
-
-interface PropertyPhoto {
-  id: string;
-  parcelId: string;
-  address: string;
-  filename: string;
-  elevation: 'front' | 'rear' | 'left' | 'right' | 'aerial' | 'interior' | 'detail';
-  dateTaken: string;
-  photographer: string;
-  lat: number;
-  lng: number;
-  resolution: string;
-  fileSize: string;
-  tags: string[];
-}
+import {
+  type PropertyPhoto,
+  getPropertyPhotos,
+} from '../../../services/suites/dossierService';
 
 const ELEVATION_LABELS: Record<string, { label: string; color: string }> = {
   front: { label: 'Front', color: 'hsl(var(--tf-network-blue-hs) 55%)' },
@@ -35,27 +24,67 @@ const ELEVATION_LABELS: Record<string, { label: string; color: string }> = {
   detail: { label: 'Detail', color: 'hsl(var(--tf-muted))' },
 };
 
-/** Demo property photos — Benton County */
-const DEMO_PHOTOS: PropertyPhoto[] = [
-  { id: 'PH-001', parcelId: '1-0529-100-0001-000', address: '1842 Jadwin Ave, Richland', filename: 'IMG_2025_0615_001.jpg', elevation: 'front', dateTaken: '2025-06-15', photographer: 'M. Chen', lat: 46.2856, lng: -119.2834, resolution: '4032x3024', fileSize: '3.2 MB', tags: ['residential', 'single-family', 'revaluation'] },
-  { id: 'PH-002', parcelId: '1-0529-100-0001-000', address: '1842 Jadwin Ave, Richland', filename: 'IMG_2025_0615_002.jpg', elevation: 'rear', dateTaken: '2025-06-15', photographer: 'M. Chen', lat: 46.2855, lng: -119.2832, resolution: '4032x3024', fileSize: '2.8 MB', tags: ['residential', 'deck', 'landscaping'] },
-  { id: 'PH-003', parcelId: '1-0529-100-0001-000', address: '1842 Jadwin Ave, Richland', filename: 'IMG_2025_0615_003.jpg', elevation: 'left', dateTaken: '2025-06-15', photographer: 'M. Chen', lat: 46.2856, lng: -119.2835, resolution: '4032x3024', fileSize: '2.5 MB', tags: ['residential', 'garage'] },
-  { id: 'PH-004', parcelId: '1-0831-200-0042-003', address: '3100 Columbia Center Blvd, Kennewick', filename: 'IMG_2025_0620_001.jpg', elevation: 'front', dateTaken: '2025-06-20', photographer: 'K. Williams', lat: 46.2210, lng: -119.2307, resolution: '4032x3024', fileSize: '4.1 MB', tags: ['commercial', 'retail', 'multi-tenant'] },
-  { id: 'PH-005', parcelId: '1-0831-200-0042-003', address: '3100 Columbia Center Blvd, Kennewick', filename: 'IMG_2025_0620_002.jpg', elevation: 'aerial', dateTaken: '2025-06-20', photographer: 'K. Williams', lat: 46.2212, lng: -119.2305, resolution: '5472x3648', fileSize: '6.8 MB', tags: ['commercial', 'parking', 'aerial'] },
-  { id: 'PH-006', parcelId: '1-0422-300-0015-000', address: '456 Gage Blvd, Kennewick', filename: 'IMG_2025_0710_001.jpg', elevation: 'front', dateTaken: '2025-07-10', photographer: 'Field Team B', lat: 46.1982, lng: -119.2145, resolution: '4032x3024', fileSize: '3.0 MB', tags: ['residential', 'single-family'] },
-  { id: 'PH-007', parcelId: '1-0422-300-0015-000', address: '456 Gage Blvd, Kennewick', filename: 'IMG_2025_0710_002.jpg', elevation: 'detail', dateTaken: '2025-07-10', photographer: 'Field Team B', lat: 46.1982, lng: -119.2144, resolution: '4032x3024', fileSize: '2.1 MB', tags: ['residential', 'foundation', 'damage'] },
-  { id: 'PH-008', parcelId: '1-1204-100-0005-001', address: '15200 N Demoss Rd, Prosser', filename: 'IMG_2025_0725_001.jpg', elevation: 'aerial', dateTaken: '2025-07-25', photographer: 'Drone Team', lat: 46.3415, lng: -119.7628, resolution: '5472x3648', fileSize: '7.2 MB', tags: ['agricultural', 'vineyard', 'aerial'] },
-  { id: 'PH-009', parcelId: '1-0627-100-0088-002', address: '8200 W Gage Blvd, Kennewick', filename: 'IMG_2025_0801_001.jpg', elevation: 'front', dateTaken: '2025-08-01', photographer: 'M. Patel', lat: 46.1880, lng: -119.2412, resolution: '4032x3024', fileSize: '3.5 MB', tags: ['commercial', 'storage', 'industrial'] },
-  { id: 'PH-010', parcelId: '1-0627-100-0088-002', address: '8200 W Gage Blvd, Kennewick', filename: 'IMG_2025_0801_002.jpg', elevation: 'interior', dateTaken: '2025-08-01', photographer: 'M. Patel', lat: 46.1880, lng: -119.2413, resolution: '4032x3024', fileSize: '2.9 MB', tags: ['commercial', 'warehouse', 'interior'] },
-];
+function photoSizeMb(photo: PropertyPhoto): number {
+  if (typeof photo.fileSizeBytes === 'number') return photo.fileSizeBytes / 1024 / 1024;
+  if (photo.fileSize) {
+    const parsed = Number.parseFloat(photo.fileSize);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+}
+
+function formatPhotoSize(photo: PropertyPhoto): string {
+  if (photo.fileSize) return photo.fileSize;
+  if (typeof photo.fileSizeBytes === 'number') return `${photoSizeMb(photo).toFixed(1)} MB`;
+  return 'Not returned';
+}
+
+function formatCoordinate(lat?: number, lng?: number): string {
+  if (typeof lat !== 'number' || typeof lng !== 'number') return 'Not returned';
+  return `${lat.toFixed(4)}N, ${Math.abs(lng).toFixed(4)}W`;
+}
 
 export default function PhotoManagerModule() {
-  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(DEMO_PHOTOS[0].id);
+  const [photos, setPhotos] = useState<PropertyPhoto[]>([]);
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [filterParcel, setFilterParcel] = useState<string>('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const uniqueParcels = [...new Set(DEMO_PHOTOS.map((p) => p.parcelId))];
-  const filtered = filterParcel === 'all' ? DEMO_PHOTOS : DEMO_PHOTOS.filter((p) => p.parcelId === filterParcel);
-  const selected = DEMO_PHOTOS.find((p) => p.id === selectedPhoto);
+  useEffect(() => {
+    let active = true;
+
+    getPropertyPhotos()
+      .then((loadedPhotos) => {
+        if (!active) return;
+        setPhotos(loadedPhotos);
+        setSelectedPhoto((current) => (
+          current && loadedPhotos.some((photo) => photo.id === current)
+            ? current
+            : loadedPhotos[0]?.id ?? null
+        ));
+        setError(null);
+      })
+      .catch((loadError) => {
+        if (!active) return;
+        setPhotos([]);
+        setSelectedPhoto(null);
+        setError(loadError instanceof Error ? loadError.message : 'Property photo API unavailable.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const uniqueParcels = [...new Set(photos.map((photo) => photo.parcelId))];
+  const filtered = filterParcel === 'all' ? photos : photos.filter((photo) => photo.parcelId === filterParcel);
+  const selected = photos.find((photo) => photo.id === selectedPhoto);
+  const photographerCount = new Set(photos.map((photo) => photo.photographer).filter(Boolean)).size;
+  const totalSize = photos.reduce((sum, photo) => sum + photoSizeMb(photo), 0);
 
   return (
     <div className='p-6 space-y-6'>
@@ -69,16 +98,40 @@ export default function PhotoManagerModule() {
           Photo Manager
         </h2>
         <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
-          Geotagged property photos — Benton County field inspection imagery
+          Geotagged property photos from TerraDossier field evidence.
         </p>
       </div>
+
+      {loading && (
+        <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+          <CardContent className='pt-6 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+            Loading property photos from TerraDossier...
+          </CardContent>
+        </Card>
+      )}
+
+      {error && (
+        <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-warning-hs) 55%)' }}>
+          <CardContent className='pt-6 text-sm' style={{ color: 'hsl(var(--tf-warning-hs) 55%)' }}>
+            {error}
+          </CardContent>
+        </Card>
+      )}
+
+      {!loading && !error && photos.length === 0 && (
+        <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
+          <CardContent className='pt-6 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+            No property photos were returned by TerraDossier.
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stats */}
       <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
         <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
           <CardContent className='pt-6 text-center'>
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Total Photos</p>
-            <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>{DEMO_PHOTOS.length}</p>
+            <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>{photos.length}</p>
           </CardContent>
         </Card>
         <Card style={{ background: 'hsl(var(--tf-card-bg))', borderColor: 'hsl(var(--tf-border))' }}>
@@ -91,7 +144,7 @@ export default function PhotoManagerModule() {
           <CardContent className='pt-6 text-center'>
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Photographers</p>
             <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
-              {new Set(DEMO_PHOTOS.map((p) => p.photographer)).size}
+              {photographerCount}
             </p>
           </CardContent>
         </Card>
@@ -99,7 +152,7 @@ export default function PhotoManagerModule() {
           <CardContent className='pt-6 text-center'>
             <p className='text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>Total Size</p>
             <p className='text-3xl font-bold' style={{ color: 'hsl(var(--tf-fg))' }}>
-              {(DEMO_PHOTOS.reduce((s, p) => s + parseFloat(p.fileSize), 0)).toFixed(1)} MB
+              {totalSize.toFixed(1)} MB
             </p>
           </CardContent>
         </Card>
@@ -143,7 +196,7 @@ export default function PhotoManagerModule() {
         <div className='lg:col-span-2'>
           <div className='grid grid-cols-2 md:grid-cols-3 gap-3'>
             {filtered.map((photo) => {
-              const elevConf = ELEVATION_LABELS[photo.elevation];
+              const elevConf = ELEVATION_LABELS[photo.elevation] ?? ELEVATION_LABELS.detail;
               const isSelected = photo.id === selectedPhoto;
               return (
                 <div
@@ -155,12 +208,24 @@ export default function PhotoManagerModule() {
                   }}
                   onClick={() => setSelectedPhoto(photo.id)}
                 >
-                  {/* Placeholder for photo thumbnail */}
                   <div
-                    className='aspect-[4/3] flex items-center justify-center relative'
+                    className='aspect-[4/3] flex items-center justify-center relative overflow-hidden'
                     style={{ background: 'hsl(var(--tf-border) / 0.3)' }}
                   >
-                    <Image size={32} style={{ color: 'hsl(var(--tf-muted) / 0.3)' }} />
+                    {photo.thumbnailUrl ? (
+                      <img
+                        src={photo.thumbnailUrl}
+                        alt={photo.filename}
+                        className='h-full w-full object-cover'
+                      />
+                    ) : (
+                      <div className='flex flex-col items-center gap-2 text-center px-3'>
+                        <Image size={32} style={{ color: 'hsl(var(--tf-muted) / 0.3)' }} />
+                        <span className='text-[10px]' style={{ color: 'hsl(var(--tf-muted))' }}>
+                          No thumbnail returned
+                        </span>
+                      </div>
+                    )}
                     <Badge
                       variant='outline'
                       className='absolute top-2 right-2 text-[10px]'
@@ -206,19 +271,19 @@ export default function PhotoManagerModule() {
                   <p className='text-xs flex items-center gap-1' style={{ color: 'hsl(var(--tf-muted))' }}>
                     <Calendar size={10} /> Date
                   </p>
-                  <p className='text-sm' style={{ color: 'hsl(var(--tf-fg))' }}>{selected.dateTaken}</p>
+                  <p className='text-sm' style={{ color: 'hsl(var(--tf-fg))' }}>{selected.dateTaken || 'Not returned'}</p>
                 </div>
                 <div>
                   <p className='text-xs flex items-center gap-1' style={{ color: 'hsl(var(--tf-muted))' }}>
                     <User size={10} /> Photographer
                   </p>
-                  <p className='text-sm' style={{ color: 'hsl(var(--tf-fg))' }}>{selected.photographer}</p>
+                  <p className='text-sm' style={{ color: 'hsl(var(--tf-fg))' }}>{selected.photographer || 'Not returned'}</p>
                 </div>
               </div>
               <div style={{ borderTop: '1px solid hsl(var(--tf-border))' }} className='pt-3'>
                 <p className='text-xs font-medium uppercase mb-2' style={{ color: 'hsl(var(--tf-muted))' }}>Geolocation</p>
                 <p className='text-sm font-mono' style={{ color: 'hsl(var(--tf-fg))' }}>
-                  {selected.lat.toFixed(4)}N, {Math.abs(selected.lng).toFixed(4)}W
+                  {formatCoordinate(selected.lat, selected.lng)}
                 </p>
               </div>
               <div style={{ borderTop: '1px solid hsl(var(--tf-border))' }} className='pt-3'>
@@ -226,11 +291,11 @@ export default function PhotoManagerModule() {
                 <div className='grid grid-cols-2 gap-2 text-sm'>
                   <div>
                     <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Resolution</p>
-                    <p style={{ color: 'hsl(var(--tf-fg))' }}>{selected.resolution}</p>
+                    <p style={{ color: 'hsl(var(--tf-fg))' }}>{selected.resolution || 'Not returned'}</p>
                   </div>
                   <div>
                     <p className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Size</p>
-                    <p style={{ color: 'hsl(var(--tf-fg))' }}>{selected.fileSize}</p>
+                    <p style={{ color: 'hsl(var(--tf-fg))' }}>{formatPhotoSize(selected)}</p>
                   </div>
                 </div>
               </div>
@@ -242,6 +307,9 @@ export default function PhotoManagerModule() {
                       {tag}
                     </Badge>
                   ))}
+                  {selected.tags.length === 0 && (
+                    <span className='text-xs' style={{ color: 'hsl(var(--tf-muted))' }}>Not returned</span>
+                  )}
                 </div>
               </div>
             </CardContent>

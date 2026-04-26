@@ -1,94 +1,94 @@
-import React, { useState, useEffect } from 'react';
+import { systemAPI } from '@/services/systemAPI';
 import { Box, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 
-interface SystemMetrics {
-  uptime: string;
-  cpuUsage: number;
-  memoryUsage: number;
-  aiAgentsActive: number;
-  quantumCoherence: number;
-  networkLatency: number;
-  securityStatus: string;
+interface SystemHealthResponse {
+  status: string;
+  moduleCount: number;
+  healthyModules: number;
+  systemComponents: Record<string, boolean>;
+  warnings: string[];
+  moduleCountTotal?: number | null;
+  moduleCountActive?: number | null;
 }
 
 const SystemDiagnostics: React.FC = () => {
-  const [metrics, setMetrics] = useState<SystemMetrics>({
-    uptime: '72:14:33',
-    cpuUsage: 23.4,
-    memoryUsage: 67.8,
-    aiAgentsActive: 1008,
-    quantumCoherence: 94.7,
-    networkLatency: 12,
-    securityStatus: 'SECURE',
-  });
+  const [health, setHealth] = useState<SystemHealthResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setMetrics((prev) => ({
-        ...prev,
-        cpuUsage: Math.max(15, Math.min(85, prev.cpuUsage + (Math.random() - 0.5) * 10)),
-        memoryUsage: Math.max(45, Math.min(85, prev.memoryUsage + (Math.random() - 0.5) * 5)),
-        aiAgentsActive: Math.max(
-          980,
-          Math.min(1008, prev.aiAgentsActive + Math.floor((Math.random() - 0.5) * 20))
-        ),
-        quantumCoherence: Math.max(
-          90,
-          Math.min(99, prev.quantumCoherence + (Math.random() - 0.5) * 2)
-        ),
-        networkLatency: Math.max(
-          5,
-          Math.min(50, prev.networkLatency + Math.floor((Math.random() - 0.5) * 10))
-        ),
-      }));
-    }, 2000);
+    let disposed = false;
 
-    return () => clearInterval(interval);
+    const loadHealth = async () => {
+      try {
+        const data = (await systemAPI.getSystemHealth()) as SystemHealthResponse;
+        if (disposed) return;
+        setHealth(data);
+        setError(null);
+      } catch (err) {
+        if (disposed) return;
+        setHealth(null);
+        setError(err instanceof Error ? err.message : 'System health unavailable');
+      }
+    };
+
+    void loadHealth();
+    const interval = setInterval(() => {
+      void loadHealth();
+    }, 10000);
+
+    return () => {
+      disposed = true;
+      clearInterval(interval);
+    };
   }, []);
 
   if (!isVisible) return null;
+
+  const activeModules = health?.moduleCountActive ?? health?.healthyModules ?? 0;
+  const totalModules = health?.moduleCountTotal ?? health?.moduleCount ?? 0;
+  const componentCount = Object.keys(health?.systemComponents ?? {}).length;
 
   return (
     <Box className='tf-osdiag' onClick={() => setIsVisible(false)} sx={{ cursor: 'pointer' }}>
       <div className='tf-osdiag-title'>SYSTEM DIAGNOSTICS</div>
 
       <div className='tf-osdiag-metric'>
-        <span>UPTIME:</span>
-        <span className='tf-osdiag-value'>{metrics.uptime}</span>
+        <span>STATUS:</span>
+        <span className='tf-osdiag-value'>{health?.status ?? 'Unavailable'}</span>
       </div>
 
       <div className='tf-osdiag-metric'>
-        <span>CPU:</span>
-        <span className='tf-osdiag-value'>{metrics.cpuUsage.toFixed(1)}%</span>
-      </div>
-
-      <div className='tf-osdiag-metric'>
-        <span>MEMORY:</span>
-        <span className='tf-osdiag-value'>{metrics.memoryUsage.toFixed(1)}%</span>
-      </div>
-
-      <div className='tf-osdiag-metric'>
-        <span>AI AGENTS:</span>
-        <span className='tf-osdiag-value'>{metrics.aiAgentsActive}</span>
-      </div>
-
-      <div className='tf-osdiag-metric'>
-        <span>Q-COHERENCE:</span>
-        <span className='tf-osdiag-value'>{metrics.quantumCoherence.toFixed(1)}%</span>
-      </div>
-
-      <div className='tf-osdiag-metric'>
-        <span>LATENCY:</span>
-        <span className='tf-osdiag-value'>{metrics.networkLatency}ms</span>
-      </div>
-
-      <div className='tf-osdiag-metric'>
-        <span>SECURITY:</span>
-        <span className='tf-osdiag-value' style={{ color: 'var(--success-green)' }}>
-          {metrics.securityStatus}
+        <span>MODULES:</span>
+        <span className='tf-osdiag-value'>
+          {activeModules}/{totalModules}
         </span>
       </div>
+
+      <div className='tf-osdiag-metric'>
+        <span>HEALTHY:</span>
+        <span className='tf-osdiag-value'>
+          {health ? `${health.healthyModules}/${health.moduleCount}` : 'n/a'}
+        </span>
+      </div>
+
+      <div className='tf-osdiag-metric'>
+        <span>COMPONENTS:</span>
+        <span className='tf-osdiag-value'>{health ? componentCount : 'n/a'}</span>
+      </div>
+
+      <div className='tf-osdiag-metric'>
+        <span>WARNINGS:</span>
+        <span className='tf-osdiag-value'>{health?.warnings.length ?? 0}</span>
+      </div>
+
+      {error && (
+        <div className='tf-osdiag-metric'>
+          <span>ERROR:</span>
+          <span className='tf-osdiag-value'>{error}</span>
+        </div>
+      )}
 
       <Typography
         variant='caption'
@@ -100,7 +100,7 @@ const SystemDiagnostics: React.FC = () => {
           fontSize: '0.6rem',
         }}
       >
-        Click to hide • Terrafusion OS v1.0
+        Click to hide • TerraFusion OS v1.0
       </Typography>
     </Box>
   );
