@@ -52,8 +52,10 @@ describe('TerraQueryModule contract', () => {
     render(<TerraQueryModule />);
 
     expect(screen.getByTestId('terraquery-governed-brief')).toBeInTheDocument();
+    // The brief now phrases the SQL-mock removal as "Offline SQL editors and
+    // simulated result timers are not part of this lane." — match the new copy.
     expect(
-      screen.getByText(/sql mock editor and simulated result timer have been removed/i),
+      screen.getByText(/offline sql editors and simulated result timers are not part of this lane/i),
     ).toBeInTheDocument();
   });
 

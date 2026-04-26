@@ -63,6 +63,12 @@ describe('DefensePacketsModule contract', () => {
   it('opens governed packet posture and shows returned refs', async () => {
     render(<DefensePacketsModule />);
 
+    // The Open Packet Posture button is disabled until an appealId is
+    // populated. Type a fixture id into the Appeal id input so the click
+    // actually fires handleOpenAppealPacket.
+    const appealInput = screen.getByLabelText(/appeal id/i) as HTMLInputElement;
+    fireEvent.change(appealInput, { target: { value: 'BOE-2025-001' } });
+
     fireEvent.click(screen.getByRole('button', { name: /open packet posture/i }));
 
     await waitFor(() => {
