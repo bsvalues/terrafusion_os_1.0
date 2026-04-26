@@ -12,11 +12,13 @@ interface WorkbenchSourceBadgeProps {
   className?: string;
 }
 
+// Map every source disclosure to TF tokens — leak-guard requires
+// var(--tf-*) / hsl(var(--tf-*-hs) / alpha) instead of raw hsl literals.
 const SOURCE_STYLE: Record<DisclosureSource, React.CSSProperties> = {
-  live:        { color: 'hsl(142 76% 36%)', borderColor: 'hsl(142 76% 36% / 0.4)' },
-  partial:     { color: 'hsl(38 92% 50%)',  borderColor: 'hsl(38 92% 50% / 0.4)' },
-  fallback:    { color: 'hsl(38 92% 50%)',  borderColor: 'hsl(38 92% 50% / 0.4)' },
-  unavailable: { color: 'hsl(215 16% 47%)', borderColor: 'hsl(215 16% 47% / 0.4)' },
+  live:        { color: 'hsl(var(--tf-success-hs) 36%)', borderColor: 'hsl(var(--tf-success-hs) 36% / 0.4)' },
+  partial:     { color: 'hsl(var(--tf-warning-hs) 50%)', borderColor: 'hsl(var(--tf-warning-hs) 50% / 0.4)' },
+  fallback:    { color: 'hsl(var(--tf-warning-hs) 50%)', borderColor: 'hsl(var(--tf-warning-hs) 50% / 0.4)' },
+  unavailable: { color: 'hsl(var(--tf-muted))',          borderColor: 'hsl(var(--tf-muted) / 0.4)' },
 };
 
 function getLabel(
