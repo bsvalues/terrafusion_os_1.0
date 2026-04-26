@@ -70,19 +70,13 @@ import Router from '../../Router';
  * The workbench should render (with empty/placeholder data) without crashing.
  */
 const BAD_PARCEL_IDS = [
-  // 'INVALID_GARBAGE' is the only case that consistently flakes under
-  // full root-tests sweep saturation (3000+ concurrent tests, 4–8 vitest
-  // workers). It passes in isolation (17/17), with a beforeAll Router
-  // warmup, with widened waitFor budgets, and with retry: 2 — but the
-  // first asserting iteration still occasionally crosses into the
-  // global ErrorBoundary fallback ('Reset Application') when the worker
-  // pool is at peak load. The other 9 cases (numeric, negative, special
-  // chars, SQL injection, path traversal, very long, unicode, single
-  // char, whitespace encoded) cover the same hardening surface and pass
-  // every time. Keep INVALID_GARBAGE out of the it.each table; revisit
-  // once the workbench cold-start render is stable under saturation.
-  // Tracked via the warmup + budget bumps in beforeAll above.
-  // { label: 'random string', value: 'INVALID_GARBAGE' },
+  // INVALID_GARBAGE used to flake under sweep saturation. Root cause was a
+  // genuine production bug in PropertyForge.tsx — `parcelYears.data?.
+  // layers.find(...)` only short-circuited on `data === undefined`, so
+  // when the API/hook returned `{ data: {} }` (no layers field) the
+  // workbench threw into the global ErrorBoundary. Fixed with a second
+  // `?.` (`data?.layers?.find`); INVALID_GARBAGE is back in the table.
+  { label: 'random string', value: 'INVALID_GARBAGE' },
   { label: 'numeric but fake', value: '0000000000' },
   { label: 'negative number', value: '-1' },
   { label: 'special chars', value: 'abc!@%23$%25%5E&*()' },

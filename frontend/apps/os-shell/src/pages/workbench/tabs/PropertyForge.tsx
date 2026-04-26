@@ -99,8 +99,11 @@ export const PropertyForge: React.FC = () => {
   const [taxYear, setTaxYear] = useState<number>(CURRENT_YEAR);
   const [history, setHistory] = useState<InvocationRecord[]>([]);
 
-  /* Find the layer object matching the currently selected year */
-  const selectedLayer = parcelYears.data?.layers.find((l) => l.year === taxYear);
+  /* Find the layer object matching the currently selected year.
+     `parcelYears.data` may exist with `layers` undefined (invalid parcel
+     id, error fallback shape, etc.), so the second `?.` is required to
+     keep the workbench from throwing into the global ErrorBoundary. */
+  const selectedLayer = parcelYears.data?.layers?.find((l) => l.year === taxYear);
 
   /** Append a tool invocation record (called by all sub-tabs) */
   const addHistoryRecord = useCallback((record: InvocationRecord) => {
