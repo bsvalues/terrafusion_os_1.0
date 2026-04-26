@@ -145,12 +145,17 @@ describe('Phase 28 contract: parcel param robustness — invalid parcelId never 
 
       render(<Router />);
 
-      // Wait for Suspense to resolve
+      // Wait for Suspense to resolve. The first parcel-id case in the
+      // it.each table hits the cold lazy-import path; under sweep load
+      // the previous 15s budget could race the chunk fetch, leaving
+      // 'Loading TerraFusion OS…' on screen and (after the suspense
+      // resolved) the global ErrorBoundary fallback. Bump to 25s so the
+      // cold-start case has headroom on saturated workers.
       await waitFor(
         () => {
           expect(screen.queryByText(/Loading TerraFusion OS/i)).not.toBeInTheDocument();
         },
-        { timeout: 15000 }
+        { timeout: 25000 }
       );
 
       // HARD GUARD: must not be in crash fallback state
@@ -169,9 +174,10 @@ describe('Phase 28 contract: parcel param robustness — invalid parcelId never 
             );
           }
         },
-        { timeout: 5000 }
+        { timeout: 8000 }
       );
-    }
+    },
+    35000,
   );
 
   /**
