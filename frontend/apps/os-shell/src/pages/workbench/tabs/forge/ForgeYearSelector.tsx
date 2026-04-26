@@ -55,7 +55,7 @@ export const ForgeYearSelector: React.FC<ForgeYearSelectorProps> = ({
    * taxYear is not present in the layers (e.g. first load was CURRENT_YEAR
    * but the parcel only has 2015). */
   useEffect(() => {
-    if (!data) return;
+    if (!data || !Array.isArray(data.layers)) return;
     const knownYears = data.layers.map((l) => l.year);
     if (knownYears.length === 0) return;
     if (!knownYears.includes(taxYear) && data.defaultYear != null) {
@@ -63,7 +63,11 @@ export const ForgeYearSelector: React.FC<ForgeYearSelectorProps> = ({
     }
   }, [data, taxYear, onTaxYearChange]);
 
-  const hasLayers = data && data.layers.length > 0;
+  // `data.layers` may be undefined when /years returns a partial body
+  // (invalid parcel id, error fallback shape, etc.). Treat any non-array
+  // layers as 'no layers known' rather than throwing into the global
+  // ErrorBoundary — same regression as the PropertyForge layers guard.
+  const hasLayers = Array.isArray(data?.layers) && data!.layers.length > 0;
 
   if (!parcelId) {
     return (
