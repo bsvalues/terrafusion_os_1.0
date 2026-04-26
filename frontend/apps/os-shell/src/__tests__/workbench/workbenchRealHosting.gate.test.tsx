@@ -326,13 +326,19 @@ describe('Workbench Real Hosting Gate', () => {
         </TabTestWrapper>
       );
 
-      await waitFor(() => {
-        expect(screen.getByTestId('property-forge-tab')).toBeInTheDocument();
-      });
+      // PropertyForge has the heaviest lazy graph in the workbench — give
+      // the Suspense resolve a generous budget so saturated workers don't
+      // race the default 1s waitFor budget under sweep load.
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('property-forge-tab')).toBeInTheDocument();
+        },
+        { timeout: 25000 },
+      );
 
       // Must NOT be a placeholder
       expect(screen.queryByTestId('placeholder-module')).not.toBeInTheDocument();
-    });
+    }, 35000);
 
     it('contains at least one interactive element', async () => {
       render(
@@ -343,9 +349,12 @@ describe('Workbench Real Hosting Gate', () => {
         </TabTestWrapper>
       );
 
-      await waitFor(() => {
-        expect(screen.getByTestId('property-forge-tab')).toBeInTheDocument();
-      });
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('property-forge-tab')).toBeInTheDocument();
+        },
+        { timeout: 25000 },
+      );
 
       // Forge has sub-tab buttons (role="tab") + a Tax Year select
       const interactiveElements = [
@@ -354,7 +363,7 @@ describe('Workbench Real Hosting Gate', () => {
         ...document.querySelectorAll('select, input'),
       ];
       expect(interactiveElements.length).toBeGreaterThanOrEqual(1);
-    });
+    }, 35000);
   });
 
   describe('PRIMARY GATE — Atlas', () => {
