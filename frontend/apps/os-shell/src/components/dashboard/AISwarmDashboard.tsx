@@ -127,10 +127,10 @@ export const AISwarmDashboard: React.FC = () => {
             variant='outlined'
             sx={{
               backgroundColor: 'hsl(var(--tf-bg) / 0.35)',
-              color: '#8fd4ff',
-              borderColor: '#8fd4ff',
+              color: 'hsl(var(--tf-pilot-required-hs) 78%)',
+              borderColor: 'hsl(var(--tf-pilot-required-hs) 78%)',
               '& .MuiChip-icon': {
-                color: '#8fd4ff',
+                color: 'hsl(var(--tf-pilot-required-hs) 78%)',
               },
             }}
           />
