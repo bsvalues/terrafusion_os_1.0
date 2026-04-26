@@ -396,8 +396,11 @@ export const PropertyDossier: React.FC = () => {
       setDocumentManagement({
         loading: false,
         error: null,
-        documents: documents.results,
-        evidenceItems: evidenceItems.results,
+        // dossierService can resolve to a partial body for an invalid
+        // parcelId (no `.results` field). Default to [] so the downstream
+        // .length / .map calls don't crash into the global ErrorBoundary.
+        documents: Array.isArray(documents?.results) ? documents.results : [],
+        evidenceItems: Array.isArray(evidenceItems?.results) ? evidenceItems.results : [],
         stats,
       });
     } catch (err) {
