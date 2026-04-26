@@ -164,7 +164,11 @@ describe('Phase 27 contract: deep-link → Router mounts → landmark renders', 
     await import('../../pages/workbench/tabs/PropertyPilot');
     localStorage.clear();
     vi.useFakeTimers({ shouldAdvanceTime: true });
-  }, 60000);
+    // Bumped from 60s — under full-suite sweep load the lazy import chain
+    // (App + PropertySearch + 4 standalone pages + ForgeSuiteHome + 6
+    // workbench tabs) can race past 60s. 120s gives enough headroom for
+    // saturated workers without masking real regressions.
+  }, 120000);
 
   afterEach(() => {
     cleanup();

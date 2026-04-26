@@ -301,14 +301,16 @@ const LazyPilot = React.lazy(() =>
 
 describe('Workbench Real Hosting Gate', () => {
   beforeAll(async () => {
-    await Promise.all([
-      import('../../pages/workbench/tabs/PropertyForge'),
-      import('../../pages/workbench/tabs/PropertyAtlas'),
-      import('../../pages/workbench/tabs/PropertyDais'),
-      import('../../pages/workbench/tabs/PropertyDossier'),
-      import('../../pages/workbench/tabs/PropertyPilot'),
-    ]);
-  });
+    // Sequentialise — parallel dynamic imports of the five tabs racing
+    // each other has timed out under sweep load (default 15s hook
+    // timeout). Bump the hook timeout to 90s and import one at a time
+    // so the worker can resolve each lazy graph before starting the next.
+    await import('../../pages/workbench/tabs/PropertyForge');
+    await import('../../pages/workbench/tabs/PropertyAtlas');
+    await import('../../pages/workbench/tabs/PropertyDais');
+    await import('../../pages/workbench/tabs/PropertyDossier');
+    await import('../../pages/workbench/tabs/PropertyPilot');
+  }, 90000);
 
   beforeEach(() => {
     vi.clearAllMocks();

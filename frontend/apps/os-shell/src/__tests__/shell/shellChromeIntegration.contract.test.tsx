@@ -68,43 +68,57 @@ describe('Phase 31-A: Shell Chrome Integration Contract', () => {
     memoryRouterEntries = ['/forge'];
     render(<Router />);
 
-    await screen.findByTestId('shell-routed-content', {}, { timeout: 10000 });
-  });
+    // ForgeSuiteHome has the heaviest lazy-import graph of the suite
+    // routes; under sweep load the 10s findBy can race the Suspense
+    // resolve. Match the per-test budget of the surrounding contract
+    // tests but bump it to 20s for the Forge surface specifically.
+    await screen.findByTestId('shell-routed-content', {}, { timeout: 20000 });
+  }, 30000);
 
   it('/atlas renders inside shell-routed-content', async () => {
     memoryRouterEntries = ['/atlas'];
     render(<Router />);
 
-    await screen.findByTestId('shell-routed-content', {}, { timeout: 10000 });
-  });
+    // Lazy suite imports under sweep load can race a 10s budget; 25s gives
+    // headroom for saturated workers without masking real regressions.
+    await screen.findByTestId('shell-routed-content', {}, { timeout: 25000 });
+  }, 35000);
 
   it('/dais renders inside shell-routed-content', async () => {
     memoryRouterEntries = ['/dais'];
     render(<Router />);
 
-    await screen.findByTestId('shell-routed-content', {}, { timeout: 10000 });
-  });
+    // Lazy suite imports under sweep load can race a 10s budget; 25s gives
+    // headroom for saturated workers without masking real regressions.
+    await screen.findByTestId('shell-routed-content', {}, { timeout: 25000 });
+  }, 35000);
 
   it('/dossier renders inside shell-routed-content', async () => {
     memoryRouterEntries = ['/dossier'];
     render(<Router />);
 
-    await screen.findByTestId('shell-routed-content', {}, { timeout: 10000 });
-  });
+    // Lazy suite imports under sweep load can race a 10s budget; 25s gives
+    // headroom for saturated workers without masking real regressions.
+    await screen.findByTestId('shell-routed-content', {}, { timeout: 25000 });
+  }, 35000);
 
   it('/gpt renders inside shell-routed-content', async () => {
     memoryRouterEntries = ['/gpt'];
     render(<Router />);
 
-    await screen.findByTestId('shell-routed-content', {}, { timeout: 10000 });
-  });
+    // Lazy suite imports under sweep load can race a 10s budget; 25s gives
+    // headroom for saturated workers without masking real regressions.
+    await screen.findByTestId('shell-routed-content', {}, { timeout: 25000 });
+  }, 35000);
 
   it('/property renders inside shell-routed-content', async () => {
     memoryRouterEntries = ['/property'];
     render(<Router />);
 
-    await screen.findByTestId('shell-routed-content', {}, { timeout: 10000 });
-  });
+    // Lazy suite imports under sweep load can race a 10s budget; 25s gives
+    // headroom for saturated workers without masking real regressions.
+    await screen.findByTestId('shell-routed-content', {}, { timeout: 25000 });
+  }, 35000);
 
   it('chrome partitioning — home has no container, /forge has it', async () => {
     // Verify home has no shell-routed-content
@@ -117,6 +131,8 @@ describe('Phase 31-A: Shell Chrome Integration Contract', () => {
     // Verify /forge has shell-routed-content
     memoryRouterEntries = ['/forge'];
     render(<Router />);
-    await screen.findByTestId('shell-routed-content', {}, { timeout: 10000 });
-  });
+    // Lazy suite imports under sweep load can race a 10s budget; 25s gives
+    // headroom for saturated workers without masking real regressions.
+    await screen.findByTestId('shell-routed-content', {}, { timeout: 25000 });
+  }, 35000);
 });
