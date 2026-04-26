@@ -30,6 +30,14 @@ vi.mock('../../services/pacsService', () => ({
   getPacsProperties: (...args: unknown[]) => mockGetPacsProperties(...args),
 }));
 
+// PropertySearch consumes getAssessmentProperties (assessmentPropertyService),
+// which fans out to assessmentSourceService via axios. Mock at this layer so
+// the page renders mocked parcels instead of the network-error fallback.
+vi.mock('../../services/assessmentPropertyService', () => ({
+  getAssessmentProperties: (...args: unknown[]) => mockGetPacsProperties(...args),
+  getAssessmentProof: vi.fn(async () => ({ source: 'mock', counts: {} })),
+}));
+
 let mockRecentParcels: string[] = [];
 vi.mock('../../context/parcelContext', () => ({
   useRecentParcels: () => mockRecentParcels,

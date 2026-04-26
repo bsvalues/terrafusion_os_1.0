@@ -126,8 +126,12 @@ describe('Phase 12: Benton County Golden Journey Contract', () => {
 
     it('renders a text input for parcel search', async () => {
       await renderPropertySearch();
-      const input = screen.queryByRole('textbox') ?? screen.queryByPlaceholderText(/GeoID|address/i);
-      expect(input).not.toBeNull();
+      // PropertySearch can mount multiple inputs whose placeholder mentions
+      // GeoID/address (e.g. dual landing/results panels under certain
+      // breakpoints). The contract is that at least one parcel search box
+      // is present — assert against the count rather than uniqueness.
+      const inputs = screen.getAllByPlaceholderText(/GeoID|address/i);
+      expect(inputs.length).toBeGreaterThan(0);
     });
 
     it('renders the Property Search heading', async () => {
