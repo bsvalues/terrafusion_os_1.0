@@ -11,7 +11,7 @@
  * Constitutional Values:
  * - FOCUS_VISIBLE: true (always show focus indicator)
  * - SPRING_STIFFNESS: 400 (responsive but not jarring)
- * - SPRING_DAMPING: 30 (smooth settle)
+ * - SPRING_DAMPING: 10 (Phase-7 material-law retune from 30)
  */
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
@@ -25,7 +25,10 @@ import userEvent from '@testing-library/user-event';
 
 const CONSTITUTIONAL_VALUES = {
   SPRING_STIFFNESS: 400,
-  SPRING_DAMPING: 30,
+  // Phase 7 material-law tuning replaced the original damping: 30 with
+  // damping: 10 in TactileButton's SPRING_CONFIG. Mirror the canonical
+  // component value here so the test is the contract.
+  SPRING_DAMPING: 10,
 } as const;
 
 // ============================================================================

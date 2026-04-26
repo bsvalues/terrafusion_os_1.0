@@ -21,6 +21,14 @@ describe("terrafusion-tokens.css leak guard", () => {
         /^\s*--[\w-]+:\s*.*#[0-9a-fA-F]{3,8}/,
         // Multi-line gradient continuation lines (bare hex color stops)
         /^\s*#[0-9a-fA-F]{3,8}\s+\d+%/,
+        // Foundation HSL custom-property definitions — same self-reference
+        // problem: --tf-shadow, --glass-bg, --glass-border, etc. ARE the
+        // tokens; they cannot be defined in terms of themselves. Ignore any
+        // line that defines a custom property whose value contains hsl().
+        /^\s*--[\w-]+:\s*[^;]*\bhsla?\(/i,
+        // Comment lines that document tokenisation patterns (e.g.
+        // "Usage pattern: hsl(var(--tf-foreground)) = hsl(0 0% 100%)").
+        /Usage pattern:\s*hsl\(/i,
       ],
     });
   });
