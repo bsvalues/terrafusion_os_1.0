@@ -6,9 +6,8 @@ using TerraFusion.Consciousness.Interfaces;
 namespace TerraFusion.Consciousness.Hubs
 {
     /// <summary>
-    /// Quantum Consciousness Hub
-    /// Real-time SignalR hub for consciousness system updates
-    /// THE TERRAFUSION WAY - Government. Transcended.
+    /// Quantum consciousness compatibility hub.
+    /// Provides SignalR access to current compatibility-mode status and metrics.
     /// </summary>
     public class QuantumConsciousnessHub : Hub
     {
@@ -103,16 +102,15 @@ namespace TerraFusion.Consciousness.Hubs
         /// </summary>
         public override async Task OnConnectedAsync()
         {
-            _logger.LogInformation("🔗 Client {ConnectionId} connected to Quantum Consciousness Hub", Context.ConnectionId);
+            _logger.LogInformation("Client {ConnectionId} connected to Quantum Consciousness Hub", Context.ConnectionId);
 
             // Send welcome message with system info
             await Clients.Caller.SendAsync("Welcome", new
             {
-                Message = "🧠⚡ Connected to TerraFusion Quantum Consciousness - Government. Transcended!",
+                Message = "Connected to TerraFusion Quantum Consciousness compatibility host.",
+                CompatibilityMode = true,
                 Timestamp = DateTime.UtcNow,
-                MaxAgents = 1000000,
-                QuantumSecurity = true,
-                GovernmentGrade = true
+                GovernedContractAvailable = false
             });
 
             await base.OnConnectedAsync();
@@ -151,7 +149,7 @@ namespace TerraFusion.Consciousness.Hubs
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("📡 Starting Consciousness Broadcast Service - THE TERRAFUSION WAY!");
+            _logger.LogInformation("Starting Consciousness Broadcast Service in compatibility mode.");
 
             while (!stoppingToken.IsCancellationRequested)
             {

@@ -1,16 +1,16 @@
 /**
  * DepreciationCalculator — Depreciation Lab
  *
- * PRIMARY: Benton County Method — market-calibrated % Good bracket tables
- *   Physical % Good comes from Benton County's age×type lookup table,
+ * PRIMARY: Certified county method — market-calibrated % Good bracket tables
+ *   Physical % Good comes from the certified county age×type lookup table,
  *   derived from ratio studies, NOT from a theoretical formula.
  *
  * COMPARISON: IAAO Age/Life (straight-line effectiveAge/economicLife)
- *   Shown side-by-side so the appraiser can see the delta. The Benton
+ *   Shown side-by-side so the appraiser can see the delta. The certified
  *   Method gives a more accurate result for this market because it is
  *   calibrated to actual sales, not a universal formula.
  *
- * Bracket tables mirror BentonCostData.ResidentialDepreciation /
+ * Bracket tables mirror the certified legacy county depreciation lookup
  * CommercialDepreciation in CostForgeController.cs (single source of truth
  * in backend; these are kept in sync).
  */
@@ -28,9 +28,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { apiFetchJson } from '@/lib/apiBase';
+import { getCostForgeCountyScope } from './countyScope';
+import { supportsCertifiedCostScheduleLane } from '../countyCertification';
 
-// ── Benton County bracket tables (mirrors CostForgeController.cs BentonCostData) ──
-// Source: Benton County Assessor cost manual, calibrated from ratio studies.
+// ── Certified county bracket tables (mirrors CostForgeController.cs) ──
+// Source: certified county cost manual, calibrated from ratio studies.
 // Factor = % Good (e.g., 0.87 = 87% good = 13% physical depreciation)
 const RESIDENTIAL_BRACKETS = [
   { minAge: 0,  maxAge: 5,   pctGood: 0.95, label: '0–5 yrs'  },
@@ -48,7 +50,7 @@ const COMMERCIAL_BRACKETS = [
   { minAge: 36, maxAge: 999, pctGood: 0.25, label: '36+ yrs'  },
 ] as const;
 
-function bentonPctGood(effectiveAge: number, isResidential: boolean): number {
+function certifiedPctGood(effectiveAge: number, isResidential: boolean): number {
   const brackets = isResidential ? RESIDENTIAL_BRACKETS : COMMERCIAL_BRACKETS;
   const match = brackets.find((b) => effectiveAge >= b.minAge && effectiveAge <= b.maxAge);
   return match?.pctGood ?? brackets[brackets.length - 1].pctGood;
@@ -90,6 +92,8 @@ interface EffectiveAgeApiResult {
 }
 
 export function DepreciationCalculator() {
+  const countyScope = getCostForgeCountyScope();
+  const certifiedLane = supportsCertifiedCostScheduleLane(countyScope.countyId);
   const [effectiveAge, setEffectiveAge] = useState('');
   const [propType, setPropType]         = useState<'residential' | 'commercial'>('residential');
   const [rcn, setRcn]                   = useState('');
@@ -112,6 +116,13 @@ export function DepreciationCalculator() {
 
   // Auto-derive effective age whenever actualAge or conditionGrade changes (400ms debounce)
   useEffect(() => {
+    if (!countyScope.isolated || !certifiedLane) {
+      setEffAgeFromApi(null);
+      setEffAgeApiError(null);
+      setEffAgeApiLoading(false);
+      return;
+    }
+
     const actualAgeNum = parseInt(actualAgeStr, 10);
     if (!actualAgeStr || isNaN(actualAgeNum) || actualAgeNum < 0) {
       setEffAgeFromApi(null);
@@ -128,7 +139,7 @@ export function DepreciationCalculator() {
         '/costforge/effective-age',
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...countyScope.headers },
           body: JSON.stringify({ actualAge: actualAgeNum, conditionGrade: condGrade }),
           signal: effAgeCtrl.current.signal,
         }
@@ -145,7 +156,7 @@ export function DepreciationCalculator() {
       clearTimeout(timer);
       effAgeCtrl.current?.abort();
     };
-  }, [actualAgeStr, condGrade]);
+  }, [actualAgeStr, certifiedLane, condGrade, countyScope.headers, countyScope.isolated]);
 
   const effAge  = parseInt(effectiveAge, 10) || 0;
   const rcnVal  = parseFloat(rcn) || 0;
@@ -154,10 +165,10 @@ export function DepreciationCalculator() {
   const isRes   = propType === 'residential';
   const economicLife = isRes ? 40 : 35;
 
-  // ── Benton Method (client-side, instant) ──
-  const bentonResult = useMemo(() => {
+  // ── Certified county method (client-side, instant) ──
+  const certifiedResult = useMemo(() => {
     if (effAge <= 0 || rcnVal <= 0) return null;
-    const pctGood       = bentonPctGood(effAge, isRes);
+    const pctGood       = certifiedPctGood(effAge, isRes);
     const physicalDepAmt = rcnVal * (1 - pctGood);
     const rcnld         = Math.max(0, rcnVal - physicalDepAmt - funcVal - extVal);
     const totalDepAmt   = physicalDepAmt + funcVal + extVal;
@@ -223,10 +234,22 @@ export function DepreciationCalculator() {
 
   const canCompute = effAge > 0 && rcnVal > 0;
 
-  // delta: positive = Benton gives MORE value (less depreciation) than IAAO
-  const rcnldDelta = bentonResult && iaaoPreview
-    ? bentonResult.rcnld - iaaoPreview.rcnld
+  // delta: positive = certified method gives MORE value (less depreciation) than IAAO
+  const rcnldDelta = certifiedResult && iaaoPreview
+    ? certifiedResult.rcnld - iaaoPreview.rcnld
     : null;
+
+  if (!countyScope.isolated) {
+    return <div className="cf-state cf-state--error">County scope required to load Depreciation Lab.</div>;
+  }
+
+  if (!certifiedLane) {
+    return (
+      <div className="cf-state cf-state--error" data-testid="depreciation-lab-unavailable">
+        Depreciation Lab is certified only on the current legacy county cost schedule lane.
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5 p-4">
@@ -235,17 +258,17 @@ export function DepreciationCalculator() {
         <div>
           <h1 className="text-2xl font-bold">Depreciation Lab</h1>
           <p className="text-muted-foreground text-sm">
-            Benton County market-calibrated % Good tables vs. IAAO Age/Life comparison
+            Certified county % Good tables vs. IAAO Age/Life comparison
           </p>
         </div>
         <div className="flex gap-2 shrink-0 items-start pt-1">
           <Badge
             style={{ background: 'hsl(28 30% 10%)', color: 'var(--cf-accent)', border: '1px solid hsl(28 50% 22%)' }}
-            title="Benton County bracket table — calibrated from ratio studies"
+            title="Certified county bracket table — calibrated from ratio studies"
           >
-            Benton Method ★ Primary
+            Certified Method ★ Primary
           </Badge>
-          <Badge variant="outline" title="Shown for comparison only — not Benton County methodology">
+          <Badge variant="outline" title="Shown for comparison only — not the certified county methodology">
             IAAO Age/Life (comparison)
           </Badge>
         </div>
@@ -331,7 +354,7 @@ export function DepreciationCalculator() {
             <p className="text-xs font-medium text-muted-foreground mb-3">
               Derive effective age from condition{' '}
               <span className="text-xs font-normal opacity-70">
-                · POST /costforge/effective-age · Benton WAC-aligned table
+                · POST /costforge/effective-age · certified condition table
               </span>
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
@@ -405,10 +428,10 @@ export function DepreciationCalculator() {
       </Card>
 
       {/* Results grid */}
-      {canCompute && bentonResult && (
+      {canCompute && certifiedResult && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          {/* ── PRIMARY: Benton Method ── */}
+          {/* ── PRIMARY: certified county method ── */}
           <div style={{
             padding: 16,
             background: 'hsl(28 30% 10%)',
@@ -418,7 +441,7 @@ export function DepreciationCalculator() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>
                 <div style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--cf-accent)', marginBottom: 2 }}>
-                  Benton Method — Primary
+                  Certified Method — Primary
                 </div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--cf-muted)' }}>
                   Market-calibrated % Good bracket table · {isRes ? 'Residential' : 'Commercial'}
@@ -452,36 +475,36 @@ export function DepreciationCalculator() {
             </div>
 
             <Row label="% Good (bracket table)"
-              value={`${(bentonResult.pctGood * 100).toFixed(0)}%`} bold accent />
+              value={`${(certifiedResult.pctGood * 100).toFixed(0)}%`} bold accent />
             <Row label="Physical depreciation"
-              value={`${bentonResult.physicalDepPct.toFixed(1)}% · $${Math.round(bentonResult.physicalDepAmt).toLocaleString()}`} />
+              value={`${certifiedResult.physicalDepPct.toFixed(1)}% · $${Math.round(certifiedResult.physicalDepAmt).toLocaleString()}`} />
             {funcVal > 0 && (
               <Row label="Functional obsolescence"
-                value={`${bentonResult.funcObsPct.toFixed(1)}% · $${Math.round(funcVal).toLocaleString()}`} />
+                value={`${certifiedResult.funcObsPct.toFixed(1)}% · $${Math.round(funcVal).toLocaleString()}`} />
             )}
             {extVal > 0 && (
               <Row label="External obsolescence"
-                value={`${bentonResult.extObsPct.toFixed(1)}% · $${Math.round(extVal).toLocaleString()}`} />
+                value={`${certifiedResult.extObsPct.toFixed(1)}% · $${Math.round(extVal).toLocaleString()}`} />
             )}
             <Row label="Total depreciation"
-              value={`${bentonResult.totalDepPct.toFixed(1)}%`} bold />
+              value={`${certifiedResult.totalDepPct.toFixed(1)}%`} bold />
 
             {/* Waterfall bar */}
             <div style={{ margin: '12px 0 4px' }}>
               <div style={{ fontSize: '0.6875rem', color: 'var(--cf-muted)', marginBottom: 4 }}>Depreciation waterfall</div>
               <div className="cf-deprec-bar">
                 <div className="cf-deprec-bar__physical"
-                  title={`Physical: ${bentonResult.physicalDepPct.toFixed(1)}%`}
-                  style={{ width: `${Math.min(bentonResult.physicalDepPct, 100)}%` }} />
+                  title={`Physical: ${certifiedResult.physicalDepPct.toFixed(1)}%`}
+                  style={{ width: `${Math.min(certifiedResult.physicalDepPct, 100)}%` }} />
                 {funcVal > 0 && (
                   <div className="cf-deprec-bar__functional"
-                    title={`Functional: ${bentonResult.funcObsPct.toFixed(1)}%`}
-                    style={{ width: `${Math.min(bentonResult.funcObsPct, 100)}%` }} />
+                    title={`Functional: ${certifiedResult.funcObsPct.toFixed(1)}%`}
+                    style={{ width: `${Math.min(certifiedResult.funcObsPct, 100)}%` }} />
                 )}
                 {extVal > 0 && (
                   <div className="cf-deprec-bar__external"
-                    title={`External: ${bentonResult.extObsPct.toFixed(1)}%`}
-                    style={{ width: `${Math.min(bentonResult.extObsPct, 100)}%` }} />
+                    title={`External: ${certifiedResult.extObsPct.toFixed(1)}%`}
+                    style={{ width: `${Math.min(certifiedResult.extObsPct, 100)}%` }} />
                 )}
               </div>
               <div style={{ display: 'flex', gap: 10, fontSize: '0.75rem', marginTop: 4 }}>
@@ -499,10 +522,10 @@ export function DepreciationCalculator() {
               borderRadius: 6,
             }}>
               <div style={{ fontSize: '0.6875rem', color: 'var(--cf-accent)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>
-                RCNLD — Benton Method
+                RCNLD — Certified Method
               </div>
               <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--cf-accent)', fontVariantNumeric: 'tabular-nums' }}>
-                ${Math.round(bentonResult.rcnld).toLocaleString()}
+                ${Math.round(certifiedResult.rcnld).toLocaleString()}
               </div>
             </div>
           </div>
@@ -521,7 +544,7 @@ export function DepreciationCalculator() {
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--cf-subtle)' }}>
                 Straight-line: Eff. Age ÷ {economicLife}-yr economic life
-                · Not Benton County methodology
+                · Not the certified county methodology
               </div>
             </div>
 
@@ -585,16 +608,16 @@ export function DepreciationCalculator() {
       {rcnldDelta !== null && Math.abs(rcnldDelta) > 0 && (
         <div className="cf-ai-callout">
           <div className="cf-ai-callout__label">Method Comparison</div>
-          The Benton Method gives{' '}
+          The certified method gives{' '}
           <strong style={{ color: rcnldDelta > 0 ? 'var(--cf-success)' : 'var(--cf-warn)' }}>
             ${Math.abs(Math.round(rcnldDelta)).toLocaleString()} {rcnldDelta > 0 ? 'more' : 'less'}
           </strong>{' '}
           value than the IAAO Age/Life formula for this structure
           ({rcnldDelta > 0
-            ? 'Benton bracket tables reflect better-than-formula market retention'
+            ? 'certified bracket tables reflect better-than-formula market retention'
             : 'market data indicates faster-than-formula depreciation in this cohort'
           }).
-          {' '}Benton County uses the bracket table method. IAAO Age/Life is shown for reference only.
+          {' '}The certified county lane uses the bracket table method. IAAO Age/Life is shown for reference only.
         </div>
       )}
 

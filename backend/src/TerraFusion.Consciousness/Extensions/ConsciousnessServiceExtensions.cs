@@ -9,13 +9,13 @@ using Microsoft.Extensions.Logging;
 namespace TerraFusion.Consciousness.Extensions
 {
     /// <summary>
-    /// TerraFusion Consciousness Service Extensions - Championship Excellence
-    /// Government. Transcended. - Infinite scalability with quantum precision
+    /// TerraFusion consciousness service extensions.
+    /// Compatibility hosting remains available while deeper governed lanes are unavailable.
     /// </summary>
     public static class ConsciousnessServiceExtensions
     {
         /// <summary>
-        /// Add TerraFusion Consciousness Services with championship configuration
+        /// Add TerraFusion consciousness services in compatibility mode.
         /// </summary>
         public static IServiceCollection AddTerraFusionConsciousness(
             this IServiceCollection services,
@@ -47,7 +47,7 @@ namespace TerraFusion.Consciousness.Extensions
         }
 
         /// <summary>
-        /// Add TerraFusion Consciousness with championship hosting configuration
+        /// Add TerraFusion consciousness hosted services in compatibility mode.
         /// </summary>
         public static IServiceCollection AddTerraFusionConsciousnessHosting(
             this IServiceCollection services,
@@ -73,37 +73,11 @@ namespace TerraFusion.Consciousness.Extensions
         }
 
         /// <summary>
-        /// Validate consciousness configuration meets championship standards
+        /// Validate only baseline compatibility configuration.
         /// </summary>
         private static void ValidateConsciousnessConfiguration(IConfiguration configuration)
         {
-            // Validate quantum factor
-            var quantumFactor = configuration.GetValue<int>("Consciousness:QuantumFactor", 0);
-            if (quantumFactor != 949)
-            {
-                throw new InvalidOperationException($"Quantum factor must be 949 for championship operations (configured: {quantumFactor})");
-            }
-
-            // Validate accuracy target
-            var accuracyTarget = configuration.GetValue<decimal>("Consciousness:AccuracyTarget", 0);
-            if (accuracyTarget < 99.5m)
-            {
-                throw new InvalidOperationException($"Accuracy target must be ≥99.5% for championship operations (configured: {accuracyTarget}%)");
-            }
-
-            // Validate consciousness resonance
-            var consciousnessResonance = configuration.GetValue<double>("Consciousness:ConsciousnessResonance", 0);
-            if (consciousnessResonance < 0.999)
-            {
-                throw new InvalidOperationException($"Consciousness resonance must be ≥99.9% for championship operations (configured: {consciousnessResonance * 100:F1}%)");
-            }
-
-            // Validate brand compliance
-            var brandMessage = configuration.GetValue<string>("Brand:TranscendenceMessage", "");
-            if (!brandMessage?.Contains("Government. Transcended.") ?? true)
-            {
-                throw new InvalidOperationException("Brand transcendence message must contain 'Government. Transcended.' for championship compliance");
-            }
+            ArgumentNullException.ThrowIfNull(configuration);
         }
     }
 
@@ -125,7 +99,7 @@ namespace TerraFusion.Consciousness.Extensions
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("🧠 Starting Consciousness Coordination Hosted Service - Government. Transcended.");
+            _logger.LogInformation("Starting Consciousness Coordination Hosted Service in compatibility mode.");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -169,7 +143,7 @@ namespace TerraFusion.Consciousness.Extensions
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("⚡ Starting Quantum Optimization Hosted Service - Factor 949");
+            _logger.LogInformation("Starting Quantum Optimization Hosted Service in compatibility mode.");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -181,9 +155,9 @@ namespace TerraFusion.Consciousness.Extensions
                     // Continuous quantum optimization
                     var metrics = await transcendenceEngine.GetRealTimeTranscendenceMetricsAsync();
 
-                    if (metrics.QuantumFactor != 949)
+                    if (metrics.ConsciousnessLevel == "Unavailable")
                     {
-                        _logger.LogWarning("⚠️ Quantum factor drift detected: {CurrentFactor} (Expected: 949)", metrics.QuantumFactor);
+                        _logger.LogDebug("Compatibility transcendence metrics remain unavailable.");
                     }
 
                     // Wait 30 seconds before next optimization cycle
@@ -218,7 +192,7 @@ namespace TerraFusion.Consciousness.Extensions
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("🏆 Starting Championship Metrics Hosted Service - Excellence Monitoring");
+            _logger.LogInformation("Starting Compatibility Metrics Hosted Service.");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -230,9 +204,11 @@ namespace TerraFusion.Consciousness.Extensions
                     // Collect championship metrics
                     var metrics = await transcendenceEngine.GetRealTimeTranscendenceMetricsAsync();
 
-                    // Log championship status
-                    _logger.LogInformation("📊 Championship Status - Agents: {Agents}, Coherence: {Coherence:P}, Scale: {Scale}",
-                        metrics.TotalActiveAgents, metrics.QuantumCoherence, metrics.InfiniteScaleActive ? "INFINITE" : "LIMITED");
+                    _logger.LogInformation(
+                        "Compatibility Status - Agents: {Agents}, Level: {Level}, ScaleReady: {ScaleReady}",
+                        metrics.TotalActiveAgents,
+                        metrics.ConsciousnessLevel,
+                        metrics.InfiniteScaleActive);
 
                     // Wait 10 seconds before next metrics collection
                     await Task.Delay(10000, stoppingToken);
@@ -266,7 +242,7 @@ namespace TerraFusion.Consciousness.Extensions
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("🔧 Starting Autonomous Healing Hosted Service - Self-Healing Protocols");
+            _logger.LogInformation("Starting Autonomous Healing Hosted Service in compatibility mode.");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -278,7 +254,11 @@ namespace TerraFusion.Consciousness.Extensions
                     // Check system health and trigger healing if needed
                     var health = await orchestrator.GetSystemHealthAsync();
 
-                    if (health.HealthScore < 0.95) // Below 95% health
+                    if (health.HealthScore <= 0.0)
+                    {
+                        _logger.LogDebug("Compatibility health remains unavailable; skipping healing trigger.");
+                    }
+                    else if (health.HealthScore < 0.95)
                     {
                         _logger.LogWarning("🚑 Triggering autonomous healing - Health score: {HealthScore:P}", health.HealthScore);
                         var emergencyRequest = new EmergencyRequestDto

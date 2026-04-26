@@ -12,12 +12,21 @@ vi.mock('../countyStudyApi', () => ({
   },
 }));
 
+vi.mock('../countyStudyScope', () => ({
+  getCountyStudyScope: () => ({
+    countyId: 'benton',
+    headers: { 'x-county-id': 'benton' },
+    isolated: true,
+  }),
+}));
+
 import { studyApi } from '../countyStudyApi';
 
 const MOCK_STUDIES = [
   {
     studyId: 'study-1',
     countyId: 'benton',
+    countyName: 'Benton County',
     taxYear: 2026,
     studyType: 'RatioStudy',
     status: 'Active',

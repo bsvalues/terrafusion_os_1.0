@@ -11,6 +11,7 @@
 //   Exception                 → 500 Internal     { error: "Internal error" }  + Error log
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
@@ -24,6 +25,7 @@ namespace TerraFusion.API.Controllers;
 public class CountyStudyController : ControllerBase
 {
     private readonly ICountyStudyService _svc;
+    private readonly ITerraFusionDbContext _db;
     private readonly ICountyResolver _countyResolver;
     private readonly ILogger<CountyStudyController> _logger;
 
@@ -37,6 +39,7 @@ public class CountyStudyController : ControllerBase
 
     public CountyStudyController(
         ICountyStudyService svc,
+        ITerraFusionDbContext db,
         ICountyResolver countyResolver,
         ICountyStudySegmentDerivationService deriveSvc,
         ICountyStudyHealthService healthSvc,
@@ -45,6 +48,7 @@ public class CountyStudyController : ControllerBase
         ILogger<CountyStudyController> logger)
     {
         _svc            = svc;
+        _db             = db;
         _countyResolver = countyResolver;
         _deriveSvc      = deriveSvc;
         _healthSvc      = healthSvc;
@@ -58,6 +62,117 @@ public class CountyStudyController : ControllerBase
         ?? User?.FindFirst("sub")?.Value
         ?? FallbackUserId;
 
+    private string? ResolveCountyScopeToken()
+    {
+        if (Request.Headers.TryGetValue("x-county-id", out var countyHeader) && !string.IsNullOrWhiteSpace(countyHeader))
+            return countyHeader.ToString();
+
+        if (Request.Query.TryGetValue("countyId", out var countyQuery) && !string.IsNullOrWhiteSpace(countyQuery))
+            return countyQuery.ToString();
+
+        return User?.FindFirst("countyId")?.Value
+            ?? User?.FindFirst("county_id")?.Value;
+    }
+
+    private async Task<Guid?> ResolveCountyScopeAsync(CancellationToken ct = default)
+    {
+        var token = ResolveCountyScopeToken();
+        if (string.IsNullOrWhiteSpace(token))
+            return null;
+
+        return await _countyResolver.TryResolveAsync(token, ct);
+    }
+
+    private IActionResult CountyScopeRequired() =>
+        BadRequest(new { error = "County scope required." });
+
+    private IActionResult ResourceOutOfScope(string resource, Guid id) =>
+        NotFound(new { error = $"{resource} {id} not found for active county scope." });
+
+    private async Task<IActionResult?> EnsureStudyScopeAsync(Guid studyId, CancellationToken ct = default)
+    {
+        var countyId = await ResolveCountyScopeAsync(ct);
+        if (!countyId.HasValue)
+            return CountyScopeRequired();
+
+        return await _db.CountyStudySessions.AsNoTracking()
+            .AnyAsync(s => s.StudyId == studyId && s.CountyId == countyId.Value, ct)
+            ? null
+            : ResourceOutOfScope("Study", studyId);
+    }
+
+    private async Task<IActionResult?> EnsureSegmentSetScopeAsync(Guid segmentSetId, CancellationToken ct = default)
+    {
+        var countyId = await ResolveCountyScopeAsync(ct);
+        if (!countyId.HasValue)
+            return CountyScopeRequired();
+
+        return await _db.CountySegmentSets.AsNoTracking()
+            .AnyAsync(s => s.SegmentSetId == segmentSetId && s.CountyId == countyId.Value, ct)
+            ? null
+            : ResourceOutOfScope("Segment set", segmentSetId);
+    }
+
+    private async Task<IActionResult?> EnsureSegmentScopeAsync(Guid segmentId, CancellationToken ct = default)
+    {
+        var countyId = await ResolveCountyScopeAsync(ct);
+        if (!countyId.HasValue)
+            return CountyScopeRequired();
+
+        return await _db.CountySegments.AsNoTracking()
+            .AnyAsync(s => s.SegmentId == segmentId && s.CountyId == countyId.Value, ct)
+            ? null
+            : ResourceOutOfScope("Segment", segmentId);
+    }
+
+    private async Task<IActionResult?> EnsureCohortScopeAsync(Guid cohortId, CancellationToken ct = default)
+    {
+        var countyId = await ResolveCountyScopeAsync(ct);
+        if (!countyId.HasValue)
+            return CountyScopeRequired();
+
+        return await _db.CountyCohorts.AsNoTracking()
+            .AnyAsync(c => c.CohortId == cohortId && c.CountyId == countyId.Value, ct)
+            ? null
+            : ResourceOutOfScope("Cohort", cohortId);
+    }
+
+    private async Task<IActionResult?> EnsureScenarioScopeAsync(Guid scenarioId, CancellationToken ct = default)
+    {
+        var countyId = await ResolveCountyScopeAsync(ct);
+        if (!countyId.HasValue)
+            return CountyScopeRequired();
+
+        return await _db.CountyScenarios.AsNoTracking()
+            .AnyAsync(s => s.ScenarioId == scenarioId && s.CountyId == countyId.Value, ct)
+            ? null
+            : ResourceOutOfScope("Scenario", scenarioId);
+    }
+
+    private async Task<IActionResult?> EnsureAdjustmentSetScopeAsync(Guid adjustmentSetId, CancellationToken ct = default)
+    {
+        var countyId = await ResolveCountyScopeAsync(ct);
+        if (!countyId.HasValue)
+            return CountyScopeRequired();
+
+        return await _db.CountyAdjustmentSets.AsNoTracking()
+            .AnyAsync(a => a.AdjustmentSetId == adjustmentSetId && a.CountyId == countyId.Value, ct)
+            ? null
+            : ResourceOutOfScope("Adjustment set", adjustmentSetId);
+    }
+
+    private async Task<IActionResult?> EnsureExceptionSetScopeAsync(Guid exceptionSetId, CancellationToken ct = default)
+    {
+        var countyId = await ResolveCountyScopeAsync(ct);
+        if (!countyId.HasValue)
+            return CountyScopeRequired();
+
+        return await _db.CountyExceptionSets.AsNoTracking()
+            .AnyAsync(e => e.ExceptionSetId == exceptionSetId && e.CountyId == countyId.Value, ct)
+            ? null
+            : ResourceOutOfScope("Exception set", exceptionSetId);
+    }
+
     // ── Studies ───────────────────────────────────────────────────────────────
 
     /// <summary>
@@ -69,6 +184,19 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopedCountyId = await ResolveCountyScopeAsync(HttpContext.RequestAborted);
+            if (!scopedCountyId.HasValue)
+                return CountyScopeRequired();
+
+            var requestedCountyId = await _countyResolver.ResolveAsync(req.CountyId, HttpContext.RequestAborted);
+            if (requestedCountyId != scopedCountyId.Value)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    error = "County Studio cannot create studies outside the active county scope.",
+                });
+            }
+
             var dto = await _svc.CreateStudyAsync(req, CurrentUserId);
             return CreatedAtAction(nameof(GetStudyById), new { studyId = dto.StudyId }, dto);
         }
@@ -96,8 +224,23 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
-            var resolvedId = await _countyResolver.ResolveAsync(countyId, ct);
-            var list = await _svc.GetStudiesAsync(resolvedId);
+            var scopedCountyId = await ResolveCountyScopeAsync(ct);
+            if (!scopedCountyId.HasValue)
+                return CountyScopeRequired();
+
+            if (!string.IsNullOrWhiteSpace(countyId))
+            {
+                var requestedCountyId = await _countyResolver.ResolveAsync(countyId, ct);
+                if (requestedCountyId != scopedCountyId.Value)
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, new
+                    {
+                        error = "County Studio cannot list studies outside the active county scope.",
+                    });
+                }
+            }
+
+            var list = await _svc.GetStudiesAsync(scopedCountyId.Value);
             return Ok(list);
         }
         catch (CountyNotFoundException ex)
@@ -129,6 +272,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, ct);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var result = await _deriveSvc.DeriveAsync(studyId, CurrentUserId, ct);
             return Ok(result);
         }
@@ -151,6 +298,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.GetStudyAsync(studyId);
             return dto is null ? NotFound(new { error = $"Study {studyId} not found" }) : Ok(dto);
         }
@@ -174,6 +325,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.UpdateStudyStatusAsync(studyId, req.Status, CurrentUserId);
             return dto is null ? NotFound(new { error = $"Study {studyId} not found" }) : Ok(dto);
         }
@@ -191,7 +346,7 @@ public class CountyStudyController : ControllerBase
     // ── Rollups (Task B — County → City → Neighborhood drill lattice) ────
 
     /// <summary>
-    /// Returns one row per Benton city, aggregated from the study's active
+    /// Returns one row per city, aggregated from the study's active
     /// CountySegmentSet. Each row carries segment/parcel counts, parcel-weighted
     /// IAAO metrics (median / COD / PRD), exception stats, a pointer to the
     /// single worst-performing segment in the city, and an IAAO compliance
@@ -205,6 +360,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var rows = await _svc.GetCityRollupAsync(studyId);
             return Ok(rows);
         }
@@ -237,6 +396,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var rows = await _svc.GetNeighborhoodRollupAsync(studyId, city);
             return Ok(rows);
         }
@@ -271,6 +434,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, ct);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _healthSvc.GetHealthSummaryAsync(studyId, ct);
             return Ok(dto);
         }
@@ -293,7 +460,7 @@ public class CountyStudyController : ControllerBase
 
     /// <summary>
     /// Returns the full Inspector detail bundle for a segment: IAAO core +
-    /// Benton Method additions (PRB / VEI / classification / equity score)
+    /// Equity additions (PRB / VEI / classification / equity score)
     /// + 5-year YoY history + compliance + human-readable warnings.
     /// 404 when the segment does not exist.
     /// </summary>
@@ -302,6 +469,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureSegmentScopeAsync(segmentId, ct);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _inspectorSvc.GetSegmentDetailAsync(segmentId, ct);
             return Ok(dto);
         }
@@ -331,6 +502,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureSegmentScopeAsync(segmentId, ct);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _inspectorSvc.GetActionContextAsync(segmentId, ct);
             return Ok(dto);
         }
@@ -365,6 +540,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureSegmentScopeAsync(segmentId, ct);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _aiSvc.DiagnoseSegmentAsync(segmentId, ct);
             return Ok(dto);
         }
@@ -399,6 +578,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, ct);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _aiSvc.DiagnoseCountyAsync(studyId, ct);
             return Ok(dto);
         }
@@ -432,6 +615,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.CreateSegmentSetAsync(studyId, req.Name, req.SourceType, req.IsBaseline, CurrentUserId);
             return StatusCode(201, dto);
         }
@@ -454,6 +641,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var list = await _svc.GetSegmentSetsAsync(studyId);
             return Ok(list);
         }
@@ -476,6 +667,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureSegmentSetScopeAsync(segmentSetId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var list = await _svc.GetSegmentsAsync(segmentSetId);
             return Ok(list);
         }
@@ -501,6 +696,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(req.StudyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.CreateCohortAsync(req, CurrentUserId);
             return CreatedAtAction(nameof(GetCohort), new { cohortId = dto.CohortId }, dto);
         }
@@ -523,6 +722,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var list = await _svc.GetCohortsAsync(studyId);
             return Ok(list);
         }
@@ -545,6 +748,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureCohortScopeAsync(cohortId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.GetCohortAsync(cohortId);
             return dto is null ? NotFound(new { error = $"Cohort {cohortId} not found" }) : Ok(dto);
         }
@@ -570,6 +777,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(req.StudyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.CreateScenarioAsync(req, CurrentUserId);
             return CreatedAtAction(nameof(GetScenario), new { scenarioId = dto.ScenarioId }, dto);
         }
@@ -592,6 +803,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var list = await _svc.GetScenariosAsync(studyId);
             return Ok(list);
         }
@@ -614,6 +829,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureScenarioScopeAsync(scenarioId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.GetScenarioAsync(scenarioId);
             return dto is null ? NotFound(new { error = $"Scenario {scenarioId} not found" }) : Ok(dto);
         }
@@ -637,6 +856,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureScenarioScopeAsync(scenarioId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.SaveScenarioAsync(scenarioId, CurrentUserId);
             return dto is null ? NotFound(new { error = $"Scenario {scenarioId} not found" }) : Ok(dto);
         }
@@ -660,6 +883,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureScenarioScopeAsync(scenarioId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.PreviewScenarioImpactAsync(scenarioId);
             return Ok(dto);
         }
@@ -684,6 +911,14 @@ public class CountyStudyController : ControllerBase
             return BadRequest(new { error = "compareWithId is required." });
         try
         {
+            var scopeResult = await EnsureScenarioScopeAsync(scenarioIdA, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
+            var compareScopeResult = await EnsureScenarioScopeAsync(compareWithId, HttpContext.RequestAborted);
+            if (compareScopeResult is not null)
+                return compareScopeResult;
+
             var dto = await _svc.CompareScenarioImpactAsync(scenarioIdA, compareWithId);
             return Ok(dto);
         }
@@ -710,6 +945,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureScenarioScopeAsync(req.ScenarioId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.PromoteScenarioAsync(req, CurrentUserId);
             return StatusCode(201, dto);
         }
@@ -732,6 +971,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var list = await _svc.GetAdjustmentSetsAsync(studyId);
             return Ok(list);
         }
@@ -760,6 +1003,10 @@ public class CountyStudyController : ControllerBase
             return BadRequest(new { error = $"Unknown approval state '{req.NewState}'." });
         try
         {
+            var scopeResult = await EnsureAdjustmentSetScopeAsync(id, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.UpdateApprovalStateAsync(id, parsed, CurrentUserId, req.RollbackReason);
             return Ok(dto);
         }
@@ -785,6 +1032,14 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var studyScopeResult = await EnsureStudyScopeAsync(req.StudyId, HttpContext.RequestAborted);
+            if (studyScopeResult is not null)
+                return studyScopeResult;
+
+            var scenarioScopeResult = await EnsureScenarioScopeAsync(req.SourceScenarioId, HttpContext.RequestAborted);
+            if (scenarioScopeResult is not null)
+                return scenarioScopeResult;
+
             var dto = await _svc.CreateExceptionSetAsync(req, CurrentUserId);
             return StatusCode(201, dto);
         }
@@ -807,6 +1062,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var list = await _svc.GetExceptionSetsAsync(studyId);
             return Ok(list);
         }
@@ -826,6 +1085,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureExceptionSetScopeAsync(id, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.UpdateExceptionStatusAsync(id, req.NewStatus, CurrentUserId);
             return Ok(dto);
         }
@@ -845,6 +1108,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureExceptionSetScopeAsync(id, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.AssignExceptionSetAsync(id, req.AssignTo, CurrentUserId);
             return Ok(dto);
         }
@@ -864,6 +1131,10 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureExceptionSetScopeAsync(id, HttpContext.RequestAborted);
+            if (scopeResult is not null)
+                return scopeResult;
+
             var dto = await _svc.AddExceptionNoteAsync(id, req.NoteText, CurrentUserId);
             return Ok(dto);
         }
@@ -892,6 +1163,17 @@ public class CountyStudyController : ControllerBase
     {
         try
         {
+            var scopeResult = await EnsureStudyScopeAsync(studyId, ct);
+            if (scopeResult is not null)
+                return scopeResult;
+
+            if (scenarioId.HasValue)
+            {
+                var scenarioScopeResult = await EnsureScenarioScopeAsync(scenarioId.Value, ct);
+                if (scenarioScopeResult is not null)
+                    return scenarioScopeResult;
+            }
+
             var study = await _svc.GetStudyAsync(studyId);
             if (study is null)
                 return NotFound(new { error = $"Study {studyId} not found." });

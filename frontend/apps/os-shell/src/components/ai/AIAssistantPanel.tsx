@@ -1,11 +1,3 @@
-/**
- * ═══════════════════════════════════════════════════════════════
- * AI ASSISTANT PANEL - Elite County Employee AI Superpower Interface
- * TerraFusion OS Quantum Governance Platform
- * Government. Transcended.
- * ═══════════════════════════════════════════════════════════════
- */
-
 import { TerraSphere } from '@/components/brand/TerraSphere';
 import {
   Avatar,
@@ -63,7 +55,7 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
       {
         id: 'system-welcome',
         role: 'system',
-        content: `**AI Assistant Ready** - ${countyId.toUpperCase()}\n\nResponses come from the governed TerraFusion AI Assistant API. I will not report agent counts, valuation accuracy, compliance status, or workflow completion unless the backend returns evidence for it.\n\nRole context: ${employeeRole}`,
+        content: `**AI Assistant Compatibility Mode** - ${countyId.toUpperCase()}\n\nResponses come from the governed TerraFusion AI Assistant API. This panel will not claim live automation, swarm execution, valuation accuracy, or compliance outcomes unless the backend returns evidence for them.\n\nRole context: ${employeeRole}`,
         timestamp: new Date(),
       },
     ]);
@@ -261,7 +253,7 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
             <div className='bg-slate-800/50 border border-slate-700 rounded-lg p-3'>
               <div className='flex items-center gap-2 text-sm text-slate-400'>
                 <div className='w-2 h-2 bg-terra-cyan rounded-full animate-pulse' />
-                <span>AI processing with quantum optimization...</span>
+                <span>Checking assistant route. Governed execution is not implied.</span>
               </div>
             </div>
           </div>
@@ -292,8 +284,8 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({
         </div>
 
         <div className='mt-2 flex items-center justify-between text-xs text-slate-400'>
-          <span>Connected to TerraFusion Consciousness Engine</span>
-          <span className='text-terra-cyan'>Port 3004</span>
+          <span>Assistant route compatibility mode</span>
+          <span className='text-terra-cyan'>No governed automation</span>
         </div>
       </div>
     </Card>

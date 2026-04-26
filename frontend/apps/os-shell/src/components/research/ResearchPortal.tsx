@@ -1,14 +1,14 @@
 /**
  * ResearchPortal.tsx
  *
- * Elite research portal - main orchestration component for authenticated research users
+ * Research portal - main orchestration component for authenticated research users
  * Integrates all 5 specialized research panels into a unified immersive environment with
  * tabbed navigation, session management, real-time synchronization, and cross-panel analytics.
  *
  * Integrated Components:
- * 1. QuantumResearchDashboard - 3D quantum visualization with property space exploration
- * 2. ConsciousnessParameterTuningPanel - Real-time AI consciousness control with predictive analytics
- * 3. InfinitePrecisionAnalyticsPanel - Statistical analysis workbench with correlation matrices
+ * 1. QuantumResearchDashboard - 3D research visualization
+ * 2. ConsciousnessParameterTuningPanel - parameter controls
+ * 3. InfinitePrecisionAnalyticsPanel - statistical analysis workbench
  * 4. AISwarmManagementPanel - county-scoped swarm health and evidence status
  * 5. StatisticalValidationWorkbench - IAAO compliance validation with certification tracking
  *
@@ -21,12 +21,8 @@
  * - Collaboration features (multi-researcher sessions, shared workspaces)
  * - Advanced analytics aggregation across all panels
  *
- * Performance: 60 FPS rendering, <10ms panel switching, <50ms cross-panel sync
- * Design: TerraFusion glassmorphic UI with quantum consciousness theming
- *
  * @module ResearchPortal
  * @version 1.0.0
- * @elite-status Championship-Grade PhD Research Environment
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -156,10 +152,10 @@ function buildResearchSession(identity: ResearchIdentity, sessionId: string, sta
     lastActivityTime: startTime,
     activePanel: 'quantum-dashboard',
     quantumParameters: {
-      quantumCoherence: 0.995,
-      entanglementStrength: 0.99,
-      consciousnessLevel: 9.5,
-      optimizationFactor: 949,
+      quantumCoherence: 0,
+      entanglementStrength: 0,
+      consciousnessLevel: 0,
+      optimizationFactor: 0,
     },
     aiSwarmMetrics: {
       availability: 'unavailable',
@@ -172,10 +168,10 @@ function buildResearchSession(identity: ResearchIdentity, sessionId: string, sta
       selectedCounty: identity.countyId ?? 'unassigned',
       assessmentPeriod: '2024',
       propertyType: 'residential',
-      certificationTarget: 'championship',
+      certificationTarget: 'evidence-review',
     },
     analyticsState: {
-      selectedVariables: ['AssessedValue', 'SalePrice', 'QuantumCoherence'],
+      selectedVariables: ['AssessedValue', 'SalePrice'],
       correlationMethod: 'pearson',
       hypothesisTestType: 'independent-t-test',
       confidenceLevel: 0.95,
@@ -482,10 +478,10 @@ export const ResearchPortal: React.FC = () => {
       },
       {
         id: 'consciousness-tuning' as ResearchPanelType,
-        name: 'Consciousness Tuning',
+        name: 'Parameter Review',
         icon: '🧠',
         shortcut: 'Ctrl+2',
-        description: 'Real-time AI consciousness parameter control',
+        description: 'Operator-managed parameter review with no implied live AI execution',
       },
       {
         id: 'analytics-workbench' as ResearchPanelType,
@@ -528,7 +524,9 @@ export const ResearchPortal: React.FC = () => {
   // ─────────────────────────────────────────────────────────────────────────────
 
   return (
-    <div
+    <main
+      role='main'
+      aria-label='Elite Research workspace'
       style={{
         width: '100vw',
         height: '100vh',
@@ -570,7 +568,7 @@ export const ResearchPortal: React.FC = () => {
                 marginBottom: '0.25rem',
               }}
             >
-              TerraFusion Quantum Research Portal
+              TerraFusion Research Portal
             </h1>
             <p
               style={{
@@ -579,7 +577,7 @@ export const ResearchPortal: React.FC = () => {
                 margin: 0,
               }}
             >
-              Elite Research Environment • County-scoped authenticated workspace
+              County-scoped authenticated workspace
             </p>
           </div>
 
@@ -771,9 +769,11 @@ export const ResearchPortal: React.FC = () => {
             </strong>
           </span>
           <span>
-            Quantum Coherence:{' '}
+            Coherence Telemetry:{' '}
             <strong style={{ color: 'var(--tf-transcend-cyan)' }}>
-              {((session?.quantumParameters.quantumCoherence || 0) * 100).toFixed(1)}%
+              {session && session.quantumParameters.quantumCoherence > 0
+                ? `${(session.quantumParameters.quantumCoherence * 100).toFixed(1)}%`
+                : 'Unavailable'}
             </strong>
           </span>
           <span>
@@ -859,7 +859,7 @@ export const ResearchPortal: React.FC = () => {
           </button>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

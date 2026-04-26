@@ -223,7 +223,7 @@ public enum RollupComplianceStatus
 }
 
 /// <summary>
-/// One row per Benton city on the county rollup. Aggregated from the study's
+/// One row per city on the county rollup. Aggregated from the study's
 /// active CountySegmentSet by joining each segment's constituent parcels'
 /// CamaCharacteristic.City (normalized via PacsCanonicalizer.NormalizeCity).
 /// </summary>
@@ -347,7 +347,7 @@ public record SegmentYearPoint(
 
 /// <summary>
 /// Everything the ObjectInspector needs to render the Metrics + Trend tabs in a
-/// single round-trip: the segment's persisted IAAO metrics, Benton Method
+/// single round-trip: the segment's persisted IAAO metrics, equity
 /// additions (PRB / VEI / classification / composite equity score), a per-year
 /// history series, and the same compliance-status / warnings vocabulary as
 /// CountyHealthSummaryDto.
@@ -370,11 +370,11 @@ public record CountySegmentDetailDto(
     decimal? StabilityScore,
     decimal? RiskScore,
     int ExceptionCount,
-    // Benton Method
+    // Equity
     decimal? Prb,
     decimal? Vei,
     string EquityClassification,            // Fair | Progressive | Regressive | InsufficientData
-    decimal? BentonEquityScore,             // 0-100
+    decimal? EquityScore,                   // 0-100
     // Count of qualified sale-ratio observations the PRB/VEI/classification
     // were computed from. Different from ParcelCount (which is the segment's
     // full parcel count). Used by Task E diagnosis detectors to distinguish

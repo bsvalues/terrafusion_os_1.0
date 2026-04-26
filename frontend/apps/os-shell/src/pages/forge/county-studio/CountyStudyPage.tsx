@@ -82,7 +82,7 @@ export function CountyStudyPage() {
 
   const handleOpenAtlas = () => {
     if (!activeStudy) return;
-    navigate(`/forge/atlas-live?studyId=${activeStudy.studyId}`);
+    navigate(`/forge/atlas-live?studyId=${activeStudy.studyId}&countyId=${activeStudy.countyId}`);
   };
 
   // Compose segment filter: severity pill AND selectedNeighborhood (when at the
@@ -109,7 +109,7 @@ export function CountyStudyPage() {
           <span style={{ fontWeight: 700, fontSize: 14 }}>TerraForge County Studio</span>
           {activeStudy && (
             <span style={{ fontSize: 12, opacity: 0.6 }}>
-              {activeStudy.countyId} · {activeStudy.taxYear} · {activeStudy.studyType}
+              {activeStudy.countyName ?? activeStudy.countyId} · {activeStudy.taxYear} · {activeStudy.studyType}
             </span>
           )}
         </div>

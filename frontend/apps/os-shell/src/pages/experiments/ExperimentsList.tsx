@@ -93,7 +93,7 @@ export default function ExperimentsList() {
         <h2 className='text-2xl font-bold text-cyan-500'>Experiments</h2>
         <Link
           to='/experiments/create'
-          className='px-4 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700 transition'
+          className='px-4 py-2 bg-cyan-700 text-white rounded hover:bg-cyan-800 transition'
         >
           Create New
         </Link>

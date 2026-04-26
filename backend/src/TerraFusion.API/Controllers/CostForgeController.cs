@@ -63,8 +63,13 @@ public class CostForgeController : ControllerBase
   {
     var countyIdClaim = User.FindFirst("countyId")?.Value?.Trim();
     var countyCodeClaim = User.FindFirst("countyCode")?.Value?.Trim();
+    var countyIdHeader = Request.Headers["x-county-id"].FirstOrDefault()?.Trim()
+      ?? Request.Headers["X-County-Id"].FirstOrDefault()?.Trim();
+    var countyCodeHeader = Request.Headers["x-county-code"].FirstOrDefault()?.Trim()
+      ?? Request.Headers["X-County-Code"].FirstOrDefault()?.Trim();
 
-    if (!string.IsNullOrWhiteSpace(countyIdClaim) && Guid.TryParse(countyIdClaim, out var directCountyId))
+    var directCountyToken = !string.IsNullOrWhiteSpace(countyIdClaim) ? countyIdClaim : countyIdHeader;
+    if (!string.IsNullOrWhiteSpace(directCountyToken) && Guid.TryParse(directCountyToken, out var directCountyId))
     {
       var county = await _db.Counties
           .AsNoTracking()
@@ -72,11 +77,15 @@ public class CostForgeController : ControllerBase
           .Select(c => new { c.Name, c.FipsCode })
           .FirstOrDefaultAsync();
 
-      return new CountyContext(directCountyId, county?.Name, county?.FipsCode, countyCodeClaim);
+      return new CountyContext(
+        directCountyId,
+        county?.Name,
+        county?.FipsCode,
+        countyCodeClaim ?? countyCodeHeader);
     }
 
-    var nameCandidates = BuildCountyNameCandidates(countyIdClaim, countyCodeClaim);
-    var fipsCandidates = BuildFipsCandidates(countyIdClaim, countyCodeClaim);
+    var nameCandidates = BuildCountyNameCandidates(countyIdClaim, countyCodeClaim, countyIdHeader, countyCodeHeader);
+    var fipsCandidates = BuildFipsCandidates(countyIdClaim, countyCodeClaim, countyIdHeader, countyCodeHeader);
 
     IQueryable<County> countyQuery = _db.Counties.AsNoTracking();
 
@@ -96,8 +105,7 @@ public class CostForgeController : ControllerBase
     }
     else
     {
-      // No claims present — dev/anonymous fallback for CostForge (Benton-specific module)
-      return new CountyContext(Guid.Parse("00000000-0000-0000-0000-000000000001"), "Benton County", "53005", "benton");
+      return null;
     }
 
     var match = await countyQuery
@@ -106,7 +114,7 @@ public class CostForgeController : ControllerBase
 
     return match is null
         ? null
-        : new CountyContext(match.Id, match.Name, match.FipsCode, countyCodeClaim);
+        : new CountyContext(match.Id, match.Name, match.FipsCode, countyCodeClaim ?? countyCodeHeader);
   }
 
   private static string[] BuildCountyNameCandidates(params string?[] claims)
@@ -203,6 +211,19 @@ public class CostForgeController : ControllerBase
     var countyFips = NormalizeCountyToken(context.CountyFipsCode);
 
     return requested == claimCode || requested == countyName || requested == countyFips;
+  }
+
+  private static bool SupportsCertifiedCostScheduleLane(CountyContext context)
+  {
+    var countyId = NormalizeCountyToken(context.CountyId.ToString("D"));
+    var countyName = NormalizeCountyToken(context.CountyName);
+    var countyCode = NormalizeCountyToken(context.ClaimCountyCode);
+    var countyFips = NormalizeCountyToken(context.CountyFipsCode);
+
+    return countyId == "19190019191919191919191919191919"
+      || countyName == "BENTON"
+      || countyCode == "BENTON"
+      || countyFips == "005";
   }
 
   private async Task<bool> PropertyExistsInCountyAsync(Guid propertyId, Guid countyId)
@@ -3304,6 +3325,10 @@ public class CostForgeController : ControllerBase
       [FromQuery] int taxYear = 0,
       [FromQuery] int minSales = 3)
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
     if (taxYear == 0) taxYear = DateTime.UtcNow.Year;
 
     // Pull qualified sales: 3-year rolling window (assessment year - 3 to year)
@@ -3311,7 +3336,8 @@ public class CostForgeController : ControllerBase
     int salesYearMin = taxYear - 3;
     var sales = await _db.ComparableSales
       .AsNoTracking()
-      .Where(s => s.SalePrice > 10_000
+      .Where(s => s.CountyId == countyContext.CountyId
+               && s.SalePrice > 10_000
                && s.SalesYear >= salesYearMin
                && s.SalesYear <= taxYear
                && (s.QualificationDecision == "qualified"
@@ -3327,14 +3353,19 @@ public class CostForgeController : ControllerBase
     // Assessed values from Properties table (canonical, no PACS naming)
     var avMap = await _db.Properties
       .AsNoTracking()
-      .Where(p => parcelIds.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+      .Where(p => p.CountyId == countyContext.CountyId
+               && parcelIds.Contains(p.ParcelNumber)
+               && p.TaxYear == taxYear
+               && p.AssessedValue > 0)
       .Select(p => new { p.ParcelNumber, p.AssessedValue })
       .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue);
 
     // Neighborhood code from CamaCharacteristics (now populated)
     var hoodMap = await _db.CamaCharacteristics
       .AsNoTracking()
-      .Where(c => parcelIds.Contains(c.ParcelId) && c.NeighborhoodCode != null)
+      .Where(c => c.CountyId == countyContext.CountyId
+               && parcelIds.Contains(c.ParcelId)
+               && c.NeighborhoodCode != null)
       .Select(c => new { c.ParcelId, c.NeighborhoodCode })
       .ToDictionaryAsync(c => c.ParcelId, c => c.NeighborhoodCode!);
 
@@ -3447,6 +3478,10 @@ public class CostForgeController : ControllerBase
   [AllowAnonymous]
   public async Task<IActionResult> MassAdjustPreview([FromBody] MassAdjustPreviewRequest req)
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
     if (req.AdjustmentPct < -50 || req.AdjustmentPct > 100)
       return BadRequest(new { error = "AdjustmentPct must be between -50 and 100" });
 
@@ -3456,7 +3491,7 @@ public class CostForgeController : ControllerBase
     // Build scoped CAMA query — neighborhood + optional segment filters
     var camaQ = _db.CamaCharacteristics
       .AsNoTracking()
-      .Where(c => c.NeighborhoodCode == req.NeighborhoodCode);
+      .Where(c => c.CountyId == countyContext.CountyId && c.NeighborhoodCode == req.NeighborhoodCode);
 
     if (!string.IsNullOrWhiteSpace(req.VintageDecade)
         && int.TryParse(req.VintageDecade.TrimEnd('s'), out var vintageStart))
@@ -3476,7 +3511,8 @@ public class CostForgeController : ControllerBase
     int previewYearMin = taxYear - 3;
     var sales = await _db.ComparableSales
       .AsNoTracking()
-      .Where(s => s.ParcelId != null
+      .Where(s => s.CountyId == countyContext.CountyId
+               && s.ParcelId != null
                && parcelSet.Contains(s.ParcelId!)
                && s.SalePrice > 10_000
                && s.SalesYear >= previewYearMin
@@ -3488,7 +3524,10 @@ public class CostForgeController : ControllerBase
 
     var avMap = await _db.Properties
       .AsNoTracking()
-      .Where(p => parcelSet.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+      .Where(p => p.CountyId == countyContext.CountyId
+               && parcelSet.Contains(p.ParcelNumber)
+               && p.TaxYear == taxYear
+               && p.AssessedValue > 0)
       .Select(p => new { p.ParcelNumber, p.AssessedValue })
       .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue);
 
@@ -6621,11 +6660,15 @@ public class CostForgeController : ControllerBase
       [FromQuery] int taxYear = 2026,
       CancellationToken ct = default)
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
     _logger.LogInformation("GetDashboardStats: taxYear={TaxYear}", taxYear);
 
     // Property type distribution from CamaCharacteristics (most recent taxYear)
     var typeGroups = await _db.Set<TerraFusion.Core.Entities.CamaCharacteristic>()
-        .Where(c => c.TaxYear == taxYear)
+        .Where(c => c.CountyId == countyContext.CountyId && c.TaxYear == taxYear)
         .GroupBy(c => c.BuildingType)
         .Select(g => new { BuildingType = g.Key, Count = g.Count() })
         .OrderByDescending(x => x.Count)
@@ -6653,7 +6696,9 @@ public class CostForgeController : ControllerBase
 
     // Depreciation stats from CamaCharacteristics
     var deprStats = await _db.Set<TerraFusion.Core.Entities.CamaCharacteristic>()
-        .Where(c => c.TaxYear == taxYear && c.DepreciationPct.HasValue)
+        .Where(c => c.CountyId == countyContext.CountyId
+                 && c.TaxYear == taxYear
+                 && c.DepreciationPct.HasValue)
         .GroupBy(c => 1)
         .Select(g => new
         {
@@ -6683,10 +6728,14 @@ public class CostForgeController : ControllerBase
     try
     {
       var resCostRows = await _db.Properties
-          .Where(p => p.PropertyType == "Residential" && p.ImprovementValue > 0)
+          .Where(p => p.CountyId == countyContext.CountyId
+                   && p.PropertyType == "Residential"
+                   && p.ImprovementValue > 0)
           .Join(
               _db.Set<TerraFusion.Core.Entities.CamaCharacteristic>()
-                  .Where(cc => cc.TaxYear == taxYear && cc.SquareFeet > 200),
+                  .Where(cc => cc.CountyId == countyContext.CountyId
+                            && cc.TaxYear == taxYear
+                            && cc.SquareFeet > 200),
               p => p.ParcelNumber,
               cc => cc.ParcelId,
               (p, cc) => new { p.ImprovementValue, cc.SquareFeet }
@@ -6723,7 +6772,9 @@ public class CostForgeController : ControllerBase
     try
     {
       var pctGoodRows = await _db.Set<TerraFusion.Core.Entities.CamaCharacteristic>()
-          .Where(c => c.TaxYear == taxYear && c.DepreciationPct.HasValue)
+          .Where(c => c.CountyId == countyContext.CountyId
+                   && c.TaxYear == taxYear
+                   && c.DepreciationPct.HasValue)
           .Select(c => c.DepreciationPct!.Value)
           .ToListAsync(ct);
       if (pctGoodRows.Count > 0)
@@ -6741,7 +6792,8 @@ public class CostForgeController : ControllerBase
       int salesYearMin = taxYear - 3;
       var salesRaw = await _db.ComparableSales
           .AsNoTracking()
-          .Where(s => s.SalePrice > 10_000
+          .Where(s => s.CountyId == countyContext.CountyId
+                   && s.SalePrice > 10_000
                    && s.SalesYear >= salesYearMin
                    && s.SalesYear <= taxYear
                    && (s.QualificationDecision == "qualified"
@@ -6755,12 +6807,17 @@ public class CostForgeController : ControllerBase
         var parcelIds2 = salesRaw.Select(s => s.ParcelId).Where(id => id != null).Distinct().ToHashSet();
         var avMap2 = await _db.Properties
             .AsNoTracking()
-            .Where(p => parcelIds2.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+            .Where(p => p.CountyId == countyContext.CountyId
+                     && parcelIds2.Contains(p.ParcelNumber)
+                     && p.TaxYear == taxYear
+                     && p.AssessedValue > 0)
             .Select(p => new { p.ParcelNumber, p.AssessedValue })
             .ToDictionaryAsync(p => p.ParcelNumber!, p => p.AssessedValue);
         var hoodMap2 = await _db.CamaCharacteristics
             .AsNoTracking()
-            .Where(c => parcelIds2.Contains(c.ParcelId) && c.NeighborhoodCode != null)
+            .Where(c => c.CountyId == countyContext.CountyId
+                     && parcelIds2.Contains(c.ParcelId)
+                     && c.NeighborhoodCode != null)
             .Select(c => new { c.ParcelId, c.NeighborhoodCode })
             .ToDictionaryAsync(c => c.ParcelId, c => c.NeighborhoodCode!);
 
@@ -6834,11 +6891,15 @@ public class CostForgeController : ControllerBase
       string hoodCd,
       [FromQuery] int taxYear = 0)
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
     if (taxYear == 0) taxYear = DateTime.UtcNow.Year;
 
     var cama = await _db.CamaCharacteristics
         .AsNoTracking()
-        .Where(c => c.NeighborhoodCode == hoodCd)
+        .Where(c => c.CountyId == countyContext.CountyId && c.NeighborhoodCode == hoodCd)
         .Select(c => new
         {
           c.ParcelId,
@@ -6855,14 +6916,18 @@ public class CostForgeController : ControllerBase
 
     var avMap = await _db.Properties
         .AsNoTracking()
-        .Where(p => parcelIds.Contains(p.ParcelNumber) && p.TaxYear == taxYear && p.AssessedValue > 0)
+        .Where(p => p.CountyId == countyContext.CountyId
+                 && parcelIds.Contains(p.ParcelNumber)
+                 && p.TaxYear == taxYear
+                 && p.AssessedValue > 0)
         .Select(p => new { p.ParcelNumber, p.AssessedValue })
         .ToDictionaryAsync(p => p.ParcelNumber!, p => (decimal?)p.AssessedValue);
 
     // Latest qualified sale per parcel — 3-layer default-qualified filter.
     var salesMap = await _db.ComparableSales
         .AsNoTracking()
-        .Where(s => s.ParcelId != null
+        .Where(s => s.CountyId == countyContext.CountyId
+                 && s.ParcelId != null
                  && parcelIds.Contains(s.ParcelId!)
                  && s.SalePrice > 10_000
                  && (s.QualificationDecision == "qualified"
@@ -7056,16 +7121,23 @@ public class CostForgeController : ControllerBase
   /// </summary>
   [HttpGet("improvement-type-codes")]
   [AllowAnonymous]
-  public IActionResult GetImprovementTypeCodes([FromQuery] string? countyId)
+  public async Task<IActionResult> GetImprovementTypeCodes([FromQuery] string? countyId)
   {
-    // Building type codes from the Benton County cost matrix
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    if (!SupportsCertifiedCostScheduleLane(countyContext))
+      return Conflict(new { error = "Certified cost schedule lane unavailable for the active county scope." });
+
+    // Building type codes from the certified legacy county cost matrix
     var buildingTypes = BentonCostData.CostMatrix
         .Select(e => new { code = e.BuildingType, description = e.BuildingTypeLabel })
         .DistinctBy(e => e.code)
         .OrderBy(e => e.code)
         .ToList();
 
-    // Feature factor codes — real Benton County ImprvDetTypeCd values from PACS
+    // Feature factor codes — real certified-lane improvement detail codes from PACS
     var featureCodes = new[]
     {
         new { code = "CovPatio",  description = "Covered Patio",          bivPct = 0.03m },
@@ -7098,6 +7170,13 @@ public class CostForgeController : ControllerBase
   [AllowAnonymous]
   public async Task<IActionResult> GetCostSchedule([FromQuery] string? qualityClass)
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    if (!SupportsCertifiedCostScheduleLane(countyContext))
+      return Conflict(new { error = "Certified cost schedule lane unavailable for the active county scope." });
+
     var qualityKeys = new[] { "ECONOMY", "STANDARD", "CUSTOM", "PREMIUM", "LUXURY" };
 
     // Cross cost matrix × quality grades to produce schedule rows
@@ -7186,8 +7265,15 @@ public class CostForgeController : ControllerBase
   /// </summary>
   [HttpPost("effective-age")]
   [AllowAnonymous]
-  public IActionResult ComputeEffectiveAge([FromBody] EffectiveAgeRequest req)
+  public async Task<IActionResult> ComputeEffectiveAge([FromBody] EffectiveAgeRequest req)
   {
+    var countyContext = await ResolveCountyContextAsync();
+    if (countyContext is null)
+      return Unauthorized(new { error = "County context required." });
+
+    if (!SupportsCertifiedCostScheduleLane(countyContext))
+      return Conflict(new { error = "Certified cost schedule lane unavailable for the active county scope." });
+
     if (req.ActualAge < 0 || req.ActualAge > 300)
       return BadRequest(new { error = "ActualAge must be between 0 and 300" });
 
@@ -7210,7 +7296,7 @@ public class CostForgeController : ControllerBase
       conditionGrade = req.ConditionGrade,
       conditionAdjustment = conditionAdj,
       effectiveAge,
-      method = "Benton WAC-aligned condition table",
+      method = "Certified legacy county condition table",
     });
   }
 

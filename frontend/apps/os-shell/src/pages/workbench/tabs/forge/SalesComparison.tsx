@@ -9,6 +9,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
+import { getSession } from '../../../../auth/session';
 import { useWorkbenchTab } from '../../../../context/workbenchTabContext';
 import { invokeTool } from '../../../../api/pilotApi';
 import { ErrorDisplay } from '../../../../components/errors/ErrorDisplay';
@@ -21,6 +22,7 @@ import {
   useRecomputeRecommendations,
   type QualificationDecisionValue,
 } from '../../../../hooks/forge/useForgeValuation';
+import { getPilotCountyScopeToken } from '../../../../services/comparableSalesService';
 import {
   type ForgeSubTabProps,
   type SalesCompsResult,
@@ -35,6 +37,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
   onValueIndicated,
 }) => {
   const { parcelId } = useWorkbenchTab();
+  const countyScope = getPilotCountyScopeToken(getSession()?.countyId ?? null);
 
   /* ── Live API data ──────────────────────────────────────── */
   const salesAPI = useSalesComparisonAPI(parcelId, taxYear);
@@ -72,11 +75,25 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
   const handleSalesComps = useCallback(async () => {
     const ids = compIds.split(',').map((s) => s.trim()).filter(Boolean);
     if (ids.length === 0) return;
+    if (!countyScope) {
+      const correlationId = `scope-${crypto.randomUUID().slice(0, 8)}`;
+      setCompsState({
+        status: 'error',
+        correlationId,
+        error: {
+          code: 'COUNTY_SCOPE_REQUIRED',
+          message: 'Sales comps rationale requires an active county-scoped session.',
+          severity: 'error',
+          correlationId,
+        },
+      });
+      return;
+    }
     setCompsState({ status: 'loading' });
     try {
       const response = await invokeTool({
         toolId: 'summarize_sales_comps_rationale',
-        params: { county: 'benton', subjectId: parcelId, compIds: ids, adjustments: true },
+        params: { county: countyScope, subjectId: parcelId, compIds: ids, adjustments: true },
         parcelId,
       });
       if (response.success && response.result) {
@@ -117,7 +134,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
         },
       });
     }
-  }, [parcelId, compIds, onHistoryRecord]);
+  }, [countyScope, parcelId, compIds, onHistoryRecord]);
 
   /* ── Render ───────────────────────────────────────────── */
 
@@ -444,6 +461,18 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
           Comparable sales selection logic and similarity analysis
         </p>
 
+        {!countyScope && (
+          <div
+            className="mb-4 px-3 py-2 rounded text-xs"
+            style={{
+              background: 'hsl(var(--tf-warning) / 0.10)',
+              color: 'hsl(var(--tf-warning))',
+            }}
+          >
+            County scope is required before governed comp rationale can run.
+          </div>
+        )}
+
         <div className="mb-4">
           <label htmlFor="comp-ids" className="block tf-text-secondary text-sm mb-2">
             Comp Parcel IDs (comma-separated)
@@ -460,7 +489,7 @@ export const SalesComparison: React.FC<ForgeSubTabProps> = ({
 
         <button
           onClick={handleSalesComps}
-          disabled={compsState.status === 'loading' || !compIds.trim()}
+          disabled={compsState.status === 'loading' || !compIds.trim() || !countyScope}
           className="w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-forge-cta mb-4"
         >
           {compsState.status === 'loading' ? 'Analyzing...' : 'Analyze Comps'}

@@ -19,7 +19,7 @@ using TerraFusion.Data;
 namespace TerraFusion.API.Controllers;
 
 /// <summary>
-/// Levy reference & compliance surfaces. Most endpoints are [AllowAnonymous]
+/// Levy reference and compliance surfaces. Most endpoints are [AllowAnonymous]
 /// because they expose only published statutory data; the attestation
 /// endpoint is authorized.
 /// </summary>

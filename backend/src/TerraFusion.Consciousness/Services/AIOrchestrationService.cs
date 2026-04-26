@@ -206,7 +206,16 @@ namespace TerraFusion.Consciousness.Services
             break;
 
           case "AGENT_COORDINATION":
-            var agentResult = await _agentService.CoordinateMillionAgentsAsync(step.Parameters);
+            var agentCoordinationRequest = new MillionAgentCoordinationRequestDto
+            {
+              OperationType = step.Parameters.GetValueOrDefault("OperationType", "AGENT_COORDINATION").ToString()!,
+              TargetAgents = step.Parameters.TryGetValue("targetAgents", out var targetAgentsValue) && targetAgentsValue is int targetAgents
+                ? targetAgents
+                : 0,
+              CoordinationParameters = step.Parameters,
+              Priority = step.Priority.ToString()
+            };
+            var agentResult = await _agentService.CoordinateMillionAgentsAsync(agentCoordinationRequest);
             results["AgentResult"] = agentResult;
             break;
 

@@ -2456,7 +2456,7 @@ levy.MapPost("/calculate", async (
     return Results.NotFound(new { error = $"LevyMeasure {req.MeasureId} not found" });
   }
 
-  var result = await calc.CalculateOptimalRateAsync(measure, useQuantumOptimization: true);
+  var result = await calc.CalculateOptimalRateAsync(measure, useQuantumOptimization: false);
   return Results.Ok(result);
 });
 
@@ -2523,7 +2523,7 @@ levy.MapPost("/projections/generate", async (
     return Results.NotFound(new { error = $"LevyScenario {req.ScenarioId} not found" });
   }
 
-  var list = await projections.GenerateProjectionsAsync(scenario, Math.Clamp(req.Years, 1, 10), useQuantumForecasting: true);
+  var list = await projections.GenerateProjectionsAsync(scenario, Math.Clamp(req.Years, 1, 10), useQuantumForecasting: false);
   return Results.Ok(list);
 });
 

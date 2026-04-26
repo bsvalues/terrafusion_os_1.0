@@ -21,7 +21,7 @@
 // Types
 // ═══════════════════════════════════════════════════════════════
 
-/** Shape of a comparable sale record from TerraFusion-normalized Benton County sales */
+/** Shape of a comparable sale record from TerraFusion-normalized county sales */
 export interface ComparableSale {
   parcelId: string;
   saleDate: string;
@@ -184,9 +184,46 @@ function normalizeCountyCode(raw: string | null | undefined): string {
   return byName?.code ?? '005';
 }
 
+function normalizeCountyScopeToken(raw: string | null | undefined): string | null {
+  const value = String(raw ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/^county-/, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return value.length > 0 ? value : null;
+}
+
+export function getComparableCountyCode(raw: string | null | undefined): string {
+  return normalizeCountyCode(raw);
+}
+
 export function getComparableCountyName(raw: string | null | undefined): string {
   const code = normalizeCountyCode(raw);
   return WASHINGTON_COUNTIES.find((county) => county.code === code)?.name ?? 'Washington';
+}
+
+export function getComparableCountyScopeToken(raw: string | null | undefined): string {
+  return normalizeCountyScopeToken(getComparableCountyName(raw)) ?? 'washington';
+}
+
+export function getPilotCountyScopeToken(raw: string | null | undefined): string | null {
+  return normalizeCountyScopeToken(raw);
+}
+
+export function doesPilotCountyMatchComparableCounty(
+  pilotCounty: string | null | undefined,
+  countyCode: string | null | undefined,
+): boolean {
+  const pilotToken = getPilotCountyScopeToken(pilotCounty);
+  if (!pilotToken) return false;
+  return pilotToken === getComparableCountyScopeToken(countyCode);
+}
+
+export function supportsGovernedComparableAdjustments(
+  countyCode: string | null | undefined,
+): boolean {
+  return normalizeCountyCode(countyCode) === '005';
 }
 
 function addressForSale(record: LaunchSaleRecord): string {
@@ -263,26 +300,6 @@ export async function loadCountyComps(countyCode: string): Promise<ComparableSal
 // ═══════════════════════════════════════════════════════════════
 
 /**
- * Legacy sync-style accessor for already-cached Benton comps.
- *
- * Replaces the synchronous `loadBentonComps()` in ComparableSalesPanel that
- * was inlined for the early Benton-only build. Now that comp data is sharded
- * per county and fetched async via loadCountyComps(), there is no sync path
- * — return whatever is in the in-memory cache (empty until the async fetch
- * resolves) and let the panel render its empty/loading state until the
- * cache populates.
- */
-export function loadBentonComps(): ComparableSale[] {
-  const cached = countyShardCache.get(normalizeCountyCode('benton'));
-  // The cache stores Promises; only return the resolved array if it's
-  // already been awaited at least once. Otherwise return [] so callers
-  // using sync useMemo don't crash.
-  if (cached && Array.isArray((cached as unknown as { __resolved?: ComparableSale[] }).__resolved)) {
-    return (cached as unknown as { __resolved: ComparableSale[] }).__resolved;
-  }
-  return [];
-}
-
 /** Apply filter pipeline to narrow comp candidates */
 export function filterComps(
   subject: SubjectProperty,

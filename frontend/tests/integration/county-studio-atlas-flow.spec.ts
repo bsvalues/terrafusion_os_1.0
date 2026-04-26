@@ -4,10 +4,10 @@
 // possible:
 //
 //   1. Forge suite home renders the County Studio launch tile
-//   2. County Studio page renders its chrome (header, Open Study button,
-//      tablist with six tabs, left rail, center panel)
-//   3. Tablist is keyboard-navigable per WAI-ARIA spec (Arrow Right → next
-//      tab, aria-selected flips)
+//   2. County Studio page renders its drill-lattice chrome (header, Open
+//      Study button, breadcrumb, left/right rails, center panel)
+//   3. The center panel reaches a stable empty/data/error state without a
+//      pre-seeded backend dataset
 //   4. Open Study button opens a dialog
 //   5. Atlas Live View (when reached via ?studyId=...) renders its top bar,
 //      sync badge, and toolbar — the map surface may show no data if the
@@ -25,7 +25,9 @@
 import { expect, test } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'node:url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SCREENSHOT_DIR = path.resolve(__dirname, '../../test-results/chunk-1-integration-screenshots');
 
 test.beforeAll(() => {
@@ -55,7 +57,7 @@ test.describe('County Studio + Atlas Live — canonical workflow', () => {
     await snapshot(page, '01-forge-home-with-county-studio-tile');
   });
 
-  test('County Studio page renders chrome and tablist is keyboard-navigable', async ({ page }) => {
+  test('County Studio page renders drill-lattice chrome', async ({ page }) => {
     // Open via direct module route. In production the shell wraps this in a
     // window; the direct URL is the simplest path for E2E.
     await page.goto('/forge/county-studio', { waitUntil: 'domcontentloaded' });
@@ -66,27 +68,15 @@ test.describe('County Studio + Atlas Live — canonical workflow', () => {
     // Open Study button always visible
     await expect(page.getByRole('button', { name: /open study/i })).toBeVisible();
 
-    // Tablist with six tabs (Overview, Ratio Study, Neighborhoods,
-    // Adjustments, Exceptions, Compliance)
-    const tablist = page.getByRole('tablist', { name: /center panel views/i });
-    await expect(tablist).toBeVisible();
-    const tabs = page.getByRole('tab');
-    await expect(tabs).toHaveCount(6);
+    // The current County Studio runtime is a drill lattice with a breadcrumb
+    // and three-pane layout rather than the older six-tab center panel.
+    await expect(page.getByRole('navigation', { name: /county studio drill breadcrumb/i })).toBeVisible();
+    await expect(page.getByTestId('cs-left-rail')).toBeVisible();
+    await expect(page.getByTestId('cs-drill-panel')).toBeVisible();
+    await expect(page.getByTestId('cs-right-rail')).toBeVisible();
 
-    // Overview is the default selected tab
-    const overviewTab = page.getByRole('tab', { name: /^Overview$/i });
-    await expect(overviewTab).toHaveAttribute('aria-selected', 'true');
-
-    // Arrow Right → next tab (Ratio Study) becomes selected
-    await tablist.focus();
-    await page.keyboard.press('ArrowRight');
-    const ratioStudyTab = page.getByRole('tab', { name: /^Ratio Study$/i });
-    await expect(ratioStudyTab).toHaveAttribute('aria-selected', 'true');
-    await expect(overviewTab).toHaveAttribute('aria-selected', 'false');
-
-    // Home key → first tab
-    await page.keyboard.press('Home');
-    await expect(overviewTab).toHaveAttribute('aria-selected', 'true');
+    // Fresh local environments legitimately land in the empty drill state.
+    await expect(page.getByText(/no segments derived yet/i)).toBeVisible();
 
     await snapshot(page, '02-county-studio-chrome-tablist');
   });
@@ -98,42 +88,35 @@ test.describe('County Studio + Atlas Live — canonical workflow', () => {
     await expect(openStudyBtn).toBeVisible({ timeout: 15_000 });
     await openStudyBtn.click();
 
-    // OpenStudyDialog renders with an accessible heading, the studies list
-    // area, and a "New Study" affordance. Any one of these confirms the
-    // dialog mounted — different copy may match different iterations.
-    const dialog = page.locator('[role="dialog"], [data-testid="open-study-dialog"]').first();
-    // Fall back to text match if no explicit dialog wrapper — OpenStudyDialog
-    // may render as a simple overlay div with the heading.
-    const titleMatch = page.getByText(/open study|new study/i).first();
-    await expect(dialog.or(titleMatch)).toBeVisible({ timeout: 5_000 });
+    // OpenStudyDialog is a custom overlay rather than a role=dialog wrapper.
+    // Confirm it by its mode switch buttons, which only exist inside the overlay.
+    await expect(page.getByRole('button', { name: /^Existing Studies$/i })).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByRole('button', { name: /^New Study$/i })).toBeVisible();
 
     await snapshot(page, '03-county-studio-open-study-dialog');
   });
 
-  test('SegmentTable renders either data rows or a distinguishable empty state', async ({ page }) => {
+  test('County Studio center panel reaches a distinguishable steady state', async ({ page }) => {
     await page.goto('/forge/county-studio', { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector('[role="tabpanel"]', { timeout: 15_000 });
+    await expect(page.getByTestId('cs-drill-panel')).toBeVisible({ timeout: 15_000 });
 
-    // One of three things must be visible in the center panel:
-    //   1. The loading skeleton (status region with aria-label "Loading segments")
-    //   2. An error alert (if the API failed — still a valid E2E state)
-    //   3. The rendered segment table OR the "No segments loaded" empty message
+    // One of the current drill-lattice steady states must be visible:
+    //   1. Empty drill state on a fresh local environment
+    //   2. A rendered rollup/segment table
+    //   3. Segment loading or error state once data has been requested
+    const emptyDrillState = page.getByText(/no segments derived yet/i);
     const skeleton  = page.getByTestId('segment-table-loading');
     const errorBox  = page.getByTestId('segment-table-error');
-    const emptyMsg  = page.getByText(/no segments loaded/i);
     const table     = page.locator('table').first();
 
-    // Wait briefly for the skeleton to resolve, then assert at least one
-    // steady-state element is present.
     await page.waitForTimeout(2_000);
 
     const anySteady = await Promise.any([
+      emptyDrillState.waitFor({ state: 'visible', timeout: 5_000 }).then(() => 'empty-drill'),
       errorBox.waitFor({ state: 'visible', timeout: 5_000 }).then(() => 'error'),
-      emptyMsg.waitFor({ state: 'visible', timeout: 5_000 }).then(() => 'empty'),
       table.waitFor({ state: 'visible', timeout: 5_000 }).then(() => 'table'),
     ]).catch(() => null);
 
-    // Accept any of the three — or the skeleton if the backend is slow.
     const skeletonVisible = await skeleton.isVisible().catch(() => false);
     expect(anySteady ?? (skeletonVisible ? 'skeleton' : null)).not.toBeNull();
 
@@ -153,10 +136,9 @@ test.describe('County Studio + Atlas Live — canonical workflow', () => {
 
     // Sync badge — AtlasSyncBadge shows one of LIVE / STAGED / SNAPSHOT /
     // DISCONNECTED. In E2E against an empty DB, DISCONNECTED is expected.
-    const badge = page.locator('[data-testid="atlas-sync-badge"], [class*="sync-badge"]').first();
-    // Fall back to text regex — different implementations may skip testid.
-    const badgeByText = page.getByText(/LIVE|STAGED|SNAPSHOT|DISCONNECTED/).first();
-    await expect(badge.or(badgeByText)).toBeVisible({ timeout: 10_000 });
+    const badge = page.getByTestId('atlas-sync-badge');
+    await expect(badge).toBeVisible({ timeout: 10_000 });
+    await expect(badge).toContainText(/LIVE|STAGED|SNAPSHOT|DISCONNECTED/);
 
     // Map surface mounted (Mapbox may fail without a token — acceptable;
     // the surface div is still present)

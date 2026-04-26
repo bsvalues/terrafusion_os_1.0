@@ -481,7 +481,7 @@ public class CountyStudioAiService : ICountyStudioAiService
         return new SegmentDiagnosisFinding(
             Code:             "HEALTHY_SEGMENT",
             Category:         "Healthy",
-            Summary:          $"Median {medF2} inside IAAO fair range, COD {codF1} inside ceiling, {d.RatioCount} qualified sales — segment is IAAO and Benton compliant.",
+            Summary:          $"Median {medF2} inside IAAO fair range, COD {codF1} inside ceiling, {d.RatioCount} qualified sales — segment is IAAO and equity compliant.",
             EvidenceStrength: 0.9m,
             Evidence:         Ev(
                 ("median",     d.MedianRatio.Value),
@@ -558,7 +558,7 @@ public class CountyStudioAiService : ICountyStudioAiService
                 new(
                     ActionCode:      "MARK_HEALTHY",
                     Target:          "None",
-                    Summary:         "No action required — segment is IAAO and Benton compliant.",
+                    Summary:         "No action required — segment is IAAO and equity compliant.",
                     Priority:        1,
                     Rationale:       findings[0].Summary,
                     PrebuiltContext: null),

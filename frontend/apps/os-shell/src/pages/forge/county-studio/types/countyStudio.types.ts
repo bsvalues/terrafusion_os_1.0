@@ -2,7 +2,13 @@
 
 export type SyncState = 'LIVE' | 'STAGED' | 'SNAPSHOT' | 'DISCONNECTED';
 export type MetricKey = 'ratio' | 'cod' | 'prd' | 'stability' | 'exceptions' | 'risk';
-export type StudyType = 'RatioStudy' | 'MassAppraisal' | 'EquityStudy' | 'CustomStudy';
+export type StudyType =
+  | 'RatioStudy'
+  | 'MassAppraisal'
+  | 'IncomeApproach'
+  | 'CostApproach'
+  | 'EquityStudy'
+  | 'CustomStudy';
 export type StudyStatus = 'Draft' | 'Active' | 'Reviewing' | 'Approved' | 'Archived';
 export type ScenarioStatus = 'Draft' | 'Saved' | 'Reviewed' | 'Approved' | 'Promoted' | 'Rejected' | 'Archived';
 export type AdjustmentType = 'PercentageIncrease' | 'PercentageDecrease' | 'FlatDollarIncrease' | 'FlatDollarDecrease' | 'CustomFormula';
@@ -28,15 +34,16 @@ export interface CountyAdjustmentSetDto {
 export interface CountyStudySessionDto {
   studyId: string;
   countyId: string;
+  countyName?: string;
   taxYear: number;
   studyType: StudyType;
   status: StudyStatus;
   baselineVersion: string | null;
   activeSegmentSetId: string | null;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   createdBy: string;
-  updatedBy: string;
+  updatedBy?: string;
 }
 
 export interface CountySegmentSetDto {
@@ -214,7 +221,7 @@ export interface CountyHealthSummaryDto {
 
 // ── Inspector (Task D — Fix #4 #5 #8 — segment detail + action-context) ──
 
-/** Benton Method vertical-equity classification for a segment. */
+/** Vertical-equity classification for a segment. */
 export type EquityClassification =
   | 'Fair'
   | 'Progressive'
@@ -253,7 +260,7 @@ export interface CountySegmentDetailDto {
   prb: number | null;
   vei: number | null;
   equityClassification: EquityClassification;
-  bentonEquityScore: number | null;
+  equityScore: number | null;
   /** Count of qualified sale-ratio observations PRB/VEI were computed from.
    *  Differs from parcelCount; used by Task E diagnosis detectors. */
   ratioCount: number;
@@ -390,4 +397,3 @@ export interface CountyDiagnosisDto {
   inputFingerprint: string;
   generatedAt: string;
 }
-

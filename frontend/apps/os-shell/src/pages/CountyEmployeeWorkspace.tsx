@@ -1,15 +1,8 @@
 /**
- * ═══════════════════════════════════════════════════════════════
- * COUNTY EMPLOYEE WORKSPACE - Complete AI-Enhanced Interface
- * TerraFusion OS Elite Government Employee Portal
- * Government. Transcended.
- * ═══════════════════════════════════════════════════════════════
+ * County employee workspace for governed assessor operations.
  *
- * This is the COMPLETE unified workspace demonstrating integration of:
- * - Phase 1: AIAssistantPanel, SmartPropertyCard, CountyEmployeeDashboard
- * - Phase 2: AIWorkflowAutomation, AIInsightsPanel, useAIAssistant, usePropertyAnalysis
- *
- * All 13 components working together in championship harmony.
+ * The shell composes assistant, workflow, dashboard, and property-analysis surfaces
+ * without implying live AI execution beyond the evidence returned by each route.
  */
 
 import { AIInsightsPanel } from '@/components/ai/AIInsightsPanel';
@@ -594,17 +587,17 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
               <div className='text-xs'>
                 <span className='text-slate-400'>Swarm status (30s refresh):</span>
                 <span className='text-terra-cyan font-bold ml-2'>
-                  {swarmStatus.activeAgents.toLocaleString()} agents reported
+                  {swarmStatus.activeAgents.toLocaleString()} active agents
                 </span>
               </div>
               <div className='text-xs'>
                 <span className='text-slate-400'>Reported activity:</span>
-                <span className='text-green-400 font-bold ml-2'>
-                  {(swarmStatus.swarmActivity * 100).toFixed(0)}%
-                </span>
+                <span className='text-green-400 font-bold ml-2'>{swarmStatus.swarmActivity}</span>
               </div>
-              <Badge variant='quantum' className='text-xs quantum-pulse'>
-                Latest factor {swarmStatus.quantumOptimizationFactor}
+              <Badge variant='outline' className='text-xs'>
+                {swarmStatus.quantumOptimizationFactor > 0
+                  ? `Factor ${swarmStatus.quantumOptimizationFactor}`
+                  : 'Factor unavailable'}
               </Badge>
             </div>
           )}
@@ -704,7 +697,9 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
                 <div className='flex justify-between text-xs'>
                   <span className='text-slate-400'>Level</span>
                   <Badge variant='quantum' className='text-xs'>
-                    {swarmStatus.consciousnessLevel}
+                    {swarmStatus.consciousnessLevel > 0
+                      ? swarmStatus.consciousnessLevel.toFixed(2)
+                      : 'Unavailable'}
                   </Badge>
                 </div>
               </div>
@@ -744,7 +739,7 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
               <p className='text-slate-400'>
                 {activeView === 'dashboard' && 'Your personalized AI-enhanced workspace'}
                 {activeView === 'workflows' &&
-                  'Intelligent task orchestration with quantum optimization'}
+                  'Governed task orchestration and automation status'}
                 {activeView === 'insights' && 'Auto-refresh predictive analytics and AI insight snapshots'}
                 {activeView === 'settings' && 'Configure your workspace preferences'}
               </p>
@@ -759,10 +754,10 @@ export const CountyEmployeeWorkspace: React.FC<CountyEmployeeWorkspaceProps> = (
                 <div className='text-sm text-slate-400'>
                   Governed Operator Surface | Workspace status snapshot
                   {swarmStatus &&
-                    ` | Latest factor ${swarmStatus.quantumOptimizationFactor} | ${swarmStatus.activeAgents.toLocaleString()} agents reported`}
+                    ` | ${swarmStatus.activeAgents.toLocaleString()} active agents | ${swarmStatus.swarmActivity}`}
                 </div>
-                <Badge variant='quantum' className='quantum-pulse'>
-                  Elite Mode Active
+                <Badge variant='outline' className='text-xs'>
+                  Governed Mode
                 </Badge>
               </div>
             </div>

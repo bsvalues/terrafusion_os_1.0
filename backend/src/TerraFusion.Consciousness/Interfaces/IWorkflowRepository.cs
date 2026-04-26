@@ -2,7 +2,7 @@
  * ═══════════════════════════════════════════════════════════════
  * WORKFLOW REPOSITORY INTERFACE
  * TerraFusion.Consciousness - Workflow Management
- * Government. Transcended.
+* Compatibility workflow repository contract.
  * ═══════════════════════════════════════════════════════════════
  */
 

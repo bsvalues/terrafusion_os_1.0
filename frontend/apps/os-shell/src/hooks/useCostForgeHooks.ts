@@ -43,7 +43,7 @@ export interface CostForgeResult {
   rcnld: number | null;
   scheduleSource: string | null;
   calcMethod: string;
-  /** Benton Method secondary features (patio, basement, shop, etc.) as %-of-BIV */
+  /** County-certified secondary features (patio, basement, shop, etc.) as %-of-BIV */
   secondaryFeatures?: CostForgeSecondaryFeature[];
 }
 
@@ -56,15 +56,26 @@ export interface ImprvTypeCode {
 /** All active improvement type codes for the county with human-readable labels.
  *  Backend returns { buildingTypes, featureCodes, qualityGrades, conditionGrades }.
  *  We expose featureCodes which carry the bivPct factor used by the Parcel Inspector. */
-export function useImprvTypeCodes(countyId: string) {
+export function useImprvTypeCodes(
+  countyId: string | null,
+  headers?: Record<string, string>,
+) {
   return useQuery<ImprvTypeCode[]>({
     queryKey: ['costforge-type-codes', countyId],
     queryFn: async () => {
-      const res = await apiFetch(`/costforge/improvement-type-codes?countyId=${encodeURIComponent(countyId)}`);
+      if (!countyId) {
+        return [];
+      }
+
+      const res = await apiFetch(
+        `/costforge/improvement-type-codes?countyId=${encodeURIComponent(countyId)}`,
+        { headers },
+      );
       if (!res.ok) throw new Error(`Imprv type codes fetch failed: ${res.status}`);
       const data = await res.json() as { featureCodes?: ImprvTypeCode[] };
       return data.featureCodes ?? [];
     },
+    enabled: Boolean(countyId),
     staleTime: 10 * 60 * 1000,
   });
 }
@@ -77,7 +88,8 @@ interface UseCalcRCNLDState {
     input: CostForgeCalcInput,
     qualityGrade?: QualityGrade,
     extWallType?: string,
-    effectiveLifeYears?: number
+    effectiveLifeYears?: number,
+    headers?: Record<string, string>,
   ) => Promise<void>;
   reset: () => void;
 }
@@ -92,14 +104,15 @@ export function useCalcRCNLD(): UseCalcRCNLDState {
     input: CostForgeCalcInput,
     qualityGrade: QualityGrade = 'Average',
     extWallType = 'Metal or Vinyl Siding',
-    effectiveLifeYears = 45
+    effectiveLifeYears = 45,
+    headers?: Record<string, string>,
   ) => {
     setIsLoading(true);
     setError(null);
     try {
       const res = await apiFetch('/costforge/calculate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify({ ...input, qualityGrade, extWallType, effectiveLifeYears }),
       });
       if (!res.ok) throw new Error(`RCNLD calculation failed: ${res.status}`);

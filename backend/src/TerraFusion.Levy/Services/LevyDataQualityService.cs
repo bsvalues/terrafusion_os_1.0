@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace TerraFusion.Levy.Services;
 
 /// <summary>
-/// Deterministic placeholder implementation of <see cref="ILevyDataQualityService"/>.
+/// Deterministic compatibility-mode implementation of <see cref="ILevyDataQualityService"/>.
 /// Ports the Flask <c>routes_data_quality.py</c> JSON endpoints behind a stable contract.
 /// Real AI-agent wiring (MCP Army / LevyAnalysisAgent / LevyAuditAgent) is deferred
 /// to a later phase and will plug in behind this same interface.
@@ -33,7 +33,7 @@ public sealed class LevyDataQualityService : ILevyDataQualityService
             GeneratedAt = DateTime.UtcNow,
             Assumptions = new List<string>
             {
-                "Scores accepted as submitted (placeholder — no DB write).",
+                "Scores accepted as submitted (compatibility mode — no DB write).",
                 "Activity logging deferred to persistence layer in a later phase.",
             },
         });
@@ -58,7 +58,7 @@ public sealed class LevyDataQualityService : ILevyDataQualityService
         {
             Success = true,
             Recommendations = recs,
-            Source = "placeholder_default_recommendations",
+            Source = "compatibility_default_recommendations",
         });
     }
 
@@ -69,7 +69,7 @@ public sealed class LevyDataQualityService : ILevyDataQualityService
             Enabled = false,
             IntervalMinutes = 0,
             AlertThreshold = 0.0,
-            Agent = "placeholder",
+            Agent = "compatibility",
             CheckedAt = DateTime.UtcNow,
         });
     }
@@ -87,13 +87,13 @@ public sealed class LevyDataQualityService : ILevyDataQualityService
         return Task.FromResult(new MonitoringToggleResult
         {
             Success = true,
-            Message = request.Enabled ? "Real-time monitoring enabled (placeholder)." : "Real-time monitoring disabled (placeholder).",
+            Message = request.Enabled ? "Real-time monitoring enabled (compatibility mode)." : "Real-time monitoring disabled (compatibility mode).",
             Status = new MonitoringStatusResult
             {
                 Enabled = request.Enabled,
                 IntervalMinutes = request.Enabled ? request.IntervalMinutes : 0,
                 AlertThreshold = request.Enabled ? request.AlertThreshold : 0.0,
-                Agent = "placeholder",
+                Agent = "compatibility",
                 CheckedAt = DateTime.UtcNow,
             },
         });
@@ -113,7 +113,7 @@ public sealed class LevyDataQualityService : ILevyDataQualityService
                 ["timeliness_score"] = 0.0,
             },
             Timestamp = DateTime.UtcNow,
-            Source = "placeholder_no_live_metrics",
+            Source = "compatibility_no_live_metrics",
         });
     }
 
@@ -145,7 +145,7 @@ public sealed class LevyDataQualityService : ILevyDataQualityService
             Assumptions = new List<string>
             {
                 "No historical series computed — AI trend agent wiring deferred.",
-                "Empty series/anomalies/forecast returned as structural placeholders.",
+                "Empty series/anomalies/forecast returned as structural compatibility values.",
             },
         });
     }
@@ -185,7 +185,7 @@ public sealed class LevyDataQualityService : ILevyDataQualityService
             GeneratedAt = DateTime.UtcNow,
             Assumptions = new List<string>
             {
-                "Audit agent wiring deferred — placeholder returns zero scores.",
+                "Audit agent wiring deferred — compatibility mode returns zero scores.",
                 "Downstream phase will replace this with real per-area validator output.",
             },
         });

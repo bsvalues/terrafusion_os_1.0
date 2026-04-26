@@ -33,6 +33,7 @@ import { SpatialTemporalTab } from './panels/SpatialTemporalTab';
 import { CalibrationEngineTab } from './panels/CalibrationEngineTab';
 import { useForgeStatisticsStore } from '@/stores/forgeStatisticsStore';
 import { apiFetch } from '@/lib/apiBase';
+import { getStatisticsCountyScope } from './statisticsCountyScope';
 
 type Tab = 'ratio-study' | 'stratified' | 'trends' | 'equity' | 'outliers' | 'comparison' | 'calibration' | 'cost-analytics' | 'diagnostics' | 'spatial-temporal' | 'calibration-engine';
 
@@ -65,6 +66,8 @@ export function StatisticsStudio() {
   const [activeTab, setActiveTab] = useState<Tab>('ratio-study');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [taxYear, setTaxYear] = useState(currentTaxYear);
+  const countyScope = useMemo(() => getStatisticsCountyScope(), []);
+  const countyId = countyScope.countyId;
   const fetchStudy = useForgeStatisticsStore((s) => s.fetchStudy);
   const setStudyFilter = useForgeStatisticsStore((s) => s.setFilter);
   const loadComparison = useForgeStatisticsStore((s) => s.loadComparison);
@@ -80,19 +83,28 @@ export function StatisticsStudio() {
   );
 
   useEffect(() => {
-    setStudyFilter({ taxYear });
+    if (!countyScope.isolated) {
+      setStudyFilter({ taxYear, countyId });
+      return;
+    }
+
+    setStudyFilter({ taxYear, countyId });
     fetchStudy();
     loadComparison();
-  }, [fetchStudy, loadComparison, setStudyFilter, taxYear]);
+  }, [countyId, countyScope.isolated, fetchStudy, loadComparison, setStudyFilter, taxYear]);
 
   // ── Trends data (live) ───────────────────────────────────────────────
   const {
     data: trendsData,
     isLoading: trendsLoading,
   } = useQuery<{ codTrend: { period: string; cod: number }[]; prdTrend: { period: string; prd: number }[] }>({
-    queryKey: ['ratio-study-trends', taxYear],
+    queryKey: ['ratio-study-trends', taxYear, countyId],
     queryFn: () =>
-      apiFetch(`/terraforge/ratio-study/trends?taxYear=${taxYear}`).then((r) => r.json()),
+      apiFetch(
+        `/terraforge/ratio-study/trends?taxYear=${taxYear}${countyId ? `&countyId=${encodeURIComponent(countyId)}` : ''}`,
+        { headers: countyScope.headers },
+      ).then((r) => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 5 * 60_000,
   });
 
@@ -101,9 +113,13 @@ export function StatisticsStudio() {
     data: snapshots = [],
     isLoading: equityLoading,
   } = useQuery<Array<{ neighborhood_code: string; parcel_count: number; median_ratio: number; cod: number; prd: number; sale_count: number }>>({
-    queryKey: ['neighborhood-snapshots-equity', taxYear],
+    queryKey: ['neighborhood-snapshots-equity', taxYear, countyId],
     queryFn: () =>
-      apiFetch(`/terraforge/comparison-snapshots?taxYear=${taxYear}`).then((r) => r.json()),
+      apiFetch(
+        `/terraforge/comparison-snapshots?taxYear=${taxYear}${countyId ? `&countyId=${encodeURIComponent(countyId)}` : ''}`,
+        { headers: countyScope.headers },
+      ).then((r) => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 5 * 60_000,
   });
 
@@ -142,6 +158,34 @@ export function StatisticsStudio() {
     { key: 'comparison', label: 'Comparison' },
     { key: 'cost-analytics', label: 'Cost Analytics' },
   ];
+
+  const showCountyScopeRequired = !countyScope.isolated;
+  const showAdvancedLaneGuard =
+    countyScope.isolated &&
+    ADVANCED_TABS.includes(activeTab) &&
+    !countyScope.advancedCertified;
+
+  const unavailableCard = (
+    <Card data-material="bento" data-testid="statistics-studio-unavailable">
+      <CardHeader>
+        <CardTitle>County Scope Required</CardTitle>
+      </CardHeader>
+      <CardContent>
+        Statistics Studio requires an explicit county-scoped session before live county metrics can load.
+      </CardContent>
+    </Card>
+  );
+
+  const advancedLaneGuard = (
+    <Card data-material="bento" data-testid="statistics-studio-advanced-unavailable">
+      <CardHeader>
+        <CardTitle>Advanced Analysis Unavailable</CardTitle>
+      </CardHeader>
+      <CardContent>
+        Advanced diagnostics remain certified only on the current legacy county lane. Countywide core metrics stay available, but this advanced tab is withheld for the active county scope.
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div data-testid="statistics-studio" className="space-y-4 p-4">
@@ -207,11 +251,13 @@ export function StatisticsStudio() {
         </div>
       </div>
 
+      {showCountyScopeRequired && unavailableCard}
+
       {/* Tab: Ratio Study */}
-      {activeTab === 'ratio-study' && (
+      {!showCountyScopeRequired && activeTab === 'ratio-study' && (
         <Card data-material="bento">
           <CardHeader>
-            <CardTitle>Benton County Ratio Study</CardTitle>
+            <CardTitle>County Ratio Study</CardTitle>
           </CardHeader>
           <CardContent>
             <RatioStudyPanel
@@ -224,10 +270,10 @@ export function StatisticsStudio() {
       )}
 
       {/* Tab: Stratified Study — IAAO DOR strata table */}
-      {activeTab === 'stratified' && <StratifiedStudyPanel taxYear={taxYear} />}
+      {!showCountyScopeRequired && activeTab === 'stratified' && <StratifiedStudyPanel taxYear={taxYear} />}
 
       {/* Tab: Trends — live quarterly COD/PRD */}
-      {activeTab === 'trends' && (
+      {!showCountyScopeRequired && activeTab === 'trends' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card data-material="bento">
             <CardHeader>
@@ -256,7 +302,7 @@ export function StatisticsStudio() {
       )}
 
       {/* Tab: Equity (VEI) — live neighborhood stats */}
-      {activeTab === 'equity' && (
+      {!showCountyScopeRequired && activeTab === 'equity' && (
         <Card data-material="bento">
           <CardHeader>
             <CardTitle>Valuation Equity Index</CardTitle>
@@ -277,26 +323,27 @@ export function StatisticsStudio() {
       )}
 
       {/* Tab: Outliers (Phase 16) */}
-      {activeTab === 'outliers' && <OutlierReviewPanel />}
+      {!showCountyScopeRequired && activeTab === 'outliers' && <OutlierReviewPanel />}
 
       {/* Tab: Comparison (Phase 16) */}
-      {activeTab === 'comparison' && <ModelComparisonPanel />}
+      {!showCountyScopeRequired && activeTab === 'comparison' && <ModelComparisonPanel />}
 
       {/* Tab: Calibration Matrix — live neighborhood ratio study + value driver attribution */}
-      {activeTab === 'calibration' && (
+      {!showCountyScopeRequired && activeTab === 'calibration' && (
         <div className="space-y-4">
           <CostRatioAnalysis />
-          <ValueDriverPanel />
+          <ValueDriverPanel taxYear={taxYear} />
         </div>
       )}
 
       {/* Tab: Cost Analytics — CostForge dashboard stats (property type dist, depreciation) */}
-      {activeTab === 'cost-analytics' && <CostForgeDashboard />}
+      {!showCountyScopeRequired && activeTab === 'cost-analytics' && <CostForgeDashboard />}
 
       {/* Advanced Analysis Tabs */}
-      {activeTab === 'diagnostics' && <DiagnosticsTab />}
-      {activeTab === 'spatial-temporal' && <SpatialTemporalTab />}
-      {activeTab === 'calibration-engine' && <CalibrationEngineTab />}
+      {!showCountyScopeRequired && showAdvancedLaneGuard && advancedLaneGuard}
+      {!showCountyScopeRequired && !showAdvancedLaneGuard && activeTab === 'diagnostics' && <DiagnosticsTab />}
+      {!showCountyScopeRequired && !showAdvancedLaneGuard && activeTab === 'spatial-temporal' && <SpatialTemporalTab />}
+      {!showCountyScopeRequired && !showAdvancedLaneGuard && activeTab === 'calibration-engine' && <CalibrationEngineTab />}
     </div>
   );
 }

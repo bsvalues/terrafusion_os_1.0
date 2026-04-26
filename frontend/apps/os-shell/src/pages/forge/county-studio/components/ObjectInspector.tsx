@@ -2,8 +2,8 @@
 //
 // Task D — three-tab Inspector (Fix #4, #5, #8).
 //
-//   Metrics tab — IAAO core + Benton Method row (PRB band / VEI bar /
-//                 classification pill / Benton Equity Score big number) +
+//   Metrics tab — IAAO core + equity-method row (PRB band / VEI bar /
+//                 classification pill / Equity Score big number) +
 //                 warnings list (same vocabulary as CountyHealthPanel).
 //   Trend tab   — 3 sparklines (median / COD / exception rate) from the
 //                 backend-supplied 5-year history. Empty-state copy when
@@ -86,7 +86,7 @@ function ratioColor(r: number | null): string {
 
 /**
  * PRB colour bands: |PRB| ≤ 0.05 green; ≤ 0.10 amber; else red.
- * Null / insufficient → muted. Matches BentonEquityMath.PrbFairAbs.
+ * Null / insufficient → muted. Matches the backend PRB fairness thresholds.
  */
 function prbColor(prb: number | null): string {
   if (prb === null) return 'hsl(var(--tf-muted))';
@@ -106,15 +106,15 @@ function classificationStyle(c: EquityClassification): { bg: string; color: stri
   }
 }
 
-// ── Benton Method row ─────────────────────────────────────────────────────
+// ── Equity-method row ─────────────────────────────────────────────────────
 
-const BentonRow = ({ detail }: { detail: CountySegmentDetailDto }) => {
+const LegacyEquityRow = ({ detail }: { detail: CountySegmentDetailDto }) => {
   const pill = classificationStyle(detail.equityClassification);
   // VEI bar min=0 max=100; clamp for sane rendering.
   const veiPct = detail.vei === null ? 0 : Math.max(0, Math.min(100, detail.vei));
   return (
     <div
-      data-testid="inspector-benton-row"
+      data-testid="inspector-equity-row"
       style={{
         marginTop: 12, padding: 10,
         border: '1px solid hsl(var(--tf-border))',
@@ -128,7 +128,7 @@ const BentonRow = ({ detail }: { detail: CountySegmentDetailDto }) => {
           color: 'hsl(var(--tf-muted))', marginBottom: 6,
         }}
       >
-        Benton Method
+        Equity Method
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
@@ -148,15 +148,15 @@ const BentonRow = ({ detail }: { detail: CountySegmentDetailDto }) => {
         </div>
 
         <div>
-          <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>Benton Equity Score</div>
+          <div style={{ fontSize: 10, color: 'hsl(var(--tf-muted))' }}>Equity Score</div>
           <div
-            data-testid="inspector-benton-score"
+            data-testid="inspector-equity-score"
             style={{
               fontSize: 22, fontWeight: 700, fontFeatureSettings: '"tnum"',
               color: 'hsl(var(--tf-fg))',
             }}
           >
-            {detail.bentonEquityScore === null ? '—' : detail.bentonEquityScore.toFixed(0)}
+            {detail.equityScore === null ? '—' : detail.equityScore.toFixed(0)}
           </div>
           <div style={{ fontSize: 9, color: 'hsl(var(--tf-muted))' }}>0-100, higher = fairer</div>
         </div>
@@ -350,7 +350,7 @@ const MetricsPanel = ({
     return (
       <div data-testid="inspector-metrics-loading"
         style={{ padding: 16, fontSize: 12, color: 'hsl(var(--tf-muted))' }}>
-        Loading Benton Method metrics…
+        Loading segment metrics…
       </div>
     );
   }
@@ -383,7 +383,7 @@ const MetricsPanel = ({
       <MetricRow label="Exceptions" value={String(detail.exceptionCount)} />
       <MetricRow label="Parcels" value={detail.parcelCount.toLocaleString()} />
 
-      <BentonRow detail={detail} />
+      <LegacyEquityRow detail={detail} />
 
       <div style={{ marginTop: 12 }}>
         <div
@@ -399,7 +399,7 @@ const MetricsPanel = ({
             data-testid="inspector-no-warnings"
             style={{ fontSize: 11, color: 'hsl(var(--tf-muted))' }}
           >
-            No warnings — this segment meets IAAO and Benton fairness bands.
+            No warnings — this segment meets IAAO and equity fairness bands.
           </div>
         ) : (
           <ul
@@ -608,6 +608,7 @@ const ActionPanel = ({
         disabledTooltip="SalesForge integration not yet active."
         deeplinkQuery={context.salesForge.deeplinkQuery}
         onClick={() => fireModule('sales-forge', {
+          countyId:      context.countyId,
           deeplinkQuery: context.salesForge.deeplinkQuery,
           stratumKey:    context.salesForge.stratumKey,
           taxYear:       context.salesForge.taxYear,
@@ -621,6 +622,7 @@ const ActionPanel = ({
         disabledTooltip="CostForge integration not yet active."
         deeplinkQuery={context.costForge.deeplinkQuery}
         onClick={() => fireModule('costforge', {
+          countyId:      context.countyId,
           deeplinkQuery: context.costForge.deeplinkQuery,
           stratumKey:    context.costForge.stratumKey,
           taxYear:       context.costForge.taxYear,
@@ -634,6 +636,7 @@ const ActionPanel = ({
         disabledTooltip="CompsForge integration not yet active."
         deeplinkQuery={context.compsForge.deeplinkQuery}
         onClick={() => fireModule('comps-forge', {
+          countyId:        context.countyId,
           deeplinkQuery:   context.compsForge.deeplinkQuery,
           sampleParcelIds: context.compsForge.sampleParcelIds,
           segmentId:       context.segmentId,
@@ -646,6 +649,7 @@ const ActionPanel = ({
         disabledTooltip="Dais integration not yet active."
         deeplinkQuery={context.dais.deeplinkQuery}
         onClick={() => fireModule('suite-dais', {
+          countyId:         context.countyId,
           deeplinkQuery:     context.dais.deeplinkQuery,
           workflowTemplate:  context.dais.workflowTemplate,
           segmentId:         context.segmentId,
@@ -659,6 +663,7 @@ const ActionPanel = ({
         disabledTooltip="Dossier integration not yet active."
         deeplinkQuery={context.dossier.deeplinkQuery}
         onClick={() => fireModule('suite-dossier', {
+          countyId:       context.countyId,
           deeplinkQuery:   context.dossier.deeplinkQuery,
           packetTemplate:  context.dossier.packetTemplate,
           segmentId:       context.segmentId,
@@ -699,12 +704,12 @@ export function ObjectInspector() {
 
   const handleOpenAtlas = () => {
     if (!activeStudy) return;
-    navigate(`/forge/atlas-live?studyId=${activeStudy.studyId}&segmentId=${seg.segmentId}`);
+    navigate(`/forge/atlas-live?studyId=${activeStudy.studyId}&segmentId=${seg.segmentId}&countyId=${activeStudy.countyId}`);
   };
   const handleFindParcels = () => {
     void activateModule('property-workbench', {
       source: 'system',
-      metadata: { segmentId: seg.segmentId },
+      metadata: { segmentId: seg.segmentId, countyId: activeStudy?.countyId },
     });
   };
 

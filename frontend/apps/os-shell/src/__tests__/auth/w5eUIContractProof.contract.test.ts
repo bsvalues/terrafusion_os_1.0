@@ -69,7 +69,9 @@ describe('Gate 1 — DemoDataBanner inventory: every fixture surface discloses',
     expect(src).not.toContain('DemoDataBanner');
     expect(src).not.toContain('isFixture');
     expect(src).toContain('useForgeStatisticsStore');
-    expect(src).toContain('apiFetch(`/terraforge/ratio-study/trends?taxYear=${taxYear}`)');
+    expect(src).toContain('apiFetch(');
+    expect(src).toContain('/terraforge/ratio-study/trends?taxYear=${taxYear}');
+    expect(src).toContain('countyId ? `&countyId=${encodeURIComponent(countyId)}` : \'\'');
   });
 
   it('SegmentDiscoveryDashboard renders explicit unavailable state instead of DemoDataBanner', () => {

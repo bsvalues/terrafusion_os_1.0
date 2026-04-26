@@ -81,7 +81,7 @@ namespace TerraFusion.Consciousness.Interfaces
         public double ResourceUtilization { get; init; }
 
         /// <summary>
-        /// Quantum coherence factor (target: 949)
+        /// Quantum coherence factor
         /// </summary>
         public int QuantumFactor { get; init; }
     }

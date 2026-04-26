@@ -43,7 +43,7 @@ export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ classNam
     return () => clearInterval(interval);
   }, [loadGovernmentMetrics]);
 
-  if (loading || !metrics) {
+  if (loading) {
     return (
       <div
         className={`bg-gradient-to-br from-blue-900/30 to-cyan-900/20 backdrop-blur-lg
@@ -75,14 +75,6 @@ export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ classNam
     );
   }
 
-  const getStatusColor = (value: number, threshold: number) => {
-    return value >= threshold
-      ? 'text-green-400'
-      : value >= threshold * 0.8
-        ? 'text-yellow-400'
-        : 'text-red-400';
-  };
-
   const sourceLabel =
     dataSource === 'ELITE_CACHE' ? 'Cached backend evidence'
     : dataSource === 'QUANTUM_SIMULATION' ? 'Simulated evidence — not authoritative'
@@ -110,95 +102,77 @@ export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ classNam
 
       {/* Government Metrics Grid */}
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-        {/* Property Assessment */}
         <div className='bg-slate-800/50 rounded-lg p-4 border border-cyan-500/20'>
           <div className='flex items-center justify-between mb-2'>
             <span className='text-cyan-300 font-semibold'>🏘️ Property Assessment</span>
-            <span
-              className={`font-bold ${getStatusColor(metrics.propertyAssessment.accuracy, 95)}`}
-            >
-              {metrics.propertyAssessment.accuracy.toFixed(1)}%
-            </span>
+            <span className='font-bold text-green-400'>{metrics.propertyAssessment.status}</span>
           </div>
           <div className='text-sm text-slate-400'>
-            <div>Response: {metrics.propertyAssessment.avgResponseTime.toFixed(0)}ms</div>
-            <div>Completed: {metrics.propertyAssessment.completedAssessments.toLocaleString()}</div>
+            <div>Parcels: {metrics.propertyAssessment.totalParcels.toLocaleString()}</div>
+            <div>Source: {metrics.propertyAssessment.dataSource}</div>
+            <div className='mt-2 text-slate-500'>{metrics.propertyAssessment.note}</div>
           </div>
         </div>
 
-        {/* Citizen Services */}
         <div className='bg-slate-800/50 rounded-lg p-4 border border-cyan-500/20'>
           <div className='flex items-center justify-between mb-2'>
-            <span className='text-cyan-300 font-semibold'>👥 Citizen Services</span>
+            <span className='text-cyan-300 font-semibold'>🔄 TerraSync</span>
             <span
-              className={`font-bold ${getStatusColor(metrics.citizenServices.satisfactionScore, 90)}`}
+              className={`font-bold ${metrics.externalSystems.terrasync.status === 'AVAILABLE' ? 'text-green-400' : 'text-yellow-400'}`}
             >
-              {metrics.citizenServices.satisfactionScore.toFixed(1)}%
+              {metrics.externalSystems.terrasync.status}
             </span>
           </div>
           <div className='text-sm text-slate-400'>
-            <div>Wait Time: {metrics.citizenServices.avgWaitTime.toFixed(0)}min</div>
-            <div>Completed: {metrics.citizenServices.servicesCompleted.toLocaleString()}</div>
+            <div>Endpoint: {metrics.externalSystems.terrasync.endpoint}</div>
+            <div className='mt-2 text-slate-500'>{metrics.externalSystems.terrasync.note}</div>
           </div>
         </div>
 
-        {/* Budget Analysis */}
         <div className='bg-slate-800/50 rounded-lg p-4 border border-cyan-500/20'>
           <div className='flex items-center justify-between mb-2'>
-            <span className='text-cyan-300 font-semibold'>💰 Budget Analysis</span>
-            <span
-              className={`font-bold ${getStatusColor(metrics.budgetAnalysis.efficiencyScore, 90)}`}
-            >
-              {metrics.budgetAnalysis.efficiencyScore.toFixed(1)}%
-            </span>
+            <span className='text-cyan-300 font-semibold'>🧾 Operator Posture</span>
+            <span className='font-bold text-yellow-400'>{metrics.operatorPosture.governedActions}</span>
           </div>
           <div className='text-sm text-slate-400'>
-            <div>Savings: ${(metrics.budgetAnalysis.costSavings / 1000000).toFixed(1)}M</div>
-            <div>Compliance: {metrics.budgetAnalysis.budgetCompliance.toFixed(1)}%</div>
+            <div>AI swarm: {metrics.operatorPosture.aiSwarmStatus}</div>
+            <div>Compliance: {metrics.operatorPosture.complianceStatus}</div>
           </div>
         </div>
 
-        {/* Compliance Reporting */}
         <div className='bg-slate-800/50 rounded-lg p-4 border border-cyan-500/20'>
           <div className='flex items-center justify-between mb-2'>
-            <span className='text-cyan-300 font-semibold'>📋 Compliance</span>
-            <span
-              className={`font-bold ${getStatusColor(metrics.complianceReporting.complianceScore, 95)}`}
-            >
-              {metrics.complianceReporting.complianceScore.toFixed(1)}%
-            </span>
+            <span className='text-cyan-300 font-semibold'>🏛️ County</span>
+            <span className='font-bold text-cyan-300'>{metrics.county.fips}</span>
           </div>
           <div className='text-sm text-slate-400'>
-            <div>Reports: {metrics.complianceReporting.reportsGenerated}</div>
-            <div>Audit Ready: {metrics.complianceReporting.auditReadiness.toFixed(1)}%</div>
+            <div>{metrics.county.name}, {metrics.county.state}</div>
+            <div>Total parcels: {metrics.county.totalParcels.toLocaleString()}</div>
           </div>
         </div>
 
-        {/* Emergency Response */}
         <div className='bg-slate-800/50 rounded-lg p-4 border border-cyan-500/20'>
           <div className='flex items-center justify-between mb-2'>
-            <span className='text-cyan-300 font-semibold'>🚨 Emergency Response</span>
-            <span
-              className={`font-bold ${getStatusColor(metrics.emergencyResponse.systemReadiness, 95)}`}
-            >
-              {metrics.emergencyResponse.systemReadiness.toFixed(1)}%
-            </span>
+            <span className='text-cyan-300 font-semibold'>🗃️ Legacy System</span>
+            <span className='font-bold text-slate-300'>{metrics.externalSystems.legacyAssessmentSystem.status}</span>
           </div>
           <div className='text-sm text-slate-400'>
-            <div>Response: {Math.floor(metrics.emergencyResponse.responseTime / 60)}min</div>
-            <div>Incidents: {metrics.emergencyResponse.incidentsHandled}</div>
+            <div>System: {metrics.externalSystems.legacyAssessmentSystem.system}</div>
+            <div className='mt-2 text-slate-500'>{metrics.externalSystems.legacyAssessmentSystem.note}</div>
           </div>
         </div>
 
-        {/* AI Evidence Status */}
         <div className='bg-gradient-to-br from-cyan-900/40 to-blue-900/40 rounded-lg p-4 border border-cyan-400/40'>
           <div className='flex items-center justify-between mb-2'>
-            <span className='text-cyan-200 font-semibold'>AI Governance</span>
-            <span className='font-bold text-cyan-300'>{dataSource}</span>
+            <span className='text-cyan-200 font-semibold'>Warnings</span>
+            <span className='font-bold text-cyan-300'>{metrics.operatorPosture.warnings.length}</span>
           </div>
-          <div className='text-sm text-cyan-400'>
-            <div>Agent telemetry is not inferred.</div>
-            <div>Only backend-returned metrics are displayed.</div>
+          <div className='text-sm text-slate-400'>
+            {metrics.operatorPosture.warnings.map((warning) => (
+              <div key={warning} className='mb-1'>
+                {warning}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -206,7 +180,7 @@ export const GovernmentAIStatus: React.FC<GovernmentAIStatusProps> = ({ classNam
       {/* Footer Status */}
       <div className='mt-4 pt-4 border-t border-cyan-500/20 text-center'>
         <div className='text-xs text-slate-400'>
-          Evidence source: {sourceLabel}. No AI capability claims are shown without backend data.
+          Evidence source: {sourceLabel}. This panel reports live parcel totals and explicit unavailable states instead of inferred operational claims.
         </div>
       </div>
     </div>

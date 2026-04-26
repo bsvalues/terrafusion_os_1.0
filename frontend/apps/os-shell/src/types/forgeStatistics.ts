@@ -57,6 +57,7 @@ export interface ModelComparisonResult {
 
 export interface StudyFilterState {
   taxYear: number;
+  countyId?: string | null;
   salesWindowMonths: number;
   neighborhood: string | null;
   propertyType: string | null;

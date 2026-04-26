@@ -56,13 +56,20 @@ export const AISwarmDashboard: React.FC = () => {
   };
 
   const renderUnavailablePanel = (title: string, detail: string) => (
-    <Card elevation={3}>
+    <Card
+      elevation={0}
+      sx={{
+        backgroundColor: 'hsl(var(--tf-surface))',
+        color: 'hsl(var(--tf-text))',
+        border: '1px solid hsl(var(--tf-border) / 0.35)',
+      }}
+    >
       <CardContent>
         <Box display='flex' alignItems='center' gap={1} mb={2}>
           <WarningIcon color='warning' />
           <Typography variant='h6'>{title}</Typography>
         </Box>
-        <Typography variant='body2' color='text.secondary'>
+        <Typography variant='body2' sx={{ color: 'hsl(var(--tf-muted))' }}>
           {detail}
         </Typography>
       </CardContent>
@@ -87,19 +94,46 @@ export const AISwarmDashboard: React.FC = () => {
   );
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3, backgroundColor: 'var(--gray-50)', minHeight: '100vh' }}>
+    <Box
+      sx={{
+        flexGrow: 1,
+        p: 3,
+        backgroundColor: 'hsl(var(--tf-bg))',
+        color: 'hsl(var(--tf-text))',
+        minHeight: '100vh',
+      }}
+    >
       <Box display='flex' justifyContent='space-between' alignItems='center' mb={3}>
         <Box>
           <Typography variant='h4' component='h1' fontWeight='bold'>
             AI Swarm Telemetry Guardrail
           </Typography>
-          <Typography variant='body2' color='text.secondary'>
+          <Typography variant='body2' sx={{ color: 'hsl(var(--tf-muted))' }}>
             Deprecated surface retained only to prevent false operational claims.
           </Typography>
         </Box>
         <Box display='flex' gap={2} alignItems='center'>
-          <Chip icon={<WarningIcon />} label='Telemetry disconnected' color='warning' variant='outlined' />
-          <Chip icon={<SecurityIcon />} label='Pilot required' color='primary' variant='outlined' />
+          <Chip
+            icon={<WarningIcon />}
+            label='Telemetry disconnected'
+            color='warning'
+            variant='outlined'
+            sx={{ backgroundColor: 'hsl(var(--tf-bg) / 0.35)' }}
+          />
+          <Chip
+            icon={<SecurityIcon />}
+            label='Pilot required'
+            color='primary'
+            variant='outlined'
+            sx={{
+              backgroundColor: 'hsl(var(--tf-bg) / 0.35)',
+              color: '#8fd4ff',
+              borderColor: '#8fd4ff',
+              '& .MuiChip-icon': {
+                color: '#8fd4ff',
+              },
+            }}
+          />
           <Button variant='outlined' startIcon={<SettingsIcon />} onClick={() => setShowSettings(true)}>
             Settings
           </Button>
@@ -154,13 +188,20 @@ export const AISwarmDashboard: React.FC = () => {
         </Grid>
 
         <Grid item xs={12}>
-          <Card elevation={3}>
+          <Card
+            elevation={0}
+            sx={{
+              backgroundColor: 'hsl(var(--tf-surface))',
+              color: 'hsl(var(--tf-text))',
+              border: '1px solid hsl(var(--tf-border) / 0.35)',
+            }}
+          >
             <CardContent>
               <Box display='flex' alignItems='center' gap={1} mb={2}>
                 <TimelineIcon color='primary' />
                 <Typography variant='h6'>Governed Action Boundary</Typography>
               </Box>
-              <Typography variant='body2' color='text.secondary' mb={2}>
+              <Typography variant='body2' sx={{ color: 'hsl(var(--tf-muted))', mb: 2 }}>
                 Actions from this route are blocked because they do not produce a Pilot
                 correlation record. Use governed tools before changing swarm state.
               </Typography>

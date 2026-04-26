@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
+import { getCountyStudyScope } from '../countyStudyScope';
 
 const HUB_URL = '/api/hubs/county-study';
 
@@ -11,9 +12,14 @@ export function useCountyStudyHub(studyId: string | null) {
 
   useEffect(() => {
     if (!studyId) return;
+    const countyScope = getCountyStudyScope();
+    if (!countyScope.isolated || !countyScope.countyId) {
+      setSyncState('DISCONNECTED');
+      return;
+    }
 
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl(HUB_URL)
+      .withUrl(`${HUB_URL}?countyId=${encodeURIComponent(countyScope.countyId)}`)
       .withAutomaticReconnect()
       .build();
 
@@ -107,8 +113,8 @@ export function useCountyStudyHub(studyId: string | null) {
     connection.onclose(() => setSyncState('DISCONNECTED'));
 
     return () => {
-      connection.invoke('LeaveStudy', studyId).catch(() => {});
-      connection.stop().catch(() => {});
+      connection.invoke('LeaveStudy', studyId).catch(() => undefined);
+      connection.stop().catch(() => undefined);
       setSyncState('DISCONNECTED');
       connectionRef.current = null;
     };
@@ -118,14 +124,18 @@ export function useCountyStudyHub(studyId: string | null) {
     if (!connectionRef.current || !studyId) return;
     try {
       await connectionRef.current.invoke('SendPresence', studyId, { type, payload: { studyId, segmentId } });
-    } catch {}
+    } catch {
+      return;
+    }
   };
 
   const sendProjection = async (type: string, payload: unknown) => {
     if (!connectionRef.current || !studyId) return;
     try {
       await connectionRef.current.invoke('SendProjection', studyId, { type, payload });
-    } catch {}
+    } catch {
+      return;
+    }
   };
 
   const sendCommit = async (type: string, payload: unknown) => {

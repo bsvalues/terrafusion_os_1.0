@@ -3,16 +3,17 @@ using TerraFusion.Levy.Models;
 namespace TerraFusion.Levy.Services
 {
     /// <summary>
-    /// Championship-level levy calculation service with quantum optimization.
-    /// Government. Transcended. - Intelligent tax assessment operations.
+    /// Levy calculation service for deterministic rate and scenario analysis.
+    /// Field names retain legacy compatibility, but the implementation is
+    /// heuristic and evidence-bound rather than AI- or quantum-backed.
     /// </summary>
     public interface ILevyCalculationService
     {
         /// <summary>
-        /// Calculate optimal levy rate for a measure with quantum enhancement.
+        /// Calculate a recommended levy rate for a measure.
         /// </summary>
         /// <param name="measure">Levy measure to calculate rate for</param>
-        /// <param name="useQuantumOptimization">Enable quantum-enhanced calculation (factor 949)</param>
+        /// <param name="useQuantumOptimization">Legacy compatibility flag. No governed quantum optimizer is available.</param>
         /// <returns>Calculated rate with AI confidence score</returns>
         Task<LevyRateCalculationResult> CalculateOptimalRateAsync(
             LevyMeasure measure,
@@ -43,7 +44,7 @@ namespace TerraFusion.Levy.Services
             decimal collectionRate);
 
         /// <summary>
-        /// Perform quantum-enhanced multi-scenario analysis.
+        /// Perform deterministic multi-scenario analysis.
         /// </summary>
         Task<List<LevyScenarioAnalysis>> AnalyzeScenariosAsync(
             LevyMeasure measure,
@@ -51,7 +52,9 @@ namespace TerraFusion.Levy.Services
     }
 
     /// <summary>
-    /// Result of levy rate calculation with AI insights.
+    /// Result of levy rate calculation.
+    /// Compatibility field names (AiOptimalRate, QuantumOptimized) are retained
+    /// for older clients, but the values are sourced from deterministic logic.
     /// </summary>
     public class LevyRateCalculationResult
     {
@@ -108,7 +111,7 @@ namespace TerraFusion.Levy.Services
     }
 
     /// <summary>
-    /// Scenario analysis with AI-powered insights.
+    /// Scenario analysis with deterministic compatibility insights.
     /// </summary>
     public class LevyScenarioAnalysis
     {

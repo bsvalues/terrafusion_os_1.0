@@ -8,10 +8,8 @@ using System.Diagnostics;
 namespace TerraFusion.Consciousness.Services
 {
     /// <summary>
-    /// Multi-County Data Service Implementation
-    /// AI Layer Mesh Federation Gateway - THE TERRAFUSION WAY!
-    /// Enables secure, privacy-preserving data sharing across US counties
-    /// Government. Transcended.
+    /// Multi-county data compatibility service.
+    /// Governed cross-county federation remains unavailable until backed by real execution and evidence.
     /// </summary>
     public class MultiCountyDataService : IMultiCountyDataService
     {

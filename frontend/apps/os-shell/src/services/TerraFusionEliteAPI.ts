@@ -22,30 +22,35 @@ interface APIResponse<T = unknown> {
 }
 
 interface GovernmentMetrics {
+  county: {
+    name: string;
+    state: string;
+    fips: string;
+    totalParcels: number;
+  };
   propertyAssessment: {
-    accuracy: number;
-    avgResponseTime: number;
-    completedAssessments: number;
+    status: string;
+    totalParcels: number;
+    dataSource: string;
+    note: string;
   };
-  citizenServices: {
-    satisfactionScore: number;
-    avgWaitTime: number;
-    servicesCompleted: number;
+  externalSystems: {
+    terrasync: {
+      status: string;
+      endpoint: string;
+      note: string;
+    };
+    legacyAssessmentSystem: {
+      status: string;
+      system: string;
+      note: string;
+    };
   };
-  budgetAnalysis: {
-    efficiencyScore: number;
-    costSavings: number;
-    budgetCompliance: number;
-  };
-  complianceReporting: {
-    complianceScore: number;
-    reportsGenerated: number;
-    auditReadiness: number;
-  };
-  emergencyResponse: {
-    responseTime: number;
-    incidentsHandled: number;
-    systemReadiness: number;
+  operatorPosture: {
+    governedActions: string;
+    aiSwarmStatus: string;
+    complianceStatus: string;
+    warnings: string[];
   };
 }
 

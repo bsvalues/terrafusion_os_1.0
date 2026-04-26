@@ -3,13 +3,14 @@ using TerraFusion.Levy.Models;
 namespace TerraFusion.Levy.Services
 {
     /// <summary>
-    /// AI-powered revenue projection service with predictive analytics.
-    /// Government. Transcended. - Quantum-enhanced financial forecasting.
+    /// Revenue projection service for deterministic multi-year forecasting.
+    /// Compatibility field names retain older AI naming, but the implementation
+    /// is heuristic and does not claim governed model-backed forecasting.
     /// </summary>
     public interface IRevenueProjectionService
     {
         /// <summary>
-        /// Generate multi-year revenue projections with AI insights.
+        /// Generate multi-year revenue projections.
         /// </summary>
         Task<List<RevenueProjection>> GenerateProjectionsAsync(
             LevyScenario scenario,
@@ -31,7 +32,7 @@ namespace TerraFusion.Levy.Services
             LevyScenario scenario);
 
         /// <summary>
-        /// Compare multiple scenarios with AI-powered recommendations.
+        /// Compare multiple scenarios with deterministic scoring.
         /// </summary>
         Task<ScenarioComparison> CompareScenariosAsync(
             List<LevyScenario> scenarios,

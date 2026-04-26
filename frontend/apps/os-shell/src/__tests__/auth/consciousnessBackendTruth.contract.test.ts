@@ -57,8 +57,9 @@ describe('Consciousness backend truth contract', () => {
     const src = readRepoFile('backend/src/TerraFusion.Consciousness/Services/ConsciousnessService.cs');
 
     expect(src).toContain('{ "QuantumConsciousness", 0.0 }');
-    expect(src).toContain('QuantumConsciousness unavailable: circular dependency unresolved.');
-    expect(src).toContain('{ "SystemCapacity", "Mesh-only" }');
+    expect(src).toContain('QuantumConsciousness unavailable: governed execution lane not available.');
+    expect(src).toContain('{ "SystemCapacity", "Compatibility" }');
+    expect(src).toContain('{ "MillionAgents", "Unavailable" }');
   });
 
   it('ConsciousnessTelemetryService reports unavailable telemetry instead of synthetic metrics', () => {
@@ -88,6 +89,8 @@ describe('Consciousness backend truth contract', () => {
     expect(src).toContain('Governed core-consciousness surface unavailable');
     expect(src).not.toContain('Supports 50,000+ AI agents with real-time monitoring');
     expect(src).not.toContain('OptimizationCompleted');
+    expect(src).toContain('TargetAccuracy { get; set; } = 0m;');
+    expect(src).toContain('MinAccuracy { get; set; } = 0m;');
   });
 
   it('Legacy consciousness host controllers report unavailable quantum/Benton demo lanes honestly', () => {
@@ -225,5 +228,134 @@ describe('Consciousness backend truth contract', () => {
     expect(src).toContain('Success = false');
     expect(src).toContain('ChampionshipCompliant = false');
     expect(src).toContain('AutonomousSuccess = false');
+  });
+
+  it('QuantumSecurityService no longer fabricates million-agent deployment, threat telemetry, or compliance success', () => {
+    const src = readRepoFile('backend/src/TerraFusion.Consciousness/Services/QuantumSecurityService.cs');
+
+    expect(src).not.toContain('Government. Transcended.');
+    expect(src).not.toContain('var totalAgents = 1000000');
+    expect(src).not.toContain('DeploymentProgress = 1.0m');
+    expect(src).not.toContain('"EncryptionIntegrityChecks", 1000000');
+    expect(src).not.toContain('"GovernmentGrade", "ACHIEVED"');
+    expect(src).not.toContain('ResponseStatus = incidentResolved ? "Resolved" : "Mitigated"');
+    expect(src).toContain('Governed quantum-security surface unavailable; compatibility surface only.');
+    expect(src).toContain('SecurityLevel = "Unavailable"');
+    expect(src).toContain('IsCompliant = false');
+    expect(src).toContain('ResponseStatus = "Unavailable"');
+  });
+
+  it('ConsciousnessServiceExtensions no longer enforce fantasy 949-brand configuration or hosted-service posture', () => {
+    const src = readRepoFile('backend/src/TerraFusion.Consciousness/Extensions/ConsciousnessServiceExtensions.cs');
+
+    expect(src).not.toContain('Quantum factor must be 949 for championship operations');
+    expect(src).not.toContain("Brand transcendence message must contain 'Government. Transcended.'");
+    expect(src).not.toContain('Starting Consciousness Coordination Hosted Service - Government. Transcended.');
+    expect(src).not.toContain('Starting Quantum Optimization Hosted Service - Factor 949');
+    expect(src).toContain('ArgumentNullException.ThrowIfNull(configuration);');
+    expect(src).toContain('Starting Consciousness Coordination Hosted Service in compatibility mode.');
+    expect(src).toContain('Compatibility transcendence metrics remain unavailable.');
+    expect(src).toContain('Compatibility health remains unavailable; skipping healing trigger.');
+  });
+
+  it('ConsciousnessHealthChecks no longer rate compatibility-mode consciousness as championship healthy', () => {
+    const src = readRepoFile('backend/src/TerraFusion.Consciousness/HealthChecks/ConsciousnessHealthChecks.cs');
+
+    expect(src).not.toContain('Quantum factor 949 configured for championship excellence');
+    expect(src).not.toContain('Consciousness system operating at championship levels');
+    expect(src).not.toContain('Transcendence engine operating at championship excellence - Government. Transcended.');
+    expect(src).toContain('Consciousness compatibility host active; governed consciousness lane unavailable');
+    expect(src).toContain('Quantum factor compatibility check only; governed optimization lane unavailable');
+    expect(src).toContain('Agent coordination compatibility host active; governed coordination lane unavailable');
+    expect(src).toContain('Governed transcendence lane unavailable');
+  });
+
+  it('AILayerMeshHub no longer welcomes users with transcended mesh claims or fake active-layer counts', () => {
+    const src = readRepoFile('backend/src/TerraFusion.Consciousness/Hubs/AILayerMeshHub.cs');
+
+    expect(src).not.toContain('Welcome to TerraFusion AI Layer Mesh - Government. Transcended!');
+    expect(src).not.toContain('ActiveLayers = 5');
+    expect(src).not.toContain('ValidationRingsActive = 4');
+    expect(src).toContain('Connected to TerraFusion AI Layer Mesh compatibility host.');
+    expect(src).toContain('GovernedContractAvailable = false');
+    expect(src).toContain('Joined Mesh Administrators compatibility channel.');
+  });
+
+  it('QuantumConsciousnessHub no longer advertises million-agent government-grade welcome state', () => {
+    const src = readRepoFile('backend/src/TerraFusion.Consciousness/Hubs/QuantumConsciousnessHub.cs');
+
+    expect(src).not.toContain('Connected to TerraFusion Quantum Consciousness - Government. Transcended!');
+    expect(src).not.toContain('MaxAgents = 1000000');
+    expect(src).not.toContain('GovernmentGrade = true');
+    expect(src).toContain('Connected to TerraFusion Quantum Consciousness compatibility host.');
+    expect(src).toContain('CompatibilityMode = true');
+    expect(src).toContain('GovernedContractAvailable = false');
+  });
+
+  it('PredictiveImpactService no longer returns physics-based or ML-theater predictions', () => {
+    const src = readRepoFile('backend/src/TerraFusion.Consciousness/Services/PredictiveImpactService.cs');
+
+    expect(src).not.toContain('GradientBoosting_PhysicsBased_v1.0');
+    expect(src).not.toContain('FallbackLinearPrediction');
+    expect(src).not.toContain('Prediction latency: <50ms P95');
+    expect(src).toContain('Governed predictive impact modeling unavailable; compatibility surface only.');
+    expect(src).toContain('PredictionMethod = "Unavailable"');
+    expect(src).toContain('ConfidenceScore = 0.0');
+  });
+
+  it('ConsciousnessEngineStub no longer seeds agents or applies synthetic 949 scaling', () => {
+    const src = readRepoFile('backend/src/TerraFusion.Consciousness/Services/ConsciousnessEngineStub.cs');
+
+    expect(src).not.toContain('var agentTypes = new[] { "PropertyAssessor", "DataProcessor", "Analyst", "ComplianceMonitor", "Coordinator" }');
+    expect(src).not.toContain('PerformanceScore = 0.85 + (i % 10) * 0.01');
+    expect(src).not.toContain('request.QuantumFactor / 949.0');
+    expect(src).toContain('Governed swarm provisioning and quantum optimization are unavailable; compatibility surface only.');
+    expect(src).toContain('QuantumOptimizationApplied = false');
+    expect(src).toContain('return false;');
+  });
+
+  it('MillionAgentService no longer simulates million-agent initialization, scaling, or coordination', () => {
+    const src = readRepoFile('backend/src/TerraFusion.Consciousness/Services/MillionAgentService.cs');
+
+    expect(src).not.toContain('_maxCapacity = 1000000');
+    expect(src).not.toContain('Initializing Million-Agent Quantum Consciousness System...');
+    expect(src).not.toContain('InitializationProgress = 1.0m');
+    expect(src).not.toContain('Target agent count must be between 0 and');
+    expect(src).toContain('Governed million-agent coordination unavailable; compatibility surface only.');
+    expect(src).toContain('InitializedAgents = 0');
+    expect(src).toContain('Success = false');
+    expect(src).toContain('Status = "Unavailable"');
+  });
+
+  it('ConsciousnessService no longer reports million-agent capacity or fully valid integrity in compatibility mode', () => {
+    const src = readRepoFile('backend/src/TerraFusion.Consciousness/Services/ConsciousnessService.cs');
+
+    expect(src).not.toContain('{ "TotalAgents", 1000000 }');
+    expect(src).not.toContain('QuantumResult"] = new { Status = "Temporarily disabled due to circular dependency" }');
+    expect(src).not.toContain('await Task.Delay(1000, cancellationToken)');
+    expect(src).not.toContain('{ "ValidationRings", 0.98 }');
+    expect(src).not.toContain('{ "DataSovereignty", 0.99 }');
+    expect(src).not.toContain('{ "QuantumConsciousness", true }');
+    expect(src).not.toContain('{ "MillionAgents", true }');
+    expect(src).toContain('Governed consciousness orchestration remains partial: mesh compatibility available, quantum lane unavailable, million-agent lane unavailable.');
+    expect(src).toContain('{ "GovernedContractAvailable", false }');
+    expect(src).toContain('Status = "Unavailable"');
+    expect(src).toContain('IsOperational = false');
+  });
+
+  it('Transcendence DTOs and quantum optimization request no longer default to fantasy 949 or championship values', () => {
+    const dtoSrc = readRepoFile('backend/src/TerraFusion.Consciousness/DTOs/TranscendenceEngineDto.cs');
+    const interfaceSrc = readRepoFile('backend/src/TerraFusion.Consciousness/Interfaces/IConsciousnessEngine.cs');
+
+    expect(dtoSrc).not.toContain('RequireChampionshipAccuracy { get; set; } = true;');
+    expect(dtoSrc).not.toContain('QuantumFactorOverride { get; set; } = 949;');
+    expect(dtoSrc).not.toContain('CoordinationStrategy { get; set; } = "CHAMPIONSHIP_HARMONY";');
+    expect(dtoSrc).not.toContain('RequiredHarmonyLevel { get; set; } = 0.999;');
+    expect(dtoSrc).not.toContain('TargetTranscendenceLevel { get; set; } = "CHAMPIONSHIP_EXCELLENCE";');
+    expect(dtoSrc).not.toContain('QuantumFactorTarget { get; set; } = 949;');
+    expect(interfaceSrc).not.toContain('QuantumFactor { get; set; } = 949;');
+    expect(dtoSrc).toContain('RequireChampionshipAccuracy { get; set; } = false;');
+    expect(dtoSrc).toContain('CoordinationStrategy { get; set; } = "Unavailable";');
+    expect(dtoSrc).toContain('TargetTranscendenceLevel { get; set; } = "Unavailable";');
   });
 });

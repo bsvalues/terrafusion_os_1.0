@@ -37,7 +37,7 @@ export const GovernmentExcellenceStatus: React.FC<GovernmentExcellenceStatusProp
   const getStatusIcon = () => {
     switch (status.operationalMode) {
       case 'BACKEND_CONNECTED':
-        return 'LIVE';
+        return 'LINK';
       case 'CACHE_AVAILABLE':
         return 'CACHE';
       case 'UNAVAILABLE':
@@ -63,13 +63,13 @@ export const GovernmentExcellenceStatus: React.FC<GovernmentExcellenceStatusProp
   const getStatusMessage = () => {
     switch (status.operationalMode) {
       case 'BACKEND_CONNECTED':
-        return 'BENTON COUNTY LIVE';
+        return 'BACKEND EVIDENCE LIVE';
       case 'CACHE_AVAILABLE':
-        return 'BENTON COUNTY CACHE EVIDENCE';
+        return 'CACHED EVIDENCE ONLY';
       case 'UNAVAILABLE':
-        return 'BENTON EVIDENCE UNAVAILABLE';
+        return 'EVIDENCE UNAVAILABLE';
       default:
-        return 'BENTON INITIALIZING';
+        return 'EVIDENCE CHECKING';
     }
   };
 
@@ -83,7 +83,7 @@ export const GovernmentExcellenceStatus: React.FC<GovernmentExcellenceStatusProp
           <div className='text-xs font-bold tracking-wide text-slate-300'>{getStatusIcon()}</div>
           <div>
             <div className={`text-sm font-bold ${getStatusColor()}`}>{getStatusMessage()}</div>
-            <div className='text-xs text-slate-400'>Benton County Assessment System</div>
+            <div className='text-xs text-slate-400'>Government evidence lane</div>
           </div>
         </div>
 

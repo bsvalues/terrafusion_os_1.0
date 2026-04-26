@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Bell, Mail, MessageSquare, Slack, CheckCircle2, XCircle, Settings } from 'lucide-react';
+import { getToken } from '@/auth/authStorage';
 
 /**
  * Codex 3-6-9 Framework - Notification Preferences Management UI
@@ -20,8 +21,6 @@ import { Bell, Mail, MessageSquare, Slack, CheckCircle2, XCircle, Settings } fro
  * - Alert level thresholds
  * - Daily summary scheduling
  * - Per-county notification settings
- *
- * THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
  */
 
 interface NotificationPreferences {
@@ -80,15 +79,10 @@ interface DailySummaryPreferences {
   includeTrends: boolean;
 }
 
-const BROWSER_STORE_PROPERTY = 'local' + 'Storage';
-
-function getAuthToken(): string | null {
-  try {
-    const store = window[BROWSER_STORE_PROPERTY as keyof Window] as Storage | null;
-    return store?.getItem('token') ?? null;
-  } catch {
-    return null;
-  }
+interface ConnectionTestState {
+  platform: 'slack' | 'teams';
+  success: boolean;
+  message: string;
 }
 
 export default function NotificationPreferences() {
@@ -142,6 +136,7 @@ export default function NotificationPreferences() {
   const [testingConnection, setTestingConnection] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionTestState | null>(null);
 
   // Load preferences from API
   useEffect(() => {
@@ -150,10 +145,9 @@ export default function NotificationPreferences() {
 
   const loadPreferences = async () => {
     try {
+      const token = getToken();
       const response = await fetch('/api/codex/notifications/preferences', {
-        headers: {
-          'Authorization': `Bearer ${getAuthToken() ?? ''}`,
-        },
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       if (response.ok) {
@@ -169,13 +163,15 @@ export default function NotificationPreferences() {
     setSaving(true);
     setSaveSuccess(false);
     setError(null);
+    setConnectionStatus(null);
 
     try {
+      const token = getToken();
       const response = await fetch('/api/codex/notifications/preferences', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getAuthToken() ?? ''}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(preferences),
       });
@@ -196,19 +192,27 @@ export default function NotificationPreferences() {
   const testConnection = async (platform: 'slack' | 'teams') => {
     setTestingConnection(platform);
     setError(null);
+    setConnectionStatus(null);
 
     try {
+      const token = getToken();
       const response = await fetch(`/api/codex/collaboration/${platform}/test`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${getAuthToken() ?? ''}`,
-        },
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       if (response.ok) {
-        alert(`${platform === 'slack' ? 'Slack' : 'Teams'} connection test successful! Check your channel for the test message.`);
+        setConnectionStatus({
+          platform,
+          success: true,
+          message: `${platform === 'slack' ? 'Slack' : 'Teams'} connection test successful. Check the configured channel for the governed test message.`,
+        });
       } else {
-        setError(`${platform === 'slack' ? 'Slack' : 'Teams'} connection test failed. Please check your webhook URL.`);
+        setConnectionStatus({
+          platform,
+          success: false,
+          message: `${platform === 'slack' ? 'Slack' : 'Teams'} connection test failed. Check the configured webhook and server logs.`,
+        });
       }
     } catch (err) {
       setError('Network error during connection test.');
@@ -247,6 +251,19 @@ export default function NotificationPreferences() {
         <Alert className="bg-red-500/10 border-red-500 text-red-500">
           <XCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      {connectionStatus && (
+        <Alert
+          className={
+            connectionStatus.success
+              ? 'bg-green-500/10 border-green-500 text-green-500'
+              : 'bg-amber-500/10 border-amber-500 text-amber-500'
+          }
+        >
+          {connectionStatus.success ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+          <AlertDescription>{connectionStatus.message}</AlertDescription>
         </Alert>
       )}
 

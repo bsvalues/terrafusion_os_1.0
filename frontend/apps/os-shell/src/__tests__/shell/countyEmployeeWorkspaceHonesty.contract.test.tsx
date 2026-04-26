@@ -58,12 +58,12 @@ vi.mock('../../hooks/useAIAssistant', () => ({
     isProcessing: false,
     swarmStatus: {
       countyId: 'benton',
-      activeAgents: 1008,
-      swarmActivity: 0.72,
-      quantumOptimizationFactor: 949,
+      activeAgents: 17,
+      swarmActivity: 'monitoring-only',
+      quantumOptimizationFactor: 0,
       responseTime: 184,
       accuracyScore: 0.995,
-      consciousnessLevel: 'stable',
+      consciousnessLevel: 0,
       lastUpdate: new Date('2026-03-21T19:00:00.000Z'),
     },
     sendMessage: vi.fn(),
@@ -163,13 +163,17 @@ describe('CountyEmployeeWorkspace honesty contract', () => {
     );
 
     expect(screen.getByText(/Swarm status \(30s refresh\):/i)).toBeInTheDocument();
-  expect(screen.getAllByText(/1,008 agents reported/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/17 active agents/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Reported activity:/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/monitoring-only/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Factor unavailable/i)).toBeInTheDocument();
+    expect(screen.getByText(/^Unavailable$/i)).toBeInTheDocument();
     expect(screen.getByText(/AI Status Snapshot/i)).toBeInTheDocument();
     expect(screen.getByText(/Workspace status snapshot/i)).toBeInTheDocument();
     expect(screen.queryByText(/^AI Swarm:$/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/AI Consciousness/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/AI Agents Active/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Elite Mode Active/i)).not.toBeInTheDocument();
   });
 
   it('describes the insights view as auto-refresh instead of real-time intelligence', () => {

@@ -5,7 +5,7 @@ namespace TerraFusion.Consciousness.Interfaces
     /// <summary>
     /// Audit Logger interface for government-grade compliance tracking
     /// Provides comprehensive audit logging for TerraFusion consciousness operations
-    /// Government. Transcended.
+    /// Compatibility audit logging contract.
     /// </summary>
     public interface IAuditLogger
     {

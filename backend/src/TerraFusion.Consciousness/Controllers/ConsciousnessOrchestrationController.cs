@@ -206,7 +206,7 @@ public class AgentTrainingRequestDto
 {
     public List<string>? AgentIds { get; set; }
     public string TrainingMode { get; set; } = "hybrid";
-    public decimal TargetAccuracy { get; set; } = 0.999m;
+    public decimal TargetAccuracy { get; set; } = 0m;
     public int MaxIterations { get; set; } = 1000;
     public decimal LearningRate { get; set; } = 0.001m;
     public QuantumTrainingParametersDto? QuantumParameters { get; set; }
@@ -237,7 +237,7 @@ public class OptimizationRequestDto
 public class OptimizationConstraintsDto
 {
     public decimal MaxLatency { get; set; } = 10m; // 10ms
-    public decimal MinAccuracy { get; set; } = 0.999m; // 99.9%
+    public decimal MinAccuracy { get; set; } = 0m;
     public decimal ResourceLimits { get; set; } = 1.0m; // 100% resource utilization
 }
 

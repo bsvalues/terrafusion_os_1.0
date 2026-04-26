@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { studyApi } from '../countyStudyApi';
+import { getCountyStudyScope } from '../countyStudyScope';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import type { CountyStudySessionDto, StudyType } from '../types/countyStudio.types';
 
@@ -34,10 +35,11 @@ const btnStyle = (primary: boolean): React.CSSProperties => ({
   color: primary ? '#000' : 'hsl(var(--tf-muted, 220 13% 50%))',
 });
 
-const STUDY_TYPES: StudyType[] = ['RatioStudy', 'MassAppraisal', 'EquityStudy', 'CustomStudy'];
+const STUDY_TYPES: StudyType[] = ['RatioStudy', 'MassAppraisal', 'IncomeApproach', 'CostApproach'];
 
 export function OpenStudyDialog({ open, onClose }: Props) {
   const { setStudy } = useCountyStudioStore();
+  const countyScope = getCountyStudyScope();
   const [studies, setStudies] = useState<CountyStudySessionDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,13 +52,19 @@ export function OpenStudyDialog({ open, onClose }: Props) {
 
   useEffect(() => {
     if (!open) return;
+    if (!countyScope.isolated) {
+      setStudies([]);
+      setLoading(false);
+      setError('County scope required before County Studio can load studies.');
+      return;
+    }
     setLoading(true);
     setError(null);
     studyApi.list()
       .then(setStudies)
-      .catch(() => setError('Failed to load studies.'))
+      .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load studies.'))
       .finally(() => setLoading(false));
-  }, [open]);
+  }, [open, countyScope.isolated]);
 
   const handleSelect = (study: CountyStudySessionDto) => {
     setStudy(study);
@@ -64,19 +72,23 @@ export function OpenStudyDialog({ open, onClose }: Props) {
   };
 
   const handleCreate = async () => {
+    if (!countyScope.isolated || !countyScope.countyId) {
+      setError('County scope required before County Studio can create a study.');
+      return;
+    }
     setCreating(true);
     setError(null);
     try {
       const created = await studyApi.create({
-        countyId: 'benton',
+        countyId: countyScope.countyId,
         taxYear,
         studyType,
         name: `${taxYear} ${studyType}`,
       });
       setStudy(created);
       onClose();
-    } catch {
-      setError('Failed to create study.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create study.');
     } finally {
       setCreating(false);
     }
@@ -118,7 +130,7 @@ export function OpenStudyDialog({ open, onClose }: Props) {
                   {s.taxYear} {s.studyType}
                 </div>
                 <div style={{ fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
-                  {s.status} · {s.countyId}
+                  {s.status} · {s.countyName ?? s.countyId}
                 </div>
               </button>
             ))}
@@ -147,9 +159,12 @@ export function OpenStudyDialog({ open, onClose }: Props) {
               </select>
             </div>
             {error && <div style={{ fontSize: 11, color: '#ef4444' }}>{error}</div>}
+            <div style={{ fontSize: 11, color: 'hsl(var(--tf-muted))' }}>
+              Active county scope: {countyScope.countyId ?? 'Unavailable'}
+            </div>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button style={btnStyle(false)} onClick={onClose}>Cancel</button>
-              <button style={btnStyle(true)} onClick={handleCreate} disabled={creating}>
+              <button style={btnStyle(true)} onClick={handleCreate} disabled={creating || !countyScope.isolated}>
                 {creating ? 'Creating…' : 'Create Study'}
               </button>
             </div>

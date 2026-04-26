@@ -179,10 +179,12 @@ export const AISwarmManagementPanel: React.FC<AISwarmManagementPanelProps> = ({
             />
             <SecondaryCard
               icon={<Bot className='h-5 w-5 text-cyan-200' />}
-              title='Quantum Factor'
+              title='Optimization Factor'
               detail={
                 status
-                  ? String(status.quantumOptimizationFactor)
+                  ? status.quantumOptimizationFactor > 0
+                    ? String(status.quantumOptimizationFactor)
+                    : 'Not reported on this route.'
                   : 'Unavailable until live status returns.'
               }
             />

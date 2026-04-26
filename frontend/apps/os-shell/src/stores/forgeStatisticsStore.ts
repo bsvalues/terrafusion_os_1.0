@@ -97,7 +97,8 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
       const result = await computeRatioStudy(get().filters);
       const qualification = computeQualification(result);
 
-      const modelId = `${get().filters.taxYear}-${get().filters.outlierMethod}`;
+      const countyScope = get().filters.countyId ? `${get().filters.countyId}-` : '';
+      const modelId = `${countyScope}${get().filters.taxYear}-${get().filters.outlierMethod}`;
       let outliers: OutlierRecord[] = [];
       let strata: StrataResult[] = [];
 
@@ -154,7 +155,8 @@ export const useForgeStatisticsStore = create<ForgeStatisticsState>((set, get) =
   },
 
   loadComparison: async () => {
-    const modelId = `${get().filters.taxYear}-${get().filters.outlierMethod}`;
+    const countyScope = get().filters.countyId ? `${get().filters.countyId}-` : '';
+    const modelId = `${countyScope}${get().filters.taxYear}-${get().filters.outlierMethod}`;
     try {
       const comparison = await statisticsAPI.compareModels({
         modelIdA: `${modelId}-12mo`,

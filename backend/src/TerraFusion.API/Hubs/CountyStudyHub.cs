@@ -1,6 +1,9 @@
 // backend/src/TerraFusion.API/Hubs/CountyStudyHub.cs
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
+using TerraFusion.Core.Interfaces;
+using TerraFusion.Core.Services;
 
 namespace TerraFusion.API.Hubs;
 
@@ -21,10 +24,46 @@ public class CountyStudyHub : Hub
     // In-memory session state: studyId → concurrent set of connectionIds (byte value is unused sentinel)
     private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, byte>> _studySessions = new();
 
+    private readonly ITerraFusionDbContext _db;
+    private readonly ICountyResolver _countyResolver;
+
+    public CountyStudyHub(ITerraFusionDbContext db, ICountyResolver countyResolver)
+    {
+        _db = db;
+        _countyResolver = countyResolver;
+    }
+
+    private async Task<Guid?> ResolveConnectionCountyScopeAsync()
+    {
+        var countyToken = Context.GetHttpContext()?.Request.Query["countyId"].ToString();
+        if (string.IsNullOrWhiteSpace(countyToken))
+            return null;
+
+        return await _countyResolver.TryResolveAsync(countyToken);
+    }
+
+    private async Task EnsureStudyAccessAsync(string studyId)
+    {
+        if (!Guid.TryParse(studyId, out var parsedStudyId))
+            throw new HubException("Invalid study id.");
+
+        var countyId = await ResolveConnectionCountyScopeAsync();
+        if (!countyId.HasValue)
+            throw new HubException("County scope required.");
+
+        var allowed = await _db.CountyStudySessions.AsNoTracking()
+            .AnyAsync(s => s.StudyId == parsedStudyId && s.CountyId == countyId.Value);
+
+        if (!allowed)
+            throw new HubException("Study not available for active county scope.");
+    }
+
     // ── Session Management ──────────────────────────────────────────────────────
 
     public async Task JoinStudy(string studyId)
     {
+        await EnsureStudyAccessAsync(studyId);
+
         await Groups.AddToGroupAsync(Context.ConnectionId, $"Study_{studyId}");
         var conns = _studySessions.GetOrAdd(studyId, _ => new ConcurrentDictionary<string, byte>());
         conns.TryAdd(Context.ConnectionId, 0);
@@ -53,6 +92,8 @@ public class CountyStudyHub : Hub
     /// <summary>Broadcast presence event to all other surfaces in the study.</summary>
     public async Task SendPresence(string studyId, object presenceEvent)
     {
+        await EnsureStudyAccessAsync(studyId);
+
         await Clients.OthersInGroup($"Study_{studyId}")
             .SendAsync("ReceivePresence", presenceEvent);
     }
@@ -62,6 +103,8 @@ public class CountyStudyHub : Hub
     /// <summary>Forge sends projection events; Atlas renders them immediately.</summary>
     public async Task SendProjection(string studyId, object projectionEvent)
     {
+        await EnsureStudyAccessAsync(studyId);
+
         await Clients.OthersInGroup($"Study_{studyId}")
             .SendAsync("ReceiveProjection", projectionEvent);
     }
@@ -71,6 +114,8 @@ public class CountyStudyHub : Hub
     /// <summary>Atlas sends spatial selection intent. Forge opens a draft dialog — never auto-commits.</summary>
     public async Task SendSelection(string studyId, object selectionEvent)
     {
+        await EnsureStudyAccessAsync(studyId);
+
         await Clients.OthersInGroup($"Study_{studyId}")
             .SendAsync("ReceiveSelection", selectionEvent);
     }
@@ -80,6 +125,8 @@ public class CountyStudyHub : Hub
     /// <summary>Forge broadcasts a commit confirmation to ALL surfaces after persisting.</summary>
     public async Task BroadcastCommit(string studyId, object commitEvent)
     {
+        await EnsureStudyAccessAsync(studyId);
+
         await Clients.Group($"Study_{studyId}")
             .SendAsync("ReceiveCommit", commitEvent);
     }
@@ -88,8 +135,7 @@ public class CountyStudyHub : Hub
 
     public Task<int> GetSessionSurfaceCount(string studyId)
     {
-        var count = _studySessions.TryGetValue(studyId, out var conns) ? conns.Count : 0;
-        return Task.FromResult(count);
+        return Task.FromResult(_studySessions.TryGetValue(studyId, out var conns) ? conns.Count : 0);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)

@@ -161,9 +161,9 @@ export function validateCountyOwnership(
 export const COUNTY_ISOLATION_AUDIT: readonly CountyIsolationAudit[] = [
   // ── Strong enforcement ──────────────────────────────────────────────
   {
-    surface: 'CostForgeController',
+    surface: 'CostForgeController (mounted workspace routes)',
     enforced: true,
-    mechanism: 'jwt_claim',
+    mechanism: 'header',
     riskLevel: 'none',
     enforcement: 'mandatory',
   },

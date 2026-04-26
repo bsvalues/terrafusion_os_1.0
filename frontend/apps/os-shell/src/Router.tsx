@@ -65,6 +65,8 @@ const Monitoring = lazy(() => import('./pages/Monitoring'));
 const TerraFusionMarketplace = lazy(
   () => import('./components/marketplace/TerraFusionMarketplace')
 );
+const ResearchPortal = lazy(() => import('./components/research/ResearchPortal'));
+const ResearchProviders = lazy(() => import('./context/ResearchContext'));
 const ExperimentsList = lazy(() => import('./pages/experiments/ExperimentsList'));
 const CreateExperiment = lazy(() => import('./pages/experiments/CreateExperiment'));
 const NotificationPreferences = lazy(() => import('./components/codex/NotificationPreferences'));
@@ -194,6 +196,14 @@ const Router: React.FC = () => {
 
                   <Route path='monitoring' element={<Monitoring />} />
                   <Route path='marketplace' element={<TerraFusionMarketplace />} />
+                  <Route
+                    path='elite-research'
+                    element={
+                      <ResearchProviders>
+                        <ResearchPortal />
+                      </ResearchProviders>
+                    }
+                  />
                   <Route path='experiments' element={<ExperimentsList />} />
                   <Route path='experiments/create' element={<CreateExperiment />} />
                   <Route path='codex/preferences' element={<NotificationPreferences />} />

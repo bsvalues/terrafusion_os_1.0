@@ -469,7 +469,7 @@ public class CountyStudyHealthService : ICountyStudyHealthService
         return absDev / median * 100m;
     }
 
-    /// <summary>Canonical Benton city normalization (matches CountyStudyService).</summary>
+    /// <summary>Canonical city normalization (matches CountyStudyService).</summary>
     private static string NormalizeCity(string? rawCity)
     {
         if (string.IsNullOrWhiteSpace(rawCity)) return "Unincorporated";

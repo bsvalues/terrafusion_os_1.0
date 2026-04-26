@@ -6,13 +6,14 @@
  * Click stratum row → SalesForge filtered to that stratum.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { apiFetch } from '@/lib/apiBase';
 import { activateModule } from '../../../orchestration/moduleActivation';
+import { getStatisticsCountyScope } from './statisticsCountyScope';
 
 interface StratumRow {
   propertyType: string;
@@ -45,7 +46,7 @@ function IAAODot({ pass, insufficient }: { pass: boolean; insufficient: boolean 
   return <span className={pass ? 'text-green-500' : 'text-red-500'}>{pass ? '✓' : '✗'}</span>;
 }
 
-function generateDorCsv(data: StratifiedResponse): void {
+function generateDorCsv(data: StratifiedResponse, exportStem: string): void {
   const header = 'PropertyType,QualityGrade,SaleCount,MedianRatio,COD,PRD,PRB,IAAOMedianPass,IAAOCodPass,IAAOPrdPass,IAAOPrbPass,TaxYear';
   const rows = data.strata.map((s) =>
     [
@@ -68,7 +69,7 @@ function generateDorCsv(data: StratifiedResponse): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `BentonCounty_DOR_StratifiedStudy_${data.taxYear}.csv`;
+  a.download = `${exportStem}_DOR_StratifiedStudy_${data.taxYear}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -78,11 +79,16 @@ interface StratifiedStudyPanelProps {
 }
 
 export function StratifiedStudyPanel({ taxYear = new Date().getFullYear() }: StratifiedStudyPanelProps) {
+  const countyScope = useMemo(() => getStatisticsCountyScope(), []);
 
   const { data, isLoading, error } = useQuery<StratifiedResponse>({
-    queryKey: ['ratio-study-stratified', taxYear],
+    queryKey: ['ratio-study-stratified', taxYear, countyScope.countyId],
     queryFn: () =>
-      apiFetch(`/terraforge/ratio-study/stratified?taxYear=${taxYear}&minSales=5`).then((r) => r.json()),
+      apiFetch(
+        `/terraforge/ratio-study/stratified?taxYear=${taxYear}&minSales=5${countyScope.countyId ? `&countyId=${encodeURIComponent(countyScope.countyId)}` : ''}`,
+        { headers: countyScope.headers },
+      ).then((r) => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 10 * 60_000,
   });
 
@@ -107,17 +113,22 @@ export function StratifiedStudyPanel({ taxYear = new Date().getFullYear() }: Str
             </p>
           </div>
           {data && (
-            <Button variant="outline" size="sm" onClick={() => generateDorCsv(data)}>
+            <Button variant="outline" size="sm" onClick={() => generateDorCsv(data, countyScope.exportStem)}>
               Export DOR CSV
             </Button>
           )}
         </div>
       </CardHeader>
       <CardContent>
+        {!countyScope.isolated && (
+          <div className="py-8 text-center text-amber-500">
+            County scope required to load the stratified study.
+          </div>
+        )}
         {isLoading && (
           <div className="py-8 text-center text-muted-foreground">Loading stratified study…</div>
         )}
-        {error && (
+        {countyScope.isolated && error && (
           <div className="py-8 text-center text-red-500">
             Failed to load stratified study data.
           </div>

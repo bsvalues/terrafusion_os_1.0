@@ -12,7 +12,7 @@ namespace TerraFusion.Levy.Services;
 /// </summary>
 /// <remarks>
 /// Phase 2 contract port: shapes match the Flask responses.
-/// Implementation is deterministic placeholder; downstream phases will wire this
+/// Implementation is deterministic compatibility mode; downstream phases will wire this
 /// behind the TerraFusion AI swarm without changing the interface.
 /// </remarks>
 public interface ILevyDataQualityService
@@ -68,7 +68,7 @@ public sealed class AiRecommendationsResult
     public bool Success { get; set; }
     public string? Error { get; set; }
     public List<AiRecommendation> Recommendations { get; set; } = new();
-    public string Source { get; set; } = "placeholder";
+    public string Source { get; set; } = "compatibility";
 }
 
 // ─── /monitoring-status & /monitoring/toggle ────────────────────────────────
@@ -77,7 +77,7 @@ public sealed class MonitoringStatusResult
     public bool Enabled { get; set; }
     public int IntervalMinutes { get; set; }
     public double AlertThreshold { get; set; }
-    public string Agent { get; set; } = "placeholder";
+    public string Agent { get; set; } = "compatibility";
     public DateTime CheckedAt { get; set; }
 }
 
@@ -101,7 +101,7 @@ public sealed class RealtimeMetricsResult
     public bool Success { get; set; }
     public Dictionary<string, double> Metrics { get; set; } = new();
     public DateTime Timestamp { get; set; }
-    public string Source { get; set; } = "placeholder";
+    public string Source { get; set; } = "compatibility";
 }
 
 // ─── /trends ────────────────────────────────────────────────────────────────

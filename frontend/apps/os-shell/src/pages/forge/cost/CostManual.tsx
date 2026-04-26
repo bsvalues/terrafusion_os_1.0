@@ -1,7 +1,7 @@
 /**
  * CostManual.tsx
  *
- * Forge Cost Schedule — Benton County local cost schedules (ratio-study calibrated).
+ * Forge Cost Schedule — certified county local cost schedules (ratio-study calibrated).
  * Fetches live cost matrix rows from /costforge/schedule. Quality filtering is
  * applied by the live API for primary rows, and free-text search is applied
  * client-side after load.
@@ -31,6 +31,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { getCostForgeCountyScope } from './countyScope';
+import { supportsCertifiedCostScheduleLane } from '../countyCertification';
 
 interface CostScheduleRow {
   buildingClass: string;
@@ -67,9 +69,10 @@ type CostManualReadState = 'loading' | 'live' | 'unavailable';
 async function getCostSchedule(
   qualityClass: string,
   signal: AbortSignal,
+  headers: Record<string, string>,
 ): Promise<CostScheduleApiRow[]> {
   const qs = qualityClass !== 'all' ? `?qualityClass=${encodeURIComponent(qualityClass)}` : '';
-  return apiFetchJson<CostScheduleApiRow[]>(`/costforge/schedule${qs}`, { signal });
+  return apiFetchJson<CostScheduleApiRow[]>(`/costforge/schedule${qs}`, { signal, headers });
 }
 
 const QUALITY_OPTIONS = [
@@ -82,6 +85,8 @@ const QUALITY_OPTIONS = [
 ] as const;
 
 export function CostManual() {
+  const countyScope = getCostForgeCountyScope();
+  const certifiedLane = supportsCertifiedCostScheduleLane(countyScope.countyId);
   const [search, setSearch] = useState('');
   const [qualityFilter, setQualityFilter] = useState<string>('all');
   const [rows, setRows] = useState<CostScheduleRow[]>([]);
@@ -101,11 +106,29 @@ export function CostManual() {
       setError(null);
       setReadState('loading');
 
+      if (!countyScope.isolated) {
+        setRows([]);
+        setSfRows([]);
+        setReadState('unavailable');
+        setError('County scope required for the certified cost schedule lane.');
+        setIsLoading(false);
+        return;
+      }
+
+      if (!certifiedLane) {
+        setRows([]);
+        setSfRows([]);
+        setReadState('unavailable');
+        setError('Cost schedule is not certified for the active county scope on the current CostForge lane.');
+        setIsLoading(false);
+        return;
+      }
+
       try {
         // The live API applies quality filtering only to primary schedule rows.
         // Secondary-feature rows have no quality tier and still return alongside
         // the filtered primary payload.
-        const result = await getCostSchedule(qualityFilter, signal);
+        const result = await getCostSchedule(qualityFilter, signal, countyScope.headers);
 
         if (Array.isArray(result)) {
           const primary: CostScheduleRow[] = [];
@@ -117,7 +140,7 @@ export function CostManual() {
                 code: entry.buildingType ?? entry.code ?? '—',
                 description: entry.description ?? entry.buildingType ?? '—',
                 pctOfBiv: Number(entry.secondaryFeaturePctOfBiv) || 0,
-                region: entry.revalArea ?? 'Benton',
+                region: entry.revalArea ?? 'County',
                 effectiveDate: entry.effectiveDate ?? '—',
               });
             } else {
@@ -161,7 +184,7 @@ export function CostManual() {
     return () => {
       abortRef.current?.abort();
     };
-  }, [qualityFilter]);
+  }, [certifiedLane, countyScope.headers, countyScope.isolated, qualityFilter]);
 
   // Server filters by qualityClass; apply client-side search on top
   const filtered = rows.filter((row) =>
@@ -178,7 +201,7 @@ export function CostManual() {
         >
           <p className="text-sm font-medium">Live cost schedule unavailable.</p>
           <p className="text-xs text-muted-foreground mt-1">
-            Benton schedule rows are not being replaced with sample data on this surface.
+            Certified schedule rows are not being replaced with sample data on this surface.
           </p>
         </div>
       )}
@@ -186,7 +209,7 @@ export function CostManual() {
         <div>
           <h1 className="text-2xl font-bold">Cost Schedule</h1>
           <p className="text-muted-foreground">
-            Benton County base rates — {rows.length > 0 ? `${rows.length} schedule rows` : readState === 'unavailable' ? 'live schedule unavailable' : 'loading…'}
+            Certified county base rates — {rows.length > 0 ? `${rows.length} schedule rows` : readState === 'unavailable' ? 'live schedule unavailable' : 'loading…'}
           </p>
           {error && (
             <p className="text-xs text-amber-500 mt-1">
@@ -252,7 +275,7 @@ export function CostManual() {
               {!isLoading && filtered.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                    {readState === 'unavailable' ? 'Cost schedule unavailable. No Benton schedule rows are being shown.' : 'No matching cost schedules found.'}
+                    {readState === 'unavailable' ? 'Cost schedule unavailable. No certified schedule rows are being shown.' : 'No matching cost schedules found.'}
                   </TableCell>
                 </TableRow>
               )}
@@ -261,7 +284,7 @@ export function CostManual() {
         </CardContent>
       </Card>
 
-      {/* Secondary-feature %-of-BIV rates (Benton Method) */}
+      {/* Secondary-feature %-of-BIV rates (certified schedule lane) */}
       {(sfRows.length > 0 || isLoading || readState === 'unavailable') && (
         <Card>
           <CardHeader className="pb-2">
@@ -270,7 +293,7 @@ export function CostManual() {
                 Secondary Feature Rates
               </CardTitle>
               <Badge variant="outline" className="text-xs">
-                %-of-BIV · Benton Method
+                %-of-BIV · Certified schedule
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -313,7 +336,7 @@ export function CostManual() {
                 {!isLoading && sfRows.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground py-6">
-                      {readState === 'unavailable' ? 'Secondary feature rates unavailable from the live schedule API.' : 'No secondary feature rates found. Run a Benton sync to populate.'}
+                      {readState === 'unavailable' ? 'Secondary feature rates unavailable from the live schedule API.' : 'No secondary feature rates found. Load a certified county schedule to populate them.'}
                     </TableCell>
                   </TableRow>
                 )}

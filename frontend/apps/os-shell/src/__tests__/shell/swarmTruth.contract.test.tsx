@@ -37,8 +37,45 @@ describe('Swarm static truth contract', () => {
     const src = readSrc('components/research/ResearchPortal.tsx');
     expect(src).not.toContain('activeAgents: 50000');
     expect(src).not.toContain('50K+ AI agent orchestration');
+    expect(src).not.toContain('optimizationFactor: 949');
+    expect(src).not.toContain('quantumCoherence: 0.995');
     expect(src).toContain("availability: 'unavailable'");
     expect(src).toContain('County-scoped swarm health and evidence status');
+    expect(src).not.toContain('Real-time AI consciousness parameter control');
+    expect(src).toContain('Operator-managed parameter review with no implied live AI execution');
+  });
+
+  it('ResearchContext defaults do not fabricate swarm scale or quantum factors', () => {
+    const src = readSrc('context/ResearchContext.tsx');
+    expect(src).not.toContain('optimizationFactor: 949');
+    expect(src).not.toContain('totalAgents: 50000');
+    expect(src).not.toContain('Math.random()');
+    expect(src).toContain('quantumCoherence: 0');
+    expect(src).toContain("coordinationMode: 'network'");
+    expect(src).toContain("selectedVariables: ['AssessedValue', 'SalePrice']");
+  });
+
+  it('AIAssistantController health route no longer advertises port or 949 factor claims', () => {
+    const src = readRepo('backend/src/TerraFusion.API/Controllers/AIAssistantController.cs');
+    expect(src).not.toContain('consciousness_engine_port');
+    expect(src).not.toContain('quantum_optimization_factor');
+    expect(src).toContain("mode = \"compatibility\"");
+  });
+
+  it('AIAssistantPanel no longer claims live consciousness-engine connectivity', () => {
+    const src = readSrc('components/ai/AIAssistantPanel.tsx');
+    expect(src).toContain('AI Assistant Compatibility Mode');
+    expect(src).not.toContain('Connected to TerraFusion Consciousness Engine');
+    expect(src).not.toContain('Port 3004');
+  });
+
+  it('AIAssistantService no longer carries fabricated analysis or workflow completion prose', () => {
+    const src = readRepo('backend/src/TerraFusion.AI/Services/AIAssistantService.cs');
+    expect(src).not.toContain('Property Analysis Complete');
+    expect(src).not.toContain('Workflow Optimization Ready');
+    expect(src).not.toContain('Compliance Check Complete');
+    expect(src).toContain('no governed AI execution or evidence-backed analysis is available');
+    expect(src).toContain('Governed property analysis is unavailable on api/AIAssistant/analyze-property.');
   });
 
   it('AIOrchestrationDashboard no longer fetches synthetic orchestration endpoints', () => {

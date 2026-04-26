@@ -128,10 +128,10 @@ namespace TerraFusion.Levy.Services
                         nameof(request));
             }
 
-            // Deterministic placeholder until the CostForge/market-comps pipeline is wired in
+            // Deterministic compatibility value until the CostForge/market-comps pipeline is wired in
             // Phase 3.1 (schema reconciliation) and Phase 3.2 (Benton seed). Shape matches
             // the Flask contract so UI/clients can integrate now.
-            result.Assumptions.Add("estimated_value is a zero placeholder pending data wiring");
+            result.Assumptions.Add("estimated_value remains 0 until comparable-sales and cost-basis inputs are wired; zero is returned for contract compatibility only");
 
             _logger.LogInformation(
                 "LevyPropertyAssessment.CalculateValue property={PropertyId} method={Method} date={Date}",
@@ -179,13 +179,13 @@ namespace TerraFusion.Levy.Services
                 });
             }
 
-            // Placeholder informational finding — real RCW 84.52 / 84.55 checks land in
+            // Compatibility informational finding — real RCW 84.52 / 84.55 checks land in
             // Phase 3 once LevyCalculationService is wired to district data.
             result.Findings.Add(new ComplianceFinding
             {
                 Code = "INFO_DEEP_CHECKS_PENDING",
                 Severity = "info",
-                Message = "Statutory RCW 84.52/84.55 checks will be evaluated once district data is loaded.",
+                Message = "Statutory RCW 84.52/84.55 checks are not yet governed on this lane; district data wiring is still pending.",
                 Reference = "RCW 84.52.043; RCW 84.55.010",
             });
 

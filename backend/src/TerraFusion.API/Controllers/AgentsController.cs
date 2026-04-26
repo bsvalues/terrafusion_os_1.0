@@ -39,18 +39,51 @@ public class AgentsController : ControllerBase
     {
         var uptime = (DateTime.UtcNow - _startTime).TotalSeconds;
         int bufferedCount;
-        lock (_lock) { bufferedCount = _eventBuffer.Count; }
+        int observedAgents;
+        int activeAgents;
+        string? lastActivityUtc;
+        string[] warnings;
+
+        lock (_lock)
+        {
+            bufferedCount = _eventBuffer.Count;
+            observedAgents = _eventBuffer
+                .Select(evt => evt.Agent)
+                .Where(agent => !string.IsNullOrWhiteSpace(agent) && !string.Equals(agent, "system", StringComparison.OrdinalIgnoreCase))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Count();
+
+            var activeThresholdUtc = DateTime.UtcNow.AddMinutes(-5);
+            activeAgents = _eventBuffer
+                .Where(evt => DateTime.TryParse(evt.TsUtc, out var ts) && ts >= activeThresholdUtc)
+                .Select(evt => evt.Agent)
+                .Where(agent => !string.IsNullOrWhiteSpace(agent) && !string.Equals(agent, "system", StringComparison.OrdinalIgnoreCase))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Count();
+
+            lastActivityUtc = _eventBuffer.LastOrDefault()?.TsUtc;
+        }
+
+        warnings = bufferedCount == 0
+            ? new[]
+            {
+                "No agent events observed in the current process. This route reports only buffered event activity, not a governed swarm registry.",
+            }
+            : new[]
+            {
+                "Agent counts reflect observed event producers in the in-process sentinel buffer, not a governed swarm registry.",
+            };
 
         return Ok(new
         {
-            executionMode = "Autonomous",
-            totalAgents = 1008,
-            activeAgents = 42,
+            executionMode = "Passive",
+            totalAgents = observedAgents,
+            activeAgents,
             queueDepth = bufferedCount,
-            lastActivityUtc = DateTime.UtcNow.AddSeconds(-5).ToString("O"),
+            lastActivityUtc,
             uptimeSeconds = (int)uptime,
-            provider = "TerraFusion.Consciousness",
-            warnings = Array.Empty<string>(),
+            provider = "SentinelEventBuffer",
+            warnings,
         });
     }
 

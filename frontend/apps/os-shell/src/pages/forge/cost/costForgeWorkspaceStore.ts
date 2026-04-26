@@ -5,6 +5,7 @@
  */
 import { create } from 'zustand';
 import { apiFetchJson } from '@/lib/apiBase';
+import { getCostForgeCountyScope } from './countyScope';
 
 export type CostForgeTab =
   | 'triage'
@@ -92,11 +93,19 @@ export const useCostForgeWorkspaceStore = create<CostForgeWorkspaceState>((set, 
 
   fetchDashboardStats: async (signal) => {
     const { taxYear } = get();
+    const scope = getCostForgeCountyScope();
     set({ dashboardLoading: true, dashboardError: null });
+    if (!scope.isolated) {
+      set({
+        dashboardError: 'County scope required for CostForge.',
+        dashboardLoading: false,
+      });
+      return;
+    }
     try {
       const data = await apiFetchJson<DashboardStats>(
         `/costforge/dashboard-stats?taxYear=${taxYear}`,
-        { signal }
+        { signal, headers: scope.headers }
       );
       set({ dashboardStats: data, dashboardLoading: false });
     } catch (err) {

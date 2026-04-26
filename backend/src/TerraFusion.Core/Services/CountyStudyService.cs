@@ -720,7 +720,7 @@ public class CountyStudyService : ICountyStudyService
     /// For every segment in the set we re-resolve the segment's parcels from
     /// canonical Properties + CamaCharacteristics (same grouping key used by
     /// derivation) so we can map a segment's city via CamaCharacteristic.City
-    /// normalized to canonical Benton city names. Medians are parcel-weighted,
+    /// normalized to canonical city names. Medians are parcel-weighted,
     /// so we reconstitute parcel-level ratios using qualified ComparableSales
     /// for the study's tax-year window.
     /// </summary>
@@ -1131,7 +1131,7 @@ public class CountyStudyService : ICountyStudyService
     }
 
     /// <summary>
-    /// Canonical Benton city normalization. Mirrors PacsCanonicalizer.NormalizeCity
+    /// Canonical city normalization. Mirrors PacsCanonicalizer.NormalizeCity
     /// (kept local to Core so the rollup service doesn't depend on the API project).
     /// Non-listed inputs fall back to "Unincorporated".
     /// </summary>

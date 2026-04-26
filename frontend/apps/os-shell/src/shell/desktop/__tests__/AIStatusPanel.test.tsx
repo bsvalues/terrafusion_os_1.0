@@ -22,14 +22,13 @@ import { AIStatusIndicator, AIStatusPanel } from '../AIStatusPanel';
 
 // Mock AI status data
 const mockAIStatus = {
-  totalAgents: 1008,
-  activeAgents: 987,
+  totalAgents: 17,
+  activeAgents: 12,
   categories: [
-    { name: 'Data Analysis', count: 245, status: 'active' },
-    { name: 'Document Processing', count: 312, status: 'active' },
-    { name: 'GIS Operations', count: 189, status: 'active' },
-    { name: 'Cost Estimation', count: 156, status: 'active' },
-    { name: 'Tax Assessment', count: 105, status: 'idle' },
+    { name: 'Event Buffer', count: 7, status: 'active' },
+    { name: 'County Assistant', count: 5, status: 'active' },
+    { name: 'Governed Modules', count: 4, status: 'idle' },
+    { name: 'Unavailable Routes', count: 1, status: 'error' },
   ],
   lastActivity: new Date().toISOString(),
   systemLoad: 0.72,
@@ -55,7 +54,7 @@ describe('AIStatusIndicator', () => {
     it('displays agent count', () => {
       render(<AIStatusIndicator status={mockAIStatus} />);
 
-      expect(screen.getByText('1,008')).toBeInTheDocument();
+      expect(screen.getByText('17')).toBeInTheDocument();
     });
 
     it('shows brain emoji icon', () => {
@@ -119,38 +118,37 @@ describe('AIStatusPanel', () => {
     it('renders panel with header', () => {
       render(<AIStatusPanel status={mockAIStatus} onClose={() => {}} />);
 
-      expect(screen.getByText(/AI Swarm Status/i)).toBeInTheDocument();
+      expect(screen.getByText(/^AI Status$/i)).toBeInTheDocument();
     });
 
     it('displays total agent count prominently', () => {
       render(<AIStatusPanel status={mockAIStatus} onClose={() => {}} />);
 
-      expect(screen.getByText('1,008')).toBeInTheDocument();
-      expect(screen.getByText(/Total Agents/i)).toBeInTheDocument();
+      expect(screen.getByText('17')).toBeInTheDocument();
+      expect(screen.getByText(/Observed Agents/i)).toBeInTheDocument();
     });
 
     it('displays active agent count', () => {
       render(<AIStatusPanel status={mockAIStatus} onClose={() => {}} />);
 
-      expect(screen.getByText('987')).toBeInTheDocument();
-      expect(screen.getByText(/Active/i)).toBeInTheDocument();
+      expect(screen.getByText('12')).toBeInTheDocument();
+      expect(screen.getByText(/Reported Active/i)).toBeInTheDocument();
     });
 
     it('lists all agent categories', () => {
       render(<AIStatusPanel status={mockAIStatus} onClose={() => {}} />);
 
-      expect(screen.getByText('Data Analysis')).toBeInTheDocument();
-      expect(screen.getByText('Document Processing')).toBeInTheDocument();
-      expect(screen.getByText('GIS Operations')).toBeInTheDocument();
-      expect(screen.getByText('Cost Estimation')).toBeInTheDocument();
-      expect(screen.getByText('Tax Assessment')).toBeInTheDocument();
+      expect(screen.getByText('Event Buffer')).toBeInTheDocument();
+      expect(screen.getByText('County Assistant')).toBeInTheDocument();
+      expect(screen.getByText('Governed Modules')).toBeInTheDocument();
+      expect(screen.getByText('Unavailable Routes')).toBeInTheDocument();
     });
 
     it('shows count for each category', () => {
       render(<AIStatusPanel status={mockAIStatus} onClose={() => {}} />);
 
-      expect(screen.getByText('245')).toBeInTheDocument();
-      expect(screen.getByText('312')).toBeInTheDocument();
+      expect(screen.getByText('7')).toBeInTheDocument();
+      expect(screen.getByText('5')).toBeInTheDocument();
     });
 
     it('shows system load indicator', () => {
@@ -165,8 +163,11 @@ describe('AIStatusPanel', () => {
       const activeIndicators = screen.getAllByTestId('category-status-active');
       const idleIndicators = screen.getAllByTestId('category-status-idle');
 
-      expect(activeIndicators.length).toBe(4);
+      const errorIndicators = screen.getAllByTestId('category-status-error');
+
+      expect(activeIndicators.length).toBe(2);
       expect(idleIndicators.length).toBe(1);
+      expect(errorIndicators.length).toBe(1);
     });
   });
 
@@ -219,7 +220,7 @@ describe('AIStatusPanel', () => {
     it('has aria-label', () => {
       render(<AIStatusPanel status={mockAIStatus} onClose={() => {}} />);
 
-      expect(screen.getByRole('dialog')).toHaveAttribute('aria-label', 'AI Swarm Status');
+      expect(screen.getByRole('dialog')).toHaveAttribute('aria-label', 'AI Status');
     });
 
     it('close button has aria-label', () => {

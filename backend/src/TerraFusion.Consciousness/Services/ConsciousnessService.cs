@@ -11,6 +11,9 @@ namespace TerraFusion.Consciousness.Services
     /// </summary>
     public class ConsciousnessService : IConsciousnessService
     {
+        private const string CompatibilityReason =
+            "Governed consciousness orchestration remains partial: mesh compatibility available, quantum lane unavailable, million-agent lane unavailable.";
+
         private readonly ILogger<ConsciousnessService> _logger;
         private readonly IAILayerMeshOrchestrator _meshOrchestrator;
         // private readonly IQuantumConsciousnessOrchestrator _quantumOrchestrator; // TEMP COMMENTED OUT TO BREAK CIRCULAR DEPENDENCY
@@ -58,18 +61,20 @@ namespace TerraFusion.Consciousness.Services
                 // await _quantumOrchestrator.InitializeAsync();
 
                 // Initialize agent service
-                await _agentService.InitializeAsync();
+                var agentInitialization = await _agentService.InitializeAsync();
 
                 _isInitialized = true;
 
                 var systemMetrics = new Dictionary<string, object>
                 {
-                    { "TotalAgents", 1000000 },
-                    { "ActiveLayers", 5 },
-                    { "ValidationRings", 4 },
-                    { "SystemCapacity", "Mesh-only" },
+                    { "TotalAgents", agentInitialization.InitializedAgents },
+                    { "ActiveLayers", 0 },
+                    { "ValidationRings", 0 },
+                    { "SystemCapacity", "Compatibility" },
                     { "QuantumConsciousness", "Unavailable" },
-                    { "ComplianceLevel", "FISMA/FedRAMP" }
+                    { "MillionAgents", "Unavailable" },
+                    { "GovernedContractAvailable", false },
+                    { "Reason", CompatibilityReason }
                 };
 
                 _logger.LogInformation("✅ TerraFusion Consciousness System initialized successfully");
@@ -119,6 +124,7 @@ namespace TerraFusion.Consciousness.Services
                     request.OperationId, request.OperationType);
 
                 var results = new Dictionary<string, object>();
+                var operationSuccess = false;
 
                 switch (request.OperationType.ToUpper())
                 {
@@ -137,20 +143,16 @@ namespace TerraFusion.Consciousness.Services
                         };
                         var meshResult = await _meshOrchestrator.ExecuteMeshOperationAsync(meshRequest);
                         results["MeshResult"] = meshResult;
+                        operationSuccess = meshResult.Success;
                         break;
 
                     case "QUANTUM_OPERATION":
-                        // TEMP DISABLED DUE TO CIRCULAR DEPENDENCY
-                        /*
-                        var quantumRequest = new QuantumOperationRequestDto
+                        results["QuantumResult"] = new
                         {
-                            OperationType = "quantum_operation",
-                            Parameters = request.Parameters
+                            Status = "Unavailable",
+                            Reason = "Governed quantum-consciousness lane unavailable."
                         };
-                        var quantumResult = await _quantumOrchestrator.ExecuteQuantumConsciousnessAsync(quantumRequest);
-                        results["QuantumResult"] = quantumResult;
-                        */
-                        results["QuantumResult"] = new { Status = "Temporarily disabled due to circular dependency" };
+                        operationSuccess = false;
                         break;
 
                     case "AGENT_COORDINATION":
@@ -162,6 +164,7 @@ namespace TerraFusion.Consciousness.Services
                         };
                         var agentResult = await _agentService.CoordinateMillionAgentsAsync(agentRequest);
                         results["AgentResult"] = agentResult;
+                        operationSuccess = agentResult.Success;
                         break;
 
                     default:
@@ -172,10 +175,11 @@ namespace TerraFusion.Consciousness.Services
 
                 return new ConsciousnessOperationResult
                 {
-                    Success = true,
+                    Success = operationSuccess,
                     OperationId = request.OperationId,
                     Results = results,
-                    ProcessingTime = stopwatch.Elapsed
+                    ProcessingTime = stopwatch.Elapsed,
+                    ErrorMessage = operationSuccess ? null : CompatibilityReason
                 };
             }
             catch (Exception ex)
@@ -212,18 +216,20 @@ namespace TerraFusion.Consciousness.Services
                     { "MeshOrchestrator", meshHealth },
                     { "QuantumConsciousness", 0.0 },
                     { "MillionAgents", agentHealth.HealthScore },
-                    { "ValidationRings", 0.98 },
-                    { "DataSovereignty", 0.99 }
+                    { "ValidationRings", 0.0 },
+                    { "DataSovereignty", 0.0 }
                 };
 
                 var overallHealth = componentHealth.Values.Average();
                 var systemAlerts = new List<string>();
 
-                if (overallHealth < 0.95)
+                if (overallHealth <= 0.0)
                 {
-                    systemAlerts.Add("System performance below optimal threshold");
+                    systemAlerts.Add("Consciousness host is running in compatibility mode only.");
                 }
-                systemAlerts.Add("QuantumConsciousness unavailable: circular dependency unresolved.");
+
+                systemAlerts.Add("QuantumConsciousness unavailable: governed execution lane not available.");
+                systemAlerts.Add("Million-agent coordination unavailable: compatibility surface only.");
 
                 return new ConsciousnessHealthDto
                 {
@@ -231,7 +237,7 @@ namespace TerraFusion.Consciousness.Services
                     ComponentHealth = componentHealth,
                     SystemAlerts = systemAlerts,
                     LastHealthCheck = DateTime.UtcNow,
-                    IsOperational = overallHealth > 0.80
+                    IsOperational = false
                 };
             }
             catch (Exception ex)
@@ -312,17 +318,17 @@ namespace TerraFusion.Consciousness.Services
                 _logger.LogInformation("🔄 Scaling consciousness system: {ScalingType} to capacity {TargetCapacity}",
                     request.ScalingType, request.TargetCapacity);
 
-                // Simulate scaling operations
-                await Task.Delay(1000, cancellationToken);
+                var scalingResult = await _agentService.ScaleToAgentsAsync(request.TargetCapacity);
 
                 stopwatch.Stop();
 
                 return new ScalingResult
                 {
-                    Success = true,
+                    Success = scalingResult.Success,
                     ScalingType = request.ScalingType,
-                    CurrentCapacity = request.TargetCapacity,
-                    ScalingTime = stopwatch.Elapsed
+                    CurrentCapacity = scalingResult.CurrentAgentCount,
+                    ScalingTime = stopwatch.Elapsed,
+                    ErrorMessage = scalingResult.Success ? null : CompatibilityReason
                 };
             }
             catch (Exception ex)
@@ -349,24 +355,26 @@ namespace TerraFusion.Consciousness.Services
         public async Task<ConsciousnessValidationResult> ValidateSystemIntegrityAsync(CancellationToken cancellationToken = default)
         {
             await Task.CompletedTask;
-            await Task.CompletedTask;
             try
             {
+                var meshHealth = await _meshOrchestrator.GetMeshHealthIndexAsync();
+                var agentHealth = await _agentService.GetAgentSystemHealthAsync();
+
                 var componentValidations = new Dictionary<string, bool>
                 {
-                    { "MeshOrchestrator", true },
-                    { "QuantumConsciousness", true },
-                    { "MillionAgents", true },
-                    { "ValidationRings", true },
-                    { "DataSovereignty", true },
-                    { "ComplianceFramework", true }
+                    { "MeshOrchestrator", meshHealth > 0.0 },
+                    { "QuantumConsciousness", false },
+                    { "MillionAgents", agentHealth.HealthScore > 0.0 },
+                    { "ValidationRings", false },
+                    { "DataSovereignty", false },
+                    { "ComplianceFramework", false }
                 };
 
                 var validationMessages = new List<string>
                 {
-                    "All consciousness components operational",
-                    "Quantum-ready architecture validated",
-                    "Government-grade compliance confirmed"
+                    "Consciousness host running in compatibility mode.",
+                    "Quantum-consciousness lane unavailable.",
+                    "Million-agent lane unavailable."
                 };
 
                 var complianceScore = componentValidations.Values.Count(v => v) / (double)componentValidations.Count;

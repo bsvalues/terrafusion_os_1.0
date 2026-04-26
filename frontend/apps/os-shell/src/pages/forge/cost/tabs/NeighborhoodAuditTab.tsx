@@ -9,7 +9,7 @@
  * Root cause: group parcels by (yearBuilt ÷ 10) decade bucket,
  * compute median ratio per decade, flag the bucket furthest from 1.0.
  *
- * BentonDiagnosticsPanel (Track 2-B):
+ * Diagnostics panel (Track 2-B):
  *   - Stratified COD by vintage  — GET /equity/stratified-cod
  *   - Condition bias             — GET /equity/condition-bias
  *   - IQR outlier badges on ratio cells (Tukey fences: Q1 − 1.5×IQR, Q3 + 1.5×IQR)
@@ -17,12 +17,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { apiFetchJson } from '@/lib/apiBase';
 import { useCostForgeWorkspaceStore } from '../costForgeWorkspaceStore';
+import { getCostForgeCountyScope } from '../countyScope';
 
-const BENTON_COUNTY_ID =
-  (import.meta.env as Record<string, string>).VITE_BENTON_COUNTY_ID ??
-  '19190019-1919-1919-1919-191919191919';
-
-// ── Benton custom metric DTO shapes ──
+// ── Custom metric DTO shapes ──
 
 interface SegmentCod { saleCount: number; medianRatio: number | null; cod: number | null; }
 interface StratifiedCodResponse {
@@ -106,6 +103,7 @@ function ratioBadgeClass(ratio: number | null): string {
 }
 
 export function NeighborhoodAuditTab() {
+  const countyScope = getCostForgeCountyScope();
   const selectedHoodCd  = useCostForgeWorkspaceStore((s) => s.selectedHoodCd);
   const drillIntoParcel = useCostForgeWorkspaceStore((s) => s.drillIntoParcel);
   const setActiveTab    = useCostForgeWorkspaceStore((s) => s.setActiveTab);
@@ -117,13 +115,18 @@ export function NeighborhoodAuditTab() {
   const [ratioFilter, setRatioFilter] = useState<'all' | 'low' | 'high' | 'nosale'>('all');
   const abortRef = useRef<AbortController | null>(null);
 
-  // BentonDiagnosticsPanel state
+  // Diagnostics panel state
   const [stratCod, setStratCod]   = useState<StratifiedCodResponse | null>(null);
   const [condBias, setCondBias]   = useState<ConditionBiasResponse | null>(null);
   const diagAbortRef = useRef<AbortController | null>(null);
 
   const load = () => {
     if (!selectedHoodCd) { setData(null); return; }
+    if (!countyScope.isolated) {
+      setData(null);
+      setError('County scope required for CostForge.');
+      return;
+    }
     abortRef.current?.abort();
     abortRef.current = new AbortController();
     setLoading(true);
@@ -131,7 +134,7 @@ export function NeighborhoodAuditTab() {
 
     apiFetchJson<ParcelListResponse>(
       `/costforge/neighborhoods/${selectedHoodCd}/parcels?taxYear=${taxYear}`,
-      { signal: abortRef.current.signal }
+      { signal: abortRef.current.signal, headers: countyScope.headers }
     )
       .then((d) => { setData(d); setLoading(false); })
       .catch((err) => {
@@ -147,26 +150,33 @@ export function NeighborhoodAuditTab() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedHoodCd, taxYear]);
 
-  // Fetch Benton diagnostics (stratified-cod + condition-bias) for selected neighborhood
+  // Fetch diagnostics (stratified-cod + condition-bias) for selected neighborhood
   useEffect(() => {
-    if (!selectedHoodCd) { setStratCod(null); setCondBias(null); return; }
+    if (!selectedHoodCd || !countyScope.isolated || !countyScope.countyId) {
+      setStratCod(null);
+      setCondBias(null);
+      return;
+    }
     diagAbortRef.current?.abort();
     diagAbortRef.current = new AbortController();
     const { signal } = diagAbortRef.current;
     const base = `/equity`;
-    const qs = `countyId=${BENTON_COUNTY_ID}&taxYear=${taxYear}&by=neighborhood&segment=${encodeURIComponent(selectedHoodCd)}`;
+    const qs = `countyId=${encodeURIComponent(countyScope.countyId)}&taxYear=${taxYear}&by=neighborhood&segment=${encodeURIComponent(selectedHoodCd)}`;
 
     Promise.allSettled([
-      apiFetchJson<StratifiedCodResponse>(`${base}/stratified-cod?${qs}&splitBy=vintage`, { signal }),
-      apiFetchJson<ConditionBiasResponse>(`${base}/condition-bias?${qs}`, { signal }),
+      apiFetchJson<StratifiedCodResponse>(`${base}/stratified-cod?${qs}&splitBy=vintage`, { signal, headers: countyScope.headers }),
+      apiFetchJson<ConditionBiasResponse>(`${base}/condition-bias?${qs}`, { signal, headers: countyScope.headers }),
     ]).then(([codResult, biasResult]) => {
       if (codResult.status === 'fulfilled') setStratCod(codResult.value);
       if (biasResult.status === 'fulfilled') setCondBias(biasResult.value);
     });
 
     return () => { diagAbortRef.current?.abort(); };
-  }, [selectedHoodCd, taxYear]);
+  }, [countyScope.countyId, countyScope.isolated, selectedHoodCd, taxYear]);
 
+  if (!countyScope.isolated) {
+    return <div className="cf-state cf-state--error">County scope required to load CostForge.</div>;
+  }
   if (!selectedHoodCd) {
     return (
       <div className="cf-state">
@@ -249,7 +259,7 @@ export function NeighborhoodAuditTab() {
         </div>
       )}
 
-      {/* BentonDiagnosticsPanel — stratified COD + condition bias */}
+      {/* Diagnostics panel — stratified COD + condition bias */}
       {(stratCod || condBias) && (
         <div style={{
           display: 'grid',

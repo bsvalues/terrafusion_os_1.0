@@ -278,7 +278,7 @@ public class CodexNotificationController : ControllerBase
     [HttpGet("history")]
     [Authorize(Roles = "Admin,SystemAdministrator,CountyAdministrator")]
     [ProducesResponseType(typeof(NotificationHistoryDto), StatusCodes.Status501NotImplemented)]
-    public async Task<ActionResult<NotificationHistoryDto>> GetNotificationHistory(
+    public ActionResult<NotificationHistoryDto> GetNotificationHistory(
         [FromQuery] string? countyId,
         [FromQuery] int days = 7)
     {

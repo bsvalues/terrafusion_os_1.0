@@ -147,7 +147,7 @@ const OBJECT_CLASS_STYLE = {
     glowMultiplier: 0.7,
     labelClass: 'text-[12px] font-medium',
     containerWidth: 'w-[88px]',
-    opacity: 0.85,
+    opacity: 1,
   },
 } as const;
 
@@ -203,7 +203,6 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       tabIndex={0}
       aria-label={`Open ${name}`}
       aria-pressed={isSelected}
-      aria-selected={isSelected}
       className={`
         group flex flex-col items-center justify-start
         ${cls.containerWidth} py-3 px-2 rounded-2xl cursor-pointer
@@ -269,8 +268,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
 
       {/* Label — sized by object class */}
       <span
-        className={`${cls.labelClass} text-[hsl(var(--tf-text)/0.95)] text-center leading-tight line-clamp-2 tracking-wide`}
-        style={{ textShadow: '0 1px 6px hsl(var(--tf-bg) / 0.9), 0 0 2px hsl(var(--tf-bg))' }}
+        className={`${cls.labelClass} text-[hsl(var(--tf-text))] text-center leading-tight line-clamp-2 tracking-wide`}
       >
         {name}
       </span>

@@ -13,6 +13,8 @@ import { useCalcRCNLD, useImprvTypeCodes, type CostForgeCalcInput, type QualityG
 import { apiFetchJson } from "@/lib/apiBase";
 import { Calculator, RefreshCw } from "lucide-react";
 import { useCostForgeWorkspaceStore } from "./costForgeWorkspaceStore";
+import { getCostForgeCountyScope } from "./countyScope";
+import { supportsCertifiedCostScheduleLane } from "../countyCertification";
 
 // SecondaryFeature row shape from GET /costforge/schedule (matrixType = "SecondaryFeature")
 interface SfRate {
@@ -27,12 +29,6 @@ interface CostScheduleApiRow {
   matrixType?: string;
   secondaryFeaturePctOfBiv?: number;
 }
-
-
-const BENTON_COUNTY_ID =
-  (import.meta.env as Record<string, string>).VITE_BENTON_COUNTY_ID ??
-  "19190019-1919-1919-1919-191919191919";
-
 interface FormState {
   parcelId: string;
   prop_type: "R" | "C";
@@ -51,8 +47,10 @@ function toNum(v: string) {
 }
 
 export function CostApproachRunner() {
+  const countyScope = getCostForgeCountyScope();
+  const certifiedLane = supportsCertifiedCostScheduleLane(countyScope.countyId);
   const { result, isLoading, error, calculate, reset } = useCalcRCNLD();
-  const { data: imprvTypeCodes = [] } = useImprvTypeCodes(BENTON_COUNTY_ID);
+  const { data: imprvTypeCodes = [] } = useImprvTypeCodes(countyScope.countyId, countyScope.headers);
 
   const selectedParcelId  = useCostForgeWorkspaceStore((s) => s.selectedParcelId);
   const setSelectedParcel = useCostForgeWorkspaceStore((s) => s.setSelectedParcel);
@@ -62,8 +60,16 @@ export function CostApproachRunner() {
   const [sfRates, setSfRates] = useState<SfRate[]>([]);
   const sfAbortRef = useRef<AbortController | null>(null);
   useEffect(() => {
+    if (!countyScope.isolated || !certifiedLane) {
+      setSfRates([]);
+      return;
+    }
+
     sfAbortRef.current = new AbortController();
-    apiFetchJson<CostScheduleApiRow[]>('/costforge/schedule', { signal: sfAbortRef.current.signal })
+    apiFetchJson<CostScheduleApiRow[]>('/costforge/schedule', {
+      signal: sfAbortRef.current.signal,
+      headers: countyScope.headers,
+    })
       .then((rows) => {
         if (!Array.isArray(rows)) return;
         setSfRates(
@@ -78,7 +84,7 @@ export function CostApproachRunner() {
       })
       .catch(() => { /* non-fatal: rates panel stays hidden */ });
     return () => { sfAbortRef.current?.abort(); };
-  }, []);
+  }, [certifiedLane, countyScope.headers, countyScope.isolated]);
 
   const [form, setForm] = useState<FormState>({
     parcelId: "",
@@ -104,10 +110,14 @@ export function CostApproachRunner() {
   const derivedAge = Math.max(0, yearNow - toNum(form.year_built));
 
   const run = async () => {
+    if (!countyScope.countyId) {
+      return;
+    }
+
     const input: CostForgeCalcInput = {
       lrsn: null,
       pin: form.parcelId || null,
-      county_id: BENTON_COUNTY_ID,
+      county_id: countyScope.countyId,
       imprv_det_type_cd: form.imprvTypeCode || null,
       yr_built: toNum(form.year_built),
       area_sqft: toNum(form.area),
@@ -122,7 +132,8 @@ export function CostApproachRunner() {
       input,
       (form.quality as QualityGrade) || undefined,
       form.prop_type === "R" ? form.extWall || undefined : undefined,
-      form.effLife ? toNum(form.effLife) : undefined
+      form.effLife ? toNum(form.effLife) : undefined,
+      countyScope.headers,
     );
     // Sync parcel ID to workspace store so CalcTrace can follow
     if (form.parcelId) {
@@ -133,6 +144,18 @@ export function CostApproachRunner() {
   const canRun = useMemo(() => {
     return toNum(form.area) > 0 && toNum(form.year_built) > 0;
   }, [form.area, form.year_built]);
+
+  if (!countyScope.isolated) {
+    return <div className="cf-state cf-state--error">County scope required to load Parcel Inspector.</div>;
+  }
+
+  if (!certifiedLane) {
+    return (
+      <div className="cf-state cf-state--error" data-testid="cost-parcel-unavailable">
+        Parcel Inspector is not certified for the active county scope on the current CostForge lane.
+      </div>
+    );
+  }
 
   // BIV = sqft × base cost/sqft
   const bivTotal =
@@ -321,9 +344,9 @@ export function CostApproachRunner() {
             </CardContent>
           </Card>
 
-          {/* BIV section — Benton Method */}
+          {/* BIV section — certified county method */}
           <div className="cf-biv-section">
-            <div className="cf-biv-section__heading">BIV Calculation — Benton Method</div>
+            <div className="cf-biv-section__heading">BIV Calculation — Certified Method</div>
 
             <div className="cf-biv-row">
               <span className="cf-biv-row__label">Main living area</span>
@@ -393,7 +416,7 @@ export function CostApproachRunner() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm">Accessory Reference Rates</CardTitle>
-                  <Badge variant="outline" className="text-xs">%-of-BIV · Benton Method</Badge>
+                  <Badge variant="outline" className="text-xs">%-of-BIV · Certified schedule</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   At BIV of{' '}

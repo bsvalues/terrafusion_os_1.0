@@ -26,8 +26,8 @@ namespace TerraFusion.Consciousness.DTOs
         public decimal EstimatedValue { get; set; }
         public string CountyId { get; set; } = string.Empty;
         public Dictionary<string, object> PropertyAttributes { get; set; } = new();
-        public bool RequireChampionshipAccuracy { get; set; } = true;
-        public int QuantumFactorOverride { get; set; } = 949;
+        public bool RequireChampionshipAccuracy { get; set; } = false;
+        public int QuantumFactorOverride { get; set; }
     }
 
     /// <summary>
@@ -58,9 +58,9 @@ namespace TerraFusion.Consciousness.DTOs
     public class QuantumAgentCoordinationRequestDto
     {
         public int TargetAgentCount { get; set; }
-        public string CoordinationStrategy { get; set; } = "CHAMPIONSHIP_HARMONY";
+        public string CoordinationStrategy { get; set; } = "Unavailable";
         public Dictionary<string, int> AgentTypeDistribution { get; set; } = new();
-        public double RequiredHarmonyLevel { get; set; } = 0.999; // 99.9%
+        public double RequiredHarmonyLevel { get; set; }
         public string OperationContext { get; set; } = string.Empty;
     }
 
@@ -89,15 +89,15 @@ namespace TerraFusion.Consciousness.DTOs
     /// </summary>
     public class ConsciousnessTranscendenceRequestDto
     {
-        public string TargetTranscendenceLevel { get; set; } = "CHAMPIONSHIP_EXCELLENCE";
-        public bool EnableInfiniteScalability { get; set; } = true;
-        public int QuantumFactorTarget { get; set; } = 949;
-        public decimal AccuracyRequirement { get; set; } = 99.5m;
+        public string TargetTranscendenceLevel { get; set; } = "Unavailable";
+        public bool EnableInfiniteScalability { get; set; }
+        public int QuantumFactorTarget { get; set; }
+        public decimal AccuracyRequirement { get; set; }
         public Dictionary<string, object> TranscendenceParameters { get; set; } = new();
     }
 
     /// <summary>
-    /// Consciousness Transcendence Result - Government. Transcended.
+    /// Consciousness transcendence result.
     /// </summary>
     public class ConsciousnessTranscendenceResultDto
     {

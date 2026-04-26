@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
+import { getToken } from '@/auth/authStorage';
 import {
   Mail,
   Send,
@@ -41,17 +42,6 @@ interface ManualAlertRequest {
   recommendedAction?: string;
 }
 
-const BROWSER_STORE_PROPERTY = 'local' + 'Storage';
-
-function getAuthToken(): string | null {
-  try {
-    const store = window[BROWSER_STORE_PROPERTY as keyof Window] as Storage | null;
-    return store?.getItem('token') ?? null;
-  } catch {
-    return null;
-  }
-}
-
 /**
  * Codex Email Notification Panel
  *
@@ -81,11 +71,12 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
     setTestResult(null);
 
     try {
+      const token = getToken();
       const response = await fetch('/api/codex/notifications/test', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${getAuthToken() ?? ''}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
       });
 
@@ -119,11 +110,12 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
     setSending(true);
 
     try {
+      const token = getToken();
       const response = await fetch('/api/codex/notifications/send-alert', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${getAuthToken() ?? ''}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(alertForm),
       });
@@ -156,14 +148,13 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const dateStr = yesterday.toISOString().split('T')[0];
+      const token = getToken();
 
       const response = await fetch(
         `/api/codex/notifications/send-daily-digest?countyId=${countyId || ''}&date=${dateStr}`,
         {
           method: 'POST',
-          headers: {
-            Authorization: `Bearer ${getAuthToken() ?? ''}`,
-          },
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         }
       );
 
@@ -186,14 +177,13 @@ export function CodexEmailNotificationPanel({ countyId }: CodexEmailNotification
       const lastSunday = new Date();
       lastSunday.setDate(lastSunday.getDate() - lastSunday.getDay());
       const dateStr = lastSunday.toISOString().split('T')[0];
+      const token = getToken();
 
       const response = await fetch(
         `/api/codex/notifications/send-weekly-summary?countyId=${countyId || ''}&weekEnding=${dateStr}`,
         {
           method: 'POST',
-          headers: {
-            Authorization: `Bearer ${getAuthToken() ?? ''}`,
-          },
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         }
       );
 

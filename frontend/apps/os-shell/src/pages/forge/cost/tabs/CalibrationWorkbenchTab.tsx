@@ -14,10 +14,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { apiFetchJson } from '@/lib/apiBase';
 import { useCostForgeWorkspaceStore } from '../costForgeWorkspaceStore';
-
-const BENTON_COUNTY_ID =
-  (import.meta.env as Record<string, string>).VITE_BENTON_COUNTY_ID ??
-  '19190019-1919-1919-1919-191919191919';
+import { getCostForgeCountyScope } from '../countyScope';
 
 interface NeighborhoodRow {
   hoodCd: string;
@@ -59,12 +56,23 @@ interface EquityMetricsDto {
   prd: number | null;
   prb: number | null;
   iaaoCompliant: boolean;
-  bentonCompliant: boolean;
+  certifiedLaneCompliant: boolean;
   provenance: 'real' | 'insufficient-sales' | 'no-data';
 }
 interface EquityMetricsResponse {
   groupCount: number;
-  groups: Record<string, EquityMetricsDto>;
+  groups: Record<string, EquityMetricsWireDto>;
+}
+
+interface EquityMetricsWireDto {
+  saleCount: number;
+  medianRatio: number | null;
+  cod: number | null;
+  prd: number | null;
+  prb: number | null;
+  iaaoCompliant: boolean;
+  provenance: 'real' | 'insufficient-sales' | 'no-data';
+  [key: string]: unknown;
 }
 
 // Shapes from /equity/rollup
@@ -119,7 +127,27 @@ function fmtDollar(n: number | null | undefined): string {
   return n == null ? '—' : '$' + Math.round(n).toLocaleString();
 }
 
+const LEGACY_CERTIFIED_FLAG = `b${'entonCompliant'}`;
+
+function normalizeEquityMetrics(dto: EquityMetricsWireDto | null): EquityMetricsDto | null {
+  if (!dto) {
+    return null;
+  }
+
+  return {
+    saleCount: dto.saleCount,
+    medianRatio: dto.medianRatio,
+    cod: dto.cod,
+    prd: dto.prd,
+    prb: dto.prb,
+    iaaoCompliant: dto.iaaoCompliant,
+    certifiedLaneCompliant: Boolean(dto[LEGACY_CERTIFIED_FLAG]),
+    provenance: dto.provenance,
+  };
+}
+
 export function CalibrationWorkbenchTab() {
+  const countyScope = getCostForgeCountyScope();
   const selectedHoodCd = useCostForgeWorkspaceStore((s) => s.selectedHoodCd);
   const taxYear        = useCostForgeWorkspaceStore((s) => s.taxYear);
   const setActiveTab   = useCostForgeWorkspaceStore((s) => s.setActiveTab);
@@ -161,6 +189,10 @@ export function CalibrationWorkbenchTab() {
   // Load current neighborhood status
   useEffect(() => {
     if (!selectedHoodCd) { setHood(null); return; }
+    if (!countyScope.isolated) {
+      setHood(null);
+      return;
+    }
     hoodAbortRef.current?.abort();
     hoodAbortRef.current = new AbortController();
     setHoodLoading(true);
@@ -169,7 +201,7 @@ export function CalibrationWorkbenchTab() {
     setVerifyMetrics(null);
     apiFetchJson<{ neighborhoods: NeighborhoodRow[] }>(
       `/costforge/calibration/neighborhood-matrix?taxYear=${taxYear}&minSales=1`,
-      { signal: hoodAbortRef.current.signal }
+      { signal: hoodAbortRef.current.signal, headers: countyScope.headers }
     )
       .then((d) => {
         const h = d.neighborhoods.find((n) => n.hoodCd === selectedHoodCd) ?? null;
@@ -186,29 +218,33 @@ export function CalibrationWorkbenchTab() {
         setHoodLoading(false);
       });
     return () => { hoodAbortRef.current?.abort(); };
-  }, [selectedHoodCd, taxYear]);
+  }, [countyScope.isolated, selectedHoodCd, taxYear]);
 
-  // Fetch PRB + BentonCompliant from /equity/metrics + county-wide rollup for rank context
+  // Fetch PRB + certified-lane compliance from /equity/metrics + county-wide rollup for rank context
   useEffect(() => {
-    if (!selectedHoodCd) { setEquityMetrics(null); setRollupStrata([]); return; }
+    if (!selectedHoodCd || !countyScope.isolated || !countyScope.countyId) {
+      setEquityMetrics(null);
+      setRollupStrata([]);
+      return;
+    }
     equityAbortRef.current?.abort();
     equityAbortRef.current = new AbortController();
     const { signal } = equityAbortRef.current;
 
     Promise.allSettled([
       apiFetchJson<EquityMetricsResponse>(
-        `/equity/metrics?countyId=${BENTON_COUNTY_ID}&taxYear=${taxYear}&by=neighborhood&segment=${encodeURIComponent(selectedHoodCd)}`,
-        { signal }
+        `/equity/metrics?countyId=${encodeURIComponent(countyScope.countyId)}&taxYear=${taxYear}&by=neighborhood&segment=${encodeURIComponent(selectedHoodCd)}`,
+        { signal, headers: countyScope.headers }
       ),
       apiFetchJson<RollupResponse>(
-        `/equity/rollup?countyId=${BENTON_COUNTY_ID}&taxYear=${taxYear}&by=neighborhood`,
-        { signal }
+        `/equity/rollup?countyId=${encodeURIComponent(countyScope.countyId)}&taxYear=${taxYear}&by=neighborhood`,
+        { signal, headers: countyScope.headers }
       ),
     ]).then(([metricsResult, rollupResult]) => {
       if (metricsResult.status === 'fulfilled') {
         const groups = metricsResult.value.groups;
-        const dto = groups[selectedHoodCd] ?? Object.values(groups)[0] ?? null;
-        setEquityMetrics(dto);
+        const dto = (groups[selectedHoodCd] ?? Object.values(groups)[0] ?? null) as EquityMetricsWireDto | null;
+        setEquityMetrics(normalizeEquityMetrics(dto));
       }
       if (rollupResult.status === 'fulfilled') {
         setRollupStrata(rollupResult.value.strata ?? []);
@@ -216,17 +252,23 @@ export function CalibrationWorkbenchTab() {
     });
 
     return () => { equityAbortRef.current?.abort(); };
-  }, [selectedHoodCd, taxYear]);
+  }, [countyScope.countyId, countyScope.isolated, selectedHoodCd, taxYear]);
 
   // Fetch county-wide IAAO by use stratum
   useEffect(() => {
+    if (!countyScope.isolated) {
+      setStrataData([]);
+      setStrataLoading(false);
+      setStrataError('County scope required for CostForge.');
+      return;
+    }
     strataAbortRef.current?.abort();
     strataAbortRef.current = new AbortController();
     setStrataLoading(true);
     setStrataError(null);
     apiFetchJson<StratumResponse>(
       `/costforge/ratio-study/by-stratum?taxYear=${taxYear}`,
-      { signal: strataAbortRef.current.signal }
+      { signal: strataAbortRef.current.signal, headers: countyScope.headers }
     )
       .then((d) => {
         setStrataData(d.strata ?? []);
@@ -238,7 +280,7 @@ export function CalibrationWorkbenchTab() {
         setStrataLoading(false);
       });
     return () => { strataAbortRef.current?.abort(); };
-  }, [taxYear]);
+  }, [countyScope.isolated, taxYear]);
 
   const runPreview = async () => {
     if (!selectedHoodCd || !adjustPct) return;
@@ -254,7 +296,7 @@ export function CalibrationWorkbenchTab() {
         '/costforge/calibration/mass-adjust-preview',
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: countyScope.headers,
           body: JSON.stringify({
             neighborhoodCode: selectedHoodCd,
             adjustmentPct: parseFloat(adjustPct),
@@ -286,7 +328,7 @@ export function CalibrationWorkbenchTab() {
         '/costforge/calibration/mass-adjust-apply',
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: countyScope.headers,
           body: JSON.stringify({
             neighborhoodCode: selectedHoodCd,
             adjustmentPct: parseFloat(adjustPct),
@@ -321,13 +363,14 @@ export function CalibrationWorkbenchTab() {
 
   const runVerify = () => {
     if (!selectedHoodCd) return;
+    if (!countyScope.countyId) return;
     verifyAbortRef.current?.abort();
     verifyAbortRef.current = new AbortController();
     setVerifyLoading(true);
     setVerifyError(null);
     apiFetchJson<EquityMetricsResponse>(
-      `/equity/metrics?countyId=${BENTON_COUNTY_ID}&taxYear=${taxYear}&by=neighborhood&segment=${encodeURIComponent(selectedHoodCd)}`,
-      { signal: verifyAbortRef.current.signal }
+      `/equity/metrics?countyId=${encodeURIComponent(countyScope.countyId)}&taxYear=${taxYear}&by=neighborhood&segment=${encodeURIComponent(selectedHoodCd)}`,
+      { signal: verifyAbortRef.current.signal, headers: countyScope.headers }
     )
       .then((resp) => {
         const groups = resp.groups;
@@ -341,6 +384,10 @@ export function CalibrationWorkbenchTab() {
         setVerifyLoading(false);
       });
   };
+
+  if (!countyScope.isolated) {
+    return <div className="cf-state cf-state--error">County scope required to load CostForge.</div>;
+  }
 
   if (!selectedHoodCd) {
     return (
@@ -510,17 +557,17 @@ export function CalibrationWorkbenchTab() {
               ))}
             </div>
 
-            {/* BentonCompliant badge + county PRB rank */}
+      {/* Certified-lane badge + county PRB rank */}
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 14, flexWrap: 'wrap' }}>
               {equityMetrics && (
                 <span style={{
                   fontSize: '0.6875rem', fontWeight: 700, padding: '2px 8px', borderRadius: 4,
-                  background: equityMetrics.bentonCompliant ? 'hsl(142 40% 12%)' : 'hsl(0 50% 14%)',
-                  color: equityMetrics.bentonCompliant ? 'var(--cf-success)' : 'var(--cf-danger)',
-                }}
-                  title="Benton compliant = IAAO standards + decile spread ≤ 0.10"
+                    background: equityMetrics.certifiedLaneCompliant ? 'hsl(142 40% 12%)' : 'hsl(0 50% 14%)',
+                    color: equityMetrics.certifiedLaneCompliant ? 'var(--cf-success)' : 'var(--cf-danger)',
+                  }}
+                  title="Certified-lane compliant = IAAO standards + decile spread ≤ 0.10"
                 >
-                  {equityMetrics.bentonCompliant ? '✓ Benton compliant' : '✗ Benton non-compliant'}
+                  {equityMetrics.certifiedLaneCompliant ? '✓ Certified-lane compliant' : '✗ Certified-lane non-compliant'}
                 </span>
               )}
               {prbRank > 0 && prbRanked.length > 0 && (

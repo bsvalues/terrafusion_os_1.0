@@ -5,7 +5,7 @@ namespace TerraFusion.Consciousness.Interfaces
     /// <summary>
     /// Hybrid Consciousness Manager interface for advanced AI fusion
     /// Manages hybrid consciousness modes and session orchestration
-    /// Government. Transcended.
+    /// Compatibility hybrid-consciousness contract.
     /// </summary>
     public interface IHybridConsciousnessManager
     {

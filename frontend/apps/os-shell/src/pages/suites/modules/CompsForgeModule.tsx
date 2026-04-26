@@ -1,7 +1,7 @@
 /**
  * CompsForge Module - Sales Comparison Approach
  *
- * Uses the active parcel as subject context, TerraFusion-normalized Benton sales as the
+ * Uses the active parcel as subject context, TerraFusion-normalized county sales as the
  * candidate pool, and CostForge endpoints as the adjustment/reconciliation
  * authority. The module does not fabricate subject characteristics or comp
  * values when source data is unavailable.
@@ -28,9 +28,12 @@ import { usePropertyStore } from '@/stores/propertyStore';
 import {
   adjustComp,
   findCompsForSubject,
-  loadBentonComps,
+  getComparableCountyName,
+  loadCountyComps,
   reconcileComps,
+  supportsGovernedComparableAdjustments,
   type AdjustmentResult,
+  type ComparableSale,
   type ReconciliationResult,
   type ScoredComp,
   type SubjectProperty,
@@ -103,13 +106,61 @@ export default function CompsForgeModule() {
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
   const [qualifiedOnly, setQualifiedOnly] = useState(true);
   const [saleWindow, setSaleWindow] = useState<SaleWindow>(INITIAL_SALE_WINDOW);
+  const [allSales, setAllSales] = useState<ComparableSale[]>([]);
+  const [salesLoading, setSalesLoading] = useState(false);
+  const [salesError, setSalesError] = useState<string | null>(null);
   const [adjustments, setAdjustments] = useState<Record<string, AdjustmentResult>>({});
   const [reconciliation, setReconciliation] = useState<ReconciliationResult | null>(null);
   const [adjustmentError, setAdjustmentError] = useState<string | null>(null);
   const [isAdjusting, setIsAdjusting] = useState(false);
 
   const subject = useMemo(() => buildSubjectFromActiveParcel(activeParcel), [activeParcel]);
-  const allSales = useMemo(() => loadBentonComps(), []);
+  const countyCode = activeParcel?.countyCode ?? null;
+  const countyName = useMemo(() => getComparableCountyName(countyCode), [countyCode]);
+  const adjustmentsSupported = useMemo(
+    () => supportsGovernedComparableAdjustments(countyCode),
+    [countyCode],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSales() {
+      if (!countyCode) {
+        setAllSales([]);
+        setSalesError('Active parcel is missing a county code, so CompsForge cannot load the county sales shard.');
+        setSalesLoading(false);
+        return;
+      }
+
+      setSalesLoading(true);
+      setSalesError(null);
+
+      try {
+        const sales = await loadCountyComps(countyCode);
+        if (!cancelled) {
+          setAllSales(sales);
+          setSalesLoading(false);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setAllSales([]);
+          setSalesError(
+            error instanceof Error
+              ? error.message
+              : `CompsForge could not load the ${countyName} County sales shard.`,
+          );
+          setSalesLoading(false);
+        }
+      }
+    }
+
+    void loadSales();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [countyCode, countyName]);
 
   const candidates = useMemo(() => {
     if (!subject) return [];
@@ -146,6 +197,15 @@ export default function CompsForgeModule() {
       if (!subject || selectedComps.length === 0) {
         setAdjustments({});
         setReconciliation(null);
+        return;
+      }
+
+      if (!adjustmentsSupported) {
+        setAdjustments({});
+        setReconciliation(null);
+        setAdjustmentError(
+          `${countyName} County comparable sales are available, but governed paired adjustments and reconciliation are currently certified only for Benton County.`,
+        );
         return;
       }
 
@@ -191,7 +251,7 @@ export default function CompsForgeModule() {
     return () => {
       cancelled = true;
     };
-  }, [selectedComps, subject]);
+  }, [adjustmentsSupported, countyName, selectedComps, subject]);
 
   const toggleSelect = useCallback((comp: ScoredComp) => {
     const key = compKey(comp);
@@ -221,7 +281,7 @@ export default function CompsForgeModule() {
           CompsForge - Sales Comparison
         </h2>
         <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
-          Active-parcel comp selection using TerraFusion-normalized Benton sales and CostForge governed adjustments.
+          Active-parcel comp selection using TerraFusion-normalized {countyName} County sales and CostForge governed adjustments.
         </p>
       </div>
 
@@ -246,6 +306,19 @@ export default function CompsForgeModule() {
         </Card>
       )}
 
+      {subject && salesError && (
+        <Card
+          style={{
+            background: 'hsl(var(--tf-card-bg))',
+            borderColor: 'hsl(var(--tf-warning) / 0.35)',
+          }}
+        >
+          <CardContent className='pt-5 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+            {salesError}
+          </CardContent>
+        </Card>
+      )}
+
       {subject && !subjectCanScore && (
         <Card
           style={{
@@ -256,6 +329,19 @@ export default function CompsForgeModule() {
           <CardContent className='pt-5 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
             Subject data is incomplete. Candidate sales can still be reviewed, but scoring quality is limited until GLA,
             year built, and assessed value are present in the parcel provider.
+          </CardContent>
+        </Card>
+      )}
+
+      {subject && !adjustmentsSupported && (
+        <Card
+          style={{
+            background: 'hsl(var(--tf-card-bg))',
+            borderColor: 'hsl(var(--tf-warning) / 0.35)',
+          }}
+        >
+          <CardContent className='pt-5 text-sm' style={{ color: 'hsl(var(--tf-muted))' }}>
+            {countyName} County sales are loaded from the statewide launch bundle, but governed paired adjustments and reconciliation are still Benton-certified only.
           </CardContent>
         </Card>
       )}
@@ -326,7 +412,11 @@ export default function CompsForgeModule() {
               <CardContent className='text-center py-10'>
                 <Search size={32} className='mx-auto mb-3' style={{ color: 'hsl(var(--tf-muted) / 0.4)' }} />
                 <p style={{ color: 'hsl(var(--tf-muted))' }}>
-                  No comparable sales match the current parcel and filters.
+                  {salesLoading
+                    ? `Loading ${countyName} County sales…`
+                    : salesError
+                      ? 'Comparable sales are unavailable until the county sales shard is restored.'
+                      : 'No comparable sales match the current parcel and filters.'}
                 </p>
               </CardContent>
             </Card>
@@ -519,7 +609,9 @@ export default function CompsForgeModule() {
               </div>
               <div className='flex justify-between gap-4'>
                 <span style={{ color: 'hsl(var(--tf-muted))' }}>County</span>
-                <span style={{ color: 'hsl(var(--tf-fg))' }}>{activeParcel?.countyCode ?? 'Unavailable'}</span>
+                <span style={{ color: 'hsl(var(--tf-fg))' }}>
+                  {countyCode ? `${countyName} (${countyCode})` : 'Unavailable'}
+                </span>
               </div>
               <div className='flex justify-between gap-4'>
                 <span style={{ color: 'hsl(var(--tf-muted))' }}>Neighborhood code</span>

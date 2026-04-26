@@ -131,7 +131,7 @@ function healthyClassDiagnosis(): SegmentDiagnosisDto {
       {
         actionCode: 'MARK_HEALTHY',
         target: 'None',
-        summary: 'No action required — segment is IAAO and Benton compliant.',
+      summary: 'No action required — segment is IAAO and equity compliant.',
         priority: 1,
         rationale: 'Median 0.97 inside IAAO fair range, COD 14.2 inside ceiling, 42 qualified sales.',
         prebuiltContext: null,

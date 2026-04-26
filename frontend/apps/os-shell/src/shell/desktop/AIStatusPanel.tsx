@@ -46,17 +46,13 @@ export interface AIStatusPanelProps {
 // ============================================================================
 
 export const defaultAIStatus: AIStatus = {
-  totalAgents: 1008,
-  activeAgents: 987,
+  totalAgents: 0,
+  activeAgents: 0,
   categories: [
-    { name: 'Data Analysis', count: 245, status: 'active' },
-    { name: 'Document Processing', count: 312, status: 'active' },
-    { name: 'GIS Operations', count: 189, status: 'active' },
-    { name: 'Cost Estimation', count: 156, status: 'active' },
-    { name: 'Tax Assessment', count: 105, status: 'idle' },
+    { name: 'Governed registry unavailable', count: 0, status: 'error' },
   ],
   lastActivity: new Date().toISOString(),
-  systemLoad: 0.72,
+  systemLoad: 0,
 };
 
 // ============================================================================
@@ -108,7 +104,7 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
         ref={panelRef}
         data-testid="ai-status-panel"
         role="dialog"
-        aria-label="AI Swarm Status"
+        aria-label="AI Status"
         className={cn(
           'absolute bottom-full right-0 mb-2',
           'w-72 p-4 rounded-lg',
@@ -144,7 +140,7 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
         style={{ boxShadow: '0 -8px 30px hsl(var(--tf-bg) / 0.5)' }}
       >
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-white">AI Swarm Status</h3>
+          <h3 className="text-sm font-semibold text-white">AI Status</h3>
           <button
             onClick={onClose}
             aria-label="Close panel"
@@ -165,7 +161,7 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
       ref={panelRef}
       data-testid="ai-status-panel"
       role="dialog"
-      aria-label="AI Swarm Status"
+      aria-label="AI Status"
       className={cn(
         'absolute bottom-full right-0 mb-2',
         'w-80 rounded-lg overflow-hidden',
@@ -179,7 +175,7 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
       <div className="flex items-center justify-between p-3 border-b border-white/10">
         <div className="flex items-center gap-2">
           <span className="text-xl">🧠</span>
-          <h3 className="text-sm font-semibold text-white">AI Swarm Status</h3>
+          <h3 className="text-sm font-semibold text-white">AI Status</h3>
         </div>
         <button
           onClick={onClose}
@@ -196,13 +192,13 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
           <div className="text-2xl font-bold text-[var(--tf-transcend-highlight)]">
             {status.totalAgents.toLocaleString()}
           </div>
-          <div className="text-xs text-white/60">Total Agents</div>
+          <div className="text-xs text-white/60">Observed Agents</div>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-[var(--tf-accent-success)]">
             {status.activeAgents.toLocaleString()}
           </div>
-          <div className="text-xs text-white/60">Active</div>
+          <div className="text-xs text-white/60">Reported Active</div>
         </div>
       </div>
 
@@ -260,7 +256,7 @@ export const AIStatusPanel: React.FC<AIStatusPanelProps> = ({
       <div className="px-3 py-2 bg-[var(--tf-transcend-highlight)]/5 border-t border-white/10">
         <div className="flex items-center gap-1.5 text-xs text-white/50">
           <span className="w-1.5 h-1.5 bg-[var(--tf-accent-success)] rounded-full animate-pulse" />
-          <span>Live • Last update: just now</span>
+          <span>Compatibility fallback • No governed agent registry connected</span>
         </div>
       </div>
     </div>
@@ -314,7 +310,7 @@ export const AIStatusIndicator: React.FC<AIStatusIndicatorProps> = ({
           {status.totalAgents.toLocaleString()}
         </span>
         <span className="text-[10px] uppercase tracking-wider text-white/60">
-          Agents
+          Observed
         </span>
       </button>
 

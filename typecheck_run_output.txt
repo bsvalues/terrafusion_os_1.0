@@ -1,0 +1,4 @@
+
+> terrafusion-os@1.0.0 type-check C:\Users\bsval\terrafusion_os_1.0
+> tsc -p tsconfig.core.json
+

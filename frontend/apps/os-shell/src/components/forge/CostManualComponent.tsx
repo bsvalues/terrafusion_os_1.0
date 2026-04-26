@@ -57,7 +57,7 @@ export function CostManualComponent({ qualityClass }: CostManualComponentProps) 
           <div className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 mb-3" data-testid="cost-manual-component-unavailable">
             <p className="text-sm font-medium">Live cost schedule unavailable.</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Benton cost schedule rows are not being replaced with local sample data.
+              Certified cost schedule rows are not being replaced with local sample data.
             </p>
             <p className="text-xs text-amber-500 mt-2">{error}</p>
           </div>
@@ -94,7 +94,7 @@ export function CostManualComponent({ qualityClass }: CostManualComponentProps) 
               {filteredEntries.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-muted-foreground">
-                    {error ? 'Cost schedule unavailable. No Benton schedule rows are being shown.' : 'No entries found'}
+                    {error ? 'Cost schedule unavailable. No certified schedule rows are being shown.' : 'No entries found'}
                   </TableCell>
                 </TableRow>
               )}

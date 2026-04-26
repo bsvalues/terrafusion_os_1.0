@@ -56,7 +56,7 @@ function SavedScenarioRow({
 
 const ADJUSTMENT_TYPES: AdjustmentType[] = [
   'PercentageIncrease', 'PercentageDecrease',
-  'FlatDollarIncrease', 'FlatDollarDecrease', 'CustomFormula',
+  'FlatDollarIncrease', 'FlatDollarDecrease',
 ];
 
 const labelStyle: React.CSSProperties = {
@@ -103,6 +103,7 @@ export function ScenarioWorksheet() {
         name: `${adjustmentType} ${magnitude}`,
         adjustmentType,
         parametersJson: JSON.stringify({ magnitude: parseFloat(magnitude) }),
+        rationale,
       });
       setDraftScenario(draft);
       const result = await scenarioApi.preview(draft.scenarioId);

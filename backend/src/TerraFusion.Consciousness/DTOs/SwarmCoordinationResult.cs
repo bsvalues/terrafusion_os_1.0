@@ -2,7 +2,7 @@
  * ═══════════════════════════════════════════════════════════════
  * SWARM COORDINATION RESULT DTO
  * TerraFusion.Consciousness - AI Swarm Coordination DTOs
- * Government. Transcended.
+ * Compatibility coordination result model.
  * ═══════════════════════════════════════════════════════════════
  */
 

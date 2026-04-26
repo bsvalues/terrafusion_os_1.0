@@ -41,6 +41,14 @@ vi.mock('@microsoft/signalr', () => {
   };
 });
 
+vi.mock('../countyStudyScope', () => ({
+  getCountyStudyScope: () => ({
+    countyId: 'benton',
+    headers: { 'x-county-id': 'benton' },
+    isolated: true,
+  }),
+}));
+
 import { useCountyStudyHub } from '../hooks/useCountyStudyHub';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { getMockConnection } from '@microsoft/signalr';

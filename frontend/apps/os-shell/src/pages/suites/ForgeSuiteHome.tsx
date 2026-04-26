@@ -133,7 +133,8 @@ const SECONDARY_MODULES: readonly ForgeModuleDef[] = [
   {
     id: 'statistics-studio',
     label: 'Statistics Studio',
-    description: 'IAAO assessment quality — COD, PRD, PRB, and uniformity diagnostics',
+    description:
+      'County-wide metrics and IAAO diagnostics — COD, PRD, PRB, equity, trend, and outlier analysis without map-first drilldown or scenario publishing',
     priority: 'secondary',
     launchMode: 'standalone',
     moduleId: 'statistics-studio',
@@ -577,8 +578,8 @@ export default function ForgeSuiteHome() {
           <section className="forge-panel" data-testid="forge-gis-applications">
             <div className="forge-panel__header">
               <div>
-                <p className="forge-panel__eyebrow">GIS Valuation Intelligence</p>
-                <h2 className="forge-panel__title">GeoForge · Spatial Mass Appraisal</h2>
+                <p className="forge-panel__eyebrow">Spatial Audit Surface</p>
+                <h2 className="forge-panel__title">GeoForge · GIS Drilldown</h2>
               </div>
             </div>
             <button
@@ -588,14 +589,14 @@ export default function ForgeSuiteHome() {
               onClick={() => handleModuleLaunch({ id: 'geo-forge', label: 'GeoForge', description: '', priority: 'primary', launchMode: 'standalone', moduleId: 'geo-forge' })}
             >
               <div className="forge-card__rail">
-                <span className="forge-chip forge-chip--neutral">GIS · Benton Method</span>
+                <span className="forge-chip forge-chip--neutral">GIS · Parcels · Neighborhoods</span>
                 <span className="forge-card__foot">Launches in window</span>
               </div>
               <div className="forge-card__title">GeoForge</div>
               <p className="forge-card__description">
-                Full-canvas GIS valuation — Mapbox choropleth, 31 analyst panels, live Benton Method
-                COD · PRD · PRB diagnostics, DOR certification workflow, adjustment workbench, Moran&apos;s I
-                spatial analysis, levy parity, and one-click WAC 458-53A narrative memo.
+                Map-first parcel and neighborhood drilldown for spatial audit, comp bloom, ratio drift,
+                certification overlays, and field-review context. Current operational backend remains Benton-heavy;
+                use Statistics Studio for countywide metrics and County Studio for rollups, scenarios, and publish flow.
               </p>
             </button>
           </section>
@@ -605,7 +606,7 @@ export default function ForgeSuiteHome() {
             <div className="forge-panel__header">
               <div>
                 <p className="forge-panel__eyebrow">County Operations</p>
-                <h2 className="forge-panel__title">County Studio · Valuation Command Center</h2>
+                <h2 className="forge-panel__title">County Studio · Rollup, Scenario, Publish</h2>
               </div>
             </div>
             <button
@@ -615,13 +616,14 @@ export default function ForgeSuiteHome() {
               onClick={() => handleModuleLaunch({ id: 'county-studio', label: 'County Studio', description: '', priority: 'primary', launchMode: 'standalone', moduleId: 'county-studio' })}
             >
               <div className="forge-card__rail">
-                <span className="forge-chip forge-chip--neutral">Segments · Scenarios · IAAO</span>
+                <span className="forge-chip forge-chip--neutral">County → City → Neighborhood → Segment</span>
                 <span className="forge-card__foot">Launches in window</span>
               </div>
               <div className="forge-card__title">County Studio</div>
               <p className="forge-card__description">
-                Segment-first countywide valuation workspace — load segment sets, define cohorts, model
-                adjustment scenarios with live preview, review IAAO compliance, and publish to Atlas Live View.
+                The countywide operating workspace for drill-lattice rollups, cohort creation, segment scenarios,
+                compliance review, and publish handoff into Atlas Live View. Use GeoForge for map drilldown and
+                Statistics Studio for pure metrics and diagnostics.
               </p>
             </button>
             <button

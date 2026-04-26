@@ -17,6 +17,7 @@
 import React, { Suspense, useEffect, useRef } from 'react';
 import activateModule from '@/orchestration/moduleActivation';
 import './CostForge.css';
+import { getCostForgeCountyBadgeLabel } from './countyScope';
 import {
   useCostForgeWorkspaceStore,
   type CostForgeTab,
@@ -38,10 +39,10 @@ const TABS: { id: CostForgeTab; label: string; title: string }[] = [
   { id: 'triage',       label: 'Triage',       title: 'AI priority-ranked neighborhood health — where to start' },
   { id: 'hood-audit',   label: 'Audit',        title: 'Drill-down: parcel spread, vintage root cause, IQR outliers' },
   { id: 'calibration',  label: 'Calibration',  title: 'Mass-adjust with impact simulation — commit the fix' },
-  { id: 'parcel',       label: 'Parcel',        title: 'Single-parcel RCNLD with Benton Method BIV display' },
-  { id: 'depreciation', label: 'Depreciation', title: 'Physical / functional / external with waterfall bar' },
+  { id: 'parcel',       label: 'Parcel',       title: 'Single-parcel RCNLD with certified BIV display' },
+  { id: 'depreciation', label: 'Depreciation', title: 'Certified physical / functional / external depreciation with comparison waterfall' },
   { id: 'data-quality', label: 'Data Quality', title: 'Assessment record quality — missing fields, outlier flags' },
-  { id: 'schedule',     label: 'Schedule',     title: 'Cost manual reference + batch apply' },
+  { id: 'schedule',     label: 'Schedule',     title: 'Certified cost manual reference + batch apply' },
   { id: 'calc-trace',   label: 'Calc Trace',   title: 'RCNLD audit trail — full calculation lineage' },
 ];
 
@@ -169,6 +170,7 @@ function parseDeeplinkQuery(raw: unknown): {
 }
 
 export default function CostForge({ metadata }: CostForgeProps = {}) {
+  const countyBadgeLabel = getCostForgeCountyBadgeLabel();
   const activeTab    = useCostForgeWorkspaceStore((s) => s.activeTab);
   const setActiveTab = useCostForgeWorkspaceStore((s) => s.setActiveTab);
   const fetchStats   = useCostForgeWorkspaceStore((s) => s.fetchDashboardStats);
@@ -269,7 +271,7 @@ export default function CostForge({ metadata }: CostForgeProps = {}) {
                 <option key={y} value={y}>{y} Study</option>
               ))}
             </select>
-            <span className="forge-chip">Benton County</span>
+            <span className="forge-chip">{countyBadgeLabel}</span>
           </div>
         </div>
         <nav className="cf-tabbar" role="tablist" aria-label="CostForge tabs">

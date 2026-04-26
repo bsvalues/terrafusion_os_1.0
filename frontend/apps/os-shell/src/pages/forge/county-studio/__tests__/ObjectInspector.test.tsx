@@ -2,8 +2,8 @@
 //
 // Task D — three-tab Inspector coverage:
 //   - Panel renders when a segment is selected, hides when none.
-//   - Metrics tab surfaces Benton Method row (PRB band, VEI bar, classification
-//     pill, Benton Equity Score). No-warnings copy when warnings array empty.
+//   - Metrics tab surfaces the equity row (PRB band, VEI bar, classification
+//     pill, Equity Score). No-warnings copy when warnings array empty.
 //   - Trend tab shows sparklines when history has ≥ 2 points, and the explicit
 //     empty copy for 0 / 1 points — no filler.
 //   - Action tab: Spatial (Atlas + Workbench) always active; Corrective
@@ -108,7 +108,7 @@ function baseDetail(overrides: Partial<CountySegmentDetailDto> = {}): CountySegm
     parcelCount: 412, medianRatio: 0.97, cod: 14.2, prd: 1.01,
     stabilityScore: 72, riskScore: 35, exceptionCount: 8,
     prb: 0.02, vei: 88, equityClassification: 'Fair',
-    bentonEquityScore: 92,
+    equityScore: 92,
     ratioCount: 42,
     yearHistory: [],
     complianceStatus: 'IaaoCompliant',
@@ -186,17 +186,17 @@ describe('ObjectInspector — panel visibility', () => {
 // ── Metrics tab ───────────────────────────────────────────────────────────
 
 describe('ObjectInspector — Metrics tab', () => {
-  it('renders the Benton Method row with PRB / VEI / Classification / Score', () => {
-    state.detail =baseDetail({ prb: 0.02, vei: 88, equityClassification: 'Fair', bentonEquityScore: 92 });
+  it('renders the equity row with PRB / VEI / Classification / Score', () => {
+    state.detail =baseDetail({ prb: 0.02, vei: 88, equityClassification: 'Fair', equityScore: 92 });
     render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
-    const row = screen.getByTestId('inspector-benton-row');
+    const row = screen.getByTestId('inspector-equity-row');
     expect(row).toBeInTheDocument();
     const prb = within(row).getByTestId('inspector-prb-value');
     expect(prb).toHaveAttribute('data-band', 'fair');
     expect(prb.textContent).toContain('0.020');
     const pill = within(row).getByTestId('inspector-classification-pill');
     expect(pill).toHaveAttribute('data-classification', 'Fair');
-    const score = within(row).getByTestId('inspector-benton-score');
+    const score = within(row).getByTestId('inspector-equity-score');
     expect(score.textContent).toBe('92');
   });
 
@@ -212,7 +212,7 @@ describe('ObjectInspector — Metrics tab', () => {
   it('shows "No warnings" copy when warnings array is empty', () => {
     state.detail =baseDetail({ warnings: [] });
     render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
-    expect(screen.getByTestId('inspector-no-warnings')).toHaveTextContent(/meets IAAO and Benton fairness bands/i);
+    expect(screen.getByTestId('inspector-no-warnings')).toHaveTextContent(/meets IAAO and equity fairness bands/i);
   });
 
   it('renders warnings list when present', () => {
@@ -331,7 +331,7 @@ describe('ObjectInspector — Action tab', () => {
     render(<MemoryRouter><ObjectInspector /></MemoryRouter>);
     await switchToTab('inspector-tab-action');
     fireEvent.click(screen.getByTestId('inspector-handoff-atlas'));
-    expect(mockNavigate).toHaveBeenCalledWith('/forge/atlas-live?studyId=study-1&segmentId=s1');
+    expect(mockNavigate).toHaveBeenCalledWith('/forge/atlas-live?studyId=study-1&segmentId=s1&countyId=benton');
   });
 
   it('Find Parcels in Workbench still activates the workbench module (regression)', async () => {
@@ -340,7 +340,7 @@ describe('ObjectInspector — Action tab', () => {
     fireEvent.click(screen.getByTestId('inspector-handoff-workbench'));
     expect(activateModuleMock).toHaveBeenCalledWith('property-workbench', expect.objectContaining({
       source: 'system',
-      metadata: expect.objectContaining({ segmentId: 's1' }),
+      metadata: expect.objectContaining({ segmentId: 's1', countyId: 'benton' }),
     }));
   });
 

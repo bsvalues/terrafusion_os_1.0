@@ -136,7 +136,6 @@ export function CohortCreationDialog() {
             <option value="Visual">Visual (lasso / polygon)</option>
             <option value="RuleBased">Rule-Based</option>
             <option value="Hybrid">Hybrid</option>
-            <option value="Manual">Manual (parcel list)</option>
           </select>
         </div>
 

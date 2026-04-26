@@ -589,7 +589,7 @@ namespace TerraFusion.Consciousness.DTOs
         public required TimeSpan InitializationTime { get; set; }
 
         /// <summary>
-        /// Quantum optimization factor achieved (949+)
+        /// Quantum optimization factor applied
         /// </summary>
         public required decimal QuantumFactor { get; set; }
 

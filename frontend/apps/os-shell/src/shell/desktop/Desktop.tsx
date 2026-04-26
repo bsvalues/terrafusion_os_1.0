@@ -561,6 +561,8 @@ export function Desktop({ className = '', children }: DesktopProps) {
         Skip to desktop content
       </a>
 
+      <h1 className='sr-only'>TerraFusion OS Desktop</h1>
+
       {/* Layer 0: Ambient Background - ALWAYS ON (CSS mode) */}
       <AmbientCompositor forcedMode='css' />
 
@@ -589,6 +591,7 @@ export function Desktop({ className = '', children }: DesktopProps) {
           id='desktop-main-content'
           className='absolute left-0 right-0 top-12 bottom-12 overflow-auto'
           style={{ zIndex: 2 }}
+          tabIndex={0}
           data-testid='shell-routed-content'
         >
           {children ?? <Outlet />}

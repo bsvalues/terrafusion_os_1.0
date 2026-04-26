@@ -9,6 +9,15 @@ vi.mock('../../context/workbenchTabContext', () => ({
   useWorkbenchTab: () => ({ parcelId: 'P-200' }),
 }));
 
+vi.mock('../../auth/session', () => ({
+  getSession: () => ({
+    userId: 'user-001',
+    countyId: 'benton',
+    role: 'assessor',
+    mode: 'pilot',
+  }),
+}));
+
 vi.mock('../../components/workbench/ComparableSalesPanel', () => ({
   ComparableSalesPanel: ({ onReconciledValue }: { onReconciledValue?: (result: { weightedAverage: number }) => void }) => (
     <div data-testid="comparable-sales-panel-mock">

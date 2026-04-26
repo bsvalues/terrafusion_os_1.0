@@ -2,14 +2,15 @@
  * ValueDriverPanel.tsx
  *
  * Feature-level ratio attribution — shows which physical improvement features
- * (basement, pool, garage, etc.) are pulling Benton County ratios above or below
+ * (basement, pool, garage, etc.) are pulling county ratios above or below
  * the county median. Calibration signal for cost schedule adjustments.
  */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { apiFetch } from '@/lib/apiBase';
+import { getStatisticsCountyScope } from './statisticsCountyScope';
 
 interface DriverFeature {
   featureCode: string;
@@ -38,14 +39,22 @@ function SignalBadge({ signal }: { signal: DriverFeature['signal'] }) {
   return <span className={className}>{label}</span>;
 }
 
-export function ValueDriverPanel() {
+interface ValueDriverPanelProps {
+  taxYear?: number;
+}
+
+export function ValueDriverPanel({ taxYear = new Date().getFullYear() }: ValueDriverPanelProps) {
   const [threshold, setThreshold] = useState(0.04);
-  const [taxYear] = useState(2026);
+  const countyScope = useMemo(() => getStatisticsCountyScope(), []);
 
   const { data, isLoading, error } = useQuery<DriverResponse>({
-    queryKey: ['ratio-study-driver-analysis', taxYear],
+    queryKey: ['ratio-study-driver-analysis', taxYear, countyScope.countyId],
     queryFn: () =>
-      apiFetch(`/terraforge/ratio-study/driver-analysis?taxYear=${taxYear}`).then((r) => r.json()),
+      apiFetch(
+        `/terraforge/ratio-study/driver-analysis?taxYear=${taxYear}${countyScope.countyId ? `&countyId=${encodeURIComponent(countyScope.countyId)}` : ''}`,
+        { headers: countyScope.headers },
+      ).then((r) => r.json()),
+    enabled: countyScope.isolated,
     staleTime: 10 * 60_000,
   });
 
@@ -90,10 +99,15 @@ export function ValueDriverPanel() {
         </div>
       </CardHeader>
       <CardContent>
+        {!countyScope.isolated && (
+          <div className="py-8 text-center text-amber-500">
+            County scope required to load driver analysis.
+          </div>
+        )}
         {isLoading && (
           <div className="py-8 text-center text-muted-foreground">Loading driver analysis…</div>
         )}
-        {error && (
+        {countyScope.isolated && error && (
           <div className="py-8 text-center text-red-500">
             Failed to load driver analysis.
           </div>

@@ -16,10 +16,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { apiFetchJson } from '@/lib/apiBase';
 import { useCostForgeWorkspaceStore } from '../costForgeWorkspaceStore';
-
-const BENTON_COUNTY_ID =
-  (import.meta.env as Record<string, string>).VITE_BENTON_COUNTY_ID ??
-  '19190019-1919-1919-1919-191919191919';
+import { getCostForgeCountyScope } from '../countyScope';
 
 // Shape of GET /api/equity/deciles response
 interface DecileResponse {
@@ -116,6 +113,7 @@ function fmtCod(n: number | null): string {
 }
 
 export function TriageTab() {
+  const countyScope = getCostForgeCountyScope();
   const drillIntoHood = useCostForgeWorkspaceStore((s) => s.drillIntoHood);
   const taxYear       = useCostForgeWorkspaceStore((s) => s.taxYear);
   const [data, setData]     = useState<MatrixResponse | null>(null);
@@ -129,25 +127,35 @@ export function TriageTab() {
   const decileAbortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
+    if (!countyScope.isolated || !countyScope.countyId) {
+      setDecileData(null);
+      return;
+    }
     decileAbortRef.current?.abort();
     decileAbortRef.current = new AbortController();
     apiFetchJson<DecileResponse>(
-      `/equity/deciles?countyId=${BENTON_COUNTY_ID}&taxYear=${taxYear}`,
-      { signal: decileAbortRef.current.signal }
+      `/equity/deciles?countyId=${encodeURIComponent(countyScope.countyId)}&taxYear=${taxYear}`,
+      { signal: decileAbortRef.current.signal, headers: countyScope.headers }
     )
       .then((d) => { setDecileData(d); })
       .catch(() => { /* non-fatal — decile badge stays hidden */ });
     return () => { decileAbortRef.current?.abort(); };
-  }, [taxYear]);
+  }, [countyScope.countyId, countyScope.isolated, taxYear]);
 
   function load() {
+    if (!countyScope.isolated) {
+      setData(null);
+      setLoading(false);
+      setError('County scope required for CostForge.');
+      return;
+    }
     abortRef.current?.abort();
     abortRef.current = new AbortController();
     setLoading(true);
     setError(null);
     apiFetchJson<MatrixResponse>(
       `/costforge/calibration/neighborhood-matrix?taxYear=${taxYear}&minSales=3`,
-      { signal: abortRef.current.signal }
+      { signal: abortRef.current.signal, headers: countyScope.headers }
     )
       .then((d) => { setData(d); setLoading(false); })
       .catch((err) => {
@@ -169,6 +177,10 @@ export function TriageTab() {
     .sort((a, b) => b.score - a.score);
 
   const outCount = data?.neighborhoods.filter((h) => !h.iaaoCompliant).length ?? 0;
+
+  if (!countyScope.isolated) {
+    return <div className="cf-state cf-state--error">County scope required to load CostForge.</div>;
+  }
 
   return (
     <div>

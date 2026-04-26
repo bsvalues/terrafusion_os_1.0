@@ -2,7 +2,7 @@
 //
 // Task D — Inspector backend contract.
 // Two endpoints' worth of logic:
-//   1. GetSegmentDetailAsync — IAAO core metrics + Benton Method (PRB / VEI /
+//   1. GetSegmentDetailAsync — IAAO core metrics + equity metrics (PRB / VEI /
 //      classification / equity score) + 5-year YoY series + compliance +
 //      human-readable warnings. One round-trip for the Inspector's Metrics
 //      and Trend tabs.

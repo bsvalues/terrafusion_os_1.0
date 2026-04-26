@@ -27,6 +27,8 @@ export type OutlierMethod = 'iqr' | 'trim' | 'none';
 export interface RatioStudyParams {
   /** Tax year for the study */
   taxYear: number;
+  /** County scope for the study (slug, name, or Guid when available) */
+  countyId?: string | null;
   /** Sales window in months (e.g. 12, 24, 36) */
   salesWindowMonths: number;
   /** Neighborhood filter (omit for county-wide) */
@@ -126,6 +128,7 @@ export interface ModelReceipt {
 export async function computeRatioStudy(params: RatioStudyParams): Promise<RatioStudyResult> {
   // Real endpoint: GET /api/terraforge/ratio-study
   const query = new URLSearchParams({ taxYear: String(params.taxYear) });
+  if (params.countyId) query.set('countyId', params.countyId);
   if (params.neighborhood) query.set('hood', params.neighborhood);
   if (params.propertyType) query.set('propertyType', params.propertyType);
   const response = await fetch(`/api/terraforge/ratio-study?${query.toString()}`);
@@ -187,6 +190,7 @@ export async function computeRatioStudy(params: RatioStudyParams): Promise<Ratio
     computedAt:       now,
     params: {
       taxYear:           params.taxYear,
+      countyId:          params.countyId,
       salesWindowMonths: params.salesWindowMonths,
       neighborhood:      params.neighborhood,
       outlierMethod:     params.outlierMethod,

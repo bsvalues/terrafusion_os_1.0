@@ -1,11 +1,3 @@
-/**
- * ═══════════════════════════════════════════════════════════════
- * USE AI ASSISTANT HOOK - React Hook for AI Integration
- * TerraFusion OS Frontend AI Coordination
- * Government. Transcended.
- * ═══════════════════════════════════════════════════════════════
- */
-
 import { useCallback, useEffect, useState } from 'react';
 import { getToken } from '../auth/authStorage';
 import { getApiBase } from '../lib/apiBase';
@@ -23,11 +15,11 @@ interface AIMessage {
 interface AISwarmStatus {
   countyId: string;
   activeAgents: number;
-  swarmActivity: number;
+  swarmActivity: string;
   quantumOptimizationFactor: number;
   responseTime: number;
   accuracyScore: number;
-  consciousnessLevel: string;
+  consciousnessLevel: number;
   lastUpdate: Date;
 }
 
@@ -63,7 +55,7 @@ export const useAIAssistant = ({
       const welcomeMessage: AIMessage = {
         id: 'system-welcome',
         role: 'system',
-        content: `**AI Assistant Ready** - ${countyId.toUpperCase()}\n\nResponses come from the governed TerraFusion AI Assistant API. Agent counts, valuation accuracy, compliance status, and workflow completion are shown only when returned with backend evidence.\n\nRole context: ${employeeRole}`,
+        content: `**AI Assistant Compatibility Mode** - ${countyId.toUpperCase()}\n\nResponses come from the governed TerraFusion AI Assistant API. Agent counts, valuation accuracy, compliance status, and workflow completion are shown only when returned with backend evidence.\n\nRole context: ${employeeRole}`,
         timestamp: new Date(),
       };
 
@@ -127,7 +119,7 @@ export const useAIAssistant = ({
           id: `error-${Date.now()}`,
           role: 'system',
           content:
-            'I apologize, but I encountered an issue processing your request. Please try again.',
+            'AI Assistant evidence unavailable. This route does not substitute generated advice or workflow claims.',
           timestamp: new Date(),
           confidence: 0,
         };

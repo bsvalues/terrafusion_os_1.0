@@ -11,7 +11,7 @@
  *   - Filter/score logic: services/comparableSalesService.ts (adapted from legacy)
  *   - Adjustment math: CostForge POST /api/costforge/sales-comparison/adjust-comparable
  *   - Reconciliation: CostForge POST /api/costforge/sales-comparison/reconcile
- *   - Data source: dev-snapshots/benton-comparable-sales.json
+ *   - Candidate data: Washington statewide launch package county shards
  *
  * GUARDRAILS:
  *   - All adjustment/reconciliation math stays in backend CostForge
@@ -20,14 +20,19 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { getSession } from '../../auth/session';
 import { useWorkbenchTab } from '../../context/workbenchTabContext';
 import { usePropertyStore } from '../../stores/propertyStore';
 import { invokeTool } from '../../api/pilotApi';
 import {
-  loadBentonComps,
   findCompsForSubject,
   adjustComp,
   reconcileComps,
+  loadCountyComps,
+  getComparableCountyName,
+  getPilotCountyScopeToken,
+  doesPilotCountyMatchComparableCounty,
+  supportsGovernedComparableAdjustments,
   type ComparableSale,
   type ScoredComp,
   type SubjectProperty,
@@ -184,6 +189,20 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
 }) => {
   const { parcelId } = useWorkbenchTab();
   const activeParcel = usePropertyStore((s) => s.activeParcel);
+  const countyCode = activeParcel?.countyCode ?? null;
+  const countyName = useMemo(() => getComparableCountyName(countyCode), [countyCode]);
+  const pilotCountyScope = useMemo(() => getPilotCountyScopeToken(getSession()?.countyId ?? null), []);
+  const countyScopeMismatch = useMemo(
+    () =>
+      countyCode != null &&
+      pilotCountyScope != null &&
+      !doesPilotCountyMatchComparableCounty(pilotCountyScope, countyCode),
+    [countyCode, pilotCountyScope],
+  );
+  const adjustmentsSupported = useMemo(
+    () => supportsGovernedComparableAdjustments(countyCode),
+    [countyCode],
+  );
 
   // Build subject from active parcel
   const subject = useMemo<SubjectProperty | null>(() => {
@@ -203,8 +222,51 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
     };
   }, [activeParcel, parcelId]);
 
-  // All sales from snapshot
-  const allSales = useMemo(() => loadBentonComps(), []);
+  const [allSales, setAllSales] = useState<ComparableSale[]>([]);
+  const [salesLoading, setSalesLoading] = useState(false);
+  const [salesError, setSalesError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSales() {
+      if (!countyCode) {
+        setAllSales([]);
+        setSalesError(
+          'Comparable sales cannot load until the active parcel includes a county code.',
+        );
+        setSalesLoading(false);
+        return;
+      }
+
+      setSalesLoading(true);
+      setSalesError(null);
+
+      try {
+        const sales = await loadCountyComps(countyCode);
+        if (!cancelled) {
+          setAllSales(sales);
+          setSalesLoading(false);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setAllSales([]);
+          setSalesError(
+            error instanceof Error
+              ? error.message
+              : `${countyName} County comparable sales are unavailable.`,
+          );
+          setSalesLoading(false);
+        }
+      }
+    }
+
+    void loadSales();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [countyCode, countyName]);
 
   // Filters
   const [filters, setFilters] = useState<CompFilter>({ qualifiedOnly: true });
@@ -241,6 +303,15 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
   // Fetch adjustments when selection changes
   useEffect(() => {
     if (!subject || selectedComps.length === 0) return;
+
+    if (!adjustmentsSupported) {
+      setAdjustments({});
+      setReconciliation(null);
+      setAdjustError(
+        `${countyName} County comparable sales are available, but governed paired adjustments and reconciliation are currently certified only for Benton County.`,
+      );
+      return;
+    }
 
     const pending = selectedComps.filter((c) => {
       const key = `${c.parcelId}|${c.saleDate}`;
@@ -281,7 +352,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
         setAdjustError('Backend unavailable — connect to CostForge API for paired adjustments');
       }
     });
-  }, [subject, selectedComps, adjustments, adjustLoading]);
+  }, [subject, selectedComps, adjustments, adjustLoading, adjustmentsSupported, countyName]);
 
   // Reconciliation
   const [reconciliation, setReconciliation] = useState<ReconciliationResult | null>(null);
@@ -333,13 +404,21 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
 
   const handleRationale = useCallback(async () => {
     if (selectedComps.length === 0 || !subject) return;
+    if (!pilotCountyScope) {
+      setRationale('Governed rationale is unavailable until a county-scoped session is active.');
+      return;
+    }
+    if (countyScopeMismatch) {
+      setRationale('Governed rationale is only available for parcels inside your county scope.');
+      return;
+    }
     setRationaleLoading(true);
     try {
       const ids = selectedComps.map((c) => c.parcelId);
       const response = await invokeTool({
         toolId: 'summarize_sales_comps_rationale',
         params: {
-          county: 'benton',
+          county: pilotCountyScope,
           subjectId: subject.parcelId,
           compIds: ids,
           adjustments: true,
@@ -355,7 +434,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
     } finally {
       setRationaleLoading(false);
     }
-  }, [selectedComps, subject]);
+  }, [selectedComps, subject, pilotCountyScope, countyScopeMismatch]);
 
   // No subject
   if (!subject) {
@@ -377,6 +456,45 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
 
       {/* Filters */}
       <FilterBar filters={filters} onChange={setFilters} totalCandidates={candidates.length} />
+
+      {salesError && (
+        <div
+          className="text-xs px-3 py-2"
+          style={{
+            color: WARNING_COLOR,
+            background: WARNING_BANNER_BG_SUBTLE,
+            borderBottom: '1px solid hsl(var(--tf-border) / 0.1)',
+          }}
+        >
+          {salesError}
+        </div>
+      )}
+
+      {!adjustmentsSupported && countyCode && (
+        <div
+          className="text-xs px-3 py-2"
+          style={{
+            color: WARNING_COLOR,
+            background: WARNING_BANNER_BG_SUBTLE,
+            borderBottom: '1px solid hsl(var(--tf-border) / 0.1)',
+          }}
+        >
+          {countyName} County comps are loaded from the statewide sales database, but governed paired adjustments and reconciliation remain Benton-certified only.
+        </div>
+      )}
+
+      {countyScopeMismatch && (
+        <div
+          className="text-xs px-3 py-2"
+          style={{
+            color: WARNING_COLOR,
+            background: WARNING_BANNER_BG_SUBTLE,
+            borderBottom: '1px solid hsl(var(--tf-border) / 0.1)',
+          }}
+        >
+          You can review statewide parcels here, but governed county-scoped comp rationale is unavailable outside your own county.
+        </div>
+      )}
 
       {/* Comp candidates table */}
       <div className="overflow-auto" style={{ maxHeight: '320px' }}>
@@ -410,7 +528,9 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
                   className="px-4 py-6 text-center"
                   style={{ color: 'hsl(var(--tf-text) / 0.4)' }}
                 >
-                  No comparable sales match current filters
+                  {salesLoading
+                    ? `Loading ${countyName} County comparable sales...`
+                    : 'No comparable sales match current filters'}
                 </td>
               </tr>
             ) : (
@@ -578,7 +698,12 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
           <div className="mt-2 flex items-center gap-2">
             <button
               onClick={handleRationale}
-              disabled={rationaleLoading || selectedComps.length === 0}
+              disabled={
+                rationaleLoading ||
+                selectedComps.length === 0 ||
+                !pilotCountyScope ||
+                countyScopeMismatch
+              }
               className="text-xs px-3 py-1 rounded transition-colors"
               style={{
                 background: 'hsl(var(--tf-accent) / 0.1)',
@@ -587,7 +712,7 @@ export const ComparableSalesPanel: React.FC<ComparableSalesPanelProps> = ({
                 opacity: rationaleLoading ? 0.5 : 1,
               }}
             >
-              {rationaleLoading ? 'Generating...' : 'AI Comp Rationale'}
+              {rationaleLoading ? 'Generating...' : 'Governed Comp Rationale'}
             </button>
           </div>
 

@@ -2,7 +2,7 @@
 //
 // Task D — Inspector service.
 //
-// Loads a single CountySegment, computes Benton Method extras (PRB, VEI,
+// Loads a single CountySegment, computes equity extras (PRB, VEI,
 // classification, composite equity score) from the same parcel-level ratios
 // the derivation service uses, assembles a 5-year YoY history by joining
 // prior CountySegments on (CountyId, SegmentType, GeographyRef) against
@@ -82,7 +82,7 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
         // derivation's grouping key exactly so PRB/VEI see the same population.
         var ratios = await LoadSegmentRatiosAsync(study, rule, ct);
 
-        // Benton additions — all from the single ratio set above, so any caller
+        // Equity additions — all from the single ratio set above, so any caller
         // re-computing downstream sees identical numbers.
         decimal? prb = BentonEquityMath.ComputePrb(ratios, segment.MedianRatio ?? 0m);
         decimal? vei = BentonEquityMath.ComputeVei(ratios, segment.PriceRelatedDifferential, prb);
@@ -145,7 +145,7 @@ public class CountyStudyInspectorService : ICountyStudyInspectorService
             Prb:                  prb.HasValue ? Math.Round(prb.Value, 4) : null,
             Vei:                  vei,
             EquityClassification: classification,
-            BentonEquityScore:    equityScore,
+            EquityScore:          equityScore,
             RatioCount:           ratios.Count,
             YearHistory:          yearHistory,
             ComplianceStatus:     compliance.ToString(),

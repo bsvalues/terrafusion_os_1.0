@@ -1,0 +1,67 @@
+ M backend/src/TerraFusion.AI/Services/AIAssistantService.cs
+ M backend/src/TerraFusion.API/Controllers/AIAssistantController.cs
+ M backend/src/TerraFusion.API/Controllers/AgentsController.cs
+ M backend/src/TerraFusion.API/Controllers/CodexNotificationController.cs
+ M backend/src/TerraFusion.API/Controllers/GovernmentController.cs
+ M backend/src/TerraFusion.API/Controllers/LevyReferenceController.cs
+ M backend/src/TerraFusion.API/Controllers/MarketplaceController.cs
+ M backend/src/TerraFusion.API/Controllers/TerraFusionMarketplaceController.cs
+ M backend/src/TerraFusion.Consciousness/Controllers/ConsciousnessOrchestrationController.cs
+ M backend/src/TerraFusion.Consciousness/DTOs/ConsciousnessDTOs.cs
+ M backend/src/TerraFusion.Consciousness/DTOs/SwarmCoordinationResult.cs
+ M backend/src/TerraFusion.Consciousness/DTOs/TranscendenceEngineDto.cs
+ M backend/src/TerraFusion.Consciousness/Extensions/ConsciousnessServiceExtensions.cs
+ M backend/src/TerraFusion.Consciousness/HealthChecks/ConsciousnessHealthChecks.cs
+ M backend/src/TerraFusion.Consciousness/Hubs/AILayerMeshHub.cs
+ M backend/src/TerraFusion.Consciousness/Hubs/QuantumConsciousnessHub.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IAILayerMeshOrchestrator.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IAIOrchestrationService.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IAuditLogger.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IBentonCountyDataService.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IComplianceService.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IComplianceValidator.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IConsciousnessEngine.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IConsciousnessTelemetryService.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IHybridConsciousnessManager.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IMillionAgentService.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IMultiCountyDataService.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IPropertyValuationService.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IQuantumConsciousnessOrchestrator.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IQuantumSecurityService.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/ITranscendenceEngine.cs
+ M backend/src/TerraFusion.Consciousness/Interfaces/IWorkflowRepository.cs
+ M backend/src/TerraFusion.Consciousness/Services/AILayerMeshOrchestrator.cs
+ M backend/src/TerraFusion.Consciousness/Services/AIOrchestrationService.cs
+ M backend/src/TerraFusion.Consciousness/Services/ConsciousnessEngineStub.cs
+ M backend/src/TerraFusion.Consciousness/Services/ConsciousnessService.cs
+ M backend/src/TerraFusion.Consciousness/Services/MillionAgentService.cs
+ M backend/src/TerraFusion.Consciousness/Services/MultiCountyDataService.cs
+ M backend/src/TerraFusion.Consciousness/Services/PredictiveImpactService.cs
+ M frontend/apps/os-shell/src/__tests__/auth/consciousnessBackendTruth.contract.test.ts
+ M frontend/apps/os-shell/src/__tests__/shell/countyEmployeeWorkspaceHonesty.contract.test.tsx
+ M frontend/apps/os-shell/src/__tests__/shell/swarmTruth.contract.test.tsx
+ M frontend/apps/os-shell/src/components/Marketplace.tsx
+ M frontend/apps/os-shell/src/components/ai/AIAssistantPanel.tsx
+ M frontend/apps/os-shell/src/components/ai/GovernmentAIStatus.tsx
+ M frontend/apps/os-shell/src/components/marketplace/AIAgentShowcase.tsx
+ M frontend/apps/os-shell/src/components/marketplace/AIMarketplaceHero.tsx
+ M frontend/apps/os-shell/src/components/marketplace/MarketplaceApp.tsx
+ M frontend/apps/os-shell/src/components/marketplace/TerraFusionMarketplace.tsx
+ M frontend/apps/os-shell/src/components/research/AISwarmManagementPanel.tsx
+ M frontend/apps/os-shell/src/components/research/ResearchPortal.tsx
+ M frontend/apps/os-shell/src/components/status/GovernmentExcellenceStatus.tsx
+ M frontend/apps/os-shell/src/context/ResearchContext.tsx
+ M frontend/apps/os-shell/src/hooks/useAIAssistant.ts
+ M frontend/apps/os-shell/src/pages/CountyEmployeeWorkspace.tsx
+ M frontend/apps/os-shell/src/services/TerraFusionEliteAPI.ts
+ M frontend/apps/os-shell/src/shell/desktop/AIStatusPanel.tsx
+ M frontend/apps/os-shell/src/shell/desktop/__tests__/AIStatusPanel.test.tsx
+ M tests/mock_tests/TerraFusion.IntegrationTests/TerraFusion.IntegrationTests.csproj
+ M tests/mock_tests/TerraFusion.PerformanceTests/TerraFusion.PerformanceTests.csproj
+ M tools/ai-workspace-companion/package.json
+?? changes.txt
+?? frontend/apps/os-shell/src/__tests__/auth/governmentTruth.contract.test.tsx
+?? frontend/apps/os-shell/src/__tests__/marketplace/
+?? integration_transitive.txt
+?? performance_transitive.txt
+?? typecheck_run_output.txt
