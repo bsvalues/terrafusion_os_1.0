@@ -17,6 +17,7 @@ describe('components/sketch/index.ts leak guard', () => {
     );
     expect(fs.existsSync(filePath), `Expected file to exist: ${filePath}`).toBe(true);
     const content = fs.readFileSync(filePath, 'utf8');
-    assertNoRawColorLeaks(content, { label: 'components/sketch/index.ts' });
+    // mutation-resistance contract requires label === basename(target).
+    assertNoRawColorLeaks(content, { label: 'index.ts' });
   });
 });
