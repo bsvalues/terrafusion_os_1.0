@@ -1,5 +1,46 @@
 import { renderHook, act } from '@testing-library/react';
 import { vi } from 'vitest';
+
+// Hoisted vi.mock so the @microsoft/signalr import resolves to the same
+// mock whether the test runs through frontend/vitest.config.ts (which
+// has a resolve.alias) or the root vitest.config.ts (which can fail to
+// honour the alias when Vite's dep-optimizer pre-bundles the real
+// package). The mock mirrors frontend/__mocks__/@microsoft/signalr.ts.
+const { mockConnection } = vi.hoisted(() => {
+  const conn = {
+    start: vi.fn().mockResolvedValue(undefined),
+    stop: vi.fn().mockResolvedValue(undefined),
+    on: vi.fn(),
+    off: vi.fn(),
+    invoke: vi.fn().mockResolvedValue(undefined),
+    onreconnected: vi.fn(),
+    onreconnecting: vi.fn(),
+    onclose: vi.fn(),
+    state: 'Connected',
+    connectionId: 'mock-connection-id',
+  };
+  return { mockConnection: conn };
+});
+
+vi.mock('@microsoft/signalr', () => {
+  const HubConnectionBuilder = vi.fn().mockImplementation(() => ({
+    withUrl: vi.fn().mockReturnThis(),
+    withAutomaticReconnect: vi.fn().mockReturnThis(),
+    build: vi.fn().mockReturnValue(mockConnection),
+  }));
+  return {
+    HubConnectionBuilder,
+    HubConnectionState: {
+      Connected: 'Connected',
+      Connecting: 'Connecting',
+      Disconnected: 'Disconnected',
+      Disconnecting: 'Disconnecting',
+      Reconnecting: 'Reconnecting',
+    },
+    getMockConnection: () => mockConnection,
+  };
+});
+
 import { useCountyStudyHub } from '../hooks/useCountyStudyHub';
 import { useCountyStudioStore } from '@/stores/countyStudioStore';
 import { getMockConnection } from '@microsoft/signalr';
