@@ -359,6 +359,9 @@
   --tf-suite-pilot-bright-hs: 226 80%; /* Pilot indigo  brighter variant   */
   --tf-suite-gpt: var(--tf-suite-pilot); /* alias */
 
+  /* HS anchor for canvas scale-marker drawing in PlanTracePanel.tsx */
+  --tf-trace-marker-hs: 142 76%;      /* PlanTrace scale-marker green H+S */
+
   /* ═══ LIQUID GLASS (Manifesto Layer 1: Shell Material) ═══
      Light cream glass — transparent over the warm wallpaper gradient.
      Backdrop blur creates the refractive Liquid Glass effect.              */

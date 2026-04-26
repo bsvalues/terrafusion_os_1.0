@@ -103,14 +103,23 @@ export function PlanTracePanel({ onSave, saving, currentGLA }: PlanTracePanelPro
     const y = (400 - img.height * scale) / 2;
     ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
 
-    // Draw scale points
-    if (scalePoint1) drawPoint(ctx, scalePoint1, "hsl(142, 76%, 36%)");
-    if (scalePoint2) drawPoint(ctx, scalePoint2, "hsl(142, 76%, 36%)");
+    // Draw scale points — canvas API does not resolve var(), so resolve the
+    // --tf-trace-marker-hs token at draw-time via getComputedStyle so the
+    // file stays free of literal raw HSL strings.
+    const traceMarkerHs =
+      (typeof window !== 'undefined' && document?.documentElement
+        ? getComputedStyle(document.documentElement)
+            .getPropertyValue('--tf-trace-marker-hs')
+            .trim()
+        : '') || '142 76%';
+    const traceMarkerColor = `hsl(${traceMarkerHs} 36%)`;
+    if (scalePoint1) drawPoint(ctx, scalePoint1, traceMarkerColor);
+    if (scalePoint2) drawPoint(ctx, scalePoint2, traceMarkerColor);
     if (scalePoint1 && scalePoint2) {
       ctx.beginPath();
       ctx.moveTo(scalePoint1.x, scalePoint1.y);
       ctx.lineTo(scalePoint2.x, scalePoint2.y);
-      ctx.strokeStyle = "hsl(142, 76%, 36%)";
+      ctx.strokeStyle = traceMarkerColor;
       ctx.lineWidth = 2;
       ctx.setLineDash([4, 4]);
       ctx.stroke();
