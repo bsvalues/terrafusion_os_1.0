@@ -152,6 +152,21 @@ vi.mock('../../pages/forge/statistics/VEIDashboard', () => ({
   default: () => <div data-testid="vei-dashboard-stub">VEIDashboard stub</div>,
 }));
 
+// Stub the county-scope helper so StatisticsStudio treats the test
+// session as isolated. Without this, showCountyScopeRequired flips to
+// true and the studio short-circuits past the per-tab panel renders —
+// hiding the OutlierReviewPanel / ModelComparisonPanel stubs the tab
+// tests are looking for.
+vi.mock('../../pages/forge/statistics/statisticsCountyScope', () => ({
+  getStatisticsCountyScope: () => ({
+    countyId: 'benton',
+    headers: { 'X-County-Id': 'benton' },
+    isolated: true,
+    advancedCertified: true,
+    exportStem: 'benton',
+  }),
+}));
+
 // Phase 16 — OutlierReviewPanel + ModelComparisonPanel stubs
 vi.mock('../../pages/forge/statistics/OutlierReviewPanel', () => ({
   __esModule: true,
@@ -331,7 +346,7 @@ describe('Phase 10: Forge Analytics Contract', () => {
       expect(violations).toEqual([]);
     });
 
-    // Phase 16: Outliers tab renders stub
+    // Phase 16: Outliers tab renders OutlierReviewPanel stub
     it('Outliers tab renders OutlierReviewPanel stub', () => {
       render(withQueryClient(<StatisticsStudio />));
       fireEvent.click(screen.getByTestId('tab-outliers'));
