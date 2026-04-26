@@ -19,6 +19,18 @@ vi.mock('@/services/forge/propertyValuationClientService', () => ({
   getCostSchedule: vi.fn(),
 }));
 
+vi.mock('../../pages/forge/cost/countyScope', () => ({
+  getCostForgeCountyScope: () => ({
+    countyId: '19190019-1919-1919-1919-191919191919',
+    headers: { 'x-county-id': '19190019-1919-1919-1919-191919191919' },
+    isolated: true,
+  }),
+}));
+
+vi.mock('../../pages/forge/countyCertification', () => ({
+  supportsCertifiedCostScheduleLane: () => true,
+}));
+
 const mockedApiFetchJson = vi.mocked(apiFetchJson);
 const mockedGetCostSchedule = vi.mocked(getCostSchedule);
 
@@ -26,6 +38,10 @@ describe('CostManual honesty contract', () => {
   beforeEach(() => {
     mockedApiFetchJson.mockReset();
     mockedGetCostSchedule.mockReset();
+    // The root vitest setup enables fake timers globally; findByTestId
+    // poll loops use setInterval and never advance under fake time, so
+    // restore real timers for these async-mock-driven assertions.
+    vi.useRealTimers();
   });
 
   it('renders an explicit unavailable state instead of sample replacement when the live page fetch fails', async () => {
@@ -36,10 +52,10 @@ describe('CostManual honesty contract', () => {
     expect(await screen.findByTestId('cost-manual-unavailable')).toBeInTheDocument();
     expect(screen.queryByText('DEMO DATA')).not.toBeInTheDocument();
     expect(
-      screen.getByText('Benton schedule rows are not being replaced with sample data on this surface.')
+      screen.getByText('Certified schedule rows are not being replaced with sample data on this surface.')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('Cost schedule unavailable. No Benton schedule rows are being shown.')
+      screen.getByText('Cost schedule unavailable. No certified schedule rows are being shown.')
     ).toBeInTheDocument();
   });
 
@@ -78,6 +94,7 @@ describe('CostManualComponent honesty contract', () => {
   beforeEach(() => {
     mockedApiFetchJson.mockReset();
     mockedGetCostSchedule.mockReset();
+    vi.useRealTimers();
   });
 
   it('clears stale rows and shows unavailable state when a subsequent governed fetch fails', async () => {
@@ -105,7 +122,7 @@ describe('CostManualComponent honesty contract', () => {
     ).toBeInTheDocument();
     expect(screen.queryByText('Single Family Residence')).not.toBeInTheDocument();
     expect(
-      screen.getByText('Cost schedule unavailable. No Benton schedule rows are being shown.')
+      screen.getByText('Cost schedule unavailable. No certified schedule rows are being shown.')
     ).toBeInTheDocument();
   });
 });
