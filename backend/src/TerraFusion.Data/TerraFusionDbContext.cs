@@ -4,9 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Entities.Pacs;
+using TerraFusion.Core.Entities.Sync;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Data.Configurations;
+using TerraFusion.Data.Configurations.Sync;
 // NOTE: TerraFusion.AI.Entities cannot be referenced here due to circular dependency
 // AI-specific DbSets are added via partial class or extension in TerraFusion.AI project
 
@@ -89,6 +91,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<AuditEvent> AuditEvents { get; set; }
   public DbSet<Permission> Permissions { get; set; }
   public DbSet<UserPermission> UserPermissions { get; set; }
+
+  // R3 Sync Spine — durable PACS-to-TerraFusion bridge audit trail
+  public DbSet<SyncBatch> SyncBatches { get; set; }
+  public DbSet<SyncRecord> SyncRecords { get; set; }
+  public DbSet<SyncWatermark> SyncWatermarks { get; set; }
+  public DbSet<SyncQuarantine> SyncQuarantine { get; set; }
 
   // Codex 3-6-9 Framework Entities
   public DbSet<CodexMetric> CodexMetrics { get; set; }
@@ -616,6 +624,12 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new CertificationStepConfiguration());
     modelBuilder.ApplyConfiguration(new NoticeConfiguration());
     modelBuilder.ApplyConfiguration(new QueueItemConfiguration());
+
+    // R3 Sync Spine
+    modelBuilder.ApplyConfiguration(new SyncBatchConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncRecordConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncWatermarkConfiguration());
+    modelBuilder.ApplyConfiguration(new SyncQuarantineConfiguration());
 
     // NOTE: TerraFusionGPT Suite configurations temporarily disabled due to circular dependency
     // These configurations are defined in TerraFusion.Data\Configurations\GPTConfiguration.cs.disabled
