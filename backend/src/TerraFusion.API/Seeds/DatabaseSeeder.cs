@@ -15,6 +15,10 @@ namespace TerraFusion.API.Seeds;
 /// </summary>
 public static class DatabaseSeeder
 {
+    private const string BentonCountyFips = "53005";
+    private const string ClarkCountyFips = "53011";
+    private const string KingCountyFips = "53033";
+
     // Stable GUIDs for idempotent seed data
     public static readonly Guid BentonCountyId = Guid.Parse("19190019-1919-1919-1919-191919191919");
     public static readonly Guid ClarkCountyId  = Guid.Parse("19190019-1919-1919-1919-191919191920");
@@ -33,10 +37,16 @@ public static class DatabaseSeeder
     {
         Console.WriteLine("[DX-01] Seeding dossier runtime development data...");
 
+        var bentonCountyId = await db.Counties
+            .Where(c => c.FipsCode == BentonCountyFips)
+            .Select(c => (Guid?)c.Id)
+            .FirstOrDefaultAsync();
+
         // Seed Counties (idempotent)
-        if (!await db.Counties.AnyAsync(c => c.Id == BentonCountyId))
+        if (!bentonCountyId.HasValue)
         {
             await SeedCounties(db);
+            bentonCountyId = BentonCountyId;
         }
         else
         {
@@ -46,7 +56,7 @@ public static class DatabaseSeeder
         // Seed Properties (idempotent)
         if (!await db.Properties.AnyAsync(p => p.Id == BentonProperty1Id))
         {
-            await SeedBentonProperties(db);
+            await SeedBentonProperties(db, bentonCountyId ?? BentonCountyId);
         }
         else
         {
@@ -102,7 +112,7 @@ public static class DatabaseSeeder
                 Id = BentonCountyId,
                 Name = "Benton",
                 State = "WA",
-                FipsCode = "53005",
+                FipsCode = BentonCountyFips,
                 Population = 206873,
                 Area = 1703.38
             },
@@ -111,7 +121,7 @@ public static class DatabaseSeeder
                 Id = ClarkCountyId,
                 Name = "Clark",
                 State = "WA",
-                FipsCode = "53011",
+                FipsCode = ClarkCountyFips,
                 Population = 503311,
                 Area = 656.31
             },
@@ -120,17 +130,32 @@ public static class DatabaseSeeder
                 Id = KingCountyId,
                 Name = "King",
                 State = "WA",
-                FipsCode = "53033",
+                FipsCode = KingCountyFips,
                 Population = 2269675,
                 Area = 2307.58
             }
         };
 
-        await db.Counties.AddRangeAsync(counties);
-        Console.WriteLine($"[DX-01] Seeded {counties.Length} counties (Benton, Clark, King)");
+        var existingFips = await db.Counties
+            .Where(c => c.FipsCode == BentonCountyFips || c.FipsCode == ClarkCountyFips || c.FipsCode == KingCountyFips)
+            .Select(c => c.FipsCode)
+            .ToListAsync();
+
+        var countiesToAdd = counties
+            .Where(county => !existingFips.Contains(county.FipsCode))
+            .ToArray();
+
+        if (countiesToAdd.Length == 0)
+        {
+            Console.WriteLine("[DX-01] Counties already seeded, skipping.");
+            return;
+        }
+
+        await db.Counties.AddRangeAsync(countiesToAdd);
+        Console.WriteLine($"[DX-01] Seeded {countiesToAdd.Length} counties (Benton, Clark, King)");
     }
 
-    private static async Task SeedBentonProperties(TerraFusionDbContext db)
+    private static async Task SeedBentonProperties(TerraFusionDbContext db, Guid bentonCountyId)
     {
         var now = DateTime.UtcNow;
         var properties = new[]
@@ -151,7 +176,7 @@ public static class DatabaseSeeder
                 AssessmentDate = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc),
                 LastUpdated = now,
                 TaxYear = 2025,
-                CountyId = BentonCountyId
+                CountyId = bentonCountyId
             },
             new Property
             {
@@ -169,7 +194,7 @@ public static class DatabaseSeeder
                 AssessmentDate = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc),
                 LastUpdated = now,
                 TaxYear = 2025,
-                CountyId = BentonCountyId
+                CountyId = bentonCountyId
             },
             new Property
             {
@@ -187,7 +212,7 @@ public static class DatabaseSeeder
                 AssessmentDate = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc),
                 LastUpdated = now,
                 TaxYear = 2025,
-                CountyId = BentonCountyId
+                CountyId = bentonCountyId
             }
         };
 
